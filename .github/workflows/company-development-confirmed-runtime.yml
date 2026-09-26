@@ -31,11 +31,11 @@ on:
   workflow_dispatch:
     inputs:
       game_id:
-        description: Optional exact game id. When set, dispatch only this game's Roblox and Unity lanes.
+        description: Optional exact game id. When set, dispatch this game's Unity Web, Roblox, and Unity lanes in parallel.
         required: false
         type: string
       trigger_source:
-        description: Optional orchestration source for diagnostics; native admission is decided only by durable readiness evidence or grandfathered native progress.
+        description: Optional orchestration source for diagnostics; development admission is minimum-design ready and all lanes fan out in parallel.
         required: false
         default: MANUAL_OR_NATIVE
         type: string
@@ -59,6 +59,7 @@ jobs:
       unity_web_ids: ${{ steps.plan.outputs.unity_web_ids }}
       unity_web_json: ${{ steps.plan.outputs.unity_web_json }}
       unity_web_bootstrap_ids: ${{ steps.plan.outputs.unity_web_bootstrap_ids }}
+      unity_web_bootstrap_json: ${{ steps.plan.outputs.unity_web_bootstrap_json }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -80,24 +81,23 @@ jobs:
           node --check tools/company-minimum-design-contract.mjs
           node --test qa/company-selected-platform-router.test.mjs
           node --test qa/company-minimum-design-contract.test.mjs
-          node --test qa/company-upper-platform-admission.test.mjs
           node --test qa/company-unity-web-gameplay-validation.test.mjs
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const r=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const d=r.directNativeDualPlatformDevelopment||{};
-          if(d.status!=='OWNER_DIRECT_LOCKED'||d.mode!=='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR')throw new Error('UPPER_PLATFORM_OWNER_LOCK_REQUIRED');
-          if(d.unityWebEnabled!==true||d.unityWebRequired!==true||d.unityWebGateRequired!==true||d.unityWebMode!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR')throw new Error('UNITY_WEB_DEVELOPMENT_FLOOR_CONTRACT_REQUIRED');
-          const gate=d.upperPlatformDevelopmentReadinessGate||{};
-          if(gate.gateId!=='UPPER_PLATFORM_DEVELOPMENT_READY'||gate.allCriteriaRequired!==true||JSON.stringify(gate.targets)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error('UPPER_PLATFORM_READINESS_GATE_REQUIRED');
-          const fan=d.unityWebNativeFanOut||{};
-          if(fan.enabled!==true||fan.trigger!=='UPPER_PLATFORM_DEVELOPMENT_READY_ON_MAIN'||JSON.stringify(fan.targets)!==JSON.stringify(['ROBLOX','UNITY'])||fan.developmentAdmissionAuthority!==true||fan.directDispatchFromUnityWebBuildForbidden!==true||fan.sourceTreeExactMatchRequired!==true)throw new Error('UPPER_PLATFORM_MAIN_HANDOFF_CONTRACT_REQUIRED');
+          if(d.status!=='OWNER_DIRECT_LOCKED'||d.mode!=='UNITY_WEB_ROBLOX_UNITY_FULL_PARALLEL_BY_GAME_ID')throw new Error('FULL_PARALLEL_OWNER_LOCK_REQUIRED');
+          if(d.unityWebEnabled!==true||d.unityWebRequired!==true||d.unityWebGateRequired!==false||d.unityWebMode!=='PARALLEL_DEVELOPMENT_AND_VALIDATION_LANE')throw new Error('UNITY_WEB_PARALLEL_LANE_CONTRACT_REQUIRED');
+          const fan=d.parallelDevelopmentFanOut||{};
+          if(fan.trigger!=='MINIMUM_DESIGN_CONTRACT_READY'||JSON.stringify(fan.lanes)!==JSON.stringify(['UNITY_WEB','ROBLOX','UNITY'])||fan.sameGameConcurrentStart!==true||fan.crossLaneDevelopmentAdmissionDependencyForbidden!==true)throw new Error('THREE_LANE_PARALLEL_FANOUT_REQUIRED');
           if(JSON.stringify(d.supportedDevelopmentPlatforms)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error('ROBLOX_UNITY_PAIR_REQUIRED');
-          if(d.automaticPairing?.ROBLOX?.join(',')!=='UNITY_WEB_FLOOR,ROBLOX,UNITY'||d.automaticPairing?.UNITY?.join(',')!=='UNITY_WEB_FLOOR,UNITY,ROBLOX')throw new Error('UNITY_WEB_THEN_BIDIRECTIONAL_PAIR_REQUIRED');
+          if(d.automaticPairing?.ROBLOX?.join(',')!=='UNITY_WEB,ROBLOX,UNITY'||d.automaticPairing?.UNITY?.join(',')!=='UNITY_WEB,ROBLOX,UNITY')throw new Error('FULL_PARALLEL_PAIR_REQUIRED');
           if(d.development?.noArtificialGlobalGameCountCap!==true||d.development?.globalGameDevelopmentWindow!==null)throw new Error('GLOBAL_GAME_COUNT_CAP_FORBIDDEN');
-          if(d.canonicalDevelopmentAdmissionAuthority!==true)throw new Error('DIRECT_NATIVE_ADMISSION_AUTHORITY_REQUIRED');
+          if(d.development?.crossLaneDevelopmentAdmissionDependencyForbidden!==true)throw new Error('CROSS_LANE_ADMISSION_DEPENDENCY_FORBIDDEN');
           if(d.strictDesignScoreRequiredForDevelopmentAdmission!==false)throw new Error('STRICT_DESIGN_ADMISSION_FORBIDDEN');
-          console.log('UPPER_PLATFORM_MACHINE_CONTRACT=PASS');
+          console.log('FULL_PARALLEL_DEVELOPMENT=PASS');
+          console.log('PARALLEL_LANES=UNITY_WEB,ROBLOX,UNITY');
+          console.log('CROSS_LANE_ADMISSION_DEPENDENCY=NONE');
           NODE
 
       - name: Fetch queue authority
@@ -106,7 +106,7 @@ jobs:
           git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
 
-      - name: Resolve Unity Web floor and upper-platform eligibility
+      - name: Resolve full parallel development fan-out
         id: plan
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
@@ -116,38 +116,29 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
-          import {classifyUpperPlatformAdmission} from './tools/company-upper-platform-admission.mjs';
+          import {discoverUnityWebBuildMethod} from './tools/company-upper-platform-admission.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-          const grandfatherGameIds=roadmap?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[];
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
-          if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('UPPER_PLATFORM_REQUESTED_GAME_ID_INVALID:'+requested);
+          if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('PARALLEL_REQUESTED_GAME_ID_INVALID:'+requested);
           const rows=(q.items||[]).filter(item=>
             (!requested||item.gameId===requested)&&
             String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&
             String(item.status||'').toUpperCase()!=='DISABLED'&&
             (platformDevelopmentEligible(item,'ROBLOX')||platformDevelopmentEligible(item,'UNITY'))
           );
-          const nativeIds=[],webIds=[],bootstrapIds=[],blockedIds=[],grandfatheredIds=[];
+          const nativeIds=[],webIds=[],bootstrapIds=[];
           for(const item of rows){
-            const decision=classifyUpperPlatformAdmission(item,{repoRoot:process.cwd(),grandfatherGameIds});
-            if(decision.state==='UPPER_PLATFORM'){
-              nativeIds.push(item.gameId);
-              if(decision.grandfathered===true)grandfatheredIds.push(item.gameId);
-              continue;
-            }
-            if(decision.state==='UNITY_WEB_FLOOR'){
+            nativeIds.push(item.gameId);
+            const buildMethod=discoverUnityWebBuildMethod(process.cwd(),item.gameId);
+            if(buildMethod){
               webIds.push(item.gameId);
-              console.log('UNITY_WEB_FLOOR_REQUIRED='+item.gameId+':'+decision.reason+':'+decision.buildMethod);
-              continue;
-            }
-            if(decision.state==='UNITY_WEB_BOOTSTRAP'){
+              console.log('UNITY_WEB_PARALLEL_READY='+item.gameId+':'+buildMethod);
+            }else{
               bootstrapIds.push(item.gameId);
-              console.log('UNITY_WEB_FLOOR_BOOTSTRAP_REQUIRED='+item.gameId+':'+decision.reason);
-              continue;
+              console.log('UNITY_WEB_PARALLEL_BOOTSTRAP_REQUIRED='+item.gameId);
             }
-            blockedIds.push(item.gameId);
-            console.log('UNITY_WEB_FLOOR_REPAIR_REQUIRED='+item.gameId+':'+decision.reason);
+            console.log('PARALLEL_GAME_ID='+item.gameId);
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_count='+nativeIds.length+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'eligible_ids='+nativeIds.join(',')+'\n');
@@ -155,20 +146,19 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_ids='+webIds.join(',')+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_json='+JSON.stringify(webIds)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_bootstrap_ids='+bootstrapIds.join(',')+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'blocked_ids='+blockedIds.join(',')+'\n');
-          console.log('UPPER_PLATFORM_ELIGIBLE_COUNT='+nativeIds.length);
-          console.log('UPPER_PLATFORM_ELIGIBLE_IDS='+(nativeIds.join(',')||'NONE'));
-          console.log('UNITY_WEB_FLOOR_IDS='+(webIds.join(',')||'NONE'));
-          console.log('UNITY_WEB_FLOOR_BOOTSTRAP_IDS='+(bootstrapIds.join(',')||'NONE'));
-          console.log('UPPER_PLATFORM_GRANDFATHERED_IDS='+(grandfatheredIds.join(',')||'NONE'));
-          console.log('UPPER_PLATFORM_BLOCKED_IDS='+(blockedIds.join(',')||'NONE'));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_bootstrap_json='+JSON.stringify(bootstrapIds)+'\n');
+          console.log('FULL_PARALLEL_ELIGIBLE_COUNT='+nativeIds.length);
+          console.log('FULL_PARALLEL_GAME_IDS='+(nativeIds.join(',')||'NONE'));
+          console.log('UNITY_WEB_PARALLEL_IDS='+(webIds.join(',')||'NONE'));
+          console.log('UNITY_WEB_PARALLEL_BOOTSTRAP_IDS='+(bootstrapIds.join(',')||'NONE'));
+          console.log('PARALLEL_LANES=UNITY_WEB,ROBLOX,UNITY');
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           NODE
 
 
 
   dispatch-roblox:
-    name: Run ready Roblox upper-platform lanes
+    name: Run Roblox parallel lanes
     needs: native-plan
     if: needs.native-plan.outputs.eligible_count != '0'
     strategy:
@@ -185,7 +175,7 @@ jobs:
     secrets: inherit
 
   dispatch-unity:
-    name: Run ready Unity upper-platform lanes
+    name: Run Unity parallel lanes
     needs: native-plan
     if: needs.native-plan.outputs.eligible_count != '0'
     strategy:
@@ -201,7 +191,7 @@ jobs:
     secrets: inherit
 
   dispatch-unity-web-floor:
-    name: Run Unity Web development floor
+    name: Run Unity Web parallel development lane
     needs: native-plan
     if: needs.native-plan.outputs.unity_web_ids != ''
     strategy:
@@ -221,13 +211,17 @@ jobs:
     secrets: inherit
 
   dispatch-unity-web-bootstrap:
-    name: Bootstrap Unity Web development-floor sources
+    name: Bootstrap Unity Web parallel lane source ${{ matrix.game_id }}
     needs: native-plan
     if: needs.native-plan.outputs.unity_web_bootstrap_ids != ''
+    strategy:
+      fail-fast: false
+      matrix:
+        game_id: ${{ fromJSON(needs.native-plan.outputs.unity_web_bootstrap_json) }}
     permissions:
       contents: write
       pull-requests: write
     uses: ./.github/workflows/unity-web-floor-source-bootstrap.yml
     with:
-      game_ids: ${{ needs.native-plan.outputs.unity_web_bootstrap_ids }}
+      game_ids: ${{ matrix.game_id }}
     secrets: inherit
