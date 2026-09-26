@@ -1,5 +1,5 @@
 {
-  "version": 242,
+  "version": 243,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1144,28 +1144,28 @@
     },
     "currentWaveExecution": {
       "outerReadiness": ".github/workflows/vibe2-24h-runner.yml::game_refill_ready",
-    "prePlanGamePrimaryRefill": {
-      "enabled": true,
-      "sourceWorkflow": ".github/workflows/vibe2-24h-runner.yml",
-      "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
-      "trigger": "RUNNABLE_GAME_PRIMARY_QUEUED_AND_FREE_EXTERNAL_SLOT",
-      "dispatchMode": "WORKFLOW_DISPATCH_BEFORE_FULL_PLANNER",
-      "fullPlannerCompletionRequiredBeforeDispatch": false,
-      "canonicalReservationAndConflictRulesPreserved": true,
-      "sharedQueueSerializationScope": "ATOMIC_OPTIMISTIC_WRITE_CONFLICT_ONLY",
-      "fallback": "NORMAL_POST_PLAN_GAME_PRIMARY_DISPATCH"
-    },
-    "mainPushGamePrimaryWake": {
-      "enabled": true,
-      "workflow": ".github/workflows/vibe2-continuous-core.yml",
-      "trigger": "MAIN_PUSH",
-      "executionLane": "GAME_PRIMARY",
-      "singletonPlannerCompletionRequired": false,
-      "usesExistingCanonicalReserve": true,
-      "newSchedulerCreated": false,
-      "sharedStateSerializationScope": "ATOMIC_OPTIMISTIC_WRITE_CONFLICT_ONLY",
-      "responsibleFileConflictProtectionPreserved": true
-    },
+      "prePlanGamePrimaryRefill": {
+        "enabled": true,
+        "sourceWorkflow": ".github/workflows/vibe2-24h-runner.yml",
+        "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
+        "trigger": "RUNNABLE_GAME_PRIMARY_QUEUED_AND_FREE_EXTERNAL_SLOT",
+        "dispatchMode": "WORKFLOW_DISPATCH_BEFORE_FULL_PLANNER",
+        "fullPlannerCompletionRequiredBeforeDispatch": false,
+        "canonicalReservationAndConflictRulesPreserved": true,
+        "sharedQueueSerializationScope": "ATOMIC_OPTIMISTIC_WRITE_CONFLICT_ONLY",
+        "fallback": "NORMAL_POST_PLAN_GAME_PRIMARY_DISPATCH"
+      },
+      "mainPushGamePrimaryWake": {
+        "enabled": true,
+        "workflow": ".github/workflows/vibe2-continuous-core.yml",
+        "trigger": "MAIN_PUSH",
+        "executionLane": "GAME_PRIMARY",
+        "singletonPlannerCompletionRequired": false,
+        "usesExistingCanonicalReserve": true,
+        "newSchedulerCreated": false,
+        "sharedStateSerializationScope": "ATOMIC_OPTIMISTIC_WRITE_CONFLICT_ONLY",
+        "responsibleFileConflictProtectionPreserved": true
+      },
       "innerReservation": ".github/workflows/vibe2-continuous-core.yml::reserve-batch",
       "capacityAuthority": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
       "globalActiveWaveBarrier": false,
@@ -5492,5 +5492,30 @@
     "unityWebSourceBootstrap": "ubuntu-slim",
     "gameHeavyCapacityReserved": true,
     "gameParallelismReduced": false
+  },
+  "developmentFloorParallelBottleneckRepair": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.developmentFloorParallelBottleneckRepair20260927",
+    "centralPlanner": {
+      "workflow": ".github/workflows/company-development-confirmed-runtime.yml",
+      "blockingScope": "ADMISSION_CRITICAL_ONLY",
+      "contractAudit": {
+        "runner": "ubuntu-slim",
+        "blocking": false,
+        "continueOnError": true
+      },
+      "activeLaneIdentityFetch": "ROBLOX_AND_UNITY_PARALLEL"
+    },
+    "unityWebFloor": {
+      "callerConcurrency": "unity-web-floor-call-<gameId>",
+      "heavyExecutionConcurrency": "unity-web-floor-exec-<gameId>",
+      "sameGameHeavyParallelism": false,
+      "independentGameParallelism": true,
+      "cancelInProgress": false,
+      "globalSerialization": false
+    },
+    "serializationScope": "SAME_GAME_HEAVY_UNITY_WEB_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
+    "robloxUnityUpperPlatformPairingPreserved": true,
+    "qualityGateWeakening": false
   }
 }
