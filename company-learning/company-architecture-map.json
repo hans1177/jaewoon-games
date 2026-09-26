@@ -5238,7 +5238,7 @@
     }
   },
   "vibeSourceGenerationFocusedRecoveryTopology": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.vibeSourceGenerationFocusedTimeoutSync20260926",
     "sourceWorker": "tools/vibe2-source-worker.mjs",
     "workflow": ".github/workflows/vibe2-continuous-core.yml",
@@ -5248,7 +5248,12 @@
       "focusedTimeoutMs": 90000,
       "focusedMaxPredict": 384,
       "focusedContextWindow": 8192,
-      "fullGraphicsPackageRetryAfterZeroOutputTimeout": false
+      "fullGraphicsPackageRetryAfterZeroOutputTimeout": false,
+      "remainingAttemptMode": "PINNED_FOCUSED_REPLACE_WITHIN_EXISTING_ATTEMPT_BUDGET",
+      "returnToFullGraphicsPackageAfterFocusedFailure": false,
+      "retryBudgetIncrease": false,
+      "qualityGateWeakening": false,
+      "scope": "ROBLOX_ASSET_ADAPTATION_ZERO_OUTPUT_TIMEOUT_CHAIN"
     },
     "sharedContextPath": {
       "beforeWorkValidation": true,
