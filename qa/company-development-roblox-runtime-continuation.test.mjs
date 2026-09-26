@@ -100,11 +100,11 @@ test('Roblox preflight persistence does not hold a global writer job lock and re
   assert.doesNotMatch(block,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
 
-test('Roblox continuation avoids workflow-wide serialization and dispatches exact F0 work independently',()=>{
+test('Roblox continuation serializes only the same preflight identity and dispatches exact F0 work independently',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
   const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
   assert.match(header,/run-name: Roblox shared preflight · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
-  assert.doesNotMatch(header,/^concurrency:\s*$/m);
+  assert.match(header,/concurrency:\n\s+group: roblox-shared-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n\s+cancel-in-progress: false/);
   assert.match(workflow,/actions\/workflows\/company-development-roblox-headless-fast-mvp\.yml\/runs\?per_page=100/);
   assert.match(workflow,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH=DEDUPED_ACTIVE:/);
   assert.match(workflow,/gh workflow run company-development-roblox-headless-fast-mvp\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
@@ -112,7 +112,7 @@ test('Roblox continuation avoids workflow-wide serialization and dispatches exac
   assert.doesNotMatch(workflow,/ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES:BATCH/);
 });
 
-test('shared preflight continuation keeps exact game targeting without a workflow-level game lock',()=>{
+test('shared preflight continuation keeps exact game targeting with same-game-only workflow locking',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
   const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
   assert.match(workflow,/run-name: Roblox shared preflight · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
@@ -126,11 +126,11 @@ test('shared preflight continuation keeps exact game targeting without a workflo
 });
 
 
-test('continuation planner job collapses duplicate same-game dispatches without workflow-wide locking',()=>{
+test('continuation workflow and planner collapse duplicate same-game dispatches without cross-game locking',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
-  assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-shared-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n\s+cancel-in-progress: false/);
   assert.match(workflow,/preflight-plan:[\s\S]{0,220}group: roblox-shared-preflight-plan-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
 });
 
