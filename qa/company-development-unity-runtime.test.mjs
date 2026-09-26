@@ -118,7 +118,7 @@ test('Unity native executor starts from minimum design without waiting for Unity
   assert.match(workflowSource,/UNITY_WEB_PARALLEL_LANE=NATIVE_DEVELOPMENT_DOES_NOT_WAIT_FOR_WEB/);
 });
 
-test('Unity executor uses unbounded eligibility with capacity batching, canary and exact-stage resume sequence',()=>{
+test('Unity executor keeps all eligible game ids parallel while canary is observation-only',()=>{
   assert.match(workflowSource,/selectTargetPlatformDevelopmentWindow/);
   assert.match(workflowSource,/selectRepresentativeCanary/);
   assert.match(workflowSource,/const batchMax=Math\.max\(1,Math\.min\(256,/);
@@ -126,6 +126,9 @@ test('Unity executor uses unbounded eligibility with capacity batching, canary a
   assert.match(workflowSource,/Math\.min\(batchMax,selected\.length\|\|1\)/);
   assert.match(workflowSource,/DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE/);
   assert.match(workflowSource,/REPRESENTATIVE_CANARY=/);
+  assert.match(workflowSource,/REPRESENTATIVE_CANARY_MODE=PARALLEL_OBSERVATION_ONLY/);
+  assert.match(workflowSource,/CANARY_SERIALIZES_GAME_ID_WAVE=NO/);
+  assert.doesNotMatch(workflowSource,/canary\?\[canary\]:rows\.slice\(0,batchMax\)/);
   assert.match(workflowSource,/COMMON_FAILURE_DETECTED=/);
   assert.match(workflowSource,/CHANGE_DETECTION=/);
   assert.match(workflowSource,/GENERATOR_FINGERPRINT_MISMATCH/);
@@ -381,12 +384,14 @@ test('Unity runtime does not reapply shared cross-platform step filtering after 
 });
 
 
-test('Unity direct native changes override unrelated representative canary selection',()=>{
+test('Unity direct changes and full waves never serialize behind representative canary selection',()=>{
   assert.match(workflowSource,/REQUESTED_GAME_IDS/);
   assert.match(workflowSource,/test\("\^\\\\\.build-requests\/unity\/\[\^\/\]\+\\\\\.json\$"\)/);
   assert.match(workflowSource,/test\("\^unity-games\/\[\^\/\]\+\/"\)/);
   assert.match(workflowSource,/gh api "repos\/\$GITHUB_REPOSITORY\/commits\/\$GITHUB_SHA"/);
   assert.match(workflowSource,/const requestedRows=requestedIds\.length\?rows\.filter/);
   assert.match(workflowSource,/const canary=requestedRows\.length\?null:/);
-  assert.match(workflowSource,/const selected=requestedRows\.length\?requestedRows\.slice/);
+  assert.match(workflowSource,/const selected=requestedRows\.length\?requestedRows\.slice\(0,batchMax\):rows\.slice\(0,batchMax\)/);
+  assert.match(workflowSource,/canary_game_id=/);
+  assert.match(workflowSource,/matrix\.item\.gameId == needs\.prepare\.outputs\.canary_game_id/);
 });
