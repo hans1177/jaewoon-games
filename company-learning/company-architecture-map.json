@@ -1,5 +1,5 @@
 {
-  "version": 259,
+  "version": 260,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5770,9 +5770,9 @@
     "centralActiveRunScanPreserved": true,
     "qualityGateWeakening": false
   },
-  "developmentIngressRunnerRelief": {
+  "lightweightGameIngressRunnerRelief": {
     "version": 1,
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.developmentIngressRunnerRelief20260927",
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.lightweightGameIngressRunnerRelief20260927",
     "observedQueuePressure": {
       "queuedWorkflowRunsBeforeChange": 105,
       "blockedIngressPool": "ubuntu-24.04-arm",
