@@ -1,5 +1,5 @@
 {
-  "version": 203,
+  "version": 204,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1258,6 +1258,20 @@
         "workerRestoreBehavior": "UNCHANGED_PER_ISOLATED_RUNNER",
         "workerModelBehaviorChanged": false,
         "gamePrimaryExternalBoundary": 256
+      },
+      "liveRunnerPressureSpeculationBridge": {
+        "version": 1,
+        "sourceWorkflow": ".github/workflows/vibe2-24h-runner.yml",
+        "targetWorkflow": ".github/workflows/vibe2-continuous-core.yml",
+        "policyFunction": "tools/vibe2-queue-control.mjs#speculativeExpansionPolicy",
+        "signal": "runner_pressure",
+        "pressureValue": "YES",
+        "action": "SUPPRESS_SPECULATIVE_VARIANTS_ONLY",
+        "primaryCoveragePreserved": true,
+        "adaptiveMaxUnchanged": true,
+        "staleTelemetryResetTarget": 256,
+        "gamePrimaryExternalBoundary": 256,
+        "repositoryDispatchWithoutPlanSignal": "EXISTING_ADAPTIVE_TELEMETRY_BEHAVIOR"
       }
     },
     "liveShadowRepairLoop": {
