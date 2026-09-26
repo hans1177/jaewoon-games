@@ -373,9 +373,27 @@ function focusedCaretakerProject(project={},repoRoot=process.cwd()){
   if(!policy.enabled)return false;
   return policy.ownerIds.has(clean(project.gameId))||(policy.includeAllReleaseConfirmed&&clean(project.releaseState).toLowerCase()==='release-confirmed');
 }
+function existingHolisticBackfillState(project={},queue={tasks:[]}){
+  if(project?.existing!==true)return Object.freeze({required:false,verifiedFocuses:[],missingFocuses:[]});
+  const pillars=['CORE_FUN','PROGRESSION','PRESENTATION','USABILITY','STABILITY'];
+  const verified=new Set((queue.tasks||[]).filter(item=>
+    clean(item?.gameId)===clean(project.gameId)
+    &&sameStudioQualityLane(item,project)
+    &&clean(item?.status).toLowerCase()==='verified'
+    &&(item?.evidence||[]).map(clean).includes('existing-holistic-backfill:v1')
+  ).map(item=>clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()).filter(value=>pillars.includes(value)));
+  const missing=pillars.filter(value=>!verified.has(value));
+  return Object.freeze({
+    required:missing.length>0,
+    platformLane:studioQualityLane(project),
+    verifiedFocuses:Object.freeze([...verified]),
+    missingFocuses:Object.freeze(missing)
+  });
+}
 function projectSort(a,b){
   const focus=(b.ownerFocusedCaretaker===true?1:0)-(a.ownerFocusedCaretaker===true?1:0);if(focus)return focus;
   const bottleneck=bottleneckRank(a)-bottleneckRank(b);if(bottleneck)return bottleneck;
+  const existingBackfill=(b.existingHolisticBackfillPriority===true?1:0)-(a.existingHolisticBackfillPriority===true?1:0);if(existingBackfill)return existingBackfill;
   const engine=(ENGINE_RANK[a.engine]??9)-(ENGINE_RANK[b.engine]??9);if(engine)return engine;
   const release=(RELEASE_RANK[a.releaseState]??9)-(RELEASE_RANK[b.releaseState]??9);if(release)return release;
   return Number(b.progress||0)-Number(a.progress||0)||a.gameId.localeCompare(b.gameId);
@@ -2338,7 +2356,16 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   }
   const microSupersede=supersedeLegacyMicroTasksForStudioQuality(queue);
   queue=microSupersede.queue;
-  const allProjects=collectProjects(status,catalog,repoRoot,developmentQueue).map(project=>({...project,ownerFocusedCaretaker:focusedCaretakerProject(project,repoRoot)}));
+  const allProjects=collectProjects(status,catalog,repoRoot,developmentQueue).map(project=>{
+    const backfill=existingHolisticBackfillState(project,queue);
+    return{
+      ...project,
+      ownerFocusedCaretaker:focusedCaretakerProject(project,repoRoot),
+      existingHolisticBackfillPriority:backfill.required===true,
+      existingHolisticBackfillPriorityLane:backfill.platformLane||studioQualityLane(project),
+      existingHolisticBackfillPriorityMissingFocuses:[...(backfill.missingFocuses||[])]
+    };
+  });
   const buildUpDirectiveBackfill=synchronizeQueuedBuildUpDirectives(queue,allProjects,repoRoot);
   queue=buildUpDirectiveBackfill.queue;
   const active=activeTasks(queue);
@@ -2361,7 +2388,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     releaseWaitExcluded:active.filter(item=>isDevelopmentImplementation(item)&&isReleaseWait(item)).length,
     capacity,
     executionWaveMax,
-    persistentQueueMax
+    persistentQueueMax,
+    existingHolisticBackfillPriorityProjectCount:allProjects.filter(project=>project.existingHolisticBackfillPriority===true).length,
+    existingHolisticBackfillPriorityGameIds:[...new Set(allProjects.filter(project=>project.existingHolisticBackfillPriority===true).map(project=>clean(project.gameId)).filter(Boolean))],
+    existingHolisticBackfillPriorityIsBelowExactBottleneckRepair:true
   };
   if(!capacity)return{planned:false,count:0,reason:'DEVELOPMENT_BACKLOG_TARGET_REACHED',queue,tasks:[],packages:[],planningBacklog,buildUpDirectiveBackfillCount:buildUpDirectiveBackfill.changed,runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,workloadTelemetry:computeWorkloadTelemetry(queue,[])};
   const policy=resolveWorkPackagePolicy(workPackagePolicy,queue);
