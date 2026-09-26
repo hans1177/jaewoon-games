@@ -1,5 +1,5 @@
 {
-  "version": 39,
+  "version": 40,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 39,
+      "runtime": 40,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -471,8 +471,9 @@
       "cohortFanInConsumesCoalescedResults": true,
       "coalescedCompletionIsNotFailure": true,
       "logicalPerTaskVariantJoinStillRequiredWhenCoalesced": true,
-      "fanInRefillConcurrencyScope": "EXECUTION_LANE",
-      "globalFanInRefillSingletonForbidden": true
+      "fanInRefillConcurrencyScope": "RUN_SCOPED_PARALLEL_RESERVE",
+      "globalFanInRefillSingletonForbidden": true,
+      "sameLaneFanInRefillSerialization": false
     },
     "signalLiveness": {
       "runState": "ALWAYS_RUNNING",

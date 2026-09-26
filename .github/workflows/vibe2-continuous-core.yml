@@ -38,7 +38,7 @@ permissions:
 # Coalesce duplicate refill control events only within the same execution lane.
 # GAME_PRIMARY must never wait behind recovery-fast, learning-idle or control-fast refill work.
 concurrency:
-  group: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}', github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
+  group: ${{ format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
 env:

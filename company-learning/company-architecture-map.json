@@ -1,5 +1,5 @@
 {
-  "version": 238,
+  "version": 239,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4088,7 +4088,7 @@
       ]
     }
   },
-  "updatedAt": "2026-09-26",
+  "updatedAt": "2026-09-27",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -5400,5 +5400,26 @@
     "allJobs": "ubuntu-slim",
     "sharesHeavyGameRunnerPool": false,
     "managerSupervisorTopologyUnchanged": true
+  },
+  "fanInRefillParallelReserve": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.fanInRefillParallelReserve20260927",
+    "workflow": ".github/workflows/vibe2-continuous-core.yml",
+    "workflowConcurrency": "RUN_SCOPED",
+    "sameLaneSerialization": false,
+    "reserveJobsParallel": true,
+    "sharedStateWriteConflictControl": "OPTIMISTIC_RETRY_ATOMIC_WRITE_ONLY"
+  },
+  "unityExactChildRunDedupe": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.unityExactChildRunDedupe20260927",
+    "parent": ".github/workflows/company-development-unity-runtime.yml",
+    "children": [
+      ".github/workflows/unity-android-independent-qa.yml",
+      ".github/workflows/unity-android-regression.yml"
+    ],
+    "identity": "BUILD_RUN",
+    "reuseActiveExactRun": true,
+    "unrelatedBuildRunsParallel": true
   }
 }

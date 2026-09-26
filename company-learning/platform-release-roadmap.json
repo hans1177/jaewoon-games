@@ -1,5 +1,5 @@
 {
-  "version": 427,
+  "version": 428,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -6620,7 +6620,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-26",
+  "updatedAt": "2026-09-27",
   "priorityTiers": [
     {
       "tier": 1,
@@ -8559,6 +8559,36 @@
       "browserOrEngineRuntimeRequired": false,
       "publicationOrderUnchanged": true,
       "gamePrimaryCapacityProtected": true,
+      "qualityGateWeakening": false
+    },
+    "fanInRefillParallelReserve20260927": {
+      "id": "FAN_IN_REFILL_PARALLEL_RESERVE_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.selfRecoveryAndBottleneckRelief",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "REMOVE_SAME_LANE_FANIN_REFILL_WORKFLOW_SERIALIZATION_AND_KEEP_ONLY_ATOMIC_SHARED_STATE_WRITE_CONFLICT_CONTROL",
+      "workflow": ".github/workflows/vibe2-continuous-core.yml",
+      "previousScope": "EXECUTION_LANE_WORKFLOW_SINGLETON",
+      "currentScope": "RUN_SCOPED_PARALLEL_RESERVE",
+      "sameLaneReserveSerialization": false,
+      "reserveJobsParallel": true,
+      "sharedStateSerialization": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY",
+      "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "unityExactChildRunDedupe20260927": {
+      "id": "UNITY_EXACT_CHILD_RUN_DEDUPE_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "REUSE_ACTIVE_INDEPENDENT_QA_AND_REGRESSION_FOR_THE_SAME_IMMUTABLE_APK_BUILD_RUN",
+      "workflow": ".github/workflows/company-development-unity-runtime.yml",
+      "exactIdentity": "BUILD_RUN",
+      "activeStates": [
+        "queued",
+        "pending",
+        "in_progress",
+        "requested"
+      ],
+      "duplicateDispatchForbiddenWhenExactActiveRunExists": true,
+      "independentDifferentBuildRunsRemainParallel": true,
       "qualityGateWeakening": false
     }
   },

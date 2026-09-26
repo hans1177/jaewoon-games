@@ -539,9 +539,16 @@ jobs:
         run: |
           set -euo pipefail
           api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-independent-qa.yml"; title="Unity Android Independent QA $BUILD_RUN"
-          baseline="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
-          jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$api/dispatches" --input -
-          child=''; for _ in $(seq 1 60); do child="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$b and .display_title==$title)|.id]|max//empty')"; [[ "$child" =~ ^[0-9]+$ ]]&&break; sleep 4; done
+          active="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" | jq -r --arg title "$title" '[.workflow_runs[]|select(.display_title==$title and (.status=="queued" or .status=="pending" or .status=="in_progress" or .status=="requested"))|.id]|min//empty')"
+          if [[ "$active" =~ ^[0-9]+$ ]]; then
+            child="$active"
+            echo "UNITY_ANDROID_INDEPENDENT_QA_REUSE_ACTIVE=$BUILD_RUN:$child"
+          else
+            baseline="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" --jq '[.workflow_runs[].id] | max // 0')"
+            jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$api/dispatches" --input -
+            child=''; for _ in $(seq 1 60); do child="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" | jq -r --argjson b "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$b and .display_title==$title)|.id]|max//empty')"; [[ "$child" =~ ^[0-9]+$ ]]&&break; sleep 4; done
+            echo "UNITY_ANDROID_INDEPENDENT_QA_DISPATCHED=$BUILD_RUN:${child:-NONE}"
+          fi
           [[ "$child" =~ ^[0-9]+$ ]]||exit 8; echo "run_id=$child" >> "$GITHUB_OUTPUT"
           for _ in $(seq 1 420); do row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$child" --jq '[.status,.conclusion]|@tsv')"; s="${row%%$'\t'*}"; c="${row#*$'\t'}"; if [[ "$s" == completed ]];then [[ "$c" == success ]]&&exit 0||exit 9;fi;sleep 5;done;exit 10
 
@@ -566,9 +573,16 @@ jobs:
         run: |
           set -euo pipefail
           api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-regression.yml"; title="Unity Android Regression $BUILD_RUN"
-          baseline="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" --jq '[.workflow_runs[].id] | max // 0')"
-          jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$api/dispatches" --input -
-          child=''; for _ in $(seq 1 60); do child="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=20" | jq -r --argjson b "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$b and .display_title==$title)|.id]|max//empty')"; [[ "$child" =~ ^[0-9]+$ ]]&&break; sleep 4; done
+          active="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" | jq -r --arg title "$title" '[.workflow_runs[]|select(.display_title==$title and (.status=="queued" or .status=="pending" or .status=="in_progress" or .status=="requested"))|.id]|min//empty')"
+          if [[ "$active" =~ ^[0-9]+$ ]]; then
+            child="$active"
+            echo "UNITY_ANDROID_REGRESSION_REUSE_ACTIVE=$BUILD_RUN:$child"
+          else
+            baseline="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" --jq '[.workflow_runs[].id] | max // 0')"
+            jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$api/dispatches" --input -
+            child=''; for _ in $(seq 1 60); do child="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" | jq -r --argjson b "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$b and .display_title==$title)|.id]|max//empty')"; [[ "$child" =~ ^[0-9]+$ ]]&&break; sleep 4; done
+            echo "UNITY_ANDROID_REGRESSION_DISPATCHED=$BUILD_RUN:${child:-NONE}"
+          fi
           [[ "$child" =~ ^[0-9]+$ ]]||exit 11; echo "run_id=$child" >> "$GITHUB_OUTPUT"
           for _ in $(seq 1 420); do row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$child" --jq '[.status,.conclusion]|@tsv')"; s="${row%%$'\t'*}"; c="${row#*$'\t'}"; if [[ "$s" == completed ]];then [[ "$c" == success ]]&&exit 0||exit 12;fi;sleep 5;done;exit 13
 

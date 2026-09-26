@@ -476,7 +476,8 @@ test('reserve preflight stays syntax-and-machine-state only and uses main contra
 
 test('neuron callbacks keep every ingress event and reconcile shared queue state optimistically',()=>{
   assert(workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
-  assert(workflow.includes("github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-refill-{0}', github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(!workflow.includes("format('vibe2-fanin-refill-{0}', github.event.client_payload.execution_lane || 'game-primary')"));
   assert(workflow.includes("startsWith(github.ref_name, 'vibe2/refill/fanin/') && format('vibe2-fanin-{0}', github.run_id)"));
   assert(!workflow.includes('vibe2-fanin-refill-singleton'));
   assert(!workflow.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
@@ -1162,10 +1163,14 @@ test('recovery-fast control work uses a slim runner and never competes for a gam
   assert.equal(runtime.continuous.executionLanes.RECOVERY_FAST.workerFanoutPerTask,1);
 });
 
-test('fan-in refill concurrency is lane-scoped and never serializes GAME_PRIMARY behind auxiliary lanes',()=>{
-  assert.match(workflow,/format\('vibe2-fanin-refill-\{0\}', github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
+test('fan-in refill reserve runs are run-scoped and never serialize same-lane reservations',()=>{
+  assert.match(workflow,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
+  assert.doesNotMatch(workflow,/format\('vibe2-fanin-refill-\{0\}'/);
   assert.doesNotMatch(workflow,/vibe2-fanin-refill-singleton/);
-  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'EXECUTION_LANE');
+  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'RUN_SCOPED_PARALLEL_RESERVE');
+  assert.equal(runtime.continuous.atomicNeuronStream.sameLaneFanInRefillSerialization,false);
   assert.equal(runtime.continuous.atomicNeuronStream.globalFanInRefillSingletonForbidden,true);
+  assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
+  assert.equal(runtime.continuous.reserveConcurrency.reserveJobsParallel,true);
   assert.equal(runtime.continuous.executionLanes.RECOVERY_FAST.gameWorkerDispatch,'GAME_PRIMARY_ATOMIC_REFILL_EVENT');
 });

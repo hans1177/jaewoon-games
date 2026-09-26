@@ -413,3 +413,11 @@ test('Unity prepare uses ARM game-control capacity while technical validation st
   assert.match(workflowSource,/\n  prepare:\n[\s\S]*?runs-on:\s*ubuntu-24\.04-arm/);
   assert.match(workflowSource,/\n  unity-technical-validation:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
 });
+
+test('Unity child QA dispatch reuses an active exact immutable-build run instead of duplicating runner work',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-unity-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/UNITY_ANDROID_INDEPENDENT_QA_REUSE_ACTIVE=/);
+  assert.match(workflow,/UNITY_ANDROID_REGRESSION_REUSE_ACTIVE=/);
+  assert.match(workflow,/\.status=="queued" or \.status=="pending" or \.status=="in_progress" or \.status=="requested"/);
+  assert.match(workflow,/per_page=100/);
+});
