@@ -32215,7 +32215,7 @@
       "priority": "high",
       "releaseState": "other",
       "status": "queued",
-      "retries": 10,
+      "retries": 11,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "ownerDirective": false,
@@ -32518,7 +32518,7 @@
         "architecture-neural-expansion-readiness:PASS",
         "architecture-neural-expansion-allowed:YES"
       ],
-      "lastOutcome": "DEFERRED_BY_WORK_LOCK",
+      "lastOutcome": "FAIL",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
