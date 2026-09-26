@@ -1,5 +1,5 @@
 {
-  "version": 220,
+  "version": 221,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1312,6 +1312,31 @@
         "queueSchedulerAuthorityChanged": false,
         "sourceWriteAuthorityChanged": false,
         "gameSemanticsChanged": false
+      },
+      "studioConnectedPackageCompletion": {
+        "version": 1,
+        "source": "company-learning/platform-release-roadmap.json#changeRecord.studioConnectedPackageCompletion20260926",
+        "owner": "tools/vibe2-source-worker.mjs::generateCandidateWithRecovery",
+        "existingComponentsReused": [
+          "tools/vibe2-source-worker.mjs::focusedReplaceOnlySpec",
+          "tools/vibe2-source-worker.mjs::buildFocusedReplaceOnlyPrompt",
+          "tools/vibe2-source-worker.mjs::evaluateStudioQualityCandidateDelta"
+        ],
+        "flow": [
+          "TRY_COMPACT_CONNECTED_PACKAGE",
+          "PRESERVE_VALID_PARTIAL_CANDIDATE",
+          "SELECT_DISTINCT_UNUSED_EXACT_ANCHOR",
+          "GENERATE_ONE_MISSING_REPLACEMENT",
+          "COMBINE_WITH_PRESERVED_CANDIDATE",
+          "REVALIDATE_EXISTING_STUDIO_QUALITY_GATE",
+          "REPEAT_ONLY_WHILE_GATE_REPORTS_MISSING_CONNECTED_DELTA_AND_CREDIT_REMAINS"
+        ],
+        "newWorker": false,
+        "newQueue": false,
+        "shadowPipeline": false,
+        "qualityGateChanged": false,
+        "writableScopeChanged": false,
+        "sourceWriteAuthorityChanged": false
       }
     },
     "liveShadowRepairLoop": {
