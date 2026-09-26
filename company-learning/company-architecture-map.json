@@ -1212,8 +1212,8 @@
         "qaSecurityReleaseAuthorityChanged": false
       },
       "reserveConcurrency": {
-        "version": 1,
-        "mode": "LANE_ISOLATED_OPTIMISTIC_SHARED_QUEUE_WRITE",
+        "version": 2,
+        "mode": "PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE",
         "workflow": ".github/workflows/vibe2-continuous-core.yml",
         "executionLanes": [
           "GAME_PRIMARY",
@@ -1222,21 +1222,21 @@
           "CONTROL_FAST"
         ],
         "crossLaneGlobalReserveLock": false,
-        "sameLaneReserveSerialization": true,
+        "sameLaneReserveSerialization": false,
         "sharedQueue": "vibe2-unreal-core:.vibe2/queue.json",
-        "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5",
+        "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5_ON_ACTUAL_WRITE_CONFLICT",
         "workerDirectControlWrite": false,
         "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v3",
         "gamePrimaryExternalBoundary": 256,
         "liveVerification": {
-          "runId": 36204978877,
-          "stalePreV2RunId": 36204043933,
-          "recoveryFastReserve": "PASS",
-          "gamePrimaryReserve": "PASS",
-          "schedulerEpochEscape": "PASS",
+          "previousRunId": 36204978877,
+          "previousMode": "LANE_ISOLATED_OPTIMISTIC_SHARED_QUEUE_WRITE",
+          "currentModeVerification": "PENDING_CI",
           "crossLaneGlobalReserveLockObserved": false,
           "gamePrimaryExternalBoundaryObserved": 256
-        }
+        },
+        "reserveJobsParallel": true,
+        "serializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY"
       },
       "learningIdlePressureGate": {
         "version": 1,

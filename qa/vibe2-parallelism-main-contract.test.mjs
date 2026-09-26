@@ -71,25 +71,35 @@ test('reserve batch persists control state only through the explicit Vibe2 contr
   assert.doesNotMatch(reserve,/(?:^|\n)\s*git (?:fetch origin vibe2-unreal-core|reset --hard origin\/vibe2-unreal-core|fetch origin company-runtime|show origin\/company-runtime:development-queue\.json|diff --quiet -- "\$\{state_paths\[@\]\}"|add "\$\{state_paths\[@\]\}"|commit -m "vibe2: repair state and reserve parallel DAG batch|push origin HEAD:vibe2-unreal-core)/);
 });
 
-test('reserve scheduling isolates execution lanes and learning defers before production under runner pressure',()=>{
+test('reserve scheduling runs same-lane reserves in parallel and learning still defers before production under runner pressure',()=>{
   const reserve=architecture.neuralWorkGraphTopology?.currentWaveExecution?.reserveConcurrency||{};
   const learning=runtime.continuous?.executionLanes?.LEARNING_IDLE||{};
 
-  assert.equal(reserve.mode,'LANE_ISOLATED_OPTIMISTIC_SHARED_QUEUE_WRITE');
+  assert.equal(reserve.mode,'PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE');
   assert.equal(reserve.crossLaneGlobalReserveLock,false);
-  assert.equal(reserve.sameLaneReserveSerialization,true);
-  assert.equal(reserve.conflictResolution,'FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5');
+  assert.equal(reserve.sameLaneReserveSerialization,false);
+  assert.equal(reserve.reserveJobsParallel,true);
+  assert.equal(reserve.serializationScope,'ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY');
+  assert.equal(reserve.conflictResolution,'FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5_ON_ACTUAL_WRITE_CONFLICT');
   assert.equal(reserve.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v3');
   assert.equal(reserve.gamePrimaryExternalBoundary,256);
 
   assert.equal(runtime.continuous.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v3');
+  assert.equal(runtime.continuous.reserveConcurrency.mode,'PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE');
   assert.equal(runtime.continuous.reserveConcurrency.crossLaneGlobalReserveLock,false);
+  assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
+  assert.equal(runtime.continuous.reserveConcurrency.reserveJobsParallel,true);
+  assert.equal(runtime.continuous.reserveConcurrency.serializationScope,'ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY');
   assert.equal(runtime.continuous.reserveConcurrency.gamePrimaryExternalBoundary,256);
   assert.equal(learning.liveRunnerPressureGateImplemented,true);
   assert.equal(learning.pressureObservationFailureDefersLearning,true);
   assert.equal(learning.productionMayNotWaitForLearningReserve,true);
 
-  assert.match(core,/format\('vibe2-control-state-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
+  const reserveStart=core.indexOf('\n  reserve:\n');
+  const reserveOutputs=core.indexOf('    outputs:',reserveStart);
+  assert.ok(reserveStart>=0&&reserveOutputs>reserveStart);
+  assert.doesNotMatch(core.slice(reserveStart,reserveOutputs),/\n    concurrency:/);
+  assert.doesNotMatch(core,/format\('vibe2-control-state-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.match(core,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(core,/format\('vibe2-continuous-\{0\}', github\.run_id\)/);
   assert.match(core,/vibe2-fanin-refill-singleton/);
