@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-arknights",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Arknights의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=TOWER_DEFENSE; inputProfile=STRATEGY_TAP; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED",
+  "output": "관찰된 타워 디펜스 동작을 독립 구현할 때는 배치 가능 위치, 타워 상태, 적 경로/웨이브 상태, 자원 원장, 업그레이드 경로를 분리한다. 공격 대상 선정과 피해 판정은 결정적인 책임 계층이 소유하고 웨이브 전환·판매·업그레이드에서 비용과 효과가 중복 반영되지 않게 한다.",
+  "sourceRevision": "external-playtest-35430868228-arknights",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Arknights",
+    "packageId": "com.YoStarEN.Arknights",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.YoStarEN.Arknights",
+    "playtestRunId": "35430868228",
+    "beforeScreenshotSha256": "c9e6ae942f83579c8ae3effaeaf93159e07570c39837b4b43da232c28dea2dc6",
+    "afterScreenshotSha256": "c184dfe606231424357d53b0e6e5b0584da203e7ecfc6a0bb6e15af602952d99",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-tower-defense-runtime-architecture",
+  "tags": [
+    "lane-pressure",
+    "placement",
+    "wave-state",
+    "upgrade-path",
+    "enemy-counter"
+  ]
+}

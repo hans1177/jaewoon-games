@@ -1,9 +1,10 @@
 {
-  "version": 3,
+  "version": 1,
   "generation": "V3-PUMP",
-  "generatedFrom": "VERIFIED_MEMORY_PLUS_LOCKED_BASE_CHECKLISTS",
+  "generatedFrom": "VERIFIED_MEMORY_ONLY",
   "taskTypes": {
     "coding": {
+      "version": 1,
       "taskType": "coding",
       "checklist": [
         "rank-responsible-source-before-edit",
@@ -11,11 +12,57 @@
         "prefer-smallest-behavior-preserving-diff",
         "run-syntax-tests-runtime-regression"
       ],
-      "reuse": [],
+      "reuse": [
+        {
+          "id": "external-black-box-block-blast-run-30",
+          "score": 0.116667,
+          "project": "block-blast",
+          "sourceRevision": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1"
+        },
+        {
+          "id": "external-black-box-cavern-cravers-run-47",
+          "score": 0.116667,
+          "project": "cavern-cravers",
+          "sourceRevision": "sha256:53702f0b724d8b6d329b6ac10f0a142eb43fcdc713c14b8950e5b6abaa801d77"
+        },
+        {
+          "id": "external-black-box-idle-fantasy-run-42",
+          "score": 0.116667,
+          "project": "idle-fantasy",
+          "sourceRevision": "sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d"
+        },
+        {
+          "id": "external-black-box-luanti-run-10",
+          "score": 0.116667,
+          "project": "luanti",
+          "sourceRevision": "sha256:523b6eb0021a1685087e8eab7ce29100ffb33d025f91c411f829c4042093ce4c"
+        },
+        {
+          "id": "external-black-box-revengate-run-59",
+          "score": 0.116667,
+          "project": "revengate",
+          "sourceRevision": "sha256:7ac6cb9aa7bdcfdee1af6df5e409005da42ac597903f8acca8aa0bfc44cb93d9"
+        },
+        {
+          "id": "external-black-box-sgtpuzzles-run-29",
+          "score": 0.116667,
+          "project": "sgtpuzzles",
+          "sourceRevision": "sha256:340f1dbb0fcb989a036709904018fa94698dbc917417280b52da8666d0b35869"
+        },
+        {
+          "id": "external-black-box-shattered-pixel-dungeon-run-4",
+          "score": 0.116667,
+          "project": "shattered-pixel-dungeon",
+          "sourceRevision": "sha256:a4f204496be3b54d90c98e68d1604248910625d4f7daa5341fa0b7e8abbeb5b6"
+        }
+      ],
       "avoid": [],
-      "authority": "verified-task-playbook"
+      "responsibleSources": [],
+      "authority": "verified-task-playbook",
+      "causalLessons": []
     },
     "bugfix": {
+      "version": 1,
       "taskType": "bugfix",
       "checklist": [
         "reproduce-or-bind-failure-evidence",
@@ -23,11 +70,57 @@
         "repair-smallest-surface",
         "rerun-original-failure-and-regression"
       ],
-      "reuse": [],
+      "reuse": [
+        {
+          "id": "external-black-box-block-blast-run-30",
+          "score": 0.116667,
+          "project": "block-blast",
+          "sourceRevision": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1"
+        },
+        {
+          "id": "external-black-box-cavern-cravers-run-47",
+          "score": 0.116667,
+          "project": "cavern-cravers",
+          "sourceRevision": "sha256:53702f0b724d8b6d329b6ac10f0a142eb43fcdc713c14b8950e5b6abaa801d77"
+        },
+        {
+          "id": "external-black-box-idle-fantasy-run-42",
+          "score": 0.116667,
+          "project": "idle-fantasy",
+          "sourceRevision": "sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d"
+        },
+        {
+          "id": "external-black-box-luanti-run-10",
+          "score": 0.116667,
+          "project": "luanti",
+          "sourceRevision": "sha256:523b6eb0021a1685087e8eab7ce29100ffb33d025f91c411f829c4042093ce4c"
+        },
+        {
+          "id": "external-black-box-revengate-run-59",
+          "score": 0.116667,
+          "project": "revengate",
+          "sourceRevision": "sha256:7ac6cb9aa7bdcfdee1af6df5e409005da42ac597903f8acca8aa0bfc44cb93d9"
+        },
+        {
+          "id": "external-black-box-sgtpuzzles-run-29",
+          "score": 0.116667,
+          "project": "sgtpuzzles",
+          "sourceRevision": "sha256:340f1dbb0fcb989a036709904018fa94698dbc917417280b52da8666d0b35869"
+        },
+        {
+          "id": "external-black-box-shattered-pixel-dungeon-run-4",
+          "score": 0.116667,
+          "project": "shattered-pixel-dungeon",
+          "sourceRevision": "sha256:a4f204496be3b54d90c98e68d1604248910625d4f7daa5341fa0b7e8abbeb5b6"
+        }
+      ],
       "avoid": [],
-      "authority": "verified-task-playbook"
+      "responsibleSources": [],
+      "authority": "verified-task-playbook",
+      "causalLessons": []
     },
     "qa": {
+      "version": 1,
       "taskType": "qa",
       "checklist": [
         "bind-exact-revision",
@@ -38,14 +131,54 @@
       "reuse": [
         {
           "id": "external-black-box-block-blast-run-30",
+          "score": 0.29,
           "project": "block-blast",
           "sourceRevision": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1"
+        },
+        {
+          "id": "external-black-box-cavern-cravers-run-47",
+          "score": 0.29,
+          "project": "cavern-cravers",
+          "sourceRevision": "sha256:53702f0b724d8b6d329b6ac10f0a142eb43fcdc713c14b8950e5b6abaa801d77"
+        },
+        {
+          "id": "external-black-box-idle-fantasy-run-42",
+          "score": 0.29,
+          "project": "idle-fantasy",
+          "sourceRevision": "sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d"
+        },
+        {
+          "id": "external-black-box-luanti-run-10",
+          "score": 0.29,
+          "project": "luanti",
+          "sourceRevision": "sha256:523b6eb0021a1685087e8eab7ce29100ffb33d025f91c411f829c4042093ce4c"
+        },
+        {
+          "id": "external-black-box-revengate-run-59",
+          "score": 0.29,
+          "project": "revengate",
+          "sourceRevision": "sha256:7ac6cb9aa7bdcfdee1af6df5e409005da42ac597903f8acca8aa0bfc44cb93d9"
+        },
+        {
+          "id": "external-black-box-sgtpuzzles-run-29",
+          "score": 0.29,
+          "project": "sgtpuzzles",
+          "sourceRevision": "sha256:340f1dbb0fcb989a036709904018fa94698dbc917417280b52da8666d0b35869"
+        },
+        {
+          "id": "external-black-box-shattered-pixel-dungeon-run-4",
+          "score": 0.29,
+          "project": "shattered-pixel-dungeon",
+          "sourceRevision": "sha256:a4f204496be3b54d90c98e68d1604248910625d4f7daa5341fa0b7e8abbeb5b6"
         }
       ],
       "avoid": [],
-      "authority": "verified-task-playbook"
+      "responsibleSources": [],
+      "authority": "verified-task-playbook",
+      "causalLessons": []
     },
     "unity": {
+      "version": 1,
       "taskType": "unity",
       "checklist": [
         "bind-current-source-tree-and-build",
@@ -53,11 +186,117 @@
         "require-independent-qa",
         "preserve-save-and-core-design-lock"
       ],
-      "reuse": [],
+      "reuse": [
+        {
+          "id": "external-black-box-block-blast-run-30",
+          "score": 0.116667,
+          "project": "block-blast",
+          "sourceRevision": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1"
+        },
+        {
+          "id": "external-black-box-cavern-cravers-run-47",
+          "score": 0.116667,
+          "project": "cavern-cravers",
+          "sourceRevision": "sha256:53702f0b724d8b6d329b6ac10f0a142eb43fcdc713c14b8950e5b6abaa801d77"
+        },
+        {
+          "id": "external-black-box-idle-fantasy-run-42",
+          "score": 0.116667,
+          "project": "idle-fantasy",
+          "sourceRevision": "sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d"
+        },
+        {
+          "id": "external-black-box-luanti-run-10",
+          "score": 0.116667,
+          "project": "luanti",
+          "sourceRevision": "sha256:523b6eb0021a1685087e8eab7ce29100ffb33d025f91c411f829c4042093ce4c"
+        },
+        {
+          "id": "external-black-box-revengate-run-59",
+          "score": 0.116667,
+          "project": "revengate",
+          "sourceRevision": "sha256:7ac6cb9aa7bdcfdee1af6df5e409005da42ac597903f8acca8aa0bfc44cb93d9"
+        },
+        {
+          "id": "external-black-box-sgtpuzzles-run-29",
+          "score": 0.116667,
+          "project": "sgtpuzzles",
+          "sourceRevision": "sha256:340f1dbb0fcb989a036709904018fa94698dbc917417280b52da8666d0b35869"
+        },
+        {
+          "id": "external-black-box-shattered-pixel-dungeon-run-4",
+          "score": 0.116667,
+          "project": "shattered-pixel-dungeon",
+          "sourceRevision": "sha256:a4f204496be3b54d90c98e68d1604248910625d4f7daa5341fa0b7e8abbeb5b6"
+        }
+      ],
       "avoid": [],
-      "authority": "verified-task-playbook"
+      "responsibleSources": [],
+      "authority": "verified-task-playbook",
+      "causalLessons": []
+    },
+    "roblox": {
+      "version": 1,
+      "taskType": "roblox",
+      "checklist": [
+        "bind-roblox-source-and-place",
+        "separate-server-client-authority",
+        "validate-remotes-and-datastore-boundaries",
+        "run-real-roblox-runtime-and-independent-qa",
+        "verify-save-rejoin-and-mobile-ui-when-applicable",
+        "publish-only-after-exact-revision-pass"
+      ],
+      "reuse": [
+        {
+          "id": "external-black-box-block-blast-run-30",
+          "score": 0.073684,
+          "project": "block-blast",
+          "sourceRevision": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1"
+        },
+        {
+          "id": "external-black-box-cavern-cravers-run-47",
+          "score": 0.073684,
+          "project": "cavern-cravers",
+          "sourceRevision": "sha256:53702f0b724d8b6d329b6ac10f0a142eb43fcdc713c14b8950e5b6abaa801d77"
+        },
+        {
+          "id": "external-black-box-idle-fantasy-run-42",
+          "score": 0.073684,
+          "project": "idle-fantasy",
+          "sourceRevision": "sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d"
+        },
+        {
+          "id": "external-black-box-luanti-run-10",
+          "score": 0.073684,
+          "project": "luanti",
+          "sourceRevision": "sha256:523b6eb0021a1685087e8eab7ce29100ffb33d025f91c411f829c4042093ce4c"
+        },
+        {
+          "id": "external-black-box-revengate-run-59",
+          "score": 0.073684,
+          "project": "revengate",
+          "sourceRevision": "sha256:7ac6cb9aa7bdcfdee1af6df5e409005da42ac597903f8acca8aa0bfc44cb93d9"
+        },
+        {
+          "id": "external-black-box-sgtpuzzles-run-29",
+          "score": 0.073684,
+          "project": "sgtpuzzles",
+          "sourceRevision": "sha256:340f1dbb0fcb989a036709904018fa94698dbc917417280b52da8666d0b35869"
+        },
+        {
+          "id": "external-black-box-shattered-pixel-dungeon-run-4",
+          "score": 0.073684,
+          "project": "shattered-pixel-dungeon",
+          "sourceRevision": "sha256:a4f204496be3b54d90c98e68d1604248910625d4f7daa5341fa0b7e8abbeb5b6"
+        }
+      ],
+      "avoid": [],
+      "responsibleSources": [],
+      "authority": "verified-task-playbook",
+      "causalLessons": []
     },
     "graphics": {
+      "version": 1,
       "taskType": "graphics",
       "checklist": [
         "rights-gate-before-derivative",
@@ -65,11 +304,57 @@
         "generate-3-to-5-derived-variants",
         "score-style-silhouette-quality-animation-mobile-performance"
       ],
-      "reuse": [],
+      "reuse": [
+        {
+          "id": "external-black-box-block-blast-run-30",
+          "score": 0.116667,
+          "project": "block-blast",
+          "sourceRevision": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1"
+        },
+        {
+          "id": "external-black-box-cavern-cravers-run-47",
+          "score": 0.116667,
+          "project": "cavern-cravers",
+          "sourceRevision": "sha256:53702f0b724d8b6d329b6ac10f0a142eb43fcdc713c14b8950e5b6abaa801d77"
+        },
+        {
+          "id": "external-black-box-idle-fantasy-run-42",
+          "score": 0.116667,
+          "project": "idle-fantasy",
+          "sourceRevision": "sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d"
+        },
+        {
+          "id": "external-black-box-luanti-run-10",
+          "score": 0.116667,
+          "project": "luanti",
+          "sourceRevision": "sha256:523b6eb0021a1685087e8eab7ce29100ffb33d025f91c411f829c4042093ce4c"
+        },
+        {
+          "id": "external-black-box-revengate-run-59",
+          "score": 0.116667,
+          "project": "revengate",
+          "sourceRevision": "sha256:7ac6cb9aa7bdcfdee1af6df5e409005da42ac597903f8acca8aa0bfc44cb93d9"
+        },
+        {
+          "id": "external-black-box-sgtpuzzles-run-29",
+          "score": 0.116667,
+          "project": "sgtpuzzles",
+          "sourceRevision": "sha256:340f1dbb0fcb989a036709904018fa94698dbc917417280b52da8666d0b35869"
+        },
+        {
+          "id": "external-black-box-shattered-pixel-dungeon-run-4",
+          "score": 0.116667,
+          "project": "shattered-pixel-dungeon",
+          "sourceRevision": "sha256:a4f204496be3b54d90c98e68d1604248910625d4f7daa5341fa0b7e8abbeb5b6"
+        }
+      ],
       "avoid": [],
-      "authority": "verified-task-playbook"
+      "responsibleSources": [],
+      "authority": "verified-task-playbook",
+      "causalLessons": []
     },
     "planning": {
+      "version": 1,
       "taskType": "planning",
       "checklist": [
         "retrieve-verified-project-patterns",
@@ -77,11 +362,57 @@
         "compare-alternatives",
         "separate-evidence-from-inference"
       ],
-      "reuse": [],
+      "reuse": [
+        {
+          "id": "external-black-box-block-blast-run-30",
+          "score": 0.116667,
+          "project": "block-blast",
+          "sourceRevision": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1"
+        },
+        {
+          "id": "external-black-box-cavern-cravers-run-47",
+          "score": 0.116667,
+          "project": "cavern-cravers",
+          "sourceRevision": "sha256:53702f0b724d8b6d329b6ac10f0a142eb43fcdc713c14b8950e5b6abaa801d77"
+        },
+        {
+          "id": "external-black-box-idle-fantasy-run-42",
+          "score": 0.116667,
+          "project": "idle-fantasy",
+          "sourceRevision": "sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d"
+        },
+        {
+          "id": "external-black-box-luanti-run-10",
+          "score": 0.116667,
+          "project": "luanti",
+          "sourceRevision": "sha256:523b6eb0021a1685087e8eab7ce29100ffb33d025f91c411f829c4042093ce4c"
+        },
+        {
+          "id": "external-black-box-revengate-run-59",
+          "score": 0.116667,
+          "project": "revengate",
+          "sourceRevision": "sha256:7ac6cb9aa7bdcfdee1af6df5e409005da42ac597903f8acca8aa0bfc44cb93d9"
+        },
+        {
+          "id": "external-black-box-sgtpuzzles-run-29",
+          "score": 0.116667,
+          "project": "sgtpuzzles",
+          "sourceRevision": "sha256:340f1dbb0fcb989a036709904018fa94698dbc917417280b52da8666d0b35869"
+        },
+        {
+          "id": "external-black-box-shattered-pixel-dungeon-run-4",
+          "score": 0.116667,
+          "project": "shattered-pixel-dungeon",
+          "sourceRevision": "sha256:a4f204496be3b54d90c98e68d1604248910625d4f7daa5341fa0b7e8abbeb5b6"
+        }
+      ],
       "avoid": [],
-      "authority": "verified-task-playbook"
+      "responsibleSources": [],
+      "authority": "verified-task-playbook",
+      "causalLessons": []
     },
     "general": {
+      "version": 1,
       "taskType": "general",
       "checklist": [
         "retrieve-verified-success-and-failure-memory",
@@ -89,154 +420,78 @@
         "compare-candidates",
         "require-verifiable-completion"
       ],
-      "reuse": [],
+      "reuse": [
+        {
+          "id": "external-black-box-block-blast-run-30",
+          "score": 0.116667,
+          "project": "block-blast",
+          "sourceRevision": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1"
+        },
+        {
+          "id": "external-black-box-cavern-cravers-run-47",
+          "score": 0.116667,
+          "project": "cavern-cravers",
+          "sourceRevision": "sha256:53702f0b724d8b6d329b6ac10f0a142eb43fcdc713c14b8950e5b6abaa801d77"
+        },
+        {
+          "id": "external-black-box-idle-fantasy-run-42",
+          "score": 0.116667,
+          "project": "idle-fantasy",
+          "sourceRevision": "sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d"
+        },
+        {
+          "id": "external-black-box-luanti-run-10",
+          "score": 0.116667,
+          "project": "luanti",
+          "sourceRevision": "sha256:523b6eb0021a1685087e8eab7ce29100ffb33d025f91c411f829c4042093ce4c"
+        },
+        {
+          "id": "external-black-box-revengate-run-59",
+          "score": 0.116667,
+          "project": "revengate",
+          "sourceRevision": "sha256:7ac6cb9aa7bdcfdee1af6df5e409005da42ac597903f8acca8aa0bfc44cb93d9"
+        },
+        {
+          "id": "external-black-box-sgtpuzzles-run-29",
+          "score": 0.116667,
+          "project": "sgtpuzzles",
+          "sourceRevision": "sha256:340f1dbb0fcb989a036709904018fa94698dbc917417280b52da8666d0b35869"
+        },
+        {
+          "id": "external-black-box-shattered-pixel-dungeon-run-4",
+          "score": 0.116667,
+          "project": "shattered-pixel-dungeon",
+          "sourceRevision": "sha256:a4f204496be3b54d90c98e68d1604248910625d4f7daa5341fa0b7e8abbeb5b6"
+        }
+      ],
       "avoid": [],
-      "authority": "verified-task-playbook"
-    },
-    "storytelling": {
-      "taskType": "storytelling",
-      "checklist": [
-        "read-central-policy-and-locked-world-facts-first",
-        "separate-world-rules-character-wants-needs-and-conflicts",
-        "build-cause-and-effect-plot-before-dialogue-polish",
-        "bind-quests-to-prerequisite-state-action-consequence-and-reward",
-        "track-foreshadowing-reveal-and-payoff",
-        "keep-character-knowledge-and-motivation-consistent",
-        "make-dialogue-serve-scene-objective-character-and-subtext",
-        "verify-story-state-save-load-and-no-softlock",
-        "distill-technique-not-reference-expression"
-      ],
-      "reuse": [],
-      "avoid": [
-        "raw-reference-copy",
-        "unearned-reveal",
-        "character-knowledge-leak",
-        "fake-choice-without-consequence",
-        "quest-without-state-causality",
-        "exposition-only-progression"
-      ],
-      "authority": "verified-task-playbook"
-    },
-    "quest": {
-      "taskType": "quest",
-      "checklist": [
-        "bind-prerequisite-and-start-state",
-        "define-player-action-and-observable-state-change",
-        "define-completion-failure-and-retry-path",
-        "connect-reward-to-progression-or-story-consequence",
-        "verify-save-load-and-reentry-state",
-        "prevent-softlock-and-duplicate-reward"
-      ],
-      "reuse": [],
-      "avoid": [
-        "orphan-objective",
-        "duplicate-reward",
-        "invisible-prerequisite",
-        "nonrecoverable-story-state"
-      ],
-      "authority": "verified-task-playbook"
-    },
-    "dialogue": {
-      "taskType": "dialogue",
-      "checklist": [
-        "read-character-goal-relationship-and-known-information",
-        "define-scene-objective-and-turn",
-        "prefer-character-specific-subtext-over-generic-exposition",
-        "do-not-reveal-information-character-does-not-know",
-        "keep-branch-consequences-consistent-with-game-state"
-      ],
-      "reuse": [],
-      "avoid": [
-        "generic-exposition-dump",
-        "knowledge-leak",
-        "voice-collapse",
-        "choice-without-state-consequence"
-      ],
-      "authority": "verified-task-playbook"
-    },
-    "presentation": {
-      "taskType": "presentation",
-      "checklist": [
-        "read-central-living-motion-and-audio-contracts",
-        "preserve-gameplay-save-progression-hit-semantics",
-        "modify-existing-responsible-presentation-system-directly",
-        "avoid-wrapper-shadow-presentation-pipeline",
-        "implement-only-current-presentation-pass",
-        "run-presentation-static-qa",
-        "require-runtime-mobile-qa-before-completion"
-      ],
-      "reuse": [],
-      "avoid": [
-        "gameplay-balance-drift",
-        "save-semantic-drift",
-        "animation-state-pop",
-        "unbounded-effects",
-        "input-obscuring-camera"
-      ],
-      "authority": "verified-task-playbook"
-    },
-    "vfx": {
-      "taskType": "vfx",
-      "checklist": [
-        "bind-vfx-to-existing-gameplay-impact-event",
-        "keep-effect-lifetime-bounded",
-        "preserve-danger-and-touch-readability",
-        "avoid-per-frame-transient-growth",
-        "run-mobile-clutter-and-performance-qa"
-      ],
-      "reuse": [],
-      "avoid": [
-        "unbounded-particles",
-        "effect-over-gameplay-readability",
-        "vfx-driven-gameplay-state"
-      ],
-      "authority": "verified-task-playbook"
-    },
-    "audio": {
-      "taskType": "audio",
-      "checklist": [
-        "reuse-existing-audio-owner",
-        "initialize-audio-through-platform-native-lifecycle",
-        "preserve-mute-and-volume-controls",
-        "bind-impact-sound-to-existing-impact-event",
-        "use-smooth-state-transition-or-crossfade",
-        "handle-app-background-resume-without-duplicate-playback",
-        "run-mobile-speaker-and-transition-qa"
-      ],
-      "reuse": [],
-      "avoid": [
-        "audio-before-platform-runtime-ready",
-        "duplicate-music-owner",
-        "resume-duplicate-playback",
-        "audio-changing-gameplay-state"
-      ],
-      "authority": "verified-task-playbook"
+      "responsibleSources": [],
+      "authority": "verified-task-playbook",
+      "causalLessons": []
     }
   },
   "policy": {
     "localWeightTrainingRequired": false,
     "paidApiRequired": false,
     "benchmarkCountsAsTrainingSample": false,
-    "hourlyCanonicalRefresh": true
+    "portableWebContextForRoblox": true,
+    "platformEvidenceTransferAllowed": false
   },
-  "directNativePlatformContext": {
-    "version": 1,
-    "commonCoreDesign": "design-revised.json#content",
-    "platformProfiles": {
-      "ROBLOX": "design-revised.json#content.platformProfiles.ROBLOX",
-      "UNITY": "design-revised.json#content.platformProfiles.UNITY"
-    },
-    "requestEitherStartsBoth": false,
-    "platformEvidenceIndependent": true,
-    "unityWeb": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
-    "unityWebRequired": true,
-    "unityWebNativeGateAuthority": true,
-    "upperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
-    "upperPlatformTargets": [
-      "ROBLOX",
-      "UNITY"
-    ],
-    "upperPlatformStartAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
-    "unityWebReleaseStage": false
+  "causalCodingLearning": {
+    "enabled": true,
+    "lessonCount": 0,
+    "evidenceBoundary": "VERIFIED_SUCCESS_AND_OBSERVED_FAILURE_ONLY",
+    "directTraining": false,
+    "authority": "causal-coding-retrieval-context-only"
+  },
+  "transformativeRecombination": {
+    "enabled": true,
+    "materialCount": 33,
+    "recipeCount": 64,
+    "minimumDistinctProjects": 2,
+    "originalModifierRequired": true,
+    "rawSourceOutputAllowed": false,
+    "rawAssetOutputAllowed": false,
+    "authority": "transformative-recombination-context-only"
   }
 }

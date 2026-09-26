@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-among-us",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Among Us의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=SOCIAL_PARTY; inputProfile=LOCATION_TAP; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=NOT_CONFIRMED",
+  "output": "관찰된 소셜 파티 동작을 독립 구현할 때는 로비, 플레이어 역할, 라운드 목표, 상호작용, 투표/결과 상태를 분리한다. 비공개 역할 정보와 공개 UI를 분리하고 서버 권한 상태가 라운드 전환을 소유하며 재접속이나 중복 입력으로 결과가 두 번 반영되지 않게 한다.",
+  "sourceRevision": "external-playtest-35426386535-among-us",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Among Us",
+    "packageId": "com.innersloth.spacemafia",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.innersloth.spacemafia",
+    "playtestRunId": "35426386535",
+    "beforeScreenshotSha256": "cdd9cf60c718090a8b51ddb43ddae0935b5c711f0f8d5e4115f0f13091e0e526",
+    "afterScreenshotSha256": "cdd9cf60c718090a8b51ddb43ddae0935b5c711f0f8d5e4115f0f13091e0e526",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-social-party-runtime-architecture",
+  "tags": [
+    "lobby-flow",
+    "role-state",
+    "round-objective",
+    "player-interaction",
+    "vote-or-result"
+  ]
+}

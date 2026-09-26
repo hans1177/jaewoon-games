@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-clash-of-clans",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Clash of Clans의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=STRATEGY_BASE; inputProfile=STRATEGY_TAP; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED",
+  "output": "관찰된 기지 전략 동작을 독립 구현할 때는 기지 배치 상태, 자원 원장, 업그레이드 큐, 유닛 편성, 공격/방어 결과를 분리한다. 자원 차감과 업그레이드 완료는 중복 적용되지 않게 하고, 전투 결과와 영속 기지 상태의 쓰기 경계를 명확히 둔다.",
+  "sourceRevision": "external-playtest-35428190268-clash-of-clans",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Clash of Clans",
+    "packageId": "com.supercell.clashofclans",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.supercell.clashofclans",
+    "playtestRunId": "35428190268",
+    "beforeScreenshotSha256": "a3fd22dcf4deacf2b3a5dec48a07555bed6f2bbf5ddbbf88997069fb123d80c0",
+    "afterScreenshotSha256": "7d75e5f4ab377331ff068ab83df5fa4e4a3426a635875680ac05a16f6cffe4aa",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-base-strategy-runtime-architecture",
+  "tags": [
+    "base-layout",
+    "resource-loop",
+    "upgrade-queue",
+    "unit-composition",
+    "attack-defense-cycle"
+  ]
+}

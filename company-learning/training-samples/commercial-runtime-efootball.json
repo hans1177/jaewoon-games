@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-efootball",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 eFootball의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=SPORTS_FOOTBALL; inputProfile=ARENA_DUAL_STICK; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED",
+  "output": "관찰된 모바일 축구 동작을 독립 구현할 때는 선수 선택/이동 입력, 공 소유권, 패스·슛 행동, 포메이션 상태, 경기 시간과 점수를 분리한다. 시각적 공 이동과 실제 소유권 판정을 한 책임 계층에서 일관되게 관리하고 경기 재개·교체·득점 이벤트가 중복 적용되지 않게 한다.",
+  "sourceRevision": "external-playtest-35430468035-efootball",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "eFootball",
+    "packageId": "jp.konami.pesam",
+    "storeUrl": "https://play.google.com/store/apps/details?id=jp.konami.pesam",
+    "playtestRunId": "35430468035",
+    "beforeScreenshotSha256": "850f8a14ae703b9c1e4d6243f5fc1041cfdcc7b9ec4ba05f4b8049c703f724e0",
+    "afterScreenshotSha256": "477e4e36bd3c29efe5939c6262b2a643dd42acd7dcdb0c1c25dfb381c4406d13",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-football-runtime-architecture",
+  "tags": [
+    "team-control",
+    "possession-state",
+    "match-clock",
+    "formation",
+    "action-feedback"
+  ]
+}

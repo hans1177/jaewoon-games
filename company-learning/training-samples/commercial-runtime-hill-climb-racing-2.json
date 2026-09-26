@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-hill-climb-racing-2",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Hill Climb Racing 2의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=CASUAL; inputProfile=DRIVE_TWO_BUTTON; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED",
+  "output": "관찰된 짧은 캐주얼 동작을 Unity로 독립 구현할 때는 입력 의도, 실제 이동/행동 상태, 충돌 또는 목표 판정, 점수/런 진행을 분리한다. 한 시스템만 최종 상태를 소유하고 반복 생성 요소는 풀링하여 비용을 제한한다. 실패→재시작은 런 상태를 명시적으로 reset해 이벤트·코루틴·오브젝트가 중복되지 않게 한다.",
+  "sourceRevision": "external-playtest-35428635250-hill-climb-racing-2",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Hill Climb Racing 2",
+    "packageId": "com.fingersoft.hcr2",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.fingersoft.hcr2",
+    "playtestRunId": "35428635250",
+    "beforeScreenshotSha256": "10dfcb7de951e946569b42c26132b16e112d22824a2b13c7fb0ab432d6e678b0",
+    "afterScreenshotSha256": "14ffbbc659138180535f90d17d209507b09b0a6a5343dd11b24f931d8b1fd033",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-casual-runtime-architecture",
+  "tags": [
+    "short-session",
+    "simple-input",
+    "fast-retry",
+    "score-loop",
+    "mobile-feedback"
+  ]
+}

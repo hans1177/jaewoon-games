@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-standoff-2",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Standoff 2의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=FPS_TACTICAL; inputProfile=ARENA_DUAL_STICK; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED",
+  "output": "관찰된 전술 FPS 동작을 독립 구현할 때는 이동, 시점/조준, 무기 상태, 피해 판정, 라운드 상태를 분리한다. 발사·재장전·무기교체의 상태 전이를 명시적으로 소유하고 네트워크 권한과 로컬 피드백을 구분하며, 라운드 종료 후 전투 상태가 다음 라운드로 누적되지 않게 한다.",
+  "sourceRevision": "external-playtest-35430605778-standoff-2",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Standoff 2",
+    "packageId": "com.axlebolt.standoff2",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.axlebolt.standoff2",
+    "playtestRunId": "35430605778",
+    "beforeScreenshotSha256": "97cd381b8fe5d51d92c15db377992cd7e3d2537eec8f9e058c26434ba8c8dc6f",
+    "afterScreenshotSha256": "c87952c4a517d3c721929fda99ce4eb4c243e61822fffa5d27d221d312f92513",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-tactical-fps-runtime-architecture",
+  "tags": [
+    "aim-input",
+    "movement-state",
+    "weapon-state",
+    "round-loop",
+    "combat-feedback"
+  ]
+}
