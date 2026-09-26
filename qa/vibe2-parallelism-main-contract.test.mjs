@@ -114,7 +114,7 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(learning.pressureObservationFailureDefersLearning,true);
   assert.equal(learning.productionMayNotWaitForLearningReserve,true);
   assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillAllowed,true);
-  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'EXECUTION_LANE');
+  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'RUN_SCOPED_PARALLEL_RESERVE');
   assert.equal(runtime.continuous.atomicNeuronStream.globalFanInRefillSingletonForbidden,true);
 
   const reserveStart=core.indexOf('\n  reserve:\n');

@@ -896,7 +896,7 @@
         "adaptiveRole": "TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY",
         "primaryReservationLimit": "CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY",
         "pressureMayDownshiftPrimaryReservations": false,
-        "fanInRefillConcurrencyScope": "EXECUTION_LANE",
+        "fanInRefillConcurrencyScope": "RUN_SCOPED_PARALLEL_RESERVE",
         "globalFanInRefillSingletonForbidden": true,
         "recoveryFastCausalReturn": "VIBE2_FANIN_REFILL_EVENT_WITH_GAME_PRIMARY_EXECUTION_LANE",
         "recoveryFastDirectGameWorkerDispatch": false
