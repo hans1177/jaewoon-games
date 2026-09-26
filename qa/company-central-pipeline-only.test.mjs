@@ -468,3 +468,36 @@ test('Unity Web actual play supplies boot proof without a duplicate browser smok
   assert.match(web,/bootSmoke:'PASS'/);
   assert.match(web,/Run Unity Web actual browser play/);
 });
+
+
+test('Unity Web bottleneck optimizations are bound consistently across central policy architecture and logs',()=>{
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
+
+  const cache=roadmap.changeRecord?.unityWebLibraryCacheReuse20260927;
+  assert.equal(cache?.buildStillRequired,true);
+  assert.equal(cache?.browserPlayStillRequired,true);
+  assert.equal(cache?.independentQaStillRequired,true);
+  assert.equal(cache?.regressionStillRequired,true);
+  assert.equal(architecture.unityWebLibraryCacheReuse?.buildArtifactReuse,false);
+  assert.equal(architecture.unityWebLibraryCacheReuse?.qaEvidenceReuse,false);
+  assert.equal(logMap.unityWebLibraryCacheReuseEvidence?.cacheHitDoesNotImplyBuildPass,true);
+  assert.equal(logMap.unityWebLibraryCacheReuseEvidence?.cacheHitDoesNotImplyQaPass,true);
+
+  const dedupe=roadmap.changeRecord?.unityWebActiveRunDedupe20260927;
+  assert.equal(dedupe?.duplicateFloorDispatchSuppressed,true);
+  assert.equal(dedupe?.duplicateBootstrapDispatchSuppressed,true);
+  assert.equal(dedupe?.distinctGamesRemainParallel,true);
+  assert.equal(architecture.unityWebActiveRunDedupe?.crossGameParallelism,true);
+  assert.equal(logMap.unityWebActiveRunDedupeEvidence?.sameGameDuplicateDispatchForbidden,true);
+
+  const boot=roadmap.changeRecord?.unityWebBootProofReuse20260927;
+  assert.equal(boot?.separateBootBrowserLaunchRemoved,true);
+  assert.equal(boot?.actualPlayValidatorOwnsBootAssertion,true);
+  assert.equal(boot?.independentQaStillRequired,true);
+  assert.equal(boot?.regressionStillRequired,true);
+  assert.equal(architecture.unityWebBootProofReuse?.bootProofOwner,'ACTUAL_BROWSER_PLAY');
+  assert.equal(logMap.unityWebBootProofReuseEvidence?.separateBootBrowserLaunchExpected,false);
+  assert.equal(logMap.unityWebBootProofReuseEvidence?.bootPassMustComeFromActualPlayEvidence,true);
+});
