@@ -5292,9 +5292,11 @@
     "scanMode": "TARGETED_RECENT_AND_ACTIVE_STATUS_QUERIES",
     "workflowLevelConcurrencyGroup": null,
     "workflowLevelConcurrencyForbidden": true,
-    "runnerDrainConcurrencyGroup": null,
+    "runnerDrainConcurrencyGroup": "director-runner-drain-v1",
     "runnerDrainMayRunInParallel": true,
-    "superviseJobConcurrencyGroup": "director-central-company-supervise-v3"
+    "superviseJobConcurrencyGroup": "director-central-company-supervise-v3",
+    "gamePrimaryGateConcurrencyGroup": "director-game-primary-gate-v1",
+    "jobLocalConcurrencyOnly": true
   },
   "controlPlaneOperationalRunnerIsolation": {
     "version": 1,
