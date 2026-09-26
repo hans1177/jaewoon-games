@@ -1062,6 +1062,21 @@ test('Vibe3 contract QA stays off game-primary ubuntu-latest capacity',()=>{
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
 });
 
+test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()=>{
+  const workflow=readText('.github/workflows/company-development-roblox-post-runtime-qa.yml');
+  const qaStart=workflow.indexOf('\n  runtime-foundation-qa:\n');
+  const studioStart=workflow.indexOf('\n  studio-local-plan:\n',qaStart);
+  assert.ok(qaStart>=0&&studioStart>qaStart);
+  const remoteQa=workflow.slice(qaStart,studioStart);
+  assert.match(remoteQa,/runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(remoteQa,/runs-on:\s*ubuntu-latest/);
+  const projection=architecture.robloxRuntimeFoundationRunnerIsolation;
+  assert.equal(projection?.runtimeFoundationQa,'ubuntu-slim');
+  assert.equal(projection?.localStudioExecutionMoved,false);
+  assert.equal(projection?.gamePrimaryUbuntuLatestCapacityProtected,true);
+  assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
+});
+
 test('duplicate administrative QA keeps only the latest same-ref validation',()=>{
   const roadmap=JSON.parse(readText('company-learning/platform-release-roadmap.json'));
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.duplicateValidationWithoutEvidenceInvalidationForbidden,true);
