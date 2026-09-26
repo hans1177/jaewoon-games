@@ -13,10 +13,6 @@ permissions:
   contents: write
   actions: write
 
-concurrency:
-  group: company-development-roblox-runtime-continuation-${{ inputs.game_id || 'batch' }}
-  cancel-in-progress: false
-
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   ROBLOX_RUNTIME_HARNESS_VERSION: '9'
@@ -323,10 +319,56 @@ jobs:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         run: |
           set -euo pipefail
-          if [ -n "$REQUESTED_GAME_ID" ]; then
-            gh workflow run company-development-roblox-headless-fast-mvp.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
-            echo "ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES:$REQUESTED_GAME_ID"
-          else
-            gh workflow run company-development-roblox-headless-fast-mvp.yml --repo "$GITHUB_REPOSITORY" --ref main
-            echo 'ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES:BATCH'
-          fi
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-f0-dispatch-queue.json
+          node <<'NODE' > /tmp/roblox-f0-ready-ids
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-f0-dispatch-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          for(const item of q.items||[]){
+            if(requested&&item.gameId!==requested)continue;
+            const revision=String(item.robloxSourceCommit||'').trim();
+            const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
+            const ready=String(item.status||'').toUpperCase()==='ACTIVE'
+              &&String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
+              &&item.robloxBuildOrPackagePassed===true
+              &&item.robloxBuildPreflightPassed===true
+              &&item.robloxFoundationF0Passed!==true
+              &&item.robloxBuildSourceRevision===revision
+              &&/^[0-9a-f]{40}$/i.test(revision)
+              &&/^sha256:[0-9a-f]{64}$/i.test(artifact);
+            if(ready)console.log(item.gameId);
+          }
+          NODE
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-headless-fast-mvp.yml/runs?per_page=100" > /tmp/roblox-f0-active-runs.json
+          node <<'NODE' > /tmp/roblox-f0-active-ids
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-f0-active-runs.json','utf8'));
+          const activeStates=new Set(['queued','pending','in_progress','requested']);
+          const prefix='Roblox F0 · ';
+          const ids=new Set();
+          for(const run of payload.workflow_runs||[]){
+            if(!activeStates.has(String(run.status||'').toLowerCase()))continue;
+            const title=String(run.display_title||'');
+            if(!title.startsWith(prefix))continue;
+            const id=title.slice(prefix.length).trim();
+            if(/^[a-z0-9][a-z0-9-]{1,48}$/.test(id))ids.add(id);
+          }
+          for(const id of [...ids].sort())console.log(id);
+          NODE
+          dispatch_count=0
+          deduped_count=0
+          while read -r id; do
+            [ -n "$id" ] || continue
+            if grep -Fxq "$id" /tmp/roblox-f0-active-ids; then
+              deduped_count=$((deduped_count+1))
+              echo "ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH=DEDUPED_ACTIVE:$id"
+              continue
+            fi
+            gh workflow run company-development-roblox-headless-fast-mvp.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            printf '%s\n' "$id" >> /tmp/roblox-f0-active-ids
+            dispatch_count=$((dispatch_count+1))
+            echo "ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES:$id"
+          done < /tmp/roblox-f0-ready-ids
+          echo "ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH_COUNT=$dispatch_count"
+          echo "ROBLOX_F0_SOURCE_PREFLIGHT_DEDUPED_COUNT=$deduped_count"
