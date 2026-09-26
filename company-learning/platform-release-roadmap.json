@@ -1,5 +1,5 @@
 {
-  "version": 391,
+  "version": 392,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -7526,6 +7526,12 @@
         "qa/company-system-ai-worker.test.mjs",
         "qa/company-system-ai-supervision-loop.test.mjs"
       ]
+    },
+    "robloxNativeCodingQuality20260926": {
+      "id": "ROBLOX_NATIVE_CODING_QUALITY_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "summary": "Strengthen the existing Roblox path with source-first native Luau responsibility mapping, exact BUILD_UP source anchors, earlier official Studio MCP behavior feedback, causal direct repair, Roblox failure taxonomy, and verified pattern reuse without adding workers queues or authority.",
+      "authorityChange": "NONE"
     }
   },
   "vibeExecutionLaneContract": {
@@ -22967,5 +22973,176 @@
       "platformLocalDirectiveGenerationForbidden": true,
       "missingDirectivePlatformBehavior": "BASELINE_OR_REPAIR_WORK_MAY_CONTINUE_BUT_BUILD_UP_COMPLETION_MUST_REMAIN_UNCLAIMED_UNTIL_VIBE_DIRECTIVE_EXISTS_AND_IS_IMPLEMENTED"
     }
+  },
+  "robloxNativeCodingQualityContract": {
+    "version": 1,
+    "status": "ACTIVE_EXECUTABLE_CONTRACT",
+    "authority": "OWNER_DIRECTIVE_2026-09-26",
+    "objective": "MAKE_ROBLOX_IMPLEMENTATION_NATIVE_TO_LUAU_SERVER_CLIENT_STUDIO_RUNTIME_AND_MOBILE_INPUT_WHILE_REUSING_THE_EXISTING_BUILD_UP_SOURCE_QA_STUDIO_MCP_AND_LEARNING_PIPELINE",
+    "architecture": {
+      "existingPipelineOnly": true,
+      "newWorkerForbidden": true,
+      "newQueueForbidden": true,
+      "shadowPipelineForbidden": true,
+      "existingFlow": [
+        "GAME_SPECIFIC_BUILD_UP",
+        "VIBE2_SOURCE_WORKER",
+        "IMPACT_SCOPED_QA",
+        "OFFICIAL_ROBLOX_STUDIO_MCP_ACTUAL_PLAY",
+        "CAUSAL_DIRECT_REPAIR",
+        "FAN_IN_REGRESSION",
+        "VIBE2_LEARNING_MOTOR"
+      ],
+      "authorityExpansion": false
+    },
+    "executionFlow": [
+      "READ_EXISTING_ROBLOX_SOURCE_BEFORE_GENERATION",
+      "MAP_EXISTING_SERVER_CLIENT_REMOTE_INPUT_SAVE_UI_CHARACTER_AND_STATE_RESPONSIBILITIES",
+      "BIND_GAME_SPECIFIC_BUILD_UP_TO_EXACT_ROBLOX_FILES_AND_SYMBOLS",
+      "IMPLEMENT_PLATFORM_NATIVE_LUAU_IN_EXISTING_RESPONSIBLE_SYSTEM",
+      "RUN_IMPACT_SCOPED_STATIC_AND_CONTRACT_QA",
+      "RUN_OFFICIAL_STUDIO_MCP_ACTUAL_PLAY_AT_EARLIEST_EXISTING_RUNTIME_FOUNDATION_ELIGIBLE_CHECKPOINT",
+      "ROUTE_OBSERVED_FAILURE_TO_EXACT_CAUSAL_SCRIPT_FUNCTION_EVENT_OR_STATE_MACHINE",
+      "MODIFY_EXISTING_RESPONSIBLE_FUNCTION_DIRECTLY",
+      "REPLAY_THE_CHANGED_SCENARIO",
+      "FAN_IN_REQUIRED_REGRESSION_ONCE",
+      "FEED_VERIFIED_SUCCESS_OR_FAILURE_PATTERN_TO_EXISTING_LEARNING_MOTOR"
+    ],
+    "sourceInspection": {
+      "requiredBeforeRobloxGeneration": true,
+      "inspectExistingGameFirst": true,
+      "requiredResponsibilityMap": [
+        "SERVER_AUTHORITY",
+        "CLIENT_PRESENTATION",
+        "REMOTE_EVENTS_AND_REMOTE_FUNCTIONS",
+        "INPUT_AND_TOUCH",
+        "CHARACTER_AND_RESPAWN",
+        "DATASTORE_AND_SAVE",
+        "UI_STATE",
+        "CORE_STATE_MACHINE",
+        "MULTIPLAYER_SYNC"
+      ],
+      "genericCrossPlatformImplementationWithoutRobloxSourceInspectionForbidden": true,
+      "existingFunctionsAndModulesPreferred": true,
+      "wrapperOverrideOrTemporaryHelperAccumulationForbidden": true
+    },
+    "buildUpRobloxHandoff": {
+      "required": true,
+      "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective",
+      "requiredFields": [
+        "RESPONSIBLE_FILES",
+        "SOURCE_SYMBOLS_OR_STATE_ANCHORS",
+        "SERVER_CLIENT_RESPONSIBILITY",
+        "CURRENT_BEHAVIOR",
+        "INTENDED_BEHAVIOR",
+        "EXPECTED_PLAYER_EFFECT",
+        "OBSERVABLE_ACCEPTANCE_SCENARIO"
+      ],
+      "genericInstructionWithoutSourceAnchorForbidden": true,
+      "sharedGameMeaningPreserved": true,
+      "platformNativeImplementationRequired": true
+    },
+    "workPackageGranularity": {
+      "mode": "RESPONSIBLE_FILE_AND_BEHAVIOR_PACKAGE",
+      "examples": [
+        "COMBAT",
+        "UI_INPUT",
+        "SAVE_LOAD",
+        "ENEMY_AI",
+        "CHARACTER_STATE",
+        "MULTIPLAYER_SYNC"
+      ],
+      "unrelatedResponsibleFilesMayRunInParallel": true,
+      "sameResponsibleFileConcurrentWriteForbidden": true,
+      "largeUnscopedRobloxRewriteDiscouraged": true
+    },
+    "actualPlayFeedback": {
+      "provider": "OFFICIAL_ROBLOX_STUDIO_MCP_ONLY",
+      "robloxPlayerAutomationForbidden": true,
+      "externalGuiMacroForbidden": true,
+      "exactLocalPlaceAndOfficialStudioMcpRequired": true,
+      "existingStudioMcpEnablementAndRuntimeFoundationPrerequisitesPreserved": true,
+      "timing": "EARLIEST_EXISTING_RUNTIME_FOUNDATION_ELIGIBLE_CHECKPOINT_AFTER_CHANGED_CORE_BEHAVIOR_IS_EXECUTABLE",
+      "changedBehaviorScenarioMustBePlayed": true,
+      "staticQaPassAloneCannotProveRobloxBehavior": true,
+      "observedFailureMustFeedNextRepairInput": true,
+      "failureRepairMustTargetObservedResponsibleScriptFunctionEventOrStateWhenDiscoverable": true,
+      "replayAfterRepairRequired": true
+    },
+    "functionalVerification": {
+      "featurePresenceAloneInsufficient": true,
+      "endToEndStateChangeRequired": true,
+      "uiActionChain": [
+        "INPUT_OR_TOUCH",
+        "LOCAL_HANDLER",
+        "REMOTE_WHEN_REQUIRED",
+        "SERVER_VALIDATION",
+        "AUTHORITATIVE_STATE_CHANGE",
+        "CLIENT_FEEDBACK"
+      ],
+      "serverAuthoritativeGameplayRequired": true,
+      "saveMeaningMustRemainCompatible": true,
+      "multiplayerRequiresAuthoritativeSyncEvidenceWhenApplicable": true
+    },
+    "baselineReplayScenarios": [
+      "BOOT_TO_FIRST_ACTION",
+      "MOVE_AND_PRIMARY_ACTION",
+      "TOUCH_PRIMARY_ACTION",
+      "DAMAGE_DEATH_RESPAWN_WHEN_APPLICABLE",
+      "SAVE_EXIT_RELOAD_RESTORE_WHEN_SAVE_EXISTS",
+      "UI_ACTION_TO_AUTHORITATIVE_STATE_CHANGE",
+      "TWO_CLIENT_JOIN_ACTION_LEAVE_REJOIN_SYNC_WHEN_MULTIPLAYER_EXISTS"
+    ],
+    "failureTaxonomy": [
+      "ROBLOX_SERVER_CLIENT_BOUNDARY",
+      "ROBLOX_REMOTE_EVENT_OR_FUNCTION",
+      "ROBLOX_TOUCH_INPUT",
+      "ROBLOX_DATASTORE_SAVE_LOAD",
+      "ROBLOX_CHARACTER_RESPAWN_STATE",
+      "ROBLOX_UI_STATE",
+      "ROBLOX_MULTIPLAYER_SYNC",
+      "ROBLOX_STUDIO_RUNTIME",
+      "ROBLOX_SOURCE_GENERATION"
+    ],
+    "codeQualityChecks": {
+      "detectUnboundedWhileLoop": true,
+      "detectLeakedConnections": true,
+      "detectDuplicateRemotePaths": true,
+      "detectClientAuthoritativeGameplayMutation": true,
+      "detectUnboundedDataStoreRetry": true,
+      "detectMissingRemoteValidation": true,
+      "detectStaleCharacterReferenceAcrossRespawn": true,
+      "findingsAreCausalInputsNotAutomaticGameWideBlockers": true
+    },
+    "verifiedLearningReuse": {
+      "existingLearningMotorOnly": true,
+      "verifiedRobloxPatternsPreferredBeforeGenericCrossPlatformPatterns": true,
+      "reusablePatternDomains": [
+        "REMOTE_SERVER_VALIDATION",
+        "TOUCH_UI",
+        "CHARACTER_STATE_MACHINE",
+        "DATASTORE_RECOVERY",
+        "MULTIPLAYER_SYNC",
+        "STUDIO_RUNTIME_DEBUGGING"
+      ],
+      "sourceAndOutcomeEvidenceRequired": true,
+      "failedPatternMustBeReusableAvoidEvidence": true,
+      "rawUnverifiedStudioOutputCannotBecomePositiveLearning": true,
+      "noNewLearningStore": true
+    },
+    "protectedSemantics": {
+      "gameRulesBalanceProgressionSaveKeysSaveMeaningEconomyAndNetworkAuthorityMayNotChangeWithoutExistingAuthority": true,
+      "runtimeAndSecurityGatesMayNotBeWeakened": true,
+      "existingOfficialStudioMcpPolicyPreserved": true
+    },
+    "implementationBindings": [
+      "tools/company-build-up-directive.mjs",
+      "tools/vibe2-source-worker.mjs",
+      "tools/company-development-roblox-studio-local-play.mjs",
+      "tools/vibe2-learning-motor.mjs",
+      "qa/vibe2-source-worker.test.mjs",
+      "qa/company-development-roblox-studio-local-play.test.mjs",
+      "qa/vibe2-learning-motor.test.mjs"
+    ]
   }
 }
