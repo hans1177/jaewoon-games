@@ -1,7 +1,7 @@
 {
   "version": 1,
   "authority": "PRIMARY_AI_AND_VIBE_JOINT",
-  "generatedAt": "2026-09-26T15:34:12.613Z",
+  "generatedAt": "2026-09-26T16:42:41.344Z",
   "decisions": [
     {
       "gameId": "ant-simulator",
@@ -244,7 +244,7 @@
       "ownerApprovalGate": false
     },
     {
-      "gameId": "survival",
+      "gameId": "monster-adventure",
       "decision": "FOCUSED_REPAIR",
       "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -275,36 +275,6 @@
     },
     {
       "gameId": "fantasy-survival",
-      "decision": "FOCUSED_REPAIR",
-      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "evidence": {
-        "planningGrowthMarketing": {
-          "packagePresent": true,
-          "joint": "AWAITING_VIBE"
-        },
-        "development": {
-          "activeTasks": 3,
-          "doneTasks": 0,
-          "failedTasks": 0,
-          "repeatedFailureSignal": 22
-        },
-        "qa": {
-          "criticalRuntimeOrGateBlocker": true
-        },
-        "balance": {
-          "structuralCoreFailure": false
-        },
-        "graphicsAudio": {
-          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
-        }
-      },
-      "jointAuthority": "PRIMARY_AI_AND_VIBE",
-      "ownerApprovalGate": false
-    },
-    {
-      "gameId": "monster-adventure",
       "decision": "FOCUSED_REPAIR",
       "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
       "productionClass": "DEVELOPMENT_CONFIRMED",
@@ -485,6 +455,36 @@
     },
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "decision": "FOCUSED_REPAIR",
+      "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "evidence": {
+        "planningGrowthMarketing": {
+          "packagePresent": true,
+          "joint": "AWAITING_VIBE"
+        },
+        "development": {
+          "activeTasks": 3,
+          "doneTasks": 0,
+          "failedTasks": 0,
+          "repeatedFailureSignal": 22
+        },
+        "qa": {
+          "criticalRuntimeOrGateBlocker": true
+        },
+        "balance": {
+          "structuralCoreFailure": false
+        },
+        "graphicsAudio": {
+          "state": "USE_EXISTING_PRESENTATION_AND_AUDIO_PASS_EVIDENCE"
+        }
+      },
+      "jointAuthority": "PRIMARY_AI_AND_VIBE",
+      "ownerApprovalGate": false
+    },
+    {
+      "gameId": "survival",
       "decision": "FOCUSED_REPAIR",
       "reason": "CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
       "productionClass": "DEVELOPMENT_CONFIRMED",

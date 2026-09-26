@@ -19911,7 +19911,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-09-26T15:34:07.883Z"
+      "updatedAt": "2026-09-26T16:42:36.304Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -118705,10 +118705,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-22T23:20:59.247Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -144205,10 +144205,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:04:31.999Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -144411,7 +144411,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.919Z",
-      "updatedAt": "2026-09-26T15:34:07.373Z"
+      "updatedAt": "2026-09-26T16:42:35.767Z"
     },
     {
       "id": "recovery-ticket-bug-65aa0ffb4ab275d5f5a6",
@@ -144454,7 +144454,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.930Z",
-      "updatedAt": "2026-09-26T15:34:07.384Z"
+      "updatedAt": "2026-09-26T16:42:35.778Z"
     },
     {
       "id": "recovery-ticket-bug-ea186d71ff8c7f6300a7",
@@ -144569,10 +144569,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T07:13:17.824Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -144618,10 +144618,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T08:08:46.628Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -145351,10 +145351,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-25T18:52:44.364Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -145444,7 +145444,10 @@
         "tester-debug-occurrence-count:49",
         "tester-debug-occurrence-count:50",
         "tester-debug-occurrence-count:51",
-        "tester-debug-occurrence-count:52"
+        "tester-debug-occurrence-count:52",
+        "{\"version\":2,\"gameId\":\"daechung-rpg\",\"sourceRevision\":\"6d226665fc3edfa8cbbbdc02245bc97df3cf6973\",\"artifactIdentity\":\"sha256:eeecf1037a0b0f08ce253c14535b6b91d804d3bc7c301762c7a1f15a36de9a96\",\"artifactRunId\":36248088327,\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"candidateVersionNumber\":25,\"expectedVersionNumber\":25,\"observedVersionNumber\":24,\"exactGame\":true,\"exactPlace\":true,\"exactVersion\":false,\"exactEngineVersion\":true,\"engineExecuted\":true,\"simulationRunning\":false,\"serverBootObserved\":false,\"blockers\":[\"exactVersion\",\"checkpointOrder\",\"checkpoint:SERVER_BOOT\",\"checkpoint:MODULE_GRAPH_READY\",\"checkpoint:WORLD_READY\",\"checkpoint:SPAWN_READY\",\"checkpoint:CHARACTER_READY\",\"checkpoint:GROUND_CONTACT\",\"checkpoint:CAMERA_READY\",\"checkpoint:INPUT_READY\",\"checkpoint:MOVEMENT_CONFIRMED\",\"checkpoint:REMOTE_ROUNDTRIP\",\"checkpoint:CORE_LOOP_READY\",\"checkpoint:SAVE_ROUNDTRIP\",\"checkpoint:MULTIPLAYER_SYNC\"],\"observedAt\":\"2026-09-26T16:42:07.371Z\",\"workflowRunId\":36256276027,\"authority\":\"exact-engine-version-awaiting-real-server-boot\"}",
+        "{\"version\":1,\"gameId\":\"daechung-rpg\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"6d226665fc3edfa8cbbbdc02245bc97df3cf6973\",\"artifactIdentity\":\"sha256:eeecf1037a0b0f08ce253c14535b6b91d804d3bc7c301762c7a1f15a36de9a96\",\"artifactRunId\":36248088327,\"universeId\":\"10767445769\",\"placeId\":\"126302702438348\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":25,\"workflowRunId\":36256193420,\"publishedAt\":\"2026-09-26T16:40:08.271Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}",
+        "tester-debug-occurrence-count:53"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145457,15 +145460,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 52,
+      "recurrenceCount": 53,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-25T19:12:21.440Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -145538,10 +145541,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.964Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -145614,10 +145617,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.970Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -145689,10 +145692,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.976Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -145764,10 +145767,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.982Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -145839,10 +145842,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.988Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -145914,10 +145917,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.993Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -145989,10 +145992,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.998Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -146064,10 +146067,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.008Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -146139,10 +146142,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.014Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -146214,10 +146217,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.019Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -146289,10 +146292,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.025Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -146364,10 +146367,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.030Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -146439,10 +146442,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.035Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -146491,10 +146494,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T08:00:39.334Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     },
     {
@@ -146546,10 +146549,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T08:00:39.342Z",
-      "updatedAt": "2026-09-26T15:34:08.141Z",
+      "updatedAt": "2026-09-26T16:42:36.577Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T15:34:08.141Z"
+        "recovery-dispatched-at:2026-09-26T16:42:36.577Z"
       ]
     }
   ]
