@@ -66,8 +66,8 @@ env:
 
 jobs:
   reserve:
-    # Queue reservation / atomic result ingress is lightweight ingress control, not heavy model execution.
-    runs-on: ubuntu-slim
+    # Queue reservation / atomic result ingress is game-control work, not heavy model execution.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 7
     # Reserve jobs may run concurrently. Only the existing optimistic shared-state
     # fetch/reset/replan/push retry section serializes on an actual write conflict.
