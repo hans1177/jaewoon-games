@@ -570,6 +570,27 @@ test('superseded Roblox batch scheduler exits before heavy work while exact game
   assert.ok((workflow.match(/if: steps\.freshness\.outputs\.run == 'true'/g)||[]).length>=4);
 });
 
+test('Roblox source persistence rejects results when the source-plan control contract changed mid-run',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/name: Bind Roblox source-plan contract fingerprint/);
+  assert.match(workflow,/contract_fingerprint: \$\{\{ steps\.contract\.outputs\.fingerprint \|\| '' \}\}/);
+  assert.match(workflow,/SOURCE_PLAN_CONTRACT_FINGERPRINT: \$\{\{ needs\.source-plan\.outputs\.contract_fingerprint \}\}/);
+  for(const required of [
+    '.github/workflows/company-development-roblox-runtime.yml',
+    'tools/company-development-roblox-bootstrap.mjs',
+    'tools/company-development-roblox-source-reconcile.mjs',
+    'tools/company-selected-platform-router.mjs',
+    'tools/company-upper-platform-admission.mjs',
+    'company-asset-library.json',
+    'company-learning/platform-release-roadmap.json',
+  ]) assert.ok(workflow.includes(required));
+  assert.match(workflow,/const sourcePlanContractStale=Boolean\(plannedContractFingerprint&&plannedContractFingerprint!==liveContractFingerprint\)/);
+  assert.match(workflow,/ROBLOX_SOURCE_PLAN_CONTRACT_STALE=/);
+  assert.match(workflow,/for\(const result of sourcePlanContractStale\?\[\]:reconciliation\)/);
+  assert.match(workflow,/for\(const result of sourcePlanContractStale\?\[\]:results\)/);
+  assert.match(workflow,/staleReconciliationCount=Math\.max\(reconciliation\.length,expected\.length,1\)/);
+});
+
 test('Roblox batch scheduler dedupes pending runs without capping per-game matrix parallelism',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
