@@ -120,13 +120,13 @@ env:
 # Keep one continuous scheduler chain. v2 releases stale pre-lane-isolation concurrency
 # while still collapsing wake signals into one pending cycle per current scheduler epoch.
 concurrency:
-  group: vibe2-24h-cycle-singleton-v3
+  group: vibe2-24h-cycle-singleton-v4
   cancel-in-progress: false
 
 jobs:
   plan:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 8
     outputs:
       continue_required: ${{ steps.queue_state.outputs.continue_required }}
@@ -825,7 +825,7 @@ jobs:
   refill:
     needs: [plan, recovery_fast, continuous, learning_idle, game_study]
     if: ${{ always() }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 2
     steps:
       - name: Dispatch next cycle unconditionally
