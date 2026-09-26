@@ -13,25 +13,24 @@
   "releaseClaim": false,
   "existingSourcePreserved": true,
   "gameplayAuthorityChanged": false,
-  "serverSourceChanged": true,
-  "foundationRepairApplied": true,
+  "serverSourceChanged": false,
+  "foundationRepairApplied": false,
   "generatedFiles": [
-    "client/Game.client.luau",
-    "server/Game.server.luau"
+    "shared/GameConfig.luau"
   ],
-  "generationMode": "EXISTING_SOURCE_FOUNDATION_REPAIR",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
   "vibe3LearningApplied": false,
   "recombinationRecipeId": null,
   "studioAssetBinding": {
-    "version": 1,
+    "version": 3,
     "applied": true,
     "source": "company-asset-library.json#baseMaterialLibrary",
-    "libraryVersion": 16,
+    "libraryVersion": 18,
     "atomState": "PREPARED_SEMANTIC_ATOM_LIBRARY",
-    "selectedAtomCount": 29,
+    "selectedAtomCount": 46,
     "families": {
       "UI": [
         "FRAME_PANEL",
@@ -60,10 +59,20 @@
         "STONE",
         "METAL"
       ],
+      "AUDIO": [
+        "ENV_WIND",
+        "ENV_WATER",
+        "UI_CONFIRM"
+      ],
       "VFX": [
         "IMPACT_FLASH",
         "TRAIL_SHORT",
         "SHAPE_BURST"
+      ],
+      "SKILL": [
+        "CAST_HAND",
+        "TELEGRAPH_CIRCLE",
+        "IMPACT_SMALL"
       ],
       "WEAPON": [
         "BLADE_LONG",
@@ -79,9 +88,74 @@
         "HEAD_CANINE",
         "JAW_LONG",
         "CLAW"
+      ],
+      "MOTION": [
+        "IDLE_RELAXED",
+        "WALK",
+        "JOG",
+        "RUN",
+        "START",
+        "STOP",
+        "TURN_90",
+        "JUMP_START",
+        "LAND",
+        "HIT_FRONT",
+        "DEATH_FRONT"
       ]
     },
+    "universalAssetFirst": {
+      "required": true,
+      "allFamilies": [
+        "CHARACTER",
+        "CREATURE",
+        "BUILDING",
+        "ENVIRONMENT",
+        "WEAPON",
+        "SKILL",
+        "MATERIAL",
+        "AUDIO",
+        "VFX",
+        "UI",
+        "MOTION",
+        "PROP"
+      ],
+      "allFamiliesEvaluated": true,
+      "missingFamilies": [],
+      "familyResultRequired": "APPLIED_OR_EXPLICIT_NOT_APPLICABLE",
+      "actualSourceBindingRequired": true,
+      "markerOnlyApplicationForbidden": true,
+      "mapEnvironmentBuildingPropRequired": true
+    },
     "recipeId": "NORMAL_VARIANT",
+    "motionQuality": {
+      "contract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+      "motionAtoms": [
+        "IDLE_RELAXED",
+        "WALK",
+        "JOG",
+        "RUN",
+        "START",
+        "STOP",
+        "TURN_90",
+        "JUMP_START",
+        "LAND",
+        "HIT_FRONT",
+        "DEATH_FRONT"
+      ],
+      "libraryFirst": true,
+      "semanticAtomsAreNotAnimationClips": true,
+      "nativeAnimationClipRuntimeVerificationRequired": true,
+      "actorClasses": [
+        "PLAYER",
+        "HUMANOID_NPC",
+        "CREATURE"
+      ],
+      "articulatedRigRequired": true,
+      "animatorRequired": true,
+      "blendAndSpeedSyncRequired": true,
+      "ikAndProceduralCorrectionPreferred": true,
+      "mannequinHardFailure": "CHARACTER_MOTION_MANNEQUIN"
+    },
     "productionVerified": false,
     "runtimeVerificationRequired": true,
     "verifiedPromotionAllowed": false,
@@ -92,9 +166,15 @@
   "studioAssetPromotionEligible": false,
   "implementationNotes": [
     "existing Roblox gameplay source preserved",
-    "native foundation/input/runtime readiness scaffolding repaired without changing gameplay balance save schema or network authority",
+    "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
+  "buildUpDirectiveId": "bug-defense-build-up-g1-95ff066175ec",
+  "buildUpGeneration": 1,
+  "buildUpGoal": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+  "buildUpDirectiveFingerprint": "95ff066175ec83cbbd8d8f7a30fe0e63fbb907c2712c022f627500d5dc0226a7",
+  "buildUpDirectiveConsumed": true,
+  "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-09-25T05:02:33.608Z"
+  "createdAt": "2026-09-26T03:54:01.775Z"
 }
