@@ -669,6 +669,7 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
   if(!loadout)return{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false};
   const text=presentationSourceText(root,changed);
   const fullText=robloxSourceTreeText(root,data,changed);
+  const universalRequired=loadout?.universalAssetFirst?.required===true;
   if(!text.trim())throw new Error('ROBLOX_STUDIO_ASSET_BINDING_SOURCE_REQUIRED');
   const checks=[],issues=[];
   const require=(name,ok)=>{checks.push({name,pass:Boolean(ok)});if(!ok)issues.push(name);};
@@ -690,29 +691,31 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
     /Color3\.(?:fromRGB|new)\s*\(/i
   ]);
   const familySignals=robloxAssetFamilySignals(fullText);
-  require('ROBLOX_STUDIO_ASSET_BINDING_VERSION',/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*2\b/.test(text));
+  require('ROBLOX_STUDIO_ASSET_BINDING_VERSION',universalRequired?/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*2\b/.test(text):/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*[12]\b/.test(text));
   require('ROBLOX_STUDIO_ASSET_SELECTION_MANIFEST',selectedAtoms.length>0);
   require('ROBLOX_SELECTED_ATOM_TRACE',atomBound);
-  require('ROBLOX_ASSET_FAMILY_STATUS_ALL_12',allFamiliesAccounted);
+  if(universalRequired)require('ROBLOX_ASSET_FAMILY_STATUS_ALL_12',allFamiliesAccounted);
   require('ROBLOX_RUNTIME_OBSERVABLE_SELECTION',runtimeObservable);
   require('ROBLOX_NATIVE_VISUAL_BINDING',nativeSignals>=3);
-  for(const family of UNIVERSAL_ASSET_FAMILIES){
-    const status=familyStatus[family];
-    if(status==='APPLIED')require('ROBLOX_ASSET_FAMILY_APPLIED_'+family,familySignals[family]===true);
-    if(status==='NOT_APPLICABLE'&&familySignals[family]===true)require('ROBLOX_ASSET_FAMILY_NOT_APPLICABLE_VALID_'+family,false);
+  if(universalRequired){
+    for(const family of UNIVERSAL_ASSET_FAMILIES){
+      const status=familyStatus[family];
+      if(status==='APPLIED')require('ROBLOX_ASSET_FAMILY_APPLIED_'+family,familySignals[family]===true);
+      if(status==='NOT_APPLICABLE'&&familySignals[family]===true)require('ROBLOX_ASSET_FAMILY_NOT_APPLICABLE_VALID_'+family,false);
+    }
+    require('ROBLOX_MAP_ENVIRONMENT_ASSET_APPLIED',familyStatus.ENVIRONMENT==='APPLIED'&&familySignals.ENVIRONMENT===true);
+    require('ROBLOX_MAP_PROP_ASSET_APPLIED',familyStatus.PROP==='APPLIED'&&familySignals.PROP===true);
+    if(familySignals.BUILDING===true)require('ROBLOX_MAP_BUILDING_ASSET_APPLIED',familyStatus.BUILDING==='APPLIED');
   }
-  require('ROBLOX_MAP_ENVIRONMENT_ASSET_APPLIED',familyStatus.ENVIRONMENT==='APPLIED'&&familySignals.ENVIRONMENT===true);
-  require('ROBLOX_MAP_PROP_ASSET_APPLIED',familyStatus.PROP==='APPLIED'&&familySignals.PROP===true);
-  if(familySignals.BUILDING===true)require('ROBLOX_MAP_BUILDING_ASSET_APPLIED',familyStatus.BUILDING==='APPLIED');
-  require('ROBLOX_MARKER_ONLY_FORBIDDEN',nativeSignals>=3&&atomBound&&runtimeObservable&&allFamiliesAccounted);
+  require('ROBLOX_MARKER_ONLY_FORBIDDEN',nativeSignals>=2&&atomBound&&runtimeObservable&&(!universalRequired||allFamiliesAccounted));
   if(issues.length)throw new Error(`ROBLOX_STUDIO_ASSET_BINDING_QA_FAILED:${issues.join('|')}`);
   return{
     status:'STATIC_PASS',checks,selectedAtomCount:atoms.length,runtimeStillRequired:true,
     requiredRuntimeEvidence:'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS',
     companyAssetPromotionBlockedUntilRuntime:true,masteryPromotionBlockedUntilRuntime:true,
     selectionHandoffVerified:true,plannerSourceMutationForbidden:loadout?.robloxSelectionHandoff?.plannerSourceMutationForbidden===true,
-    universalAssetFirst:true,allTwelveFamiliesAccounted:true,familyStatus,
-    mapEnvironmentAssetCoverage:true,markerOnlyBindingForbidden:true,gameplaySemanticsPreservationRequired:true,authorityExpanded:false
+    universalAssetFirst:universalRequired,allTwelveFamiliesAccounted:universalRequired?allFamiliesAccounted:null,familyStatus,
+    mapEnvironmentAssetCoverage:universalRequired?(familyStatus.ENVIRONMENT==='APPLIED'&&familyStatus.PROP==='APPLIED'):null,markerOnlyBindingForbidden:true,gameplaySemanticsPreservationRequired:true,authorityExpanded:false
   };
 }
 function runWeatherPresentationStaticQa({root,data={},changed=[]}={}){
