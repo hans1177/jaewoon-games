@@ -423,13 +423,18 @@ export function reserveSecurityRecoveryTask(queueInput,{id='',reservationId='',a
   return{queue:{...queue,tasks},reserved:tasks.filter(t=>t.id===taskId),reservationId:rid,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired,scopeReconciled:compacted.scopeReconciled};
 }
 
-export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMinutes=30,at=Date.now()}={}){
+export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMinutes=30,at=Date.now(),preferredIds=[]}={}){
   const reclaimed=reclaimStaleSystemAiReservations(queueInput,{leaseMinutes,at});
   const compacted=coalesceQueuedSystemAiDuplicateRepairs(reclaimed.queue,{at});
   const queue=compacted.queue, active=queue.tasks.filter(t=>t.status==='running');
   const profiles=new Map(queue.tasks.map(task=>[task.id,systemAiImpactProfile(task,queue,{at})]));
+  const preferredOrder=new Map(unique(preferredIds).map((id,index)=>[id,index]));
+  const preferredRank=task=>preferredOrder.has(task.id)?preferredOrder.get(task.id):Number.MAX_SAFE_INTEGER;
   const candidates=queue.tasks.filter(t=>t.status==='queued'&&dependencyReady(t,queue))
-    .sort((a,b)=>(profiles.get(b.id)?.score||0)-(profiles.get(a.id)?.score||0)||rank(b.priority)-rank(a.priority)||a.createdAt.localeCompare(b.createdAt));
+    .sort((a,b)=>preferredRank(a)-preferredRank(b)
+      ||(profiles.get(b.id)?.score||0)-(profiles.get(a.id)?.score||0)
+      ||rank(b.priority)-rank(a.priority)
+      ||a.createdAt.localeCompare(b.createdAt));
   const requestedBatch=Math.max(0,Math.floor(Number(max)||0));
   const chosen=[],commonCanarySignatures=new Set(active.map(task=>profiles.get(task.id)).filter(profile=>profile?.commonBottleneck===true&&clean(profile.signature)).map(profile=>clean(profile.signature)));
   for(const task of candidates){
@@ -454,7 +459,7 @@ export function reserveSystemAiBatch(queueInput,{max=16,reservationId='',leaseMi
       evidence:unique([...(t.evidence||[]),`system-ai-impact-score:${impact.score}`,`system-ai-blocked-task-count:${impact.blockedTaskCount}`,`system-ai-common-bottleneck:${impact.commonBottleneck?'YES':'NO'}`,...(impact.commonBottleneck&&impact.signature?[`system-ai-representative-canary:${impact.signature}`]:[]),...(t.previousReservationId?[`system-ai-handoff-to-reservation:${rid}`]:[])])
     };
   });
-  return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired,scopeReconciled:compacted.scopeReconciled,impactProfiles:Object.fromEntries(chosen.map(t=>[t.id,profiles.get(t.id)]))};
+  return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired,scopeReconciled:compacted.scopeReconciled,preferredIds:unique(preferredIds),impactProfiles:Object.fromEntries(chosen.map(t=>[t.id,profiles.get(t.id)]))};
 }
 export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',leaseMinutes=30,at=Date.now()}={}){
   const reclaimed=reclaimStaleSystemAiReservations(queueInput,{leaseMinutes,at});
@@ -594,7 +599,12 @@ export function runSystemAiQueue(args={}){
     return{command,...result};
   }
   if(command==='reserve'){
-    const result=reserveSystemAiBatch(queue,{max:Number(args.max||16),reservationId:args.reservation,leaseMinutes:Number(args['lease-minutes']||30)});
+    const result=reserveSystemAiBatch(queue,{
+      max:Number(args.max||16),
+      reservationId:args.reservation,
+      leaseMinutes:Number(args['lease-minutes']||30),
+      preferredIds:clean(args.preferred).split(',').map(clean).filter(Boolean)
+    });
     writeJson(file,result.queue);if(clean(args.output))writeJson(args.output,{version:1,reservationId:result.reservationId,tasks:result.reserved});
     return{command,...result};
   }

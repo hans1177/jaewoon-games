@@ -1,5 +1,5 @@
 {
-  "version": 65,
+  "version": 66,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1228,5 +1228,28 @@
     "gamePrimaryBoundaryMustRemain": 256,
     "adaptivePressureBehaviorMustRemainUnchanged": true,
     "checkoutReliefMustNotBecomeQaOrSecurityBypass": true
+  },
+  "systemAiDeepBottleneckReasoning": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.systemAiDeepBottleneckReasoning20260926",
+    "requiredMarkers": [
+      "SYSTEM_AI_BOTTLENECK_RECOMMENDED_TARGETS=",
+      "SYSTEM_AI_BOTTLENECK_RESERVATION_MODE=",
+      "COMPANY_SYSTEM_AI_DEEP_REASONING=",
+      "COMPANY_SYSTEM_AI_CRITIC_VERDICT=",
+      "COMPANY_SYSTEM_AI_SELECTED_STRATEGY="
+    ],
+    "resultEvidence": [
+      "deepReasoningUsed",
+      "selectedHypothesisId",
+      "selectedStrategyId",
+      "criticVerdict",
+      "falsifiedHypothesisIds",
+      "repairStrategyFingerprint"
+    ],
+    "rawPrivateReasoningStored": false,
+    "deterministicVerificationStillRequired": true,
+    "failedStrategyMustFeedRetry": true,
+    "rejectedHypothesesMustFeedRetry": true
   }
 }
