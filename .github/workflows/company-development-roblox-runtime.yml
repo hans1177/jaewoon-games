@@ -401,6 +401,7 @@ jobs:
         run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-roblox-persist.json
 
       - name: Persist Roblox source-bind state to company runtime
+        id: persist_state
         if: needs.source-plan.outputs.count != '0' || needs.source-plan.outputs.reconciliation_count != '0'
         env:
           EXPECTED_TARGETS_JSON: ${{ needs.source-plan.outputs.targets_json }}
@@ -435,13 +436,14 @@ jobs:
             if(!byId.has(target.gameId))results.push({gameId:target.gameId,pass:false,candidateReady:false,sourcePath:target.target,failure:'worker-result-missing'});
           }
           const stamp=new Date().toISOString();
-          let reconciliationPass=0,reconciliationFail=0;
+          let reconciliationPass=0,reconciliationFail=0,staleReconciliationCount=0;
           for(const result of reconciliation){
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing during reconciliation: ${result.gameId}`);
             const reconciliationRevision=String(result.sourceRevision||'').trim();
             if(reconciliationRevision!==currentMainRevision){
-              console.log(`ROBLOX_SOURCE_RECONCILIATION_STALE_IGNORED=${result.gameId}:${reconciliationRevision||'MISSING'}:${currentMainRevision}`);
+              staleReconciliationCount++;
+              console.log(`ROBLOX_SOURCE_RECONCILIATION_STALE_REQUEUE=${result.gameId}:${reconciliationRevision||'MISSING'}:${currentMainRevision}`);
               continue;
             }
             if(result.pass===true){
@@ -567,6 +569,7 @@ jobs:
           queue.developmentGameWipMax=null;
           queue.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          fs.writeFileSync('/tmp/roblox-source-persist-meta.json',JSON.stringify({staleReconciliationCount,currentMainRevision},null,2)+'\n');
           console.log(`ROBLOX_SOURCE_RECONCILIATION_PASS=${reconciliationPass}`);
           console.log(`ROBLOX_SOURCE_RECONCILIATION_FAIL=${reconciliationFail}`);
           console.log(`ROBLOX_SOURCE_PASS_COUNT=${passCount}`);
@@ -603,6 +606,9 @@ jobs:
             echo "ROBLOX_SOURCE_PERSIST_CONFLICT_RETRY=$attempt"
             sleep 2
           done
+          stale_reconciliation_count="$(node -e "const fs=require('fs');const p='/tmp/roblox-source-persist-meta.json';const m=fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):{};process.stdout.write(String(Number(m.staleReconciliationCount||0)))")"
+          echo "stale_reconciliation_count=$stale_reconciliation_count" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_SOURCE_RECONCILIATION_STALE_COUNT=$stale_reconciliation_count"
           echo 'ROBLOX_SOURCE_BIND_PERSIST=PASS'
           echo 'ROBLOX_RUNTIME_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
@@ -615,10 +621,12 @@ jobs:
           echo 'ROBLOX_SOURCE_REPAIR_UNLIMITED=YES'
 
       - name: Dispatch next Roblox source execution slice when other eligible work remains
-        if: needs.source-plan.outputs.count != '0'
+        if: needs.source-plan.outputs.count != '0' || steps.persist_state.outputs.stale_reconciliation_count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
           CURRENT_TARGETS_JSON: ${{ needs.source-plan.outputs.targets_json }}
+          STALE_RECONCILIATION_COUNT: ${{ steps.persist_state.outputs.stale_reconciliation_count || '0' }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -648,8 +656,20 @@ jobs:
           NODE
           )"
           echo "ROBLOX_REMAINING_OTHER_TARGETS=$remaining"
-          if [[ "$remaining" =~ ^[1-9][0-9]*$ ]]; then
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo "ROBLOX_STALE_RECONCILIATION_COUNT=${STALE_RECONCILIATION_COUNT:-0}"
+          redispatch='false'
+          if [[ "${STALE_RECONCILIATION_COUNT:-0}" =~ ^[1-9][0-9]*$ ]]; then
+            redispatch='true'
+            echo 'ROBLOX_FRESH_MAIN_RECONCILIATION_REQUIRED=YES'
+          elif [[ "$remaining" =~ ^[1-9][0-9]*$ ]]; then
+            redispatch='true'
+          fi
+          if [[ "$redispatch" == 'true' ]]; then
+            if [[ -n "$REQUESTED_GAME_ID" ]]; then
+              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
+            else
+              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            fi
             echo 'ROBLOX_NEXT_BATCH_DISPATCH=YES'
           else
             echo 'ROBLOX_NEXT_BATCH_DISPATCH=NO'
