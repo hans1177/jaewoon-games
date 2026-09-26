@@ -1536,6 +1536,7 @@ jobs:
             baseCodingMethod?.fullWebInitialSeedStrategy===true?'coding-full-web-initial-seed:YES':'',
             Array.isArray(baseCodingMethod?.fullWebInitialSeedTargetBytes)&&baseCodingMethod.fullWebInitialSeedTargetBytes.length===2&&`coding-full-web-initial-seed-target:${baseCodingMethod.fullWebInitialSeedTargetBytes.join('-')}`,
             baseCodingMethod?.partialTimeoutRecovery===true?'coding-timeout-partial-recovery:YES':'',
+            baseCodingMethod?.robloxZeroOutputTimeoutFocusedRecovery===true?'coding-roblox-zero-timeout-focused-recovery:YES':'',
             baseCodingMethod?.partialMalformedRecovery===true?'coding-malformed-partial-recovery:YES':'',
             baseCodingMethod?.streamedPartialEditRecovery===true?'coding-streamed-partial-edit-recovery:YES':'',
             baseCodingMethod?.focusedFirstEditEarlyStop===true?'coding-focused-first-edit-early-stop:YES':'',
