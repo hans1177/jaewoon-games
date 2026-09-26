@@ -1,5 +1,5 @@
 {
-  "version": 432,
+  "version": 433,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8675,6 +8675,25 @@
       "robloxUnityConcurrentUpperPlatformDevelopmentPreserved": true,
       "noArtificialGlobalGameCountCapPreserved": true,
       "sharedStateWriteRulesUnchanged": true,
+      "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "mainPushWakeFreshnessGate20260927": {
+      "id": "MAIN_PUSH_WAKE_FRESHNESS_GATE_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "DROP_STALE_MAIN_PUSH_GAME_PRIMARY_WAKES_BEFORE_EXPENSIVE_PREFLIGHT_OR_SHARED_CONTROL_STATE_RESERVATION",
+      "workflow": ".github/workflows/vibe2-continuous-core.yml",
+      "appliesOnlyTo": "MAIN_PUSH_WAKE",
+      "freshnessAuthority": "CURRENT_MAIN_SHA_FROM_GITHUB_API_AT_RESERVE_START",
+      "staleAction": "SUCCESSFUL_NOOP_BEFORE_CONTRACT_PREFLIGHT_AND_RESERVE",
+      "currentMainAction": "CONTINUE_EXISTING_CANONICAL_RESERVE_PATH",
+      "neuronAndFanInCallbacksUnchanged": true,
+      "workflowDispatchAndWorkflowCallUnchanged": true,
+      "staleWakeMayMutateControlState": false,
+      "staleWakeMayStartGameWorker": false,
+      "runningOrCompletedGameWorkerCancellationForbidden": true,
+      "sharedStateOptimisticRetryUnchanged": true,
+      "independentGameParallelismPreserved": true,
       "qualitySecurityReleaseGatesUnchanged": true
     }
   },
