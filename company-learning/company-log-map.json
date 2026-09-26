@@ -1,5 +1,5 @@
 {
-  "version": 75,
+  "version": 76,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1114,7 +1114,7 @@
     "runtimePersistRequired": true
   },
   "gameSpecificBuildUpDirectiveEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective",
     "requiredCorrelationKeys": [
       "gameId",
@@ -1150,7 +1150,16 @@
       "OBSERVED_PLAYER_EFFECT",
       "EFFECTIVENESS_CLASSIFICATION",
       "NEXT_VIBE_ACTION",
-      "NEXT_VIBE_ACTION_REASON"
+      "NEXT_VIBE_ACTION_REASON",
+      "HOLISTIC_CORE_DOMAIN_STATUS",
+      "HOLISTIC_GAP_SET",
+      "MAP_EXPANSION_AND_WORLD_DENSITY_DECISION_WHEN_APPLICABLE",
+      "INVENTORY_EQUIPMENT_SYSTEM_CONNECTION_DECISION_WHEN_APPLICABLE",
+      "UI_UX_CONVENIENCE_MENU_AND_FEEDBACK_DECISION",
+      "FIRST_10_MINUTES_AND_SESSION_FLOW_DECISION",
+      "MID_LATE_GAME_DEPTH_DECISION_WHEN_APPLICABLE",
+      "SAVE_RECONNECT_SETTINGS_ACCESSIBILITY_DECISION_WHEN_APPLICABLE",
+      "PERFORMANCE_BUDGET_DECISION"
     ],
     "visualEvidenceDomains": [
       "CHARACTER",
@@ -1188,7 +1197,16 @@
     "noMeaningfulEffectCannotAdvanceDepth": true,
     "unknownRuntimeEffectCannotEmitConfirmedEffect": true,
     "nextVibeActionMustReferenceEffectClassificationAndDeferredGapEvidence": true,
-    "sameFailedStrategySelectionRequiresNewCausalEvidence": true
+    "sameFailedStrategySelectionRequiresNewCausalEvidence": true,
+    "allowedPerDomainStates": [
+      "PASS",
+      "GAP",
+      "NOT_APPLICABLE"
+    ],
+    "passiveEvaluatedStateForbidden": true,
+    "applicableGapCannotBeOmittedFromPriorityEvidence": true,
+    "notApplicableRequiresDesignOrSourceAbsenceEvidence": true,
+    "presentationOnlyEvidenceCannotHideApplicableGameplayWorldInventoryUiGap": true
   },
   "minimumNecessaryProcedureDevelopmentEvidence": {
     "version": 1,
