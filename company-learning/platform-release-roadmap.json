@@ -23882,6 +23882,7 @@
           "order": [
             "SECURITY_OR_RUNTIME_CRITICAL_REPAIR",
             "PROGRESS_BLOCKER_OR_EXACT_CAUSAL_REPAIR",
+            "OWNER_EXPLICIT_P0_PLATFORM_WORK",
             "EXISTING_GAME_HOLISTIC_BACKFILL",
             "GENERIC_ASSET_PRESENTATION_WEATHER_OR_MICRO_POLISH",
             "NORMAL_PERPETUAL_BUILD_UP_AFTER_HOLISTIC_BASELINE"
@@ -23892,7 +23893,9 @@
           "unrelatedNonConflictingWorkMayContinueInParallel": true,
           "responsibleFileConflictSerializationOnly": true,
           "securityAndProgressBlockersRemainHigherPriority": true,
-          "noNewQueueWorkerOrPipeline": true
+          "noNewQueueWorkerOrPipeline": true,
+          "ownerExplicitP0PlatformWorkMayPreemptHolisticBackfill": true,
+          "genericWeatherPresentationStillBelowHolisticBackfill": true
         }
       }
     }
