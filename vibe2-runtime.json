@@ -1,5 +1,5 @@
 {
-  "version": 39,
+  "version": 40,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 39,
+      "runtime": 40,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -534,7 +534,14 @@
       "invalidPathBoundedRetry": true,
       "ambiguousMissingPathFailClosed": true,
       "writableScopeExpansionAllowed": false,
-      "missingPathRecoveryTelemetry": "codingMethod.missingPathRecoveries"
+      "missingPathRecoveryTelemetry": "codingMethod.missingPathRecoveries",
+      "blankRelativePathFailureClass": "INVALID_PATH",
+      "holisticStudioNoOpRecovery": "CONNECTED_3_TO_6_EXACT_ANCHOR_PACKAGE_RETRY",
+      "holisticInvalidPathRecovery": "CONNECTED_3_TO_6_EXACT_WRITABLE_PATH_PACKAGE_RETRY",
+      "holisticMinimumConnectedSourceDeltas": 3,
+      "holisticSingleEditCollapseForbidden": true,
+      "retryBudgetIncreasedForThisRepair": false,
+      "timeoutIncreasedForThisRepair": false
     },
     "slotRefillResponsibleFileLocksHeldUntilFanIn": true,
     "perWorkerCompletionSignalPressureAware": true,
