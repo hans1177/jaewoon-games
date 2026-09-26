@@ -167,7 +167,7 @@ jobs:
           print(f'UNITY_WEB_BUILD_METHOD={method}')
           PY
 
-      - name: Verify Unity Web development-floor contract
+      - name: Verify Unity Web parallel-lane contract
         shell: bash
         run: |
           set -euo pipefail
@@ -175,13 +175,14 @@ jobs:
           import fs from 'node:fs';
           const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const c=policy.unityWebFirstStage;
-          const gate=policy.directNativeDualPlatformDevelopment?.upperPlatformDevelopmentReadinessGate;
+          const d=policy.directNativeDualPlatformDevelopment||{};
           if(c?.status!=='OWNER_DIRECT_LOCKED') throw new Error('Unity Web policy not locked');
-          if(c?.scope!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'||c?.enabled!==true||c?.developmentAdmissionAuthority!==true) throw new Error('Unity Web development floor contract changed');
+          if(c?.scope!=='PARALLEL_DEVELOPMENT_AND_VALIDATION_LANE'||c?.enabled!==true||c?.developmentAdmissionAuthority!==false) throw new Error('Unity Web parallel lane contract changed');
+          if(c?.nativeDevelopmentMayRunWithoutWebBuild!==true) throw new Error('Unity Web must not block native development');
           if(c?.canonicalGameSourceRoot!=='unity-games/<gameId>/') throw new Error('canonical Unity source changed');
           if(c?.publicWebBuildRoot!=='web-games/<gameId>/') throw new Error('Web build output changed');
-          if(gate?.gateId!=='UPPER_PLATFORM_DEVELOPMENT_READY'||gate?.allCriteriaRequired!==true) throw new Error('upper-platform readiness gate missing');
-          console.log('UNITY_WEB_DEVELOPMENT_FLOOR_CONTRACT=PASS');
+          if(d?.parallelDevelopmentFanOut?.sameGameConcurrentStart!==true) throw new Error('three-lane parallel fanout missing');
+          console.log('UNITY_WEB_PARALLEL_LANE_CONTRACT=PASS');
           NODE
 
       - name: Bind canonical Unity source tree
@@ -453,15 +454,17 @@ jobs:
             actualBrowserPlay:'PASS',
             independentQa:'PASS',
             regression:'PASS',
-            upperPlatformGateCandidate:true,
+            upperPlatformGateCandidate:false,
             validationSurfaceOnly:false,
-            nativeGateAuthority:true,
+            nativeGateAuthority:false,
+            developmentAdmissionAuthority:false,
+            nativeDevelopmentAlreadyIndependent:true,
             releaseOrDeploymentAuthority:false,
             generatedAt:new Date().toISOString()
           },null,2)+'\n');
           NODE
 
-      - name: Evaluate upper-platform development readiness
+      - name: Evaluate Unity Web quality checkpoint
         id: readiness
         shell: bash
         env:
@@ -480,7 +483,7 @@ jobs:
           const root='/tmp/unity-web/web-games/'+gameId;
           const queue=JSON.parse(fs.readFileSync('/tmp/company-runtime-development-queue.json','utf8'));
           const item=(queue.items||[]).find(row=>row.gameId===gameId);
-          if(!item)throw new Error('UPPER_PLATFORM_QUEUE_ITEM_MISSING:'+gameId);
+          if(!item)throw new Error('UNITY_WEB_CHECKPOINT_QUEUE_ITEM_MISSING:'+gameId);
           const build=JSON.parse(fs.readFileSync(path.join(root,'unity-web-build.json'),'utf8'));
           const play=JSON.parse(fs.readFileSync(path.join(root,'unity-web-gameplay-validation.json'),'utf8'));
           const independent=JSON.parse(fs.readFileSync(path.join(root,'unity-web-independent-qa.json'),'utf8'));
@@ -540,21 +543,21 @@ jobs:
           const evidence={
             version:1,
             gameId,
-            state:pass?'UPPER_PLATFORM_DEVELOPMENT_READY':'REPAIR_REQUIRED',
+            state:pass?'WEB_QUALITY_CHECKPOINT_PASS':'REPAIR_REQUIRED',
             pass,
             sourceCommit:process.env.SOURCE_COMMIT||process.env.GITHUB_SHA,
             unitySourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA,
             buildTreeSha256:build.buildTreeSha256,
             criteria,
-            passAction:pass?'START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT':null,
-            failureAction:pass?null:'REPAIR_CAUSAL_UNITY_WEB_FLOOR_THEN_REBUILD_REPLAY_REQA_REREGRESSION',
+            passAction:pass?'RECORD_WEB_CHECKPOINT_NATIVE_ALREADY_RUNNING':null,
+            failureAction:pass?null:'REPAIR_CAUSAL_UNITY_WEB_LANE_THEN_REBUILD_REPLAY_REQA_REREGRESSION',
             releaseOrDeploymentAuthority:false,
             generatedAt:new Date().toISOString(),
           };
           fs.writeFileSync(path.join(root,'upper-platform-development-readiness.json'),JSON.stringify(evidence,null,2)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'pass='+(pass?'true':'false')+'\n');
-          console.log('UPPER_PLATFORM_DEVELOPMENT_READY='+(pass?'PASS':'NO'));
-          if(!pass)console.log('UPPER_PLATFORM_REPAIR_REQUIRED='+JSON.stringify(criteria));
+          console.log('UNITY_WEB_QUALITY_CHECKPOINT='+(pass?'PASS':'NO'));
+          if(!pass)console.log('UNITY_WEB_REPAIR_REQUIRED='+JSON.stringify(criteria));
           NODE
 
       - name: Upload Unity Web artifact
@@ -610,9 +613,9 @@ jobs:
             echo "UNITY_WEB_PUBLICATION_PR=NO_CHANGE"
             exit 0
           fi
-          git commit -m "build: publish $GAME_ID Unity Web readiness"
+          git commit -m "build: publish $GAME_ID Unity Web quality checkpoint"
           git push --force-with-lease origin HEAD:"$branch"
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "build: publish $GAME_ID Unity Web readiness"             --body "Verified Unity Web development-floor artifact from workflow run $GITHUB_RUN_ID. upper-platform-development-readiness.json must PASS before Roblox/Unity upper-platform development starts. This artifact is not release or deployment authority.")"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "build: publish $GAME_ID Unity Web quality checkpoint"             --body "Verified Unity Web parallel-lane artifact from workflow run $GITHUB_RUN_ID. The compatibility readiness file records Web quality only; Roblox and Unity native development already run independently from minimum-design readiness. This artifact is not development-admission, release, or deployment authority.")"
           echo "UNITY_WEB_READINESS_PR=$pr_url"
           echo 'UNITY_WEB_DIRECT_MAIN_WRITE=NO'
 
