@@ -3,79 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-qknitr",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:56:55.241Z",
-      "expiresAt": "2026-09-26T17:41:55.241Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-13lmua5",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-unity-web-base-implementation-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:57:04.752Z",
-      "expiresAt": "2026-09-26T17:42:04.752Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-o2aig1",
-      "worker": "vibe2",
-      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "files": [
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:57:17.929Z",
-      "expiresAt": "2026-09-26T17:42:17.929Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1y1e009",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau",
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/shared/GameConfig.luau"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:57:20.518Z",
-      "expiresAt": "2026-09-26T17:42:20.518Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-n2xt8c",
       "worker": "vibe2",
       "taskId": "fantasy-survival-studio-evolution-unity-web-usability-v1",
@@ -749,6 +676,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-1dm25qb",
+      "worker": "vibe2",
+      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "files": [
+        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "f576c728b1c7fe30c5bccfe0368033fcd500be67",
+      "acquiredAt": "2026-09-26T17:42:56.181Z",
+      "expiresAt": "2026-09-26T18:27:56.181Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
