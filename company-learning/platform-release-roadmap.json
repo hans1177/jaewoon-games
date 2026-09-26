@@ -1,5 +1,5 @@
 {
-  "version": 423,
+  "version": 424,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8467,6 +8467,29 @@
       },
       "heavyGameWorkersRemainUbuntuLatest": true,
       "independentGameParallelismPreserved": true,
+      "sharedStateWriteRulesUnchanged": true,
+      "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "controlPlaneRunnerPoolSeparation20260926": {
+      "id": "CONTROL_PLANE_RUNNER_POOL_SEPARATION_2026-09-26",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "MAXIMIZE_EFFECTIVE_GAME_PARALLELISM_BY_KEEPING_NON_MODEL_NON_BUILD_CONTROL_JOBS_OFF_UBUNTU_LATEST",
+      "systemAi": {
+        "reserveRunner": "ubuntu-slim",
+        "workerRunner": "ubuntu-latest",
+        "fanInRunner": "ubuntu-slim"
+      },
+      "seedDesign": {
+        "gateRunner": "ubuntu-slim",
+        "targetResolverRunner": "ubuntu-slim",
+        "designCycleRunner": "ubuntu-latest",
+        "canaryPersistRunner": "ubuntu-slim",
+        "scoreSyncRunner": "ubuntu-slim",
+        "continuationRunner": "ubuntu-slim"
+      },
+      "heavyWorkerSemanticsChanged": false,
+      "gameParallelismReduced": false,
       "sharedStateWriteRulesUnchanged": true,
       "qualitySecurityReleaseGatesUnchanged": true
     }
@@ -21017,7 +21040,7 @@
         "existingHomepageAndRecordsPathScopesPreserved": true
       },
       "controlPlaneRunnerIsolation": {
-        "version": 2,
+        "version": 3,
         "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
         "runner": "ubuntu-slim",
         "workflows": [
@@ -21033,7 +21056,10 @@
         "purpose": "KEEP_NONBLOCKING_ADMINISTRATIVE_VALIDATION_OFF_GAME_PRIMARY_UBUNTU_LATEST_CAPACITY",
         "productQualityGateWeakening": false,
         "securityOrReleaseGateBypass": false,
-        "gamePrimaryWorkerSlotsProtected": true
+        "gamePrimaryWorkerSlotsProtected": true,
+        "systemAiReserveAndFanInSlim": true,
+        "seedDesignNonModelControlJobsSlim": true,
+        "heavyGameAndModelWorkersRemainFullRunner": true
       },
       "latestHeadControlPlaneDedupe": {
         "version": 1,

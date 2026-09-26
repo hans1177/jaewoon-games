@@ -1,5 +1,5 @@
 {
-  "version": 234,
+  "version": 235,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5314,6 +5314,36 @@
       "supervise": "ubuntu-slim"
     },
     "ubuntuLatestReservedForHeavyGameWork": true,
+    "gameParallelismReduced": false
+  },
+  "controlPlaneHeavyRunnerSeparation": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.controlPlaneRunnerPoolSeparation20260926",
+    "systemAi": {
+      "reserve": "ubuntu-slim",
+      "worker": "ubuntu-latest",
+      "fanIn": "ubuntu-slim"
+    },
+    "seedDesign": {
+      "gate": "ubuntu-slim",
+      "resolve": "ubuntu-slim",
+      "designCycle": "ubuntu-latest",
+      "canary": "ubuntu-slim",
+      "scoreSync": "ubuntu-slim",
+      "continue": "ubuntu-slim"
+    },
+    "fullRunnerPurpose": [
+      "MODEL_EXECUTION",
+      "GAME_BUILD",
+      "RUNTIME_VALIDATION",
+      "OTHER_HEAVY_PLATFORM_WORK"
+    ],
+    "controlRunnerPurpose": [
+      "QUEUE_RESERVATION",
+      "STATE_FANIN",
+      "STATUS_SYNC",
+      "LIGHTWEIGHT_POLICY_AND_STATE_CONTROL"
+    ],
     "gameParallelismReduced": false
   }
 }

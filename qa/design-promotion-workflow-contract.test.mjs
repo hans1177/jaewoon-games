@@ -111,3 +111,12 @@ test('promotion invariant accepts progressed native states and rejects Web-first
   assert.match(promotion,/\^WEB_\|\^WAITING_WEB/);
   assert.doesNotMatch(promotion,/currentStep\|\|''\)!=='TARGET_PLATFORM_SOURCE_BIND'/);
 });
+
+test('design control jobs use slim runners while per-game design cycles retain full runners',()=>{
+  assert.match(designRuntime,/\n  game-primary-gate:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
+  assert.match(designRuntime,/\n  resolve-seed-targets:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
+  assert.match(designRuntime,/\n  design-cycle:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
+  assert.match(designRuntime,/\n  mark-design-engine-canary:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
+  assert.match(designRuntime,/\n  sync-strict-design-scores:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
+  assert.match(designRuntime,/\n  continue-seed-supply:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
+});

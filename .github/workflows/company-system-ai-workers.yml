@@ -274,7 +274,7 @@ jobs:
   worker:
     needs: reserve
     if: needs.reserve.outputs.count != '0'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 24
     strategy:
       fail-fast: false
@@ -636,7 +636,7 @@ jobs:
   fan_in:
     needs: [reserve, worker]
     if: always() && needs.reserve.outputs.count != '0'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 9
     concurrency:
       group: company-system-ai-fanin-${{ github.run_id }}-${{ github.run_attempt }}

@@ -1093,7 +1093,7 @@ jobs:
   mark-design-engine-canary:
     needs: [resolve-seed-targets, design-cycle]
     if: always() && needs.resolve-seed-targets.outputs.run == 'true' && needs.resolve-seed-targets.outputs.canary_mode == 'true' && needs.design-cycle.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -1137,7 +1137,7 @@ jobs:
   sync-strict-design-scores:
     needs: [resolve-seed-targets, design-cycle]
     if: always() && needs.resolve-seed-targets.outputs.run == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -1232,7 +1232,7 @@ jobs:
   continue-seed-supply:
     needs: [resolve-seed-targets, design-cycle, mark-design-engine-canary, sync-strict-design-scores]
     if: always() && needs.resolve-seed-targets.outputs.run == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4

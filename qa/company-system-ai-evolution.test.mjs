@@ -361,3 +361,10 @@ test('system AI workflow wires sensing, exact reservation identity, missing-resu
   assert.match(workflow,/for attempt in 1 2 3 4 5; do/);
   assert.match(workflow,/cancel-in-progress: false/);
 });
+
+test('system AI control-plane jobs stay off heavy game runners while model workers retain full runners',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
+  assert.match(workflow,/\n  reserve:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
+  assert.match(workflow,/\n  worker:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
+  assert.match(workflow,/\n  fan_in:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
+});
