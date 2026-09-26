@@ -1,5 +1,5 @@
 {
-  "version": 113,
+  "version": 114,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1922,11 +1922,14 @@
       "DIRECTOR_RUNNER_DRAIN_CANCELLED",
       "VIBE2_STALE_UNSTARTED_SCHEDULER",
       "VIBE2_STALE_UNSTARTED_FANIN_REFILL",
-      "DUPLICATE_TITLE"
+      "DUPLICATE_TITLE",
+      "VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE"
     ],
     "currentMainMustBeResolvedBeforeSelection": true,
     "inProgressCancellationForbidden": true,
-    "independentGameCancellationForbidden": true
+    "independentGameCancellationForbidden": true,
+    "staleUnstartedMainPushGamePrimaryWakeTracked": true,
+    "inProgressMainPushGamePrimaryWakeCancellationForbidden": true
   },
   "directorPreSupervisionCoalescingEvidence": {
     "version": 1,
@@ -1990,7 +1993,8 @@
       "VIBE2_MAIN_PUSH_WAKE_LATEST_SHA",
       "VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED",
       "VIBE2_MAIN_PUSH_WAKE_FRESH",
-      "VIBE2_MAIN_PUSH_WAKE_FRESHNESS=BYPASS_NON_MAIN_PUSH"
+      "VIBE2_MAIN_PUSH_WAKE_FRESHNESS=BYPASS_NON_MAIN_PUSH",
+      "VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE"
     ],
     "staleWakeControlStateWriteForbidden": true,
     "staleWakeGameWorkerFanoutForbidden": true,
@@ -1999,6 +2003,9 @@
     "concurrencyGroup": "vibe2-main-push-game-primary-wake",
     "activeWakeCancellationForbidden": true,
     "onlyNewestPendingMainWakeRetained": true,
-    "repositoryDispatchAndCallableRunScope": "RUN_SCOPED"
+    "repositoryDispatchAndCallableRunScope": "RUN_SCOPED",
+    "staleQueuedWakeDrainAllowed": true,
+    "inProgressWakeCancellationForbidden": true,
+    "staleQueuedWakeDrainScope": "MAIN_PUSH_WAKE_HEAD_SHA_NOT_CURRENT_MAIN_ONLY"
   }
 }
