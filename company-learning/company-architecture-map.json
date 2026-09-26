@@ -1,5 +1,5 @@
 {
-  "version": 249,
+  "version": 250,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5565,5 +5565,25 @@
     "partialScanFailClosed": true,
     "matrixMaxParallelCap": null,
     "distinctGamesRemainParallel": true
+  },
+  "robloxPlannerDuplicateContractQaRemoval": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxPlannerDuplicateContractQaRemoval20260927",
+    "canonicalQaWorkflow": ".github/workflows/company-central-policy-contract-qa.yml",
+    "sourcePlan": {
+      "workflow": ".github/workflows/company-development-roblox-runtime.yml",
+      "duplicateCentralTestsRemoved": true,
+      "responsibilityLocalTestsPreserved": true,
+      "staticSyntaxChecksPreserved": true,
+      "sharedContextCompilationPreserved": true
+    },
+    "continuationPlan": {
+      "workflow": ".github/workflows/company-development-roblox-runtime-continuation.yml",
+      "duplicateCentralTestsRemoved": true,
+      "responsibilityLocalChecksPreserved": true
+    },
+    "runtimeCriticalPathWaitsForDuplicateQa": false,
+    "independentGameParallelismPreserved": true,
+    "qualityGateWeakening": false
   }
 }
