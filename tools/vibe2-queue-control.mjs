@@ -348,7 +348,8 @@ export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, res
 export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'game-primary', speculativeExpansionAllowed = true, speculativeExpansionReason = 'AVAILABLE' } = {}) {
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue = recovered.queue;
-  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation, lane });
+  const laneMode=clean(lane||'game-primary').toLowerCase();
+  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation, lane:laneMode });
   let tasks = started.tasks || [];
   const reservedTaskOrder = tasks.map((task) => task.id);
   const workerBudget = Math.max(
@@ -362,7 +363,7 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
     if (/web[-_ ]?base[-_ ]?implementation|full[_ -]?web|full[_ -]?rebuild|full_web_game_rebuild/.test(text)) return 2;
     return task?.packageLongWorkProtected===true?2:1;
   };
-  const speculativeEligible = tasks.filter((task) =>
+  const speculativeEligible = (laneMode==='game-primary'?tasks:[]).filter((task) =>
     !['unity','roblox'].includes(clean(task.target).toLowerCase()) &&
     task.estimatedRisk === 'high' &&
     (task.speculativeEligible || task.priority === 'critical')
