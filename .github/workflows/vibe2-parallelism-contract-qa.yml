@@ -11,6 +11,7 @@ on:
       - 'tools/vibe2-adaptive-backpressure.mjs'
       - 'tools/vibe2-queue-control.mjs'
       - 'qa/vibe2-parallelism-main-contract.test.mjs'
+      - 'qa/vibe2-parallelism-20-contract.test.mjs'
       - '.github/workflows/vibe2-parallelism-contract-qa.yml'
   push:
     branches: [main]
@@ -23,6 +24,7 @@ on:
       - 'tools/vibe2-adaptive-backpressure.mjs'
       - 'tools/vibe2-queue-control.mjs'
       - 'qa/vibe2-parallelism-main-contract.test.mjs'
+      - 'qa/vibe2-parallelism-20-contract.test.mjs'
       - '.github/workflows/vibe2-parallelism-contract-qa.yml'
   workflow_dispatch:
 
@@ -43,4 +45,4 @@ jobs:
         with:
           node-version: '22'
       - name: Verify self-adaptive GAME_PRIMARY parallelism contract
-        run: node --test qa/vibe2-parallelism-main-contract.test.mjs
+        run: node --test qa/vibe2-parallelism-main-contract.test.mjs qa/vibe2-parallelism-20-contract.test.mjs

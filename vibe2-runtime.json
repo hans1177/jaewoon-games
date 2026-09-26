@@ -180,6 +180,17 @@
     "maxWorkMinutes": 22,
     "maxModelCallsPerWorker": 4,
     "dispatchNextWhenCapacityOpens": true,
+    "prePlanGamePrimaryRefill": {
+      "enabled": true,
+      "sourceWorkflow": ".github/workflows/vibe2-24h-runner.yml",
+      "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
+      "trigger": "RUNNABLE_GAME_PRIMARY_QUEUED_AND_FREE_EXTERNAL_SLOT",
+      "dispatchMode": "WORKFLOW_DISPATCH_BEFORE_FULL_PLANNER",
+      "preservesCanonicalReservation": true,
+      "sharedQueueWriteMode": "EXISTING_OPTIMISTIC_RESERVE_ONLY",
+      "fallback": "NORMAL_POST_PLAN_GAME_PRIMARY_DISPATCH",
+      "purpose": "REMOVE_FULL_PLAN_STARTUP_SERIALIZATION_FROM_ALREADY_QUEUED_GAME_DEVELOPMENT"
+    },
     "refillMode": "task-micro-fanin-repository-dispatch-with-five-minute-safety-net",
     "refillRef": "vibe2-unreal-core",
     "refillRequiresEligibleWork": true,

@@ -165,6 +165,56 @@ jobs:
           echo "VIBE2_24H_LEARNING_PROVIDER=$VIBE2_24H_LEARNING_PROVIDER"
           echo "VIBE2_24H_GEMINI_LEARNING=FORBIDDEN"
 
+      - name: Dispatch queued GAME_PRIMARY work before full planning
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          state="$(node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          const lane=t=>{
+            const status=String(t.status||'').toLowerCase();
+            const blocker=String(t.blocker||'');
+            const dep=String(t.department||'').toLowerCase();
+            const type=String(t.type||'implementation').toLowerCase();
+            const ev=(t.evidence||[]).map(String);
+            if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';
+            if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';
+            if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';
+            if(t.systemSteward===true)return'RECOVERY_FAST';
+            return'CONTROL_FAST';
+          };
+          const tasks=q.tasks||[];
+          const active=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='GAME_PRIMARY').length;
+          const queued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='GAME_PRIMARY').length;
+          const max=Math.max(1,Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||256));
+          process.stdout.write([queued,active,Math.max(0,max-active)].join('\t'));
+          NODE
+          )"
+          IFS=$'\t' read -r queued active free_slots <<< "$state"
+          echo "VIBE2_PREPLAN_GAME_PRIMARY_QUEUED=$queued"
+          echo "VIBE2_PREPLAN_GAME_PRIMARY_ACTIVE=$active"
+          echo "VIBE2_PREPLAN_GAME_PRIMARY_FREE_SLOTS=$free_slots"
+          if [ "$queued" -eq 0 ] || [ "$free_slots" -eq 0 ]; then
+            echo 'VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=NOT_NEEDED'
+            exit 0
+          fi
+
+          body='{"ref":"main","inputs":{"execution_lane":"game-primary","lane_max":"256"}}'
+          if curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-continuous-core.yml/dispatches" \
+            --data "$body"; then
+            echo 'VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED'
+          else
+            echo 'VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=FAILED_FALLBACK_POST_PLAN' >&2
+          fi
+
       - name: Plan from latest main and persist control queue
         shell: bash
         run: |

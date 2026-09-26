@@ -24,6 +24,15 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,256);
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,30);
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMaxActiveWorkers,256);
+  const prePlan=runtime.continuous.prePlanGamePrimaryRefill||{};
+  assert.equal(prePlan.enabled,true);
+  assert.equal(prePlan.workerWorkflow,'.github/workflows/vibe2-continuous-core.yml');
+  assert.equal(prePlan.dispatchMode,'WORKFLOW_DISPATCH_BEFORE_FULL_PLANNER');
+  assert.equal(prePlan.preservesCanonicalReservation,true);
+  const architecturePrePlan=architectureWave.prePlanGamePrimaryRefill||{};
+  assert.equal(architecturePrePlan.enabled,true);
+  assert.equal(architecturePrePlan.fullPlannerCompletionRequiredBeforeDispatch,false);
+  assert.equal(architecturePrePlan.canonicalReservationAndConflictRulesPreserved,true);
   assert.equal(runtime.adaptiveBackpressure.adaptiveControlRole,'TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY');
   assert.equal(runtime.adaptiveBackpressure.primaryReservationLimit,'CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY');
   assert.equal(runtime.adaptiveBackpressure.primaryReservationDownshiftAllowed,false);
@@ -49,6 +58,12 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.ok(runner.includes('VIBE2_24H_GAME_PRIMARY_RESERVATION_LIMIT_SOURCE=CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY'));
   assert.ok(core.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'"));
   assert.ok(core.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'"));
+  const fastDispatch=runner.indexOf('      - name: Dispatch queued GAME_PRIMARY work before full planning');
+  const fullPlan=runner.indexOf('      - name: Plan from latest main and persist control queue');
+  assert.ok(fastDispatch>=0&&fullPlan>fastDispatch);
+  assert.match(runner,/actions\/workflows\/vibe2-continuous-core\.yml\/dispatches/);
+  assert.match(runner,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
+  assert.match(runner,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=FAILED_FALLBACK_POST_PLAN/);
 });
 
 test('reserve batch persists control state only through the explicit Vibe2 control root',()=>{

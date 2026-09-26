@@ -1144,6 +1144,17 @@
     },
     "currentWaveExecution": {
       "outerReadiness": ".github/workflows/vibe2-24h-runner.yml::game_refill_ready",
+    "prePlanGamePrimaryRefill": {
+      "enabled": true,
+      "sourceWorkflow": ".github/workflows/vibe2-24h-runner.yml",
+      "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
+      "trigger": "RUNNABLE_GAME_PRIMARY_QUEUED_AND_FREE_EXTERNAL_SLOT",
+      "dispatchMode": "WORKFLOW_DISPATCH_BEFORE_FULL_PLANNER",
+      "fullPlannerCompletionRequiredBeforeDispatch": false,
+      "canonicalReservationAndConflictRulesPreserved": true,
+      "sharedQueueSerializationScope": "ATOMIC_OPTIMISTIC_WRITE_CONFLICT_ONLY",
+      "fallback": "NORMAL_POST_PLAN_GAME_PRIMARY_DISPATCH"
+    },
       "innerReservation": ".github/workflows/vibe2-continuous-core.yml::reserve-batch",
       "capacityAuthority": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
       "globalActiveWaveBarrier": false,
