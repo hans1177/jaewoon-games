@@ -241,11 +241,13 @@ test('central development planner removes duplicate runtime contract QA from the
   assert.doesNotMatch(nativePlan,/node --test qa\/company-upper-platform-admission\.test\.mjs/);
   assert.doesNotMatch(development,/\n  contract-audit:\n/);
   assert.doesNotMatch(development,/Audit central development contracts without blocking game dispatch/);
-  assert.match(development,/active-roblox-native-runs\.json &/);
-  assert.match(development,/active-unity-native-runs\.json &/);
-  assert.match(development,/wait "\$roblox_scan_pid" \|\| roblox_scan_status=\$\?/);
-  assert.match(development,/wait "\$unity_scan_pid" \|\| unity_scan_status=\$\?/);
-  assert.match(development,/NATIVE_ACTIVE_RUN_SCAN=FAIL:ROBLOX=/);
+  assert.match(development,/company-development-roblox-runtime\.yml\/runs\?per_page=100&page=\$page/);
+  assert.match(development,/company-development-unity-runtime\.yml\/runs\?per_page=100&page=\$page/);
+  assert.match(development,/for page in 1 2 3; do/);
+  assert.match(development,/pids\+=\("\$!"\)/);
+  assert.match(development,/NATIVE_ACTIVE_RUN_SCAN_PAGE_FAIL=/);
+  assert.match(development,/jq -s '\{workflow_runs:\(map\(\.workflow_runs \/\/ \[\]\)\|add\)\}'/);
+  assert.match(development,/NATIVE_ACTIVE_RUN_SCAN_PAGES=3/);
   assert.match(development,/NATIVE_ACTIVE_RUN_SCAN=PASS/);
 });
 
@@ -273,4 +275,16 @@ test('Unity Web floor serializes only the same game while independent games rema
   assert.match(workflow,/build:\n\s+concurrency:\n\s+group: unity-web-floor-exec-\$\{\{ inputs\.game_id \|\| inputs\.request_file \|\| github\.run_id \}\}[\s\S]*?cancel-in-progress: false[\s\S]*?runs-on: ubuntu-latest/);
   assert.doesNotMatch(workflow,/UNITY_WEB_FLOOR_EXACT_DEDUPED_ACTIVE=/);
   assert.doesNotMatch(development,/strategy:[\s\S]{0,160}?max-parallel:/);
+});
+
+
+test('central native active-run dedupe covers the full 256 game execution window',()=>{
+  const development=read('.github/workflows/company-development-confirmed-runtime.yml');
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  assert.equal(Number(roadmap.developmentSpeedExecution?.externalMatrixBatchMax),256);
+  assert.match(development,/for page in 1 2 3; do/);
+  assert.match(development,/per_page=100&page=\$page/);
+  assert.match(development,/NATIVE_ACTIVE_RUN_SCAN_ROBLOX_ROWS=/);
+  assert.match(development,/NATIVE_ACTIVE_RUN_SCAN_UNITY_ROWS=/);
+  assert.match(development,/NATIVE_ACTIVE_RUN_SCAN_PAGES=3/);
 });
