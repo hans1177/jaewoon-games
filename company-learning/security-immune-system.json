@@ -1,5 +1,5 @@
 {
-  "version": 49,
+  "version": 50,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -763,5 +763,23 @@
     "externalGuiMacroForbidden": true,
     "actualPlayFeedbackMayNotBypassSecurityQaOrReleaseGates": true,
     "verifiedLearningMayNotPromoteUnsafeRemoteOrSavePatterns": true
+  },
+  "robloxThumbnailUploadSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#robloxMarketingThumbnailSyncContract",
+    "apiKeyOnly": true,
+    "requiredScope": "universe.thumbnail:write",
+    "cookieFallbackForbidden": true,
+    "targetUniverseMustMatchCanonicalRuntimeTarget": true,
+    "arbitraryUniverseInputForbidden": true,
+    "localAssetPathMustResolveInsideRepository": true,
+    "maxUploadBytes": 3145728,
+    "executableContentForbidden": true,
+    "canonicalSvgAllowed": true,
+    "svgScriptForbidden": true,
+    "svgForeignObjectForbidden": true,
+    "svgExternalReferenceForbidden": true,
+    "renderedPngMustRemainInsideWorkingRepository": true,
+    "renderedPngMayNotBeCommittedAsRuntimeState": true
   }
 }
