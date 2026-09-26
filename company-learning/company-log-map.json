@@ -1,5 +1,5 @@
 {
-  "version": 118,
+  "version": 119,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2052,7 +2052,7 @@
     "source": "company-learning/platform-release-roadmap.json#changeRecord.unityPlannerDuplicateContractQaRemoval20260927",
     "duplicateRuntimeTestsPresent": false,
     "canonicalQaWorkflow": ".github/workflows/company-central-policy-contract-qa.yml",
-    "responsibilityLocalRuntimeTestsPreserved": true,
+    "responsibilityLocalRuntimeTestsPreserved": false,
     "runtimeMarkersPreserved": [
       "DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE",
       "UNITY_TARGET_N",
@@ -2060,6 +2060,22 @@
       "UNITY_EXECUTION_BATCH_CAPACITY"
     ],
     "canonicalUnityStageOrderUnchanged": true,
-    "qualitySecurityReleaseEvidenceUnchanged": true
+    "qualitySecurityReleaseEvidenceUnchanged": true,
+    "canonicalQaOwnsUpperPlatformAdmissionAndFatalLogcat": true,
+    "runtimeContractTestsRemaining": 0
+  },
+  "unityPrepareInputOverlapEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.unityPrepareInputOverlap20260927",
+    "markers": [
+      "UNITY_PREPARE_CONTRACT_VERIFY=PASS",
+      "UNITY_PREPARE_QUEUE_FETCH=PASS",
+      "UNITY_PREPARE_INPUT_OVERLAP=PASS",
+      "UNITY_PREPARE_INPUT_OVERLAP=FAIL"
+    ],
+    "queueSelectionRequiresBothInputs": true,
+    "queueFetchSerializedBehindContractChecks": false,
+    "canonicalStageOrderUnchanged": true
   }
 }
