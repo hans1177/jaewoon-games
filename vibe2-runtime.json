@@ -1,5 +1,5 @@
 {
-  "version": 34,
+  "version": 35,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 34,
+      "runtime": 35,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -659,7 +659,11 @@
         "cachedRuntimeSidecar": true,
         "prewarmOncePerWorkflow": true,
         "workerPullOnlyOnCacheMiss": true,
-        "duplicateModelDownloadForbidden": true
+        "duplicateModelDownloadForbidden": true,
+        "prewarmCacheProbeLookupOnlyOnHit": true,
+        "prewarmFullRestoreOnHitForbidden": true,
+        "workerRestoreRemainsRequiredPerIsolatedRunner": true,
+        "workerModelBehaviorChanged": false
       }
     },
     "performance": {
