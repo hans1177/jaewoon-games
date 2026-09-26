@@ -887,7 +887,7 @@ jobs:
           done < /tmp/roblox-f9-ids
 
   studio-local-plan:
-    name: plan exact local Studio MCP playtests
+    name: plan exact local Studio MCP playtests for earliest eligible artifacts
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 8
     outputs:
@@ -914,7 +914,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Select exact internal-release artifacts needing official Studio MCP play
+      - name: Select exact runtime-foundation or internal-release artifacts needing official Studio MCP play
         id: plan
         working-directory: main
         env:
