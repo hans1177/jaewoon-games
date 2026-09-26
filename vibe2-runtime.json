@@ -191,6 +191,18 @@
       "fallback": "NORMAL_POST_PLAN_GAME_PRIMARY_DISPATCH",
       "purpose": "REMOVE_FULL_PLAN_STARTUP_SERIALIZATION_FROM_ALREADY_QUEUED_GAME_DEVELOPMENT"
     },
+    "mainPushGamePrimaryWake": {
+      "enabled": true,
+      "workflow": ".github/workflows/vibe2-continuous-core.yml",
+      "trigger": "MAIN_PUSH",
+      "executionLane": "GAME_PRIMARY",
+      "reason": "PREVENT_SINGLETON_PLANNER_PENDING_REPLACEMENT_FROM_STARVING_ALREADY_QUEUED_GAME_WORK",
+      "usesExistingReservePath": true,
+      "newSchedulerCreated": false,
+      "sharedQueueWriteMode": "EXISTING_OPTIMISTIC_RESERVE_ONLY",
+      "responsibleFileConflictProtectionPreserved": true,
+      "qaAndReleaseAuthorityUnchanged": true
+    },
     "refillMode": "task-micro-fanin-repository-dispatch-with-five-minute-safety-net",
     "refillRef": "vibe2-unreal-core",
     "refillRequiresEligibleWork": true,

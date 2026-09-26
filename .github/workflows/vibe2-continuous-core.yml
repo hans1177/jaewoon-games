@@ -27,8 +27,11 @@ on:
         default: '256'
   repository_dispatch:
     types: [vibe2-neuron-complete, vibe2-fanin-refill]
+  # GAME_PRIMARY_MAIN_PUSH_WAKE: main churn must not starve queued game work behind
+  # the singleton planner. This enters the existing canonical reserve path only.
   push:
     branches:
+      - main
       - 'vibe2/refill/fanin/**'
 
 permissions:

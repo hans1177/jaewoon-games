@@ -1155,6 +1155,17 @@
       "sharedQueueSerializationScope": "ATOMIC_OPTIMISTIC_WRITE_CONFLICT_ONLY",
       "fallback": "NORMAL_POST_PLAN_GAME_PRIMARY_DISPATCH"
     },
+    "mainPushGamePrimaryWake": {
+      "enabled": true,
+      "workflow": ".github/workflows/vibe2-continuous-core.yml",
+      "trigger": "MAIN_PUSH",
+      "executionLane": "GAME_PRIMARY",
+      "singletonPlannerCompletionRequired": false,
+      "usesExistingCanonicalReserve": true,
+      "newSchedulerCreated": false,
+      "sharedStateSerializationScope": "ATOMIC_OPTIMISTIC_WRITE_CONFLICT_ONLY",
+      "responsibleFileConflictProtectionPreserved": true
+    },
       "innerReservation": ".github/workflows/vibe2-continuous-core.yml::reserve-batch",
       "capacityAuthority": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
       "globalActiveWaveBarrier": false,
