@@ -1,5 +1,5 @@
 {
-  "version": 204,
+  "version": 205,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4758,5 +4758,21 @@
     "foundationPassEligibilityReadFromPersistedRuntimeState": true,
     "singleGameFoundationDelayCannotBlockOtherEligibleStudioPlay": true,
     "runtimeFoundationAndStudioPlanningMayRunParallel": true
+  },
+  "robloxMarketingThumbnailSyncTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#robloxMarketingThumbnailSyncContract",
+    "flow": [
+      "GAME_SPECIFIC_MARKETING_IMAGE",
+      "GAME_CATALOG_NORMALIZATION",
+      "HOMEPAGE_CANONICAL_IDENTITY_IMAGE",
+      "ROBLOX_PRIVATE_RUNTIME_CANDIDATE_PUBLISH",
+      "ROBLOX_OPEN_CLOUD_THUMBNAIL_UPLOAD",
+      "PROCESSING_STATUS_VERIFY"
+    ],
+    "noNewReleasePipeline": true,
+    "existingReleaseWorkflowOnly": true,
+    "homepageAndRobloxShareSameAsset": true,
+    "cookieFallback": false
   }
 }
