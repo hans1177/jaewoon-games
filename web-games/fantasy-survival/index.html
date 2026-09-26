@@ -2864,7 +2864,7 @@ function updateDeepSeaEnemySpecial(e,targetP,now,playerD){
  if(e.type.anglerLure&&e.hostile&&now>=(e.nextLureAt||0)){
   e.nextLureAt=now+5000;
   if(Math.random()<.30){
-   targetP.anglerLureUntil=now+5000;targetP.anglerLureSource=e.netId;targetP.anglerStruggle=0;
+   targetP.anglerLureUntil=now+2000;targetP.anglerLureSource=e.netId;targetP.anglerStruggle=0;
    showNotice('심해 아귀 유혹 · 2초 동안 움직여서 발버둥쳐');return true
   }
  }
