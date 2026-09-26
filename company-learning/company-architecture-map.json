@@ -4763,16 +4763,18 @@
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#robloxMarketingThumbnailSyncContract",
     "flow": [
-      "GAME_SPECIFIC_MARKETING_IMAGE",
+      "GAME_SPECIFIC_CANONICAL_MARKETING_IMAGE",
       "GAME_CATALOG_NORMALIZATION",
-      "HOMEPAGE_CANONICAL_IDENTITY_IMAGE",
-      "ROBLOX_PRIVATE_RUNTIME_CANDIDATE_PUBLISH",
+      "HOMEPAGE_CANONICAL_IMAGE_DIRECT_USE",
+      "DETERMINISTIC_1920X1080_PNG_RASTERIZATION_FOR_ROBLOX",
       "ROBLOX_OPEN_CLOUD_THUMBNAIL_UPLOAD",
-      "PROCESSING_STATUS_VERIFY"
+      "PROCESSING_STATUS_AND_ACTIVE_CONFIG_READBACK"
     ],
     "noNewReleasePipeline": true,
     "existingReleaseWorkflowOnly": true,
     "homepageAndRobloxShareSameAsset": true,
-    "cookieFallback": false
+    "cookieFallback": false,
+    "homepageUsesCanonicalSourceDirectly": true,
+    "robloxUsesEphemeralRasterDerivative": true
   }
 }
