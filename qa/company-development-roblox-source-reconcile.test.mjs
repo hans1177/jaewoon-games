@@ -360,6 +360,24 @@ test('existing Roblox source automatically enters rebind when company library bi
   }
 });
 
+test('existing Roblox client Studio asset binding v1 is upgraded in place to v2',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-client-v1-upgrade-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary});
+    const clientFile=path.join(root,'client','Game.client.luau');
+    const v2=fs.readFileSync(clientFile,'utf8');
+    fs.writeFileSync(clientFile,v2.replace(/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/,'STUDIO_ASSET_BINDING_VERSION = 1'));
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary});
+    const upgraded=fs.readFileSync(clientFile,'utf8');
+    assert.match(upgraded,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
+    assert.doesNotMatch(upgraded,/STUDIO_ASSET_BINDING_VERSION\s*=\s*1/);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
 test('existing Roblox library rebind preserves gameplay server and updates only config plus client presentation binding',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-library-rebind-apply-'));
   try{
