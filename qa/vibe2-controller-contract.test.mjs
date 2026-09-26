@@ -1152,3 +1152,10 @@ test('Vibe2 control-plane jobs use slim runners while heavy workers retain full 
   assert.match(runnerWorkflow,/\n  plan:[\s\S]{0,180}?runs-on: ubuntu-slim/);
   assert.match(runnerWorkflow,/\n  refill:[\s\S]{0,220}?runs-on: ubuntu-slim/);
 });
+
+test('recovery-fast control work uses a slim runner and never competes for a game-primary runner',()=>{
+  assert.match(recoveryFastWorkflow,/\n  recover:\n\s+runs-on: ubuntu-slim/);
+  assert.doesNotMatch(recoveryFastWorkflow,/runs-on: ubuntu-latest/);
+  assert.equal(runtime.continuous.executionLanes.RECOVERY_FAST.consumesGamePrimarySlot,false);
+  assert.equal(runtime.continuous.executionLanes.RECOVERY_FAST.workerFanoutPerTask,1);
+});
