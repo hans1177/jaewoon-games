@@ -1,5 +1,5 @@
 {
-  "version": 245,
+  "version": 246,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5514,7 +5514,9 @@
         "continueOnError": true
       },
       "activeLaneIdentityFetch": "ROBLOX_AND_UNITY_PARALLEL_FAIL_CLOSED",
-      "partialScanDispatchForbidden": true
+      "partialScanDispatchForbidden": true,
+      "runner": "ubuntu-24.04-arm",
+      "gameControlPoolSeparatedFromAdministrativeAudit": true
     },
     "unityWebFloor": {
       "callerConcurrency": "unity-web-floor-call-<gameId>",
