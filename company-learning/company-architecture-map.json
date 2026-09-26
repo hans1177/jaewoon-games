@@ -1,5 +1,5 @@
 {
-  "version": 218,
+  "version": 219,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4905,7 +4905,15 @@
         "existingBackfillNegativeNewGamePhraseDoesNotTriggerCreationGate": true,
         "realNewGameCreationStillUsesOwnerGate": true,
         "ownerReservedDecisionCategoriesUnchanged": true,
-        "executionGateRepairFunction": "assets/vibe-workbench.js::isNewGameDevelopmentRequest"
+        "executionGateRepairFunction": "assets/vibe-workbench.js::isNewGameDevelopmentRequest",
+        "fanInReviewIsolation": {
+          "reviewer": "tools/vibe2-fan-in-review.mjs",
+          "blockedCandidateAction": "REQUEUE_SAME_TASK_CLEAR_RESERVATION_KEEP_EVIDENCE_NO_RETRY_PENALTY",
+          "releaseCandidateOnBlockedReview": false,
+          "unrelatedCohortSettlementContinues": true,
+          "fullRegressionFailureRemainsGlobal": true,
+          "stateWriteFailureRemainsGlobal": true
+        }
       }
     }
   },

@@ -255,7 +255,28 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
     if(uniqueMissing.length){
       evidence.add('role-result:review:BLOCKED');
       evidence.add(`package-review-missing:${uniqueMissing.join('|')}`);
-      reviewed.push({taskId:task.id,sampleId:selectedResult?resultSampleId(selectedResult):clean(task.id),pass:false,missing:uniqueMissing,presentationRuntimeVisual});
+      evidence.add('fan-in-review-task-local-requeue:YES');
+      reviewed.push({
+        taskId:task.id,
+        sampleId:selectedResult?resultSampleId(selectedResult):clean(task.id),
+        pass:false,
+        missing:uniqueMissing,
+        presentationRuntimeVisual,
+        taskLocalRequeue:true
+      });
+      return{
+        ...task,
+        status:'queued',
+        blocker:null,
+        reservationId:null,
+        reservationRunId:null,
+        reservationRunAttempt:0,
+        reservedAt:null,
+        neuronExpectedVariants:0,
+        neuronResults:[],
+        lastOutcome:'FAN_IN_REVIEW_BLOCKED_REQUEUE',
+        evidence:[...evidence]
+      };
     }else{
       evidence.add('role-result:review:PASS');
       evidence.add('package-review:all-required-roles-pass');
@@ -437,7 +458,15 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
     evidence:durableNeuralEvidence,
     shadowAudit:neuralDurableShadowAudit
   });
-  return{queue:{...queue,tasks:tasksWithNeuralAudit},reviewed,skipped,releaseCandidates,experienceReviews,capabilityApplicationReviews,capabilityBenchmarkReviews,codingTraces,neuralShadowAudit,neuralDurableShadowAudit,neuralWorkGraphSummary,neuralPhase2Readiness,pass:reviewed.every(row=>row.pass)};
+  const pass=reviewed.every(row=>row.pass);
+  const taskLocalRequeueCount=reviewed.filter(row=>row.pass===false&&row.taskLocalRequeue===true).length;
+  const cohortSettlementPass=reviewed.every(row=>row.pass===true||row.taskLocalRequeue===true);
+  return{
+    queue:{...queue,tasks:tasksWithNeuralAudit},
+    reviewed,skipped,releaseCandidates,experienceReviews,capabilityApplicationReviews,capabilityBenchmarkReviews,
+    codingTraces,neuralShadowAudit,neuralDurableShadowAudit,neuralWorkGraphSummary,neuralPhase2Readiness,
+    pass,cohortSettlementPass,taskLocalRequeueCount
+  };
 }
 
 export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',outputFile='',traceLedgerFile=''}={}){
@@ -452,7 +481,7 @@ export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',
     codingTraceLedger=mergeCodingTraceLedger(readJson(traceLedgerFile,{traces:[]}),result.codingTraces);
     writeJson(traceLedgerFile,codingTraceLedger);
   }
-  if(clean(outputFile))writeJson(outputFile,{version:7,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,capabilityApplicationReviews:result.capabilityApplicationReviews,capabilityBenchmarkReviews:result.capabilityBenchmarkReviews,codingTraces:result.codingTraces,codingTraceLedgerStats:codingTraceLedger?.stats||null,neuralShadowAudit:result.neuralShadowAudit,neuralDurableShadowAudit:result.neuralDurableShadowAudit,neuralWorkGraphSummary:result.neuralWorkGraphSummary,neuralPhase2Readiness:result.neuralPhase2Readiness,pass:result.pass});
+  if(clean(outputFile))writeJson(outputFile,{version:7,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,capabilityApplicationReviews:result.capabilityApplicationReviews,capabilityBenchmarkReviews:result.capabilityBenchmarkReviews,codingTraces:result.codingTraces,codingTraceLedgerStats:codingTraceLedger?.stats||null,neuralShadowAudit:result.neuralShadowAudit,neuralDurableShadowAudit:result.neuralDurableShadowAudit,neuralWorkGraphSummary:result.neuralWorkGraphSummary,neuralPhase2Readiness:result.neuralPhase2Readiness,pass:result.pass,cohortSettlementPass:result.cohortSettlementPass,taskLocalRequeueCount:result.taskLocalRequeueCount});
   return{...result,codingTraceLedger};
 }
 
@@ -479,6 +508,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const readiness=result.neuralPhase2Readiness;
   const summary=readiness.evidenceSummary;
   console.log(`VIBE2_FAN_IN_REVIEW=${result.pass?'PASS':'BLOCKED'}`);
+  console.log(`VIBE2_FAN_IN_COHORT_SETTLEMENT=${result.cohortSettlementPass?(result.pass?'PASS':'PASS_WITH_TASK_LOCAL_REQUEUE'):'BLOCKED'}`);
+  console.log(`VIBE2_FAN_IN_TASK_LOCAL_REQUEUE_COUNT=${result.taskLocalRequeueCount||0}`);
   console.log(`VIBE2_FAN_IN_REVIEW_COUNT=${result.reviewed.length}`);
   console.log(`VIBE2_FAN_IN_REVIEW_SKIPPED=${result.skipped.length}`);
   console.log(`VIBE2_FAN_IN_RELEASE_CANDIDATES=${result.releaseCandidates.length}`);
@@ -509,5 +540,5 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_NEURAL_PHASE2_EXECUTION_AUTHORITY=${readiness.executionAuthorityGranted?'YES':'NO'}`);
   console.log(`VIBE2_NEURAL_PHASE2_AUTOMATIC_PROMOTION=${readiness.automaticPromotionAllowed?'YES':'NO'}`);
   console.log('VIBE2_FAN_IN_REVIEW_SOURCE_WRITE=NO');
-  if(!result.pass)process.exitCode=1;
+  if(!result.cohortSettlementPass)process.exitCode=1;
 }

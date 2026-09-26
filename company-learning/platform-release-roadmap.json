@@ -1,5 +1,5 @@
 {
-  "version": 410,
+  "version": 411,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -23028,7 +23028,20 @@
         "runtimeOrReleaseFailureBlocksPromotionAndAffectedRuntimeResponsibilitiesOnly": true,
         "independentCoreFunProgressionUsabilityStabilityWorkContinues": true,
         "releaseBarrierMayNotBecomeGameDevelopmentBarrier": true,
-        "unrelatedFailureMayNotCreateSameGameGlobalLock": true
+        "unrelatedFailureMayNotCreateSameGameGlobalLock": true,
+        "fanInReviewTaskIsolation": {
+          "enabled": true,
+          "strictPerTaskReviewEvidenceStillRequired": true,
+          "blockedTaskCannotBecomeReleaseCandidate": true,
+          "blockedTaskRequeuesWithoutReviewRetryPenalty": true,
+          "blockedTaskReservationMustBeCleared": true,
+          "blockedTaskEvidenceMustPersist": true,
+          "blockedTaskCannotFailUnrelatedCohortSettlement": true,
+          "fullRegressionFailureStillFailsCohort": true,
+          "reviewExecutionOrStateWriteFailureStillFailsCohort": true,
+          "taskLocalReviewBlockMarker": "fan-in-review-task-local-requeue:YES",
+          "liveFailureEvidence": "RUN_36225893107_REGRESSION_608_PASS_FAN_IN_REVIEW_5_BLOCKED"
+        }
       },
       "automaticFeatureExpansionFreezeForbidden": true,
       "featureDevelopmentMayPauseOnlyForExplicitOwnerInstructionOrDirectDependencyConflict": true,
@@ -23987,7 +24000,9 @@
           "queuedGenericPresentationIsDeprioritizedNotDeleted": true,
           "alreadyRunningGenericPresentationIsPreserved": true,
           "ownerOrExactCausalRepairPresentationIsNeverDeprioritizedByThisRule": true,
-          "deferredGenericPresentationReturnsNaturallyAfterHolisticConflictClears": true
+          "deferredGenericPresentationReturnsNaturallyAfterHolisticConflictClears": true,
+          "fanInReviewBlockedPillarRequeuesLocallyWithoutFailingUnrelatedPillars": true,
+          "fanInReviewEvidenceGateRemainsStrictPerTask": true
         }
       }
     }
