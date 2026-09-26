@@ -1,5 +1,5 @@
 {
-  "version": 115,
+  "version": 116,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2025,5 +2025,21 @@
     "externalExecutionWindowCovered": 256,
     "partialScanMayDispatch": false,
     "independentGameParallelismRequired": true
+  },
+  "robloxPlannerDuplicateContractQaRemovalEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxPlannerDuplicateContractQaRemoval20260927",
+    "duplicateRuntimeTestsPresent": false,
+    "canonicalQaWorkflow": ".github/workflows/company-central-policy-contract-qa.yml",
+    "runtimeMarkersPreserved": [
+      "ROBLOX_SOURCE_PLAN_CONTRACT_FINGERPRINT",
+      "ROBLOX_RECONCILE_BOUND_REVISION_COUNT",
+      "ROBLOX_SOURCE_TARGET_COUNT",
+      "ROBLOX_PREFLIGHT_TARGET_COUNT"
+    ],
+    "responsibilityLocalRuntimeTestsPreserved": true,
+    "sharedContextCompilationPreserved": true,
+    "qualitySecurityReleaseEvidenceUnchanged": true
   }
 }
