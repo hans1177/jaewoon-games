@@ -3,97 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-15mw3ry",
-      "worker": "vibe2",
-      "taskId": "survival-unity-web-base-implementation-v1",
-      "gameId": "survival",
-      "files": [
-        "unity-games/survival/Assets/Scripts/GameCore.cs",
-        "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T20:01:26.130Z",
-      "expiresAt": "2026-09-26T20:46:26.130Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1cllqqf",
-      "worker": "vibe2",
-      "taskId": "amusement-tycoon-unity-web-base-implementation-v1",
-      "gameId": "amusement-tycoon",
-      "files": [
-        "unity-games/amusement-tycoon/Assets/Scripts/GameCore.cs",
-        "unity-games/amusement-tycoon/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T20:01:27.811Z",
-      "expiresAt": "2026-09-26T20:46:27.811Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:amusement-tycoon-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1x4v39x",
-      "worker": "vibe2",
-      "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T20:01:53.546Z",
-      "expiresAt": "2026-09-26T20:46:53.546Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-100zgh5",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T20:01:55.249Z",
-      "expiresAt": "2026-09-26T20:46:55.249Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1pny1js",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T20:02:08.976Z",
-      "expiresAt": "2026-09-26T20:47:08.976Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-6pgj3d",
       "worker": "vibe2",
       "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
@@ -840,6 +749,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:bug-defense-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-cmtz6w",
+      "worker": "vibe2",
+      "taskId": "seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1",
+      "gameId": "seed-casual-realm-weaver",
+      "files": [
+        "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "cf19b2e0c26ae7cffa42abab9c6b30372285d78d",
+      "acquiredAt": "2026-09-26T20:47:23.618Z",
+      "expiresAt": "2026-09-26T21:32:23.618Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
