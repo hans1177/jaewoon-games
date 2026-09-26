@@ -47,7 +47,7 @@ env:
 
 jobs:
   game-primary-gate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       defer: ${{ steps.gate.outputs.defer }}
       active_game_work: ${{ steps.gate.outputs.active_game_work }}
@@ -86,7 +86,7 @@ jobs:
   resolve-seed-targets:
     needs: game-primary-gate
     if: needs.game-primary-gate.outputs.defer != 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       run: ${{ steps.targets.outputs.run }}
       targets: ${{ steps.targets.outputs.targets }}
