@@ -1138,33 +1138,7 @@
       },
       "holisticBackfillLiveFailureAudit": {
         "runId": 36229097447,
-        "scope": "SAMPLED_EXISTING_GAME_HOLISTIC_UNITY_WEB_WORKERS",
-        "sampledJobs": [
-          {
-            "jobId": 108369130219,
-            "gameId": "bug-defense",
-            "finalFailureClass": "NO_OP"
-          },
-          {
-            "jobId": 108369130224,
-            "gameId": "amusement-tycoon",
-            "finalFailureClass": "NO_OP"
-          },
-          {
-            "jobId": 108369130225,
-            "gameId": "seed-casual-realm-weaver",
-            "finalFailureClass": "INVALID_PATH"
-          },
-          {
-            "jobId": 108369130229,
-            "gameId": "seed-idle-growth-rpg-crystal-bloom",
-            "finalFailureClass": "NO_OP"
-          }
-        ],
-        "sampledFailureCounts": {
-          "NO_OP": 3,
-          "INVALID_PATH": 1
-        },
+        "scope": "CURRENT_QUEUE_EXISTING_HOLISTIC_TASKS_RESERVED_BY_RUN",
         "verifiedMessages": [
           "후보가 실제 source 변경을 생성하지 않음",
           "잘못된 상대 경로:"
@@ -1188,7 +1162,37 @@
           "qaBypassAllowed": false,
           "authorityChange": "NONE"
         },
-        "verificationState": "TARGETED_QA_REQUIRED_THEN_LIVE_WAVE_REVALIDATION"
+        "verificationState": "TARGETED_QA_REQUIRED_THEN_LIVE_WAVE_REVALIDATION",
+        "currentHolisticTaskCount": 15,
+        "currentHolisticJobIds": [
+          108369130219,
+          108369130224,
+          108369130225,
+          108369130229,
+          108369130247,
+          108369130253,
+          108369130254,
+          108369130268,
+          108369130270,
+          108369130283,
+          108369130284,
+          108369130295,
+          108369130299,
+          108369130302,
+          108369130316
+        ],
+        "finalFailureCounts": {
+          "NO_OP": 10,
+          "INVALID_PATH": 2,
+          "TIMEOUT": 2,
+          "STUDIO_QUALITY_DELTA": 1
+        },
+        "repairTargetsObservedFailureCount": 12,
+        "repairTargetsObservedPercent": 80,
+        "nonTargetFailuresPreservedForSeparateCausalRepair": {
+          "TIMEOUT": 2,
+          "STUDIO_QUALITY_DELTA": 1
+        }
       }
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
