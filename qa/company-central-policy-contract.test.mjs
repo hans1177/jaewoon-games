@@ -53,6 +53,25 @@ test('platform-release-roadmap is the single machine execution policy source',()
     'tools/apply-common-development-quality-policy.mjs'
   ]) assert.equal(fs.existsSync(path.join(repoRoot,removed)),false,removed);
 });
+test('director fallback wake only re-dispatches existing queued GAME_PRIMARY work',()=>{
+  const fallback=roadmap.changeRecord?.directorGamePrimaryFallbackWake20260927||{};
+  assert.equal(fallback.existingQueuedTaskDispatchOnly,true);
+  assert.equal(fallback.newSchedulerCreated,false);
+  assert.equal(fallback.newQueueCreated,false);
+  assert.equal(fallback.newTaskCreated,false);
+  assert.equal(fallback.canonicalReservePathPreserved,true);
+  assert.equal(fallback.activeNonPushCoreSuppressesFallbackDispatch,true);
+  assert.equal(fallback.cancelledWorkflowRunWakeSuppressed,true);
+  assert.equal(fallback.qualitySecurityReleaseGatesUnchanged,true);
+
+  assert.match(directorSupervisor,/\n      - Vibe2 Continuous Core\n    types: \[completed\]/);
+  assert.match(directorSupervisor,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=DISPATCHED/);
+  assert.match(directorSupervisor,/DIRECTOR_GAME_PRIMARY_SCOPED_CORE_ACTIVE=/);
+  assert.match(directorSupervisor,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_ACTIVE_CORE/);
+  assert.match(directorSupervisor,/actions\/workflows\/vibe2-continuous-core\.yml\/dispatches/);
+  assert.doesNotMatch(directorSupervisor,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=.*CREATE_(?:TASK|QUEUE|SCHEDULER)/);
+});
+
 test('Unity Web log contract matches the mandatory upper-platform development floor and per-game bootstrap parallelism',()=>{
   const evidence=logMap.unityWebGameDevelopmentEvidence;
   assert.equal(evidence.role,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
