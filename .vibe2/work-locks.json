@@ -3,151 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1g6yi6m",
-      "worker": "vibe2",
-      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/Game.server.luau",
-        "roblox-games/cozy-island/client/Game.client.luau",
-        "roblox-games/cozy-island/shared/GameConfig.luau"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T19:50:16.787Z",
-      "expiresAt": "2026-09-26T20:35:16.787Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-post-release-focus-12c1a7e2ae6288fd"
-      ]
-    },
-    {
-      "id": "wl-1sp0tc",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-unity-web-base-implementation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "unity-games/horror-escape-room/Assets/Scripts/GameCore.cs",
-        "unity-games/horror-escape-room/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T19:50:19.192Z",
-      "expiresAt": "2026-09-26T20:35:19.192Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1qthlbc",
-      "worker": "vibe2",
-      "taskId": "cozy-island-existing-web-assessment-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "web-games/cozy-island/index.html"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T19:50:21.087Z",
-      "expiresAt": "2026-09-26T20:35:21.087Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-existing-web-assessment-v1"
-      ]
-    },
-    {
-      "id": "wl-4psrs8",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "unity-games/horror-escape-room/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T19:50:26.708Z",
-      "expiresAt": "2026-09-26T20:35:26.708Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-1bp2xi3",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-post-release-focus-4048dd962de0ea8d",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/server/Game.server.luau",
-        "roblox-games/horror-escape-room/client/Game.client.luau",
-        "roblox-games/horror-escape-room/shared/GameConfig.luau"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T19:50:55.721Z",
-      "expiresAt": "2026-09-26T20:35:55.721Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-post-release-focus-4048dd962de0ea8d"
-      ]
-    },
-    {
-      "id": "wl-1g4ryvb",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-unity-web-base-implementation-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T19:51:03.233Z",
-      "expiresAt": "2026-09-26T20:36:03.233Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-9vqrp0",
-      "worker": "vibe2",
-      "taskId": "cozy-island-studio-evolution-presentation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/BattleVisual.luau",
-        "roblox-games/cozy-island/shared/QACamera.luau"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T19:51:17.224Z",
-      "expiresAt": "2026-09-26T20:36:17.224Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-xifk6w",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-studio-evolution-presentation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T19:52:07.753Z",
-      "expiresAt": "2026-09-26T20:37:07.753Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-studio-evolution-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-e6e74t",
       "worker": "vibe2",
       "taskId": "bug-defense-roblox-presentation-asset-adaptation-v1",
@@ -858,6 +713,23 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
+      ]
+    },
+    {
+      "id": "wl-l8z4kw",
+      "worker": "vibe2",
+      "taskId": "cozy-island-existing-web-assessment-v1",
+      "gameId": "cozy-island",
+      "files": [
+        "web-games/cozy-island/index.html"
+      ],
+      "baseSha": "cf19b2e0c26ae7cffa42abab9c6b30372285d78d",
+      "acquiredAt": "2026-09-26T20:37:17.444Z",
+      "expiresAt": "2026-09-26T21:22:17.444Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-existing-web-assessment-v1"
       ]
     }
   ]
