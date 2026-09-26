@@ -22,28 +22,66 @@ env:
 
 jobs:
   plan:
-    concurrency:
-      group: roblox-f0-plan-${{ inputs.game_id || 'batch' }}
-      cancel-in-progress: false
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
-      count: ${{ steps.targets.outputs.count }}
-      matrix: ${{ steps.targets.outputs.matrix }}
-      targets_json: ${{ steps.targets.outputs.targets_json }}
+      count: ${{ steps.targets.outputs.count || '0' }}
+      matrix: ${{ steps.targets.outputs.matrix || '{"include":[]}' }}
+      targets_json: ${{ steps.targets.outputs.targets_json || '[]' }}
     steps:
+      - name: Reject superseded F0 planner
+        id: freshness
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-headless-fast-mvp.yml/runs?per_page=100")"
+          winner="$(printf '%s' "$payload" | REQUESTED_GAME_ID="$REQUESTED_GAME_ID" node -e "
+            let body='';process.stdin.on('data',c=>body+=c).on('end',()=>{
+              const payload=JSON.parse(body);
+              const active=new Set(['queued','pending','in_progress','requested']);
+              const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+              const title='Roblox F0 · '+(requested||'batch');
+              const ids=(payload.workflow_runs||[])
+                .filter(run=>active.has(String(run.status||'').toLowerCase())&&String(run.display_title||'')===title)
+                .map(run=>Number(run.id))
+                .filter(Number.isFinite)
+                .sort((a,b)=>a-b);
+              if(!ids.length){process.stdout.write('');return;}
+              process.stdout.write(String(requested?ids[0]:ids[ids.length-1]));
+            });
+          ")"
+          echo "ROBLOX_F0_PLAN_ACTIVE_WINNER=${winner:-NONE}"
+          if [ -n "$winner" ] && [ "$winner" != "$GITHUB_RUN_ID" ]; then
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+            if [ -n "$REQUESTED_GAME_ID" ]; then
+              echo "ROBLOX_F0_PLAN_EXACT_DEDUPED=$REQUESTED_GAME_ID:$GITHUB_RUN_ID:$winner"
+            else
+              echo "ROBLOX_F0_PLAN_BATCH_DEDUPED_NEWER=$GITHUB_RUN_ID:$winner"
+            fi
+          else
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_F0_PLAN_DEDUPE_PASS=${REQUESTED_GAME_ID:-BATCH}:$GITHUB_RUN_ID"
+          fi
       - uses: actions/checkout@v4
+        if: steps.freshness.outputs.run == 'true'
         with:
           ref: main
           fetch-depth: 1
       - uses: actions/setup-node@v4
+        if: steps.freshness.outputs.run == 'true'
         with:
           node-version: '22'
-      - run: node --test qa/company-development-roblox-headless-fast-mvp.test.mjs
+      - if: steps.freshness.outputs.run == 'true'
+        run: node --test qa/company-development-roblox-headless-fast-mvp.test.mjs
       - name: Fetch runtime queue
+        if: steps.freshness.outputs.run == 'true'
         run: |
           git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
       - id: targets
+        if: steps.freshness.outputs.run == 'true'
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           EVENT_NAME: ${{ github.event_name }}
@@ -162,7 +200,7 @@ jobs:
   persist:
     needs: [plan, validate]
     if: always() && needs.plan.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v4
         with:
