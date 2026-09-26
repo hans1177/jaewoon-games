@@ -117,7 +117,7 @@ test('shared preflight continuation keeps exact game targeting with same-game-on
   const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
   assert.match(workflow,/run-name: Roblox shared preflight · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.match(workflow,/workflow_dispatch:[\s\S]*game_id:/);
-  assert.doesNotMatch(header,/^concurrency:\s*$/m);
+  assert.match(header,/concurrency:\n\s+group: roblox-shared-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n\s+cancel-in-progress: false/);
   assert.match(workflow,/REQUESTED_GAME_ID: \$\{\{ inputs\.game_id \|\| '' \}\}/);
   assert.match(workflow,/if\(requested&&item\.gameId!==requested\)continue/);
   assert.match(workflow,/if\(requested&&item\.gameId!==requested\)return false/);
