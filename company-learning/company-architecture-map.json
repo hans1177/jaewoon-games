@@ -1,5 +1,5 @@
 {
-  "version": 224,
+  "version": 225,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5172,5 +5172,23 @@
     "sourceRootWideLockForbidden": true,
     "qaSecurityReleaseGatesUnchanged": true,
     "authorityExpanded": false
+  },
+  "unityWebFloorBootstrapParallelism": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.unityWebFloorBootstrapGameIdParallelism20260927",
+    "orchestrator": ".github/workflows/company-development-confirmed-runtime.yml",
+    "workerWorkflow": ".github/workflows/unity-web-floor-source-bootstrap.yml",
+    "identity": "GAME_ID",
+    "topology": [
+      "RESOLVE_BOOTSTRAP_ELIGIBLE_GAME_IDS",
+      "MATRIX_FAN_OUT_BY_GAME_ID",
+      "PER_GAME_BOOTSTRAP_SOURCE_GENERATION",
+      "PER_GAME_BOOTSTRAP_PR"
+    ],
+    "crossGameConcurrency": "PARALLEL",
+    "sameGameConcurrency": "SERIALIZE_OVERLAPPING_SOURCE_MUTATION_ONLY",
+    "globalWorkflowSerializationForbidden": true,
+    "globalInternalParallelCap": null,
+    "externalMatrixBoundary": 256
   }
 }

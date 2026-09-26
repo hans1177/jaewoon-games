@@ -1,8 +1,8 @@
 {
-  "version": 415,
+  "version": 416,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-26",
+  "recordedAt": "2026-09-27",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -3557,7 +3557,10 @@
           "modelCacheHitRestoreLiveRun": 36208311596,
           "workerConditionalModelRestore": "IMPLEMENTED_PENDING_QA_AND_LIVE",
           "schedulerEpochStaleRelease": "IMPLEMENTED_PENDING_CI_AND_LIVE",
-          "schedulerEpochStaleReleaseReason": "PRE_PATCH_V2_RUN_4554_HELD_WORKFLOW_LEVEL_SINGLETON_WHILE_NEW_TIMEOUT_RECOVERY_WAVES_REMAINED_JOBLESS_PENDING"
+          "schedulerEpochStaleReleaseReason": "PRE_PATCH_V2_RUN_4554_HELD_WORKFLOW_LEVEL_SINGLETON_WHILE_NEW_TIMEOUT_RECOVERY_WAVES_REMAINED_JOBLESS_PENDING",
+          "unityWebFloorBootstrapParallelism": "DOCUMENTED_BEFORE_CODE",
+          "unityWebFloorBootstrapIdentity": "GAME_ID",
+          "unityWebFloorBootstrapCrossGameSerialization": "REMOVE"
         },
         "incidentHistory": [
           {
@@ -8306,6 +8309,52 @@
         "EXACT_GAME_ID_DISPATCH_REMAINS_SUPPORTED",
         "COMPANY_RUNTIME_PERSIST_CONFLICT_RETRY_REMAINS",
         "NO_QA_SECURITY_RELEASE_GATE_WEAKENING"
+      ]
+    },
+    "unityWebFloorBootstrapGameIdParallelism20260927": {
+      "id": "UNITY_WEB_FLOOR_BOOTSTRAP_GAME_ID_PARALLELISM_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+      "reason": "UNITY_WEB_FLOOR_SOURCE_BOOTSTRAP_USED_ONE_GLOBAL_CONCURRENCY_GROUP_AND_ONE_SERIAL_FOR_LOOP_OVER_MULTIPLE_GAME_IDS",
+      "policyBasis": [
+        "internalArtificialConcurrencyCapsForbidden",
+        "distinctGamesMustRemainParallel",
+        "sameGameIndependentNonOverlappingWorkMustRemainParallel",
+        "sourceRootWideLockForbidden",
+        "responsibleFileConflictSerializationOnly",
+        "externalProviderCapacityIsOnlyHeavyExecutionSerializationBoundary"
+      ],
+      "currentBehavior": {
+        "input": "COMMA_SEPARATED_GAME_IDS",
+        "workflowConcurrencyGroup": "GLOBAL_UNITY_WEB_FLOOR_SOURCE_BOOTSTRAP",
+        "sourceGeneration": "SERIAL_FOR_LOOP"
+      },
+      "targetBehavior": {
+        "canonicalIdentity": "GAME_ID",
+        "orchestration": "PER_GAME_MATRIX_FAN_OUT",
+        "workflowInput": "EXACT_GAME_ID",
+        "concurrencyScope": "SAME_GAME_ONLY",
+        "distinctGamesParallel": true,
+        "maxInternalGameCap": null,
+        "externalBatchBoundary": 256
+      },
+      "protectedSemantics": [
+        "DEVELOPMENT_CONFIRMED_ONLY",
+        "NATIVE_UPPER_PLATFORM_ALREADY_STARTED_REJECTED",
+        "CANONICAL_OUTPUT_UNITY_GAMES_GAME_ID",
+        "DESIGN_BASELINE_BINDING",
+        "VIBE_BUILD_UP_DIRECTIVE_BINDING",
+        "PR_BASED_MAIN_PROMOTION",
+        "NO_DIRECT_MAIN_WRITE"
+      ],
+      "implementationState": "DOCUMENTED_BEFORE_CODE",
+      "requiredVerification": [
+        "ORCHESTRATOR_EMITS_GAME_ID_MATRIX",
+        "BOOTSTRAP_ACCEPTS_EXACT_GAME_ID",
+        "NO_GLOBAL_CROSS_GAME_BOOTSTRAP_CONCURRENCY_GROUP",
+        "NO_MULTI_GAME_SERIAL_FOR_LOOP",
+        "SAME_GAME_DUPLICATE_MUTATION_REMAINS_SERIALIZED",
+        "DISTINCT_GAME_BOOTSTRAPS_CAN_RUN_CONCURRENTLY",
+        "EXTERNAL_MATRIX_BOUNDARY_REMAINS_256"
       ]
     }
   },

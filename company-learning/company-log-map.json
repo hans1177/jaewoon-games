@@ -1,5 +1,5 @@
 {
-  "version": 89,
+  "version": 90,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1689,5 +1689,21 @@
       "NO_REPEATED_JOBLESS_PENDING_REPLACEMENT_WITHIN_V3_EPOCH"
     ],
     "authorityChange": "NONE"
+  },
+  "unityWebFloorBootstrapParallelism": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.unityWebFloorBootstrapGameIdParallelism20260927",
+    "requiredMarkers": [
+      "UNITY_WEB_BOOTSTRAP_GAME_ID=",
+      "UNITY_WEB_BOOTSTRAP_GENERATED_GAME_ID=",
+      "UNITY_WEB_BOOTSTRAP_PR=",
+      "UNITY_WEB_BOOTSTRAP_CROSS_GAME_PARALLEL=YES",
+      "UNITY_WEB_BOOTSTRAP_SAME_GAME_SERIALIZATION=YES"
+    ],
+    "forbiddenMarkers": [
+      "UNITY_WEB_BOOTSTRAP_GENERATED_IDS="
+    ],
+    "concurrencyGroupTemplate": "unity-web-floor-source-bootstrap-${gameId}",
+    "globalConcurrencyGroupForbidden": true
   }
 }
