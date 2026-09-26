@@ -1,5 +1,5 @@
 {
-  "version": 431,
+  "version": 432,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8647,6 +8647,34 @@
       "heavyBuildOrModelRunnerReduced": false,
       "independentGameParallelismPreserved": true,
       "sharedStateWriterRulesPreserved": true,
+      "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "developmentFloorParallelBottleneckRepair20260927": {
+      "id": "DEVELOPMENT_FLOOR_PARALLEL_BOTTLENECK_REPAIR_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "REMOVE_CENTRAL_PLANNER_DUPLICATE_VALIDATION_WAIT_AND_PREVENT_SAME_GAME_UNITY_WEB_HEAVY_RUNNER_COLLISION_WITHOUT_REDUCING_INDEPENDENT_GAME_PARALLELISM",
+      "centralWorkflow": ".github/workflows/company-development-confirmed-runtime.yml",
+      "unityWebWorkflow": ".github/workflows/unity-web-first-stage-build.yml",
+      "centralPlanner": {
+        "admissionCriticalValidationOnly": true,
+        "duplicateContractTestsMovedToNonblockingSlimAudit": true,
+        "activeRobloxAndUnityRunScansParallel": true,
+        "gameDispatchWaitsForContractAudit": false
+      },
+      "unityWebPerGameConcurrency": {
+        "callerGroup": "unity-web-floor-call-<gameId>",
+        "heavyExecutionGroup": "unity-web-floor-exec-<gameId>",
+        "sameGameConcurrentHeavyExecution": false,
+        "cancelInProgress": false,
+        "independentGamesRemainParallel": true,
+        "globalUnityWebSerializationForbidden": true,
+        "matrixMaxParallelCap": null
+      },
+      "unityWebDevelopmentFloorRequired": true,
+      "robloxUnityConcurrentUpperPlatformDevelopmentPreserved": true,
+      "noArtificialGlobalGameCountCapPreserved": true,
+      "sharedStateWriteRulesUnchanged": true,
       "qualitySecurityReleaseGatesUnchanged": true
     }
   },
