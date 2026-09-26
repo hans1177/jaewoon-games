@@ -83,3 +83,16 @@ test('F0 readiness follows canonical central Roblox validation mode instead of q
   assert.ok(workflow.includes('ROBLOX_CANONICAL_VALIDATION_MODE='));
   assert.doesNotMatch(workflow,/item\.robloxValidationMode/);
 });
+
+test('Roblox preflight persistence does not hold a global writer job lock and retries semantic writes on conflict',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  const start=workflow.indexOf('\n  preflight-persist:\n');
+  const end=workflow.indexOf('\n  dispatch-headless:\n',start);
+  const block=workflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.doesNotMatch(block,/group:\s*company-runtime-writer/);
+  assert.match(block,/ROBLOX_PREFLIGHT_PERSIST_OPTIMISTIC_ATTEMPT=/);
+  assert.match(block,/ROBLOX_PREFLIGHT_PERSIST_CONFLICT_RETRY=/);
+  assert.match(block,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.doesNotMatch(block,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+});

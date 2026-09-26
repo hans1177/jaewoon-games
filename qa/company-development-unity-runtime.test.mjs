@@ -376,9 +376,15 @@ test('Unity hybrid router avoids full repository history and fetches only the ev
 });
 
 
-test('distinct Unity runtime runs are not globally serialized while runtime persistence stays serialized',()=>{
+test('distinct Unity runtime and persistence jobs are not globally serialized while runtime writes retry exact state conflicts',()=>{
   assert.doesNotMatch(workflowSource,/^concurrency:\s*\n\s*group:\s*company-development-unity-runtime\s*$/m);
-  assert.match(workflowSource,/persist-runtime:[\s\S]*concurrency:[\s\S]*group: company-runtime-writer/);
+  const start=workflowSource.indexOf('\n  persist-runtime:\n');
+  assert.ok(start>=0);
+  const persist=workflowSource.slice(start);
+  assert.doesNotMatch(persist,/group:\s*company-runtime-writer/);
+  assert.match(persist,/UNITY_RUNTIME_PERSIST_OPTIMISTIC_ATTEMPT=/);
+  assert.match(persist,/UNITY_RUNTIME_PERSIST_CONFLICT_RETRY=/);
+  assert.doesNotMatch(persist,/git rebase origin\/company-runtime/);
 });
 
 

@@ -750,9 +750,6 @@ jobs:
     if: needs.prepare.outputs.run == 'true' && always()
     runs-on: ubuntu-latest
     timeout-minutes: 12
-    concurrency:
-      group: company-runtime-writer
-      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
         with:
@@ -775,8 +772,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags --depth=1 origin company-runtime main
-          git reset --hard origin/company-runtime
           checkpoint_root=''
           if [[ -d /tmp/development-unity-runtime/runtime-persist/queue ]]; then
             checkpoint_root=/tmp/development-unity-runtime/runtime-persist
@@ -785,8 +780,15 @@ jobs:
           fi
           [[ -n "$checkpoint_root" ]] || { echo 'checkpoint queue directory missing after artifact extraction' >&2; find /tmp/development-unity-runtime -maxdepth 3 -type d -print; exit 15; }
           export CHECKPOINT_ROOT="$checkpoint_root"
-          if [[ -d "$checkpoint_root/design" ]]; then cp -R "$checkpoint_root/design/." design/; fi
-          node <<'NODE'
+          git config user.name 'jaewoon-development-unity-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            echo "UNITY_RUNTIME_PERSIST_OPTIMISTIC_ATTEMPT=$attempt/5"
+            git fetch --no-tags --depth=1 origin company-runtime main
+            git reset --hard origin/company-runtime
+            if [[ -d "$checkpoint_root/design" ]]; then cp -R "$checkpoint_root/design/." design/; fi
+            node <<'NODE'
           const fs=require('fs'),path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const dir=path.join(process.env.CHECKPOINT_ROOT,'queue');
@@ -801,17 +803,26 @@ jobs:
           console.log(`DEVELOPMENT_UNITY_PERSIST_COUNT=${updates.length}`);
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
           NODE
-          git checkout origin/main -- tools/company-homepage-platform-exposure-sync.mjs
-          node tools/company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
-          git reset -- tools/company-homepage-platform-exposure-sync.mjs >/dev/null 2>&1 || true
-          git config user.name 'jaewoon-development-unity-runtime'
-          git config user.email 'actions@users.noreply.github.com'
-          git add design development-queue.json homepage-platform-exposure.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
+            git checkout origin/main -- tools/company-homepage-platform-exposure-sync.mjs
+            node tools/company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
+            git reset -- tools/company-homepage-platform-exposure-sync.mjs >/dev/null 2>&1 || true
+            git add design development-queue.json homepage-platform-exposure.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              persisted=1
+              echo 'UNITY_RUNTIME_PERSIST_WRITE=NO_CHANGE'
+              break
+            fi
             git commit -m 'runtime: persist Unity exact-stage checkpoints [skip ci]'
-            for attempt in 1 2 3;do if git push origin HEAD:company-runtime;then break;fi;git fetch --no-tags origin company-runtime;git rebase origin/company-runtime||{ git rebase --abort||true;exit 1;};sleep $((attempt*2));done
-          fi
+            if git push origin HEAD:company-runtime; then
+              persisted=1
+              echo 'UNITY_RUNTIME_PERSIST_WRITE=PUSHED'
+              break
+            fi
+            echo "UNITY_RUNTIME_PERSIST_CONFLICT_RETRY=$attempt"
+            sleep $((attempt*2))
+          done
+          test "$persisted" = '1'
           anyPassed="$(node -e "process.stdout.write(String(require('/tmp/persist-result.json').anyPassed))")"
           anyFailed="$(node -e "process.stdout.write(String(require('/tmp/persist-result.json').anyFailed))")"
           echo "any_passed=$anyPassed" >> "$GITHUB_OUTPUT"

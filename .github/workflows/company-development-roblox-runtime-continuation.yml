@@ -191,9 +191,6 @@ jobs:
     timeout-minutes: 12
     outputs:
       pass_count: ${{ steps.persist.outputs.pass_count }}
-    concurrency:
-      group: company-runtime-writer
-      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
         with:
@@ -216,9 +213,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-          git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
-          node <<'NODE'
+          git config user.name 'jaewoon-roblox-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            echo "ROBLOX_PREFLIGHT_PERSIST_OPTIMISTIC_ATTEMPT=$attempt/5"
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            node <<'NODE'
           const fs=require('fs'),path=require('path');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
@@ -268,23 +270,29 @@ jobs:
             }
           }
           queue.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`pass_count=${pass}\n`);
+          fs.writeFileSync('/tmp/roblox-preflight-persist-meta.json',JSON.stringify({pass,fail}));
           console.log(`ROBLOX_BUILD_PREFLIGHT_PASS_COUNT=${pass}`);console.log(`ROBLOX_BUILD_PREFLIGHT_FAIL_COUNT=${fail}`);
           console.log('ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO');
           NODE
-          git config user.name 'jaewoon-roblox-runtime'
-          git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if ! git diff --cached --quiet; then
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              persisted=1
+              echo 'ROBLOX_PREFLIGHT_PERSIST_WRITE=NO_CHANGE'
+              break
+            fi
             git commit -m 'runtime: persist Roblox shared-model preflight checkpoint [skip ci]'
-            for attempt in 1 2 3; do
-              if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then break; fi
-              git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-              git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
-              sleep $((attempt*2))
-            done
-          fi
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              persisted=1
+              echo 'ROBLOX_PREFLIGHT_PERSIST_WRITE=PUSHED'
+              break
+            fi
+            echo "ROBLOX_PREFLIGHT_PERSIST_CONFLICT_RETRY=$attempt"
+            sleep $((attempt*2))
+          done
+          test "$persisted" = '1'
+          pass_count="$(node -e "process.stdout.write(String(require('/tmp/roblox-preflight-persist-meta.json').pass||0))")"
+          echo "pass_count=$pass_count" >> "$GITHUB_OUTPUT"
 
   dispatch-headless:
     name: dispatch Roblox F0 source preflight
