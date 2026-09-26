@@ -80,6 +80,7 @@ const FULL_WEB_CONTEXT_WINDOW=32768;
 const MAX_GENERATION_ATTEMPTS=4;
 const SPECULATIVE_FULL_WEB_MAX_GENERATION_ATTEMPTS=3;
 const SPECULATIVE_JSON_MAX_GENERATION_ATTEMPTS=2;
+const STUDIO_CONNECTED_COMPLETION_MAX_ADDITIVE_ATTEMPTS=3;
 const ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS=new Set([
   'TIMEOUT','EDIT_MATCH','PRESENTATION_PATCH_DELTA','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION'
 ]);
@@ -1277,7 +1278,7 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     .slice(0,Math.max(1,Math.min(5,Number(max)||3)));
 }
 
-export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[]}={}){
+export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[],excludedAnchors=[]}={}){
   const raw=String(prompt??'');
   const allowedLine=raw.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
   const allowedPaths=allowedLine
@@ -1298,10 +1299,14 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
     };
     exactResponsible.sort((a,b)=>visualOwnerScore(b)-visualOwnerScore(a));
   }
+  const excluded=new Set((excludedAnchors||[]).map(value=>String(value)));
   const candidates=[];
   for(const relative of exactResponsible){
     const anchors=exactRetryAnchorSuggestions(raw,{max:5,sourceRoot,responsibleFiles:[relative],preferredTargets});
-    for(const find of anchors)candidates.push({path:relative,find});
+    for(const find of anchors){
+      const key=relative+'\u0000'+find;
+      if(!excluded.has(key))candidates.push({path:relative,find});
+    }
   }
   const index=Math.max(0,Math.min(candidates.length-1,Number(anchorIndex)||0));
   const selected=candidates[index]||null;
@@ -1323,8 +1328,8 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
   }
   return{path:selected.path,find:selected.find,context};
 }
-export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[],presentationRecovery=false}={}){
-  const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot,anchorIndex,preferredTargets});
+export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[],presentationRecovery=false,excludedAnchors=[]}={}){
+  const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot,anchorIndex,preferredTargets,excludedAnchors});
   if(!spec)return null;
   const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: make the smallest real implementation change required by the work order';
   const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
@@ -1374,6 +1379,51 @@ export function normalizeFocusedReplaceOnly(raw,spec={}){
     newFiles:[],
     replaceFiles:[],
     tests:[]
+  };
+}
+
+function candidateExactAnchorKeys(candidate={}){
+  return (candidate?.edits||[]).map(row=>clean(row.path)+'\u0000'+String(row.find??'')).filter(Boolean);
+}
+export function buildStudioConnectedCompletionPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',partialCandidate=null,preferredTargets=[]}={}){
+  if(!partialCandidate||!(partialCandidate.edits||[]).length)return null;
+  const raw=String(prompt??'');
+  const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,260);
+  if(!/STUDIO_QUALITY_DELTA_REQUIRED/i.test(reason))return null;
+  const presentationRecovery=/focus=PRESENTATION/i.test(raw)||/VISUAL:\d+\/[1-9]/i.test(reason);
+  const excludedAnchors=candidateExactAnchorKeys(partialCandidate);
+  const focused=buildFocusedReplaceOnlyPrompt(raw,{
+    error,
+    responsibleFiles,
+    sourceRoot,
+    preferredTargets,
+    presentationRecovery,
+    excludedAnchors
+  });
+  if(!focused)return null;
+  return{
+    ...focused,
+    preservedCandidate:partialCandidate,
+    prompt:[
+      focused.prompt,
+      '',
+      'STUDIO CONNECTED PACKAGE COMPLETION:',
+      'The worker is preserving '+String((partialCandidate.edits||[]).length)+' already-valid exact edits from the rejected candidate.',
+      'Return only this one missing exact-anchor replacement. Do not regenerate, repeat, or describe preserved edits.',
+      'This completion does not lower the BUILD_UP breadth gate; the combined candidate must still satisfy every configured connected-source and presentation-delta requirement.'
+    ].join('\n')
+  };
+}
+export function normalizeStudioConnectedCompletion(raw,completion={}){
+  const focused=normalizeFocusedReplaceOnly(raw,completion.spec||{});
+  const preserved=completion.preservedCandidate||{};
+  return{
+    summary:clean(preserved.summary)||'Vibe2 studio connected-package completion',
+    expectedEffect:clean(preserved.expectedEffect)||'complete the existing studio quality package without discarding valid edits',
+    edits:[...(preserved.edits||[]),...(focused.edits||[])],
+    newFiles:[...(preserved.newFiles||[])],
+    replaceFiles:[...(preserved.replaceFiles||[])],
+    tests:[...(preserved.tests||[])]
   };
 }
 
@@ -1721,6 +1771,8 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let presentationPatchDeltaObserved=false;
   let presentationPatchDeltaCreditUsed=false;
   let studioEditMatchCreditUsed=false;
+  let studioConnectedCompletionCredits=0;
+  let studioFocusedSeedUsed=false;
   let missingPathRecoveries=0;
   let fullWebProgressCreditCount=0;
   let robloxFullGraphicsPackageActive=false;
@@ -1781,7 +1833,15 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       ?buildSystemAtomicPairCompletionPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,partialCandidate:lastRejectedCandidate})
       :null;
     const preferredFocusedTargets=unique(exploration?.editContract?.primaryTargets||[]);
-    const focusedReplaceOnly=diagnosticFocusedReplaceOnly||(focusedFinal
+    const studioPresentationRecovery=studioExpansion&&/focus=PRESENTATION/i.test(String(prompt??''));
+    const studioConnectedCompletion=!allowFullRewrite&&studioExpansion&&priorFailureClass==='STUDIO_QUALITY_DELTA'
+      ?buildStudioConnectedCompletionPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,partialCandidate:lastRejectedCandidate,preferredTargets:preferredFocusedTargets})
+      :null;
+    const studioFocusedSeed=!allowFullRewrite&&studioExpansion&&!lastRejectedCandidate
+      &&['TIMEOUT','NO_OP','MALFORMED_OUTPUT','EDIT_MATCH'].includes(priorFailureClass)
+      ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor,preferredTargets:preferredFocusedTargets,presentationRecovery:studioPresentationRecovery})
+      :null;
+    const focusedReplaceOnly=diagnosticFocusedReplaceOnly||studioFocusedSeed||(focusedFinal
       ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor,preferredTargets:preferredFocusedTargets,presentationRecovery:presentationPatchDeltaObserved})
       :null);
     const remainingStages=Math.max(1,maxAttempts-attempt);
@@ -1790,27 +1850,27 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       :(allowFullRewrite&&bestFullWebFallbackRaw?bestFullWebFallbackRaw:lastRaw);
     const attemptPrompt=expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
-      :(systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired,robloxFullGraphicsPackageActive:robloxFullGraphicsPackageRecovery}):initialStudioPrompt));
+      :(studioConnectedCompletion?.prompt||systemAtomicPairCompletion?.prompt||focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot,systemAtomicPairRequired,robloxFullGraphicsPackageActive:robloxFullGraphicsPackageRecovery}):initialStudioPrompt));
     const maxPredict=expansionMode
       ?FULL_WEB_EXPANSION_MAX_PREDICT
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_MAX_PREDICT:(retry?FULL_WEB_RETRY_MAX_PREDICT:FULL_WEB_MAX_PREDICT))
-        :((systemAtomicPairCompletion||focusedReplaceOnly)?(robloxAssetAdaptationTask?JSON_RETRY_MAX_PREDICT:JSON_FOCUSED_REPLACE_MAX_PREDICT):(focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT)))));
+        :((studioConnectedCompletion||systemAtomicPairCompletion||focusedReplaceOnly)?(robloxAssetAdaptationTask?JSON_RETRY_MAX_PREDICT:JSON_FOCUSED_REPLACE_MAX_PREDICT):(focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT)))));
     const timeoutMs=expansionMode
       ?FULL_WEB_EXPANSION_TIMEOUT_MS
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
-        :((systemAtomicPairCompletion||focusedReplaceOnly)?(robloxAssetAdaptationTask?JSON_RETRY_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))));
+        :((studioConnectedCompletion||systemAtomicPairCompletion||focusedReplaceOnly)?(robloxAssetAdaptationTask?JSON_RETRY_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))));
     const contextWindow=expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
-      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(robloxAssetAdaptationTask?JSON_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
+      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((studioConnectedCompletion||systemAtomicPairCompletion||focusedReplaceOnly)?(robloxAssetAdaptationTask?JSON_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
     if(allowFullRewrite&&retry)console.log(`VIBE2_FULL_WEB_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
     const studioExactAnchorRecovery=studioExpansion&&priorFailureClass==='EDIT_MATCH';
-    const temperature=systemAtomicPairCompletion?0.14:(focusedReplaceOnly?0.26:(expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(studioExactAnchorRecovery?0.08:(retry?(attempt>=3?0.22:0.16):0.08))));
+    const temperature=(studioConnectedCompletion||systemAtomicPairCompletion)?0.14:(focusedReplaceOnly?0.26:(expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(studioExactAnchorRecovery?0.08:(retry?(attempt>=3?0.22:0.16):0.08))));
     const focusedFirstEditEarlyStop=focusedWebRepair&&!retry&&!allowFullRewrite&&!focusedReplaceOnly&&!robloxAssetAdaptationTask;
-    const completionMode=(systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(((timeoutFastEscalation||focusedFirstEditEarlyStop)&&!robloxFullGraphicsPackageRecovery)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
+    const completionMode=(studioConnectedCompletion||systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(((timeoutFastEscalation||focusedFirstEditEarlyStop)&&!robloxFullGraphicsPackageRecovery)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
     try{
       const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow,temperature,completionMode});
       lastRaw=raw;
@@ -1848,9 +1908,11 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
           candidate=normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite,minFullRewriteBytes});
         }
       }else{
-        const focusedRaw=systemAtomicPairCompletion
-          ?normalizeSystemAtomicPairCompletion(raw,systemAtomicPairCompletion)
-          :(focusedReplaceOnly?normalizeFocusedReplaceOnly(raw,focusedReplaceOnly.spec):(streamedPartialEdit||raw));
+        const focusedRaw=studioConnectedCompletion
+          ?normalizeStudioConnectedCompletion(raw,studioConnectedCompletion)
+          :(systemAtomicPairCompletion
+            ?normalizeSystemAtomicPairCompletion(raw,systemAtomicPairCompletion)
+            :(focusedReplaceOnly?normalizeFocusedReplaceOnly(raw,focusedReplaceOnly.spec):(streamedPartialEdit||raw)));
         const missingPathRecovery=!allowFullRewrite
           ?recoverMissingEditPaths(focusedRaw,{responsibleFiles,sourceRoot})
           :{value:focusedRaw,recovered:0};
@@ -1863,13 +1925,14 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       lastRejectedCandidate=candidate;
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,studioConnectedCompletion:studioConnectedCompletion!=null,studioConnectedCompletionCredits,studioFocusedSeedUsed,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
       if(partialOutput.trim())lastRaw=partialOutput;
       const failureClass=generationFailureClass(error);
       if(failureClass==='PRESENTATION_PATCH_DELTA')presentationPatchDeltaObserved=true;
+      if(studioFocusedSeed)studioFocusedSeedUsed=true;
       if(allowFullRewrite&&lastRaw.trim()&&Buffer.byteLength(lastRaw,'utf8')>Buffer.byteLength(bestFullWebFallbackRaw,'utf8')){
         bestFullWebFallbackRaw=lastRaw;
       }
@@ -1972,6 +2035,17 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         studioEditMatchCreditRetry=true;
         console.log(`VIBE2_STUDIO_EDIT_MATCH_CREDIT=${attempt}->${maxAttempts}:${candidateVariant}`);
       }
+      let studioConnectedCompletionCreditRetry=false;
+      if(!allowFullRewrite&&studioExpansion&&failureClass==='STUDIO_QUALITY_DELTA'&&lastRejectedCandidate
+        &&attempt>=maxAttempts&&studioConnectedCompletionCredits<STUDIO_CONNECTED_COMPLETION_MAX_ADDITIVE_ATTEMPTS){
+        const nextCompletion=buildStudioConnectedCompletionPrompt(prompt,{error,responsibleFiles,sourceRoot,partialCandidate:lastRejectedCandidate,preferredTargets:preferredFocusedTargets});
+        if(nextCompletion){
+          maxAttempts=attempt+1;
+          studioConnectedCompletionCredits+=1;
+          studioConnectedCompletionCreditRetry=true;
+          console.log(`VIBE2_STUDIO_CONNECTED_COMPLETION_CREDIT=${attempt}->${maxAttempts}:${candidateVariant}:preserved=${(lastRejectedCandidate.edits||[]).length}`);
+        }
+      }
       let speculativeFocusedRetryCredit=false;
       if(!allowFullRewrite&&speculativeVariant&&!systemAtomicPairRequired&&failureClass!=='DIAGNOSTIC_POSTCONDITION'&&focusedFinalRetryAllowed(error)&&attempt>=maxAttempts&&!speculativeFocusedRetryCreditUsed&&!focusedNoOpCreditRetry&&!studioEditMatchCreditRetry){
         maxAttempts=attempt+1;
@@ -2039,7 +2113,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
       const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
-      const hasAnother=ordinaryRetry||focusedRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
+      const hasAnother=ordinaryRetry||focusedRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||studioConnectedCompletionCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
         error.vibe2GenerationAttempts=attempt;
