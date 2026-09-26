@@ -36,7 +36,7 @@ sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 const MAP_PING_COOLDOWN_MS=10000,MAP_PING_LIFETIME_MS=10000;
 let enemySeq=0;
 const WEATHER_PRESENTATION_VERSION=1;
-const WORLD={w:36000,h:14400},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=51,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
+const WORLD={w:36000,h:14400},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=52,RESOURCE_RESPAWN_MS=300000,AUTO_GATHER_RANGE=110,AUTO_GATHER_INTERVAL_MS=500,AUTO_GATHER_INTERRUPT_MS=1000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -1100,9 +1100,21 @@ function craftItem(id){
  else if(r.kind==='map'){p.map=true;rememberItem(r.id);ui.mapBtn.classList.add('ready');ui.mapTab.hidden=false}
  rememberItem(r.id);checkAchievementProgress(true);showNotice(r.name+' 제작 완료');updateHud();renderPanel();saveGame(false)
 }
-function tabState(){ui.handTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='hand');ui.benchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='bench');ui.ironBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='ironbench');ui.goldBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='goldbench');ui.jungleBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='junglebench');ui.inventoryTab.classList.toggle('on',state.panelMode==='inventory');ui.mapTab.classList.toggle('on',state.panelMode==='map');ui.ironBenchTab.textContent='철 제작대';ui.goldBenchTab.textContent='금 제작대';ui.jungleBenchTab.textContent='밀림 제작대'}
+function craftStationBuilt(mode){return mode==='hand'||mode==='bench'&&!!state.bench||mode==='ironbench'&&!!state.ironBench||mode==='goldbench'&&!!state.goldBench||mode==='junglebench'&&!!state.jungleBench}
+function tabState(){
+ ui.benchTab.hidden=!state.bench;ui.ironBenchTab.hidden=!state.ironBench;ui.goldBenchTab.hidden=!state.goldBench;ui.jungleBenchTab.hidden=!state.jungleBench;
+ ui.handTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='hand');
+ ui.benchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='bench');
+ ui.ironBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='ironbench');
+ ui.goldBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='goldbench');
+ ui.jungleBenchTab.classList.toggle('on',state.panelMode==='craft'&&state.craftMode==='junglebench');
+ ui.inventoryTab.classList.toggle('on',state.panelMode==='inventory');ui.mapTab.classList.toggle('on',state.panelMode==='map');
+ ui.ironBenchTab.textContent='철 제작대';ui.goldBenchTab.textContent='금 제작대';ui.jungleBenchTab.textContent='밀림 제작대'
+}
 function renderCraft(){
- tabState();const mode=state.craftMode,list=recipes.filter(r=>r.where===mode);
+ tabState();const mode=state.craftMode;
+ if(!craftStationBuilt(mode)){state.craftMode='hand';tabState();ui.sheetBody.innerHTML='<div class="info"><b>제작대가 아직 없어</b><br>먼저 해당 제작대를 만들어 설치해야 제작 목록이 열려.</div>';return}
+ const list=recipes.filter(r=>r.where===mode);
  const stationId=mode==='ironbench'?'iron-bench':mode==='goldbench'?'gold-bench':mode==='junglebench'?'jungle-bench':mode==='bench'?'bench':null,station=stationId?item(stationId):null,stationLabel=station?station.name:'';
  let head=mode==='hand'?'맨손 제작 · 어디서든 제작 가능':mode==='bench'?(nearBench()?'제작대 사용 가능':'제작대 가까이에서만 제작 가능'):mode==='ironbench'?(nearIronBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):mode==='goldbench'?(nearGoldBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):(nearJungleBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능');
  let html='<div class="info"><b>'+head+'</b><br>모든 제작법과 필요 재료가 처음부터 공개돼.</div><div class="grid">';
@@ -1618,7 +1630,13 @@ function renderUpgrade(){
  html+='</div>';ui.sheetBody.innerHTML=html;ui.sheetBody.querySelectorAll('[data-upgrade]').forEach(b=>b.addEventListener('click',()=>upgradeGear(b.dataset.upgrade)))
 }
 function openUpgrade(){if(!state.blacksmithAnvil){showNotice('대장장이 모루를 먼저 만들어');return}if(!nearAnvil()){showNotice('대장장이 모루 가까이 가야 해');return}state.panelMode='upgrade';ui.sheet.classList.add('open');renderUpgrade()}
-function openCraft(mode=state.craftMode){state.panelMode='craft';state.craftMode=mode;ui.sheet.classList.add('open');renderCraft()}function openInventory(){state.panelMode='inventory';ui.sheet.classList.add('open');renderInventory()}
+function openCraft(mode=state.craftMode){
+ if(!craftStationBuilt(mode)){
+  const label=mode==='bench'?'제작대':mode==='ironbench'?'철 제작대':mode==='goldbench'?'금 제작대':mode==='junglebench'?'밀림 제작대':'제작대';
+  showNotice(label+'를 먼저 만들어 설치해야 해');mode='hand'
+ }
+ state.panelMode='craft';state.craftMode=mode;ui.sheet.classList.add('open');renderCraft()
+}function openInventory(){state.panelMode='inventory';ui.sheet.classList.add('open');renderInventory()}
 
 function chestById(id){return state.chests.find(x=>x.id===id)||null}
 function renderChest(){
