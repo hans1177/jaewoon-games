@@ -31,6 +31,10 @@ permissions:
   contents: write
   actions: write
 
+concurrency:
+  group: unity-native-exact-${{ inputs.game_id || github.run_id }}
+  cancel-in-progress: false
+
 jobs:
   prepare:
     name: prepare selected-platform Unity queue
