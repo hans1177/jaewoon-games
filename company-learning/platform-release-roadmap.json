@@ -21762,6 +21762,20 @@
       "invalidPathBoundedRetry": true,
       "deterministicRecoveryBeforeAdditionalModelInvocation": true,
       "missingPathRecoveryTelemetry": "codingMethod.missingPathRecoveries",
+      "explicitLineLocatorRecovery": {
+        "enabled": true,
+        "acceptedSuffixes": [
+          ":<line>",
+          ":<line>:<column>",
+          "#L<line>",
+          "#L<start>-L<end>"
+        ],
+        "exactResponsibleFileMatchRequired": true,
+        "stripBeforeExtensionValidation": true,
+        "writableScopeExpansionAllowed": false,
+        "unmatchedLocatorFailsClosedAsInvalidPath": true,
+        "observedIncident": "Assets/Scripts/UnityWebFloorGame.cs:149"
+      },
       "latestObservedMissingPathIncident": {
         "runId": 36057026213,
         "affectedRobloxTasks": 13,
