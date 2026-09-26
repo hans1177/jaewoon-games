@@ -711,10 +711,11 @@ test('known Roblox source repair debt outranks reconciliation pass and canonical
   assert.match(workflow,/const bootstrapFailed=secondaryOwnerFocus\?item\.ownerFocusRobloxSourceBootstrapFailedAt:item\.robloxSourceBootstrapFailedAt/);
   assert.match(workflow,/item\.robloxFoundationF0Passed!==true/);
   assert.match(workflow,/const currentReconciliationPass=reconciledPass\.has\(item\.gameId\)/);
-  assert.match(workflow,/const resolvedAssetBindingFalseDebt=!secondaryOwnerFocus/);
-  assert.match(workflow,/existing-source-studio-asset-binding-required/);
-  assert.match(workflow,/const knownSourceRepairDebt=\(Boolean\(bootstrapFailed\)&&!resolvedAssetBindingFalseDebt\)\|\|f0FoundationRepair/);
-  assert.match(workflow,/ROBLOX_STALE_ASSET_BINDING_DEBT_RESOLVED_BY_EXACT_RECONCILIATION=/);
+  assert.match(workflow,/const resolvedSourceBindDebt=!secondaryOwnerFocus/);
+  assert.match(workflow,/String\(item\.currentStep\|\|''\)\.toUpperCase\(\)==='TARGET_PLATFORM_SOURCE_BIND'/);
+  assert.match(workflow,/String\(item\.robloxFailureStage\|\|''\)\.toUpperCase\(\)==='TARGET_PLATFORM_SOURCE_BIND'/);
+  assert.match(workflow,/const knownSourceRepairDebt=\(Boolean\(bootstrapFailed\)&&!resolvedSourceBindDebt\)\|\|f0FoundationRepair/);
+  assert.match(workflow,/ROBLOX_STALE_SOURCE_BIND_DEBT_RESOLVED_BY_EXACT_RECONCILIATION=/);
   assert.match(workflow,/const repairSupersedesCandidate=existingSourceAssetRebind\|\|knownSourceRepairDebt/);
   assert.match(workflow,/if\(candidateReady&&!repairSupersedesCandidate\)continue/);
   assert.match(workflow,/ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR=/);
