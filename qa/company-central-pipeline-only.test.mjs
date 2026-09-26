@@ -228,20 +228,19 @@ test('director coalesces disposable pre-supervision control jobs but preserves s
 });
 
 
-test('central development planner keeps duplicate contract QA off the game dispatch critical path',()=>{
+test('central development planner removes duplicate runtime contract QA from the game dispatch path',()=>{
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
   const nativeStart=development.indexOf('\n  native-plan:\n');
-  const auditStart=development.indexOf('\n  contract-audit:\n');
   const dispatchStart=development.indexOf('\n  dispatch-roblox:\n');
-  assert.ok(nativeStart>0&&auditStart>nativeStart&&dispatchStart>auditStart);
-  const nativePlan=development.slice(nativeStart,auditStart);
+  assert.ok(nativeStart>0&&dispatchStart>nativeStart);
+  const nativePlan=development.slice(nativeStart,dispatchStart);
   assert.match(nativePlan,/runs-on: ubuntu-24\.04-arm/);
   assert.match(nativePlan,/Validate direct-native admission contract/);
   assert.doesNotMatch(nativePlan,/node --test qa\/company-selected-platform-router\.test\.mjs/);
   assert.doesNotMatch(nativePlan,/node --test qa\/company-minimum-design-contract\.test\.mjs/);
   assert.doesNotMatch(nativePlan,/node --test qa\/company-upper-platform-admission\.test\.mjs/);
-  assert.match(development,/contract-audit:[\s\S]*?runs-on: ubuntu-slim[\s\S]*?continue-on-error: true/);
-  assert.match(development,/Audit central development contracts without blocking game dispatch/);
+  assert.doesNotMatch(development,/\n  contract-audit:\n/);
+  assert.doesNotMatch(development,/Audit central development contracts without blocking game dispatch/);
   assert.match(development,/active-roblox-native-runs\.json &/);
   assert.match(development,/active-unity-native-runs\.json &/);
   assert.match(development,/wait "\$roblox_scan_pid" \|\| roblox_scan_status=\$\?/);
@@ -255,14 +254,15 @@ test('central policy architecture and log maps bind the development floor parall
   const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
   const logMap=JSON.parse(read('company-learning/company-log-map.json'));
   const change=roadmap.changeRecord?.developmentFloorParallelBottleneckRepair20260927;
-  assert.equal(change?.centralPlanner?.gameDispatchWaitsForContractAudit,false);
+  assert.equal(change?.centralPlanner?.duplicateRuntimeContractAuditRemoved,true);
+  assert.equal(change?.centralPlanner?.canonicalQaAuthorityPreserved,true);
   assert.equal(change?.centralPlanner?.activeRobloxAndUnityRunScansParallel,true);
   assert.equal(change?.unityWebPerGameConcurrency?.independentGamesRemainParallel,true);
   assert.equal(change?.unityWebPerGameConcurrency?.globalUnityWebSerializationForbidden,true);
   assert.equal(change?.qualitySecurityReleaseGatesUnchanged,true);
   assert.equal(architecture.developmentFloorParallelBottleneckRepair?.centralPlanner?.blockingScope,'ADMISSION_CRITICAL_ONLY');
   assert.equal(architecture.developmentFloorParallelBottleneckRepair?.unityWebFloor?.independentGameParallelism,true);
-  assert.equal(logMap.developmentFloorParallelBottleneckRepairEvidence?.contractAuditMayBlockGameDispatch,false);
+  assert.equal(logMap.developmentFloorParallelBottleneckRepairEvidence?.duplicateRuntimeAuditPresent,false);
   assert.equal(logMap.developmentFloorParallelBottleneckRepairEvidence?.independentGameParallelismRequired,true);
 });
 
