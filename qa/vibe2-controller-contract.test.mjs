@@ -244,7 +244,8 @@ test('controller reserves a batch and fans workers out to the external matrix bo
   assert(workflow.includes("if [ \"$VIBE2_EXECUTION_LANE\" = 'game-primary' ]; then lane_min=\"$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN\"; fi"));
   assert.equal((workflow.match(/--min="\$lane_min"/g)||[]).length,4);
   assert(workflow.includes('matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}'));
-  assert(workflow.includes("'vibe2-control-state-vibe2-unreal-core'"));
+  assert(workflow.includes("format('vibe2-control-state-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(!workflow.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_OUT'));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_IN=PASS'));
   assert(workflow.includes('for(let i=1;i<variantCount;i++)workers.push'));
@@ -408,7 +409,8 @@ test('neuron callbacks keep every ingress event and reconcile shared queue state
   assert(workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
   assert(workflow.includes("github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-{0}', github.run_id)"));
   assert(workflow.includes("startsWith(github.ref_name, 'vibe2/refill/fanin/') && format('vibe2-fanin-{0}', github.run_id)"));
-  assert(workflow.includes("'vibe2-control-state-vibe2-unreal-core'"));
+  assert(workflow.includes("format('vibe2-control-state-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(!workflow.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
   const start=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
   const end=workflow.indexOf('  model_cache:',start);
   const reserveBlock=workflow.slice(start,end);
