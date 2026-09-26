@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-132sj01",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
-      ],
-      "baseSha": "e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-      "acquiredAt": "2026-09-26T10:47:06.048Z",
-      "expiresAt": "2026-09-26T11:32:06.048Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-1w14nuz",
       "worker": "vibe2",
       "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1",
@@ -662,6 +644,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-17bg48i",
+      "worker": "vibe2",
+      "taskId": "bug-defense-studio-evolution-unity-web-usability-v1",
+      "gameId": "bug-defense",
+      "files": [
+        "unity-games/bug-defense/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "301c7b31195783b594327baee8c066ffafa9d1ed",
+      "acquiredAt": "2026-09-26T11:32:09.414Z",
+      "expiresAt": "2026-09-26T12:17:09.414Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:bug-defense-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
