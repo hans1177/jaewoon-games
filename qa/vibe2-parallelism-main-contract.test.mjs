@@ -197,6 +197,11 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillAllowed,true);
   assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'RUN_SCOPED_PARALLEL_RESERVE');
   assert.equal(runtime.continuous.atomicNeuronStream.globalFanInRefillSingletonForbidden,true);
+  assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingIndependentFreeSlotRefillPreserved,true);
+  assert.equal(runtime.continuous.callbackCoalescing.capacityRefillMayProceedWhileResultCoalesced,true);
+  assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.maxSignalsPerWave,1);
+  assert.match(core,/VIBE2_PRESSURE_REFILL_DISPATCH=WAVE_LEADER_EXISTING_FANIN_REFILL/);
+  assert.match(core,/runner-pressure-wave-leader-free-slot-refill/);
 
   const reserveStart=core.indexOf('\n  reserve:\n');
   const reserveOutputs=core.indexOf('    outputs:',reserveStart);
