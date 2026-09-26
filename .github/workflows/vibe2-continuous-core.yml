@@ -456,12 +456,16 @@ jobs:
           const batch=JSON.parse(fs.readFileSync('/tmp/vibe2-batch.json','utf8'));
           const workers=[];
           const safe=value=>String(value||'task').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'task';
+          const pressureRefillEligible=String(process.env.VIBE2_EXECUTION_LANE||'').toLowerCase()==='game-primary';
+          let pressureRefillLeaderAssigned=false;
           for(const row of batch.matrix||[]){
             const safeTask=safe(row.taskId);
             const variantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
             const shared={taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256),expectedVariants:variantCount};
-            workers.push({...shared,variant:'primary'});
-            for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`});
+            const pressureRefillLeader=pressureRefillEligible&&!pressureRefillLeaderAssigned;
+            workers.push({...shared,variant:'primary',pressureRefillLeader});
+            if(pressureRefillLeader)pressureRefillLeaderAssigned=true;
+            for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`,pressureRefillLeader:false});
           }
           fs.appendFileSync(out,`worker_matrix=${JSON.stringify({include:workers})}\n`);
           fs.appendFileSync(out,`worker_count=${workers.length}\n`);
@@ -1647,6 +1651,7 @@ jobs:
           VIBE2_NEURON_TASK_ID: ${{ matrix.taskId }}
           VIBE2_NEURON_RESERVATION_ID: ${{ matrix.reservationId }}
           VIBE2_NEURON_CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
+          VIBE2_PRESSURE_REFILL_LEADER: ${{ matrix.pressureRefillLeader }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1683,6 +1688,19 @@ jobs:
 
           if [ "${queue_pressure:-0}" -gt 0 ]; then
             echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'
+            if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_PRESSURE_REFILL_LEADER:-false}" = 'true' ]; then
+              refill_payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:'game-primary',reason:'runner-pressure-wave-leader-free-slot-refill'}}))")"
+              curl --fail-with-body --silent --show-error \
+                --request POST \
+                --header 'Accept: application/vnd.github+json' \
+                --header "Authorization: Bearer $GH_TOKEN" \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+                --data "$refill_payload"
+              echo 'VIBE2_PRESSURE_REFILL_DISPATCH=WAVE_LEADER_EXISTING_FANIN_REFILL'
+            else
+              echo 'VIBE2_PRESSURE_REFILL_DISPATCH=SKIPPED_NON_LEADER_OR_NON_GAME_PRIMARY'
+            fi
             echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'
             exit 0
           fi
