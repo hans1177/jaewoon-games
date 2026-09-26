@@ -19911,7 +19911,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-09-26T03:45:27.231Z"
+      "updatedAt": "2026-09-26T03:51:10.150Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -118705,10 +118705,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-22T23:20:59.247Z",
-      "updatedAt": "2026-09-26T03:45:27.437Z",
+      "updatedAt": "2026-09-26T03:51:10.381Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T03:45:27.437Z"
+        "recovery-dispatched-at:2026-09-26T03:51:10.381Z"
       ]
     },
     {
@@ -144205,10 +144205,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:04:31.999Z",
-      "updatedAt": "2026-09-26T03:45:27.437Z",
+      "updatedAt": "2026-09-26T03:51:10.381Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T03:45:27.437Z"
+        "recovery-dispatched-at:2026-09-26T03:51:10.381Z"
       ]
     },
     {
@@ -144411,7 +144411,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.919Z",
-      "updatedAt": "2026-09-26T03:45:26.938Z"
+      "updatedAt": "2026-09-26T03:51:09.808Z"
     },
     {
       "id": "recovery-ticket-bug-65aa0ffb4ab275d5f5a6",
@@ -144454,7 +144454,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.930Z",
-      "updatedAt": "2026-09-26T03:45:26.946Z"
+      "updatedAt": "2026-09-26T03:51:09.817Z"
     },
     {
       "id": "recovery-ticket-bug-ea186d71ff8c7f6300a7",
@@ -144540,7 +144540,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T07:13:17.824Z",
-      "updatedAt": "2026-09-26T03:45:26.954Z"
+      "updatedAt": "2026-09-26T03:51:09.827Z"
     },
     {
       "id": "recovery-ticket-bug-b021616100dca0c3a206",
@@ -144585,10 +144585,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T08:08:46.628Z",
-      "updatedAt": "2026-09-26T03:45:27.437Z",
+      "updatedAt": "2026-09-26T03:51:10.381Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T03:45:27.437Z"
+        "recovery-dispatched-at:2026-09-26T03:51:10.381Z"
       ]
     },
     {
@@ -145318,10 +145318,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-25T18:52:44.364Z",
-      "updatedAt": "2026-09-26T03:45:27.437Z",
+      "updatedAt": "2026-09-26T03:51:10.381Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T03:45:27.437Z"
+        "recovery-dispatched-at:2026-09-26T03:51:10.381Z"
       ]
     },
     {
@@ -145378,7 +145378,8 @@
         "tester-debug-occurrence-count:19",
         "{\"version\":3,\"platform\":\"ROBLOX\",\"gameId\":\"daechung-rpg\",\"placeId\":\"126302702438348\",\"placeVersion\":23,\"exactGame\":true,\"exactPlace\":true,\"exactVersion\":true,\"requirements\":{\"saveEnabled\":true,\"multiplayerRequired\":true},\"requiredCheckpoints\":[\"SERVER_BOOT\",\"MODULE_GRAPH_READY\",\"WORLD_READY\",\"SPAWN_READY\",\"CHARACTER_READY\",\"GROUND_CONTACT\",\"CAMERA_READY\",\"INPUT_READY\",\"MOVEMENT_CONFIRMED\",\"REMOTE_ROUNDTRIP\",\"CORE_LOOP_READY\",\"SAVE_ROUNDTRIP\",\"MULTIPLAYER_SYNC\"],\"checkpointPass\":{\"SERVER_BOOT\":true,\"MODULE_GRAPH_READY\":true,\"WORLD_READY\":true,\"SPAWN_READY\":true,\"CHARACTER_READY\":true,\"GROUND_CONTACT\":true,\"CAMERA_READY\":true,\"INPUT_READY\":true,\"MOVEMENT_CONFIRMED\":true,\"REMOTE_ROUNDTRIP\":true,\"CORE_LOOP_READY\":true,\"SAVE_ROUNDTRIP\":true,\"MULTIPLAYER_SYNC\":false},\"checkpointOrderPassed\":true,\"foundationCausalOrder\":[\"SERVER_BOOT\",\"MODULE_GRAPH_READY\",\"WORLD_READY\",\"SPAWN_READY\",\"CHARACTER_READY\",\"GROUND_CONTACT\"],\"f1ServerBootPassed\":true,\"f2WorldFoundationPassed\":true,\"f3CharacterFoundationPassed\":true,\"f4PhysicsAndMovementPassed\":true,\"f5InputCameraUiPassed\":true,\"f6CoreServicesPassed\":true,\"f7MultiplayerFoundationPassed\":false,\"f8GameplaySystemsPassed\":true,\"runtimeFoundationPassed\":true,\"developmentContinuationPassed\":true,\"runtimeAcceptancePassed\":false,\"multiplayerPromotionPending\":true,\"actualRuntimeEvidence\":true,\"state\":\"DEVELOPMENT_CONTINUES_MULTIPLAYER_PENDING\",\"blockers\":[\"checkpoint:MULTIPLAYER_SYNC\"],\"authority\":\"existing-game-tester-roblox-runtime-foundation-v1\",\"sourceRevision\":\"51eadc7b331419af8319c664c539023aed1e7403\",\"artifactIdentity\":\"sha256:eaac4b27b3cbef6b7a4498f01ddcc3e48fa3c1a71c38b15173a47e9b7881d5d2\",\"artifactRunId\":36167523434,\"universeId\":\"10767445769\",\"candidateVersionNumber\":23,\"observedAt\":\"2026-09-26T03:40:12.858Z\",\"workflowRunId\":36215503674}",
         "tester-debug-occurrence-count:20",
-        "tester-debug-occurrence-count:21"
+        "tester-debug-occurrence-count:21",
+        "tester-debug-occurrence-count:22"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145391,15 +145392,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 21,
+      "recurrenceCount": 22,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-25T19:12:21.440Z",
-      "updatedAt": "2026-09-26T03:45:27.437Z",
+      "updatedAt": "2026-09-26T03:51:10.381Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T03:45:27.437Z"
+        "recovery-dispatched-at:2026-09-26T03:51:10.381Z"
       ]
     }
   ]
