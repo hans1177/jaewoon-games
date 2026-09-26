@@ -166,7 +166,13 @@ jobs:
               &&item.robloxFoundationF0Passed!==true
               &&String(item.robloxFailureStage||'').toUpperCase()==='F0_SOURCE_INTEGRITY'
               &&String(item.robloxFailureSignature||'').toUpperCase()==='ROBLOX_F0_SOURCE_PREFLIGHT_FAILED';
-            const knownSourceRepairDebt=Boolean(bootstrapFailed)||f0FoundationRepair;
+            const currentReconciliationPass=reconciledPass.has(item.gameId);
+            const resolvedAssetBindingFalseDebt=!secondaryOwnerFocus
+              &&currentReconciliationPass
+              &&String(item.robloxFailureStage||'').toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND'
+              &&String(item.robloxFailureSignature||'')==='existing-source-studio-asset-binding-required';
+            const knownSourceRepairDebt=(Boolean(bootstrapFailed)&&!resolvedAssetBindingFalseDebt)||f0FoundationRepair;
+            if(resolvedAssetBindingFalseDebt)console.log('ROBLOX_STALE_ASSET_BINDING_DEBT_RESOLVED_BY_EXACT_RECONCILIATION='+item.gameId);
             const candidateReady=secondaryOwnerFocus
               ?Boolean(item.ownerFocusRobloxSourceCandidateReadyAt)&&String(item.ownerFocusRobloxSourceCandidateBranch||'').trim()
               :Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim();
@@ -496,6 +502,7 @@ jobs:
               Object.assign(item,{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
                 selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxSourceBootstrapFailedAt:stamp,
+                robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
                 robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:null,robloxBuildArtifactIdentity:null,robloxBuildPassedAt:null,
                 robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:null,
                 robloxFoundationF0Passed:false,robloxFoundationF0PassedAt:null,robloxFoundationF0Evidence:null,
