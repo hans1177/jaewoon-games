@@ -137,6 +137,22 @@ test('causal source generation classes survive into parallel telemetry',()=>{
   assert.deepEqual(t.sourceGenerationFailures.classes,{NO_OP:1,TIMEOUT:1,FULL_REWRITE_SIZE:1});
 });
 
+test('candidate branch publication failures are infrastructure stage instead of source generation',()=>{
+  const results=[
+    row(1,{
+      outcome:'FAIL',
+      blocker:'source-candidate-generation-failed',
+      candidateFailure:{class:'CANDIDATE_BRANCH_PUBLISH',message:'remote candidate push failed'}
+    })
+  ];
+  const t=computeParallelismTelemetry({results,requestedMax:1,effectiveMax:1,taskCount:1});
+  assert.equal(t.sourceGenerationFailures.count,0);
+  assert.deepEqual(t.sourceGenerationFailures.classes,{});
+  assert.deepEqual(t.workerFailureStages.classes,{CANDIDATE_PUBLICATION:1});
+  assert.equal(t.workerFailureStages.coveragePct,100);
+  assert.equal(t.bottleneck,'CANDIDATE_PUBLICATION');
+});
+
 test('blocked work order is not counted as source generation failure even with stale candidate metadata',()=>{
   const results=[row(1,{
     outcome:'BLOCKED',
