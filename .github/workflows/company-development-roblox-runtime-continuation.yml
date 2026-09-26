@@ -13,6 +13,10 @@ permissions:
   contents: write
   actions: write
 
+concurrency:
+  group: roblox-shared-preflight-${{ inputs.game_id || 'batch' }}
+  cancel-in-progress: false
+
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   ROBLOX_RUNTIME_HARNESS_VERSION: '9'
@@ -20,9 +24,6 @@ env:
 jobs:
   preflight-plan:
     name: resolve Roblox shared-model preflight work
-    concurrency:
-      group: roblox-shared-preflight-plan-${{ inputs.game_id || 'batch' }}
-      cancel-in-progress: false
     runs-on: ubuntu-slim
     timeout-minutes: 8
     outputs:
