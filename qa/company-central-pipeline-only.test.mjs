@@ -241,6 +241,11 @@ test('central development planner removes duplicate runtime contract QA from the
   assert.doesNotMatch(nativePlan,/node --test qa\/company-upper-platform-admission\.test\.mjs/);
   assert.doesNotMatch(development,/\n  contract-audit:\n/);
   assert.doesNotMatch(development,/Audit central development contracts without blocking game dispatch/);
+  assert.match(development,/Fetch queue authority and active native lane identities in parallel/);
+  assert.match(development,/git fetch --no-tags --depth=1 origin "\$COMPANY_RUNTIME_BRANCH" &/);
+  assert.match(development,/queue_fetch_pid=\$!/);
+  assert.match(development,/wait "\$queue_fetch_pid" \|\| queue_fetch_status=\$\?/);
+  assert.match(development,/NATIVE_QUEUE_AUTHORITY_FETCH=PASS/);
   assert.match(development,/company-development-roblox-runtime\.yml\/runs\?per_page=100&page=\$page/);
   assert.match(development,/company-development-unity-runtime\.yml\/runs\?per_page=100&page=\$page/);
   assert.match(development,/for page in 1 2 3; do/);
@@ -287,4 +292,6 @@ test('central native active-run dedupe covers the full 256 game execution window
   assert.match(development,/NATIVE_ACTIVE_RUN_SCAN_ROBLOX_ROWS=/);
   assert.match(development,/NATIVE_ACTIVE_RUN_SCAN_UNITY_ROWS=/);
   assert.match(development,/NATIVE_ACTIVE_RUN_SCAN_PAGES=3/);
+  assert.match(development,/NATIVE_QUEUE_AUTHORITY_FETCH=PASS/);
+  assert.match(development,/git fetch --no-tags --depth=1 origin "\$COMPANY_RUNTIME_BRANCH" &/);
 });
