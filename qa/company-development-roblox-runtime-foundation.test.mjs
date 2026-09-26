@@ -516,3 +516,14 @@ test('post-runtime dedupe job runs without a same-game concurrency lock',()=>{
   assert.doesNotMatch(block,/concurrency:/);
   assert.match(block,/ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=/);
 });
+
+test('F9 dedupe job itself has no same-game concurrency lock',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  const start=workflow.indexOf('\n  dedupe:\n');
+  const end=workflow.indexOf('\n  final-review:\n',start);
+  const block=workflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(block,/runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(block,/concurrency:/);
+  assert.match(block,/ROBLOX_F9_ACTIVE_WINNER=/);
+});
