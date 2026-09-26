@@ -126,7 +126,7 @@ function buildRepairCriticPrompt(task={},answer={},contexts=[]){
     'Reject QA bypasses, fake PASS evidence, wrapper-only patches, authority expansion, unassigned files, and repeated failed strategies.',
     'If the proposal is weak, return REVISE with a corrected revisedAnswer using the same implementation schema. If it is sound, return PASS.',
     'Do not output private chain-of-thought. Return concise weak points and corrections only.',
-    'Schema: {"verdict":"PASS|REVISE","preferredStrategyId":"...","weakPoints":["..."],"requiredCorrections":["..."],"revisedAnswer":null}.',
+    'Schema: {"verdict":"PASS|REVISE","preferredStrategyId":"...","weakPoints":["..."],"requiredCorrections":["..."],"revisedAnswer":null OR {"summary":"...","selectedHypothesisId":"...","falsifiedHypothesisIds":["..."],"knownGoodComparison":"...","strategyOptions":[{"id":"...","summary":"...","risk":"LOW|MEDIUM|HIGH","files":["assigned/file"]}],"selectedStrategyId":"...","edits":[{"path":"...","find":"small exact unique text","replace":"replacement"}],"newFiles":[{"path":"...","content":"..."}],"recommendedTests":["..."],"risks":["..."]}}.',
     'TASK ID: '+clean(task.id),
     'FAILURE STAGE: '+(causal.failureStage||'UNSPECIFIED'),
     'FAILURE SIGNATURE: '+(causal.failureSignature||'UNSPECIFIED'),
