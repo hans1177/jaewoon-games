@@ -1,5 +1,5 @@
 {
-  "version": 210,
+  "version": 211,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4803,7 +4803,48 @@
         "applicableGapCannotBeSilentlyDeferredByPresentationWork": true,
         "responsibleFileConflictSerializationOnly": true,
         "platformNativeExecutionPreserved": true
-      }
+      },
+      "existingGameHolisticBackfill": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
+      "existingGamesNotGrandfathered": true,
+      "firstEligibleExistingGenerationUsesFiveQualityPillars": true,
+      "existingGameHolisticBaselineRequiresFivePillarFanIn": true
+    },
+    "existingGameHolisticBackfill": {
+      "version": 1,
+      "centralPolicy": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
+      "noNewPipeline": true,
+      "existingProjectCollection": "tools/vibe2-auto-planner.mjs::collectProjects",
+      "existingTaskGenerator": "tools/vibe2-auto-planner.mjs::findStudioContinuousImprovementTasks",
+      "existingDirectiveGenerator": "tools/company-build-up-directive.mjs",
+      "existingQueue": "assets/vibe-continuous-queue.js",
+      "eligibleLifecycle": [
+        "ACTIVE",
+        "REBUILD"
+      ],
+      "authorityBoundary": "EXISTING_DEVELOPMENT_AUTHORITY_ONLY",
+      "firstEligibleFlow": [
+        "DISCOVER_EXISTING_ELIGIBLE_PROJECT_FROM_CURRENT_CATALOG_STATUS_AND_DEVELOPMENT_QUEUE",
+        "LOAD_OR_AUTO_ENROLL_CANONICAL_VERIFIED_DESIGN",
+        "INSPECT_CURRENT_EXISTING_SOURCE_WITHOUT_RESET",
+        "CLASSIFY_CURRENT_BUILD_UP_DOMAINS_PASS_GAP_OR_NOT_APPLICABLE",
+        "CREATE_ONE_SHARED_BUILD_UP_DIRECTIVE_GENERATION",
+        "FAN_OUT_CORE_FUN_PROGRESSION_PRESENTATION_USABILITY_STABILITY",
+        "PRESERVE_EXISTING_WORKING_FEATURES_SAVE_RULES_AND_AUTHORITY",
+        "IMPLEMENT_REAL_GAPS_IN_EXISTING_RESPONSIBLE_FILES",
+        "RUN_IMPACT_QA_AND_NATIVE_RUNTIME_EVIDENCE",
+        "FAN_IN_ALL_FIVE_PILLAR_RESULTS",
+        "EMIT_EXISTING_GAME_HOLISTIC_BASELINE_ONLY_IF_ALL_REQUIRED_PILLARS_VERIFY",
+        "RETURN_TO_NORMAL_PERPETUAL_BUILD_UP"
+      ],
+      "noGrandfathering": true,
+      "oldPassDoesNotSkipCurrentHolisticReview": true,
+      "fullResetForbiddenWithoutExistingEvidenceAndAuthority": true,
+      "sameGameIndependentPillarsMayRunParallel": true,
+      "responsibleFileConflictSerializationOnly": true,
+      "missingVerifiedDesignUsesCanonicalDesignFlow": true,
+      "failedPillarKeepsDepthAndRoutesCausalRepair": true,
+      "shadowWorkerCreated": false,
+      "shadowQueueCreated": false
     }
   },
   "nonblockingCoordinationTelemetryTopology": {
