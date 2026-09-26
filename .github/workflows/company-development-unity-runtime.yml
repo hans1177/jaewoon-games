@@ -51,15 +51,32 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Verify Unity selected-platform execution contracts
+      - name: Verify Unity contracts while fetching runtime queue
+        shell: bash
         run: |
-          node --check tools/company-shared-context.mjs
-          node tools/company-shared-context.mjs --output=/tmp/company-shared-context-unity-plan.json
-          node --check tools/company-selected-platform-router.mjs
-          node --check tools/company-development-unity-platform.mjs
-          node --check tools/company-upper-platform-admission.mjs
-          node --check tools/company-development-unity-bootstrap.mjs
-          node --check tools/company-development-unity-evidence.mjs
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin company-runtime &
+          queue_fetch_pid=$!
+          verify_status=0
+          {
+            node --check tools/company-shared-context.mjs
+            node tools/company-shared-context.mjs --output=/tmp/company-shared-context-unity-plan.json
+            node --check tools/company-selected-platform-router.mjs
+            node --check tools/company-development-unity-platform.mjs
+            node --check tools/company-upper-platform-admission.mjs
+            node --check tools/company-development-unity-bootstrap.mjs
+            node --check tools/company-development-unity-evidence.mjs
+          } || verify_status=$?
+          queue_fetch_status=0
+          wait "$queue_fetch_pid" || queue_fetch_status=$?
+          if (( verify_status != 0 || queue_fetch_status != 0 )); then
+            echo "UNITY_PREPARE_INPUT_OVERLAP=FAIL:VERIFY=$verify_status:QUEUE=$queue_fetch_status" >&2
+            exit 14
+          fi
+          git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
+          echo 'UNITY_PREPARE_CONTRACT_VERIFY=PASS'
+          echo 'UNITY_PREPARE_QUEUE_FETCH=PASS'
+          echo 'UNITY_PREPARE_INPUT_OVERLAP=PASS'
 
       - name: Bind current main
         id: main
@@ -73,8 +90,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags --depth=1 origin company-runtime
-          git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
           requested_ids="$REQUESTED_GAME_ID"
           if [[ -n "$requested_ids" && ! "$requested_ids" =~ ^[a-z0-9][a-z0-9-]{1,80}$ ]]; then
             echo "UNITY_REQUESTED_GAME_ID_INVALID=$requested_ids" >&2
