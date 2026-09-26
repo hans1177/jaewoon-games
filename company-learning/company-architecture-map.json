@@ -3685,20 +3685,13 @@
         "reservedAt",
         "blocker"
       ],
-      "preservedState": [
-        "taskId",
-        "gameId",
-        "goal",
-        "retryHistory",
-        "evidence",
-        "protectedSemantics"
-      ],
       "actionMarker": "RECOVER_STALE_RUNNING_RESERVATION",
       "lastOutcomeMarker": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "evidenceMarker": "system-steward:stale-running-reservation-recovered",
       "directMainWrite": false,
       "policyMutation": false,
-      "runningSafeWorkCancellation": false
+      "retryHistoryMutation": false,
+      "unrelatedTaskFieldsPreservedBySpread": true
     }
   },
   "learningRetrievalRouting": {
