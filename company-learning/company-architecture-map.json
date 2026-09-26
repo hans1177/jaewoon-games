@@ -1923,6 +1923,21 @@
       "strongerThanHumanReferenceRequiresMatchedBenchmarkEvidence": true,
       "selfModelUpdatesFromEvidenceOnly": true,
       "authorityExpansion": false
+    },
+    "schedulerSelectionOrder": {
+      "version": 1,
+      "source": "company-learning/platform-release-roadmap.json#changeRecord.holisticWorkerMatrixPriorityOrderRepair20260926",
+      "selector": "assets/vibe-continuous-queue.js::selectVibeQueueBatch",
+      "reservation": "assets/vibe-continuous-queue.js::beginVibeQueueBatch",
+      "matrixCompiler": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
+      "orderContract": "SCHEDULER_SCORE_ORDER_PRESERVED_END_TO_END",
+      "persistentQueueOrderMayOverrideSelection": false,
+      "matrixMayResortSelectedTasks": false,
+      "liveEvidence": {
+        "runId": 36229097447,
+        "reservationId": "36229097447:1"
+      },
+      "authorityExpansion": false
     }
   },
   "roadmapAssistantOrchestration": {
