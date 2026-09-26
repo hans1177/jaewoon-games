@@ -132,13 +132,13 @@
     },
     {
       "gameId": "village-dungeons",
-      "PROJECT_PHASE": "TARGET_PLATFORM_RUNTIME",
-      "PLATFORM": "ROBLOX",
+      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PLATFORM": "UNITY",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "roblox-games/village-dungeons",
+        "sourcePath": "unity-games/village-dungeons",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -154,13 +154,9 @@
         "CONTENT_STRUCTURE": null,
         "BALANCE_INTENT": null
       },
-      "ROBLOX_HANDOFF": {
-        "required": true,
-        "ready": false,
-        "reason": "WEB_BASELINE_NOT_VERIFIED"
-      },
+      "ROBLOX_HANDOFF": null,
       "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": true,
+        "eligibleAfterRelease": false,
         "assigned": false,
         "state": "WAITING_FOR_VERIFIED_RELEASE",
         "logicalRunnerPerProject": 1,
@@ -187,7 +183,7 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
+      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
     },
     {
       "gameId": "amusement-tycoon",
@@ -407,14 +403,14 @@
       "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
     },
     {
-      "gameId": "survival",
+      "gameId": "monster-adventure",
       "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
       "PLATFORM": "UNITY",
       "GENRE": null,
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "unity-games/survival",
+        "sourcePath": "unity-games/monster-adventure",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -445,9 +441,21 @@
       "LEARNING_CONTEXT": {
         "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
         "verifiedSemanticExperienceIds": [
-          "capability_ctrace_1d9be1f71564bdbf830142e8",
-          "capability_ctrace_44fd7d6e2f9274367465034b",
-          "capability_ctrace_f62bcf597b6821f4400c5b04"
+          "capability_ctrace_cd82f46339f60a9d3d87c01f",
+          "capability_ctrace_d5f1596f6da4a12df001d268",
+          "capability_ctrace_f0745bd93fed2fbb7993e548",
+          "capability_ctrace_d5eb9311eb739caa29b7856f",
+          "capability_ctrace_0207deb99e02b8819bdd5d2b",
+          "capability_ctrace_82c7184020b6c7803e6cddb0",
+          "capability_ctrace_eac47dca37f0da39af4ca5d4",
+          "capability_ctrace_c5fc908e9a7bff302112cbb6",
+          "capability_ctrace_e05c14ae9966b50f2138c763",
+          "capability_ctrace_dd6261945e0735cf75162f31",
+          "capability_ctrace_082e03cdb0b308b6ad4453e4",
+          "capability_ctrace_aeb06fe1458f339fe0010be0",
+          "capability_ctrace_d99e28fd0018d922ac6f4c40",
+          "capability_ctrace_dff665b34d9c37b27b812171",
+          "capability_ctrace_ca7b69060a40dff5326199fc"
         ],
         "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
         "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
@@ -509,75 +517,6 @@
         "continuousLearning": true
       },
       "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
-    },
-    {
-      "gameId": "monster-adventure",
-      "PROJECT_PHASE": "TARGET_PLATFORM_RUNTIME",
-      "PLATFORM": "ROBLOX",
-      "GENRE": null,
-      "WEB_BASELINE": {
-        "required": true,
-        "state": "PENDING",
-        "sourcePath": "roblox-games/monster-adventure",
-        "evidencePath": null,
-        "sourceIndexSha256": null,
-        "designBaselineSha256": null,
-        "validationSchemaVersion": null,
-        "strictScore": null,
-        "promotionRevalidationPassed": false,
-        "CORE_LOOP": null,
-        "STATE_MODEL": null,
-        "PROGRESSION_MODEL": null,
-        "UI_FLOW": null,
-        "INPUT_INTENT": null,
-        "SAVE_MEANING": null,
-        "CONTENT_STRUCTURE": null,
-        "BALANCE_INTENT": null
-      },
-      "ROBLOX_HANDOFF": {
-        "required": true,
-        "ready": false,
-        "reason": "WEB_BASELINE_NOT_VERIFIED"
-      },
-      "POST_RELEASE_FOCUS_RUNNER": {
-        "eligibleAfterRelease": true,
-        "assigned": false,
-        "state": "WAITING_FOR_VERIFIED_RELEASE",
-        "logicalRunnerPerProject": 1,
-        "activeTaskMaxPerProject": 1,
-        "sharedProtectedRunnerSlots": 1,
-        "scheduler": "vibe2-24h-runner",
-        "worker": "vibe2-continuous-core",
-        "continuousRefill": true
-      },
-      "LEARNING_CONTEXT": {
-        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
-        "verifiedSemanticExperienceIds": [
-          "capability_ctrace_cd82f46339f60a9d3d87c01f",
-          "capability_ctrace_d5f1596f6da4a12df001d268",
-          "capability_ctrace_f0745bd93fed2fbb7993e548",
-          "capability_ctrace_d5eb9311eb739caa29b7856f",
-          "capability_ctrace_0207deb99e02b8819bdd5d2b",
-          "capability_ctrace_82c7184020b6c7803e6cddb0",
-          "capability_ctrace_eac47dca37f0da39af4ca5d4",
-          "capability_ctrace_c5fc908e9a7bff302112cbb6",
-          "capability_ctrace_e05c14ae9966b50f2138c763",
-          "capability_ctrace_dd6261945e0735cf75162f31",
-          "capability_ctrace_082e03cdb0b308b6ad4453e4",
-          "capability_ctrace_aeb06fe1458f339fe0010be0",
-          "capability_ctrace_d99e28fd0018d922ac6f4c40",
-          "capability_ctrace_dff665b34d9c37b27b812171",
-          "capability_ctrace_ca7b69060a40dff5326199fc"
-        ],
-        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
-        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
-        "webBaselinePortableToRoblox": true,
-        "rawSourceCopyAllowed": false,
-        "rawAssetCopyAllowed": false,
-        "gateBypass": false,
-        "continuousLearning": true
-      },
-      "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
     },
     {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -908,6 +847,59 @@
       "LEARNING_CONTEXT": {
         "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
         "verifiedSemanticExperienceIds": [],
+        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
+        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
+        "webBaselinePortableToRoblox": true,
+        "rawSourceCopyAllowed": false,
+        "rawAssetCopyAllowed": false,
+        "gateBypass": false,
+        "continuousLearning": true
+      },
+      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+    },
+    {
+      "gameId": "survival",
+      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PLATFORM": "UNITY",
+      "GENRE": null,
+      "WEB_BASELINE": {
+        "required": true,
+        "state": "PENDING",
+        "sourcePath": "unity-games/survival",
+        "evidencePath": null,
+        "sourceIndexSha256": null,
+        "designBaselineSha256": null,
+        "validationSchemaVersion": null,
+        "strictScore": null,
+        "promotionRevalidationPassed": false,
+        "CORE_LOOP": null,
+        "STATE_MODEL": null,
+        "PROGRESSION_MODEL": null,
+        "UI_FLOW": null,
+        "INPUT_INTENT": null,
+        "SAVE_MEANING": null,
+        "CONTENT_STRUCTURE": null,
+        "BALANCE_INTENT": null
+      },
+      "ROBLOX_HANDOFF": null,
+      "POST_RELEASE_FOCUS_RUNNER": {
+        "eligibleAfterRelease": false,
+        "assigned": false,
+        "state": "WAITING_FOR_VERIFIED_RELEASE",
+        "logicalRunnerPerProject": 1,
+        "activeTaskMaxPerProject": 1,
+        "sharedProtectedRunnerSlots": 1,
+        "scheduler": "vibe2-24h-runner",
+        "worker": "vibe2-continuous-core",
+        "continuousRefill": true
+      },
+      "LEARNING_CONTEXT": {
+        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
+        "verifiedSemanticExperienceIds": [
+          "capability_ctrace_1d9be1f71564bdbf830142e8",
+          "capability_ctrace_44fd7d6e2f9274367465034b",
+          "capability_ctrace_f62bcf597b6821f4400c5b04"
+        ],
         "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
         "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
         "webBaselinePortableToRoblox": true,
