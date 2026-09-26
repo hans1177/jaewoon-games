@@ -89,6 +89,29 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Drop stale main-push wake before reserve work
+        id: main_wake
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          proceed=true
+          if [[ "${GITHUB_EVENT_NAME:-}" == 'push' && "${GITHUB_REF_NAME:-}" == 'main' ]]; then
+            latest_main="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha')"
+            echo "VIBE2_MAIN_PUSH_WAKE_EVENT_SHA=$GITHUB_SHA"
+            echo "VIBE2_MAIN_PUSH_WAKE_LATEST_SHA=$latest_main"
+            if [[ "$GITHUB_SHA" != "$latest_main" ]]; then
+              proceed=false
+              echo "VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED=$GITHUB_SHA:$latest_main"
+            else
+              echo "VIBE2_MAIN_PUSH_WAKE_FRESH=$GITHUB_SHA"
+            fi
+          else
+            echo "VIBE2_MAIN_PUSH_WAKE_FRESHNESS=BYPASS_NON_MAIN_PUSH"
+          fi
+          echo "proceed=$proceed" >> "$GITHUB_OUTPUT"
+
       - name: Download atomic neuron completion result
         if: github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-neuron-complete'
         uses: actions/download-artifact@v4
@@ -100,6 +123,7 @@ jobs:
 
       - name: Prepare latest main machine contract
         id: contract
+        if: steps.main_wake.outputs.proceed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -125,7 +149,7 @@ jobs:
           echo 'VIBE2_MAIN_CONTRACT_SNAPSHOT=ARCHIVE'
 
       - name: Fast scheduler preflight
-        if: github.event_name != 'repository_dispatch' || github.event.action != 'vibe2-neuron-complete'
+        if: steps.main_wake.outputs.proceed == 'true' && (github.event_name != 'repository_dispatch' || github.event.action != 'vibe2-neuron-complete')
         shell: bash
         run: |
           set -euo pipefail
@@ -180,6 +204,7 @@ jobs:
 
       - name: Reserve conflict-free DAG batch
         id: batch
+        if: steps.main_wake.outputs.proceed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
