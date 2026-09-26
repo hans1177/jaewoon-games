@@ -1039,3 +1039,13 @@ test('director supervisor runner drain remains structurally valid and jobs are u
   assert.match(directorSupervisor,/while IFS=\$'\\t' read -r run_id reason; do/);
   assert.doesNotMatch(directorSupervisor,/while IFS=\s+outputs:/);
 });
+
+
+test('director runner drain uses targeted active-run queries instead of deep Actions history pagination',()=>{
+  assert.match(directorSupervisor,/fetch_runs 'per_page=100'/);
+  assert.match(directorSupervisor,/fetch_runs 'status=in_progress&per_page=100'/);
+  assert.match(directorSupervisor,/fetch_runs 'status=queued&per_page=100'/);
+  assert.match(directorSupervisor,/DIRECTOR_RUNNER_DRAIN_FETCH_RETRY=/);
+  assert.doesNotMatch(directorSupervisor,/for page in \$\(seq 1 20\)/);
+  assert.doesNotMatch(directorSupervisor,/page=\$\{page\}/);
+});
