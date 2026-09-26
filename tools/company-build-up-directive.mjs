@@ -101,7 +101,7 @@ function sourceAnchorCandidates(text='',file=''){
       if(!symbol||CONTROL_FLOW_SYMBOLS.has(symbol.toLowerCase()))continue;
       const nearby=lines.slice(Math.max(0,index-2),Math.min(lines.length,index+4)).join(' ');
       const score=20
-        +tokenCount(nearby,/attack|damage|combat|enemy|boss|player|input|progress|reward|unlock|quest|save|spawn|camera|animation|vfx|ui|touch|state|phase|mode/gi)*8
+        +tokenCount(nearby,/attack|damage|combat|enemy|boss|player|input|progress|reward|unlock|quest|save|spawn|camera|animation|vfx|ui|touch|state|phase|mode|map|region|terrain|landmark|inventory|equip|item|menu|settings|interact|prompt|session|checkpoint|craft/gi)*8
         +(kind==='CLASS'?8:kind==='FUNCTION'?6:4);
       anchors.push({file,line:index+1,kind,symbol,context:clean(trimmed).slice(0,180),score});
       matched=true;break;
@@ -217,7 +217,7 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
   const topFiles=rows.map(row=>({
     file:row.file,
     score:
-      tokenCount(row.text,/attack|damage|combat|enemy|player|progress|quest|save|ui|camera|animation|particle/gi)
+      tokenCount(row.text,/attack|damage|combat|enemy|player|progress|quest|save|ui|camera|animation|particle|map|region|terrain|landmark|inventory|equip|item|menu|settings|interact|prompt|session|checkpoint|craft/gi)
   })).sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file)).slice(0,12);
   const sourceAnchors=rows.flatMap(row=>row.sourceAnchors||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0)).slice(0,48);
   return Object.freeze({
@@ -342,8 +342,8 @@ function domainState(domain,{design={},source={}}={}){
   if(domain==='NPC_SOCIAL_BEHAVIOR'&&!/npc|villager|resident|social|주민|상인|대화/.test(relevantByText))return no('no NPC or social behavior signal in approved design');
   if(domain==='NARRATIVE_STORY'&&!/story|narrative|lore|quest|스토리|세계관|대사/.test(relevantByText))return no('no narrative or story signal in approved design');
   if(domain==='REPLAYABILITY_VARIATION'&&!/rogue|wave|random|procedural|replay|런|웨이브|랜덤/.test(relevantByText))return no('no explicit replay variation signal in approved design');
-  if(['MAP_EXPANSION','WORLD_DENSITY','WORLD_NAVIGATION','CONTENT_DISCOVERY'].includes(domain)&&!hasWorld)return no('approved design and current source do not expose a world/map surface requiring expansion');
-  if(['INVENTORY_USABILITY'].includes(domain)&&!hasInventory)return no('game has no current inventory/item ownership system');
+  if(['WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','LANDMARKS','TRAVERSAL','CONTENT_DISCOVERY'].includes(domain)&&!hasWorld)return no('approved design and current source do not expose a world/map surface requiring expansion');
+  if(['INVENTORY','INVENTORY_USABILITY'].includes(domain)&&!hasInventory)return no('game has no current inventory/item ownership system');
   if(domain==='EQUIPMENT_LOADOUT'&&!hasEquipment)return no('game has no current equipment/loadout system');
   if(domain==='RECONNECT_RECOVERY'&&!hasMultiplayer&&!hasSave)return no('game has no multiplayer or persistent reconnect state');
   if(domain==='SAVE_COMPLETENESS'&&!hasSave)return no('game has no persistent save system yet');
@@ -389,8 +389,7 @@ function domainState(domain,{design={},source={}}={}){
     CONTENT_DISCOVERY:(hasWorld||hasProgression)&&Number(s.interaction||0)<3,
     PERFORMANCE:Number(s.performance||0)<2,
     PERFORMANCE_BUDGET:Number(s.performance||0)<3,
-    RUNTIME_STABILITY:Number(s.errorRecovery||0)<2,
-    SETTINGS_ACCESSIBILITY:Number(s.settings||0)<2
+    RUNTIME_STABILITY:Number(s.errorRecovery||0)<2
   };
   if(['CHARACTER_VISUALS','ENEMY_VISUALS','ENVIRONMENT','TERRAIN','MATERIALS'].includes(domain)&&Number(s.primitive||0)>8)return gap('placeholder or primitive-heavy implementation remains');
   if(weakByDomain[domain]===true)return gap('current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation');
