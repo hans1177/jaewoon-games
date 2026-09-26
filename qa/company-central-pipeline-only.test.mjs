@@ -163,7 +163,7 @@ test('runner drain uses a YAML-safe delimiter and preserves the game gate block'
   const director=read('.github/workflows/director-supervisor.yml');
   assert.match(director,/while IFS='\\|' read -r run_id reason; do/);
   assert.doesNotMatch(director,/while IFS=\$'\\t'/);
-  assert.match(director,/game-primary-gate:\n\s+needs: runner-drain\n\s+if: always\(\)\n\s+runs-on: ubuntu-slim\n\s+outputs:/);
+  assert.match(director,/game-primary-gate:\n\s+needs: runner-drain\n\s+if: always\(\) && \(github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.conclusion != 'cancelled'\)[\s\S]{0,180}?runs-on: ubuntu-slim[\s\S]{0,180}?outputs:/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
 });
 
