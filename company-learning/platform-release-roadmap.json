@@ -1,5 +1,5 @@
 {
-  "version": 415,
+  "version": 416,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8293,20 +8293,43 @@
       "gameIdStillCanonicalTaskIdentity": true,
       "maxParallelFieldRequired": false,
       "internalArtificialParallelCapAdded": false,
-      "implementationState": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "implementationState": "RUNTIME_CONTINUATION_F0_AND_PRIVATE_DISPATCH_DEDUP_UPDATED_PENDING_QA_AND_LIVE",
       "codeBindings": [
         ".github/workflows/company-development-roblox-runtime.yml",
         "qa/company-development-roblox-runtime.test.mjs",
         "qa/company-central-policy-contract.test.mjs",
-        "company-learning/company-architecture-map.json"
+        "company-learning/company-architecture-map.json",
+        ".github/workflows/company-development-roblox-runtime-continuation.yml",
+        ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
+        "qa/company-development-roblox-runtime-continuation.test.mjs",
+        "qa/company-development-roblox-headless-fast-mvp.test.mjs"
       ],
       "requiredVerification": [
         "ROBLOX_WORKFLOW_HAS_NO_TOP_LEVEL_GAME_WIDE_CONCURRENCY_GROUP",
         "ROBLOX_SOURCE_AND_TECHNICAL_MATRICES_HAVE_NO_MAX_PARALLEL_CAP",
         "EXACT_GAME_ID_DISPATCH_REMAINS_SUPPORTED",
         "COMPANY_RUNTIME_PERSIST_CONFLICT_RETRY_REMAINS",
-        "NO_QA_SECURITY_RELEASE_GATE_WEAKENING"
-      ]
+        "NO_QA_SECURITY_RELEASE_GATE_WEAKENING",
+        "ROBLOX_CONTINUATION_HAS_NO_WORKFLOW_WIDE_LOCK",
+        "ROBLOX_F0_HAS_NO_WORKFLOW_WIDE_LOCK",
+        "ROBLOX_F0_DISPATCHES_EXACT_GAME_IDS",
+        "ROBLOX_ACTIVE_F0_AND_PRIVATE_RUNTIME_DISPATCHES_DEDUP_SAME_GAME",
+        "ROBLOX_F0_PERSIST_USES_OPTIMISTIC_SHARED_STATE_RETRY"
+      ],
+      "followup": {
+        "scope": "ROBLOX_SHARED_PREFLIGHT_F0_PRIVATE_RUNTIME_DISPATCH",
+        "continuationWorkflow": ".github/workflows/company-development-roblox-runtime-continuation.yml",
+        "f0Workflow": ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
+        "releaseWorkflow": ".github/workflows/company-development-roblox-release-promotion.yml",
+        "continuationWorkflowWideSerializationRemoved": true,
+        "f0WorkflowWideSerializationRemoved": true,
+        "exactGameF0Dispatch": true,
+        "activeF0SameGameDispatchDedup": true,
+        "activePrivateRuntimeSameGameDispatchDedup": true,
+        "f0SharedStatePersistMode": "OPTIMISTIC_RETRY_NO_JOB_WIDE_LOCK",
+        "heavyWorkSerializationAdded": false,
+        "qualityGateWeakening": false
+      }
     }
   },
   "vibeExecutionLaneContract": {
