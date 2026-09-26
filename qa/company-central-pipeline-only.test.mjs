@@ -529,13 +529,19 @@ test('exact-game native workflow concurrency closes dedupe races without global 
 
   assert.equal(change?.exactGameIdentity,'inputs.game_id');
   assert.equal(change?.pushBatchIdentity,'batch-push');
-  assert.equal(change?.manualBatchFallbackIdentity,'github.run_id');
+  assert.equal(change?.nonPushEmptyBatchIdentity,'github.run_id');
   assert.equal(change?.cancelInProgress,false);
   assert.equal(change?.distinctGamesParallel,true);
+  assert.equal(change?.pushBatchRunsCoalesced,true);
+  assert.equal(change?.manualEmptyBatchRunsRunScoped,true);
   assert.equal(change?.batchRunsGloballySerialized,false);
   assert.equal(change?.globalNativeSerializationForbidden,true);
   assert.equal(architecture.nativeExactGameWorkflowConcurrency?.distinctGamesParallel,true);
   assert.equal(architecture.nativeExactGameWorkflowConcurrency?.batchGlobalSerialization,false);
+  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.pushBatchCoalesced,true);
+  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.manualEmptyBatchRunScoped,true);
   assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.exactGameOverlapForbidden,true);
   assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.distinctGameParallelismRequired,true);
+  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.pushBatchCoalesced,true);
+  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.manualEmptyBatchRunScoped,true);
 });
