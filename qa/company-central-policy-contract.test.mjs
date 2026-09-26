@@ -64,7 +64,13 @@ test('director fallback wake only re-dispatches existing queued GAME_PRIMARY wor
   assert.equal(fallback.cancelledWorkflowRunWakeSuppressed,true);
   assert.equal(fallback.qualitySecurityReleaseGatesUnchanged,true);
 
+  const coalescing=roadmap.changeRecord?.directorPreSupervisionCoalescing20260927||{};
+  assert.equal(coalescing.gamePrimaryGateCancelInProgress,false);
+  assert.equal(coalescing.gamePrimaryGateActiveCompletionPreserved,true);
+  assert.equal(coalescing.gamePrimaryGatePendingLatestWins,true);
+
   assert.match(directorSupervisor,/\n      - Vibe2 Continuous Core\n    types: \[completed\]/);
+  assert.match(directorSupervisor,/game-primary-gate:[\s\S]*?group: director-game-primary-gate-v1[\s\S]*?cancel-in-progress: false/);
   assert.match(directorSupervisor,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=DISPATCHED/);
   assert.match(directorSupervisor,/DIRECTOR_GAME_PRIMARY_SCOPED_CORE_ACTIVE=/);
   assert.match(directorSupervisor,/DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE=SKIPPED_ACTIVE_CORE/);
