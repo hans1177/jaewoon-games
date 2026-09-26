@@ -266,7 +266,7 @@ test('conflict markers fail fast',()=>{
 });
 
 
-test('Roblox asset adaptation accepts all required core domains plus unlimited additional visual domains with native motion',()=> {
+test('Roblox asset adaptation accepts articulated Animator motion with blend and speed sync',()=> {
   const root=repo();
   const sourceRoot=path.join(root,'roblox-games/demo');
   fs.mkdirSync(path.join(sourceRoot,'client'),{recursive:true});
@@ -274,12 +274,41 @@ test('Roblox asset adaptation accepts all required core domains plus unlimited a
     'local RunService = game:GetService("RunService")',
     'local Lighting = game:GetService("Lighting")',
     'local character = Instance.new("Model")',
-    'character.Name = "PlayerCharacterVisual"',
-    'local enemyBody = Instance.new("MeshPart")',
-    'enemyBody.Name = "EnemyCreatureBody"',
-    'enemyBody.Material = Enum.Material.SmoothPlastic',
-    'enemyBody.Color = Color3.fromRGB(80,110,145)',
-    'enemyBody.Parent = character',
+    'character.Name = "EnemyCharacter"',
+    'local humanoid = Instance.new("Humanoid")',
+    'humanoid.Parent = character',
+    'local animator = Instance.new("Animator")',
+    'animator.Parent = humanoid',
+    'local rootPart = Instance.new("Part")',
+    'rootPart.Name = "HumanoidRootPart"',
+    'rootPart.Parent = character',
+    'local torso = Instance.new("MeshPart")',
+    'torso.Name = "UpperTorso"',
+    'torso.Material = Enum.Material.SmoothPlastic',
+    'torso.Color = Color3.fromRGB(80,110,145)',
+    'torso.Parent = character',
+    'local arm = Instance.new("MeshPart")',
+    'arm.Name = "RightUpperArm"',
+    'arm.Parent = character',
+    'local leg = Instance.new("MeshPart")',
+    'leg.Name = "RightUpperLeg"',
+    'leg.Parent = character',
+    'local shoulder = Instance.new("Motor6D")',
+    'shoulder.Name = "RightShoulder"',
+    'shoulder.Part0 = torso',
+    'shoulder.Part1 = arm',
+    'shoulder.Parent = torso',
+    'local hip = Instance.new("Motor6D")',
+    'hip.Name = "RightHip"',
+    'hip.Part0 = torso',
+    'hip.Part1 = leg',
+    'hip.Parent = torso',
+    'local animation = Instance.new("Animation")',
+    'animation.AnimationId = "rbxassetid://1"',
+    'local animationTrack = animator:LoadAnimation(animation)',
+    'animationTrack:Play(0.15)',
+    'animationTrack:AdjustWeight(1, 0.15)',
+    'animationTrack:AdjustSpeed(math.max(0.5, humanoid.WalkSpeed / 16))',
     'local weaponEquipment = Instance.new("MeshPart")',
     'weaponEquipment.Name = "SwordEquipment"',
     'weaponEquipment.Material = Enum.Material.Metal',
@@ -292,11 +321,13 @@ test('Roblox asset adaptation accepts all required core domains plus unlimited a
     'local hud = Instance.new("ScreenGui")',
     'hud.Name = "ExtraUiDomain"',
     'local impactVfx = Instance.new("ParticleEmitter")',
-    'impactVfx.Name = "ExtraVfxDomain"',
+    'impactVfx.Name = "ImpactVfx"',
     'impactVfx.Parent = terrainEnvironment',
     'Lighting.Brightness = 2',
     'RunService.RenderStepped:Connect(function(dt)',
-    '  enemyBody.CFrame = enemyBody.CFrame * CFrame.Angles(0, dt * 0.4, 0)',
+    '  rootPart.CFrame = rootPart.CFrame * CFrame.new(0, 0, -dt)',
+    '  shoulder.Transform = CFrame.Angles(math.sin(os.clock()*8)*0.15, 0, 0)',
+    '  hip.Transform = CFrame.Angles(-math.sin(os.clock()*8)*0.12, 0, 0)',
     '  weaponEquipment.Orientation = weaponEquipment.Orientation + Vector3.new(0, dt * 8, 0)',
     'end)'
   ].join('\n')+'\n','utf8');
@@ -307,15 +338,72 @@ test('Roblox asset adaptation accepts all required core domains plus unlimited a
     changedFiles:['client/Visual.client.luau'],
     presentationQuality:{required:true,pass:'ASSET_ADAPTATION',runtimeChecks:['golden-scene-runtime'],authorityExpanded:false}
   },null,2));
-  const result=runIncrementalQa({root,manifest,namespace:'roblox:full-graphics-extra-domains'});
+  const result=runIncrementalQa({root,manifest,namespace:'roblox:articulated-motion'});
   assert.equal(result.presentationQa.status,'STATIC_PASS');
   assert.equal(result.presentationQa.pass,'ASSET_ADAPTATION');
-  assert.equal(result.presentationQa.checks.find(row=>row.name==='ROBLOX_VISUAL_DOMAIN_CHARACTER_ENEMY')?.pass,true);
-  assert.equal(result.presentationQa.checks.find(row=>row.name==='ROBLOX_VISUAL_DOMAIN_WEAPON_EQUIPMENT')?.pass,true);
-  assert.equal(result.presentationQa.checks.find(row=>row.name==='ROBLOX_VISUAL_DOMAIN_ENVIRONMENT_TERRAIN')?.pass,true);
-  assert.equal(result.presentationQa.checks.find(row=>row.name==='ROBLOX_VISUAL_DOMAIN_MATERIAL_COLOR_STYLE')?.pass,true);
-  assert.equal(result.presentationQa.checks.find(row=>row.name==='ROBLOX_NATIVE_MOTION_DRIVER')?.pass,true);
-  assert.equal(result.presentationQa.checks.find(row=>row.name==='ROBLOX_NATIVE_TRANSFORM_MUTATION')?.pass,true);
+  for(const check of [
+    'ROBLOX_CHARACTER_ARTICULATION','ROBLOX_CHARACTER_ANIMATOR','ROBLOX_CHARACTER_JOINT_MOTION',
+    'ROBLOX_CHARACTER_BLEND','ROBLOX_CHARACTER_SPEED_SYNC','ROBLOX_NO_WELD_ONLY_ARTICULATED_BODY',
+    'ROBLOX_NO_ROOT_ONLY_MANNEQUIN_MOTION'
+  ])assert.equal(result.presentationQa.checks.find(row=>row.name===check)?.pass,true,check);
+  assert.equal(result.presentationQa.runtimeStillRequired,true);
+});
+
+test('Roblox asset adaptation hard fails a welded root-only humanoid mannequin',()=> {
+  const root=repo();
+  const sourceRoot=path.join(root,'roblox-games/demo');
+  fs.mkdirSync(path.join(sourceRoot,'server'),{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'server/Game.server.luau'),[
+    'local RunService = game:GetService("RunService")',
+    'local function humanoidFigure()',
+    '  local character = Instance.new("Model")',
+    '  character.Name = "EnemyNPCCharacter"',
+    '  local rootPart = Instance.new("Part")',
+    '  rootPart.Name = "HumanoidRootPart"',
+    '  rootPart.Parent = character',
+    '  local torso = Instance.new("Part")',
+    '  torso.Name = "Torso"',
+    '  torso.Material = Enum.Material.SmoothPlastic',
+    '  torso.Color = Color3.fromRGB(90,110,130)',
+    '  torso.Parent = character',
+    '  local arm = Instance.new("Part")',
+    '  arm.Name = "RightArm"',
+    '  arm.Parent = character',
+    '  local leg = Instance.new("Part")',
+    '  leg.Name = "RightLeg"',
+    '  leg.Parent = character',
+    '  local armWeld = Instance.new("WeldConstraint")',
+    '  armWeld.Part0 = torso',
+    '  armWeld.Part1 = arm',
+    '  armWeld.Parent = arm',
+    '  local legWeld = Instance.new("WeldConstraint")',
+    '  legWeld.Part0 = torso',
+    '  legWeld.Part1 = leg',
+    '  legWeld.Parent = leg',
+    '  local weaponEquipment = Instance.new("MeshPart")',
+    '  weaponEquipment.Name = "SwordEquipment"',
+    '  weaponEquipment.Material = Enum.Material.Metal',
+    '  weaponEquipment.Parent = character',
+    '  local terrainEnvironment = Instance.new("MeshPart")',
+    '  terrainEnvironment.Name = "DungeonTerrainEnvironment"',
+    '  terrainEnvironment.Material = Enum.Material.Slate',
+    '  terrainEnvironment.Parent = workspace',
+    '  RunService.Heartbeat:Connect(function(dt)',
+    '    rootPart.CFrame = rootPart.CFrame * CFrame.new(0,0,-dt)',
+    '  end)',
+    '  return character',
+    'end',
+    'humanoidFigure()'
+  ].join('\n')+'\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'roblox-games/demo',target:'roblox',changedFiles:['server/Game.server.luau'],
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false}
+  },null,2));
+  assert.throws(
+    ()=>runIncrementalQa({root,manifest,namespace:'roblox:mannequin-root-only'}),
+    /CHARACTER_MOTION_MANNEQUIN/
+  );
 });
 
 test('Roblox asset adaptation fails when a required core visual domain is missing regardless of extra domains',()=> {

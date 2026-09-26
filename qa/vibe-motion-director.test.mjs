@@ -8,6 +8,8 @@ import {
   MOTION_COMPOSITION_CHANNELS,
   MOTION_DNA_FIELDS,
   MOTION_LIBRARY_GRAPH_NODES,
+  ROBLOX_CHARACTER_MOTION_FAILURE,
+  ROBLOX_MOTION_SOURCE_PRIORITY,
   createMotionDNA,
   scoreMotionCandidate,
   selectContextMotion,
@@ -42,6 +44,10 @@ import {
   createMotionLineage,
   aggregateRuntimeMotionSignals,
   buildRuntimeMotionLearningCandidate,
+  selectRobloxCharacterMotionSource,
+  createRobloxMotionBlendProfile,
+  createRobloxCharacterMotionPlan,
+  auditRobloxCharacterMotionEvidence,
   createMotionDirectorPlan
 } from '../assets/vibe-motion-director.js';
 
@@ -556,4 +562,105 @@ test('full motion director plan exposes advanced quality and learning systems',(
   assert.equal(plan.emotionIntent.intent,'ALERT');
   assert.equal(plan.motionLod.tier,'NEAR');
   assert.equal(plan.runtimeLearning.positiveMasteryEligible,true);
+});
+
+
+test('Roblox motion source selection prefers verified compatible library motion before new authoring',()=>{
+  const candidates=[
+    {id:'new-handmade',sourceType:'NEW_NATIVE_AUTHORING',dna:createMotionDNA({id:'new-handmade',bodyPlan:'HUMANOID',rigProfile:'R15',platformVariant:'ROBLOX',speciesOrArchetype:'KNIGHT'})},
+    {id:'company-run',companyVerified:true,gameId:'other',dna:createMotionDNA({id:'company-run',bodyPlan:'HUMANOID',rigProfile:'R15',platformVariant:'ROBLOX',speciesOrArchetype:'KNIGHT',runtimeVerificationState:'VERIFIED_RUNTIME',sourceProvenance:'COMPANY_VERIFIED'})},
+    {id:'same-game-run',companyVerified:true,gameId:'demo',dna:createMotionDNA({id:'same-game-run',bodyPlan:'HUMANOID',rigProfile:'R15',platformVariant:'ROBLOX',speciesOrArchetype:'KNIGHT',runtimeVerificationState:'VERIFIED_RUNTIME',sourceProvenance:'COMPANY_VERIFIED'})}
+  ];
+  const selected=selectRobloxCharacterMotionSource({
+    candidates,gameId:'demo',archetype:'KNIGHT',
+    context:{bodyPlan:'HUMANOID',rigProfile:'R15'}
+  });
+  assert.equal(selected.selectedId,'same-game-run');
+  assert.equal(selected.sourceClass,'VERIFIED_SAME_GAME_SAME_ARCHETYPE_MOTION');
+  assert.equal(selected.libraryFirst,true);
+  assert.equal(selected.newKeyframeAuthoringLast,true);
+  assert.equal(ROBLOX_MOTION_SOURCE_PRIORITY[0],'VERIFIED_SAME_GAME_SAME_ARCHETYPE_MOTION');
+});
+
+test('Roblox blend profile requires crossfade weight and locomotion speed sync',()=>{
+  const blend=createRobloxMotionBlendProfile({crossFadeSeconds:.01,walkSpeed:7,runSpeed:17});
+  assert.equal(blend.crossFadeSeconds,.08);
+  assert.equal(blend.speedThresholds.WALK,7);
+  assert.equal(blend.speedThresholds.RUN,17);
+  assert.equal(blend.animationTrackCrossFadeRequired,true);
+  assert.equal(blend.adjustWeightPreferred,true);
+  assert.equal(blend.playbackSpeedSyncRequired,true);
+  assert.equal(blend.hardStatePopForbidden,true);
+});
+
+test('Roblox articulated character audit hard fails mannequin root-only motion',()=>{
+  const result=auditRobloxCharacterMotionEvidence({
+    actorClass:'HUMANOID_NPC',
+    articulatedExpected:true,
+    hasHumanoid:true,
+    hasAnimator:false,
+    hasMotor6D:false,
+    visibleLocomotion:true,
+    rootTransformChanges:true,
+    jointTransformChanges:false,
+    weldConstraintOnly:true,
+    officialStudioRuntimeObserved:true
+  });
+  assert.equal(result.pass,false);
+  assert.equal(result.mannequin,true);
+  assert.equal(result.failureCode,ROBLOX_CHARACTER_MOTION_FAILURE);
+  assert.ok(result.failures.includes('ROOT_ONLY_VISIBLE_LOCOMOTION'));
+  assert.ok(result.failures.includes('WELD_CONSTRAINT_ONLY_ARTICULATED_BODY'));
+});
+
+test('Roblox articulated character audit passes smooth joint motion with native runtime evidence',()=>{
+  const result=auditRobloxCharacterMotionEvidence({
+    actorClass:'HUMANOID_NPC',
+    articulatedExpected:true,
+    hasHumanoid:true,
+    hasAnimator:true,
+    hasMotor6D:true,
+    visibleLocomotion:true,
+    rootTransformChanges:true,
+    jointTransformChanges:true,
+    playbackSpeedSynced:true,
+    footSlideNormalized:.01,
+    officialStudioRuntimeObserved:true
+  });
+  assert.equal(result.pass,true);
+  assert.equal(result.mannequin,false);
+  assert.equal(result.failureCode,null);
+});
+
+test('Roblox motion director plan binds articulated smooth-motion system without gameplay authority',()=>{
+  const plan=createRobloxCharacterMotionPlan({
+    actorClass:'CREATURE',
+    bodyPlan:'HEAVY_BIPED',
+    rigProfile:'CUSTOM_MOTOR6D',
+    gameId:'demo',
+    archetype:'OGRE',
+    motionCandidates:[{
+      id:'ogre-run',
+      companyVerified:true,
+      gameId:'demo',
+      dna:createMotionDNA({
+        id:'ogre-run',bodyPlan:'HEAVY_BIPED',rigProfile:'CUSTOM_MOTOR6D',
+        speciesOrArchetype:'OGRE',platformVariant:'ROBLOX',
+        runtimeVerificationState:'VERIFIED_RUNTIME',sourceProvenance:'COMPANY_VERIFIED'
+      })
+    }]
+  });
+  assert.equal(plan.motionSource.selectedId,'ogre-run');
+  assert.ok(plan.requiredRig.includes('ANIMATOR'));
+  assert.equal(plan.rootTransformOnlyVisualLocomotionForbidden,true);
+  assert.equal(plan.officialStudioRuntimeEvidenceRequired,true);
+  assert.equal(plan.gameplayAuthority,false);
+
+  const director=createMotionDirectorPlan({
+    platform:'ROBLOX',bodyPlan:'HEAVY_BIPED',rigProfile:'CUSTOM_MOTOR6D',
+    motionCandidates:[],robloxCharacterMotion:{actorClass:'CREATURE',archetype:'OGRE'}
+  });
+  assert.equal(director.version,2);
+  assert.ok(director.systems.includes('ROBLOX_SMOOTH_CHARACTER_MOTION'));
+  assert.equal(director.robloxCharacterMotion.actorClass,'CREATURE');
 });

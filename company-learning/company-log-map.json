@@ -1,5 +1,5 @@
 {
-  "version": 73,
+  "version": 75,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -596,7 +596,7 @@
     "structuredEvidenceRequiredForAcceptance": true
   },
   "motionDirectorEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h.motionDirectorSystem",
     "recordKind": "motion-director-evidence",
     "rootScope": "INSIDE_GRAPHICS_PRODUCTION_ONLY",
@@ -622,7 +622,16 @@
       "ROOT_MOVEMENT_ENVELOPE_RESULT",
       "CONTACT_SYNC_RESULT",
       "PLATFORM_RUNTIME_CAPTURE",
-      "QA_RESULT"
+      "QA_RESULT",
+      "ACTOR_CLASS",
+      "RIG_ARTICULATION_RESULT",
+      "ANIMATOR_BINDING_RESULT",
+      "MOTION_SOURCE_STRATEGY",
+      "BLEND_PROFILE",
+      "LOCOMOTION_SPEED_SYNC_RESULT",
+      "JOINT_ACTIVITY_RESULT",
+      "MANNEQUIN_CHECK_RESULT",
+      "PROCEDURAL_CONTACT_CORRECTION_RESULT"
     ],
     "unresolvedCompatibilityOrLibraryEdgeBlocksVerifiedPromotion": true,
     "markerOnlyEvidenceForbidden": true,
@@ -630,7 +639,10 @@
     "gameplayAuthorityMutationEvidenceMustFail": true,
     "unityAndRobloxEvidenceRemainPlatformSpecific": true,
     "failureState": "ASSET_REPAIR_REQUIRED",
-    "passMeaning": "MOTION_PRESENTATION_CHECKPOINT_NOT_RELEASE_AUTHORITY"
+    "passMeaning": "MOTION_PRESENTATION_CHECKPOINT_NOT_RELEASE_AUTHORITY",
+    "manuallyAuthoredMotionMustExplainWhyVerifiedCompatibleLibraryMotionWasInsufficient": true,
+    "rootOnlyLocomotionCannotProveArticulatedMotionPass": true,
+    "manquinFailureCode": "CHARACTER_MOTION_MANNEQUIN"
   },
   "autoMotionGapFillEvidenceContract": {
     "version": 1,
@@ -685,7 +697,7 @@
     "canonicalTrainingPipelineOnly": true
   },
   "motionAdvancedQualityEvidence": {
-    "version": 1,
+    "version": 2,
     "required": [
       "TRANSITION_DIRECTOR_RESULT",
       "CONTACT_QA_RESULT",
@@ -694,7 +706,13 @@
       "GROUP_OR_MULTI_ACTOR_ALIGNMENT_WHEN_USED",
       "EMOTION_INTENT_LAYER_WHEN_USED",
       "MOTION_LOD_TIER",
-      "MOTION_LINEAGE"
+      "MOTION_LINEAGE",
+      "JOINT_ACTIVITY_RESULT",
+      "LOCOMOTION_SPEED_SYNC_RESULT",
+      "STATE_BLEND_CONTINUITY_RESULT",
+      "FOOT_SLIDE_RESULT",
+      "IK_OR_CONTACT_CORRECTION_RESULT_WHEN_SUPPORTED",
+      "MANNEQUIN_HARD_FAILURE_RESULT"
     ],
     "hardFailureBlocksPromotion": true
   },
@@ -1287,7 +1305,7 @@
     }
   },
   "robloxNativeCodingQualityEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#robloxNativeCodingQualityContract",
     "correlationKeys": [
       "TASK_ID",
@@ -1304,7 +1322,8 @@
       "ROBLOX_NATIVE_FUNCTIONAL_CHAIN=",
       "ROBLOX_NATIVE_ACTUAL_PLAY_FEEDBACK=",
       "ROBLOX_NATIVE_FAILURE_CLASS=",
-      "ROBLOX_NATIVE_LEARNING_REUSE="
+      "ROBLOX_NATIVE_LEARNING_REUSE=",
+      "ROBLOX_CHARACTER_MOTION_QUALITY="
     ],
     "failureClasses": [
       "ROBLOX_SERVER_CLIENT_BOUNDARY",
@@ -1315,13 +1334,24 @@
       "ROBLOX_UI_STATE",
       "ROBLOX_MULTIPLAYER_SYNC",
       "ROBLOX_STUDIO_RUNTIME",
-      "ROBLOX_SOURCE_GENERATION"
+      "ROBLOX_SOURCE_GENERATION",
+      "ROBLOX_CHARACTER_RIG_ANIMATION",
+      "ROBLOX_CHARACTER_MOTION_MANNEQUIN"
     ],
     "observedStudioFailureMustReferenceExactScenario": true,
     "exactScriptFunctionEventOrStatePreferred": true,
     "repeatedFailureDedupeRequired": true,
     "rawLogAloneCannotProvePass": true,
-    "verifiedLearningMustReferenceSourceAndOutcome": true
+    "verifiedLearningMustReferenceSourceAndOutcome": true,
+    "motionQualityEvidence": {
+      "centralContract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+      "requiredWhenCharacterMotionAffected": true,
+      "exactActorClassAndRigRequired": true,
+      "jointActivityAndBlendObservationRequired": true,
+      "officialStudioMcpRuntimeCaptureRequired": true,
+      "staticMarkerOnlyPassForbidden": true,
+      "hardFailureCode": "ROBLOX_CHARACTER_MOTION_MANNEQUIN"
+    }
   },
   "vibeModelCacheLookupOnlyWarmup": {
     "version": 2,
@@ -1381,5 +1411,52 @@
     "baselineCacheBytes": 2814033971,
     "skipRestoreWhenWorkLockNotAcquired": true,
     "gamePrimaryBoundaryMustRemain": 256
+  },
+  "universalAssetFirstUpgradeEvidenceContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.universalAssetFirstUpgradeContract",
+    "requiredFor": [
+      "VIBE2",
+      "VIBE3",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "assetFamilies": [
+      "CHARACTER",
+      "CREATURE",
+      "BUILDING",
+      "ENVIRONMENT",
+      "WEAPON",
+      "SKILL",
+      "MATERIAL",
+      "AUDIO",
+      "VFX",
+      "UI",
+      "MOTION",
+      "PROP"
+    ],
+    "requiredFields": [
+      "ASSET_LOOKUP_EXECUTED",
+      "ASSET_FAMILY_APPLICABILITY_MATRIX",
+      "SELECTED_ASSET_IDS_OR_ATOMS",
+      "SOURCE_BINDING_FILES_AND_SYMBOLS",
+      "ACTUAL_RUNTIME_USAGE_RESULT",
+      "MAP_ENVIRONMENT_COVERAGE_RESULT",
+      "PRIMITIVE_ONLY_CHECK_RESULT"
+    ],
+    "rules": {
+      "everyFamilyMustBeAccountedFor": true,
+      "notApplicableRequiresEvidence": true,
+      "markersOrConfigSelectionAloneCannotProveUsage": true,
+      "runtimeEvidenceRequiredBeforeVerifiedPromotion": true,
+      "exactFailureClassRequired": true
+    },
+    "hardFailureClasses": [
+      "UNIVERSAL_ASSET_LOOKUP_MISSING",
+      "APPLICABLE_ASSET_FAMILY_NOT_BOUND",
+      "ASSET_MARKER_ONLY_NO_VISIBLE_USE",
+      "PRIMITIVE_ONLY_VISUAL_UPGRADE",
+      "MAP_ENVIRONMENT_ASSET_COVERAGE_MISSING"
+    ]
   }
 }

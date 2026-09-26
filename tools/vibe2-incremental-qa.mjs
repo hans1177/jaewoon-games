@@ -401,6 +401,49 @@ function runSpecializedFocusedQa({root,data={},changed=[]}={}){
     authorityExpanded:false
   };
 }
+function robloxCharacterMotionStaticEvidence(text=''){
+  const source=String(text||'');
+  const customActorFactory=/(?:humanoidFigure|figure|create\w*(?:Npc|NPC|Enemy|Monster|Creature|Character)|build\w*(?:Npc|NPC|Enemy|Monster|Creature|Character))\s*\(/i.test(source);
+  const customModel=/Instance\.new\s*\(\s*["']Model["']\s*\)/i.test(source);
+  const humanoidCreated=/Instance\.new\s*\(\s*["']Humanoid["']\s*\)|Instance\.new\s*\(\s*["']AnimationController["']\s*\)/i.test(source);
+  const namedLimbs={
+    arm:/(?:UpperArm|LowerArm|RightArm|LeftArm|ArmL|ArmR|Shoulder|Hand)/i.test(source),
+    leg:/(?:UpperLeg|LowerLeg|RightLeg|LeftLeg|LegL|LegR|Foot|Boot)/i.test(source),
+    torso:/(?:UpperTorso|LowerTorso|Torso|Chest|Waist|Pelvis)/i.test(source),
+    head:/(?:\bHead\b|RPGHead|NpcHead|EnemyHead|MonsterHead)/i.test(source)
+  };
+  const limbFamilies=Object.values(namedLimbs).filter(Boolean).length;
+  const characterTerms=/(?:character|player|npc|enemy|monster|boss|creature|humanoid|villager|resident)/i.test(source);
+  const customArticulatedIntent=humanoidCreated||customActorFactory||(customModel&&characterTerms&&limbFamilies>=2);
+  const nativePlayerRigIntent=!customArticulatedIntent&&/(?:CharacterAdded|LocalPlayer|player\.Character|HumanoidRootPart)/.test(source)&&/Humanoid/.test(source);
+  const articulation=/(?:Motor6D|\bBone\b|UpperTorso|LowerTorso|LeftUpperArm|RightUpperArm|LeftUpperLeg|RightUpperLeg)/.test(source);
+  const animator=/(?:Animator|AnimationController|AnimationTrack|LoadAnimation|WaitForChild\s*\(\s*["']Animate["'])/.test(source);
+  const jointMotion=/(?:AnimationTrack|LoadAnimation|:Play\s*\(|AdjustWeight\s*\(|(?:Motor6D|Bone)[\s\S]{0,900}\.Transform\s*=|\.Transform\s*=\s*CFrame)/i.test(source);
+  const rootMotion=/(?:\.CFrame\s*=|:PivotTo\s*\(|PrimaryPartCFrame|SetPrimaryPartCFrame)/.test(source);
+  const weldConstraint=/WeldConstraint/.test(source);
+  const blend=/(?:AdjustWeight\s*\(|:Play\s*\(\s*\.?\d|:Stop\s*\(\s*\.?\d|cross.?fade|fadeTime|blend)/i.test(source);
+  const speedSync=/(?:AdjustSpeed\s*\(|PlaybackSpeed\s*=|WalkSpeed[\s\S]{0,500}(?:AnimationTrack|AdjustSpeed)|(?:speed|velocity)[\s\S]{0,500}AdjustSpeed)/i.test(source);
+  const ik=/(?:IKControl|FootIK|foot.?ik|ground.?normal|pelvis.?height|spine.?lean|head.?gaze)/i.test(source);
+  const articulatedExpected=customArticulatedIntent===true;
+  const rootOnly=articulatedExpected&&rootMotion&&!jointMotion;
+  const weldOnly=articulatedExpected&&weldConstraint&&!articulation;
+  return Object.freeze({
+    articulatedExpected,
+    customArticulatedIntent,
+    nativePlayerRigIntent,
+    articulation,
+    animator,
+    jointMotion,
+    rootMotion,
+    weldConstraint,
+    blend,
+    speedSync,
+    ik,
+    rootOnly,
+    weldOnly
+  });
+}
+
 function runPresentationStaticQa({root,data={},changed=[]}={}){
   const contract=presentationContract(data);
   if(!contract)return{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false};
@@ -470,6 +513,19 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
         const motionMutation=/(?:TweenService[\s\S]{0,1200}(?:CFrame|Transform|Position|Orientation)\s*=|(?:RenderStepped|Heartbeat)[\s\S]{0,1200}\.(?:CFrame|Transform|Position|Orientation)\s*=|(?:Motor6D|Bone)[\s\S]{0,800}\.Transform\s*=|\.(?:CFrame|Transform|Position|Orientation)\s*=\s*(?:CFrame|Vector3|UDim2|[^\n;]+[+*\-]))/i.test(text);
         require('ROBLOX_NATIVE_MOTION_DRIVER',motionDriver);
         require('ROBLOX_NATIVE_TRANSFORM_MUTATION',motionMutation);
+        const characterMotion=robloxCharacterMotionStaticEvidence(text);
+        if(characterMotion.articulatedExpected){
+          require('ROBLOX_CHARACTER_ARTICULATION',characterMotion.articulation);
+          require('ROBLOX_CHARACTER_ANIMATOR',characterMotion.animator);
+          require('ROBLOX_CHARACTER_JOINT_MOTION',characterMotion.jointMotion);
+          require('ROBLOX_CHARACTER_BLEND',characterMotion.blend);
+          require('ROBLOX_CHARACTER_SPEED_SYNC',characterMotion.speedSync);
+          require('ROBLOX_NO_WELD_ONLY_ARTICULATED_BODY',!characterMotion.weldOnly);
+          require('ROBLOX_NO_ROOT_ONLY_MANNEQUIN_MOTION',!characterMotion.rootOnly);
+          if(characterMotion.weldOnly||characterMotion.rootOnly||!characterMotion.articulation||!characterMotion.animator||!characterMotion.jointMotion){
+            require('CHARACTER_MOTION_MANNEQUIN',false);
+          }
+        }
       }else{
         const identityDomains=patternHits(text,[
           /\b(?:head|torso|body|arm|leg|hand|foot|character|player|enemy|monster|npc|creature)\b/i,
@@ -490,6 +546,21 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
         ?/(?:Animator|AnimationClip|SkinnedMeshRenderer|Transform|Bone|Quaternion|localRotation|localPosition)/i.test(text)
         :/(?:Animator|AnimationTrack|Motor6D|Bone|CFrame|Transform|TweenService)/i.test(text));
       require('SECONDARY_MOTION_SIGNAL',/(?:weapon|arm|hand|head|hair|tail|wing|cloak|cape|accessory|ornament)[\s\S]{0,800}(?:lerp|damp|spring|sway|bob|follow|lag|rotation|cframe|quaternion)|(?:lerp|damp|spring|sway|bob|follow|lag)[\s\S]{0,800}(?:weapon|arm|hand|head|hair|tail|wing|cloak|cape|accessory|ornament)/i.test(text));
+      if(target==='roblox'){
+        const characterMotion=robloxCharacterMotionStaticEvidence(text);
+        if(characterMotion.articulatedExpected){
+          require('ROBLOX_CHARACTER_ARTICULATION',characterMotion.articulation);
+          require('ROBLOX_CHARACTER_ANIMATOR',characterMotion.animator);
+          require('ROBLOX_CHARACTER_JOINT_MOTION',characterMotion.jointMotion);
+          require('ROBLOX_CHARACTER_BLEND',characterMotion.blend);
+          require('ROBLOX_CHARACTER_SPEED_SYNC',characterMotion.speedSync);
+          require('ROBLOX_NO_WELD_ONLY_ARTICULATED_BODY',!characterMotion.weldOnly);
+          require('ROBLOX_NO_ROOT_ONLY_MANNEQUIN_MOTION',!characterMotion.rootOnly);
+          if(characterMotion.weldOnly||characterMotion.rootOnly||!characterMotion.articulation||!characterMotion.animator||!characterMotion.jointMotion){
+            require('CHARACTER_MOTION_MANNEQUIN',false);
+          }
+        }
+      }
     }
   }else if(pass==='ANIMATION_FEEL'){
     const hit=patternHits(text,[/anticipat/i,/hit.?stop|freeze.?frame/i,/recoil/i,/recover(?:y)?/i,/overshoot|settle/i,/smear|trail|afterimage/i,/squash|stretch/i]);
@@ -545,6 +616,48 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
   };
 }
 
+const UNIVERSAL_ASSET_FAMILIES=Object.freeze(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP']);
+function robloxSourceTreeText(root,data={},changed=[]){
+  let sourceRoot=posix(data?.sourceRoot);
+  if(!sourceRoot){
+    const hit=(changed||[]).map(posix).find(value=>/^roblox-games\/[^/]+\//.test(value));
+    if(hit)sourceRoot=hit.split('/').slice(0,2).join('/');
+  }
+  if(!sourceRoot)return presentationSourceText(root,changed);
+  const base=assertInside(root,sourceRoot);
+  if(!fs.existsSync(base)||!fs.statSync(base).isDirectory())return presentationSourceText(root,changed);
+  const rows=[];let bytes=0;
+  const visit=dir=>{
+    for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+      const file=path.join(dir,entry.name);
+      if(entry.isDirectory()){visit(file);continue;}
+      if(!/\.(?:lua|luau)$/i.test(entry.name))continue;
+      const content=fs.readFileSync(file,'utf8');
+      bytes+=Buffer.byteLength(content,'utf8');
+      if(bytes>2_000_000)continue;
+      rows.push(content);
+    }
+  };
+  visit(base);
+  return rows.join('\n\n');
+}
+function robloxAssetFamilySignals(text=''){
+  const source=String(text||'');
+  return Object.freeze({
+    CHARACTER:/(?:CharacterAdded|player\.Character|Instance\.new\s*\(\s*["']Humanoid["']|Name\s*=\s*["'](?:Player|Character|NPC|Npc|Villager|Resident))/i.test(source),
+    CREATURE:/(?:Name\s*=\s*["'](?:Enemy|Monster|Boss|Creature|Zombie|Goblin|Wolf|Spider|Beetle|Ant|Bear|Shark)|create\w*(?:Enemy|Monster|Boss|Creature)\s*\()/i.test(source),
+    BUILDING:/(?:Name\s*=\s*["'](?:Village|House|School|Shop|Building|Temple|Castle|Dungeon|Wall|Roof|Door|Warehouse|Hospital|PoliceStation)|create\w*(?:Building|House|School|Shop|Village)\s*\()/i.test(source),
+    ENVIRONMENT:/(?:workspace\.Terrain|Terrain:|Lighting|Atmosphere|Sky|Name\s*=\s*["'](?:Tree|Rock|Ground|Terrain|Environment|Forest|Jungle|Snow|Water|Lake|Road|Path))/i.test(source),
+    WEAPON:/(?:Instance\.new\s*\(\s*["']Tool["']|Name\s*=\s*["'](?:Weapon|Sword|Axe|Spear|Hammer|Bow|Crossbow|Gun|Staff|Shield))/i.test(source),
+    SKILL:/(?:Name\s*=\s*["'](?:Skill|Spell|Projectile|Telegraph|Cast|Ability)|create\w*(?:Skill|Spell|Projectile|Ability)\s*\()/i.test(source),
+    MATERIAL:/(?:\.Material\s*=|SurfaceAppearance|TextureID|MeshId|Color3\.(?:fromRGB|new)\s*\()/i.test(source),
+    AUDIO:/(?:Instance\.new\s*\(\s*["']Sound["']|\.SoundId\s*=|\bSoundService\b)/i.test(source),
+    VFX:/(?:ParticleEmitter|Trail|Beam|PointLight|SpotLight|SurfaceLight)/i.test(source),
+    UI:/(?:ScreenGui|BillboardGui|SurfaceGui|TextButton|ImageButton|ImageLabel|TextLabel|ScrollingFrame)/i.test(source),
+    MOTION:/(?:Animator|AnimationTrack|LoadAnimation|Motor6D|\bBone\b|TweenService|RenderStepped)/i.test(source),
+    PROP:/(?:Name\s*=\s*["'](?:Chest|Crate|Barrel|Chair|Table|Bed|Shelf|Bench|Lamp|Lantern|Sign|Signpost|Torch|Banner|Rug|Book|Workbench|Furnace|Anvil|Cart))/i.test(source)
+  });
+}
 function robloxStudioAssetBindingContract(data={}){
   const loadout=data?.assetProduction?.baseMaterialLoadout;
   const handoff=loadout?.robloxSelectionHandoff;
@@ -555,6 +668,8 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
   const loadout=robloxStudioAssetBindingContract(data);
   if(!loadout)return{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false};
   const text=presentationSourceText(root,changed);
+  const fullText=robloxSourceTreeText(root,data,changed);
+  const universalRequired=loadout?.universalAssetFirst?.required===true;
   if(!text.trim())throw new Error('ROBLOX_STUDIO_ASSET_BINDING_SOURCE_REQUIRED');
   const checks=[],issues=[];
   const require=(name,ok)=>{checks.push({name,pass:Boolean(ok)});if(!ok)issues.push(name);};
@@ -563,27 +678,44 @@ function runRobloxStudioAssetBindingQa({root,data={},changed=[]}={}){
   const selectedAtoms=[...selectionBody.matchAll(/["']([A-Z][A-Z0-9_]{2,})["']/g)].map(match=>clean(match[1])).filter(Boolean);
   const selectedSet=new Set(selectedAtoms);
   const atomBound=atoms.length>0&&atoms.every(atom=>selectedSet.has(atom));
+  const statusBody=text.match(/\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{([\s\S]*?)\}/)?.[1]||'';
+  const familyStatus={};
+  for(const match of statusBody.matchAll(/\b([A-Z][A-Z0-9_]*)\s*=\s*["'](APPLIED|NOT_APPLICABLE)["']/g))familyStatus[clean(match[1])]=clean(match[2]);
+  const allFamiliesAccounted=UNIVERSAL_ASSET_FAMILIES.every(family=>['APPLIED','NOT_APPLICABLE'].includes(familyStatus[family]));
   const runtimeObservable=/SetAttribute\s*\(\s*["']StudioAssetBindingVersion["']\s*,\s*STUDIO_ASSET_BINDING_VERSION\s*\)/.test(text)
     &&/SetAttribute\s*\(\s*["']StudioAssetAtoms["']\s*,\s*table\.concat\s*\(\s*STUDIO_ASSET_SELECTION\s*,\s*["'],["']\s*\)\s*\)/.test(text);
-  const nativeSignals=patternHits(text,[
+  const nativeSignals=patternHits(fullText,[
     /Instance\.new\s*\(/i,
-    /\b(?:MeshPart|SpecialMesh|SurfaceAppearance|ParticleEmitter|Trail|Beam|Attachment|WeldConstraint|Motor6D|ScreenGui|Frame|TextButton|ImageButton)\b/i,
+    /\b(?:MeshPart|SpecialMesh|SurfaceAppearance|ParticleEmitter|Trail|Beam|Attachment|WeldConstraint|Motor6D|ScreenGui|Frame|TextButton|ImageButton|Sound)\b/i,
     /\.(?:Material|Color|BrickColor|TextureID|MeshId|CFrame|Size|Position|Orientation)\s*=/i,
     /Color3\.(?:fromRGB|new)\s*\(/i
   ]);
-  require('ROBLOX_STUDIO_ASSET_BINDING_VERSION',/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*1\b/.test(text));
+  const familySignals=robloxAssetFamilySignals(fullText);
+  require('ROBLOX_STUDIO_ASSET_BINDING_VERSION',universalRequired?/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*2\b/.test(text):/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*[12]\b/.test(text));
   require('ROBLOX_STUDIO_ASSET_SELECTION_MANIFEST',selectedAtoms.length>0);
   require('ROBLOX_SELECTED_ATOM_TRACE',atomBound);
+  if(universalRequired)require('ROBLOX_ASSET_FAMILY_STATUS_ALL_12',allFamiliesAccounted);
   require('ROBLOX_RUNTIME_OBSERVABLE_SELECTION',runtimeObservable);
-  require('ROBLOX_NATIVE_VISUAL_BINDING',nativeSignals>=2);
-  require('ROBLOX_MARKER_ONLY_FORBIDDEN',nativeSignals>=2&&atomBound&&runtimeObservable);
+  require('ROBLOX_NATIVE_VISUAL_BINDING',nativeSignals>=3);
+  if(universalRequired){
+    for(const family of UNIVERSAL_ASSET_FAMILIES){
+      const status=familyStatus[family];
+      if(status==='APPLIED')require('ROBLOX_ASSET_FAMILY_APPLIED_'+family,familySignals[family]===true);
+      if(status==='NOT_APPLICABLE'&&familySignals[family]===true)require('ROBLOX_ASSET_FAMILY_NOT_APPLICABLE_VALID_'+family,false);
+    }
+    require('ROBLOX_MAP_ENVIRONMENT_ASSET_APPLIED',familyStatus.ENVIRONMENT==='APPLIED'&&familySignals.ENVIRONMENT===true);
+    require('ROBLOX_MAP_PROP_ASSET_APPLIED',familyStatus.PROP==='APPLIED'&&familySignals.PROP===true);
+    if(familySignals.BUILDING===true)require('ROBLOX_MAP_BUILDING_ASSET_APPLIED',familyStatus.BUILDING==='APPLIED');
+  }
+  require('ROBLOX_MARKER_ONLY_FORBIDDEN',nativeSignals>=2&&atomBound&&runtimeObservable&&(!universalRequired||allFamiliesAccounted));
   if(issues.length)throw new Error(`ROBLOX_STUDIO_ASSET_BINDING_QA_FAILED:${issues.join('|')}`);
   return{
     status:'STATIC_PASS',checks,selectedAtomCount:atoms.length,runtimeStillRequired:true,
     requiredRuntimeEvidence:'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS',
     companyAssetPromotionBlockedUntilRuntime:true,masteryPromotionBlockedUntilRuntime:true,
     selectionHandoffVerified:true,plannerSourceMutationForbidden:loadout?.robloxSelectionHandoff?.plannerSourceMutationForbidden===true,
-    markerOnlyBindingForbidden:true,gameplaySemanticsPreservationRequired:true,authorityExpanded:false
+    universalAssetFirst:universalRequired,allTwelveFamiliesAccounted:universalRequired?allFamiliesAccounted:null,familyStatus,
+    mapEnvironmentAssetCoverage:universalRequired?(familyStatus.ENVIRONMENT==='APPLIED'&&familyStatus.PROP==='APPLIED'):null,markerOnlyBindingForbidden:true,gameplaySemanticsPreservationRequired:true,authorityExpanded:false
   };
 }
 function runWeatherPresentationStaticQa({root,data={},changed=[]}={}){
@@ -664,7 +796,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const weatherPresentation=weatherPresentationContract(data);
   const specializedRequest=specializedVerificationRequest(data);
   const studioAssetBinding=robloxStudioAssetBindingContract(data);
-  const payload = ['vibe2-incremental-qa-v13', namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null)];
+  const payload = ['vibe2-incremental-qa-v14', namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null)];
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
@@ -673,7 +805,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   for(const target of replayTargets)payload.push('CAUSAL_REPLAY:'+target.relative,fs.readFileSync(target.absolute));
   const contentHash = sha256(payload);
   const cachePath = clean(cacheFile);
-  const cache = cachePath ? readJson(cachePath,{version:11,entries:{}}) : {version:11,entries:{}};
+  const cache = cachePath ? readJson(cachePath,{version:12,entries:{}}) : {version:12,entries:{}};
   const cached = cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
     return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, gameRepairQa:cached.gameRepairQa||{status:'NOT_REQUIRED',required:false,fullRegressionStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, robloxStudioAssetBindingQa:cached.robloxStudioAssetBindingQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, specializedVerificationQa:cached.specializedVerificationQa||{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY',runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
@@ -691,7 +823,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
     cache.entries=cache.entries||{};
-    cache.version=11; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, savedAt:new Date().toISOString() };
+    cache.version=12; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, savedAt:new Date().toISOString() };
     const entries=Object.entries(cache.entries).slice(-200);
     cache.entries=Object.fromEntries(entries);
     writeJson(cachePath,cache);

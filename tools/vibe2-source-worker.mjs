@@ -820,6 +820,8 @@ export function buildRobloxNativeSourceInspection({order={},context={},responsib
   if(/DataStoreService|GetDataStore|UpdateAsync|SetAsync|GetAsync/.test(combined))systems.push('DATASTORE_SAVE_LOAD');
   if(/UserInputService|ContextActionService|TouchTap|TouchPan|TouchStarted|TouchEnded/.test(combined))systems.push('TOUCH_INPUT');
   if(/CharacterAdded|CharacterRemoving|Humanoid|HumanoidRootPart|LoadCharacter/.test(combined))systems.push('CHARACTER_RESPAWN');
+  if(/Motor6D|\bBone\b|Animator|AnimationController|AnimationTrack|LoadAnimation|IKControl/.test(combined))systems.push('RIG_AND_ANIMATION');
+  if(/(?:CFrame\s*=|:PivotTo\s*\(|PrimaryPartCFrame|AssemblyLinearVelocity)/.test(combined)&&/(?:character|npc|enemy|monster|boss|creature|humanoid|torso|arm|leg)/i.test(combined))systems.push('CHARACTER_MOTION');
   if(/ScreenGui|GuiButton|TextButton|ImageButton|Activated|MouseButton1Click/.test(combined))systems.push('UI_STATE');
   if(/RunService|Heartbeat|RenderStepped|Stepped|state|phase|mode/i.test(combined))systems.push('CORE_STATE_MACHINE');
   if(/Players\.PlayerAdded|PlayerRemoving|GetPlayers\(|replic|network|server authority/i.test(combined))systems.push('MULTIPLAYER_SYNC');
@@ -834,6 +836,8 @@ export function buildRobloxNativeSourceInspection({order={},context={},responsib
       /DataStoreService|GetDataStore|UpdateAsync|SetAsync|GetAsync/.test(file.content)?'DATASTORE':null,
       /UserInputService|ContextActionService|Touch/.test(file.content)?'INPUT':null,
       /CharacterAdded|Humanoid|HumanoidRootPart/.test(file.content)?'CHARACTER':null,
+      /Motor6D|\bBone\b|Animator|AnimationController|AnimationTrack|LoadAnimation|IKControl/.test(file.content)?'RIG_ANIMATION':null,
+      /(?:CFrame\s*=|:PivotTo\s*\(|PrimaryPartCFrame|AssemblyLinearVelocity)/.test(file.content)&&/(?:character|npc|enemy|monster|boss|creature|humanoid|torso|arm|leg)/i.test(file.content)?'CHARACTER_MOTION':null,
       /ScreenGui|GuiButton|Activated|MouseButton1Click/.test(file.content)?'UI':null
     ].filter(Boolean)
   }));
@@ -844,6 +848,14 @@ export function buildRobloxNativeSourceInspection({order={},context={},responsib
     editableFiles:Object.freeze(responsibleFiles.map(clean).filter(Boolean)),
     systems:Object.freeze(unique(systems)),
     responsibilities:Object.freeze(responsibilities.map(row=>Object.freeze(row))),
+    motionQuality:Object.freeze({
+      rigSignals:/Motor6D|\bBone\b|R15|UpperTorso|LowerTorso/.test(combined),
+      animatorSignals:/Animator|AnimationController|AnimationTrack|LoadAnimation|IKControl/.test(combined),
+      rootTransformMotionSignals:/(?:CFrame\s*=|:PivotTo\s*\(|PrimaryPartCFrame)/.test(combined),
+      weldConstraintSignals:/WeldConstraint/.test(combined),
+      libraryFirstRequired:true,
+      hardFailure:'ROBLOX_CHARACTER_MOTION_MANNEQUIN'
+    }),
     sourceReadBeforeGeneration:true,
     genericCrossPlatformTranslationForbidden:true
   });
@@ -862,7 +874,13 @@ function robloxNativeWorkerGuidance(order={},context={},responsibleFiles=[]) {
     directiveResponsibilities?`BUILD_UP_SERVER_CLIENT_BINDING=${directiveResponsibilities}`:'',
     directive.observableAcceptanceScenario?`END_TO_END_ACCEPTANCE=${clean(directive.observableAcceptanceScenario)}`:'END_TO_END_ACCEPTANCE=input/touch -> local handler -> Remote when required -> server validation -> authoritative state change -> client feedback',
     'Use Roblox-native Luau and the existing server/client/module responsibility. Do not translate Unity/Web implementation literally.',
-    'Read the existing RemoteEvent/RemoteFunction, touch input, character/respawn, DataStore/save, UI state, and multiplayer sync flow before changing behavior.',
+    'Read the existing RemoteEvent/RemoteFunction, touch input, character/respawn, rig/animation, DataStore/save, UI state, and multiplayer sync flow before changing behavior.',
+    'CHARACTER MOTION QUALITY: for PLAYER/HUMANOID_NPC/CREATURE, inspect the existing rig before motion changes. An articulated actor must use R15 or a compatible Motor6D/Bone rig plus Humanoid or AnimationController and Animator. WeldConstraint-only articulated bodies and single rigid Parts are not a finished character motion solution.',
+    'MOTION SOURCE ORDER: reuse verified same-game/same-archetype motion first, then compatible verified company motion, then license-verified repository/external motion with retarget cleanup. Author new keyframes only for the remaining verified coverage gap.',
+    'SMOOTHNESS: use AnimationTrack cross-fade/weight blending, speed-synchronized Walk/Jog/Run playback, start/stop/turn continuity, and upper/lower-body layering when supported. Do not snap Attack back to Idle.',
+    'PROCEDURAL CORRECTION: use budgeted IKControl/foot contact, pelvis height, spine lean, head gaze, slope adaptation, landing compression, and hit recoil when supported. These are visual corrections only and may not own movement, collider, hit, cooldown, or damage authority.',
+    'MANNEQUIN HARD FAILURE: moving an articulated NPC/creature only by root/PrimaryPart CFrame or PivotTo without active joint motion is forbidden. Do not claim character motion complete from Tween/CFrame movement alone.',
+    'STUDIO MOTION PROBE FOR LIVING_MOTION WORK: in the existing responsible character setup path, add a bounded RunService:IsStudio() verification probe for one representative articulated actor. It must print ROBLOX_CHARACTER_MOTION_RUNTIME=START before observation and then PASS or FAIL after measuring actual Motor6D/Bone Transform change during visible locomotion. Do not print PASS from a constant or config marker. The probe must be Studio-only, bounded, one-shot, and must not own gameplay movement.',
     'Server remains authoritative for damage, reward, currency, inventory, progression, save, and multiplayer state. Client requests intent and renders feedback; it does not decide authoritative results.',
     'Remote handlers must validate sender, payload shape/range, ownership/state preconditions, and rate/duplicate behavior when applicable.',
     'DataStore retries must be bounded/backed off and preserve existing keys and save meaning. Character references must survive respawn through CharacterAdded/current-character refresh.',
@@ -889,6 +907,16 @@ export function inspectRobloxNativeCandidateQuality({candidate={},sourceRoot=''}
     if(server&&/OnServerEvent|OnServerInvoke/.test(row.text)&&!/typeof\s*\(|type\s*\(|IsA\s*\(|math\.clamp|tonumber\s*\(|assert\s*\(|if\s+not\s+/i.test(row.text))findings.push({file:row.path,class:'REMOTE_INPUT_VALIDATION_WEAK'});
     if(/DataStoreService|GetDataStore/.test(row.text)&&/while\s+true\s+do/i.test(row.text))findings.push({file:row.path,class:'UNBOUNDED_DATASTORE_RETRY'});
     if(/local\s+\w*character\w*\s*=\s*\w+\.Character\b/i.test(row.text)&&!/CharacterAdded|CharacterRemoving/i.test(row.text))findings.push({file:row.path,class:'STALE_CHARACTER_REFERENCE_RISK'});
+    const actorSignal=/(?:character|npc|enemy|monster|boss|creature|humanoid|torso|upperTorso|lowerTorso|arm|leg)/i.test(row.text);
+    const customActorSignal=/(?:Instance\.new\s*\(\s*["'](?:Model|Part|MeshPart)["']|humanoidFigure\s*\(|figure\s*\(|create\w*(?:Npc|Enemy|Monster|Creature|Character)\s*\()/i.test(row.text);
+    const rootMotionSignal=/(?:\.CFrame\s*=|:PivotTo\s*\(|PrimaryPartCFrame|SetPrimaryPartCFrame)/.test(row.text);
+    const articulationSignal=/(?:Motor6D|\bBone\b|UpperTorso|LowerTorso|LeftUpperArm|RightUpperArm|LeftUpperLeg|RightUpperLeg)/.test(row.text);
+    const animatorSignal=/(?:Animator|AnimationController|AnimationTrack|LoadAnimation|\bAnimate\b|IKControl)/.test(row.text);
+    const weldSignal=/WeldConstraint/.test(row.text);
+    if(actorSignal&&customActorSignal&&rootMotionSignal&&!articulationSignal)findings.push({file:row.path,class:'ROOT_ONLY_ARTICULATED_MOTION_RISK'});
+    if(actorSignal&&customActorSignal&&weldSignal&&!articulationSignal)findings.push({file:row.path,class:'WELD_CONSTRAINT_ONLY_CHARACTER_RISK'});
+    if(actorSignal&&customActorSignal&&/(?:Humanoid|AnimationController|Motor6D|\bBone\b)/.test(row.text)&&!animatorSignal)findings.push({file:row.path,class:'MISSING_ANIMATOR_BINDING_RISK'});
+    if(actorSignal&&rootMotionSignal&&!/(?:AdjustWeight|AdjustSpeed|AnimationTrack|LoadAnimation|Animator)/.test(row.text))findings.push({file:row.path,class:'LOCOMOTION_BLEND_SPEED_SYNC_MISSING_RISK'});
     const connects=(row.text.match(/\.Connect\s*\(/g)||[]).length;
     const cleanup=(row.text.match(/:Disconnect\s*\(|Janitor|Maid|Trove|Destroying/g)||[]).length;
     if(connects>=3&&cleanup===0)findings.push({file:row.path,class:'EVENT_CONNECTION_CLEANUP_RISK'});
@@ -899,6 +927,8 @@ export function inspectRobloxNativeCandidateQuality({candidate={},sourceRoot=''}
     findings:Object.freeze(findings.map(row=>Object.freeze(row))),
     automaticGameWideBlock:false,
     securityRelevantFindings:Object.freeze(findings.filter(row=>['CLIENT_DATASTORE_AUTHORITY','CLIENT_AUTHORITATIVE_GAMEPLAY_MUTATION','REMOTE_INPUT_VALIDATION_WEAK','UNBOUNDED_DATASTORE_RETRY'].includes(row.class))),
+    motionQualityFindings:Object.freeze(findings.filter(row=>['ROOT_ONLY_ARTICULATED_MOTION_RISK','WELD_CONSTRAINT_ONLY_CHARACTER_RISK','MISSING_ANIMATOR_BINDING_RISK','LOCOMOTION_BLEND_SPEED_SYNC_MISSING_RISK'].includes(row.class))),
+    motionQualityHardFailure:'ROBLOX_CHARACTER_MOTION_MANNEQUIN',
     sourceRoot:clean(sourceRoot)||null
   });
 }
@@ -929,6 +959,27 @@ function gatedRetryStrategyGuidance(order = {}) {
   ].join('\n');
 }
 
+function universalAssetWorkerGuidance(order={}) {
+  const target=clean(order?.target).toLowerCase();
+  if(!['roblox','unity'].includes(target))return'';
+  const loadout=order?.assetProduction?.baseMaterialLoadout||{};
+  const contract=loadout?.universalAssetFirst||{};
+  if(contract?.required!==true)return'';
+  const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
+  const selected=Object.entries(loadout?.families||{}).map(([family,atoms])=>family+'='+((atoms||[]).map(clean).filter(Boolean).join('|')||'NONE')).join('; ');
+  return [
+    '[UNIVERSAL ASSET-FIRST UPGRADE CONTRACT]',
+    'All 12 asset families MUST be evaluated: '+families.join(','),
+    'Selected loadout: '+(selected||'NONE'),
+    'For each family record exactly APPLIED or NOT_APPLICABLE. NOT_APPLICABLE is allowed only when the current game truly has no existing system for that family; never use it to skip an existing system.',
+    'APPLIED means the selected/verified compatible asset is used by the existing responsible native source, not merely listed in config, comments, attributes, constants, or a manifest.',
+    'Primitive-only, color-only, marker-only, or repeated generic-Part changes cannot satisfy a Vibe graphics/presentation upgrade.',
+    'Map/world asset use is mandatory: background/terrain/biome plus existing buildings/settlements/landmarks/set dressing/props must use ENVIRONMENT, BUILDING, and PROP assets. Villages, houses, schools, shops, temples, dungeon entrances, trees, rocks, furniture, signs, lights and similar world objects must not remain generic placeholders when they exist in the game.',
+    target==='roblox'?'Roblox evidence: use STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION = {...}, and STUDIO_ASSET_FAMILY_STATUS = { FAMILY = "APPLIED" or "NOT_APPLICABLE" } for all 12 families. These evidence tables never replace actual Instance/Model/MeshPart/Material/Sound/Particle/UI/Animator binding.':'Unity evidence must bind selected assets to actual GameObject/Prefab/Renderer/Material/AudioSource/ParticleSystem/Animator/UI ownership; metadata alone cannot pass.',
+    'Do not create a new gameplay system only to satisfy an asset family. Preserve gameplay rules, balance, hitboxes, damage, cooldowns, save meaning, progression, economy, and network authority.',
+    'Use the existing responsible functions/files directly; do not create a wrapper or shadow asset pipeline.'
+  ].join('\n');
+}
 function weatherWorkerGuidance(order = {}) {
   const contract=order?.weatherPresentation||{};
   if(contract?.required!==true)return'';
@@ -963,6 +1014,7 @@ allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw V
 `Department: ${order.department||'development'}`,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
+universalAssetWorkerGuidance(order),
 studioQualityWorkerGuidance(order),
 gameSpecificBuildUpDirectiveGuidance(order),
 robloxNativeWorkerGuidance(order,context,responsibleFiles),
@@ -2370,6 +2422,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     console.log('ROBLOX_NATIVE_SOURCE_INSPECTION=PASS:files='+robloxNativeSourceInspection.files.length+':systems='+(robloxNativeSourceInspection.systems.join(',')||'NONE'));
     console.log('ROBLOX_NATIVE_BUILD_UP_BINDING='+(order?.selectedTask?.buildUpDirective?.robloxNativeExecution||order?.buildUpDirective?.robloxNativeExecution?'PASS':'BASELINE_OR_REPAIR'));
     console.log('ROBLOX_NATIVE_CODE_QUALITY_FINDINGS='+robloxNativeCandidateQuality.findingCount);
+    console.log('ROBLOX_CHARACTER_MOTION_QUALITY='+(robloxNativeCandidateQuality.motionQualityFindings?.length?'REPAIR_REQUIRED:'+robloxNativeCandidateQuality.motionQualityFindings.map(row=>row.class).join(','):'STATIC_READY_RUNTIME_REQUIRED'));
   }
   const generation={...generated.generation,candidateVariant,attemptBudget:generationAttemptBudget({allowFullRewrite,variant:candidateVariant}),speculativeAttemptBudgetApplied:/^speculative-/i.test(candidateVariant),fullWebInitialSeedStrategy:allowFullRewrite,fullWebInitialSeedTargetBytes:allowFullRewrite?[FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES,FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES]:[],contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true,contextPreferenceRequested:preferredContextMode||null,contextPreferenceApplied:Boolean(preferredContextMode&&preferredContextMode===(context.mode||'STANDARD_CONTEXT'))};
   if(bootstrap&&target==='web'&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){

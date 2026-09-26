@@ -1,5 +1,5 @@
 {
-  "version": 207,
+  "version": 209,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2607,6 +2607,39 @@
           "positiveLearningRequiresVerifiedRuntimePass": true,
           "verifiedFailureMayTeachAvoidPattern": true,
           "platformEvidenceIndependent": true
+        },
+        "version": 2,
+        "robloxSmoothCharacterMotion": {
+          "centralContract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+          "noNewTopLevelPipeline": true,
+          "existingMotionDirector": "assets/vibe-motion-director.js",
+          "existingSourceWorker": "tools/vibe2-source-worker.mjs",
+          "existingStaticQa": "tools/vibe2-incremental-qa.mjs",
+          "nativeRuntimeQa": "tools/company-development-roblox-studio-local-play.mjs",
+          "learningFanIn": "tools/vibe2-learning-motor.mjs",
+          "actorClassification": [
+            "PLAYER",
+            "HUMANOID_NPC",
+            "CREATURE"
+          ],
+          "requiredChain": [
+            "CLASSIFY_ACTOR_AND_BODY_PLAN",
+            "INSPECT_EXISTING_RIG_AND_MOTION",
+            "SELECT_VERIFIED_COMPATIBLE_MOTION_LIBRARY",
+            "RETARGET_OR_ADAPT_WHEN_REQUIRED",
+            "BIND_NATIVE_ROBLOX_ANIMATOR_AND_TRACKS",
+            "BLEND_AND_SPEED_SYNC",
+            "ADD_BUDGETED_PROCEDURAL_CONTACT_CORRECTION",
+            "RUN_STATIC_MANNEQUIN_GUARD",
+            "RUN_OFFICIAL_STUDIO_RUNTIME_SCENARIO",
+            "ROUTE_EXACT_CAUSAL_REPAIR",
+            "FAN_IN_VERIFIED_LEARNING"
+          ],
+          "articulation": "R15_OR_CUSTOM_MOTOR6D_OR_BONE_RIG",
+          "articulatedActorRootOnlyMotionPassForbidden": true,
+          "verifiedLibraryBeforeNewKeyframeAuthoring": true,
+          "nativeBlendAndContactCorrectionRequired": true,
+          "platformEvidenceIndependent": true
         }
       },
       "autoMotionCoverageGapFill": {
@@ -4747,7 +4780,7 @@
     }
   },
   "robloxNativeCodingQualityTopology": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#robloxNativeCodingQualityContract",
     "role": "STRUCTURAL_BINDING_ONLY",
     "flow": [
@@ -4763,7 +4796,9 @@
       "tools/company-build-up-directive.mjs",
       "tools/vibe2-source-worker.mjs",
       "tools/company-development-roblox-studio-local-play.mjs",
-      "tools/vibe2-learning-motor.mjs"
+      "tools/vibe2-learning-motor.mjs",
+      "assets/vibe-motion-director.js",
+      "qa/company-roblox-character-motion-quality.test.mjs"
     ],
     "noNewWorker": true,
     "noNewQueue": true,
@@ -4778,7 +4813,19 @@
     "studioPlannerRunsIndependentlyOnAuthenticatedSelfHostedRunner": true,
     "foundationPassEligibilityReadFromPersistedRuntimeState": true,
     "singleGameFoundationDelayCannotBlockOtherEligibleStudioPlay": true,
-    "runtimeFoundationAndStudioPlanningMayRunParallel": true
+    "runtimeFoundationAndStudioPlanningMayRunParallel": true,
+    "motionQualityBinding": {
+      "policy": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+      "motionDirector": "assets/vibe-motion-director.js",
+      "sourceWorker": "tools/vibe2-source-worker.mjs",
+      "qa": "qa/company-roblox-character-motion-quality.test.mjs",
+      "officialStudioMcpPlay": "tools/company-development-roblox-studio-local-play.mjs",
+      "hardFailure": "ROBLOX_CHARACTER_MOTION_MANNEQUIN",
+      "rootTransformOnlyCannotSatisfyArticulatedMotion": true,
+      "noNewWorker": true,
+      "noNewQueue": true,
+      "noShadowMotionPipeline": true
+    }
   },
   "robloxHomepageThumbnailSyncTopology": {
     "version": 1,
@@ -4797,5 +4844,55 @@
     "releasePromotionWorkflowExtendedOnly": true,
     "verifiedUniverseIdRequired": true,
     "gameCatalogBackwardCompatibilityPreserved": true
+  },
+  "universalAssetFirstUpgradeTopology": {
+    "version": 1,
+    "policy": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.universalAssetFirstUpgradeContract",
+    "existingPipelineOnly": true,
+    "noNewWorker": true,
+    "noNewQueue": true,
+    "noShadowAssetPipeline": true,
+    "chain": [
+      "assets/vibe-art-pipeline.js",
+      "tools/vibe2-asset-production-plan.mjs",
+      "tools/vibe2-source-worker.mjs",
+      "tools/vibe2-incremental-qa.mjs",
+      "NATIVE_RUNTIME_QA",
+      "REGRESSION_SECURITY_FAN_IN",
+      "tools/vibe2-learning-motor.mjs"
+    ],
+    "allFamilies": [
+      "CHARACTER",
+      "CREATURE",
+      "BUILDING",
+      "ENVIRONMENT",
+      "WEAPON",
+      "SKILL",
+      "MATERIAL",
+      "AUDIO",
+      "VFX",
+      "UI",
+      "MOTION",
+      "PROP"
+    ],
+    "mapWorldBindings": {
+      "planner": "tools/vibe2-asset-production-plan.mjs",
+      "environmentDirector": "assets/vibe-environment-director.js",
+      "qualityGate": "assets/vibe-visual-quality-gate.js",
+      "requiredWorldLayers": [
+        "BACKGROUND",
+        "TERRAIN",
+        "BUILDING",
+        "LANDMARK",
+        "SET_DRESSING",
+        "PROP"
+      ]
+    },
+    "sourceOwnership": {
+      "selectionPlannerMayNotMutateGameSource": true,
+      "vibe2Vibe3OwnActualGameSourceBinding": true,
+      "actualBindingMustUseExistingResponsibleFiles": true,
+      "markerOnlyBindingForbidden": true
+    }
   }
 }

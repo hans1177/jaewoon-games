@@ -469,6 +469,45 @@ export function classifyStudioConsoleOutput(consoleResult){
   };
 }
 
+export function collectCharacterMotionRuntimeEvidence(consoleResult){
+  const text=flattenText(consoleResult,[]).join('\n');
+  const lines=text.split(/\r?\n/).map(line=>clean(line)).filter(Boolean);
+  const rows=[];
+  for(const line of lines){
+    const markerIndex=line.indexOf('ROBLOX_CHARACTER_MOTION_RUNTIME=');
+    if(markerIndex<0)continue;
+    const payload=clean(line.slice(markerIndex+'ROBLOX_CHARACTER_MOTION_RUNTIME='.length));
+    if(!payload)continue;
+    const firstSpace=payload.indexOf(' ');
+    const state=clean(firstSpace<0?payload:payload.slice(0,firstSpace)).toUpperCase();
+    const rest=firstSpace<0?'':payload.slice(firstSpace+1);
+    const fields={};
+    for(const token of rest.split(/\s+/).map(clean).filter(Boolean)){
+      const split=token.indexOf('=');
+      if(split<=0)continue;
+      const key=clean(token.slice(0,split));
+      const value=clean(token.slice(split+1));
+      if(key)fields[key]=value;
+    }
+    rows.push({state,fields,line:payload.slice(0,700)});
+  }
+  const started=rows.some(row=>row.state==='START');
+  const passed=rows.some(row=>row.state==='PASS');
+  const failed=rows.filter(row=>row.state==='FAIL');
+  const required=started||passed||failed.length>0;
+  return Object.freeze({
+    required,
+    observed:rows.length>0,
+    started,
+    pass:required&&passed&&failed.length===0,
+    failed:failed.length>0,
+    rows:Object.freeze(rows.map(row=>Object.freeze({state:row.state,fields:Object.freeze({...row.fields}),line:row.line}))),
+    failureReasons:Object.freeze(failed.map(row=>clean(row.fields.reason)||'CHARACTER_MOTION_MANNEQUIN')),
+    marker:'ROBLOX_CHARACTER_MOTION_RUNTIME',
+    hardFailure:'ROBLOX_CHARACTER_MOTION_MANNEQUIN'
+  });
+}
+
 
 function schemaProps(schema={}){return schema?.properties&&typeof schema.properties==='object'?schema.properties:{};}
 function schemaRequired(schema={}){return Array.isArray(schema?.required)?schema.required:[];}
@@ -691,7 +730,7 @@ export async function runOfficialStudioMcpPlay({
   const client=new McpStdioClient({...launch,timeoutMs});
   const actions=[],checkpoints=[],errors=[];
   const checkpoint=(id,pass)=>checkpoints.push({id,name:id,required:true,pass:pass===true});
-  let studioId='',beforeImages=[],afterImages=[],consoleResult=null,started=false;
+  let studioId='',beforeImages=[],afterImages=[],consoleResult=null,characterMotionRuntime=null,started=false;
   try{
     await client.connect();
     const requiredTools=['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input','user_mouse_input','character_navigation'];
@@ -765,6 +804,19 @@ export async function runOfficialStudioMcpPlay({
     consoleResult=await client.call('get_console_output',consoleArgs);
     checkpoint('console-output-captured',true);
 
+    characterMotionRuntime=collectCharacterMotionRuntimeEvidence(consoleResult);
+    if(characterMotionRuntime.required===true){
+      checkpoint('character-motion-runtime-started',characterMotionRuntime.started||characterMotionRuntime.rows.some(row=>row.state==='PASS'||row.state==='FAIL'));
+      checkpoint('character-motion-runtime-pass',characterMotionRuntime.pass===true);
+      if(characterMotionRuntime.pass!==true){
+        errors.push({
+          type:'character-motion-quality-error',
+          actionId:'character-motion-runtime',
+          signature:'ROBLOX_CHARACTER_MOTION_MANNEQUIN:'+(characterMotionRuntime.failureReasons.join(',')||'RUNTIME_PROBE_DID_NOT_PASS')
+        });
+      }
+    }
+
     const consoleClassification=classifyStudioConsoleOutput(consoleResult);
     const consoleText=consoleClassification.consoleText;
     const diagnosticPatterns=[
@@ -812,7 +864,8 @@ export async function runOfficialStudioMcpPlay({
         playMode:true,
         mcpInput:true,
         screenCapture:beforeImages.length>0&&afterImages.length>0,
-        consoleCapture:consoleResult!=null
+        consoleCapture:consoleResult!=null,
+        characterMotionRuntime:characterMotionRuntime?.required===true
       },
       mcp:{
         protocolVersion:client.protocolVersion,
@@ -829,8 +882,11 @@ export async function runOfficialStudioMcpPlay({
         distinctFrameChange:checkpoints.find(x=>x.id==='viewport-changed-after-input')?.pass===true,
         consoleErrorCount:errors.length,
         consoleWarningCount:consoleClassification.warningCount,
-        consoleStructuredEntryCount:consoleClassification.structuredEntryCount
+        consoleStructuredEntryCount:consoleClassification.structuredEntryCount,
+        characterMotionRuntimeRequired:characterMotionRuntime?.required===true,
+        characterMotionRuntimePassed:characterMotionRuntime?.pass===true
       },
+      characterMotionRuntime,
       rawSourceIncluded:false,
       rawGameplayValuesIncluded:false,
       rawViewportIncluded:false
@@ -858,7 +914,7 @@ export async function runOfficialStudioMcpPlay({
       version:1,
       authority:'roblox-official-studio-mcp-runtime',
       runtimeVerified:false,
-      capabilities:{officialStudioMcp:false,playMode:false,mcpInput:false,screenCapture:false,consoleCapture:false},
+      capabilities:{officialStudioMcp:false,playMode:false,mcpInput:false,screenCapture:false,consoleCapture:false,characterMotionRuntime:false},
       actions,checkpoints,errors,
       metrics:{beforeFrameCount:beforeImages.length,afterFrameCount:afterImages.length,distinctFrameChange:false,consoleErrorCount:errors.length},
       rawSourceIncluded:false,rawGameplayValuesIncluded:false,rawViewportIncluded:false
@@ -944,6 +1000,9 @@ export function createLocalStudioPlayEvidence({
   const screenCapture=runtime?.capabilities?.screenCapture===true;
   const consoleCapture=runtime?.capabilities?.consoleCapture===true;
   const screenChanged=runtime?.metrics?.distinctFrameChange===true;
+  const characterMotionRuntime=runtime?.characterMotionRuntime&&typeof runtime.characterMotionRuntime==='object'?runtime.characterMotionRuntime:null;
+  const characterMotionRequired=characterMotionRuntime?.required===true;
+  const characterMotionPass=!characterMotionRequired||characterMotionRuntime?.pass===true;
   const actualPlay=officialMcp&&playMode&&mcpInput&&screenCapture&&consoleCapture;
   const requiredPass=required.length>0&&required.every(row=>row.pass===true);
   const pass=Boolean(
@@ -953,6 +1012,7 @@ export function createLocalStudioPlayEvidence({
     &&dispatched
     &&screenChanged
     &&requiredPass
+    &&characterMotionPass
     &&errors.length===0
   );
   const infrastructureFailure=errors.some(row=>/infrastructure|mcp.*missing|no_studio/i.test(row.type+' '+(row.signature||'')));
@@ -978,6 +1038,7 @@ export function createLocalStudioPlayEvidence({
     :/DataStore|GetDataStore|SetAsync|UpdateAsync|save|load/i.test(nativeFailureText)?'ROBLOX_DATASTORE_SAVE_LOAD'
     :/RemoteEvent|RemoteFunction|OnServer|FireServer|InvokeServer|remote/i.test(nativeFailureText)?'ROBLOX_REMOTE_EVENT_OR_FUNCTION'
     :/touch|input|keyboard|mouse|button/i.test(nativeFailureText)?'ROBLOX_TOUCH_INPUT'
+    :/ROBLOX_CHARACTER_MOTION_MANNEQUIN|character-motion-quality|joint|animator|animation/i.test(nativeFailureText)?'ROBLOX_CHARACTER_MOTION_MANNEQUIN'
     :/character|humanoid|respawn|spawn/i.test(nativeFailureText)?'ROBLOX_CHARACTER_RESPAWN_STATE'
     :/gui|ui|screen|viewport/i.test(nativeFailureText)?'ROBLOX_UI_STATE'
     :/replic|sync|multiplayer|join|rejoin|late.?join/i.test(nativeFailureText)?'ROBLOX_MULTIPLAYER_SYNC'
@@ -1044,8 +1105,19 @@ export function createLocalStudioPlayEvidence({
       errors,
       runtimeSummary:{
         consoleErrorCount:Number(runtime?.metrics?.consoleErrorCount||0),
-        distinctFrameChange:screenChanged
+        distinctFrameChange:screenChanged,
+        characterMotionRuntimeRequired:characterMotionRequired,
+        characterMotionRuntimePassed:characterMotionPass
       },
+      characterMotionRuntime:characterMotionRuntime?{
+        required:characterMotionRequired,
+        observed:characterMotionRuntime.observed===true,
+        started:characterMotionRuntime.started===true,
+        pass:characterMotionRuntime.pass===true,
+        failed:characterMotionRuntime.failed===true,
+        failureReasons:Array.isArray(characterMotionRuntime.failureReasons)?characterMotionRuntime.failureReasons.slice(0,8):[],
+        hardFailure:clean(characterMotionRuntime.hardFailure)||null
+      }:null,
       learningSignals:[...new Set([...learningSignals,robloxFailureClass].map(clean).filter(Boolean))],
       rawSourceIncluded:false,
       rawGameplayValuesIncluded:false,
@@ -1173,6 +1245,8 @@ async function main(){
     console.log('ROBLOX_STUDIO_MCP_VIEWPORT_AFTER_FRAMES='+Number(result?.metrics?.afterFrameCount||0));
     console.log('ROBLOX_STUDIO_MCP_VIEWPORT_CHANGED='+(result?.metrics?.distinctFrameChange===true?'YES':'NO'));
     console.log('ROBLOX_STUDIO_MCP_CONSOLE_ERROR_COUNT='+Number(result?.metrics?.consoleErrorCount||0));
+    console.log('ROBLOX_CHARACTER_MOTION_RUNTIME_REQUIRED='+(result?.characterMotionRuntime?.required===true?'YES':'NO'));
+    console.log('ROBLOX_CHARACTER_MOTION_RUNTIME_RESULT='+(result?.characterMotionRuntime?.required===true?(result?.characterMotionRuntime?.pass===true?'PASS':'FAIL'):'NOT_APPLICABLE'));
     console.log('ROBLOX_STUDIO_MCP_RUNTIME='+(result.runtimeVerified?'PASS':'FAIL'));
     if(!result.runtimeVerified){
       throw new Error(

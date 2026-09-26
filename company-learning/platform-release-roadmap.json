@@ -1,5 +1,5 @@
 {
-  "version": 399,
+  "version": 401,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -49,7 +49,7 @@
     "passIsCheckpointNotTerminal": true
   },
   "livingMotionVisualQualityContract": {
-    "version": 5,
+    "version": 6,
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "objective": "CONTINUOUS_HIGH_END_CINEMATIC_GAME_PRESENTATION_EVOLUTION_WITH_LIVING_MOTION_CHARACTER_ACTING_ENVIRONMENTAL_STORYTELLING_AND_GAME_SPECIFIC_AUDIO_VISUAL_DIRECTION_WITHOUT_CREATING_A_STANDALONE_RELEASE_GATE",
@@ -455,6 +455,309 @@
       "beforeAfterVisualComparisonRequired": true,
       "mobileReadabilityAndPerformanceRequired": true,
       "failureState": "ASSET_REPAIR_REQUIRED"
+    },
+    "robloxCharacterMotionQuality": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "objective": "ELIMINATE_MANNEQUIN_LIKE_CHARACTER_MOTION_BY_REQUIRING_ARTICULATED_NATIVE_ROBLOX_RIGS_LIBRARY_FIRST_MOTION_SELECTION_SMOOTH_STATE_BLEND_SPEED_SYNC_PROCEDURAL_CONTACT_CORRECTION_AND_RUNTIME_VERIFIED_JOINT_ACTIVITY",
+      "appliesToActorClasses": [
+        "PLAYER",
+        "HUMANOID_NPC",
+        "CREATURE"
+      ],
+      "principles": {
+        "jointAndWeightShiftMotionRequiredForArticulatedActors": true,
+        "wholeBodyRootTransformOnlyLocomotionCannotClaimCharacterMotionPass": true,
+        "smoothContinuityPreferredOverNewKeyframeAuthoring": true,
+        "verifiedCompatibleMotionLibraryPreferredBeforeNewAnimationAuthoring": true,
+        "perGameMotionIdentityRequired": true,
+        "presentationMayNotChangeGameplayMovementDamageHitboxCooldownSaveProgressionEconomyOrNetworkAuthority": true
+      },
+      "rigContract": {
+        "humanoid": {
+          "preferred": "R15_OR_COMPATIBLE_CUSTOM_ARTICULATED_RIG",
+          "requiredComponents": [
+            "MOTOR6D_OR_BONES",
+            "HUMANOID_OR_ANIMATION_CONTROLLER",
+            "ANIMATOR"
+          ],
+          "playerMayReuseRobloxNativeR15AnimateWhenCompatible": true,
+          "humanoidNpcRequiresArticulatedRig": true
+        },
+        "creature": {
+          "preferred": "BODY_PLAN_SPECIFIC_MOTOR6D_OR_BONE_RIG",
+          "requiredComponents": [
+            "ARTICULATED_JOINT_CHAIN",
+            "ANIMATOR"
+          ],
+          "humanoidAllowedWhenBodyPlanAndProportionAreCompatible": true,
+          "bodyPlanSpecificMotionIdentityRequired": true
+        },
+        "weldConstraintOnlyArticulatedActorForbiddenForVerifiedMotion": true,
+        "singleRigidPartActorAllowedOnlyWhenDesignExplicitlyDefinesRigidBodyEntity": true,
+        "cframeMayMoveAuthoritativeRootButCannotBeTheOnlyVisibleMotionForArticulatedActor": true
+      },
+      "motionSourcePriority": [
+        "VERIFIED_SAME_GAME_SAME_ARCHETYPE_MOTION",
+        "VERIFIED_COMPATIBLE_COMPANY_MOTION_LIBRARY",
+        "LICENSE_VERIFIED_REPOSITORY_MOTION",
+        "LICENSE_VERIFIED_EXTERNAL_MOTION_WITH_PROVENANCE",
+        "SAFE_RETARGET_AND_CLEANUP",
+        "NEW_NATIVE_AUTHORING_ONLY_FOR_REMAINING_GAP"
+      ],
+      "authoringPolicy": {
+        "vibeShouldSelectAdaptBlendAndDirectBeforeGeneratingNewKeyframes": true,
+        "manualProceduralKeyframeFallbackRequiresDocumentedCoverageGap": true,
+        "motionLibrarySelectionMustRespectRigBodyPlanWeaponStanceStyleAndPlatformCompatibility": true,
+        "importantCharacterBossOrCreatureRequiresSignatureVariation": true,
+        "speedScalingAloneCannotCreateCharacterIdentity": true
+      },
+      "baselineMotionCoverage": {
+        "humanoidCore": [
+          "IDLE",
+          "WALK",
+          "JOG",
+          "RUN",
+          "START",
+          "STOP",
+          "TURN",
+          "ATTACK",
+          "HIT",
+          "DEATH"
+        ],
+        "traversalWhenApplicable": [
+          "JUMP",
+          "FALL",
+          "LAND"
+        ],
+        "combatWhenApplicable": [
+          "SKILL",
+          "BLOCK",
+          "DODGE",
+          "STUN"
+        ],
+        "npcActingWhenApplicable": [
+          "BREATH",
+          "LOOK_AROUND",
+          "NOTICE_PLAYER",
+          "SOCIAL_GESTURE"
+        ],
+        "creatureCore": [
+          "IDLE_ACTING",
+          "BODY_PLAN_LOCOMOTION",
+          "TURN",
+          "ATTACK",
+          "HIT",
+          "DEATH"
+        ]
+      },
+      "blendAndContinuity": {
+        "hardStatePopForbiddenWhenBlendIsPossible": true,
+        "animationTrackCrossFadeRequired": true,
+        "weightBlendPreferred": true,
+        "speedBasedLocomotionBlendRequired": true,
+        "playbackSpeedMustTrackActualLocomotionSpeedWithinStyleEnvelope": true,
+        "accelerationDecelerationVisualContinuityRequired": true,
+        "turnInPlaceOrTurnBlendRequiredWhenDirectionDeltaIsLarge": true,
+        "attackRecoveryMayNotSnapInstantlyToIdle": true,
+        "upperLowerBodyLayeringPreferredWhenRigSupports": true
+      },
+      "proceduralCorrection": {
+        "visualOnly": true,
+        "preferred": [
+          "FOOT_IK",
+          "GROUND_NORMAL_ALIGNMENT",
+          "PELVIS_HEIGHT",
+          "SPINE_LEAN",
+          "HEAD_GAZE",
+          "AIM_OFFSET",
+          "LANDING_COMPRESSION",
+          "HIT_RECOIL",
+          "SLOPE_BODY_ADAPTATION"
+        ],
+        "ikControlPreferredWhenSupported": true,
+        "gameplayColliderAndMovementAuthorityImmutable": true,
+        "mobileMotionLodRequired": true
+      },
+      "characterStyleParameters": [
+        "WEIGHT",
+        "STRIDE",
+        "LEAN",
+        "BOUNCE",
+        "TURN_SPEED",
+        "ATTACK_POWER_PRESENTATION",
+        "IDLE_ENERGY"
+      ],
+      "runtimeQa": {
+        "mandatoryScenario": [
+          "IDLE_5_SECONDS",
+          "WALK_10_SECONDS",
+          "TURN_LEFT_RIGHT",
+          "RUN_AND_STOP",
+          "ATTACK_THREE_TIMES_WHEN_COMBATANT",
+          "HIT_REACTION_WHEN_DAMAGEABLE",
+          "DEATH_WHEN_MORTAL",
+          "RESPAWN_WHEN_SUPPORTED"
+        ],
+        "requiredObservations": [
+          "JOINT_TRANSFORMS_CHANGE_DURING_LOCOMOTION",
+          "ARMS_LEGS_OR_BODY_PLAN_LIMBS_SHOW_CYCLIC_MOTION",
+          "TORSO_OR_CENTER_OF_MASS_SHOWS_WEIGHT_SHIFT",
+          "NO_VISIBLE_FOOT_SLIDE",
+          "NO_HARD_IDLE_WALK_RUN_POP",
+          "NO_ATTACK_TO_IDLE_SNAP",
+          "TURN_BODY_CHAIN_READS_NATURALLY",
+          "LANDING_COMPRESSION_WHEN_APPLICABLE",
+          "HIT_RECOIL_WHEN_APPLICABLE",
+          "MOBILE_FRAME_STABILITY"
+        ],
+        "hardFailureCode": "CHARACTER_MOTION_MANNEQUIN",
+        "hardFailureConditions": [
+          "ARTICULATED_ACTOR_MOVES_WITH_ONLY_ROOT_OR_PRIMARY_PART_TRANSFORM",
+          "REQUIRED_ANIMATOR_MISSING",
+          "ARTICULATED_RIG_HAS_NO_ACTIVE_JOINT_MOTION_DURING_VISIBLE_LOCOMOTION",
+          "WELD_CONSTRAINT_ONLY_BODY_CLAIMS_ARTICULATED_MOTION_PASS",
+          "LOCOMOTION_CLIP_EXISTS_BUT_DOES_NOT_BLEND_OR_SYNC_WITH_ACTUAL_SPEED",
+          "MOTION_STATE_SNAPS_CAUSE_VISIBLE_MANNEQUIN_POP"
+        ],
+        "officialRobloxStudioMcpRuntimeEvidenceRequired": true,
+        "staticSourceMarkersAloneCannotPass": true
+      },
+      "repairPriority": [
+        "BROKEN_OR_MISSING_ARTICULATION",
+        "MISSING_ANIMATOR_OR_TRACK_BINDING",
+        "LOCOMOTION_BLEND_AND_SPEED_SYNC",
+        "FOOT_CONTACT_AND_IK",
+        "ATTACK_HIT_DEATH_CONTINUITY",
+        "CHARACTER_SPECIFIC_STYLE_AND_SECONDARY_MOTION"
+      ]
+    },
+    "universalAssetFirstUpgradeContract": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "objective": "EVERY_VIBE_VISUAL_OR_PRESENTATION_UPGRADE_MUST_EVALUATE_THE_FULL_COMPANY_ASSET_UNIVERSE_AND_MUST_BIND_REAL_COMPATIBLE_ASSETS_TO_EVERY_APPLICABLE_EXISTING_GAME_SYSTEM_BEFORE_THE_UPGRADE_CAN_PASS",
+      "platforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "assetFamilies": [
+        "CHARACTER",
+        "CREATURE",
+        "BUILDING",
+        "ENVIRONMENT",
+        "WEAPON",
+        "SKILL",
+        "MATERIAL",
+        "AUDIO",
+        "VFX",
+        "UI",
+        "MOTION",
+        "PROP"
+      ],
+      "enforcement": {
+        "everyUpgradeMustRunCompanyAssetLookup": true,
+        "allFamiliesMustBeEvaluated": true,
+        "applicableFamiliesRequireActualSourceBinding": true,
+        "semanticSelectionOrConfigMarkerAloneCannotPass": true,
+        "primitiveOnlyOrColorOnlyUpgradeCannotPass": true,
+        "placeholderAssetMayNotCountAsFinalUpgrade": true,
+        "existingVerifiedCompanyAssetFirst": true,
+        "existingRepositoryAssetSecond": true,
+        "licenseVerifiedExternalGapFillThird": true,
+        "newNativeAuthoringOnlyAfterVerifiedGap": true,
+        "gameStyleLockAndVisualDnaMustWin": true,
+        "originalAssetPreserved": true,
+        "nativePlatformVariantRequired": true,
+        "actualRuntimeQaRequired": true
+      },
+      "applicability": {
+        "everyFamilyMustReturn": "APPLIED_OR_EXPLICIT_NOT_APPLICABLE",
+        "notApplicableRequiresExistingGameSystemAbsenceEvidence": true,
+        "notApplicableMayNotBeUsedToSkipAnExistingSystem": true,
+        "assetRequirementMayNotInventNewGameplaySystem": true,
+        "protectedGameplaySemanticsImmutable": true
+      },
+      "mapAndWorld": {
+        "mandatoryDomains": [
+          "BACKGROUND",
+          "TERRAIN",
+          "BIOME",
+          "BUILDING",
+          "LANDMARK",
+          "SET_DRESSING",
+          "SMALL_PROP",
+          "VEGETATION",
+          "ROAD_OR_PATH",
+          "WATER_WHEN_PRESENT",
+          "SKY_OR_ATMOSPHERE",
+          "LIGHTING_LANGUAGE"
+        ],
+        "settlementDomains": [
+          "VILLAGE",
+          "HOUSE",
+          "SHOP",
+          "SCHOOL",
+          "TEMPLE",
+          "CASTLE",
+          "DUNGEON_ENTRANCE",
+          "INTERIOR_WHEN_PRESENT"
+        ],
+        "propExamples": [
+          "TREE",
+          "ROCK",
+          "BUSH",
+          "FLOWER",
+          "CHAIR",
+          "TABLE",
+          "BED",
+          "SHELF",
+          "BENCH",
+          "LAMP",
+          "LANTERN",
+          "CRATE",
+          "BARREL",
+          "CHEST",
+          "SIGNPOST",
+          "TORCH",
+          "BANNER",
+          "RUG",
+          "BOOK",
+          "WORKBENCH"
+        ],
+        "emptyFlatPlaneAsFinishedMapForbidden": true,
+        "repeatedSinglePrimitiveSetDressingForbidden": true,
+        "environmentAssetDensityMustMatchBiomeAndGameStyle": true,
+        "landmarkAndNavigationReadabilityRequired": true
+      },
+      "vibeUpgradeSequence": [
+        "READ_CURRENT_GAME_SOURCE_AND_STYLE_LOCK",
+        "SCAN_ALL_12_ASSET_FAMILIES",
+        "CLASSIFY_EACH_FAMILY_APPLIED_OR_NOT_APPLICABLE",
+        "SELECT_VERIFIED_COMPATIBLE_ASSETS",
+        "BIND_SELECTED_ASSETS_IN_EXISTING_RESPONSIBLE_SOURCE",
+        "VERIFY_ACTUAL_VISUAL_AUDIO_MOTION_USAGE_NOT_MARKER_ONLY",
+        "RUN_IMPACT_STATIC_QA",
+        "RUN_NATIVE_RUNTIME_QA",
+        "FAN_IN_REGRESSION_AND_LEARNING"
+      ],
+      "hardFailures": [
+        "UNIVERSAL_ASSET_LOOKUP_MISSING",
+        "APPLICABLE_ASSET_FAMILY_NOT_BOUND",
+        "ASSET_MARKER_ONLY_NO_VISIBLE_USE",
+        "PRIMITIVE_ONLY_VISUAL_UPGRADE",
+        "MAP_ENVIRONMENT_ASSET_COVERAGE_MISSING"
+      ],
+      "implementationBindings": [
+        "company-asset-library.json",
+        "assets/vibe-art-pipeline.js",
+        "tools/vibe2-asset-production-plan.mjs",
+        "tools/vibe2-source-worker.mjs",
+        "tools/vibe2-incremental-qa.mjs",
+        "tools/company-development-roblox-bootstrap.mjs",
+        "assets/vibe-visual-quality-gate.js"
+      ]
     }
   },
   "platformRepresentativeSets": {
@@ -7952,6 +8255,14 @@
       "gameDevelopmentSignalHasNoTerminalDoneState": true,
       "verifiedCheckpointFeedsNextPlanningCycle": true,
       "auxiliaryEvidenceReturnsToCausalGraph": true
+    },
+    "universalAssetFirstUpgradeBinding": {
+      "contract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.universalAssetFirstUpgradeContract",
+      "requiredForVibe2Vibe3Upgrade": true,
+      "allTwelveFamiliesEvaluated": true,
+      "applicableFamilyActualBindingRequired": true,
+      "noShadowAssetPipeline": true,
+      "protectedGameplayAuthorityUnchanged": true
     }
   },
   "vibeCodingMethodSelfImprovement": {
@@ -15092,7 +15403,7 @@
         "directCrossPlatformBinaryReuseForbidden": true
       },
       "motionDirectorSystem": {
-        "version": 2,
+        "version": 3,
         "authority": "OWNER_DIRECTIVE_2026-09-24",
         "status": "ACTIVE_EXECUTABLE_CONTRACT",
         "target": "HIGH_END_COMPOSABLE_MOTION_DIRECTOR",
@@ -15695,7 +16006,11 @@
             "ANIMATION_TRACK_PRIORITY",
             "R15_OR_CUSTOM_RIG",
             "MOTOR6D_OR_BONES",
+            "ANIMATIONTRACK_CROSSFADE",
+            "ADJUSTWEIGHT_AND_ADJUSTSPEED_WHEN_APPROPRIATE",
             "LAYERED_TRACKS_WHEN_COMPATIBLE",
+            "IKCONTROL_WHEN_SUPPORTED",
+            "HEAD_GAZE_AND_VISUAL_SPINE_LEAN",
             "MOBILE_BUDGETED_PROCEDURAL_CORRECTION"
           ],
           "directCrossPlatformBinaryReuseForbidden": true
@@ -15715,7 +16030,11 @@
           "MOBILE_READABILITY",
           "MOBILE_FRAME_STABILITY",
           "ACTUAL_TARGET_GAME_RUNTIME_CAPTURE",
-          "BEFORE_AFTER_COMPARISON"
+          "BEFORE_AFTER_COMPARISON",
+          "JOINT_ACTIVITY_DURING_VISIBLE_LOCOMOTION",
+          "LOCOMOTION_SPEED_SYNC",
+          "NO_MANNEQUIN_ROOT_ONLY_MOTION",
+          "ROBLOX_NATIVE_BLEND_CONTINUITY"
         ],
         "authorityGuard": {
           "motionDirectorOwnsPresentationSelectionAndCompositionOnly": true,
@@ -16024,6 +16343,19 @@
           "canonicalTrainingStillRequiresExistingDistillationThresholdHoldoutAndCanary": true,
           "sameGameSameMotionFailureRetrievalHighestPriority": true,
           "platformEvidenceIndependent": true
+        },
+        "robloxSmoothCharacterMotion": {
+          "contract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+          "libraryFirst": true,
+          "newKeyframeAuthoringLast": true,
+          "articulatedJointMotionRequired": true,
+          "rootTransformOnlyVisualLocomotionForbiddenForArticulatedActors": true,
+          "speedSynchronizedBlendRequired": true,
+          "transitionDirectorRequired": true,
+          "automaticContactQaRequired": true,
+          "proceduralCorrectionPreferred": true,
+          "officialStudioRuntimeVerificationRequired": true,
+          "mannequinHardFailure": "CHARACTER_MOTION_MANNEQUIN"
         }
       },
       "autoMotionCoverageGapFill": {
@@ -23168,7 +23500,7 @@
     }
   },
   "robloxNativeCodingQualityContract": {
-    "version": 1,
+    "version": 2,
     "status": "ACTIVE_EXECUTABLE_CONTRACT",
     "authority": "OWNER_DIRECTIVE_2026-09-26",
     "objective": "MAKE_ROBLOX_IMPLEMENTATION_NATIVE_TO_LUAU_SERVER_CLIENT_STUDIO_RUNTIME_AND_MOBILE_INPUT_WHILE_REUSING_THE_EXISTING_BUILD_UP_SOURCE_QA_STUDIO_MCP_AND_LEARNING_PIPELINE",
@@ -23213,7 +23545,9 @@
         "DATASTORE_AND_SAVE",
         "UI_STATE",
         "CORE_STATE_MACHINE",
-        "MULTIPLAYER_SYNC"
+        "MULTIPLAYER_SYNC",
+        "RIG_AND_ANIMATION_OWNERSHIP",
+        "NPC_AND_CREATURE_MOTION"
       ],
       "genericCrossPlatformImplementationWithoutRobloxSourceInspectionForbidden": true,
       "existingFunctionsAndModulesPreferred": true,
@@ -23243,7 +23577,8 @@
         "SAVE_LOAD",
         "ENEMY_AI",
         "CHARACTER_STATE",
-        "MULTIPLAYER_SYNC"
+        "MULTIPLAYER_SYNC",
+        "CHARACTER_MOTION"
       ],
       "unrelatedResponsibleFilesMayRunInParallel": true,
       "sameResponsibleFileConcurrentWriteForbidden": true,
@@ -23265,7 +23600,17 @@
       "plannerScheduling": "INDEPENDENT_SELF_HOSTED_PLAN_READS_PERSISTED_EXACT_ELIGIBILITY",
       "runtimeFoundationObservationMayRunParallel": true,
       "singleGameFoundationDelayMayNotBlockOtherEligibleStudioPlay": true,
-      "eligibilitySource": "PERSISTED_EXACT_RUNTIME_FOUNDATION_OR_INTERNAL_RELEASE_EVIDENCE"
+      "eligibilitySource": "PERSISTED_EXACT_RUNTIME_FOUNDATION_OR_INTERNAL_RELEASE_EVIDENCE",
+      "characterMotionScenarioWhenAffected": [
+        "IDLE",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_WHEN_APPLICABLE",
+        "HIT_WHEN_APPLICABLE",
+        "DEATH_WHEN_APPLICABLE",
+        "RESPAWN_WHEN_APPLICABLE"
+      ]
     },
     "functionalVerification": {
       "featurePresenceAloneInsufficient": true,
@@ -23300,7 +23645,9 @@
       "ROBLOX_UI_STATE",
       "ROBLOX_MULTIPLAYER_SYNC",
       "ROBLOX_STUDIO_RUNTIME",
-      "ROBLOX_SOURCE_GENERATION"
+      "ROBLOX_SOURCE_GENERATION",
+      "ROBLOX_CHARACTER_RIG_ANIMATION",
+      "ROBLOX_CHARACTER_MOTION_MANNEQUIN"
     ],
     "codeQualityChecks": {
       "detectUnboundedWhileLoop": true,
@@ -23310,7 +23657,12 @@
       "detectUnboundedDataStoreRetry": true,
       "detectMissingRemoteValidation": true,
       "detectStaleCharacterReferenceAcrossRespawn": true,
-      "findingsAreCausalInputsNotAutomaticGameWideBlockers": true
+      "findingsAreCausalInputsNotAutomaticGameWideBlockers": true,
+      "detectArticulatedActorMovedOnlyByRootCFrame": true,
+      "detectWeldConstraintOnlyArticulatedCharacter": true,
+      "detectMissingAnimatorOnArticulatedNpcOrCreature": true,
+      "detectUnblendedLocomotionStateSwitch": true,
+      "detectLocomotionPlaybackSpeedDesync": true
     },
     "verifiedLearningReuse": {
       "existingLearningMotorOnly": true,
@@ -23321,7 +23673,10 @@
         "CHARACTER_STATE_MACHINE",
         "DATASTORE_RECOVERY",
         "MULTIPLAYER_SYNC",
-        "STUDIO_RUNTIME_DEBUGGING"
+        "STUDIO_RUNTIME_DEBUGGING",
+        "RIG_ANIMATION",
+        "MOTION_BLEND",
+        "MOTION_CONTACT_IK"
       ],
       "sourceAndOutcomeEvidenceRequired": true,
       "failedPatternMustBeReusableAvoidEvidence": true,
@@ -23340,8 +23695,21 @@
       "tools/vibe2-learning-motor.mjs",
       "qa/vibe2-source-worker.test.mjs",
       "qa/company-development-roblox-studio-local-play.test.mjs",
-      "qa/vibe2-learning-motor.test.mjs"
-    ]
+      "qa/vibe2-learning-motor.test.mjs",
+      "assets/vibe-motion-director.js",
+      "qa/company-roblox-character-motion-quality.test.mjs"
+    ],
+    "characterMotionBinding": {
+      "centralContract": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+      "reuseExistingMotionDirector": true,
+      "implementationModule": "assets/vibe-motion-director.js",
+      "sourceWorker": "tools/vibe2-source-worker.mjs",
+      "qaMode": "IMPACT_SCOPED_PLUS_OFFICIAL_STUDIO_RUNTIME",
+      "wholeBodyCFrameOnlyMotionCannotPassArticulatedActor": true,
+      "validatedMotionLibraryPreferredBeforeAuthoring": true,
+      "animatorRigBlendSpeedSyncAndContactRequiredWhenApplicable": true,
+      "hardFailure": "ROBLOX_CHARACTER_MOTION_MANNEQUIN"
+    }
   },
   "robloxHomepageThumbnailSyncContract": {
     "version": 1,

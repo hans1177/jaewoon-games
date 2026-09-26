@@ -167,7 +167,9 @@ test('Roblox visual planning selects concrete base material atoms and requires n
       task:{gameId:'demo',goal:'save null guard repair'},target:'roblox',repoRoot:root,
       manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
     });
-    assert.equal(nonVisual.baseMaterialLoadout.robloxSelectionHandoff.handoffRequired,false);
+    assert.equal(nonVisual.baseMaterialLoadout.robloxSelectionHandoff.handoffRequired,true);
+    assert.equal(nonVisual.baseMaterialLoadout.universalAssetFirst.allFamiliesEvaluated,true);
+    assert.deepEqual(Object.keys(nonVisual.baseMaterialLoadout.families).sort(),['AUDIO','BUILDING','CHARACTER','CREATURE','ENVIRONMENT','MATERIAL','MOTION','PROP','SKILL','UI','VFX','WEAPON']);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -208,7 +210,7 @@ test('new Roblox bootstrap consumes Studio base materials in real HUD source wit
   assert.equal(built.studioAssets.applied,true);
   assert.match(built.result.sharedConfig,/StudioAssets\s*=/);
   assert.match(built.result.sharedConfig,/FRAME_PANEL/);
-  assert.match(built.result.clientCode,/STUDIO_ASSET_BINDING_VERSION\s*=\s*1/);
+  assert.match(built.result.clientCode,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
   assert.match(built.result.clientCode,/Config\.StudioAssets/);
   assert.match(built.result.clientCode,/StudioHealthTrack/);
   assert.match(built.result.clientCode,/Instance\.new\("Frame"\)/);
@@ -272,6 +274,9 @@ test('new Roblox bootstrap binds Studio material atoms into generated Luau witho
         PROP:['CHEST','CRATE','LAMP','WORKBENCH'],
         MATERIAL:['WOOD','STONE','METAL','CLOTH'],
         VFX:['IMPACT_FLASH','TRAIL_SHORT','SHAPE_BURST'],
+        SKILL:['CAST_HAND','PROJECTILE_ORB','IMPACT_SMALL'],
+        AUDIO:['ENV_WIND','UI_CONFIRM','ATTACK_SWING_LIGHT'],
+        MOTION:['IDLE_RELAXED','WALK','RUN'],
         WEAPON:['BLADE_LONG','GUARD_CROSS','GRIP_LONG'],
         CHARACTER:['TORSO_CLOTH','SHOULDER_LIGHT','BACK_CAPE'],
         CREATURE:['HEAD_CANINE','JAW_LONG','CLAW']
@@ -326,7 +331,7 @@ test('new Roblox bootstrap binds Studio material atoms into generated Luau witho
   assert.equal(compiled.studioAssets.runtimeVerificationRequired,true);
   assert.match(compiled.result.sharedConfig,/StudioAssets\s*=/);
   assert.match(compiled.result.sharedConfig,/FRAME_PANEL/);
-  assert.match(compiled.result.clientCode,/STUDIO_ASSET_BINDING_VERSION\s*=\s*1/);
+  assert.match(compiled.result.clientCode,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
   assert.match(compiled.result.clientCode,/Config\.StudioAssets/);
   assert.match(compiled.result.clientCode,/StudioAssetAtoms/);
   assert.doesNotMatch(compiled.result.sharedConfig,/ProductionVerified\s*=\s*true/);
@@ -351,7 +356,7 @@ test('existing Roblox visual candidate must bind selected Studio atoms to real n
     };
     fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2));
     fs.writeFileSync(file,[
-      'local STUDIO_ASSET_BINDING_VERSION = 1',
+      'local STUDIO_ASSET_BINDING_VERSION = 2',
       'local STUDIO_ASSET_SELECTION = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"}',
       'local root = Instance.new("Frame")',
       'root.BackgroundColor3 = Color3.fromRGB(22, 34, 58)',
@@ -365,7 +370,7 @@ test('existing Roblox visual candidate must bind selected Studio atoms to real n
     assert.equal(result.robloxStudioAssetBindingQa.companyAssetPromotionBlockedUntilRuntime,true);
 
     fs.writeFileSync(file,[
-      'local STUDIO_ASSET_BINDING_VERSION = 1',
+      'local STUDIO_ASSET_BINDING_VERSION = 2',
       'local STUDIO_ASSET_SELECTION = {"FRAME_PANEL","BUTTON_PRIMARY","BAR_HEALTH"}',
       'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
       'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))'
@@ -512,7 +517,7 @@ test('existing Roblox games receive one Studio asset backfill task until real bi
     assert.equal(duplicate,null);
 
     fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),[
-      'local STUDIO_ASSET_BINDING_VERSION = 1',
+      'local STUDIO_ASSET_BINDING_VERSION = 2',
       'local root = Instance.new("Frame")',
       'root:SetAttribute("StudioAssetAtoms", "FRAME_PANEL,BUTTON_PRIMARY")',
       'root.BackgroundColor3 = Color3.fromRGB(20,20,20)'
@@ -550,29 +555,50 @@ test('autonomous planner queues Studio asset backfill for an existing confirmed 
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('Roblox Studio asset auto apply requires selected atom trace and real native binding',()=>{
+test('Roblox Studio asset auto apply requires all family accounting, map assets, selected atom trace, and real native binding',()=>{
   const root=tempRoot();
   try{
     const relative='roblox-games/demo/client/Game.client.luau';
     const file=path.join(root,...relative.split('/'));
     fs.mkdirSync(path.dirname(file),{recursive:true});
-    fs.writeFileSync(file,`local STUDIO_ASSET_BINDING_VERSION = 1
-local STUDIO_ASSET_SELECTION = {"FRAME_PANEL"}
+    const families={
+      CHARACTER:['TORSO_CLOTH'],CREATURE:['HEAD_CANINE'],BUILDING:['FOUNDATION_RECT'],ENVIRONMENT:['TREE_TRUNK_THICK'],
+      WEAPON:['BLADE_LONG'],SKILL:['CAST_HAND'],MATERIAL:['WOOD'],AUDIO:['ENV_WIND'],VFX:['IMPACT_FLASH'],UI:['FRAME_PANEL'],
+      MOTION:['IDLE_RELAXED'],PROP:['CHEST']
+    };
+    const atoms=Object.values(families).flat();
+    fs.writeFileSync(file,`local STUDIO_ASSET_BINDING_VERSION = 2
+local STUDIO_ASSET_SELECTION = {${atoms.map(atom=>JSON.stringify(atom)).join(',')}}
+local STUDIO_ASSET_FAMILY_STATUS = {
+  CHARACTER = "APPLIED", CREATURE = "APPLIED", BUILDING = "APPLIED", ENVIRONMENT = "APPLIED",
+  WEAPON = "APPLIED", SKILL = "APPLIED", MATERIAL = "APPLIED", AUDIO = "APPLIED",
+  VFX = "APPLIED", UI = "APPLIED", MOTION = "APPLIED", PROP = "APPLIED"
+}
+local character = Instance.new("Model"); character.Name = "Character"
+local humanoid = Instance.new("Humanoid"); humanoid.Parent = character
+local enemy = Instance.new("Model"); enemy.Name = "Enemy"
+local house = Instance.new("Model"); house.Name = "House"
+local tree = Instance.new("Part"); tree.Name = "Tree"; tree.Material = Enum.Material.Wood
+local sword = Instance.new("Tool"); sword.Name = "Sword"
+local projectile = Instance.new("Part"); projectile.Name = "Projectile"
+local sound = Instance.new("Sound"); sound.SoundId = "rbxassetid://0"
+local vfx = Instance.new("ParticleEmitter")
 local gui = Instance.new("ScreenGui")
-local panel = Instance.new("Frame")
-panel.Name = STUDIO_ASSET_SELECTION[1]
+local panel = Instance.new("Frame"); panel.Parent = gui
+local motor = Instance.new("Motor6D"); motor.Transform = CFrame.Angles(0,0,0)
+local chest = Instance.new("Part"); chest.Name = "Chest"
 panel.BackgroundColor3 = Color3.fromRGB(22,34,58)
 panel:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
 panel:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))
-panel.Parent = gui
 `);
     const manifestPath=path.join(root,'manifest-roblox-studio-asset.json');
     fs.writeFileSync(manifestPath,JSON.stringify({
-      target:'roblox',
+      target:'roblox',sourceRoot:'roblox-games/demo',
       changedFiles:[relative],
       assetProduction:{
         baseMaterialLoadout:{
-          families:{UI:['FRAME_PANEL']},
+          families,
+          universalAssetFirst:{required:true},
           robloxSelectionHandoff:{handoffRequired:true,downstreamApplicationRequired:true,plannerSourceMutationForbidden:true}
         }
       }
@@ -580,15 +606,18 @@ panel.Parent = gui
     const result=runIncrementalQa({root,manifest:manifestPath,files:[relative],namespace:'roblox-studio-asset',force:true});
     assert.equal(result.outcome,'PASS');
     assert.equal(result.robloxStudioAssetBindingQa.status,'STATIC_PASS');
+    assert.equal(result.robloxStudioAssetBindingQa.allTwelveFamiliesAccounted,true);
+    assert.equal(result.robloxStudioAssetBindingQa.mapEnvironmentAssetCoverage,true);
     assert.equal(result.robloxStudioAssetBindingQa.runtimeStillRequired,true);
-    assert.equal(result.robloxStudioAssetBindingQa.companyAssetPromotionBlockedUntilRuntime,true);
 
-    fs.writeFileSync(file,`local STUDIO_ASSET_SELECTION = {"FRAME_PANEL"}
+    fs.writeFileSync(file,`local STUDIO_ASSET_BINDING_VERSION = 2
+local STUDIO_ASSET_SELECTION = {${atoms.map(atom=>JSON.stringify(atom)).join(',')}}
 local panel = Instance.new("Frame")
 panel.BackgroundColor3 = Color3.fromRGB(22,34,58)
+panel:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
 panel:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION, ","))
 `);
-    assert.throws(()=>runIncrementalQa({root,manifest:manifestPath,files:[relative],namespace:'roblox-studio-asset-missing-marker',force:true}),/ROBLOX_STUDIO_ASSET_BINDING_QA_FAILED:ROBLOX_STUDIO_ASSET_BINDING_VERSION/);
+    assert.throws(()=>runIncrementalQa({root,manifest:manifestPath,files:[relative],namespace:'roblox-studio-asset-missing-family-status',force:true}),/ROBLOX_ASSET_FAMILY_STATUS_ALL_12/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
