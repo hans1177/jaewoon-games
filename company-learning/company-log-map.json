@@ -1,5 +1,5 @@
 {
-  "version": 86,
+  "version": 87,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1637,5 +1637,26 @@
     },
     "falsePassForbidden": true,
     "unknownLivenessMayNotBeLoggedAsVerifiedLive": true
+  },
+  "vibeStudioConnectedPackageCompletion": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.studioConnectedPackageCompletion20260926",
+    "producer": "tools/vibe2-source-worker.mjs",
+    "requiredMarkers": [
+      "VIBE2_GENERATION_ATTEMPT_FAILURE=",
+      "VIBE2_GENERATION_ATTEMPT_OUTPUT_BYTES=",
+      "VIBE2_STUDIO_CONNECTED_COMPLETION_CREDIT="
+    ],
+    "resultFields": [
+      "generation.studioFocusedSeedUsed",
+      "generation.studioConnectedCompletion",
+      "generation.studioConnectedCompletionCredits",
+      "codingMethod.semanticDiffEnforcement.studioQualityDelta"
+    ],
+    "interpretation": {
+      "completionCredit": "AN_ADDITIONAL_FOCUSED_MODEL_CALL_ALLOWED_ONLY_TO_COMPLETE_A_PRESERVED_PARTIAL_PACKAGE_THAT_STILL_FAILS_THE_UNCHANGED_STUDIO_DELTA_GATE",
+      "completedPackage": "COMBINED_CANDIDATE_PASSED_THE_EXISTING_CONNECTED_SOURCE_AND_PRESENTATION_DELTA_REQUIREMENTS",
+      "gateFailure": "STUDIO_QUALITY_DELTA_REMAINS_A_FAILURE_AND_MUST_NOT_BE_RELABELED_PASS"
+    }
   }
 }
