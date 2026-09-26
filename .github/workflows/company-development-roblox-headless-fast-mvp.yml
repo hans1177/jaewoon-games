@@ -1,4 +1,5 @@
 name: Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight
+run-name: Roblox F0 · ${{ inputs.game_id || 'batch' }}
 
 on:
   push:
@@ -15,10 +16,6 @@ on:
 permissions:
   contents: write
   actions: write
-
-concurrency:
-  group: company-development-roblox-f0-source-preflight-${{ inputs.game_id || 'batch' }}
-  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
@@ -257,7 +254,35 @@ jobs:
             console.error('ROBLOX_SHARED_FALLBACK_DEFERRED='+id);
           }
           NODE
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-release-promotion.yml/runs?per_page=100" > /tmp/roblox-private-runtime-active-runs.json
+          node <<'NODE' > /tmp/roblox-private-runtime-active-ids
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-private-runtime-active-runs.json','utf8'));
+          const activeStates=new Set(['queued','pending','in_progress','requested']);
+          const prefix='Roblox private runtime · ';
+          const ids=new Set();
+          for(const run of payload.workflow_runs||[]){
+            if(!activeStates.has(String(run.status||'').toLowerCase()))continue;
+            const title=String(run.display_title||'');
+            if(!title.startsWith(prefix))continue;
+            const id=title.slice(prefix.length).trim();
+            if(/^[a-z0-9][a-z0-9-]{1,48}$/.test(id))ids.add(id);
+          }
+          for(const id of [...ids].sort())console.log(id);
+          NODE
+          dispatch_count=0
+          deduped_count=0
           while read -r id; do
             [ -n "$id" ] || continue
+            if grep -Fxq "$id" /tmp/roblox-private-runtime-active-ids; then
+              deduped_count=$((deduped_count+1))
+              echo "ROBLOX_PRIVATE_RUNTIME_DISPATCH=DEDUPED_ACTIVE:$id"
+              continue
+            fi
             gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            printf '%s\n' "$id" >> /tmp/roblox-private-runtime-active-ids
+            dispatch_count=$((dispatch_count+1))
+            echo "ROBLOX_PRIVATE_RUNTIME_DISPATCHED=$id"
           done < /tmp/release-ids
+          echo "ROBLOX_PRIVATE_RUNTIME_DISPATCH_COUNT=$dispatch_count"
+          echo "ROBLOX_PRIVATE_RUNTIME_DEDUPED_COUNT=$deduped_count"
