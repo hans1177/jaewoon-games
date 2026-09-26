@@ -32,13 +32,13 @@ permissions:
   actions: write
 
 concurrency:
-  group: director-central-company-supervisor
+  group: director-central-company-supervisor-v2
   cancel-in-progress: false
 
 jobs:
   runner-drain:
     name: drain superseded queued work
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
     permissions:
       contents: read
@@ -50,11 +50,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" > /tmp/director-run-drain.json
+          : > /tmp/director-run-drain.ndjson
+          for page in $(seq 1 20); do
+            payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100&page=${page}")"
+            printf '%s\n' "$payload" >> /tmp/director-run-drain.ndjson
+            count="$(printf '%s' "$payload" | jq '.workflow_runs | length')"
+            [ "$count" -eq 100 ] || break
+          done
           node <<'NODE' > /tmp/director-run-cancel.list
           const fs=require('fs');
-          const payload=JSON.parse(fs.readFileSync('/tmp/director-run-drain.json','utf8'));
-          const runs=(payload.workflow_runs||[]).filter(r=>Number(r.id)!==Number(process.env.GITHUB_RUN_ID));
+          const pages=fs.readFileSync('/tmp/director-run-drain.ndjson','utf8').trim().split('\n').filter(Boolean).map(JSON.parse);
+          const byId=new Map();
+          for(const page of pages)for(const run of page.workflow_runs||[])byId.set(Number(run.id),run);
+          const runs=[...byId.values()].filter(r=>Number(r.id)!==Number(process.env.GITHUB_RUN_ID));
           const active=new Set(['queued','pending','requested','in_progress']);
           const queued=new Set(['queued','pending','requested']);
           const cancel=new Map();
@@ -86,6 +94,11 @@ jobs:
               for(const stale of group.slice(1))add(stale,'CONTROL_PLANE_SUPERSEDED');
             }
           }
+
+          for(const stale of runs.filter(r=>
+            r.path==='.github/workflows/director-supervisor.yml'
+            &&queued.has(String(r.status||'').toLowerCase())
+          ))add(stale,'DIRECTOR_SUPERSEDED');
 
           const centralPush=runs
             .filter(r=>r.path==='.github/workflows/company-development-confirmed-runtime.yml'
@@ -124,6 +137,18 @@ jobs:
           dedupeByTitle('.github/workflows/company-development-roblox-runtime.yml',true);
           dedupeByTitle('.github/workflows/company-development-roblox-release-promotion.yml',false);
 
+          const staleBefore=Date.now()-(15*60*1000);
+          const legacyRoblox=runs
+            .filter(r=>r.path==='.github/workflows/company-development-roblox-runtime.yml'
+              &&active.has(String(r.status||'').toLowerCase())
+              &&String(r.head_sha||'')!==String(process.env.GITHUB_SHA||'')
+              &&Date.parse(String(r.created_at||0))<staleBefore
+              &&(
+                String(r.display_title||'')==='Company DEVELOPMENT_CONFIRMED Roblox Runtime'
+                ||String(r.display_title||'')==='Roblox runtime · batch'
+              ));
+          for(const stale of legacyRoblox)add(stale,'ROBLOX_STALE_LEGACY_OR_BATCH');
+
           for(const [id,reason] of [...cancel.entries()].sort((a,b)=>a[0]-b[0]))console.log(String(id)+'|'+reason);
           NODE
 
@@ -134,6 +159,9 @@ jobs:
             if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
               cancelled=$((cancelled+1))
               echo "DIRECTOR_RUNNER_DRAIN_CANCELLED=${run_id}:${reason}"
+            elif [ "$reason" = 'ROBLOX_STALE_LEGACY_OR_BATCH' ] && gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1; then
+              cancelled=$((cancelled+1))
+              echo "DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED=${run_id}:${reason}"
             else
               failed=$((failed+1))
               echo "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED=${run_id}:${reason}"

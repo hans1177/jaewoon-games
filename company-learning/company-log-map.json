@@ -1,5 +1,5 @@
 {
-  "version": 97,
+  "version": 98,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1801,7 +1801,7 @@
     "securityAndReleaseGateClaimsUnchanged": true
   },
   "runnerQueueDrainEvidence": {
-    "version": 1,
+    "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "workflow": ".github/workflows/director-supervisor.yml",
     "markers": [
@@ -1809,9 +1809,15 @@
       "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED",
       "DIRECTOR_RUNNER_DRAIN_CANCELLED_COUNT",
       "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED_COUNT",
-      "DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN"
+      "DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN",
+      "DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED"
     ],
     "cancelledRunReasonRequired": true,
-    "independentGameCancellationForbidden": true
+    "independentGameCancellationForbidden": true,
+    "runnerLabel": "ubuntu-24.04-arm",
+    "staleLegacyOrBatchReason": "ROBLOX_STALE_LEGACY_OR_BATCH",
+    "staleThresholdMinutes": 15,
+    "scanPagesMax": 20,
+    "exactNamedGameInProgressCancellationForbidden": true
   }
 }

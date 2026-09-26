@@ -1,5 +1,5 @@
 {
-  "version": 421,
+  "version": 422,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8401,6 +8401,28 @@
         "company-learning/company-architecture-map.json",
         "company-learning/company-log-map.json"
       ]
+    },
+    "runnerQueueDrainV2_20260926": {
+      "id": "RUNNER_QUEUE_DRAIN_V2_2026-09-26",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "BREAK_STALE_X64_QUEUE_HOLD_BY_RUNNING_SUPERVISOR_DRAIN_ON_EXISTING_ARM_POOL_AND_EVICTING_ONLY_SUPERSEDED_OR_LEGACY_BATCH_RUNS",
+      "supervisorConcurrencyGroup": "director-central-company-supervisor-v2",
+      "runner": "ubuntu-24.04-arm",
+      "scanPagesMax": 20,
+      "staleThresholdMinutes": 15,
+      "staleRobloxTitles": [
+        "Company DEVELOPMENT_CONFIRMED Roblox Runtime",
+        "Roblox runtime · batch"
+      ],
+      "staleRobloxDifferentHeadRequired": true,
+      "staleLegacyOrBatchInProgressCancellationAllowed": true,
+      "forceCancelFallbackAllowedForStaleLegacyOrBatch": true,
+      "exactNamedGameInProgressCancellationForbidden": true,
+      "independentGameCancellationForbidden": true,
+      "currentHeadRunCancellationForbidden": true,
+      "sharedStateOptimisticRetryPreserved": true,
+      "qualitySecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {

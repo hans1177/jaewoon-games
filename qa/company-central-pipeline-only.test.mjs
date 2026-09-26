@@ -161,3 +161,16 @@ test('runner drain uses a YAML-safe delimiter and preserves the game gate block'
   assert.match(director,/game-primary-gate:\n\s+needs: runner-drain\n\s+if: always\(\)\n\s+runs-on: ubuntu-slim\n\s+outputs:/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
 });
+
+test('runner drain bypasses the stale supervisor group and evicts stale legacy Roblox runs',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  assert.match(director,/group: director-central-company-supervisor-v2/);
+  assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-24\.04-arm/);
+  assert.match(director,/for page in \$\(seq 1 20\); do/);
+  assert.match(director,/ROBLOX_STALE_LEGACY_OR_BATCH/);
+  assert.match(director,/15\*60\*1000/);
+  assert.match(director,/actions\/runs\/\$\{run_id\}\/force-cancel/);
+  assert.match(director,/String\(r\.display_title\|\|''\)==='Company DEVELOPMENT_CONFIRMED Roblox Runtime'/);
+  assert.match(director,/String\(r\.display_title\|\|''\)==='Roblox runtime · batch'/);
+  assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
+});
