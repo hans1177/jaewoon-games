@@ -1,5 +1,5 @@
 {
-  "version": 403,
+  "version": 404,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8040,7 +8040,9 @@
         "MAP_GAMEPLAY_INVENTORY_UI_CONVENIENCE_SESSION_AND_DEPTH_DEBT_CANNOT_BE_SILENTLY_SKIPPED",
         "EXISTING_FEATURE_SAVE_RULE_AND_AUTHORITY_PRESERVATION_REQUIRED",
         "NO_NEW_WORKER_QUEUE_OR_SHADOW_PIPELINE"
-      ]
+      ],
+      "platformLaneUpgrade": "EXISTING_GAME_BACKFILL_IS_NOW_SCOPED_PER_WEB_ROBLOX_UNITY_WEB_UNITY_NATIVE_LANE_WITH_INDEPENDENT_EVIDENCE",
+      "unityWebIncluded": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -23738,7 +23740,7 @@
         }
       },
       "existingGameHolisticBackfill": {
-        "version": 1,
+        "version": 2,
         "authority": "OWNER_DIRECTIVE_2026-09-26",
         "status": "ACTIVE_EXECUTABLE_CONTRACT",
         "objective": "RETROACTIVELY_APPLY_THE_CURRENT_HOLISTIC_BUILD_UP_STANDARD_TO_EVERY_EXISTING_ELIGIBLE_GAME_WITHOUT_RESETTING_OR_GRANDFATHERING_LOW_QUALITY_IMPLEMENTATION",
@@ -23815,7 +23817,9 @@
           "markerCannotBeEmittedUntilAllRequiredPillarsVerified": true,
           "sourceAndRuntimeOrDeterministicEvidenceRequired": true,
           "afterBaseline": "RETURN_TO_NORMAL_PERPETUAL_BUILD_UP_WITH_CURRENT_HOLISTIC_STANDARD",
-          "terminalDoneStateForbidden": true
+          "terminalDoneStateForbidden": true,
+          "platformLaneBaselineMarker": "EXISTING_GAME_HOLISTIC_BASELINE_VERIFIED",
+          "baselineIsPerPlatformLane": true
         },
         "bindings": {
           "projectCollection": "tools/vibe2-auto-planner.mjs::collectProjects",
@@ -23824,6 +23828,48 @@
           "qa": "tools/vibe2-incremental-qa.mjs",
           "runtimeEvidence": "EXISTING_PLATFORM_NATIVE_QA_PATHS",
           "queue": "assets/vibe-continuous-queue.js"
+        },
+        "platformLaneBackfill": {
+          "scopeKey": "GAME_ID_PLUS_PLATFORM_LANE",
+          "lanes": [
+            "WEB",
+            "ROBLOX",
+            "UNITY_WEB",
+            "UNITY_NATIVE"
+          ],
+          "requiredWhenAuthorizedAndSourceExists": true,
+          "existingCatalogSourceDiscovery": {
+            "roblox": "DISCOVER_EXISTING_roblox-games/<gameId>_FOR_ACTIVE_OR_REBUILD_CONFIRMED_GAME",
+            "unityWeb": "DISCOVER_EXISTING_unity-games/<gameId>_AS_UNITY_WEB_BACKFILL_EVEN_IF_STATUS_PROJECT_LIST_OMITS_IT",
+            "unityNative": "USE_EXISTING_NATIVE_UNITY_AUTHORITY_AND_SOURCE_WITH_ITS_OWN_BACKFILL_HISTORY",
+            "web": "USE_EXISTING_WEB_ARCHIVE_WHEN_CURRENT_DEVELOPMENT_AUTHORITY_ALLOWS"
+          },
+          "independentHistory": true,
+          "independentFivePillarBaseline": true,
+          "siblingPlatformPassCannotSubstitute": true,
+          "unityWeb": {
+            "sameCanonicalUnityProjectAsUnityNative": true,
+            "independentVerificationRequired": true,
+            "requiredRuntimeSurface": "WEBGL_BROWSER",
+            "requiredEvidence": [
+              "POINTER_OR_TOUCH_INPUT",
+              "HUD_AND_MENU_FLOW",
+              "CORE_LOOP_PROGRESS",
+              "SAVE_RECOVERY_WHEN_APPLICABLE",
+              "FRAME_AND_MEMORY_BUDGET",
+              "WEBGL_ACTUAL_PLAY"
+            ],
+            "unityNativePassCannotSubstitute": true,
+            "robloxPassCannotSubstitute": true
+          },
+          "unityNative": {
+            "independentNativeRuntimeEvidenceRequired": true,
+            "unityWebPassCannotSubstitute": true
+          },
+          "roblox": {
+            "independentNativeStudioRuntimeEvidenceRequired": true,
+            "unityOrUnityWebPassCannotSubstitute": true
+          }
         }
       }
     }
