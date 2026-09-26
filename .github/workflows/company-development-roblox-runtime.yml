@@ -557,6 +557,8 @@ jobs:
               }else{
                 Object.assign(item,{
                   ownerFocusRobloxSourceBootstrapFailedAt:stamp,
+                  ownerFocusRobloxSourceCandidateBranch:null,
+                  ownerFocusRobloxSourceCandidateReadyAt:null,
                   ownerFocusRobloxAssetPipelineState:'SOURCE_REPAIR_REQUIRED',
                   ownerFocusRobloxSourceFailure:result.failure||'unknown-failure',
                   updatedAt:stamp,
@@ -590,6 +592,7 @@ jobs:
               Object.assign(item,{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
                 selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxSourceBootstrapFailedAt:stamp,
+                robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
                 robloxRuntimePassed:false,routingBlockers:[`roblox-source-bootstrap:${result.failure||'unknown-failure'}`],updatedAt:stamp,
               });
               failCount++;
