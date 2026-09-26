@@ -1,5 +1,5 @@
 {
-  "version": 70,
+  "version": 71,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1335,5 +1335,33 @@
     "expectedEffect": "REMOVE_REDUNDANT_PREWARM_CACHE_PAYLOAD_DOWNLOAD_AND_EXTRACTION_ON_HIT",
     "workerRestoreMustRemain": true,
     "gamePrimaryBoundaryMustRemain": 256
+  },
+  "unityAndroidRegressionDispatchDedupe": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.unityAndroidRegressionDispatchDedupe20260926",
+    "requiredMarkers": [
+      "UNITY_ANDROID_REGRESSION_DISPATCH_OWNER=INDEPENDENT_QA_AUTO_CHAIN",
+      "UNITY_ANDROID_REGRESSION_DISPATCH_OWNER=COMPANY_DEVELOPMENT_UNITY_RUNTIME",
+      "UNITY_ANDROID_REGRESSION_DEDUPE_BUILD_RUN="
+    ],
+    "duplicateBaseline": [
+      {
+        "upstreamBuildRunId": 36205269709,
+        "regressionRunIds": [
+          36206546746,
+          36206555517
+        ]
+      },
+      {
+        "upstreamBuildRunId": 36205334785,
+        "regressionRunIds": [
+          36206554858,
+          36206562633
+        ]
+      }
+    ],
+    "expectedEffect": "REMOVE_SECOND_PENDING_REGRESSION_RUN_FOR_THE_SAME_IMMUTABLE_UPSTREAM_BUILD",
+    "exactArtifactRegressionStillRequired": true,
+    "regressionEvidenceStillRequired": true
   }
 }
