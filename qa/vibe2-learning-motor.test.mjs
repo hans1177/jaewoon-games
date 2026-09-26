@@ -412,6 +412,30 @@ test('learning motor classifies concept world streaming persona relationship and
   assert.ok(narrativeDomains.includes('WORLD_NARRATIVE_BINDING'));
 });
 
+test('learning motor exposes Roblox touch character and UI native domains',()=>{
+  for(const domain of ['ROBLOX_TOUCH_INPUT','ROBLOX_CHARACTER_STATE','ROBLOX_UI_STATE'])assert.ok(MASTERY_DOMAINS.includes(domain));
+  const classified=classifyLearningDomains({
+    target:'roblox',
+    goal:'ContextActionService touch input CharacterAdded respawn ScreenGui button RemoteEvent authoritative sync'
+  });
+  const all=classified.all;
+  assert.ok(all.includes('ROBLOX_TOUCH_INPUT'));
+  assert.ok(all.includes('ROBLOX_CHARACTER_STATE'));
+  assert.ok(all.includes('ROBLOX_UI_STATE'));
+});
+
+test('Roblox target retrieval prefers verified Roblox-native Studio outcomes over generic cross-platform history',()=>{
+  const task={gameId:'g-new',target:'roblox',goal:'repair RemoteEvent touch input and character respawn'};
+  const experienceInput={records:[
+    {id:'generic',gameId:'other',engine:'unity',verified:true,reusable:true,problem:'touch input character state',goal:'repair touch input',change:'fixed',outcome:'PASS',reusablePatterns:['generic touch input pattern'],avoidPatterns:[],confirmations:5},
+    {id:'roblox-native',gameId:'other2',engine:'roblox',taskType:'roblox-studio-local-internal-play',verified:true,reusable:true,problem:'RemoteEvent touch input character respawn',goal:'repair Roblox native input',change:'fixed',outcome:'PASS',evidence:['roblox-native-actual-play-feedback:PASS','roblox-studio-local-runtime:PASS'],reusablePatterns:['verified-studio-local-play:roblox-touch-input'],avoidPatterns:[],confirmations:1}
+  ]};
+  const result=retrieveUnifiedLearning({task,experienceInput,codePatternsInput:{patterns:[]},playbooksInput:{taskTypes:{}},practiceDistilledInput:{entries:[]},masteryInput:{}});
+  assert.equal(result.experience[0].id,'roblox-native');
+  assert.ok(result.experience[0].reasons.includes('roblox-native-verified'));
+  assert.equal(result.priority[1],'ROBLOX_NATIVE_VERIFIED_WHEN_TARGET_ROBLOX');
+});
+
 test('benchmark ladder includes narrative tracks and never counts directly as training sample',()=>{
   const ladder=buildBenchmarkLadder({});
   assert.equal(ladder.cases.length,26);
