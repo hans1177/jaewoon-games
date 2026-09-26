@@ -3,190 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-xr6jsd",
-      "worker": "vibe2",
-      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/Game.server.luau",
-        "roblox-games/cozy-island/client/Game.client.luau",
-        "roblox-games/cozy-island/shared/GameConfig.luau"
-      ],
-      "baseSha": "3443b667d3ea131e8c1796abf5578022d6d876ac",
-      "acquiredAt": "2026-09-26T02:35:04.523Z",
-      "expiresAt": "2026-09-26T03:20:04.523Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-post-release-focus-12c1a7e2ae6288fd"
-      ]
-    },
-    {
-      "id": "wl-rvz2o",
-      "worker": "vibe2",
-      "taskId": "survival-roblox-presentation-asset-adaptation-v1",
-      "gameId": "survival",
-      "files": [
-        "roblox-games/survival/client/Game.client.luau",
-        "roblox-games/survival/server/Game.server.luau",
-        "roblox-games/survival/shared/GameConfig.luau"
-      ],
-      "baseSha": "3443b667d3ea131e8c1796abf5578022d6d876ac",
-      "acquiredAt": "2026-09-26T02:35:06.454Z",
-      "expiresAt": "2026-09-26T03:20:06.454Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-xvvy22",
-      "worker": "vibe2",
-      "taskId": "ant-simulator-existing-web-assessment-v1",
-      "gameId": "ant-simulator",
-      "files": [
-        "web-games/ant-simulator/index.html"
-      ],
-      "baseSha": "3443b667d3ea131e8c1796abf5578022d6d876ac",
-      "acquiredAt": "2026-09-26T02:35:08.129Z",
-      "expiresAt": "2026-09-26T03:20:08.129Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:ant-simulator-existing-web-assessment-v1"
-      ]
-    },
-    {
-      "id": "wl-1vmakgh",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
-        "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
-        "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau"
-      ],
-      "baseSha": "3443b667d3ea131e8c1796abf5578022d6d876ac",
-      "acquiredAt": "2026-09-26T02:35:10.140Z",
-      "expiresAt": "2026-09-26T03:20:10.140Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1yibjuu",
-      "worker": "vibe2",
-      "taskId": "cozy-island-existing-web-assessment-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "web-games/cozy-island/index.html"
-      ],
-      "baseSha": "3443b667d3ea131e8c1796abf5578022d6d876ac",
-      "acquiredAt": "2026-09-26T02:35:11.815Z",
-      "expiresAt": "2026-09-26T03:20:11.815Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-existing-web-assessment-v1"
-      ]
-    },
-    {
-      "id": "wl-1hlnsao",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau"
-      ],
-      "baseSha": "3443b667d3ea131e8c1796abf5578022d6d876ac",
-      "acquiredAt": "2026-09-26T02:35:15.500Z",
-      "expiresAt": "2026-09-26T03:20:15.500Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-pjq1sf",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
-      ],
-      "baseSha": "3443b667d3ea131e8c1796abf5578022d6d876ac",
-      "acquiredAt": "2026-09-26T02:35:24.346Z",
-      "expiresAt": "2026-09-26T03:20:24.346Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-zd0fpp",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "roblox-games/monster-adventure/client/Game.client.luau",
-        "roblox-games/monster-adventure/server/Game.server.luau",
-        "roblox-games/monster-adventure/shared/GameConfig.luau"
-      ],
-      "baseSha": "3443b667d3ea131e8c1796abf5578022d6d876ac",
-      "acquiredAt": "2026-09-26T02:35:26.972Z",
-      "expiresAt": "2026-09-26T03:20:26.972Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1ht3600",
-      "worker": "vibe2",
-      "taskId": "cozy-island-studio-evolution-presentation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/BattleVisual.luau",
-        "roblox-games/cozy-island/shared/QACamera.luau"
-      ],
-      "baseSha": "3443b667d3ea131e8c1796abf5578022d6d876ac",
-      "acquiredAt": "2026-09-26T02:35:31.636Z",
-      "expiresAt": "2026-09-26T03:20:31.636Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-g0nfan",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/shared/QACamera.luau",
-        "roblox-games/horror-escape-room/shared/VisualStyle.luau"
-      ],
-      "baseSha": "3443b667d3ea131e8c1796abf5578022d6d876ac",
-      "acquiredAt": "2026-09-26T02:35:39.673Z",
-      "expiresAt": "2026-09-26T03:20:39.673Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-5l657a",
       "worker": "vibe2",
       "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1",
@@ -355,6 +171,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1dnhsfn",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-studio-evolution-presentation-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "roblox-games/daechung-rpg/shared/QACamera.luau",
+        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
+      ],
+      "baseSha": "305f660fc5400e3a32cfb6e1123e741cc5d1a2db",
+      "acquiredAt": "2026-09-26T03:20:39.686Z",
+      "expiresAt": "2026-09-26T04:05:39.686Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-studio-evolution-presentation-v1"
       ]
     }
   ]
