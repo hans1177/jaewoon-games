@@ -125,6 +125,14 @@ test('homepage keeps the three current internal releases visible before runtime 
   for(const title of ['포근섬: 작은 왕국 키우기','5포탈 RPG: 던전 파티','심야 감염전 \\[4대4\\]'])assert.match(index,new RegExp(title));
   assert.match(index,/Roblox · 내부출시/);
   for(const placeId of ['116850096561713','126302702438348','98222620265768'])assert.match(index,new RegExp(`href="https:\\/\\/www\\.roblox\\.com\\/games\\/${placeId}"`));
+  for(const [gameId,image] of Object.entries({
+    'cozy-island':'/assets/roblox-thumbnails/cozy-island.svg',
+    'daechung-rpg':'/assets/roblox-thumbnails/daechung-rpg.svg',
+    'horror-escape-room':'/assets/roblox-thumbnails/horror-escape-room.svg'
+  })){
+    const card=index.match(new RegExp('<article class="foldGameCard" data-game-id="'+gameId+'">[\\s\\S]*?<\\/article>'))?.[0]||'';
+    assert.ok(card.includes('src="'+image+'"'),gameId+' fallback image must match canonical marketing art');
+  }
   assert.match(homepage,/homeInternalReleaseFallback/);
   assert.match(homepage,/document\.getElementById\(id\)\?\.remove\(\)/);
 });
