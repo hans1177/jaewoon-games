@@ -8436,9 +8436,13 @@
       "stalePreviousSupervisorEpochMayDrain": true,
       "workflowLevelConcurrencyGroup": null,
       "workflowLevelConcurrencyForbidden": true,
-      "runnerDrainConcurrencyGroup": null,
+      "runnerDrainConcurrencyGroup": "director-runner-drain-v1",
       "runnerDrainMayRunInParallel": true,
-      "superviseJobConcurrencyGroup": "director-central-company-supervise-v3"
+      "superviseJobConcurrencyGroup": "director-central-company-supervise-v3",
+      "runnerDrainCoalescesDuplicateWakeups": true,
+      "runnerDrainMayRunInParallelWithOtherDirectorJobs": true,
+      "gamePrimaryGateConcurrencyGroup": "director-game-primary-gate-v1",
+      "gamePrimaryGateCoalescesDuplicateWakeups": true
     },
     "controlPlaneGameRunnerEviction20260926": {
       "id": "CONTROL_PLANE_GAME_RUNNER_EVICTION_2026-09-26",
