@@ -164,9 +164,11 @@ test('runner drain uses a YAML-safe delimiter and preserves the game gate block'
 
 test('runner drain bypasses the stale supervisor group and evicts stale legacy Roblox runs',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
-  assert.match(director,/group: director-central-company-supervisor-v2/);
+  assert.match(director,/group: director-central-company-supervisor-v3/);
   assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-24\.04-arm/);
-  assert.match(director,/for page in \$\(seq 1 20\); do/);
+  assert.doesNotMatch(director,/for page in \$\(seq 1 20\); do/);
+  assert.match(director,/fetch_runs 'status=in_progress&per_page=100'/);
+  assert.match(director,/fetch_runs 'status=queued&per_page=100'/);
   assert.match(director,/ROBLOX_STALE_LEGACY_OR_BATCH/);
   assert.match(director,/15\*60\*1000/);
   assert.match(director,/actions\/runs\/\$\{run_id\}\/force-cancel/);
