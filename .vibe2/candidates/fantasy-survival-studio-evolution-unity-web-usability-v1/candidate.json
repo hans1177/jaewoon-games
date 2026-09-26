@@ -1,0 +1,24 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "            var p=enemy.transform.position;",
+      "replace": "            var p=enemy.transform.position;\n            enemy.transform.Rotate(35f*Time.unscaledDeltaTime,45f*Time.unscaledDeltaTime,0f);"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "            var p=player.transform.position;",
+      "replace": "            var p=player.transform.position;\n            player.transform.Rotate(0f,55f * Time.unscaledDeltaTime,0f,Space.World);"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "        Camera cam = Camera.main;",
+      "replace": "        Camera cam = Camera.main;\n        cam.transform.position = new Vector3(0f,1f,1f);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

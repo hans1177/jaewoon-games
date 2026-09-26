@@ -38,6 +38,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
     private void BuildWorld()
     {
         Camera cam = Camera.main;
+        cam.transform.position = new Vector3(0f,1f,1f);
         if (cam == null)
         {
             var cameraObject = new GameObject("Main Camera");
@@ -88,6 +89,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         {
             enemy.transform.Rotate(0f,55f * Time.unscaledDeltaTime,0f,Space.World);
             var p=enemy.transform.position;
+            enemy.transform.Rotate(35f*Time.unscaledDeltaTime,45f*Time.unscaledDeltaTime,0f);
             p.y=1f+Mathf.Sin(motionClock*2.1f)*0.28f;
             enemy.transform.position=p;
         }
@@ -95,6 +97,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         if (player != null && started)
         {
             var p=player.transform.position;
+            player.transform.Rotate(0f,55f * Time.unscaledDeltaTime,0f,Space.World);
             p.x=-2f+Mathf.Sin(motionClock*1.7f)*0.55f;
             player.transform.position=p;
         }
