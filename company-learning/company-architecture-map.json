@@ -1,5 +1,5 @@
 {
-  "version": 206,
+  "version": 207,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4771,7 +4771,9 @@
       "game-catalog-canonical-marketing-thumbnail",
       "homepage-renderer",
       "roblox-thumbnail-render-and-upload",
-      "roblox-thumbnail-status-verify",
+      "roblox-thumbnail-processing-status",
+      "active-thumbnail-personalization-create-or-update",
+      "active-personalization-and-thumbnail-list-readback",
       "runtime-evidence-persist"
     ],
     "sameSourceAssetForHomepageAndRoblox": true,
@@ -4779,6 +4781,7 @@
     "noNewQueue": true,
     "releasePromotionWorkflowExtendedOnly": true,
     "verifiedUniverseIdRequired": true,
-    "gameCatalogBackwardCompatibilityPreserved": true
+    "gameCatalogBackwardCompatibilityPreserved": true,
+    "uploadOnlyCannotSatisfyAppliedState": true
   }
 }
