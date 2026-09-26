@@ -66,7 +66,8 @@ env:
 
 jobs:
   reserve:
-    runs-on: ubuntu-slim
+    # Queue reservation / atomic result ingress is game-control work, not heavy model execution.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 7
     # Reserve jobs may run concurrently. Only the existing optimistic shared-state
     # fetch/reset/replan/push retry section serializes on an actual write conflict.
@@ -1713,7 +1714,8 @@ jobs:
   fan_in:
     needs: [reserve, worker]
     if: always() && needs.reserve.outputs.worker_count != '0'
-    runs-on: ubuntu-slim
+    # State fan-in stays on the game-control pool; heavy workers remain ubuntu-latest.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 8
     concurrency:
       # Fan-in jobs must not share one pending GitHub concurrency slot.
