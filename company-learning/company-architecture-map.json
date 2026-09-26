@@ -1146,6 +1146,16 @@
         "writableScopeExpansionAllowed": false,
         "telemetry": "codingMethod.missingPathRecoveries",
         "triggerRun": 36057026213
+      },
+      "candidateBranchPublication": {
+        "owner": ".github/workflows/vibe2-continuous-core.yml",
+        "localBranchBase": "RESERVE_TIME_PINNED_MAIN_SHA",
+        "remoteRefCreation": "PRECREATE_AT_PINNED_BASE_VIA_GIT_REFS_API",
+        "commitPushScope": "TASK_APPROVED_SOURCE_AND_CANDIDATE_ARTIFACT_DIFF_ONLY",
+        "workflowWriteAuthorityRequiredForUntouchedBaseWorkflows": false,
+        "pushFailureClassification": "CANDIDATE_BRANCH_PUBLISH",
+        "remoteRefCleanupOnPushFailure": true,
+        "directMainWriteAllowed": false
       }
     },
     "activation": {
