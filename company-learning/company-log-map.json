@@ -1,5 +1,5 @@
 {
-  "version": 66,
+  "version": 67,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1251,5 +1251,21 @@
     "deterministicVerificationStillRequired": true,
     "failedStrategyMustFeedRetry": true,
     "rejectedHypothesesMustFeedRetry": true
+  },
+  "vibeLaneReserveAndLearningPressureRelief": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.laneReserveAndLearningPressureRelief20260926",
+    "requiredMarkers": [
+      "VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS",
+      "VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING",
+      "VIBE2_24H_RUNNER_QUEUE_PRESSURE=",
+      "VIBE2_24H_LEARNING_IDLE_DEFERRED=RUNNER_PRESSURE",
+      "VIBE2_24H_LEARNING_IDLE_DEFERRED=NO"
+    ],
+    "reserveConcurrencyKey": "vibe2-control-state-{execution_lane}",
+    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v2",
+    "gamePrimaryBoundaryMustRemain": 256,
+    "productionMustNotWaitForLearningReserve": true,
+    "directWorkerControlWriteForbidden": true
   }
 }

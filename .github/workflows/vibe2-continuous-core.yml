@@ -64,10 +64,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 7
     concurrency:
-      # Atomic completions and fan-in refills must never wait behind a stale control checkout.
-      # Give each ingress its own slot; shared queue writes are reconciled by the optimistic
-      # fetch/reset/push retry loop in the reserve step.
-      group: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-neuron-complete' && format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name) || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-{0}', github.run_id) || github.event_name == 'push' && startsWith(github.ref_name, 'vibe2/refill/fanin/') && format('vibe2-fanin-{0}', github.run_id) || 'vibe2-control-state-vibe2-unreal-core' }}
+      # Atomic callbacks keep unique slots; normal reserve work is isolated by execution lane.
+      # GitHub concurrency keeps one pending job per group, so sharing one fallback group across
+      # production/recovery/learning can starve another lane before it starts. Shared state writes
+      # remain conflict-safe through the existing optimistic fetch/reset/push retry loop.
+      group: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-neuron-complete' && format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name) || github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-{0}', github.run_id) || github.event_name == 'push' && startsWith(github.ref_name, 'vibe2/refill/fanin/') && format('vibe2-fanin-{0}', github.run_id) || format('vibe2-control-state-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
       cancel-in-progress: false
       queue: max
     outputs:

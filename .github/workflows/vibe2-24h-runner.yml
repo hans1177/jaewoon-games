@@ -117,10 +117,10 @@ env:
   VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'
   VIBE2_LEARNING_LANE_MAX: '4'
 
-# Keep one continuous scheduler chain. Multiple wake signals collapse into one
-# pending cycle while the running cycle still dispatches its successor unconditionally.
+# Keep one continuous scheduler chain. v2 releases stale pre-lane-isolation concurrency
+# while still collapsing wake signals into one pending cycle per current scheduler epoch.
 concurrency:
-  group: vibe2-24h-cycle-singleton
+  group: vibe2-24h-cycle-singleton-v2
   cancel-in-progress: false
 
 jobs:
@@ -137,6 +137,7 @@ jobs:
       game_primary_queued: ${{ steps.queue_state.outputs.game_primary_queued }}
       learning_idle_queued: ${{ steps.queue_state.outputs.learning_idle_queued }}
       recovery_fast_queued: ${{ steps.queue_state.outputs.recovery_fast_queued }}
+      runner_pressure: ${{ steps.queue_state.outputs.runner_pressure }}
     steps:
       - name: Checkout Vibe2 control branch
         uses: actions/checkout@v4
@@ -572,9 +573,48 @@ jobs:
       - name: Read queue continuation state
         id: queue_state
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           node /tmp/vibe2-main/tools/vibe2-queue-control.mjs summary | tee /tmp/vibe2-plan-summary.log
+
+          runner_pressure='YES'
+          pressure_count='unknown'
+          if curl --fail-with-body --silent --show-error \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" \
+            --output /tmp/vibe2-24h-actions-runs.json; then
+            if pressure_count="$(node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-24h-actions-runs.json','utf8'));
+          const currentRun=String(process.env.GITHUB_RUN_ID||'');
+          const pressureStates=new Set(['queued','pending','requested']);
+          const count=(payload.workflow_runs||[]).filter(row=>
+            String(row.id||'')!==currentRun &&
+            pressureStates.has(String(row.status||'').toLowerCase())
+          ).length;
+          process.stdout.write(String(count));
+          NODE
+            )" && [[ "$pressure_count" =~ ^[0-9]+$ ]]; then
+              if [ "$pressure_count" -eq 0 ]; then runner_pressure='NO'; fi
+              echo 'VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS'
+            else
+              pressure_count='unknown'
+              echo 'VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING'
+            fi
+          else
+            echo 'VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING'
+          fi
+          echo "runner_pressure=$runner_pressure" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_24H_RUNNER_QUEUE_PRESSURE=${pressure_count}"
+          if [ "$runner_pressure" = 'YES' ]; then
+            echo 'VIBE2_24H_LEARNING_IDLE_DEFERRED=RUNNER_PRESSURE'
+          else
+            echo 'VIBE2_24H_LEARNING_IDLE_DEFERRED=NO'
+          fi
           continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-plan-summary.log | tail -n1)"
           case "${continue_required:-NO}" in
             YES|NO) ;;
@@ -763,9 +803,9 @@ jobs:
 
   learning_idle:
     needs: plan
-    # Learning keeps running beside production. Capacity pressure may reduce throughput,
-    # but queued learning and the learning state machine must not pause.
-    if: ${{ needs.plan.outputs.learning_idle_queued != '0' }}
+    # Production preempts learning. Keep learning queued, but do not start auxiliary
+    # learning workers while the live Actions queue is already under runner pressure.
+    if: ${{ needs.plan.outputs.learning_idle_queued != '0' && needs.plan.outputs.runner_pressure != 'YES' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: learning-idle

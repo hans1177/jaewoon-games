@@ -1,5 +1,5 @@
 {
-  "version": 199,
+  "version": 200,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1197,6 +1197,38 @@
         "taskReservationSemanticsChanged": false,
         "sourceWriteAuthorityChanged": false,
         "qaSecurityReleaseAuthorityChanged": false
+      },
+      "reserveConcurrency": {
+        "version": 1,
+        "mode": "LANE_ISOLATED_OPTIMISTIC_SHARED_QUEUE_WRITE",
+        "workflow": ".github/workflows/vibe2-continuous-core.yml",
+        "executionLanes": [
+          "GAME_PRIMARY",
+          "RECOVERY_FAST",
+          "LEARNING_IDLE",
+          "CONTROL_FAST"
+        ],
+        "crossLaneGlobalReserveLock": false,
+        "sameLaneReserveSerialization": true,
+        "sharedQueue": "vibe2-unreal-core:.vibe2/queue.json",
+        "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5",
+        "workerDirectControlWrite": false,
+        "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v2",
+        "gamePrimaryExternalBoundary": 256
+      },
+      "learningIdlePressureGate": {
+        "version": 1,
+        "workflow": ".github/workflows/vibe2-24h-runner.yml",
+        "source": "GITHUB_ACTIONS_RECENT_RUN_STATUS",
+        "pressureStatuses": [
+          "queued",
+          "pending",
+          "requested"
+        ],
+        "actionOnPressure": "DEFER_LEARNING_IDLE",
+        "actionOnObservationFailure": "DEFER_LEARNING_IDLE",
+        "gamePrimaryUnaffected": true,
+        "recoveryFastUnaffected": true
       }
     },
     "liveShadowRepairLoop": {

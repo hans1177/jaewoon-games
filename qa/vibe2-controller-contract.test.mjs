@@ -128,7 +128,7 @@ test('runtime enables DAG sharding work stealing with policy-unbounded external-
   assert.equal(runtime.continuous.studioQualityLoop.verifiedDesignHardFailuresMax,0);
   assert.equal(runtime.continuous.studioQualityLoop.unverifiedDesignGameplayMutationForbidden,true);
   assert.equal(runtime.continuous.studioQualityLoop.runtimeDesignEvidenceAuthority,'company-runtime');
-  assert.equal(runtime.documentation.machineStateVersions.runtime,33);
+  assert.equal(runtime.documentation.machineStateVersions.runtime,runtime.version);
   assert.equal(runtime.documentation.machineStateVersions.parallelism,4);
   assert.equal(runtime.workManagement.controlStateRecovery.enabled,true);
   assert.equal(runtime.workManagement.controlStateRecovery.blankOrMissingQueueRecovery,'CANONICAL_EMPTY_V5_THEN_COMPANY_RUNTIME_REPLAN');
@@ -244,7 +244,8 @@ test('controller reserves a batch and fans workers out to the external matrix bo
   assert(workflow.includes("if [ \"$VIBE2_EXECUTION_LANE\" = 'game-primary' ]; then lane_min=\"$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN\"; fi"));
   assert.equal((workflow.match(/--min="\$lane_min"/g)||[]).length,4);
   assert(workflow.includes('matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}'));
-  assert(workflow.includes("'vibe2-control-state-vibe2-unreal-core'"));
+  assert(workflow.includes("format('vibe2-control-state-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(!workflow.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_OUT'));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_IN=PASS'));
   assert(workflow.includes('for(let i=1;i<variantCount;i++)workers.push'));
@@ -408,7 +409,8 @@ test('neuron callbacks keep every ingress event and reconcile shared queue state
   assert(workflow.includes("format('vibe2-neuron-{0}-{1}', github.event.client_payload.source_run, github.event.client_payload.artifact_name)"));
   assert(workflow.includes("github.event.action == 'vibe2-fanin-refill' && format('vibe2-fanin-{0}', github.run_id)"));
   assert(workflow.includes("startsWith(github.ref_name, 'vibe2/refill/fanin/') && format('vibe2-fanin-{0}', github.run_id)"));
-  assert(workflow.includes("'vibe2-control-state-vibe2-unreal-core'"));
+  assert(workflow.includes("format('vibe2-control-state-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(!workflow.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
   const start=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
   const end=workflow.indexOf('  model_cache:',start);
   const reserveBlock=workflow.slice(start,end);
@@ -512,6 +514,11 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes('game_refill_ready: ${{ steps.queue_state.outputs.game_refill_ready }}'));
   assert(safetyNetWorkflow.includes('free_worker_slots: ${{ steps.queue_state.outputs.free_worker_slots }}'));
   assert(safetyNetWorkflow.includes('active_worker_reservations: ${{ steps.queue_state.outputs.active_worker_reservations }}'));
+  assert(safetyNetWorkflow.includes('runner_pressure: ${{ steps.queue_state.outputs.runner_pressure }}'));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS'));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING'));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_QUEUE_PRESSURE='));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_LEARNING_IDLE_DEFERRED='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_FREE_GAME_WORKER_SLOTS='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_GAME_REFILL_READY='));
@@ -524,7 +531,8 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes("lane_max: '256'"));
   assert.equal(safetyNetWorkflow.includes("lane_max: '20'"),false);
   assert(safetyNetWorkflow.includes("needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0'"));
-  assert(safetyNetWorkflow.includes("needs.plan.outputs.learning_idle_queued != '0'"));
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.learning_idle_queued != '0' && needs.plan.outputs.runner_pressure != 'YES'"));
+  assert(safetyNetWorkflow.includes("new Set(['queued','pending','requested'])"));
   assert(safetyNetWorkflow.includes("VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'"));
   assert(safetyNetWorkflow.includes("VIBE2_LEARNING_ALWAYS_ON: 'true'"));
   assert(safetyNetWorkflow.includes('needs: [plan, recovery_fast, continuous, learning_idle, game_study]'));
@@ -538,7 +546,7 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(workflow.includes('vibe2-queue-control.mjs reserve-batch'));
 });
 
-test('free-slot refill keeps game-study idle-gated while learning-idle remains active beside production',()=>{
+test('free-slot refill keeps game-study idle-gated while learning-idle yields first under runner pressure',()=>{
   assert(safetyNetWorkflow.includes("const waveReady=activeGame===0?'YES':'NO'"));
   assert(safetyNetWorkflow.includes("const gameRefillReady=freeWorkerSlots>0?'YES':'NO'"));
   assert(safetyNetWorkflow.includes("needs.plan.outputs.learning_idle_queued != '0'"));
@@ -547,7 +555,8 @@ test('free-slot refill keeps game-study idle-gated while learning-idle remains a
 });
 
 test('24H cycle preserves continuity without multiplying independent scheduler chains',()=>{
-  assert(safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton'));
+  assert(safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton-v2'));
+  assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton\n'));
   assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-${{ github.run_id }}'));
   assert(safetyNetWorkflow.includes('cancel-in-progress: false'));
   const planStart=safetyNetWorkflow.indexOf('  plan:');
@@ -568,6 +577,8 @@ test('continuous core and 24H runner isolate game-primary and learning-idle exec
   assert(workflow.includes('execution_lane:'));
   assert(workflow.includes("VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}"));
   assert(workflow.includes('--lane="$VIBE2_EXECUTION_LANE"'));
+  assert(workflow.includes("format('vibe2-control-state-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(!workflow.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
   assert(workflow.includes('VIBE2_REGRESSION_ROLE=SKIPPED_AUXILIARY_LANE:'));
   assert(workflow.includes('AUXILIARY_LANE_NO_RELEASE'));
   assert(workflow.includes("if: env.VIBE2_EXECUTION_LANE == 'game-primary'"));
