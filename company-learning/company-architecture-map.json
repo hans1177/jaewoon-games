@@ -1154,6 +1154,8 @@
         "commitPushScope": "TASK_APPROVED_SOURCE_AND_CANDIDATE_ARTIFACT_DIFF_ONLY",
         "workflowWriteAuthorityRequiredForUntouchedBaseWorkflows": false,
         "pushFailureClassification": "CANDIDATE_BRANCH_PUBLISH",
+        "parallelTelemetryStage": "CANDIDATE_PUBLICATION",
+        "excludedFromSourceGenerationFailureRate": true,
         "remoteRefCleanupOnPushFailure": true,
         "directMainWriteAllowed": false
       }
