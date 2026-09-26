@@ -1725,6 +1725,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let missingPathRecoveries=0;
   let fullWebProgressCreditCount=0;
   let robloxFullGraphicsPackageActive=false;
+  let robloxZeroOutputTimeoutFocusedRecoveryActive=false;
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
   const robloxGraphicsInitial=!allowFullRewrite
     &&/Engine:\s*roblox/i.test(String(prompt??''))
@@ -1768,17 +1769,22 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const zeroOutputTimeoutRecovery=!allowFullRewrite
       &&priorFailureClass==='TIMEOUT'
       &&!clean(lastRaw);
+    if(robloxAssetAdaptationTask&&zeroOutputTimeoutRecovery)robloxZeroOutputTimeoutFocusedRecoveryActive=true;
     if(zeroOutputTimeoutRecovery)console.log(`VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY=${attempt}:${candidateVariant}`);
+    if(robloxAssetAdaptationTask&&robloxZeroOutputTimeoutFocusedRecoveryActive&&!zeroOutputTimeoutRecovery&&attempt>2){
+      console.log(`VIBE2_ROBLOX_TIMEOUT_RECOVERY_CHAIN_FOCUSED=${attempt}:${candidateVariant}:${priorFailureClass||'UNKNOWN'}`);
+    }
     const robloxFullGraphicsPackageRecovery=robloxAssetAdaptationTask
       &&robloxFullGraphicsPackageActive
       &&ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES.has(priorFailureClass)
-      &&!zeroOutputTimeoutRecovery;
+      &&!zeroOutputTimeoutRecovery
+      &&!robloxZeroOutputTimeoutFocusedRecoveryActive;
     const timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT';
     const editMatchFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='EDIT_MATCH';
     const malformedFastEscalation=focusedWebRepair&&!allowFullRewrite&&attempt>=2&&priorFailureClass==='MALFORMED_OUTPUT';
     const systemCausalPairRecovery=priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'||priorFailureClass==='SYSTEM_CANDIDATE_SYNTAX';
     const presentationPatchDeltaRecovery=!allowFullRewrite&&priorFailureClass==='PRESENTATION_PATCH_DELTA';
-    const focusedFinal=!allowFullRewrite&&(!studioExpansion||zeroOutputTimeoutRecovery)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||(speculativeVariant&&attempt>=2));
+    const focusedFinal=!allowFullRewrite&&(!studioExpansion||zeroOutputTimeoutRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const diagnosticFocusedReplaceOnly=!allowFullRewrite&&!studioExpansion&&!robloxFullGraphicsPackageRecovery
       ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})
