@@ -552,15 +552,17 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
   const execution=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution;
   assert.equal(execution.gameLevelExecution,'PARALLEL_BY_DEFAULT');
   assert.equal(execution.internalGameConcurrencyCapsForbidden,true);
-  assert.equal(execution.workflowLevelGameWideSerializationForbidden,true);
-  assert.equal(execution.workflowLevelConcurrencyGroupByGameIdForbidden,true);
-  assert.equal(execution.sameGameConflictSerializationScope,'RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY');
+  assert.equal(execution.workflowLevelGameWideSerializationForbidden,false);
+  assert.equal(execution.workflowLevelConcurrencyGroupByGameIdForbidden,false);
+  assert.equal(execution.crossGameWorkflowSerializationForbidden,true);
+  assert.equal(execution.exactGameDuplicateWorkflowSerializationAllowed,true);
+  assert.equal(execution.internalSameWorkflowGameMatrixParallelismPreserved,true);
+  assert.equal(execution.sameGameConflictSerializationScope,'EXACT_DUPLICATE_WORKFLOW_OR_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY');
   assert.equal(execution.externalProviderCapacityIsOnlyHeavyExecutionBoundary,true);
   assert.equal(execution.defaultRequestedGameWorkers,256);
-  assert.doesNotMatch(workflow,/^concurrency:\s*$/m);
-  assert.doesNotMatch(workflow,/company-development-roblox-runtime-\$\{\{ inputs\.game_id/);
+  assert.match(workflow,/concurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n\s+cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/max-parallel:/);
-  for(const job of ['source-plan','source-bootstrap','technical-plan','technical-persist']){
+  for(const job of ['source-bootstrap','technical-plan','technical-persist']){
     const header=`  ${job}:\n`;
     const start=workflow.indexOf(header);
     assert.ok(start>=0,job+' missing');
@@ -570,6 +572,10 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
     const block=workflow.slice(start,end);
     assert.match(block,/runs-on: ubuntu-24\.04-arm/);
   }
+  const sourcePlanStart=workflow.indexOf('  source-plan:\n');
+  const sourceWorkerStart=workflow.indexOf('\n  source-worker:',sourcePlanStart);
+  assert.ok(sourcePlanStart>=0&&sourceWorkerStart>sourcePlanStart);
+  assert.match(workflow.slice(sourcePlanStart,sourceWorkerStart),/runs-on: ubuntu-slim/);
   const technicalWorkerStart=workflow.indexOf('  technical-worker:\n');
   const technicalWorkerEnd=workflow.indexOf('\n  technical-persist:',technicalWorkerStart);
   assert.match(workflow.slice(technicalWorkerStart,technicalWorkerEnd),/runs-on: ubuntu-latest/);
@@ -640,8 +646,8 @@ test('Roblox source worker bases candidate on current main without leaking workf
 test('Roblox batch scheduler v5 uses slim control-plane capacity without capping per-game matrix parallelism',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
-  assert.doesNotMatch(workflow,/^concurrency:\s*$/m);
-  assert.doesNotMatch(workflow,/company-development-roblox-runtime-\$\{\{ inputs\.game_id/);
+  assert.match(workflow,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
+  assert.match(workflow,/cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/max-parallel:/);
   assert.match(workflow,/const EXECUTION_BATCH_MAX=256;/);
   assert.equal(roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.matrixBatchMax,256);
@@ -834,40 +840,42 @@ test('Roblox runtime self-redispatch dedupes queued or running work for the same
   assert.match(workflow,/ROBLOX_BATCH_CONTRACT_SUPERSEDED_REDISPATCH=DEDUPED_EXISTING_RUN:/);
   assert.match(workflow,/ROBLOX_F0_SOURCE_REPAIR_DISPATCH=DEDUPED_EXISTING_RUN:/);
   assert.match(workflow,/ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=DEDUPED_EXISTING_RUN:/);
-  assert.doesNotMatch(workflow,/^concurrency:\s*$/m);
+  assert.match(workflow,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
 });
 
 
-test('Roblox runtime collapses duplicate exact-game and batch planners without a workflow-wide lock',()=>{
+test('Roblox runtime collapses duplicate exact-game and batch planners with same-game-only workflow locking',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/run-name: Roblox runtime · \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   assert.match(workflow,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_ACTIVE=/);
   assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_NEWER_ACTIVE=/);
   assert.match(workflow,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
-  assert.doesNotMatch(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:/);
+  assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n\s+cancel-in-progress: false/);
 });
 
-test('source-plan dedupe job itself has no concurrency lock and stays on ARM game-control capacity',()=>{
+test('source-plan dedupe job itself has no job lock and stays on slim ingress capacity',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const start=workflow.indexOf('\n  source-plan:\n');
   const end=workflow.indexOf('\n  source-worker:\n',start);
   const block=workflow.slice(start,end);
   assert.ok(start>=0&&end>start);
-  assert.match(block,/runs-on:\s*ubuntu-24\.04-arm/);
-  assert.doesNotMatch(block,/concurrency:/);
+  assert.match(block,/runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(block,/\n    concurrency:/);
   assert.match(block,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
 });
 
-test('Roblox game-control jobs use ARM while heavy source and technical workers stay on full runners',()=>{
+test('Roblox ingress uses slim while later game-control jobs stay on ARM and heavy workers stay full',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
-  for(const job of ['source-plan','source-bootstrap','technical-plan','technical-persist']){
+  const section=(job,next)=>{
     const start=workflow.indexOf('\n  '+job+':\n');
     assert.ok(start>=0,job);
-    const tail=workflow.slice(start+1);
-    const next=tail.slice(1).search(/\n  [A-Za-z0-9_-]+:\n/);
-    const block=next>=0?workflow.slice(start,start+1+next+1):workflow.slice(start);
-    assert.match(block,/runs-on:\s*ubuntu-24\.04-arm/,job);
+    const end=next?workflow.indexOf('\n  '+next+':\n',start):workflow.length;
+    return workflow.slice(start,end);
+  };
+  assert.match(section('source-plan','source-worker'),/runs-on:\s*ubuntu-slim/);
+  for(const [job,next] of [['source-bootstrap','technical-plan'],['technical-plan','technical-worker'],['technical-persist',null]]){
+    assert.match(section(job,next),/runs-on:\s*ubuntu-24\.04-arm/,job);
   }
   assert.match(workflow,/\n  source-worker:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
   assert.match(workflow,/\n  technical-worker:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
