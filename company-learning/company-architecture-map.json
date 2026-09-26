@@ -1,5 +1,5 @@
 {
-  "version": 219,
+  "version": 220,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1293,6 +1293,25 @@
         "liveVerificationRun": 36208311596,
         "prewarmRunnerReliefLiveVerified": true,
         "nextObservedInfrastructureBottleneck": "WORKER_MODEL_CACHE_RESTORE_BEFORE_WORK_ORDER_AND_LOCK"
+      },
+      "liveReservationLeaseRecovery": {
+        "version": 1,
+        "source": "company-learning/platform-release-roadmap.json#changeRecord.liveReservationLeaseRecovery20260926",
+        "canonicalDecisionOwner": "tools/vibe2-queue-control.mjs::recoverStaleRunningReservations",
+        "systemStewardDelegation": "tools/vibe2-system-steward.mjs::runSystemStewardState",
+        "snapshotIngress": [
+          ".github/workflows/vibe2-continuous-core.yml::Snapshot live reservation owners",
+          ".github/workflows/vibe2-24h-runner.yml::Snapshot live reservation owners"
+        ],
+        "identity": "reservationRunId",
+        "liveRunProtection": "LIVE_OR_UNKNOWN_PRESERVE_RESERVATION_OWNER_BLOCKS_AGE_ONLY_RECLAIM",
+        "staleRecovery": "MISSING_OR_EXPIRED_NONLIVE_RESERVATION_REQUEUES_WITHOUT_RETRY_CONSUMPTION",
+        "externalWaitProtectionPreserved": true,
+        "singleCanonicalStaleDecisionFunction": true,
+        "duplicateStaleDecisionImplementationForbidden": true,
+        "queueSchedulerAuthorityChanged": false,
+        "sourceWriteAuthorityChanged": false,
+        "gameSemanticsChanged": false
       }
     },
     "liveShadowRepairLoop": {
