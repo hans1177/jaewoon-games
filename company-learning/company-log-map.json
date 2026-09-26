@@ -1280,11 +1280,14 @@
       "VIBE2_LIVE_RUNNER_QUEUE_PRESSURE=",
       "VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS",
       "VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN",
+      "VIBE2_PRESSURE_REFILL_DISPATCH=WAVE_LEADER_EXISTING_FANIN_REFILL",
       "VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=FAIL_OPEN"
     ],
     "coalescedResultMustRemainInWorkerArtifact": true,
     "existingCohortFanInMustConsumeCoalescedResult": true,
     "coalescingIsNotTaskFailure": true,
+    "coalescedResultMayStillTriggerSingleWaveCapacityRefill": true,
+    "capacityRefillDoesNotConsumeWorkerResult": true,
     "immediateDispatchMustResumeWhenQueuePressureClears": true,
     "workerDirectControlWriteForbidden": true
   },
