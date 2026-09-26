@@ -141,6 +141,7 @@ test('bound Roblox games re-enter reconciliation only when their own source tree
     assert.equal(changed[0].pass,true,changed[0].blockers.join(','));
     assert.equal(changed[0].sourceDrift,true);
     assert.equal(changed[0].sourceRevision,currentRevision);
+    assert.equal(changed[0].sourceTreeSha,execFileSync('git',['rev-parse',`HEAD:roblox-games/${gameId}`],{cwd:tmp,encoding:'utf8'}).trim());
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
@@ -324,6 +325,7 @@ test('existing Roblox source automatically enters rebind when company library bi
     assert.equal(rows[0].failure,'existing-source-studio-asset-binding-required');
     assert.equal(rows[0].studioAssetBindingRefreshRequired,true);
     assert.equal(rows[0].studioAssetLibraryVersion,companyAssetLibrary.version);
+    assert.match(rows[0].sourceTreeSha,/^[0-9a-f]{40}$/);
     assert.ok(rows[0].blockers.includes('ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED'));
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
@@ -360,6 +362,17 @@ test('existing Roblox library rebind preserves gameplay server and updates only 
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
+});
+
+test('Roblox runtime persistence uses game source-tree identity instead of unrelated main SHA churn',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/reconciliationSourceTreeSha:String\(reconciliationRow\?\.sourceTreeSha\|\|''\)/);
+  assert.match(workflow,/RECONCILIATION_SOURCE_TREE_SHA:/);
+  assert.match(workflow,/ROBLOX_SOURCE_TREE_STALE_BEFORE_WORKER=/);
+  assert.match(workflow,/git rev-parse "origin\/main:\$TARGET_SOURCE"/);
+  assert.match(workflow,/origin\/main:\$\{result\.sourcePath\}/);
+  assert.match(workflow,/sourceIdentityStale=reconciliationTreeSha/);
+  assert.match(workflow,/ROBLOX_SOURCE_RECONCILIATION_UNRELATED_MAIN_ADVANCE_ACCEPTED=/);
 });
 
 test('Roblox runtime workflow watches library changes and routes existing sources through the same source PR lane',()=>{
