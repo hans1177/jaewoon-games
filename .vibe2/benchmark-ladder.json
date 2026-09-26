@@ -671,88 +671,8 @@
       ],
       "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
       "authority": "practice-and-measurement-only"
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_2c0a700824026293385a417b",
-      "track": "CAPABILITY_GENERALIZATION",
-      "level": 1,
-      "state": "READY_FOR_UNSEEN_SCREEN",
-      "countsAsTrainingSample": false,
-      "countsAsProductionPass": false,
-      "productionPreemptible": true,
-      "capabilityId": "capability_ctrace_2c0a700824026293385a417b",
-      "sourceGameId": "amusement-tycoon",
-      "targetEngine": "web",
-      "holdoutGameId": "bug-defense",
-      "pairId": "phase4-pair-1dxwlb4",
-      "unseenProblemFingerprint": "phase4-unseen-x9qcdi",
-      "pairRoles": [
-        "CONTROL",
-        "CHALLENGER"
-      ],
-      "pairedControlChallengerRequired": true,
-      "screenOnly": true,
-      "mayPromoteGeneralization": false,
-      "fixedBetweenVariants": [
-        "NON_TARGET_CONTEXT",
-        "WRITABLE_SCOPE",
-        "MODEL_BUDGET",
-        "QA_CONTRACT"
-      ],
-      "requiredVerification": [
-        "UNSEEN_GAME",
-        "UNSEEN_PROBLEM_FINGERPRINT",
-        "PAIRED_CONTROL_CHALLENGER",
-        "FRESH_INDEPENDENT_QA",
-        "REGRESSION",
-        "NATIVE_RUNTIME_WHEN_REQUIRED",
-        "CAPABILITY_SPECIFIC_SUPPORT",
-        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
-      ],
-      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
-      "authority": "practice-and-measurement-only"
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_333cb035bd13d117708a9b9d",
-      "track": "CAPABILITY_GENERALIZATION",
-      "level": 1,
-      "state": "READY_FOR_UNSEEN_SCREEN",
-      "countsAsTrainingSample": false,
-      "countsAsProductionPass": false,
-      "productionPreemptible": true,
-      "capabilityId": "capability_ctrace_333cb035bd13d117708a9b9d",
-      "sourceGameId": "amusement-tycoon",
-      "targetEngine": "web",
-      "holdoutGameId": "bug-defense",
-      "pairId": "phase4-pair-18s0lk5",
-      "unseenProblemFingerprint": "phase4-unseen-iw0qx7",
-      "pairRoles": [
-        "CONTROL",
-        "CHALLENGER"
-      ],
-      "pairedControlChallengerRequired": true,
-      "screenOnly": true,
-      "mayPromoteGeneralization": false,
-      "fixedBetweenVariants": [
-        "NON_TARGET_CONTEXT",
-        "WRITABLE_SCOPE",
-        "MODEL_BUDGET",
-        "QA_CONTRACT"
-      ],
-      "requiredVerification": [
-        "UNSEEN_GAME",
-        "UNSEEN_PROBLEM_FINGERPRINT",
-        "PAIRED_CONTROL_CHALLENGER",
-        "FRESH_INDEPENDENT_QA",
-        "REGRESSION",
-        "NATIVE_RUNTIME_WHEN_REQUIRED",
-        "CAPABILITY_SPECIFIC_SUPPORT",
-        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
-      ],
-      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
-      "authority": "practice-and-measurement-only"
     }
   ],
-  "phase4GeneralizationCases": 9,
+  "phase4GeneralizationCases": 7,
   "authority": "practice-and-measurement-only"
 }
