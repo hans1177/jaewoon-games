@@ -2470,6 +2470,23 @@ test('timeout partial recovery is persisted in coding method and immutable worke
   assert.match(workflowSource,/baseCodingMethod\?\.partialTimeoutRecovery===true\?'coding-timeout-partial-recovery:YES'/);
 });
 
+
+test('zero-output timeout switches Roblox visual recovery to the focused contract',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/const zeroOutputTimeoutRecovery=!allowFullRewrite/);
+  assert.match(workerSource,/priorFailureClass==='TIMEOUT'/);
+  assert.match(workerSource,/&&\s*!zeroOutputTimeoutRecovery;/);
+  assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY/);
+});
+
+test('failed source generation keeps the validated preflight shared context as evidence fallback',()=>{
+  const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workflowSource,/SHARED_CONTEXT_BEFORE_FILE:/);
+  assert.match(workflowSource,/const sharedContextPath=\[clean\(process\.env\.SHARED_CONTEXT_FILE\),clean\(process\.env\.SHARED_CONTEXT_BEFORE_FILE\)\]\.find/);
+  assert.match(workflowSource,/fs\.readFileSync\(sharedContextPath,'utf8'\)/);
+});
+
+
 test('focused retry derives exact unique find anchors from writable source',()=>{
   const base=[
     'You are the Vibe2 game source worker. Return JSON only.',
