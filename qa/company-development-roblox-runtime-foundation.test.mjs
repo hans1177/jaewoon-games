@@ -506,3 +506,13 @@ test('F9 collapses duplicate exact-game and scan runs before deterministic revie
   assert.match(workflow,/ROBLOX_F9_SCAN_DEDUPED_NEWER=/);
   assert.match(workflow,/final-review:\n\s+needs: dedupe\n\s+if: needs\.dedupe\.outputs\.run == 'true'/);
 });
+
+test('post-runtime dedupe job runs without a same-game concurrency lock',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  const start=workflow.indexOf('  dedupe:');
+  const end=workflow.indexOf('\n  runtime-foundation-qa:',start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(block,/concurrency:/);
+  assert.match(block,/ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=/);
+});
