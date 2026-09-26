@@ -76,6 +76,62 @@ test('Roblox source worker inspects native responsibilities before generation',(
   assert.ok(inspection.responsibilities.some(row=>row.role==='CLIENT_INPUT_OR_PRESENTATION'));
 });
 
+test('Roblox source inspection detects articulated rig and character motion ownership',()=>{
+  const inspection=buildRobloxNativeSourceInspection({
+    order:{target:'roblox'},
+    responsibleFiles:['server/Npc.server.luau'],
+    context:{files:[{
+      path:'server/Npc.server.luau',editable:true,
+      content:[
+        'local npc = Instance.new("Model")',
+        'local humanoid = Instance.new("Humanoid")',
+        'local animator = Instance.new("Animator")',
+        'animator.Parent = humanoid',
+        'local torso = Instance.new("Part")',
+        'local arm = Instance.new("Part")',
+        'local shoulder = Instance.new("Motor6D")',
+        'shoulder.Part0 = torso',
+        'shoulder.Part1 = arm',
+        'npc:PivotTo(CFrame.new(0,4,0))'
+      ].join("\n")
+    }]}
+  });
+  assert.ok(inspection.systems.includes('RIG_AND_ANIMATION'));
+  assert.ok(inspection.systems.includes('CHARACTER_MOTION'));
+  assert.equal(inspection.motionQuality.rigSignals,true);
+  assert.equal(inspection.motionQuality.animatorSignals,true);
+  assert.equal(inspection.motionQuality.rootTransformMotionSignals,true);
+  assert.equal(inspection.motionQuality.libraryFirstRequired,true);
+  assert.equal(inspection.motionQuality.hardFailure,'ROBLOX_CHARACTER_MOTION_MANNEQUIN');
+  assert.ok(inspection.responsibilities[0].signals.includes('RIG_ANIMATION'));
+  assert.ok(inspection.responsibilities[0].signals.includes('CHARACTER_MOTION'));
+});
+
+test('Roblox candidate quality reports welded root-only mannequin motion risks',()=>{
+  const result=inspectRobloxNativeCandidateQuality({candidate:{edits:[{
+    path:'server/Game.server.luau',
+    replace:[
+      'local function humanoidFigure()',
+      ' local npc = Instance.new("Model")',
+      ' local torso = Instance.new("Part")',
+      ' torso.Name = "Torso"',
+      ' local arm = Instance.new("Part")',
+      ' arm.Name = "RightArm"',
+      ' local leg = Instance.new("Part")',
+      ' leg.Name = "RightLeg"',
+      ' local weld = Instance.new("WeldConstraint")',
+      ' weld.Part0 = torso',
+      ' weld.Part1 = arm',
+      ' npc:PivotTo(CFrame.new(0,4,0))',
+      'end'
+    ].join("\n")
+  }]}});
+  assert.ok(result.motionQualityFindings.some(row=>row.class==='ROOT_ONLY_ARTICULATED_MOTION_RISK'));
+  assert.ok(result.motionQualityFindings.some(row=>row.class==='WELD_CONSTRAINT_ONLY_CHARACTER_RISK'));
+  assert.equal(result.motionQualityHardFailure,'ROBLOX_CHARACTER_MOTION_MANNEQUIN');
+  assert.equal(result.automaticGameWideBlock,false);
+});
+
 test('Roblox candidate quality reports unsafe native patterns without creating a game-wide blocker',()=>{
   const result=inspectRobloxNativeCandidateQuality({candidate:{edits:[
     {path:'client/Game.client.luau',replace:'local store = DataStoreService:GetDataStore("save")\ncoins.Value = 100'},
