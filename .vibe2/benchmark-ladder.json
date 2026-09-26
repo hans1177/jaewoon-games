@@ -3,10 +3,10 @@
   "kind": "vibe2-benchmark-ladder",
   "cases": [
     {
-      "id": "mastery-coding-l15-g6",
+      "id": "mastery-coding-l16-g7",
       "track": "CODING",
-      "level": 15,
-      "difficultyGeneration": 6,
+      "level": 16,
+      "difficultyGeneration": 7,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -18,10 +18,10 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-bugfix-l18-g9",
+      "id": "mastery-bugfix-l19-g10",
       "track": "BUGFIX",
-      "level": 18,
-      "difficultyGeneration": 9,
+      "level": 19,
+      "difficultyGeneration": 10,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -63,9 +63,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-unity_native-l1-g1",
+      "id": "mastery-unity_native-l2-g1",
       "track": "UNITY_NATIVE",
-      "level": 1,
+      "level": 2,
       "difficultyGeneration": 1,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
@@ -138,9 +138,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-asset_production-l7-g1",
+      "id": "mastery-asset_production-l8-g1",
       "track": "ASSET_PRODUCTION",
-      "level": 7,
+      "level": 8,
       "difficultyGeneration": 1,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
@@ -183,10 +183,10 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-animation_feel-l12-g3",
+      "id": "mastery-animation_feel-l13-g4",
       "track": "ANIMATION_FEEL",
-      "level": 12,
-      "difficultyGeneration": 3,
+      "level": 13,
+      "difficultyGeneration": 4,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -198,9 +198,9 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-vfx-l5-g1",
+      "id": "mastery-vfx-l6-g1",
       "track": "VFX",
-      "level": 5,
+      "level": 6,
       "difficultyGeneration": 1,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
@@ -791,48 +791,8 @@
       ],
       "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
       "authority": "practice-and-measurement-only"
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_e24add62615bf96a065576ab",
-      "track": "CAPABILITY_GENERALIZATION",
-      "level": 1,
-      "state": "READY_FOR_UNSEEN_SCREEN",
-      "countsAsTrainingSample": false,
-      "countsAsProductionPass": false,
-      "productionPreemptible": true,
-      "capabilityId": "capability_ctrace_e24add62615bf96a065576ab",
-      "sourceGameId": "cozy-island",
-      "targetEngine": "roblox",
-      "holdoutGameId": "amusement-tycoon",
-      "pairId": "phase4-pair-cja4qp",
-      "unseenProblemFingerprint": "phase4-unseen-12l4chz",
-      "pairRoles": [
-        "CONTROL",
-        "CHALLENGER"
-      ],
-      "pairedControlChallengerRequired": true,
-      "screenOnly": true,
-      "mayPromoteGeneralization": false,
-      "fixedBetweenVariants": [
-        "NON_TARGET_CONTEXT",
-        "WRITABLE_SCOPE",
-        "MODEL_BUDGET",
-        "QA_CONTRACT"
-      ],
-      "requiredVerification": [
-        "UNSEEN_GAME",
-        "UNSEEN_PROBLEM_FINGERPRINT",
-        "PAIRED_CONTROL_CHALLENGER",
-        "FRESH_INDEPENDENT_QA",
-        "REGRESSION",
-        "NATIVE_RUNTIME_WHEN_REQUIRED",
-        "CAPABILITY_SPECIFIC_SUPPORT",
-        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
-      ],
-      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
-      "authority": "practice-and-measurement-only"
     }
   ],
-  "phase4GeneralizationCases": 11,
+  "phase4GeneralizationCases": 10,
   "authority": "practice-and-measurement-only"
 }
