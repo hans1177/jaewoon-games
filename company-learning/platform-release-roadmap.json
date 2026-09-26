@@ -1,5 +1,5 @@
 {
-  "version": 414,
+  "version": 415,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -887,7 +887,10 @@
       "graphicsAndGameplayParallelWhenResponsibilitiesDoNotOverlap": true,
       "releaseQaFailureIsLaneLocalUntilSharedFanIn": true,
       "defaultRequestedGameWorkers": 256,
-      "recoverToExternalProviderBoundaryAfterPressure": true
+      "recoverToExternalProviderBoundaryAfterPressure": true,
+      "workflowLevelGameWideSerializationForbidden": true,
+      "workflowLevelConcurrencyGroupByGameIdForbidden": true,
+      "sameGameConflictSerializationScope": "RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY"
     },
     "candidateReleaseConcurrency": {
       "scope": "CANDIDATE_BRANCH",
@@ -8262,6 +8265,47 @@
         "qa/vibe2-controller-contract.test.mjs",
         "qa/vibe2-queue-control.test.mjs",
         "qa/vibe2-parallelism-main-contract.test.mjs"
+      ]
+    },
+    "robloxGameWideWorkflowSerializationRemoval20260926": {
+      "id": "ROBLOX_GAME_WIDE_WORKFLOW_SERIALIZATION_REMOVAL_2026-09-26",
+      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.robloxEndToEndParallelExecution",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "symptom": "ROBLOX_RUNTIME_WORKFLOW_USED_ONE_TOP_LEVEL_CONCURRENCY_GROUP_PER_GAME_ID_OR_BATCH_AND_SERIALIZED_THE_FULL_WORKFLOW_SCOPE",
+      "policyBasis": [
+        "internalGameConcurrencyCapsForbidden",
+        "sameGameMultipleIndependentPackagesParallel",
+        "sourceRootWideLockForbidden",
+        "responsibleFileConflictSerializationOnly",
+        "globalHeavyExecutionSerializationForbidden",
+        "globalOrchestrationSerializationForbidden"
+      ],
+      "repair": "REMOVE_TOP_LEVEL_COMPANY_DEVELOPMENT_ROBLOX_RUNTIME_CONCURRENCY_GROUP_AND_KEEP_ONLY_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_CONFLICT_SERIALIZATION",
+      "preserves": [
+        "GAME_ID_EXACT_DISPATCH",
+        "PER_GAME_MATRIX_FAN_OUT",
+        "SOURCE_PLAN_CONTRACT_FINGERPRINT",
+        "COMPANY_RUNTIME_OPTIMISTIC_PERSIST_RETRY",
+        "QA_SECURITY_RELEASE_GATES",
+        "FAN_IN",
+        "EXTERNAL_PROVIDER_CAPACITY_BOUNDARY_256"
+      ],
+      "gameIdStillCanonicalTaskIdentity": true,
+      "maxParallelFieldRequired": false,
+      "internalArtificialParallelCapAdded": false,
+      "implementationState": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "codeBindings": [
+        ".github/workflows/company-development-roblox-runtime.yml",
+        "qa/company-development-roblox-runtime.test.mjs",
+        "qa/company-central-policy-contract.test.mjs",
+        "company-learning/company-architecture-map.json"
+      ],
+      "requiredVerification": [
+        "ROBLOX_WORKFLOW_HAS_NO_TOP_LEVEL_GAME_WIDE_CONCURRENCY_GROUP",
+        "ROBLOX_SOURCE_AND_TECHNICAL_MATRICES_HAVE_NO_MAX_PARALLEL_CAP",
+        "EXACT_GAME_ID_DISPATCH_REMAINS_SUPPORTED",
+        "COMPANY_RUNTIME_PERSIST_CONFLICT_RETRY_REMAINS",
+        "NO_QA_SECURITY_RELEASE_GATE_WEAKENING"
       ]
     }
   },
