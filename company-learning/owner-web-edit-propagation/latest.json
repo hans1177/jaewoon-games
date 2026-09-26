@@ -1,32 +1,33 @@
 {
   "version": 1,
-  "before": "b8565149a9fba247cdf8c00b908aaea584d21b83",
-  "after": "07dcf31848cf1cf257cce1d5fd6365d5c1c95251",
-  "generatedAt": "2026-09-26T03:17:49.811Z",
+  "before": "a4ff6d25668f845ac11e1195c7b64f0da75a863d",
+  "after": "a47dbbae8618391c0c3a6124f16878ddc603b02c",
+  "generatedAt": "2026-09-26T04:25:47.786Z",
   "manifests": [
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
       "gameId": "fantasy-survival",
       "sourcePath": "web-games/fantasy-survival",
-      "sourceBefore": "b8565149a9fba247cdf8c00b908aaea584d21b83",
-      "sourceAfter": "07dcf31848cf1cf257cce1d5fd6365d5c1c95251",
-      "semanticIntentFingerprint": "09d04d5026beffb887416bf6b6c43f6da99518f4f2d1906c39f7337b56ff34d0",
+      "sourceBefore": "a4ff6d25668f845ac11e1195c7b64f0da75a863d",
+      "sourceAfter": "a47dbbae8618391c0c3a6124f16878ddc603b02c",
+      "semanticIntentFingerprint": "a718ef4b0692883102bacec637235c20d2c92443652e2297f72cf61095944a05",
       "affectedSystems": [
+        "CRAFTING",
+        "INVENTORY",
         "WORLD",
         "PROGRESSION",
-        "AUDIO",
         "SAVE"
       ],
       "platformTargets": [
-        "UNITY",
-        "ROBLOX"
+        "ROBLOX",
+        "UNITY"
       ],
       "literalWebCodeCrossPlatformCopyForbidden": true,
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-26T03:17:49.811Z",
+      "detectedAt": "2026-09-26T04:25:47.786Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     }
   ]
