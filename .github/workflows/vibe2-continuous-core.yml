@@ -745,60 +745,11 @@ jobs:
           put('variant',process.env.VARIANT||'primary');
           NODE
 
-      - name: Acquire shared Work Lock before source write
-        id: work_lock
-        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
-          node <<'NODE' > /tmp/vibe2-work-lock-request.env
-          const fs=require('fs');
-          const order=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
-          const lock=order?.compiledWorkContract?.workLock||{};
-          if(lock.requiredBeforeSourceWrite!==true)throw new Error('WORK_LOCK_REQUIRED_CONTRACT_MISSING');
-          if(!lock.taskId||!lock.baseSha||!Array.isArray(lock.files)||!lock.files.length)throw new Error('WORK_LOCK_IDENTITY_INCOMPLETE');
-          const emit=(key,value)=>process.stdout.write(key+'='+JSON.stringify(String(value??''))+'\n');
-          emit('LOCK_TASK',lock.taskId);
-          emit('LOCK_GAME',lock.gameId||order.gameId||'');
-          emit('LOCK_FILES',lock.files.join(','));
-          emit('LOCK_BASE_SHA',lock.baseSha);
-          emit('LOCK_CHANGE_SET',order?.compiledWorkContract?.changeSet?.id||lock.taskId);
-          NODE
-          source /tmp/vibe2-work-lock-request.env
-          test -n "$LOCK_TASK"
-          test -n "$LOCK_FILES"
-          test -n "$LOCK_BASE_SHA"
-          test "$LOCK_BASE_SHA" = "$CONTRACT_SHA"
-          node "$contract_root/tools/vibe2-remote-work-lock.mjs" acquire \
-            --worker=vibe2 \
-            --task="$LOCK_TASK" \
-            --game="$LOCK_GAME" \
-            --files="$LOCK_FILES" \
-            --base-sha="$LOCK_BASE_SHA" \
-            --evidence="compiled-central-work-contract,change-set:$LOCK_CHANGE_SET" | tee /tmp/vibe2-work-lock-acquire.log
-          acquired="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_ACQUIRED=//p' /tmp/vibe2-work-lock-acquire.log | tail -n1)"
-          lock_id="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_ID=//p' /tmp/vibe2-work-lock-acquire.log | tail -n1)"
-          reason="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_REASON=//p' /tmp/vibe2-work-lock-acquire.log | tail -n1)"
-          if [ "$acquired" = 'YES' ]; then
-            echo 'acquired=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'acquired=false' >> "$GITHUB_OUTPUT"
-          fi
-          echo "lock_id=$lock_id" >> "$GITHUB_OUTPUT"
-          echo "reason=$reason" >> "$GITHUB_OUTPUT"
-          echo "VIBE2_SHARED_WORK_LOCK_ACQUIRED=${acquired:-NO}"
-          echo "VIBE2_SHARED_WORK_LOCK_REASON=${reason:-UNKNOWN}"
-
       - name: Decide worker local model requirement
         id: model_need
         env:
           ORDER_RUN: ${{ steps.order.outputs.run }}
           ROUTE: ${{ steps.order.outputs.route }}
-          WORK_LOCK_ACQUIRED: ${{ steps.work_lock.outputs.acquired }}
         shell: bash
         run: |
           set -euo pipefail
@@ -810,12 +761,8 @@ jobs:
             required='true'
             reason='LEARNING_ROUTE'
           elif [ "$ROUTE" = 'text-source-worker' ]; then
-            if [ "$WORK_LOCK_ACQUIRED" = 'true' ]; then
-              required='true'
-              reason='TEXT_SOURCE_LOCK_ACQUIRED'
-            else
-              reason='TEXT_SOURCE_LOCK_NOT_ACQUIRED'
-            fi
+            required='true'
+            reason='TEXT_SOURCE_ROUTE'
           fi
           echo "required=$required" >> "$GITHUB_OUTPUT"
           echo "reason=$reason" >> "$GITHUB_OUTPUT"
@@ -974,6 +921,55 @@ jobs:
           test "$VIBE2_OPENAI_PAID_API_ALLOWED" = "false"
           echo 'VIBE2_GAME_SOURCE_AUTHORITY=PASS'
           echo 'VIBE2_CODEX_ROLE=SYSTEM_TOOLING_CI_TEST_INFRA_ONLY'
+
+      - name: Acquire shared Work Lock before source write
+        id: work_lock
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          node <<'NODE' > /tmp/vibe2-work-lock-request.env
+          const fs=require('fs');
+          const order=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
+          const lock=order?.compiledWorkContract?.workLock||{};
+          if(lock.requiredBeforeSourceWrite!==true)throw new Error('WORK_LOCK_REQUIRED_CONTRACT_MISSING');
+          if(!lock.taskId||!lock.baseSha||!Array.isArray(lock.files)||!lock.files.length)throw new Error('WORK_LOCK_IDENTITY_INCOMPLETE');
+          const emit=(key,value)=>process.stdout.write(key+'='+JSON.stringify(String(value??''))+'\n');
+          emit('LOCK_TASK',lock.taskId);
+          emit('LOCK_GAME',lock.gameId||order.gameId||'');
+          emit('LOCK_FILES',lock.files.join(','));
+          emit('LOCK_BASE_SHA',lock.baseSha);
+          emit('LOCK_CHANGE_SET',order?.compiledWorkContract?.changeSet?.id||lock.taskId);
+          NODE
+          source /tmp/vibe2-work-lock-request.env
+          test -n "$LOCK_TASK"
+          test -n "$LOCK_FILES"
+          test -n "$LOCK_BASE_SHA"
+          test "$LOCK_BASE_SHA" = "$CONTRACT_SHA"
+          node "$contract_root/tools/vibe2-remote-work-lock.mjs" acquire \
+            --worker=vibe2 \
+            --task="$LOCK_TASK" \
+            --game="$LOCK_GAME" \
+            --files="$LOCK_FILES" \
+            --base-sha="$LOCK_BASE_SHA" \
+            --evidence="compiled-central-work-contract,change-set:$LOCK_CHANGE_SET" | tee /tmp/vibe2-work-lock-acquire.log
+          acquired="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_ACQUIRED=//p' /tmp/vibe2-work-lock-acquire.log | tail -n1)"
+          lock_id="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_ID=//p' /tmp/vibe2-work-lock-acquire.log | tail -n1)"
+          reason="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_REASON=//p' /tmp/vibe2-work-lock-acquire.log | tail -n1)"
+          if [ "$acquired" = 'YES' ]; then
+            echo 'acquired=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'acquired=false' >> "$GITHUB_OUTPUT"
+          fi
+          echo "lock_id=$lock_id" >> "$GITHUB_OUTPUT"
+          echo "reason=$reason" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_SHARED_WORK_LOCK_ACQUIRED=${acquired:-NO}"
+          echo "VIBE2_SHARED_WORK_LOCK_REASON=${reason:-UNKNOWN}"
+          echo 'VIBE2_WORK_LOCK_ACQUIRE_TIMING=POST_MODEL_PREP_READ_ONLY_EXPLORATION_PRE_SOURCE_WRITE'
 
       - name: Generate isolated candidate from pinned main contract
         id: candidate
