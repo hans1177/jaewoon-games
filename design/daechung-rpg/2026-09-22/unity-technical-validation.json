@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "gameId": "daechung-rpg",
+  "state": "FAIL",
+  "pass": false,
+  "validated": false,
+  "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
+  "checkedAt": "2026-09-26T21:14:09.760Z",
+  "sourceBinding": {
+    "upstreamBuildRunId": 36270766956,
+    "sourceCommit": "f7746ed35c327bd9873b63bfa7a93bb48094e670",
+    "sourceTreeSha": "a699b0138282287b64fe6b79945b1354a459daf5",
+    "apkSha256": "a0e8317bf01b808fb6ac71382904ddf46debdc32561dca67cb1d16f863616204",
+    "sameBinding": true
+  },
+  "realEvidence": {
+    "runtimeSmoke": true,
+    "independentQa": true,
+    "metricSamples": 0,
+    "actionObserved": false,
+    "saveObserved": false,
+    "pauseResumeObserved": true
+  },
+  "coverage": {
+    "ANDROID_FPS_FRAME_STABILITY": {
+      "state": "FAIL",
+      "sampleCount": 0,
+      "minFps": null,
+      "avgFps": null,
+      "scope": "ANDROID_16_EMULATOR_TECHNICAL_PROTOTYPE"
+    },
+    "MEMORY_HEAT_LOADING": {
+      "state": "FAIL",
+      "maxAllocatedMemoryBytes": null,
+      "loading": "PASS",
+      "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
+      "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
+    },
+    "PHYSICS_CAMERA_ANIMATION": {
+      "state": "NOT_REQUIRED_BY_CURRENT_TECH_PROTOTYPE",
+      "reason": "Generated validation prototype uses deterministic UI/state animation and no physics/camera dependency."
+    },
+    "AI_NAVMESH_OBJECT_COUNT": {
+      "state": "NOT_REQUIRED_BY_CURRENT_TECH_PROTOTYPE",
+      "reason": "No NavMesh or AI-agent dependency is used in the validation prototype."
+    },
+    "VFX_COST": {
+      "state": "PASS",
+      "reason": "No external VFX assets; prototype uses lightweight immediate-mode validation visuals."
+    },
+    "ASPECT_RATIO_TOUCH": {
+      "state": "FAIL",
+      "evidence": "Android emulator black-box taps/swipes plus in-app action log."
+    },
+    "SAVE_LOAD_UPDATE_COMPATIBILITY": {
+      "state": "FAIL",
+      "updateInstallPassed": true,
+      "saveSignalObserved": false,
+      "limitation": "Update installation and save writes are observed; cross-version migration schema is not exercised by this first technical prototype."
+    },
+    "APP_PAUSE_RESUME": {
+      "state": "PASS",
+      "evidence": "Independent Android QA background/resume plus app pause/focus signal."
+    },
+    "IMPLEMENTATION_COMPLEXITY": {
+      "state": "PASS",
+      "trackedProjectFiles": 35,
+      "reason": "One-game technical prototype is intentionally minimal and generated from locked design/Web evidence."
+    },
+    "ASSET_AND_QA_COST": {
+      "state": "PASS",
+      "externalRuntimeAssets": 0,
+      "reason": "No external art/audio package dependency in technical prototype; QA uses existing Android smoke and independent QA pipelines."
+    },
+    "FUTURE_EXPANSION_FEASIBILITY": {
+      "state": "REVIEW_REQUIRED_BY_DEPARTMENT_MEETING",
+      "reason": "Seed expansion decisions are preserved for Unity evidence meeting; technical prototype does not claim Steam/multiplayer production readiness."
+    }
+  },
+  "limitations": [
+    "This is DEVELOPMENT_CONFIRMED technical-validation evidence, not RELEASE_CONFIRMED approval.",
+    "Physical-device thermal behavior is not inferred from emulator evidence."
+  ],
+  "provenance": {
+    "buildInfo": "/tmp/unity-build/daechung-rpg-android-cloud-36270766956-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-36270766956/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-36270766956/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "projectPath": "unity-games/daechung-rpg"
+  }
+}
