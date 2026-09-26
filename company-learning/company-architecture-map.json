@@ -1,5 +1,5 @@
 {
-  "version": 214,
+  "version": 215,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4815,7 +4815,7 @@
       "existingGameHolisticBaselineRequiresFivePillarFanIn": true
     },
     "existingGameHolisticBackfill": {
-      "version": 3,
+      "version": 4,
       "centralPolicy": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
       "noNewPipeline": true,
       "existingProjectCollection": "tools/vibe2-auto-planner.mjs::collectProjects",
@@ -4886,7 +4886,10 @@
         "newCandidatePriorityOnly": true,
         "unrelatedParallelismPreserved": true,
         "sameResponsibleFileConflictStillSerializes": true,
-        "ownerExplicitP0Preserved": true
+        "ownerExplicitP0Preserved": true,
+        "gamePrimaryAdaptiveFloor": 30,
+        "externalProviderBoundary": 256,
+        "holisticWorkPackageExpansion": "EXPAND_EXISTING_TASK_SCOPE_TO_CONFIGURED_MINIMUM_WITHOUT_NEW_PIPELINE_OR_PROTECTED_RULE_CHANGE"
       }
     }
   },
