@@ -8,8 +8,8 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -57,10 +57,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
-      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-26T18:47:36.976Z",
+      "updatedAt": "2026-09-26T19:59:47.354Z",
       "robloxSourceCommit": "6d226665fc3edfa8cbbbdc02245bc97df3cf6973",
       "robloxSourceBootstrapPassedAt": "2026-09-26T15:18:18.812Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -801,7 +801,37 @@
         "runtimeVerificationRequired": true,
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
-      }
+      },
+      "platformAdapter": "tools/company-development-unity-platform.mjs",
+      "unityCandidateBranch": "development/unity-tech-daechung-rpg-36266233046",
+      "unitySourceCommit": "6d284b3fe0d1d0bbfe8796527c4ba81b5f2ed721",
+      "unityBuildRunId": 36267224065,
+      "unityRuntimeSmokeRunId": null,
+      "unityIndependentQaRunId": null,
+      "unityRegressionRunId": null,
+      "unityInternalReleaseReady": false,
+      "unityInternalReleaseAt": null,
+      "unityInternalReleaseEvidence": null,
+      "unityPublicReleaseReady": false,
+      "unityPublicRelease": false,
+      "executionEvidence": {
+        "version": 1,
+        "platform": "UNITY",
+        "sourceRevision": "6d284b3fe0d1d0bbfe8796527c4ba81b5f2ed721",
+        "sourceFingerprint": "572eb4a2f6b5d38378ce2c5c621d9f4ab2a429eec6f6c83ab27c104523e61465",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:a4e0b160dbe9eda28ae650e98ae8584bedd53fd342b0a2c2949974a5c31e313f",
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "regressionPassed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "IMMUTABLE_ARTIFACT_BIND",
+        "failureStage": "TARGET_PLATFORM_RUNTIME",
+        "failureSignature": "121c30201e00f91a81c62501b4c7336c69d5da448424d4227edc60f33ee6bf7e"
+      },
+      "resumeStage": "TARGET_PLATFORM_RUNTIME",
+      "failureCount": 1,
+      "contractCanaryPassed": false
     },
     {
       "gameId": "horror-escape-room",
@@ -8539,7 +8569,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-26T19:59:48.289Z",
+  "updatedAt": "2026-09-26T19:59:54.626Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
