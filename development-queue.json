@@ -810,8 +810,8 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -859,10 +859,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-26T16:50:41.541Z",
+      "updatedAt": "2026-09-26T19:45:50.763Z",
       "robloxSourceCommit": "8816db394640fb0fc2c8ba4013bac7a810dcfcfa",
       "robloxSourceBootstrapPassedAt": "2026-09-26T12:54:53.288Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1588,7 +1588,37 @@
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
       },
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-26T14:22:45.765Z"
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-26T14:22:45.765Z",
+      "platformAdapter": "tools/company-development-unity-platform.mjs",
+      "unityCandidateBranch": null,
+      "unitySourceCommit": null,
+      "unityBuildRunId": null,
+      "unityRuntimeSmokeRunId": null,
+      "unityIndependentQaRunId": null,
+      "unityRegressionRunId": null,
+      "unityInternalReleaseReady": false,
+      "unityInternalReleaseAt": null,
+      "unityInternalReleaseEvidence": null,
+      "unityPublicReleaseReady": false,
+      "unityPublicRelease": false,
+      "executionEvidence": {
+        "version": 1,
+        "platform": "UNITY",
+        "sourceRevision": null,
+        "sourceFingerprint": null,
+        "buildOrPackagePassed": false,
+        "artifactIdentity": null,
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "regressionPassed": false,
+        "exactRevision": false,
+        "lastSuccessfulStage": "CHEAP_PRECHECK",
+        "failureStage": "SINGLE_BUILD_OR_PACKAGE",
+        "failureSignature": "4dd87fcb9d4c2e66f74d3ddc1b220c1f00c7208c659e691ff13645f96d2079ad"
+      },
+      "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
+      "failureCount": 1,
+      "contractCanaryPassed": false
     },
     {
       "gameId": "village-dungeons",
@@ -8359,7 +8389,7 @@
       "robloxRuntimeLastObservationAttemptAt": "2026-09-26T16:16:19.123Z"
     }
   ],
-  "updatedAt": "2026-09-26T19:45:22.475Z",
+  "updatedAt": "2026-09-26T19:45:52.624Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
