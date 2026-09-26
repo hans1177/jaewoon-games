@@ -1,5 +1,5 @@
 {
-  "version": 233,
+  "version": 234,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5289,5 +5289,23 @@
     "staleLegacyOrBatchMayForceCancel": true,
     "exactNamedGameInProgressMayCancel": false,
     "independentGameRunMayCancel": false
+  },
+  "controlPlaneOperationalRunnerIsolation": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.controlPlaneGameRunnerEviction20260926",
+    "slimWorkflows": [
+      ".github/workflows/company-status-sync.yml",
+      ".github/workflows/company-development-queue-reconcile.yml",
+      ".github/workflows/company-design-promotion-sync.yml",
+      ".github/workflows/company-platform-exposure-sync.yml",
+      ".github/workflows/vibe2-recovery-fast.yml"
+    ],
+    "director": {
+      "runnerDrain": "ubuntu-24.04-arm",
+      "gamePrimaryGate": "ubuntu-slim",
+      "supervise": "ubuntu-slim"
+    },
+    "ubuntuLatestReservedForHeavyGameWork": true,
+    "gameParallelismReduced": false
   }
 }
