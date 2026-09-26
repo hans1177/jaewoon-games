@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "QACamera.install(C,gui,function()",
+      "replace": "QACamera.install(C,gui,function()\n    local shots = {\n        {label = \"rpg-village\", position = Vector3.new(0, 120, 170), lookAt = Vector3.new(0, 2, 0)}\n    }\n    for _, z in ipairs(C.Portals) do\n        table.insert(shots, {\n            label = \"rpg-portal-\" .. z.Id,\n            position = z.Center + Vector3.new(0, 95, 150),\n            lookAt = z.Center\n        })\n    end\n    return shots\nend)\nrender()"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
