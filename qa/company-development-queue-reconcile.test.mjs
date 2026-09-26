@@ -212,6 +212,9 @@ test('reconciler source contains no Web-first admission state',()=>{
 
 test('workflow persists only direct-native queue state and dispatches runtime only when queue is nonempty',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-queue-reconcile.yml','utf8');
+  assert.match(workflow,/Checkout main engine[\s\S]*fetch-depth:\s*1/);
+  assert.match(workflow,/Checkout main engine[\s\S]*fetch-tags:\s*false/);
+  assert.doesNotMatch(workflow,/Checkout main engine[\s\S]*fetch-depth:\s*0/);
   const source=fs.readFileSync('tools/company-development-queue-reconcile.mjs','utf8');
   assert.match(workflow,/id:\s*queue_state/);
   assert.match(workflow,/steps\.queue_state\.outputs\.queue_count != '0'/);
