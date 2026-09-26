@@ -33,7 +33,7 @@ test('missing canonical Unity source requests Vibe bootstrap instead of legacy H
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
-test('complete Unity Web child evidence produces compatibility build evidence without owning upper-platform admission',()=>{
+test('complete Unity Web child evidence produces lane-local compatibility evidence without owning native admission',()=>{
   const dir=temp();
   try{
     const gameId='worker-pass-game';
@@ -79,7 +79,8 @@ test('complete Unity Web child evidence produces compatibility build evidence wi
     assert.equal(evidence.compatibilityEvidenceOnly,true);
     assert.equal(evidence.nativeGateAuthority,false);
     assert.equal(evidence.developmentAdmissionAuthority,false);
-    assert.equal(evidence.upperPlatformReadinessRequired,true);
+    assert.equal(evidence.upperPlatformReadinessRequired,false);
+    assert.equal(evidence.nativeDevelopmentAlreadyIndependent,true);
     assert.equal(evidence.releaseAuthority,false);
     assert.equal(result.update.currentStep,undefined);
     assert.equal(result.update.canonicalState,undefined);
