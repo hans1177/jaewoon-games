@@ -1,5 +1,5 @@
 {
-  "version": 453,
+  "version": 454,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -888,9 +888,14 @@
       "releaseQaFailureIsLaneLocalUntilSharedFanIn": true,
       "defaultRequestedGameWorkers": 256,
       "recoverToExternalProviderBoundaryAfterPressure": true,
-      "workflowLevelGameWideSerializationForbidden": true,
-      "workflowLevelConcurrencyGroupByGameIdForbidden": true,
-      "sameGameConflictSerializationScope": "RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY"
+      "workflowLevelGameWideSerializationForbidden": false,
+      "workflowLevelConcurrencyGroupByGameIdForbidden": false,
+      "sameGameConflictSerializationScope": "EXACT_DUPLICATE_WORKFLOW_OR_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
+      "crossGameWorkflowSerializationForbidden": true,
+      "exactGameDuplicateWorkflowSerializationAllowed": true,
+      "exactGameDuplicateWorkflowSerializationPurpose": "RACE_DUPLICATE_PLANNER_AND_HEAVY_NATIVE_EXECUTION_SUPPRESSION_ONLY",
+      "exactGameDuplicateWorkflowSerializationAuthority": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
+      "internalSameWorkflowGameMatrixParallelismPreserved": true
     },
     "candidateReleaseConcurrency": {
       "scope": "CANDIDATE_BRANCH",
