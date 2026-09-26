@@ -1,5 +1,5 @@
 {
-  "version": 206,
+  "version": 207,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4779,6 +4779,12 @@
     "noNewQueue": true,
     "releasePromotionWorkflowExtendedOnly": true,
     "verifiedUniverseIdRequired": true,
-    "gameCatalogBackwardCompatibilityPreserved": true
+    "gameCatalogBackwardCompatibilityPreserved": true,
+    "authentication": [
+      "OPEN_CLOUD_API_KEY_PRIMARY",
+      "OFFICIAL_COOKIE_CSRF_SCOPE_FAILURE_FALLBACK"
+    ],
+    "cookieFallbackTrigger": "API_KEY_403_SCOPE_NOT_AUTHORIZED_ONLY",
+    "sameUploadEndpoint": true
   }
 }
