@@ -1,5 +1,5 @@
 {
-  "version": 440,
+  "version": 441,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8747,7 +8747,12 @@
       "duplicateExactGameDispatchSuppressed": true,
       "distinctGamesRemainParallel": true,
       "matrixParallelismCapAdded": false,
-      "qualitySecurityReleaseGatesUnchanged": true
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "queueAuthorityFetchParallelWithRunScan": true,
+      "queueAuthoritySource": "company-runtime:development-queue.json",
+      "queueAuthorityFetchFailureBlocksDispatch": true,
+      "scanStartsBeforeQueueAuthorityFetchCompletes": true,
+      "dispatchPlanningWaitsForBothQueueAndRunScan": true
     },
     "robloxPlannerDuplicateContractQaRemoval20260927": {
       "id": "ROBLOX_PLANNER_DUPLICATE_CONTRACT_QA_REMOVAL_2026-09-27",
