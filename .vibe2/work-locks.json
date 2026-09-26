@@ -3,42 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1lvgcax",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "086c3db729b7e78755f43ac77788b159380a829d",
-      "acquiredAt": "2026-09-26T15:09:11.314Z",
-      "expiresAt": "2026-09-26T15:54:11.314Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1wstacy",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "unity-games/horror-escape-room/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "086c3db729b7e78755f43ac77788b159380a829d",
-      "acquiredAt": "2026-09-26T15:09:20.021Z",
-      "expiresAt": "2026-09-26T15:54:20.021Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-12bg249",
       "worker": "vibe2",
       "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1",
@@ -328,6 +292,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-pyotet",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
+      "gameId": "daechung-rpg",
+      "files": [
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau",
+        "roblox-games/daechung-rpg/shared/GameConfig.luau"
+      ],
+      "baseSha": "58a6c16427756883868a685290b14815e6dccb19",
+      "acquiredAt": "2026-09-26T15:54:28.738Z",
+      "expiresAt": "2026-09-26T16:39:28.738Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-post-release-focus-b0dce53053629c70"
       ]
     }
   ]
