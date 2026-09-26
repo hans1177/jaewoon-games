@@ -1,5 +1,5 @@
 {
-  "version": 87,
+  "version": 88,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1126,11 +1126,27 @@
     "runtimeReconcileMustActuallyExecute": true
   },
   "reconcileCancellationChurnContract": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.execution.stateReconciliation",
     "observedFailure": "RECONCILE_JOB_STARTED_AFTER_NONBLOCKING_GATE_THEN_WAS_CANCELLED_BY_A_LATER_WORKFLOW_RUN_TRIGGER",
     "correction": "CANCEL_IN_PROGRESS_FALSE_AND_SERIALIZED_STATE_WRITES",
-    "runtimePersistRequired": true
+    "runtimePersistRequired": true,
+    "affectedWorkflows": [
+      ".github/workflows/company-development-queue-reconcile.yml",
+      ".github/workflows/company-status-sync.yml"
+    ],
+    "statusSyncEvidence": {
+      "observedRuns": [
+        36232817674,
+        36232813678,
+        36232805019,
+        36232807549
+      ],
+      "concurrencyGroup": "company-status-sync-runtime",
+      "requiredCancelInProgress": false,
+      "runningSyncCancellationForbidden": true,
+      "pendingTriggerCoalescingAllowed": true
+    }
   },
   "gameSpecificBuildUpDirectiveEvidenceContract": {
     "version": 2,
