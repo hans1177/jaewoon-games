@@ -1,5 +1,5 @@
 {
-  "version": 74,
+  "version": 75,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1411,5 +1411,52 @@
     "baselineCacheBytes": 2814033971,
     "skipRestoreWhenWorkLockNotAcquired": true,
     "gamePrimaryBoundaryMustRemain": 256
+  },
+  "universalAssetFirstUpgradeEvidenceContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.universalAssetFirstUpgradeContract",
+    "requiredFor": [
+      "VIBE2",
+      "VIBE3",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "assetFamilies": [
+      "CHARACTER",
+      "CREATURE",
+      "BUILDING",
+      "ENVIRONMENT",
+      "WEAPON",
+      "SKILL",
+      "MATERIAL",
+      "AUDIO",
+      "VFX",
+      "UI",
+      "MOTION",
+      "PROP"
+    ],
+    "requiredFields": [
+      "ASSET_LOOKUP_EXECUTED",
+      "ASSET_FAMILY_APPLICABILITY_MATRIX",
+      "SELECTED_ASSET_IDS_OR_ATOMS",
+      "SOURCE_BINDING_FILES_AND_SYMBOLS",
+      "ACTUAL_RUNTIME_USAGE_RESULT",
+      "MAP_ENVIRONMENT_COVERAGE_RESULT",
+      "PRIMITIVE_ONLY_CHECK_RESULT"
+    ],
+    "rules": {
+      "everyFamilyMustBeAccountedFor": true,
+      "notApplicableRequiresEvidence": true,
+      "markersOrConfigSelectionAloneCannotProveUsage": true,
+      "runtimeEvidenceRequiredBeforeVerifiedPromotion": true,
+      "exactFailureClassRequired": true
+    },
+    "hardFailureClasses": [
+      "UNIVERSAL_ASSET_LOOKUP_MISSING",
+      "APPLICABLE_ASSET_FAMILY_NOT_BOUND",
+      "ASSET_MARKER_ONLY_NO_VISIBLE_USE",
+      "PRIMITIVE_ONLY_VISUAL_UPGRADE",
+      "MAP_ENVIRONMENT_ASSET_COVERAGE_MISSING"
+    ]
   }
 }
