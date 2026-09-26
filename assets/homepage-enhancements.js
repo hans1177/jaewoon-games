@@ -38,6 +38,7 @@ const platformLabel=value=>{
 };
 const canonicalOf=row=>row?.canonical&&typeof row.canonical==='object'?row.canonical:{};
 const identityOf=row=>canonicalOf(row).identity&&typeof canonicalOf(row).identity==='object'?canonicalOf(row).identity:{};
+const marketingOf=row=>canonicalOf(row).marketing&&typeof canonicalOf(row).marketing==='object'?canonicalOf(row).marketing:{};
 const lifecycleOf=row=>canonicalOf(row).lifecycle&&typeof canonicalOf(row).lifecycle==='object'?canonicalOf(row).lifecycle:{};
 const productionOf=row=>canonicalOf(row).production&&typeof canonicalOf(row).production==='object'?canonicalOf(row).production:{};
 const sourcesOf=row=>canonicalOf(row).sources&&typeof canonicalOf(row).sources==='object'?canonicalOf(row).sources:{};
@@ -241,7 +242,7 @@ function mergeGame(row){
   const playable=web.playable===true||row?.homepageWebPlayable===true;
   const allowWeb=playable&&(displayEligible(row)||displayMode==='WEB_PUBLISHED'||displayMode==='ROBLOX_HISTORICAL_DEPLOYMENT');
   const webPath=allowWeb?canonicalWebHref(row):'';
-  return {...row,id:gameIdOf(row),name:identity.name||row?.name||gameIdOf(row),webPath,image:identity.image||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
+  return {...row,id:gameIdOf(row),name:identity.name||row?.name||gameIdOf(row),webPath,image:marketingOf(row).thumbnail||identity.image||row?.marketingThumbnail||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
 }
 function platformLinks(game){
   const exposure=exposureOf(gameIdOf(game));
