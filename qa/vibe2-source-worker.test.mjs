@@ -2476,6 +2476,7 @@ test('zero-output timeout switches Roblox visual recovery to the focused contrac
   assert.match(workerSource,/const zeroOutputTimeoutRecovery=!allowFullRewrite/);
   assert.match(workerSource,/priorFailureClass==='TIMEOUT'/);
   assert.match(workerSource,/&&\s*!zeroOutputTimeoutRecovery;/);
+  assert.match(workerSource,/\(!studioExpansion\|\|zeroOutputTimeoutRecovery\)/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY/);
 });
 
