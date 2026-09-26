@@ -749,6 +749,8 @@ test('Studio MCP opens the exact local Place as the single Studio before MCP and
 });
 
 test('Studio MCP planner stays independent from hosted foundation capacity while accepting foundation-pass artifacts',()=>{
+  const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
   assert.match(studioPlanBlock,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
   assert.match(studioPlanBlock,/shell: powershell/);
