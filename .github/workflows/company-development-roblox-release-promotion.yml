@@ -33,7 +33,7 @@ env:
 jobs:
   release:
     name: deploy exact F0-passed Roblox artifact as private runtime candidate
-    if: ${{ inputs.thumbnail_only != true }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.thumbnail_only != true }}
     runs-on: ubuntu-latest
     timeout-minutes: 300
     steps:
@@ -908,11 +908,11 @@ jobs:
           fi
 
   thumbnail-sync:
-    name: sync canonical Roblox and homepage thumbnail
+    name: sync canonical Roblox and homepage thumbnails
     needs: release
-    if: ${{ always() && (inputs.thumbnail_only == true || needs.release.result == 'success') }}
+    if: ${{ always() && (github.event_name == 'push' || inputs.thumbnail_only == true || needs.release.result == 'success') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout current canonical implementation
         uses: actions/checkout@v4
@@ -949,45 +949,99 @@ jobs:
           set -euo pipefail
           node --test qa/company-roblox-thumbnail-sync.test.mjs qa/company-homepage-runtime-propagation.test.mjs
 
-      - name: Render upload and verify shared thumbnail
+      - name: Resolve thumbnail sync games
+        id: thumbnail_games
+        working-directory: main
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
+          import fs from 'node:fs';
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          if(requested){
+            console.log('game_ids='+requested);
+          }else{
+            const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+            const exposure=JSON.parse(fs.readFileSync('homepage-platform-exposure.json','utf8'));
+            const ids=[];
+            for(const row of exposure.games||[]){
+              const gameId=String(row?.gameId||'').trim();
+              const roblox=(row.platforms||[]).find(p=>String(p?.platform||'').toUpperCase()==='ROBLOX');
+              const game=(catalog.games||[]).find(g=>String(g?.id||'')===gameId);
+              const image=String(game?.canonical?.marketing?.thumbnail||game?.marketingThumbnail||'');
+              if(
+                roblox?.internalReleaseReady===true
+                &&/^[1-9][0-9]*$/.test(String(roblox?.placeId||''))
+                &&image.startsWith('assets/roblox-thumbnails/')
+              ) ids.push(gameId);
+            }
+            console.log('game_ids='+ids.join(' '));
+          }
+          NODE
+          game_ids="$(sed -n 's/^game_ids=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          test -n "$game_ids"
+          echo "ROBLOX_THUMBNAIL_SYNC_GAMES=$game_ids"
+
+      - name: Render upload and verify shared thumbnails
         id: thumbnail
         working-directory: main
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          GAME_ID: ${{ inputs.game_id }}
+          GAME_IDS: ${{ steps.thumbnail_games.outputs.game_ids }}
         shell: bash
         run: |
           set -euo pipefail
           test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
-          node tools/company-roblox-thumbnail-sync.mjs \
-            --game-id="$GAME_ID" \
-            --catalog=game-catalog.json \
-            --queue=../runtime/development-queue.json \
-            --output=.tmp/roblox-thumbnail-evidence.json
-          cat .tmp/roblox-thumbnail-evidence.json
+          mkdir -p .tmp/roblox-thumbnail-evidence
+          failures=()
+          for game_id in $GAME_IDS; do
+            echo "ROBLOX_THUMBNAIL_SYNC_START=$game_id"
+            if node tools/company-roblox-thumbnail-sync.mjs \
+              --game-id="$game_id" \
+              --catalog=game-catalog.json \
+              --queue=../runtime/development-queue.json \
+              --output=".tmp/roblox-thumbnail-evidence/$game_id.json"; then
+              cat ".tmp/roblox-thumbnail-evidence/$game_id.json"
+            else
+              failures+=("$game_id")
+            fi
+          done
+          if [ "${#failures[@]}" -ne 0 ]; then
+            echo "ROBLOX_THUMBNAIL_SYNC_FAILED_GAMES=${failures[*]}"
+            exit 1
+          fi
+          echo 'ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS'
 
       - name: Persist verified thumbnail evidence to runtime
         working-directory: main
         env:
-          GAME_ID: ${{ inputs.game_id }}
+          GAME_IDS: ${{ steps.thumbnail_games.outputs.game_ids }}
           RUNTIME_BRANCH: company-runtime
         shell: bash
         run: |
           set -euo pipefail
-          cp .tmp/roblox-thumbnail-evidence.json /tmp/roblox-thumbnail-evidence.json
+          mkdir -p /tmp/roblox-thumbnail-evidence
+          cp .tmp/roblox-thumbnail-evidence/*.json /tmp/roblox-thumbnail-evidence/
           for attempt in 1 2 3 4 5; do
             git -C ../runtime fetch --no-tags origin "$RUNTIME_BRANCH"
             git -C ../runtime reset --hard "origin/$RUNTIME_BRANCH"
             node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const queuePath='../runtime/development-queue.json';
-          const evidence=JSON.parse(fs.readFileSync('/tmp/roblox-thumbnail-evidence.json','utf8'));
           const queue=JSON.parse(fs.readFileSync(queuePath,'utf8').replace(/^\uFEFF/,''));
-          const item=(queue.items||[]).find(row=>String(row?.gameId||'')===String(process.env.GAME_ID||''));
-          if(!item)throw new Error('ROBLOX_THUMBNAIL_RUNTIME_ITEM_MISSING:'+process.env.GAME_ID);
-          item.robloxThumbnailEvidence=evidence;
-          item.updatedAt=evidence.uploadedAt;
-          queue.updatedAt=evidence.uploadedAt;
+          let latest=queue.updatedAt||null;
+          for(const gameId of String(process.env.GAME_IDS||'').trim().split(/\s+/).filter(Boolean)){
+            const evidencePath='/tmp/roblox-thumbnail-evidence/'+gameId+'.json';
+            const evidence=JSON.parse(fs.readFileSync(evidencePath,'utf8'));
+            const item=(queue.items||[]).find(row=>String(row?.gameId||'')===gameId);
+            if(!item)throw new Error('ROBLOX_THUMBNAIL_RUNTIME_ITEM_MISSING:'+gameId);
+            item.robloxThumbnailEvidence=evidence;
+            item.updatedAt=evidence.uploadedAt;
+            if(!latest||Date.parse(evidence.uploadedAt)>Date.parse(latest))latest=evidence.uploadedAt;
+          }
+          queue.updatedAt=latest||new Date().toISOString();
           fs.writeFileSync(queuePath,JSON.stringify(queue,null,2)+'\n');
           NODE
             git -C ../runtime config user.name "jaewoon-roblox-thumbnail-sync"
@@ -997,7 +1051,7 @@ jobs:
               echo 'ROBLOX_THUMBNAIL_RUNTIME_PERSIST=NO_CHANGE'
               exit 0
             fi
-            git -C ../runtime commit -m "runtime: persist Roblox thumbnail evidence for $GAME_ID"
+            git -C ../runtime commit -m "runtime: persist verified Roblox thumbnail evidence"
             if git -C ../runtime push origin HEAD:"$RUNTIME_BRANCH"; then
               echo 'ROBLOX_THUMBNAIL_RUNTIME_PERSIST=PASS'
               exit 0
