@@ -239,7 +239,7 @@ jobs:
   supervise:
     needs: game-primary-gate
     if: needs.game-primary-gate.outputs.defer != 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 8
     steps:
       - name: Checkout central policy source
