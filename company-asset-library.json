@@ -1,8 +1,8 @@
 {
-  "version": 16,
+  "version": 17,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-09-24",
+  "updatedAt": "2026-09-26",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -43,7 +43,12 @@
     "variantRecipeSystem": true,
     "identityBudgetByImportance": true,
     "usageWeightedVariation": true,
-    "baseAtomsAreSemanticNotVerifiedAssets": true
+    "baseAtomsAreSemanticNotVerifiedAssets": true,
+    "robloxArticulatedCharacterMotionRequired": true,
+    "robloxRootOnlyCharacterMotionForbidden": true,
+    "robloxVerifiedMotionLibraryBeforeNewKeyframes": true,
+    "robloxBlendAndSpeedSyncRequired": true,
+    "robloxIkAndProceduralContactCorrectionPreferred": true
   },
   "platformPacks": [
     {
@@ -3794,5 +3799,53 @@
       "PROMOTION_OR_REPAIR"
     ],
     "runtimePassRequiredForVerifiedPromotion": true
+  },
+  "robloxCharacterMotionQuality": {
+    "version": 1,
+    "status": "ACTIVE_SEMANTIC_CAPABILITY",
+    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+    "productionVerified": false,
+    "hardFailure": "CHARACTER_MOTION_MANNEQUIN",
+    "actorClasses": [
+      "PLAYER",
+      "HUMANOID_NPC",
+      "CREATURE"
+    ],
+    "sourcePriority": [
+      "VERIFIED_SAME_GAME_SAME_ARCHETYPE_MOTION",
+      "VERIFIED_COMPATIBLE_COMPANY_MOTION_LIBRARY",
+      "LICENSE_VERIFIED_REPOSITORY_MOTION",
+      "LICENSE_VERIFIED_EXTERNAL_MOTION_WITH_PROVENANCE",
+      "SAFE_RETARGET_AND_CLEANUP",
+      "NEW_NATIVE_AUTHORING_ONLY_FOR_REMAINING_GAP"
+    ],
+    "nativeRig": [
+      "R15_OR_CUSTOM_RIG",
+      "MOTOR6D_OR_BONES",
+      "HUMANOID_OR_ANIMATION_CONTROLLER",
+      "ANIMATOR"
+    ],
+    "smoothness": [
+      "ANIMATIONTRACK_CROSSFADE",
+      "ADJUST_WEIGHT",
+      "ADJUST_SPEED",
+      "START_STOP_TURN_CONTINUITY",
+      "NO_ATTACK_IDLE_SNAP"
+    ],
+    "procedural": [
+      "IKCONTROL_WHEN_SUPPORTED",
+      "FOOT_CONTACT",
+      "PELVIS_HEIGHT",
+      "SPINE_LEAN",
+      "HEAD_GAZE",
+      "SLOPE_ADAPTATION",
+      "LANDING_COMPRESSION",
+      "HIT_RECOIL"
+    ],
+    "motionAtomsSource": "baseMaterialLibrary.families.MOTION",
+    "semanticAtomsAreNotAnimationClips": true,
+    "actualNativeAnimationClipRequiredForRuntimeVerification": true,
+    "officialStudioRuntimeRequiredForVerifiedPromotion": true,
+    "gameplayAuthority": false
   }
 }
