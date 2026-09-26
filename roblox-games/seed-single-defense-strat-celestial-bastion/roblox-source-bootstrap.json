@@ -15,7 +15,9 @@
   "gameplayAuthorityChanged": false,
   "serverSourceChanged": false,
   "foundationRepairApplied": false,
-  "generatedFiles": [],
+  "generatedFiles": [
+    "client/Game.client.luau"
+  ],
   "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
@@ -24,6 +26,7 @@
   "recombinationRecipeId": null,
   "studioAssetBinding": {
     "version": 3,
+    "bindingVersion": 2,
     "applied": true,
     "source": "company-asset-library.json#baseMaterialLibrary",
     "libraryVersion": 18,
@@ -174,5 +177,5 @@
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-09-26T12:16:02.463Z"
+  "createdAt": "2026-09-26T12:50:17.308Z"
 }
