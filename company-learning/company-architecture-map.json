@@ -1,5 +1,5 @@
 {
-  "version": 262,
+  "version": 263,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3175,7 +3175,7 @@
       }
     },
     "robloxStudioVerifiedRuntimeIngress": {
-      "version": 2,
+      "version": 3,
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.robloxStudioUsage",
       "sourceState": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
       "producerWorkflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play",
@@ -3226,13 +3226,16 @@
       "mcpOfficialBinaryFallbackWindows": "%LOCALAPPDATA%\\Roblox\\Versions\\version-*\\StudioMCP.exe",
       "generatedBatchRewrite": false,
       "thirdPartyBridge": false,
-      "infrastructureRecovery": "OFFICIAL_STUDIO_AND_MCP_CLIENT_RESTART_ONLY",
+      "infrastructureRecovery": "RESTART_ONLY_WHEN_MCP_TOOL_READINESS_ENABLEMENT_ATTACHMENT_OR_TRANSPORT_FAILS",
       "assistantSettingsMutation": false,
       "guiToggleAutomation": false,
       "settingEnablementRequired": true,
       "unconfirmedSettingMayNotEmitRuntimeOrLearningPass": true,
       "settingDiagnosticAdvisoryWhenMissingOrUnknown": true,
-      "requiredToolHandshakeAuthority": true
+      "requiredToolHandshakeAuthority": true,
+      "completedSessionRuntimeFailure": "PERSIST_AS_GAME_RUNTIME_EVIDENCE_NO_MCP_RESTART",
+      "runtimeFailureConsumesMcpRecoveryAttempt": false,
+      "completedSessionExitContract": "MCP_PROCESS_EXIT_ZERO_RUNTIME_QA_RESULT_PERSISTED_SEPARATELY"
     }
   },
   "ownerRule2Topology": {
@@ -3705,7 +3708,15 @@
         "resume": "AUTOMATIC_ON_NEXT_EXISTING_RUNTIME_QA_TRIGGER",
         "explicitDisabledState": "NO",
         "explicitDisabledExecution": "SKIP_STUDIO_AND_MCP_SESSION_ATTEMPTS",
-        "requiredToolHandshakeAuthority": true
+        "requiredToolHandshakeAuthority": true,
+        "sessionRestartEligibleFailureScope": [
+          "MCP_TOOL_READINESS",
+          "MCP_SERVER_ENABLEMENT",
+          "STUDIO_ATTACHMENT",
+          "MCP_TRANSPORT"
+        ],
+        "completedMcpSessionRuntimeFailureAction": "PERSIST_GAME_RUNTIME_EVIDENCE_WITHOUT_MCP_SESSION_RESTART",
+        "runtimeFailureMustNotConsumeMcpRecoveryAttempts": true
       },
       "actualPlayPlannerEligibility": "RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING",
       "actualPlayPlannerExclusiveCurrentStepGate": false,
