@@ -1,5 +1,5 @@
 {
-  "version": 414,
+  "version": 415,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -2903,7 +2903,7 @@
         "gameRuntimeEvidenceStillRequiredForGameLearning": true
       },
       "developmentBottleneckFocus": {
-        "version": 79,
+        "version": 80,
         "authority": "OWNER_DIRECTIVE_2026-09-19",
         "enabled": true,
         "priority": "DEVELOPMENT_AND_RELEASE_BOTTLENECK_FIRST",
@@ -3554,7 +3554,9 @@
           "modelCacheHitRestoreLiveRun": 36208311596,
           "workerConditionalModelRestore": "IMPLEMENTED_PENDING_QA_AND_LIVE",
           "schedulerEpochStaleRelease": "IMPLEMENTED_PENDING_CI_AND_LIVE",
-          "schedulerEpochStaleReleaseReason": "PRE_PATCH_V2_RUN_4554_HELD_WORKFLOW_LEVEL_SINGLETON_WHILE_NEW_TIMEOUT_RECOVERY_WAVES_REMAINED_JOBLESS_PENDING"
+          "schedulerEpochStaleReleaseReason": "PRE_PATCH_V2_RUN_4554_HELD_WORKFLOW_LEVEL_SINGLETON_WHILE_NEW_TIMEOUT_RECOVERY_WAVES_REMAINED_JOBLESS_PENDING",
+          "auxiliarySpeculativeRelief": "IMPLEMENTED_PENDING_CI_AND_LIVE",
+          "auxiliarySpeculativeReliefRule": "KEEP_AUXILIARY_PRIMARY_RECOVERY_CONTROL_LEARNING_TASKS_BUT_DISABLE_ONLY_SPARE_SPECULATIVE_VARIANTS_WHILE_GAME_PRIMARY_HAS_QUEUED_OR_CAPACITY_RUNNING_WORK_OR_ADAPTIVE_RUNNER_PRESSURE_EXISTS"
         },
         "incidentHistory": [
           {
@@ -7801,6 +7803,27 @@
         "centralPolicyContract": 36200348257,
         "companyEvolutionQa": 36200348264,
         "securityImmune": 36200348267
+      },
+      "auxiliaryLaneAlignment": {
+        "state": "IMPLEMENTED_PENDING_CI_AND_LIVE",
+        "authorityChange": "NONE",
+        "executionScopeChange": "NONE",
+        "observedPreFixRunId": 36235195075,
+        "observedPreFixLane": "RECOVERY_FAST",
+        "observedPreFixPrimaryTaskCount": 2,
+        "observedPreFixSpeculativeWorkerCount": 4,
+        "observedPreFixWorkerFanOut": 6,
+        "rootCause": "AUXILIARY_RESERVE_HARD_CODED_SPECULATIVE_EXPANSION_ALLOWED_TRUE_EVEN_WHILE_GAME_PRIMARY_WORK_AND_RUNNER_QUEUE_PRESSURE_EXISTED",
+        "correction": "AUXILIARY_PRIMARY_TASKS_REMAIN_RUNNABLE_BUT_SPARE_SPECULATIVE_VARIANTS_ARE_SUPPRESSED_WHILE_GAME_PRIMARY_IS_ACTIVE_OR_ADAPTIVE_RUNNER_PRESSURE_EXISTS_AND_RESUME_AUTOMATICALLY_WHEN_SPARE_CAPACITY_RETURNS",
+        "primaryGameCoveragePreserved": true,
+        "auxiliaryPrimaryTaskCoveragePreserved": true,
+        "retryBudgetChanged": false,
+        "workerBoundaryChanged": false,
+        "qaOrSecurityGateChanged": false,
+        "bindings": [
+          "tools/vibe2-queue-control.mjs",
+          "qa/vibe2-queue-control.test.mjs"
+        ]
       }
     },
     "runnerPressureCallbackCoalescing20260926": {

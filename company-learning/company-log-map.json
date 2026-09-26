@@ -1249,11 +1249,12 @@
     "relevantSecurityFindingStillRequiresExistingQuarantineEvidence": true
   },
   "vibeRunnerPressureSpeculativeRelief": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerPressureSpeculativeRelief20260926",
     "requiredMarkers": [
       "VIBE2_SPECULATIVE_EXPANSION=ENABLED",
-      "VIBE2_SPECULATIVE_EXPANSION=SUPPRESSED_RUNNER_PRESSURE"
+      "VIBE2_SPECULATIVE_EXPANSION=SUPPRESSED_RUNNER_PRESSURE",
+      "VIBE2_SPECULATIVE_EXPANSION_REASON="
     ],
     "schedulerEvidence": [
       "primaryTaskCount",
@@ -1263,7 +1264,22 @@
     ],
     "primaryCoverageMustRemainUnchangedWhenSuppressed": true,
     "suppressionIsNotFailure": true,
-    "automaticRecoveryExpected": true
+    "automaticRecoveryExpected": true,
+    "appliesToExecutionLanes": [
+      "GAME_PRIMARY",
+      "RECOVERY_FAST",
+      "CONTROL_FAST",
+      "LEARNING_IDLE"
+    ],
+    "auxiliarySuppressionReasonPrefix": "AUXILIARY_",
+    "auxiliaryPrimaryTaskCoverageMustRemainUnchangedWhenSuppressed": true,
+    "preFixEvidence": {
+      "runId": 36235195075,
+      "lane": "RECOVERY_FAST",
+      "primaryTaskCount": 2,
+      "speculativeWorkerCount": 4,
+      "workerFanOut": 6
+    }
   },
   "vibeRunnerPressureCallbackCoalescing": {
     "version": 1,
