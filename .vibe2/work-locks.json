@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-ilicqw",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau",
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/shared/GameConfig.luau"
-      ],
-      "baseSha": "6939b771e3bb5812ad61cad0b7400d83acf44e0b",
-      "acquiredAt": "2026-09-26T04:11:24.643Z",
-      "expiresAt": "2026-09-26T04:56:24.643Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-60c27z",
       "worker": "vibe2",
       "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1",
@@ -282,6 +263,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:horror-escape-room-studio-evolution-presentation-v1"
+      ]
+    },
+    {
+      "id": "wl-ta27t8",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-roblox-second-gate-rebuild-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau"
+      ],
+      "baseSha": "f753f0cbc33e69287115925ac962ccb5c03a9d56",
+      "acquiredAt": "2026-09-26T04:56:44.295Z",
+      "expiresAt": "2026-09-26T05:41:44.295Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-roblox-second-gate-rebuild-v1"
       ]
     }
   ]
