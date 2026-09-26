@@ -2327,7 +2327,8 @@
       "coding_1hzcwah",
       "coding_nwrwl2",
       "coding_hhrxq4",
-      "coding_fm6xth"
+      "coding_fm6xth",
+      "coding_sfs0tj"
     ],
     "seenNegativeOutcomeIds": [
       "coding_negative_1irey3q",
@@ -10707,33 +10708,33 @@
         "lastUpdatedAt": "2026-09-24T19:13:48.487Z"
       },
       "STRUCTURAL_CAUSE_FIRST": {
-        "verifiedApplications": 2,
+        "verifiedApplications": 3,
         "firstCandidatePasses": 0,
-        "totalGenerationAttempts": 6,
+        "totalGenerationAttempts": 9,
         "verifiedFailures": 0,
         "games": {
-          "__vibe_system__": 2
+          "__vibe_system__": 3
         },
         "targets": {
-          "system": 2
+          "system": 3
         },
         "contextModes": {
           "STANDARD_CONTEXT": {
-            "verifiedApplications": 2,
+            "verifiedApplications": 3,
             "verifiedFailures": 0,
             "firstCandidatePasses": 0,
-            "totalGenerationAttempts": 6,
-            "totalContextBytes": 157012,
-            "lastEvidence": "coding_fm6xth",
+            "totalGenerationAttempts": 9,
+            "totalContextBytes": 235668,
+            "lastEvidence": "coding_sfs0tj",
             "lastFailureEvidence": null,
-            "lastUpdatedAt": "2026-09-26T18:47:50.532Z"
+            "lastUpdatedAt": "2026-09-26T21:12:42.930Z"
           }
         },
         "failureFingerprints": {},
-        "state": "OBSERVED",
-        "lastEvidence": "coding_fm6xth",
+        "state": "VERIFIED",
+        "lastEvidence": "coding_sfs0tj",
         "lastFailureEvidence": null,
-        "lastUpdatedAt": "2026-09-26T18:47:50.532Z"
+        "lastUpdatedAt": "2026-09-26T21:12:42.930Z"
       }
     }
   },
@@ -13460,7 +13461,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-26T21:02:45.344Z",
+    "lastBuiltAt": "2026-09-26T21:12:42.963Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -19465,5 +19466,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-26T21:02:45.344Z"
+  "updatedAt": "2026-09-26T21:12:42.963Z"
 }
