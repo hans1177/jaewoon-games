@@ -1,5 +1,5 @@
 {
-  "version": 240,
+  "version": 241,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5439,5 +5439,23 @@
       "IN_PROGRESS_FANIN",
       "INDEPENDENT_GAME_RUN"
     ]
+  },
+  "directorPreSupervisionCoalescing": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.directorPreSupervisionCoalescing20260927",
+    "runnerDrain": {
+      "group": "director-runner-drain-v1",
+      "latestWins": true
+    },
+    "gamePrimaryGate": {
+      "group": "director-game-primary-gate-v1",
+      "latestWins": true
+    },
+    "supervise": {
+      "group": "director-central-company-supervise-v3",
+      "latestWins": false,
+      "completionPreserved": true
+    },
+    "gameWorkCancellation": false
   }
 }

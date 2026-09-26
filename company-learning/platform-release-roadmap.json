@@ -1,5 +1,5 @@
 {
-  "version": 429,
+  "version": 430,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8609,6 +8609,18 @@
       "independentGameRunMayCancel": false,
       "runningSchedulerMayCancel": false,
       "runningFanInMayCancel": false,
+      "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "directorPreSupervisionCoalescing20260927": {
+      "id": "DIRECTOR_PRE_SUPERVISION_COALESCING_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "KEEP_ONLY_THE_LATEST_DISPOSABLE_RUNNER_DRAIN_AND_GATE_JOBS_WHILE_PRESERVING_NONCANCELLABLE_SUPERVISION_COMPLETION",
+      "runnerDrainCancelInProgress": true,
+      "gamePrimaryGateCancelInProgress": true,
+      "superviseCancelInProgress": false,
+      "sharedStateWriterCancellationChurnForbidden": true,
+      "independentGameRunCancellationForbidden": true,
       "qualitySecurityReleaseGatesUnchanged": true
     }
   },
