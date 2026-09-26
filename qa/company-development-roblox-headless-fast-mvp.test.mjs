@@ -174,6 +174,17 @@ test('F0 planner dedupes duplicate dispatches while validation matrix remains pa
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
-  assert.match(workflow,/plan:[\s\S]{0,180}group: roblox-f0-plan-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  const planStart=workflow.indexOf('\n  plan:\n');
+  const validateStart=workflow.indexOf('\n  validate:\n',planStart);
+  const planBlock=workflow.slice(planStart,validateStart);
+  assert.match(planBlock,/runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(planBlock,/concurrency:/);
+  assert.match(planBlock,/ROBLOX_F0_PLAN_ACTIVE_WINNER=/);
+  assert.match(planBlock,/ROBLOX_F0_PLAN_EXACT_DEDUPED=/);
+  assert.match(planBlock,/ROBLOX_F0_PLAN_BATCH_DEDUPED_NEWER=/);
+  assert.match(planBlock,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
   assert.doesNotMatch(workflow,/max-parallel:\s*[1-9][0-9]*/);
+  const persistStart=workflow.indexOf('\n  persist:\n');
+  const persistBlock=workflow.slice(persistStart);
+  assert.match(persistBlock,/runs-on:\s*ubuntu-slim/);
 });
