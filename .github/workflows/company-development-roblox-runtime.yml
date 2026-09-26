@@ -43,7 +43,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: company-development-roblox-runtime-${{ inputs.game_id || 'batch-v4' }}
+  group: company-development-roblox-runtime-${{ inputs.game_id || 'batch-v5' }}
   cancel-in-progress: false
 
 env:
@@ -62,7 +62,7 @@ env:
 jobs:
   source-plan:
     name: resolve Roblox source work
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-slim
     timeout-minutes: 8
     outputs:
       count: ${{ steps.targets.outputs.count || '0' }}
@@ -456,7 +456,7 @@ jobs:
     name: persist Roblox source-bind results
     needs: [source-plan, source-worker]
     if: always() && needs.source-plan.result == 'success'
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-slim
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
@@ -800,7 +800,7 @@ jobs:
     name: resolve Roblox technical package work
     needs: source-bootstrap
     if: always() && needs.source-bootstrap.result == 'success'
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-slim
     timeout-minutes: 8
     outputs:
       count: ${{ steps.targets.outputs.count }}
@@ -1144,7 +1144,7 @@ jobs:
     name: persist Roblox package checkpoints
     needs: [technical-plan, technical-worker]
     if: always() && needs.technical-plan.result == 'success'
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-slim
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
