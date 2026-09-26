@@ -1,5 +1,5 @@
 {
-  "version": 51,
+  "version": 52,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -795,5 +795,20 @@
       "image/jpeg"
     ],
     "publicReleaseAuthorityUnchanged": true
+  },
+  "universalAssetFirstUpgradeSecurity": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.universalAssetFirstUpgradeContract",
+    "protections": {
+      "assetRequirementCannotAuthorizeGameplayMutation": true,
+      "assetRequirementCannotChangeSaveProgressionEconomyNetworkAuthority": true,
+      "externalAssetsRequireLicenseAndProvenanceVerification": true,
+      "semanticAtomSelectionCannotClaimVerifiedRuntimeAsset": true,
+      "configMarkerOnlyCannotClaimAssetUsage": true,
+      "placeholderOrPrimitiveOnlyUpgradeCannotClaimVisualPass": true,
+      "notApplicableCannotHideExistingApplicableSystem": true,
+      "rawExternalProtectedAssetCopyForbidden": true,
+      "gameStyleLockMustBePreserved": true
+    }
   }
 }
