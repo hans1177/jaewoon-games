@@ -369,7 +369,7 @@ const RAID_WAVES=[
  [{id:'polarbear',count:3},{id:'polarwolf',count:3},{id:'firesnake',count:2}],
  [{id:'gorilla',count:2},{id:'anaconda',count:1},{id:'polarbear',count:2},{id:'polarwolf',count:4}]
 ];
-function raidSpawnDelayMs(raidNo){return Math.max(1,Math.floor(Number(raidNo)||1))*120000}
+function raidSpawnDelayMs(raidNo){const n=Math.max(1,Math.floor(Number(raidNo)||1));return(n+3)*60000}
 const ACHIEVEMENTS=[
  {id:'strong-body',name:'강력한 신체',desc:'화산 또는 수정 지역 몬스터를 처치'},
  {id:'escape-step',name:'탈출의 1걸음',desc:'무전기 부품을 발견'},
