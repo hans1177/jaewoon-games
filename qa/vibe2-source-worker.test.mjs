@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
@@ -58,6 +58,34 @@ function robloxFullGraphicsMotionPatch(accent='70,95,130') {
     'panel.BackgroundColor3 = Color3.fromRGB(' + accent + ')'
   ].join('\n');
 }
+
+test('Roblox source worker inspects native responsibilities before generation',()=>{
+  const inspection=buildRobloxNativeSourceInspection({
+    order:{target:'roblox'},
+    responsibleFiles:['server/Combat.server.luau','client/Input.client.luau'],
+    context:{files:[
+      {path:'server/Combat.server.luau',editable:true,content:'Remote.OnServerEvent:Connect(function(player, payload)\n local store = DataStoreService:GetDataStore("save")\nend)'},
+      {path:'client/Input.client.luau',editable:true,content:'UserInputService.TouchStarted:Connect(function() Remote:FireServer({action="attack"}) end)'}
+    ]}
+  });
+  assert.equal(inspection.required,true);
+  assert.ok(inspection.systems.includes('REMOTE_EVENTS_AND_FUNCTIONS'));
+  assert.ok(inspection.systems.includes('DATASTORE_SAVE_LOAD'));
+  assert.ok(inspection.systems.includes('TOUCH_INPUT'));
+  assert.ok(inspection.responsibilities.some(row=>row.role==='SERVER_AUTHORITY'));
+  assert.ok(inspection.responsibilities.some(row=>row.role==='CLIENT_INPUT_OR_PRESENTATION'));
+});
+
+test('Roblox candidate quality reports unsafe native patterns without creating a game-wide blocker',()=>{
+  const result=inspectRobloxNativeCandidateQuality({candidate:{edits:[
+    {path:'client/Game.client.luau',replace:'local store = DataStoreService:GetDataStore("save")\ncoins.Value = 100'},
+    {path:'server/Remote.server.luau',replace:'Remote.OnServerEvent:Connect(function(player, amount) reward(player, amount) end)'}
+  ]}});
+  assert.equal(result.automaticGameWideBlock,false);
+  assert.ok(result.findings.some(row=>row.class==='CLIENT_DATASTORE_AUTHORITY'));
+  assert.ok(result.findings.some(row=>row.class==='REMOTE_INPUT_VALIDATION_WEAK'));
+  assert.ok(result.securityRelevantFindings.length>=2);
+});
 
 test('presentation candidate delta rejects marker-only edits and accepts actual visual source changes',()=>{
   const contract={required:true,pass:'ASSET_ADAPTATION'};
