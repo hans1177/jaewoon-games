@@ -642,7 +642,7 @@ jobs:
           const baselineTarget=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_BASELINE_TARGET||20));
           const adaptiveMin=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_ADAPTIVE_MIN||30));
           const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));
-          const effectiveMax=Math.max(adaptiveMin,Math.min(configuredMax,controlTarget));
+          const effectiveMax=configuredMax;
           const freeWorkerSlots=Math.max(0,effectiveMax-activeGame);
           const waveReady=activeGame===0?'YES':'NO';
           const gameRefillReady=freeWorkerSlots>0?'YES':'NO';
@@ -657,6 +657,7 @@ jobs:
           console.log('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='+activeGame);
           console.log('VIBE2_24H_GAME_PRIMARY_ACTIVE_MAX='+effectiveMax);
           console.log('VIBE2_24H_ADAPTIVE_RECOMMENDED_MAX='+controlTarget);
+          console.log('VIBE2_24H_GAME_PRIMARY_RESERVATION_LIMIT_SOURCE=CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY');
           console.log('VIBE2_24H_FREE_GAME_WORKER_SLOTS='+freeWorkerSlots);
           console.log('VIBE2_24H_GAME_REFILL_READY='+gameRefillReady);
           console.log('VIBE2_24H_GAME_PRIMARY_QUEUED='+gameQueued);
