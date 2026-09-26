@@ -13,15 +13,26 @@ const posix=v=>clean(v).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));}catch{return fallback;}};
 
 export const BUILD_UP_DOMAINS=Object.freeze([
-  'CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS',
-  'PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','CONTENT_VARIETY','WORLD_MAP_TOPOLOGY','REGIONS',
-  'LANDMARKS','TRAVERSAL','ECONOMY','INVENTORY','CRAFTING','SAVE_AND_RECOVERY','MULTIPLAYER_AND_SYNC',
-  'INPUT','MOBILE_UX','ACCESSIBILITY','TUTORIAL_ONBOARDING','DIFFICULTY_PACING','GAME_FEEL',
-  'SPAWN_ENCOUNTER_DIRECTOR','FAILURE_RESPAWN_CHECKPOINTS','NPC_SOCIAL_BEHAVIOR','NARRATIVE_STORY',
+  'CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ANTI_GRIND','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS',
+  'PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','CONTENT_VARIETY','CONTENT_DENSITY','CONTENT_DISCOVERY','MID_LATE_GAME_DEPTH',
+  'WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','LANDMARKS','TRAVERSAL','INTERACTION_DISCOVERABILITY',
+  'ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION',
+  'SESSION_FLOW','FIRST_10_MINUTES','FAILURE_RESPAWN_CHECKPOINTS','SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY','MULTIPLAYER_AND_SYNC',
+  'INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY',
+  'TUTORIAL_ONBOARDING','DIFFICULTY_PACING','GAME_FEEL','SPAWN_ENCOUNTER_DIRECTOR','NPC_SOCIAL_BEHAVIOR','NARRATIVE_STORY',
   'AUDIO_MUSIC_SFX','REPLAYABILITY_VARIATION','CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT',
   'BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ANIMATION',
   'SECONDARY_MOTION','VFX','CAMERA','UI_HUD','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION',
-  'PERFORMANCE','RUNTIME_STABILITY','ERROR_RECOVERY'
+  'PERFORMANCE','PERFORMANCE_BUDGET','RUNTIME_STABILITY','ERROR_RECOVERY'
+]);
+
+export const HOLISTIC_CORE_DOMAINS=Object.freeze([
+  'CORE_FUN','PLAYER_ACTIONS','PLAYER_AGENCY','PROGRESSION','CONTENT_VARIETY','CONTENT_DENSITY',
+  'WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','INTERACTION_DISCOVERABILITY',
+  'INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','SYSTEM_CONNECTION',
+  'SESSION_FLOW','FIRST_10_MINUTES','MID_LATE_GAME_DEPTH','SAVE_COMPLETENESS',
+  'INPUT','MOBILE_UX','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY',
+  'ANTI_GRIND','CONTENT_DISCOVERY','PERFORMANCE_BUDGET','RUNTIME_STABILITY'
 ]);
 
 export const VISUAL_DOMAINS=Object.freeze([
@@ -90,7 +101,7 @@ function sourceAnchorCandidates(text='',file=''){
       if(!symbol||CONTROL_FLOW_SYMBOLS.has(symbol.toLowerCase()))continue;
       const nearby=lines.slice(Math.max(0,index-2),Math.min(lines.length,index+4)).join(' ');
       const score=20
-        +tokenCount(nearby,/attack|damage|combat|enemy|boss|player|input|progress|reward|unlock|quest|save|spawn|camera|animation|vfx|ui|touch|state|phase|mode/gi)*8
+        +tokenCount(nearby,/attack|damage|combat|enemy|boss|player|input|progress|reward|unlock|quest|save|spawn|camera|animation|vfx|ui|touch|state|phase|mode|map|region|terrain|landmark|inventory|equip|item|menu|settings|interact|prompt|session|checkpoint|craft/gi)*8
         +(kind==='CLASS'?8:kind==='FUNCTION'?6:4);
       anchors.push({file,line:index+1,kind,symbol,context:clean(trimmed).slice(0,180),score});
       matched=true;break;
@@ -184,6 +195,20 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     vfx:tokenCount(joined,/particle|trail|vfx|effect|flash|shake|afterimage/gi),
     camera:tokenCount(joined,/camera|fieldofview|fov|cinemachine/gi),
     ui:tokenCount(joined,/screenui|screengui|canvas|button|hud|label|uitoolkit|ongui/gi),
+    uiFlow:tokenCount(joined,/menu|panel|modal|popup|tab|scroll|backbutton|closebutton|navigation|screen.?stack|page.?stack/gi),
+    input:tokenCount(joined,/userinputservice|contextactionservice|touch|mousebutton|keycode|inputaction|onclick|activated/gi),
+    map:tokenCount(joined,/world|map|region|biome|zone|terrain|dungeon|village|town|island|forest|jungle|snow|desert|lake|room|floor|portal/gi),
+    landmark:tokenCount(joined,/landmark|checkpoint|spawnpoint|waypoint|signpost|tower|temple|castle|school|shop|hospital|station/gi),
+    interaction:tokenCount(joined,/interact|proximityprompt|clickdetector|pickup|collect|open|useitem|activate|trigger|prompt/gi),
+    inventory:tokenCount(joined,/inventory|itemslot|slot|stack|hotbar|backpack|itemdata|itemid/gi),
+    equipment:tokenCount(joined,/equip|unequip|equipment|weapon.?slot|armor|loadout|equipped/gi),
+    settings:tokenCount(joined,/settings|volume|musicvolume|sfxvolume|camera.?shake|sensitivity|accessibility|ui.?scale|graphics.?quality/gi),
+    feedback:tokenCount(joined,/toast|notification|feedback|tooltip|floating.?text|damage.?number|message|success|failed|complete|reward.?popup/gi),
+    session:tokenCount(joined,/restart|result|gameover|victory|defeat|respawn|checkpoint|return.?menu|start.?game|end.?game|session/gi),
+    content:tokenCount(joined,/enemy|monster|boss|item|weapon|quest|region|biome|event|building|npc|recipe|skill|ability/gi),
+    choice:tokenCount(joined,/choice|select|option|branch|build|loadout|strategy|upgrade.?choice|choose/gi),
+    connection:tokenCount(joined,/inventory.*equip|equip.*inventory|reward.*unlock|unlock.*region|quest.*reward|drop.*craft|craft.*equip|map.*quest|region.*resource|resource.*craft/gi),
+    performance:tokenCount(joined,/pool|objectpool|debounce|throttle|debri|destroy\s*\(|disconnect\s*\(|cleanup|dispose|lod|cull|streaming|budget|fps|memory|gc\b/gi),
     lighting:tokenCount(joined,/lighting|light\b|colorcorrection|postprocess|ambient|shadow/gi),
     primitive:tokenCount(joined,/createprimitive|primitivetype|instance\.new\(["']Part["']|shape\s*=|capsule|sphere|cube/gi),
     todo:tokenCount(joined,/TODO|FIXME|NotImplementedException/g),
@@ -192,7 +217,7 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
   const topFiles=rows.map(row=>({
     file:row.file,
     score:
-      tokenCount(row.text,/attack|damage|combat|enemy|player|progress|quest|save|ui|camera|animation|particle/gi)
+      tokenCount(row.text,/attack|damage|combat|enemy|player|progress|quest|save|ui|camera|animation|particle|map|region|terrain|landmark|inventory|equip|item|menu|settings|interact|prompt|session|checkpoint|craft/gi)
   })).sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file)).slice(0,12);
   const sourceAnchors=rows.flatMap(row=>row.sourceAnchors||[]).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||a.file.localeCompare(b.file)||Number(a.line||0)-Number(b.line||0)).slice(0,48);
   return Object.freeze({
@@ -210,6 +235,13 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
       signals.camera<1?'CAMERA_LANGUAGE_SPARSE':null,
       signals.progression<4?'PROGRESSION_IMPLEMENTATION_SPARSE':null,
       signals.ai<2?'AI_BEHAVIOR_DEPTH_SPARSE':null,
+      signals.map<3?'WORLD_MAP_IMPLEMENTATION_SPARSE':null,
+      signals.inventory>0&&signals.equipment<2?'INVENTORY_EQUIPMENT_FLOW_SPARSE':null,
+      signals.ui>0&&signals.uiFlow<2?'UI_MENU_FLOW_SPARSE':null,
+      signals.interaction<2?'INTERACTION_DISCOVERABILITY_SPARSE':null,
+      signals.session<2?'SESSION_FLOW_SPARSE':null,
+      signals.settings<1?'SETTINGS_ACCESSIBILITY_SPARSE':null,
+      signals.performance<2?'PERFORMANCE_BUDGET_SPARSE':null,
       signals.todo>0?'EXPLICIT_TODO_OR_NOT_IMPLEMENTED_PRESENT':null
     ])
   });
@@ -295,23 +327,74 @@ function domainState(domain,{design={},source={}}={}){
     ...(design.signatureSystems||[]).flatMap(x=>[x.name,x.purpose,x.playerChoice])
   ]);
   const no=(reason)=>({domain,state:'NOT_APPLICABLE',reason});
-  if(domain==='MULTIPLAYER_AND_SYNC'&&!/multi|coop|co-op|pvp|player/.test(clean(design.multiplayerMode).toLowerCase())&&!/multiplayer|coop|pvp/.test(relevantByText))return no('approved design does not currently require multiplayer');
+  const gap=(reason)=>({domain,state:'GAP',reason});
+  const pass=(reason='current source and approved design provide sufficient implementation signal')=>({domain,state:'PASS',reason});
+  const hasWorld=/world|map|region|biome|zone|terrain|dungeon|village|town|island|forest|jungle|snow|desert|lake|room|floor|portal|지역|맵|마을|던전|섬|숲/.test(relevantByText)||Number(s.map||0)>0;
+  const hasInventory=/inventory|item|equipment|equip|weapon|armor|loot|craft|인벤|아이템|장비|무기|방어구|전리품|제작/.test(relevantByText)||Number(s.inventory||0)>0||Number(s.equipment||0)>0;
+  const hasEquipment=/equipment|equip|weapon|armor|loadout|장비|무기|방어구|장착/.test(relevantByText)||Number(s.equipment||0)>0;
+  const hasProgression=Boolean(clean(design.progressionDirection))||Number(s.progression||0)>0;
+  const hasMultiplayer=/multi|coop|co-op|pvp|player/.test(clean(design.multiplayerMode).toLowerCase())||/multiplayer|coop|pvp/.test(relevantByText)||Number(s.multiplayer||0)>0;
+  const hasSave=Number(s.save||0)>0||/save|persist|저장/.test(relevantByText);
+
+  if(domain==='MULTIPLAYER_AND_SYNC'&&!hasMultiplayer)return no('approved design and current source do not require multiplayer');
   if(domain==='CRAFTING'&&!/craft|제작|recipe/.test(relevantByText)&&Number(s.progression||0)>0)return no('no crafting signal in approved design');
   if(domain==='QUESTS'&&!/quest|퀘스트|story|npc/.test(relevantByText))return no('no quest/story objective signal in approved design');
   if(domain==='NPC_SOCIAL_BEHAVIOR'&&!/npc|villager|resident|social|주민|상인|대화/.test(relevantByText))return no('no NPC or social behavior signal in approved design');
   if(domain==='NARRATIVE_STORY'&&!/story|narrative|lore|quest|스토리|세계관|대사/.test(relevantByText))return no('no narrative or story signal in approved design');
   if(domain==='REPLAYABILITY_VARIATION'&&!/rogue|wave|random|procedural|replay|런|웨이브|랜덤/.test(relevantByText))return no('no explicit replay variation signal in approved design');
-  const weak=
-    (['ANIMATION','SECONDARY_MOTION'].includes(domain)&&Number(s.animation||0)<2)||
-    (domain==='VFX'&&Number(s.vfx||0)<2)||
-    (domain==='CAMERA'&&Number(s.camera||0)<1)||
-    (domain==='PROGRESSION'&&Number(s.progression||0)<4)||
-    (domain==='ENEMY_AI'&&Number(s.ai||0)<2)||
-    (domain==='ERROR_RECOVERY'&&Number(s.errorRecovery||0)<2)||
-    (['CHARACTER_VISUALS','ENEMY_VISUALS','ENVIRONMENT','TERRAIN','MATERIALS'].includes(domain)&&Number(s.primitive||0)>8);
-  return{domain,state:weak?'GAP':'EVALUATED',reason:weak?'current source signals indicate shallow or placeholder-heavy implementation':'considered against current design and source'};
-}
+  if(['WORLD_MAP_TOPOLOGY','MAP_EXPANSION','REGIONS','WORLD_DENSITY','WORLD_NAVIGATION','LANDMARKS','TRAVERSAL','CONTENT_DISCOVERY'].includes(domain)&&!hasWorld)return no('approved design and current source do not expose a world/map surface requiring expansion');
+  if(['INVENTORY','INVENTORY_USABILITY'].includes(domain)&&!hasInventory)return no('game has no current inventory/item ownership system');
+  if(domain==='EQUIPMENT_LOADOUT'&&!hasEquipment)return no('game has no current equipment/loadout system');
+  if(domain==='RECONNECT_RECOVERY'&&!hasMultiplayer&&!hasSave)return no('game has no multiplayer or persistent reconnect state');
+  if(domain==='SAVE_COMPLETENESS'&&!hasSave)return no('game has no persistent save system yet');
+  if(domain==='MID_LATE_GAME_DEPTH'&&!hasProgression)return no('approved design has no multi-stage progression direction');
 
+  const weakByDomain={
+    ANIMATION:Number(s.animation||0)<2,
+    SECONDARY_MOTION:Number(s.animation||0)<2,
+    VFX:Number(s.vfx||0)<2,
+    CAMERA:Number(s.camera||0)<1,
+    PROGRESSION:Number(s.progression||0)<4,
+    ENEMY_AI:Number(s.ai||0)<2,
+    ERROR_RECOVERY:Number(s.errorRecovery||0)<2,
+    WORLD_MAP_TOPOLOGY:hasWorld&&Number(s.map||0)<5,
+    MAP_EXPANSION:hasWorld&&(Number(s.map||0)<8||Number(s.landmark||0)<2),
+    REGIONS:hasWorld&&Number(s.map||0)<6,
+    WORLD_DENSITY:hasWorld&&(Number(s.content||0)<8||Number(s.landmark||0)<2),
+    WORLD_NAVIGATION:hasWorld&&(Number(s.landmark||0)<2||Number(s.uiFlow||0)<1),
+    LANDMARKS:hasWorld&&Number(s.landmark||0)<2,
+    TRAVERSAL:hasWorld&&Number(s.input||0)<2,
+    INTERACTION_DISCOVERABILITY:Number(s.interaction||0)<3,
+    INVENTORY:hasInventory&&Number(s.inventory||0)<3,
+    INVENTORY_USABILITY:hasInventory&&(Number(s.inventory||0)<5||Number(s.uiFlow||0)<2),
+    EQUIPMENT_LOADOUT:hasEquipment&&Number(s.equipment||0)<4,
+    SYSTEM_CONNECTION:(hasInventory||hasWorld||hasProgression)&&Number(s.connection||0)<2,
+    SESSION_FLOW:Number(s.session||0)<4,
+    FIRST_10_MINUTES:Number(s.session||0)<3||Number(s.progression||0)<3||Number(s.interaction||0)<2,
+    MID_LATE_GAME_DEPTH:hasProgression&&(Number(s.progression||0)<8||Number(s.content||0)<10),
+    SAVE_AND_RECOVERY:hasSave&&Number(s.save||0)<3,
+    SAVE_COMPLETENESS:hasSave&&(Number(s.save||0)<5||(hasInventory&&Number(s.inventory||0)<3)),
+    RECONNECT_RECOVERY:(hasMultiplayer||hasSave)&&Number(s.errorRecovery||0)<2,
+    INPUT:Number(s.input||0)<3,
+    MOBILE_UX:Number(s.input||0)<3||Number(s.ui||0)<3,
+    SETTINGS_ACCESSIBILITY:Number(s.settings||0)<2,
+    MENU_FLOW:Number(s.ui||0)>0&&Number(s.uiFlow||0)<3,
+    CONVENIENCE:(Number(s.ui||0)+Number(s.interaction||0)+Number(s.progression||0))>0&&Number(s.uiFlow||0)<3,
+    UI_DESIGN_SYSTEM:Number(s.ui||0)<4,
+    UI_INFORMATION_PRIORITY:Number(s.ui||0)<4||Number(s.feedback||0)<2,
+    FEEDBACK_CLARITY:Number(s.feedback||0)<3,
+    PLAYER_AGENCY:(Number(s.combat||0)+Number(s.progression||0))>3&&Number(s.choice||0)<2,
+    ANTI_GRIND:hasProgression&&Number(s.content||0)<8,
+    CONTENT_DENSITY:Number(s.content||0)<8,
+    CONTENT_DISCOVERY:(hasWorld||hasProgression)&&Number(s.interaction||0)<3,
+    PERFORMANCE:Number(s.performance||0)<2,
+    PERFORMANCE_BUDGET:Number(s.performance||0)<3,
+    RUNTIME_STABILITY:Number(s.errorRecovery||0)<2
+  };
+  if(['CHARACTER_VISUALS','ENEMY_VISUALS','ENVIRONMENT','TERRAIN','MATERIALS'].includes(domain)&&Number(s.primitive||0)>8)return gap('placeholder or primitive-heavy implementation remains');
+  if(weakByDomain[domain]===true)return gap('current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation');
+  return pass();
+}
 
 function escalationDepthInfo({previousDirective=null,previousOutcome='',currentSourceTreeFingerprint=''}={}){
   const priorDepth=Math.max(0,Number(previousDirective?.developmentDepth||0));
@@ -351,11 +434,11 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
   const progression=design.progressionDirection||'승인된 진행 방향';
   const depth=Number(depthInfo.developmentDepth||1);
   const focusDomains={
-    CORE_FUN:new Set(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','CONTENT_VARIETY']),
-    PROGRESSION:new Set(['PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','CRAFTING']),
-    PRESENTATION:new Set(['CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','UI_HUD','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION','LANDMARKS']),
-    USABILITY:new Set(['INPUT','MOBILE_UX','ACCESSIBILITY','TUTORIAL_ONBOARDING','TRAVERSAL','UI_HUD','GOALS','GAME_FEEL']),
-    STABILITY:new Set(['SAVE_AND_RECOVERY','MULTIPLAYER_AND_SYNC','FAILURE_RESPAWN_CHECKPOINTS','PERFORMANCE','RUNTIME_STABILITY','ERROR_RECOVERY'])
+    CORE_FUN:new Set(['CORE_FUN','COMBAT_OR_PRIMARY_INTERACTION','PLAYER_ACTIONS','PLAYER_AGENCY','ANTI_GRIND','ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','CONTENT_VARIETY','CONTENT_DENSITY','SESSION_FLOW','FIRST_10_MINUTES']),
+    PROGRESSION:new Set(['PROGRESSION','GOALS','REWARDS','UNLOCKS','QUESTS','ECONOMY','INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','SYSTEM_CONNECTION','MID_LATE_GAME_DEPTH','CONTENT_DISCOVERY','MAP_EXPANSION','REGIONS']),
+    PRESENTATION:new Set(['CHARACTER_VISUALS','ENEMY_VISUALS','WEAPONS_AND_EQUIPMENT','BUILDINGS_AND_PROPS','ENVIRONMENT','TERRAIN','MATERIALS','PALETTE','LIGHTING','ANIMATION','SECONDARY_MOTION','VFX','CAMERA','UI_HUD','UI_DESIGN_SYSTEM','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION','LANDMARKS','WORLD_DENSITY']),
+    USABILITY:new Set(['INPUT','MOBILE_UX','ACCESSIBILITY','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','INTERACTION_DISCOVERABILITY','WORLD_NAVIGATION','TUTORIAL_ONBOARDING','TRAVERSAL','UI_HUD','GOALS','GAME_FEEL']),
+    STABILITY:new Set(['SAVE_AND_RECOVERY','SAVE_COMPLETENESS','RECONNECT_RECOVERY','MULTIPLAYER_AND_SYNC','FAILURE_RESPAWN_CHECKPOINTS','PERFORMANCE','PERFORMANCE_BUDGET','RUNTIME_STABILITY','ERROR_RECOVERY'])
   };
   const instructions={
     CORE_FUN:`${anchor}가 단순 반복 입력이 아니라 상황을 읽고 선택을 바꾸는 핵심 재미가 되게 한다. 같은 선택의 반복 이득을 줄이고 성공/실패 이유가 즉시 보이게 한다.`,
@@ -390,6 +473,29 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
     NARRATIVE_STORY:`스토리가 적용되는 게임이면 세계 설정·NPC 대사·환경 단서·퀘스트 결과가 서로 모순되지 않고 플레이 행동으로 드러나며 긴 설명이 핵심 루프를 끊지 않게 한다.`,
     AUDIO_MUSIC_SFX:`배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.`,
     REPLAYABILITY_VARIATION:`반복 플레이가 적용되는 게임이면 조우 조합·지역 경로·보상 선택·빌드/전략·이벤트 중 게임에 맞는 변주를 제공해 같은 정답만 반복되지 않게 한다.`,
+    PLAYER_AGENCY:`핵심 루프에서 최소 두 개 이상의 의미 있는 선택축을 유지하고 하나의 정답 버튼 반복보다 상황·자원·위험에 따라 선택이 달라지게 한다.`,
+    ANTI_GRIND:`같은 행동을 반복해서 숫자만 채우는 구간을 줄이고 반복이 필요하면 새로운 위험·조합·선택·단축 해금 중 하나가 주기적으로 생기게 한다.`,
+    CONTENT_DENSITY:`플레이 시간과 이동 거리에 비해 실제 상호작용·조우·보상·발견이 비는 구간을 줄이고 새 콘텐츠가 서로 다른 플레이 결정을 만들게 한다.`,
+    CONTENT_DISCOVERY:`새 지역·아이템·시스템·퀘스트가 해금됐을 때 플레이어가 존재와 접근 방법을 자연스럽게 발견하도록 세계 신호·UI·목표·상호작용을 연결한다.`,
+    MID_LATE_GAME_DEPTH:`중후반은 초반 수치 상승 반복이 아니라 새 지역·적 역할·장비 조합·시스템 연결·전략 전환 중 여러 축에서 플레이 깊이가 실제로 확장되게 한다.`,
+    MAP_EXPANSION:`맵 확장은 면적만 늘리지 말고 새 지역 역할, 연결 경로, 잠금/해금, 랜드마크, 자원·적·이벤트 차이와 기존 지역으로 돌아올 이유를 함께 설계한다.`,
+    WORLD_DENSITY:`넓은 공간이 비지 않게 탐색 거리마다 기능성 소품·상호작용·조우·자원·환경 이야기 중 게임에 맞는 요소를 배치하고 반복 복제 밀도를 줄인다.`,
+    WORLD_NAVIGATION:`지도/미니맵/방향 표식/랜드마크/목표 추적 중 게임에 맞는 수단으로 현재 위치·목적지·잠금 경로를 읽게 하며 모바일에서도 길을 잃는 비용을 줄인다.`,
+    INTERACTION_DISCOVERABILITY:`줍기·열기·대화·제작·장착·구매·사용 가능한 대상은 접근 전후에 형태/프롬프트/상태 피드백으로 구별되고 상호작용 실패 이유도 즉시 보이게 한다.`,
+    INVENTORY_USABILITY:`인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.`,
+    EQUIPMENT_LOADOUT:`장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.`,
+    SYSTEM_CONNECTION:`드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.`,
+    SESSION_FLOW:`접속→첫 행동→핵심 재미→보상→업그레이드/선택→새 목표→실패/성공→저장/종료가 막힘 없이 한 세션으로 이어지고 할 일이 사라지는 공백을 줄인다.`,
+    FIRST_10_MINUTES:`첫 10분 안에 이동/기본 입력, 핵심 상호작용, 첫 성공 피드백, 첫 보상 또는 성장, 다음 목표를 실제 플레이로 경험하게 하고 설명문만으로 대체하지 않는다.`,
+    SAVE_COMPLETENESS:`현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.`,
+    RECONNECT_RECOVERY:`재접속/late join/일시 네트워크 실패 시 권위 상태를 다시 동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 안전한 복구 경로를 제공한다.`,
+    SETTINGS_ACCESSIBILITY:`음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.`,
+    MENU_FLOW:`인벤토리·장비·제작·상점·퀘스트·설정 등 존재하는 메뉴 사이 전환, 뒤로가기, 닫기, 팝업 중첩, 스크롤, 선택 유지가 모바일에서 예측 가능하게 동작하게 한다.`,
+    CONVENIENCE:`반복 조작을 줄일 수 있는 빠른 사용/장착, 제작 가능 표시, 부족 재료 표시, 목표 추적, 비교 정보 등 현재 게임에 맞는 편의 기능을 추가하되 플레이 선택 자체를 자동화하지 않는다.`,
+    UI_DESIGN_SYSTEM:`HUD와 메뉴가 공통 타이포·패널·아이콘·간격·상태 색/형태 규칙을 공유하고 게임 세계의 아트 언어와 연결되며 기능마다 제각각인 임시 UI를 줄인다.`,
+    UI_INFORMATION_PRIORITY:`현재 목표, 생존/위험, 핵심 자원, 장비/쿨다운, 다음 행동 순으로 실제 플레이 중요도에 맞게 정보 위계를 정하고 작은 화면에서 비핵심 정보가 핵심 HUD를 밀어내지 않게 한다.`,
+    FEEDBACK_CLARITY:`획득·구매·제작·장착·레벨업·퀘스트·실패·사용 불가 등 중요한 상태 변화에 즉시 읽히는 UI/음향/시각 피드백과 실패 이유를 연결한다.`,
+    PERFORMANCE_BUDGET:`맵·에셋·NPC·VFX를 늘릴 때 객체 수명, 동시 NPC/파티클, 업데이트 빈도, 스트리밍/LOD, 메모리·모바일 프레임 예산을 함께 정의하고 초과 시 표현 비용부터 줄인다.`,
     CHARACTER_VISUALS:`${identity} 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.`,
     ENEMY_VISUALS:`적 종류와 위험도가 색상만이 아니라 실루엣·크기·이동 리듬·공격 전조·피격/사망 반응으로 구별되게 한다.`,
     WEAPONS_AND_EQUIPMENT:`무기/장비 외형이 실제 기능·사거리·무게감·공격 궤적·장착 상태와 맞고 플레이어 손/몸에 자연스럽게 연결되게 한다.`,
@@ -483,7 +589,8 @@ function platformDirectives({identity,goal}){
 export function directivePrompt(d={}){
   if(!d?.directiveId)return'';
   const visual=Object.entries(d.visualBuildUpDirective?.domains||{}).map(([k,v])=>`- ${k}: ${v}`).join('\n');
-  const domainPriority=(d.allDomainImplementationDirectives||[]).filter(row=>['FIX_NOW','BUILD_UP_NOW'].includes(row.priority)).slice(0,14).map(row=>`- ${row.domain}[${row.priority}]: ${row.directive}`).join('\n');
+  const domainPriority=(d.allDomainImplementationDirectives||[]).filter(row=>['FIX_NOW','BUILD_UP_NOW'].includes(row.priority)).slice(0,28).map(row=>`- ${row.domain}[${row.priority}]: ${row.directive}`).join('\n');
+  const holistic=(d.allDomainImplementationDirectives||[]).filter(row=>HOLISTIC_CORE_DOMAINS.includes(row.domain)).map(row=>`- ${row.domain}=${row.state}/${row.priority}`).join('\n');
   const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} | CURRENT=${row.currentBehavior||row.context||'UNKNOWN'} | INTENDED=${row.intendedBehavior||'FOLLOW_PRIMARY_GOAL'} | ACCEPT=${row.observableAcceptance||'REAL_SOURCE_AND_EFFECT_DELTA'}`).join('\n');
   return[
     '[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',
@@ -498,6 +605,8 @@ export function directivePrompt(d={}){
     `NEXT_VIBE_ACTION: ${d.nextActionDecision?.action||'CONTINUE_BUILD_UP_CURRENT_SYSTEM'} - ${d.nextActionDecision?.reason||''}`,
     `GAMEPLAY: ${d.gameplayImplementationDirectives.join(' | ')}`,
     `PROGRESSION_WORLD: ${d.progressionContentWorldDirectives.join(' | ')}`,
+    'HOLISTIC_CORE_DOMAIN_STATUS:',
+    holistic,
     'PRIORITY_DOMAIN_DIRECTIVES:',
     domainPriority,
     'VISUAL:',
@@ -621,12 +730,16 @@ export function buildGameSpecificBuildUpDirective({
   const progression=[
     `${design.progressionDirection||'승인된 진행 방향'}을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다.`,
     '새 콘텐츠는 기존 핵심 루프와 연결되어야 하며 단순 수량 복제나 색/수치만 다른 변형으로 채우지 않는다.',
-    '맵/지역이 있는 게임은 동선·위험/보상·랜드마크·조우/자원 역할이 서로 구별되도록 유지하거나 강화한다.'
+    '맵/지역이 있는 게임은 면적만 늘리지 말고 새 지역 역할·연결 경로·잠금/해금·랜드마크·조우/자원 역할·발견 피드백이 구별되도록 확장한다.',
+    '인벤토리/장비/제작/상점/퀘스트가 존재하면 서로 같은 authoritative 상태를 사용해 실제 플레이와 연결하고 고립된 메뉴 기능으로 남기지 않는다.',
+    '초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.'
   ];
   const ux=[
     '핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다.',
     '터치 입력은 실제 게임 상태 변화에 연결하고 키보드/검증용 우회 입력이 모바일 PASS를 대신하지 못하게 한다.',
-    '실패/재시도/복귀 시 플레이어가 무엇이 유지되고 무엇이 초기화되는지 즉시 알 수 있게 한다.'
+    '실패/재시도/복귀 시 플레이어가 무엇이 유지되고 무엇이 초기화되는지 즉시 알 수 있게 한다.',
+    'HUD·메뉴·인벤토리·장비·설정은 같은 UI 디자인 언어와 정보 우선순위를 사용하고 뒤로가기/닫기/스크롤/팝업 중첩을 모바일에서 검증한다.',
+    '반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다.'
   ];
   const acceptance=[
     'CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM',
@@ -635,7 +748,11 @@ export function buildGameSpecificBuildUpDirective({
     'VISUAL_CLAIM_REQUIRES_ACTUAL_RENDERED_DELTA',
     'BEFORE_AFTER_OR_VERIFIED_BASELINE_COMPARISON',
     'NO_PROTECTED_SAVE_BALANCE_ECONOMY_NETWORK_SEMANTIC_REGRESSION',
-    'FOUNDATION_ONLY_REPAIR_COUNTS_ONLY_WHEN_FOUNDATION_IS_THIS_DIRECTIVE_PRIMARY_VERIFIED_GAP'
+    'FOUNDATION_ONLY_REPAIR_COUNTS_ONLY_WHEN_FOUNDATION_IS_THIS_DIRECTIVE_PRIMARY_VERIFIED_GAP',
+    'HOLISTIC_CORE_DOMAINS_CLASSIFIED_PASS_GAP_OR_NOT_APPLICABLE',
+    'EXISTING_APPLICABLE_GAP_CANNOT_BE_SILENTLY_SKIPPED',
+    'FIRST_10_MINUTES_AND_SESSION_FLOW_REVIEWED',
+    'MAP_INVENTORY_UI_CONVENIENCE_AND_SYSTEM_CONNECTION_REVIEWED_WHEN_APPLICABLE'
   ];
   const nextCandidates=uniq([
     focus==='CORE_FUN'?'CONNECT_CORE_FUN_TO_PROGRESSION_AND_CONTENT_VARIETY':'DEEPEN_CORE_FUN_DECISION_DENSITY',
@@ -696,7 +813,16 @@ export function buildGameSpecificBuildUpDirective({
     acceptanceEvidence:acceptance,
     nextEscalationCandidates:nextCandidates,
     loopEscalation:{automatic:true,nextGeneration:generation+1,currentDevelopmentDepth:depthInfo.developmentDepth,nextDevelopmentDepth:depthInfo.advanceAllowed?depthInfo.developmentDepth+1:depthInfo.developmentDepth,escalationStage:depthInfo.escalationStage,escalationMode:depthInfo.escalationMode,sourceChangedSincePrevious:depthInfo.sourceChangedSincePrevious,verifiedEvolution:depthInfo.verifiedEvolution,reuseSameGoalWithoutNewEvidence:false,completedGoalBecomesBaseline:depthInfo.verifiedEvolution},
-    coverage:{allDomainsConsidered:true,domainCount:BUILD_UP_DOMAINS.length,visualDomainCount:VISUAL_DOMAINS.length,notApplicable:states.filter(x=>x.state==='NOT_APPLICABLE').map(x=>x.domain)},
+    coverage:{
+      allDomainsConsidered:true,
+      domainCount:BUILD_UP_DOMAINS.length,
+      visualDomainCount:VISUAL_DOMAINS.length,
+      allowedStates:['PASS','GAP','NOT_APPLICABLE'],
+      holisticCoreDomains:HOLISTIC_CORE_DOMAINS,
+      holisticGaps:states.filter(x=>HOLISTIC_CORE_DOMAINS.includes(x.domain)&&x.state==='GAP').map(x=>x.domain),
+      notApplicable:states.filter(x=>x.state==='NOT_APPLICABLE').map(x=>x.domain),
+      silentApplicableGapOmissionForbidden:true
+    },
     generatedAt:new Date().toISOString()
   });
 }
