@@ -4,11 +4,11 @@
   "publicSafe": true,
   "authority": "SANITIZED_PORTFOLIO_CONTROL_SNAPSHOT",
   "source": "vibe2-unreal-core:.vibe2/portfolio-decisions.json",
-  "generatedAt": "2026-09-26T06:17:52.145Z",
+  "generatedAt": "2026-09-26T06:34:13.428Z",
   "counts": {
     "ACCELERATE": 0,
-    "CONTINUE": 1,
-    "FOCUSED_REPAIR": 16,
+    "CONTINUE": 0,
+    "FOCUSED_REPAIR": 17,
     "REDESIGN": 0,
     "PAUSE": 0,
     "RETIRE_REVIEW": 0,
@@ -53,6 +53,15 @@
     },
     {
       "gameId": "daechung-rpg",
+      "decision": "FOCUSED_REPAIR",
+      "label": "집중수리",
+      "priorityRank": 1,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
+    },
+    {
+      "gameId": "fantasy-survival",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
@@ -155,15 +164,6 @@
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
-      "gameId": "fantasy-survival",
-      "decision": "CONTINUE",
-      "label": "정상개발",
-      "priorityRank": 2,
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "lifecycleState": "ACTIVE",
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
