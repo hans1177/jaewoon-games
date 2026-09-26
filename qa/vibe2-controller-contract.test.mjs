@@ -535,6 +535,7 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes('free_worker_slots: ${{ steps.queue_state.outputs.free_worker_slots }}'));
   assert(safetyNetWorkflow.includes('active_worker_reservations: ${{ steps.queue_state.outputs.active_worker_reservations }}'));
   assert(safetyNetWorkflow.includes('runner_pressure: ${{ steps.queue_state.outputs.runner_pressure }}'));
+  assert(safetyNetWorkflow.includes('runner_pressure: ${{ needs.plan.outputs.runner_pressure }}'));
   assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS'));
   assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING'));
   assert(safetyNetWorkflow.includes('VIBE2_24H_RUNNER_QUEUE_PRESSURE='));
@@ -564,6 +565,13 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(!workflow.includes('VIBE2_RESERVE_GUARD=ACTIVE_WAVE_PRESENT'));
   assert(!workflow.includes("guard:'ACTIVE_LANE_RESERVATION_PRESENT'"));
   assert(workflow.includes('vibe2-queue-control.mjs reserve-batch'));
+  assert(workflow.includes("VIBE2_LIVE_RUNNER_PRESSURE: ${{ inputs.runner_pressure || github.event.client_payload.runner_pressure || 'NO' }}"));
+  assert(workflow.includes('--runner-pressure="$VIBE2_LIVE_RUNNER_PRESSURE"'));
+  assert(workflow.includes('VIBE2_RESERVE_LIVE_RUNNER_PRESSURE=$VIBE2_LIVE_RUNNER_PRESSURE'));
+  assert.equal(runtime.continuous.speculativeParallelism.liveRunnerPressureBridgeImplemented,true);
+  assert.equal(runtime.continuous.speculativeParallelism.liveRunnerPressureSuppressesSpeculationOnly,true);
+  assert.equal(runtime.continuous.speculativeParallelism.primaryCoveragePreservedUnderLiveRunnerPressure,true);
+  assert.equal(runtime.continuous.speculativeParallelism.gamePrimaryExternalBoundaryUnchanged,256);
 });
 
 test('free-slot refill keeps game-study idle-gated while learning-idle yields first under runner pressure',()=>{
