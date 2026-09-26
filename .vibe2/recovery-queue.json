@@ -19911,7 +19911,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-09-26T11:01:25.447Z"
+      "updatedAt": "2026-09-26T12:53:38.872Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -118705,10 +118705,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-22T23:20:59.247Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -144205,10 +144205,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:04:31.999Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -144411,7 +144411,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.919Z",
-      "updatedAt": "2026-09-26T11:01:24.905Z"
+      "updatedAt": "2026-09-26T12:53:38.365Z"
     },
     {
       "id": "recovery-ticket-bug-65aa0ffb4ab275d5f5a6",
@@ -144454,7 +144454,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.930Z",
-      "updatedAt": "2026-09-26T11:01:24.916Z"
+      "updatedAt": "2026-09-26T12:53:38.375Z"
     },
     {
       "id": "recovery-ticket-bug-ea186d71ff8c7f6300a7",
@@ -144548,7 +144548,10 @@
         "tester-debug-occurrence-count:65",
         "tester-debug-occurrence-count:66",
         "tester-debug-occurrence-count:67",
-        "tester-debug-occurrence-count:68"
+        "tester-debug-occurrence-count:68",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"802c81b123445a7451fc5b5617325b1f9cc82f2c\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:69"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -144561,15 +144564,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 68,
+      "recurrenceCount": 69,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T07:13:17.824Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -144615,10 +144618,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T08:08:46.628Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -145348,10 +145351,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-25T18:52:44.364Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -145438,7 +145441,8 @@
         "tester-debug-occurrence-count:46",
         "tester-debug-occurrence-count:47",
         "tester-debug-occurrence-count:48",
-        "tester-debug-occurrence-count:49"
+        "tester-debug-occurrence-count:49",
+        "tester-debug-occurrence-count:50"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145451,15 +145455,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 49,
+      "recurrenceCount": 50,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-25T19:12:21.440Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -145511,7 +145515,10 @@
         "tester-debug-occurrence-count:22",
         "tester-debug-occurrence-count:23",
         "tester-debug-occurrence-count:24",
-        "tester-debug-occurrence-count:25"
+        "tester-debug-occurrence-count:25",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"c91ffce54fe3421934cecf4ea553120b6f6755f3\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:26"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145524,15 +145531,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 25,
+      "recurrenceCount": 26,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.964Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -145584,7 +145591,10 @@
         "tester-debug-occurrence-count:22",
         "tester-debug-occurrence-count:23",
         "tester-debug-occurrence-count:24",
-        "tester-debug-occurrence-count:25"
+        "tester-debug-occurrence-count:25",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"4ca07c5c784ab271870319a49bc3b14564830416\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:26"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145597,15 +145607,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 25,
+      "recurrenceCount": 26,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.970Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -145656,7 +145666,10 @@
         "tester-debug-occurrence-count:22",
         "tester-debug-occurrence-count:23",
         "tester-debug-occurrence-count:24",
-        "tester-debug-occurrence-count:25"
+        "tester-debug-occurrence-count:25",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"817873fc1afe06b6da3578e13c5b75b132b71981\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:26"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145669,15 +145682,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 25,
+      "recurrenceCount": 26,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.976Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -145728,7 +145741,10 @@
         "tester-debug-occurrence-count:22",
         "tester-debug-occurrence-count:23",
         "tester-debug-occurrence-count:24",
-        "tester-debug-occurrence-count:25"
+        "tester-debug-occurrence-count:25",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"cc5ea55ceb54d8272fd828a67e111bc59722382c\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:26"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145741,15 +145757,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 25,
+      "recurrenceCount": 26,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.982Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -145800,7 +145816,10 @@
         "tester-debug-occurrence-count:22",
         "tester-debug-occurrence-count:23",
         "tester-debug-occurrence-count:24",
-        "tester-debug-occurrence-count:25"
+        "tester-debug-occurrence-count:25",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"5abb16097cb808b896582d55622e64bbcb520849\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:26"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145813,15 +145832,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 25,
+      "recurrenceCount": 26,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.988Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -145872,7 +145891,10 @@
         "tester-debug-occurrence-count:22",
         "tester-debug-occurrence-count:23",
         "tester-debug-occurrence-count:24",
-        "tester-debug-occurrence-count:25"
+        "tester-debug-occurrence-count:25",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"9286a802ac240c77fc36b1f5d3ebc60633213352\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:26"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145885,15 +145907,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 25,
+      "recurrenceCount": 26,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.993Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -145944,7 +145966,10 @@
         "tester-debug-occurrence-count:22",
         "tester-debug-occurrence-count:23",
         "tester-debug-occurrence-count:24",
-        "tester-debug-occurrence-count:25"
+        "tester-debug-occurrence-count:25",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"124e3d1a3b70c41e908f6f3f97f71c017de1cff3\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:26"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145957,15 +145982,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 25,
+      "recurrenceCount": 26,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.998Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -146016,7 +146041,10 @@
         "tester-debug-occurrence-count:22",
         "tester-debug-occurrence-count:23",
         "tester-debug-occurrence-count:24",
-        "tester-debug-occurrence-count:25"
+        "tester-debug-occurrence-count:25",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"eb96fe6844bb97d88dfe002ce6d55faf7f7fc2b7\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:26"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146029,15 +146057,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 25,
+      "recurrenceCount": 26,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.008Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -146088,7 +146116,10 @@
         "tester-debug-occurrence-count:22",
         "tester-debug-occurrence-count:23",
         "tester-debug-occurrence-count:24",
-        "tester-debug-occurrence-count:25"
+        "tester-debug-occurrence-count:25",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"4bb92fc13442d91720f1dadafe305bd4e228b875\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:26"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146101,15 +146132,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 25,
+      "recurrenceCount": 26,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.014Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -146160,7 +146191,10 @@
         "tester-debug-occurrence-count:22",
         "tester-debug-occurrence-count:23",
         "tester-debug-occurrence-count:24",
-        "tester-debug-occurrence-count:25"
+        "tester-debug-occurrence-count:25",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"deb598bd1c4050daf7f7ed3ba367de31992ad118\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:26"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146173,15 +146207,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 25,
+      "recurrenceCount": 26,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.019Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -146232,7 +146266,10 @@
         "tester-debug-occurrence-count:22",
         "tester-debug-occurrence-count:23",
         "tester-debug-occurrence-count:24",
-        "tester-debug-occurrence-count:25"
+        "tester-debug-occurrence-count:25",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"a161ef5c892216163be3a480741cb4154d249143\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:26"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146245,15 +146282,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 25,
+      "recurrenceCount": 26,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.025Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -146304,7 +146341,10 @@
         "tester-debug-occurrence-count:22",
         "tester-debug-occurrence-count:23",
         "tester-debug-occurrence-count:24",
-        "tester-debug-occurrence-count:25"
+        "tester-debug-occurrence-count:25",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"0d8074a2682f73f0dc4a98d0a179d4aa7f6ed4a0\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:26"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146317,15 +146357,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 25,
+      "recurrenceCount": 26,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.030Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -146376,7 +146416,10 @@
         "tester-debug-occurrence-count:22",
         "tester-debug-occurrence-count:23",
         "tester-debug-occurrence-count:24",
-        "tester-debug-occurrence-count:25"
+        "tester-debug-occurrence-count:25",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"c7bf00dd98fcb64a3e3f3342927a13b2d146b94a\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:26"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146389,15 +146432,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 25,
+      "recurrenceCount": 26,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.035Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -146446,10 +146489,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T08:00:39.334Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     },
     {
@@ -146480,7 +146523,10 @@
         "recovery-reactivated-after-source-refailure",
         "tester-debug-occurrence-count:3",
         "tester-debug-occurrence-count:4",
-        "tester-debug-occurrence-count:5"
+        "tester-debug-occurrence-count:5",
+        "roblox-source-bootstrap:source-generation-failed",
+        "{\"sourceRevision\":\"271de162b065909cd3c12def0fde087a79c40e85\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "tester-debug-occurrence-count:6"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146493,15 +146539,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 5,
+      "recurrenceCount": 6,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T08:00:39.342Z",
-      "updatedAt": "2026-09-26T11:01:25.717Z",
+      "updatedAt": "2026-09-26T12:53:39.137Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T11:01:25.717Z"
+        "recovery-dispatched-at:2026-09-26T12:53:39.137Z"
       ]
     }
   ]
