@@ -3,42 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-bb0fmo",
-      "worker": "vibe2",
-      "taskId": "seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "files": [
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T20:17:58.794Z",
-      "expiresAt": "2026-09-26T21:02:58.794Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1w5w8q3",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T20:18:03.232Z",
-      "expiresAt": "2026-09-26T21:03:03.232Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-2qlx8y",
       "worker": "vibe2",
       "taskId": "monster-adventure-unity-web-base-implementation-v1",
@@ -163,6 +127,23 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
+      ]
+    },
+    {
+      "id": "wl-10sokek",
+      "worker": "vibe2",
+      "taskId": "cozy-island-existing-web-assessment-v1",
+      "gameId": "cozy-island",
+      "files": [
+        "web-games/cozy-island/index.html"
+      ],
+      "baseSha": "c497af1fd4d23549038ec34b462842cb1e503544",
+      "acquiredAt": "2026-09-26T21:03:06.548Z",
+      "expiresAt": "2026-09-26T21:48:06.548Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-existing-web-assessment-v1"
       ]
     }
   ]
