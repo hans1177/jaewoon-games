@@ -1,5 +1,5 @@
 {
-  "version": 413,
+  "version": 414,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -7737,7 +7737,7 @@
       "objective": "REDUCE_GITHUB_ACTIONS_CALLBACK_AND_RUNNER_PRESSURE_WITHOUT_REDUCING_PRIMARY_GAME_DEVELOPMENT_COVERAGE",
       "existingArchitectureOnly": true,
       "shadowPipelineCreated": false,
-      "behavior": "WHEN_EXISTING_ADAPTIVE_CONTROL_REPORTS_RUNNER_OR_QUEUE_PRESSURE_KEEP_EVERY_PRIMARY_RESERVED_TASK_AT_ONE_VARIANT_AND_SKIP_ONLY_SPARE_SPECULATIVE_EXPANSION; WHEN_PRESSURE_CLEARS EXISTING_SPECULATIVE_POLICY_RESUMES",
+      "behavior": "WHEN_EXISTING_ADAPTIVE_CONTROL_REPORTS_RUNNER_OR_QUEUE_PRESSURE, LOW_EFFECTIVE_PEAK_UTILIZATION_WITH_LOADED_WORK, OR HIGH_OR_SEVERE_WORK_PRESSURE KEEP_EVERY_PRIMARY_RESERVED_TASK_AT_ONE_VARIANT_AND_SKIP_ONLY_SPARE_SPECULATIVE_EXPANSION; WHEN_PRESSURE_CLEARS EXISTING_SPECULATIVE_POLICY_RESUMES",
       "preserves": [
         "PRIMARY_GAME_TASK_RESERVATIONS",
         "TASK_MICRO_FANIN",
@@ -7752,7 +7752,7 @@
         "qa/vibe2-queue-control.test.mjs",
         "qa/vibe2-controller-contract.test.mjs"
       ],
-      "implementationState": "IMPLEMENTED_QA_VERIFIED",
+      "implementationState": "IMPLEMENTED_PENDING_QA_AND_LIVE",
       "implementationCodeHead": "4bac61bf02c4787111da3b2c66e2e4cfc62d2a7f",
       "verification": {
         "vibe2CoreQa": 36200348261,
@@ -7760,7 +7760,24 @@
         "centralPolicyContract": 36200348257,
         "companyEvolutionQa": 36200348264,
         "securityImmune": 36200348267
-      }
+      },
+      "liveBackfillPressureExtension": {
+        "observedRunId": 36229097447,
+        "observedWorkerJobs": 57,
+        "averageWorkerQueueWaitSeconds": 1260,
+        "averageModelCacheRestoreSeconds": 25,
+        "averageCandidateGenerationSeconds": 546,
+        "priorControlReason": "LOW_LOAD",
+        "priorTelemetryPressureLevel": "SEVERE",
+        "priorTelemetryFailureRatePct": 100,
+        "priorTelemetryBottleneck": "SOURCE_CANDIDATE_GENERATION",
+        "causalGap": "SPECULATIVE_EXPANSION_CHECKED_DERIVED_LOW_LOAD_REASON_AND_DID_NOT_DIRECTLY_SUPPRESS_ON_HIGH_OR_SEVERE_TELEMETRY_PRESSURE",
+        "correction": "HIGH_OR_SEVERE_ADAPTIVE_PRESSURE_SUPPRESSES_ONLY_OPTIONAL_SPECULATIVE_VARIANTS_WHILE_PRIMARY_TASK_RESERVATIONS_REMAIN_UNCHANGED",
+        "newWorkerOrQueue": false,
+        "primaryCoverageReduced": false,
+        "securityQaReleaseGateChanged": false
+      },
+      "implementationCodeHeadScope": "PRE_SEVERE_PRESSURE_EXTENSION_BASELINE"
     },
     "runnerPressureCallbackCoalescing20260926": {
       "id": "RUNNER_PRESSURE_CALLBACK_COALESCING_2026-09-26",
