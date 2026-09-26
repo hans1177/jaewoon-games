@@ -3206,6 +3206,54 @@ test('invalid edit path recovery requires an exact allowed path', () => {
 });
 
 
+test('model line locator is removed only when it resolves to an exact responsible file', async () => {
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'model-line-locator.json');
+  write(path.join(cwd,'unity-games/demo/Assets/Scripts/UnityWebFloorGame.cs'),'class UnityWebFloorGame { int Speed() { return 1; } }\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({
+    target:'unity',
+    root:'unity-games/demo',
+    responsibleFiles:['unity-games/demo/Assets/Scripts/UnityWebFloorGame.cs'],
+    taskId:'unity-line-locator'
+  }),null,2));
+  write(responseFile,JSON.stringify({
+    edits:[{
+      path:'Assets/Scripts/UnityWebFloorGame.cs:149',
+      find:'return 1;',
+      replace:'return 2;'
+    }],
+    newFiles:[]
+  }));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.deepEqual(result.changedFiles,['Assets/Scripts/UnityWebFloorGame.cs']);
+});
+
+test('model line locator cannot escape the responsible file scope', async () => {
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'model-line-locator-outside.json');
+  write(path.join(cwd,'unity-games/demo/Assets/Scripts/UnityWebFloorGame.cs'),'class UnityWebFloorGame { int Speed() { return 1; } }\n');
+  write(path.join(cwd,'unity-games/demo/Assets/Scripts/Other.cs'),'class Other { int Speed() { return 1; } }\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({
+    target:'unity',
+    root:'unity-games/demo',
+    responsibleFiles:['unity-games/demo/Assets/Scripts/UnityWebFloorGame.cs'],
+    taskId:'unity-line-locator-outside'
+  }),null,2));
+  write(responseFile,JSON.stringify({
+    edits:[{
+      path:'Assets/Scripts/Other.cs:149',
+      find:'return 1;',
+      replace:'return 2;'
+    }],
+    newFiles:[]
+  }));
+  await assert.rejects(
+    runVibe2SourceWorker({cwd,responseFile}),
+    /텍스트 worker 허용 확장자 아님|책임 파일 범위 밖 수정 금지/
+  );
+});
+
+
 test('token-repeat abort is retryable infrastructure output failure', () => {
   assert.equal(shouldRetryGenerationError(new Error('Ollama 오류: prediction aborted, token repeat limit reached')),true);
 });
