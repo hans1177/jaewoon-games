@@ -1,5 +1,5 @@
 {
-  "version": 38,
+  "version": 39,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 38,
+      "runtime": 39,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -323,11 +323,11 @@
       "taskLocalExploration": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "directMainGameSourceWriteForbidden": true,
-      "note": "GAME_PRIMARY requests external provider capacity 256 by default. Same-game non-overlapping responsible files run in parallel; source-root/game-wide locks are forbidden. Verified external runner/provider pressure may temporarily downshift and stale/missing pressure evidence recovers to 256.",
+      "note": "GAME_PRIMARY keeps an owner floor of 30 concurrent game workers while external capacity remains available, may scale above 30 up to 256, and never reduces below 30 solely because of adaptive pressure. Same-game non-overlapping responsible files remain parallel.",
       "capacityAwareFreeSlotRefill": true,
       "externalProviderMax": 256,
-      "baselineTarget": 256,
-      "adaptiveMinActiveWorkers": 4,
+      "baselineTarget": 30,
+      "adaptiveMinActiveWorkers": 30,
       "adaptiveMaxActiveWorkers": 256,
       "fixedWaveBarrier": false,
       "legacyCapacityEnvelopeOnly": true
@@ -354,8 +354,8 @@
         "fanInOnlyRefill": false,
         "adaptiveGameControlEligible": true,
         "capacityAwareFreeSlotRefill": true,
-        "adaptiveBaselineTarget": 256,
-        "adaptiveMinActiveWorkers": 4,
+        "adaptiveBaselineTarget": 30,
+        "adaptiveMinActiveWorkers": 30,
         "adaptiveMaxActiveWorkers": 256
       },
       "RECOVERY_FAST": {
@@ -424,12 +424,9 @@
       "cohortFanInRole": "REGRESSION_RELEASE_AUDIT_PLUS_PRESSURE_COALESCED_RESULT_INGRESS",
       "workerDirectControlWrite": false,
       "sourceAndFileConflictLocksPreserved": false,
-      "pressureFloor": 4,
+      "pressureFloor": 30,
       "autonomousScaleSteps": [
-        4,
-        8,
-        16,
-        20,
+        30,
         32,
         64,
         128,
@@ -574,10 +571,7 @@
     "mode": "GAME_PRIMARY_VERIFIED_THROUGHPUT_ADAPTIVE_WITH_EXTERNAL_BOUNDARY",
     "stateFile": ".vibe2/parallelism-control.json",
     "steps": [
-      4,
-      8,
-      16,
-      20,
+      30,
       32,
       64,
       128,
@@ -608,8 +602,8 @@
     "ownerMinimumWaveAppliedTo": [
       "GAME_PRIMARY"
     ],
-    "minimumAdaptiveWave": 4,
-    "baselineAdaptiveWave": 256,
+    "minimumAdaptiveWave": 30,
+    "baselineAdaptiveWave": 30,
     "staleTelemetryResetTarget": 256
   },
   "sources": {
@@ -803,10 +797,7 @@
     ],
     "loadProbeTargetWorkers": 256,
     "backpressureSteps": [
-      4,
-      8,
-      16,
-      20,
+      30,
       32,
       64,
       128,
