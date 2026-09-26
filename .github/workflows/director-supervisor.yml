@@ -51,12 +51,33 @@ jobs:
         run: |
           set -euo pipefail
           : > /tmp/director-run-drain.ndjson
-          for page in $(seq 1 20); do
-            payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100&page=${page}")"
-            printf '%s\n' "$payload" >> /tmp/director-run-drain.ndjson
-            count="$(printf '%s' "$payload" | jq '.workflow_runs | length')"
-            [ "$count" -eq 100 ] || break
-          done
+          fetch_runs() {
+            local query="$1"
+            local attempt code body
+            for attempt in 1 2 3; do
+              body="$(mktemp)"
+              code="$(curl --silent --show-error --output "$body" --write-out '%{http_code}' \
+                --header 'Accept: application/vnd.github+json' \
+                --header "Authorization: Bearer $GH_TOKEN" \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?${query}" || true)"
+              if [ "$code" = '200' ]; then
+                cat "$body" >> /tmp/director-run-drain.ndjson
+                printf '\n' >> /tmp/director-run-drain.ndjson
+                rm -f "$body"
+                return 0
+              fi
+              echo "DIRECTOR_RUNNER_DRAIN_FETCH_RETRY=${attempt}:${code}:${query}"
+              rm -f "$body"
+              sleep $((attempt*2))
+            done
+            return 1
+          }
+          fetch_runs 'per_page=100'
+          fetch_runs 'status=in_progress&per_page=100'
+          fetch_runs 'status=queued&per_page=100'
+          fetch_runs 'status=requested&per_page=100' || true
+          fetch_runs 'status=waiting&per_page=100' || true
           node <<'NODE' > /tmp/director-run-cancel.list
           const fs=require('fs');
           const pages=fs.readFileSync('/tmp/director-run-drain.ndjson','utf8').trim().split('\n').filter(Boolean).map(JSON.parse);
