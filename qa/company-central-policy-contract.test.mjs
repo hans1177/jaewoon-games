@@ -1074,3 +1074,13 @@ test('director runner drain remains parallel while supervise alone is serialized
   assert.match(directorSupervisor,/runner-drain:[\s\S]*?runs-on:\s*ubuntu-24\.04-arm/);
   assert.match(directorSupervisor,/supervise:[\s\S]*?concurrency:\n\s+group:\s*director-central-company-supervise-v3/);
 });
+
+
+test('director uses job-local coalescing without workflow-wide serialization',()=>{
+  const jobsAt=directorSupervisor.indexOf('\njobs:\n');
+  assert.ok(jobsAt>0);
+  assert.doesNotMatch(directorSupervisor.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(directorSupervisor,/runner-drain:[\s\S]*?group:\s*director-runner-drain-v1/);
+  assert.match(directorSupervisor,/game-primary-gate:[\s\S]*?group:\s*director-game-primary-gate-v1/);
+  assert.match(directorSupervisor,/supervise:[\s\S]*?group:\s*director-central-company-supervise-v3/);
+});
