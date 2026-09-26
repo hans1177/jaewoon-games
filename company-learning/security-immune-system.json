@@ -1,5 +1,5 @@
 {
-  "version": 50,
+  "version": 51,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -779,6 +779,16 @@
       "image/png",
       "image/jpeg"
     ],
-    "publicReleaseAuthorityUnchanged": true
+    "publicReleaseAuthorityUnchanged": true,
+    "cookieCsrfFallbackAllowed": true,
+    "cookieFallbackTrigger": "ONLY_HTTP_403_SCOPE_NOT_AUTHORIZED_FROM_THUMBNAIL_UPLOAD",
+    "allowedCookieSecrets": [
+      "ROBLOX_ROBLOSECURITY",
+      "ROBLOX_SECURITY_COOKIE"
+    ],
+    "cookieSecretMayNotBeLogged": true,
+    "csrfTokenMayNotBeLogged": true,
+    "fallbackMustUseSameVerifiedUniverseTarget": true,
+    "fallbackMayNotChangePublicationTarget": true
   }
 }
