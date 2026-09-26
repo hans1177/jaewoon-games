@@ -1,5 +1,5 @@
 {
-  "version": 107,
+  "version": 108,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1951,5 +1951,24 @@
     },
     "heavyGameRunnerClaimUnchanged": true,
     "acceptanceGatesUnchanged": true
+  },
+  "developmentFloorParallelBottleneckRepairEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.developmentFloorParallelBottleneckRepair20260927",
+    "markers": [
+      "CENTRAL_DEVELOPMENT_CONTRACT_AUDIT=PASS",
+      "NATIVE_ACTIVE_RUN_SCAN=PASS",
+      "ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE",
+      "UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE"
+    ],
+    "concurrencyGroups": [
+      "unity-web-floor-call-<gameId>",
+      "unity-web-floor-exec-<gameId>"
+    ],
+    "sameGameUnityWebHeavyOverlapForbidden": true,
+    "independentGameParallelismRequired": true,
+    "contractAuditMayBlockGameDispatch": false,
+    "qualitySecurityReleaseEvidenceUnchanged": true
   }
 }
