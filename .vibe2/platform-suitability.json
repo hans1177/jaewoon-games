@@ -3,7 +3,7 @@
   "kind": "platform-suitability",
   "authority": "PRIMARY_AI_AND_VIBE_JOINT_WITH_DEPARTMENT_EVIDENCE",
   "policy": "ROBLOX_UNITY_CONCURRENT_SUITABILITY_DISPLAY_ONLY",
-  "generatedAt": "2026-09-26T17:30:19.832Z",
+  "generatedAt": "2026-09-26T18:09:34.790Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -419,65 +419,6 @@
       "lowerSuitabilityDoesNotDisableDevelopment": true
     },
     {
-      "gameId": "monster-adventure",
-      "gameName": "몬스터 어드벤처",
-      "executionMode": "ROBLOX_UNITY_CONCURRENT",
-      "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-      "ROBLOX": {
-        "score": 70,
-        "label": "MEDIUM",
-        "departments": {
-          "planning": 70,
-          "development": 68,
-          "graphics": 68,
-          "audio": 70,
-          "qa": 72,
-          "balance": 70,
-          "growthMarketing": 72
-        },
-        "adaptationProfile": "SOCIAL_FAST_SESSION",
-        "direction": [
-          "FAST_ENTRY",
-          "MOBILE_FIRST",
-          "SOCIAL_AND_MULTIPLAYER",
-          "SHORT_REPEATABLE_GOALS",
-          "SERVER_AUTHORITATIVE_SYNC",
-          "ROBLOX_NATIVE_SERVICES"
-        ]
-      },
-      "UNITY": {
-        "score": 75,
-        "label": "MEDIUM",
-        "departments": {
-          "planning": 72,
-          "development": 77,
-          "graphics": 82,
-          "audio": 80,
-          "qa": 72,
-          "balance": 74,
-          "growthMarketing": 70
-        },
-        "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
-        "direction": [
-          "DEEP_SYSTEM_PRESENTATION",
-          "RICHER_VISUALS",
-          "CAMERA_AND_CINEMATIC_LANGUAGE",
-          "LONGER_SESSION_SUPPORT",
-          "DETAILED_CONTROLS",
-          "PERFORMANCE_SCALING",
-          "IMMERSIVE_AUDIO"
-        ]
-      },
-      "signals": {
-        "genre": "몬스터 어드벤처",
-        "playMode": "UNSPECIFIED",
-        "multiplayer": false,
-        "deepSystemGenre": false,
-        "socialGenre": false
-      },
-      "lowerSuitabilityDoesNotDisableDevelopment": true
-    },
-    {
       "gameId": "fantasy-survival",
       "gameName": "마력숲 생존기",
       "executionMode": "ROBLOX_UNITY_CONCURRENT",
@@ -529,6 +470,65 @@
       },
       "signals": {
         "genre": "마력숲 생존기",
+        "playMode": "UNSPECIFIED",
+        "multiplayer": false,
+        "deepSystemGenre": false,
+        "socialGenre": false
+      },
+      "lowerSuitabilityDoesNotDisableDevelopment": true
+    },
+    {
+      "gameId": "monster-adventure",
+      "gameName": "몬스터 어드벤처",
+      "executionMode": "ROBLOX_UNITY_CONCURRENT",
+      "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+      "ROBLOX": {
+        "score": 70,
+        "label": "MEDIUM",
+        "departments": {
+          "planning": 70,
+          "development": 68,
+          "graphics": 68,
+          "audio": 70,
+          "qa": 72,
+          "balance": 70,
+          "growthMarketing": 72
+        },
+        "adaptationProfile": "SOCIAL_FAST_SESSION",
+        "direction": [
+          "FAST_ENTRY",
+          "MOBILE_FIRST",
+          "SOCIAL_AND_MULTIPLAYER",
+          "SHORT_REPEATABLE_GOALS",
+          "SERVER_AUTHORITATIVE_SYNC",
+          "ROBLOX_NATIVE_SERVICES"
+        ]
+      },
+      "UNITY": {
+        "score": 75,
+        "label": "MEDIUM",
+        "departments": {
+          "planning": 72,
+          "development": 77,
+          "graphics": 82,
+          "audio": 80,
+          "qa": 72,
+          "balance": 74,
+          "growthMarketing": 70
+        },
+        "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+        "direction": [
+          "DEEP_SYSTEM_PRESENTATION",
+          "RICHER_VISUALS",
+          "CAMERA_AND_CINEMATIC_LANGUAGE",
+          "LONGER_SESSION_SUPPORT",
+          "DETAILED_CONTROLS",
+          "PERFORMANCE_SCALING",
+          "IMMERSIVE_AUDIO"
+        ]
+      },
+      "signals": {
+        "genre": "몬스터 어드벤처",
         "playMode": "UNSPECIFIED",
         "multiplayer": false,
         "deepSystemGenre": false,
