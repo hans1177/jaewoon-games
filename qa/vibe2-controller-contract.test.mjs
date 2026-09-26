@@ -333,30 +333,37 @@ test('reserve probes model cache lookup-only and skips the dedicated warmup runn
   assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreRemainsRequiredPerIsolatedRunner,true);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreDeferredUntilWorkOrder,true);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreRequiresLocalModel,true);
-  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreSkippedWithoutSourceLock,true);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreSkippedWithoutSourceLock,false);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreIndependentOfSourceLock,true);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.workerModelBehaviorChanged,false);
 });
 
-test('worker decides local-model need only after sync, work order, and source lock',()=>{
+test('worker prepares the model and read-only exploration before acquiring the source-write lock',()=>{
   const start=workflow.indexOf('  worker:');
   const end=workflow.indexOf('  fan_in:',start);
   const workerPart=workflow.slice(start,end);
   const sync=workerPart.indexOf('- name: Synchronize worker with Vibe before work');
   const constitution=workerPart.indexOf('- name: Enforce canonical constitution before source write');
   const order=workerPart.indexOf('- name: Build reserved task work order');
-  const lock=workerPart.indexOf('- name: Acquire shared Work Lock before source write');
   const modelNeed=workerPart.indexOf('- name: Decide worker local model requirement');
   const cache=workerPart.indexOf('- name: Restore shared Ollama runtime cache');
   const prepare=workerPart.indexOf('- name: Prepare cached Ollama runtime');
   const metrics=workerPart.indexOf('- name: Measure worker Ollama preparation');
+  const exploration=workerPart.indexOf('- name: Build task-local exploration handoff');
+  const budget=workerPart.indexOf('- name: Verify free execution budget');
+  const lock=workerPart.indexOf('- name: Acquire shared Work Lock before source write');
+  const candidate=workerPart.indexOf('- name: Generate isolated candidate from pinned main contract');
   assert.ok(sync>=0);
   assert.ok(constitution>sync);
   assert.ok(order>constitution);
-  assert.ok(lock>order);
-  assert.ok(modelNeed>lock);
+  assert.ok(modelNeed>order);
   assert.ok(cache>modelNeed);
   assert.ok(prepare>cache);
   assert.ok(metrics>prepare);
+  assert.ok(exploration>metrics);
+  assert.ok(budget>exploration);
+  assert.ok(lock>budget);
+  assert.ok(candidate>lock);
   assert.ok(workerPart.includes('node tools/company-shared-context.mjs --output=/tmp/vibe2-worker-shared-context.json'));
   assert.ok(workerPart.includes('verify-worker-sync'));
   assert.ok(workerPart.includes('--reservation-id="$RESERVATION_ID"'));
@@ -367,10 +374,12 @@ test('worker decides local-model need only after sync, work order, and source lo
   assert.match(workerPart,/VIBE2_WORKER_MODEL_CACHE_REQUIRED=YES/);
   assert.match(workerPart,/VIBE2_WORKER_MODEL_CACHE_REQUIRED=NO/);
   assert.match(workerPart,/VIBE2_WORKER_MODEL_CACHE_REASON=\$reason/);
-  assert.match(workerPart,/TEXT_SOURCE_LOCK_ACQUIRED/);
-  assert.match(workerPart,/TEXT_SOURCE_LOCK_NOT_ACQUIRED/);
+  assert.match(workerPart,/TEXT_SOURCE_ROUTE/);
+  assert.doesNotMatch(workerPart,/TEXT_SOURCE_LOCK_ACQUIRED|TEXT_SOURCE_LOCK_NOT_ACQUIRED/);
   assert.match(workerPart,/LEARNING_ROUTE/);
   assert.match(workerPart,/WORK_ORDER_NOT_RUNNABLE/);
+  assert.match(workerPart,/VIBE2_WORK_LOCK_ACQUIRE_TIMING=POST_MODEL_PREP_READ_ONLY_EXPLORATION_PRE_SOURCE_WRITE/);
+  assert.match(workerPart,/if: steps\.order\.outputs\.run == 'true' && steps\.order\.outputs\.route == 'text-source-worker' && steps\.work_lock\.outputs\.acquired == 'true'/);
   const restoreBlock=workerPart.slice(cache,prepare);
   assert.match(restoreBlock,/if: steps\.model_need\.outputs\.required == 'true'/);
   const practice=workerPart.indexOf('- name: Run isolated learning practice');
@@ -380,10 +389,18 @@ test('worker decides local-model need only after sync, work order, and source lo
   assert.match(prepareBlock,/pull-model: 'true'/);
   assert.match(prepareBlock,/VIBE2_OLLAMA_RUNTIME_SOURCE=SHARED_PREPARE_OLLAMA/);
   assert.equal(workerPart.includes('ollama.com/install.sh'),false);
-  assert.match(workerPart,/MODEL_CACHE_REQUIRED: \${{ steps\.model_need\.outputs\.required }}/);
-  assert.match(workerPart,/MODEL_CACHE_REASON: \${{ steps\.model_need\.outputs\.reason }}/);
+  assert.match(workerPart,/MODEL_CACHE_REQUIRED: \$\{\{ steps\.model_need\.outputs\.required \}\}/);
+  assert.match(workerPart,/MODEL_CACHE_REASON: \$\{\{ steps\.model_need\.outputs\.reason \}\}/);
   assert.match(workerPart,/modelCacheRequired:clean\(process\.env\.MODEL_CACHE_REQUIRED\)\.toLowerCase\(\)==='true'/);
   assert.match(workerPart,/modelCacheReason:clean\(process\.env\.MODEL_CACHE_REASON\)\|\|null/);
+  assert.equal(runtime.continuous.workLockConflictPolicy.acquireTiming,'AFTER_MODEL_PREPARATION_AND_READ_ONLY_EXPLORATION_IMMEDIATELY_BEFORE_SOURCE_WRITE');
+  assert.equal(runtime.continuous.workLockConflictPolicy.preLockReadOnlyPreparationAllowed,true);
+  assert.equal(runtime.continuous.workLockConflictPolicy.lockMayNotCoverModelPreparation,true);
+  assert.equal(runtime.continuous.workLockConflictPolicy.lockMayNotCoverReadOnlyExploration,true);
+  const policyLock=roadmap.developmentLifecycleMachine.internalPlatformPlaytestDevelopment.phase1Implementation.workLock;
+  assert.equal(policyLock.acquireTiming,'AFTER_MODEL_PREPARATION_AND_READ_ONLY_EXPLORATION_IMMEDIATELY_BEFORE_SOURCE_WRITE');
+  assert.equal(policyLock.lockMayNotCoverModelPreparation,true);
+  assert.equal(policyLock.lockMayNotCoverReadOnlyExploration,true);
 });
 
 test('one Vibe2 wave uses the same reserved main contract without a global exploration barrier',()=>{
