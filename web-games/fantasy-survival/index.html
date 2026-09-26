@@ -2867,7 +2867,7 @@ function updateAnacondaWrap(e,now){
  if(!t){e.anacondaWrap=null;return false}
  e.playerTargetId=wrap.targetId;
  if(now>=wrap.endAt){e.anacondaWrap=null;return false}
- if(now>=wrap.nextHit){wrap.nextHit=now+500;enemyDamageTarget(e,7,true)}
+ if(now>=wrap.nextHit){wrap.nextHit=now+1000;enemyDamageTarget(e,15,true)}
  return true
 }
 function throwMudProjectile(e,p,now){
@@ -2988,7 +2988,7 @@ function performMonsterVsMonsterAttack(e,target,now,damageMult=1){
     hit(50);return
   }
   if(e.type.id==='anaconda'){
-    if(Math.random()<.30){for(let i=0;i<8&&target.hp>0;i++)hit(7);stun(4000);return}
+    if(Math.random()<.30){for(let i=0;i<4&&target.hp>0;i++)hit(15);stun(4000);return}
     hit(65);return
   }
   if(e.type.id==='polarbear'){
