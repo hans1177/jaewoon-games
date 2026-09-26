@@ -8565,6 +8565,32 @@
       "independentGameParallelismReduced": false,
       "qualitySecurityReleaseGatesUnchanged": true
     },
+    "lightweightGameIngressRunnerRelief20260927": {
+      "id": "LIGHTWEIGHT_GAME_INGRESS_RUNNER_RELIEF_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "FREE_ARM_GAME_CONTROL_CAPACITY_BY_MOVING_ONLY_LIGHTWEIGHT_INGRESS_AND_QUEUE_RESERVATION_WORK_TO_UBUNTU_SLIM_WHILE_KEEPING_STATE_SETTLEMENT_AND_HEAVY_GAME_EXECUTION_ON_THEIR_EXISTING_POOLS",
+      "lightweightIngressPool": "ubuntu-slim",
+      "gameControlPool": "ubuntu-24.04-arm",
+      "heavyGameExecutionPool": "ubuntu-latest",
+      "movedToSlim": {
+        "vibeReserve": ".github/workflows/vibe2-continuous-core.yml::reserve",
+        "robloxSourcePlan": ".github/workflows/company-development-roblox-runtime.yml::source-plan",
+        "unityPrepare": ".github/workflows/company-development-unity-runtime.yml::prepare",
+        "directorRunnerDrain": ".github/workflows/director-supervisor.yml::runner-drain"
+      },
+      "preservedOnArm": {
+        "vibeFanIn": ".github/workflows/vibe2-continuous-core.yml::fan_in",
+        "nativeGameControlBeyondIngress": true
+      },
+      "vibeWorkerRemains": "ubuntu-latest",
+      "sharedStateWriteRulesUnchanged": true,
+      "runningGameWorkCancellationForbidden": true,
+      "independentGameParallelismPreserved": true,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "newSchedulerCreated": false,
+      "newQueueCreated": false
+    },
     "homepageRunnerIsolation20260926": {
       "id": "HOMEPAGE_RUNNER_ISOLATION_2026-09-26",
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
