@@ -152,6 +152,16 @@ jobs:
           echo "DEVELOPMENT_QUEUE_RUNTIME_CHANGED=$changed"
           echo "DEVELOPMENT_QUEUE_RUNTIME_COUNT=$queue_count"
 
+      - name: Sync status after queue mutation
+        if: ${{ success() && steps.queue_state.outputs.changed == '1' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-status-sync.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'COMPANY_STATUS_SYNC_DISPATCHED=QUEUE_CHANGED'
+
       - name: Dispatch development runtime
         if: ${{ success() && steps.queue_state.outputs.queue_count != '0' }}
         env:
