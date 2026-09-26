@@ -286,6 +286,8 @@ test('Unity Web floor serializes only the same game while independent games rema
 test('central native active-run dedupe covers the full 256 game execution window',()=>{
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
   assert.equal(Number(roadmap.developmentSpeedExecution?.externalMatrixBatchMax),256);
   assert.match(development,/for page in 1 2 3; do/);
   assert.match(development,/per_page=100&page=\$page/);
@@ -294,6 +296,12 @@ test('central native active-run dedupe covers the full 256 game execution window
   assert.match(development,/NATIVE_ACTIVE_RUN_SCAN_PAGES=3/);
   assert.match(development,/NATIVE_QUEUE_AUTHORITY_FETCH=PASS/);
   assert.match(development,/git fetch --no-tags --depth=1 origin "\$COMPANY_RUNTIME_BRANCH" &/);
+  const record=roadmap.changeRecord?.activeNativeRunDedupeCoverage20260927;
+  assert.equal(record?.queueAuthorityFetchParallelWithRunScan,true);
+  assert.equal(record?.queueAuthorityFetchFailureBlocksDispatch,true);
+  assert.equal(architecture.activeNativeRunDedupeCoverage?.queueAuthorityFetchParallelWithRunScan,true);
+  assert.equal(logMap.activeNativeRunDedupeCoverageEvidence?.queueAuthorityFetchParallelWithRunScan,true);
+  assert.ok(logMap.activeNativeRunDedupeCoverageEvidence?.markers?.includes('NATIVE_QUEUE_AUTHORITY_FETCH=PASS'));
 });
 
 
