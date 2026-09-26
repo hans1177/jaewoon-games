@@ -1173,7 +1173,7 @@ test('continuous planners overlay company-runtime design evidence before autonom
 test('Vibe2 control-plane jobs use slim runners while heavy workers retain full runners',()=>{
   const coreWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   const runnerWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
-  assert.match(coreWorkflow,/\n  reserve:\n(?:\s+#.*\n)*\s+runs-on: ubuntu-24\.04-arm/);
+  assert.match(coreWorkflow,/\n  reserve:\n(?:\s+#.*\n)*\s+runs-on: ubuntu-slim/);
   assert.match(coreWorkflow,/\n  fan_in:[\s\S]*?runs-on: ubuntu-24\.04-arm/);
   assert.match(coreWorkflow,/\n  worker:[\s\S]*?runs-on: ubuntu-latest/);
   assert.match(runnerWorkflow,/\n  plan:[\s\S]{0,180}?runs-on: ubuntu-slim/);
