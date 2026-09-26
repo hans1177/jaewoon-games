@@ -160,9 +160,6 @@ jobs:
     needs: [plan, validate]
     if: always() && needs.plan.result == 'success'
     runs-on: ubuntu-latest
-    concurrency:
-      group: company-runtime-writer
-      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
         with:
@@ -180,9 +177,14 @@ jobs:
           EXPECTED: ${{ needs.plan.outputs.targets_json }}
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-          git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
-          node <<'NODE'
+          git config user.name 'jaewoon-roblox-headless'
+          git config user.email 'actions@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            echo "ROBLOX_F0_PERSIST_OPTIMISTIC_ATTEMPT=$attempt/5"
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            node <<'NODE'
           const fs=require('fs'),path=require('path');
           const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const expected=JSON.parse(process.env.EXPECTED||'[]');
@@ -218,17 +220,23 @@ jobs:
           }
           q.updatedAt=stamp;fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
           NODE
-          git config user.name 'jaewoon-roblox-headless'
-          git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          if ! git diff --cached --quiet; then
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              persisted=1
+              echo 'ROBLOX_F0_PERSIST_WRITE=NO_CHANGE'
+              break
+            fi
             git commit -m 'runtime: persist Roblox F0 source preflight evidence [skip ci]'
-            for i in 1 2 3 4 5; do
-              git push origin HEAD:"$COMPANY_RUNTIME_BRANCH" && break
-              git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-              git rebase "origin/$COMPANY_RUNTIME_BRANCH"
-            done
-          fi
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              persisted=1
+              echo 'ROBLOX_F0_PERSIST_WRITE=PUSHED'
+              break
+            fi
+            echo "ROBLOX_F0_PERSIST_CONFLICT_RETRY=$attempt"
+            sleep $((attempt*2))
+          done
+          test "$persisted" = '1'
       - name: Dispatch private runtime candidate deployment
         if: needs.plan.outputs.count != '0'
         env:

@@ -154,3 +154,16 @@ test('F0 accepts approved non-combat action loops without inventing combat marke
  assert.equal(r.pass,true,r.blockers.join(','));
  assert.equal(r.checks.combatOrRound,true);
 });
+
+test('F0 persistence does not serialize the whole job and reapplies evidence after runtime write conflicts',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  const start=workflow.indexOf('\n  persist:\n');
+  const end=workflow.indexOf('\n      - name: Dispatch private runtime candidate deployment',start);
+  const block=workflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.doesNotMatch(block,/group:\s*company-runtime-writer/);
+  assert.match(block,/ROBLOX_F0_PERSIST_OPTIMISTIC_ATTEMPT=/);
+  assert.match(block,/ROBLOX_F0_PERSIST_CONFLICT_RETRY=/);
+  assert.match(block,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.doesNotMatch(block,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+});
