@@ -1,5 +1,5 @@
 {
-  "version": 443,
+  "version": 444,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8831,6 +8831,30 @@
       "noGameEligibilityChange": true,
       "noQualityGateWeakening": true,
       "independentGameParallelismPreserved": true
+    },
+    "unityWebLibraryCacheReuse20260927": {
+      "id": "UNITY_WEB_LIBRARY_CACHE_REUSE_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "REUSE_PER_GAME_UNITY_LIBRARY_IMPORT_CACHE_FOR_UNITY_WEB_DEVELOPMENT_FLOOR_WITHOUT_REUSING_BUILD_OR_QA_PASS_EVIDENCE",
+      "workflow": ".github/workflows/unity-web-first-stage-build.yml",
+      "precedent": ".github/workflows/unity-cloud-android-test.yml#Cache Unity Library",
+      "cachePath": "unity-games/<gameId>/Library",
+      "keyInputs": [
+        "RUNNER_OS",
+        "GAME_ID",
+        "Packages/manifest.json",
+        "ProjectSettings/ProjectVersion.txt"
+      ],
+      "restoreScope": "SAME_OS_SAME_GAME",
+      "buildStillRequired": true,
+      "browserPlayStillRequired": true,
+      "independentQaStillRequired": true,
+      "regressionStillRequired": true,
+      "sourceTreeBindingUnchanged": true,
+      "releaseAuthorityUnchanged": true,
+      "independentGameParallelismPreserved": true,
+      "qualitySecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
