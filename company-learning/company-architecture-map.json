@@ -1,5 +1,5 @@
 {
-  "version": 261,
+  "version": 262,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5543,7 +5543,9 @@
     "source": "company-learning/platform-release-roadmap.json#changeRecord.directorPreSupervisionCoalescing20260927",
     "runnerDrain": {
       "group": "director-runner-drain-v1",
-      "latestWins": true
+      "activeCompletionPreserved": true,
+      "pendingLatestWins": true,
+      "cancelInProgress": false
     },
     "gamePrimaryGate": {
       "group": "director-game-primary-gate-v1",
