@@ -56,11 +56,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     outputs:
-      count: ${{ steps.targets.outputs.count }}
-      matrix: ${{ steps.targets.outputs.matrix }}
-      targets_json: ${{ steps.targets.outputs.targets_json }}
-      reconciliation_count: ${{ steps.reconcile.outputs.count }}
-      reconciliation_json: ${{ steps.reconcile.outputs.results_json }}
+      count: ${{ steps.targets.outputs.count || '0' }}
+      matrix: ${{ steps.targets.outputs.matrix || '{"include":[]}' }}
+      targets_json: ${{ steps.targets.outputs.targets_json || '[]' }}
+      reconciliation_count: ${{ steps.reconcile.outputs.count || '0' }}
+      reconciliation_json: ${{ steps.reconcile.outputs.results_json || '[]' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -71,7 +71,30 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Reject superseded batch scheduler
+        id: freshness
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "$REQUESTED_GAME_ID" ]; then
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_BATCH_FRESHNESS=EXACT_GAME:$REQUESTED_GAME_ID"
+            exit 0
+          fi
+          git fetch --no-tags --depth=1 origin main
+          current_main="$(git rev-parse origin/main)"
+          if [ "$current_main" != "$GITHUB_SHA" ]; then
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_BATCH_SUPERSEDED=$GITHUB_SHA:$current_main"
+          else
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_BATCH_FRESHNESS=CURRENT:$current_main"
+          fi
+
       - name: Verify Roblox development contracts
+        if: steps.freshness.outputs.run == 'true'
         run: |
           set -euo pipefail
           node --check tools/company-shared-context.mjs
@@ -87,6 +110,7 @@ jobs:
           node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs qa/company-selected-platform-router.test.mjs qa/company-upper-platform-admission.test.mjs
 
       - name: Fetch current company runtime
+        if: steps.freshness.outputs.run == 'true'
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
@@ -106,6 +130,7 @@ jobs:
           echo "ROBLOX_RECONCILE_BOUND_REVISION_COUNT=$(wc -l < /tmp/roblox-bound-source-revisions | tr -d ' ')"
 
       - name: Revalidate exact-main Roblox source already merged
+        if: steps.freshness.outputs.run == 'true'
         id: reconcile
         env:
           SOURCE_REVISION: ${{ github.sha }}
@@ -120,6 +145,7 @@ jobs:
             --results=/tmp/roblox-source-reconciliation.json
 
       - name: Resolve next Roblox source execution slice from unbounded native queue
+        if: steps.freshness.outputs.run == 'true'
         id: targets
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
