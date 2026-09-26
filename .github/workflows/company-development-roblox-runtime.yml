@@ -42,7 +42,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: company-development-roblox-runtime-${{ inputs.game_id || format('batch-{0}', github.run_id) }}
+  group: company-development-roblox-runtime-${{ inputs.game_id || 'batch' }}
   cancel-in-progress: false
 
 env:
