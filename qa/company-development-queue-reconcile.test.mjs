@@ -47,13 +47,39 @@ const writePolicy=root=>write(root,'company-learning/platform-release-roadmap.js
     status:'OWNER_DIRECT_LOCKED',mode:'ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR',
     canonicalDevelopmentAdmissionAuthority:true,minimumDesignRequired:true,
     strictDesignScoreRequiredForDevelopmentAdmission:false,legacyWebFirstFallbackForbidden:true,
-    webDevelopmentStageRemoved:true,supportedDevelopmentPlatforms:['ROBLOX','UNITY'],
-    unityWebValidationSurface:{requiredForDevelopmentAdmission:false}
+    webDevelopmentStageRemoved:false,unityWebEnabled:true,unityWebRequired:true,unityWebGateRequired:true,
+    unityWebMode:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
+    upperPlatformAdmission:'UPPER_PLATFORM_DEVELOPMENT_READY',
+    supportedDevelopmentPlatforms:['ROBLOX','UNITY'],
+    automaticPairing:{
+      ROBLOX:['UNITY_WEB_FLOOR','ROBLOX','UNITY'],
+      UNITY:['UNITY_WEB_FLOOR','UNITY','ROBLOX']
+    },
+    development:{
+      unityWebDevelopmentFloorRequiredBeforeUpperPlatformStart:true,
+      upperPlatformDevelopmentStartsOnlyAfterUnityWebReadinessPass:true
+    },
+    upperPlatformDevelopmentReadinessGate:{
+      gateId:'UPPER_PLATFORM_DEVELOPMENT_READY',allCriteriaRequired:true,targets:['ROBLOX','UNITY']
+    }
   },
   developmentLifecycleMachine:{saveNormalization:{
     authority:'MACHINE_EXECUTION_CONTRACT',preserveExistingCompatibleSaveMeaning:true,
     canonicalWebModule:'assets/save-versioning.js',webRestoreEvidenceEvaluator:'tools/company-web-save-restore-evidence.mjs'
   }}
+});
+
+test('queue reconciler accepts the canonical Unity Web floor contract and rejects the removed-stage drift',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'direct-queue-policy-drift-'));
+  try{
+    writePolicy(root);
+    assert.doesNotThrow(()=>reconcileDevelopmentQueue({root}));
+    const policyFile=path.join(root,'company-learning/platform-release-roadmap.json');
+    const policy=JSON.parse(fs.readFileSync(policyFile,'utf8'));
+    policy.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved=true;
+    write(root,'company-learning/platform-release-roadmap.json',policy);
+    assert.throws(()=>reconcileDevelopmentQueue({root}),/CANONICAL_DIRECT_NATIVE_POLICY_REQUIRED/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('keeps only active confirmed seeds with valid minimum design and preserves native progress',()=>{
