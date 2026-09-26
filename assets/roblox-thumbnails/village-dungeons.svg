@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" role="img" aria-label="마을 던전 RPG">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#8bd1ef"/><stop offset="1" stop-color="#f3d6a1"/></linearGradient>
+ <filter id="shadow"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-opacity=".3"/></filter>
+ <filter id="glow"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1920" height="1080" fill="url(#sky)"/>
+<path d="M0 700Q420 560 820 690T1600 650Q1780 620 1920 690V1080H0Z" fill="#6eb45d"/>
+<g filter="url(#shadow)">
+ <g transform="translate(250 585)"><rect x="-95" y="70" width="190" height="155" rx="15" fill="#f2d6a1" stroke="#92594a" stroke-width="10"/><path d="M-125 82 0-55 125 82Z" fill="#ba5c49"/><rect x="-24" y="155" width="48" height="70" fill="#423a34"/></g>
+ <g transform="translate(480 630)"><rect x="-80" y="60" width="160" height="135" rx="15" fill="#f4dba8" stroke="#8a5c4d" stroke-width="9"/><path d="M-105 70 0-45 105 70Z" fill="#c56c52"/></g>
+</g>
+<g transform="translate(770 810)" filter="url(#shadow)">
+ <circle cx="0" cy="-120" r="40" fill="#f0d2a1"/><path d="M-62-78h124l48 220H-110Z" fill="#345c99"/>
+ <path d="m48-70 265-250 30 32-250 270Z" fill="#e6e1cf"/><path d="m310-330 60-48-16 75Z" fill="#d9a63f"/>
+</g>
+<g transform="translate(1160 520)" fill="none" stroke-width="18" filter="url(#glow)">
+ <ellipse cx="0" cy="0" rx="80" ry="135" stroke="#e95045"/><ellipse cx="170" cy="20" rx="80" ry="135" stroke="#f3bb45"/>
+ <ellipse cx="340" cy="0" rx="80" ry="135" stroke="#52b962"/><ellipse cx="510" cy="20" rx="80" ry="135" stroke="#4d96e8"/>
+ <ellipse cx="680" cy="0" rx="80" ry="135" stroke="#9b62dc"/>
+</g>
+<path d="M1050 820Q1390 700 1840 800" fill="none" stroke="#d6b47a" stroke-width="95" stroke-linecap="round"/>
+<rect x="65" y="65" width="900" height="330" rx="48" fill="#173341" opacity=".92" stroke="#fff" stroke-width="5"/>
+<text x="120" y="225" font-family="Noto Sans CJK KR,Arial,sans-serif" font-size="122" font-weight="900" fill="#fff" stroke="#0d2028" stroke-width="6" paint-order="stroke">마을 던전 RPG</text>
+<text x="120" y="330" font-family="Noto Sans CJK KR,Arial,sans-serif" font-size="56" font-weight="800" fill="#ffe083">마을에서 준비하고 5개 던전에 도전</text>
+<rect x="1290" y="825" width="530" height="110" rx="32" fill="#4d367a" stroke="#fff" stroke-width="4"/>
+<text x="1555" y="896" text-anchor="middle" font-family="Noto Sans CJK KR,Arial,sans-serif" font-size="45" font-weight="800" fill="#fff">퀘스트 · 장비 · 보스 · 파티 성장</text>
+</svg>

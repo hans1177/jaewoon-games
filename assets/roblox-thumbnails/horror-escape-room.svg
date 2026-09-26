@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" role="img" aria-label="심야 감염전 4대4">
+<defs>
+ <linearGradient id="hall" x2="0" y2="1"><stop stop-color="#172232"/><stop offset="1" stop-color="#05080d"/></linearGradient>
+ <filter id="redglow"><feGaussianBlur stdDeviation="18" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ <filter id="blueglow"><feGaussianBlur stdDeviation="12" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1920" height="1080" fill="url(#hall)"/>
+<path d="M0 100 700 460v620H0ZM1920 100 1220 460v620h700Z" fill="#101722"/>
+<path d="M700 460h520l300 620H400Z" fill="#202834"/>
+<g stroke="#3b4655" stroke-width="16"><path d="M700 460 390 1080"/><path d="m1220 460 310 620"/><path d="M960 460v620"/></g>
+<g fill="#f34545" opacity=".35" filter="url(#redglow)"><circle cx="1560" cy="245" r="120"/><circle cx="1720" cy="620" r="110"/></g>
+<g transform="translate(1220 545)" fill="#b52e38">
+ <path d="M0 250 65 60 145 0l90 70 70 205-98-70-55 135-70-130Z"/><circle cx="145" cy="18" r="62" fill="#6b171f"/>
+ <path d="M120-5 90-85l55 30 50-45-20 90Z" fill="#6b171f"/>
+</g>
+<g transform="translate(1510 670)" fill="#8b202d"><circle cx="0" cy="-100" r="50"/><path d="M-75-55H75l65 250H-140Z"/><path d="m-35-125-45-75 70 35 50-50-10 88Z"/></g>
+<g fill="#3c83d8" filter="url(#blueglow)">
+ <g transform="translate(610 725)"><circle cx="0" cy="-115" r="40"/><path d="M-58-72h116l44 210H-102Z"/></g>
+ <g transform="translate(790 775)"><circle cx="0" cy="-100" r="35"/><path d="M-52-62h104l40 190H-92Z"/></g>
+ <g transform="translate(430 800)"><circle cx="0" cy="-95" r="33"/><path d="M-48-58h96l36 180H-84Z"/></g>
+ <g transform="translate(940 820)"><circle cx="0" cy="-90" r="31"/><path d="M-46-54h92l34 170H-80Z"/></g>
+</g>
+<rect x="65" y="65" width="880" height="330" rx="48" fill="#080c13" opacity=".92" stroke="#e5484d" stroke-width="5"/>
+<text x="120" y="225" font-family="Noto Sans CJK KR,Arial,sans-serif" font-size="130" font-weight="900" fill="#fff" stroke="#53090d" stroke-width="7" paint-order="stroke">심야 감염전</text>
+<text x="120" y="330" font-family="Noto Sans CJK KR,Arial,sans-serif" font-size="62" font-weight="800" fill="#ff6a6f">잡히면 몬스터가 된다</text>
+<rect x="1505" y="80" width="315" height="145" rx="36" fill="#a71922" stroke="#fff" stroke-width="5"/>
+<text x="1662" y="173" text-anchor="middle" font-family="Noto Sans CJK KR,Arial,sans-serif" font-size="70" font-weight="900" fill="#fff">4 VS 4</text>
+</svg>
