@@ -1,5 +1,5 @@
 {
-  "version": 72,
+  "version": 73,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1335,7 +1335,9 @@
     "baselineCacheBytes": 2814033971,
     "expectedEffect": "REMOVE_REDUNDANT_PREWARM_CACHE_PAYLOAD_DOWNLOAD_AND_EXTRACTION_AND_DEDICATED_PREWARM_RUNNER_ON_HIT",
     "modelCacheJobMustSkipOnReserveHit": true,
-    "workerRestoreMustRemain": true,
+    "workerRestoreMustRemainWhenLocalModelRequired": true,
+    "liveVerificationRunId": 36208311596,
+    "liveVerificationResult": "PASS",
     "gamePrimaryBoundaryMustRemain": 256
   },
   "robloxHomepageThumbnailSyncEvidenceContract": {
@@ -1359,5 +1361,25 @@
     "rawApiKeyForbidden": true,
     "uploadPassRequiresHttpSuccessAndOperationEvidence": true,
     "verifyPassRequiresProcessingOrListedThumbnailEvidence": true
+  },
+  "vibeWorkerConditionalModelRestore": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.workerConditionalModelRestore20260926",
+    "requiredMarkers": [
+      "VIBE2_WORKER_MODEL_CACHE_REQUIRED=YES|NO",
+      "VIBE2_WORKER_MODEL_CACHE_REASON="
+    ],
+    "structuredEvidenceFields": [
+      "modelCacheRequired",
+      "modelCacheReason",
+      "ollamaCacheHit",
+      "ollamaRuntimeSource",
+      "modelPrepMs"
+    ],
+    "baselineRunId": 36208311596,
+    "baselineWorkerJobId": 108309749479,
+    "baselineCacheBytes": 2814033971,
+    "skipRestoreWhenWorkLockNotAcquired": true,
+    "gamePrimaryBoundaryMustRemain": 256
   }
 }

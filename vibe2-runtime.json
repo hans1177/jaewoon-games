@@ -1,5 +1,5 @@
 {
-  "version": 36,
+  "version": 37,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 36,
+      "runtime": 37,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -666,6 +666,17 @@
         "prewarmJobSkippedOnReserveCacheHit": true,
         "prewarmRunnerRequiredOnCacheHit": false,
         "workerRestoreRemainsRequiredPerIsolatedRunner": true,
+        "workerRestoreDeferredUntilWorkOrder": true,
+        "workerRestoreRequiresLocalModel": true,
+        "workerRestoreSkippedWithoutSourceLock": true,
+        "workerRuntimePreparation": "shared-prepare-ollama-action",
+        "workerRuntimePreparationPath": ".github/actions/prepare-ollama/action.yml",
+        "workerInlineInstallPipeForbidden": true,
+        "workerLocalModelRoutes": [
+          "text-source-worker-with-lock",
+          "analysis-only",
+          "learning-web-artifact"
+        ],
         "workerModelBehaviorChanged": false
       }
     },

@@ -19,6 +19,7 @@ const recoveryFastWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-r
 const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
 const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const continuousRunnerSource=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
+const prepareOllamaAction=fs.readFileSync(new URL('../.github/actions/prepare-ollama/action.yml',import.meta.url),'utf8');
 
 test('legacy presentation tasks expand to existing native visual responsibility files at execution time',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-presentation-scope-'));
@@ -325,19 +326,32 @@ test('reserve probes model cache lookup-only and skips the dedicated warmup runn
   assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmJobSkippedOnReserveCacheHit,true);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.prewarmRunnerRequiredOnCacheHit,false);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreRemainsRequiredPerIsolatedRunner,true);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreDeferredUntilWorkOrder,true);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreRequiresLocalModel,true);
+  assert.equal(runtime.workers.textSource.modelLoadOptimization.workerRestoreSkippedWithoutSourceLock,true);
   assert.equal(runtime.workers.textSource.modelLoadOptimization.workerModelBehaviorChanged,false);
 });
 
-test('every atomic worker synchronizes with Vibe control state before any worker work',()=>{
+test('worker decides local-model need only after sync, work order, and source lock',()=>{
   const start=workflow.indexOf('  worker:');
   const end=workflow.indexOf('  fan_in:',start);
   const workerPart=workflow.slice(start,end);
   const sync=workerPart.indexOf('- name: Synchronize worker with Vibe before work');
-  const cache=workerPart.indexOf('- name: Restore shared Ollama runtime cache');
+  const constitution=workerPart.indexOf('- name: Enforce canonical constitution before source write');
   const order=workerPart.indexOf('- name: Build reserved task work order');
+  const lock=workerPart.indexOf('- name: Acquire shared Work Lock before source write');
+  const modelNeed=workerPart.indexOf('- name: Decide worker local model requirement');
+  const cache=workerPart.indexOf('- name: Restore shared Ollama runtime cache');
+  const prepare=workerPart.indexOf('- name: Prepare cached Ollama runtime');
+  const metrics=workerPart.indexOf('- name: Measure worker Ollama preparation');
   assert.ok(sync>=0);
-  assert.ok(cache>sync);
-  assert.ok(order>sync);
+  assert.ok(constitution>sync);
+  assert.ok(order>constitution);
+  assert.ok(lock>order);
+  assert.ok(modelNeed>lock);
+  assert.ok(cache>modelNeed);
+  assert.ok(prepare>cache);
+  assert.ok(metrics>prepare);
   assert.ok(workerPart.includes('node tools/company-shared-context.mjs --output=/tmp/vibe2-worker-shared-context.json'));
   assert.ok(workerPart.includes('verify-worker-sync'));
   assert.ok(workerPart.includes('--reservation-id="$RESERVATION_ID"'));
@@ -345,6 +359,26 @@ test('every atomic worker synchronizes with Vibe control state before any worker
   assert.ok(workerPart.includes('--reservation-attempt="$RESERVATION_RUN_ATTEMPT"'));
   assert.ok(workerPart.includes('--reserved-at="$RESERVED_AT"'));
   assert.ok(workerPart.includes('VIBE2_WORKER_PREFLIGHT_SYNC=PASS'));
+  assert.match(workerPart,/VIBE2_WORKER_MODEL_CACHE_REQUIRED=YES/);
+  assert.match(workerPart,/VIBE2_WORKER_MODEL_CACHE_REQUIRED=NO/);
+  assert.match(workerPart,/VIBE2_WORKER_MODEL_CACHE_REASON=\$reason/);
+  assert.match(workerPart,/TEXT_SOURCE_LOCK_ACQUIRED/);
+  assert.match(workerPart,/TEXT_SOURCE_LOCK_NOT_ACQUIRED/);
+  assert.match(workerPart,/LEARNING_ROUTE/);
+  assert.match(workerPart,/WORK_ORDER_NOT_RUNNABLE/);
+  const restoreBlock=workerPart.slice(cache,prepare);
+  assert.match(restoreBlock,/if: steps\.model_need\.outputs\.required == 'true'/);
+  const practice=workerPart.indexOf('- name: Run isolated learning practice');
+  const prepareBlock=workerPart.slice(prepare,practice);
+  assert.match(prepareBlock,/if: steps\.model_need\.outputs\.required == 'true'/);
+  assert.match(prepareBlock,/uses: \.\/vibe2-contract\/\.github\/actions\/prepare-ollama/);
+  assert.match(prepareBlock,/pull-model: 'true'/);
+  assert.match(prepareBlock,/VIBE2_OLLAMA_RUNTIME_SOURCE=SHARED_PREPARE_OLLAMA/);
+  assert.equal(workerPart.includes('ollama.com/install.sh'),false);
+  assert.match(workerPart,/MODEL_CACHE_REQUIRED: \${{ steps\.model_need\.outputs\.required }}/);
+  assert.match(workerPart,/MODEL_CACHE_REASON: \${{ steps\.model_need\.outputs\.reason }}/);
+  assert.match(workerPart,/modelCacheRequired:clean\(process\.env\.MODEL_CACHE_REQUIRED\)\.toLowerCase\(\)==='true'/);
+  assert.match(workerPart,/modelCacheReason:clean\(process\.env\.MODEL_CACHE_REASON\)\|\|null/);
 });
 
 test('one Vibe2 wave uses the same reserved main contract without a global exploration barrier',()=>{
@@ -668,11 +702,19 @@ test('worker never mutates shared queue state and only emits an atomic completio
   assert(workerPart.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'));
 });
 
-test('worker Ollama cache includes the runtime sidecar and rejects binary-only cache hits',()=>{
+test('worker model cache keeps the existing key while runtime preparation reuses the shared pinned action',()=>{
   assert(workflow.includes('~/.cache/vibe2-ollama/lib/ollama'));
   assert(workflow.includes('vibe2-ollama-v3-Linux-qwen3-1.7b'));
-  assert(workflow.includes("find \"$cached_lib\" -type f -name 'llama-server'"));
-  assert(workflow.includes('sudo cp -a "$cached_lib/." /usr/local/lib/ollama/'));
+  assert(workflow.includes('uses: ./vibe2-contract/.github/actions/prepare-ollama'));
+  assert(workflow.includes("pull-model: 'true'"));
+  const workerStart=workflow.indexOf('\n  worker:');
+  const fanInStart=workflow.indexOf('\n  fan_in:',workerStart);
+  const workerPart=workflow.slice(workerStart,fanInStart);
+  assert.equal(workerPart.includes('ollama.com/install.sh'),false);
+  assert(prepareOllamaAction.includes("default: '0.33.3'"));
+  assert(prepareOllamaAction.includes('https://ollama.com/download/ollama-linux-amd64.tar.zst?version='));
+  assert(prepareOllamaAction.includes("grep -qx 'lib/ollama/llama-server'"));
+  assert(prepareOllamaAction.includes('sudo tar --zstd -xf "$slim" -C /usr'));
   assert(!workflow.includes('key: vibe2-ollama-v2-Linux-qwen3-1.7b'));
 });
 

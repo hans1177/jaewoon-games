@@ -1,5 +1,5 @@
 {
-  "version": 206,
+  "version": 207,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1259,9 +1259,26 @@
         "prewarmMissBehavior": "RUN_EXISTING_WARM_AND_PERSIST",
         "workerNeedsPrewarm": true,
         "workerSkippedPrewarmBehavior": "CONTINUE_VIA_EXISTING_ALWAYS_JOB_CONDITION",
-        "workerRestoreBehavior": "UNCHANGED_PER_ISOLATED_RUNNER",
+        "workerRestoreBehavior": "CONDITIONAL_AFTER_WORK_ORDER_AND_LOCK",
+        "workerRuntimePreparation": "SHARED_PREPARE_OLLAMA_COMPOSITE_ACTION",
+        "workerRuntimePreparationPath": ".github/actions/prepare-ollama/action.yml",
+        "workerInlineInstallPipeForbidden": true,
+        "workerRestoreRequiredRoutes": [
+          "TEXT_SOURCE_WORKER_WITH_LOCK",
+          "ANALYSIS_ONLY",
+          "LEARNING_WEB_ARTIFACT"
+        ],
+        "workerRestoreSkippedRoutes": [
+          "NOT_RUNNABLE",
+          "TEXT_SOURCE_WORKER_WITHOUT_LOCK",
+          "ENGINE_EDITOR",
+          "OTHER_NON_MODEL_ROUTE"
+        ],
         "workerModelBehaviorChanged": false,
-        "gamePrimaryExternalBoundary": 256
+        "gamePrimaryExternalBoundary": 256,
+        "liveVerificationRun": 36208311596,
+        "prewarmRunnerReliefLiveVerified": true,
+        "nextObservedInfrastructureBottleneck": "WORKER_MODEL_CACHE_RESTORE_BEFORE_WORK_ORDER_AND_LOCK"
       }
     },
     "liveShadowRepairLoop": {

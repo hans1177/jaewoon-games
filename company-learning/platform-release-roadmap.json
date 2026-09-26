@@ -1,5 +1,5 @@
 {
-  "version": 398,
+  "version": 399,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -3182,7 +3182,7 @@
               "result": "PASS"
             }
           },
-          "currentExecutionInfrastructureBottleneck": "RUNNER_CAPACITY_AND_MODEL_CACHE_STARTUP_PRESSURE_AFTER_CROSS_LANE_STARVATION_RELIEF",
+          "currentExecutionInfrastructureBottleneck": "WORKER_MODEL_CACHE_RESTORE_BEFORE_WORK_ORDER_AND_LOCK",
           "runnerPressureCallbackCoalescing": "IMPLEMENTATION_IN_PROGRESS",
           "runnerPressureCallbackCoalescingRule": "IF_RECENT_REPOSITORY_ACTIONS_HAVE_QUEUED_PENDING_OR_REQUESTED_RUNS, DO_NOT CREATE_ANOTHER_ATOMIC_NEURON_CALLBACK_WORKFLOW; KEEP_THE_IMMUTABLE_WORKER_RESULT_ARTIFACT_AND_LET_EXISTING_COHORT_FAN_IN_CONSUME_IT; WHEN_QUEUE_PRESSURE_CLEARS, RESUME_IMMEDIATE_CALLBACK",
           "runnerPressureCallbackCoalescingPreserves": [
@@ -3206,9 +3206,11 @@
           "gamePrimaryExternalBoundary": 256,
           "lastLanePressureLiveVerificationRun": 36204978877,
           "lastLanePressureLiveVerificationResult": "PASS",
-          "modelCacheHitRestoreRelief": "IMPLEMENTED_PENDING_QA_AND_LIVE",
+          "modelCacheHitRestoreRelief": "LIVE_VERIFIED",
           "modelCacheWarmupProbe": "RESERVE_LOOKUP_ONLY_ON_HIT",
-          "modelCacheWarmupRunnerRelief": "SKIP_MODEL_CACHE_JOB_ON_RESERVE_CACHE_HIT"
+          "modelCacheWarmupRunnerRelief": "LIVE_VERIFIED_SKIP_MODEL_CACHE_JOB_ON_RESERVE_CACHE_HIT",
+          "modelCacheHitRestoreLiveRun": 36208311596,
+          "workerConditionalModelRestore": "IMPLEMENTED_PENDING_QA_AND_LIVE"
         },
         "incidentHistory": [
           {
@@ -7632,7 +7634,15 @@
       "modelCacheJobOnReserveMiss": "RUN_EXISTING_WARM_AND_PERSIST",
       "workerNeedsRelationship": "UNCHANGED_WITH_ALWAYS_SEMANTICS_SO_SKIPPED_PREWARM_DOES_NOT_BLOCK_WORKERS",
       "dedicatedWarmupRunnerRequiredOnCacheHit": false,
-      "implementationState": "IMPLEMENTED_PENDING_QA_AND_LIVE"
+      "liveVerification": {
+        "runId": 36208311596,
+        "reserveCacheHit": true,
+        "reserveLookupOnly": true,
+        "modelCacheJobConclusion": "skipped",
+        "workerJobsStarted": true,
+        "result": "PASS"
+      },
+      "implementationState": "LIVE_VERIFIED"
     },
     "robloxNativeNonblockingStudioPlanner20260926": {
       "id": "ROBLOX_NATIVE_NONBLOCKING_STUDIO_PLANNER_2026-09-26",
@@ -7660,6 +7670,56 @@
       "authority": "OWNER_DIRECTIVE_2026-09-26",
       "summary": "Bind one canonical marketing thumbnail asset to both Roblox experience thumbnails and homepage game-card rendering, using verified universe IDs and Open Cloud thumbnail scopes.",
       "authorityChange": "NONE"
+    },
+    "workerConditionalModelRestore20260926": {
+      "id": "VIBE2_WORKER_CONDITIONAL_MODEL_RESTORE_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "objective": "AVOID_2814033971_BYTE_PER_WORKER_OLLAMA_CACHE_RESTORE_UNTIL_THE_WORK_ORDER_AND_SOURCE_LOCK_PROVE_LOCAL_MODEL_EXECUTION_IS_REQUIRED",
+      "existingArchitectureOnly": true,
+      "shadowPipelineCreated": false,
+      "newSchedulerCreated": false,
+      "newWorkerCreated": false,
+      "baselineEvidence": {
+        "liveRunId": 36208311596,
+        "workerJobId": 108309749479,
+        "cacheBytes": 2814033971,
+        "restoreObserved": true,
+        "downloadStart": "2026-09-26T01:26:23Z",
+        "restoreComplete": "2026-09-26T01:26:47Z",
+        "executionRoute": "text-source-worker",
+        "workLockAcquired": false,
+        "candidateGeneration": "SKIPPED",
+        "wasteSignature": "MODEL_CACHE_RESTORED_BEFORE_WORK_ORDER_AND_LOCK_OUTCOME"
+      },
+      "requiredWorkerOrder": [
+        "WORKER_SYNC",
+        "CONSTITUTION_PREFLIGHT",
+        "BUILD_WORK_ORDER",
+        "ACQUIRE_WORK_LOCK_WHEN_TEXT_SOURCE",
+        "DECIDE_LOCAL_MODEL_REQUIRED",
+        "RESTORE_AND_PREPARE_OLLAMA_ONLY_WHEN_REQUIRED",
+        "EXECUTE_EXISTING_ROUTE"
+      ],
+      "localModelRequiredWhen": [
+        "TEXT_SOURCE_WORKER_AND_WORK_LOCK_ACQUIRED",
+        "ANALYSIS_ONLY",
+        "LEARNING_WEB_ARTIFACT"
+      ],
+      "localModelNotRequiredWhen": [
+        "WORK_ORDER_NOT_RUNNABLE",
+        "TEXT_SOURCE_WORKER_WITHOUT_WORK_LOCK",
+        "ENGINE_EDITOR",
+        "OTHER_NON_MODEL_ROUTE"
+      ],
+      "workerModelBehaviorChanged": false,
+      "workerCacheKeyChanged": false,
+      "workerRuntimePreparation": "REUSE_EXISTING_SHARED_PREPARE_OLLAMA_ACTION",
+      "workerTrustedInstallPipeAllowed": false,
+      "sharedPrepareOllamaAction": ".github/actions/prepare-ollama/action.yml",
+      "workerSourceGenerationSemanticsChanged": false,
+      "workerQaSemanticsChanged": false,
+      "gamePrimaryExternalBoundary": 256,
+      "implementationState": "IMPLEMENTED_PENDING_QA_AND_LIVE"
     }
   },
   "vibeExecutionLaneContract": {
