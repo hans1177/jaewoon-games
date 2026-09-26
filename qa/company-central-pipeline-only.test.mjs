@@ -139,3 +139,17 @@ test('native development trigger ownership avoids duplicate central plus child p
   assert.ok(robloxPush.includes('tools/company-development-roblox-build-preflight.mjs'));
   assert.ok(unityPush.includes('unity-games/**'));
 });
+
+test('director drains superseded runner backlog before noncritical supervision',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  assert.match(director,/group: director-central-company-supervisor[\s\S]*cancel-in-progress: false/);
+  assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-slim/);
+  assert.match(director,/game-primary-gate:[\s\S]*needs: runner-drain[\s\S]*runs-on: ubuntu-slim/);
+  assert.match(director,/actions\/runs\/\$\{run_id\}\/cancel/);
+  assert.match(director,/CONTROL_PLANE_SUPERSEDED/);
+  assert.match(director,/CENTRAL_DEVELOPMENT_PUSH_SUPERSEDED/);
+  assert.match(director,/company-development-roblox-runtime\.yml/);
+  assert.match(director,/company-development-roblox-release-promotion\.yml/);
+  assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
+  assert.doesNotMatch(director,/DUPLICATE_TITLE:[^\n]*company-development-unity-runtime\.yml/);
+});

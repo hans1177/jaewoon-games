@@ -1,5 +1,5 @@
 {
-  "version": 96,
+  "version": 97,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1799,5 +1799,19 @@
     "staleRunCancellationIsExpected": true,
     "gameRunCancellationByThisContractForbidden": true,
     "securityAndReleaseGateClaimsUnchanged": true
+  },
+  "runnerQueueDrainEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "workflow": ".github/workflows/director-supervisor.yml",
+    "markers": [
+      "DIRECTOR_RUNNER_DRAIN_CANCELLED",
+      "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED",
+      "DIRECTOR_RUNNER_DRAIN_CANCELLED_COUNT",
+      "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED_COUNT",
+      "DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN"
+    ],
+    "cancelledRunReasonRequired": true,
+    "independentGameCancellationForbidden": true
   }
 }

@@ -1,5 +1,5 @@
 {
-  "version": 420,
+  "version": 421,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8376,6 +8376,30 @@
         ".github/workflows/company-development-roblox-runtime.yml",
         ".github/workflows/company-development-unity-runtime.yml",
         "qa/company-central-pipeline-only.test.mjs"
+      ]
+    },
+    "runnerQueueDrain20260926": {
+      "id": "RUNNER_QUEUE_DRAIN_2026-09-26",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "FREE_GAME_EXECUTION_CAPACITY_BY_CANCELLING_ONLY_SUPERSEDED_CONTROL_PLANE_AND_DUPLICATE_SAME_GAME_QUEUED_RUNS",
+      "supervisor": ".github/workflows/director-supervisor.yml",
+      "supervisorRunner": "ubuntu-slim",
+      "directorCancelInProgress": false,
+      "staleControlPlaneMayCancel": true,
+      "staleCentralPushMayCancelWhenNotStarted": true,
+      "robloxSameTitleQueuedDuplicateMayCancel": true,
+      "privateRuntimeSameGameQueuedDuplicateMayCancel": true,
+      "independentGameRunsMayCancel": false,
+      "inProgressGameRunMayCancel": false,
+      "unityIndependentGameRunMayCancel": false,
+      "sharedStateWriterCancellationChurnForbidden": true,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "implementationFiles": [
+        ".github/workflows/director-supervisor.yml",
+        "qa/company-central-pipeline-only.test.mjs",
+        "company-learning/company-architecture-map.json",
+        "company-learning/company-log-map.json"
       ]
     }
   },

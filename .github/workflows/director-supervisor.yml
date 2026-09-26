@@ -33,11 +33,283 @@ permissions:
 
 concurrency:
   group: director-central-company-supervisor
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  game-primary-gate:
+  runner-drain:
+    name: drain superseded queued work
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - name: Cancel superseded control-plane and duplicate Roblox queue runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" > /tmp/director-run-drain.json
+          node <<'NODE' > /tmp/director-run-cancel.tsv
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/director-run-drain.json','utf8'));
+          const runs=(payload.workflow_runs||[]).filter(r=>Number(r.id)!==Number(process.env.GITHUB_RUN_ID));
+          const active=new Set(['queued','pending','requested','in_progress']);
+          const queued=new Set(['queued','pending','requested']);
+          const cancel=new Map();
+          const add=(run,reason)=>{
+            if(!run||!active.has(String(run.status||'').toLowerCase()))return;
+            cancel.set(Number(run.id),reason);
+          };
+          const pureControlPlane=new Set([
+            '.github/workflows/company-evolution-qa.yml',
+            '.github/workflows/company-central-policy-contract-qa.yml',
+            '.github/workflows/vibe2-parallelism-contract-qa.yml',
+            '.github/workflows/company-security-immune.yml',
+            '.github/workflows/main-write-guard.yml',
+            '.github/workflows/vibe3-engine-contract.yml',
+            '.github/workflows/vibe2-core-qa.yml',
+            '.github/workflows/company-game-seed-qa.yml',
+          ]);
+          for(const path of pureControlPlane){
+            const rows=runs.filter(r=>r.path===path&&active.has(String(r.status||'').toLowerCase()));
+            const groups=new Map();
+            for(const run of rows){
+              const key=[String(run.event||''),String(run.head_branch||'')].join(':');
+              if(!groups.has(key))groups.set(key,[]);
+              groups.get(key).push(run);
+            }
+            for(const group of groups.values()){
+              group.sort((a,b)=>Number(b.id)-Number(a.id));
+              for(const stale of group.slice(1))add(stale,'CONTROL_PLANE_SUPERSEDED');
+            }
+          }
+
+          const centralPush=runs
+            .filter(r=>r.path==='.github/workflows/company-development-confirmed-runtime.yml'
+              &&String(r.event||'')==='push'
+              &&String(r.head_branch||'')==='main'
+              &&active.has(String(r.status||'').toLowerCase()))
+            .sort((a,b)=>Number(b.id)-Number(a.id));
+          for(const stale of centralPush.slice(1)){
+            if(queued.has(String(stale.status||'').toLowerCase()))add(stale,'CENTRAL_DEVELOPMENT_PUSH_SUPERSEDED');
+          }
+
+          const dedupeByTitle=(path,{batchNewest=false}={})=>{
+            const rows=runs.filter(r=>r.path===path&&active.has(String(r.status||'').toLowerCase()));
+            const groups=new Map();
+            for(const run of rows){
+              const title=String(run.display_title||'');
+              if(!title)continue;
+              if(!groups.has(title))groups.set(title,[]);
+              groups.get(title).push(run);
+            }
+            for(const [title,group] of groups){
+              if(group.length<2)continue;
+              const inProgress=group.filter(r=>String(r.status||'').toLowerCase()==='in_progress').sort((a,b)=>Number(a.id)-Number(b.id));
+              let winner;
+              if(inProgress.length)winner=inProgress[0];
+              else if(batchNewest&&title.endsWith(' · batch'))winner=[...group].sort((a,b)=>Number(b.id)-Number(a.id))[0];
+              else winner=[...group].sort((a,b)=>Number(a.id)-Number(b.id))[0];
+              for(const stale of group){
+                if(Number(stale.id)===Number(winner.id))continue;
+                if(queued.has(String(stale.status||'').toLowerCase()))add(stale,'DUPLICATE_TITLE:'+path);
+              }
+            }
+          };
+          dedupeByTitle('.github/workflows/company-development-roblox-runtime.yml',{batchNewest:true});
+          dedupeByTitle('.github/workflows/company-development-roblox-release-promotion.yml');
+
+          for(const [id,reason] of [...cancel.entries()].sort((a,b)=>a[0]-b[0]))console.log(id+'\t'+reason);
+          NODE
+
+          cancelled=0
+          failed=0
+          while IFS=    outputs:
+      defer: ${{ steps.gate.outputs.defer }}
+      active_game_work: ${{ steps.gate.outputs.active_game_work }}
+    steps:
+      - name: Defer noncritical work while Vibe2 game primary is active
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          queue_api="repos/${GITHUB_REPOSITORY}/contents/.vibe2/queue.json?ref=vibe2-unreal-core"
+          if ! queue_response="$(gh api "$queue_api" 2>/dev/null)"; then
+            echo 'defer=true' >> "$GITHUB_OUTPUT"
+            echo 'active_game_work=unknown' >> "$GITHUB_OUTPUT"
+            echo 'GAME_PRIMARY_GATE=DEFER_QUEUE_UNAVAILABLE'
+            exit 0
+          fi
+          queue_b64="$(jq -r '.content // empty' <<<"$queue_response" | tr -d '\n')"
+          queue_json="$(printf '%s' "$queue_b64" | base64 -d 2>/dev/null || true)"
+          if [ -z "$queue_json" ] || ! jq -e . >/dev/null 2>&1 <<<"$queue_json"; then
+            echo 'defer=true' >> "$GITHUB_OUTPUT"
+            echo 'active_game_work=unknown' >> "$GITHUB_OUTPUT"
+            echo 'GAME_PRIMARY_GATE=DEFER_QUEUE_INVALID'
+            exit 0
+          fi
+          active_game_work="$(jq '[.tasks[]? | select(
+            ((((.status // "") | ascii_downcase) == "queued") or (((.status // "") | ascii_downcase) == "running"))
+            and (((.department // "") | ascii_downcase) == "development")
+            and (((.type // "") | ascii_downcase) == "implementation"))
+          ] | length' <<<"$queue_json")"
+          echo "active_game_work=$active_game_work" >> "$GITHUB_OUTPUT"
+          if [ "$active_game_work" -gt 0 ]; then
+            echo 'defer=true' >> "$GITHUB_OUTPUT"
+            echo "GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK:$active_game_work"
+          else
+            echo 'defer=false' >> "$GITHUB_OUTPUT"
+            echo 'GAME_PRIMARY_GATE=RUN'
+          fi
+
+  supervise:
+    needs: game-primary-gate
+    if: needs.game-primary-gate.outputs.defer != 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout central policy source
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Synchronize central roadmap context (director)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --output=/tmp/worker-shared-context.json
+
+      - name: Verify central policy authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const machineSource='company-learning/platform-release-roadmap.json';
+          const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+          const policy=JSON.parse(fs.readFileSync(machineSource,'utf8'));
+          if(directive.policyDocument!==machineSource||directive.machineSourceOfTruth!==machineSource)throw new Error('central policy source mismatch');
+          if(directive.authority!=='MACHINE_EXECUTION_CONTRACT')throw new Error('company directive machine authority mismatch');
+          if(policy.policySource!==machineSource||policy.machineSourceOfTruth!==machineSource||policy.authority!=='MACHINE_EXECUTION_CONTRACT'||policy.humanDocumentRequired!==false)throw new Error('canonical machine policy authority mismatch');
+          const docs=policy.centralDocumentation||{};
+          if(docs.canonicalSet?.policy!==machineSource)throw new Error('central documentation canonical policy mismatch');
+          if(docs.humanReadableArtifactPolicy?.humanReadablePolicyMirrorRequired!==false)throw new Error('human policy mirror must remain disabled');
+          if(policy.legacyPolicyMirror!==undefined)throw new Error('legacy policy mirror field must be removed');
+          console.log('CENTRAL_POLICY_AUTHORITY=PASS');
+          NODE
+
+      - name: Read central runtime state and workflow evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin company-runtime --quiet
+          if git cat-file -e origin/company-runtime:development-queue.json 2>/dev/null; then
+            git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
+          else
+            printf '{"version":1,"items":[]}' > /tmp/development-queue.json
+          fi
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" > /tmp/actions-runs.json
+          node <<'NODE' > /tmp/director-central.env
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const actions=JSON.parse(fs.readFileSync('/tmp/actions-runs.json','utf8'));
+          const runs=actions.workflow_runs||[];
+          const active=name=>runs.some(r=>r.name===name&&['queued','in_progress'].includes(String(r.status||'')));
+          const latest=name=>runs.filter(r=>r.name===name).sort((a,b)=>new Date(b.updated_at||b.created_at||0)-new Date(a.updated_at||a.created_at||0))[0]||null;
+          const development=(queue.items||[]).filter(x=>String(x.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED');
+          const pending=development.filter(x=>String(x.status||'').toUpperCase()==='PENDING');
+          const unityPending=development.filter(x=>
+            String(x.status||'').toUpperCase()==='ACTIVE' &&
+            String(x.currentStep||'').toUpperCase()==='UNITY_ANDROID_TECHNICAL_VALIDATION' &&
+            String(x.canonicalState||'').toUpperCase()==='WAITING_UNITY_VALIDATION'
+          );
+          const devName='Company DEVELOPMENT_CONFIRMED Runtime';
+          const unityName='Company DEVELOPMENT_CONFIRMED Unity Runtime';
+          const devActive=active(devName);
+          const unityActive=active(unityName);
+          const latestDev=latest(devName);
+          const latestUnity=latest(unityName);
+          console.log(`PENDING_DEVELOPMENT_COUNT=${pending.length}`);
+          console.log(`PENDING_DEVELOPMENT_IDS=${pending.map(x=>x.gameId).join(',')}`);
+          console.log(`WAITING_UNITY_DEVELOPMENT_COUNT=${unityPending.length}`);
+          console.log(`WAITING_UNITY_DEVELOPMENT_IDS=${unityPending.map(x=>x.gameId).join(',')}`);
+          console.log(`DEVELOPMENT_RUNTIME_ACTIVE=${devActive?'true':'false'}`);
+          console.log(`DEVELOPMENT_RUNTIME_LAST_CONCLUSION=${latestDev?.conclusion||''}`);
+          console.log(`DEVELOPMENT_UNITY_RUNTIME_ACTIVE=${unityActive?'true':'false'}`);
+          console.log(`DEVELOPMENT_UNITY_RUNTIME_LAST_CONCLUSION=${latestUnity?.conclusion||''}`);
+          console.log(`DEVELOPMENT_RECOVER=${pending.length>0&&!devActive?'true':'false'}`);
+          console.log(`DEVELOPMENT_UNITY_RECOVER=${unityPending.length>0&&!unityActive?'true':'false'}`);
+          NODE
+          cat /tmp/director-central.env
+
+      - name: Recover central development queues
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          source /tmp/director-central.env
+          recovered='false'
+          if [ "$DEVELOPMENT_RECOVER" = 'true' ]; then
+            gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'DIRECTOR_RECOVERY=COMPANY_DEVELOPMENT_CONFIRMED_RUNTIME'
+            recovered='true'
+          fi
+          if [ "$DEVELOPMENT_UNITY_RECOVER" = 'true' ]; then
+            gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'DIRECTOR_RECOVERY=COMPANY_DEVELOPMENT_CONFIRMED_UNITY_RUNTIME'
+            recovered='true'
+          fi
+          if [ "$recovered" = 'false' ]; then
+            echo 'DIRECTOR_RECOVERY=NOT_REQUIRED'
+          fi
+          echo 'LEGACY_AUTONOMOUS_PIPELINE_DISPATCH=FORBIDDEN'
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '### Central company supervision'
+            echo '- policy authority: company-learning/platform-release-roadmap.json (MACHINE_EXECUTION_CONTRACT)'
+            echo '- design pipeline: Company Seed DESIGN_ONLY Runtime'
+            echo '- promotion pipeline: Company DESIGN_ONLY Promotion Sync'
+            echo '- development pipeline: Company DEVELOPMENT_CONFIRMED Runtime'
+            echo '- Unity technical validation: Company DEVELOPMENT_CONFIRMED Unity Runtime'
+            echo '- legacy autonomous top-level pipeline: removed'
+            if [ -f /tmp/director-central.env ]; then
+              source /tmp/director-central.env
+              echo "- pending development games: ${PENDING_DEVELOPMENT_COUNT:-0}"
+              echo "- waiting Unity development games: ${WAITING_UNITY_DEVELOPMENT_COUNT:-0}"
+              echo "- central development runtime active: ${DEVELOPMENT_RUNTIME_ACTIVE:-false}"
+              echo "- Unity development runtime active: ${DEVELOPMENT_UNITY_RUNTIME_ACTIVE:-false}"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+\t' read -r run_id reason; do
+            [ -n "$run_id" ] || continue
+            if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
+              cancelled=$((cancelled+1))
+              echo "DIRECTOR_RUNNER_DRAIN_CANCELLED=${run_id}:${reason}"
+            else
+              failed=$((failed+1))
+              echo "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED=${run_id}:${reason}"
+            fi
+          done < /tmp/director-run-cancel.tsv
+          echo "DIRECTOR_RUNNER_DRAIN_CANCELLED_COUNT=$cancelled"
+          echo "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED_COUNT=$failed"
+          echo 'DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN'
+
+  game-primary-gate:
+    needs: runner-drain
+    if: always()
+    runs-on: ubuntu-slim
     outputs:
       defer: ${{ steps.gate.outputs.defer }}
       active_game_work: ${{ steps.gate.outputs.active_game_work }}

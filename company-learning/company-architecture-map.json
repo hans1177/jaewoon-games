@@ -1,5 +1,5 @@
 {
-  "version": 231,
+  "version": 232,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5263,5 +5263,25 @@
       "vibe2-parallelism-contract-qa",
       "company-security-immune"
     ]
+  },
+  "runnerQueueDrainTopology": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerQueueDrain20260926",
+    "owner": ".github/workflows/director-supervisor.yml#runner-drain",
+    "runner": "ubuntu-slim",
+    "executesBeforeGamePrimaryGate": true,
+    "cancellable": [
+      "SUPERSEDED_CONTROL_PLANE",
+      "STALE_UNSTARTED_CENTRAL_DEVELOPMENT_PUSH",
+      "DUPLICATE_QUEUED_ROBLOX_SAME_TITLE",
+      "DUPLICATE_QUEUED_PRIVATE_RUNTIME_SAME_GAME"
+    ],
+    "forbidden": [
+      "INDEPENDENT_GAME_RUN",
+      "IN_PROGRESS_GAME_RUN",
+      "UNITY_INDEPENDENT_GAME_RUN",
+      "SHARED_STATE_WRITER_IN_PROGRESS"
+    ],
+    "gamePrimaryParallelismPreserved": true
   }
 }
