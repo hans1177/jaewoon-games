@@ -3,44 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1uxwv80",
-      "worker": "vibe2",
-      "taskId": "cozy-island-roblox-second-gate-rebuild-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/shared/GameConfig.luau",
-        "roblox-games/cozy-island/server/Game.server.luau",
-        "roblox-games/cozy-island/client/Game.client.luau"
-      ],
-      "baseSha": "9a1e4fb94ac87e3456f17d205adbcb14e2709754",
-      "acquiredAt": "2026-09-26T13:11:51.146Z",
-      "expiresAt": "2026-09-26T13:56:51.146Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-roblox-second-gate-rebuild-v1"
-      ]
-    },
-    {
-      "id": "wl-uyyzfl",
-      "worker": "vibe2",
-      "taskId": "survival-roblox-presentation-asset-adaptation-v1",
-      "gameId": "survival",
-      "files": [
-        "roblox-games/survival/client/Game.client.luau",
-        "roblox-games/survival/server/Game.server.luau",
-        "roblox-games/survival/shared/GameConfig.luau"
-      ],
-      "baseSha": "9a1e4fb94ac87e3456f17d205adbcb14e2709754",
-      "acquiredAt": "2026-09-26T13:11:58.165Z",
-      "expiresAt": "2026-09-26T13:56:58.165Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-9fkv49",
       "worker": "vibe2",
       "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
@@ -656,6 +618,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
+      ]
+    },
+    {
+      "id": "wl-1ez3c8v",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
+      ],
+      "baseSha": "9a1e4fb94ac87e3456f17d205adbcb14e2709754",
+      "acquiredAt": "2026-09-26T13:57:06.545Z",
+      "expiresAt": "2026-09-26T14:42:06.545Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
       ]
     }
   ]
