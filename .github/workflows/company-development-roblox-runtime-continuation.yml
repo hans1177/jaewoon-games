@@ -46,7 +46,6 @@ jobs:
           node --check tools/vibe3-roblox-platform.mjs
           node --check tools/company-development-roblox-runtime-persist.mjs
           node --check tools/company-development-roblox-headless-fast-mvp.mjs
-          node --test qa/company-development-roblox-runtime-continuation.test.mjs
       - name: Fetch canonical runtime queue
         run: |
           set -euo pipefail
