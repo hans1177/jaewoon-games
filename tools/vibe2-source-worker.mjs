@@ -815,7 +815,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
   ].filter(Boolean).join('\n');
 }
-function buildUpDirectiveBlockFromPrompt(prompt=''){
+function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false}={}){
   const raw=String(prompt??'');
   const begin='[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]';
   const end='[GAME SPECIFIC BUILD UP DIRECTIVE END]';
@@ -823,7 +823,15 @@ function buildUpDirectiveBlockFromPrompt(prompt=''){
   if(start<0)return'';
   const finish=raw.indexOf(end,start+begin.length);
   if(finish<0)return'';
-  return raw.slice(start,finish+end.length);
+  const block=raw.slice(start,finish+end.length);
+  if(!compact)return block;
+  const keepPrefixes=[
+    'directiveId=','gameIdentity=','primaryGoal=','sourceAnchors=','expectedPlayerEffect=',
+    'nextVibeAction=','visual=','platform=','preserve=','acceptance='
+  ];
+  return block.split('\n').filter(line=>
+    line===begin||line===end||keepPrefixes.some(prefix=>line.startsWith(prefix))
+  ).join('\n');
 }
 
 
@@ -1358,7 +1366,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
     prompt:[
       'You are the Vibe2 focused source repair worker. Return JSON only.',
       goal,
-      buildUpDirectiveBlockFromPrompt(raw),
+      buildUpDirectiveBlockFromPrompt(raw,{compact:true}),
       reason?'Previous failure: '+reason:'',
       'Exact writable path: '+JSON.stringify(spec.path),
       'Exact find anchor already fixed by the worker: '+JSON.stringify(spec.find),
@@ -1839,6 +1847,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
     if(allowFullRewrite&&retry)console.log(`VIBE2_FULL_WEB_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
+    if(focusedReplaceOnly)console.log(`VIBE2_FOCUSED_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
     const studioExactAnchorRecovery=studioExpansion&&priorFailureClass==='EDIT_MATCH';
     const temperature=systemAtomicPairCompletion?0.14:(focusedReplaceOnly?0.26:(expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(studioExactAnchorRecovery?0.08:(retry?(attempt>=3?0.22:0.16):0.08))));
     const focusedFirstEditEarlyStop=focusedWebRepair&&!retry&&!allowFullRewrite&&!focusedReplaceOnly&&!robloxAssetAdaptationTask;
