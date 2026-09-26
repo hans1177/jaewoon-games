@@ -108,18 +108,32 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" > /tmp/active-roblox-native-runs.json &
-          roblox_scan_pid=$!
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-unity-runtime.yml/runs?per_page=100" > /tmp/active-unity-native-runs.json &
-          unity_scan_pid=$!
-          roblox_scan_status=0
-          unity_scan_status=0
-          wait "$roblox_scan_pid" || roblox_scan_status=$?
-          wait "$unity_scan_pid" || unity_scan_status=$?
-          if (( roblox_scan_status != 0 || unity_scan_status != 0 )); then
-            echo "NATIVE_ACTIVE_RUN_SCAN=FAIL:ROBLOX=$roblox_scan_status:UNITY=$unity_scan_status" >&2
+          pids=()
+          labels=()
+          for page in 1 2 3; do
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100&page=$page" > "/tmp/active-roblox-native-runs-$page.json" &
+            pids+=("$!")
+            labels+=("ROBLOX:$page")
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-unity-runtime.yml/runs?per_page=100&page=$page" > "/tmp/active-unity-native-runs-$page.json" &
+            pids+=("$!")
+            labels+=("UNITY:$page")
+          done
+          scan_failed=0
+          for i in "${!pids[@]}"; do
+            if ! wait "${pids[$i]}"; then
+              echo "NATIVE_ACTIVE_RUN_SCAN_PAGE_FAIL=${labels[$i]}" >&2
+              scan_failed=1
+            fi
+          done
+          if (( scan_failed != 0 )); then
+            echo 'NATIVE_ACTIVE_RUN_SCAN=FAIL' >&2
             exit 14
           fi
+          jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/active-roblox-native-runs-{1,2,3}.json > /tmp/active-roblox-native-runs.json
+          jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/active-unity-native-runs-{1,2,3}.json > /tmp/active-unity-native-runs.json
+          echo "NATIVE_ACTIVE_RUN_SCAN_ROBLOX_ROWS=$(jq '.workflow_runs|length' /tmp/active-roblox-native-runs.json)"
+          echo "NATIVE_ACTIVE_RUN_SCAN_UNITY_ROWS=$(jq '.workflow_runs|length' /tmp/active-unity-native-runs.json)"
+          echo 'NATIVE_ACTIVE_RUN_SCAN_PAGES=3'
           echo 'NATIVE_ACTIVE_RUN_SCAN=PASS'
 
       - name: Resolve Unity Web floor and upper-platform eligibility
