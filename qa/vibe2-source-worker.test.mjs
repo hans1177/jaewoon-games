@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, buildStudioConnectedCompletionPrompt, normalizeStudioConnectedCompletion, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
@@ -845,6 +845,120 @@ test('studio build-up starts with the same compact package contract instead of a
   assert.ok(Buffer.byteLength(initial,'utf8')<Buffer.byteLength(prompt,'utf8'),'initial studio prompt must be compacted before first model call');
 });
 
+
+test('studio connected completion preserves valid edits and selects a different exact anchor',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'roblox-games/demo');
+  const relative='client/Game.client.luau';
+  write(path.join(sourceRoot,relative),[
+    'local alpha = 1',
+    'local beta = 1',
+    'local gamma = 1',
+    'return { alpha = alpha, beta = beta, gamma = gamma }'
+  ].join('\n')+'\n');
+  const prompt=[
+    '[STUDIO_QUALITY_EVOLUTION] cycle=1; phase=BUILD_UP; focus=STABILITY',
+    'Engine: roblox',
+    'Goal: improve connected stability feedback without changing gameplay values',
+    'Allowed edit paths: '+relative,
+    '=== FILE '+relative+' [EDITABLE] ===',
+    fs.readFileSync(path.join(sourceRoot,relative),'utf8')
+  ].join('\n');
+  const partial={
+    summary:'partial',
+    expectedEffect:'connected delta',
+    edits:[{path:relative,find:'local alpha = 1',replace:'local alpha = 2'}],
+    newFiles:[],replaceFiles:[],tests:[]
+  };
+  const completion=buildStudioConnectedCompletionPrompt(prompt,{
+    error:new Error('STUDIO_QUALITY_DELTA_REQUIRED:BUILD_UP:1/3:VISUAL:0/0:INSUFFICIENT_CONNECTED_SOURCE_DELTAS'),
+    responsibleFiles:[relative],
+    sourceRoot,
+    partialCandidate:partial
+  });
+  assert.ok(completion);
+  assert.notEqual(completion.spec.find,'local alpha = 1');
+  assert.match(completion.prompt,/preserving 1 already-valid exact edits/i);
+  const combined=normalizeStudioConnectedCompletion({replace:'local beta = 2'},completion);
+  assert.equal(combined.edits.length,2);
+  assert.equal(combined.edits[0].find,'local alpha = 1');
+  assert.notEqual(combined.edits[1].find,'local alpha = 1');
+});
+
+test('studio build-up accumulates exact-anchor completions until the unchanged three-delta gate passes',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local alpha = 1',
+    'local beta = 1',
+    'local gamma = 1',
+    'return { alpha = alpha, beta = beta, gamma = gamma }'
+  ].join('\n')+'\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${relative}`],taskId:'studio-connected-completion'});
+  workOrder.selectedTask={
+    id:workOrder.taskId,gameId:'demo',target:'roblox',evidence:['studio-quality-loop:v1'],
+    studioQualityEvolution:{
+      phase:'BUILD_UP',focusPillar:'STABILITY',realSourceDeltaRequired:true,
+      requiredConnectedImprovements:{min:3,max:6}
+    }
+  };
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const first=path.join(cwd,'studio-partial-1.json');
+  const second=path.join(cwd,'studio-partial-2.json');
+  const third=path.join(cwd,'studio-partial-3.json');
+  write(first,JSON.stringify({edits:[{path:relative,find:'local alpha = 1',replace:'local alpha = 2'}]}));
+  write(second,JSON.stringify({replace:'local beta = 2'}));
+  write(third,JSON.stringify({replace:'local gamma = 2'}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[first,second,third]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.studioConnectedCompletion,true);
+  assert.equal(result.codingMethod.semanticDiffEnforcement.studioQualityDelta.pass,true);
+  assert.equal(result.codingMethod.semanticDiffEnforcement.studioQualityDelta.sourceDeltaUnits,3);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/local alpha = 2/);
+  assert.match(candidate,/local beta = 2/);
+  assert.match(candidate,/local gamma = 2/);
+});
+
+test('studio NO_OP recovery seeds one exact edit then grants only the completion credit needed to reach the same gate',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local alpha = 1',
+    'local beta = 1',
+    'local gamma = 1',
+    'return { alpha = alpha, beta = beta, gamma = gamma }'
+  ].join('\n')+'\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${relative}`],taskId:'studio-noop-connected-completion'});
+  workOrder.selectedTask={
+    id:workOrder.taskId,gameId:'demo',target:'roblox',evidence:['studio-quality-loop:v1'],
+    studioQualityEvolution:{
+      phase:'BUILD_UP',focusPillar:'STABILITY',realSourceDeltaRequired:true,
+      requiredConnectedImprovements:{min:3,max:6}
+    }
+  };
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const noop=path.join(cwd,'studio-noop.json');
+  const seed=path.join(cwd,'studio-seed.json');
+  const second=path.join(cwd,'studio-complete-2.json');
+  const third=path.join(cwd,'studio-complete-3.json');
+  write(noop,JSON.stringify({edits:[]}));
+  write(seed,JSON.stringify({replace:'local beta = 2'}));
+  write(second,JSON.stringify({replace:'local alpha = 2'}));
+  write(third,JSON.stringify({replace:'local gamma = 2'}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[noop,seed,second,third]});
+  assert.equal(result.generation.attempts,4);
+  assert.equal(result.generation.baseAttemptBudget,3);
+  assert.equal(result.generation.effectiveAttemptBudget,4);
+  assert.equal(result.generation.studioFocusedSeedUsed,true);
+  assert.equal(result.generation.studioConnectedCompletionCredits,1);
+  assert.equal(result.codingMethod.semanticDiffEnforcement.studioQualityDelta.pass,true);
+  assert.equal(result.codingMethod.semanticDiffEnforcement.studioQualityDelta.sourceDeltaUnits,3);
+});
 
 test('studio edit-match at the base budget gets one exact-anchor recovery attempt without widening scope',async()=>{
   const cwd=tempRoot();
