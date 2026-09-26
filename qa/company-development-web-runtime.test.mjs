@@ -228,7 +228,8 @@ test('native routing admits only readiness-pass or grandfathered games while unr
   assert.match(source,/dispatch-unity:/);
   assert.match(source,/dispatch-unity-web-floor:/);
   assert.match(source,/dispatch-unity-web-bootstrap:/);
-  assert.match(source,/needs\.native-plan\.outputs\.eligible_json/);
+  assert.match(source,/needs\.native-plan\.outputs\.roblox_json/);
+  assert.match(source,/needs\.native-plan\.outputs\.unity_json/);
   assert.match(source,/needs\.native-plan\.outputs\.unity_web_json/);
   assert.doesNotMatch(source,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
 });
