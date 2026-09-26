@@ -50,9 +50,6 @@ env:
 jobs:
   source-plan:
     name: resolve Roblox source work
-    concurrency:
-      group: roblox-runtime-plan-${{ inputs.game_id || 'batch' }}
-      cancel-in-progress: false
     runs-on: ubuntu-slim
     timeout-minutes: 8
     outputs:
