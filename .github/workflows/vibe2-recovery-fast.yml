@@ -102,7 +102,24 @@ jobs:
           echo "VIBE2_RECOVERY_FAST_SYSTEM_AI_NEW_RECOVERY_DISPATCH=$system_ai_recovery_dispatched"
           echo "VIBE2_RECOVERY_FAST_PRIMARY_AI_COLLABORATION_REQUESTED=$primary_ai_collaboration_requested"
           echo "VIBE2_RECOVERY_FAST_GAME_REQUEUED=$vibe_requeued"
-          echo 'VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=DEFER_TO_GAME_PRIMARY_FANIN'
+          echo 'VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=PENDING_CAUSAL_RETURN_TO_GAME_PRIMARY_ATOMIC_REFILL'
+
+      - name: Return recovered game work to GAME_PRIMARY immediately
+        if: steps.recovery.outputs.vibe_requeued != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload='{"event_type":"vibe2-fanin-refill","client_payload":{"execution_lane":"game-primary","reason":"recovery-fast-causal-return"}}'
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo 'VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=GAME_PRIMARY_ATOMIC_REFILL'
 
       - name: Dispatch supervised system-AI recovery immediately
         if: steps.recovery.outputs.system_ai_recovery_dispatched != '0'
