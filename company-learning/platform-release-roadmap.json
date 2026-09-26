@@ -4196,6 +4196,8 @@
         "untouchedWorkflowFilesMustNotRequireWorkflowWriteAuthority": true,
         "candidateRemoteRefCleanupOnPushFailure": true,
         "candidatePublicationFailureClass": "CANDIDATE_BRANCH_PUBLISH",
+        "candidatePublicationTelemetryStage": "CANDIDATE_PUBLICATION",
+        "candidatePublicationExcludedFromSourceGenerationFailureRate": true,
         "directMainWrite": false,
         "externalPaidApiRequired": false,
         "openAiPaidApiAllowed": false
