@@ -3,67 +3,8 @@
   "kind": "platform-suitability",
   "authority": "PRIMARY_AI_AND_VIBE_JOINT_WITH_DEPARTMENT_EVIDENCE",
   "policy": "ROBLOX_UNITY_CONCURRENT_SUITABILITY_DISPLAY_ONLY",
-  "generatedAt": "2026-09-26T10:03:28.231Z",
+  "generatedAt": "2026-09-26T11:01:30.388Z",
   "games": [
-    {
-      "gameId": "cozy-island",
-      "gameName": "포근섬",
-      "executionMode": "ROBLOX_UNITY_CONCURRENT",
-      "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-      "ROBLOX": {
-        "score": 77,
-        "label": "MEDIUM",
-        "departments": {
-          "planning": 85,
-          "development": 83,
-          "graphics": 68,
-          "audio": 70,
-          "qa": 77,
-          "balance": 78,
-          "growthMarketing": 77
-        },
-        "adaptationProfile": "SOCIAL_FAST_SESSION",
-        "direction": [
-          "FAST_ENTRY",
-          "MOBILE_FIRST",
-          "SOCIAL_AND_MULTIPLAYER",
-          "SHORT_REPEATABLE_GOALS",
-          "SERVER_AUTHORITATIVE_SYNC",
-          "ROBLOX_NATIVE_SERVICES"
-        ]
-      },
-      "UNITY": {
-        "score": 78,
-        "label": "MEDIUM",
-        "departments": {
-          "planning": 80,
-          "development": 70,
-          "graphics": 87,
-          "audio": 84,
-          "qa": 72,
-          "balance": 80,
-          "growthMarketing": 75
-        },
-        "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
-        "direction": [
-          "DEEP_SYSTEM_PRESENTATION",
-          "RICHER_VISUALS",
-          "CAMERA_AND_CINEMATIC_LANGUAGE",
-          "LONGER_SESSION_SUPPORT",
-          "DETAILED_CONTROLS",
-          "PERFORMANCE_SCALING",
-          "IMMERSIVE_AUDIO"
-        ]
-      },
-      "signals": {
-        "genre": "Simulation",
-        "playMode": "COOP",
-        "multiplayer": true,
-        "deepSystemGenre": true,
-        "socialGenre": false
-      },
-      "lowerSuitabilityDoesNotDisableDevelopment": true
-    },
     {
       "gameId": "daechung-rpg",
       "gameName": "대충 RPG",
@@ -413,6 +354,65 @@
         "genre": "마을 던전 RPG",
         "playMode": "UNSPECIFIED",
         "multiplayer": false,
+        "deepSystemGenre": true,
+        "socialGenre": false
+      },
+      "lowerSuitabilityDoesNotDisableDevelopment": true
+    },
+    {
+      "gameId": "cozy-island",
+      "gameName": "포근섬",
+      "executionMode": "ROBLOX_UNITY_CONCURRENT",
+      "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+      "ROBLOX": {
+        "score": 77,
+        "label": "MEDIUM",
+        "departments": {
+          "planning": 85,
+          "development": 83,
+          "graphics": 68,
+          "audio": 70,
+          "qa": 77,
+          "balance": 78,
+          "growthMarketing": 77
+        },
+        "adaptationProfile": "SOCIAL_FAST_SESSION",
+        "direction": [
+          "FAST_ENTRY",
+          "MOBILE_FIRST",
+          "SOCIAL_AND_MULTIPLAYER",
+          "SHORT_REPEATABLE_GOALS",
+          "SERVER_AUTHORITATIVE_SYNC",
+          "ROBLOX_NATIVE_SERVICES"
+        ]
+      },
+      "UNITY": {
+        "score": 78,
+        "label": "MEDIUM",
+        "departments": {
+          "planning": 80,
+          "development": 70,
+          "graphics": 87,
+          "audio": 84,
+          "qa": 72,
+          "balance": 80,
+          "growthMarketing": 75
+        },
+        "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+        "direction": [
+          "DEEP_SYSTEM_PRESENTATION",
+          "RICHER_VISUALS",
+          "CAMERA_AND_CINEMATIC_LANGUAGE",
+          "LONGER_SESSION_SUPPORT",
+          "DETAILED_CONTROLS",
+          "PERFORMANCE_SCALING",
+          "IMMERSIVE_AUDIO"
+        ]
+      },
+      "signals": {
+        "genre": "Simulation",
+        "playMode": "COOP",
+        "multiplayer": true,
         "deepSystemGenre": true,
         "socialGenre": false
       },

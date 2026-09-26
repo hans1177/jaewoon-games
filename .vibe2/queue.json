@@ -442,7 +442,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22cozy-island-post-release-focus-12c1a7e2ae6288fd%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A16%2C%22edgeCount%22%3A14%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A6%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A4%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -1982,7 +1983,8 @@
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22daechung-rpg-post-release-focus-b0dce53053629c70%7C36231868218%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fdaechung-rpg-post-release-focus-b0dce53053629c70-primary-36231868218-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22daechung-rpg-post-release-focus-b0dce53053629c70%7C36231868218%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fdaechung-rpg-post-release-focus-b0dce53053629c70-primary-36231868218-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A18%2C%22edgeCount%22%3A16%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A6%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A4%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22daechung-rpg-post-release-focus-b0dce53053629c70%22%2C%22sampleId%22%3A%22daechung-rpg-post-release-focus-b0dce53053629c70%7C36231868218%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fdaechung-rpg-post-release-focus-b0dce53053629c70-primary-36231868218-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_REVIEW_BLOCKED%22%2C%22proposedAction%22%3A%22NO_ROUTE%22%2C%22proposedReason%22%3Anull%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22BOTH_HOLD_OR_OBSERVE%22%2C%22rootCauseState%22%3Anull%7D",
         "game-repair-repeat-count:48",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:49"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -3456,7 +3458,8 @@
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -5574,7 +5577,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22daechung-rpg-unity-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22daechung-rpg-unity-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22daechung-rpg-unity-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A20%2C%22edgeCount%22%3A18%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A7%2C%22HYPOTHESIS%22%3A6%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A7%2C%22HYPOTHESIS%22%3A4%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:48",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:49"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -7905,7 +7909,8 @@
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22cozy-island-existing-web-assessment-v1%7C36231868218%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Fcozy-island-existing-web-assessment-v1-speculative-2-36231868218-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22cozy-island-existing-web-assessment-v1%7C36231868218%3A1%7Cspeculative-2%7Cvibe2%2Fcandidate%2Fcozy-island-existing-web-assessment-v1-speculative-2-36231868218-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A22%2C%22edgeCount%22%3A20%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A8%2C%22HYPOTHESIS%22%3A6%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A3%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A8%2C%22HYPOTHESIS%22%3A4%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A3%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SUPERVISOR_PASS_REQUIRED_BUT_MISSING%22%2C%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22cozy-island-existing-web-assessment-v1%22%2C%22sampleId%22%3A%22cozy-island-existing-web-assessment-v1%7C36231868218%3A1%7Cspeculative-1%7Cvibe2%2Fcandidate%2Fcozy-island-existing-web-assessment-v1-speculative-1-36231868218-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_REVIEW_BLOCKED%22%2C%22proposedAction%22%3A%22NO_ROUTE%22%2C%22proposedReason%22%3Anull%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22BOTH_HOLD_OR_OBSERVE%22%2C%22rootCauseState%22%3Anull%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -9683,7 +9688,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22amusement-tycoon-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22amusement-tycoon-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22amusement-tycoon-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A18%2C%22edgeCount%22%3A16%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -11423,7 +11429,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22bug-defense-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22bug-defense-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22bug-defense-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A18%2C%22edgeCount%22%3A16%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -13072,7 +13079,8 @@
         "game-repair-mode:ROOT_CAUSE_MODE",
         "game-repair-repeat-count:3",
         "game-repair-repeat-count:4",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:5"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -14789,7 +14797,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A18%2C%22edgeCount%22%3A16%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -16440,7 +16449,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A18%2C%22edgeCount%22%3A16%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -18136,7 +18146,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A18%2C%22edgeCount%22%3A16%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -19880,7 +19891,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A18%2C%22edgeCount%22%3A16%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -21858,7 +21870,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A6%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A4%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -23584,7 +23597,8 @@
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1%7C36229097447%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1%7C36229097447%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A6%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A4%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:23",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -25302,7 +25316,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22survival-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22survival-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22survival-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A6%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A4%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -27038,7 +27053,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22village-dungeons-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22village-dungeons-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22village-dungeons-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A6%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A4%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -30151,7 +30167,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -30525,7 +30542,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -30930,7 +30948,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -31059,7 +31078,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -31982,7 +32002,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -32612,7 +32633,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -32740,7 +32762,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -33382,7 +33405,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -33510,7 +33534,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -33638,7 +33663,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -33766,7 +33792,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -33894,7 +33921,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -34022,7 +34050,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -34150,7 +34179,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -44779,7 +44809,8 @@
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22daechung-rpg-studio-evolution-presentation-v1%7C36229097447%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22daechung-rpg-studio-evolution-presentation-v1%7C36229097447%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A22%2C%22edgeCount%22%3A20%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A7%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A7%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:47",
         "game-repair-repeat-count:48",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:49"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -46293,7 +46324,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22cozy-island-studio-evolution-presentation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22cozy-island-studio-evolution-presentation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22cozy-island-studio-evolution-presentation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A20%2C%22edgeCount%22%3A18%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -47782,7 +47814,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22horror-escape-room-studio-evolution-presentation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22horror-escape-room-studio-evolution-presentation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22horror-escape-room-studio-evolution-presentation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A20%2C%22edgeCount%22%3A18%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -49675,7 +49708,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22line-defense-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22line-defense-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22line-defense-roblox-presentation-asset-adaptation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A6%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A4%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -51686,7 +51720,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -51819,7 +51854,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -51947,7 +51983,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -52080,7 +52117,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -52213,7 +52251,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -52341,7 +52380,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -52469,7 +52509,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -52597,7 +52638,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -52725,7 +52767,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -52853,7 +52896,8 @@
         "game-repair-repeat-count:21",
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
-        "game-repair-repeat-count:24"
+        "game-repair-repeat-count:24",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -53166,7 +53210,8 @@
         "game-repair-repeat-count:46",
         "game-repair-repeat-count:47",
         "game-repair-repeat-count:48",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:49"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -54413,7 +54458,8 @@
         "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
         "game-repair-repeat-count:46",
         "game-repair-repeat-count:47",
-        "game-repair-repeat-count:48"
+        "game-repair-repeat-count:48",
+        "game-repair-repeat-count:49"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -55816,7 +55862,8 @@
         "game-repair-repeat-count:22",
         "game-repair-repeat-count:23",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -57187,7 +57234,8 @@
         "retry-failure-signature:source-candidate-generation-failed",
         "retry-policy:UNLIMITED_OR_WITHIN_BOUND",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -58682,7 +58730,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:67",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:68"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -60740,7 +60789,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:67",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:68"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -62771,7 +62821,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -64822,7 +64873,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22bug-defense-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22bug-defense-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22bug-defense-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -66859,7 +66911,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -69149,7 +69202,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -71224,7 +71278,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22line-defense-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22line-defense-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22line-defense-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -73275,7 +73330,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22monster-adventure-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22monster-adventure-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22monster-adventure-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:4",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:5"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -75310,7 +75366,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -77344,7 +77401,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -79380,7 +79438,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -81414,7 +81473,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -83448,7 +83508,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -85498,7 +85559,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -87550,7 +87612,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22survival-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22survival-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22survival-unity-web-base-implementation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -89585,7 +89648,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -91636,7 +91700,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:67",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:68"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -93748,7 +93813,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22amusement-tycoon-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22amusement-tycoon-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22amusement-tycoon-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -95863,7 +95929,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22bug-defense-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22bug-defense-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22bug-defense-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -97973,7 +98040,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -100111,7 +100179,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22line-defense-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22line-defense-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22line-defense-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -102235,7 +102304,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22monster-adventure-studio-evolution-unity-web-presentation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22monster-adventure-studio-evolution-unity-web-presentation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22monster-adventure-studio-evolution-unity-web-presentation-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:4",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:5"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -104333,7 +104403,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -106430,7 +106501,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -108546,7 +108618,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -110661,7 +110734,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -112776,7 +112850,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -114889,7 +114964,8 @@
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1%7C36231868218%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A19%2C%22edgeCount%22%3A17%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -116986,7 +117062,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -119084,7 +119161,8 @@
         "recovery:transient-work-lock-requeue-v1",
         "transient-work-lock-deferred:work-lock-conflict:worker-task-lock-mismatch",
         "game-repair-repeat-count:24",
-        "recovery:stale-running-reservation-v1"
+        "recovery:stale-running-reservation-v1",
+        "game-repair-repeat-count:25"
       ],
       "lastOutcome": "STALE_RESERVATION_RECOVERED",
       "reservationId": null,
@@ -122590,6 +122668,7 @@
       "target": "web",
       "department": "learning",
       "type": "research",
+      "executionLane": "LEARNING_IDLE",
       "goal": "[VIBE_LEARNING_PRACTICE]\nkind=UNITY_NATIVE_DRILL\ndomains=UNITY_RUNTIME\npracticeGeneration=1\npracticeMode=ANALYSIS\n소스 파일을 수정하지 않는다. Unity 네이티브 런타임, 물리, 입력, 씬 수명주기, 필요 시 Netcode 경계를 분석한다. Unity runtime QA 없는 결과는 검증된 네이티브 성공으로 취급하지 않는다.\n이 결과는 연습 전용이며 production PASS, QA PASS, release evidence로 사용할 수 없다.",
       "responsibleFiles": [],
       "dependencies": [],
@@ -122597,14 +122676,17 @@
       "releaseState": "other",
       "status": "queued",
       "retries": 0,
+      "retryPolicy": "BOUNDED",
       "maxRetries": 1,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "sourceRoot": "learning-practice:gap-unity_runtime-l6",
-      "speculativeEligible": false,
-      "estimatedRisk": "low",
+      "productionMode": "AUTONOMOUS_VIBE",
+      "supervisionApproved": false,
+      "supervisionContract": null,
+      "supervisionReview": null,
+      "blocker": null,
       "evidence": [
         "learning-practice-only",
         "production-pass:NO",
@@ -122613,11 +122695,140 @@
         "learning-analysis-practice",
         "practice-domain:UNITY_RUNTIME"
       ],
+      "lastOutcome": null,
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
+      "neuronExpectedVariants": 0,
+      "neuronResults": [],
+      "buildUpDirective": null,
+      "buildUpDirectiveId": null,
+      "buildUpGeneration": 0,
+      "buildUpGoal": null,
+      "buildUpSourceTree": null,
+      "buildUpStatus": null,
+      "previousGoal": null,
+      "lastAchievedGoal": null,
+      "developmentDepth": 0,
+      "escalationStage": null,
+      "buildUpNextAction": null,
+      "buildUpNextActionReason": null,
+      "nextEscalationRequired": false,
+      "companyContext": null,
+      "sourceRoot": "learning-practice:gap-unity_runtime-l6",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "atomicNeuronMode": null,
+      "atomicCompletionRequired": false,
+      "taskWorkUnits": 0,
+      "packageId": null,
+      "packageGoal": null,
+      "packageRole": null,
+      "packageOwner": null,
+      "packageWorkUnits": 0,
+      "packageSize": 0,
+      "packageMinWorkUnits": 0,
+      "packageLongWorkProtected": false,
+      "postReleaseFocused": false,
+      "historicalDeploymentRecovery": false,
+      "focusCycle": 0,
+      "focusPolicyRef": null,
+      "recoveryGeneration": 0,
+      "systemSteward": false,
+      "ownerFocusedCaretaker": false,
+      "packageContext": null,
+      "studioQualityEvolution": null,
       "completionCriteria": [
         "PRACTICE_ANALYSIS_COMPLETED",
         "REPOSITORY_SOURCE_WRITE_ZERO",
         "PRODUCTION_PASS_NO"
-      ]
+      ],
+      "shard": "verification"
+    },
+    {
+      "id": "LEARNING-PRACTICE-gap-vfx-l7-g1",
+      "gameId": null,
+      "target": "web",
+      "department": "learning",
+      "type": "research",
+      "executionLane": "LEARNING_IDLE",
+      "goal": "[VIBE_LEARNING_PRACTICE]\nkind=VFX_READABILITY_DRILL\ndomains=VFX\npracticeGeneration=1\npracticeMode=WEB_ARTIFACT\n소스 파일을 수정하지 않는다. 타격 피드백·trail·particle·telegraph를 모바일 가독성과 effect budget 안에서 구현하고 무제한 객체 생성을 막는 방법을 분석한다.\n이 결과는 연습 전용이며 production PASS, QA PASS, release evidence로 사용할 수 없다.",
+      "responsibleFiles": [],
+      "dependencies": [],
+      "priority": "low",
+      "releaseState": "other",
+      "status": "queued",
+      "retries": 0,
+      "retryPolicy": "BOUNDED",
+      "maxRetries": 1,
+      "ownerDirective": false,
+      "requiresOwnerDecision": false,
+      "protectedChange": false,
+      "paidResourceRequired": false,
+      "productionMode": "AUTONOMOUS_VIBE",
+      "supervisionApproved": false,
+      "supervisionContract": null,
+      "supervisionReview": null,
+      "blocker": null,
+      "evidence": [
+        "learning-practice-only",
+        "production-pass:NO",
+        "practice-kind:VFX_READABILITY_DRILL",
+        "practice-generation:1",
+        "learning-web-artifact-practice",
+        "practice-domain:VFX"
+      ],
+      "lastOutcome": null,
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
+      "neuronExpectedVariants": 0,
+      "neuronResults": [],
+      "buildUpDirective": null,
+      "buildUpDirectiveId": null,
+      "buildUpGeneration": 0,
+      "buildUpGoal": null,
+      "buildUpSourceTree": null,
+      "buildUpStatus": null,
+      "previousGoal": null,
+      "lastAchievedGoal": null,
+      "developmentDepth": 0,
+      "escalationStage": null,
+      "buildUpNextAction": null,
+      "buildUpNextActionReason": null,
+      "nextEscalationRequired": false,
+      "companyContext": null,
+      "sourceRoot": "learning-practice:gap-vfx-l7",
+      "speculativeEligible": false,
+      "estimatedRisk": "low",
+      "atomicNeuronMode": null,
+      "atomicCompletionRequired": false,
+      "taskWorkUnits": 0,
+      "packageId": null,
+      "packageGoal": null,
+      "packageRole": null,
+      "packageOwner": null,
+      "packageWorkUnits": 0,
+      "packageSize": 0,
+      "packageMinWorkUnits": 0,
+      "packageLongWorkProtected": false,
+      "postReleaseFocused": false,
+      "historicalDeploymentRecovery": false,
+      "focusCycle": 0,
+      "focusPolicyRef": null,
+      "recoveryGeneration": 0,
+      "systemSteward": false,
+      "ownerFocusedCaretaker": false,
+      "packageContext": null,
+      "studioQualityEvolution": null,
+      "completionCriteria": [
+        "PRACTICE_WEB_ARTIFACT_VERIFIED",
+        "REPOSITORY_SOURCE_WRITE_ZERO",
+        "PRODUCTION_PASS_NO"
+      ],
+      "shard": "verification"
     }
   ]
 }
