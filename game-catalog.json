@@ -58,7 +58,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
-        "updatedAt": "2026-09-26T13:58:47.776Z",
+        "updatedAt": "2026-09-26T15:01:23.658Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -157,7 +157,7 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "손님 생각 말풍선, 낮·저녁·밤 하루 결산, 벤치 휴식, 놀이기구 고장·수리공, 10~100G 입장료 설정 추가 및 기존 자유배치·길·대기줄·청소·업그레이드 유지",
-            "updatedAt": "2026-09-26T13:58:47.776Z",
+            "updatedAt": "2026-09-26T15:01:23.658Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -334,166 +334,6 @@
       ]
     },
     {
-      "id": "bug-defense",
-      "name": "곤충 디펜스",
-      "description": "30웨이브 곤충 디펜스",
-      "genre": [
-        "웨이브",
-        "전략",
-        "곤충"
-      ],
-      "image": "assets/insect-war-v2.webp",
-      "webPath": null,
-      "hasWebArchive": true,
-      "featured": true,
-      "homepageWebPlayable": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "웨이브",
-          "전략",
-          "곤충"
-        ],
-        "genreLabel": "오비·플랫포머 · 타워 오비",
-        "subgenre": "타워 오비",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-09-26T14:08:23.068Z",
-        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 3,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "bug-defense",
-          "name": "곤충 디펜스",
-          "description": "30웨이브 곤충 디펜스",
-          "genres": [
-            "웨이브",
-            "전략",
-            "곤충"
-          ],
-          "image": "assets/insect-war-v2.webp",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/insect-war-v2.webp",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "ROBLOX_UNITY",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "ROBLOX",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "",
-            "archive": true,
-            "playable": false,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": true,
-          "category": "development-confirmed",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "웨이브",
-              "전략",
-              "곤충"
-            ],
-            "genreLabel": "오비·플랫포머 · 타워 오비",
-            "subgenre": "타워 오비",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-09-26T14:08:23.068Z",
-            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "catalogOrder": 3,
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/bug-defense",
-        "UNITY": "unity-games/bug-defense"
-      },
-      "updatedAt": "2026-09-21T15:09:50.123Z"
-    },
-    {
       "id": "daechung-rpg",
       "name": "5포탈 RPG: 던전 파티",
       "description": "마을에서 장비와 퀘스트를 준비하고 AI 동료와 5개 포탈 지역을 정복하는 3D 파티 RPG",
@@ -544,13 +384,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
-        "updatedAt": "2026-09-26T13:55:44.377Z",
+        "updatedAt": "2026-09-26T14:39:14.563Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 4,
+        "catalogOrder": 3,
         "authority": "company-runtime",
         "identity": {
           "gameId": "daechung-rpg",
@@ -643,13 +483,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
-            "updatedAt": "2026-09-26T13:55:44.377Z",
+            "updatedAt": "2026-09-26T14:39:14.563Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 4,
+      "catalogOrder": 3,
       "homepageDisplayMode": "WEB_PUBLISHED",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
@@ -712,7 +552,7 @@
       "multiplayerSupported": true,
       "soloPlayable": true,
       "ownerDirectDevelopment": true,
-      "catalogOrder": 5,
+      "catalogOrder": 4,
       "updatedAt": "2026-09-22T19:15:00+09:00",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
@@ -744,13 +584,13 @@
         "playMode": "HYBRID",
         "playModeLabel": "혼합",
         "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-        "updatedAt": "2026-09-26T14:07:49.711Z",
-        "status": "F0_SOURCE_PREFLIGHT_PASSED",
+        "updatedAt": "2026-09-26T14:30:13.857Z",
+        "status": "REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 5,
+        "catalogOrder": 4,
         "authority": "company-runtime",
         "identity": {
           "gameId": "horror-escape-room",
@@ -841,8 +681,8 @@
             "playMode": "HYBRID",
             "playModeLabel": "혼합",
             "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-            "updatedAt": "2026-09-26T14:07:49.711Z",
-            "status": "F0_SOURCE_PREFLIGHT_PASSED",
+            "updatedAt": "2026-09-26T14:30:13.857Z",
+            "status": "REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -850,165 +690,6 @@
       "nameEnglish": "Midnight Infection [4v4]",
       "internationalTitle": "Midnight Infection [4v4]",
       "marketingThumbnail": "assets/roblox-thumbnails/horror-escape-room.svg"
-    },
-    {
-      "id": "line-defense",
-      "name": "골목 군단 대전",
-      "description": "재화를 모아 유닛을 소환하고 상대 아지트를 부수는 모바일 라인 디펜스",
-      "genre": [
-        "라인 디펜스",
-        "전략",
-        "자동전투"
-      ],
-      "image": "assets/page-bg-v2.webp",
-      "webPath": null,
-      "hasWebArchive": true,
-      "featured": true,
-      "homepageWebPlayable": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
-      "ownerExistingGame": false,
-      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "라인 디펜스",
-          "전략",
-          "자동전투"
-        ],
-        "genreLabel": "라인 디펜스 · 전략 · 자동전투",
-        "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-09-26T14:08:34.442Z",
-        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 6,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "line-defense",
-          "name": "골목 군단 대전",
-          "description": "재화를 모아 유닛을 소환하고 상대 아지트를 부수는 모바일 라인 디펜스",
-          "genres": [
-            "라인 디펜스",
-            "전략",
-            "자동전투"
-          ],
-          "image": "assets/page-bg-v2.webp",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/page-bg-v2.webp",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_DIRECT_GAME_BUILD",
-          "ownerExistingGame": false
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "ROBLOX_UNITY",
-          "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
-          "selectedPlatform": "ROBLOX",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "",
-            "archive": true,
-            "playable": false,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": true,
-          "category": "development-confirmed",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "라인 디펜스",
-              "전략",
-              "자동전투"
-            ],
-            "genreLabel": "라인 디펜스 · 전략 · 자동전투",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-09-26T14:08:34.442Z",
-            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "catalogOrder": 6,
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/line-defense",
-        "UNITY": "unity-games/line-defense"
-      },
-      "updatedAt": "2026-09-21T15:09:50.123Z"
     },
     {
       "id": "village-dungeons",
@@ -1056,13 +737,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-09-26T13:58:47.776Z",
+        "updatedAt": "2026-09-26T14:39:39.758Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 7,
+        "catalogOrder": 5,
         "authority": "company-runtime",
         "identity": {
           "gameId": "village-dungeons",
@@ -1155,13 +836,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-09-26T13:58:47.776Z",
+            "updatedAt": "2026-09-26T14:39:39.758Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 7,
+      "catalogOrder": 5,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -1173,6 +854,325 @@
       },
       "updatedAt": "2026-09-21T15:09:50.123Z",
       "marketingThumbnail": "assets/roblox-thumbnails/village-dungeons.svg"
+    },
+    {
+      "id": "bug-defense",
+      "name": "곤충 디펜스",
+      "description": "30웨이브 곤충 디펜스",
+      "genre": [
+        "웨이브",
+        "전략",
+        "곤충"
+      ],
+      "image": "assets/insect-war-v2.webp",
+      "webPath": null,
+      "hasWebArchive": true,
+      "featured": true,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "웨이브",
+          "전략",
+          "곤충"
+        ],
+        "genreLabel": "웨이브 · 전략 · 곤충",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-26T14:36:53.037Z",
+        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 6,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "bug-defense",
+          "name": "곤충 디펜스",
+          "description": "30웨이브 곤충 디펜스",
+          "genres": [
+            "웨이브",
+            "전략",
+            "곤충"
+          ],
+          "image": "assets/insect-war-v2.webp",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/insect-war-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": true,
+            "playable": false,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "웨이브",
+              "전략",
+              "곤충"
+            ],
+            "genreLabel": "웨이브 · 전략 · 곤충",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-26T14:36:53.037Z",
+            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 6,
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/bug-defense",
+        "UNITY": "unity-games/bug-defense"
+      },
+      "updatedAt": "2026-09-21T15:09:50.123Z"
+    },
+    {
+      "id": "line-defense",
+      "name": "골목 군단 대전",
+      "description": "재화를 모아 유닛을 소환하고 상대 아지트를 부수는 모바일 라인 디펜스",
+      "genre": [
+        "라인 디펜스",
+        "전략",
+        "자동전투"
+      ],
+      "image": "assets/page-bg-v2.webp",
+      "webPath": null,
+      "hasWebArchive": true,
+      "featured": true,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
+      "ownerExistingGame": false,
+      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "라인 디펜스",
+          "전략",
+          "자동전투"
+        ],
+        "genreLabel": "라인 디펜스 · 전략 · 자동전투",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-26T14:36:53.037Z",
+        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 7,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "line-defense",
+          "name": "골목 군단 대전",
+          "description": "재화를 모아 유닛을 소환하고 상대 아지트를 부수는 모바일 라인 디펜스",
+          "genres": [
+            "라인 디펜스",
+            "전략",
+            "자동전투"
+          ],
+          "image": "assets/page-bg-v2.webp",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/page-bg-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_GAME_BUILD",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": true,
+            "playable": false,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "라인 디펜스",
+              "전략",
+              "자동전투"
+            ],
+            "genreLabel": "라인 디펜스 · 전략 · 자동전투",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-26T14:36:53.037Z",
+            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 7,
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/line-defense",
+        "UNITY": "unity-games/line-defense"
+      },
+      "updatedAt": "2026-09-21T15:09:50.123Z"
     },
     {
       "id": "cozy-island",
@@ -1219,8 +1219,8 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "동화풍 주민·동물 아트 재구성 · 5거점 정복 특징 중심 Roblox 제목 적용",
-        "updatedAt": "2026-09-26T14:07:49.711Z",
-        "status": "F0_SOURCE_PREFLIGHT_PASSED",
+        "updatedAt": "2026-09-26T14:36:53.037Z",
+        "status": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1316,8 +1316,8 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "동화풍 주민·동물 아트 재구성 · 5거점 정복 특징 중심 Roblox 제목 적용",
-            "updatedAt": "2026-09-26T14:07:49.711Z",
-            "status": "F0_SOURCE_PREFLIGHT_PASSED",
+            "updatedAt": "2026-09-26T14:36:53.037Z",
+            "status": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1332,802 +1332,6 @@
         "UNITY"
       ],
       "marketingThumbnail": "assets/roblox-thumbnails/cozy-island.svg"
-    },
-    {
-      "id": "fantasy-survival",
-      "name": "마력숲 생존기",
-      "description": "사용자 직접 업로드 웹게임",
-      "genre": [
-        "RPG",
-        "생존",
-        "액션",
-        "보드"
-      ],
-      "image": "",
-      "webPath": null,
-      "hasWebArchive": true,
-      "homepageWebPlayable": false,
-      "homepageOfficialCard": false,
-      "homepageTestCandidate": false,
-      "homepageDisplayMode": "WEB_PUBLISHED",
-      "lifecycleState": "ACTIVE",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "homepageCategory": "development-confirmed",
-      "ownerDirectWebUpload": true,
-      "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
-      "ownerWebSourceRevision": "774c279215e1ae039ca023181bdd765e7a85d0168b7e6be3575778710657b79a",
-      "ownerWebEntryFile": "web-games/fantasy-survival/index.html",
-      "webDevelopmentResetRequired": true,
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "RPG",
-          "생존",
-          "액션",
-          "보드"
-        ],
-        "genreLabel": "오비·플랫포머 · 클래식 오비",
-        "subgenre": "클래식 오비",
-        "playMode": "HYBRID",
-        "playModeLabel": "혼합",
-        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-09-26T14:07:49.711Z",
-        "status": "F0_SOURCE_PREFLIGHT_PASSED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "selectedPlatform": "UNITY",
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 9,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "fantasy-survival",
-          "name": "마력숲 생존기",
-          "description": "사용자 직접 업로드 웹게임",
-          "genres": [
-            "RPG",
-            "생존",
-            "액션",
-            "보드"
-          ],
-          "image": "assets/pwa-icon-512.png",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/pwa-icon-512.png",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "",
-          "ownerExistingGame": false
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "ROBLOX_UNITY",
-          "handling": "",
-          "selectedPlatform": "ROBLOX",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "",
-            "archive": true,
-            "playable": false,
-            "purpose": ""
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "development-confirmed",
-          "displayMode": "WEB_PUBLISHED",
-          "artbookPath": "",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "RPG",
-              "생존",
-              "액션",
-              "보드"
-            ],
-            "genreLabel": "오비·플랫포머 · 클래식 오비",
-            "subgenre": "클래식 오비",
-            "playMode": "HYBRID",
-            "playModeLabel": "혼합",
-            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-09-26T14:07:49.711Z",
-            "status": "F0_SOURCE_PREFLIGHT_PASSED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "catalogOrder": 9,
-      "productionTarget": "ROBLOX_UNITY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/fantasy-survival",
-        "UNITY": "unity-games/fantasy-survival"
-      },
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "updatedAt": "2026-09-21T15:09:50.123Z"
-    },
-    {
-      "id": "monster-adventure",
-      "name": "몬스터 어드벤처",
-      "description": "몬스터 포획과 성장 모험",
-      "genre": [
-        "몬스터",
-        "턴제",
-        "모험"
-      ],
-      "image": "assets/fantasy-rpg-v2.webp",
-      "webPath": null,
-      "hasWebArchive": false,
-      "featured": false,
-      "homepageWebPlayable": false,
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "몬스터",
-          "턴제",
-          "모험"
-        ],
-        "genreLabel": "오비·플랫포머 · 타워 오비",
-        "subgenre": "타워 오비",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-09-26T14:09:21.393Z",
-        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 10,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "monster-adventure",
-          "name": "몬스터 어드벤처",
-          "description": "몬스터 포획과 성장 모험",
-          "genres": [
-            "몬스터",
-            "턴제",
-            "모험"
-          ],
-          "image": "assets/fantasy-rpg-v2.webp",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/fantasy-rpg-v2.webp",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "ROBLOX_UNITY",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "ROBLOX",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "",
-            "archive": false,
-            "playable": false,
-            "purpose": ""
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "development-confirmed",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "몬스터",
-              "턴제",
-              "모험"
-            ],
-            "genreLabel": "오비·플랫포머 · 타워 오비",
-            "subgenre": "타워 오비",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-09-26T14:09:21.393Z",
-            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "catalogOrder": 10,
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/monster-adventure",
-        "UNITY": "unity-games/monster-adventure"
-      },
-      "updatedAt": "2026-09-21T15:09:50.123Z"
-    },
-    {
-      "id": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "name": "잃어버린 별의 메아리",
-      "description": "액션 생존 로그라이트",
-      "genre": [
-        "액션",
-        "생존 로그라이트"
-      ],
-      "image": "assets/homepage-covers/lost-star.svg",
-      "webPath": null,
-      "hasWebArchive": true,
-      "featured": false,
-      "selectedPlatform": "UNITY",
-      "homepageWebPlayable": false,
-      "homepageArtbookPath": "/artbook-viewer.html?game=seed-action-survival-rogu-echoes-of-the-lost-star",
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "액션",
-          "생존 로그라이트"
-        ],
-        "genreLabel": "액션 · 생존 로그라이트",
-        "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-09-26T14:07:49.711Z",
-        "status": "F0_SOURCE_PREFLIGHT_PASSED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 11,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-          "name": "잃어버린 별의 메아리",
-          "description": "액션 생존 로그라이트",
-          "genres": [
-            "액션",
-            "생존 로그라이트"
-          ],
-          "image": "assets/homepage-covers/lost-star.svg",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/homepage-covers/lost-star.svg",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "ROBLOX_UNITY",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "ROBLOX",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "",
-            "archive": true,
-            "playable": false,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "development-confirmed",
-          "displayMode": "",
-          "artbookPath": "/artbook-viewer.html?game=seed-action-survival-rogu-echoes-of-the-lost-star",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "액션",
-              "생존 로그라이트"
-            ],
-            "genreLabel": "액션 · 생존 로그라이트",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-09-26T14:07:49.711Z",
-            "status": "F0_SOURCE_PREFLIGHT_PASSED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "catalogOrder": 11,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-        "UNITY": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star"
-      },
-      "updatedAt": "2026-09-21T15:09:50.123Z"
-    },
-    {
-      "id": "seed-casual-realm-weaver",
-      "name": "세계의 직조자",
-      "description": "캐주얼 세계 창조 게임",
-      "genre": [
-        "캐주얼",
-        "모바일"
-      ],
-      "image": "assets/homepage-covers/realm-weaver.svg",
-      "webPath": null,
-      "hasWebArchive": true,
-      "featured": false,
-      "selectedPlatform": "UNITY",
-      "homepageWebPlayable": false,
-      "homepageArtbookPath": "/artbook-viewer.html?game=seed-casual-realm-weaver",
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "캐주얼",
-          "모바일"
-        ],
-        "genreLabel": "캐주얼 · 모바일",
-        "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-09-26T14:07:49.711Z",
-        "status": "F0_SOURCE_PREFLIGHT_PASSED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 12,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "seed-casual-realm-weaver",
-          "name": "세계의 직조자",
-          "description": "캐주얼 세계 창조 게임",
-          "genres": [
-            "캐주얼",
-            "모바일"
-          ],
-          "image": "assets/homepage-covers/realm-weaver.svg",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/homepage-covers/realm-weaver.svg",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "ROBLOX_UNITY",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "ROBLOX",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "",
-            "archive": true,
-            "playable": false,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "development-confirmed",
-          "displayMode": "",
-          "artbookPath": "/artbook-viewer.html?game=seed-casual-realm-weaver",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "캐주얼",
-              "모바일"
-            ],
-            "genreLabel": "캐주얼 · 모바일",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-09-26T14:07:49.711Z",
-            "status": "F0_SOURCE_PREFLIGHT_PASSED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "catalogOrder": 12,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/seed-casual-realm-weaver",
-        "UNITY": "unity-games/seed-casual-realm-weaver"
-      },
-      "updatedAt": "2026-09-21T15:09:50.123Z"
-    },
-    {
-      "id": "seed-idle-growth-rpg-crystal-bloom",
-      "name": "수정의 개화",
-      "description": "방치 성장 RPG",
-      "genre": [
-        "방치형",
-        "RPG"
-      ],
-      "image": "assets/card-rpg-v2.webp",
-      "webPath": null,
-      "hasWebArchive": true,
-      "featured": false,
-      "selectedPlatform": "UNITY",
-      "homepageWebPlayable": false,
-      "homepageArtbookPath": "/artbook-viewer.html?game=seed-idle-growth-rpg-crystal-bloom",
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "방치형",
-          "RPG"
-        ],
-        "genreLabel": "오비·플랫포머 · 클래식 오비",
-        "subgenre": "클래식 오비",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-09-26T14:07:49.711Z",
-        "status": "F0_SOURCE_PREFLIGHT_PASSED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 13,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "seed-idle-growth-rpg-crystal-bloom",
-          "name": "수정의 개화",
-          "description": "방치 성장 RPG",
-          "genres": [
-            "방치형",
-            "RPG"
-          ],
-          "image": "assets/card-rpg-v2.webp",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/card-rpg-v2.webp",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "ROBLOX_UNITY",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "ROBLOX",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "",
-            "archive": true,
-            "playable": false,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "development-confirmed",
-          "displayMode": "",
-          "artbookPath": "/artbook-viewer.html?game=seed-idle-growth-rpg-crystal-bloom",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "방치형",
-              "RPG"
-            ],
-            "genreLabel": "오비·플랫포머 · 클래식 오비",
-            "subgenre": "클래식 오비",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-09-26T14:07:49.711Z",
-            "status": "F0_SOURCE_PREFLIGHT_PASSED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "catalogOrder": 13,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
-        "UNITY": "unity-games/seed-idle-growth-rpg-crystal-bloom"
-      },
-      "updatedAt": "2026-09-21T15:09:50.123Z"
     },
     {
       "id": "seed-puzzle-chromatic-cascade",
@@ -2174,13 +1378,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-09-26T14:06:30.586Z",
+        "updatedAt": "2026-09-26T15:01:23.658Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 14,
+        "catalogOrder": 9,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-puzzle-chromatic-cascade",
@@ -2269,13 +1473,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-09-26T14:06:30.586Z",
+            "updatedAt": "2026-09-26T15:01:23.658Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 14,
+      "catalogOrder": 9,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2283,326 +1487,6 @@
       "targetSourcePaths": {
         "ROBLOX": "roblox-games/seed-puzzle-chromatic-cascade",
         "UNITY": "unity-games/seed-puzzle-chromatic-cascade"
-      },
-      "updatedAt": "2026-09-21T15:09:50.123Z"
-    },
-    {
-      "id": "seed-single-defense-strat-celestial-bastion",
-      "name": "천상의 보루",
-      "description": "싱글 디펜스 전략",
-      "genre": [
-        "디펜스",
-        "전략"
-      ],
-      "image": "assets/crystal-v2.webp",
-      "webPath": null,
-      "hasWebArchive": true,
-      "featured": false,
-      "selectedPlatform": "UNITY",
-      "homepageWebPlayable": false,
-      "homepageArtbookPath": "/artbook-viewer.html?game=seed-single-defense-strat-celestial-bastion",
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "디펜스",
-          "전략"
-        ],
-        "genreLabel": "오비·플랫포머 · 타워 오비",
-        "subgenre": "타워 오비",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-09-26T14:07:49.711Z",
-        "status": "F0_SOURCE_PREFLIGHT_PASSED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 15,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "seed-single-defense-strat-celestial-bastion",
-          "name": "천상의 보루",
-          "description": "싱글 디펜스 전략",
-          "genres": [
-            "디펜스",
-            "전략"
-          ],
-          "image": "assets/crystal-v2.webp",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/crystal-v2.webp",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "ROBLOX_UNITY",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "ROBLOX",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "",
-            "archive": true,
-            "playable": false,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "development-confirmed",
-          "displayMode": "WEB_PUBLISHED",
-          "artbookPath": "/artbook-viewer.html?game=seed-single-defense-strat-celestial-bastion",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "디펜스",
-              "전략"
-            ],
-            "genreLabel": "오비·플랫포머 · 타워 오비",
-            "subgenre": "타워 오비",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-09-26T14:07:49.711Z",
-            "status": "F0_SOURCE_PREFLIGHT_PASSED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "catalogOrder": 15,
-      "homepageDisplayMode": "WEB_PUBLISHED",
-      "ownerDirectWebUpload": true,
-      "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
-      "ownerWebSourceRevision": "760a335a7a7e94ad46c148d7c53004e4a2ebe814cabfc0721fc8fed49ce1ce4e",
-      "ownerWebEntryFile": "web-games/seed-single-defense-strat-celestial-bastion/index.html",
-      "webDevelopmentResetRequired": true,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/seed-single-defense-strat-celestial-bastion",
-        "UNITY": "unity-games/seed-single-defense-strat-celestial-bastion"
-      },
-      "updatedAt": "2026-09-21T15:09:50.123Z"
-    },
-    {
-      "id": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "name": "엘도리아 연대기",
-      "description": "스토리 완결 RPG",
-      "genre": [
-        "스토리",
-        "RPG"
-      ],
-      "image": "assets/homepage-covers/eldoria.svg",
-      "webPath": null,
-      "hasWebArchive": true,
-      "featured": false,
-      "selectedPlatform": "UNITY",
-      "homepageWebPlayable": false,
-      "homepageArtbookPath": "/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria",
-      "homepageCategory": "development-confirmed",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "ROBLOX_UNITY",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "스토리",
-          "RPG"
-        ],
-        "genreLabel": "스토리 · RPG",
-        "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-09-26T14:07:49.711Z",
-        "status": "F0_SOURCE_PREFLIGHT_PASSED",
-        "productionClass": "DEVELOPMENT_CONFIRMED"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 16,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-          "name": "엘도리아 연대기",
-          "description": "스토리 완결 RPG",
-          "genres": [
-            "스토리",
-            "RPG"
-          ],
-          "image": "assets/homepage-covers/eldoria.svg",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/homepage-covers/eldoria.svg",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DEVELOPMENT_CONFIRMED",
-          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-          "target": "ROBLOX_UNITY",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "ROBLOX",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
-        },
-        "sources": {
-          "web": {
-            "path": "",
-            "archive": true,
-            "playable": false,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "development-confirmed",
-          "displayMode": "",
-          "artbookPath": "/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria",
-          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
-          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "스토리",
-              "RPG"
-            ],
-            "genreLabel": "스토리 · RPG",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-09-26T14:07:49.711Z",
-            "status": "F0_SOURCE_PREFLIGHT_PASSED",
-            "productionClass": "DEVELOPMENT_CONFIRMED"
-          }
-        }
-      },
-      "catalogOrder": 16,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
-        "UNITY": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria"
       },
       "updatedAt": "2026-09-21T15:09:50.123Z"
     },
@@ -2650,13 +1534,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-09-26T13:58:47.776Z",
+        "updatedAt": "2026-09-26T14:58:03.446Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 17,
+        "catalogOrder": 10,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival",
@@ -2745,8 +1629,1124 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-09-26T13:58:47.776Z",
+            "updatedAt": "2026-09-26T14:58:03.446Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 10,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/survival",
+        "UNITY": "unity-games/survival"
+      },
+      "updatedAt": "2026-09-21T15:09:50.123Z"
+    },
+    {
+      "id": "fantasy-survival",
+      "name": "마력숲 생존기",
+      "description": "사용자 직접 업로드 웹게임",
+      "genre": [
+        "RPG",
+        "생존",
+        "액션",
+        "보드"
+      ],
+      "image": "",
+      "webPath": null,
+      "hasWebArchive": true,
+      "homepageWebPlayable": false,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "homepageCategory": "development-confirmed",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
+      "ownerWebSourceRevision": "774c279215e1ae039ca023181bdd765e7a85d0168b7e6be3575778710657b79a",
+      "ownerWebEntryFile": "web-games/fantasy-survival/index.html",
+      "webDevelopmentResetRequired": true,
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "RPG",
+          "생존",
+          "액션",
+          "보드"
+        ],
+        "genreLabel": "RPG · 생존 · 액션 · 보드",
+        "subgenre": "",
+        "playMode": "HYBRID",
+        "playModeLabel": "혼합",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-26T14:36:53.037Z",
+        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "selectedPlatform": "UNITY",
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 11,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "fantasy-survival",
+          "name": "마력숲 생존기",
+          "description": "사용자 직접 업로드 웹게임",
+          "genres": [
+            "RPG",
+            "생존",
+            "액션",
+            "보드"
+          ],
+          "image": "assets/pwa-icon-512.png",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/pwa-icon-512.png",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": true,
+            "playable": false,
+            "purpose": ""
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "WEB_PUBLISHED",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "RPG",
+              "생존",
+              "액션",
+              "보드"
+            ],
+            "genreLabel": "RPG · 생존 · 액션 · 보드",
+            "subgenre": "",
+            "playMode": "HYBRID",
+            "playModeLabel": "혼합",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-26T14:36:53.037Z",
+            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 11,
+      "productionTarget": "ROBLOX_UNITY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/fantasy-survival",
+        "UNITY": "unity-games/fantasy-survival"
+      },
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "updatedAt": "2026-09-21T15:09:50.123Z"
+    },
+    {
+      "id": "monster-adventure",
+      "name": "몬스터 어드벤처",
+      "description": "몬스터 포획과 성장 모험",
+      "genre": [
+        "몬스터",
+        "턴제",
+        "모험"
+      ],
+      "image": "assets/fantasy-rpg-v2.webp",
+      "webPath": null,
+      "hasWebArchive": false,
+      "featured": false,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "몬스터",
+          "턴제",
+          "모험"
+        ],
+        "genreLabel": "몬스터 · 턴제 · 모험",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-26T14:36:53.037Z",
+        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 12,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "monster-adventure",
+          "name": "몬스터 어드벤처",
+          "description": "몬스터 포획과 성장 모험",
+          "genres": [
+            "몬스터",
+            "턴제",
+            "모험"
+          ],
+          "image": "assets/fantasy-rpg-v2.webp",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/fantasy-rpg-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": false,
+            "playable": false,
+            "purpose": ""
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "몬스터",
+              "턴제",
+              "모험"
+            ],
+            "genreLabel": "몬스터 · 턴제 · 모험",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-26T14:36:53.037Z",
+            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 12,
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/monster-adventure",
+        "UNITY": "unity-games/monster-adventure"
+      },
+      "updatedAt": "2026-09-21T15:09:50.123Z"
+    },
+    {
+      "id": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "name": "잃어버린 별의 메아리",
+      "description": "액션 생존 로그라이트",
+      "genre": [
+        "액션",
+        "생존 로그라이트"
+      ],
+      "image": "assets/homepage-covers/lost-star.svg",
+      "webPath": null,
+      "hasWebArchive": true,
+      "featured": false,
+      "selectedPlatform": "UNITY",
+      "homepageWebPlayable": false,
+      "homepageArtbookPath": "/artbook-viewer.html?game=seed-action-survival-rogu-echoes-of-the-lost-star",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "액션",
+          "생존 로그라이트"
+        ],
+        "genreLabel": "액션 · 생존 로그라이트",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-26T14:36:53.037Z",
+        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 13,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "name": "잃어버린 별의 메아리",
+          "description": "액션 생존 로그라이트",
+          "genres": [
+            "액션",
+            "생존 로그라이트"
+          ],
+          "image": "assets/homepage-covers/lost-star.svg",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/homepage-covers/lost-star.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": true,
+            "playable": false,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "/artbook-viewer.html?game=seed-action-survival-rogu-echoes-of-the-lost-star",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "액션",
+              "생존 로그라이트"
+            ],
+            "genreLabel": "액션 · 생존 로그라이트",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-26T14:36:53.037Z",
+            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 13,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+        "UNITY": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star"
+      },
+      "updatedAt": "2026-09-21T15:09:50.123Z"
+    },
+    {
+      "id": "seed-casual-realm-weaver",
+      "name": "세계의 직조자",
+      "description": "캐주얼 세계 창조 게임",
+      "genre": [
+        "캐주얼",
+        "모바일"
+      ],
+      "image": "assets/homepage-covers/realm-weaver.svg",
+      "webPath": null,
+      "hasWebArchive": true,
+      "featured": false,
+      "selectedPlatform": "UNITY",
+      "homepageWebPlayable": false,
+      "homepageArtbookPath": "/artbook-viewer.html?game=seed-casual-realm-weaver",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "캐주얼",
+          "모바일"
+        ],
+        "genreLabel": "캐주얼 · 모바일",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-26T14:36:53.037Z",
+        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 14,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "seed-casual-realm-weaver",
+          "name": "세계의 직조자",
+          "description": "캐주얼 세계 창조 게임",
+          "genres": [
+            "캐주얼",
+            "모바일"
+          ],
+          "image": "assets/homepage-covers/realm-weaver.svg",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/homepage-covers/realm-weaver.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": true,
+            "playable": false,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "/artbook-viewer.html?game=seed-casual-realm-weaver",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "캐주얼",
+              "모바일"
+            ],
+            "genreLabel": "캐주얼 · 모바일",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-26T14:36:53.037Z",
+            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 14,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/seed-casual-realm-weaver",
+        "UNITY": "unity-games/seed-casual-realm-weaver"
+      },
+      "updatedAt": "2026-09-21T15:09:50.123Z"
+    },
+    {
+      "id": "seed-idle-growth-rpg-crystal-bloom",
+      "name": "수정의 개화",
+      "description": "방치 성장 RPG",
+      "genre": [
+        "방치형",
+        "RPG"
+      ],
+      "image": "assets/card-rpg-v2.webp",
+      "webPath": null,
+      "hasWebArchive": true,
+      "featured": false,
+      "selectedPlatform": "UNITY",
+      "homepageWebPlayable": false,
+      "homepageArtbookPath": "/artbook-viewer.html?game=seed-idle-growth-rpg-crystal-bloom",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "방치형",
+          "RPG"
+        ],
+        "genreLabel": "방치형 · RPG",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-26T14:36:53.037Z",
+        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 15,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "name": "수정의 개화",
+          "description": "방치 성장 RPG",
+          "genres": [
+            "방치형",
+            "RPG"
+          ],
+          "image": "assets/card-rpg-v2.webp",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/card-rpg-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": true,
+            "playable": false,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "/artbook-viewer.html?game=seed-idle-growth-rpg-crystal-bloom",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "방치형",
+              "RPG"
+            ],
+            "genreLabel": "방치형 · RPG",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-26T14:36:53.037Z",
+            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 15,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
+        "UNITY": "unity-games/seed-idle-growth-rpg-crystal-bloom"
+      },
+      "updatedAt": "2026-09-21T15:09:50.123Z"
+    },
+    {
+      "id": "seed-single-defense-strat-celestial-bastion",
+      "name": "천상의 보루",
+      "description": "싱글 디펜스 전략",
+      "genre": [
+        "디펜스",
+        "전략"
+      ],
+      "image": "assets/crystal-v2.webp",
+      "webPath": null,
+      "hasWebArchive": true,
+      "featured": false,
+      "selectedPlatform": "UNITY",
+      "homepageWebPlayable": false,
+      "homepageArtbookPath": "/artbook-viewer.html?game=seed-single-defense-strat-celestial-bastion",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "디펜스",
+          "전략"
+        ],
+        "genreLabel": "디펜스 · 전략",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-26T14:36:53.037Z",
+        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 16,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "name": "천상의 보루",
+          "description": "싱글 디펜스 전략",
+          "genres": [
+            "디펜스",
+            "전략"
+          ],
+          "image": "assets/crystal-v2.webp",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/crystal-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": true,
+            "playable": false,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "WEB_PUBLISHED",
+          "artbookPath": "/artbook-viewer.html?game=seed-single-defense-strat-celestial-bastion",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "디펜스",
+              "전략"
+            ],
+            "genreLabel": "디펜스 · 전략",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-26T14:36:53.037Z",
+            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 16,
+      "homepageDisplayMode": "WEB_PUBLISHED",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "CURRENT_OWNER_BASELINE",
+      "ownerWebSourceRevision": "760a335a7a7e94ad46c148d7c53004e4a2ebe814cabfc0721fc8fed49ce1ce4e",
+      "ownerWebEntryFile": "web-games/seed-single-defense-strat-celestial-bastion/index.html",
+      "webDevelopmentResetRequired": true,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/seed-single-defense-strat-celestial-bastion",
+        "UNITY": "unity-games/seed-single-defense-strat-celestial-bastion"
+      },
+      "updatedAt": "2026-09-21T15:09:50.123Z"
+    },
+    {
+      "id": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "name": "엘도리아 연대기",
+      "description": "스토리 완결 RPG",
+      "genre": [
+        "스토리",
+        "RPG"
+      ],
+      "image": "assets/homepage-covers/eldoria.svg",
+      "webPath": null,
+      "hasWebArchive": true,
+      "featured": false,
+      "selectedPlatform": "UNITY",
+      "homepageWebPlayable": false,
+      "homepageArtbookPath": "/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "스토리",
+          "RPG"
+        ],
+        "genreLabel": "스토리 · RPG",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-09-26T14:36:53.037Z",
+        "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 17,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "name": "엘도리아 연대기",
+          "description": "스토리 완결 RPG",
+          "genres": [
+            "스토리",
+            "RPG"
+          ],
+          "image": "assets/homepage-covers/eldoria.svg",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/homepage-covers/eldoria.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET"
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "",
+            "archive": true,
+            "playable": false,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "스토리",
+              "RPG"
+            ],
+            "genreLabel": "스토리 · RPG",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-09-26T14:36:53.037Z",
+            "status": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -2757,8 +2757,8 @@
         "UNITY"
       ],
       "targetSourcePaths": {
-        "ROBLOX": "roblox-games/survival",
-        "UNITY": "unity-games/survival"
+        "ROBLOX": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
+        "UNITY": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria"
       },
       "updatedAt": "2026-09-21T15:09:50.123Z"
     },
