@@ -1,11 +1,11 @@
 {
   "version": 1,
   "kind": "NEXT_SESSION_MACHINE_HANDOFF",
-  "updatedAt": "2026-09-19",
+  "updatedAt": "2026-09-26",
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "repository": "hans1177/jaewoon-games",
   "branch": "main",
-  "observedMainHead": "a3969aafa495a8762de32c463f991887c798a99a",
+  "observedMainHead": "3443b667d3ea131e8c1796abf5578022d6d876ac",
   "objective": "NORMALIZE_THE_LARGEST_DEVELOPMENT_BOTTLENECK_FIRST_THEN_CONTINUE_THE_AUTONOMOUS_OPERATING_PLAN",
   "sourceOfTruth": [
     "company-learning/platform-release-roadmap.json",
@@ -131,5 +131,106 @@
     "COMPLETE_MUTATION_AND_FAILURE_TO_REGRESSION_BINDINGS",
     "GREEN_ALL_RELEVANT_CENTRAL_AND_VIBE_QA"
   ],
-  "executionInstruction": "ACT_ON_THE_REPOSITORY_DIRECTLY_WHEN_THE_OWNER_SAYS_CONTINUE_OR_PROCEED. DO_NOT_ONLY_DESCRIBE A PLAN. MAKE_SCOPED_CHANGES, RUN_QA, AND REPORT_VERIFIED_STATE."
+  "executionInstruction": "ACT_ON_THE_REPOSITORY_DIRECTLY_WHEN_THE_OWNER_SAYS_CONTINUE_OR_PROCEED. DO_NOT_ONLY_DESCRIBE A PLAN. MAKE_SCOPED_CHANGES, RUN_QA, AND REPORT_VERIFIED_STATE.",
+  "pendingRobloxHomepageThumbnailContinuation": {
+    "status": "DOCUMENTED_ONLY_NOT_APPLIED",
+    "ownerInstruction": "CONTINUE_NEXT_SESSION",
+    "objective": "REPLACE_THE_CURRENT_FOUR_INTERNAL_ROBLOX_EXPOSURE_GAME_THUMBNAILS_WITH_PREMIUM_ROBLOX_STYLE_ART_AND_USE_THE_EXACT_SAME_CANONICAL_IMAGE_FOR_HOMEPAGE_AND_ROBLOX",
+    "requiredVisualTextFormat": {
+      "primaryTitle": "ENGLISH_GAME_NAME",
+      "secondarySubtitle": "KOREAN_GAME_NAME",
+      "hierarchy": "ENGLISH_TITLE_DOMINANT_KOREAN_SUBTITLE_SECONDARY",
+      "style": "PREMIUM_ROBLOX_STYLE_HIGH_CLICK_THROUGH_ORIGINAL_ART_NO_ROBLOX_LOGO"
+    },
+    "targetGames": [
+      {
+        "gameId": "cozy-island",
+        "englishTitle": "COZY ISLAND",
+        "koreanSubtitle": "포근섬: 작은 왕국 키우기",
+        "canonicalPath": "assets/roblox-thumbnails/cozy-island.svg"
+      },
+      {
+        "gameId": "daechung-rpg",
+        "englishTitle": "5 PORTAL RPG",
+        "koreanSubtitle": "5포탈 RPG: 던전 파티",
+        "canonicalPath": "assets/roblox-thumbnails/daechung-rpg.svg"
+      },
+      {
+        "gameId": "horror-escape-room",
+        "englishTitle": "MIDNIGHT INFECTION",
+        "koreanSubtitle": "심야 감염전 [4대4]",
+        "canonicalPath": "assets/roblox-thumbnails/horror-escape-room.svg"
+      },
+      {
+        "gameId": "village-dungeons",
+        "englishTitle": "VILLAGE DUNGEONS",
+        "koreanSubtitle": "마을 던전 RPG",
+        "canonicalPath": "assets/roblox-thumbnails/village-dungeons.svg"
+      }
+    ],
+    "currentRepositoryState": {
+      "existingCanonicalThumbnailFilesAlreadyPresent": true,
+      "homepageAndRobloxSameSourceContractAlreadyImplemented": true,
+      "homepageRendererPrefersCanonicalMarketingThumbnail": true,
+      "robloxOpenCloudThumbnailSyncTool": "tools/company-roblox-thumbnail-sync.mjs",
+      "relevantQa": [
+        "qa/company-roblox-thumbnail-sync.test.mjs",
+        "qa/company-homepage-runtime-propagation.test.mjs"
+      ],
+      "releaseWorkflow": ".github/workflows/company-development-roblox-release-promotion.yml",
+      "note": "DO_NOT_CREATE_A_SECOND_THUMBNAIL_PIPELINE_OR_DUPLICATE_HOMEPAGE_AND_ROBLOX_ART"
+    },
+    "generatedArtState": {
+      "createdInPreviousSession": true,
+      "appliedToRepository": false,
+      "designs": [
+        "COZY_ISLAND_PREMIUM_ISLAND_KINGDOM",
+        "5_PORTAL_RPG_PREMIUM_FANTASY_PORTALS",
+        "MIDNIGHT_INFECTION_PREMIUM_4V4_HORROR",
+        "VILLAGE_DUNGEONS_PREMIUM_VILLAGE_DUNGEON"
+      ],
+      "sourceFilesAreSessionLocalAndMustNotBeAssumedPersistent": true,
+      "regenerateIfUnavailable": true
+    },
+    "lowSizeImplementationRecommendation": {
+      "preserveExistingCanonicalSvgPaths": true,
+      "method": "EMBED_COMPRESSED_JPEG_INSIDE_EXISTING_1920x1080_VIEWBOX_SVG",
+      "reason": "PRESERVES_CATALOG_PATHS_HOMEPAGE_BINDINGS_AND_EXISTING_SVG_CONTRACT_WHILE_KEEPING_REPOSITORY_DIFF_SMALL",
+      "preparedReferenceCompression": {
+        "embeddedRasterSize": "512x288",
+        "jpegQuality": 48,
+        "observedJpegApproxKbRange": "24-35",
+        "observedSvgApproxKbRange": "32-47"
+      },
+      "doNotChangeGameCatalogToNewIndependentImagePathUnlessNecessary": true
+    },
+    "nextWorkerExecutionOrder": [
+      "FETCH_FRESH_MAIN_AND_RELOAD_ROADMAP_LOG_ARCHITECTURE_SECURITY",
+      "VERIFY_THE_FOUR_CANONICAL_THUMBNAIL_PATHS_AND_CURRENT_CATALOG_BINDINGS",
+      "OBTAIN_OR_REGENERATE_THE_FOUR_APPROVED_PREMIUM_IMAGES",
+      "COMPRESS_FOR_LOW_REPOSITORY_SIZE",
+      "REPLACE_ONLY_THE_EXISTING_FOUR_CANONICAL_THUMBNAIL_FILES",
+      "KEEP_HOMEPAGE_AND_ROBLOX_USING_THE_EXACT_SAME_CANONICAL_FILE",
+      "RUN_QA_COMPANY_ROBLOX_THUMBNAIL_SYNC_AND_HOMEPAGE_RUNTIME_PROPAGATION",
+      "VERIFY_HOMEPAGE_CARD_RENDERING",
+      "VERIFY_ROBLOX_OPEN_CLOUD_THUMBNAIL_SYNC_ONLY_FOR_VERIFIED_UNIVERSE_TARGETS",
+      "MERGE_ONLY_AFTER_QA_AND_RUNTIME_EVIDENCE_PASS"
+    ],
+    "protectedConstraints": [
+      "NO_GAMEPLAY_CHANGE",
+      "NO_GAME_BALANCE_OR_SAVE_CHANGE",
+      "NO_NEW_WORKER_OR_QUEUE",
+      "NO_SHADOW_PIPELINE",
+      "NO_ROBLOX_PLAYER_AUTOMATION",
+      "OFFICIAL_ROBLOX_STUDIO_MCP_ONLY_WHEN_RUNTIME_PLAY_IS_REQUIRED",
+      "NO_PUBLIC_RELEASE_CLAIM_FROM_THUMBNAIL_SYNC",
+      "ROBLOX_API_KEY_MUST_NEVER_BE_LOGGED_OR_PERSISTED"
+    ],
+    "abandonedPartialWork": {
+      "temporaryBranch": "assistant/roblox-premium-thumbnails-v1",
+      "branchPurpose": "EXPERIMENTAL_THUMBNAIL_CONTINUATION",
+      "note": "NO_COMPLETED_REPOSITORY_THUMBNAIL_APPLICATION_WAS_CONFIRMED_FROM_THIS_SESSION; DO_NOT_ASSUME_THIS_BRANCH_IS_AUTHORITATIVE",
+      "action": "START_FROM_FRESH_MAIN_AND_CHERRY_PICK_NOTHING_UNLESS_DIFF_IS_REVIEWED"
+    }
+  }
 }
