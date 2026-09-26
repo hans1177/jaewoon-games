@@ -1,5 +1,5 @@
 {
-  "version": 85,
+  "version": 86,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -132,6 +132,25 @@
         "PRIMARY_AI_ROLE=NON_BLOCKING_ASSISTANT_AND_COLLABORATOR",
         "AUTHORITY_CHANGE=NONE_UNLESS_EXPLICIT_CENTRAL_POLICY"
       ]
+    },
+    "systemStewardRecovery": {
+      "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.selfRecoveryAndBottleneckRelief",
+      "implementation": "tools/vibe2-system-steward.mjs",
+      "staleRunningReservationAction": "RECOVER_STALE_RUNNING_RESERVATION",
+      "queueOutcomeMarker": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
+      "queueEvidenceMarker": "system-steward:stale-running-reservation-recovered",
+      "emittedMarkers": [
+        "VIBE2_SYSTEM_STEWARD_ACTION",
+        "VIBE2_SYSTEM_STEWARD_ACTIONS",
+        "VIBE2_SYSTEM_STEWARD_TASK",
+        "VIBE2_SYSTEM_STEWARD_TASK_COUNT",
+        "VIBE2_SYSTEM_STEWARD_QUEUE_CHANGED",
+        "VIBE2_SYSTEM_STEWARD_BLANK_QUEUE_RECOVERED",
+        "VIBE2_SYSTEM_STEWARD_CONTROL_CHANGED",
+        "VIBE2_SYSTEM_STEWARD_QUEUE_MAX",
+        "VIBE2_SYSTEM_STEWARD_ADAPTIVE_MAX"
+      ],
+      "staleLeaseRecoveryKeepsTaskIdentity": true
     }
   },
   "systemAiWorkerLogContract": {

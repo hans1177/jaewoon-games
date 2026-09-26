@@ -1143,10 +1143,9 @@
       "conflictSafety": "SOURCE_ROOT_FILE_AND_DEPENDENCY_LOCKS_REMAIN_ENFORCED",
       "neuralAuthority": "GATED_REQUEUE_REPRIORITIZE_REFILL_AND_THROUGHPUT_TUNING_ONLY",
       "externalProviderAndPlanningBound": 256,
-      "gamePrimaryActiveExecutionCap": "ADAPTIVE_20_TO_256_FROM_VERIFIED_THROUGHPUT",
-      "refillExample": "ACTIVE_19_FREE_237_AT_EXTERNAL_BOUND_256",
-      "externalSpareBeyond20": "AVAILABLE_TO_GAME_PRIMARY; 20_IS_PRESSURE_FLOOR_NOT_CAP",
-      "adaptiveControl": "NO_FIXED_INTERNAL_CAP; BASELINE_20; PRESSURE_FLOOR_20; VERIFIED_HEALTHY_SATURATION_SELF_EXPANDS_20_TO_32_TO_64_TO_128_TO_256",
+      "gamePrimaryActiveExecutionCap": "ADAPTIVE_30_TO_256_FROM_VERIFIED_THROUGHPUT",
+      "refillExample": "ACTIVE_29_FREE_227_AT_EXTERNAL_BOUND_256",
+      "adaptiveControl": "NO_FIXED_INTERNAL_CAP; BASELINE_256; PRESSURE_FLOOR_30; VERIFIED_EXTERNAL_PRESSURE_MAY_DOWNSHIFT_TO_30; HEALTHY_CAPACITY_RECOVERS_TOWARD_256",
       "gamePrimaryFixedInternalCap": null,
       "reserveIngressRuntimeSync": {
         "required": true,
@@ -1293,7 +1292,8 @@
         "liveVerificationRun": 36208311596,
         "prewarmRunnerReliefLiveVerified": true,
         "nextObservedInfrastructureBottleneck": "WORKER_MODEL_CACHE_RESTORE_BEFORE_WORK_ORDER_AND_LOCK"
-      }
+      },
+      "externalSpareBeyond30": "AVAILABLE_TO_GAME_PRIMARY; 30_IS_PRESSURE_FLOOR_NOT_CAP"
     },
     "liveShadowRepairLoop": {
       "path": [
@@ -3652,7 +3652,8 @@
       "state": "tools/company-recovery-queue.mjs",
       "dispatch": "tools/company-recovery-dispatch.mjs",
       "systemAi": "tools/company-system-ai-worker.mjs",
-      "scheduler": ".github/workflows/vibe2-24h-runner.yml"
+      "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+      "systemSteward": "tools/vibe2-system-steward.mjs"
     },
     "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
     "terminalFailureFromRetryCount": false,
@@ -3681,6 +3682,31 @@
       "failureFeedback": "tools/company-system-ai-queue.mjs",
       "noShadowPipeline": true,
       "noNewAuthority": true
+    },
+    "staleRunningReservationRecovery": {
+      "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.automaticRecovery.staleRunningReservation",
+      "implementation": "tools/vibe2-system-steward.mjs::staleRunningIds",
+      "contractTest": "qa/vibe2-system-steward.test.mjs",
+      "queue": "vibe2-unreal-core:.vibe2/queue.json",
+      "eligibleState": "running",
+      "waitBlockersExcluded": true,
+      "staleAfterMinutes": 45,
+      "detection": "MISSING_OR_OLDER_THAN_STALE_THRESHOLD_RESERVED_AT",
+      "action": "CLEAR_RESERVATION_AND_REQUEUE_SAME_TASK",
+      "clearedFields": [
+        "reservationId",
+        "reservationRunId",
+        "reservationRunAttempt",
+        "reservedAt",
+        "blocker"
+      ],
+      "actionMarker": "RECOVER_STALE_RUNNING_RESERVATION",
+      "lastOutcomeMarker": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
+      "evidenceMarker": "system-steward:stale-running-reservation-recovered",
+      "directMainWrite": false,
+      "policyMutation": false,
+      "retryHistoryMutation": false,
+      "unrelatedTaskFieldsPreservedBySpread": true
     }
   },
   "learningRetrievalRouting": {
