@@ -1,5 +1,5 @@
 {
-  "version": 52,
+  "version": 53,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -722,7 +722,7 @@
     "failureAction": "KEEP_VIBE_TASK_RUNTIME_QA_PENDING_OR_ASSET_REPAIR_REQUIRED"
   },
   "gameSpecificBuildUpDirectiveSecurity": {
-    "version": 2,
+    "version": 3,
     "centralContract": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective",
     "protections": {
       "directiveGeneratorCannotExpandPolicyAuthority": true,
@@ -742,7 +742,17 @@
       "activeReservationDirectiveCannotBeSilentlyRewritten": true,
       "effectivenessClassifierCannotSelfApproveQaRuntimeReleaseOrPromotion": true,
       "nextActionDecisionCannotBypassSecurityQaRuntimeOrReleaseAuthority": true,
-      "sameFailedStrategyRequiresNewVerifiedCausalEvidenceBeforeReuse": true
+      "sameFailedStrategyRequiresNewVerifiedCausalEvidenceBeforeReuse": true,
+      "passiveEvaluatedStateCannotHideApplicableGap": true,
+      "notApplicableRequiresCurrentDesignOrSourceAbsenceEvidence": true,
+      "applicableMapInventoryUiGameplaySessionGapCannotBeSilentlySkipped": true,
+      "mapExpansionRequirementCannotAuthorizeRandomGameIdentityDrift": true,
+      "convenienceRequirementMayNotAutomateAwayCorePlayerChoice": true,
+      "inventoryEquipmentUpgradeMustPreserveAuthoritativeStateAndSaveMeaning": true,
+      "saveCompletenessMayNotChangeExistingSaveKeysOrMeaningWithoutMigrationAuthority": true,
+      "uiUxUpgradeMayNotMoveGameplayAuthorityToClient": true,
+      "performanceBudgetOptimizationMayReducePresentationCostButNotProtectedGameplayMeaning": true,
+      "holisticCoverageCannotInventAbsentGameplaySystemsSolelyToSatisfyChecklist": true
     },
     "failureAction": "REGENERATE_OR_REPAIR_AFFECTED_DIRECTIVE_SCOPE_WITHOUT_STOPPING_UNRELATED_GAME_DEVELOPMENT"
   },
