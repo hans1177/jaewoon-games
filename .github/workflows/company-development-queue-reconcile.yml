@@ -32,7 +32,7 @@ env:
 
 jobs:
   game-primary-gate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       defer: ${{ steps.gate.outputs.defer }}
       active_game_work: ${{ steps.gate.outputs.active_game_work }}
@@ -69,7 +69,7 @@ jobs:
   reconcile:
     needs: game-primary-gate
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
       - name: Checkout main engine
