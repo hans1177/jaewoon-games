@@ -8,8 +8,8 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "status": "ACTIVE",
-      "selectedPlatform": "UNITY",
-      "targetPlatform": "UNITY",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -60,7 +60,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-26T22:29:51.602Z",
+      "updatedAt": "2026-09-26T22:30:24.591Z",
       "robloxSourceCommit": "6d226665fc3edfa8cbbbdc02245bc97df3cf6973",
       "robloxSourceBootstrapPassedAt": "2026-09-26T15:18:18.812Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -913,8 +913,8 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "status": "ACTIVE",
-      "selectedPlatform": "UNITY",
-      "targetPlatform": "UNITY",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -965,7 +965,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-26T22:26:05.638Z",
+      "updatedAt": "2026-09-26T22:30:24.591Z",
       "robloxSourceCommit": "8816db394640fb0fc2c8ba4013bac7a810dcfcfa",
       "robloxSourceBootstrapPassedAt": "2026-09-26T12:54:53.288Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1745,8 +1745,8 @@
       },
       "robloxProjectPath": "roblox-games/village-dungeons",
       "unityProjectPath": "unity-games/village-dungeons",
-      "targetSourcePath": "roblox-games/village-dungeons",
-      "sourcePath": "roblox-games/village-dungeons",
+      "targetSourcePath": "unity-games/village-dungeons",
+      "sourcePath": "unity-games/village-dungeons",
       "designBaselineSource": "design/village-dungeons/2026-09-19/design-revised.json",
       "designDate": "2026-09-19",
       "minimumDesignContract": {
@@ -1782,7 +1782,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T22:26:54.723Z",
+      "updatedAt": "2026-09-26T22:30:24.591Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3511,8 +3511,8 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "status": "ACTIVE",
-      "selectedPlatform": "UNITY",
-      "targetPlatform": "UNITY",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -3563,7 +3563,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T21:23:25.110Z",
+      "updatedAt": "2026-09-26T22:30:24.591Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -8488,7 +8488,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-26T22:30:13.483Z",
+  "updatedAt": "2026-09-26T22:30:24.591Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -8553,6 +8553,5 @@
   },
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
-  "automaticFeatureExpansionFreezeForbidden": true,
-  "robloxSourceParallelism": null
+  "automaticFeatureExpansionFreezeForbidden": true
 }
