@@ -210,7 +210,7 @@ test('central native planner suppresses already-active per-game child dispatches
 
 test('director runner drain advances latest scheduler without cancelling running game work',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
-  assert.match(director,/CURRENT_MAIN_SHA="$current_main" node/);
+  assert.match(director,/CURRENT_MAIN_SHA="\$current_main"[^\n]*node/);
   assert.match(director,/VIBE2_STALE_UNSTARTED_SCHEDULER/);
   assert.match(director,/VIBE2_STALE_UNSTARTED_FANIN_REFILL/);
   assert.match(director,/unity-android-independent-qa\.yml/);
