@@ -909,7 +909,7 @@
     "internalArtificialConcurrencyCapsForbidden": true,
     "codingEfficiencyObjective": "MAXIMIZE_VERIFIED_FUNCTIONAL_SOURCE_CHANGE_PER_MODEL_INVOCATION_AND_FIRST_CANDIDATE_PASS_RATE",
     "sourceCandidateGenerationBottleneckMitigation": {
-      "version": 7,
+      "version": 8,
       "priority": "SOURCE_CANDIDATE_GENERATION_FIRST",
       "status": "FOCUSED_TIMEOUT_CHAIN_POLICY_SYNC_CODE_PENDING",
       "focusedWebRepairFirstAttemptMode": "RESPONSIBILITY_SELECTED_JSON_EDIT",
@@ -1189,7 +1189,11 @@
       "robloxZeroOutputTimeoutFocusedRecoveryAttemptBudgetIncrease": false,
       "robloxZeroOutputTimeoutFocusedRecoveryQualityGateWeakening": false,
       "robloxNonTimeoutFullGraphicsPackageRecoveryUnchanged": true,
-      "robloxMotionAndCoreVisualDomainGatesUnchanged": true
+      "robloxMotionAndCoreVisualDomainGatesUnchanged": true,
+      "exactResponsibleLineLocatorNormalization": true,
+      "lineLocatorNormalizationRule": "STRIP_TRAILING_LINE_OR_LINE_COLUMN_SUFFIX_ONLY_WHEN_STRIPPED_PATH_EXACTLY_MATCHES_EXISTING_RESPONSIBLE_FILE",
+      "lineLocatorNormalizationWritableScopeExpansion": false,
+      "lineLocatorNormalizationInvalidUnknownPathStillRejected": true
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
     "strategyQualityMayNotTradeAwayQaOrEvidence": true,
