@@ -2159,6 +2159,7 @@ export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
 
 function findSafeTasks(project,repoRoot,queue){
   const pilot=isAssetProductionPilot(project,repoRoot);
+  const weatherPilot=isWeatherPresentationPilot(project,repoRoot);
   const studioTasks=findStudioContinuousImprovementTasks(project,repoRoot,queue);
   const holisticBackfillTasks=studioTasks.filter(task=>task?.studioQualityEvolution?.existingHolisticBackfillRequired===true);
   const normalStudioTasks=studioTasks.filter(task=>task?.studioQualityEvolution?.existingHolisticBackfillRequired!==true);
@@ -2190,8 +2191,9 @@ function findSafeTasks(project,repoRoot,queue){
     ]);
     return uniqueTaskCandidates([
       findUnityTask(project,repoRoot,queue),
+      ...(weatherPilot?[findWeatherPresentationTask(project,repoRoot,queue)]:[]),
       ...holisticBackfillTasks,
-      findWeatherPresentationTask(project,repoRoot,queue),
+      ...(!weatherPilot?[findWeatherPresentationTask(project,repoRoot,queue)]:[]),
       findPresentationQualityTask(project,repoRoot,queue),
       ...normalStudioTasks,
       scanExplicitMarkerTask(project,repoRoot,queue)
