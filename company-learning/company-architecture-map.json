@@ -4872,14 +4872,16 @@
         "noNewScheduler": true,
         "ordering": [
           "EXACT_RUNTIME_SECURITY_PROGRESS_REPAIR",
+          "OWNER_EXPLICIT_P0_PLATFORM_WORK",
           "HOLISTIC_BACKFILL_FIVE_PILLARS",
-          "GENERIC_PRESENTATION_ASSET_POLISH",
+          "GENERIC_PRESENTATION_ASSET_WEATHER_POLISH",
           "NORMAL_CONTINUOUS_EVOLUTION"
         ],
         "existingRunningTaskPreserved": true,
         "newCandidatePriorityOnly": true,
         "unrelatedParallelismPreserved": true,
-        "sameResponsibleFileConflictStillSerializes": true
+        "sameResponsibleFileConflictStillSerializes": true,
+        "ownerExplicitP0Preserved": true
       }
     }
   },
