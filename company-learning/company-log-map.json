@@ -1,5 +1,5 @@
 {
-  "version": 79,
+  "version": 80,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1271,6 +1271,25 @@
     "gamePrimaryBoundaryMustRemain": 256,
     "adaptivePressureBehaviorMustRemainUnchanged": true,
     "checkoutReliefMustNotBecomeQaOrSecurityBypass": true
+  },
+  "vibeFanInPinnedContractOverlay": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.fanInPinnedContractOverlayRepair20260926",
+    "workflow": ".github/workflows/vibe2-continuous-core.yml",
+    "requiredMarkers": [
+      "VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state.json",
+      "VIBE2_REGRESSION_ROLE=PASS",
+      "VIBE2_HIERARCHICAL_FAN_IN=PASS:"
+    ],
+    "failureClass": "FAN_IN_RUNTIME_OVERLAY_ROOT_MISSING",
+    "forbiddenPath": "/tmp/vibe2-main",
+    "requiredOverlayRoot": "$GITHUB_WORKSPACE/vibe2-contract",
+    "liveFailureEvidence": [
+      "run:36220960087",
+      "run:36221316381"
+    ],
+    "regressionMayPassBeforeOverlayFailure": true,
+    "queueSettlementRequiredAfterOverlay": true
   },
   "systemAiDeepBottleneckReasoning": {
     "version": 1,
