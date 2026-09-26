@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-c7a4k1",
-      "worker": "vibe2",
-      "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "f576c728b1c7fe30c5bccfe0368033fcd500be67",
-      "acquiredAt": "2026-09-26T17:39:09.488Z",
-      "expiresAt": "2026-09-26T18:24:09.488Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-ddgl4b",
       "worker": "vibe2",
       "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
@@ -565,6 +547,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:cozy-island-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-juums",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "unity-games/horror-escape-room/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "81435c833397a8cecff4a1b7ac335681b6ea2a8b",
+      "acquiredAt": "2026-09-26T18:24:24.712Z",
+      "expiresAt": "2026-09-26T19:09:24.712Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
       ]
     }
   ]
