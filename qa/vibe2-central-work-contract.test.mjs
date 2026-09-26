@@ -10,6 +10,7 @@ import { execFileSync } from 'node:child_process';
 import {
   CANONICAL_VIBE_POLICY_PATH,
   loadCentralPolicySnapshot,
+  loadCentralPolicySnapshotFromGitRef,
   compileVibeCentralWorkContract,
   assertCompiledWorkContractFresh
 } from '../tools/vibe2-central-work-contract.mjs';
@@ -275,6 +276,34 @@ test('central roadmap fingerprint is fail-closed when policy changes during work
     ()=>assertCompiledWorkContractFresh({cwd:root,contract,phase:'PRE_CANDIDATE_WRITE'}),
     /CENTRAL_POLICY_STALE:PRE_CANDIDATE_WRITE/
   );
+});
+
+test('live git-ref loader accepts central policy snapshots larger than one MiB',()=>{
+  const base=tempRoot();
+  const origin=path.join(base,'origin.git');
+  const seed=path.join(base,'seed');
+  const worker=path.join(base,'worker');
+  fs.mkdirSync(seed,{recursive:true});
+  execFileSync('git',['init','--bare',origin],{stdio:['ignore','pipe','pipe']});
+  git(seed,'init','-b','main');
+  git(seed,'config','user.name','qa');
+  git(seed,'config','user.email','qa@example.invalid');
+  writePolicy(seed,196);
+  const policyFile=path.join(seed,CANONICAL_VIBE_POLICY_PATH);
+  const document=JSON.parse(fs.readFileSync(policyFile,'utf8'));
+  document.largeTelemetryFixture='x'.repeat(1100000);
+  fs.writeFileSync(policyFile,JSON.stringify(document,null,2)+'\n','utf8');
+  assert.ok(fs.statSync(policyFile).size>1024*1024);
+  git(seed,'add','.');
+  git(seed,'commit','-m','large policy');
+  git(seed,'remote','add','origin',origin);
+  git(seed,'push','-u','origin','main');
+  execFileSync('git',['clone','--quiet','--branch','main',origin,worker],{stdio:['ignore','pipe','pipe']});
+  const snapshot=loadCentralPolicySnapshotFromGitRef({repoRoot:worker,required:true,ref:'origin/main',fetchRemote:false});
+  assert.equal(snapshot.valid,true);
+  assert.equal(snapshot.present,true);
+  assert.equal(snapshot.version,196);
+  assert.equal(snapshot.errors.length,0);
 });
 
 test('pinned worker ignores unrelated live roadmap progress but detects execution-policy change',()=>{
