@@ -858,6 +858,14 @@ test('minimum necessary procedure policy keeps development throughput ahead of u
   assert.equal(noGameWideLock.internalArtificialParallelCapAdded,false);
   assert.equal(architecture.robloxDevelopmentParallelismProjection.topLevelGameWideWorkflowLock,false);
   assert.equal(architecture.robloxDevelopmentParallelismProjection.maxParallelInternalCap,null);
+  const unityBootstrapParallel=roadmap.changeRecord?.unityWebBootstrapParallelFanout20260927;
+  assert.equal(unityBootstrapParallel.globalBootstrapConcurrencyGroupRemoved,true);
+  assert.equal(unityBootstrapParallel.exactGameIdInputRequired,true);
+  assert.equal(unityBootstrapParallel.parentMatrixFanout,true);
+  assert.equal(unityBootstrapParallel.internalMaxParallel,null);
+  assert.equal(architecture.unityWebBootstrapParallelismProjection.topLevelGlobalWorkflowLock,false);
+  assert.equal(architecture.unityWebBootstrapParallelismProjection.multiGameLoop,false);
+  assert.equal(architecture.unityWebBootstrapParallelismProjection.maxParallelInternalCap,null);
   assert.equal(p.execution.taskMicroFanInImmediateRefillPreserved,true);
   assert.equal(p.execution.cohortFanInLimitedToRelevantIntegrationRegressionAndRelease,true);
   assert.equal(p.principles.optimizationLaneMustRemainLiveDuringDevelopment,true);

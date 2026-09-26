@@ -131,3 +131,18 @@ test('Unity Web floor consumes the exact Vibe directive without creating a platf
     fs.rmSync(root,{recursive:true,force:true});
   }
 });
+
+test('Unity Web floor bootstrap fans out exact game ids without a global workflow lock or internal parallel cap',()=>{
+  const parent=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+  const worker=fs.readFileSync('.github/workflows/unity-web-floor-source-bootstrap.yml','utf8');
+  assert.match(parent,/unity_web_bootstrap_json/);
+  assert.match(parent,/dispatch-unity-web-bootstrap:[\s\S]*?strategy:[\s\S]*?matrix:[\s\S]*?game_id:/);
+  assert.match(parent,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml[\s\S]*?game_id: \$\{\{ matrix\.game_id \}\}/);
+  assert.doesNotMatch(parent,/dispatch-unity-web-bootstrap:[\s\S]*?max-parallel:/);
+  assert.match(worker,/run-name: Unity Web Floor Bootstrap \$\{\{ inputs\.game_id \}\}/);
+  assert.match(worker,/workflow_call:[\s\S]*?game_id:/);
+  assert.doesNotMatch(worker,/^concurrency:/m);
+  assert.doesNotMatch(worker,/GAME_IDS|inputs\.game_ids|for\(const gameId of ids\)/);
+  assert.match(worker,/GAME_ID: \$\{\{ inputs\.game_id \}\}/);
+});
+

@@ -1,8 +1,8 @@
 {
-  "version": 415,
+  "version": 416,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-26",
+  "recordedAt": "2026-09-27",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -8306,6 +8306,51 @@
         "EXACT_GAME_ID_DISPATCH_REMAINS_SUPPORTED",
         "COMPANY_RUNTIME_PERSIST_CONFLICT_RETRY_REMAINS",
         "NO_QA_SECURITY_RELEASE_GATE_WEAKENING"
+      ]
+    },
+    "unityWebBootstrapParallelFanout20260927": {
+      "id": "UNITY_WEB_BOOTSTRAP_PARALLEL_FANOUT_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.orchestrationConcurrency",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "symptom": "UNITY_WEB_BOOTSTRAP_ACCEPTED_COMMA_SEPARATED_GAME_IDS_USED_ONE_GLOBAL_CONCURRENCY_GROUP_AND_GENERATED_DISTINCT_GAME_SOURCES_IN_A_SINGLE_FOR_LOOP",
+      "policyBasis": [
+        "globalSerializationForbidden",
+        "distinctGamesParallel",
+        "longRunningUnityWebMayNotBlockOtherGames",
+        "externalProviderCapacityIsOnlyHeavyExecutionBoundary"
+      ],
+      "repair": "FAN_OUT_BOOTSTRAP_BY_EXACT_GAME_ID_MATRIX_REMOVE_GLOBAL_BOOTSTRAP_CONCURRENCY_GROUP_AND_PROCESS_ONE_GAME_PER_WORKFLOW_INVOCATION_WITHOUT_MAX_PARALLEL",
+      "preserves": [
+        "GAME_ID_CANONICAL_TASK_IDENTITY",
+        "DEVELOPMENT_CONFIRMED_GATE",
+        "DURABLE_NATIVE_PROGRESS_REJECTION",
+        "EXACT_DESIGN_BASELINE",
+        "VIBE_BUILD_UP_DIRECTIVE",
+        "CANDIDATE_PR_ONLY",
+        "UNITY_WEB_BUILD_QA_REGRESSION_READINESS_GATES"
+      ],
+      "globalBootstrapConcurrencyGroupRemoved": true,
+      "commaSeparatedGameBatchRemoved": true,
+      "exactGameIdInputRequired": true,
+      "parentMatrixFanout": true,
+      "internalMaxParallel": null,
+      "sharedStateHeavySerializationAdded": false,
+      "qaOrReleaseGateWeakening": false,
+      "implementationState": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "codeBindings": [
+        ".github/workflows/company-development-confirmed-runtime.yml",
+        ".github/workflows/unity-web-floor-source-bootstrap.yml",
+        "qa/company-unity-web-floor-bootstrap.test.mjs",
+        "qa/company-central-policy-contract.test.mjs",
+        "company-learning/company-architecture-map.json"
+      ],
+      "requiredVerification": [
+        "UNITY_WEB_BOOTSTRAP_PARENT_MATRIX_USES_GAME_ID",
+        "UNITY_WEB_BOOTSTRAP_WORKFLOW_ACCEPTS_ONE_GAME_ID",
+        "NO_TOP_LEVEL_GLOBAL_BOOTSTRAP_CONCURRENCY_GROUP",
+        "NO_MAX_PARALLEL_INTERNAL_CAP",
+        "NO_MULTI_GAME_FOR_LOOP",
+        "UNITY_RUNTIME_SHARED_STATE_WRITER_CRITICAL_SECTION_UNCHANGED"
       ]
     }
   },
@@ -22735,7 +22780,10 @@
       "sameGameIndependentNonOverlappingPackagesParallel": true,
       "onlyAllowedSerialization": "ATOMIC_SHARED_STATE_WRITE_OR_EXACT_RESPONSIBLE_FILE_CONFLICT",
       "sharedStateWriteMustReleaseHeavyExecutionCapacity": true,
-      "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true
+      "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true,
+      "unityWebBootstrapGameWideSerializationForbidden": true,
+      "unityWebBootstrapDispatchIdentity": "GAME_ID",
+      "unityWebBootstrapInternalParallelCap": null
     }
   },
   "centralDocumentation": {

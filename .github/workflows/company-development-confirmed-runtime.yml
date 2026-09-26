@@ -59,6 +59,7 @@ jobs:
       unity_web_ids: ${{ steps.plan.outputs.unity_web_ids }}
       unity_web_json: ${{ steps.plan.outputs.unity_web_json }}
       unity_web_bootstrap_ids: ${{ steps.plan.outputs.unity_web_bootstrap_ids }}
+      unity_web_bootstrap_json: ${{ steps.plan.outputs.unity_web_bootstrap_json }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -155,6 +156,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_ids='+webIds.join(',')+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_json='+JSON.stringify(webIds)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_bootstrap_ids='+bootstrapIds.join(',')+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_bootstrap_json='+JSON.stringify(bootstrapIds)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'blocked_ids='+blockedIds.join(',')+'\n');
           console.log('UPPER_PLATFORM_ELIGIBLE_COUNT='+nativeIds.length);
           console.log('UPPER_PLATFORM_ELIGIBLE_IDS='+(nativeIds.join(',')||'NONE'));
@@ -221,13 +223,17 @@ jobs:
     secrets: inherit
 
   dispatch-unity-web-bootstrap:
-    name: Bootstrap Unity Web development-floor sources
+    name: Bootstrap Unity Web development-floor source ${{ matrix.game_id }}
     needs: native-plan
     if: needs.native-plan.outputs.unity_web_bootstrap_ids != ''
+    strategy:
+      fail-fast: false
+      matrix:
+        game_id: ${{ fromJSON(needs.native-plan.outputs.unity_web_bootstrap_json) }}
     permissions:
       contents: write
       pull-requests: write
     uses: ./.github/workflows/unity-web-floor-source-bootstrap.yml
     with:
-      game_ids: ${{ needs.native-plan.outputs.unity_web_bootstrap_ids }}
+      game_id: ${{ matrix.game_id }}
     secrets: inherit
