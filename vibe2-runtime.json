@@ -573,7 +573,7 @@
   },
   "adaptiveBackpressure": {
     "enabled": true,
-    "mode": "GAME_PRIMARY_VERIFIED_THROUGHPUT_ADAPTIVE_WITH_EXTERNAL_BOUNDARY",
+    "mode": "GAME_PRIMARY_TELEMETRY_ONLY_WITH_SPECULATIVE_PRESSURE_CONTROL",
     "stateFile": ".vibe2/parallelism-control.json",
     "steps": [
       4,
@@ -613,7 +613,10 @@
     ],
     "minimumAdaptiveWave": 30,
     "baselineAdaptiveWave": 256,
-    "staleTelemetryResetTarget": 256
+    "staleTelemetryResetTarget": 256,
+    "adaptiveControlRole": "TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY",
+    "primaryReservationLimit": "CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY",
+    "primaryReservationDownshiftAllowed": false
   },
   "sources": {
     "queue": ".vibe2/queue.json",
@@ -817,7 +820,7 @@
       256
     ],
     "policyConcurrencyLimit": null,
-    "effectiveMaxMeaning": "CURRENT_EXTERNAL_CAPACITY_REQUEST_AFTER_VERIFIED_PRESSURE_ADJUSTMENT"
+    "effectiveMaxMeaning": "CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY_FOR_PRIMARY_RESERVATION; ADAPTIVE_VALUE_IS_TELEMETRY_ONLY"
   },
   "contracts": {
     "core": {
