@@ -373,36 +373,13 @@ jobs:
           tree_sha="$(find "$out" -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{print $1}')"
           echo "tree_sha=$tree_sha" >> "$GITHUB_OUTPUT"
 
-      - name: Browser boot smoke
+      - name: Prepare Unity Web browser runtime
         shell: bash
-        env:
-          GAME_ID: ${{ steps.request.outputs.game_id }}
         run: |
           set -euo pipefail
           npm install --no-save playwright
           npx playwright install --with-deps chromium
-          python3 -m http.server 4181 --directory /tmp/unity-web >/tmp/unity-web-http.log 2>&1 &
-          pid=$!
-          trap 'kill "$pid" 2>/dev/null || true' EXIT
-          node --input-type=module <<'NODE'
-          import {chromium} from 'playwright';
-          const game=process.env.GAME_ID;
-          const browser=await chromium.launch({headless:true});
-          const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
-          const errors=[];
-          page.on('pageerror',e=>errors.push(e.message));
-          page.on('console',m=>{ if(m.type()==='error') errors.push(m.text()); });
-          await page.goto(`http://127.0.0.1:4181/web-games/${game}/`,{waitUntil:'domcontentloaded',timeout:60000});
-          await page.waitForSelector('canvas',{state:'visible',timeout:60000});
-          await page.waitForTimeout(3000);
-          const box=await page.locator('canvas').first().boundingBox();
-          if(!box||box.width<1||box.height<1) throw new Error('Unity canvas not rendered');
-          const fatal=errors.filter(x=>/wasm|abort|out of memory|failed to fetch|build error/i.test(x));
-          if(fatal.length) throw new Error(fatal.join(' | '));
-          await page.screenshot({path:'/tmp/unity-web/boot-mobile.png',fullPage:true});
-          await browser.close();
-          console.log('UNITY_WEB_BOOT_SMOKE=PASS');
-          NODE
+          echo 'UNITY_WEB_BROWSER_RUNTIME=READY'
 
       - name: Run Unity Web actual browser play
         shell: bash
@@ -457,7 +434,11 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const gameId=process.env.GAME_ID;
-          const file='/tmp/unity-web/web-games/'+gameId+'/unity-web-build.json';
+          const root='/tmp/unity-web/web-games/'+gameId;
+          const play=JSON.parse(fs.readFileSync(root+'/unity-web-gameplay-validation.json','utf8'));
+          if(play.pass!==true||play.boot?.pass!==true)throw new Error('UNITY_WEB_ACTUAL_PLAY_BOOT_EVIDENCE_REQUIRED');
+          const file=root+'/unity-web-build.json';
+          console.log('UNITY_WEB_BOOT_SMOKE=PASS:ACTUAL_PLAY_EVIDENCE');
           fs.writeFileSync(file,JSON.stringify({
             version:2,
             engine:'UNITY_WEB',
