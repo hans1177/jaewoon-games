@@ -884,9 +884,19 @@ export function runQueueCommand(args = {}) {
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
     const reservationMaxConcurrentTasks=executionLane==='game-primary'?adaptiveMaxConcurrentTasks:configuredMaxConcurrentTasks;
+    const pressureSpeculativeExpansion=speculativeExpansionPolicy(adaptiveControl);
+    const gamePrimaryDemand=executionLane==='game-primary'
+      ?null
+      :selectVibeQueueBatch(queue,{maxConcurrentTasks:1,lane:'game-primary'});
+    const auxiliaryGamePrimaryActive=executionLane!=='game-primary'
+      &&((gamePrimaryDemand?.selected?.length||0)>0||(gamePrimaryDemand?.capacityRunning?.length||0)>0);
     const speculativeExpansion=executionLane==='game-primary'
-      ?speculativeExpansionPolicy(adaptiveControl)
-      :Object.freeze({allowed:true,reason:'AUXILIARY_LANE_UNCHANGED',primaryCoveragePreserved:true});
+      ?pressureSpeculativeExpansion
+      :auxiliaryGamePrimaryActive
+        ?Object.freeze({allowed:false,reason:'AUXILIARY_SPARE_ONLY_GAME_PRIMARY_ACTIVE',primaryCoveragePreserved:true})
+        :pressureSpeculativeExpansion.allowed===false
+          ?Object.freeze({...pressureSpeculativeExpansion,reason:`AUXILIARY_${pressureSpeculativeExpansion.reason}`})
+          :Object.freeze({allowed:true,reason:'AUXILIARY_SPARE_CAPACITY_AVAILABLE',primaryCoveragePreserved:true});
     const reserved = reserveVibeTaskBatch(queue, {
       maxConcurrentTasks: reservationMaxConcurrentTasks,
       reservation: reservationFromArgs(args),
