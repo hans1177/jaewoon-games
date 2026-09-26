@@ -252,6 +252,36 @@ end
 
 -- 상태 갱신
 local function render()
+  local idx=p:GetAttribute("NextBaseIndex")or 1
+  local b=C.Bases[idx]
+  local target=b and (b.Name .. " · " .. (b.Enemy or "수비대") .. " · 전력 " .. b.Strength)or "5개 거점 정복 완료"
+  resources.Text=string.format("나무 %d · 식량 %d · 코인 %d
+병사 %d · 병영 Lv.%d · 점령 %d/5",
+   p:GetAttribute("Wood")or 0,p:GetAttribute("Food")or 0,p:GetAttribute("Coins")or 0,
+   p:GetAttribute("Troops")or 0,p:GetAttribute("BarracksLevel")or 1,p:GetAttribute("CapturedBases")or 0)
+
+  local inBattle=p:GetAttribute("InBattle")==true
+  local activity=p:GetAttribute("LastActivity")or "나무/작물에 가까이 가서 직접 채집"
+  objective.Text=inBattle and ("⚔ " .. target .. " · 전투 " .. (p:GetAttribute("BattleProgress")or 0).. "%") or (activity .. "  |  다음: " .. target)
+
+  if inBattle then
+    if bgm.IsPlaying then bgm:Stop()end
+    if not battleBgm.IsPlaying then battleBgm:Play()end
+  else
+    if battleBgm.IsPlaying then battleBgm:Stop()end
+    if not bgm.IsPlaying then bgm:Play()end
+  end
+
+  local captured=p:GetAttribute("CapturedBases")or 0
+  if captured>lastCaptured then victorySfx.TimePosition=0;victorySfx:Play()end
+  lastCaptured=captured
+end
+
+for _,k in ipairs({"Wood","Food","Coins","Iron","Horses","Stone","Gold","Sulfur","Residents","WoodWorkers","Farmers","BarracksLevel","Troops","CapturedBases","CapturedIslands","NextBaseIndex","BattleProgress","LastActivity","InBattle"})do
+  p:GetAttributeChangedSignal(k):Connect(render)
+end
+
+p:GetAttributeChangedSignal("FeedbackEvent"):Co
  local idx=p:GetAttribute("NextBaseIndex")or 1
  local b=C.Bases[idx]
  local target=b and (b.Name.." · "..(b.Enemy or"수비대").." · 전력 "..b.Strength)or"5개 거점 정복 완료"
