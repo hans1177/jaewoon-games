@@ -1,10 +1,10 @@
 // 파일명: tools/vibe2-adaptive-backpressure.mjs
 // 역할: 정책상 무제한 병렬을 유지하면서 외부 GitHub matrix 배치 용량 안에서 텔레메트리 기반 압력 조절만 수행한다.
 
-export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 16, 20, 32, 64, 128, 256]);
+export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([30, 32, 64, 128, 256]);
 export const DEFAULT_ADAPTIVE_MAX = 256;
 export const DEFAULT_ADAPTIVE_TARGET = 256;
-export const DEFAULT_ADAPTIVE_MIN = 4;
+export const DEFAULT_ADAPTIVE_MIN = 30;
 export const DEFAULT_TELEMETRY_TTL_MS = 90 * 60 * 1000;
 
 const num = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
@@ -12,7 +12,7 @@ const clean = (value) => String(value ?? '').trim();
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 function normalizeStep(value = DEFAULT_ADAPTIVE_TARGET) {
-  const raw = clamp(Math.floor(num(value) || DEFAULT_ADAPTIVE_TARGET), 4, DEFAULT_ADAPTIVE_MAX);
+  const raw = clamp(Math.floor(num(value) || DEFAULT_ADAPTIVE_TARGET), DEFAULT_ADAPTIVE_MIN, DEFAULT_ADAPTIVE_MAX);
   return ADAPTIVE_PARALLELISM_STEPS.reduce((best, step) => Math.abs(step - raw) < Math.abs(best - raw) ? step : best, DEFAULT_ADAPTIVE_TARGET);
 }
 function stepDown(current) {
