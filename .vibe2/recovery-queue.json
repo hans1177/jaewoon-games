@@ -19911,7 +19911,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-09-26T06:34:08.211Z"
+      "updatedAt": "2026-09-26T06:51:33.379Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -118705,10 +118705,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-22T23:20:59.247Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -144205,10 +144205,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-23T11:04:31.999Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -144411,7 +144411,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.919Z",
-      "updatedAt": "2026-09-26T06:34:07.702Z"
+      "updatedAt": "2026-09-26T06:51:32.892Z"
     },
     {
       "id": "recovery-ticket-bug-65aa0ffb4ab275d5f5a6",
@@ -144454,7 +144454,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T06:50:55.930Z",
-      "updatedAt": "2026-09-26T06:34:07.714Z"
+      "updatedAt": "2026-09-26T06:51:32.903Z"
     },
     {
       "id": "recovery-ticket-bug-ea186d71ff8c7f6300a7",
@@ -144540,7 +144540,8 @@
         "tester-debug-occurrence-count:57",
         "tester-debug-occurrence-count:58",
         "tester-debug-occurrence-count:59",
-        "tester-debug-occurrence-count:60"
+        "tester-debug-occurrence-count:60",
+        "tester-debug-occurrence-count:61"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -144553,15 +144554,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 60,
+      "recurrenceCount": 61,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T07:13:17.824Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -144607,10 +144608,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-24T08:08:46.628Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -145340,10 +145341,10 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-25T18:52:44.364Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -145422,7 +145423,8 @@
         "tester-debug-occurrence-count:38",
         "tester-debug-occurrence-count:39",
         "tester-debug-occurrence-count:40",
-        "tester-debug-occurrence-count:41"
+        "tester-debug-occurrence-count:41",
+        "tester-debug-occurrence-count:42"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145435,15 +145437,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 41,
+      "recurrenceCount": 42,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-25T19:12:21.440Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -145486,7 +145488,8 @@
         "tester-debug-occurrence-count:14",
         "tester-debug-occurrence-count:15",
         "tester-debug-occurrence-count:16",
-        "tester-debug-occurrence-count:17"
+        "tester-debug-occurrence-count:17",
+        "tester-debug-occurrence-count:18"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145499,15 +145502,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 17,
+      "recurrenceCount": 18,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.964Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -145550,7 +145553,8 @@
         "tester-debug-occurrence-count:14",
         "tester-debug-occurrence-count:15",
         "tester-debug-occurrence-count:16",
-        "tester-debug-occurrence-count:17"
+        "tester-debug-occurrence-count:17",
+        "tester-debug-occurrence-count:18"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145563,15 +145567,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 17,
+      "recurrenceCount": 18,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.970Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -145614,7 +145618,8 @@
         "tester-debug-occurrence-count:14",
         "tester-debug-occurrence-count:15",
         "tester-debug-occurrence-count:16",
-        "tester-debug-occurrence-count:17"
+        "tester-debug-occurrence-count:17",
+        "tester-debug-occurrence-count:18"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145627,15 +145632,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 17,
+      "recurrenceCount": 18,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.976Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -145678,7 +145683,8 @@
         "tester-debug-occurrence-count:14",
         "tester-debug-occurrence-count:15",
         "tester-debug-occurrence-count:16",
-        "tester-debug-occurrence-count:17"
+        "tester-debug-occurrence-count:17",
+        "tester-debug-occurrence-count:18"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145691,15 +145697,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 17,
+      "recurrenceCount": 18,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.982Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -145742,7 +145748,8 @@
         "tester-debug-occurrence-count:14",
         "tester-debug-occurrence-count:15",
         "tester-debug-occurrence-count:16",
-        "tester-debug-occurrence-count:17"
+        "tester-debug-occurrence-count:17",
+        "tester-debug-occurrence-count:18"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145755,15 +145762,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 17,
+      "recurrenceCount": 18,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.988Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -145806,7 +145813,8 @@
         "tester-debug-occurrence-count:14",
         "tester-debug-occurrence-count:15",
         "tester-debug-occurrence-count:16",
-        "tester-debug-occurrence-count:17"
+        "tester-debug-occurrence-count:17",
+        "tester-debug-occurrence-count:18"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145819,15 +145827,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 17,
+      "recurrenceCount": 18,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.993Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -145870,7 +145878,8 @@
         "tester-debug-occurrence-count:14",
         "tester-debug-occurrence-count:15",
         "tester-debug-occurrence-count:16",
-        "tester-debug-occurrence-count:17"
+        "tester-debug-occurrence-count:17",
+        "tester-debug-occurrence-count:18"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145883,15 +145892,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 17,
+      "recurrenceCount": 18,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:41.998Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -145934,7 +145943,8 @@
         "tester-debug-occurrence-count:14",
         "tester-debug-occurrence-count:15",
         "tester-debug-occurrence-count:16",
-        "tester-debug-occurrence-count:17"
+        "tester-debug-occurrence-count:17",
+        "tester-debug-occurrence-count:18"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -145947,15 +145957,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 17,
+      "recurrenceCount": 18,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.008Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -145998,7 +146008,8 @@
         "tester-debug-occurrence-count:14",
         "tester-debug-occurrence-count:15",
         "tester-debug-occurrence-count:16",
-        "tester-debug-occurrence-count:17"
+        "tester-debug-occurrence-count:17",
+        "tester-debug-occurrence-count:18"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146011,15 +146022,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 17,
+      "recurrenceCount": 18,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.014Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -146062,7 +146073,8 @@
         "tester-debug-occurrence-count:14",
         "tester-debug-occurrence-count:15",
         "tester-debug-occurrence-count:16",
-        "tester-debug-occurrence-count:17"
+        "tester-debug-occurrence-count:17",
+        "tester-debug-occurrence-count:18"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146075,15 +146087,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 17,
+      "recurrenceCount": 18,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.019Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -146126,7 +146138,8 @@
         "tester-debug-occurrence-count:14",
         "tester-debug-occurrence-count:15",
         "tester-debug-occurrence-count:16",
-        "tester-debug-occurrence-count:17"
+        "tester-debug-occurrence-count:17",
+        "tester-debug-occurrence-count:18"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146139,15 +146152,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 17,
+      "recurrenceCount": 18,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.025Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -146190,7 +146203,8 @@
         "tester-debug-occurrence-count:14",
         "tester-debug-occurrence-count:15",
         "tester-debug-occurrence-count:16",
-        "tester-debug-occurrence-count:17"
+        "tester-debug-occurrence-count:17",
+        "tester-debug-occurrence-count:18"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146203,15 +146217,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 17,
+      "recurrenceCount": 18,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.030Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     },
     {
@@ -146254,7 +146268,8 @@
         "tester-debug-occurrence-count:14",
         "tester-debug-occurrence-count:15",
         "tester-debug-occurrence-count:16",
-        "tester-debug-occurrence-count:17"
+        "tester-debug-occurrence-count:17",
+        "tester-debug-occurrence-count:18"
       ],
       "recoveryStrategy": "REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
       "verificationPlan": [
@@ -146267,15 +146282,15 @@
       "recoveryOwner": "VIBE2_VIBE3",
       "primaryAiReview": "PENDING",
       "learningPromotion": "PENDING",
-      "recurrenceCount": 17,
+      "recurrenceCount": 18,
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-26T04:43:42.035Z",
-      "updatedAt": "2026-09-26T06:34:08.446Z",
+      "updatedAt": "2026-09-26T06:51:33.612Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-26T06:34:08.446Z"
+        "recovery-dispatched-at:2026-09-26T06:51:33.612Z"
       ]
     }
   ]
