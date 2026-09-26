@@ -666,7 +666,11 @@ test('known Roblox source repair debt outranks reconciliation pass and canonical
   assert.equal(repair.repeatedFailureEscalation.repeatedSameApproachWithoutNewCausalEvidenceForbidden,true);
   assert.match(workflow,/const bootstrapFailed=secondaryOwnerFocus\?item\.ownerFocusRobloxSourceBootstrapFailedAt:item\.robloxSourceBootstrapFailedAt/);
   assert.match(workflow,/item\.robloxFoundationF0Passed!==true/);
-  assert.match(workflow,/const knownSourceRepairDebt=Boolean\(bootstrapFailed\)\|\|f0FoundationRepair/);
+  assert.match(workflow,/const currentReconciliationPass=reconciledPass\.has\(item\.gameId\)/);
+  assert.match(workflow,/const resolvedAssetBindingFalseDebt=!secondaryOwnerFocus/);
+  assert.match(workflow,/existing-source-studio-asset-binding-required/);
+  assert.match(workflow,/const knownSourceRepairDebt=\(Boolean\(bootstrapFailed\)&&!resolvedAssetBindingFalseDebt\)\|\|f0FoundationRepair/);
+  assert.match(workflow,/ROBLOX_STALE_ASSET_BINDING_DEBT_RESOLVED_BY_EXACT_RECONCILIATION=/);
   assert.match(workflow,/const repairSupersedesCandidate=existingSourceAssetRebind\|\|knownSourceRepairDebt/);
   assert.match(workflow,/if\(candidateReady&&!repairSupersedesCandidate\)continue/);
   assert.match(workflow,/ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR=/);
@@ -675,6 +679,13 @@ test('known Roblox source repair debt outranks reconciliation pass and canonical
   assert.doesNotMatch(workflow,/f0FoundationRepair=!secondaryOwnerFocus\s*\n\s*&&state==='F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED'/);
 });
 
+
+test('source reconciliation failure clears older Roblox source candidate pointers atomically',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const failureBlock=workflow.slice(workflow.indexOf('if(result.pass===true){'),workflow.indexOf('reconciliationFail++;')+32);
+  assert.match(failureBlock,/robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null/);
+  assert.match(failureBlock,/robloxFailureStage:'TARGET_PLATFORM_SOURCE_BIND'/);
+});
 
 test('pending private runtime candidates retry even when technical target count is zero',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
