@@ -482,7 +482,8 @@ test('exact game_id runtime dispatch isolates source and package selection',()=>
 test('stale historical Roblox runtime executions cannot roll source or package state backward',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/currentMainRevision=execFileSync\('git',\['rev-parse','origin\/main'\]/);
-  assert.match(workflow,/ROBLOX_SOURCE_RECONCILIATION_STALE_IGNORED=/);
+  assert.match(workflow,/ROBLOX_SOURCE_RECONCILIATION_STALE_REQUEUE=/);
+  assert.match(workflow,/ROBLOX_SOURCE_RECONCILIATION_STALE_COUNT=/);
   assert.match(workflow,/reconciliationRevision!==currentMainRevision/);
   assert.match(workflow,/ROBLOX_PACKAGE_STALE_RESULT_IGNORED=/);
   assert.match(workflow,/boundSourceRevision!==resultSourceRevision/);
