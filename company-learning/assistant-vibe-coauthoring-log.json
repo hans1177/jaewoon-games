@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "authority": "ASSISTANT_VIBE_COAUTHORING_TRACE",
   "status": "ACTIVE",
   "recordedAt": "2026-09-26",
@@ -315,6 +315,39 @@
       ],
       "learningState": "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE",
       "liveState": "CODE_AND_QA_VERIFIED_LIVE_ROBLOX_RUNTIME_PENDING"
+    },
+    {
+      "id": "assistant_roblox_stale_candidate_asset_rebind_unblock_20260926",
+      "date": "2026-09-26",
+      "gameId": "MULTI_GAME_ROBLOX",
+      "actionType": "PIPELINE_CAUSAL_REPAIR",
+      "problem": "Sixteen DEVELOPMENT_CONFIRMED Roblox games had current Studio asset-binding refresh debt, but older source candidate branch pointers from earlier runs were still marked ready. The source planner checked candidateReady before current repair debt and skipped every game, producing ROBLOX_SOURCE_TARGET_COUNT=0 despite sixteen reconciliation failures.",
+      "rootCause": "STALE_SOURCE_CANDIDATE_STATE_OUTRANKED_NEWER_CAUSAL_SOURCE_REPAIR",
+      "repair": [
+        "Moved current reconciliation and repair-debt classification ahead of candidateReady suppression.",
+        "Added repairSupersedesCandidate so Studio asset rebind or known source repair debt bypasses stale candidate state.",
+        "Cleared sixteen demonstrably stale runtime candidate pointers whose candidateReadyAt preceded the newer asset-binding failure timestamp.",
+        "Removed dedicated QA-only runtime/source-reconcile test files from full Roblox Runtime push triggers while preserving their Vibe3/Vibe QA coverage."
+      ],
+      "evidence": [
+        "company-runtime:development-queue:16 stale candidates cleared at runtime commit 58784d24ef3cc17849fec13d69cd1c00b37ed5a6",
+        "main:fix b688c86bf0da7f2540038c8bb7bbce9d83db9c62",
+        "main:test 1e2e3149e1544b270a21ab9f4d16c4dc0ad3549b",
+        "main:trigger isolation 38a6d49f929b88daded29ebfcacfd68a95bfdfe1",
+        "main:trigger test 0c96a2dd883f4d9d833375dbcb84fa4f954f84d4",
+        "live:QA-only commit 0c96a2dd created Company Evolution QA and Vibe3 Engine Contract but no Roblox Runtime run"
+      ],
+      "reusablePatterns": [
+        "NEWER_CAUSAL_REPAIR_DEBT_SUPERSEDES_OLDER_PENDING_SOURCE_CANDIDATE",
+        "CANDIDATE_POINTER_FRESHNESS_MUST_BE_COMPARED_TO_NEWER_FAILURE_EVIDENCE",
+        "DEDICATED_QA_ONLY_CHANGES_SHOULD_NOT_LAUNCH_HEAVY_RUNTIME_WHEN_COVERED_BY_SEPARATE_QA"
+      ],
+      "avoidPatterns": [
+        "CANDIDATE_READY_EARLY_CONTINUE_BEFORE_CURRENT_REPAIR_CLASSIFICATION",
+        "STALE_CANDIDATE_POINTER_BLOCKS_REBIND",
+        "QA_ONLY_EDIT_SPAWNS_FULL_NATIVE_RUNTIME"
+      ],
+      "liveState": "CODE_AND_RUNTIME_STATE_REPAIRED; EXISTING_GITHUB_ACTIONS_QUEUE_DRAIN_PENDING; NO_MCP_GATE_WEAKENING"
     }
   ]
 }
