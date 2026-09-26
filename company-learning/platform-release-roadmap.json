@@ -1,5 +1,5 @@
 {
-  "version": 422,
+  "version": 423,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8384,7 +8384,7 @@
       "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
       "objective": "FREE_GAME_EXECUTION_CAPACITY_BY_CANCELLING_ONLY_SUPERSEDED_CONTROL_PLANE_AND_DUPLICATE_SAME_GAME_QUEUED_RUNS",
       "supervisor": ".github/workflows/director-supervisor.yml",
-      "supervisorRunner": "ubuntu-slim",
+      "supervisorRunner": "ubuntu-24.04-arm",
       "directorCancelInProgress": false,
       "staleControlPlaneMayCancel": true,
       "staleCentralPushMayCancelWhenNotStarted": true,
@@ -8400,7 +8400,8 @@
         "qa/company-central-pipeline-only.test.mjs",
         "company-learning/company-architecture-map.json",
         "company-learning/company-log-map.json"
-      ]
+      ],
+      "supervisionRunner": "ubuntu-slim"
     },
     "runnerQueueDrainV2_20260926": {
       "id": "RUNNER_QUEUE_DRAIN_V2_2026-09-26",
@@ -8422,6 +8423,28 @@
       "independentGameCancellationForbidden": true,
       "currentHeadRunCancellationForbidden": true,
       "sharedStateOptimisticRetryPreserved": true,
+      "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "controlPlaneGameRunnerEviction20260926": {
+      "id": "CONTROL_PLANE_GAME_RUNNER_EVICTION_2026-09-26",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "MOVE_NON_GAME_NODE_GIT_CONTROL_WORK_OFF_UBUNTU_LATEST_SO_GAME_BUILD_MODEL_AND_RUNTIME_WORKERS_GET_PRIMARY_HOSTED_RUNNER_CAPACITY",
+      "slimWorkflows": [
+        ".github/workflows/company-status-sync.yml",
+        ".github/workflows/company-development-queue-reconcile.yml",
+        ".github/workflows/company-design-promotion-sync.yml",
+        ".github/workflows/company-platform-exposure-sync.yml",
+        ".github/workflows/vibe2-recovery-fast.yml"
+      ],
+      "directorRunnerSplit": {
+        "runnerDrain": "ubuntu-24.04-arm",
+        "gamePrimaryGate": "ubuntu-slim",
+        "supervise": "ubuntu-slim"
+      },
+      "heavyGameWorkersRemainUbuntuLatest": true,
+      "independentGameParallelismPreserved": true,
+      "sharedStateWriteRulesUnchanged": true,
       "qualitySecurityReleaseGatesUnchanged": true
     }
   },
@@ -20971,13 +20994,18 @@
         "existingHomepageAndRecordsPathScopesPreserved": true
       },
       "controlPlaneRunnerIsolation": {
-        "version": 1,
+        "version": 2,
         "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
         "runner": "ubuntu-slim",
         "workflows": [
           ".github/workflows/company-evolution-qa.yml",
           ".github/workflows/company-central-policy-contract-qa.yml",
-          ".github/workflows/main-write-guard.yml"
+          ".github/workflows/main-write-guard.yml",
+          ".github/workflows/company-status-sync.yml",
+          ".github/workflows/company-development-queue-reconcile.yml",
+          ".github/workflows/company-design-promotion-sync.yml",
+          ".github/workflows/company-platform-exposure-sync.yml",
+          ".github/workflows/vibe2-recovery-fast.yml"
         ],
         "purpose": "KEEP_NONBLOCKING_ADMINISTRATIVE_VALIDATION_OFF_GAME_PRIMARY_UBUNTU_LATEST_CAPACITY",
         "productQualityGateWeakening": false,
