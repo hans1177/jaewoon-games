@@ -84,6 +84,10 @@ test('reserve scheduling isolates execution lanes and learning defers before pro
   assert.equal(learning.liveRunnerPressureGateImplemented,true);
   assert.equal(learning.pressureObservationFailureDefersLearning,true);
   assert.equal(learning.productionMayNotWaitForLearningReserve,true);
+  assert.equal(runtime.continuous.speculativeParallelism.liveRunnerPressureBridgeImplemented,true);
+  assert.equal(runtime.continuous.speculativeParallelism.liveRunnerPressureSuppressesSpeculationOnly,true);
+  assert.equal(runtime.continuous.speculativeParallelism.primaryCoveragePreservedUnderLiveRunnerPressure,true);
+  assert.equal(runtime.continuous.speculativeParallelism.gamePrimaryExternalBoundaryUnchanged,256);
 
   assert.match(core,/format\('vibe2-control-state-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(core,/\|\| 'vibe2-control-state-vibe2-unreal-core'/);
@@ -91,4 +95,8 @@ test('reserve scheduling isolates execution lanes and learning defers before pro
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING/);
   assert.match(runner,/needs\.plan\.outputs\.learning_idle_queued != '0' && needs\.plan\.outputs\.runner_pressure != 'YES'/);
+  assert.match(runner,/runner_pressure: \$\{\{ needs\.plan\.outputs\.runner_pressure \}\}/);
+  assert.match(core,/VIBE2_LIVE_RUNNER_PRESSURE: \$\{\{ inputs\.runner_pressure \|\| github\.event\.client_payload\.runner_pressure \|\| 'NO' \}\}/);
+  assert.match(core,/--runner-pressure="\$VIBE2_LIVE_RUNNER_PRESSURE"/);
+  assert.match(core,/VIBE2_RESERVE_LIVE_RUNNER_PRESSURE=\$VIBE2_LIVE_RUNNER_PRESSURE/);
 });
