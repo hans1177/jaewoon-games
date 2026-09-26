@@ -782,9 +782,9 @@ function initWorld(){
   for(const p of [{x:2100,y:1880},{x:12200,y:1760}])state.enemies.push(spawnAt(creatures.lakebuffalo,p.x,p.y,null));
   for(const p of [{x:5200,y:1860},{x:9400,y:1700}])state.enemies.push(spawnAt(creatures.crystaldeer,p.x,p.y,null));
   for(const p of [{x:4100,y:1650},{x:7600,y:1910},{x:11600,y:1660}])state.enemies.push(spawnAt(creatures.lakeheron,p.x,p.y,null));
-  // 수중: 악어 1 + 상어 2 + 물고기 6
+  // 수중: 악어 1 + 상어 3 + 물고기 6
   {const e=spawnAt(creatures.lakecroc,10400,1880,null);e.area='underwater';e.noRespawn=true;state.enemies.push(e)}
-  for(const p of [{x:5200,y:1700},{x:14300,y:2300}]){const e=spawnAt(creatures.shark,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
+  for(const p of [{x:5200,y:1700},{x:9800,y:900},{x:14300,y:2300}]){const e=spawnAt(creatures.shark,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
   for(let i=0;i<6;i++){const p={x:2200+i*2450,y:650+(i%3)*720};const e=spawnAt(creatures.lakefish,p.x,p.y,null);e.area='underwater';state.enemies.push(e)}
   // 꽃밭 생태계
   for(let i=0;i<8;i++){const p=randomFlowerPoint(false);state.enemies.push(spawnAt(creatures.flowergoblin,p.x,p.y,null))}for(let pack=0;pack<6;pack++){const a=randomFlowerPoint(false),count=Math.random()<.2?1:2;for(let i=0;i<count;i++)state.enemies.push(spawnAt(creatures.giantbee,a.x+rand(-55,55),a.y+rand(-55,55),pack))}for(let i=0;i<5;i++){const a=randomFlowerPoint(true),adult=spawnAt(creatures.giantspider,a.x,a.y,100+i);state.enemies.push(adult);const kids=2+Math.floor(Math.random()*3);for(let k=0;k<kids;k++){const c=spawnAt(creatures.giantspiderling,a.x+rand(-85,85),a.y+rand(-85,85),100+i);c.leaderId=adult.netId;state.enemies.push(c)}}for(let i=0;i<2;i++){const p=randomFlowerPoint(true);state.enemies.push(spawnAt(creatures.giantspiderling,p.x,p.y,null))}
