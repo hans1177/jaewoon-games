@@ -1042,6 +1042,26 @@ test('administrative control-plane QA stays off game-primary ubuntu-latest capac
   }
 });
 
+test('System AI reserve control stays off game-primary ubuntu-latest capacity',()=>{
+  const workflow=readText('.github/workflows/company-system-ai-workers.yml');
+  const reserveStart=workflow.indexOf('\n  reserve:\n');
+  const workerStart=workflow.indexOf('\n  worker:\n',reserveStart);
+  assert.ok(reserveStart>=0&&workerStart>reserveStart);
+  const reserve=workflow.slice(reserveStart,workerStart);
+  assert.match(reserve,/runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(reserve,/runs-on:\s*ubuntu-latest/);
+  const policy=roadmap.changeRecord?.controlPlaneRunnerPoolSeparation20260926;
+  assert.equal(policy?.systemAi?.reserveRunner,'ubuntu-slim');
+});
+
+test('Vibe3 contract QA stays off game-primary ubuntu-latest capacity',()=>{
+  const workflow=readText('.github/workflows/vibe3-engine-contract.yml');
+  assert.match(workflow,/\n  contract:\n[\s\S]*?runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(workflow,/runs-on:\s*ubuntu-latest/);
+  assert.ok(architecture.minimumNecessaryProcedurePolicyProjection.impactScopedWorkflowFiles.includes('.github/workflows/vibe3-engine-contract.yml'));
+  assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
+});
+
 test('duplicate administrative QA keeps only the latest same-ref validation',()=>{
   const roadmap=JSON.parse(readText('company-learning/platform-release-roadmap.json'));
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.duplicateValidationWithoutEvidenceInvalidationForbidden,true);
