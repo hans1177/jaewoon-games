@@ -61,6 +61,7 @@ jobs:
       targets_json: ${{ steps.targets.outputs.targets_json || '[]' }}
       reconciliation_count: ${{ steps.reconcile.outputs.count || '0' }}
       reconciliation_json: ${{ steps.reconcile.outputs.results_json || '[]' }}
+      contract_fingerprint: ${{ steps.contract.outputs.fingerprint || '' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -92,6 +93,31 @@ jobs:
             echo 'run=true' >> "$GITHUB_OUTPUT"
             echo "ROBLOX_BATCH_FRESHNESS=CURRENT:$current_main"
           fi
+
+      - name: Bind Roblox source-plan contract fingerprint
+        id: contract
+        if: steps.freshness.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          fingerprint="$(node - <<'NODE'
+          const {execFileSync}=require('child_process');
+          const crypto=require('crypto');
+          const paths=[
+            '.github/workflows/company-development-roblox-runtime.yml',
+            'tools/company-development-roblox-bootstrap.mjs',
+            'tools/company-development-roblox-source-reconcile.mjs',
+            'tools/company-selected-platform-router.mjs',
+            'tools/company-upper-platform-admission.mjs',
+            'company-asset-library.json',
+            'company-learning/platform-release-roadmap.json',
+          ];
+          const rows=paths.map(path=>path+':'+execFileSync('git',['rev-parse',`HEAD:${path}`],{encoding:'utf8'}).trim());
+          process.stdout.write(crypto.createHash('sha256').update(rows.join('\n')).digest('hex'));
+          NODE
+          )"
+          echo "fingerprint=$fingerprint" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_SOURCE_PLAN_CONTRACT_FINGERPRINT=$fingerprint"
 
       - name: Verify Roblox development contracts
         if: steps.freshness.outputs.run == 'true'
@@ -450,6 +476,7 @@ jobs:
         env:
           EXPECTED_TARGETS_JSON: ${{ needs.source-plan.outputs.targets_json }}
           RECONCILIATION_RESULTS_JSON: ${{ needs.source-plan.outputs.reconciliation_json }}
+          SOURCE_PLAN_CONTRACT_FINGERPRINT: ${{ needs.source-plan.outputs.contract_fingerprint }}
         shell: bash
         run: |
           set -euo pipefail
@@ -465,6 +492,20 @@ jobs:
           const {execFileSync}=require('child_process');
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const currentMainRevision=execFileSync('git',['rev-parse','origin/main'],{encoding:'utf8'}).trim();
+          const contractPaths=[
+            '.github/workflows/company-development-roblox-runtime.yml',
+            'tools/company-development-roblox-bootstrap.mjs',
+            'tools/company-development-roblox-source-reconcile.mjs',
+            'tools/company-selected-platform-router.mjs',
+            'tools/company-upper-platform-admission.mjs',
+            'company-asset-library.json',
+            'company-learning/platform-release-roadmap.json',
+          ];
+          const crypto=require('crypto');
+          const liveContractRows=contractPaths.map(path=>path+':'+execFileSync('git',['rev-parse',`origin/main:${path}`],{encoding:'utf8'}).trim());
+          const liveContractFingerprint=crypto.createHash('sha256').update(liveContractRows.join('\n')).digest('hex');
+          const plannedContractFingerprint=String(process.env.SOURCE_PLAN_CONTRACT_FINGERPRINT||'').trim();
+          const sourcePlanContractStale=Boolean(plannedContractFingerprint&&plannedContractFingerprint!==liveContractFingerprint);
           const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
           const expectedById=new Map(expected.map(target=>[target.gameId,target]));
           const reconciliation=JSON.parse(process.env.RECONCILIATION_RESULTS_JSON||'[]');
@@ -481,7 +522,11 @@ jobs:
           }
           const stamp=new Date().toISOString();
           let reconciliationPass=0,reconciliationFail=0,staleReconciliationCount=0;
-          for(const result of reconciliation){
+          if(sourcePlanContractStale){
+            staleReconciliationCount=Math.max(reconciliation.length,expected.length,1);
+            console.log(`ROBLOX_SOURCE_PLAN_CONTRACT_STALE=${plannedContractFingerprint}:${liveContractFingerprint}`);
+          }
+          for(const result of sourcePlanContractStale?[]:reconciliation){
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing during reconciliation: ${result.gameId}`);
             const reconciliationRevision=String(result.sourceRevision||'').trim();
@@ -547,7 +592,7 @@ jobs:
             }
           }
           let passCount=0,candidateCount=0,failCount=0;
-          for(const result of results){
+          for(const result of sourcePlanContractStale?[]:results){
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing: ${result.gameId}`);
             const target=expectedById.get(result.gameId)||{};
