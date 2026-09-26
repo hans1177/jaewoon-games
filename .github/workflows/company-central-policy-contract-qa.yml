@@ -8,6 +8,9 @@ on:
       - 'company-learning/company-log-map.json'
       - 'company-learning/company-architecture-map.json'
       - 'company-learning/security-immune-system.json'
+      - 'company-learning/other-ai-machine-directive.json'
+      - 'company-learning/next-session-handoff.json'
+      - 'qa/other-ai-machine-directive.test.mjs'
       - 'tools/company-shared-context.mjs'
       - 'qa/company-shared-context.test.mjs'
       - 'qa/company-long-horizon-vision.test.mjs'
@@ -106,6 +109,9 @@ on:
       - 'company-learning/company-log-map.json'
       - 'company-learning/company-architecture-map.json'
       - 'company-learning/security-immune-system.json'
+      - 'company-learning/other-ai-machine-directive.json'
+      - 'company-learning/next-session-handoff.json'
+      - 'qa/other-ai-machine-directive.test.mjs'
       - 'tools/company-shared-context.mjs'
       - 'qa/company-shared-context.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
@@ -211,6 +217,7 @@ jobs:
           node --check tools/company-constitution-enforcer.mjs
           node --test qa/company-shared-context.test.mjs
           node --test qa/company-long-horizon-vision.test.mjs
+          node --test qa/other-ai-machine-directive.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/company-shared-context.json
           node tools/company-constitution-enforcer.mjs --phase=policy-qa
           node --test qa/company-constitution-enforcer.test.mjs
