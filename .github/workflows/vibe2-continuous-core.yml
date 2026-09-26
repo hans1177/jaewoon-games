@@ -1297,6 +1297,7 @@ jobs:
           OLLAMA_CACHE_HIT: ${{ steps.worker_ollama_cache.outputs.cache-hit }}
           OLLAMA_RUNTIME_SOURCE: ${{ steps.model_need.outputs.required == 'true' && 'SHARED_PREPARE_OLLAMA' || '' }}
           SHARED_CONTEXT_FILE: /tmp/vibe2-shared-context-${{ matrix.safeTask }}-${{ matrix.variant }}-after.json
+          SHARED_CONTEXT_BEFORE_FILE: /tmp/vibe2-shared-context-${{ matrix.safeTask }}-${{ matrix.variant }}-before.json
           CANDIDATE_MS: ${{ steps.candidate.outputs.duration_ms }}
           QA_MS: ${{ steps.incremental_qa.outputs.duration_ms }}
         shell: bash
@@ -1481,16 +1482,21 @@ jobs:
             clean(process.env.MODEL_CACHE_REASON)&&`model-cache-reason:${clean(process.env.MODEL_CACHE_REASON)}`,
             clean(process.env.RESERVATION_ID)&&`reservation-id:${clean(process.env.RESERVATION_ID)}`,
             `variant:${clean(process.env.VARIANT)||'primary'}`,
-            ...(fs.existsSync(clean(process.env.SHARED_CONTEXT_FILE))?(()=>{
-              const c=JSON.parse(fs.readFileSync(clean(process.env.SHARED_CONTEXT_FILE),'utf8'));
+            ...(()=>{
+              const post=clean(process.env.SHARED_CONTEXT_FILE);
+              const pre=clean(process.env.SHARED_CONTEXT_BEFORE_FILE);
+              const contextFile=post&&fs.existsSync(post)?post:(pre&&fs.existsSync(pre)?pre:'');
+              if(!contextFile)return['shared-context-sync:MISSING'];
+              const c=JSON.parse(fs.readFileSync(contextFile,'utf8'));
               return[
                 `shared-context-policy:${clean(c?.hashes?.policySha256)}`,
                 `shared-context-log-map:${clean(c?.hashes?.logMapSha256)}`,
                 `shared-context-architecture:${clean(c?.hashes?.architectureSha256)}`,
                 `shared-context-security:${clean(c?.hashes?.securityPolicySha256)}`,
+                `shared-context-source:${contextFile===post?'POST_REVALIDATED':'PRE_VALIDATED_NO_SOURCE_WRITE'}`,
                 'shared-context-sync:PASS'
               ];
-            })():['shared-context-sync:MISSING']),
+            })(),
             ...(['analysis-only','learning-web-artifact'].includes(route)?['learning-practice-only','production-pass:NO','source-write:NO']:[ ]),
             ...(route==='learning-web-artifact'&&fs.existsSync('/tmp/vibe2-learning-practice-result.json')?(()=>{
               const p=JSON.parse(fs.readFileSync('/tmp/vibe2-learning-practice-result.json','utf8'));
