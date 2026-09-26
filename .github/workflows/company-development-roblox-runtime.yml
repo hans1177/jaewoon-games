@@ -1189,6 +1189,9 @@ jobs:
     name: persist Roblox package checkpoints
     needs: [technical-plan, technical-worker]
     if: always() && needs.technical-plan.result == 'success'
+    concurrency:
+      group: roblox-private-runtime-dispatch-${{ inputs.game_id || github.run_id }}
+      cancel-in-progress: false
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 12
     steps:
@@ -1466,10 +1469,11 @@ jobs:
           echo 'ROBLOX_REGRESSION_PASS=NO'
           echo 'ROBLOX_FINAL_REVIEW_PASS=NO'
           echo 'ROBLOX_RELEASE_CLAIM=NO'
-      - name: Dispatch pending private runtime candidates
+      - name: Route pending private runtime candidates through exact game dispatcher
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1479,10 +1483,12 @@ jobs:
           node - <<'NODE' > /tmp/roblox-private-runtime-release-ids
           const fs=require('fs');
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-private-runtime-dispatch-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           const valid=t=>/^[1-9][0-9]*$/.test(String(t?.universeId||''))&&/^[1-9][0-9]*$/.test(String(t?.placeId||''));
           let sharedFallbackUsed=false;
           let pendingCount=0;
           for(const x of q.items||[]){
+            if(requested&&x.gameId!==requested)continue;
             const revision=String(x.robloxSourceCommit||'').trim();
             const artifact=String(x.robloxBuildArtifactIdentity||'').trim();
             const candidate=x.robloxRuntimeCandidateEvidence||{};
@@ -1522,8 +1528,10 @@ jobs:
           }
           console.error('ROBLOX_PRIVATE_RUNTIME_PENDING_COUNT='+pendingCount);
           NODE
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-release-promotion.yml/runs?per_page=100" > /tmp/roblox-private-runtime-active-runs.json
-          node <<'NODE' > /tmp/roblox-private-runtime-active-ids
+
+          if [ -n "$REQUESTED_GAME_ID" ]; then
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-release-promotion.yml/runs?per_page=100" > /tmp/roblox-private-runtime-active-runs.json
+            node <<'NODE' > /tmp/roblox-private-runtime-active-ids
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/roblox-private-runtime-active-runs.json','utf8'));
           const activeStates=new Set(['queued','pending','in_progress','requested']);
@@ -1538,22 +1546,59 @@ jobs:
           }
           for(const id of [...ids].sort())console.log(id);
           NODE
-          dispatch_count=0
-          deduped_count=0
+            dispatch_count=0
+            deduped_count=0
+            while read -r id; do
+              [ -n "$id" ] || continue
+              if grep -Fxq "$id" /tmp/roblox-private-runtime-active-ids; then
+                deduped_count=$((deduped_count+1))
+                echo "ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=DEDUPED_ACTIVE:$id"
+                continue
+              fi
+              gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+              printf '%s\n' "$id" >> /tmp/roblox-private-runtime-active-ids
+              dispatch_count=$((dispatch_count+1))
+              echo "ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=$id"
+            done < /tmp/roblox-private-runtime-release-ids
+            echo "ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH_COUNT=$dispatch_count"
+            echo "ROBLOX_PRIVATE_RUNTIME_RETRY_DEDUPED_COUNT=$deduped_count"
+            echo 'ROBLOX_PRIVATE_RUNTIME_DISPATCH_OWNER=EXACT_GAME_RUNTIME'
+            exit 0
+          fi
+
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" > /tmp/roblox-runtime-active-runs.json
+          node <<'NODE' > /tmp/roblox-runtime-active-exact-ids
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-active-runs.json','utf8'));
+          const activeStates=new Set(['queued','pending','in_progress','requested']);
+          const prefix='Roblox runtime · ';
+          const ids=new Set();
+          for(const run of payload.workflow_runs||[]){
+            if(!activeStates.has(String(run.status||'').toLowerCase()))continue;
+            const title=String(run.display_title||'');
+            if(!title.startsWith(prefix)||title===prefix+'batch')continue;
+            const id=title.slice(prefix.length).trim();
+            if(/^[a-z0-9][a-z0-9-]{1,48}$/.test(id))ids.add(id);
+          }
+          for(const id of [...ids].sort())console.log(id);
+          NODE
+          handoff_count=0
+          handoff_deduped=0
           while read -r id; do
             [ -n "$id" ] || continue
-            if grep -Fxq "$id" /tmp/roblox-private-runtime-active-ids; then
-              deduped_count=$((deduped_count+1))
-              echo "ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=DEDUPED_ACTIVE:$id"
+            if grep -Fxq "$id" /tmp/roblox-runtime-active-exact-ids; then
+              handoff_deduped=$((handoff_deduped+1))
+              echo "ROBLOX_PRIVATE_RUNTIME_BATCH_HANDOFF=DEDUPED_ACTIVE_RUNTIME:$id"
               continue
             fi
-            gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
-            printf '%s\n' "$id" >> /tmp/roblox-private-runtime-active-ids
-            dispatch_count=$((dispatch_count+1))
-            echo "ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=$id"
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            printf '%s\n' "$id" >> /tmp/roblox-runtime-active-exact-ids
+            handoff_count=$((handoff_count+1))
+            echo "ROBLOX_PRIVATE_RUNTIME_BATCH_HANDOFF=EXACT_RUNTIME:$id"
           done < /tmp/roblox-private-runtime-release-ids
-          echo "ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH_COUNT=$dispatch_count"
-          echo "ROBLOX_PRIVATE_RUNTIME_RETRY_DEDUPED_COUNT=$deduped_count"
+          echo "ROBLOX_PRIVATE_RUNTIME_BATCH_HANDOFF_COUNT=$handoff_count"
+          echo "ROBLOX_PRIVATE_RUNTIME_BATCH_HANDOFF_DEDUPED_COUNT=$handoff_deduped"
+          echo 'ROBLOX_PRIVATE_RUNTIME_DISPATCH_OWNER=EXACT_GAME_RUNTIME'
 
       - name: Dispatch Roblox HEADLESS FAST_MVP continuation
         if: always()
