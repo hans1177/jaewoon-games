@@ -59,7 +59,11 @@ namespace JaewoonGames.JungleExpedition
         private void Start()
         {
             Application.targetFrameRate = 60;
+#if UNITY_WEBGL && !UNITY_EDITOR
+            qaMode = true;
+#else
             qaMode = Application.absoluteURL.Contains("qa=1");
+#endif
             LoadGame();
             BuildWorld();
             SpawnPlayer();
