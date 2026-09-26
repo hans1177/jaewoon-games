@@ -68,6 +68,12 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.ok(directive.platformAdaptationDirectives.UNITY_WEB);
   assert.ok(directive.platformAdaptationDirectives.ROBLOX);
   assert.ok(directive.platformAdaptationDirectives.UNITY_APP);
+  assert.equal(directive.robloxNativeExecution.required,true);
+  assert.ok(directive.robloxNativeExecution.responsibleFiles.some(file=>/roblox-games\/bug-defense/.test(file)));
+  assert.ok(directive.robloxNativeExecution.sourceSymbolsOrStateAnchors.some(row=>row.symbol==='attack'));
+  assert.ok(directive.robloxNativeExecution.serverClientResponsibility.some(row=>row.role==='SERVER_AUTHORITY'));
+  assert.match(directive.robloxNativeExecution.observableAcceptanceScenario,/server validation -> authoritative state change -> client feedback/);
+  assert.ok(directive.robloxNativeExecution.codeQualityChecks.includes('REMOTE_INPUT_VALIDATION'));
   assert.ok(directive.currentImplementationFindings.sourceAnchors.some(row=>row.symbol==='attack'));
   assert.ok(directive.responsibleSystemsAndFiles.sourceAnchors.length>=1);
   assert.equal(directive.responsibleSystemsAndFiles.exactSourceAnchorRequired,true);
