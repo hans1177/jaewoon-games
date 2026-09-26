@@ -1,5 +1,5 @@
 {
-  "version": 40,
+  "version": 41,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 40,
+      "runtime": 41,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -204,7 +204,19 @@
       "activeWakeCancellationForbidden": true,
       "sharedQueueWriteMode": "EXISTING_OPTIMISTIC_RESERVE_ONLY",
       "responsibleFileConflictProtectionPreserved": true,
-      "qaAndReleaseAuthorityUnchanged": true
+      "qaAndReleaseAuthorityUnchanged": true,
+      "freshnessGateBeforeContractPreflight": true,
+      "freshnessAuthority": "CURRENT_MAIN_SHA_AT_RESERVE_START",
+      "staleAction": "NOOP_BEFORE_CONTRACT_PREFLIGHT_AND_RESERVE",
+      "staleWakeMayWriteControlState": false,
+      "staleWakeMayStartGameWorker": false,
+      "runningOrCompletedGameWorkerCancellation": false,
+      "markers": [
+        "VIBE2_MAIN_PUSH_WAKE_EVENT_SHA",
+        "VIBE2_MAIN_PUSH_WAKE_LATEST_SHA",
+        "VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED",
+        "VIBE2_MAIN_PUSH_WAKE_FRESH"
+      ]
     },
     "refillMode": "task-micro-fanin-repository-dispatch-with-five-minute-safety-net",
     "refillRef": "vibe2-unreal-core",
