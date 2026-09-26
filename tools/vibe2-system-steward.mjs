@@ -8,6 +8,7 @@ import { pathToFileURL } from 'node:url';
 import { createVibeContinuousQueue, EXTERNAL_MATRIX_BATCH_MAX } from '../assets/vibe-continuous-queue.js';
 import { createParallelismControl, DEFAULT_ADAPTIVE_TARGET, DEFAULT_TELEMETRY_TTL_MS, ADAPTIVE_PARALLELISM_STEPS } from './vibe2-adaptive-backpressure.mjs';
 import { injectSelfArchitectureEvolutionTasks } from './vibe2-self-architecture-evolution.mjs';
+import { readLiveReservationRunIds, recoverStaleRunningReservations } from './vibe2-queue-control.mjs';
 
 const clean=v=>String(v??'').trim();
 const readJson=(file,fallback={})=>{
@@ -32,13 +33,6 @@ const rawMachineStateHealthy=({queueInput={},controlInput={}}={})=>
   adaptiveControlStepHealthy(controlInput);
 const clearReservation=task=>({...task,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null});
 
-function staleRunningIds(queue,{nowMs=Date.now(),staleMs=45*60*1000}={}){
-  return new Set(queue.tasks.filter(task=>{
-    if(clean(task.status).toLowerCase()!=='running'||waitBlocker(task.blocker))return false;
-    const at=Date.parse(clean(task.reservedAt));
-    return !Number.isFinite(at)||nowMs-at>Math.max(60_000,Number(staleMs)||45*60*1000);
-  }).map(task=>task.id));
-}
 function unlimitedCausalRepairTasks(queue){
   return queue.tasks.filter(task=>clean(task.status).toLowerCase()==='failed'
     &&clean(task.retryPolicy).toUpperCase()==='UNLIMITED_CAUSAL_REPAIR'
@@ -47,7 +41,7 @@ function unlimitedCausalRepairTasks(queue){
     &&safeTask(task));
 }
 
-export function runSystemStewardState({queueInput={},controlInput={},neuralExpansionReadiness={},now=new Date().toISOString(),staleRunningMs=45*60*1000,telemetryTtlMs=DEFAULT_TELEMETRY_TTL_MS}={}){
+export function runSystemStewardState({queueInput={},controlInput={},neuralExpansionReadiness={},liveReservationRunIds=[],now=new Date().toISOString(),staleRunningMs=45*60*1000,telemetryTtlMs=DEFAULT_TELEMETRY_TTL_MS}={}){
   let queue=createVibeContinuousQueue(queueInput);
   let control=createParallelismControl(controlInput);
   const nowMs=Date.parse(now)||Date.now(),actions=[],taskIds=[];
@@ -91,13 +85,21 @@ export function runSystemStewardState({queueInput={},controlInput={},neuralExpan
     actions.push('RECOVER_STALE_MACHINE_STATE_BLOCKER'); taskIds.push(...staleMachineIds);
   }
 
-  const staleIds=staleRunningIds(queue,{nowMs,staleMs:staleRunningMs});
-  if(staleIds.size){
-    queue=createVibeContinuousQueue({maxConcurrentTasks:queue.maxConcurrentTasks,tasks:queue.tasks.map(row=>staleIds.has(row.id)?{
-      ...clearReservation(row),status:'queued',blocker:null,lastOutcome:'SYSTEM_STEWARD_STALE_LEASE_RECOVERED',
+  const staleRecovery=recoverStaleRunningReservations(queue,{
+    nowMs,
+    staleMs:staleRunningMs,
+    liveReservationRunIds,
+    developmentImplementationOnly:false
+  });
+  if(staleRecovery.recovered){
+    const staleIds=new Set(staleRecovery.recoveredTaskIds||[]);
+    queue=createVibeContinuousQueue({maxConcurrentTasks:staleRecovery.queue.maxConcurrentTasks,tasks:staleRecovery.queue.tasks.map(row=>staleIds.has(row.id)?{
+      ...row,lastOutcome:'SYSTEM_STEWARD_STALE_LEASE_RECOVERED',
       evidence:uniq([...(row.evidence||[]),'system-steward:stale-running-reservation-recovered'])
     }:row)});
     actions.push('RECOVER_STALE_RUNNING_RESERVATION'); taskIds.push(...staleIds);
+  }else{
+    queue=staleRecovery.queue;
   }
 
   const causalRepair=unlimitedCausalRepairTasks(queue);
@@ -134,16 +136,19 @@ export function runSystemStewardState({queueInput={},controlInput={},neuralExpan
     changedQueue:actions.some(x=>['RECOVER_STALE_MACHINE_STATE_BLOCKER','RECOVER_STALE_RUNNING_RESERVATION','RESUME_UNLIMITED_CAUSAL_REPAIR','ALIGN_QUEUE_EXTERNAL_BOUNDARY_256','ENQUEUE_SELF_ARCHITECTURE_EVOLUTION'].includes(x)),
     changedControl:actions.some(x=>['RESET_INVALID_PARALLELISM_STATE','RESET_STALE_PARALLELISM_PRESSURE'].includes(x)),
     taskId:taskIds[0]||null,taskIds:uniq(taskIds),queue,control,
+    liveReservationRunCount:liveReservationRunIds instanceof Set?liveReservationRunIds.size:new Set((liveReservationRunIds||[]).map(clean).filter(Boolean)).size,
+    liveReservationProtectedCount:staleRecovery.protectedLive||0,
     neuralExpansionReadiness:evolution.neuralExpansionReadiness};
 }
 
-export function runSystemStewardFiles({queueFile='.vibe2/queue.json',controlFile='.vibe2/parallelism-control.json',neuralReadinessFile='',now=new Date().toISOString()}={}){
+export function runSystemStewardFiles({queueFile='.vibe2/queue.json',controlFile='.vibe2/parallelism-control.json',neuralReadinessFile='',liveRunsFile='',now=new Date().toISOString()}={}){
   const queueMissing=!fs.existsSync(queueFile);
   const queueBlank=!queueMissing&&!clean(fs.readFileSync(queueFile,'utf8'));
   const result=runSystemStewardState({
     queueInput:readJson(queueFile,{tasks:[]}),
     controlInput:readJson(controlFile,{}),
     neuralExpansionReadiness:readJson(neuralReadinessFile,{}),
+    liveReservationRunIds:readLiveReservationRunIds(liveRunsFile),
     now
   });
   const recoveredBlankQueue=queueMissing||queueBlank;
@@ -157,6 +162,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     queueFile:clean(args.queue)||'.vibe2/queue.json',
     controlFile:clean(args.control)||'.vibe2/parallelism-control.json',
     neuralReadinessFile:clean(args['neural-readiness']),
+    liveRunsFile:clean(args['live-runs-file']),
     now:clean(args.now)||new Date().toISOString()
   });
   console.log('VIBE2_SYSTEM_STEWARD_ACTION='+result.action);
@@ -168,6 +174,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log('VIBE2_SYSTEM_STEWARD_CONTROL_CHANGED='+(result.changedControl?'YES':'NO'));
   console.log('VIBE2_SYSTEM_STEWARD_QUEUE_MAX='+result.queue.maxConcurrentTasks);
   console.log('VIBE2_SYSTEM_STEWARD_ADAPTIVE_MAX='+result.control.currentMax);
+  console.log('VIBE2_SYSTEM_STEWARD_LIVE_RESERVATION_RUNS='+result.liveReservationRunCount);
+  console.log('VIBE2_SYSTEM_STEWARD_STALE_RECOVERY_SKIPPED_LIVE='+result.liveReservationProtectedCount);
   const neuralReady=result.neuralExpansionReadiness?.pass===true;
   console.log('VIBE2_NEURAL_EXPANSION_READINESS='+(neuralReady?'PASS':'PENDING'));
   console.log('VIBE2_NEURAL_EXPANSION_MISSING='+(result.neuralExpansionReadiness?.missing||[]).join(',')||'NONE');

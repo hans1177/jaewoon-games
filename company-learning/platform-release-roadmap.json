@@ -1,5 +1,5 @@
 {
-  "version": 412,
+  "version": 414,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -7737,7 +7737,7 @@
       "objective": "REDUCE_GITHUB_ACTIONS_CALLBACK_AND_RUNNER_PRESSURE_WITHOUT_REDUCING_PRIMARY_GAME_DEVELOPMENT_COVERAGE",
       "existingArchitectureOnly": true,
       "shadowPipelineCreated": false,
-      "behavior": "WHEN_EXISTING_ADAPTIVE_CONTROL_REPORTS_RUNNER_OR_QUEUE_PRESSURE_KEEP_EVERY_PRIMARY_RESERVED_TASK_AT_ONE_VARIANT_AND_SKIP_ONLY_SPARE_SPECULATIVE_EXPANSION; WHEN_PRESSURE_CLEARS EXISTING_SPECULATIVE_POLICY_RESUMES",
+      "behavior": "WHEN_EXISTING_ADAPTIVE_CONTROL_REPORTS_RUNNER_OR_QUEUE_PRESSURE, LOW_EFFECTIVE_PEAK_UTILIZATION_WITH_LOADED_WORK, OR HIGH_OR_SEVERE_WORK_PRESSURE KEEP_EVERY_PRIMARY_RESERVED_TASK_AT_ONE_VARIANT_AND_SKIP_ONLY_SPARE_SPECULATIVE_EXPANSION; WHEN_PRESSURE_CLEARS EXISTING_SPECULATIVE_POLICY_RESUMES",
       "preserves": [
         "PRIMARY_GAME_TASK_RESERVATIONS",
         "TASK_MICRO_FANIN",
@@ -7752,7 +7752,7 @@
         "qa/vibe2-queue-control.test.mjs",
         "qa/vibe2-controller-contract.test.mjs"
       ],
-      "implementationState": "IMPLEMENTED_QA_VERIFIED",
+      "implementationState": "IMPLEMENTED_PENDING_QA_AND_LIVE",
       "implementationCodeHead": "4bac61bf02c4787111da3b2c66e2e4cfc62d2a7f",
       "verification": {
         "vibe2CoreQa": 36200348261,
@@ -7760,7 +7760,24 @@
         "centralPolicyContract": 36200348257,
         "companyEvolutionQa": 36200348264,
         "securityImmune": 36200348267
-      }
+      },
+      "liveBackfillPressureExtension": {
+        "observedRunId": 36229097447,
+        "observedWorkerJobs": 57,
+        "averageWorkerQueueWaitSeconds": 1260,
+        "averageModelCacheRestoreSeconds": 25,
+        "averageCandidateGenerationSeconds": 546,
+        "priorControlReason": "LOW_LOAD",
+        "priorTelemetryPressureLevel": "SEVERE",
+        "priorTelemetryFailureRatePct": 100,
+        "priorTelemetryBottleneck": "SOURCE_CANDIDATE_GENERATION",
+        "causalGap": "SPECULATIVE_EXPANSION_CHECKED_DERIVED_LOW_LOAD_REASON_AND_DID_NOT_DIRECTLY_SUPPRESS_ON_HIGH_OR_SEVERE_TELEMETRY_PRESSURE",
+        "correction": "HIGH_OR_SEVERE_ADAPTIVE_PRESSURE_SUPPRESSES_ONLY_OPTIONAL_SPECULATIVE_VARIANTS_WHILE_PRIMARY_TASK_RESERVATIONS_REMAIN_UNCHANGED",
+        "newWorkerOrQueue": false,
+        "primaryCoverageReduced": false,
+        "securityQaReleaseGateChanged": false
+      },
+      "implementationCodeHeadScope": "PRE_SEVERE_PRESSURE_EXTENSION_BASELINE"
     },
     "runnerPressureCallbackCoalescing20260926": {
       "id": "RUNNER_PRESSURE_CALLBACK_COALESCING_2026-09-26",
@@ -8131,6 +8148,84 @@
       "reserveJobTempRootReuseForbiddenAcrossJobs": true,
       "qaSecurityReleaseSemanticsChanged": false,
       "purpose": "RESTORE_FAN_IN_STATE_SETTLEMENT_SO_NEW_HOLISTIC_BACKFILL_GENERATIONS_CAN_ENTER_AND_PROGRESS"
+    },
+    "liveReservationLeaseRecovery20260926": {
+      "id": "VIBE2_LIVE_RESERVATION_LEASE_RECOVERY_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "objective": "PREVENT_AGE_ONLY_STALE_RECOVERY_FROM_REQUEUEING_WORK_STILL_OWNED_BY_A_LIVE_GITHUB_ACTIONS_RUN_WHILE_PRESERVING_REAL_STALE_LEASE_RECOVERY",
+      "observed": {
+        "holisticBackfillActive": true,
+        "largeBatchReservationObserved": true,
+        "repeatedStaleRecoveryHistoryObserved": true,
+        "causalDefect": "STALE_RECOVERY_CHECKED_RESERVED_AT_AGE_WITHOUT_RESERVATION_RUN_LIVENESS",
+        "duplicateExecutionRisk": "AN_EXPIRED_BY_AGE_BUT_STILL_LIVE_RESERVATION_COULD_BE_CLEARED_AND_RESERVED_AGAIN"
+      },
+      "correction": {
+        "canonicalRecoveryOwner": "tools/vibe2-queue-control.mjs::recoverStaleRunningReservations",
+        "systemStewardUsesCanonicalRecovery": true,
+        "reservationRunLivenessSource": "GITHUB_ACTIONS_EXACT_RESERVATION_RUN_SNAPSHOT",
+        "liveStatuses": [
+          "queued",
+          "in_progress",
+          "pending",
+          "requested",
+          "waiting"
+        ],
+        "observationFailureAction": "PRESERVE_AFFECTED_CURRENT_RESERVATION_AS_UNKNOWN_PRESERVE",
+        "liveReservationMayNotBeRecoveredByAgeOnly": true,
+        "nonLiveMissingOrExpiredReservationStillRecoverable": true,
+        "workerCapacityReleasedWaitSemanticsPreserved": true,
+        "retryBudgetUnchanged": true,
+        "queueSchedulerAuthorityUnchanged": true,
+        "gameRuleBalanceSaveNetworkAuthorityUnchanged": true,
+        "securityReleaseQaGateUnchanged": true,
+        "directMainAuthorityAdded": false
+      },
+      "bindings": [
+        "tools/vibe2-queue-control.mjs",
+        "tools/vibe2-system-steward.mjs",
+        ".github/workflows/vibe2-continuous-core.yml",
+        ".github/workflows/vibe2-24h-runner.yml"
+      ],
+      "qa": [
+        "qa/vibe2-queue-control.test.mjs",
+        "qa/vibe2-system-steward.test.mjs"
+      ],
+      "nextGate": "TARGETED_QA_THEN_LIVE_WAVE_VERIFY_NO_LIVE_RESERVATION_IS_RECLAIMED_AS_STALE"
+    },
+    "studioConnectedPackageCompletion20260926": {
+      "id": "VIBE2_STUDIO_CONNECTED_PACKAGE_COMPLETION_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "objective": "KEEP_THE_EXISTING_BUILD_UP_QUALITY_GATE_AND_COMPLETE_PARTIAL_CONNECTED_SOURCE_PACKAGES_INCREMENTALLY_INSTEAD_OF_DISCARDING_VALID_EDITS_OR_REASKING_THE_SMALL_LOCAL_MODEL_FOR_THE_WHOLE_PACKAGE",
+      "liveEvidence": [
+        "RUN_36229097447_JOB_108369130229_TIMEOUT_TIMEOUT_NO_OP",
+        "RUN_36229097447_JOB_108369130316_TIMEOUT_NO_OP_STUDIO_QUALITY_DELTA_1_OF_3"
+      ],
+      "rootCause": "STUDIO_BUILD_UP_RETRY_REGENERATED_THE_FULL_3_TO_6_EDIT_PACKAGE_EACH_ATTEMPT_AND_DID_NOT_PRESERVE_A_VALID_PARTIAL_CANDIDATE_WHEN_THE_CONFIGURED_CONNECTED_DELTA_GATE_REJECTED_IT",
+      "correction": {
+        "initialConnectedPackageAttemptPreserved": true,
+        "timeoutNoOpMalformedOrEditMatchMaySeedOneExactAnchor": true,
+        "validPartialCandidatePreservedAcrossCompletion": true,
+        "completionUnit": "ONE_DISTINCT_EXACT_ANCHOR_REPLACEMENT_PER_MODEL_CALL",
+        "usedAnchorReuseForbidden": true,
+        "combinedCandidateRevalidatedByExistingSemanticAndStudioQualityGate": true,
+        "configuredConnectedImprovementMinimumUnchanged": true,
+        "presentationMinimumVisualDeltaUnchanged": true,
+        "completionCreditMaximum": 3,
+        "completionCreditOnlyWhenExistingGateStillReportsStudioQualityDelta": true,
+        "writableScopeExpansion": false,
+        "qualityGateWeakening": false,
+        "retryHistoryDeletion": false,
+        "gameRuleBalanceEconomyProgressionSaveNetworkAuthorityChanged": false,
+        "directMainAuthorityAdded": false
+      },
+      "bindings": [
+        "tools/vibe2-source-worker.mjs"
+      ],
+      "qa": [
+        "qa/vibe2-source-worker.test.mjs"
+      ],
+      "nextGate": "TARGETED_SOURCE_WORKER_QA_THEN_LIVE_HOLISTIC_BACKFILL_RETRY_VERIFY_TIMEOUT_NO_OP_AND_ONE_OF_THREE_FAILURE_CLASSES_DROP"
     },
     "holisticWorkerMatrixPriorityOrderRepair20260926": {
       "id": "HOLISTIC_WORKER_MATRIX_PRIORITY_ORDER_REPAIR_2026-09-26",

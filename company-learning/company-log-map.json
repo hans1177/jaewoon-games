@@ -1,5 +1,5 @@
 {
-  "version": 85,
+  "version": 88,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1239,7 +1239,22 @@
     ],
     "primaryCoverageMustRemainUnchangedWhenSuppressed": true,
     "suppressionIsNotFailure": true,
-    "automaticRecoveryExpected": true
+    "automaticRecoveryExpected": true,
+    "suppressionReasons": [
+      "ADAPTIVE_RUNNER_PRESSURE",
+      "LOW_EFFECTIVE_PEAK_UTILIZATION",
+      "ADAPTIVE_SEVERE_WORK_PRESSURE"
+    ],
+    "liveBackfillEvidence": {
+      "runId": 36229097447,
+      "averageWorkerQueueWaitSeconds": 1260,
+      "averageModelCacheRestoreSeconds": 25,
+      "averageCandidateGenerationSeconds": 546,
+      "priorControlReason": "LOW_LOAD",
+      "pressureLevel": "SEVERE",
+      "failureRatePct": 100,
+      "bottleneck": "SOURCE_CANDIDATE_GENERATION"
+    }
   },
   "vibeRunnerPressureCallbackCoalescing": {
     "version": 1,
@@ -1611,6 +1626,52 @@
         "blockedTaskReleaseCandidateForbidden": true,
         "unrelatedTasksMaySettle": true
       }
+    }
+  },
+  "vibeLiveReservationLeaseRecovery": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.liveReservationLeaseRecovery20260926",
+    "workflows": [
+      ".github/workflows/vibe2-continuous-core.yml",
+      ".github/workflows/vibe2-24h-runner.yml"
+    ],
+    "requiredMarkers": [
+      "VIBE2_LIVE_RESERVATION_SNAPSHOT=",
+      "VIBE2_LIVE_RESERVATION_SNAPSHOT_RUNS=",
+      "VIBE2_LIVE_RESERVATION_SNAPSHOT_UNKNOWN_PRESERVED=",
+      "VIBE2_LIVE_RESERVATION_RUNS=",
+      "VIBE2_STALE_RESERVATION_RECOVERY_SKIPPED_LIVE_RUNS=",
+      "VIBE2_SYSTEM_STEWARD_LIVE_RESERVATION_RUNS=",
+      "VIBE2_SYSTEM_STEWARD_STALE_RECOVERY_SKIPPED_LIVE="
+    ],
+    "interpretation": {
+      "liveReservationRunCount": "NUMBER_OF_RUNNING_QUEUE_RESERVATION_OWNER_RUNS_OBSERVED_LIVE_OR_CONSERVATIVELY_PRESERVED",
+      "skippedLiveRecoveryCount": "NUMBER_OF_RUNNING_TASKS_NOT_RECLAIMED_BECAUSE_THEIR_RESERVATION_OWNER_RUN_REMAINS_LIVE",
+      "unknownPreserved": "ACTIONS_API_OBSERVATION_FAILED_FOR_AN_EXISTING_RESERVATION_OWNER_SO_THE_LEASE_IS_PRESERVED_NOT_REQUEUED",
+      "recoveredCountExistingMarker": "VIBE2_QUEUE_RECOVERED_REMAINS_THE_ACTUAL_INFRASTRUCTURE_RECOVERY_COUNT"
+    },
+    "falsePassForbidden": true,
+    "unknownLivenessMayNotBeLoggedAsVerifiedLive": true
+  },
+  "vibeStudioConnectedPackageCompletion": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.studioConnectedPackageCompletion20260926",
+    "producer": "tools/vibe2-source-worker.mjs",
+    "requiredMarkers": [
+      "VIBE2_GENERATION_ATTEMPT_FAILURE=",
+      "VIBE2_GENERATION_ATTEMPT_OUTPUT_BYTES=",
+      "VIBE2_STUDIO_CONNECTED_COMPLETION_CREDIT="
+    ],
+    "resultFields": [
+      "generation.studioFocusedSeedUsed",
+      "generation.studioConnectedCompletion",
+      "generation.studioConnectedCompletionCredits",
+      "codingMethod.semanticDiffEnforcement.studioQualityDelta"
+    ],
+    "interpretation": {
+      "completionCredit": "AN_ADDITIONAL_FOCUSED_MODEL_CALL_ALLOWED_ONLY_TO_COMPLETE_A_PRESERVED_PARTIAL_PACKAGE_THAT_STILL_FAILS_THE_UNCHANGED_STUDIO_DELTA_GATE",
+      "completedPackage": "COMBINED_CANDIDATE_PASSED_THE_EXISTING_CONNECTED_SOURCE_AND_PRESENTATION_DELTA_REQUIREMENTS",
+      "gateFailure": "STUDIO_QUALITY_DELTA_REMAINS_A_FAILURE_AND_MUST_NOT_BE_RELABELED_PASS"
     }
   }
 }

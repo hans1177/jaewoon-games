@@ -125,6 +125,55 @@ jobs:
           echo "VIBE2_CONTINUOUS_CONTRACT_SHA=$contract_sha"
           echo 'VIBE2_MAIN_CONTRACT_SNAPSHOT=ARCHIVE'
 
+      - name: Snapshot live reservation owners
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          control_root="$GITHUB_WORKSPACE"
+          live_runs_file=/tmp/vibe2-live-reservation-runs.json
+          ids_file=/tmp/vibe2-live-reservation-run-ids.txt
+          rm -f /tmp/vibe2-reservation-run-*.json
+          node - "$control_root/.vibe2/queue.json" > "$ids_file" <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const ids=[...new Set((q.tasks||[])
+            .filter(t=>String(t.status||'').toLowerCase()==='running')
+            .map(t=>String(t.reservationRunId||'').trim())
+            .filter(Boolean))].sort();
+          process.stdout.write(ids.join('\n')+(ids.length?'\n':''));
+          NODE
+          while IFS= read -r reservation_run_id; do
+            [ -n "$reservation_run_id" ] || continue
+            safe_id="$(printf '%s' "$reservation_run_id" | tr -cd '0-9A-Za-z._-')"
+            run_file="/tmp/vibe2-reservation-run-${safe_id}.json"
+            if ! curl --fail-with-body --silent --show-error \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}" \
+              --output "$run_file"; then
+              printf '{"id":"%s","status":"unknown_preserve"}\n' "$reservation_run_id" > "$run_file"
+            fi
+          done < "$ids_file"
+          node - "$ids_file" "$live_runs_file" <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const ids=fs.readFileSync(process.argv[2],'utf8').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+          const rows=ids.map(id=>{
+            const safe=id.replace(/[^0-9A-Za-z._-]/g,'');
+            const file='/tmp/vibe2-reservation-run-'+safe+'.json';
+            try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return{id,status:'unknown_preserve'};}
+          });
+          fs.writeFileSync(process.argv[3],JSON.stringify({workflow_runs:rows},null,2)+'\n');
+          const live=new Set(['queued','in_progress','pending','requested','waiting','unknown_preserve']);
+          const protectedCount=rows.filter(row=>live.has(String(row.status||'').toLowerCase())).length;
+          const unknownCount=rows.filter(row=>String(row.status||'').toLowerCase()==='unknown_preserve').length;
+          console.log('VIBE2_LIVE_RESERVATION_SNAPSHOT='+(unknownCount?'PARTIAL_PRESERVE':'PASS'));
+          console.log('VIBE2_LIVE_RESERVATION_SNAPSHOT_RUNS='+protectedCount);
+          console.log('VIBE2_LIVE_RESERVATION_SNAPSHOT_UNKNOWN_PRESERVED='+unknownCount);
+          NODE
+
       - name: Fast scheduler preflight
         if: github.event_name != 'repository_dispatch' || github.event.action != 'vibe2-neuron-complete'
         shell: bash
@@ -168,7 +217,8 @@ jobs:
           node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" \
-            --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-reserve-preflight-steward.log
+            --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json \
+            --live-runs-file=/tmp/vibe2-live-reservation-runs.json | tee /tmp/vibe2-reserve-preflight-steward.log
           echo 'VIBE2_RESERVE_PREFLIGHT_STEWARD=PASS'
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
@@ -272,7 +322,8 @@ jobs:
             node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
               --queue="$control_root/.vibe2/queue.json" \
               --control="$control_root/.vibe2/parallelism-control.json" \
-              --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-reserve-steward.log
+              --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json \
+              --live-runs-file=/tmp/vibe2-live-reservation-runs.json | tee /tmp/vibe2-reserve-steward.log
             echo 'VIBE2_RESERVE_STEWARD=PASS'
 
             # Every non-neuron reserve ingress must synchronize from the current company runtime
@@ -354,6 +405,7 @@ jobs:
             --reservation-run="$GITHUB_RUN_ID" \
             --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
             --reserved-at="$reserved_at" \
+            --live-runs-file=/tmp/vibe2-live-reservation-runs.json \
             --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \

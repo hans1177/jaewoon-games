@@ -725,6 +725,40 @@ test('runner pressure suppresses only optional speculative variants while preser
   assert.ok(reserved.tasks.every(task=>task.neuronExpectedVariants===1));
 });
 
+test('severe source-generation pressure suppresses optional speculation even when scale control says low load',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-spec-severe-low-load-'));
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'control.json');
+  const batchFile=path.join(dir,'batch.json');
+  fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[{
+    id:'holistic-primary',gameId:'holistic-primary',target:'web',department:'development',type:'implementation',
+    goal:'holistic BUILD_UP source completion',status:'queued',priority:'critical',estimatedRisk:'high',speculativeEligible:true,
+    sourceRoot:'web-games/holistic-primary',responsibleFiles:['index.html']
+  }]},null,2));
+  fs.writeFileSync(controlFile,JSON.stringify({
+    version:4,currentMax:256,lastDecision:'HOLD',lastReason:'LOW_LOAD',
+    lastTelemetry:{
+      workerCount:1,effectiveMax:256,actualPeakConcurrency:1,effectivePeakUtilizationPct:0.39,
+      failureRatePct:100,pressureLevel:'SEVERE',bottleneck:'SOURCE_CANDIDATE_GENERATION',
+      firstCandidatePassRatePct:0,verifiedCandidatesPerMinute:0
+    }
+  },null,2));
+  const result=runQueueCommand({
+    command:'reserve-batch',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'30',
+    'reservation-id':'severe:1','reservation-run':'severe','reserved-at':'2026-09-26T08:15:30Z',output:batchFile
+  });
+  const batch=JSON.parse(fs.readFileSync(batchFile,'utf8'));
+  assert.equal(result.speculativeExpansion.allowed,false);
+  assert.match(result.speculativeExpansion.reason,/ADAPTIVE_SEVERE_WORK_PRESSURE/);
+  assert.equal(result.primaryTaskCount,1);
+  assert.equal(result.workerCount,1);
+  assert.equal(result.matrix[0].speculativeVariants,1);
+  assert.equal(batch.scheduler.primaryTaskCount,1);
+  assert.equal(batch.scheduler.workerCount,1);
+  assert.equal(batch.scheduler.speculativeExpansionAllowed,false);
+  assert.match(batch.scheduler.speculativeExpansionReason,/ADAPTIVE_SEVERE_WORK_PRESSURE/);
+});
+
 test('reserve-batch reads adaptive runner pressure and restores speculation after pressure clears',()=>{
   const makeFiles=(name,control)=>{
     const dir=fs.mkdtempSync(path.join(os.tmpdir(),name));
@@ -1010,6 +1044,24 @@ test('stale running development reservation is requeued without consuming retry'
   assert.equal(task.lastOutcome,'STALE_RESERVATION_RECOVERED');
   assert.equal(task.reservationId,null);
   assert.ok(task.evidence.includes('recovery:stale-running-reservation-v1'));
+});
+
+test('stale-age reservation owned by a live workflow run is preserved', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'live-reservation',gameId:'live',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/live',goal:'implementation',status:'running',retries:1,maxRetries:2,
+    reservationId:'36229097447:1',reservationRunId:'36229097447',reservationRunAttempt:1,reservedAt:'2026-09-18T08:00:00Z'
+  }]});
+  const recovered=recoverStaleRunningReservations(queue,{
+    nowMs:Date.parse('2026-09-18T10:00:00Z'),
+    liveReservationRunIds:new Set(['36229097447'])
+  });
+  const task=recovered.queue.tasks[0];
+  assert.equal(recovered.recovered,0);
+  assert.equal(recovered.protectedLive,1);
+  assert.equal(task.status,'running');
+  assert.equal(task.reservationId,'36229097447:1');
+  assert.equal(task.lastOutcome ?? null,null);
 });
 
 test('awaiting QA running reservation is not reclaimed as stale worker capacity', () => {

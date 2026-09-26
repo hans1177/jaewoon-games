@@ -1,5 +1,5 @@
 {
-  "version": 220,
+  "version": 222,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -525,7 +525,7 @@
     }
   },
   "neuralWorkGraphTopology": {
-    "version": 5,
+    "version": 4,
     "authority": "DERIVED_FROM_CENTRAL_POLICY",
     "centralPolicyKey": "neuralDevelopmentBrain",
     "currentState": "ALWAYS_RUNNING_ATOMIC_SIGNAL_MESH_WITH_VIBE_SYNCED_WORKERS",
@@ -841,15 +841,16 @@
           8,
           16,
           20,
+          30,
           32,
           64,
           128,
           256
         ],
-        "baselineTarget": 20,
+        "baselineTarget": 256,
         "externalBoundary": 256,
         "hardCapAt20": false,
-        "hardFloorAt20": true,
+        "hardFloorAt20": false,
         "pressureMayDownshiftBelow20": false,
         "healthySaturationMayUpshiftAbove20": true,
         "matrixFanOutUsesCurrentAdaptiveTarget": true,
@@ -868,12 +869,13 @@
         "telemetryDenominator": "CURRENT_ATOMIC_RESERVATION_CAP",
         "speculativeExpansionController": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
         "speculativeExpansionPressureSource": ".vibe2/parallelism-control.json",
-        "speculativeExpansionPolicy": "PRIMARY_FIRST_SPARE_ONLY_WITH_RUNNER_PRESSURE_SUPPRESSION",
+        "speculativeExpansionPolicy": "PRIMARY_FIRST_SPARE_ONLY_WITH_ADAPTIVE_PRESSURE_SUPPRESSION",
         "speculativeExpansionSuppressedSignals": [
           "RUNNER_CAPACITY",
           "RUNNER_QUEUE_WAIT",
           "CHECKOUT_NETWORK",
-          "LOW_EFFECTIVE_PEAK_UTILIZATION_WITH_LOADED_WORK"
+          "LOW_EFFECTIVE_PEAK_UTILIZATION_WITH_LOADED_WORK",
+          "HIGH_OR_SEVERE_ADAPTIVE_PRESSURE_LEVEL"
         ],
         "speculativeExpansionSuppressionEffect": "OPTIONAL_VARIANTS_ONLY",
         "primaryReservationCountUnaffected": true,
@@ -891,7 +893,17 @@
         "callbackCoalescingFailOpen": true,
         "callbackCoalescingResultLossForbidden": true,
         "newWorkflowForCallbackCoalescing": false,
-        "newSchedulerForCallbackCoalescing": false
+        "newSchedulerForCallbackCoalescing": false,
+        "adaptiveMinimum": 30,
+        "severePressureGuard": {
+          "owner": "tools/vibe2-queue-control.mjs::speculativeExpansionPolicy",
+          "liveEvidenceRunId": 36229097447,
+          "observedPriorReason": "LOW_LOAD",
+          "observedPressureLevel": "SEVERE",
+          "observedFailureRatePct": 100,
+          "observedBottleneck": "SOURCE_CANDIDATE_GENERATION",
+          "effect": "OPTIONAL_SPECULATIVE_VARIANTS_SUPPRESSED_PRIMARY_RESERVATIONS_UNCHANGED"
+        }
       },
       "bottleneckFirstRuntimeCheckpoint": {
         "version": 1,
@@ -1293,6 +1305,50 @@
         "liveVerificationRun": 36208311596,
         "prewarmRunnerReliefLiveVerified": true,
         "nextObservedInfrastructureBottleneck": "WORKER_MODEL_CACHE_RESTORE_BEFORE_WORK_ORDER_AND_LOCK"
+      },
+      "liveReservationLeaseRecovery": {
+        "version": 1,
+        "source": "company-learning/platform-release-roadmap.json#changeRecord.liveReservationLeaseRecovery20260926",
+        "canonicalDecisionOwner": "tools/vibe2-queue-control.mjs::recoverStaleRunningReservations",
+        "systemStewardDelegation": "tools/vibe2-system-steward.mjs::runSystemStewardState",
+        "snapshotIngress": [
+          ".github/workflows/vibe2-continuous-core.yml::Snapshot live reservation owners",
+          ".github/workflows/vibe2-24h-runner.yml::Snapshot live reservation owners"
+        ],
+        "identity": "reservationRunId",
+        "liveRunProtection": "LIVE_OR_UNKNOWN_PRESERVE_RESERVATION_OWNER_BLOCKS_AGE_ONLY_RECLAIM",
+        "staleRecovery": "MISSING_OR_EXPIRED_NONLIVE_RESERVATION_REQUEUES_WITHOUT_RETRY_CONSUMPTION",
+        "externalWaitProtectionPreserved": true,
+        "singleCanonicalStaleDecisionFunction": true,
+        "duplicateStaleDecisionImplementationForbidden": true,
+        "queueSchedulerAuthorityChanged": false,
+        "sourceWriteAuthorityChanged": false,
+        "gameSemanticsChanged": false
+      },
+      "studioConnectedPackageCompletion": {
+        "version": 1,
+        "source": "company-learning/platform-release-roadmap.json#changeRecord.studioConnectedPackageCompletion20260926",
+        "owner": "tools/vibe2-source-worker.mjs::generateCandidateWithRecovery",
+        "existingComponentsReused": [
+          "tools/vibe2-source-worker.mjs::focusedReplaceOnlySpec",
+          "tools/vibe2-source-worker.mjs::buildFocusedReplaceOnlyPrompt",
+          "tools/vibe2-source-worker.mjs::evaluateStudioQualityCandidateDelta"
+        ],
+        "flow": [
+          "TRY_COMPACT_CONNECTED_PACKAGE",
+          "PRESERVE_VALID_PARTIAL_CANDIDATE",
+          "SELECT_DISTINCT_UNUSED_EXACT_ANCHOR",
+          "GENERATE_ONE_MISSING_REPLACEMENT",
+          "COMBINE_WITH_PRESERVED_CANDIDATE",
+          "REVALIDATE_EXISTING_STUDIO_QUALITY_GATE",
+          "REPEAT_ONLY_WHILE_GATE_REPORTS_MISSING_CONNECTED_DELTA_AND_CREDIT_REMAINS"
+        ],
+        "newWorker": false,
+        "newQueue": false,
+        "shadowPipeline": false,
+        "qualityGateChanged": false,
+        "writableScopeChanged": false,
+        "sourceWriteAuthorityChanged": false
       }
     },
     "liveShadowRepairLoop": {
