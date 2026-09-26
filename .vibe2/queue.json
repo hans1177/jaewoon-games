@@ -33461,7 +33461,7 @@
       "priority": "high",
       "releaseState": "other",
       "status": "queued",
-      "retries": 23,
+      "retries": 24,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "ownerDirective": false,
@@ -33886,7 +33886,10 @@
         "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
         "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
         "architecture-neural-expansion-readiness:PASS",
-        "architecture-neural-expansion-allowed:YES"
+        "architecture-neural-expansion-allowed:YES",
+        "candidate-release-rejected",
+        "actions-run-36259212165",
+        "retry-failure-signature:target-auto-release-not-configured"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
