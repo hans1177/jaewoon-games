@@ -1129,6 +1129,18 @@
       "sourceCandidateRecovery": {
         "owner": "tools/vibe2-source-worker.mjs",
         "missingEditPath": "UNIQUE_FIND_MATCH_WITHIN_RESPONSIBLE_FILES",
+        "explicitLineLocatorRecovery": {
+          "owner": "tools/vibe2-source-worker.mjs::normalizeModelPath",
+          "exactResponsibleFileMatchRequired": true,
+          "supported": [
+            ":<line>",
+            ":<line>:<column>",
+            "#L<line>",
+            "#L<start>-L<end>"
+          ],
+          "writableScopeExpansionAllowed": false,
+          "unmatchedLocatorFailsClosed": true
+        },
         "deterministicBeforeModelRetry": true,
         "ambiguousOrUnmatchedPath": "INVALID_PATH_BOUNDED_RETRY",
         "writableScopeExpansionAllowed": false,
