@@ -1810,15 +1810,17 @@
       "DIRECTOR_RUNNER_DRAIN_CANCELLED_COUNT",
       "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED_COUNT",
       "DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN",
-      "DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED"
+      "DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED",
+      "DIRECTOR_RUNNER_DRAIN_FETCH_RETRY"
     ],
     "cancelledRunReasonRequired": true,
     "independentGameCancellationForbidden": true,
     "runnerLabel": "ubuntu-24.04-arm",
     "staleLegacyOrBatchReason": "ROBLOX_STALE_LEGACY_OR_BATCH",
     "staleThresholdMinutes": 15,
-    "scanPagesMax": 20,
-    "exactNamedGameInProgressCancellationForbidden": true
+    "scanPagesMax": null,
+    "exactNamedGameInProgressCancellationForbidden": true,
+    "scanMode": "TARGETED_RECENT_AND_ACTIVE_STATUS_QUERIES"
   },
   "controlPlaneGameRunnerEvictionEvidence": {
     "version": 1,
