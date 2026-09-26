@@ -2927,7 +2927,15 @@ function summonYetiCubs(e){
  showNotice('예티 우두머리 · 새끼 3마리 소환')
 }
 function summonPolarWolves(e){
- for(let i=0;i<2;i++){const a=i*Math.PI,r=65;const w=spawnAt(creatures.polarwolf,e.x+Math.cos(a)*r,e.y+Math.sin(a)*r,null);w.hostile=true;w.noRespawn=true;state.enemies.push(w)}
+ for(let i=0;i<2;i++){
+  const a=i*Math.PI,r=65;
+  const w=spawnAt(creatures.polarwolf,e.x+Math.cos(a)*r,e.y+Math.sin(a)*r,null);
+  w.hostile=true;
+  w.noRespawn=true;
+  w.howlSummoned=true;
+  w.howlCount=3;
+  state.enemies.push(w)
+ }
  showNotice('북극늑대 · 포위 하울링')
 }
 function updateSnowSpecial(e,targetP,now,playerD){
@@ -2937,9 +2945,14 @@ function updateSnowSpecial(e,targetP,now,playerD){
   if(!e.nextYetiSlamAt)e.nextYetiSlamAt=now+4000;
   if(now>=e.nextYetiSlamAt){e.nextYetiSlamAt=now+4000;if(Math.random()<.30){applyEnemyEffectTarget(e,targetP,'coldburst',5000);showNotice('예티 지면강타 · 5초간 추위 3배');return true}}
  }
- if(e.type.polarWolfSpecial&&e.hostile&&playerD<(e.type.detect||560)){
+ if(e.type.polarWolfSpecial&&e.hostile&&!e.howlSummoned&&(e.howlCount||0)<3&&playerD<(e.type.detect||560)){
   if(!e.nextHowlAt)e.nextHowlAt=now+8000;
-  if(now>=e.nextHowlAt){e.nextHowlAt=now+8000;summonPolarWolves(e);return true}
+  if(now>=e.nextHowlAt){
+   e.nextHowlAt=now+8000;
+   e.howlCount=(e.howlCount||0)+1;
+   summonPolarWolves(e);
+   return true
+  }
  }
  return false
 }
