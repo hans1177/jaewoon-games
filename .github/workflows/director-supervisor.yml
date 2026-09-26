@@ -51,7 +51,7 @@ jobs:
         run: |
           set -euo pipefail
           gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" > /tmp/director-run-drain.json
-          node <<'NODE' > /tmp/director-run-cancel.tsv
+          node <<'NODE' > /tmp/director-run-cancel.list
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/director-run-drain.json','utf8'));
           const runs=(payload.workflow_runs||[]).filter(r=>Number(r.id)!==Number(process.env.GITHUB_RUN_ID));
@@ -62,6 +62,7 @@ jobs:
             if(!run||!active.has(String(run.status||'').toLowerCase()))return;
             cancel.set(Number(run.id),reason);
           };
+
           const pureControlPlane=new Set([
             '.github/workflows/company-evolution-qa.yml',
             '.github/workflows/company-central-policy-contract-qa.yml',
@@ -76,7 +77,7 @@ jobs:
             const rows=runs.filter(r=>r.path===path&&active.has(String(r.status||'').toLowerCase()));
             const groups=new Map();
             for(const run of rows){
-              const key=[String(run.event||''),String(run.head_branch||'')].join(':');
+              const key=String(run.event||'')+':'+String(run.head_branch||'');
               if(!groups.has(key))groups.set(key,[]);
               groups.get(key).push(run);
             }
@@ -96,7 +97,7 @@ jobs:
             if(queued.has(String(stale.status||'').toLowerCase()))add(stale,'CENTRAL_DEVELOPMENT_PUSH_SUPERSEDED');
           }
 
-          const dedupeByTitle=(path,{batchNewest=false}={})=>{
+          const dedupeByTitle=(path,batchNewest=false)=>{
             const rows=runs.filter(r=>r.path===path&&active.has(String(r.status||'').toLowerCase()));
             const groups=new Map();
             for(const run of rows){
@@ -107,26 +108,28 @@ jobs:
             }
             for(const [title,group] of groups){
               if(group.length<2)continue;
-              const inProgress=group.filter(r=>String(r.status||'').toLowerCase()==='in_progress').sort((a,b)=>Number(a.id)-Number(b.id));
+              const inProgress=group
+                .filter(r=>String(r.status||'').toLowerCase()==='in_progress')
+                .sort((a,b)=>Number(a.id)-Number(b.id));
               let winner;
               if(inProgress.length)winner=inProgress[0];
               else if(batchNewest&&title.endsWith(' · batch'))winner=[...group].sort((a,b)=>Number(b.id)-Number(a.id))[0];
               else winner=[...group].sort((a,b)=>Number(a.id)-Number(b.id))[0];
               for(const stale of group){
                 if(Number(stale.id)===Number(winner.id))continue;
-                if(queued.has(String(stale.status||'').toLowerCase()))add(stale,'DUPLICATE_TITLE:'+path);
+                if(queued.has(String(stale.status||'').toLowerCase()))add(stale,'DUPLICATE_TITLE');
               }
             }
           };
-          dedupeByTitle('.github/workflows/company-development-roblox-runtime.yml',{batchNewest:true});
-          dedupeByTitle('.github/workflows/company-development-roblox-release-promotion.yml');
+          dedupeByTitle('.github/workflows/company-development-roblox-runtime.yml',true);
+          dedupeByTitle('.github/workflows/company-development-roblox-release-promotion.yml',false);
 
-          for(const [id,reason] of [...cancel.entries()].sort((a,b)=>a[0]-b[0]))console.log(id+'\t'+reason);
+          for(const [id,reason] of [...cancel.entries()].sort((a,b)=>a[0]-b[0]))console.log(String(id)+'|'+reason);
           NODE
 
           cancelled=0
           failed=0
-          while IFS=$'\t' read -r run_id reason; do
+          while IFS='|' read -r run_id reason; do
             [ -n "$run_id" ] || continue
             if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
               cancelled=$((cancelled+1))
@@ -135,7 +138,7 @@ jobs:
               failed=$((failed+1))
               echo "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED=${run_id}:${reason}"
             fi
-          done < /tmp/director-run-cancel.tsv
+          done < /tmp/director-run-cancel.list
           echo "DIRECTOR_RUNNER_DRAIN_CANCELLED_COUNT=$cancelled"
           echo "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED_COUNT=$failed"
           echo 'DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN'

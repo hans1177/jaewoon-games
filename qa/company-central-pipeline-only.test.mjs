@@ -153,3 +153,11 @@ test('director drains superseded runner backlog before noncritical supervision',
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
   assert.doesNotMatch(director,/DUPLICATE_TITLE:[^\n]*company-development-unity-runtime\.yml/);
 });
+
+test('runner drain uses a YAML-safe delimiter and preserves the game gate block',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  assert.match(director,/while IFS='\\|' read -r run_id reason; do/);
+  assert.doesNotMatch(director,/while IFS=\$'\\t'/);
+  assert.match(director,/game-primary-gate:\n\s+needs: runner-drain\n\s+if: always\(\)\n\s+runs-on: ubuntu-slim\n\s+outputs:/);
+  assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
+});
