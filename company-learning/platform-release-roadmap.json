@@ -1,5 +1,5 @@
 {
-  "version": 414,
+  "version": 415,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -3543,7 +3543,7 @@
           "workerControlCheckoutGamePrimaryBoundary": 256,
           "workerControlCheckoutAdaptiveBehaviorUnchanged": true,
           "reserveConcurrencyRelief": "LIVE_VERIFIED",
-          "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v3",
+          "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v4",
           "learningIdleRunnerPressureDeferral": "LIVE_VERIFIED",
           "gamePrimaryExternalBoundary": 256,
           "lastLanePressureLiveVerificationRun": 36204978877,
@@ -3554,7 +3554,7 @@
           "modelCacheHitRestoreLiveRun": 36208311596,
           "workerConditionalModelRestore": "IMPLEMENTED_PENDING_QA_AND_LIVE",
           "schedulerEpochStaleRelease": "IMPLEMENTED_PENDING_CI_AND_LIVE",
-          "schedulerEpochStaleReleaseReason": "PRE_PATCH_V2_RUN_4554_HELD_WORKFLOW_LEVEL_SINGLETON_WHILE_NEW_TIMEOUT_RECOVERY_WAVES_REMAINED_JOBLESS_PENDING"
+          "schedulerEpochStaleReleaseReason": "V3_FINAL_REFILL_CONTROL_JOB_REMAINED_QUEUED_UNDER_GITHUB_RUNNER_PRESSURE_AND_BLOCKED_NEXT_SCHEDULER_CHAIN"
         },
         "incidentHistory": [
           {
@@ -8263,6 +8263,28 @@
         "qa/vibe2-queue-control.test.mjs",
         "qa/vibe2-parallelism-main-contract.test.mjs"
       ]
+    },
+    "vibe24hStaleSingletonEpochRelease20260926v4": {
+      "authority": "OWNER_DIRECT_RECOVERY_2026-09-26",
+      "previousEpoch": "vibe2-24h-cycle-singleton-v3",
+      "currentEpoch": "vibe2-24h-cycle-singleton-v4",
+      "reason": "V3_FINAL_REFILL_CONTROL_JOB_QUEUED_AFTER_SUCCESSFUL_WORKER_WAVE_AND_PREVENTED_NEXT_CONTINUOUS_CYCLE",
+      "workflow": ".github/workflows/vibe2-24h-runner.yml",
+      "controlRunnerIsolation": {
+        "plan": "ubuntu-slim",
+        "refill": "ubuntu-slim",
+        "continuousReserve": "ubuntu-slim",
+        "continuousFanIn": "ubuntu-slim"
+      },
+      "duplicateQaRelief": {
+        "workflow": ".github/workflows/company-evolution-qa.yml",
+        "collapseSameRefRuns": true,
+        "cancelSupersededValidation": true
+      },
+      "invariant": "ONE_CONTINUOUS_SCHEDULER_CHAIN_PER_CURRENT_EPOCH",
+      "newWakeSignalAction": "COLLAPSE_TO_SINGLE_V4_PENDING_OR_RUNNING_CHAIN",
+      "authorityChange": "NONE",
+      "qaSecurityReleaseGateWeakening": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -8372,7 +8394,7 @@
       "runnerPressureSource": "GITHUB_ACTIONS_RECENT_RUN_STATUS_QUEUED_PENDING_REQUESTED",
       "pressureObservationFailureAction": "DEFER_LEARNING_ONLY",
       "productionMayNotWaitForLearningReserve": true,
-      "schedulerEpoch": "vibe2-24h-cycle-singleton-v3"
+      "schedulerEpoch": "vibe2-24h-cycle-singleton-v4"
     },
     "releaseWait": {
       "taskClass": "RELEASE_WAIT",
