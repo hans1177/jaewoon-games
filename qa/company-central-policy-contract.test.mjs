@@ -12,6 +12,7 @@ const obsoleteAgentsPath=path.join(repoRoot,'AGENTS.md');
 const directive=readJson('company-directive.json');
 const roadmap=readJson('company-learning/platform-release-roadmap.json');
 const architecture=readJson('company-learning/company-architecture-map.json');
+const logMap=readJson('company-learning/company-log-map.json');
 const multimodelWorkflow=readText('.github/workflows/artbook-free-department-bots.yml');
 const designCycle=readText('tools/company-design-cycle.mjs');
 const pipeline=readText('tools/artbook-production-pipeline.mjs');
@@ -52,6 +53,23 @@ test('platform-release-roadmap is the single machine execution policy source',()
     'tools/apply-common-development-quality-policy.mjs'
   ]) assert.equal(fs.existsSync(path.join(repoRoot,removed)),false,removed);
 });
+test('Unity Web log contract matches the mandatory upper-platform development floor and per-game bootstrap parallelism',()=>{
+  const evidence=logMap.unityWebGameDevelopmentEvidence;
+  assert.equal(evidence.role,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
+  assert.equal(evidence.nativeGateAuthority,true);
+  assert.equal(evidence.developmentAdmissionAuthority,true);
+  assert.equal(evidence.requiredForDevelopmentAdmission,true);
+  assert.equal(evidence.requiredForNativeRuntimePass,false);
+  assert.equal(evidence.requiredForRelease,false);
+  assert.equal(evidence.canonicalSource,'unity-games/<gameId>/');
+  assert.equal(evidence.sourceBootstrapParallelism,'PER_GAME_MATRIX_PARALLEL');
+  assert.equal(evidence.sourceBootstrapGlobalSerializationForbidden,true);
+  for(const marker of ['UNITY_WEB_FLOOR_REQUIRED','UNITY_WEB_FLOOR_BOOTSTRAP_REQUIRED','UNITY_WEB_BOOTSTRAP_GENERATED_ID']){
+    assert.ok(evidence.markers.includes(marker),marker);
+  }
+  assert.ok(!evidence.markers.includes('UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE'));
+});
+
 test('GAME_SEED mirrors the current historical-bootstrap dynamic-portfolio and selected-platform policy',()=>{
   assert.equal(directive.gameSeed.enabled,true);
   assert.equal(directive.gameSeed.requiredBeforeDesignerDraft,true);
