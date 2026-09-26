@@ -1,5 +1,5 @@
 {
-  "version": 212,
+  "version": 213,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4810,7 +4810,7 @@
       "existingGameHolisticBaselineRequiresFivePillarFanIn": true
     },
     "existingGameHolisticBackfill": {
-      "version": 2,
+      "version": 3,
       "centralPolicy": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
       "noNewPipeline": true,
       "existingProjectCollection": "tools/vibe2-auto-planner.mjs::collectProjects",
@@ -4866,7 +4866,21 @@
       },
       "sharedDirectiveReuseBoundary": "SAME_GAME_SAME_PLATFORM_LANE_ONLY_FOR_SOURCE_ANCHORS_AND_GENERATION_FAN_IN",
       "crossPlatformGameIntentMayBeShared": true,
-      "crossPlatformSourceAnchorsMayNotBeReusedAsProof": true
+      "crossPlatformSourceAnchorsMayNotBeReusedAsProof": true,
+      "schedulingTopology": {
+        "existingPlanner": "tools/vibe2-auto-planner.mjs::findSafeTasks",
+        "noNewScheduler": true,
+        "ordering": [
+          "EXACT_RUNTIME_SECURITY_PROGRESS_REPAIR",
+          "HOLISTIC_BACKFILL_FIVE_PILLARS",
+          "GENERIC_PRESENTATION_ASSET_POLISH",
+          "NORMAL_CONTINUOUS_EVOLUTION"
+        ],
+        "existingRunningTaskPreserved": true,
+        "newCandidatePriorityOnly": true,
+        "unrelatedParallelismPreserved": true,
+        "sameResponsibleFileConflictStillSerializes": true
+      }
     }
   },
   "nonblockingCoordinationTelemetryTopology": {
