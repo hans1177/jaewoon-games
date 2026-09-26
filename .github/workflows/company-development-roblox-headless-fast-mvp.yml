@@ -22,6 +22,9 @@ env:
 
 jobs:
   plan:
+    concurrency:
+      group: roblox-f0-plan-${{ inputs.game_id || 'batch' }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     outputs:
       count: ${{ steps.targets.outputs.count }}
