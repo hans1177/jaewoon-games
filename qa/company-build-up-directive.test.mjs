@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
   BUILD_UP_DOMAINS,
+  HOLISTIC_CORE_DOMAINS,
   VISUAL_DOMAINS,
   buildGameSpecificBuildUpDirective,
   directivePrompt,
@@ -55,6 +56,9 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.equal(directive.generation,1);
   assert.equal(directive.coverage.allDomainsConsidered,true);
   assert.equal(directive.qualityGapMap.length,BUILD_UP_DOMAINS.length);
+  assert.deepEqual(directive.coverage.allowedStates,['PASS','GAP','NOT_APPLICABLE']);
+  assert.deepEqual([...directive.coverage.holisticCoreDomains],[...HOLISTIC_CORE_DOMAINS]);
+  assert.ok(directive.qualityGapMap.every(row=>['PASS','GAP','NOT_APPLICABLE'].includes(row.state)));
   assert.equal(directive.allDomainImplementationDirectives.length,BUILD_UP_DOMAINS.length);
   assert.ok(directive.allDomainImplementationDirectives.every(row=>row.state==='NOT_APPLICABLE'||String(row.directive||'').length>20));
   assert.equal(directive.developmentDepth,1);
@@ -87,6 +91,49 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.match(directivePrompt(directive),/GAME_SPECIFIC_BUILD_UP_DIRECTIVE/);
   assert.match(directivePrompt(directive),/SOURCE_ANCHORS:/);
   assert.match(directivePrompt(directive),/EXPECTED_PLAYER_EFFECT:/);
+  assert.match(directivePrompt(directive),/HOLISTIC_CORE_DOMAIN_STATUS:/);
+});
+
+test('holistic build-up marks sparse map inventory UI session and convenience systems as explicit gaps',()=>{
+  const sourceObservation={
+    sourceRoot:'roblox-games/sample',
+    sourceTreeFingerprint:'7'.repeat(64),
+    fileCount:2,
+    topFiles:[],
+    sourceAnchors:[],
+    signals:{
+      combat:8,progression:3,ai:2,save:2,multiplayer:0,animation:2,vfx:2,camera:1,ui:2,uiFlow:0,input:1,
+      map:3,landmark:0,interaction:1,inventory:2,equipment:1,settings:0,feedback:0,session:1,content:5,
+      choice:0,connection:0,performance:0,lighting:1,primitive:2,todo:0,errorRecovery:1
+    },
+    observations:['CURRENT_SOURCE_FILES=2']
+  };
+  const d=buildGameSpecificBuildUpDirective({
+    gameId:'sample',
+    designRecord:{
+      content:{
+        identity:'지역 탐험과 장비 성장 게임',
+        coreFun:'탐험해서 자원을 얻고 장비를 바꿔 더 위험한 지역에 진입하는 재미',
+        coreLoop:['지역 탐험','전리품 획득','장비 교체','새 지역 해금'],
+        signatureSystems:[
+          {name:'지역 탐험',purpose:'위험과 보상을 고른다',playerChoice:'어느 지역을 먼저 갈지 선택'},
+          {name:'장비 성장',purpose:'획득품을 다음 전투 선택에 연결한다',playerChoice:'어떤 장비를 장착할지 선택'}
+        ],
+        progressionDirection:'새 지역과 장비를 순차적으로 해금한다',
+        multiplayerMode:'SINGLE'
+      }
+    },
+    sourceObservation
+  });
+  const state=Object.fromEntries(d.qualityGapMap.map(row=>[row.domain,row.state]));
+  for(const domain of ['MAP_EXPANSION','WORLD_DENSITY','WORLD_NAVIGATION','INTERACTION_DISCOVERABILITY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','SYSTEM_CONNECTION','SESSION_FLOW','FIRST_10_MINUTES','MID_LATE_GAME_DEPTH','SETTINGS_ACCESSIBILITY','MENU_FLOW','CONVENIENCE','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','FEEDBACK_CLARITY','PLAYER_AGENCY','ANTI_GRIND','CONTENT_DENSITY','PERFORMANCE_BUDGET']){
+    assert.equal(state[domain],'GAP',domain);
+  }
+  assert.ok(d.coverage.holisticGaps.includes('MAP_EXPANSION'));
+  assert.ok(d.coverage.holisticGaps.includes('INVENTORY_USABILITY'));
+  assert.ok(d.coverage.holisticGaps.includes('UI_DESIGN_SYSTEM'));
+  assert.match(directivePrompt(d),/MAP_EXPANSION\[FIX_NOW\]/);
+  assert.match(directivePrompt(d),/INVENTORY_USABILITY\[FIX_NOW\]/);
 });
 
 test('unverified history raises generation but does not rotate focus without a verified source delta',()=>{
