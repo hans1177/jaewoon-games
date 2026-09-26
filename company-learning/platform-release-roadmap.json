@@ -1,5 +1,5 @@
 {
-  "version": 395,
+  "version": 396,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -3207,7 +3207,10 @@
           "lastLanePressureLiveVerificationRun": 36204978877,
           "lastLanePressureLiveVerificationResult": "PASS",
           "modelCacheHitRestoreRelief": "IMPLEMENTED_PENDING_QA_AND_LIVE",
-          "modelCacheWarmupProbe": "LOOKUP_ONLY_ON_HIT"
+          "modelCacheWarmupProbe": "LOOKUP_ONLY_ON_HIT",
+          "runnerPressureSpeculationBridge": "IMPLEMENTED_PENDING_QA_AND_LIVE",
+          "runnerPressureSpeculationPolicy": "LIVE_PRESSURE_SUPPRESSES_SPECULATION_ONLY",
+          "runnerPressurePrimaryCoveragePreserved": true
         },
         "incidentHistory": [
           {
@@ -7624,6 +7627,40 @@
       "requiredEvidence": [
         "VIBE2_MODEL_CACHE_WARMUP_LOOKUP_ONLY=YES",
         "VIBE2_MODEL_CACHE_WARMUP_HIT="
+      ],
+      "implementationState": "IMPLEMENTED_PENDING_QA_AND_LIVE"
+    },
+    "liveRunnerPressureSpeculationBridge20260926": {
+      "id": "VIBE2_LIVE_RUNNER_PRESSURE_SPECULATION_BRIDGE_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "objective": "CONNECT_EXISTING_24H_LIVE_RUNNER_PRESSURE_OBSERVATION_TO_EXISTING_SPECULATIVE_EXPANSION_POLICY_WITHOUT_REDUCING_PRIMARY_GAME_CAPACITY",
+      "existingArchitectureOnly": true,
+      "shadowPipelineCreated": false,
+      "newSchedulerCreated": false,
+      "baselineEvidence": {
+        "liveRunId": 36205789660,
+        "planRunnerPressure": "YES",
+        "runnerQueuePressure": 25,
+        "adaptiveDecision": "RESET",
+        "adaptiveReason": "SYSTEM_STEWARD_STALE_TELEMETRY_RESET_TO_256",
+        "adaptiveMax": 256,
+        "reservedPrimaryTasks": 21,
+        "speculativeWorkers": 4,
+        "totalFanOutWorkers": 25,
+        "speculativeExpansion": "ENABLED"
+      },
+      "change": "PASS_PLAN_RUNNER_PRESSURE_TO_RESERVE_AND_SUPPRESS_SPECULATIVE_VARIANTS_ONLY_WHEN_LIVE_PRESSURE_IS_YES",
+      "primaryCoveragePreserved": true,
+      "primaryReservationLimitChanged": false,
+      "gamePrimaryExternalBoundary": 256,
+      "gamePrimaryBoundaryUnchanged": true,
+      "adaptiveStaleResetBehaviorChanged": false,
+      "repositoryDispatchFallbackBehavior": "EXISTING_ADAPTIVE_TELEMETRY_ONLY_WHEN_NO_24H_PLAN_PRESSURE_INPUT",
+      "qaSecurityReleaseAuthorityChanged": false,
+      "requiredEvidence": [
+        "VIBE2_RESERVE_LIVE_RUNNER_PRESSURE=YES",
+        "VIBE2_SPECULATIVE_EXPANSION=SUPPRESSED_RUNNER_PRESSURE",
+        "VIBE2_SPECULATIVE_EXPANSION_REASON=LIVE_RUNNER_PRESSURE"
       ],
       "implementationState": "IMPLEMENTED_PENDING_QA_AND_LIVE"
     }
