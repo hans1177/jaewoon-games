@@ -11,6 +11,10 @@ on:
         required: false
         type: string
         default: '256'
+      runner_pressure:
+        required: false
+        type: string
+        default: 'NO'
   workflow_dispatch:
     inputs:
       execution_lane:
@@ -25,6 +29,10 @@ on:
         required: false
         type: string
         default: '256'
+      runner_pressure:
+        required: false
+        type: string
+        default: 'NO'
   repository_dispatch:
     types: [vibe2-neuron-complete, vibe2-fanin-refill]
   push:
@@ -58,6 +66,7 @@ env:
   VIBE2_SHARED_CONTEXT_REQUIRED: 'true'
   VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}
   VIBE2_LANE_MAX: ${{ inputs.lane_max || '256' }}
+  VIBE2_LIVE_RUNNER_PRESSURE: ${{ inputs.runner_pressure || github.event.client_payload.runner_pressure || 'NO' }}
 
 jobs:
   reserve:
@@ -343,12 +352,14 @@ jobs:
           else
             echo 'VIBE2_RESERVE_MODE=NEW_WAVE_OR_IDLE_REFILL'
           fi
+          echo "VIBE2_RESERVE_LIVE_RUNNER_PRESSURE=$VIBE2_LIVE_RUNNER_PRESSURE"
           node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" \
             --lane="$VIBE2_EXECUTION_LANE" \
             --max="$VIBE2_LANE_MAX" \
             --min="$lane_min" \
+            --runner-pressure="$VIBE2_LIVE_RUNNER_PRESSURE" \
             --reservation-id="$reservation_id" \
             --reservation-run="$GITHUB_RUN_ID" \
             --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
