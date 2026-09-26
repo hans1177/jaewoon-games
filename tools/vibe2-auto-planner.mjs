@@ -1587,8 +1587,10 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       evidence:[...new Set([...(taskInput.evidence||[]),'build-up-directive:DESIGN_PENDING','build-up-directive:auto-design-enrollment-required'])]
     };
   }
+  const platformLane=studioQualityLane(project);
   const taskHistory=[...(queue?.tasks||[])].filter(item=>
     clean(item?.gameId)===clean(project.gameId)
+    &&sameStudioQualityLane(item,project)
     &&item?.buildUpDirective
     &&typeof item.buildUpDirective==='object'
   );
@@ -1613,6 +1615,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       buildUpGoal:directive.thisLoopPrimaryGoal,
       buildUpSourceTree:directive.sourceTreeFingerprint,
       buildUpStatus:'DIRECTIVE_BOUND',
+      buildUpPlatformLane:platformLane,
       previousGoal:clean(directive?.previousVersionDelta?.previousGoal)||null,
       lastAchievedGoal:clean(directive?.effectivenessMeasurement?.previousGeneration?.classification).toUpperCase()==='EFFECT_CONFIRMED'?clean(directive?.previousVersionDelta?.previousGoal)||null:null,
       developmentDepth:Number(directive.developmentDepth||1),
@@ -1664,13 +1667,13 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     independentQaPassed:project?.queueRuntimeIndependentQaPassed===true,
     regressionPassed:project?.queueRuntimeRegressionPassed===true
   };
-  const sourceRoots=[project.projectPath,`roblox-games/${project.gameId}`,`unity-games/${project.gameId}`,`web-games/${project.gameId}`]
+  const sourceRoots=[project.projectPath]
     .map(posix).filter((value,index,array)=>value&&array.indexOf(value)===index&&fs.existsSync(sourceFile(repoRoot,value)));
   const sourceObservation=inspectGameSources({repoRoot,sourceRoots});
   const directive=buildGameSpecificBuildUpDirective({
     gameId:project.gameId,
     gameName:project.name||project.gameId,
-    platform:'COMMON',
+    platform:platformLane==='unity-web'?'UNITY_WEB':clean(project.engine).toUpperCase()||'COMMON',
     designRecord:designContext.record,
     sourceObservation,
     repoRoot,
@@ -1952,6 +1955,7 @@ function bindSharedBuildUpDirective(taskInput,directive){
     buildUpGoal:directive.thisLoopPrimaryGoal,
     buildUpSourceTree:directive.sourceTreeFingerprint,
     buildUpStatus:'DIRECTIVE_BOUND',
+    buildUpPlatformLane:studioQualityTaskLane(taskInput),
     previousGoal:clean(directive?.previousVersionDelta?.previousGoal)||null,
     lastAchievedGoal:clean(directive?.effectivenessMeasurement?.previousGeneration?.classification).toUpperCase()==='EFFECT_CONFIRMED'?clean(directive?.previousVersionDelta?.previousGoal)||null:null,
     developmentDepth:Number(directive.developmentDepth||1),
