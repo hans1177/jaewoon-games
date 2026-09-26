@@ -3,61 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1pju6cd",
-      "worker": "vibe2",
-      "taskId": "amusement-tycoon-unity-web-base-implementation-v1",
-      "gameId": "amusement-tycoon",
-      "files": [
-        "unity-games/amusement-tycoon/Assets/Scripts/GameCore.cs",
-        "unity-games/amusement-tycoon/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T16:59:52.871Z",
-      "expiresAt": "2026-09-26T17:44:52.871Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:amusement-tycoon-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1wng57o",
-      "worker": "vibe2",
-      "taskId": "bug-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "unity-games/bug-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T17:00:02.872Z",
-      "expiresAt": "2026-09-26T17:45:02.872Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1tg30ap",
-      "worker": "vibe2",
-      "taskId": "bug-defense-roblox-presentation-asset-adaptation-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "roblox-games/bug-defense/client/Game.client.luau",
-        "roblox-games/bug-defense/server/Game.server.luau",
-        "roblox-games/bug-defense/shared/GameConfig.luau"
-      ],
-      "baseSha": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
-      "acquiredAt": "2026-09-26T17:01:53.510Z",
-      "expiresAt": "2026-09-26T17:46:53.510Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-461znh",
       "worker": "vibe2",
       "taskId": "daechung-rpg-studio-evolution-presentation-v1",
@@ -713,6 +658,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:fantasy-survival-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-n308n3",
+      "worker": "vibe2",
+      "taskId": "line-defense-unity-web-base-implementation-v1",
+      "gameId": "line-defense",
+      "files": [
+        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
+        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "f576c728b1c7fe30c5bccfe0368033fcd500be67",
+      "acquiredAt": "2026-09-26T17:47:04.184Z",
+      "expiresAt": "2026-09-26T18:32:04.184Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:line-defense-unity-web-base-implementation-v1"
       ]
     }
   ]
