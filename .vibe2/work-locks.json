@@ -3,44 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-e6e74t",
-      "worker": "vibe2",
-      "taskId": "bug-defense-roblox-presentation-asset-adaptation-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "roblox-games/bug-defense/client/Game.client.luau",
-        "roblox-games/bug-defense/server/Game.server.luau",
-        "roblox-games/bug-defense/shared/GameConfig.luau"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T19:53:27.189Z",
-      "expiresAt": "2026-09-26T20:38:27.189Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-19iwhcy",
-      "worker": "vibe2",
-      "taskId": "amusement-tycoon-roblox-presentation-asset-adaptation-v1",
-      "gameId": "amusement-tycoon",
-      "files": [
-        "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "roblox-games/amusement-tycoon/shared/GameConfig.luau"
-      ],
-      "baseSha": "738c791ce7356c4647069a03a5a5e3be4d22a992",
-      "acquiredAt": "2026-09-26T19:53:41.302Z",
-      "expiresAt": "2026-09-26T20:38:41.302Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:amusement-tycoon-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-1kts6ym",
       "worker": "vibe2",
       "taskId": "ant-simulator-existing-web-assessment-v1",
@@ -824,6 +786,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-90jxte",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-unity-web-base-implementation-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "unity-games/horror-escape-room/Assets/Scripts/GameCore.cs",
+        "unity-games/horror-escape-room/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "cf19b2e0c26ae7cffa42abab9c6b30372285d78d",
+      "acquiredAt": "2026-09-26T20:39:03.302Z",
+      "expiresAt": "2026-09-26T21:24:03.302Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-unity-web-base-implementation-v1"
       ]
     }
   ]
