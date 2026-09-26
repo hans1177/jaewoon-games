@@ -909,9 +909,9 @@
     "internalArtificialConcurrencyCapsForbidden": true,
     "codingEfficiencyObjective": "MAXIMIZE_VERIFIED_FUNCTIONAL_SOURCE_CHANGE_PER_MODEL_INVOCATION_AND_FIRST_CANDIDATE_PASS_RATE",
     "sourceCandidateGenerationBottleneckMitigation": {
-      "version": 6,
+      "version": 7,
       "priority": "SOURCE_CANDIDATE_GENERATION_FIRST",
-      "status": "FOCUSED_TIMEOUT_POLICY_RESYNC_CI_VERIFIED_LIVE_PENDING",
+      "status": "FOCUSED_TIMEOUT_CHAIN_POLICY_SYNC_CODE_PENDING",
       "focusedWebRepairFirstAttemptMode": "RESPONSIBILITY_SELECTED_JSON_EDIT",
       "modelGeneratedPathOrFindOnFocusedFirstAttempt": true,
       "focusedReplaceTimeoutMs": 90000,
@@ -1177,7 +1177,19 @@
           "qa/vibe2-source-worker.test.mjs"
         ],
         "nextGate": "CI_PASS_THEN_VERIFY_NEXT_PRODUCTION_WAVE_REDUCES_ZERO_OUTPUT_TIMEOUT_TAIL_AND_SHARED_CONTEXT_MISSING_FALSE_EVIDENCE"
-      }
+      },
+      "robloxZeroOutputTimeoutFocusedRecoveryStickyWithinAttemptBudget": true,
+      "robloxZeroOutputTimeoutFocusedRecoveryRule": "AFTER_FIRST_ZERO_OUTPUT_TIMEOUT_KEEP_REMAINING_EXISTING_ATTEMPTS_ON_PINNED_FOCUSED_REPLACE_BUDGET_INSTEAD_OF_RETURNING_TO_240S_FULL_PACKAGE_GENERATION",
+      "robloxZeroOutputTimeoutFocusedRecoveryBudget": {
+        "timeoutMs": 90000,
+        "maxPredict": 384,
+        "contextWindow": 8192
+      },
+      "robloxZeroOutputTimeoutFocusedRecoveryScope": "ROBLOX_ASSET_ADAPTATION_ONLY",
+      "robloxZeroOutputTimeoutFocusedRecoveryAttemptBudgetIncrease": false,
+      "robloxZeroOutputTimeoutFocusedRecoveryQualityGateWeakening": false,
+      "robloxNonTimeoutFullGraphicsPackageRecoveryUnchanged": true,
+      "robloxMotionAndCoreVisualDomainGatesUnchanged": true
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
     "strategyQualityMayNotTradeAwayQaOrEvidence": true,
