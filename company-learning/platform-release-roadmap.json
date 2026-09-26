@@ -1,5 +1,5 @@
 {
-  "version": 406,
+  "version": 407,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -2613,8 +2613,8 @@
           "priorReservedTasks": 19,
           "recoveryAdaptiveStep": 16
         },
-        "ownerPreferredCurrentWave": 20,
-        "ownerPreferredWaveAuthority": "OWNER_DIRECTIVE_2026-09-20",
+        "ownerPreferredCurrentWave": 30,
+        "ownerPreferredWaveAuthority": "OWNER_DIRECTIVE_2026-09-26",
         "gameImplementationPreemptsNonblockingSupervision": true,
         "nonblockingSupervisionUsesSpareCapacityOnly": true,
         "ownerAndSystemStewardProtectionPreserved": true,
@@ -2642,7 +2642,7 @@
         ],
         "selfAdaptiveExpansionAbovePreferredWave": true,
         "selfAdaptiveExpansionSteps": [
-          20,
+          30,
           32,
           64,
           128,
@@ -8050,6 +8050,22 @@
       "directResponsibleFunction": "tools/vibe2-auto-planner.mjs#findSafeTasks",
       "runningTaskMigration": "DO_NOT_CANCEL_ALREADY_RUNNING_SAFE_WORK; APPLY_PRIORITY_TO_NEWLY_PLANNED_WORK_AND_NEXT_GENERATIONS"
     },
+    "holisticBackfillThirtyFloor20260926": {
+      "id": "HOLISTIC_BACKFILL_THIRTY_GAME_FLOOR_2026-09-26",
+      "authority": "OWNER_DIRECTIVE_2026-09-26",
+      "summary": "Raise the GAME_PRIMARY adaptive concurrency floor from 20 to 30 while preserving the external maximum 256, and let coherent holistic BUILD_UP packages expand to the configured minimum workload instead of being deferred by MINIMUM_WORKLOAD_GATE.",
+      "minimumConcurrentGameWorkers": 30,
+      "externalProviderBoundary": 256,
+      "maximumReducedToThirty": false,
+      "inventoryOrItemCountChanged": false,
+      "alreadyRunningSafeWorkCancelled": false,
+      "bindings": [
+        "tools/vibe2-adaptive-backpressure.mjs",
+        "tools/vibe2-auto-planner.mjs",
+        ".github/workflows/vibe2-24h-runner.yml",
+        "vibe2-runtime.json"
+      ]
+    },
     "fanInPinnedContractOverlayRepair20260926": {
       "id": "VIBE2_FAN_IN_PINNED_CONTRACT_OVERLAY_REPAIR_2026-09-26",
       "summary": "Cohort fan-in must overlay company-runtime design state into the pinned main contract checkout owned by the fan-in job, never into the reserve job temporary snapshot.",
@@ -8066,15 +8082,15 @@
     }
   },
   "vibeExecutionLaneContract": {
-    "version": 2,
+    "version": 3,
     "status": "ATOMIC_NEURON_STREAM_WITH_AUXILIARY_VESSELS",
-    "authority": "OWNER_DIRECTIVE_2026-09-20",
+    "authority": "OWNER_DIRECTIVE_2026-09-26",
     "documentFirst": true,
     "principle": "GAME_PRIMARY_IS_CONTINUOUS_ATOMIC_NEURON_CIRCULATION; AUXILIARY_LANES_RETURN_CAUSAL_EVIDENCE_WITHOUT_STOPPING_THE_MAIN_ARTERY",
     "gamePrimary": {
       "taskClass": "DEVELOPMENT_IMPLEMENTATION",
-      "activeWorkerBaselineTarget": 20,
-      "activeWorkerAdaptiveMinimum": 20,
+      "activeWorkerBaselineTarget": 30,
+      "activeWorkerAdaptiveMinimum": 30,
       "activeWorkerInternalCap": null,
       "externalProviderBoundary": 256,
       "capacityAwareFreeSlotRefill": true,
@@ -23909,7 +23925,10 @@
           "securityAndProgressBlockersRemainHigherPriority": true,
           "noNewQueueWorkerOrPipeline": true,
           "ownerExplicitP0PlatformWorkMayPreemptHolisticBackfill": true,
-          "genericWeatherPresentationStillBelowHolisticBackfill": true
+          "genericWeatherPresentationStillBelowHolisticBackfill": true,
+          "holisticPackageMayAutoExpandToConfiguredMinimumWorkload": true,
+          "minimumWorkloadExpansionMustRemainWithinExistingResponsibleSystem": true,
+          "minimumWorkloadExpansionMayNotChangeProtectedGameRules": true
         }
       }
     }
