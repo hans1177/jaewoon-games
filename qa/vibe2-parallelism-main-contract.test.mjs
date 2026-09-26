@@ -13,15 +13,15 @@ test('maximum parallelism is default and source-root locks are permanently disab
   const wave=roadmap.neuralDevelopmentBrain.currentWaveExecution;
   assert.equal(wave.externalProviderAndPlanningBound,256);
   assert.equal(wave.defaultRequestedParallelism,256);
-  assert.equal(wave.gamePrimaryBaselineTarget,256);
-  assert.equal(wave.gamePrimaryAdaptiveMinimum,4);
+  assert.equal(wave.gamePrimaryBaselineTarget,30);
+  assert.equal(wave.gamePrimaryAdaptiveMinimum,30);
   assert.equal(wave.sourceRootWideLockForbidden,true);
   assert.equal(wave.responsibleFileConflictProtectionStillRequired,true);
   assert.equal(wave.globalActiveWorkerBarrier,false);
 
   assert.equal(runtime.continuous.maxConcurrentGameTasks,256);
-  assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,256);
-  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,4);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.baselineTarget,30);
+  assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMinActiveWorkers,30);
   assert.equal(runtime.continuous.gamePrimaryExecutionWave.adaptiveMaxActiveWorkers,256);
   assert.equal(runtime.coordination.sourceRootExclusive,false);
   assert.equal(runtime.coordination.responsibleFileExclusive,true);
@@ -36,10 +36,10 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.equal(control.currentMax,256);
 
   assert.ok(runner.includes("VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'"));
-  assert.ok(runner.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'"));
-  assert.ok(runner.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '4'"));
-  assert.ok(core.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'"));
-  assert.ok(core.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '4'"));
+  assert.ok(runner.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '30'"));
+  assert.ok(runner.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'"));
+  assert.ok(core.includes("VIBE2_GAME_PRIMARY_BASELINE_TARGET: '30'"));
+  assert.ok(core.includes("VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'"));
 });
 
 test('reserve batch persists control state only through the explicit Vibe2 control root',()=>{
