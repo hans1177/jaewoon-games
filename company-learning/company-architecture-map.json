@@ -1,5 +1,5 @@
 {
-  "version": 220,
+  "version": 221,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -302,7 +302,26 @@
       "CRITIC_VERIFY",
       "UPDATE_FACTS_AND_VERIFIED_MEMORY",
       "CONTINUE_FROM_NEW_EVENTS"
-    ]
+    ],
+    "sharedWorkLockLifecycle": {
+      "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformPlaytestDevelopment.phase1Implementation.workLock",
+      "stateBranch": "vibe2-work-locks",
+      "statePath": ".vibe2/work-locks.json",
+      "acquireBeforeSourceWrite": true,
+      "sameTaskSpeculativeVariantsMayReuse": true,
+      "releaseAfterFanInOrAbort": true,
+      "fanInCleanupImplementation": ".github/workflows/vibe2-continuous-core.yml#Release shared Work Locks after fan-in or abort",
+      "fanInCleanupIdempotent": true,
+      "missingLockDuringCleanup": "ALREADY_RELEASED_CONTINUE",
+      "unexpectedReleaseFailure": "FAIL_CLOSED",
+      "releaseTool": "tools/vibe2-remote-work-lock.mjs",
+      "authority": "EDIT_EXCLUSIVITY_ONLY",
+      "observedLeakEvidence": {
+        "runId": 36229097447,
+        "fanInJobId": 108376279559,
+        "failure": "FIRST_LOCK_NOT_FOUND_ABORTED_REMAINING_RELEASE_LOOP"
+      }
+    }
   },
   "externalAiRules": {
     "executeAssignedScopeOnly": false,
