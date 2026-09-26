@@ -74,7 +74,8 @@ concurrency:
 
 jobs:
   reserve:
-    runs-on: ubuntu-latest
+    # Control-plane reservation only. Keep heavy game/model capacity on ubuntu-latest.
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     concurrency:
       group: ${{ github.event_name == 'push' && 'company-system-ai-push-qa-reserve' || 'company-system-ai-reserve-control' }}
