@@ -472,7 +472,7 @@ test('fantasy-survival development-confirmed Unity can receive P0 weather work o
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('development-confirmed Unity non-pilot receives presentation work without inheriting pilot weather scope',()=>{
+test('development-confirmed existing Unity non-pilot receives holistic backfill before generic presentation and never inherits pilot weather scope',()=>{
   const root=tempRoot();
   try{
     const scripts=path.join(root,'unity-games','other-game','Assets','Scripts');
@@ -488,7 +488,8 @@ test('development-confirmed Unity non-pilot receives presentation work without i
       queue:{maxConcurrentTasks:4,tasks:[]},repoRoot:root,maxConcurrentTasks:4,planningBacklogTarget:4
     });
     assert.equal(result.planned,true);
-    assert.ok(result.tasks.some(row=>row.id==='other-game-unity-presentation-asset-adaptation-v1'));
+    assert.ok(result.tasks.some(row=>(row.evidence||[]).includes('existing-holistic-backfill:v1')));
+    assert.ok(result.tasks.some(row=>row.studioQualityEvolution?.existingHolisticBackfillRequired===true));
     assert.equal(result.tasks.some(row=>row.id==='other-game-unity-weather-presentation-v1'),false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -527,7 +528,7 @@ test('existing Roblox games receive one Studio asset backfill task until real bi
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('autonomous planner queues Studio asset backfill for an existing confirmed Roblox game',()=>{
+test('autonomous planner prioritizes holistic backfill before Studio asset backfill for an existing confirmed Roblox game',()=>{
   const root=tempRoot();
   try{
     writePolicy(root);
@@ -547,11 +548,11 @@ test('autonomous planner queues Studio asset backfill for an existing confirmed 
       repoRoot:root,maxConcurrentTasks:4,planningBacklogTarget:4
     });
     assert.equal(result.planned,true);
-    const backfill=result.tasks.find(row=>row.id==='demo-roblox-studio-asset-backfill-v1');
-    assert.ok(backfill);
-    assert.equal(backfill.target,'roblox');
-    assert.equal(backfill.studioAssetBackfill,true);
-    assert.ok(backfill.evidence.includes('roblox-studio-asset-vibe-application:required'));
+    const holistic=result.tasks.find(row=>(row.evidence||[]).includes('existing-holistic-backfill:v1'));
+    assert.ok(holistic);
+    assert.equal(holistic.target,'roblox');
+    assert.equal(holistic.studioQualityEvolution?.existingHolisticBackfillRequired,true);
+    assert.equal(result.tasks.some(row=>row.id==='demo-roblox-studio-asset-backfill-v1'),false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 

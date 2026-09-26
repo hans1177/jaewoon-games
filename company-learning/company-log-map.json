@@ -1,5 +1,5 @@
 {
-  "version": 78,
+  "version": 79,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1485,7 +1485,7 @@
     ]
   },
   "existingGameHolisticBackfillEvidenceContract": {
-    "version": 2,
+    "version": 3,
     "authority": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
     "requiredFor": "EVERY_ELIGIBLE_EXISTING_ACTIVE_OR_REBUILD_GAME_UNTIL_HOLISTIC_BASELINE_VERIFIED",
     "requiredCorrelationKeys": [
@@ -1507,7 +1507,8 @@
       "CHANGED_RESPONSIBLE_GAME_FILES_WHEN_GAP_REPAIRED",
       "FOCUS_PILLAR_QA_OR_RUNTIME_RESULT",
       "SHARED_DIRECTIVE_FAN_IN_STATUS",
-      "ALL_FIVE_PILLAR_BACKFILL_OUTCOMES"
+      "ALL_FIVE_PILLAR_BACKFILL_OUTCOMES",
+      "HOLISTIC_BACKFILL_SCHEDULING_PRIORITY"
     ],
     "requiredPillars": [
       "CORE_FUN",
@@ -1528,7 +1529,8 @@
       "active": "existing-holistic-backfill:v1",
       "grandfather": "existing-game-grandfather-exemption:NO",
       "baseline": "EXISTING_GAME_HOLISTIC_BASELINE_VERIFIED",
-      "platformLane": "studio-quality-platform-lane:<lane>"
+      "platformLane": "studio-quality-platform-lane:<lane>",
+      "priority": "existing-holistic-priority-before-generic-polish:YES"
     },
     "platformLaneEvidence": {
       "allowed": [
@@ -1541,6 +1543,13 @@
       "siblingLaneEvidenceCannotSubstitute": true,
       "unityWebRequiresWebglBrowserRuntimeEvidence": true,
       "sameUnitySourceDoesNotMergeUnityWebAndUnityNativePassState": true
+    },
+    "schedulingEvidence": {
+      "higherSeverityRepairMayPreempt": true,
+      "genericPresentationMayNotPreemptEligibleHolisticBackfill": true,
+      "alreadyRunningSafeTaskNotRequiredToBeCancelled": true,
+      "nextGenerationMustUseCurrentPriority": true,
+      "ownerExplicitP0MayPreempt": true
     }
   }
 }
