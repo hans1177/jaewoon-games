@@ -550,7 +550,7 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
   assert.equal(execution.internalGameConcurrencyCapsForbidden,true);
   assert.equal(execution.externalProviderCapacityIsOnlyHeavyExecutionBoundary,true);
   assert.equal(execution.defaultRequestedGameWorkers,256);
-  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch-v2' \}\}/);
+  assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch-v3' \}\}/);
   assert.doesNotMatch(workflow,/format\('batch-\{0\}', github\.run_id\)/);
   assert.match(workflow,/cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/group: company-runtime-writer/);
@@ -559,15 +559,19 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
 });
 
 
-test('superseded Roblox batch scheduler exits before heavy work while exact game dispatch remains valid',()=>{
+test('Roblox batch scheduler ignores unrelated main churn and redispatches only when its control contract changed',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/name: Reject superseded batch scheduler/);
   assert.match(workflow,/if \[ -n "\$REQUESTED_GAME_ID" \]; then/);
   assert.match(workflow,/ROBLOX_BATCH_FRESHNESS=EXACT_GAME:/);
-  assert.match(workflow,/ROBLOX_BATCH_SUPERSEDED=/);
+  assert.match(workflow,/ROBLOX_SOURCE_PLAN_CONTRACT_PATHS:/);
+  assert.match(workflow,/git diff --quiet "\$GITHUB_SHA" "\$current_main" -- "\$\{contract_paths\[@\]\}"/);
+  assert.match(workflow,/ROBLOX_BATCH_UNRELATED_MAIN_ADVANCE_ACCEPTED=/);
+  assert.match(workflow,/ROBLOX_BATCH_CONTRACT_SUPERSEDED=/);
   assert.match(workflow,/GH_TOKEN: \$\{\{ github\.token \}\}/);
   assert.match(workflow,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
-  assert.match(workflow,/ROBLOX_BATCH_SUPERSEDED_REDISPATCH=YES:/);
+  assert.match(workflow,/ROBLOX_BATCH_CONTRACT_SUPERSEDED_REDISPATCH=YES:/);
+  assert.doesNotMatch(workflow,/ROBLOX_BATCH_SUPERSEDED=/);
   assert.match(workflow,/count: \$\{\{ steps\.targets\.outputs\.count \|\| '0' \}\}/);
   assert.match(workflow,/matrix: \$\{\{ steps\.targets\.outputs\.matrix \|\| '\{"include":\[\]\}' \}\}/);
   assert.ok((workflow.match(/if: steps\.freshness\.outputs\.run == 'true'/g)||[]).length>=4);
@@ -576,6 +580,8 @@ test('superseded Roblox batch scheduler exits before heavy work while exact game
 test('Roblox source persistence rejects results when the source-plan control contract changed mid-run',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/name: Bind Roblox source-plan contract fingerprint/);
+  assert.match(workflow,/ROBLOX_SOURCE_PLAN_CONTRACT_PATHS:/);
+  assert.ok((workflow.match(/ROBLOX_SOURCE_PLAN_CONTRACT_PATHS_MISSING/g)||[]).length>=2);
   assert.match(workflow,/contract_fingerprint: \$\{\{ steps\.contract\.outputs\.fingerprint \|\| '' \}\}/);
   assert.match(workflow,/SOURCE_PLAN_CONTRACT_FINGERPRINT: \$\{\{ needs\.source-plan\.outputs\.contract_fingerprint \}\}/);
   for(const required of [
@@ -594,7 +600,7 @@ test('Roblox source persistence rejects results when the source-plan control con
   assert.match(workflow,/staleReconciliationCount=Math\.max\(reconciliation\.length,expected\.length,1\)/);
 });
 
-test('Roblox batch scheduler v2 epoch dedupes pending runs without capping per-game matrix parallelism',()=>{
+test('Roblox batch scheduler v3 epoch dedupes pending runs without capping per-game matrix parallelism',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
   assert.match(workflow,/group: company-development-roblox-runtime-\$\{\{ inputs\.game_id \|\| 'batch-v2' \}\}/);
