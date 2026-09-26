@@ -1,5 +1,5 @@
 {
-  "version": 248,
+  "version": 249,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5552,5 +5552,18 @@
     "staleQueuedWakeMayCancel": true,
     "inProgressWakeCancellationForbidden": true,
     "staleDrainScope": "MAIN_PUSH_WAKE_HEAD_SHA_NOT_CURRENT_MAIN_ONLY"
+  },
+  "activeNativeRunDedupeCoverage": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.activeNativeRunDedupeCoverage20260927",
+    "planner": ".github/workflows/company-development-confirmed-runtime.yml#native-plan",
+    "externalExecutionWindow": 256,
+    "scanRowsPerWorkflow": 300,
+    "pageFetchParallel": true,
+    "robloxAndUnityScansParallel": true,
+    "exactGameActiveRunSuppression": true,
+    "partialScanFailClosed": true,
+    "matrixMaxParallelCap": null,
+    "distinctGamesRemainParallel": true
   }
 }
