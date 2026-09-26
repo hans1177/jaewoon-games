@@ -3357,13 +3357,21 @@ test('game-specific BUILD_UP worker guidance carries source current-to-intended 
   assert.match(source,/nextVibeAction=/);
 });
 
-test('Roblox zero-output timeout uses focused recovery instead of repeating the full graphics package budget',()=>{
+test('Roblox zero-output timeout stays on focused recovery for the remaining existing attempt budget',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/let robloxZeroOutputTimeoutFocusedRecoveryActive=false/);
   assert.match(source,/const zeroOutputTimeoutRecovery=!allowFullRewrite[\s\S]*?priorFailureClass==='TIMEOUT'[\s\S]*?!clean\(lastRaw\)/);
-  assert.match(source,/ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES\.has\(priorFailureClass\)[\s\S]*?&&!zeroOutputTimeoutRecovery/);
+  assert.match(source,/robloxAssetAdaptationTask&&zeroOutputTimeoutRecovery\)robloxZeroOutputTimeoutFocusedRecoveryActive=true/);
+  assert.match(source,/ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES\.has\(priorFailureClass\)[\s\S]*?&&!zeroOutputTimeoutRecovery[\s\S]*?&&!robloxZeroOutputTimeoutFocusedRecoveryActive/);
   assert.match(source,/VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY/);
+  assert.match(source,/VIBE2_ROBLOX_TIMEOUT_RECOVERY_CHAIN_FOCUSED/);
+  assert.match(source,/\(!studioExpansion\|\|zeroOutputTimeoutRecovery\|\|robloxZeroOutputTimeoutFocusedRecoveryActive\)/);
+  assert.match(source,/presentationPatchDeltaRecovery\|\|robloxZeroOutputTimeoutFocusedRecoveryActive/);
   assert.match(source,/\(systemAtomicPairCompletion\|\|focusedReplaceOnly\)\?\(systemAtomicPairCompletion\?JSON_RETRY_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS\)/);
   assert.match(source,/\(systemAtomicPairCompletion\|\|focusedReplaceOnly\)\?\(systemAtomicPairCompletion\?JSON_RETRY_MAX_PREDICT:JSON_FOCUSED_REPLACE_MAX_PREDICT\)/);
+  assert.match(source,/JSON_FOCUSED_REPLACE_TIMEOUT_MS=90000/);
+  assert.match(source,/JSON_FOCUSED_REPLACE_MAX_PREDICT=384/);
+  assert.match(source,/JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192/);
 });
 
 test('failed source generation still performs post-work shared-context validation before exiting the candidate step',()=>{
