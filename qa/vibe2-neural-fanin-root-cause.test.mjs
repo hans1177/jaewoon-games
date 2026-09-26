@@ -111,8 +111,58 @@ test('fan-in blocks studio build-up results that do not prove the required imple
   });
   assert.equal(result.reviewed[0].pass,false);
   assert.ok(result.reviewed[0].missing.includes('studio-quality-implementation-delta'));
+  assert.equal(result.reviewed[0].taskLocalRequeue,true);
+  assert.equal(result.pass,false);
+  assert.equal(result.cohortSettlementPass,true);
+  assert.equal(result.taskLocalRequeueCount,1);
   assert.equal(result.releaseCandidates.length,0);
+  assert.equal(result.queue.tasks[0].status,'queued');
+  assert.equal(result.queue.tasks[0].blocker,null);
+  assert.equal(result.queue.tasks[0].lastOutcome,'FAN_IN_REVIEW_BLOCKED_REQUEUE');
+  assert.ok(result.queue.tasks[0].evidence.includes('fan-in-review-task-local-requeue:YES'));
   assert.ok(result.queue.tasks[0].evidence.some(value=>value.includes('studio-quality-implementation-delta')));
+});
+
+test('fan-in keeps strict game repair evidence but requeues only the blocked task',()=>{
+  const task={
+    ...baseTask(),
+    reservationId:'reserve-1',
+    reservationRunId:'run-1',
+    reservationRunAttempt:1,
+    reservedAt:'2026-09-26T07:17:25Z',
+    neuronExpectedVariants:1,
+    neuronResults:['primary']
+  };
+  const candidate=baseResult();
+  candidate.gameRepairQa={
+    required:true,
+    prePatchReproduced:false,
+    responsibleSystem:null,
+    originalScenarioReplay:'PENDING_RUNTIME_EVIDENCE',
+    invariants:'PENDING_RUNTIME_EVIDENCE',
+    saveMigration:'PENDING_RUNTIME_EVIDENCE',
+    multiplayerLifecycle:'PENDING_AUTONOMOUS_HARNESS_EVIDENCE',
+    multiplayerAutomation:{userAssistanceRequired:false},
+    readyForFanIn:false
+  };
+  const result=finalizeVibe2FanInReview({queue:{tasks:[task]},results:[candidate],taskIds:['neural-root-task']});
+  assert.equal(result.reviewed[0].pass,false);
+  assert.ok(result.reviewed[0].missing.includes('game-repair-prepatch-reproduction'));
+  assert.ok(result.reviewed[0].missing.includes('game-repair-ready-for-fan-in'));
+  assert.equal(result.releaseCandidates.length,0);
+  assert.equal(result.cohortSettlementPass,true);
+  assert.equal(result.taskLocalRequeueCount,1);
+  const next=result.queue.tasks[0];
+  assert.equal(next.status,'queued');
+  assert.equal(next.blocker,null);
+  assert.equal(next.reservationId,null);
+  assert.equal(next.reservationRunId,null);
+  assert.equal(next.reservationRunAttempt,0);
+  assert.equal(next.reservedAt,null);
+  assert.equal(next.lastOutcome,'FAN_IN_REVIEW_BLOCKED_REQUEUE');
+  assert.ok(next.evidence.includes('role-result:review:BLOCKED'));
+  assert.ok(next.evidence.includes('fan-in-review-task-local-requeue:YES'));
+  assert.ok(next.evidence.some(value=>value.startsWith('package-review-missing:')));
 });
 
 test('fan-in accepts studio build-up breadth evidence only when the configured delta count is met',()=>{
