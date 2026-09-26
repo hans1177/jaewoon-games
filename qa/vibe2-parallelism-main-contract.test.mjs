@@ -84,6 +84,30 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.match(runner,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=FAILED_FALLBACK_POST_PLAN/);
 });
 
+test('game control jobs stay on ARM while heavy execution stays on ubuntu-latest',()=>{
+  const pool=runtime.continuous?.gamePrimaryControlRunnerPool||{};
+  const architecturePool=architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool||{};
+
+  assert.equal(pool.reserve,'ubuntu-24.04-arm');
+  assert.equal(pool.fanIn,'ubuntu-24.04-arm');
+  assert.equal(pool.worker,'ubuntu-latest');
+  assert.equal(pool.modelCache,'ubuntu-latest');
+  assert.equal(pool.queueReservationAndStateFanInOnly,true);
+  assert.equal(pool.heavyGameExecutionUnchanged,true);
+
+  assert.equal(architecturePool.reserve,'ubuntu-24.04-arm');
+  assert.equal(architecturePool.fanIn,'ubuntu-24.04-arm');
+  assert.equal(architecturePool.worker,'ubuntu-latest');
+  assert.equal(architecturePool.modelCache,'ubuntu-latest');
+  assert.equal(architecturePool.queueReservationAndStateFanInOnly,true);
+  assert.equal(architecturePool.heavyGameExecutionUnchanged,true);
+
+  assert.match(core,/\n  reserve:\n(?:    #[^\n]*\n)*    runs-on: ubuntu-24\.04-arm/);
+  assert.match(core,/\n  fan_in:[\s\S]{0,260}?\n    runs-on: ubuntu-24\.04-arm/);
+  assert.match(core,/\n  model_cache:[\s\S]{0,180}?\n    runs-on: ubuntu-latest/);
+  assert.match(core,/\n  worker:[\s\S]{0,180}?\n    runs-on: ubuntu-latest/);
+});
+
 test('reserve batch persists control state only through the explicit Vibe2 control root',()=>{
   const start=core.indexOf('      - name: Reserve conflict-free DAG batch');
   const end=core.indexOf('\n  model_cache:',start);
