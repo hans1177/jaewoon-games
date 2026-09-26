@@ -67,48 +67,10 @@ permissions:
   actions: write
 
 jobs:
-  dedupe:
-    name: Keep one active exact Unity Web floor run
-    runs-on: ubuntu-slim
-    timeout-minutes: 5
-    outputs:
-      run: ${{ steps.gate.outputs.run }}
-    steps:
-      - name: Suppress duplicate same-game floor work before heavy runner allocation
-        id: gate
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ inputs.game_id || '' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ -z "$GAME_ID" ]]; then
-            echo 'run=true' >> "$GITHUB_OUTPUT"
-            echo 'UNITY_WEB_FLOOR_DEDUPE=BYPASS_NO_EXACT_GAME_ID'
-            exit 0
-          fi
-          title="Unity Web Floor $GAME_ID"
-          winner="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/unity-web-first-stage-build.yml/runs?per_page=100" | jq -r --arg title "$title" --arg current "$GITHUB_RUN_ID" '
-            [.workflow_runs[]
-              | select(.display_title==$title)
-              | select(.status=="queued" or .status=="pending" or .status=="in_progress" or .status=="requested")
-              | .id]
-            | map(select((tostring)==$current or . != null))
-            | sort
-            | .[0] // empty
-          ')"
-          echo "UNITY_WEB_FLOOR_ACTIVE_WINNER=${winner:-NONE}"
-          if [[ "$winner" =~ ^[0-9]+$ && "$winner" != "$GITHUB_RUN_ID" ]]; then
-            echo 'run=false' >> "$GITHUB_OUTPUT"
-            echo "UNITY_WEB_FLOOR_EXACT_DEDUPED_ACTIVE=$GAME_ID:$GITHUB_RUN_ID:$winner"
-          else
-            echo 'run=true' >> "$GITHUB_OUTPUT"
-            echo "UNITY_WEB_FLOOR_EXACT_RUN_ALLOWED=$GAME_ID:$GITHUB_RUN_ID"
-          fi
-
   build:
-    needs: dedupe
-    if: needs.dedupe.outputs.run == 'true'
+    concurrency:
+      group: unity-web-floor-exec-${{ inputs.game_id || inputs.request_file || github.run_id }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 75
     outputs:
