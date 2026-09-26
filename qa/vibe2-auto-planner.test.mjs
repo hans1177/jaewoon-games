@@ -1110,6 +1110,7 @@ test('full planner replaces low-value micro work with queued studio packages and
   assert.equal(first.studioQualityEvolution?.requiredConnectedImprovements?.max,null);
   assert.ok(first.evidence.includes('studio-quality-loop:v1'));
 
+  const firstFocus=first.studioQualityEvolution?.focusPillar;
   working={...working,tasks:working.tasks.map(row=>
     row.gameId===gameId
       &&row.studioQualityEvolution?.cycle===first.studioQualityEvolution?.cycle
@@ -1127,6 +1128,7 @@ test('full planner replaces low-value micro work with queued studio packages and
     second=working.tasks.find(row=>
       row.gameId===gameId
       &&row.id!==first.id
+      &&row.studioQualityEvolution?.focusPillar===firstFocus
       &&String(row.status||'').trim().toLowerCase()==='queued'
       &&(row.evidence||[]).includes('studio-quality-loop:v1')
     )||null;
