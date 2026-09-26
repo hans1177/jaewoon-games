@@ -1721,6 +1721,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let presentationPatchDeltaObserved=false;
   let presentationPatchDeltaCreditUsed=false;
   let studioEditMatchCreditUsed=false;
+  let studioCausalRecoveryCreditUsed=false;
   let missingPathRecoveries=0;
   let fullWebProgressCreditCount=0;
   let robloxFullGraphicsPackageActive=false;
@@ -1863,7 +1864,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       lastRejectedCandidate=candidate;
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,studioCausalRecoveryCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -1972,6 +1973,13 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         studioEditMatchCreditRetry=true;
         console.log(`VIBE2_STUDIO_EDIT_MATCH_CREDIT=${attempt}->${maxAttempts}:${candidateVariant}`);
       }
+      const studioCausalRecoveryClass=studioExpansion&&['NO_OP','TIMEOUT','INVALID_PATH','STUDIO_QUALITY_DELTA'].includes(failureClass);
+      let studioCausalRecoveryCreditRetry=false;
+      if(!allowFullRewrite&&studioCausalRecoveryClass&&attempt>=maxAttempts&&attempt<configuredBaseMaxAttempts&&!studioCausalRecoveryCreditUsed){
+        maxAttempts=Math.min(configuredBaseMaxAttempts,attempt+1);
+        studioCausalRecoveryCreditUsed=true;
+        studioCausalRecoveryCreditRetry=maxAttempts>attempt;
+      }
       let speculativeFocusedRetryCredit=false;
       if(!allowFullRewrite&&speculativeVariant&&!systemAtomicPairRequired&&failureClass!=='DIAGNOSTIC_POSTCONDITION'&&focusedFinalRetryAllowed(error)&&attempt>=maxAttempts&&!speculativeFocusedRetryCreditUsed&&!focusedNoOpCreditRetry&&!studioEditMatchCreditRetry){
         maxAttempts=attempt+1;
@@ -2039,7 +2047,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
       const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
-      const hasAnother=ordinaryRetry||focusedRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
+      const hasAnother=ordinaryRetry||focusedRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||studioCausalRecoveryCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
         error.vibe2GenerationAttempts=attempt;
