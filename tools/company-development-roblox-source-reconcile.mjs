@@ -17,14 +17,26 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
   const expected=buildRobloxStudioAssetBootstrapPlan({gameId:'library-refresh-probe',profile:{genre:''},assetLibrary});
   if(expected.applied!==true)return {required:false,refreshRequired:false,libraryVersion:Number(assetLibrary?.version||0)};
   const configFile=path.join(root,'shared','GameConfig.luau');
+  const clientFile=path.join(root,'client','Game.client.luau');
   if(!fs.existsSync(configFile))return {required:true,refreshRequired:true,libraryVersion:Number(expected.libraryVersion||0),reason:'CONFIG_MISSING'};
+  if(!fs.existsSync(clientFile))return {required:true,refreshRequired:true,libraryVersion:Number(expected.libraryVersion||0),reason:'CLIENT_MISSING'};
   const config=fs.readFileSync(configFile,'utf8');
+  const client=fs.readFileSync(clientFile,'utf8');
   const libraryVersion=Number(config.match(/LibraryVersion\s*=\s*(\d+)/)?.[1]||0);
   const bindingVersion=Number(config.match(/BindingVersion\s*=\s*(\d+)/)?.[1]||0);
+  const clientBindingVersion=Number(client.match(/STUDIO_ASSET_BINDING_VERSION\s*=\s*(\d+)/)?.[1]||0);
   const expectedBindingVersion=Number(expected.bindingVersion||0);
   const applied=/StudioAssets\s*=\s*\{[\s\S]*?Applied\s*=\s*true/.test(config);
-  const refreshRequired=!applied||bindingVersion!==expectedBindingVersion||libraryVersion!==Number(expected.libraryVersion||0);
-  return {required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,bindingVersion,expectedBindingVersion,applied,reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null};
+  const clientConfigBound=/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(client);
+  const clientVisibleBound=/StudioAssetFramePanel/.test(client)
+    ||(/StudioAssetBindingVersion/.test(client)&&/StudioAssetAtoms/.test(client)&&/FRAME_PANEL/.test(client)&&/(hasStudioAssetAtom|hasStudioAtom)/.test(client));
+  const refreshRequired=!applied
+    ||bindingVersion!==expectedBindingVersion
+    ||libraryVersion!==Number(expected.libraryVersion||0)
+    ||clientBindingVersion!==expectedBindingVersion
+    ||!clientConfigBound
+    ||!clientVisibleBound;
+  return {required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,bindingVersion,clientBindingVersion,expectedBindingVersion,applied,clientConfigBound,clientVisibleBound,reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null};
 }
 
 export function hasVerifiedVibe2SourceHandoff(item={}){
