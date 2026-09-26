@@ -1,5 +1,5 @@
 {
-  "version": 244,
+  "version": 245,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1167,7 +1167,13 @@
         "concurrencyGroup": "vibe2-main-push-game-primary-wake",
         "activeWakeCancellationForbidden": true,
         "sharedStateSerializationScope": "ATOMIC_OPTIMISTIC_WRITE_CONFLICT_ONLY",
-        "responsibleFileConflictProtectionPreserved": true
+        "responsibleFileConflictProtectionPreserved": true,
+        "freshnessGateBeforeContractPreflight": true,
+        "freshnessAuthority": "CURRENT_MAIN_SHA_AT_RESERVE_START",
+        "staleAction": "NOOP_BEFORE_CONTRACT_PREFLIGHT_AND_RESERVE",
+        "staleWakeMayWriteControlState": false,
+        "staleWakeMayStartGameWorker": false,
+        "runningOrCompletedGameWorkerCancellation": false
       },
       "innerReservation": ".github/workflows/vibe2-continuous-core.yml::reserve-batch",
       "capacityAuthority": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
@@ -5521,5 +5527,22 @@
     "serializationScope": "SAME_GAME_HEAVY_UNITY_WEB_OR_ATOMIC_SHARED_STATE_WRITE_ONLY",
     "robloxUnityUpperPlatformPairingPreserved": true,
     "qualityGateWeakening": false
+  },
+  "mainPushWakeFreshnessGate": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.mainPushWakeFreshnessGate20260927",
+    "workflow": ".github/workflows/vibe2-continuous-core.yml",
+    "appliesTo": "MAIN_PUSH_WAKE_ONLY",
+    "freshnessCheck": "GITHUB_SHA_EQUALS_CURRENT_MAIN_SHA",
+    "staleExitBefore": [
+      "MAIN_CONTRACT_ARCHIVE",
+      "FAST_SCHEDULER_PREFLIGHT",
+      "RESERVE_BATCH",
+      "CONTROL_STATE_WRITE",
+      "GAME_WORKER_FANOUT"
+    ],
+    "callbackIngressUnchanged": true,
+    "activeGameWorkerCancellationForbidden": true,
+    "independentGameParallelismPreserved": true
   }
 }
