@@ -283,11 +283,12 @@
     "entryWorkflow": ".github/workflows/vibe2-24h-runner.yml",
     "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
     "gamePrimaryControlRunnerPool": {
-      "authority": "company-learning/platform-release-roadmap.json#changeRecord.gameControlRunnerPoolSeparation20260926",
-      "reserve": "ubuntu-24.04-arm",
+      "authority": "company-learning/platform-release-roadmap.json#changeRecord.lightweightGameIngressRunnerRelief20260927",
+      "reserve": "ubuntu-slim",
       "fanIn": "ubuntu-24.04-arm",
       "worker": "ubuntu-latest",
       "modelCache": "ubuntu-latest",
+      "lightweightReserveSeparatedFromArmFanIn": true,
       "heavyGameExecutionUnchanged": true,
       "queueReservationAndStateFanInOnly": true
     },
