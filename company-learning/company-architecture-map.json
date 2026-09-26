@@ -1,5 +1,5 @@
 {
-  "version": 252,
+  "version": 253,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5596,12 +5596,30 @@
     "canonicalQaWorkflow": ".github/workflows/company-central-policy-contract-qa.yml",
     "prepareWorkflow": ".github/workflows/company-development-unity-runtime.yml",
     "duplicateCentralTestsRemoved": true,
-    "responsibilityLocalTestsPreserved": true,
+    "responsibilityLocalTestsPreserved": false,
     "staticSyntaxChecksPreserved": true,
     "sharedContextCompilationPreserved": true,
     "canonicalStageOrderPreserved": true,
     "runtimeCriticalPathWaitsForDuplicateQa": false,
     "independentGameParallelismPreserved": true,
+    "qualityGateWeakening": false,
+    "movedRemainingContractTestsToCanonicalQa": true,
+    "runtimeCriticalPathContractTests": [],
+    "canonicalQaOwnsUpperPlatformAdmissionAndFatalLogcat": true
+  },
+  "unityPrepareInputOverlap": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.unityPrepareInputOverlap20260927",
+    "workflow": ".github/workflows/company-development-unity-runtime.yml#prepare",
+    "runner": "ubuntu-24.04-arm",
+    "parallelInputs": [
+      "company-runtime:development-queue.json",
+      "LOCAL_UNITY_CONTRACT_COMPILATION"
+    ],
+    "barrier": "BOTH_INPUTS_PASS_BEFORE_QUEUE_SELECTION",
+    "queueFetchSerializedBehindContractChecks": false,
+    "canonicalStageOrderPreserved": true,
+    "eligibilitySemanticsUnchanged": true,
     "qualityGateWeakening": false
   }
 }
