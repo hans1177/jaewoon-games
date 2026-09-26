@@ -207,3 +207,15 @@ test('central native planner suppresses already-active per-game child dispatches
   assert.match(development,/fromJSON\(needs\.native-plan\.outputs\.roblox_json\)/);
   assert.match(development,/fromJSON\(needs\.native-plan\.outputs\.unity_json\)/);
 });
+
+test('director runner drain advances latest scheduler without cancelling running game work',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  assert.match(director,/CURRENT_MAIN_SHA="$current_main" node/);
+  assert.match(director,/VIBE2_STALE_UNSTARTED_SCHEDULER/);
+  assert.match(director,/VIBE2_STALE_UNSTARTED_FANIN_REFILL/);
+  assert.match(director,/unity-android-independent-qa\.yml/);
+  assert.match(director,/unity-android-regression\.yml/);
+  assert.match(director,/const queued=new Set\(\['queued','pending','requested'\]\)/);
+  assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
+  assert.doesNotMatch(director,/VIBE2_STALE_UNSTARTED_SCHEDULER[\s\S]{0,400}in_progress/);
+});

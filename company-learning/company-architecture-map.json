@@ -1,5 +1,5 @@
 {
-  "version": 239,
+  "version": 240,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5421,5 +5421,23 @@
     "identity": "BUILD_RUN",
     "reuseActiveExactRun": true,
     "unrelatedBuildRunsParallel": true
+  },
+  "runnerQueueFreshnessDrain": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerQueueFreshnessDrain20260927",
+    "owner": ".github/workflows/director-supervisor.yml#runner-drain",
+    "currentMainLookup": "GITHUB_API_AT_DRAIN_TIME",
+    "cancellable": [
+      "STALE_UNSTARTED_VIBE2_24H_SCHEDULER",
+      "STALE_UNSTARTED_VIBE2_FANIN_REFILL",
+      "DUPLICATE_UNSTARTED_UNITY_INDEPENDENT_QA_SAME_BUILD_RUN",
+      "DUPLICATE_UNSTARTED_UNITY_REGRESSION_SAME_BUILD_RUN"
+    ],
+    "forbidden": [
+      "IN_PROGRESS_GAME_RUN",
+      "IN_PROGRESS_SCHEDULER",
+      "IN_PROGRESS_FANIN",
+      "INDEPENDENT_GAME_RUN"
+    ]
   }
 }

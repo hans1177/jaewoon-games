@@ -1,5 +1,5 @@
 {
-  "version": 428,
+  "version": 429,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8401,7 +8401,10 @@
         "company-learning/company-architecture-map.json",
         "company-learning/company-log-map.json"
       ],
-      "supervisionRunner": "ubuntu-slim"
+      "supervisionRunner": "ubuntu-slim",
+      "staleUnstartedSchedulerMayCancel": true,
+      "staleUnstartedFanInRefillMayCancel": true,
+      "exactUnityChildQaDuplicateMayCancel": true
     },
     "runnerQueueDrainV2_20260926": {
       "id": "RUNNER_QUEUE_DRAIN_V2_2026-09-26",
@@ -8590,6 +8593,23 @@
       "duplicateDispatchForbiddenWhenExactActiveRunExists": true,
       "independentDifferentBuildRunsRemainParallel": true,
       "qualityGateWeakening": false
+    },
+    "runnerQueueFreshnessDrain20260927": {
+      "id": "RUNNER_QUEUE_FRESHNESS_DRAIN_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "ADVANCE_LATEST_MAIN_CONTROL_WORK_BY_CANCELLING_ONLY_STALE_UNSTARTED_SCHEDULER_REFILL_AND_EXACT_DUPLICATE_CHILD_QA_RUNS",
+      "supervisor": ".github/workflows/director-supervisor.yml",
+      "currentMainResolvedAtExecution": true,
+      "staleUnstartedVibe24hMayCancel": true,
+      "staleUnstartedFanInRefillMayCancel": true,
+      "duplicateUnityIndependentQaMayCancel": true,
+      "duplicateUnityRegressionMayCancel": true,
+      "inProgressGameRunMayCancel": false,
+      "independentGameRunMayCancel": false,
+      "runningSchedulerMayCancel": false,
+      "runningFanInMayCancel": false,
+      "qualitySecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {

@@ -1,5 +1,5 @@
 {
-  "version": 104,
+  "version": 105,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1914,5 +1914,18 @@
       "UNITY_ANDROID_REGRESSION_DISPATCHED"
     ],
     "exactIdentity": "BUILD_RUN"
+  },
+  "runnerQueueFreshnessDrainEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "markers": [
+      "DIRECTOR_RUNNER_DRAIN_CANCELLED",
+      "VIBE2_STALE_UNSTARTED_SCHEDULER",
+      "VIBE2_STALE_UNSTARTED_FANIN_REFILL",
+      "DUPLICATE_TITLE"
+    ],
+    "currentMainMustBeResolvedBeforeSelection": true,
+    "inProgressCancellationForbidden": true,
+    "independentGameCancellationForbidden": true
   }
 }

@@ -76,7 +76,8 @@ jobs:
           fetch_runs 'status=queued&per_page=100'
           fetch_runs 'status=requested&per_page=100' || true
           fetch_runs 'status=waiting&per_page=100' || true
-          node <<'NODE' > /tmp/director-run-cancel.list
+          current_main="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq '.sha')"
+          CURRENT_MAIN_SHA="$current_main" node <<'NODE' > /tmp/director-run-cancel.list
           const fs=require('fs');
           const pages=fs.readFileSync('/tmp/director-run-drain.ndjson','utf8').trim().split('\n').filter(Boolean).map(JSON.parse);
           const byId=new Map();
@@ -155,6 +156,26 @@ jobs:
           };
           dedupeByTitle('.github/workflows/company-development-roblox-runtime.yml',true);
           dedupeByTitle('.github/workflows/company-development-roblox-release-promotion.yml',false);
+          dedupeByTitle('.github/workflows/unity-android-independent-qa.yml',false);
+          dedupeByTitle('.github/workflows/unity-android-regression.yml',false);
+
+          const currentMain=String(process.env.CURRENT_MAIN_SHA||'').trim();
+          if(currentMain){
+            for(const stale of runs.filter(r=>
+              r.path==='.github/workflows/vibe2-24h-runner.yml'
+              &&queued.has(String(r.status||'').toLowerCase())
+              &&String(r.head_branch||'')==='main'
+              &&String(r.head_sha||'')!==currentMain
+            ))add(stale,'VIBE2_STALE_UNSTARTED_SCHEDULER');
+
+            for(const stale of runs.filter(r=>
+              r.path==='.github/workflows/vibe2-continuous-core.yml'
+              &&String(r.display_title||'')==='vibe2-fanin-refill'
+              &&queued.has(String(r.status||'').toLowerCase())
+              &&String(r.head_branch||'')==='main'
+              &&String(r.head_sha||'')!==currentMain
+            ))add(stale,'VIBE2_STALE_UNSTARTED_FANIN_REFILL');
+          }
 
           const staleBefore=Date.now()-(15*60*1000);
           const legacyRoblox=runs
