@@ -21,6 +21,7 @@ const unityRuntimeWorkflow=readText('.github/workflows/company-development-unity
 const unityWebWorkflow=readText('.github/workflows/unity-web-first-stage-build.yml');
 const nativeDatasetGate=readText('tools/vibe2-real-platform-dataset-gate.mjs');
 const directorSupervisor=readText('.github/workflows/director-supervisor.yml');
+const coreQaWorkflow=readText('.github/workflows/vibe2-core-qa.yml');
 
 test('platform-release-roadmap is the single machine execution policy source',()=>{
   assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
@@ -1075,6 +1076,17 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.equal(projection?.localStudioExecutionMoved,false);
   assert.equal(projection?.gamePrimaryUbuntuLatestCapacityProtected,true);
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
+});
+
+test('core QA keeps one active regression alive during same-ref main churn',()=>{
+  const policy=roadmap.changeRecord?.vibe2CoreQaActiveCompletion20260927;
+  assert.equal(policy?.cancelActiveValidation,false);
+  assert.equal(policy?.pendingPolicy,'KEEP_ONLY_LATEST_PENDING_SAME_REF');
+  assert.equal(policy?.exactShaReuseByGamePrimaryReservePreserved,true);
+  assert.equal(policy?.qualityGateWeakened,false);
+  assert.match(coreQaWorkflow,/concurrency:\n\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}[\s\S]*?cancel-in-progress:\s*false/);
+  assert.equal(architecture.executionTopology?.vibe2?.vibeGameControlRunnerPool?.coreQaRunner,'ubuntu-slim');
+  assert.equal(architecture.executionTopology?.vibe2?.vibeGameControlRunnerPool?.coreQaConcurrencyMode,'ACTIVE_ONE_PLUS_LATEST_PENDING');
 });
 
 test('duplicate administrative QA keeps only the latest same-ref validation',()=>{
