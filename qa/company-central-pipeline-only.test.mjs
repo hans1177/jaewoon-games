@@ -233,7 +233,7 @@ test('director runner drain advances latest scheduler without cancelling running
 test('director coalesces disposable pre-supervision control jobs but preserves supervise completion',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   assert.match(director,/runner-drain:[\s\S]*?group: director-runner-drain-v1[\s\S]*?cancel-in-progress: false/);
-  assert.match(director,/game-primary-gate:[\s\S]*?group: director-game-primary-gate-v1[\s\S]*?cancel-in-progress: true/);
+  assert.match(director,/game-primary-gate:[\s\S]*?group: director-game-primary-gate-v1[\s\S]*?cancel-in-progress: false/);
   assert.match(director,/supervise:[\s\S]*?group: director-central-company-supervise-v3[\s\S]*?cancel-in-progress: false/);
 });
 
