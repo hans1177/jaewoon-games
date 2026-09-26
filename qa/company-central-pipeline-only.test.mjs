@@ -184,3 +184,11 @@ test('runner drain bypasses the stale supervisor group and evicts stale legacy R
   assert.match(director,/String\(r\.display_title\|\|''\)==='Roblox runtime · batch'/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
 });
+
+
+test('director cancellation cleanup does not recursively wake another drain while success and failure wakes remain eligible',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  assert.match(director,/runner-drain:\n[\s\S]{0,220}?if: github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.conclusion != 'cancelled'/);
+  assert.match(director,/game-primary-gate:\n[\s\S]{0,220}?if: always\(\) && \(github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.conclusion != 'cancelled'\)/);
+  assert.match(director,/supervise:\n[\s\S]{0,260}?github\.event\.workflow_run\.conclusion != 'cancelled'/);
+});
