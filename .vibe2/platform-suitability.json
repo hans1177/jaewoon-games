@@ -3,7 +3,7 @@
   "kind": "platform-suitability",
   "authority": "PRIMARY_AI_AND_VIBE_JOINT_WITH_DEPARTMENT_EVIDENCE",
   "policy": "ROBLOX_UNITY_CONCURRENT_SUITABILITY_DISPLAY_ONLY",
-  "generatedAt": "2026-09-26T14:25:24.261Z",
+  "generatedAt": "2026-09-26T15:34:12.814Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -118,6 +118,65 @@
         "genre": "Survival",
         "playMode": "COMPETITIVE",
         "multiplayer": true,
+        "deepSystemGenre": true,
+        "socialGenre": false
+      },
+      "lowerSuitabilityDoesNotDisableDevelopment": true
+    },
+    {
+      "gameId": "village-dungeons",
+      "gameName": "마을 던전 RPG",
+      "executionMode": "ROBLOX_UNITY_CONCURRENT",
+      "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+      "ROBLOX": {
+        "score": 70,
+        "label": "MEDIUM",
+        "departments": {
+          "planning": 70,
+          "development": 68,
+          "graphics": 68,
+          "audio": 70,
+          "qa": 72,
+          "balance": 70,
+          "growthMarketing": 72
+        },
+        "adaptationProfile": "SOCIAL_FAST_SESSION",
+        "direction": [
+          "FAST_ENTRY",
+          "MOBILE_FIRST",
+          "SOCIAL_AND_MULTIPLAYER",
+          "SHORT_REPEATABLE_GOALS",
+          "SERVER_AUTHORITATIVE_SYNC",
+          "ROBLOX_NATIVE_SERVICES"
+        ]
+      },
+      "UNITY": {
+        "score": 79,
+        "label": "MEDIUM",
+        "departments": {
+          "planning": 80,
+          "development": 77,
+          "graphics": 87,
+          "audio": 84,
+          "qa": 72,
+          "balance": 80,
+          "growthMarketing": 75
+        },
+        "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+        "direction": [
+          "DEEP_SYSTEM_PRESENTATION",
+          "RICHER_VISUALS",
+          "CAMERA_AND_CINEMATIC_LANGUAGE",
+          "LONGER_SESSION_SUPPORT",
+          "DETAILED_CONTROLS",
+          "PERFORMANCE_SCALING",
+          "IMMERSIVE_AUDIO"
+        ]
+      },
+      "signals": {
+        "genre": "마을 던전 RPG",
+        "playMode": "UNSPECIFIED",
+        "multiplayer": false,
         "deepSystemGenre": true,
         "socialGenre": false
       },
@@ -301,65 +360,6 @@
       "lowerSuitabilityDoesNotDisableDevelopment": true
     },
     {
-      "gameId": "village-dungeons",
-      "gameName": "마을 던전 RPG",
-      "executionMode": "ROBLOX_UNITY_CONCURRENT",
-      "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-      "ROBLOX": {
-        "score": 70,
-        "label": "MEDIUM",
-        "departments": {
-          "planning": 70,
-          "development": 68,
-          "graphics": 68,
-          "audio": 70,
-          "qa": 72,
-          "balance": 70,
-          "growthMarketing": 72
-        },
-        "adaptationProfile": "SOCIAL_FAST_SESSION",
-        "direction": [
-          "FAST_ENTRY",
-          "MOBILE_FIRST",
-          "SOCIAL_AND_MULTIPLAYER",
-          "SHORT_REPEATABLE_GOALS",
-          "SERVER_AUTHORITATIVE_SYNC",
-          "ROBLOX_NATIVE_SERVICES"
-        ]
-      },
-      "UNITY": {
-        "score": 79,
-        "label": "MEDIUM",
-        "departments": {
-          "planning": 80,
-          "development": 77,
-          "graphics": 87,
-          "audio": 84,
-          "qa": 72,
-          "balance": 80,
-          "growthMarketing": 75
-        },
-        "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
-        "direction": [
-          "DEEP_SYSTEM_PRESENTATION",
-          "RICHER_VISUALS",
-          "CAMERA_AND_CINEMATIC_LANGUAGE",
-          "LONGER_SESSION_SUPPORT",
-          "DETAILED_CONTROLS",
-          "PERFORMANCE_SCALING",
-          "IMMERSIVE_AUDIO"
-        ]
-      },
-      "signals": {
-        "genre": "마을 던전 RPG",
-        "playMode": "UNSPECIFIED",
-        "multiplayer": false,
-        "deepSystemGenre": true,
-        "socialGenre": false
-      },
-      "lowerSuitabilityDoesNotDisableDevelopment": true
-    },
-    {
       "gameId": "cozy-island",
       "gameName": "포근섬",
       "executionMode": "ROBLOX_UNITY_CONCURRENT",
@@ -414,6 +414,65 @@
         "playMode": "COOP",
         "multiplayer": true,
         "deepSystemGenre": true,
+        "socialGenre": false
+      },
+      "lowerSuitabilityDoesNotDisableDevelopment": true
+    },
+    {
+      "gameId": "survival",
+      "gameName": "나의 생존기",
+      "executionMode": "ROBLOX_UNITY_CONCURRENT",
+      "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+      "ROBLOX": {
+        "score": 70,
+        "label": "MEDIUM",
+        "departments": {
+          "planning": 70,
+          "development": 68,
+          "graphics": 68,
+          "audio": 70,
+          "qa": 72,
+          "balance": 70,
+          "growthMarketing": 72
+        },
+        "adaptationProfile": "SOCIAL_FAST_SESSION",
+        "direction": [
+          "FAST_ENTRY",
+          "MOBILE_FIRST",
+          "SOCIAL_AND_MULTIPLAYER",
+          "SHORT_REPEATABLE_GOALS",
+          "SERVER_AUTHORITATIVE_SYNC",
+          "ROBLOX_NATIVE_SERVICES"
+        ]
+      },
+      "UNITY": {
+        "score": 75,
+        "label": "MEDIUM",
+        "departments": {
+          "planning": 72,
+          "development": 77,
+          "graphics": 82,
+          "audio": 80,
+          "qa": 72,
+          "balance": 74,
+          "growthMarketing": 70
+        },
+        "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+        "direction": [
+          "DEEP_SYSTEM_PRESENTATION",
+          "RICHER_VISUALS",
+          "CAMERA_AND_CINEMATIC_LANGUAGE",
+          "LONGER_SESSION_SUPPORT",
+          "DETAILED_CONTROLS",
+          "PERFORMANCE_SCALING",
+          "IMMERSIVE_AUDIO"
+        ]
+      },
+      "signals": {
+        "genre": "나의 생존기",
+        "playMode": "UNSPECIFIED",
+        "multiplayer": false,
+        "deepSystemGenre": false,
         "socialGenre": false
       },
       "lowerSuitabilityDoesNotDisableDevelopment": true
@@ -883,65 +942,6 @@
       },
       "signals": {
         "genre": "엘도리아 연대기",
-        "playMode": "UNSPECIFIED",
-        "multiplayer": false,
-        "deepSystemGenre": false,
-        "socialGenre": false
-      },
-      "lowerSuitabilityDoesNotDisableDevelopment": true
-    },
-    {
-      "gameId": "survival",
-      "gameName": "나의 생존기",
-      "executionMode": "ROBLOX_UNITY_CONCURRENT",
-      "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
-      "ROBLOX": {
-        "score": 70,
-        "label": "MEDIUM",
-        "departments": {
-          "planning": 70,
-          "development": 68,
-          "graphics": 68,
-          "audio": 70,
-          "qa": 72,
-          "balance": 70,
-          "growthMarketing": 72
-        },
-        "adaptationProfile": "SOCIAL_FAST_SESSION",
-        "direction": [
-          "FAST_ENTRY",
-          "MOBILE_FIRST",
-          "SOCIAL_AND_MULTIPLAYER",
-          "SHORT_REPEATABLE_GOALS",
-          "SERVER_AUTHORITATIVE_SYNC",
-          "ROBLOX_NATIVE_SERVICES"
-        ]
-      },
-      "UNITY": {
-        "score": 75,
-        "label": "MEDIUM",
-        "departments": {
-          "planning": 72,
-          "development": 77,
-          "graphics": 82,
-          "audio": 80,
-          "qa": 72,
-          "balance": 74,
-          "growthMarketing": 70
-        },
-        "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
-        "direction": [
-          "DEEP_SYSTEM_PRESENTATION",
-          "RICHER_VISUALS",
-          "CAMERA_AND_CINEMATIC_LANGUAGE",
-          "LONGER_SESSION_SUPPORT",
-          "DETAILED_CONTROLS",
-          "PERFORMANCE_SCALING",
-          "IMMERSIVE_AUDIO"
-        ]
-      },
-      "signals": {
-        "genre": "나의 생존기",
         "playMode": "UNSPECIFIED",
         "multiplayer": false,
         "deepSystemGenre": false,

@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-09-26T14:25:18.567Z",
+  "updatedAt": "2026-09-26T15:34:07.299Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -390,15 +390,16 @@
       "evidence": [
         "{\"version\":1,\"gameId\":\"horror-escape-room\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"294311358d51d510f8ca60283632ad5f819afc17\",\"artifactIdentity\":\"sha256:a298a9bdc3e5b0469d3b5a7adcdfd01da5b0ddc9ce19423631098e1668b1b236\",\"artifactRunId\":35980786497,\"universeId\":\"10767445796\",\"placeId\":\"98222620265768\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":21,\"workflowRunId\":35981119690,\"publishedAt\":\"2026-09-24T09:26:44.889Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}",
         "{\"version\":1,\"gameId\":\"horror-escape-room\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"8e71a6ee9681ece4feafd4963ccebe37d106c2bb\",\"artifactIdentity\":\"sha256:a298a9bdc3e5b0469d3b5a7adcdfd01da5b0ddc9ce19423631098e1668b1b236\",\"artifactRunId\":36106173538,\"universeId\":\"10766974456\",\"placeId\":\"112507741861842\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":19,\"workflowRunId\":36106433040,\"publishedAt\":\"2026-09-25T07:12:18.695Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}",
-        "{\"version\":2,\"gameId\":\"horror-escape-room\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"8e71a6ee9681ece4feafd4963ccebe37d106c2bb\",\"artifactIdentity\":\"sha256:a298a9bdc3e5b0469d3b5a7adcdfd01da5b0ddc9ce19423631098e1668b1b236\",\"artifactRunId\":36106173538,\"universeId\":\"10767445796\",\"placeId\":\"98222620265768\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":21,\"workflowRunId\":36145336407,\"publishedAt\":\"2026-09-25T14:08:10.303Z\",\"authority\":\"roblox-open-cloud-dedicated-private-runtime-candidate\",\"dedicated\":true,\"current\":true,\"publisherMainRevision\":\"75f2d279f11c56d4cc2d256e3d73cbc06c60b62b\"}"
+        "{\"version\":2,\"gameId\":\"horror-escape-room\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"8e71a6ee9681ece4feafd4963ccebe37d106c2bb\",\"artifactIdentity\":\"sha256:a298a9bdc3e5b0469d3b5a7adcdfd01da5b0ddc9ce19423631098e1668b1b236\",\"artifactRunId\":36106173538,\"universeId\":\"10767445796\",\"placeId\":\"98222620265768\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":21,\"workflowRunId\":36145336407,\"publishedAt\":\"2026-09-25T14:08:10.303Z\",\"authority\":\"roblox-open-cloud-dedicated-private-runtime-candidate\",\"dedicated\":true,\"current\":true,\"publisherMainRevision\":\"75f2d279f11c56d4cc2d256e3d73cbc06c60b62b\"}",
+        "{\"version\":1,\"gameId\":\"horror-escape-room\",\"platform\":\"ROBLOX\",\"sourceRevision\":\"8816db394640fb0fc2c8ba4013bac7a810dcfcfa\",\"artifactIdentity\":\"sha256:04acccc859af4332c3c7901c828fd9caaa07e6bbd0a091c0d4ebce31c173be2b\",\"artifactRunId\":36238682627,\"universeId\":\"10767445796\",\"placeId\":\"98222620265768\",\"foundationF0Passed\":true,\"published\":true,\"releaseClaim\":false,\"exposure\":\"PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE\",\"visibilityIntent\":\"PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE\",\"versionNumber\":22,\"workflowRunId\":36247890210,\"publishedAt\":\"2026-09-26T14:20:30.122Z\",\"authority\":\"roblox-open-cloud-private-runtime-candidate\"}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "route": "GAME_TESTER_FOUNDATION_EXECUTION",
       "repairEligible": false,
       "status": "OPEN",
       "createdAt": "2026-09-24T09:30:30.062Z",
-      "updatedAt": "2026-09-26T03:56:31.473Z",
-      "occurrenceCount": 218,
+      "updatedAt": "2026-09-26T15:34:07.296Z",
+      "occurrenceCount": 219,
       "internalFlowBlocking": true,
       "externalReleaseBlockingOnly": false
     },
@@ -564,8 +565,8 @@
       "externalReleaseBlockingOnly": true,
       "status": "OPEN",
       "createdAt": "2026-09-25T19:12:21.313Z",
-      "updatedAt": "2026-09-26T14:25:18.564Z",
-      "occurrenceCount": 51
+      "updatedAt": "2026-09-26T15:34:07.296Z",
+      "occurrenceCount": 52
     },
     {
       "id": "bug-75e82e071db7d0d05520",
@@ -1075,8 +1076,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-26T14:25:18.564Z",
-      "updatedAt": "2026-09-26T14:25:18.564Z",
-      "occurrenceCount": 1
+      "updatedAt": "2026-09-26T15:34:07.296Z",
+      "occurrenceCount": 2
     },
     {
       "id": "bug-cc0f8b50b5481b708817",
