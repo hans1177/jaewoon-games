@@ -1,5 +1,5 @@
 {
-  "version": 122,
+  "version": 123,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2136,5 +2136,19 @@
     "sameGameDuplicateDispatchForbidden": true,
     "independentGameParallelismRequired": true,
     "scanFailureMayNotDispatch": true
+  },
+  "unityWebBootProofReuseEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.unityWebBootProofReuse20260927",
+    "markers": [
+      "UNITY_WEB_BROWSER_RUNTIME=READY",
+      "UNITY_WEB_GAMEPLAY_QA=PASS",
+      "UNITY_WEB_BOOT_SMOKE=PASS:ACTUAL_PLAY_EVIDENCE"
+    ],
+    "separateBootBrowserLaunchExpected": false,
+    "bootPassMustComeFromActualPlayEvidence": true,
+    "independentQaStillRequired": true,
+    "regressionStillRequired": true
   }
 }
