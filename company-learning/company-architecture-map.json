@@ -1,5 +1,5 @@
 {
-  "version": 225,
+  "version": 226,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4066,7 +4066,7 @@
       ]
     }
   },
-  "updatedAt": "2026-09-27",
+  "updatedAt": "2026-09-26",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -5177,7 +5177,7 @@
     "runtimeFile": "vibe2-runtime.json"
   },
   "robloxDevelopmentParallelismProjection": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxGameWideWorkflowSerializationRemoval20260926",
     "workflow": ".github/workflows/company-development-roblox-runtime.yml",
     "taskIdentity": "GAME_ID_PLUS_RESPONSIBILITY_AND_EXACT_SOURCE_IDENTITY",
@@ -5192,6 +5192,16 @@
     "sharedStateWriteSerialization": "ATOMIC_OPTIMISTIC_RETRY_ONLY",
     "sourceRootWideLockForbidden": true,
     "qaSecurityReleaseGatesUnchanged": true,
-    "authorityExpanded": false
+    "authorityExpanded": false,
+    "continuationWorkflow": ".github/workflows/company-development-roblox-runtime-continuation.yml",
+    "f0Workflow": ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
+    "privateRuntimeWorkflow": ".github/workflows/company-development-roblox-release-promotion.yml",
+    "continuationWorkflowWideLock": false,
+    "f0WorkflowWideLock": false,
+    "exactF0PerGameDispatch": true,
+    "activeF0SameGameDispatchDedup": true,
+    "activePrivateRuntimeSameGameDispatchDedup": true,
+    "f0WorkerMatrixParallel": true,
+    "f0SharedStatePersistMode": "OPTIMISTIC_RETRY_NO_JOB_WIDE_LOCK"
   }
 }
