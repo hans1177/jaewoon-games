@@ -290,11 +290,22 @@ jobs:
           node - <<'NODE' > /tmp/private-runtime-handoff-ids
           const q=require('/tmp/q.json');
           const ids=JSON.parse(process.env.TARGETS||'[]').map(x=>x.gameId);
+          const valid=t=>/^[1-9][0-9]*$/.test(String(t?.universeId||''))&&/^[1-9][0-9]*$/.test(String(t?.placeId||''));
+          let sharedFallbackUsed=false;
           for(const id of ids){
             const x=(q.items||[]).find(y=>y.gameId===id);
             if(x?.robloxFoundationF0Passed!==true||x?.robloxRuntimeFoundationPassed===true)continue;
             if(String(x.currentStep||'').toUpperCase()!=='PRIVATE_RUNTIME_CANDIDATE_DEPLOY')continue;
-            console.log(id);
+            const exactTarget=((x.robloxPublicationTarget?.verified===true
+                ||(x.robloxPublicationTarget?.dedicated===true
+                  &&x.robloxPublicationTarget?.shared!==true
+                  &&String(x.robloxPublicationTarget?.bootstrapState||'').toUpperCase()==='CREATED_PRIVATE_UNPUBLISHED'))
+                &&valid(x.robloxPublicationTarget))
+              ||(x.robloxInternalReleaseEvidence?.published===true&&valid(x.robloxInternalReleaseEvidence))
+              ||(x.robloxReleaseEvidence?.published===true&&valid(x.robloxReleaseEvidence));
+            if(exactTarget){console.log(id);continue;}
+            if(!sharedFallbackUsed){sharedFallbackUsed=true;console.log(id);continue;}
+            console.error('ROBLOX_F0_SHARED_FALLBACK_DEFERRED='+id);
           }
           NODE
           gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" > /tmp/roblox-runtime-active-runs.json
