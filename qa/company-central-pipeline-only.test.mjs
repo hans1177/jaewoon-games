@@ -412,3 +412,45 @@ test('central planner dedupes active Unity Web floor and bootstrap runs without 
   assert.doesNotMatch(development,/dispatch-unity-web-floor:[\s\S]{0,260}?max-parallel:/);
   assert.doesNotMatch(development,/dispatch-unity-web-bootstrap:[\s\S]{0,260}?max-parallel:/);
 });
+
+
+test('shared Ollama model cache is opt-in for native development workers and preserves dedicated Vibe cache',()=>{
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
+  const action=read('.github/actions/prepare-ollama/action.yml');
+  const roblox=read('.github/workflows/company-development-roblox-runtime.yml');
+  const continuation=read('.github/workflows/company-development-roblox-runtime-continuation.yml');
+  const unity=read('.github/workflows/company-development-unity-runtime.yml');
+  const vibe=read('.github/workflows/vibe2-continuous-core.yml');
+  const centralQa=read('.github/workflows/company-central-policy-contract-qa.yml');
+  const change=roadmap.changeRecord?.sharedOllamaModelCache20260927;
+
+  assert.match(action,/cache-model:\n\s+description:[\s\S]{0,240}?default: 'false'/);
+  assert.match(action,/Resolve requested Ollama model cache key/);
+  assert.match(action,/safe_model=.*sed -E/);
+  assert.match(action,/uses: actions\/cache\/restore@v4/);
+  assert.match(action,/uses: actions\/cache\/save@v4/);
+  assert.match(action,/key: \$\{\{ steps\.model-cache-key\.outputs\.key \}\}/);
+  assert.match(action,/Save requested Ollama model cache immediately/);
+  assert.match(action,/continue-on-error: true/);
+  assert.ok(action.indexOf('Ensure requested local model')<action.indexOf('Save requested Ollama model cache immediately'));
+
+  for(const workflow of [roblox,continuation,unity]){
+    assert.match(workflow,/cache-model: 'true'/);
+  }
+  assert.match(vibe,/key: vibe2-ollama-v3-Linux-qwen3-1\.7b/);
+  assert.doesNotMatch(vibe,/cache-model: 'true'/);
+
+  assert.ok(centralQa.includes(".github/actions/prepare-ollama/action.yml"));
+  assert.ok(centralQa.includes(".github/workflows/company-development-roblox-runtime-continuation.yml"));
+  assert.equal(change?.cacheOptInDefault,false);
+  assert.equal(change?.saveTiming,'IMMEDIATELY_AFTER_REQUESTED_MODEL_IS_CONFIRMED_LOCAL');
+  assert.equal(change?.saveFailureBlocksDevelopment,false);
+  assert.equal(change?.existingVibe2DedicatedModelCacheUnchanged,true);
+  assert.equal(change?.qualitySecurityReleaseGatesUnchanged,true);
+  assert.equal(architecture.sharedOllamaModelCache?.optInDefault,false);
+  assert.equal(architecture.sharedOllamaModelCache?.saveImmediatelyAfterRequestedModelReady,true);
+  assert.equal(logMap.sharedOllamaModelCacheEvidence?.cacheHitSkipsModelPull,true);
+  assert.equal(logMap.sharedOllamaModelCacheEvidence?.cacheSaveFailureMayBlockDevelopment,false);
+});
