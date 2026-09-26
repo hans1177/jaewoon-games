@@ -303,6 +303,7 @@ export function compareCatalogGames(a={},b={},policy=normalizationPolicy()){
 
 export function canonicalizeGameRecord(game={}){
   const runtime=game.homepageInfo&&typeof game.homepageInfo==='object'?game.homepageInfo:{};
+  const marketingImage=clean(game.marketingImage||game.image)||'assets/pwa-icon-512.png';
   const selectedPlatform=selectedPlatformOf(game);
   const robloxTarget=game.robloxPublicationTarget&&typeof game.robloxPublicationTarget==='object'?game.robloxPublicationTarget:{};
   const robloxEvidence=game.robloxReleaseEvidence&&typeof game.robloxReleaseEvidence==='object'?game.robloxReleaseEvidence:{};
@@ -320,7 +321,8 @@ export function canonicalizeGameRecord(game={}){
       name:clean(game.name),
       description:clean(game.description),
       genres,
-      image:clean(game.image)||'assets/pwa-icon-512.png',
+      image:marketingImage,
+      marketingImage:clean(game.marketingImage)||null,
       aliases:list(game.aliases)
     },
     lifecycle:{
@@ -412,6 +414,7 @@ export function normalizeCatalog(catalog={}){
     if(ids.has(id))throw new Error('duplicate catalog game id: '+id);
     ids.add(id);
     game.productionClass=normalizedProductionClass(game.productionClass);
+    if(clean(game.marketingImage))game.image=clean(game.marketingImage);
     const legacyHistorical=clean(game.homepageCategory).toLowerCase()==='historical-deployed';
     game.homepageCategory=homepageCategoryForProductionClass(game.productionClass)||'design-only';
     if(legacyHistorical&&!clean(game.homepageDisplayMode))game.homepageDisplayMode='ROBLOX_HISTORICAL_DEPLOYMENT';
@@ -463,6 +466,10 @@ export function validateNormalizedCatalog(catalog={}){
     for(const field of LEGACY_DEVELOPMENT_FREEZE_FIELDS)if(Object.hasOwn(game,field))errors.push('LEGACY_DEVELOPMENT_FREEZE_FORBIDDEN:'+id+':'+field);
     if(!id||!canonical||canonical.schemaVersion!==CATALOG_CANONICAL_SCHEMA_VERSION){errors.push('CANONICAL_MISSING:'+id);continue;}
     if(canonical.identity?.gameId!==id)errors.push('IDENTITY_MISMATCH:'+id);
+    if(clean(game.marketingImage)){
+      if(clean(game.image)!==clean(game.marketingImage))errors.push('MARKETING_IMAGE_LEGACY_MIRROR_MISMATCH:'+id);
+      if(clean(canonical.identity?.image)!==clean(game.marketingImage))errors.push('MARKETING_IMAGE_CANONICAL_MISMATCH:'+id);
+    }
     if(ids.has(id))errors.push('DUPLICATE_GAME_ID:'+id);ids.add(id);
     const cls=normalizedProductionClass(game.productionClass);
     if(canonical.production?.class!==cls)errors.push('PRODUCTION_MIRROR_MISMATCH:'+id);
