@@ -18,9 +18,9 @@ const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true})
 const safeId=value=>clean(value).replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,100)||'game';
 const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const contract=policy?.unityWebFirstStage;
-if(contract?.status!=='OWNER_DIRECT_LOCKED'||contract?.scope!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'||contract?.enabled!==true||contract?.developmentAdmissionAuthority!==true||contract?.validationSurfaceOnly!==false)throw new Error('UNITY_WEB_DEVELOPMENT_FLOOR_POLICY_MISSING');
+if(contract?.status!=='OWNER_DIRECT_LOCKED'||contract?.scope!=='PARALLEL_DEVELOPMENT_AND_VALIDATION_LANE'||contract?.enabled!==true||contract?.developmentAdmissionAuthority!==false||contract?.validationSurfaceOnly!==false)throw new Error('UNITY_WEB_PARALLEL_LANE_POLICY_MISSING');
 if(contract?.canonicalGameSourceRoot!=='unity-games/<gameId>/'||contract?.publicWebBuildRoot!=='web-games/<gameId>/')throw new Error('UNITY_WEB_SOURCE_BUILD_BOUNDARY_MISMATCH');
-if(contract?.upperPlatformDevelopmentReadinessGate!=='company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate')throw new Error('UPPER_PLATFORM_READINESS_GATE_BINDING_REQUIRED');
+if(contract?.nativeDevelopmentMayRunWithoutWebBuild!==true)throw new Error('UNITY_WEB_NATIVE_INDEPENDENCE_REQUIRED');
 
 function discoverBuildMethod(sourceRoot){
   const editorRoot=path.join(sourceRoot,'Assets','Editor');
@@ -244,10 +244,11 @@ if(mode==='result'){
           compatibilityEvidenceOnly:true,
           nativeGateAuthority:false,
           developmentAdmissionAuthority:false,
-          upperPlatformReadinessRequired:true,
+          upperPlatformReadinessRequired:false,
           upperPlatformReadinessEvidence:`web-games/${gameId}/upper-platform-development-readiness.json`,
+          nativeDevelopmentAlreadyIndependent:true,
           releaseAuthority:false,
-          postGateAction:'EVALUATE_UPPER_PLATFORM_DEVELOPMENT_READY_THEN_START_ROBLOX_UNITY',
+          postGateAction:'RECORD_WEB_QUALITY_CHECKPOINT_NATIVE_ALREADY_RUNNING',
           generatedAt:stamp,
         };
         const evidenceOut=path.join(persistRoot,evidenceRelative);
