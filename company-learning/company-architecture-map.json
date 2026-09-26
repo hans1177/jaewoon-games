@@ -1,5 +1,5 @@
 {
-  "version": 228,
+  "version": 229,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -4080,7 +4080,7 @@
       ]
     }
   },
-  "updatedAt": "2026-09-27",
+  "updatedAt": "2026-09-26",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -4431,7 +4431,20 @@
       "unityWebRegressionPassNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR",
       "unityWebUpperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
       "unityWebReadinessPassDispatch": "ROBLOX_AND_UNITY_CONCURRENT_DEVELOPMENT",
-      "unityWebReadinessFailure": "REPAIR_REQUIRED"
+      "unityWebReadinessFailure": "REPAIR_REQUIRED",
+      "triggerResponsibility": {
+        "version": 1,
+        "centralCommonOwner": ".github/workflows/company-development-confirmed-runtime.yml",
+        "platformSpecificDirectPushOwners": {
+          "ROBLOX": ".github/workflows/company-development-roblox-runtime.yml",
+          "UNITY": ".github/workflows/company-development-unity-runtime.yml"
+        },
+        "centralAndChildDuplicatePushForbidden": true,
+        "exactGameDispatchPreserved": true,
+        "workflowCallParallelFanOutPreserved": true,
+        "centralCommonPathsDoNotDirectlyPushChildExecutors": true,
+        "platformSpecificPathsDoNotWakeCentralPortfolioScan": true
+      }
     },
     "revisions": {
       "leadPolicy": "ed368aa6e07ba390217a4a841118788e3413b851",

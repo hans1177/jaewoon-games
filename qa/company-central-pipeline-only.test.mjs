@@ -111,3 +111,31 @@ test('technical release implementation remains subordinate to central evidence g
   assert.equal(release.internalRelease.actualRuntimeFoundationF1ThroughF4Required,true);
   assert.ok(releaseCycle.includes('company-learning/platform-release-roadmap.json'));
 });
+test('native development trigger ownership avoids duplicate central plus child push execution',()=>{
+  const development=read('.github/workflows/company-development-confirmed-runtime.yml');
+  const roblox=read('.github/workflows/company-development-roblox-runtime.yml');
+  const unity=read('.github/workflows/company-development-unity-runtime.yml');
+  const developmentPush=development.slice(development.indexOf('on:'),development.indexOf('workflow_dispatch:'));
+  const robloxPush=roblox.slice(roblox.indexOf('on:'),roblox.indexOf('workflow_call:'));
+  const unityPush=unity.slice(unity.indexOf('on:'),unity.indexOf('workflow_call:'));
+  for(const commonPath of [
+    'company-learning/platform-release-roadmap.json',
+    'company-learning/company-architecture-map.json',
+    'company-learning/company-log-map.json',
+    'tools/company-shared-context.mjs',
+    'tools/company-selected-platform-router.mjs',
+    'tools/company-upper-platform-admission.mjs',
+    'tools/company-minimum-design-contract.mjs',
+    'company-asset-library.json',
+  ]) assert.ok(developmentPush.includes(commonPath),commonPath);
+  for(const childPath of [
+    '.github/workflows/company-development-roblox-runtime.yml',
+    '.github/workflows/company-development-roblox-runtime-continuation.yml',
+    '.github/workflows/company-development-roblox-headless-fast-mvp.yml',
+    '.github/workflows/company-development-unity-runtime.yml',
+    'unity-games/**',
+  ]) assert.ok(!developmentPush.includes(childPath),childPath);
+  assert.ok(robloxPush.includes('.github/workflows/company-development-roblox-runtime.yml'));
+  assert.ok(robloxPush.includes('tools/company-development-roblox-build-preflight.mjs'));
+  assert.ok(unityPush.includes('unity-games/**'));
+});

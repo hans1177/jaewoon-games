@@ -1,5 +1,5 @@
 {
-  "version": 417,
+  "version": 418,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8338,6 +8338,45 @@
         "pendingReplacementCancellationEliminated": true,
         "duplicatePrivateRuntimeRunsSelfSkipBeforeHeavyWork": true
       }
+    },
+    "nativeDevelopmentTriggerResponsibilitySplit20260926": {
+      "id": "NATIVE_DEVELOPMENT_TRIGGER_RESPONSIBILITY_SPLIT_2026-09-26",
+      "authority": "company-learning/platform-release-roadmap.json#departmentDrivenPortfolioDevelopmentControl.runtimeExecution.developmentExecutionOwner",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "REMOVE_DUPLICATE_CENTRAL_AND_CHILD_PUSH_RUNS_WITHOUT_REDUCING_GAME_PARALLELISM",
+      "centralOwner": ".github/workflows/company-development-confirmed-runtime.yml",
+      "centralCommonTriggerScope": [
+        "SHARED_NATIVE_POLICY",
+        "SHARED_ROUTER_AND_ADMISSION",
+        "SHARED_CONTEXT",
+        "CENTRAL_ARCHITECTURE_AND_LOG_CONTRACT",
+        "SHARED_ASSET_LIBRARY"
+      ],
+      "platformSpecificDirectPush": {
+        "ROBLOX": [
+          "ROBLOX_RUNTIME_WORKFLOW_AND_CONTINUATION",
+          "ROBLOX_BUILD_PREFLIGHT_AND_RUNTIME_SMOKE",
+          "ROBLOX_BOOTSTRAP_RECONCILE_AND_DRIFT_SYNC"
+        ],
+        "UNITY": [
+          "UNITY_RUNTIME_WORKFLOW",
+          "UNITY_GAME_SOURCE",
+          "UNITY_BUILD_REQUEST",
+          "UNITY_NATIVE_BUILD_AND_RUNTIME_TOOLS"
+        ]
+      },
+      "duplicateCentralAndChildPushForbidden": true,
+      "exactGameManualAndWorkflowCallDispatchPreserved": true,
+      "crossPlatformFanOutPreserved": true,
+      "gameLevelParallelismReduced": false,
+      "qualityOrEvidenceGateWeakening": false,
+      "sharedRuntimeWriteRulesUnchanged": true,
+      "implementationFiles": [
+        ".github/workflows/company-development-confirmed-runtime.yml",
+        ".github/workflows/company-development-roblox-runtime.yml",
+        ".github/workflows/company-development-unity-runtime.yml",
+        "qa/company-central-pipeline-only.test.mjs"
+      ]
     }
   },
   "vibeExecutionLaneContract": {

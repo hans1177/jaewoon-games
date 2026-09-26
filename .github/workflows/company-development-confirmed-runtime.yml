@@ -5,13 +5,6 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/company-development-confirmed-runtime.yml'
-      - '.github/workflows/company-development-roblox-runtime-continuation.yml'
-      - '.github/workflows/company-development-roblox-headless-fast-mvp.yml'
-      - 'tools/company-development-roblox-build-preflight.mjs'
-      - 'tools/company-development-roblox-runtime-smoke.luau'
-      - 'qa/company-development-roblox-runtime-continuation.test.mjs'
-      - '.github/workflows/company-development-roblox-runtime.yml'
-      - '.github/workflows/company-development-unity-runtime.yml'
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-minimum-design-contract.mjs'
       - 'tools/company-upper-platform-admission.mjs'
@@ -26,8 +19,10 @@ on:
       - 'tools/company-unity-web-floor-bootstrap.mjs'
       - 'tools/company-unity-web-gameplay-validation.mjs'
       - 'qa/company-unity-web-gameplay-validation.test.mjs'
-      - 'unity-games/**'
       - 'web-games/**/upper-platform-development-readiness.json'
+      - 'company-asset-library.json'
+      - 'tools/company-shared-context.mjs'
+      - 'company-learning/company-log-map.json'
   workflow_dispatch:
     inputs:
       game_id:

@@ -1,5 +1,5 @@
 {
-  "version": 93,
+  "version": 94,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -460,7 +460,7 @@
     "continuousEvolutionEvidenceAllowedAfterInternalAndPublicRelease": true,
     "standaloneReleaseAuthority": false
   },
-  "updatedAt": "2026-09-27",
+  "updatedAt": "2026-09-26",
   "graphicsProductionEvidenceContract": {
     "version": 4,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1759,5 +1759,20 @@
     "sharedStateWriteOnlyMayRetry": true,
     "heavyRuntimeQaMayNotWaitInsideSharedStateWrite": true,
     "exactGameContinuationRequired": true
+  },
+  "nativeDevelopmentTriggerResponsibilityEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "centralOwner": ".github/workflows/company-development-confirmed-runtime.yml",
+    "requiredEvidence": [
+      "UPPER_PLATFORM_ELIGIBLE_COUNT",
+      "UPPER_PLATFORM_ELIGIBLE_IDS",
+      "ROBLOX_RUNTIME_EXACT_DEDUPED_ACTIVE",
+      "UNITY_REQUESTED_GAME_IDS"
+    ],
+    "duplicateCentralAndChildPushRunIsBottleneck": true,
+    "duplicateValidationWithoutRelevantDeltaForbidden": true,
+    "platformSpecificDirectPushMayRemainParallel": true,
+    "sharedPolicyChangeUsesCentralFanOut": true
   }
 }
