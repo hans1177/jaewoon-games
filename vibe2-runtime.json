@@ -1,5 +1,5 @@
 {
-  "version": 37,
+  "version": 38,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 37,
+      "runtime": 38,
       "queue": 5,
       "parallelism": 4,
       "experience": 3,
@@ -297,7 +297,11 @@
       "pinnedMainContractShaRequired": true,
       "sharedContextSyncRequired": true,
       "mismatchAction": "INHIBIT_WORKER_AND_REPLAN_OR_REQUEUE_EXACT_STAGE",
-      "validator": "tools/vibe2-queue-control.mjs::verifyVibeWorkerSynchronization"
+      "validator": "tools/vibe2-queue-control.mjs::verifyVibeWorkerSynchronization",
+      "fanInPinnedContractRoot": "$GITHUB_WORKSPACE/vibe2-contract",
+      "fanInRuntimeDesignOverlaySource": "company-runtime:design,game-seed-state.json",
+      "fanInRuntimeDesignOverlayRoot": "PINNED_CONTRACT_ROOT",
+      "reserveJobTempRootReuseAcrossFanInForbidden": true
     },
     "taskLocalExploration": {
       "enabled": true,

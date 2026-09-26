@@ -1,5 +1,5 @@
 {
-  "version": 405,
+  "version": 406,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-26",
@@ -8049,6 +8049,20 @@
       "summary": "Existing ACTIVE/REBUILD games now schedule holistic map/gameplay/progression/inventory/UI/usability/stability BUILD_UP ahead of generic asset/presentation polish after higher-severity security/runtime/progress repairs, preventing graphics-only queue monopolization.",
       "directResponsibleFunction": "tools/vibe2-auto-planner.mjs#findSafeTasks",
       "runningTaskMigration": "DO_NOT_CANCEL_ALREADY_RUNNING_SAFE_WORK; APPLY_PRIORITY_TO_NEWLY_PLANNED_WORK_AND_NEXT_GENERATIONS"
+    },
+    "fanInPinnedContractOverlayRepair20260926": {
+      "id": "VIBE2_FAN_IN_PINNED_CONTRACT_OVERLAY_REPAIR_2026-09-26",
+      "summary": "Cohort fan-in must overlay company-runtime design state into the pinned main contract checkout owned by the fan-in job, never into the reserve job temporary snapshot.",
+      "liveFailureEvidence": [
+        "RUN_36220960087_FAN_IN_TAR_TMP_VIBE2_MAIN_MISSING",
+        "RUN_36221316381_REGRESSION_607_OF_607_PASS_THEN_FAN_IN_TAR_TMP_VIBE2_MAIN_MISSING"
+      ],
+      "directResponsibleWorkflow": ".github/workflows/vibe2-continuous-core.yml",
+      "pinnedContractRoot": "$GITHUB_WORKSPACE/vibe2-contract",
+      "runtimeOverlaySource": "company-runtime:design,game-seed-state.json",
+      "reserveJobTempRootReuseForbiddenAcrossJobs": true,
+      "qaSecurityReleaseSemanticsChanged": false,
+      "purpose": "RESTORE_FAN_IN_STATE_SETTLEMENT_SO_NEW_HOLISTIC_BACKFILL_GENERATIONS_CAN_ENTER_AND_PROGRESS"
     }
   },
   "vibeExecutionLaneContract": {
