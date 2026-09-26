@@ -149,7 +149,8 @@ const ROBLOX_BOOTSTRAP_STUDIO_FAMILY_PREFERENCES=Object.freeze({
   VFX:Object.freeze(['IMPACT_FLASH','TRAIL_SHORT','SHAPE_BURST']),
   WEAPON:Object.freeze(['BLADE_LONG','GUARD_CROSS','GRIP_LONG']),
   CHARACTER:Object.freeze(['TORSO_CLOTH','SHOULDER_LIGHT','BACK_CAPE']),
-  CREATURE:Object.freeze(['HEAD_CANINE','JAW_LONG','CLAW'])
+  CREATURE:Object.freeze(['HEAD_CANINE','JAW_LONG','CLAW']),
+  MOTION:Object.freeze(['IDLE_RELAXED','WALK','JOG','RUN','START','STOP','TURN_90','JUMP_START','LAND','HIT_FRONT','DEATH_FRONT'])
 });
 function stableAssetSeed(value=''){let hash=2166136261;for(const ch of clean(value)){hash^=ch.charCodeAt(0);hash=Math.imul(hash,16777619);}return hash>>>0;}
 function selectBootstrapAtoms(values=[],preferred=[],key='',count=3){
@@ -163,10 +164,42 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
   const families=assetLibrary?.baseMaterialLibrary?.families||{};
   const selected={};
   for(const [family,preferred] of Object.entries(ROBLOX_BOOTSTRAP_STUDIO_FAMILY_PREFERENCES)){
-    selected[family]=selectBootstrapAtoms(families?.[family]||[],preferred,`${gameId}|${profile?.genre||''}|${family}`,family==='ENVIRONMENT'||family==='BUILDING'?4:3);
+    selected[family]=selectBootstrapAtoms(
+      families?.[family]||[],
+      preferred,
+      `${gameId}|${profile?.genre||''}|${family}`,
+      family==='MOTION'?11:(family==='ENVIRONMENT'||family==='BUILDING'?4:3)
+    );
   }
   const selectedAtomCount=Object.values(selected).reduce((n,rows)=>n+rows.length,0);
-  return Object.freeze({version:1,applied:selectedAtomCount>=12,source:'company-asset-library.json#baseMaterialLibrary',libraryVersion:Number(assetLibrary?.version||0),atomState:clean(assetLibrary?.baseMaterialLibrary?.status)||null,selectedAtomCount,families:Object.freeze(selected),recipeId:'NORMAL_VARIANT',productionVerified:false,runtimeVerificationRequired:true,verifiedPromotionAllowed:false,gameplayAuthority:false});
+  const motionAtoms=Object.freeze([...(selected.MOTION||[])]);
+  return Object.freeze({
+    version:2,
+    applied:selectedAtomCount>=12,
+    source:'company-asset-library.json#baseMaterialLibrary',
+    libraryVersion:Number(assetLibrary?.version||0),
+    atomState:clean(assetLibrary?.baseMaterialLibrary?.status)||null,
+    selectedAtomCount,
+    families:Object.freeze(selected),
+    recipeId:'NORMAL_VARIANT',
+    motionQuality:Object.freeze({
+      contract:'company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality',
+      motionAtoms,
+      libraryFirst:true,
+      semanticAtomsAreNotAnimationClips:true,
+      nativeAnimationClipRuntimeVerificationRequired:true,
+      actorClasses:Object.freeze(['PLAYER','HUMANOID_NPC','CREATURE']),
+      articulatedRigRequired:true,
+      animatorRequired:true,
+      blendAndSpeedSyncRequired:true,
+      ikAndProceduralCorrectionPreferred:true,
+      mannequinHardFailure:'CHARACTER_MOTION_MANNEQUIN'
+    }),
+    productionVerified:false,
+    runtimeVerificationRequired:true,
+    verifiedPromotionAllowed:false,
+    gameplayAuthority:false
+  });
 }
 
 function studioAssetConfigBlock(studioAssets={}){
@@ -183,6 +216,15 @@ function studioAssetConfigBlock(studioAssets={}){
     RuntimeVerificationRequired = true,
     Families = {
 ${familyRows}
+    },
+    MotionQuality = {
+      Contract = "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",
+      LibraryFirst = true,
+      ArticulatedRigRequired = true,
+      AnimatorRequired = true,
+      BlendAndSpeedSyncRequired = true,
+      RuntimeVerificationRequired = true,
+      MannequinHardFailure = "CHARACTER_MOTION_MANNEQUIN",
     },
   },
   -- STUDIO_ASSET_BINDING_END
@@ -431,6 +473,8 @@ export function validateRobloxBootstrap({sharedConfig='',serverCode='',clientCod
   ];
   if(studioAssets?.applied===true){
     if(!/StudioAssets\s*=/.test(sharedConfig)||!/BindingVersion\s*=\s*1/.test(sharedConfig))blockers.push('CONFIG_STUDIO_ASSET_BINDING_REQUIRED');
+    if(!(studioAssets?.families?.MOTION||[]).length)blockers.push('CONFIG_STUDIO_MOTION_ATOMS_REQUIRED');
+    if(!/MotionQuality\s*=/.test(sharedConfig)||!/MannequinHardFailure\s*=\s*["']CHARACTER_MOTION_MANNEQUIN["']/.test(sharedConfig))blockers.push('CONFIG_ROBLOX_MOTION_QUALITY_REQUIRED');
     if(!/STUDIO_ASSET_BINDING_VERSION\s*=\s*1/.test(clientCode))blockers.push('CLIENT_STUDIO_ASSET_BINDING_VERSION_REQUIRED');
     if(!/[A-Za-z_][A-Za-z0-9_]*\.StudioAssets/.test(clientCode))blockers.push('CLIENT_STUDIO_ASSET_CONFIG_USAGE_REQUIRED');
     if(!/(?:Instance\.new\s*\(\s*["']Frame["']|Color3\.fromRGB|BackgroundColor3)/.test(clientCode))blockers.push('CLIENT_STUDIO_ASSET_VISIBLE_BINDING_REQUIRED');
