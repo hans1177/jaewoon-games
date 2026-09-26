@@ -1,5 +1,5 @@
 {
-  "version": 201,
+  "version": 202,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1247,7 +1247,18 @@
           "recoveryFastUnaffected": true
         }
       },
-      "nextObservedInfrastructureBottleneck": "RUNNER_CAPACITY_AND_MODEL_CACHE_STARTUP_PRESSURE"
+      "nextObservedInfrastructureBottleneck": "RUNNER_CAPACITY_AND_MODEL_CACHE_STARTUP_PRESSURE",
+      "modelCacheStartupRelief": {
+        "version": 1,
+        "workflow": ".github/workflows/vibe2-continuous-core.yml",
+        "cacheKey": "vibe2-ollama-v3-Linux-qwen3-1.7b",
+        "prewarmJob": "model_cache",
+        "prewarmHitBehavior": "LOOKUP_ONLY_NO_PAYLOAD_RESTORE",
+        "prewarmMissBehavior": "WARM_AND_PERSIST_EXISTING_CACHE_PATHS",
+        "workerRestoreBehavior": "UNCHANGED_PER_ISOLATED_RUNNER",
+        "workerModelBehaviorChanged": false,
+        "gamePrimaryExternalBoundary": 256
+      }
     },
     "liveShadowRepairLoop": {
       "path": [
