@@ -246,6 +246,8 @@ test('reconcile trigger bursts serialize and status feedback is change-driven',(
   const statusWorkflow=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
   assert.match(workflow,/group: company-development-queue-reconcile-runtime\s+cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/group: company-development-queue-reconcile-runtime\s+cancel-in-progress: true/);
+  assert.match(statusWorkflow,/group: company-status-sync-runtime\s+cancel-in-progress: false/);
+  assert.doesNotMatch(statusWorkflow,/group: company-status-sync-runtime\s+cancel-in-progress: true/);
   assert.match(workflow,/steps\.queue_state\.outputs\.changed == '1'/);
   assert.match(workflow,/gh workflow run company-status-sync\.yml/);
   assert.match(workflow,/COMPANY_STATUS_SYNC_DISPATCHED=QUEUE_CHANGED/);
