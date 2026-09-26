@@ -54582,7 +54582,7 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -54822,10 +54822,10 @@
         "game-repair-repeat-count:21"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
+      "reservationId": "36228466410:1",
+      "reservationRunId": "36228466410",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-09-26T08:02:01Z",
       "neuronExpectedVariants": 1,
       "neuronResults": [],
       "buildUpDirective": {
