@@ -157,13 +157,16 @@ test('director drains superseded runner backlog before noncritical supervision',
   assert.doesNotMatch(director.slice(0,jobsAt),/\nconcurrency:/);
   assert.match(director,/supervise:[\s\S]*?concurrency:[\s\S]*?group: director-central-company-supervise-v3[\s\S]*?cancel-in-progress: false/);
   assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-slim/);
-  assert.match(director,/game-primary-gate:[\s\S]*needs: runner-drain[\s\S]*runs-on: ubuntu-slim/);
+  assert.doesNotMatch(director,/game-primary-gate:\n\s+needs: runner-drain/);
+  assert.match(director,/game-primary-gate:[\s\S]*runs-on: ubuntu-slim/);
+  assert.match(director,/supervise:\n\s+needs: \[runner-drain, game-primary-gate\]/);
   assert.match(director,/actions\/runs\/\$\{run_id\}\/cancel/);
   assert.match(director,/CONTROL_PLANE_SUPERSEDED/);
   assert.match(director,/CENTRAL_DEVELOPMENT_PUSH_SUPERSEDED/);
   assert.match(director,/company-development-roblox-runtime\.yml/);
   assert.match(director,/company-development-roblox-release-promotion\.yml/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
+  assert.match(director,/DIRECTOR_GAME_PRIMARY_CURRENT_MAIN=/);
   assert.match(director,/JSON\.stringify\(j\)\+'\\\\n'/);
   assert.match(director,/director-run-drain\.ndjson/);
   assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-unity-runtime\.yml',true\)/);
@@ -173,7 +176,7 @@ test('runner drain uses a YAML-safe delimiter and preserves the game gate block'
   const director=read('.github/workflows/director-supervisor.yml');
   assert.match(director,/while IFS='\\|' read -r run_id reason; do/);
   assert.doesNotMatch(director,/while IFS=\$'\\t'/);
-  assert.match(director,/game-primary-gate:\n\s+needs: runner-drain\n\s+if: always\(\) && \(github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.conclusion != 'cancelled'\)[\s\S]{0,180}?runs-on: ubuntu-slim[\s\S]{0,180}?outputs:/);
+  assert.match(director,/game-primary-gate:\n\s+if: always\(\) && \(github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.conclusion != 'cancelled'\)[\s\S]{0,220}?runs-on: ubuntu-slim[\s\S]{0,180}?outputs:/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
 });
 
