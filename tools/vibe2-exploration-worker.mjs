@@ -39,11 +39,17 @@ function normalizeRelative(value,root){const normalized=posix(value);return norm
 function sourceRootBootstrapAllowed(order,target,root){
   const evidence=new Set((order?.selectedTask?.evidence||[]).map(clean));
   const responsible=unique(order?.source?.responsibleFiles||[]).map(v=>normalizeRelative(v,root));
-  return target==='web'
-    &&order?.workerPolicy?.sourceRootBootstrapAllowed===true
-    &&evidence.has('source-root-bootstrap-required')
-    &&responsible.length===1
-    &&responsible[0]==='index.html';
+  if(order?.workerPolicy?.sourceRootBootstrapAllowed!==true||!evidence.has('source-root-bootstrap-required'))return false;
+  if(target==='web'){
+    return responsible.length===1&&responsible[0]==='index.html';
+  }
+  if(target==='unity'){
+    return evidence.has('unity-web-source-root-bootstrap-required')
+      &&responsible.length===2
+      &&responsible.includes('Assets/Scripts/GameCore.cs')
+      &&responsible.includes('Assets/Scripts/RuntimeBootstrap.cs');
+  }
+  return false;
 }
 function sha(text){return crypto.createHash('sha256').update(String(text)).digest('hex');}
 function safeRead(file){try{const stat=fs.statSync(file);if(!stat.isFile()||stat.size>MAX_READ_BYTES)return'';return fs.readFileSync(file,'utf8');}catch{return'';}}
