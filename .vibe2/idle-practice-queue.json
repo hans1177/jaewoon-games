@@ -23,7 +23,7 @@
   "hypothesisGenerationLimit": null,
   "falsificationGenerationLimit": null,
   "previousResultComparisonRequired": true,
-  "phase4GeneralizationDrills": 14,
+  "phase4GeneralizationDrills": 12,
   "drills": [
     {
       "id": "review-fail_wu3qnk",
@@ -447,44 +447,6 @@
       "holdoutGameId": "amusement-tycoon",
       "targetEngine": "web",
       "unseenProblemFingerprint": "phase4-unseen-1b7ldsc",
-      "mayPromoteGeneralization": false
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_74d39d52bb47e6444412ec04-control",
-      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAPABILITY_GENERALIZATION"
-      ],
-      "phase4Benchmark": true,
-      "phase4CapabilityId": "capability_ctrace_74d39d52bb47e6444412ec04",
-      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_74d39d52bb47e6444412ec04",
-      "phase4PairId": "phase4-pair-12if2gi",
-      "phase4Role": "CONTROL",
-      "holdoutGameId": "amusement-tycoon",
-      "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-5ljgy4",
-      "mayPromoteGeneralization": false
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_74d39d52bb47e6444412ec04-challenger",
-      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAPABILITY_GENERALIZATION"
-      ],
-      "phase4Benchmark": true,
-      "phase4CapabilityId": "capability_ctrace_74d39d52bb47e6444412ec04",
-      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_74d39d52bb47e6444412ec04",
-      "phase4PairId": "phase4-pair-12if2gi",
-      "phase4Role": "CHALLENGER",
-      "holdoutGameId": "amusement-tycoon",
-      "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-5ljgy4",
       "mayPromoteGeneralization": false
     },
     {
@@ -1984,7 +1946,7 @@
       ]
     },
     {
-      "id": "gap-debugging-l20",
+      "id": "gap-debugging-l21",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -1994,7 +1956,7 @@
       ]
     },
     {
-      "id": "gap-state_machine-l20",
+      "id": "gap-state_machine-l21",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,

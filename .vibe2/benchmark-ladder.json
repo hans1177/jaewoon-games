@@ -3,10 +3,10 @@
   "kind": "vibe2-benchmark-ladder",
   "cases": [
     {
-      "id": "mastery-coding-l16-g7",
+      "id": "mastery-coding-l17-g8",
       "track": "CODING",
-      "level": 16,
-      "difficultyGeneration": 7,
+      "level": 17,
+      "difficultyGeneration": 8,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -18,10 +18,10 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-bugfix-l20-g11",
+      "id": "mastery-bugfix-l21-g12",
       "track": "BUGFIX",
-      "level": 20,
-      "difficultyGeneration": 11,
+      "level": 21,
+      "difficultyGeneration": 12,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -593,46 +593,6 @@
       "authority": "practice-and-measurement-only"
     },
     {
-      "id": "phase4-generalization-capability_ctrace_74d39d52bb47e6444412ec04",
-      "track": "CAPABILITY_GENERALIZATION",
-      "level": 1,
-      "state": "READY_FOR_UNSEEN_SCREEN",
-      "countsAsTrainingSample": false,
-      "countsAsProductionPass": false,
-      "productionPreemptible": true,
-      "capabilityId": "capability_ctrace_74d39d52bb47e6444412ec04",
-      "sourceGameId": "bug-defense",
-      "targetEngine": "web",
-      "holdoutGameId": "amusement-tycoon",
-      "pairId": "phase4-pair-12if2gi",
-      "unseenProblemFingerprint": "phase4-unseen-5ljgy4",
-      "pairRoles": [
-        "CONTROL",
-        "CHALLENGER"
-      ],
-      "pairedControlChallengerRequired": true,
-      "screenOnly": true,
-      "mayPromoteGeneralization": false,
-      "fixedBetweenVariants": [
-        "NON_TARGET_CONTEXT",
-        "WRITABLE_SCOPE",
-        "MODEL_BUDGET",
-        "QA_CONTRACT"
-      ],
-      "requiredVerification": [
-        "UNSEEN_GAME",
-        "UNSEEN_PROBLEM_FINGERPRINT",
-        "PAIRED_CONTROL_CHALLENGER",
-        "FRESH_INDEPENDENT_QA",
-        "REGRESSION",
-        "NATIVE_RUNTIME_WHEN_REQUIRED",
-        "CAPABILITY_SPECIFIC_SUPPORT",
-        "ZERO_CAPABILITY_SPECIFIC_CONTRADICTIONS"
-      ],
-      "promotionRule": "SCREEN_ONLY_NEVER_GENERALIZES_WITHOUT_PHASE4_RUNTIME_EVIDENCE",
-      "authority": "practice-and-measurement-only"
-    },
-    {
       "id": "phase4-generalization-capability_ctrace_8d74f51489e0fcd3b8c02e18",
       "track": "CAPABILITY_GENERALIZATION",
       "level": 1,
@@ -673,6 +633,6 @@
       "authority": "practice-and-measurement-only"
     }
   ],
-  "phase4GeneralizationCases": 7,
+  "phase4GeneralizationCases": 6,
   "authority": "practice-and-measurement-only"
 }
