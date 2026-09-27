@@ -5569,7 +5569,7 @@
     ]
   },
   "runnerQueueDrainTopology": {
-    "version": 6,
+    "version": 7,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerQueueDrain20260926",
     "owner": ".github/workflows/director-supervisor.yml#runner-drain",
     "runner": "ubuntu-24.04",
@@ -5579,7 +5579,10 @@
       "STALE_UNSTARTED_CENTRAL_DEVELOPMENT_PUSH",
       "DUPLICATE_QUEUED_ROBLOX_SAME_TITLE",
       "DUPLICATE_QUEUED_PRIVATE_RUNTIME_SAME_GAME",
-      "DUPLICATE_QUEUED_UNITY_SAME_TITLE"
+      "DUPLICATE_QUEUED_UNITY_SAME_TITLE",
+      "STALE_CENTRAL_PUSH_REPLACED_BY_CURRENT_HEAD_RUN",
+      "STALE_NATIVE_BATCH_PUSH_REPLACED_BY_CURRENT_CENTRAL",
+      "DUPLICATE_QUEUED_VIBE24H_SCHEDULER"
     ],
     "forbidden": [
       "INDEPENDENT_GAME_RUN",
@@ -5617,7 +5620,11 @@
     "superviseRunner": "ubuntu-slim",
     "gameHeavyRunnerUnchanged": "ubuntu-latest",
     "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
-    "runnerDrainEpochAdvancedToBypassLegacyPendingGroup": true
+    "runnerDrainEpochAdvancedToBypassLegacyPendingGroup": true,
+    "staleCentralPushRequiresCurrentHeadReplacement": true,
+    "staleNativeBatchPushRequiresCurrentHeadCentralReplacement": true,
+    "vibe24hSchedulerSameTitleDedupe": true,
+    "vibe24hSchedulerInProgressWinner": "ACTIVE_RUN_PRESERVED"
   },
   "controlPlaneOperationalRunnerIsolation": {
     "version": 1,
