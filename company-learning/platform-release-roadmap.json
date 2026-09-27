@@ -1,5 +1,5 @@
 {
-  "version": 485,
+  "version": 486,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -20289,7 +20289,7 @@
       "runnerLabel": "ubuntu-24.04-arm"
     },
     "buildUpRuntimeClosure": {
-      "version": 1,
+      "version": 2,
       "status": "ACTIVE",
       "activePlatforms": [
         "WEB",
@@ -20331,6 +20331,16 @@
           "ROBLOX",
           "UNITY"
         ]
+      },
+      "web": {
+        "finalRuntimeAuthority": "WEB_CANDIDATE_BROWSER_RUNTIME_PLUS_CLOUDFLARE_DEPLOYMENT",
+        "candidateRuntimeBeforeAfterRequired": true,
+        "cloudflarePagesDeploymentCheckRequired": true,
+        "reviewedMainPromotionRequired": true,
+        "promotedSourceTreeShaRequired": true,
+        "exactPromotedSourceRequiredForSettlement": true,
+        "anotherPlatformRuntimeMayNotSubstitute": true,
+        "robloxRuntimeDispatchForbidden": true
       }
     }
   },
@@ -26581,46 +26591,5 @@
       "qa/company-roblox-thumbnail-sync.test.mjs",
       "qa/company-homepage-runtime-propagation.test.mjs"
     ]
-  },
-  "buildUpRuntimeClosure": {
-    "version": 1,
-    "authority": "MACHINE_EXECUTION_CONTRACT",
-    "executionModel": "EXISTING_BUILD_UP_FLOW_NO_NEW_STAGE_OR_SHADOW_PIPELINE",
-    "activePlatforms": [
-      "WEB",
-      "ROBLOX",
-      "UNITY"
-    ],
-    "pausedPlatforms": [
-      "FORTNITE_UEFN"
-    ],
-    "sourceIdentity": "SOURCE_ROOT_TREE_SHA",
-    "web": {
-      "candidateRuntimeBeforeAfterRequired": true,
-      "releaseDeploymentTarget": "CLOUDFLARE_PAGES",
-      "releaseDeploymentPreviewMustPass": true,
-      "reviewedMainPromotionRequired": true,
-      "promotedSourceTreeShaRequired": true,
-      "finalSettlementRequiresExactPromotedSourceTree": true,
-      "crossPlatformRuntimeDispatchForbidden": true,
-      "robloxRuntimeMayNotSubstituteForWebRuntime": true
-    },
-    "roblox": {
-      "waitingTaskMustRecordPromotedSourceTreeSha": true,
-      "f9RuntimeSettlementMustMatchWaitingSourceTreeSha": true,
-      "sameGameDifferentSourceMayNotSettle": true,
-      "runtimeIndependentQaRegressionRequired": true
-    },
-    "unity": {
-      "waitingTaskMustRecordPromotedSourceTreeSha": true,
-      "runtimeSettlementMustMatchWaitingSourceTreeSha": true,
-      "incrementalApkBuildAndMainPromotionAloneMayNotSettleBuildUpTask": true,
-      "runtimeIndependentQaRegressionRequiredBeforeVibePass": true,
-      "sameGameDifferentSourceMayNotSettle": true
-    },
-    "nativeVerificationCallbackMonotonicity": {
-      "laterStageWaitOrVerifiedStateMayNotRegress": true,
-      "candidateVerificationMayMergeEvidenceWithoutRewinding": true
-    }
   }
 }
