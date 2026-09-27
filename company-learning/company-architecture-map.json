@@ -1,5 +1,5 @@
 {
-  "version": 281,
+  "version": 282,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -340,7 +340,10 @@
     "mayExecuteCanonicalQueuedWorkWithoutSupervisor": true,
     "centralContractDefaultAuthority": true,
     "deterministicGateMayCompleteWorkWithoutPrimaryAi": true,
-    "adaptiveConcurrencyRole": "TELEMETRY_ONLY_NOT_HARD_CAP"
+    "adaptiveConcurrencyRole": "TELEMETRY_ONLY_NOT_HARD_CAP",
+    "externalAiUnavailableAction": "VIBE2_VIBE3_SOLO_CONTINUE_SAME_CHECKPOINT",
+    "externalAiAvailabilityMayBlockIndependentVibeWork": false,
+    "externalAiReconnectReplaysCompletedVibeWork": false
   },
   "primaryAiSupervisionDomains": [
     "ROADMAP_IMPLEMENTATION",
@@ -2583,7 +2586,7 @@
     "ownerControlledFinancialActions": true
   },
   "assetProductionParallelism": {
-    "version": 6,
+    "version": 7,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract",
     "executionAuthority": "EXISTING_DAG_SCHEDULER_WITH_ATOMIC_COMPLETION_CALLBACK",
     "codeAndAssetWorkMayRunConcurrently": true,
@@ -3039,7 +3042,8 @@
         "ACTION",
         "ADVENTURE",
         "TYCOON"
-      ]
+      ],
+      "runnerLabel": "ubuntu-24.04-arm"
     },
     "dedicatedExecution": {
       "lane": "ASSET_DEVELOPMENT",
@@ -3051,7 +3055,21 @@
       "taskMarker": "assetProductionLane=true",
       "newWorkerAuthority": false,
       "newQueueAuthority": false,
-      "newTopLevelPipeline": false
+      "newTopLevelPipeline": false,
+      "runnerLabel": "ubuntu-24.04-arm",
+      "gamePrimaryRunnerLabel": "ubuntu-latest",
+      "physicalRunnerPoolSeparated": true,
+      "ollamaArchitectures": [
+        "X64",
+        "ARM64"
+      ],
+      "robloxGeneration": {
+        "mode": "BOUNDED_FOCUSED_EXACT_ANCHOR",
+        "maxAttempts": 3,
+        "focusedTimeoutMs": 120000,
+        "focusedMaxPredict": 768,
+        "focusedContextWindow": 8192
+      }
     }
   },
   "platformPresentationSeparation": {
