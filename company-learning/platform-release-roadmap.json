@@ -6025,19 +6025,21 @@
           "name": "MULTIPLAYER_FOUNDATION",
           "alwaysRequired": false,
           "checks": [
-            "MINIMUM_TWO_PARTICIPANTS_SAME_SERVER",
-            "ONE_AUTHORITATIVE_SHARED_STATE_BROADCAST",
-            "CLIENT_MULTIPLAYER_SYNC_HANDLER_CONTRACT"
+            "MULTIPLAYER_APPLICABILITY_FROM_VERIFIED_DESIGN_OR_CURRENT_SOURCE",
+            "AUTHORITATIVE_SHARED_STATE_BROADCAST_CONTRACT_WHEN_APPLICABLE",
+            "CLIENT_SYNC_HANDLER_CONTRACT_WHEN_APPLICABLE",
+            "EXACT_INTERNAL_SESSION_NO_SYNC_FAILURE_WHEN_APPLICABLE"
           ],
-          "evidenceAuthority": "ACTUAL_TWO_CLIENT_PLATFORM_RUNTIME_PLUS_STATIC_SERVER_CLIENT_SYNC_CONTRACT",
-          "releaseGateMode": "TWO_CLIENT_ONE_SYNC",
+          "evidenceAuthority": "F0_STATIC_SERVER_CLIENT_SYNC_CONTRACT_PLUS_EXACT_INTERNAL_PLATFORM_SESSION",
+          "releaseGateMode": "INTERNAL_EXACT_CONTRACT_REUSE",
           "sameExactCandidateEvidenceReuse": true,
           "duplicateExecutionForSameExactCandidateForbidden": true,
           "applicability": "ONLY_WHEN_VERIFIED_DESIGN_OR_CURRENT_SOURCE_HAS_MULTIPLAYER",
           "noMultiplayerAction": "NOT_APPLICABLE",
           "routineEvidence": "ONE_INTERNAL_EXACT_CANDIDATE_SYNC_PROOF",
           "externalLiveServerRequired": false,
-          "extendedLifecycleImpactScoped": true
+          "extendedLifecycleImpactScoped": true,
+          "extendedTwoClientRuntimeOnlyWhenImpacted": true
         },
         {
           "id": "F8",
@@ -6176,8 +6178,8 @@
           "successfulGameStateTransitionRequired": true
         },
         "multiplayerReleaseProof": {
-          "version": 2,
-          "mode": "TWO_CLIENT_ONE_SYNC",
+          "version": 3,
+          "mode": "IMPACT_SCOPED_INTERNAL_SYNC",
           "minimumParticipants": 2,
           "sameServerRequired": true,
           "actualRuntimeCheckpoint": "MULTIPLAYER_SYNC",
@@ -6193,8 +6195,7 @@
           "serverAuthorityAndRemoteValidationStillRequired": true,
           "multiplayerRepairFlowMayRequireExtendedLifecycle": true,
           "appliesTo": [
-            "INTERNAL_RELEASE",
-            "PUBLIC_RELEASE"
+            "MULTIPLAYER_RELEVANT_CHANGE_OR_FAILURE"
           ],
           "sameProofReusedForInternalAndPublic": true,
           "duplicatePublicMultiplayerCheckRequired": false,
@@ -6204,7 +6205,18 @@
           "externalLiveServerRequiredForInternalDevelopment": false,
           "singleProofPerExactCandidate": true,
           "sameProofReusedForF7AndF9": true,
-          "extendedLifecycleOnlyOnMultiplayerRelevantChangeOrFailure": true
+          "extendedLifecycleOnlyOnMultiplayerRelevantChangeOrFailure": true,
+          "routineInternalMode": "F0_STATIC_SYNC_CONTRACT_PLUS_EXACT_STUDIO_PLAY",
+          "minimumParticipantsForRoutineInternal": 1,
+          "sameServerRequiredForRoutineInternal": false,
+          "actualTwoClientRuntimeRequiredForRoutineInternal": false,
+          "extendedTwoClientRuntimeRequiredOnlyOnRelevantChangeOrFailure": true,
+          "extendedTwoClientTriggers": [
+            "MULTIPLAYER_CODE_CHANGED",
+            "NETWORK_AUTHORITY_CHANGED",
+            "SYNC_FAILURE_PRESENT",
+            "JOIN_REJOIN_OR_REPLICATION_BEHAVIOR_CHANGED"
+          ]
         }
       },
       "releaseGate": {
