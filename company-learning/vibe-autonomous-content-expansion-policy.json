@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -235,5 +235,98 @@
       ]
     },
     "completionMeaning": "A breadth cycle means the game has received meaningful connected improvements across world/background, enemies/bosses, quests/story, items/equipment, gameplay rules/events, mid-late/endgame depth, and presentation. It does not mean cloning one feature into seven names."
+  },
+  "presentationEvolution": {
+    "status": "ACTIVE",
+    "executionBoundary": "EXISTING_BUILD_UP_AND_PRESENTATION_ONLY",
+    "platforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
+    "decisionOwner": "VIBE",
+    "adaptiveReplacementCount": {
+      "minimumActual": 1,
+      "maximumActual": 60,
+      "fixedQuotaForbidden": true,
+      "bands": {
+        "micro": [
+          1,
+          10
+        ],
+        "normal": [
+          10,
+          30
+        ],
+        "major": [
+          30,
+          60
+        ]
+      },
+      "rule": "REPLACE_ONLY_WHAT_ACTUALLY_NEEDS_IMPROVEMENT; SMALL_GAPS_MAY_USE_1_TO_10; NORMAL_REFRESHES_USUALLY_10_TO_30; LARGE_COHERENT_REFRESHES_MAY_USE_30_TO_60"
+    },
+    "includedSurfaces": [
+      "BACKGROUND",
+      "TERRAIN",
+      "ENVIRONMENT",
+      "BUILDING",
+      "PROP",
+      "LANDMARK",
+      "CHARACTER",
+      "MONSTER",
+      "CREATURE",
+      "WEAPON",
+      "ITEM",
+      "EQUIPMENT",
+      "MATERIAL",
+      "TEXTURE",
+      "VFX",
+      "MOTION",
+      "ANIMATION",
+      "MENU",
+      "HUD",
+      "INVENTORY_UI",
+      "SHOP_UI",
+      "CRAFT_UI",
+      "QUEST_UI",
+      "ICON",
+      "TYPOGRAPHY",
+      "CAMERA_PRESENTATION",
+      "ENVIRONMENTAL_PRESENTATION",
+      "AUDIO_PRESENTATION_WHEN_RELEVANT"
+    ],
+    "candidateUseModes": [
+      "DIRECT_REUSE_WHEN_ALREADY_CONCEPT_MATCHED",
+      "ADAPT_RESTYLE_AND_RETARGET",
+      "TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES",
+      "NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER"
+    ],
+    "selectionPriority": [
+      "PLACEHOLDER",
+      "LOW_QUALITY",
+      "STYLE_MISMATCH",
+      "DUPLICATE_OR_OVERREUSED",
+      "POOR_READABILITY",
+      "WEAK_VFX_OR_MOTION",
+      "OTHER_VERIFIED_PRESENTATION_GAP"
+    ],
+    "coherence": {
+      "styleLockRequired": true,
+      "worldAndRegionContextRequired": true,
+      "rawAssetPackMashupForbidden": true,
+      "recombinationMustNormalizeIntoOneGameSpecificVisualLanguage": true,
+      "foreignRawSourceAssetBytesOrProtectedIdentifiersForbidden": true
+    },
+    "completion": {
+      "actualSourceOrBindingDeltaRequired": true,
+      "selectionOnlyDoesNotCount": true,
+      "markerOnlyDoesNotCount": true,
+      "actualReplacementCountMustBeRecorded": true,
+      "changedSurfacesMustBeRecorded": true,
+      "reuseModesUsedMustBeRecorded": true,
+      "zeroActualReplacementCannotPass": true,
+      "beforeAfterEvidenceRequired": true
+    }
   }
 }

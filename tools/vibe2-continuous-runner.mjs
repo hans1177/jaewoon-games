@@ -144,11 +144,33 @@ export function expandPresentationResponsibleFiles({task={},target='',repoRoot=p
       ?[`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,`${root}/Assets/Scripts/RuntimeBootstrap.cs`,`${root}/Assets/Scripts/GameCore.cs`]
       :resolvedTarget==='web'
         ?[`${root}/index.html`,`${root}/style.css`,`${root}/game.js`]
-        :[];
+        :['fortnite-uefn','uefn','unreal'].includes(resolvedTarget)
+          ?[`${root}/Game.verse`,`${root}/Island.verse`,`${root}/Main.verse`,`${root}/Presentation.verse`,`${root}/UI.verse`,`${root}/Verse/Presentation.verse`,`${root}/Verse/UI.verse`]
+          :[];
   const discovered=candidates.filter(relative=>{
     try{return fs.existsSync(path.resolve(repoRoot,relative))&&fs.statSync(path.resolve(repoRoot,relative)).isFile();}
     catch{return false;}
   });
+  if(['fortnite-uefn','uefn','unreal'].includes(resolvedTarget)){
+    const rootDir=path.resolve(repoRoot,root),verse=[];
+    if(fs.existsSync(rootDir)){
+      const stack=[rootDir];
+      while(stack.length&&verse.length<12){
+        const current=stack.pop();
+        let entries=[];
+        try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+        for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
+          if(['Binaries','Intermediate','Saved','DerivedDataCache','.git'].includes(entry.name))continue;
+          const full=path.join(current,entry.name);
+          if(entry.isDirectory()){stack.push(full);continue;}
+          if(!/\.verse$/i.test(entry.name))continue;
+          verse.push(posix(path.relative(repoRoot,full)));
+          if(verse.length>=12)break;
+        }
+      }
+    }
+    return freezeList([...base,...discovered,...verse]).slice(0,6);
+  }
   return freezeList([...base,...discovered]).slice(0,6);
 }
 
@@ -163,6 +185,36 @@ function presentationTaskType(task = {}) {
 function buildPresentationQualityContract(task = {}, target = '') {
   const pass=presentationPassFromTask(task);
   if(!pass)return freeze({required:false,pass:null,authorityExpanded:false});
+  const replacementInput=task?.graphicsReplacementContract&&typeof task.graphicsReplacementContract==='object'
+    ?task.graphicsReplacementContract
+    :null;
+  const graphicsReplacement=replacementInput?freeze({
+    required:true,
+    version:Number(replacementInput.version||1),
+    decisionOwner:clean(replacementInput.decisionOwner)||'VIBE',
+    platforms:freezeList(replacementInput.platforms||['WEB','ROBLOX','UNITY','FORTNITE_UEFN']),
+    platform:clean(replacementInput.platform)||null,
+    adaptiveCount:freeze({
+      minimumActual:Math.max(1,Number(replacementInput?.adaptiveCount?.minimumActual||1)),
+      maximumActual:Math.min(60,Math.max(1,Number(replacementInput?.adaptiveCount?.maximumActual||60))),
+      fixedQuotaForbidden:replacementInput?.adaptiveCount?.fixedQuotaForbidden!==false,
+      chooseOnlyWhatActuallyNeedsImprovement:replacementInput?.adaptiveCount?.chooseOnlyWhatActuallyNeedsImprovement!==false,
+      bands:replacementInput?.adaptiveCount?.bands||{micro:[1,10],normal:[10,30],major:[30,60]}
+    }),
+    surfaces:freezeList(replacementInput.surfaces||[]),
+    priorityOrder:freezeList(replacementInput.priorityOrder||[]),
+    reuseModes:freezeList(replacementInput.reuseModes||[]),
+    compositionRule:clean(replacementInput.compositionRule)||null,
+    conceptRule:clean(replacementInput.conceptRule)||null,
+    antiMashupRule:clean(replacementInput.antiMashupRule)||null,
+    copyRule:clean(replacementInput.copyRule)||null,
+    actualSourceOrBindingDeltaRequired:replacementInput?.implementation?.actualSourceOrBindingDeltaRequired!==false,
+    actualReplacementCountMustBeRecorded:replacementInput?.implementation?.actualReplacementCountMustBeRecorded!==false,
+    changedSurfacesMustBeRecorded:replacementInput?.implementation?.changedSurfacesMustBeRecorded!==false,
+    reuseModesUsedMustBeRecorded:replacementInput?.implementation?.reuseModesUsedMustBeRecorded!==false,
+    zeroActualReplacementCannotPass:replacementInput?.implementation?.zeroActualReplacementCannotPass!==false,
+    beforeAfterEvidenceRequired:replacementInput?.implementation?.beforeAfterEvidenceRequired!==false
+  }):freeze({required:false,version:1});
   const checks={
     ASSET_ADAPTATION:['style-lock-consistency','reuse-existing-assets-first','context-matched-background','non-placeholder-character-enemy-models','runtime-render-binding','no-duplicate-render-pipeline','gameplay-semantics-unchanged'],
     LIVING_MOTION:['idle-alive-motion','locomotion-blend-or-equivalent','acceleration-deceleration','turn-smoothing','secondary-motion','state-driven-motion-not-decorative-only','gameplay-speed-unchanged'],
@@ -183,12 +235,27 @@ function buildPresentationQualityContract(task = {}, target = '') {
   };
   return freeze({
     required:true,
-    version:2,
+    version:3,
     pass,
+    graphicsReplacement,
     policyRefs:freezeList(['company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract','company-learning/platform-release-roadmap.json#audioMusicQualityContract']),
     preserve:freezeList(['GAMEPLAY_BALANCE','SAVE_MEANING','PROGRESSION','HIT_SEMANTICS','NETWORK_AUTHORITY']),
-    staticChecks:freezeList(checks[pass]||[]),
-    runtimeChecks:freezeList(runtimeChecks[pass]||[]),
+    staticChecks:freezeList([
+      ...(checks[pass]||[]),
+      ...(graphicsReplacement.required?[
+        'adaptive-graphics-replacement-contract-present',
+        'actual-source-or-binding-delta-required',
+        'actual-replacement-count-recorded',
+        'changed-surfaces-recorded',
+        'reuse-adapt-recombine-mode-recorded',
+        'zero-replacement-pass-forbidden',
+        'concept-style-lock-coherence'
+      ]:[])
+    ]),
+    runtimeChecks:freezeList([
+      ...(runtimeChecks[pass]||[]),
+      ...(graphicsReplacement.required?['replacement-before-after-runtime-evidence','replacement-result-visible-in-target-runtime']:[])
+    ]),
     target:clean(target).toLowerCase()||null,
     realImplementation:freeze({
       backgroundAndEnvironmentMustRender:true,
@@ -224,7 +291,15 @@ function presentationQualityGuidance(contract = {}) {
     `preserve=${(contract.preserve||[]).join(',')}`,
     `static-checks=${(contract.staticChecks||[]).join(',')}`,
     `runtime-checks=${(contract.runtimeChecks||[]).join(',')}`,
-    '실제 Web 플레이 화면에 컨셉에 맞는 배경/환경, 임시 primitive가 아닌 캐릭터·몬스터 표현, 상태 기반 idle/move/attack/hit/death, gameplay event에 연결된 VFX·카메라, 모바일 터치/프레임 근거가 있어야 PASS다.',
+    ...(contract.graphicsReplacement?.required?[
+      `adaptive-graphics-replacement=required; actual-range=${contract.graphicsReplacement.adaptiveCount?.minimumActual||1}-${contract.graphicsReplacement.adaptiveCount?.maximumActual||60}; fixed-quota=forbidden`,
+      `replacement-surfaces=${(contract.graphicsReplacement.surfaces||[]).join(',')}`,
+      `candidate-use-modes=${(contract.graphicsReplacement.reuseModes||[]).join(',')}`,
+      '교체 개수는 Vibe가 실제 결함에 맞춰 정한다. 1~10개만 고쳐야 하면 그만큼만 고치고, 일반 개선은 대체로 10~30개, 큰 일관된 리프레시는 필요할 때 30~60개까지 가능하다. 개수 채우기를 위해 멀쩡한 표현을 바꾸면 안 된다.',
+      '완성 자산 그대로 사용에만 묶이지 않는다. 현재 컨셉에 정확히 맞으면 재사용하고, 필요하면 재질·비율·색·모션·VFX·레이아웃을 응용하며, 여러 호환 후보의 장점을 재조합해 하나의 게임 전용 표현으로 만든다. 무가공 에셋팩 짬뽕은 금지한다.',
+      '완료 결과에는 실제 교체 개수, 변경한 표현 계열, 사용한 재사용/변형/재조합 방식을 기록해야 한다. 실제 source/binding 교체가 0개면 이 그래픽/presentation 작업은 PASS가 아니다.'
+    ]:[]),
+    '실제 대상 플랫폼 플레이 화면에 컨셉에 맞는 배경/환경, 임시 primitive가 아닌 캐릭터·몬스터 표현, 상태 기반 idle/move/attack/hit/death, gameplay event에 연결된 VFX·카메라, 모바일 터치/프레임 근거가 있어야 PASS다.',
     '마커·설명문·정적 CSS 장식만 추가하거나 컨셉 불일치 배경/모형 몹을 남긴 상태는 presentation 완료로 인정하지 않는다.',
     `atomic-neuron=${contract.atomicNeuron?.mode||'NONE'}; max-variants=${contract.atomicNeuron?.maxVariants||1}; task-micro-fanin=required`,
     '후보는 격리 브랜치에서 생성하고 같은 task 안에서 micro-fan-in으로 하나만 선택한다. 전역 wave 완료를 기다리지 않는다.',
@@ -275,7 +350,9 @@ function weatherPresentationGuidance(contract = {}) {
     ?'Unity 네이티브 Particle System/Fog/Lighting/Material/Audio를 사용한다.'
     :contract.target==='roblox'
       ?'Roblox 네이티브 ParticleEmitter/Atmosphere/Lighting/ColorCorrection/Sound를 사용한다.'
-      :'기존 Web Canvas/DOM/CSS/WebAudio 렌더 책임 시스템을 직접 사용한다.';
+      :contract.target==='fortnite-uefn'||contract.target==='unreal'||contract.target==='uefn'
+        ?'Fortnite UEFN 네이티브 Verse/device/VFX/audio/lighting 표현 책임을 사용한다.'
+        :'기존 Web Canvas/DOM/CSS/WebAudio 렌더 책임 시스템을 직접 사용한다.';
   return [
     '[WEATHER PRESENTATION CONTRACT]',
     `states=${(contract.states||[]).join(',')}`,
