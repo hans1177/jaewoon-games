@@ -29,6 +29,7 @@ function roadmap(){
       enabled:true,
       required:false,
       requiredForActualVibeInternalPlay:true,
+      requiredForInternalRelease:true,
       officialStudioMcpOnly:true,
       localPlaceFileRequired:true,
       onlinePublishedPlaceDirectOpenForbidden:true,
@@ -38,7 +39,7 @@ function roadmap(){
       studioMcpTransport:'STDIO',
       historicalExactPublishedArtifactAllowedForLocalActualPlay:true,
       runtimeFoundationPassedArtifactAllowedForLocalActualPlay:true,
-      earliestBehaviorFeedbackCheckpoint:'AFTER_RUNTIME_FOUNDATION_PASS_AND_EXACT_SOURCE_ARTIFACT_BINDING',
+      earliestBehaviorFeedbackCheckpoint:'AFTER_EXACT_PRIVATE_RUNTIME_CANDIDATE_AND_EXACT_SOURCE_ARTIFACT_BINDING',
       mcpUnavailableRecovery:{automaticResumeAfterPrerequisite:true}
     }},
     developmentLifecycleMachine:{robloxStudioUsage:{
@@ -150,6 +151,17 @@ test('planner selects exact internally released artifact during parallel foundat
   assert.equal(result.include[0].historicalExactPublishedArtifact,true);
 });
 
+test('planner selects exact private candidate before any external server observation',()=>{
+  const candidate=item();
+  candidate.robloxInternalReleasePublished=false;
+  candidate.robloxInternalReleaseEvidence={};
+  candidate.robloxRuntimeFoundationPassed=false;
+  candidate.robloxRuntimeFoundationEvidence={};
+  const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
+  assert.equal(result.include.length,1);
+  assert.equal(result.include[0].actualPlayEligibility,'PRIVATE_INTERNAL_CANDIDATE_EXACT');
+});
+
 test('planner selects exact runtime-foundation artifact before internal release',()=>{
   const candidate=item();
   candidate.robloxInternalReleasePublished=false;
@@ -252,15 +264,19 @@ test('central contract makes actual play evidence-gated and parallel to foundati
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const loop=central.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.internalBuildupLoop||{};
-  assert.equal(loop.actualVibePlayEligibility,'RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING');
-  assert.equal(loop.actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease,true);
+  assert.equal(loop.actualVibePlayEligibility,'EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_EXACT_SOURCE_ARTIFACT_BINDING');
+  assert.equal(loop.actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease,false);
+  assert.equal(loop.actualVibePlayMayStartAfterExactPrivateCandidateBeforeRuntimeFoundationPass,true);
   assert.equal(loop.actualVibePlayEligibilityMustNotDependOnExclusiveCurrentStep,true);
   assert.equal(loop.foundationOrFinalRevalidationMayRunParallelWithActualVibePlayAfterInternalRelease,true);
   assert.equal(loop.currentStepMayRepresentParallelRuntimeRevalidationWithoutRevokingInternalReleasePlayEligibility,true);
   assert.equal(loop.explicitDisabledGameRemainsIneligible,true);
   const arch=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup||{};
-  assert.equal(arch.actualPlayPlannerEligibility,'RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING');
-  assert.equal(arch.actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass,true);
+  assert.equal(arch.actualPlayPlannerEligibility,'EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_EXACT_SOURCE_ARTIFACT_BINDING');
+  assert.equal(arch.externalServerProbeAutomatic,false);
+  assert.equal(arch.externalServerObservationRequiredForInternalDevelopment,false);
+  assert.equal(arch.f1ThroughF8SingleStudioSession,true);
+  assert.equal(arch.f9RuntimeReplay,false);
   assert.equal(arch.actualPlayPlannerExclusiveCurrentStepGate,false);
   assert.equal(arch.parallelRuntimeFoundationAndFinalRevalidationAllowedAfterInternalRelease,true);
   assert.equal(arch.explicitDisabledGameEligible,false);
