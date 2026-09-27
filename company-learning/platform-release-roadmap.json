@@ -9305,7 +9305,18 @@
       "heavyGameExecutionChanged": false,
       "learningAuthorityChanged": false,
       "qualitySecurityReleaseGatesUnchanged": true,
-      "gamePrimaryUbuntuLatestCapacityProtected": true
+      "gamePrimaryUbuntuLatestCapacityProtected": true,
+      "version": 2,
+      "workflowLevelConcurrencyRemoved": true,
+      "controlPlanePreparationBlockedByLocalTraining": false,
+      "localTrainingConcurrency": {
+        "practiceGroup": "vibe2-unity-practice-local-training",
+        "verifiedGroup": "vibe2-unity-verified-local-training",
+        "cancelInProgress": false,
+        "newestPendingPerGroupOnly": true
+      },
+      "localRunnerOfflineMayBlockPreparation": false,
+      "localRunnerOfflineMayBlockOnlyLocalTraining": true
     }
   },
   "vibeExecutionLaneContract": {
