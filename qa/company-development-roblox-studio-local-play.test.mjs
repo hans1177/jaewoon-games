@@ -803,6 +803,9 @@ test('Studio MCP planner stays independent from hosted foundation capacity while
   assert.match(studioPlanBlock,/ROBLOX_STUDIO_MCP_PLAN_RUNNER=SELF_HOSTED_WINDOWS/);
   assert.doesNotMatch(studioPlanBlock,/needs: runtime-foundation-qa/);
   assert.doesNotMatch(studioPlanBlock,/needs\.runtime-foundation-qa/);
+  assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
+  assert.doesNotMatch(studioPlanBlock,/needs\.dedupe/);
+  assert.doesNotMatch(studioPlanBlock,/if:\s*needs\.dedupe\.outputs\.run/);
   assert.equal(central.robloxNativeCodingQualityContract.actualPlayFeedback.portfolioWideFoundationJobWaitForbidden,true);
   assert.equal(architecture.robloxNativeCodingQualityTopology.studioPlannerDependsOnPortfolioFoundationJob,false);
   assert.match(workflow,/studio-mcp-auto-play:[\s\S]*needs: studio-local-plan[\s\S]*if: always\(\) && needs\.studio-local-plan\.result == 'success' && needs\.studio-local-plan\.outputs\.count != '0'/);
