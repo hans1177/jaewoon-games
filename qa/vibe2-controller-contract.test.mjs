@@ -49,7 +49,7 @@ test('legacy presentation tasks expand to existing native visual responsibility 
 });
 
 
-test('adaptive graphics replacement worker contract covers UEFN Verse and rejects zero-replacement PASS',()=>{
+test('dormant UEFN Verse worker scope remains available while planner scheduling is held',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-uefn-presentation-scope-'));
   try{
     const gameRoot=path.join(root,'uefn-games','demo','Content','Verse');
