@@ -1077,7 +1077,7 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
     version:1,
     executionBoundary:'EXISTING_PRESENTATION_OR_BUILD_UP_ONLY',
     decisionOwner:'VIBE',
-    platforms:Object.freeze(['WEB','ROBLOX','UNITY','FORTNITE_UEFN']),
+    platforms:Object.freeze(['WEB','ROBLOX','UNITY']),
     platform,
     pass:clean(pass).toUpperCase()||'ASSET_ADAPTATION',
     adaptiveCount:Object.freeze({
@@ -1111,6 +1111,7 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
 
 function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_ADAPTATION'){
   if(!taskInput)return taskInput;
+  if(buildUpPlatformToken(project,studioQualityLane(project))==='FORTNITE_UEFN')return taskInput;
   const contract=buildAdaptiveGraphicsReplacementContract(project,pass);
   const guidance=[
     '',
@@ -1532,7 +1533,7 @@ local STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION, STUDIO_ASSET_FAM
 
 export function findPresentationQualityTask(project,repoRoot,queue){
   const engine=clean(project.engine).toLowerCase();
-  if(!['web','unity','roblox','unreal'].includes(engine))return null;
+  if(!['web','unity','roblox'].includes(engine))return null;
   if(!['development-confirmed','release-confirmed'].includes(clean(project.releaseState).toLowerCase()))return null;
   if(engine!=='web'&&!assetProductionEnabled(repoRoot))return null;
   const relatives=presentationSourcesForProject(project,repoRoot);

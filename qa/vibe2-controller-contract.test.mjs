@@ -49,7 +49,7 @@ test('legacy presentation tasks expand to existing native visual responsibility 
 });
 
 
-test('adaptive graphics replacement worker contract covers UEFN Verse and rejects zero-replacement PASS',()=>{
+test('dormant UEFN Verse worker scope remains available while planner scheduling is held',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-uefn-presentation-scope-'));
   try{
     const gameRoot=path.join(root,'uefn-games','demo','Content','Verse');
@@ -70,6 +70,7 @@ test('adaptive graphics replacement worker contract covers UEFN Verse and reject
     assert.match(continuousRunnerSource,/zero-replacement-pass-forbidden/);
     assert.match(continuousRunnerSource,/실제 교체 개수/);
     assert.match(continuousRunnerSource,/재사용\/변형\/재조합/);
+    assert.match(continuousRunnerSource,/OWNER_HOLD_FORTNITE_UEFN_PRESENTATION/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 

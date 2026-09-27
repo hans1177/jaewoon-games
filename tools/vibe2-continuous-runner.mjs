@@ -192,7 +192,7 @@ function buildPresentationQualityContract(task = {}, target = '') {
     required:true,
     version:Number(replacementInput.version||1),
     decisionOwner:clean(replacementInput.decisionOwner)||'VIBE',
-    platforms:freezeList(replacementInput.platforms||['WEB','ROBLOX','UNITY','FORTNITE_UEFN']),
+    platforms:freezeList(replacementInput.platforms||['WEB','ROBLOX','UNITY']),
     platform:clean(replacementInput.platform)||null,
     adaptiveCount:freeze({
       minimumActual:Math.max(1,Number(replacementInput?.adaptiveCount?.minimumActual||1)),
@@ -492,6 +492,15 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   if (runtime?.continuous?.enabled === false) return freeze({ ...base, reason:'CONTINUOUS_DISABLED' });
   if (!resolved.task) return freeze({ ...base, reason:resolved.reason || 'NO_ELIGIBLE_WORK' });
   const task = resolved.task;
+  const taskTarget=clean(task?.target).toLowerCase();
+  const taskSourceRoot=posix(task?.sourceRoot);
+  const holdEvidence=(task?.evidence||[]).map(clean);
+  const fortniteUefnTask=['fortnite-uefn','fortnite_uefn','fortnite','uefn'].includes(taskTarget)
+    ||taskSourceRoot.startsWith('uefn-games/')
+    ||holdEvidence.some(value=>/fortnite[_-]?uefn|\buefn\b/i.test(value));
+  if(fortniteUefnTask&&presentationPassFromTask(task)){
+    return freeze({...base,reason:'OWNER_HOLD_FORTNITE_UEFN_PRESENTATION',selectedTask:task,hold:true,authorityExpanded:false});
+  }
   const centralPolicy = centralPolicySnapshot || loadCentralPolicySnapshot({ repoRoot:process.cwd(), required:true });
   if (centralPolicy.required === true && centralPolicy.valid !== true) return freeze({ ...base, reason:`CENTRAL_POLICY_INVALID:${(centralPolicy.errors || []).join('|') || 'UNKNOWN'}`, selectedTask:task, centralPolicy });
   if(clean(task.target).toLowerCase()==='system'&&task.systemSteward===true&&clean(task.department).toLowerCase()==='system-architecture'){
