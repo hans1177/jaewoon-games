@@ -1,5 +1,5 @@
 {
-  "version": 265,
+  "version": 266,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6046,6 +6046,27 @@
     "technicalPlanRunnerUnchanged": "ubuntu-24.04-arm",
     "heavyGameRunnerUnchanged": "ubuntu-latest",
     "exactGameParallelismPreserved": true,
+    "qualitySecurityReleaseGatesUnchanged": true
+  },
+  "concurrentPlatformSharedProgressMonotonicity": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.concurrentPlatformSharedProgressMonotonicity20260927",
+    "concurrentPlatforms": [
+      "ROBLOX",
+      "UNITY"
+    ],
+    "sharedFlowFields": [
+      "currentStep",
+      "canonicalState"
+    ],
+    "unityCheckpointWriter": ".github/workflows/company-development-unity-runtime.yml#Persist this game's checkpoint immediately",
+    "canonicalRepair": "tools/company-development-queue-reconcile.mjs#recoverExactPrivateRuntimeCheckpoint",
+    "exactRobloxF0Recovery": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY/F0_SOURCE_PREFLIGHT_PASSED",
+    "exactRobloxCandidateRecovery": "TARGET_PLATFORM_RUNTIME_FOUNDATION/PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+    "robloxInternalRecovery": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+    "perPlatformEvidenceIndependent": true,
+    "sharedProgressRegressionForbidden": true,
+    "optimisticRuntimeWritePreserved": true,
     "qualitySecurityReleaseGatesUnchanged": true
   }
 }
