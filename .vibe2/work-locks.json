@@ -3,42 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-16f16ac",
-      "worker": "vibe2",
-      "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "files": [
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "352cd25bf6280c47211a63bfc3e57519a984640e",
-      "acquiredAt": "2026-09-27T23:04:33.395Z",
-      "expiresAt": "2026-09-27T23:49:33.395Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-djxvw",
-      "worker": "vibe2",
-      "taskId": "village-dungeons-unity-web-base-implementation-v1",
-      "gameId": "village-dungeons",
-      "files": [
-        "unity-games/village-dungeons/Assets/Scripts/GameCore.cs",
-        "unity-games/village-dungeons/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "352cd25bf6280c47211a63bfc3e57519a984640e",
-      "acquiredAt": "2026-09-27T23:04:50.333Z",
-      "expiresAt": "2026-09-27T23:49:50.333Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:village-dungeons-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-18o6rdl",
       "worker": "vibe2",
       "taskId": "seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1",
@@ -608,6 +572,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:amusement-tycoon-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-9n1lfi",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-28a2f2747401-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-queue-control.mjs",
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-queue-control.test.mjs"
+      ],
+      "baseSha": "33742deadee7b1cc8e7919dbb101ad5fd15f3779",
+      "acquiredAt": "2026-09-27T23:50:50.795Z",
+      "expiresAt": "2026-09-28T00:35:50.795Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-28a2f2747401-v1"
       ]
     }
   ]
