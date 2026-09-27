@@ -1132,6 +1132,21 @@ test('Vibe3 contract QA stays off game-primary ubuntu-latest capacity',()=>{
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
 });
 
+test('Roblox Open Cloud transient 429 retry preserves exact runtime truth',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  const source=fs.readFileSync('tools/company-development-roblox-runtime-foundation.mjs','utf8');
+  const policy=roadmap.changeRecord?.robloxOpenCloudTransient429Retry20260927;
+  assert.deepEqual(policy?.transientHttpStatuses,[429]);
+  assert.equal(policy?.staleSentinelMayNotPass,true);
+  assert.equal(policy?.permission401403BehaviorChanged,false);
+  assert.equal(policy?.exactSourceArtifactVersionGatePreserved,true);
+  assert.deepEqual(architecture.robloxRuntimeFoundationRunnerIsolation?.openCloudTransientRetry?.retryStatuses,[429]);
+  assert.equal(architecture.robloxRuntimeFoundationRunnerIsolation?.openCloudTransientRetry?.exactVersionRequiredAfterRetry,true);
+  assert.match(source,/retryStatuses=new Set/);
+  assert.match(source,/_HTTP_RETRY=/);
+});
+
 test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()=>{
   const workflow=readText('.github/workflows/company-development-roblox-post-runtime-qa.yml');
   const qaStart=workflow.indexOf('\n  runtime-foundation-qa:\n');
