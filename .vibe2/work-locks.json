@@ -3,79 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-olvoop",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-unity-web-base-implementation-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T07:08:50.598Z",
-      "expiresAt": "2026-09-27T07:53:50.598Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-hk6p52",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "unity-games/horror-escape-room/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T07:08:56.637Z",
-      "expiresAt": "2026-09-27T07:53:56.637Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-1be7skq",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-unity-web-base-implementation-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T07:09:04.239Z",
-      "expiresAt": "2026-09-27T07:54:04.239Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1q711bw",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T07:09:10.315Z",
-      "expiresAt": "2026-09-27T07:54:10.315Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-6i7a4m",
       "worker": "vibe2",
       "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1",
@@ -180,6 +107,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
+      ]
+    },
+    {
+      "id": "wl-1exn5r1",
+      "worker": "vibe2",
+      "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "files": [
+        "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+        "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
+        "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau"
+      ],
+      "baseSha": "a04680f4a6e5ead3869094a55f6bec4284dca9d9",
+      "acquiredAt": "2026-09-27T07:54:41.919Z",
+      "expiresAt": "2026-09-27T08:39:41.919Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
