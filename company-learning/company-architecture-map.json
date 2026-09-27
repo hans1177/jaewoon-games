@@ -5440,10 +5440,10 @@
     ]
   },
   "runnerQueueDrainTopology": {
-    "version": 4,
+    "version": 5,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerQueueDrain20260926",
     "owner": ".github/workflows/director-supervisor.yml#runner-drain",
-    "runner": "ubuntu-slim",
+    "runner": "ubuntu-24.04",
     "executesBeforeGamePrimaryGate": false,
     "cancellable": [
       "SUPERSEDED_CONTROL_PLANE",
@@ -5483,7 +5483,10 @@
     "activeSameGameCancellationForbidden": true,
     "releaseAndQaFifoSemanticsUnchanged": true,
     "homepageCompletionWakeRemoved": true,
-    "homepageInternalDirectorSupervisionPreserved": true
+    "homepageInternalDirectorSupervisionPreserved": true,
+    "gamePrimaryGateRunner": "ubuntu-slim",
+    "superviseRunner": "ubuntu-slim",
+    "gameHeavyRunnerUnchanged": "ubuntu-latest"
   },
   "controlPlaneOperationalRunnerIsolation": {
     "version": 1,
@@ -5496,7 +5499,7 @@
       ".github/workflows/vibe2-recovery-fast.yml"
     ],
     "director": {
-      "runnerDrain": "ubuntu-slim",
+      "runnerDrain": "ubuntu-24.04",
       "gamePrimaryGate": "ubuntu-slim",
       "supervise": "ubuntu-slim"
     },
@@ -5990,5 +5993,16 @@
     "gamePrimaryGateSemanticsUnchanged": true,
     "homepagePublicationSemanticsUnchanged": true,
     "gamePrimaryCapacityProtected": true
+  },
+  "directorDrainRunnerIsolation": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.directorDrainRunnerIsolation20260927",
+    "runnerDrain": "ubuntu-24.04",
+    "gamePrimaryGate": "ubuntu-slim",
+    "supervise": "ubuntu-slim",
+    "heavyGameExecution": "ubuntu-latest",
+    "drainLogicChanged": false,
+    "activeGameCancellationForbidden": true,
+    "independentGameCancellationForbidden": true
   }
 }
