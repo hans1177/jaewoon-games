@@ -1,5 +1,5 @@
 {
-  "version": 297,
+  "version": 298,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3925,7 +3925,8 @@
       "explicitExternalPublicationEvidenceRequiredForPublicRelease": true,
       "staleBuildEvidenceRejected": true,
       "changedSourceRequiresRebuildBeforeGateReevaluation": true
-    }
+    },
+    "validationOptimization": "company-learning/company-architecture-map.json#validationOptimizationTopology"
   },
   "autonomousBottleneckRecovery": {
     "version": 1,
@@ -5197,7 +5198,10 @@
       "existingGameHolisticBackfill": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
       "existingGamesNotGrandfathered": true,
       "firstEligibleExistingGenerationUsesFiveQualityPillars": true,
-      "existingGameHolisticBaselineRequiresFivePillarFanIn": true
+      "existingGameHolisticBaselineRequiresFivePillarFanIn": true,
+      "validationOverheadPolicy": "REUSE_EXACT_EVIDENCE_AND_RUN_ONLY_IMPACT_RELEVANT_SECURITY_MULTIPLAYER_RUNTIME_CHECKS",
+      "externalServerObservationCannotPauseBuildUp": true,
+      "nextDevelopmentGenerationPreferredOverSameRevisionRevalidation": true
     },
     "existingGameHolisticBackfill": {
       "version": 5,
@@ -6529,5 +6533,62 @@
     "runtimeExecutionSemanticsChanged": false,
     "dnaLearningMainPushScope": "VERIFIED_LEARNING_INPUTS_ONLY",
     "dnaLearningBroadCompanyLearningWildcardForbidden": true
+  },
+  "validationOptimizationTopology": {
+    "version": 1,
+    "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.developmentFocusedValidationOptimization",
+    "purpose": "PRESERVE_EXISTING_AUTONOMOUS_EVOLUTION_AND_F0_TO_F9_WHILE_DEDUPING_NON_PRODUCTIVE_VALIDATION",
+    "autonomousEvolutionPipelineUnchanged": true,
+    "existingDirectiveGenerator": "tools/company-build-up-directive.mjs",
+    "existingPlanner": "tools/vibe2-auto-planner.mjs",
+    "existingScheduler": ".github/workflows/vibe2-24h-runner.yml",
+    "sequence": [
+      "BUILD_UP_DIRECTIVE",
+      "GAME_SOURCE_DELTA",
+      "F0_EXACT_SOURCE_BASELINE",
+      "ONE_INTERNAL_EXECUTION_COLLECTS_F1_TO_F8",
+      "F9_AGGREGATES_AND_IMPACT_REGRESSES",
+      "EFFECT_MEASUREMENT",
+      "NEXT_BUILD_UP_DIRECTIVE"
+    ],
+    "exactCandidateDeduplication": {
+      "sameRevisionSecurityReuse": true,
+      "sameCandidateMultiplayerReuse": true,
+      "sameCandidateInternalRuntimeReuse": true,
+      "repeatedExternalServerProbe": false,
+      "f9NewPlaySession": false
+    },
+    "security": {
+      "baselineAtF0": true,
+      "impactScopedRescan": true,
+      "fullRescanOnlyOnSecurityRelevantChangeOrOpenFailure": true,
+      "protectedGameplaySemanticsRemainEnforced": true
+    },
+    "multiplayer": {
+      "noMultiplayer": "F7_NOT_APPLICABLE",
+      "routineMultiplayer": "ONE_INTERNAL_EXACT_CANDIDATE_SYNC_PROOF",
+      "extendedLifecycle": "ONLY_ON_RELEVANT_CHANGE_OR_FAILURE",
+      "externalLiveServerForInternalDevelopment": false
+    },
+    "externalServer": {
+      "internalDevelopmentGate": false,
+      "internalQaGate": false,
+      "f0ToF9Gate": false,
+      "role": "OPTIONAL_DIAGNOSTIC_OR_OWNER_APPROVED_EXTERNAL_PUBLICATION_CHECK_ONLY"
+    },
+    "platforms": {
+      "ROBLOX": {
+        "internalExecution": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD",
+        "publicServerAutomation": false
+      },
+      "UNITY": {
+        "internalExecution": "EXISTING_INTERNAL_OR_CLOSED_RUNTIME_EXECUTION"
+      },
+      "FORTNITE_UEFN": {
+        "excluded": true
+      }
+    },
+    "noNewPipeline": true,
+    "noNewFloor": true
   }
 }
