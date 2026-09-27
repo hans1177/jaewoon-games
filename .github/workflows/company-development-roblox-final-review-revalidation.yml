@@ -400,7 +400,16 @@ jobs:
             item.robloxFailureStage=null;
             item.robloxFailureSignature=null;
             item.robloxOwnerPublicReleaseApprovalRequired=true;
-            item.robloxOwnerPublicReleaseApproved=false;
+            const ownerApproval=item.robloxOwnerPublicReleaseApprovalEvidence||{};
+            item.robloxOwnerPublicReleaseApproved=Boolean(
+              ownerApproval.approved===true
+              &&String(ownerApproval.authority||'')==='OWNER_EXPLICIT_DIRECTIVE_ONLY'
+              &&String(ownerApproval.sourceRevision||'')===sourceRevision
+              &&String(ownerApproval.artifactIdentity||'')===artifactIdentity
+              &&Number(ownerApproval.versionNumber||0)===Number(candidate.versionNumber)
+              &&String(ownerApproval.universeId||'')===String(candidate.universeId||'')
+              &&String(ownerApproval.placeId||'')===String(candidate.placeId||'')
+            );
             item.routingBlockers=[];
             if(item.executionEvidence){
               item.executionEvidence.lastSuccessfulStage='INTERNAL_PLATFORM_RELEASE';
