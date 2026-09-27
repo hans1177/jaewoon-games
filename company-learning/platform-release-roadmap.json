@@ -8740,13 +8740,12 @@
     "lightweightGameIngressRunnerRelief20260927": {
       "id": "LIGHTWEIGHT_GAME_INGRESS_RUNNER_RELIEF_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
-      "status": "CODE_UPDATED_LIVE_QUEUE_EVIDENCE_WITH_ROBLOX_CRITICAL_INGRESS_EXCEPTION",
+      "status": "CODE_UPDATED_LIVE_QUEUE_EVIDENCE_WITH_ROBLOX_AND_VIBE_CRITICAL_INGRESS_EXCEPTIONS",
       "objective": "FREE_ARM_GAME_CONTROL_CAPACITY_BY_MOVING_ONLY_LIGHTWEIGHT_INGRESS_AND_QUEUE_RESERVATION_WORK_TO_UBUNTU_SLIM_WHILE_KEEPING_STATE_SETTLEMENT_AND_HEAVY_GAME_EXECUTION_ON_THEIR_EXISTING_POOLS",
       "lightweightIngressPool": "ubuntu-slim",
       "gameControlPool": "ubuntu-24.04-arm",
       "heavyGameExecutionPool": "ubuntu-latest",
       "movedToSlim": {
-        "vibeReserve": ".github/workflows/vibe2-continuous-core.yml::reserve",
         "unityPrepare": ".github/workflows/company-development-unity-runtime.yml::prepare",
         "centralNativePlan": ".github/workflows/company-development-confirmed-runtime.yml::native-plan"
       },
@@ -8812,9 +8811,20 @@
         "reason": "LIVE_SLIM_CONTROL_QUEUE_DELAY_AFTER_DIRECTOR_DRAIN_SUCCEEDED_ON_FIXED_2404",
         "centralNativePlanRemains": "ubuntu-slim",
         "unityPrepareRemains": "ubuntu-slim",
-        "vibeReserveRemains": "ubuntu-slim",
+        "vibeReserveRemains": "ubuntu-24.04(game-primary)/ubuntu-slim(auxiliary)",
         "heavyExecutionUnchanged": "ubuntu-latest",
         "technicalPlanUnchanged": "ubuntu-24.04-arm"
+      },
+      "vibeGamePrimaryReserveCriticalIngressException": {
+        "workflow": ".github/workflows/vibe2-continuous-core.yml::reserve",
+        "previousRunner": "ubuntu-slim",
+        "runner": "ubuntu-24.04",
+        "scope": "GAME_PRIMARY_ONLY",
+        "auxiliaryReserveRunner": "ubuntu-slim",
+        "fanInRefillReserveRunner": "ubuntu-24.04-arm",
+        "reason": "LIVE_GAME_PRIMARY_RESERVE_QUEUED_ON_SLIM_WHILE_DIRECTOR_DRAIN_COMPLETED_ON_FIXED_2404",
+        "heavyExecutionUnchanged": "ubuntu-latest",
+        "sharedStateWriteRulesUnchanged": true
       }
     },
     "homepageRunnerIsolation20260926": {
@@ -8859,18 +8869,22 @@
         "state": "QUEUED_BEHIND_SLIM_CONTROL_PRESSURE"
       },
       "runnerRouting": {
-        "defaultReserve": "ubuntu-slim",
+        "defaultReserve": "ubuntu-24.04(game-primary)/ubuntu-slim(auxiliary)",
         "fanInRefillReserve": "ubuntu-24.04-arm",
-        "heavyWorker": "ubuntu-latest"
+        "heavyWorker": "ubuntu-latest",
+        "gamePrimaryReserve": "ubuntu-24.04",
+        "auxiliaryReserve": "ubuntu-slim"
       },
       "scope": "VIBE2_FANIN_REFILL_REPOSITORY_DISPATCH_ONLY",
-      "mainPushReserveUnchanged": true,
-      "neuronCompletionIngressUnchanged": true,
+      "mainPushReserveUnchanged": false,
+      "neuronCompletionIngressUnchanged": false,
       "reserveConcurrencyUnchanged": true,
       "optimisticSharedStateWriteUnchanged": true,
       "workerCapacityUnchanged": true,
       "qualitySecurityReleaseGatesUnchanged": true,
-      "newWorkflowOrQueueCreated": false
+      "newWorkflowOrQueueCreated": false,
+      "gamePrimaryReserveCriticalIngressNowUsesFixed2404": true,
+      "fanInRefillArmBypassPreserved": true
     },
     "unityExactChildRunDedupe20260927": {
       "id": "UNITY_EXACT_CHILD_RUN_DEDUPE_2026-09-27",
@@ -9473,6 +9487,41 @@
       "previousConcurrencyGroup": "company-development-queue-reconcile-runtime",
       "concurrencyGroup": "company-development-queue-reconcile-runtime-v2",
       "concurrencyEpochAdvancedToBypassLegacyPendingGroup": true
+    },
+    "vibeGamePrimaryReserveRunnerIsolation20260927": {
+      "id": "VIBE_GAME_PRIMARY_RESERVE_RUNNER_ISOLATION_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "KEEP_GAME_PRIMARY_RESERVATION_AND_NEURON_INGRESS_FROM_STARVING_BEHIND_SATURATED_UBUNTU_SLIM_CONTROL_WORK_WHILE_PRESERVING_AUXILIARY_SLIM_AND_FAN_IN_ARM_ROUTING",
+      "observedEvidence": {
+        "queuedWorkflowRuns": 36,
+        "pendingWorkflowRuns": 16,
+        "mainPushReserveRunId": 36292913438,
+        "repositoryDispatchReserveRunId": 36292923491,
+        "reserveState": "QUEUED_ON_UBUNTU_SLIM",
+        "directorDrainRunId": 36292913479,
+        "directorDrainRunner": "ubuntu-24.04",
+        "directorDrainCompletedWhileSlimReserveQueued": true
+      },
+      "routing": {
+        "gamePrimaryReserve": "ubuntu-24.04",
+        "auxiliaryReserve": "ubuntu-slim",
+        "fanInRefillReserve": "ubuntu-24.04-arm",
+        "heavyWorker": "ubuntu-latest",
+        "modelCache": "ubuntu-latest"
+      },
+      "gamePrimaryScopeOnly": true,
+      "recoveryFastLearningIdleControlFastRemainSlim": true,
+      "fanInRefillArmBypassPreserved": true,
+      "reserveConcurrencyUnchanged": true,
+      "optimisticSharedStateWriteUnchanged": true,
+      "workerCapacityUnchanged": true,
+      "activeGameCancellationForbidden": true,
+      "independentGameParallelismPreserved": true,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "newWorkflowCreated": false,
+      "newQueueCreated": false,
+      "newSchedulerCreated": false
     }
   },
   "vibeExecutionLaneContract": {

@@ -93,9 +93,10 @@ env:
 
 jobs:
   reserve:
-    # Default ingress stays on slim. Pressure-driven fan-in refill bypasses a saturated slim control queue
-    # through the existing ARM game-control pool; heavy model workers remain on ubuntu-latest.
-    runs-on: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && 'ubuntu-24.04-arm' || 'ubuntu-slim' }}
+    # Game-primary reservation is latency-critical and must not wait behind the saturated administrative slim pool.
+    # Fan-in refill keeps its ARM bypass; auxiliary learning/control lanes remain on slim.
+    # Heavy model workers remain on ubuntu-latest.
+    runs-on: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && 'ubuntu-24.04-arm' || (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary' && 'ubuntu-24.04' || 'ubuntu-slim' }}
     timeout-minutes: 7
     # Reserve jobs may run concurrently. Only the existing optimistic shared-state
     # fetch/reset/replan/push retry section serializes on an actual write conflict.

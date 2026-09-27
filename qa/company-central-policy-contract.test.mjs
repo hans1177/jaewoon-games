@@ -1097,6 +1097,47 @@ test('Unity learning preparation stays off game-primary ubuntu-latest capacity',
   assert.equal(projection?.localTrainingConcurrency?.verifiedGroup,'vibe2-unity-verified-local-training');
 });
 
+test('Vibe game-primary reserve bypasses saturated slim control capacity without moving auxiliary lanes or heavy workers',()=>{
+  const policy=roadmap.changeRecord?.vibeGamePrimaryReserveRunnerIsolation20260927;
+  assert.equal(policy?.routing?.gamePrimaryReserve,'ubuntu-24.04');
+  assert.equal(policy?.routing?.auxiliaryReserve,'ubuntu-slim');
+  assert.equal(policy?.routing?.fanInRefillReserve,'ubuntu-24.04-arm');
+  assert.equal(policy?.routing?.heavyWorker,'ubuntu-latest');
+  assert.equal(policy?.routing?.modelCache,'ubuntu-latest');
+  assert.equal(policy?.gamePrimaryScopeOnly,true);
+  assert.equal(policy?.recoveryFastLearningIdleControlFastRemainSlim,true);
+  assert.equal(policy?.fanInRefillArmBypassPreserved,true);
+  assert.equal(policy?.reserveConcurrencyUnchanged,true);
+  assert.equal(policy?.optimisticSharedStateWriteUnchanged,true);
+  assert.equal(policy?.activeGameCancellationForbidden,true);
+  assert.equal(policy?.independentGameParallelismPreserved,true);
+  assert.equal(policy?.qualitySecurityReleaseGatesUnchanged,true);
+
+  const workflow=readText('.github/workflows/vibe2-continuous-core.yml');
+  const reserveStart=workflow.indexOf('\n  reserve:\n');
+  const workerStart=workflow.indexOf('\n  worker:\n',reserveStart);
+  assert.ok(reserveStart>=0&&workerStart>reserveStart);
+  const reserve=workflow.slice(reserveStart,workerStart);
+  assert.match(reserve,/vibe2-fanin-refill' && 'ubuntu-24\.04-arm'/);
+  assert.match(reserve,/\(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'game-primary' && 'ubuntu-24\.04'/);
+  assert.match(reserve,/\|\| 'ubuntu-slim' \}\}/);
+
+  const runtime=JSON.parse(readText('vibe2-runtime.json'));
+  const pool=runtime.continuous?.gamePrimaryControlRunnerPool;
+  assert.equal(pool?.gamePrimaryReserve,'ubuntu-24.04');
+  assert.equal(pool?.auxiliaryReserve,'ubuntu-slim');
+  assert.equal(pool?.fanInRefillReserve,'ubuntu-24.04-arm');
+  assert.equal(pool?.worker,'ubuntu-latest');
+
+  const projection=architecture.vibeGamePrimaryReserveRunnerIsolation;
+  assert.equal(projection?.gamePrimaryReserveRunner,'ubuntu-24.04');
+  assert.equal(projection?.auxiliaryReserveRunner,'ubuntu-slim');
+  assert.equal(projection?.fanInRefillReserveRunner,'ubuntu-24.04-arm');
+  assert.equal(projection?.heavyWorkerRunner,'ubuntu-latest');
+  assert.equal(projection?.gamePrimaryLaneOnlyMoved,true);
+  assert.equal(projection?.qualitySecurityReleaseGatesUnchanged,true);
+});
+
 test('administrative control-plane QA stays off game-primary ubuntu-latest capacity',()=>{
   const roadmap=JSON.parse(readText('company-learning/platform-release-roadmap.json'));
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);

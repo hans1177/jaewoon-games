@@ -1238,7 +1238,7 @@
       "innerReservation": ".github/workflows/vibe2-continuous-core.yml::reserve-batch",
       "vibeGameControlRunnerPool": {
         "source": "company-learning/platform-release-roadmap.json#changeRecord.lightweightGameIngressRunnerRelief20260927",
-        "reserve": "ubuntu-slim",
+        "reserve": "ubuntu-24.04",
         "fanIn": "ubuntu-24.04-arm",
         "worker": "ubuntu-latest",
         "modelCache": "ubuntu-latest",
@@ -1255,7 +1255,11 @@
         "coreQaBrowserSmokeQualityGatePreserved": true,
         "coreQaBrowserSmokeParallel": true,
         "coreQaBrowserSmokeRequiresRealBrowser": true,
-        "coreQaBrowserSmokeUsesGamePrimaryLabel": false
+        "coreQaBrowserSmokeUsesGamePrimaryLabel": false,
+        "gamePrimaryReserve": "ubuntu-24.04",
+        "auxiliaryReserve": "ubuntu-slim",
+        "gamePrimaryCriticalIngressSeparatedFromSlim": true,
+        "auxiliaryIngressRemainsSlim": true
       },
       "capacityAuthority": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
       "globalActiveWaveBarrier": false,
@@ -6088,5 +6092,27 @@
     "qualitySecurityReleaseGatesUnchanged": true,
     "previousConcurrencyGroup": "company-development-queue-reconcile-runtime",
     "epochAdvancedToBypassLegacyPendingGroup": true
+  },
+  "vibeGamePrimaryReserveRunnerIsolation": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.vibeGamePrimaryReserveRunnerIsolation20260927",
+    "workflow": ".github/workflows/vibe2-continuous-core.yml",
+    "observedQueuedGamePrimaryReserveRuns": [
+      36292913438,
+      36292923491
+    ],
+    "observedFixedRunnerDirectorDrainRun": 36292913479,
+    "gamePrimaryReserveRunner": "ubuntu-24.04",
+    "auxiliaryReserveRunner": "ubuntu-slim",
+    "fanInRefillReserveRunner": "ubuntu-24.04-arm",
+    "heavyWorkerRunner": "ubuntu-latest",
+    "modelCacheRunner": "ubuntu-latest",
+    "gamePrimaryLaneOnlyMoved": true,
+    "auxiliaryLaneRunnerUnchanged": true,
+    "fanInRefillRunnerUnchanged": true,
+    "heavyExecutionUnchanged": true,
+    "sharedStateWriteRulesUnchanged": true,
+    "independentGameParallelismPreserved": true,
+    "qualitySecurityReleaseGatesUnchanged": true
   }
 }
