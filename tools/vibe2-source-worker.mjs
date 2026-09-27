@@ -1864,7 +1864,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
     if(allowFullRewrite&&retry)console.log(`VIBE2_FULL_WEB_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
-    if(focusedReplaceOnly)console.log(`VIBE2_FOCUSED_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
+    if(focusedReplaceOnly){
+      console.log(`VIBE2_FOCUSED_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
+      console.log('VIBE2_FOCUSED_REPLACE_SCHEMA=ONE_KEY_REPLACE');
+    }
     const studioExactAnchorRecovery=studioExpansion&&priorFailureClass==='EDIT_MATCH';
     const temperature=systemAtomicPairCompletion?0.14:(focusedReplaceOnly?0.08:(expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(studioExactAnchorRecovery?0.08:(retry?(attempt>=3?0.22:0.16):0.08))));
     const focusedFirstEditEarlyStop=focusedWebRepair&&!retry&&!allowFullRewrite&&!focusedReplaceOnly&&!robloxAssetAdaptationTask;
