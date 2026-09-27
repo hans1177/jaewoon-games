@@ -5941,5 +5941,22 @@
       "fiveMinuteSchedulePreserved": true,
       "productionQueueContinuityPreserved": true
     }
+  },
+  "learningPreparationRunnerIsolation": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.learningPreparationRunnerIsolation20260927",
+    "practiceCpuFallback": {
+      "preparePracticeRunner": "ubuntu-slim",
+      "trainingRunner": "self-hosted,Windows,X64,jaewoon-unity"
+    },
+    "structuralDistillation": {
+      "staticGateRunner": "ubuntu-slim",
+      "onlineTeacherRunner": "ubuntu-slim",
+      "trainingRunner": "self-hosted,Windows,X64,jaewoon-unity"
+    },
+    "selfHostedTrainingMoved": false,
+    "gamePrimaryUbuntuLatestCapacityProtected": true,
+    "heavyGameExecutionUnchanged": true,
+    "learningAuthorityUnchanged": true
   }
 }
