@@ -1,5 +1,5 @@
 {
-  "version": 128,
+  "version": 129,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1961,7 +1961,7 @@
     "inProgressMainPushGamePrimaryWakeCancellationForbidden": true
   },
   "directorPreSupervisionCoalescingEvidence": {
-    "version": 1,
+    "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "latestWinsJobs": [],
     "activeCompletionPreservedJobs": [
@@ -1975,7 +1975,10 @@
     "gamePrimaryGateCancelInProgress": false,
     "preservedCompletionJob": "supervise",
     "expectedSupersededConclusion": "cancelled",
-    "independentGameCancellationForbidden": true
+    "independentGameCancellationForbidden": true,
+    "runnerDrainPreviousConcurrencyGroup": "director-runner-drain-v1",
+    "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
+    "epochAdvancedToBypassLegacyPendingGroup": true
   },
   "nativeControlRunnerIsolationEvidence": {
     "version": 1,
@@ -2271,7 +2274,7 @@
     "expectedEffect": "FEWER_REDUNDANT_DIRECTOR_WORKFLOW_RUNS"
   },
   "directorDrainRunnerIsolationEvidence": {
-    "version": 1,
+    "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "workflow": ".github/workflows/director-supervisor.yml",
     "job": "runner-drain",
@@ -2284,6 +2287,9 @@
       "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED_COUNT",
       "DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN"
     ],
-    "cancellationSemanticsChanged": false
+    "cancellationSemanticsChanged": false,
+    "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
+    "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
+    "epochAdvancedToBypassLegacyPendingGroup": true
   }
 }

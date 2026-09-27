@@ -1,5 +1,5 @@
 {
-  "version": 456,
+  "version": 457,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -8560,7 +8560,10 @@
       "activeSameGameCancellationForbidden": true,
       "releaseAndQaFifoSemanticsUnchanged": true,
       "runnerDrainRunner": "ubuntu-24.04",
-      "gamePrimaryGateRunner": "ubuntu-slim"
+      "gamePrimaryGateRunner": "ubuntu-slim",
+      "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
+      "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
+      "runnerDrainEpochAdvancedToBypassLegacyPendingGroup": true
     },
     "vibe2CoreQaActiveCompletion20260927": {
       "id": "VIBE2_CORE_QA_ACTIVE_COMPLETION_2026-09-27",
@@ -8913,7 +8916,10 @@
       "superviseCancelInProgress": false,
       "sharedStateWriterCancellationChurnForbidden": true,
       "independentGameRunCancellationForbidden": true,
-      "qualitySecurityReleaseGatesUnchanged": true
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
+      "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
+      "runnerDrainEpochAdvancedToBypassLegacyPendingGroup": true
     },
     "nativeControlRunnerIsolationExpansion20260927": {
       "id": "NATIVE_CONTROL_RUNNER_ISOLATION_EXPANSION_2026-09-27",
@@ -9351,7 +9357,8 @@
       "observedEvidence": {
         "prSlimControlJobsQueued": true,
         "ubuntu2404BrowserSmokeStartedAndPassedWhileSlimQueued": true,
-        "directorDrainObservedDelayedOnSlim": true
+        "directorDrainObservedDelayedOnSlim": true,
+        "newRunnerStillPendingBehindLegacyConcurrencyGroup": true
       },
       "runnerDrainRunner": "ubuntu-24.04",
       "gamePrimaryGateRunner": "ubuntu-slim",
@@ -9361,7 +9368,10 @@
       "activeGameCancellationForbidden": true,
       "independentGameCancellationForbidden": true,
       "drainLogicChanged": false,
-      "qualitySecurityReleaseGatesUnchanged": true
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
+      "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
+      "concurrencyEpochAdvancedForLegacyPendingQueue": true
     }
   },
   "vibeExecutionLaneContract": {
