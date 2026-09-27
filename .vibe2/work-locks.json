@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-p2eodh",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "352cd25bf6280c47211a63bfc3e57519a984640e",
-      "acquiredAt": "2026-09-27T23:00:24.997Z",
-      "expiresAt": "2026-09-27T23:45:24.997Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-snbfc9",
       "worker": "vibe2",
       "taskId": "horror-escape-room-unity-web-base-implementation-v1",
@@ -566,6 +548,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-b2odpr",
+      "worker": "vibe2",
+      "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "files": [
+        "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+        "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
+        "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau"
+      ],
+      "baseSha": "a1c2423b2f03b1d4102e0185ac611b3fe04c6a05",
+      "acquiredAt": "2026-09-27T23:45:49.282Z",
+      "expiresAt": "2026-09-28T00:30:49.282Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
