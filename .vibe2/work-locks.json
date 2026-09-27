@@ -3,41 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1vz5a90",
-      "worker": "vibe2",
-      "taskId": "bug-defense-unity-web-base-implementation-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "unity-games/bug-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/bug-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "7e2983a1f9b7517c34e0c1bced7213be394eb942",
-      "acquiredAt": "2026-09-27T21:25:51.854Z",
-      "expiresAt": "2026-09-27T22:10:51.854Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1r5mrr1",
-      "worker": "vibe2",
-      "taskId": "ant-simulator-existing-web-assessment-v1",
-      "gameId": "ant-simulator",
-      "files": [
-        "web-games/ant-simulator/index.html"
-      ],
-      "baseSha": "7e2983a1f9b7517c34e0c1bced7213be394eb942",
-      "acquiredAt": "2026-09-27T21:26:28.392Z",
-      "expiresAt": "2026-09-27T22:11:28.392Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:ant-simulator-existing-web-assessment-v1"
-      ]
-    },
-    {
       "id": "wl-gpoets",
       "worker": "vibe2",
       "taskId": "horror-escape-room-post-release-focus-4048dd962de0ea8d",
@@ -667,6 +632,23 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:fantasy-survival-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-1cql4fc",
+      "worker": "vibe2",
+      "taskId": "ant-simulator-existing-web-assessment-v1",
+      "gameId": "ant-simulator",
+      "files": [
+        "web-games/ant-simulator/index.html"
+      ],
+      "baseSha": "6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+      "acquiredAt": "2026-09-27T22:12:29.041Z",
+      "expiresAt": "2026-09-27T22:57:29.041Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:ant-simulator-existing-web-assessment-v1"
       ]
     }
   ]
