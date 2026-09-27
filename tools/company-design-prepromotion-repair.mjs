@@ -191,6 +191,42 @@ export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNK
   setMissing(out,'progressionDirection',session,900,repairs,'GAME_SEED.TARGET_SESSION_DIRECTION');
   setMissing(out,'visualDirection',firstText(factText(factPack,'visualDirection','artDirection'),identity&&`GAME_SEED 정체성 '${identity}'을 유지하는 시각 방향`),900,repairs,'FACT_PACK_OR_GAME_SEED_IDENTITY');
   setMissing(out,'mobileUx',targetPlatform&&`선택 플랫폼 ${targetPlatform}에서 핵심 조작과 정보 우선순위를 유지한다${targetAudience?`; 대상 ${targetAudience}`:''}`,900,repairs,'GAME_SEED.INITIAL_TARGET_PLATFORM_AND_TARGET_AUDIENCE');
+  const ux=out.uxAccessibilityPlan&&typeof out.uxAccessibilityPlan==='object'&&!Array.isArray(out.uxAccessibilityPlan)?out.uxAccessibilityPlan:{};
+  const menuSignal=(JSON.stringify({design:out,seed})||'').toLowerCase();
+  const menuPatterns=['MAIN_MENU','PAUSE','SETTINGS'];
+  const addMenu=(name,re)=>{if(re.test(menuSignal)&&!menuPatterns.includes(name))menuPatterns.push(name);};
+  addMenu('INVENTORY',/inventory|인벤토리|item|아이템|equipment|장비/);
+  addMenu('LOADOUT',/loadout|장착|equip|equipment|weapon|무기/);
+  addMenu('SHOP',/shop|store|merchant|상점|상인/);
+  addMenu('CRAFTING',/craft|제작|recipe|레시피|workbench|작업대/);
+  addMenu('QUEST',/quest|퀘스트|mission|임무/);
+  addMenu('MAP',/map|지도|region|지역|explor|탐험/);
+  addMenu('RESULTS',/result|score|victory|defeat|wave|결과|승리|패배|웨이브/);
+  addMenu('BUILD',/build|building|tycoon|건설|건축|타이쿤/);
+  addMenu('RESEARCH',/research|tech|upgrade tree|연구|기술/);
+  addMenu('SOCIAL',/multiplayer|coop|competitive|party|멀티|협동|파티/);
+  addMenu('DIALOG',/dialog|story|npc|대화|스토리/);
+  addMenu('CODEX',/codex|bestiary|collection|도감|수집/);
+  const nextUx={
+    hudPriorities:clean(ux.hudPriorities)||'핵심 상태·목표·위험 정보만 플레이 중 우선 노출하고 상세 정보는 상황별 메뉴로 분리한다.',
+    touchAndInput:clean(ux.touchAndInput)||'모바일 터치 영역은 이동/행동과 메뉴 호출이 겹치지 않게 분리하고 한 손 탐색과 명확한 닫기/뒤로가기를 지원한다.',
+    readability:clean(ux.readability)||'메뉴 계층·선택 상태·비활성 상태를 색상만이 아니라 크기·형태·텍스트·아이콘으로 함께 구분한다.',
+    accessibility:clean(ux.accessibility)||'핵심 메뉴 행동에는 텍스트 라벨과 반복 가능한 피드백을 제공하고 시간 제한만으로 메뉴 사용을 강제하지 않는다.',
+    menuArchitecture:ux.menuArchitecture&&typeof ux.menuArchitecture==='object'&&!Array.isArray(ux.menuArchitecture)?{
+      primaryFlow:clean(ux.menuArchitecture.primaryFlow)||'플레이→상황별 메뉴→행동 확인→원래 플레이 상태 복귀 흐름을 유지한다.',
+      menuPatterns:Array.isArray(ux.menuArchitecture.menuPatterns)&&ux.menuArchitecture.menuPatterns.length>=3?ux.menuArchitecture.menuPatterns.slice(0,12):menuPatterns.slice(0,12),
+      mobileNavigation:clean(ux.menuArchitecture.mobileNavigation)||'엄지 도달 범위, 큰 터치 타깃, 안전영역, 일관된 뒤로가기와 스크롤을 사용한다.',
+      stateSafety:clean(ux.menuArchitecture.stateSafety)||'메뉴를 열고 닫아도 저장·전투·진행·네트워크 권한 의미를 임의로 바꾸지 않는다.',
+      antiTemplateRule:clean(ux.menuArchitecture.antiTemplateRule)||'게임 장르와 실제 기능에 맞춰 화면별 정보 밀도와 배치를 다르게 하고 모든 게임에 같은 패널 템플릿을 복제하지 않는다.'
+    }:{
+      primaryFlow:'플레이→상황별 메뉴→행동 확인→원래 플레이 상태 복귀 흐름을 유지한다.',
+      menuPatterns:menuPatterns.slice(0,12),
+      mobileNavigation:'엄지 도달 범위, 큰 터치 타깃, 안전영역, 일관된 뒤로가기와 스크롤을 사용한다.',
+      stateSafety:'메뉴를 열고 닫아도 저장·전투·진행·네트워크 권한 의미를 임의로 바꾸지 않는다.',
+      antiTemplateRule:'게임 장르와 실제 기능에 맞춰 화면별 정보 밀도와 배치를 다르게 하고 모든 게임에 같은 패널 템플릿을 복제하지 않는다.'
+    }
+  };
+  if(JSON.stringify(ux)!==JSON.stringify(nextUx)){out.uxAccessibilityPlan=nextUx;repairs.push({field:'uxAccessibilityPlan.menuArchitecture',source:'GAME_SYSTEM_SIGNALS+MOBILE_UX_MENU_VARIETY'});}
   setMissing(out,'marketTargetDirection',firstText([market,targetAudience].filter(Boolean).join(' / '),targetAudience),900,repairs,'GAME_SEED.MARKET_EVIDENCE_SUMMARY_AND_TARGET_AUDIENCE');
   setMissing(out,'steamExpansionDecision',firstText(expansion,targetPlatform&&`선택 플랫폼 ${targetPlatform} 검증을 우선하고 추가 PC 확장은 검증 후 결정한다`),500,repairs,'GAME_SEED.CROSS_PLATFORM_EXPANSION_VALUE_OR_TARGET_PLATFORM');
   if(!MODES.has(clean(out.multiplayerMode).toUpperCase())&&mode){out.multiplayerMode=mode;repairs.push({field:'multiplayerMode',source:'GAME_SEED.MULTIPLAYER_DESIGN_MODE_OR_INITIAL_PLAY_MODE'});}
