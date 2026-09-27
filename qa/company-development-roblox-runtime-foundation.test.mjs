@@ -401,6 +401,26 @@ test('post-runtime Open Cloud engine probes use bounded external API concurrency
  assert.doesNotMatch(workflow,/Promise\.all\(candidates\.map/);
 });
 
+test('post-runtime scan persists successful sibling probes before surfacing persistent peer failures',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/persistentFailure:true/);
+ assert.match(workflow,/ROBLOX_FOUNDATION_OPEN_CLOUD_PROBE_PERSISTENT_FAILURE=/);
+ assert.match(workflow,/roblox-open-cloud-engine-probe-failure/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_PERSISTENT_PROBE_FAILURE_COUNT=/);
+ assert.match(workflow,/Enforce persistent Open Cloud probe failures after evidence persistence/);
+ const stateWriteAt=workflow.indexOf("git add development-queue.json");
+ const studioDispatchAt=workflow.indexOf("ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH_COUNT=");
+ const failGateAt=workflow.indexOf("ROBLOX_OPEN_CLOUD_PERSISTENT_PROBE_FAILURE=YES");
+ assert.ok(stateWriteAt>0&&studioDispatchAt>stateWriteAt&&failGateAt>studioDispatchAt);
+});
+
+test('post-runtime Studio followup delegates exact-engine preboot eligibility to the canonical planner',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/const queueStudioFollowupIfEligible=item=>\{[\s\S]*?planLocalStudioCandidates\(/);
+ assert.doesNotMatch(workflow,/queueStudioFollowupIfEligible=item=>\{\s*if\(item\?\.robloxRuntimeFoundationPassed!==true\)return;/);
+ assert.match(workflow,/ROBLOX_FOUNDATION_AWAITING_REAL_SERVER_BOOT=[\s\S]*?queueStudioFollowupIfEligible\(item\);[\s\S]*?continue;/);
+});
+
 test('central policy and architecture preserve runtime truth while real server boot blocks external release only',()=>{
  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));

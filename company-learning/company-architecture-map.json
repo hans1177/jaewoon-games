@@ -1,5 +1,5 @@
 {
-  "version": 274,
+  "version": 276,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5569,7 +5569,10 @@
       "exactGameDispatch": true,
       "qualityGateOrderPreserved": true,
       "reusableFoundationRaceCovered": true,
-      "loopStopsWhenPlannerReportsAlreadyObserved": true
+      "loopStopsWhenPlannerReportsAlreadyObserved": true,
+      "prebootExactEngineCovered": true,
+      "prePlannerRuntimeFoundationPassGuard": false,
+      "observedMissedDispatchRunId": 36297021567
     }
   },
   "nativeChildDispatchDedupeTopology": {
@@ -6111,7 +6114,7 @@
     "epochAdvancedToBypassLegacyPendingGroup": true
   },
   "robloxOpenCloudThrottleRecovery": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxOpenCloudThrottleRecovery20260927",
     "module": "tools/company-development-roblox-runtime-foundation.mjs",
     "workflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
@@ -6128,18 +6131,19 @@
     "persistentApiFailureStillFails": true,
     "runtimeTruthGateUnchanged": true,
     "studioMcpGateUnchanged": true,
-    "publicReleaseGateUnchanged": true
-  },
-  "robloxExactEvidenceRaceRepair": {
-    "version": 1,
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxExactEvidenceRaceRepair20260927",
+    "publicReleaseGateUnchanged": true,
     "openCloudProbeFailureIsolation": "PER_CANDIDATE",
     "successfulProbePersistence": true,
+    "successfulProbeEvidencePersistsBeforeWorkflowFailure": true,
     "persistentThrottleFailClosed": true,
-    "prebootStudioEvidencePersistence": "EXACT_SOURCE_ARTIFACT_PLACE_VERSION_ONLY",
-    "runtimeFoundationTruthGateUnchanged": true,
-    "publicReleaseGateUnchanged": true,
+    "persistentFailureSurfacedAfterRuntimeStateAndStudioFollowup": true,
+    "exactEnginePrebootStudioEvidencePersistence": "EXACT_SOURCE_ARTIFACT_PLACE_VERSION_ONLY",
+    "exactEnginePrebootMayPromoteRuntimeFoundation": false,
+    "exactEnginePrebootMayPromotePublicRelease": false,
     "studioAssetBindingVersionSource": "robloxStudioAssetBinding.bindingVersion",
-    "primaryActionEffectAuthority": "SERVER_FEEDBACK_TRANSITION_OR_OBSERVED_MOTION"
+    "primaryActionEffectAuthority": "SUCCESSFUL_PRIMARY_INPUT_PLUS_SERVER_FEEDBACK_TRANSITION_OR_OBSERVED_MOTION",
+    "gameplayRulesUnchanged": true,
+    "postFoundationStudioFollowupDelegatesToCanonicalPlanner": true,
+    "prePlannerRuntimeFoundationPassGuard": false
   }
 }
