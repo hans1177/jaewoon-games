@@ -724,11 +724,25 @@ function buildAutonomousContentExpansion({
   const previousTheme=clean(previousExpansion?.selectedTheme);
   const effectClass=clean(previousEffectiveness?.classification).toUpperCase();
   const continueSame=['REGRESSION','NO_MEANINGFUL_EFFECT','PARTIAL_EFFECT','UNKNOWN_RUNTIME_EFFECT'].includes(effectClass);
+  const themeIds=AUTONOMOUS_EXPANSION_THEMES.map(theme=>theme.id);
+  const previousLedger=previousExpansion?.themeCoverageLedger||{};
+  const previousCounts=Object.fromEntries(themeIds.map(id=>[id,Math.max(0,Number(previousLedger?.counts?.[id]||0))]));
+  let previousSequence=Array.isArray(previousLedger?.sequence)?previousLedger.sequence.map(clean).filter(id=>themeIds.includes(id)):[];
+  if(!previousSequence.length&&previousTheme){
+    previousSequence=[previousTheme];
+    previousCounts[previousTheme]=Math.max(1,Number(previousCounts[previousTheme]||0));
+  }
+  const uncoveredThemes=themeIds.filter(id=>Number(previousCounts[id]||0)===0);
   const scored=AUTONOMOUS_EXPANSION_THEMES.map((theme,index)=>{
     const gapDomains=theme.domains.filter(domain=>stateByDomain.get(domain)==='GAP');
     const applicableDomains=theme.domains.filter(domain=>stateByDomain.get(domain)!=='NOT_APPLICABLE');
+    const previousCount=Number(previousCounts[theme.id]||0);
+    const recentlyUsed=previousSequence.slice(-2).includes(theme.id);
     let score=gapDomains.length*12+applicableDomains.length*2+(theme.focuses.includes(focus)?8:0);
-    if(previousTheme===theme.id)score+=continueSame?6:-100;
+    score-=previousCount*18;
+    if(!continueSame&&uncoveredThemes.length&&previousCount>0)score-=140;
+    if(!continueSame&&recentlyUsed)score-=55;
+    if(previousTheme===theme.id)score+=continueSame?160:-100;
     if(theme.id==='WORLD_ECOLOGY_STORY_CHAIN'){if(Number(source?.signals?.map||0)<8)score+=5;if(Number(source?.signals?.content||0)<8)score+=5;}
     if(theme.id==='ENEMY_BOSS_COMBAT_ECOLOGY'&&Number(source?.signals?.ai||0)<4)score+=6;
     if(theme.id==='QUEST_STORY_PROGRESSION_CHAIN'&&Number(source?.signals?.progression||0)<8)score+=6;
@@ -739,6 +753,11 @@ function buildAutonomousContentExpansion({
   const selected=scored[0]||{theme:AUTONOMOUS_EXPANSION_THEMES[0],score:0,gapDomains:[],applicableDomains:[]};
   const selectedTheme=selected.theme;
   const sameThemeDepth=previousTheme===selectedTheme.id?Math.max(1,Number(previousExpansion?.themeDepth||1)+1):1;
+  const nextCounts={...previousCounts,[selectedTheme.id]:Number(previousCounts[selectedTheme.id]||0)+1};
+  const nextSequence=[...previousSequence,selectedTheme.id].slice(-Math.max(14,themeIds.length*2));
+  const missingAfterSelection=themeIds.filter(id=>Number(nextCounts[id]||0)===0);
+  const minCoverageCount=Math.min(...themeIds.map(id=>Number(nextCounts[id]||0)));
+  const leastCoveredThemes=themeIds.filter(id=>Number(nextCounts[id]||0)===minCoverageCount);
   const repairFirst=clean(nextActionDecision?.action).toUpperCase()==='CAUSAL_REPAIR';
   return Object.freeze({
     version:1,
@@ -765,7 +784,19 @@ function buildAutonomousContentExpansion({
     }),
     selectedTheme:selectedTheme.id,
     themeDepth:sameThemeDepth,
-    selectedThemeReason:String(selected.gapDomains.length)+' explicit GAP(s) and '+String(selected.applicableDomains.length)+' applicable domain(s); focus='+focus+'; previousTheme='+(previousTheme||'NONE')+'; previousEffect='+(effectClass||'NONE')+'.',
+    selectedThemeReason:String(selected.gapDomains.length)+' explicit GAP(s) and '+String(selected.applicableDomains.length)+' applicable domain(s); focus='+focus+'; previousTheme='+(previousTheme||'NONE')+'; previousEffect='+(effectClass||'NONE')+'; previousCoverage='+String(previousCounts[selectedTheme.id]||0)+'; uncoveredBefore='+String(uncoveredThemes.length)+'.',
+    themeCoverageLedger:Object.freeze({
+      version:1,
+      counts:Object.freeze({...nextCounts}),
+      sequence:Object.freeze([...nextSequence]),
+      requiredThemes:Object.freeze([...themeIds]),
+      distinctCovered:themeIds.filter(id=>Number(nextCounts[id]||0)>0).length,
+      totalThemes:themeIds.length,
+      breadthCycleComplete:missingAfterSelection.length===0,
+      missingThemes:Object.freeze([...missingAfterSelection]),
+      leastCoveredThemes:Object.freeze([...leastCoveredThemes]),
+      selectionPolicy:'SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME'
+    }),
     scoredThemes:Object.freeze(scored.map(row=>Object.freeze({theme:row.theme.id,score:row.score,gapDomains:Object.freeze(row.gapDomains)}))),
     coherentContentBundle:Object.freeze(selectedTheme.bundle),
     bundleRule:'MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT',
@@ -840,6 +871,7 @@ export function directivePrompt(d={}){
     `PREVIOUS_EFFECT: ${d.effectivenessMeasurement?.previousGeneration?.classification||'NO_PREVIOUS_GENERATION'} - ${d.effectivenessMeasurement?.previousGeneration?.reason||''}`,
     `NEXT_VIBE_ACTION: ${d.nextActionDecision?.action||'CONTINUE_BUILD_UP_CURRENT_SYSTEM'} - ${d.nextActionDecision?.reason||''}`,
     `AUTONOMOUS_CONTENT_EXPANSION: mode=${expansion.executionMode||'AUTONOMOUS_CONTENT_BUILD_UP'}; theme=${expansion.selectedTheme||'AUTO'}; themeDepth=${expansion.themeDepth||1}; decisionOwner=${expansion.autonomousDecisionOwner||'VIBE'}; boundary=${expansion.executionBoundary||'EXISTING_BUILD_UP_ONLY'}`,
+    `CONTENT_BREADTH_LEDGER: covered=${expansion.themeCoverageLedger?.distinctCovered||0}/${expansion.themeCoverageLedger?.totalThemes||0}; missing=${(expansion.themeCoverageLedger?.missingThemes||[]).join(',')||'NONE'}; leastCovered=${(expansion.themeCoverageLedger?.leastCoveredThemes||[]).join(',')||'NONE'}`,
     `EXISTING_COMPLETENESS_CHECK: ${expansion.existingCompletenessReview?.mode||'CHECK_EXISTING_AND_EXPAND_OR_IMPROVE'}; dimensions=${(expansion.existingCompletenessReview?.dimensions||[]).join(',')}`,
     'COHERENT_CONTENT_BUNDLE:',
     expansionBundle,

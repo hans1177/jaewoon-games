@@ -82,6 +82,9 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.equal(directive.autonomousContentExpansion.antiCloneContract.nameColorOrStatOnlyCloneForbidden,true);
   assert.equal(directive.autonomousContentExpansion.continuityAndCausality.required,true);
   assert.equal(directive.autonomousContentExpansion.derivedRuleEvolution.allowed,true);
+  assert.equal(directive.autonomousContentExpansion.themeCoverageLedger.version,1);
+  assert.equal(directive.autonomousContentExpansion.themeCoverageLedger.distinctCovered,1);
+  assert.equal(directive.autonomousContentExpansion.themeCoverageLedger.totalThemes,7);
   assert.ok(directive.autonomousContentExpansion.coherentContentBundle.length>=6);
   assert.equal(directive.robloxNativeExecution.required,true);
   assert.ok(directive.robloxNativeExecution.responsibleFiles.some(file=>/roblox-games\/bug-defense/.test(file)));
@@ -104,6 +107,7 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.match(directivePrompt(directive),/EXPECTED_PLAYER_EFFECT:/);
   assert.match(directivePrompt(directive),/HOLISTIC_CORE_DOMAIN_STATUS:/);
   assert.match(directivePrompt(directive),/AUTONOMOUS_CONTENT_EXPANSION:/);
+  assert.match(directivePrompt(directive),/CONTENT_BREADTH_LEDGER:/);
   assert.match(directivePrompt(directive),/COHERENT_CONTENT_BUNDLE:/);
   assert.match(directivePrompt(directive),/ANTI_CLONE:/);
   assert.match(directivePrompt(directive),/CONTINUITY_CAUSALITY:/);
@@ -410,6 +414,77 @@ test('autonomous content expansion rotates after a verified effective generation
   assert.equal(second.autonomousContentExpansion.executionBoundary,'EXISTING_BUILD_UP_ONLY');
   assert.equal(second.autonomousContentExpansion.existingCompletenessReview.weakExistingContentMayPreemptNewContent,true);
   assert.equal(second.autonomousContentExpansion.antiCloneContract.minimumMeaningfulDistinctAxes,2);
+});
+
+
+test('successful buildup generations cover every major content theme before starting a new breadth cycle',()=>{
+  const sourceBase={
+    sourceRoot:'roblox-games/breadth-demo',
+    sourceTreeFingerprint:'0'.repeat(64),
+    fileCount:5,
+    topFiles:[{file:'roblox-games/breadth-demo/server/World.server.luau',score:35}],
+    sourceAnchors:[{file:'roblox-games/breadth-demo/server/World.server.luau',line:3,kind:'FUNCTION',symbol:'updateWorld',context:'function updateWorld()',score:40}],
+    signals:{
+      combat:3,progression:2,ai:1,save:1,multiplayer:1,animation:1,vfx:1,camera:1,ui:2,uiFlow:1,input:2,
+      map:2,landmark:0,interaction:1,inventory:1,equipment:1,settings:0,feedback:1,session:1,content:2,
+      choice:1,connection:0,performance:1,lighting:1,primitive:2,todo:0,errorRecovery:1
+    },
+    observations:['CURRENT_SOURCE_FILES=5','CONTENT_BREADTH_STILL_SHALLOW']
+  };
+  const directives=[];
+  let previous=null;
+  for(let index=0;index<7;index+=1){
+    const directive=buildGameSpecificBuildUpDirective({
+      gameId:'breadth-demo',
+      gameName:'Breadth Demo',
+      designRecord:design(),
+      sourceObservation:{...sourceBase,sourceTreeFingerprint:String(index+1).repeat(64)},
+      previousDirective:previous,
+      previousDirectiveOutcome:previous?'verified':'',
+      runtimeEvidence:previous?{runtimeObserved:true,runtimePassed:true}:{}
+    });
+    directives.push(directive);
+    previous=directive;
+  }
+  const themes=directives.map(row=>row.autonomousContentExpansion.selectedTheme);
+  assert.equal(new Set(themes).size,7);
+  const finalLedger=directives.at(-1).autonomousContentExpansion.themeCoverageLedger;
+  assert.equal(finalLedger.distinctCovered,7);
+  assert.equal(finalLedger.totalThemes,7);
+  assert.equal(finalLedger.breadthCycleComplete,true);
+  assert.deepEqual([...finalLedger.missingThemes],[]);
+  assert.ok(Object.values(finalLedger.counts).every(value=>value===1));
+});
+
+test('failed effectiveness may stay on the same content theme instead of breadth rotation hiding the causal repair',()=>{
+  const first=buildGameSpecificBuildUpDirective({
+    gameId:'breadth-repair-demo',
+    designRecord:design(),
+    sourceObservation:{
+      sourceRoot:'roblox-games/breadth-repair-demo',
+      sourceTreeFingerprint:'a'.repeat(64),
+      fileCount:2,topFiles:[],sourceAnchors:[],
+      signals:{combat:2,progression:2,ai:1,save:1,multiplayer:0,animation:1,vfx:1,camera:0,ui:1,uiFlow:0,input:1,map:1,landmark:0,interaction:1,inventory:0,equipment:0,settings:0,feedback:0,session:1,content:2,choice:0,connection:0,performance:1,lighting:0,primitive:2,todo:0,errorRecovery:1},
+      observations:['CURRENT_SOURCE_FILES=2']
+    }
+  });
+  const second=buildGameSpecificBuildUpDirective({
+    gameId:'breadth-repair-demo',
+    designRecord:design(),
+    sourceObservation:{
+      sourceRoot:'roblox-games/breadth-repair-demo',
+      sourceTreeFingerprint:'b'.repeat(64),
+      fileCount:2,topFiles:[],sourceAnchors:[],
+      signals:{combat:2,progression:2,ai:1,save:1,multiplayer:0,animation:1,vfx:1,camera:0,ui:1,uiFlow:0,input:1,map:1,landmark:0,interaction:1,inventory:0,equipment:0,settings:0,feedback:0,session:1,content:2,choice:0,connection:0,performance:1,lighting:0,primitive:2,todo:0,errorRecovery:1},
+      observations:['CURRENT_SOURCE_FILES=2']
+    },
+    previousDirective:first,
+    previousDirectiveOutcome:'failed',
+    runtimeEvidence:{runtimeObserved:true,runtimePassed:false,failureStage:'PLAYTEST',failureSignature:'verified-product-quality-failure'}
+  });
+  assert.equal(second.autonomousContentExpansion.selectedTheme,first.autonomousContentExpansion.selectedTheme);
+  assert.equal(second.autonomousContentExpansion.themeDepth,2);
+  assert.equal(second.autonomousContentExpansion.executionMode,'CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT');
 });
 
 test('verified product-quality failure keeps autonomous expansion inside existing buildup but causal repair goes first',()=>{
