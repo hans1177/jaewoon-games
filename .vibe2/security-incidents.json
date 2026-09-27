@@ -4,6 +4,43 @@
   "policy": "QUARANTINE_PRESERVE_REDACTED_EVIDENCE_VERIFY_RECOVERY_THEN_DISTILL",
   "incidents": [
     {
+      "id": "sec_review_45b6b28bd1b9663f94ff",
+      "status": "REVIEW_REQUIRED",
+      "disposition": "REVIEW",
+      "rule": "CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
+      "severity": "HIGH",
+      "category": "policy-integrity",
+      "file": "company-learning/company-log-map.json",
+      "line": 0,
+      "evidenceSha256": "f0170ca7f5da3783b0fde2fba49c5025b4f139c975352c962016ffd176504099",
+      "snippet": "AGGREGATED_POLICY_REVIEW_FINDINGS",
+      "rawSecretStored": false,
+      "rawMalwareStored": false,
+      "detections": 1,
+      "reviewFindingCount": 1,
+      "reviewEvidenceSha256": [
+        "e8262d4e427263467af5d68a506ed3cd2c194ccf80bf554b23f3428b2c02bbdf"
+      ],
+      "reviewLines": [
+        2489
+      ],
+      "legacyIncidentIds": [],
+      "securityRunId": 36299854919,
+      "securityArtifactId": 10924508793,
+      "firstDetectedAt": "2026-09-27T06:24:02.359Z",
+      "lastDetectedAt": "2026-09-27T06:24:02.359Z",
+      "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
+      "reviewUnit": "SECURITY_SCAN_AND_FILE",
+      "compactedPolicyReview": true,
+      "rootCause": null,
+      "remediation": null,
+      "verificationEvidence": [],
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "resolvedAt": null,
+      "verificationMode": null
+    },
+    {
       "id": "sec_review_f36eb2c05f9cd896559a",
       "status": "REVIEW_REQUIRED",
       "disposition": "REVIEW",
