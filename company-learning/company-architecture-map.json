@@ -1248,7 +1248,11 @@
         "ingressControl": "ubuntu-slim",
         "coreQaRunner": "ubuntu-slim",
         "coreQaConcurrencyMode": "ACTIVE_ONE_PLUS_LATEST_PENDING",
-        "coreQaCancelInProgress": false
+        "coreQaCancelInProgress": false,
+        "coreQaBrowserSmokeRunner": "ubuntu-latest",
+        "coreQaBrowserSmokeSeparateJob": true,
+        "coreQaBrowserSmokeReason": "CHROME_REQUIRED; KEEP DETERMINISTIC CORE REGRESSION ON UBUNTU_SLIM",
+        "coreQaBrowserSmokeQualityGatePreserved": true
       },
       "capacityAuthority": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
       "globalActiveWaveBarrier": false,
