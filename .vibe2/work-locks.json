@@ -3,42 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1nfotzp",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "352cd25bf6280c47211a63bfc3e57519a984640e",
-      "acquiredAt": "2026-09-27T22:52:05.621Z",
-      "expiresAt": "2026-09-27T23:37:05.621Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-serfn1",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-unity-web-base-implementation-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "352cd25bf6280c47211a63bfc3e57519a984640e",
-      "acquiredAt": "2026-09-27T22:52:59.990Z",
-      "expiresAt": "2026-09-27T23:37:59.990Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-1eui5qv",
       "worker": "vibe2",
       "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1",
@@ -594,6 +558,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:ant-simulator-existing-web-assessment-v1"
+      ]
+    },
+    {
+      "id": "wl-ada1v9",
+      "worker": "vibe2",
+      "taskId": "bug-defense-studio-evolution-unity-web-usability-v1",
+      "gameId": "bug-defense",
+      "files": [
+        "unity-games/bug-defense/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "4c21c3495a2225a6a0458511999afa03ace4f92d",
+      "acquiredAt": "2026-09-27T23:38:11.573Z",
+      "expiresAt": "2026-09-28T00:23:11.573Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:bug-defense-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
