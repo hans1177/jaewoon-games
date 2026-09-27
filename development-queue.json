@@ -3694,10 +3694,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-27T11:14:21.143Z",
+      "updatedAt": "2026-09-27T11:16:29.911Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3851,23 +3851,23 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-runtime-candidate-deploy-pending"
       ],
       "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "285dd295d25ebb18583a8454cfbd57b47c31c682",
+      "robloxBuildSourceRevision": "68eeb76aa9330445f0c1d46f3078d586a6d15584",
       "robloxBuildArtifactIdentity": "sha256:e72a6abd3bcb94bfcb815674866f83aec52edd82288d53c36e45981bb36a8e28",
-      "robloxBuildPassedAt": "2026-09-27T10:20:16.140Z",
+      "robloxBuildPassedAt": "2026-09-27T11:16:29.911Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-27T10:20:16.140Z",
+      "robloxBuildPreflightPassedAt": "2026-09-27T11:16:29.911Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "line-defense",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-09-27T10:04:09.284Z",
-        "sourceRevision": "285dd295d25ebb18583a8454cfbd57b47c31c682",
+        "checkedAt": "2026-09-27T11:14:14.976Z",
+        "sourceRevision": "68eeb76aa9330445f0c1d46f3078d586a6d15584",
         "artifactIdentity": "sha256:e72a6abd3bcb94bfcb815674866f83aec52edd82288d53c36e45981bb36a8e28",
         "secondaryOwnerFocus": false,
         "facts": {
@@ -3887,7 +3887,7 @@
           "directRoblox": false,
           "concurrentRoblox": true,
           "build": {
-            "sourceRevision": "285dd295d25ebb18583a8454cfbd57b47c31c682",
+            "sourceRevision": "68eeb76aa9330445f0c1d46f3078d586a6d15584",
             "artifactIdentity": "sha256:e72a6abd3bcb94bfcb815674866f83aec52edd82288d53c36e45981bb36a8e28",
             "webValidationPassed": false,
             "musicValidationPassed": false,
@@ -3911,18 +3911,18 @@
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
       "robloxFoundationF0Passed": true,
-      "robloxFoundationF0PassedAt": "2026-09-27T10:20:16.140Z",
+      "robloxFoundationF0PassedAt": "2026-09-27T11:16:29.911Z",
       "robloxFoundationF0Evidence": {
         "version": 3,
         "gameId": "line-defense",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-09-27T10:04:09.997Z",
+        "checkedAt": "2026-09-27T11:14:15.610Z",
         "sourcePath": "roblox-games/line-defense",
-        "sourceRevision": "285dd295d25ebb18583a8454cfbd57b47c31c682",
+        "sourceRevision": "68eeb76aa9330445f0c1d46f3078d586a6d15584",
         "artifactIdentity": "sha256:e72a6abd3bcb94bfcb815674866f83aec52edd82288d53c36e45981bb36a8e28",
         "rebuiltArtifactIdentity": "sha256:e72a6abd3bcb94bfcb815674866f83aec52edd82288d53c36e45981bb36a8e28",
-        "artifactRunId": 36309369387,
+        "artifactRunId": 36311573118,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "SINGLE",
@@ -3980,12 +3980,12 @@
         "gameId": "line-defense",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-09-27T10:04:09.997Z",
+        "checkedAt": "2026-09-27T11:14:15.610Z",
         "sourcePath": "roblox-games/line-defense",
-        "sourceRevision": "285dd295d25ebb18583a8454cfbd57b47c31c682",
+        "sourceRevision": "68eeb76aa9330445f0c1d46f3078d586a6d15584",
         "artifactIdentity": "sha256:e72a6abd3bcb94bfcb815674866f83aec52edd82288d53c36e45981bb36a8e28",
         "rebuiltArtifactIdentity": "sha256:e72a6abd3bcb94bfcb815674866f83aec52edd82288d53c36e45981bb36a8e28",
-        "artifactRunId": 36309369387,
+        "artifactRunId": 36311573118,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "SINGLE",
@@ -9683,7 +9683,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T11:16:13.061Z",
+  "updatedAt": "2026-09-27T11:16:29.911Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -9748,5 +9748,6 @@
   },
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
-  "automaticFeatureExpansionFreezeForbidden": true
+  "automaticFeatureExpansionFreezeForbidden": true,
+  "robloxTechnicalParallelism": null
 }
