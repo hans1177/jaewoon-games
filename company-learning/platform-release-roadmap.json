@@ -9858,6 +9858,21 @@
       "newWorkerAuthorityCreated": false,
       "gamePrimaryWorkerPolicyUnchanged": true,
       "qaSecurityReleaseGatesUnchanged": true
+    },
+    "menuUxDiversity20260927": {
+      "id": "MENU_UX_DIVERSITY_2026-09-27",
+      "authority": "OWNER_DIRECTIVE_2026-09-27",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "centralContract": "menuUxDiversityContract",
+      "preserves": [
+        "EXISTING_GAMEPLAY_RULES",
+        "EXISTING_SAVE_MEANING",
+        "EXISTING_BALANCE",
+        "EXISTING_NETWORK_AUTHORITY",
+        "MOBILE_FIRST",
+        "CANONICAL_VIBE_QUEUE"
+      ],
+      "noNewPipeline": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -26276,5 +26291,65 @@
       "qa/company-roblox-thumbnail-sync.test.mjs",
       "qa/company-homepage-runtime-propagation.test.mjs"
     ]
+  },
+  "menuUxDiversityContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-27",
+    "status": "ACTIVE",
+    "objective": "LET_VIBE_AUTONOMOUSLY_DESIGN_AND_IMPLEMENT_GAME_SPECIFIC_MENU_SURFACES_WITHOUT_COPYING_ONE_MENU_TEMPLATE_OR_INVENTING_GAMEPLAY_SYSTEMS",
+    "designAuthority": "tools/company-design-cycle.mjs#UX_ACCESSIBILITY_PLAN.menuSurfaces",
+    "implementationAuthority": "tools/vibe2-source-worker.mjs#presentationPassGuidance+studioQualityWorkerGuidance",
+    "assetAuthority": "tools/vibe2-asset-production-plan.mjs+assets/vibe-studio-asset-universe.js",
+    "rules": {
+      "menuSurfaceCount": {
+        "minimum": 3,
+        "maximum": 10
+      },
+      "candidateExamples": [
+        "MAIN",
+        "PAUSE",
+        "INVENTORY_EQUIPMENT",
+        "SHOP",
+        "CRAFTING",
+        "QUEST_STORY",
+        "MAP",
+        "PARTY_MULTIPLAYER",
+        "BUILD_RESEARCH",
+        "SETTINGS",
+        "RESULT"
+      ],
+      "examplesAreNotMandatoryChecklist": true,
+      "existingGameplaySystemsOnly": true,
+      "irrelevantMenuSurfaceForbidden": true,
+      "sameMenuBundleAcrossGamesForbidden": true,
+      "sameLayoutAcrossGamesForbidden": true,
+      "genreSessionContextAdaptationRequired": true,
+      "informationPriorityDiversityRequired": true,
+      "entryContextDiversityRequired": true,
+      "layoutDiversityRequired": true,
+      "mobileInteractionRequired": true,
+      "visualLanguageBoundToGameIdentity": true,
+      "targetPlatformNativeAdaptationRequired": true,
+      "mobileFirst": true,
+      "gameplayRulesBalanceSaveNetworkAuthorityUnchanged": true
+    },
+    "reusableUiLibrary": {
+      "family": "UI",
+      "menuSubfamilies": [
+        "MAIN_MENU",
+        "PAUSE",
+        "SHOP",
+        "CRAFTING",
+        "QUEST",
+        "SETTINGS",
+        "RESULT",
+        "SOCIAL"
+      ],
+      "preparedAssetDoesNotImplyGameMenuRequired": true,
+      "runtimeVerificationRequiredForReusablePromotion": true
+    },
+    "newQueueCreated": false,
+    "newWorkerAuthorityCreated": false,
+    "newTopLevelPipelineCreated": false
   }
 }
