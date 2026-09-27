@@ -365,7 +365,7 @@ test('reserve probes model cache lookup-only and skips the dedicated warmup runn
   assert.match(reserveBlock,/VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_CACHE_HIT/);
   assert.match(modelBlock,/if: needs\.reserve\.outputs\.worker_count != '0' && needs\.reserve\.outputs\.model_cache_hit != 'true'/);
   assert.match(modelBlock,/Recheck or persist shared Ollama runtime cache/);
-  assert.match(modelBlock,/lookup-only: true/);
+  assert.match(modelBlock,/lookup-only: false/);
   assert.match(modelBlock,/VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS/);
   assert.match(workerBlock,/needs: \[reserve, model_cache\]/);
   assert.match(workerBlock,/if: always\(\) && needs\.reserve\.outputs\.worker_count != '0'/);
@@ -891,7 +891,7 @@ test('worker never mutates shared queue state and only emits an atomic completio
 
 test('worker model cache is architecture-aware while runtime preparation reuses the shared pinned action',()=>{
   assert(workflow.includes('~/.cache/vibe2-ollama/lib/ollama'));
-  assert(workflow.includes('vibe2-ollama-v4-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b'));
+  assert(workflow.includes('vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b'));
   assert(workflow.includes('uses: ./vibe2-contract/.github/actions/prepare-ollama'));
   assert(workflow.includes("pull-model: 'true'"));
   const workerStart=workflow.indexOf('\n  worker:');
@@ -1089,7 +1089,7 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   assert(resultStep.includes('taskId:clean(manifest.taskId)'));
   assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
   assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
-  assert(resultStep.includes('version:16'));
+  assert(resultStep.includes('version:17'));
   assert(resultStep.includes('workLock'));
   assert(resultStep.includes('phase4BenchmarkVerification'));
   assert(resultStep.includes('knowledgeApplication'));
@@ -1331,7 +1331,7 @@ test('continuous planners overlay company-runtime design evidence before autonom
 test('Vibe2 control-plane jobs use slim runners while heavy workers retain full runners',()=>{
   const coreWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   const runnerWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
-  assert.match(coreWorkflow,/\n  reserve:\n(?:\s+#.*\n)*\s+runs-on: \$\{\{ github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-slim' \}\}/);
+  assert.match(coreWorkflow,/\n  reserve:\n(?:\s+#.*\n)*\s+runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| \(github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-slim'\) \}\}/);
   assert.match(coreWorkflow,/\n  fan_in:[\s\S]*?runs-on: ubuntu-24\.04-arm/);
   assert.match(coreWorkflow,/\n  worker:[\s\S]*?runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest' \}\}/);
   assert.match(runnerWorkflow,/\n  plan:[\s\S]{0,180}?runs-on: ubuntu-slim/);
