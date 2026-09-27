@@ -1,0 +1,24 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "complete source plus causal regression-test atomic candidate",
+  "edits": [
+    {
+      "path": "qa/vibe2-queue-control.test.mjs",
+      "find": "  assert.equal(criticPayload.authorityPromotionEligible,false);",
+      "replace": "  assert.equal(criticPayload.authorityPromotionEligible,true);"
+    },
+    {
+      "path": "qa/vibe2-queue-control.test.mjs",
+      "find": "  assert.equal(merged.applied[0].neuralFeedback[0].authorityPromotionEligible,false);",
+      "replace": "  assert.equal(merged.applied[0].neuralFeedback[0].authorityPromotionEligible,true);"
+    },
+    {
+      "path": "tools/vibe2-queue-control.mjs",
+      "find": "  console.log(`VIBE2_QUEUE_EFFECTIVE_MAX=${result.summary?.effectiveMaxConcurrentTasks ?? result.summary?.maxConcurrentTasks ?? DEFAULT_MAX_CONCURRENT_TASKS}`);",
+      "replace": "console.log(`VIBE2_QUEUE_EFFECTIVE_MAX=${result.summary?.effectiveMaxConcurrentTasks ?? result.summary?.maxConcurrentTasks ?? DEFAULT_MAX_CONCURRENT_TASKS}`);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
