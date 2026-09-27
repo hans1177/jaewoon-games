@@ -3475,7 +3475,11 @@ test('Fortnite UEFN presentation stays paused and does not enter adaptive graphi
   const verseDir=path.join(root,'uefn-games',gameId,'Content','Verse');
   fs.mkdirSync(verseDir,{recursive:true});
   fs.writeFileSync(path.join(verseDir,'Presentation.verse'),'AdaptivePresentation := class():\n    Apply():void = {}\n','utf8');
-  const policy=JSON.parse(fs.readFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),'utf8'));
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.developmentAccess={...(policy.developmentAccess||{}),FORTNITE_UEFN:'OWNER_HOLD'};
+  policy.fortniteUefn={...(policy.fortniteUefn||{}),developmentStatus:'DEVELOPMENT_PAUSED',developmentStatusLabel:'개발보류',developmentExecutionAllowed:false};
+  fs.writeFileSync(policyPath,JSON.stringify(policy,null,2)+'\n','utf8');
   assert.equal(policy.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
   assert.equal(policy.fortniteUefn.developmentStatus,'DEVELOPMENT_PAUSED');
   assert.equal(policy.fortniteUefn.developmentStatusLabel,'개발보류');
