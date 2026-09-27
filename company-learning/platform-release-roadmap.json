@@ -25618,7 +25618,7 @@
     }
   },
   "robloxHomepageThumbnailSyncContract": {
-    "version": 1,
+    "version": 2,
     "status": "ACTIVE_EXECUTABLE_CONTRACT",
     "authority": "OWNER_DIRECTIVE_2026-09-26",
     "objective": "USE_ONE_GAME_MARKETING_IMAGE_AUTHORITY_FOR_ROBLOX_HOMEPAGE_THUMBNAIL_AND_COMPANY_HOMEPAGE_GAME_CARD",
@@ -25646,14 +25646,22 @@
       "titleReadableAtSmallCardSize": true,
       "gameSpecificVisualIdentityRequired": true,
       "genericPageBackgroundForbidden": true,
-      "unrelatedGameArtForbidden": true
+      "unrelatedGameArtForbidden": true,
+      "canonicalSvgMaxBytes": 12288,
+      "rasterCanonicalMaxBytes": 163840,
+      "englishTitleDominant": true,
+      "koreanSubtitleSecondary": true,
+      "blocky3dGameCardDirection": true,
+      "lowSizeWithoutVisibleQualityCollapse": true,
+      "koreanUploadFontPackage": "fonts-noto-cjk"
     },
     "publicationFlow": [
       "CREATE_OR_UPDATE_CANONICAL_GAME_MARKETING_THUMBNAIL",
-      "VALIDATE_FILE_EXISTS_UNIQUE_NON_PLACEHOLDER_AND_16_9",
+      "VALIDATE_FILE_EXISTS_UNIQUE_NON_PLACEHOLDER_16_9_AND_LOW_SIZE",
+      "VERIFY_ENGLISH_MAIN_TITLE_KOREAN_SUBTITLE_AND_GAME_SPECIFIC_BLOCKY_3D_DIRECTION",
       "SYNC_GAME_CATALOG_CANONICAL_MARKETING_THUMBNAIL",
       "HOME_PAGE_RENDERER_READS_CANONICAL_MARKETING_THUMBNAIL_FIRST",
-      "RENDER_UPLOAD_PNG_FROM_SAME_SOURCE",
+      "RENDER_UPLOAD_PNG_FROM_SAME_SOURCE_WITH_KOREAN_FONT_AVAILABLE",
       "UPLOAD_TO_VERIFIED_ROBLOX_UNIVERSE_WITH_OPEN_CLOUD",
       "VERIFY_ROBLOX_THUMBNAIL_PROCESSING_AND_LISTING",
       "PERSIST_UPLOAD_EVIDENCE",
