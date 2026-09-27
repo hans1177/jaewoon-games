@@ -199,10 +199,10 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(reserve.reserveJobsParallel,true);
   assert.equal(reserve.serializationScope,'ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY');
   assert.equal(reserve.conflictResolution,'FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5_ON_ACTUAL_WRITE_CONFLICT');
-  assert.equal(reserve.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v3');
+  assert.equal(reserve.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v4');
   assert.equal(reserve.gamePrimaryExternalBoundary,256);
 
-  assert.equal(runtime.continuous.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v3');
+  assert.equal(runtime.continuous.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v4');
   assert.equal(runtime.continuous.reserveConcurrency.mode,'PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE');
   assert.equal(runtime.continuous.reserveConcurrency.crossLaneGlobalReserveLock,false);
   assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
@@ -231,7 +231,7 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.doesNotMatch(core,/vibe2-fanin-refill-singleton/);
   assert.doesNotMatch(core,/format\('vibe2-fanin-refill-\{0\}'/);
   assert.doesNotMatch(core,/\|\| 'vibe2-control-state-vibe2-unreal-core'/);
-  assert.match(runner,/group: vibe2-24h-cycle-singleton-v3/);
+  assert.match(runner,/group: vibe2-24h-cycle-singleton-v4/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING/);
   assert.match(runner,/needs\.plan\.outputs\.learning_idle_queued != '0' && needs\.plan\.outputs\.runner_pressure != 'YES'/);
