@@ -9324,6 +9324,21 @@
       },
       "localRunnerOfflineMayBlockPreparation": false,
       "localRunnerOfflineMayBlockOnlyLocalTraining": true
+    },
+    "directorHomepageWakeDecoupling20260927": {
+      "id": "DIRECTOR_HOMEPAGE_WAKE_DECOUPLING_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "REMOVE_REDUNDANT_FULL_DIRECTOR_WORKFLOW_WAKE_AFTER_HOMEPAGE_MANAGER_COMPLETION_WHILE_PRESERVING_HOMEPAGE_INTERNAL_DIRECTOR_SUPERVISION",
+      "homepagePipelineOwnsDirectorSupervision": true,
+      "homepageManagerWorkflowRunWakeRemovedFromCentralDirector": true,
+      "homepagePublicationAuthorityUnchanged": true,
+      "homepageSelfQaUnchanged": true,
+      "centralDirectorManualSchedulePushAndRelevantWorkflowRunWakesPreserved": true,
+      "gamePrimaryGateUnchanged": true,
+      "runnerDrainUnchanged": true,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "expectedEffect": "REDUCE_DIRECTOR_WORKFLOW_RUN_BURSTS_AND_ALLOW_RUNNER_DRAIN_TO_REACH_EXECUTION_SOONER"
     }
   },
   "vibeExecutionLaneContract": {
