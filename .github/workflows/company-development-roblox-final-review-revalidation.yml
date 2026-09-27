@@ -422,7 +422,7 @@ jobs:
         run: |
           set -euo pipefail
           proof_tsv=/tmp/roblox-f9-vibe-fanin.tsv
-          node --input-type=module - "../runtime/development-queue.json" "$REQUESTED_GAME_ID" > "$proof_tsv" <<'NODE'
+          node --input-type=module - "runtime/development-queue.json" "$REQUESTED_GAME_ID" > "$proof_tsv" <<'NODE'
           import fs from 'node:fs';
           const [queuePath,requested='']=process.argv.slice(2);
           const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
