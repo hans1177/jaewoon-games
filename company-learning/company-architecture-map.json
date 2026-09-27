@@ -1,5 +1,5 @@
 {
-  "version": 287,
+  "version": 288,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5172,7 +5172,18 @@
         ],
         "applicableGapCannotBeSilentlyDeferredByPresentationWork": true,
         "responsibleFileConflictSerializationOnly": true,
-        "platformNativeExecutionPreserved": true
+        "platformNativeExecutionPreserved": true,
+        "menuDiversity": {
+          "policy": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.holisticGameEvolution.uiUxConvenience.menuDiversity",
+          "implementation": [
+            "tools/company-build-up-directive.mjs",
+            "tools/vibe2-asset-production-plan.mjs"
+          ],
+          "sameMenuSetAcrossGamesForbidden": true,
+          "selectsOnlyApplicableMenus": true,
+          "existingWorkerAndQueueOnly": true,
+          "mobileFlowVerificationPreserved": true
+        }
       },
       "existingGameHolisticBackfill": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
       "existingGamesNotGrandfathered": true,
