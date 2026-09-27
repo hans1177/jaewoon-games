@@ -818,7 +818,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const velocity=Math.hypot(Number(actionPlayer.velocityX||0),Number(actionPlayer.velocityY||0),Number(actionPlayer.velocityZ||0));
   const feedbackBefore=clean(preActionClientProbe?.player?.feedbackEvent);
   const feedbackAfter=clean(actionPlayer?.feedbackEvent);
-  const authoritativeActionFeedback=Boolean(feedbackAfter&&feedbackAfter!==feedbackBefore);
+  const authoritativeActionFeedback=Boolean(actionOk('ui-primary-action')&&feedbackAfter&&feedbackAfter!==feedbackBefore);
   const lightingBrightness=Number(client?.lighting?.brightness??server?.lighting?.brightness??0);
   const rows=[
     {id:'character-camera-ready',pass:player.characterPresent===true&&player.humanoidPresent===true&&player.rootPresent===true&&client?.camera?.present===true},
@@ -1422,7 +1422,7 @@ export function createLocalStudioPlayEvidence({
       infrastructureFailure,
       failureClass,
       robloxFailureClass,
-      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
+      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
       studioMcpServerEnablementRequired,
       operatorPrerequisite:studioMcpServerEnablementRequired?'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT':null,
       localPlaceFile:true,
@@ -1457,7 +1457,8 @@ export function createLocalStudioPlayEvidence({
         scenarioContractRequired,
         scenarioFailureCount:qualityFailureKinds.length,
         primaryActionDisplacement:Number(runtime?.metrics?.primaryActionDisplacement||0),
-        primaryActionVelocity:Number(runtime?.metrics?.primaryActionVelocity||0)
+        primaryActionVelocity:Number(runtime?.metrics?.primaryActionVelocity||0),
+        primaryActionFeedbackChanged:runtime?.metrics?.primaryActionFeedbackChanged===true
       },
       characterMotionRuntime:characterMotionRuntime?{
         required:characterMotionRequired,
