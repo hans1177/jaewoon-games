@@ -1438,3 +1438,36 @@ test('quality-first buildup short-circuit is centralized and architecture/log pr
   assert.ok(evidence?.requiredMarkers?.includes('QUALITY_BUILDUP_AUTO_REQUEUE=YES|NO'));
   assert.equal(evidence?.transient429MustNotClaimGameSourceDefect,true);
 });
+
+
+test('central policy makes verified internal product quality failure preempt external release observation',()=>{
+  const policy=roadmap.minimumNecessaryProcedurePolicy?.qualityFirstBuildupShortCircuit;
+  assert.equal(policy?.status,'ACTIVE');
+  assert.equal(policy?.automaticRouting?.ownerApprovalRequiredForApprovedScopeQualityRepair,false);
+  assert.equal(policy?.automaticRouting?.canonicalRoute,'EXISTING_VIBE_PLANNER_AND_SOURCE_WORKER_ONLY');
+  assert.equal(policy?.automaticRouting?.shadowPipelineForbidden,true);
+  assert.equal(policy?.automaticRouting?.directResponsibleFunctionOrModuleRepairRequired,true);
+  assert.equal(policy?.shortCircuit?.transient429MayNotPreemptActiveQualityBuildUp,true);
+  assert.equal(policy?.shortCircuit?.externalObservationMayRunAgainOnlyAfterRelevantInternalQualityPass,true);
+  assert.equal(policy?.shortCircuit?.validUnchangedPassingEvidenceMustBeReused,true);
+  assert.equal(policy?.resume?.fullPipelineRestartForbidden,true);
+  assert.equal(policy?.resume?.publicReleaseHardGateUnchanged,true);
+  assert.equal(policy?.resume?.securityAndSaveIntegrityGatesUnchanged,true);
+  assert.equal(policy?.f9?.productQualityFailureAction,'AUTO_REQUEUE_CANONICAL_GAME_CODE_BUILD_UP_WITHOUT_OWNER_APPROVAL');
+  assert.equal(policy?.f9?.sourceMutationForbiddenSolelyForTransient429,true);
+
+  const projection=architecture.minimumNecessaryProcedurePolicyProjection?.qualityFirstBuildupShortCircuit;
+  assert.equal(projection?.source,'company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit');
+  assert.equal(projection?.internalProductQualityFailurePreemptsExternalReleaseObservation,true);
+  assert.equal(projection?.approvedScopeQualityRepairOwnerApprovalRequired,false);
+  assert.equal(projection?.transient429DoesNotCauseGameSourceRebuild,true);
+  assert.equal(projection?.resumeAtFirstInvalidatedDownstreamGate,true);
+  assert.equal(projection?.f9ProductQualityFailureReturnsToBuildUp,true);
+  assert.equal(projection?.publicReleaseHardGateUnchanged,true);
+
+  const logContract=logMap.qualityFirstBuildupShortCircuitEvidence;
+  assert.equal(logContract?.source,'company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit');
+  assert.equal(logContract?.transient429MustNotClaimGameSourceDefect,true);
+  assert.equal(logContract?.sourceMutationRequiredBeforeProductQualityRevalidation,true);
+  assert.ok(logContract?.requiredMarkers?.includes('QUALITY_FIRST_BUILDUP_SHORT_CIRCUIT=ACTIVE'));
+});
