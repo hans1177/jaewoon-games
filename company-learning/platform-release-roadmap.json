@@ -1,5 +1,5 @@
 {
-  "version": 478,
+  "version": 479,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9940,6 +9940,24 @@
         "FORTNITE_UEFN"
       ],
       "reason": "OWNER_DEFERRED_FORTNITE_DEVELOPMENT"
+    },
+    "unityWebMenuPlannerBindingDisambiguation20260927": {
+      "id": "UNITY_WEB_MENU_PLANNER_BINDING_DISAMBIGUATION_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane.menuUiSourceIdentity",
+      "status": "ACTIVE",
+      "objective": "DISTINGUISH_UNITY_WEBGL_FROM_GENERIC_WEB_IN_MENU_BUILD_UP_WHILE_PRESERVING_THE_SAME_CANONICAL_UNITY_UI_SOURCE",
+      "generalPlatformTokenMayRemainWeb": true,
+      "activeBindingProfileRequired": true,
+      "requiredUnityWebProfile": "UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE",
+      "genericWebProfileForbiddenForUnityWeb": true,
+      "activeBuildUpPlatforms": [
+        "WEB",
+        "ROBLOX",
+        "UNITY"
+      ],
+      "fortniteUefnOwnerHoldPreserved": true,
+      "newWorkflowOrStageCreated": false,
+      "gameplaySemanticsChanged": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -24540,7 +24558,9 @@
         "platformSpecificWebglCompatibilityAdjustmentsAllowed": true,
         "compatibilityAdjustmentsMustRemainInsideCanonicalUnityProject": true,
         "compatibilityAdjustmentsMayNotForkGameplayUiMeaning": true,
-        "genericLegacyWebUiCannotSatisfyUnityWebRequirement": true
+        "genericLegacyWebUiCannotSatisfyUnityWebRequirement": true,
+        "plannerActiveBindingProfileRequired": true,
+        "requiredPlannerProfile": "UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE"
       }
     },
     "upperPlatformAdmission": "UPPER_PLATFORM_DEVELOPMENT_READY",

@@ -1,5 +1,5 @@
 {
-  "version": 291,
+  "version": 292,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6318,7 +6318,7 @@
     }
   },
   "menuExperienceDiversityTopology": {
-    "version": 2,
+    "version": 3,
     "source": "company-learning/vibe-autonomous-content-expansion-policy.json#presentationEvolution.menuExperienceDiversity",
     "status": "ACTIVE",
     "executionModel": "RESPONSIBILITY_INSIDE_EXISTING_PRESENTATION_BUILD_UP_NOT_A_NEW_STAGE",
@@ -6353,7 +6353,7 @@
       "ROBLOX": "SEPARATE_ROBLOX_NATIVE_UI_RUNTIME",
       "UNITY_APP_AND_WEBGL": "SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE",
       "GENERIC_WEB_OR_LEGACY_VALIDATION": "EXISTING_WEB_UI_ONLY_NOT_A_UNITY_WEBGL_SUBSTITUTE",
-      "FORTNITE_UEFN": "SEPARATE_UEFN_NATIVE_UI_RUNTIME"
+      "FORTNITE_UEFN": "PAUSED_OWNER_HOLD_NO_BUILD_UP"
     },
     "unityWebSeparateHtmlCssJsGameplayUiForbidden": true,
     "unityWebCanonicalSourceRoot": "unity-games/<gameId>/",
@@ -6362,7 +6362,15 @@
     ],
     "pausedPlatformStatus": {
       "FORTNITE_UEFN": "개발보류"
-    }
+    },
+    "plannerActiveBindingProfileRequired": true,
+    "unityWebGeneralPlatformTokenMayBeWeb": true,
+    "unityWebRequiredActiveBindingProfile": "UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE",
+    "unityWebGenericWebBindingProfileForbidden": true,
+    "resumePlatformBinding": {
+      "FORTNITE_UEFN": "SEPARATE_UEFN_NATIVE_UI_RUNTIME"
+    },
+    "fortniteUefnOwnerExplicitResumeRequired": true
   },
   "fortniteUefnDevelopmentPauseTopology": {
     "version": 1,

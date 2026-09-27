@@ -45,6 +45,15 @@ function uefnRootFromCatalog(game={}){const explicit=posix(game.uefnProjectPath|
 function studioQualityLane(project={}){const engine=clean(project.engine).toLowerCase(),target=clean(project.selectedPlatform||project.targetPlatform||project.target).toLowerCase();if(engine==='unity'&&project.firstStageUnityWeb===true)return'unity-web';if(engine==='unity')return'unity-native';if(engine==='roblox')return'roblox';if(engine==='web')return'web';if(engine==='unreal')return /fortnite|uefn/.test(target)?'fortnite-uefn':'unreal-native';return engine||'unknown';}
 function studioQualityTaskLane(item={}){const explicit=clean(item?.studioQualityEvolution?.platformLane).toLowerCase();if(explicit)return explicit;const evidence=new Set((item?.evidence||[]).map(value=>clean(value).toLowerCase()));const target=clean(item?.target).toLowerCase(),root=posix(item?.sourceRoot);if(evidence.has('unity-web-first-stage')||evidence.has('studio-quality-platform-lane:unity-web'))return'unity-web';if(target==='unity'||target.startsWith('unity-')||root.startsWith('unity-games/'))return'unity-native';if(target==='roblox'||root.startsWith('roblox-games/'))return'roblox';if(target==='web'||root.startsWith('web-games/'))return'web';if(target==='fortnite-uefn'||target==='uefn'||target==='unreal'||target.startsWith('fortnite')||(root.startsWith('uefn-games/')||root.startsWith('unreal-games/')))return target==='unreal'?'unreal-native':'fortnite-uefn';return target||'unknown';}
 function buildUpPlatformToken(project={},platformLane=studioQualityLane(project)){if(platformLane==='unity-web')return'WEB';if(platformLane==='unity-native')return'UNITY';if(platformLane==='roblox')return'ROBLOX';if(platformLane==='web')return'WEB';if(platformLane==='fortnite-uefn'||platformLane==='unreal-native'||clean(project.engine).toLowerCase()==='unreal')return'FORTNITE_UEFN';return clean(project.engine).toUpperCase()||'COMMON';}
+function menuPlatformBindingProfile(project={},platformLane=studioQualityLane(project)){
+  const lane=clean(platformLane).toLowerCase();
+  if(lane==='unity-web')return'UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE';
+  if(lane==='unity-native')return'UNITY_APP_SAME_CANONICAL_UNITY_PROJECT_WITH_WEBGL';
+  if(lane==='roblox')return'ROBLOX_NATIVE_UI_RUNTIME';
+  if(lane==='web')return'GENERIC_WEB_OR_LEGACY_VALIDATION_UI_RUNTIME';
+  if(lane==='fortnite-uefn'||lane==='unreal-native'||clean(project.engine).toLowerCase()==='unreal')return'FORTNITE_UEFN_OWNER_HOLD_NO_BUILD_UP';
+  return'UNKNOWN_EXISTING_UI_RESPONSIBILITY';
+}
 function sameStudioQualityLane(item={},project={}){return studioQualityTaskLane(item)===studioQualityLane(project);}
 function catalogById(catalog={}){return new Map((Array.isArray(catalog.games)?catalog.games:[]).map(game=>[clean(game.id),game]));}
 function permanentRemovalIds(catalog={}){return new Set((Array.isArray(catalog?.permanentRemovalPolicy?.ids)?catalog.permanentRemovalPolicy.ids:[]).map(clean).filter(Boolean));}
@@ -1082,12 +1091,15 @@ const MENU_EXPERIENCE_PATTERN_FAMILIES=Object.freeze({
 });
 
 function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTATION'){
-  const platform=buildUpPlatformToken(project,studioQualityLane(project));
+  const platformLane=studioQualityLane(project);
+  const platform=buildUpPlatformToken(project,platformLane);
+  const activeMenuBindingProfile=menuPlatformBindingProfile(project,platformLane);
   return Object.freeze({
     version:1,
     executionBoundary:'EXISTING_PRESENTATION_OR_BUILD_UP_ONLY',
     decisionOwner:'VIBE',
     platforms:Object.freeze(['WEB','ROBLOX','UNITY']),
+    pausedPlatforms:Object.freeze(['FORTNITE_UEFN']),
     platform,
     pass:clean(pass).toUpperCase()||'ASSET_ADAPTATION',
     adaptiveCount:Object.freeze({
@@ -1102,9 +1114,12 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
     priorityOrder:Object.freeze(['PLACEHOLDER','LOW_QUALITY','STYLE_MISMATCH','DUPLICATE_OR_OVERREUSED','POOR_READABILITY','WEAK_VFX_OR_MOTION','OTHER_VERIFIED_PRESENTATION_GAP']),
     reuseModes:ADAPTIVE_GRAPHICS_REUSE_MODES,
     menuDiversity:Object.freeze({
-      version:2,
+      version:3,
       executionBoundary:'EXISTING_MENU_AND_UI_BUILD_UP_ONLY',
       unityWebIsUnityBuildTargetNotIndependentPlatform:true,
+      activePlatformBindingProfile:activeMenuBindingProfile,
+      activePlatforms:Object.freeze(['WEB','ROBLOX','UNITY']),
+      pausedPlatforms:Object.freeze(['FORTNITE_UEFN']),
       surfaces:MENU_EXPERIENCE_SURFACES,
       genericOneTemplateForAllGamesForbidden:true,
       colorOrBackgroundOnlyVariationDoesNotCount:true,
@@ -1120,7 +1135,8 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
         UNITY_CANONICAL_SOURCE_ROOT:'unity-games/<gameId>/',
         UNITY_WEBGL_SEPARATE_HTML_CSS_JS_GAMEPLAY_UI:'FORBIDDEN',
         GENERIC_WEB_OR_LEGACY_VALIDATION:'EXISTING_WEB_UI_ONLY_NOT_A_UNITY_WEBGL_SUBSTITUTE',
-        FORTNITE_UEFN:'DEVELOPMENT_PAUSED_OWNER_HOLD_NO_ACTIVE_BUILD_UP'
+        FORTNITE_UEFN:'PAUSED_OWNER_HOLD_NO_BUILD_UP',
+        FORTNITE_UEFN_RESUME_BINDING:'SEPARATE_UEFN_NATIVE_UI_RUNTIME'
       }),
       mobileFirst:Object.freeze({touchTargetMinimumPx:44,safeAreaRequired:true,narrowScreenNoClipping:true,scrollReachabilityRequired:true,thumbReachabilityRequired:true}),
       preservation:Object.freeze({reuseExistingUiSystemAndResponsibleFiles:true,inventMissingGameplaySystemOnlyToFillMenuForbidden:true,gameplayEconomySaveQuestAndProgressionMeaningUnchanged:true,sameGameStyleLockRequired:true})
@@ -1158,6 +1174,7 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
     '가변 교체와 메뉴 경험 계약은 현재 개발 활성 플랫폼인 WEB / ROBLOX / UNITY에 공통으로 쓰되 공통 계약이 동일 런타임 코드를 뜻하지는 않는다. FORTNITE_UEFN은 개발보류 상태라 자동 BUILD_UP 대상에서 제외한다.',
     'Unity 앱과 Unity Web은 별도 웹 게임으로 갈라지지 않는다. 둘 다 unity-games/<gameId>/의 같은 canonical Unity 프로젝트와 같은 UI 소스를 기본으로 쓰고 Unity Web은 그 프로젝트의 WebGL 빌드다. Unity Web 전용 HTML/CSS/JS gameplay UI를 따로 만들어 대체하지 않는다.',
     'Roblox는 기존 Roblox 네이티브 UI 책임 구조로 구현한다. 기존 generic/legacy Web UI가 있더라도 그것으로 Unity WebGL 구현을 대신하지 않는다. Fortnite UEFN은 OWNER_HOLD/개발보류가 해제되기 전에는 이 자동 표현 작업을 생성하지 않는다.',
+    `현재 메뉴 platform binding profile은 ${contract.menuDiversity.activePlatformBindingProfile}이다. Unity Web 작업이 WEB 토큰을 쓰더라도 GENERIC_WEB_OR_LEGACY_VALIDATION_UI_RUNTIME이 아니라 UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE를 사용한다.`,
     '실제 교체 수는 최소 1개, 최대 60개다. 작은 결함은 1~10개, 일반 개선은 대체로 10~30개, 지역/표현 대형 리프레시는 필요할 때 30~60개를 사용할 수 있다.',
     '대상에는 배경·지형·환경·건물·소품·랜드마크·캐릭터·몬스터·무기·아이템·장비·재질·텍스처·VFX·모션/애니메이션·메뉴·HUD·인벤토리·상점·제작·퀘스트·설정·결과 UI·아이콘·타이포·카메라·환경 연출이 포함된다. 오디오 표현도 관련 있을 때 함께 연결할 수 있다.',
     '메뉴/UI를 이번 작업에서 건드릴 때는 메인메뉴·인벤토리·상점·제작·퀘스트·설정·결과창 중 실제 게임에 존재하는 화면의 정보구조·탐색·레이아웃·상호작용을 현재 장르와 규칙에 맞게 선택하거나 혼합한다.',
@@ -1200,6 +1217,7 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
       'adaptive-graphics-reuse-modes:'+ADAPTIVE_GRAPHICS_REUSE_MODES.join(','),
       'menu-experience-diversity:v1',
       'menu-platform-binding:v1',
+      'menu-active-platform-binding:'+contract.menuDiversity.activePlatformBindingProfile,
       'unity-web-menu-source:SAME_CANONICAL_UNITY_PROJECT',
       'unity-web-separate-html-css-js-gameplay-ui:FORBIDDEN',
       'menu-one-template-for-all:FORBIDDEN',

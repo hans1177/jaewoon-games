@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -415,7 +415,7 @@
         "gameplayEconomySaveQuestAndProgressionMeaningUnchanged": true,
         "sameGameStyleLockRequired": true
       },
-      "version": 2,
+      "version": 3,
       "unityWebIsUnityBuildTargetNotIndependentPlatform": true,
       "implementationSeparation": {
         "version": 1,
@@ -442,7 +442,8 @@
           "unityAppAndWebglUiSourceSharedByDefault": true,
           "separateHtmlCssJsGameplayUiForbidden": true,
           "webglCompatibilityAdaptationAllowedInsideCanonicalUnityProject": true,
-          "gameplayUiSemanticForkForbidden": true
+          "gameplayUiSemanticForkForbidden": true,
+          "requiredUnityWebPlannerProfile": "UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE"
         },
         "GENERIC_WEB_OR_LEGACY_VALIDATION": {
           "runtimeImplementation": "EXISTING_WEB_UI_SYSTEM_ONLY",
@@ -450,8 +451,10 @@
           "cannotSubstituteForUnityWebglGameplayUi": true
         },
         "FORTNITE_UEFN": {
-          "runtimeImplementation": "UEFN_NATIVE_UI_SYSTEM",
-          "directUnityOrRobloxRuntimeCodeReuseForbidden": true
+          "runtimeImplementation": "PAUSED_OWNER_HOLD_NO_BUILD_UP",
+          "directUnityOrRobloxRuntimeCodeReuseForbidden": true,
+          "resumeRuntimeImplementation": "UEFN_NATIVE_UI_SYSTEM",
+          "ownerExplicitResumeRequired": true
         }
       },
       "pausedPlatforms": [
@@ -459,7 +462,9 @@
       ],
       "pausedPlatformStatus": {
         "FORTNITE_UEFN": "개발보류"
-      }
+      },
+      "plannerActiveBindingProfileRequired": true,
+      "unityWebMustNotUseGenericWebBindingProfile": true
     },
     "pausedPlatforms": [
       "FORTNITE_UEFN"

@@ -1639,6 +1639,12 @@ test('menu experience diversity stays inside existing Vibe presentation buildup'
   assert.equal(menu.chooseAdaptOrHybridizePatternFamilies,true);
   assert.equal(menu.projectSpecificPatternAllowed,true);
   assert.equal(menu.unityWebIsUnityBuildTargetNotIndependentPlatform,true);
+  assert.equal(menu.plannerActiveBindingProfileRequired,true);
+  assert.equal(menu.unityWebMustNotUseGenericWebBindingProfile,true);
+  assert.equal(menu.implementationSeparation.UNITY_APP_AND_WEBGL.requiredUnityWebPlannerProfile,'UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE');
+  assert.equal(menu.implementationSeparation.FORTNITE_UEFN.runtimeImplementation,'PAUSED_OWNER_HOLD_NO_BUILD_UP');
+  assert.equal(menu.implementationSeparation.FORTNITE_UEFN.resumeRuntimeImplementation,'UEFN_NATIVE_UI_SYSTEM');
+  assert.equal(menu.implementationSeparation.FORTNITE_UEFN.ownerExplicitResumeRequired,true);
   assert.equal(menu.implementationSeparation.ROBLOX.runtimeImplementation,'ROBLOX_NATIVE_EXISTING_UI_SYSTEM');
   assert.equal(menu.implementationSeparation.UNITY_APP_AND_WEBGL.runtimeImplementation,'SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE');
   assert.equal(menu.implementationSeparation.UNITY_APP_AND_WEBGL.canonicalSourceRoot,'unity-games/<gameId>/');
@@ -1662,6 +1668,11 @@ test('menu experience diversity stays inside existing Vibe presentation buildup'
   assert.equal(topology.genericOneTemplateForAllGamesForbidden,true);
   assert.equal(topology.colorOrBackgroundOnlyVariationDoesNotCount,true);
   assert.equal(topology.unityWebIdentity,'UNITY_WEBGL_BUILD_OF_SAME_CANONICAL_UNITY_PROJECT');
+  assert.equal(topology.plannerActiveBindingProfileRequired,true);
+  assert.equal(topology.unityWebRequiredActiveBindingProfile,'UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE');
+  assert.equal(topology.unityWebGenericWebBindingProfileForbidden,true);
+  assert.equal(topology.platformBinding.FORTNITE_UEFN,'PAUSED_OWNER_HOLD_NO_BUILD_UP');
+  assert.equal(topology.resumePlatformBinding.FORTNITE_UEFN,'SEPARATE_UEFN_NATIVE_UI_RUNTIME');
   assert.equal(topology.platformBinding.ROBLOX,'SEPARATE_ROBLOX_NATIVE_UI_RUNTIME');
   assert.equal(topology.platformBinding.UNITY_APP_AND_WEBGL,'SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE');
   assert.equal(topology.unityWebSeparateHtmlCssJsGameplayUiForbidden,true);
@@ -1672,6 +1683,8 @@ test('menu experience diversity stays inside existing Vibe presentation buildup'
   assert.equal(unityWebMenu.webBuildTarget,'UNITY_WEBGL');
   assert.equal(unityWebMenu.separateHtmlCssJsGameplayUiForbidden,true);
   assert.equal(unityWebMenu.genericLegacyWebUiCannotSatisfyUnityWebRequirement,true);
+  assert.equal(unityWebMenu.plannerActiveBindingProfileRequired,true);
+  assert.equal(unityWebMenu.requiredPlannerProfile,'UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE');
   const platformAssetSeparation=roadmap.assetProductionParallelContract.platformAssetSeparation;
   assert.equal(platformAssetSeparation.unityWebMenuRuntimeMustUseSameCanonicalUnityProjectAsUnity,true);
   assert.equal(platformAssetSeparation.unityAndUnityWebShareUiSourceByDefault,true);
@@ -1683,5 +1696,7 @@ test('menu experience diversity stays inside existing Vibe presentation buildup'
   assert.match(vibeAutoPlanner,/menu-experience-diversity:v1/);
   assert.match(vibeAutoPlanner,/메인메뉴·인벤토리·상점·제작·퀘스트·설정·결과창/);
   assert.match(vibeAutoPlanner,/SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE/);
+  assert.match(vibeAutoPlanner,/menuPlatformBindingProfile/);
+  assert.match(vibeAutoPlanner,/UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE/);
   assert.match(vibeAutoPlanner,/Unity Web 전용 HTML\/CSS\/JS gameplay UI를 따로 만들어 대체하지 않는다/);
 });

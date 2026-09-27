@@ -3391,6 +3391,9 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
   assert.equal(contract.menuDiversity.colorOrBackgroundOnlyVariationDoesNotCount,true);
   assert.equal(contract.menuDiversity.projectSpecificPatternAllowed,true);
   assert.equal(contract.menuDiversity.unityWebIsUnityBuildTargetNotIndependentPlatform,true);
+  assert.equal(contract.menuDiversity.activePlatformBindingProfile,'GENERIC_WEB_OR_LEGACY_VALIDATION_UI_RUNTIME');
+  assert.deepEqual([...contract.menuDiversity.activePlatforms],['WEB','ROBLOX','UNITY']);
+  assert.deepEqual([...contract.menuDiversity.pausedPlatforms],['FORTNITE_UEFN']);
   assert.equal(contract.menuDiversity.platformBinding.ROBLOX,'SEPARATE_ROBLOX_NATIVE_UI_RUNTIME');
   assert.equal(contract.menuDiversity.platformBinding.UNITY_APP_AND_WEBGL,'SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE');
   assert.equal(contract.menuDiversity.platformBinding.UNITY_CANONICAL_SOURCE_ROOT,'unity-games/<gameId>/');
@@ -3430,9 +3433,30 @@ test('studio PRESENTATION focus receives the same adaptive replacement contract 
   assert.equal(task.studioQualityEvolution.focusPillar,'PRESENTATION');
   assert.equal(task.graphicsReplacementContract.executionBoundary,'EXISTING_PRESENTATION_OR_BUILD_UP_ONLY');
   assert.equal(task.graphicsReplacementContract.decisionOwner,'VIBE');
+  assert.equal(task.graphicsReplacementContract.menuDiversity.activePlatformBindingProfile,'ROBLOX_NATIVE_UI_RUNTIME');
+  assert.ok(task.evidence.includes('menu-active-platform-binding:ROBLOX_NATIVE_UI_RUNTIME'));
   assert.deepEqual([...task.graphicsReplacementContract.platforms],['WEB','ROBLOX','UNITY']);
+  assert.deepEqual([...task.graphicsReplacementContract.pausedPlatforms],['FORTNITE_UEFN']);
   assert.ok(task.evidence.includes('adaptive-graphics-replacement:v1'));
   assert.match(task.goal,/ADAPTIVE_GRAPHICS_REPLACEMENT_CONTRACT/);
+});
+
+test('Unity Web presentation uses canonical Unity WebGL menu binding instead of generic Web',()=>{
+  const root=tempRepo();
+  const gameId='adaptive-unity-web';
+  const dir=path.join(root,'unity-games',gameId,'Assets','Scripts');
+  fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'RuntimeBootstrap.cs'),'public class RuntimeBootstrap {}\n','utf8');
+  fs.writeFileSync(path.join(dir,'GameCore.cs'),'public class GameCore {}\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'탐험과 전투 선택을 연결한다'});
+  const project={gameId,name:'Adaptive Unity Web',engine:'unity',target:'unity',releaseState:'development-confirmed',projectPath:`unity-games/${gameId}`,existing:true,firstStageUnityWeb:true,firstStageEngine:'UNITY_WEB'};
+  const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION');
+  assert.ok(task);
+  assert.equal(task.studioQualityEvolution.platformLane,'unity-web');
+  assert.equal(task.graphicsReplacementContract.platform,'WEB');
+  assert.equal(task.graphicsReplacementContract.menuDiversity.activePlatformBindingProfile,'UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE');
+  assert.ok(task.evidence.includes('menu-active-platform-binding:UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE'));
+  assert.match(task.goal,/Unity Web 작업이 WEB 토큰을 쓰더라도/);
 });
 
 test('Fortnite UEFN presentation stays paused and does not enter adaptive graphics BUILD_UP',()=>{
