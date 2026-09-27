@@ -234,13 +234,18 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&item?.robloxRuntimeFoundationEvidence?.exactEngineVersion===true
       &&item?.robloxRuntimeFoundationEvidence?.serverBootObserved!==true
     );
-    const currentExact=Boolean(
+    const privateCandidateExact=Boolean(
       candidateExact
       &&item?.robloxBuildOrPackagePassed===true
+      &&item?.robloxBuildPreflightPassed===true
+      &&item?.robloxFoundationF0Passed===true
       &&clean(item?.robloxBuildSourceRevision)===currentSourceRevision
       &&currentSourceRevision===candidateSourceRevision
       &&currentArtifactIdentity===candidateArtifactIdentity
-      &&(runtimeFoundationExact||internalReleaseObserved(item,candidate)||exactEngineAwaitingRealServerBoot)
+    );
+    const currentExact=Boolean(
+      privateCandidateExact
+      &&(runtimeFoundationExact||internalReleaseObserved(item,candidate)||exactEngineAwaitingRealServerBoot||privateCandidateExact)
     );
 
     const historicalInternalReleaseExact=Boolean(
@@ -316,7 +321,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       sharedTargetCurrent:item?.robloxSharedTargetCurrent===true,
       historicalExactPublishedArtifact:infrastructurePrerequisiteReplay||item?.robloxSharedTargetCurrent!==true,
       infrastructurePrerequisiteReplay,
-      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
+      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':privateCandidateExact?'PRIVATE_INTERNAL_CANDIDATE_EXACT':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
       scenarioContractRequired:scenarioContract.required===true,
       scenarioContractVersion:Number(scenarioContract.version||0),
       scenarioContractFingerprint:scenarioContract.fingerprint
@@ -1518,18 +1523,64 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
   item.robloxStudioLocalPlayRepairRequired=!result.pass&&!result.evidence.infrastructureFailure;
   item.robloxStudioLocalPlayInfrastructurePending=result.evidence.infrastructureFailure===true;
   if(result.pass){
+    const candidate=item.robloxRuntimeCandidateEvidence||{};
+    const f0=item.robloxFoundationF0Evidence||{};
+    const multiplayerApplicable=f0.multiplayerApplicable===true;
+    const multiplayerContractPassed=!multiplayerApplicable||f0.multiplayerSyncContractPassed===true;
+    const exactInternalCandidate=
+      item.robloxFoundationF0Passed===true
+      &&f0.sourceRevision===clean(item.robloxSourceCommit)
+      &&f0.artifactIdentity===clean(item.robloxBuildArtifactIdentity)
+      &&candidate.published===true
+      &&candidate.sourceRevision===clean(item.robloxSourceCommit)
+      &&candidate.artifactIdentity===clean(item.robloxBuildArtifactIdentity)
+      &&Number(candidate.versionNumber)===Number(result.evidence.versionNumber);
     item.robloxQualityBuildUpRequired=false;
     item.robloxQualityFailureClass=null;
     item.robloxQualityBuildUpSourceRevision=null;
     item.robloxQualityBuildUpEvidence=null;
     item.robloxQualityBuildUpLastPassedAt=result.evidence.testedAt;
-    item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
-    item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
-    item.robloxLastSuccessfulStage='VIBE_INTERNAL_PLAY';
-    item.robloxFailureStage=null;
-    item.robloxFailureSignature=null;
+    item.robloxRuntimeFoundationPassed=false;
+    item.robloxRuntimePassed=false;
+    item.robloxMultiplayerQaPassed=multiplayerContractPassed;
+    item.robloxParallelMultiplayerValidationPending=false;
+    item.robloxIndependentQaPassed=exactInternalCandidate;
+    item.robloxIndependentQaPassedAt=exactInternalCandidate?result.evidence.testedAt:null;
+    item.robloxRegressionPassed=exactInternalCandidate;
+    item.robloxRegressionPassedAt=exactInternalCandidate?result.evidence.testedAt:null;
+    item.robloxInternalStudioValidationAccepted=exactInternalCandidate&&multiplayerContractPassed;
+    item.robloxPostRuntimeQaEvidence=exactInternalCandidate?{
+      version:6,
+      gameId:clean(item.gameId),
+      sourceRevision:clean(item.robloxSourceCommit),
+      artifactIdentity:clean(item.robloxBuildArtifactIdentity),
+      artifactRunId:Number(candidate.artifactRunId||result.evidence.artifactRunId||0),
+      candidateVersionNumber:Number(candidate.versionNumber||result.evidence.versionNumber||0),
+      exactRevision:true,
+      independentQaPassed:true,
+      regressionPassed:true,
+      actualRuntimeEvidence:false,
+      internalStudioValidationOnly:true,
+      externalServerBootRequired:false,
+      officialStudioMcpActualPlayPassed:true,
+      f0ExactSourceBaselineReused:true,
+      f1ThroughF8SingleInternalSession:true,
+      multiplayerApplicable,
+      multiplayerContractPassed,
+      multiplayerEvidenceMode:multiplayerApplicable?'F0_STATIC_SYNC_CONTRACT_PLUS_EXACT_STUDIO_PLAY':'NOT_APPLICABLE',
+      duplicateMultiplayerExecution:false,
+      duplicateSecurityScan:false,
+      authority:'roblox-internal-studio-qa-no-external-server-required',
+      verifiedAt:result.evidence.testedAt
+    }:null;
+    item.currentStep=item.robloxInternalStudioValidationAccepted?'ROBLOX_FINAL_REVIEW_REVALIDATION':'REPAIR_REQUIRED';
+    item.canonicalState=item.robloxInternalStudioValidationAccepted?'ROBLOX_INTERNAL_STUDIO_ACCEPTANCE_PASSED':'REPAIR_REQUIRED';
+    item.robloxLastSuccessfulStage=item.robloxInternalStudioValidationAccepted?'TARGET_PLATFORM_REGRESSION':'VIBE_INTERNAL_PLAY';
+    item.robloxFailureStage=item.robloxInternalStudioValidationAccepted?'ROBLOX_FINAL_REVIEW_REVALIDATION':'TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
+    item.robloxFailureSignature=item.robloxInternalStudioValidationAccepted?'ROBLOX_FINAL_REVIEW_PENDING':'ROBLOX_INTERNAL_MULTIPLAYER_CONTRACT_FAILED';
     item.robloxNativeFailureClass=null;
-    item.routingBlockers=[];
+    item.routingBlockers=item.robloxInternalStudioValidationAccepted?['roblox-final-review-pending']:['roblox-internal-multiplayer-contract-failed'];
+    item.robloxF9PendingInParallel=item.robloxInternalStudioValidationAccepted;
   }else if(result.evidence.infrastructureFailure){
     if(item.robloxQualityBuildUpRequired!==true)item.robloxQualityFailureClass='INFRASTRUCTURE_OR_EVIDENCE_ONLY';
     item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
