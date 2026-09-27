@@ -1664,3 +1664,33 @@ test('recovery-fast never expands one system repair into speculative worker vari
   assert.equal(reserved.matrix.length,2);
   assert.ok(reserved.matrix.every(row=>row.speculativeVariants===1));
 });
+
+
+test('asset production tasks use the dedicated asset-development lane and never consume game-primary reservation',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:256,tasks:[
+    {
+      id:'asset-visual',gameId:'asset-game',target:'roblox',department:'development',type:'implementation',
+      goal:'character motion and environment asset production',status:'queued',
+      sourceRoot:'roblox-games/asset-game',responsibleFiles:['client/Game.client.luau'],
+      assetProductionLane:true,evidence:['asset-production-parallel:v1','presentation-pass:LIVING_MOTION']
+    },
+    {
+      id:'game-logic',gameId:'logic-game',target:'roblox',department:'development',type:'implementation',
+      goal:'gameplay logic repair',status:'queued',
+      sourceRoot:'roblox-games/logic-game',responsibleFiles:['server/Game.server.luau']
+    }
+  ]});
+  const asset=queue.tasks.find(task=>task.id==='asset-visual');
+  const game=queue.tasks.find(task=>task.id==='game-logic');
+  assert.equal(asset.assetProductionLane,true);
+  assert.equal(asset.executionLane,'ASSET_DEVELOPMENT');
+  assert.equal(game.executionLane,'GAME_PRIMARY');
+
+  const assetBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:64,lane:'asset-development',reservation:{id:'asset:1',runId:'asset-run',runAttempt:1,reservedAt:'2026-09-27T08:30:00Z'}});
+  assert.deepEqual(assetBatch.tasks.map(task=>task.id),['asset-visual']);
+  assert.ok(assetBatch.tasks.every(task=>task.executionLane==='ASSET_DEVELOPMENT'));
+
+  const gameBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:256,lane:'game-primary',reservation:{id:'game:1',runId:'game-run',runAttempt:1,reservedAt:'2026-09-27T08:30:00Z'}});
+  assert.deepEqual(gameBatch.tasks.map(task=>task.id),['game-logic']);
+  assert.ok(gameBatch.tasks.every(task=>task.executionLane==='GAME_PRIMARY'));
+});
