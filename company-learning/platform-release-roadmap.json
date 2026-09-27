@@ -9858,6 +9858,54 @@
       "newWorkerAuthorityCreated": false,
       "gamePrimaryWorkerPolicyUnchanged": true,
       "qaSecurityReleaseGatesUnchanged": true
+    },
+    "menuVarietyImplementation20260927": {
+      "id": "MENU_VARIETY_IMPLEMENTATION_2026-09-27",
+      "authority": "OWNER_DIRECTIVE_2026-09-27",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "LET_VIBE_DESIGN_AND_IMPLEMENT_GAME_SPECIFIC_MENU_ARCHITECTURES_WITHOUT_CREATING_FAKE_GAMEPLAY_SYSTEMS_OR_BREAKING_EXISTING_STATE",
+      "designContract": {
+        "source": "tools/company-design-cycle.mjs#uxAccessibilityPlan.menuArchitecture",
+        "defaultPatterns": [
+          "MAIN_MENU",
+          "PAUSE",
+          "SETTINGS"
+        ],
+        "optionalPatterns": [
+          "INVENTORY",
+          "LOADOUT",
+          "SHOP",
+          "CRAFTING",
+          "QUEST",
+          "MAP",
+          "RESULTS",
+          "BUILD",
+          "RESEARCH",
+          "SOCIAL",
+          "DIALOG",
+          "CODEX",
+          "CUSTOM"
+        ],
+        "genreAndSystemFitRequired": true,
+        "identicalGenericPanelReplicationForbidden": true,
+        "unavailableGameplaySystemMayNotBeInventedForMenu": true
+      },
+      "implementationContract": {
+        "source": "tools/vibe2-source-worker.mjs#MENU_VARIETY_CONTRACT",
+        "reuseExistingMenuStateAndHandlers": true,
+        "preserveSaveProgressionNetworkAuthority": true,
+        "mobileTouchBackScrollSafeAreaRequired": true,
+        "directResponsibleUiFunctionModificationPreferred": true
+      },
+      "assetCoverage": {
+        "source": "assets/vibe-studio-asset-universe.js#DEFAULT_COVERAGE_BASELINES.UI",
+        "planner": "tools/vibe2-asset-production-plan.mjs",
+        "menuSpecificUiCoverage": true
+      },
+      "existingCanonicalQueuePreserved": true,
+      "newQueueOrPipelineCreated": false,
+      "gameplayBalanceChanged": false,
+      "saveSchemaChanged": false
     }
   },
   "vibeExecutionLaneContract": {
