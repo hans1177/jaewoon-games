@@ -1548,6 +1548,15 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.match(vibe24hRunner,/asset_development_queued == '0'[\s\S]*asset_development_active == '0'/);
   assert.match(vibeContinuousCore,/\n          - asset-development/);
   assert.match(vibeContinuousCore,/asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest'/);
+  const laneIsolation=roadmap.changeRecord.reusableCoreLaneConcurrencyIsolation20260927;
+  assert.equal(laneIsolation.fix.workflowCallLaneScope,'RUN_ID_PLUS_EXECUTION_LANE');
+  assert.equal(laneIsolation.fix.assetDevelopmentPreserved,true);
+  assert.equal(laneIsolation.cancelInProgressRemainsFalse,true);
+  assert.equal(architecture.neuralWorkGraphTopology.currentWaveExecution.mainPushGamePrimaryWake.workflowCallLaneRunsRunScoped,true);
+  assert.equal(logMap.mainPushWakeFreshnessEvidence.workflowCallInheritedPushEventMustRemainRunScoped,true);
+  assert.equal(logMap.reusableCoreLaneConcurrencyEvidence.requiresExplicitLaneEmptyForMainPushSingleton,true);
+  assert.match(vibeContinuousCore,/inputs\.execution_lane == '' && 'vibe2-main-push-game-primary-wake'/);
+  assert.match(vibeContinuousCore,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
 });
 
 test('external AI loss never stops independent Vibe development and resumes from the same checkpoint',()=>{
