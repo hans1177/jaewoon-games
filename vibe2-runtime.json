@@ -217,7 +217,11 @@
         "VIBE2_MAIN_PUSH_WAKE_LATEST_SHA",
         "VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED",
         "VIBE2_MAIN_PUSH_WAKE_FRESH"
-      ]
+      ],
+      "directMainPushOnly": true,
+      "explicitExecutionLaneBypassesMainPushSingleton": true,
+      "workflowCallLaneRunsRunScoped": true,
+      "workflowCallInheritedPushEventMustNotCoalesce": true
     },
     "directorGamePrimaryFallbackWake": {
       "enabled": true,
