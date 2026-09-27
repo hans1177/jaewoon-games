@@ -3,61 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1gv1922",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T03:06:24.217Z",
-      "expiresAt": "2026-09-27T03:51:24.217Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1tv0cct",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-unity-web-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T03:06:48.291Z",
-      "expiresAt": "2026-09-27T03:51:48.291Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-kpz814",
-      "worker": "vibe2",
-      "taskId": "village-dungeons-roblox-presentation-asset-adaptation-v1",
-      "gameId": "village-dungeons",
-      "files": [
-        "roblox-games/village-dungeons/client/Game.client.luau",
-        "roblox-games/village-dungeons/server/Game.server.luau",
-        "roblox-games/village-dungeons/shared/GameConfig.luau"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T03:06:55.237Z",
-      "expiresAt": "2026-09-27T03:51:55.237Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:village-dungeons-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-duni7y",
       "worker": "vibe2",
       "taskId": "SYS-ARCH-425305e25df9-v1",
@@ -275,6 +220,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:survival-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-a0k1wj",
+      "worker": "vibe2",
+      "taskId": "seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "files": [
+        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
+      "acquiredAt": "2026-09-27T03:54:02.456Z",
+      "expiresAt": "2026-09-27T04:39:02.456Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1"
       ]
     }
   ]
