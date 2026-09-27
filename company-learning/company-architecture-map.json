@@ -5943,7 +5943,7 @@
     }
   },
   "learningPreparationRunnerIsolation": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.learningPreparationRunnerIsolation20260927",
     "practiceCpuFallback": {
       "preparePracticeRunner": "ubuntu-slim",
@@ -5957,6 +5957,14 @@
     "selfHostedTrainingMoved": false,
     "gamePrimaryUbuntuLatestCapacityProtected": true,
     "heavyGameExecutionUnchanged": true,
-    "learningAuthorityUnchanged": true
+    "learningAuthorityUnchanged": true,
+    "workflowLevelConcurrencyRemoved": true,
+    "controlPlanePreparationBlockedByLocalTraining": false,
+    "localTrainingConcurrency": {
+      "practiceGroup": "vibe2-unity-practice-local-training",
+      "verifiedGroup": "vibe2-unity-verified-local-training",
+      "cancelInProgress": false
+    },
+    "localRunnerOfflineMayBlockOnlyLocalTraining": true
   }
 }
