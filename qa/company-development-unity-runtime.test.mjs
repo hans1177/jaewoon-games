@@ -217,6 +217,22 @@ test('checkpoint persistence is game-local and does not wait for cohort artifact
   assert.doesNotMatch(workflowSource,/CHECKPOINT_ROOT/);
 });
 
+
+test('Unity checkpoint persistence preserves farther exact Roblox shared progress for concurrent games',()=>{
+  assert.match(workflowSource,/const mergedUpdate=\{\.\.\.update\}/);
+  assert.match(workflowSource,/const concurrent=Array\.isArray\(item\.concurrentTargetPlatforms\)/);
+  assert.match(workflowSource,/const exactRobloxBuild=item\.robloxBuildOrPackagePassed===true/);
+  assert.match(workflowSource,/const exactRobloxCandidate=exactCandidate\.published===true/);
+  assert.match(workflowSource,/const robloxInternal=item\.robloxInternalReleaseReady===true/);
+  assert.match(workflowSource,/mergedUpdate\.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+  assert.match(workflowSource,/mergedUpdate\.canonicalState='F0_SOURCE_PREFLIGHT_PASSED'/);
+  assert.match(workflowSource,/mergedUpdate\.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION'/);
+  assert.match(workflowSource,/mergedUpdate\.canonicalState='PRIVATE_RUNTIME_CANDIDATE_DEPLOYED'/);
+  assert.match(workflowSource,/UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX=/);
+  assert.match(workflowSource,/Object\.assign\(item,mergedUpdate\)/);
+  assert.doesNotMatch(workflowSource,/Object\.assign\(item,update\)/);
+});
+
 test('Unity executor accepts exact game dispatch from the shared native orchestrator',()=>{
   assert.match(workflowSource,/workflow_dispatch:\s*\n\s*inputs:\s*\n\s*game_id:/);
   assert.match(workflowSource,/REQUESTED_GAME_ID: \$\{\{ inputs\.game_id \|\| '' \}\}/);
