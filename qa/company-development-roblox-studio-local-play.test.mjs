@@ -61,8 +61,18 @@ function item(){
     canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
     robloxSourceCommit:source,
     robloxBuildOrPackagePassed:true,
+    robloxBuildPreflightPassed:true,
     robloxBuildSourceRevision:source,
     robloxBuildArtifactIdentity:artifact,
+    robloxFoundationF0Passed:true,
+    robloxFoundationF0Evidence:{
+      pass:true,
+      sourceRevision:source,
+      artifactIdentity:artifact,
+      artifactRunId:777,
+      multiplayerApplicable:false,
+      multiplayerSyncContractPassed:true
+    },
     robloxSharedTargetCurrent:false,
     robloxRuntimeFoundationPassed:false,
     robloxInternalReleasePublished:true,
@@ -150,6 +160,18 @@ test('planner selects exact internally released artifact during parallel foundat
   assert.equal(result.include[0].historicalExactPublishedArtifact,true);
 });
 
+test('planner starts internal Studio validation from exact F0 private candidate without external server evidence',()=>{
+  const candidate=item();
+  candidate.robloxInternalReleasePublished=false;
+  candidate.robloxInternalReleaseEvidence={};
+  candidate.robloxRuntimeFoundationPassed=false;
+  candidate.robloxRuntimeFoundationEvidence=null;
+  const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
+  assert.equal(result.include.length,1);
+  assert.equal(result.include[0].actualPlayEligibility,'PRIVATE_INTERNAL_CANDIDATE_EXACT');
+  assert.equal(candidate.robloxRuntimeFoundationPassed,false);
+});
+
 test('planner selects exact runtime-foundation artifact before internal release',()=>{
   const candidate=item();
   candidate.robloxInternalReleasePublished=false;
@@ -216,6 +238,13 @@ test('exact engine preboot candidate persists Studio evidence without fabricatin
   assert.equal(applied.result.evidence.currentSourceArtifactBinding,true);
   assert.equal(applied.item.robloxRuntimeFoundationPassed,false);
   assert.equal(applied.item.robloxRuntimePassed,false);
+  assert.equal(applied.item.robloxInternalStudioValidationAccepted,true);
+  assert.equal(applied.item.robloxIndependentQaPassed,true);
+  assert.equal(applied.item.robloxRegressionPassed,true);
+  assert.equal(applied.item.robloxPostRuntimeQaEvidence.internalStudioValidationOnly,true);
+  assert.equal(applied.item.robloxPostRuntimeQaEvidence.externalServerBootRequired,false);
+  assert.equal(applied.item.robloxPostRuntimeQaEvidence.f1ThroughF8SingleInternalSession,true);
+  assert.equal(applied.item.robloxFailureSignature,'ROBLOX_FINAL_REVIEW_PENDING');
 });
 
 test('Studio evidence maps observed failures into Roblox-native failure classes',()=>{
@@ -252,15 +281,19 @@ test('central contract makes actual play evidence-gated and parallel to foundati
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const loop=central.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.internalBuildupLoop||{};
-  assert.equal(loop.actualVibePlayEligibility,'RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING');
+  assert.equal(loop.actualVibePlayEligibility,'EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_F0_EXACT_SOURCE_ARTIFACT_BINDING');
+  assert.equal(loop.actualVibePlayMayStartAfterF0PrivateCandidateBeforeRuntimeFoundation,true);
   assert.equal(loop.actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease,true);
+  assert.equal(loop.externalServerObservationPrerequisite,false);
   assert.equal(loop.actualVibePlayEligibilityMustNotDependOnExclusiveCurrentStep,true);
   assert.equal(loop.foundationOrFinalRevalidationMayRunParallelWithActualVibePlayAfterInternalRelease,true);
   assert.equal(loop.currentStepMayRepresentParallelRuntimeRevalidationWithoutRevokingInternalReleasePlayEligibility,true);
   assert.equal(loop.explicitDisabledGameRemainsIneligible,true);
   const arch=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup||{};
-  assert.equal(arch.actualPlayPlannerEligibility,'RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING');
+  assert.equal(arch.actualPlayPlannerEligibility,'EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_F0_EXACT_SOURCE_ARTIFACT_BINDING');
+  assert.equal(arch.actualPlayMayStartBeforeRuntimeFoundationPassAfterExactPrivateCandidate,true);
   assert.equal(arch.actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass,true);
+  assert.equal(arch.externalServerObservationPrerequisite,false);
   assert.equal(arch.actualPlayPlannerExclusiveCurrentStepGate,false);
   assert.equal(arch.parallelRuntimeFoundationAndFinalRevalidationAllowedAfterInternalRelease,true);
   assert.equal(arch.explicitDisabledGameEligible,false);
