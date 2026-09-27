@@ -6523,7 +6523,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-27T12:59:39.067Z",
+      "updatedAt": "2026-09-27T14:40:15.130Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -6677,7 +6677,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-open-cloud-engine-probe-transient-retry"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "456c47c090c1c88523338e8483d28c591d4034ef",
@@ -6904,7 +6904,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 2,
+      "robloxRuntimeRetryCount": 3,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -6921,7 +6921,7 @@
       "robloxInternalReleaseAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -7000,7 +7000,7 @@
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T11:53:55.865Z",
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T14:40:15.130Z",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": null,
       "unitySourceCommit": null,
@@ -11397,7 +11397,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T14:35:09.327Z",
+  "updatedAt": "2026-09-27T14:40:15.130Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
