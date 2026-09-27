@@ -78,7 +78,7 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.equal(directive.autonomousContentExpansion.version,2);
   assert.equal(directive.autonomousContentExpansion.executionBoundary,'EXISTING_BUILD_UP_ONLY');
   assert.equal(directive.autonomousContentExpansion.autonomousDecisionOwner,'VIBE');
-  assert.deepEqual([...directive.autonomousContentExpansion.platformScope],['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.deepEqual([...directive.autonomousContentExpansion.platformScope],['WEB','ROBLOX','UNITY']);
   assert.equal(directive.autonomousContentExpansion.existingCompletenessReview.requiredEveryBuildUp,true);
   assert.equal(directive.autonomousContentExpansion.antiCloneContract.nameColorOrStatOnlyCloneForbidden,true);
   assert.equal(directive.autonomousContentExpansion.continuityAndCausality.required,true);
