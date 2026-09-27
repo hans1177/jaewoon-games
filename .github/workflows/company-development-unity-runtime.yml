@@ -796,9 +796,37 @@ jobs:
           const robloxInternal=item.robloxInternalReleaseReady===true
             ||item.robloxInternalReleasePublished===true
             ||item.robloxInternalReleaseEvidence?.published===true;
+          const robloxFailureStage=String(item.robloxFailureStage||'').toUpperCase();
+          const robloxFailureSignature=String(item.robloxFailureSignature||'').trim();
+          const robloxCanonicalState=String(item.canonicalState||'').toUpperCase();
+          const robloxRoutingBlockers=Array.isArray(item.routingBlockers)?item.routingBlockers.map(value=>String(value||'')):[];
+          const robloxRepairWaitingEvidence=
+            robloxFailureSignature==='existing-source-studio-asset-binding-required'
+            ||robloxFailureSignature==='ROBLOX_BUILD_PACKAGE_PENDING'
+            ||robloxFailureSignature==='ROBLOX_RUNTIME_CANDIDATE_IDENTITY_MISMATCH'
+            ||robloxRoutingBlockers.some(value=>/^roblox-source-bootstrap:|^roblox-build-package-pending$|^roblox-runtime-candidate-identity-mismatch$|^roblox-ground-contact-failure/.test(value))
+            ||item.robloxQualityBuildUpRequired===true;
           const robloxRepairRequired=
-            String(item.canonicalState||'').toUpperCase()==='TARGET_PLATFORM_REPAIR_REQUIRED'
-            &&Boolean(String(item.robloxFailureStage||'').trim());
+            (robloxCanonicalState==='TARGET_PLATFORM_REPAIR_REQUIRED'&&Boolean(robloxFailureStage))
+            ||(robloxCanonicalState==='WAITING_TARGET_PLATFORM_VALIDATION'&&robloxRepairWaitingEvidence);
+          const robloxRepairResumeStep=
+            item.robloxQualityBuildUpRequired===true
+              ?String(item.currentStep||'REPAIR_REQUIRED')
+              :(
+                robloxFailureStage==='TARGET_PLATFORM_SOURCE_BIND'
+                ||robloxFailureSignature==='existing-source-studio-asset-binding-required'
+                ||robloxRoutingBlockers.some(value=>value.startsWith('roblox-source-bootstrap:'))
+              )
+                ?'TARGET_PLATFORM_SOURCE_BIND'
+                :(!exactRobloxBuild
+                  ||robloxFailureStage==='TARGET_PLATFORM_BUILD_OR_PACKAGE'
+                  ||robloxFailureSignature==='ROBLOX_BUILD_PACKAGE_PENDING'
+                  ||robloxRoutingBlockers.includes('roblox-build-package-pending'))
+                  ?'TARGET_PLATFORM_BUILD_OR_PACKAGE'
+                  :(robloxFailureSignature==='ROBLOX_RUNTIME_CANDIDATE_IDENTITY_MISMATCH'
+                    ||robloxRoutingBlockers.includes('roblox-runtime-candidate-identity-mismatch'))
+                    ?'PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
+                    :String(item.currentStep||robloxFailureStage||'TARGET_PLATFORM_TECHNICAL_VALIDATION');
           if(concurrent&&update.unityInternalReleaseReady!==true){
             if(robloxInternal){
               mergedUpdate.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
@@ -808,14 +836,14 @@ jobs:
               mergedUpdate.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
               mergedUpdate.canonicalState='PRIVATE_RUNTIME_CANDIDATE_DEPLOYED';
               console.log('UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX='+update.gameId+':TARGET_PLATFORM_RUNTIME_FOUNDATION');
+            }else if(robloxRepairRequired){
+              mergedUpdate.currentStep=robloxRepairResumeStep;
+              mergedUpdate.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED';
+              console.log('UNITY_SHARED_REPAIR_PRESERVED_FROM_ROBLOX='+update.gameId+':'+mergedUpdate.currentStep);
             }else if(exactRobloxBuild){
               mergedUpdate.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
               mergedUpdate.canonicalState='F0_SOURCE_PREFLIGHT_PASSED';
               console.log('UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX='+update.gameId+':PRIVATE_RUNTIME_CANDIDATE_DEPLOY');
-            }else if(robloxRepairRequired){
-              mergedUpdate.currentStep=String(item.currentStep||'TARGET_PLATFORM_TECHNICAL_VALIDATION');
-              mergedUpdate.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED';
-              console.log('UNITY_SHARED_REPAIR_PRESERVED_FROM_ROBLOX='+update.gameId+':'+mergedUpdate.currentStep);
             }
           }
           Object.assign(item,mergedUpdate);
