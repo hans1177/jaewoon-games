@@ -1,5 +1,5 @@
 {
-  "version": 460,
+  "version": 461,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -8563,7 +8563,16 @@
       "gamePrimaryGateRunner": "ubuntu-slim",
       "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
       "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
-      "runnerDrainEpochAdvancedToBypassLegacyPendingGroup": true
+      "runnerDrainEpochAdvancedToBypassLegacyPendingGroup": true,
+      "supersededStaleInProgressControlPlaneMayCancel": true,
+      "staleInProgressControlPlaneThresholdMinutes": 12,
+      "staleInProgressControlPlaneSafeWorkflows": [
+        ".github/workflows/director-supervisor.yml",
+        ".github/workflows/vibe2-merged-pr-provenance.yml",
+        ".github/workflows/company-dna-learning.yml"
+      ],
+      "sharedStateWriterInProgressMayCancel": false,
+      "gamePrimaryInProgressMayCancel": false
     },
     "vibe2CoreQaActiveCompletion20260927": {
       "id": "VIBE2_CORE_QA_ACTIVE_COMPLETION_2026-09-27",
