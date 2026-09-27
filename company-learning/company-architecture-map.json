@@ -1,5 +1,5 @@
 {
-  "version": 298,
+  "version": 299,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3870,7 +3870,7 @@
         "completedMcpSessionRuntimeFailureAction": "PERSIST_GAME_RUNTIME_EVIDENCE_WITHOUT_MCP_SESSION_RESTART",
         "runtimeFailureMustNotConsumeMcpRecoveryAttempts": true
       },
-      "actualPlayPlannerEligibility": "RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING",
+      "actualPlayPlannerEligibility": "EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_EXACT_SOURCE_ARTIFACT_BINDING",
       "actualPlayPlannerExclusiveCurrentStepGate": false,
       "parallelRuntimeFoundationAndFinalRevalidationAllowedAfterInternalRelease": true,
       "explicitDisabledGameEligible": false,
@@ -3884,12 +3884,12 @@
         "exactEngineExecutionMayNotSubstituteRealServerBoot": true,
         "studioMcpActualPlayEvidencePreservedWhilePending": true,
         "fakeRuntimeFoundationPromotionForbidden": true,
-        "observationRetry": "UNLIMITED_OBSERVATION",
+        "observationRetry": "OPTIONAL_DIAGNOSTIC_ONLY",
         "developmentBlocking": false,
         "internalQaBlocking": false,
         "internalRegressionBlocking": false,
         "internalReleaseBlocking": false,
-        "externalPublicReleaseBlocking": true,
+        "externalPublicReleaseBlocking": false,
         "internalReleaseUsesExplicitObservationDeferredEvidence": true,
         "runtimePassTruthRemainsFalseUntilRealServerBootEvidence": true,
         "exactPrivateRuntimeFailureInternalFlowBlocking": false,
@@ -3901,10 +3901,11 @@
         "playerAutomation": false,
         "publishedPlaceDirectStudioAutomation": false,
         "exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot": true,
-        "studioPlannerEligibility": "EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT",
+        "studioPlannerEligibility": "EXACT_PRIVATE_RUNTIME_CANDIDATE",
         "studioActualPlayMayNotSetRuntimeFoundationPass": true,
         "externalPublicReleaseRemainsBlockedUntilRealServerBoot": true,
-        "studioFollowupOwner": ".github/workflows/company-development-roblox-post-runtime-qa.yml"
+        "studioFollowupOwner": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+        "role": "OPTIONAL_DIAGNOSTIC_RUNTIME_TRUTH_ONLY"
       },
       "actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass": true,
       "continuesBeforeInternalRelease": true,
@@ -3912,7 +3913,8 @@
       "internalServerBootRequired": false,
       "f0ToF9ExecutionShape": "F0_ONCE__F1_TO_F8_ONE_STUDIO_SESSION__F9_FAN_IN_ONLY",
       "perFloorStudioRelaunchForbidden": true,
-      "f10Exists": false
+      "f10Exists": false,
+      "actualPlayMayStartBeforeRuntimeFoundationPassAfterExactPrivateCandidate": true
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
