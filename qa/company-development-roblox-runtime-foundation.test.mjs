@@ -294,6 +294,28 @@ test('Open Cloud engine probe matches the exact selected Studio material atoms i
  assert.match(body.script,/StudioAssets/);
 });
 
+test('Open Cloud engine probe matches the declared current Studio asset binding version',async()=>{
+ const responses=[
+  {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
+  {ok:true,status:200,body:{state:'COMPLETE'}},
+  {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED=true'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS=BAR_HEALTH,BUTTON_PRIMARY,FRAME_PANEL'},
+  ]}]}}
+ ];
+ const fetchImpl=async()=>{const row=responses.shift();return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};};
+ const r=await probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:2,
+  expectedStudioAssetBinding:{applied:true,bindingVersion:2,families:{UI:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH']}},
+ });
+ assert.equal(r.expectedStudioAssetBindingVersion,2);
+ assert.equal(r.studioAssetBindingVersion,2);
+ assert.equal(r.studioAssetSelectionMatched,true);
+});
+
 test('Open Cloud engine probe rejects a deployed Studio material selection mismatch',async()=>{
  const responses=[
   {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
@@ -372,7 +394,10 @@ test('post-runtime Open Cloud engine probes use bounded external API concurrency
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:2,candidates\.length\|\|1\)\)/);
  assert.match(workflow,/networkRetryAttempts:6,networkRetryDelayMs:1000/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_FAILURE=/);
+ assert.match(workflow,/probes\[index\]=probe/);
  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_PROBE_COUNT=/);
+ assert.match(workflow,/writeFileSync\('\/tmp\/roblox-open-cloud-engine-probes\.json'/);
  assert.doesNotMatch(workflow,/Promise\.all\(candidates\.map/);
 });
 

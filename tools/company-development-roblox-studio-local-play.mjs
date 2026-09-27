@@ -746,7 +746,7 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     'local function attr(inst,name) if not inst then return nil end;local ok,value=pcall(function() return inst:GetAttribute(name) end);if ok then return value end;return nil end',
     'local payload={',
     ' context='+JSON.stringify(context)+',',
-    ' player={present=p~=nil,characterPresent=p~=nil and p.Character~=nil,humanoidPresent=hum~=nil,rootPresent=root~=nil,rootX=root and root.Position.X or nil,rootY=root and root.Position.Y or nil,rootZ=root and root.Position.Z or nil,velocityX=root and root.AssemblyLinearVelocity.X or nil,velocityY=root and root.AssemblyLinearVelocity.Y or nil,velocityZ=root and root.AssemblyLinearVelocity.Z or nil,health=hum and hum.Health or nil,roundState=attr(p,"RoundState"),role=attr(p,"Role"),monsterPreference=attr(p,"MonsterPreference"),soloRole=attr(p,"SoloRole"),currentMap=attr(p,"CurrentMap"),currentMapEvent=attr(p,"CurrentMapEvent"),humanCount=attr(p,"HumanCount"),monsterCount=attr(p,"MonsterCount"),objectivesDone=attr(p,"ObjectivesDone"),objectivesTotal=attr(p,"ObjectivesTotal")},',
+    ' player={present=p~=nil,characterPresent=p~=nil and p.Character~=nil,humanoidPresent=hum~=nil,rootPresent=root~=nil,rootX=root and root.Position.X or nil,rootY=root and root.Position.Y or nil,rootZ=root and root.Position.Z or nil,velocityX=root and root.AssemblyLinearVelocity.X or nil,velocityY=root and root.AssemblyLinearVelocity.Y or nil,velocityZ=root and root.AssemblyLinearVelocity.Z or nil,health=hum and hum.Health or nil,roundState=attr(p,"RoundState"),role=attr(p,"Role"),monsterPreference=attr(p,"MonsterPreference"),soloRole=attr(p,"SoloRole"),feedbackEvent=attr(p,"FeedbackEvent"),currentMap=attr(p,"CurrentMap"),currentMapEvent=attr(p,"CurrentMapEvent"),humanCount=attr(p,"HumanCount"),monsterCount=attr(p,"MonsterCount"),objectivesDone=attr(p,"ObjectivesDone"),objectivesTotal=attr(p,"ObjectivesTotal")},',
     ' camera={present=camera~=nil,viewportX=viewport.X,viewportY=viewport.Y,fieldOfView=camera and camera.FieldOfView or nil},',
     ' ui=gui,',
     ' world={arenaPresent=arena~=nil,arenaPartCount=parts,proximityPromptCount=prompts},',
@@ -806,6 +806,9 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const actionPlayer=postActionClientProbe?.player||player;
   const displacement=pointDistance(preActionClientProbe?.player||{},actionPlayer);
   const velocity=Math.hypot(Number(actionPlayer.velocityX||0),Number(actionPlayer.velocityY||0),Number(actionPlayer.velocityZ||0));
+  const preActionFeedback=clean(preActionClientProbe?.player?.feedbackEvent);
+  const postActionFeedback=clean(actionPlayer?.feedbackEvent);
+  const primaryActionFeedbackChanged=Boolean(actionOk('ui-primary-action')&&postActionFeedback&&postActionFeedback!==preActionFeedback);
   const lightingBrightness=Number(client?.lighting?.brightness??server?.lighting?.brightness??0);
   const rows=[
     {id:'character-camera-ready',pass:player.characterPresent===true&&player.humanoidPresent===true&&player.rootPresent===true&&client?.camera?.present===true},
@@ -819,7 +822,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'interaction-surface-present',pass:Number(world.proximityPromptCount||0)>=Number(exp.minimumPromptCount||0)},
     {id:'world-geometry-present',pass:world.arenaPresent===true&&Number(world.arenaPartCount||0)>=Number(exp.minimumArenaParts||0)},
     {id:'primary-action-input',pass:!clean(contract.primaryActionButtonText)||actionOk('ui-primary-action')},
-    {id:'primary-action-effect',pass:!clean(contract.primaryActionButtonText)||displacement>=Number(exp.minimumPrimaryActionDisplacement||0.25)||velocity>=1},
+    {id:'primary-action-effect',pass:!clean(contract.primaryActionButtonText)||primaryActionFeedbackChanged||displacement>=Number(exp.minimumPrimaryActionDisplacement||0.25)||velocity>=1},
     {id:'visual-capture-sane',pass:before.pass&&after.pass&&lightingBrightness>=Number(exp.minimumLightingBrightness||0)}
   ];
   const scenarios=rows.filter(row=>requiredIds.size===0||requiredIds.has(row.id)).map(row=>({...row,required:true}));
@@ -828,7 +831,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const finalState=clean(player.roundState);
   const initialPop=Number(initialClientProbe?.workspace?.ActivePopulation||0);
   const finalPop=Number(ws.ActivePopulation||humanCount+monsterCount||0);
-  return{required:true,scenarios,qualityFailureKinds,authoritativeStateChangeObserved:Boolean((initialState&&finalState&&initialState!==finalState)||finalPop>initialPop),capture:{before,after},metrics:{primaryActionDisplacement:displacement,primaryActionVelocity:velocity}};
+  return{required:true,scenarios,qualityFailureKinds,authoritativeStateChangeObserved:Boolean(primaryActionFeedbackChanged||(initialState&&finalState&&initialState!==finalState)||finalPop>initialPop),capture:{before,after},metrics:{primaryActionDisplacement:displacement,primaryActionVelocity:velocity,primaryActionFeedbackChanged}};
 }
 
 class McpStdioClient{
@@ -1280,10 +1283,24 @@ export function createLocalStudioPlayEvidence({
     &&candidateMatchesExpected
     &&runtimeFoundationObserved(item,candidate)
   );
+  const runtimeFoundationEvidence=item?.robloxRuntimeFoundationEvidence||{};
+  const exactEngineVersionAwaitingRealServerBoot=Boolean(
+    currentSourceArtifactBinding
+    &&candidateMatchesExpected
+    &&item?.robloxRuntimeFoundationPassed!==true
+    &&clean(runtimeFoundationEvidence?.authority)==='exact-engine-version-awaiting-real-server-boot'
+    &&clean(runtimeFoundationEvidence?.sourceRevision)===sourceRevision
+    &&clean(runtimeFoundationEvidence?.artifactIdentity)===artifactIdentity
+    &&String(runtimeFoundationEvidence?.placeId||'')===placeId
+    &&Number(runtimeFoundationEvidence?.candidateVersionNumber||0)===versionNumber
+    &&runtimeFoundationEvidence?.engineExecuted===true
+    &&runtimeFoundationEvidence?.exactEngineVersion===true
+    &&runtimeFoundationEvidence?.serverBootObserved!==true
+  );
   const currentExactPublishedArtifact=Boolean(
     currentSourceArtifactBinding
     &&candidateMatchesExpected
-    &&(runtimeFoundationExact||internalReleaseObserved(item,candidate))
+    &&(runtimeFoundationExact||exactEngineVersionAwaitingRealServerBoot||internalReleaseObserved(item,candidate))
   );
   const historicalExactPublishedArtifact=Boolean(
     !currentSourceArtifactBinding
@@ -1404,7 +1421,7 @@ export function createLocalStudioPlayEvidence({
       infrastructureFailure,
       failureClass,
       robloxFailureClass,
-      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
+      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineVersionAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
       studioMcpServerEnablementRequired,
       operatorPrerequisite:studioMcpServerEnablementRequired?'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT':null,
       localPlaceFile:true,
@@ -1439,7 +1456,8 @@ export function createLocalStudioPlayEvidence({
         scenarioContractRequired,
         scenarioFailureCount:qualityFailureKinds.length,
         primaryActionDisplacement:Number(runtime?.metrics?.primaryActionDisplacement||0),
-        primaryActionVelocity:Number(runtime?.metrics?.primaryActionVelocity||0)
+        primaryActionVelocity:Number(runtime?.metrics?.primaryActionVelocity||0),
+        primaryActionFeedbackChanged:runtime?.metrics?.primaryActionFeedbackChanged===true
       },
       characterMotionRuntime:characterMotionRuntime?{
         required:characterMotionRequired,

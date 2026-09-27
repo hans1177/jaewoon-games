@@ -1,5 +1,5 @@
 {
-  "version": 273,
+  "version": 274,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6129,5 +6129,17 @@
     "runtimeTruthGateUnchanged": true,
     "studioMcpGateUnchanged": true,
     "publicReleaseGateUnchanged": true
+  },
+  "robloxExactEvidenceRaceRepair": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxExactEvidenceRaceRepair20260927",
+    "openCloudProbeFailureIsolation": "PER_CANDIDATE",
+    "successfulProbePersistence": true,
+    "persistentThrottleFailClosed": true,
+    "prebootStudioEvidencePersistence": "EXACT_SOURCE_ARTIFACT_PLACE_VERSION_ONLY",
+    "runtimeFoundationTruthGateUnchanged": true,
+    "publicReleaseGateUnchanged": true,
+    "studioAssetBindingVersionSource": "robloxStudioAssetBinding.bindingVersion",
+    "primaryActionEffectAuthority": "SERVER_FEEDBACK_TRANSITION_OR_OBSERVED_MOTION"
   }
 }

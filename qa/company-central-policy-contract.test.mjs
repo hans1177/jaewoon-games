@@ -1169,6 +1169,25 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:2,candidates\.length\|\|1\)\)/);
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.runtimeTruthGateUnchanged,true);
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.publicReleaseGateUnchanged,true);
+  const exactRepair=roadmap.changeRecord?.robloxExactEvidenceRaceRepair20260927;
+  assert.equal(exactRepair?.observedRunId,36296050875);
+  assert.equal(exactRepair?.observedGameId,'horror-escape-room');
+  assert.equal(exactRepair?.candidateVersionNumber,24);
+  assert.equal(exactRepair?.successfulProbeMustSurviveSiblingPersistentThrottle,true);
+  assert.equal(exactRepair?.persistentProbeFailureMustRemainCandidateFailClosed,true);
+  assert.equal(exactRepair?.exactEnginePrebootStudioEvidencePersistenceAllowed,true);
+  assert.equal(exactRepair?.exactEnginePrebootStudioEvidenceMaySetRuntimeFoundationPass,false);
+  assert.equal(exactRepair?.exactEnginePrebootStudioEvidenceMaySetPublicReleaseReady,false);
+  assert.equal(exactRepair?.studioAssetBindingVersionMustMatchDeclaredBindingVersion,true);
+  assert.equal(exactRepair?.primaryActionEffectMayUseAuthoritativeServerFeedbackTransition,true);
+  assert.equal(exactRepair?.sourceArtifactCandidateBindingMustRemainExact,true);
+  assert.equal(architecture.robloxExactEvidenceRaceRepair?.openCloudProbeFailureIsolation,'PER_CANDIDATE');
+  assert.equal(architecture.robloxExactEvidenceRaceRepair?.successfulProbePersistence,true);
+  assert.equal(architecture.robloxExactEvidenceRaceRepair?.persistentThrottleFailClosed,true);
+  assert.equal(architecture.robloxExactEvidenceRaceRepair?.runtimeFoundationTruthGateUnchanged,true);
+  assert.equal(architecture.robloxExactEvidenceRaceRepair?.publicReleaseGateUnchanged,true);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_FAILURE=/);
+  assert.match(workflow,/probes\[index\]=probe/);
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
 });
 

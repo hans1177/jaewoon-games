@@ -189,6 +189,35 @@ test('planner admits exact engine version while real server boot is pending with
   assert.equal(candidate.robloxInternalReleasePublished,false);
 });
 
+test('exact engine preboot candidate persists Studio evidence without fabricating runtime foundation pass',()=>{
+  const candidate=item();
+  candidate.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+  candidate.canonicalState='PRIVATE_RUNTIME_CANDIDATE_DEPLOYED';
+  candidate.robloxInternalReleasePublished=false;
+  candidate.robloxInternalReleaseEvidence={};
+  candidate.robloxRuntimeFoundationPassed=false;
+  candidate.robloxRuntimePassed=false;
+  candidate.robloxRuntimeFoundationEvidence={
+    authority:'exact-engine-version-awaiting-real-server-boot',
+    sourceRevision:source,
+    artifactIdentity:artifact,
+    placeId:'456',
+    candidateVersionNumber:9,
+    engineExecuted:true,
+    exactEngineVersion:true,
+    serverBootObserved:false
+  };
+  const applied=applyLocalStudioPlayResult({
+    queue:{items:[candidate]},gameId:'g1',runtime:runtime(),expected,workflowRunId:101,studioStepSucceeded:true,
+    testedAt:'2026-09-27T05:10:00.000Z'
+  });
+  assert.equal(applied.result.pass,true);
+  assert.equal(applied.result.evidence.actualPlayEligibility,'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT');
+  assert.equal(applied.result.evidence.currentSourceArtifactBinding,true);
+  assert.equal(applied.item.robloxRuntimeFoundationPassed,false);
+  assert.equal(applied.item.robloxRuntimePassed,false);
+});
+
 test('Studio evidence maps observed failures into Roblox-native failure classes',()=>{
   const candidate=item();
   const broken=runtime();
@@ -1157,6 +1186,25 @@ test('declared Studio actual-play contract requires core progression UI action e
   assert.equal(result.scenarios.every(row=>row.pass===true),true);
   assert.equal(result.authoritativeStateChangeObserved,true);
   assert.ok(result.metrics.primaryActionDisplacement>=2);
+});
+
+test('primary action effect accepts an authoritative server feedback transition even after dash velocity settles',()=>{
+  const contract={required:true,primaryActionButtonText:'대시',requiredScenarios:['primary-action-input','primary-action-effect'],expectations:{minimumPrimaryActionDisplacement:0.25}};
+  const result=evaluateStudioActualPlayContract({
+    contract,
+    preActionClientProbe:{player:{rootX:10,rootY:3,rootZ:10,velocityX:0,velocityY:0,velocityZ:0,feedbackEvent:'OLD'}},
+    postActionClientProbe:{player:{rootX:10,rootY:3,rootZ:10,velocityX:0,velocityY:0,velocityZ:0,feedbackEvent:'DASH:12345'}},
+    clientProbe:{player:{},ui:{},workspace:{},world:{},lighting:{}},
+    serverProbe:{},
+    actions:[{id:'ui-primary-action',type:'mcp-mouse-input',dispatched:true,ok:true}],
+    beforeImages:[],
+    afterImages:[]
+  });
+  assert.equal(result.scenarios.find(x=>x.id==='primary-action-input').pass,true);
+  assert.equal(result.scenarios.find(x=>x.id==='primary-action-effect').pass,true);
+  assert.equal(result.metrics.primaryActionFeedbackChanged,true);
+  assert.equal(result.authoritativeStateChangeObserved,true);
+  assert.match(helper,/feedbackEvent=attr\(p,"FeedbackEvent"\)/);
 });
 
 test('movement alone cannot pass a declared Studio actual-play scenario contract',()=>{
