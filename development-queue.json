@@ -2243,10 +2243,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-27T09:26:44.877Z",
+      "updatedAt": "2026-09-27T09:26:50.291Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2752,9 +2752,9 @@
         "independentQaPassed": false,
         "regressionPassed": false,
         "exactRevision": false,
-        "lastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-        "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-        "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING"
+        "lastSuccessfulStage": "CHEAP_PRECHECK",
+        "failureStage": "SINGLE_BUILD_OR_PACKAGE",
+        "failureSignature": "4dd87fcb9d4c2e66f74d3ddc1b220c1f00c7208c659e691ff13645f96d2079ad"
       },
       "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
       "failureCount": 1,
@@ -9289,7 +9289,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T09:26:44.877Z",
+  "updatedAt": "2026-09-27T09:26:52.192Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
