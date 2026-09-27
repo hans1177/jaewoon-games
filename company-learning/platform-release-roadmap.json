@@ -1,5 +1,5 @@
 {
-  "version": 482,
+  "version": 483,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -10026,6 +10026,18 @@
       "graphicsEvidence": "GROUNDING_MUST_SURVIVE_SOURCE_WORKER_TO_INCREMENTAL_QA_TO_FAN_IN",
       "robloxRuntimeSettlement": "F9_MUST_MATCH_EXACT_PROMOTED_SOURCE_ROOT_TREE_SHA",
       "sameGameStaleRuntimeProofMayNotPassNewerBuildUp": true,
+      "noNewWorkflowOrStage": true,
+      "gameplaySemanticsUnchanged": true
+    },
+    "buildUpUnityRuntimeClosure20260928": {
+      "status": "ACTIVE",
+      "scope": "EXISTING_UNITY_BUILD_UP_AND_RUNTIME_FLOW_ONLY",
+      "activePlatform": "UNITY",
+      "promotedSourceTreeShaRequired": true,
+      "incrementalApkBuildAndMainPromotionAloneInsufficient": true,
+      "runtimeIndependentQaRegressionRequired": true,
+      "exactSourceTreeMatchRequiredForVibeSettlement": true,
+      "sameGameStaleRuntimeProofMayNotSettle": true,
       "noNewWorkflowOrStage": true,
       "gameplaySemanticsUnchanged": true
     }
@@ -20278,7 +20290,15 @@
         "runtimePassWithoutExactBuildUpSourceIdentityCannotSettleTask": true
       },
       "gameplaySemanticsPreservationRequired": true,
-      "newWorkflowOrShadowPipelineForbidden": true
+      "newWorkflowOrShadowPipelineForbidden": true,
+      "unity": {
+        "finalRuntimeAuthority": "UNITY_EXACT_APK_RUNTIME_INDEPENDENT_QA_REGRESSION",
+        "waitingTaskMustRecordPromotedSourceTreeSha": true,
+        "runtimeSettlementMustMatchWaitingSourceTreeSha": true,
+        "sameGameDifferentSourceMayNotSettle": true,
+        "incrementalApkBuildAndMainPromotionAloneMayNotSettleBuildUpTask": true,
+        "runtimePassIndependentQaAndRegressionRequiredBeforeVibePass": true
+      }
     }
   },
   "weatherPresentationContract": {
