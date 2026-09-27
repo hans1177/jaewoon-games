@@ -253,6 +253,30 @@ function bindSaveContract(item,roadmap={}){
   item.saveVersioningContract=clean(save.canonicalWebModule)||'assets/save-versioning.js';
   item.saveRestoreEvidenceContract=clean(save.webRestoreEvidenceEvaluator)||'tools/company-web-save-restore-evidence.mjs';
 }
+function bindNativeValidationApplicability(item,design={}){
+  const content=design?.record?.content&&typeof design.record.content==='object'?design.record.content:{};
+  const multiplayerMode=upper(content.multiplayerMode||content.robloxBuildProfile?.playMode||'');
+  const singlePlayer=multiplayerMode==='SINGLE'||/^SINGLE(?:_|-|\s|$)/.test(multiplayerMode);
+  const profiles=content.platformProfiles&&typeof content.platformProfiles==='object'?content.platformProfiles:{};
+  const platformApplicability={};
+  for(const platform of DIRECT_PLATFORMS){
+    const profile=profiles[platform]||{};
+    const saveText=clean(profile.saveAndNetwork);
+    const explicitNoSave=/(?:\bno\s+save\b|\bstateless\b|without\s+(?:persistent\s+)?save|저장\s*(?:없|안\s*함|하지\s*않))/i.test(saveText);
+    platformApplicability[platform]={
+      multiplayerMode:multiplayerMode||null,
+      multiplayerRequired:!singlePlayer,
+      saveRequired:!explicitNoSave,
+      applicabilityAuthority:design.file||null
+    };
+  }
+  item.nativeValidationApplicability={
+    version:1,
+    source:design.file||null,
+    multiplayerMode:multiplayerMode||null,
+    platforms:platformApplicability
+  };
+}
 function normalizeItem(oldItem,{game,seed,design,roadmap,dedicatedRegistry,stamp}){
   const gameId=clean(game.id);
   const selected=resolveSelectedPlatform(seed,game,oldItem)||'ROBLOX';
@@ -264,8 +288,12 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,dedicatedRegistry,stamp
     gameId,
     seedId:item.seedId||seed?.seedId||null,
     gameName:item.gameName||seed?.gameName||game?.name||gameId,
-    productionClass:'DEVELOPMENT_CONFIRMED',
-    productionClassSource:'MINIMUM_DUAL_PLATFORM_DESIGN_READY',
+    productionClass:(
+      upper(game?.productionClass)==='RELEASE_CONFIRMED'
+      ||upper(seed?.productionClass)==='RELEASE_CONFIRMED'
+      ||upper(oldItem?.productionClass)==='RELEASE_CONFIRMED'
+    )?'RELEASE_CONFIRMED':'DEVELOPMENT_CONFIRMED',
+    productionClassSource:'MINIMUM_DUAL_PLATFORM_DESIGN_READY_RELEASE_STATE_PRESERVED',
     lifecycleState:upper(game?.lifecycleState||'ACTIVE'),
     status:['ACTIVE','PENDING'].includes(upper(item.status))?upper(item.status):'ACTIVE',
     selectedPlatform:selected,
@@ -301,6 +329,7 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,dedicatedRegistry,stamp
   });
   removeLegacy(item);
   bindSaveContract(item,roadmap);
+  bindNativeValidationApplicability(item,design);
   restoreDedicatedTargetIdentity(item,{registry:dedicatedRegistry,gameId,stamp});
   const internalEvidence=item?.robloxInternalReleaseEvidence?.published===true
     ?item.robloxInternalReleaseEvidence
@@ -367,8 +396,8 @@ export function reconcileDevelopmentQueue({root='.'}={}){
     const lifecycle=upper(game?.lifecycleState||'ACTIVE');
     const seed=seeds.get(gameId)||null;
     const seedActive=Boolean(seed)&&ACTIVE_SEED_STATUS.has(upper(seed?.status));
-    const seedConfirmed=upper(seed?.productionClass)==='DEVELOPMENT_CONFIRMED';
-    const catalogConfirmed=upper(game?.productionClass)==='DEVELOPMENT_CONFIRMED';
+    const seedConfirmed=['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(upper(seed?.productionClass));
+    const catalogConfirmed=['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(upper(game?.productionClass));
     const lifecycleActive=ACTIVE_LIFECYCLE.has(lifecycle);
     const design=latestMinimumDesign(root,gameId);
 
