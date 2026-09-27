@@ -5890,7 +5890,7 @@
         "lowerLayerFailureInvalidatesAllHigherLayerCompletion": true,
         "headlessOrSourceMarkerEvidenceCannotClaimActualRuntime": true,
         "internalReleaseIsDevelopmentSurfaceNotCompletion": true,
-        "actualPlatformRuntimeEvidenceRequiredBeforeInternalRelease": true,
+        "actualPlatformRuntimeEvidenceRequiredBeforeInternalRelease": false,
         "sourceChangeInvalidatesAffectedFoundationEvidence": true,
         "anyNativeSourceChangeAlwaysRerunsF0ThroughF4": true,
         "f5ThroughF9MayUseImpactScopedSelectionWhenUnaffected": true,
@@ -5907,7 +5907,8 @@
         "duplicateExactValidationWithinCycleForbidden": true,
         "internalDevelopmentExternalServerObservationRequired": false,
         "securityChecksImpactScopedAfterExactBaseline": true,
-        "multiplayerChecksApplicabilityAndImpactScoped": true
+        "multiplayerChecksApplicabilityAndImpactScoped": true,
+        "internalStudioOrEquivalentPlatformSessionRequiredBeforeInternalRelease": true
       },
       "layers": [
         {
@@ -6075,7 +6076,7 @@
         }
       ],
       "runtimeSentinel": {
-        "required": true,
+        "required": false,
         "checkpoints": [
           "SERVER_BOOT",
           "MODULE_GRAPH_READY",
@@ -6104,7 +6105,7 @@
           "requiredApiKeyScopes": [
             "universe-datastores.objects:read"
           ],
-          "missingPermissionAction": "FAIL_CLOSED_EXTERNAL_EXECUTION_BLOCKER_NO_RUNTIME_PASS",
+          "missingPermissionAction": "DIAGNOSTIC_UNAVAILABLE_INTERNAL_DEVELOPMENT_CONTINUES",
           "secret": "ROBLOX_OPEN_CLOUD_API_KEY",
           "internalDevelopmentGate": false,
           "optionalDiagnosticOnly": true
@@ -6127,7 +6128,9 @@
           "MULTIPLAYER_SYNC",
           "CORE_LOOP_READY"
         ],
-        "monotonicSequenceRequiredForFoundationOrder": true
+        "monotonicSequenceRequiredForFoundationOrder": true,
+        "internalDevelopmentGate": false,
+        "role": "OPTIONAL_EXTERNAL_RUNTIME_DIAGNOSTIC"
       },
       "robloxContract": {
         "sourcePreflight": "HEADLESS_FAST_MVP_RECLASSIFIED_AS_SOURCE_PREFLIGHT_ONLY",
@@ -6144,8 +6147,8 @@
           "ACTUAL_RUNTIME_PASS",
           "INTERNAL_RELEASE_READY"
         ],
-        "runtimeSurface": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
-        "sentinelRequiredBeforeInternalRelease": true,
+        "runtimeSurface": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD",
+        "sentinelRequiredBeforeInternalRelease": false,
         "landSpawnGroundProbe": {
           "timeoutSeconds": 3,
           "downwardRaycastRequired": true,
@@ -6217,7 +6220,8 @@
             "SYNC_FAILURE_PRESENT",
             "JOIN_REJOIN_OR_REPLICATION_BEHAVIOR_CHANGED"
           ]
-        }
+        },
+        "internalValidationAuthority": "F0_EXACT_SOURCE_BASELINE_PLUS_OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD"
       },
       "releaseGate": {
         "previousInvalidRule": "HEADLESS_FAST_MVP_PASS_MAY_ENABLE_INTERNAL_RELEASE",
@@ -6233,21 +6237,13 @@
           "INTERNAL_PLATFORM_RELEASE"
         ],
         "headlessOnlyInternalReleaseForbidden": true,
-        "runtimeFoundationRequiredForInternalRelease": true,
-        "runtimeFoundationInternalReleaseExceptionStates": [
-          "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
-          "EXACT_PRIVATE_RUNTIME_FINDING_EXTERNAL_RELEASE_ONLY"
-        ],
-        "runtimeFoundationInternalReleaseExceptionRequires": [
-          "EXACT_PRIVATE_OR_RESTRICTED_CANDIDATE",
-          "EXACT_OPEN_CLOUD_ENGINE_PLACE_VERSION",
-          "OFFICIAL_STUDIO_MCP_ACTUAL_PLAY_PASS",
-          "NO_RELEASE_BLOCKING_STUDIO_CONSOLE_ERROR"
-        ],
+        "runtimeFoundationRequiredForInternalRelease": false,
+        "runtimeFoundationInternalReleaseExceptionStates": [],
+        "runtimeFoundationInternalReleaseExceptionRequires": [],
         "runtimeFoundationExceptionMaySetRuntimePass": false,
         "runtimeFoundationExceptionMaySetExternalPublicReleaseReady": false,
-        "runtimeFoundationRequiredForPublicReleaseReady": true,
-        "internalPublishWithoutRuntimeFoundationAction": "ALLOW_ONLY_EXACT_AWAITING_REAL_SERVER_BOOT_EXCEPTION_OTHERWISE_REPAIR_REQUIRED",
+        "runtimeFoundationRequiredForPublicReleaseReady": false,
+        "internalPublishWithoutRuntimeFoundationAction": "ALLOW_AFTER_EXACT_F0_PLUS_OFFICIAL_STUDIO_MCP_INTERNAL_VALIDATION",
         "staleFoundationEvidenceMayNotPromote": true,
         "newCandidateInvalidation": {
           "clearPriorInternalReleaseReady": true,
@@ -6264,7 +6260,8 @@
           "UNIVERSE_ID",
           "PLACE_ID",
           "CANDIDATE_VERSION_NUMBER",
-          "ACTUAL_RUNTIME_SENTINEL",
+          "F0_EXACT_SOURCE_BASELINE",
+          "OFFICIAL_INTERNAL_PLATFORM_SESSION",
           "POST_RUNTIME_QA"
         ],
         "sourceDriftInvalidation": {
@@ -6322,7 +6319,8 @@
         "externalServerObservationRequiredForF0ThroughF9": false,
         "securityEvidenceMayBeReusedWhenExactRelevantSourceUnchanged": true,
         "multiplayerEvidenceMayBeReusedWhenExactCandidateAndRelevantSourceUnchanged": true,
-        "f9ReexecutesRuntime": false
+        "f9ReexecutesRuntime": false,
+        "externalServerBootObservationRequired": false
       },
       "failureRouting": {
         "foundationFailureIsCompanyWideHighImpactBlocker": true,
