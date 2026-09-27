@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g1-738d61ad0c35",
-  "directiveFingerprint": "738d61ad0c359a346bdb993d79f42a51ed3e52faf53a509cb65ed07aee504115",
-  "previousDirectiveFingerprint": "faf59f56ea71e7d3084a4300102d4b061298b1ec03f885649f73f72c086abaab",
-  "forbiddenRepeatFingerprint": "faf59f56ea71e7d3084a4300102d4b061298b1ec03f885649f73f72c086abaab",
+  "directiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g1-3a8f05c4738f",
+  "directiveFingerprint": "3a8f05c4738f09a7cb0ba5e8ab2faf64fb3d62f0fc97cb864aa90ba166802b45",
+  "previousDirectiveFingerprint": "3a3351eb9a4516d2bbfded309bac9bb72d6a3a19a69bdbaa338e3bda79558669",
+  "forbiddenRepeatFingerprint": "3a3351eb9a4516d2bbfded309bac9bb72d6a3a19a69bdbaa338e3bda79558669",
   "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
   "gameName": "잃어버린 별의 메아리",
   "generation": 1,
@@ -11,9 +11,9 @@
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
   "previousDirectiveOutcome": "cancelled",
-  "platform": "WEB",
-  "sourceRoot": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star",
-  "sourceTreeFingerprint": "38cc8e7e94725cb7f1de60f4667a67387ad27a398ad9ffdf8f177b07197e7be0",
+  "platform": "ROBLOX",
+  "sourceRoot": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+  "sourceTreeFingerprint": "9292f3bc2602a07e643b05c4727aa34a5cd3e25920ed6f1fd8243636d1be3899",
   "designFingerprint": "f82191ecfbaafd23f36b80b618d3a6262e90d6bf333e105b4a488bcbb0ac84eb",
   "gameIdentityAndNonNegotiables": {
     "identity": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.",
@@ -48,205 +48,186 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=6",
-      "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
-      "VFX_IMPLEMENTATION_SPARSE",
-      "PERFORMANCE_BUDGET_SPARSE"
+      "CURRENT_SOURCE_FILES=4",
+      "MOTION_IMPLEMENTATION_SPARSE",
+      "SETTINGS_ACCESSIBILITY_SPARSE"
     ],
     "signals": {
-      "combat": 12,
-      "progression": 24,
-      "ai": 18,
-      "save": 25,
-      "multiplayer": 0,
-      "animation": 2,
-      "vfx": 0,
-      "camera": 8,
-      "ui": 5,
-      "uiFlow": 5,
-      "input": 7,
-      "map": 14,
-      "landmark": 4,
-      "interaction": 3,
+      "combat": 54,
+      "progression": 41,
+      "ai": 2,
+      "save": 15,
+      "multiplayer": 11,
+      "animation": 1,
+      "vfx": 4,
+      "camera": 6,
+      "ui": 28,
+      "uiFlow": 10,
+      "input": 17,
+      "map": 3,
+      "landmark": 2,
+      "interaction": 6,
       "inventory": 0,
-      "equipment": 10,
-      "settings": 12,
-      "feedback": 5,
-      "session": 10,
-      "content": 14,
-      "choice": 41,
+      "equipment": 0,
+      "settings": 0,
+      "feedback": 1,
+      "session": 8,
+      "content": 38,
+      "choice": 1,
       "connection": 0,
-      "performance": 0,
-      "lighting": 6,
-      "primitive": 13,
+      "performance": 5,
+      "lighting": 1,
+      "primitive": 0,
       "todo": 0,
-      "errorRecovery": 0
+      "errorRecovery": 8
     },
     "topFiles": [
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "score": 80
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "score": 190
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "score": 60
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
+        "score": 48
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Art/unity-web-floor-domain.json",
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "score": 39
+      },
+      {
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/default.project.json",
         "score": 2
-      },
-      {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Animations/unity-web-floor-domain.json",
-        "score": 0
-      },
-      {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Materials/unity-web-floor-domain.json",
-        "score": 0
-      },
-      {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Prefabs/unity-web-floor-domain.json",
-        "score": 0
       }
     ],
     "sourceAnchors": [
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 141,
-        "kind": "METHOD",
-        "symbol": "LoadState",
-        "context": "private void LoadState()",
-        "score": 80
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "line": 90,
+        "kind": "FUNCTION",
+        "symbol": "render",
+        "context": "local function render()",
+        "score": 106
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 16,
-        "kind": "METHOD",
-        "symbol": "BuildWeb",
-        "context": "public static void BuildWeb()",
-        "score": 72
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 36,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler1",
+        "context": "local function scopeHandler1(player)",
+        "score": 98
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 33,
-        "kind": "METHOD",
-        "symbol": "Build",
-        "context": "public static void Build()",
-        "score": 72
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 45,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler2",
+        "context": "local function scopeHandler2(player)",
+        "score": 98
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 149,
-        "kind": "METHOD",
-        "symbol": "LogState",
-        "context": "private void LogState()",
-        "score": 56
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 61,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler3",
+        "context": "local function scopeHandler3(player)",
+        "score": 98
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 38,
-        "kind": "METHOD",
-        "symbol": "BuildWorld",
-        "context": "private void BuildWorld()",
-        "score": 48
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 77,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler4",
+        "context": "local function scopeHandler4(player)",
+        "score": 98
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 108,
-        "kind": "METHOD",
-        "symbol": "StartGameplay",
-        "context": "private void StartGameplay()",
-        "score": 48
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 93,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler5",
+        "context": "local function scopeHandler5(player)",
+        "score": 98
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 11,
-        "kind": "CLASS",
-        "symbol": "UnityWebFloorBuild",
-        "context": "public static class UnityWebFloorBuild",
-        "score": 36
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 109,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler6",
+        "context": "local function scopeHandler6(player)",
+        "score": 98
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 84,
-        "kind": "METHOD",
-        "symbol": "Update",
-        "context": "private void Update()",
-        "score": 32
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "line": 109,
+        "kind": "FUNCTION",
+        "symbol": "reportNativeFoundationReady",
+        "context": "local function reportNativeFoundationReady()",
+        "score": 82
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 134,
-        "kind": "METHOD",
-        "symbol": "SafeReturn",
-        "context": "private void SafeReturn()",
-        "score": 32
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 26,
+        "kind": "FUNCTION",
+        "symbol": "initializePlayer",
+        "context": "local function initializePlayer(player)",
+        "score": 74
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 154,
-        "kind": "METHOD",
-        "symbol": "OnGUI",
-        "context": "private void OnGUI()",
-        "score": 32
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 192,
+        "kind": "FUNCTION",
+        "symbol": "bindNativeFoundationPlayer",
+        "context": "local function bindNativeFoundationPlayer(player)",
+        "score": 66
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 3,
-        "kind": "CLASS",
-        "symbol": "UnityWebFloorGame",
-        "context": "public sealed class UnityWebFloorGame : MonoBehaviour",
-        "score": 28
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "line": 14,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAssetAtom",
+        "context": "local function hasStudioAssetAtom(atom)",
+        "score": 50
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 54,
-        "kind": "METHOD",
-        "symbol": "EnsureScene",
-        "context": "private static void EnsureScene()",
-        "score": 24
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 17,
+        "kind": "FUNCTION",
+        "symbol": "readNumber",
+        "context": "local function readNumber(player, name, fallback)",
+        "score": 42
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
         "line": 22,
-        "kind": "METHOD",
-        "symbol": "Awake",
-        "context": "private void Awake()",
-        "score": 24
+        "kind": "FUNCTION",
+        "symbol": "setNumber",
+        "context": "local function setNumber(player, name, value)",
+        "score": 42
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 115,
-        "kind": "METHOD",
-        "symbol": "PerformAction",
-        "context": "private void PerformAction(bool mobile)",
-        "score": 24
-      },
-      {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 7,
-        "kind": "STATE",
-        "symbol": "STATE:SURVIVAL",
-        "context": "private const string Mode = \"SURVIVAL\";",
-        "score": 18
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 183,
+        "kind": "FUNCTION",
+        "symbol": "bindNativeFoundationCharacter",
+        "context": "local function bindNativeFoundationCharacter(character)",
+        "score": 34
       }
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-    "previousFocus": "USABILITY",
+    "previousGoal": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+    "previousFocus": "STABILITY",
     "previousGeneration": null,
-    "previousSourceTreeFingerprint": "38cc8e7e94725cb7f1de60f4667a67387ad27a398ad9ffdf8f177b07197e7be0",
-    "currentSourceTreeFingerprint": "38cc8e7e94725cb7f1de60f4667a67387ad27a398ad9ffdf8f177b07197e7be0",
-    "sourceChanged": false,
+    "previousSourceTreeFingerprint": "80e3ccaa27836afe50e6638cf3dd512aed0206aaf2725b211f69d3c265c98e3b",
+    "currentSourceTreeFingerprint": "9292f3bc2602a07e643b05c4727aa34a5cd3e25920ed6f1fd8243636d1be3899",
+    "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
-    "failureStage": "SINGLE_BUILD_OR_PACKAGE",
-    "failureSignature": "4dd87fcb9d4c2e66f74d3ddc1b220c1f00c7208c659e691ff13645f96d2079ad",
-    "blockers": [
-      "roblox-runtime-foundation-awaiting-observation"
-    ],
-    "runtimeObserved": true,
+    "failureStage": "",
+    "failureSignature": "",
+    "blockers": [],
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -269,8 +250,8 @@
     },
     {
       "domain": "PLAYER_AGENCY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "ANTI_GRIND",
@@ -334,18 +315,18 @@
     },
     {
       "domain": "WORLD_MAP_TOPOLOGY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "MAP_EXPANSION",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "REGIONS",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "WORLD_DENSITY",
@@ -389,8 +370,8 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "CRAFTING",
@@ -429,13 +410,13 @@
     },
     {
       "domain": "RECONNECT_RECOVERY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MULTIPLAYER_AND_SYNC",
-      "state": "NOT_APPLICABLE",
-      "reason": "approved design and current source do not require multiplayer"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "INPUT",
@@ -454,8 +435,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "MENU_FLOW",
@@ -474,13 +455,13 @@
     },
     {
       "domain": "UI_INFORMATION_PRIORITY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "FEEDBACK_CLARITY",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "TUTORIAL_ONBOARDING",
@@ -524,13 +505,13 @@
     },
     {
       "domain": "CHARACTER_VISUALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "ENEMY_VISUALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "WEAPONS_AND_EQUIPMENT",
@@ -544,18 +525,18 @@
     },
     {
       "domain": "ENVIRONMENT",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "TERRAIN",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MATERIALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "PALETTE",
@@ -569,18 +550,18 @@
     },
     {
       "domain": "ANIMATION",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "SECONDARY_MOTION",
-      "state": "PASS",
-      "reason": "current source and approved design provide sufficient implementation signal"
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "VFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CAMERA",
@@ -604,23 +585,23 @@
     },
     {
       "domain": "PERFORMANCE",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "RUNTIME_STABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "ERROR_RECOVERY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     }
   ],
   "allDomainImplementationDirectives": [
@@ -653,8 +634,8 @@
     },
     {
       "domain": "PLAYER_AGENCY",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "핵심 루프에서 최소 두 개 이상의 의미 있는 선택축을 유지하고 하나의 정답 버튼 반복보다 상황·자원·위험에 따라 선택이 달라지게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -699,7 +680,7 @@
     {
       "domain": "GOALS",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "현재 목표·다음 목표·실패 조건을 플레이 중 확인 가능하게 하고, 목표가 메아리 공명 시스템와 직접 연결되어 플레이어가 왜 행동하는지 분명하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -770,8 +751,8 @@
     },
     {
       "domain": "WORLD_MAP_TOPOLOGY",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "월드 구조는 시작점·안전/위험 구역·주요 동선·우회 경로·보상 지점·잠금/해금 연결을 읽을 수 있게 하고 막다른 빈 공간을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -779,8 +760,8 @@
     },
     {
       "domain": "MAP_EXPANSION",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "맵 확장은 면적만 늘리지 말고 새 지역 역할, 연결 경로, 잠금/해금, 랜드마크, 자원·적·이벤트 차이와 기존 지역으로 돌아올 이유를 함께 설계한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -788,8 +769,8 @@
     },
     {
       "domain": "REGIONS",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "지역마다 지형, 적/상호작용, 자원, 위험, 조명/색, 이동 방식 중 여러 축이 달라 실제 플레이 역할이 구별되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -807,7 +788,7 @@
     {
       "domain": "WORLD_NAVIGATION",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "지도/미니맵/방향 표식/랜드마크/목표 추적 중 게임에 맞는 수단으로 현재 위치·목적지·잠금 경로를 읽게 하며 모바일에서도 길을 잃는 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -825,7 +806,7 @@
     {
       "domain": "TRAVERSAL",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "이동은 속도만이 아니라 지형·장애물·경로 선택·위험 회피와 연결하고 모바일 입력에서 의도한 방향/행동이 안정적으로 유지되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -834,7 +815,7 @@
     {
       "domain": "INTERACTION_DISCOVERABILITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "줍기·열기·대화·제작·장착·구매·사용 가능한 대상은 접근 전후에 형태/프롬프트/상태 피드백으로 구별되고 상호작용 실패 이유도 즉시 보이게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -869,8 +850,8 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -915,7 +896,7 @@
     {
       "domain": "FAILURE_RESPAWN_CHECKPOINTS",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "사망/실패/런 종료 시 손실·보존·체크포인트·리스폰 위치·재시작 시간을 명확히 하고 실패 후 다시 핵심 재미로 돌아가는 시간을 최소화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -924,7 +905,7 @@
     {
       "domain": "SAVE_AND_RECOVERY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "세이브는 기존 키/의미를 보존하면서 진행·장비·해금 등 승인된 상태가 재접속 후 정확히 복구되고 중간 실패 시 안전한 fallback을 갖게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -941,8 +922,8 @@
     },
     {
       "domain": "RECONNECT_RECOVERY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "재접속/late join/일시 네트워크 실패 시 권위 상태를 다시 동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 안전한 복구 경로를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -950,17 +931,17 @@
     },
     {
       "domain": "MULTIPLAYER_AND_SYNC",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 approved design and current source do not require multiplayer. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "멀티가 적용되는 게임이면 authoritative state, 참가/이탈, 핵심 행동 동기화, 재접속/late join, 승패/보상 일관성을 실제 2인 이상 흐름에 맞춘다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "INPUT",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 행동마다 터치 우선 입력과 키보드/패드 대체 입력을 동일 게임 상태에 연결하고 중복 입력·길게 누름·드래그·취소 경계를 명확히 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -969,7 +950,7 @@
     {
       "domain": "MOBILE_UX",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "작은 화면에서 핵심 HUD·조작·위험 경고·선택지가 손가락과 겹치지 않게 하고 safe area, 스크롤, 팝업 닫기, 가로/세로 대응을 실제 플레이 기준으로 정리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -978,7 +959,7 @@
     {
       "domain": "ACCESSIBILITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "색만으로 상태를 구분하지 않고 형태/아이콘/텍스트/모션을 함께 쓰며, 중요한 피드백은 크기·대비·지속시간을 확보해 정보 누락을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -986,8 +967,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -996,7 +977,7 @@
     {
       "domain": "MENU_FLOW",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리·장비·제작·상점·퀘스트·설정 등 존재하는 메뉴 사이 전환, 뒤로가기, 닫기, 팝업 중첩, 스크롤, 선택 유지가 모바일에서 예측 가능하게 동작하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1005,7 +986,7 @@
     {
       "domain": "CONVENIENCE",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "반복 조작을 줄일 수 있는 빠른 사용/장착, 제작 가능 표시, 부족 재료 표시, 목표 추적, 비교 정보 등 현재 게임에 맞는 편의 기능을 추가하되 플레이 선택 자체를 자동화하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1022,8 +1003,8 @@
     },
     {
       "domain": "UI_INFORMATION_PRIORITY",
-      "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "현재 목표, 생존/위험, 핵심 자원, 장비/쿨다운, 다음 행동 순으로 실제 플레이 중요도에 맞게 정보 위계를 정하고 작은 화면에서 비핵심 정보가 핵심 HUD를 밀어내지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1031,8 +1012,8 @@
     },
     {
       "domain": "FEEDBACK_CLARITY",
-      "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "획득·구매·제작·장착·레벨업·퀘스트·실패·사용 불가 등 중요한 상태 변화에 즉시 읽히는 UI/음향/시각 피드백과 실패 이유를 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1041,7 +1022,7 @@
     {
       "domain": "TUTORIAL_ONBOARDING",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "첫 플레이에서 메아리 공명 시스템의 핵심 입력→결과→다음 목표를 실제 행동으로 학습시키고, 설명문만 읽는 튜토리얼보다 단계적 실습·즉시 피드백·도움말 회수를 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1059,7 +1040,7 @@
     {
       "domain": "GAME_FEEL",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 메아리 공명 시스템에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1112,8 +1093,8 @@
     },
     {
       "domain": "CHARACTER_VISUALS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1121,8 +1102,8 @@
     },
     {
       "domain": "ENEMY_VISUALS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "적 종류와 위험도가 색상만이 아니라 실루엣·크기·이동 리듬·공격 전조·피격/사망 반응으로 구별되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1148,8 +1129,8 @@
     },
     {
       "domain": "ENVIRONMENT",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1157,8 +1138,8 @@
     },
     {
       "domain": "TERRAIN",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "지형 높낮이·경계·통로·전투/상호작용 공간이 플레이 기능과 맞고 반복 평면/단일 primitive 위주 구성을 실제 지형 형태로 교체한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1166,8 +1147,8 @@
     },
     {
       "domain": "MATERIALS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "재질은 이름 등록이 아니라 거칠기·광택·마모·투명/발광·빛 반응이 표면 역할과 맞게 실제 렌더에 적용되도록 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1193,8 +1174,8 @@
     },
     {
       "domain": "ANIMATION",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "주요 캐릭터/적 행동을 idle→locomotion→anticipation→impact→recovery→hit/death 상태와 실제 게임 이벤트에 연결하고 정지 모델 판정을 금지한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1202,8 +1183,8 @@
     },
     {
       "domain": "SECONDARY_MOTION",
-      "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "state": "GAP",
+      "priority": "FIX_NOW",
       "developmentDepth": 1,
       "directive": "장비·의상·머리·꼬리·식생·기계 등 적합한 요소에 지연/관성/반동을 추가해 무게감과 생동감을 주되 판정/권한은 바꾸지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1211,8 +1192,8 @@
     },
     {
       "domain": "VFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1230,7 +1211,7 @@
     {
       "domain": "UI_HUD",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "HUD는 현재 목표·체력/위험·핵심 자원·쿨다운/상태·다음 선택의 우선순위를 명확히 하고 게임 아트 언어와 일치하는 패널/아이콘/상태 피드백을 사용한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1256,8 +1237,8 @@
     },
     {
       "domain": "PERFORMANCE",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "실제 병목 근거를 기준으로 update/tick 빈도, 객체/파티클 수명, draw/instance 수, GC/할당, 네트워크 빈도, 모바일 열/메모리 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1265,8 +1246,8 @@
     },
     {
       "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "맵·에셋·NPC·VFX를 늘릴 때 객체 수명, 동시 NPC/파티클, 업데이트 빈도, 스트리밍/LOD, 메모리·모바일 프레임 예산을 함께 정의하고 초과 시 표현 비용부터 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1274,8 +1255,8 @@
     },
     {
       "domain": "RUNTIME_STABILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "핵심 루프를 반복 실행해도 상태 누수·중복 이벤트·고착·크래시 없이 시작→플레이→실패/성공→재시작/복귀가 유지되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1283,8 +1264,8 @@
     },
     {
       "domain": "ERROR_RECOVERY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "재현된 오류는 숨기지 말고 책임 시스템에서 원인을 제거하고 실패 시 안전한 복구/재시도/사용자 피드백 경로를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1293,12 +1274,37 @@
   ],
   "detectedGaps": [
     {
+      "domain": "PLAYER_AGENCY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "WORLD_MAP_TOPOLOGY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "MAP_EXPANSION",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "REGIONS",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
       "domain": "INVENTORY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
       "domain": "INVENTORY_USABILITY",
+      "state": "GAP",
+      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+    },
+    {
+      "domain": "EQUIPMENT_LOADOUT",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
@@ -1313,66 +1319,36 @@
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "RECONNECT_RECOVERY",
+      "domain": "SETTINGS_ACCESSIBILITY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "CHARACTER_VISUALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "ENEMY_VISUALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "ENVIRONMENT",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "TERRAIN",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "MATERIALS",
-      "state": "GAP",
-      "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "VFX",
+      "domain": "UI_INFORMATION_PRIORITY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "PERFORMANCE",
+      "domain": "FEEDBACK_CLARITY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "PERFORMANCE_BUDGET",
+      "domain": "ANIMATION",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "RUNTIME_STABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "ERROR_RECOVERY",
+      "domain": "SECONDARY_MOTION",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     }
   ],
-  "primaryFocus": "USABILITY",
-  "thisLoopPrimaryGoal": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"메아리 공명 시스템\", 현재 책임 소스는 unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::LoadState, unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs::BuildWeb, unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs::Build, unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::LogState, unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::BuildWorld, unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::StartGameplay, unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs::UnityWebFloorBuild, unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::Update이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryFocus": "STABILITY",
+  "thisLoopPrimaryGoal": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"메아리 공명 시스템\", 현재 책임 소스는 roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau::render, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler1, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler2, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler3, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler4, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler5, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler6, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau::reportNativeFoundationReady이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::LoadState, unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs::BuildWeb, unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs::Build, unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::LogState, unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::BuildWorld, unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::StartGameplay, unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs::UnityWebFloorBuild, unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::Update에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau::render, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler1, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler2, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler3, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler4, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler5, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler6, roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau::reportNativeFoundationReady에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "메아리 공명 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "엔트로피 미터가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "고유 시스템 메아리 공명 시스템, 엔트로피 미터 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
@@ -1404,8 +1380,8 @@
       "UNITY",
       "FORTNITE_UEFN"
     ],
-    "requestedPlatform": "WEB",
-    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
+    "requestedPlatform": "ROBLOX",
+    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
     "existingCompletenessReview": {
       "requiredEveryBuildUp": true,
       "mode": "CHECK_EXISTING_AND_EXPAND_OR_IMPROVE_WHICHEVER_HAS_HIGHER_PLAYER_VALUE",
@@ -1424,52 +1400,53 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "PRESENTATION_WORLD_COHESION",
+    "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
     "themeDepth": 1,
-    "selectedThemeReason": "5 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=REGRESSION.",
+    "selectedThemeReason": "4 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=NONE; previousEffect=UNKNOWN_RUNTIME_EFFECT.",
     "scoredThemes": [
       {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 93,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "VFX",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
-      },
-      {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 64,
+        "score": 68,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
+          "EQUIPMENT_LOADOUT",
           "SYSTEM_CONNECTION"
-        ]
-      },
-      {
-        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 26,
-        "gapDomains": [
-          "ENEMY_VISUALS"
         ]
       },
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 24,
+        "score": 46,
         "gapDomains": [
+          "PLAYER_AGENCY",
           "SYSTEM_CONNECTION"
         ]
       },
       {
-        "theme": "MID_LATE_ENDGAME_COMPLETION",
-        "score": 16,
-        "gapDomains": []
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
+        "score": 41,
+        "gapDomains": [
+          "MAP_EXPANSION",
+          "REGIONS"
+        ]
       },
       {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 12,
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 37,
+        "gapDomains": [
+          "ANIMATION"
+        ]
+      },
+      {
+        "theme": "MID_LATE_ENDGAME_COMPLETION",
+        "score": 28,
+        "gapDomains": [
+          "MAP_EXPANSION"
+        ]
+      },
+      {
+        "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "score": 20,
         "gapDomains": []
       },
       {
@@ -1479,13 +1456,13 @@
       }
     ],
     "coherentContentBundle": [
-      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
-      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
-      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
-      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
-      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
-      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
-      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
+      "SOURCE_AND_DISCOVERY: 아이템이 어디서 왜 나오는지 지역·몹·퀘스트·제작과 연결한다.",
+      "DISTINCT_USE_CASE: 데미지 숫자만 다른 복제 장비가 아니라 사거리·타이밍·상태·위험·보상·조합 역할이 달라야 한다.",
+      "INVENTORY_AND_EQUIP_FLOW: 획득→비교→장착·사용→교체→피드백이 같은 authoritative 상태를 사용한다.",
+      "CRAFT_OR_UPGRADE_CONNECTION: 재료·레시피·제작·강화 결과가 실제 플레이 선택을 바꾼다.",
+      "PROGRESSION_PURPOSE: 아이템이 특정 지역·적·빌드·퀘스트·해금과 연결되어 성장 경로에 의미를 가진다.",
+      "SYNERGY_AND_TRADEOFF: 장비·스킬·소모품 사이에 조합 또는 선택 비용이 있어 하나의 정답만 반복되지 않게 한다.",
+      "WORLD_PRESENTATION: 외형·이름·설명·획득 연출이 실제 기능과 세계 설정을 일치시킨다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -1553,7 +1530,7 @@
       "identity": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.",
       "visualPurpose": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 플레이 판단과 메아리 공명 시스템가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
       "distinctnessRule": "엔트로피 미터와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
-      "placeholderDebt": "HIGH"
+      "placeholderDebt": "EVALUATE_AND_REPLACE_WHEN_VISIBLE"
     },
     "domains": {
       "CHARACTER": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.",
@@ -1590,7 +1567,7 @@
       "PRIMARY_PLACEHOLDER_PRIMITIVE_CANNOT_CLOSE_VISUAL_BUILD_UP",
       "BEFORE_AFTER_COMPARISON_REQUIRED"
     ],
-    "focus": "USABILITY"
+    "focus": "STABILITY"
   },
   "uxInputDirectives": [
     "핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다.",
@@ -1600,144 +1577,149 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
-    "FORTNITE_UEFN": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
-    "UNREAL": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UEFN": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
+    "WEB": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "ROBLOX": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "FORTNITE_UEFN": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UNITY_WEB": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNREAL": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UEFN": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.: 동일 공통 목표 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
   "robloxNativeExecution": {
     "version": 1,
     "required": true,
-    "responsibleFiles": [],
+    "responsibleFiles": [
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/default.project.json"
+    ],
     "sourceSymbolsOrStateAnchors": [
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 141,
-        "kind": "METHOD",
-        "symbol": "LoadState",
-        "currentBehavior": "private void LoadState()",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 LoadState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "line": 90,
+        "kind": "FUNCTION",
+        "symbol": "render",
+        "currentBehavior": "local function render()",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 16,
-        "kind": "METHOD",
-        "symbol": "BuildWeb",
-        "currentBehavior": "public static void BuildWeb()",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 BuildWeb의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 36,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler1",
+        "currentBehavior": "local function scopeHandler1(player)",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 33,
-        "kind": "METHOD",
-        "symbol": "Build",
-        "currentBehavior": "public static void Build()",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 Build의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 45,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler2",
+        "currentBehavior": "local function scopeHandler2(player)",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 149,
-        "kind": "METHOD",
-        "symbol": "LogState",
-        "currentBehavior": "private void LogState()",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 LogState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 61,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler3",
+        "currentBehavior": "local function scopeHandler3(player)",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 38,
-        "kind": "METHOD",
-        "symbol": "BuildWorld",
-        "currentBehavior": "private void BuildWorld()",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 BuildWorld의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 77,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler4",
+        "currentBehavior": "local function scopeHandler4(player)",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 108,
-        "kind": "METHOD",
-        "symbol": "StartGameplay",
-        "currentBehavior": "private void StartGameplay()",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 StartGameplay의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 93,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler5",
+        "currentBehavior": "local function scopeHandler5(player)",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 11,
-        "kind": "CLASS",
-        "symbol": "UnityWebFloorBuild",
-        "currentBehavior": "public static class UnityWebFloorBuild",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 UnityWebFloorBuild의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 109,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler6",
+        "currentBehavior": "local function scopeHandler6(player)",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 84,
-        "kind": "METHOD",
-        "symbol": "Update",
-        "currentBehavior": "private void Update()",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 Update의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "line": 109,
+        "kind": "FUNCTION",
+        "symbol": "reportNativeFoundationReady",
+        "currentBehavior": "local function reportNativeFoundationReady()",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reportNativeFoundationReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "symbol": "LoadState",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "symbol": "render",
+        "role": "CLIENT_INPUT_OR_PRESENTATION",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "symbol": "BuildWeb",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "symbol": "scopeHandler1",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "symbol": "Build",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "symbol": "scopeHandler2",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "symbol": "LogState",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "symbol": "scopeHandler3",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "symbol": "BuildWorld",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "symbol": "scopeHandler4",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "symbol": "StartGameplay",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "symbol": "scopeHandler5",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "symbol": "UnityWebFloorBuild",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "symbol": "scopeHandler6",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "symbol": "Update",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "symbol": "reportNativeFoundationReady",
+        "role": "CLIENT_INPUT_OR_PRESENTATION",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
-    "expectedPlayerEffect": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
+    "expectedPlayerEffect": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "observableAcceptanceScenario": "input/touch -> local handler -> RemoteEvent/RemoteFunction when required -> server validation -> authoritative state change -> client feedback",
     "sourceInspectionChecklist": [
       "SERVER_AUTHORITY",
@@ -1770,111 +1752,107 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/GameCore.cs",
-      "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/RuntimeBootstrap.cs",
-      "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-      "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-      "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Art/unity-web-floor-domain.json",
-      "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Animations/unity-web-floor-domain.json",
-      "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Materials/unity-web-floor-domain.json",
-      "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Prefabs/unity-web-floor-domain.json"
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau",
+      "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/default.project.json"
     ],
     "sourceAnchors": [
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 141,
-        "kind": "METHOD",
-        "symbol": "LoadState",
-        "context": "private void LoadState()",
-        "score": 80,
-        "currentBehavior": "private void LoadState()",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 LoadState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::LoadState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "line": 90,
+        "kind": "FUNCTION",
+        "symbol": "render",
+        "context": "local function render()",
+        "score": 106,
+        "currentBehavior": "local function render()",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau::render이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 16,
-        "kind": "METHOD",
-        "symbol": "BuildWeb",
-        "context": "public static void BuildWeb()",
-        "score": 72,
-        "currentBehavior": "public static void BuildWeb()",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 BuildWeb의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs::BuildWeb이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 36,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler1",
+        "context": "local function scopeHandler1(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler1(player)",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler1이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 33,
-        "kind": "METHOD",
-        "symbol": "Build",
-        "context": "public static void Build()",
-        "score": 72,
-        "currentBehavior": "public static void Build()",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 Build의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs::Build이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 45,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler2",
+        "context": "local function scopeHandler2(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler2(player)",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler2이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 149,
-        "kind": "METHOD",
-        "symbol": "LogState",
-        "context": "private void LogState()",
-        "score": 56,
-        "currentBehavior": "private void LogState()",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 LogState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::LogState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 61,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler3",
+        "context": "local function scopeHandler3(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler3(player)",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler3이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 38,
-        "kind": "METHOD",
-        "symbol": "BuildWorld",
-        "context": "private void BuildWorld()",
-        "score": 48,
-        "currentBehavior": "private void BuildWorld()",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 BuildWorld의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::BuildWorld이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 77,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler4",
+        "context": "local function scopeHandler4(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler4(player)",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler4이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 108,
-        "kind": "METHOD",
-        "symbol": "StartGameplay",
-        "context": "private void StartGameplay()",
-        "score": 48,
-        "currentBehavior": "private void StartGameplay()",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 StartGameplay의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::StartGameplay이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 93,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler5",
+        "context": "local function scopeHandler5(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler5(player)",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler5이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 11,
-        "kind": "CLASS",
-        "symbol": "UnityWebFloorBuild",
-        "context": "public static class UnityWebFloorBuild",
-        "score": 36,
-        "currentBehavior": "public static class UnityWebFloorBuild",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 UnityWebFloorBuild의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs::UnityWebFloorBuild이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "line": 109,
+        "kind": "FUNCTION",
+        "symbol": "scopeHandler6",
+        "context": "local function scopeHandler6(player)",
+        "score": 98,
+        "currentBehavior": "local function scopeHandler6(player)",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler6의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau::scopeHandler6이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 84,
-        "kind": "METHOD",
-        "symbol": "Update",
-        "context": "private void Update()",
-        "score": 32,
-        "currentBehavior": "private void Update()",
-        "intendedBehavior": "USABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 Update의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs::Update이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "line": 109,
+        "kind": "FUNCTION",
+        "symbol": "reportNativeFoundationReady",
+        "context": "local function reportNativeFoundationReady()",
+        "score": 82,
+        "currentBehavior": "local function reportNativeFoundationReady()",
+        "intendedBehavior": "STABILITY primary goal \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reportNativeFoundationReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau::reportNativeFoundationReady이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -1882,18 +1860,18 @@
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
   },
   "effectivenessMeasurement": {
-    "expectedPlayerEffect": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
+    "expectedPlayerEffect": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "4dd87fcb9d4c2e66f74d3ddc1b220c1f00c7208c659e691ff13645f96d2079ad",
-      "runtimeObserved": true
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "38cc8e7e94725cb7f1de60f4667a67387ad27a398ad9ffdf8f177b07197e7be0",
-      "runtimeObserved": true,
+      "sourceTreeFingerprint": "9292f3bc2602a07e643b05c4727aa34a5cd3e25920ed6f1fd8243636d1be3899",
+      "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "SINGLE_BUILD_OR_PACKAGE",
-      "failureSignature": "4dd87fcb9d4c2e66f74d3ddc1b220c1f00c7208c659e691ff13645f96d2079ad"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -1904,8 +1882,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "verified failure/regression evidence has higher player value than unrelated build-up"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -1937,7 +1915,7 @@
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": false,
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -1986,21 +1964,26 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
+      "PLAYER_AGENCY",
+      "WORLD_MAP_TOPOLOGY",
+      "MAP_EXPANSION",
+      "REGIONS",
       "INVENTORY",
       "INVENTORY_USABILITY",
+      "EQUIPMENT_LOADOUT",
       "SYSTEM_CONNECTION",
       "SAVE_COMPLETENESS",
-      "PERFORMANCE_BUDGET",
-      "RUNTIME_STABILITY"
+      "SETTINGS_ACCESSIBILITY",
+      "UI_INFORMATION_PRIORITY",
+      "FEEDBACK_CLARITY"
     ],
     "notApplicable": [
       "QUESTS",
       "CRAFTING",
-      "MULTIPLAYER_AND_SYNC",
       "NPC_SOCIAL_BEHAVIOR",
       "NARRATIVE_STORY"
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-09-27T12:37:39.477Z"
+  "generatedAt": "2026-09-27T12:37:39.213Z"
 }

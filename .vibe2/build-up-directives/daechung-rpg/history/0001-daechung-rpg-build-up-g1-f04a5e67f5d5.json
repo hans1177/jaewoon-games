@@ -1,43 +1,73 @@
 {
   "version": 2,
-  "directiveId": "seed-casual-realm-weaver-build-up-g1-43232cca30c2",
-  "directiveFingerprint": "43232cca30c215827cf0a07a3c560fd02b1e9b6307f8a5fd0610ac1def6ab538",
-  "previousDirectiveFingerprint": "7d7e58fea027873846d001bc24b38f1cc05490df34eb3d5c35181cb0a9320ea4",
-  "forbiddenRepeatFingerprint": "7d7e58fea027873846d001bc24b38f1cc05490df34eb3d5c35181cb0a9320ea4",
-  "gameId": "seed-casual-realm-weaver",
-  "gameName": "세계의 직조자",
+  "directiveId": "daechung-rpg-build-up-g1-f04a5e67f5d5",
+  "directiveFingerprint": "f04a5e67f5d5b62224d1fdfd67f3d77ce326220627378a6df35b0fea349843b9",
+  "previousDirectiveFingerprint": "4df608788a8dc2b6179f5662303667c703656aa86933a3fdf7547405d36fa744",
+  "forbiddenRepeatFingerprint": "4df608788a8dc2b6179f5662303667c703656aa86933a3fdf7547405d36fa744",
+  "gameId": "daechung-rpg",
+  "gameName": "5포탈 RPG: 던전 파티",
   "generation": 1,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
   "previousDirectiveOutcome": "cancelled",
-  "platform": "WEB",
-  "sourceRoot": "unity-games/seed-casual-realm-weaver",
-  "sourceTreeFingerprint": "4fbba76ec6324eaac1be0a3f4bf8859cc1d8ae9ca091923dafd42877d74f7c2d",
-  "designFingerprint": "60a5f88b64b3c454d1f87de504919394158457dec77dff0714476bad7179db40",
+  "platform": "ROBLOX",
+  "sourceRoot": "roblox-games/daechung-rpg",
+  "sourceTreeFingerprint": "9afb73f9a58d389d143398f4d9dd5e97175e0d8413d75e49b59e99e2cc3b0828",
+  "designFingerprint": "96add7fd73d84d9a53459185ddf4457d9058daeb4ceab00aeab0dd18b14ab27a",
   "gameIdentityAndNonNegotiables": {
-    "identity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.",
-    "coreFun": "조각을 배치하고 연결할 때 발생하는 즉각적인 시각적 피드백과, 완성된 풍경이 생동감 있게 변하는 '생명력의 전이'를 경험하는 것입니다.",
+    "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
+    "coreFun": "4인 파티 조합과 장비 세팅을 계속 바꿔 보며 서로 다른 AI 행동·관계·합동기·직업 능력이 맞물리는 순간을 찾는 재미. 희귀도보다 조합과 세팅이 더 중요하다.",
     "coreLoop": [
-      "화면에 제시된 무작위 지형 조각을 확인하고, 한 손가락 드래그로 원하는 위치에 배치합니다.",
-      "조각을 연결하여 특정 패턴이나 색상을 완성하면, 해당 영역이 활성화되며 점수와 함께 주변 환경이 변화합니다.",
-      "연속 연결(콤보)을 통해 특수 효과를 발동시키고, 제한된 턴 내에 목표 점수를 달성하여 다음 스테이지로 나아갑니다.",
-      "획득한 재화로 새로운 테마의 조각 세트를 해금하거나, 나만의 작은 정원을 꾸미는 보상 시스템을 이용합니다."
+      "마을과 지역 스토리를 진행해 새로운 AI 동료와 사건을 발견한다.",
+      "보유 동료 중 4명을 골라 파티를 만들고 각 동료의 장비, AI 성향, 스킬을 세팅한다.",
+      "필드·던전·보스에서 직접 전투하며 파티 조합과 장비가 실제 전투에서 어떻게 맞물리는지 확인한다.",
+      "동료 전용 퀘스트, 숙명 관계, 히든 조건, 보스 포섭을 통해 새로운 동료·합동기·전용장비를 얻고 다른 4인 조합을 시험한다."
     ],
     "signatureSystems": [
       {
-        "name": "직조 연결 시스템",
-        "purpose": "단순 배치를 넘어, 조각 간의 속성(색상, 형태)을 매칭하여 시너지를 발생시키기 위함입니다.",
-        "playerChoice": "어떤 조각을 먼저 배치하여 연쇄 반응을 일으킬지, 혹은 더 큰 보상을 위해 특정 패턴을 완성할지 결정합니다."
+        "name": "4인 파티 고정",
+        "purpose": "파티 슬롯은 항상 4명이며 탱·딜·힐 강제를 없애고 여러 조합이 실전에서 성립하도록 밸런스를 맞춘다.",
+        "playerChoice": ""
       },
       {
-        "name": "생태계 복원 게이지",
-        "purpose": "플레이의 성과를 시각적으로 누적하고, 스테이지 클리어 시 극적인 변화를 보여주기 위함입니다.",
-        "playerChoice": "어떤 지역을 우선적으로 복원하여 보너스 효과를 얻을지, 혹은 위험 요소를 제거할지 선택합니다."
+        "name": "무한 확장 AI 동료",
+        "purpose": "새 지역·스토리 업데이트마다 동료를 계속 추가할 수 있고 각 동료는 전용 스토리, AI 행동, 스킬과 장비 방향을 가진다.",
+        "playerChoice": ""
+      },
+      {
+        "name": "숙명 관계",
+        "purpose": "특정 동료 조합이 함께 사건을 겪으면 전용 대사, 관계 변화, 합동기 또는 전투 규칙 변화가 열린다.",
+        "playerChoice": ""
+      },
+      {
+        "name": "파티 기억",
+        "purpose": "같은 4인으로 중요한 사건·보스·역전을 겪은 기록이 파티 정체성으로 남고 특수 대사·행동·지원 효과를 연다.",
+        "playerChoice": ""
+      },
+      {
+        "name": "보스·히든 동료",
+        "purpose": "특정 보스를 죽이는 대신 조건을 만족해 포섭하거나 숨겨진 시간·아이템·동료 조합으로 레어 동료를 발견한다.",
+        "playerChoice": ""
+      },
+      {
+        "name": "장비가 AI를 바꿈",
+        "purpose": "장비는 수치뿐 아니라 공격성, 보호 우선, 상태이상 활용 같은 AI 행동 우선순위와 스킬 운용을 바꾼다.",
+        "playerChoice": ""
+      },
+      {
+        "name": "라이벌 AI 파티",
+        "purpose": "다른 AI 4인 파티도 세계에서 성장하고 보스·보물·사건을 경쟁하거나 때로 협력한다.",
+        "playerChoice": ""
+      },
+      {
+        "name": "조합 엔딩",
+        "purpose": "특정 4인 조합으로 주요 스토리를 끝내면 그 조합만의 후일담·비밀 엔딩을 볼 수 있다.",
+        "playerChoice": ""
       }
     ],
-    "progressionDirection": "스테이지가 진행될수록 지형의 복잡도가 증가하며, 새로운 속성을 가진 조각들이 추가됩니다. 플레이어는 점진적으로 더 넓고 화려한 세계를 직조하며, 수집한 조각으로 자신만의 커스텀 맵을 구성할 수 있습니다.",
-    "multiplayerMode": "SINGLE",
+    "progressionDirection": "초기 4인 동료 확보 → 지역 스토리와 장비 파밍 → 숙명 관계·전용 퀘스트 → 히든/보스 동료 → 고난도 조합전투 → 라이벌 파티 경쟁 → 조합별 엔딩과 계속 추가되는 새 동료.",
+    "multiplayerMode": "SINGLE_OR_COOP",
     "preserve": [
       "CORE_IDENTITY",
       "APPROVED_RULE_SEMANTICS",
@@ -49,204 +79,412 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=6",
-      "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
-      "VFX_IMPLEMENTATION_SPARSE",
-      "PERFORMANCE_BUDGET_SPARSE"
+      "CURRENT_SOURCE_FILES=7",
+      "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH"
     ],
     "signals": {
-      "combat": 12,
-      "progression": 24,
-      "ai": 18,
-      "save": 25,
-      "multiplayer": 0,
-      "animation": 2,
-      "vfx": 0,
-      "camera": 8,
-      "ui": 5,
-      "uiFlow": 5,
-      "input": 7,
-      "map": 14,
-      "landmark": 4,
-      "interaction": 3,
-      "inventory": 0,
-      "equipment": 10,
-      "settings": 12,
-      "feedback": 5,
-      "session": 10,
-      "content": 14,
-      "choice": 41,
-      "connection": 0,
-      "performance": 0,
-      "lighting": 6,
-      "primitive": 13,
+      "combat": 520,
+      "progression": 339,
+      "ai": 38,
+      "save": 110,
+      "multiplayer": 16,
+      "animation": 20,
+      "vfx": 24,
+      "camera": 59,
+      "ui": 110,
+      "uiFlow": 65,
+      "input": 41,
+      "map": 324,
+      "landmark": 26,
+      "interaction": 37,
+      "inventory": 14,
+      "equipment": 46,
+      "settings": 3,
+      "feedback": 45,
+      "session": 63,
+      "content": 426,
+      "choice": 58,
+      "connection": 2,
+      "performance": 17,
+      "lighting": 44,
+      "primitive": 9,
       "todo": 0,
-      "errorRecovery": 0
+      "errorRecovery": 19
     },
     "topFiles": [
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "score": 80
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "score": 378
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "score": 60
+        "file": "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "score": 114
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Art/unity-web-floor-domain.json",
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "score": 94
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
+        "score": 88
+      },
+      {
+        "file": "roblox-games/daechung-rpg/launch-mvp.json",
+        "score": 49
+      },
+      {
+        "file": "roblox-games/daechung-rpg/default.project.json",
         "score": 2
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Animations/unity-web-floor-domain.json",
-        "score": 0
-      },
-      {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Materials/unity-web-floor-domain.json",
-        "score": 0
-      },
-      {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Prefabs/unity-web-floor-domain.json",
-        "score": 0
+        "file": "roblox-games/daechung-rpg/shared/VisualStyle.luau",
+        "score": 1
       }
     ],
     "sourceAnchors": [
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 141,
-        "kind": "METHOD",
-        "symbol": "LoadState",
-        "context": "private void LoadState()",
-        "score": 80
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 414,
+        "kind": "FUNCTION",
+        "symbol": "beginEnemyAttack",
+        "context": "local function beginEnemyAttack(e,target,now)",
+        "score": 170
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 16,
-        "kind": "METHOD",
-        "symbol": "BuildWeb",
-        "context": "public static void BuildWeb()",
-        "score": 72
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 770,
+        "kind": "FUNCTION",
+        "symbol": "enemyModel",
+        "context": "local function enemyModel(parent,z,pos,boss,enemyDef)",
+        "score": 130
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 33,
-        "kind": "METHOD",
-        "symbol": "Build",
-        "context": "public static void Build()",
-        "score": 72
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 515,
+        "kind": "FUNCTION",
+        "symbol": "init",
+        "context": "local function init(p)",
+        "score": 114
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 149,
-        "kind": "METHOD",
-        "symbol": "LogState",
-        "context": "private void LogState()",
-        "score": 56
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 640,
+        "kind": "FUNCTION",
+        "symbol": "makeVillage",
+        "context": "local function makeVillage()",
+        "score": 114
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 38,
-        "kind": "METHOD",
-        "symbol": "BuildWorld",
-        "context": "private void BuildWorld()",
-        "score": 48
+        "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
+        "line": 85,
+        "kind": "FUNCTION",
+        "symbol": "restoreCamera",
+        "context": "local function restoreCamera(camera,saved)",
+        "score": 106
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 108,
-        "kind": "METHOD",
-        "symbol": "StartGameplay",
-        "context": "private void StartGameplay()",
-        "score": 48
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 901,
+        "kind": "FUNCTION",
+        "symbol": "spawnEnemy",
+        "context": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
+        "score": 98
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 11,
-        "kind": "CLASS",
-        "symbol": "UnityWebFloorBuild",
-        "context": "public static class UnityWebFloorBuild",
-        "score": 36
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 199,
+        "kind": "FUNCTION",
+        "symbol": "bindChar",
+        "context": "local function bindChar(c)combatTracks={};local h=c:WaitForChild(\"Humanoid\");h.HealthChanged:Connect(render);render()end",
+        "score": 90
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 84,
-        "kind": "METHOD",
-        "symbol": "Update",
-        "context": "private void Update()",
-        "score": 32
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 404,
+        "kind": "FUNCTION",
+        "symbol": "chooseEnemyAttack",
+        "context": "local function chooseEnemyAttack(e)",
+        "score": 82
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 134,
-        "kind": "METHOD",
-        "symbol": "SafeReturn",
-        "context": "private void SafeReturn()",
-        "score": 32
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 580,
+        "kind": "FUNCTION",
+        "symbol": "unlockBossCompanion",
+        "context": "local function unlockBossCompanion(killer,e)",
+        "score": 74
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 154,
-        "kind": "METHOD",
-        "symbol": "OnGUI",
-        "context": "private void OnGUI()",
-        "score": 32
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 1113,
+        "kind": "FUNCTION",
+        "symbol": "killEnemy",
+        "context": "local function killEnemy(p,e,contribution)",
+        "score": 74
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 91,
+        "kind": "FUNCTION",
+        "symbol": "playCombatAnimation",
+        "context": "local function playCombatAnimation(skillCast)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 775,
+        "kind": "FUNCTION",
+        "symbol": "add",
+        "context": "local function add(nm,size,off,col,mat,shape,rot)return attach(rootPart,nm,size,off,col,mat,shape,rot)end",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 1086,
+        "kind": "FUNCTION",
+        "symbol": "completeQuestIfNeeded",
+        "context": "local function completeQuestIfNeeded(p,zone)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 1180,
+        "kind": "FUNCTION",
+        "symbol": "bossSpecForCompanion",
+        "context": "local function bossSpecForCompanion(def)",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 1250,
+        "kind": "FUNCTION",
+        "symbol": "makeBossCompanionRoster",
+        "context": "local function makeBossCompanionRoster()",
+        "score": 66
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 272,
+        "kind": "FUNCTION",
+        "symbol": "decorateCharacterModel",
+        "context": "local function decorateCharacterModel(model,classId,variant,advancementId)",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 572,
+        "kind": "FUNCTION",
+        "symbol": "unlockCompanion",
+        "context": "local function unlockCompanion(p,id)",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 1187,
+        "kind": "FUNCTION",
+        "symbol": "setCompanionLabel",
+        "context": "local function setCompanionLabel(part,text,color)",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 1385,
+        "kind": "FUNCTION",
+        "symbol": "refreshAppearance",
+        "context": "local function refreshAppearance()task.defer(function()task.wait(.05);setStats(p,false);applyPlayerAppearance(p)end)end",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
         "line": 3,
-        "kind": "CLASS",
-        "symbol": "UnityWebFloorGame",
-        "context": "public sealed class UnityWebFloorGame : MonoBehaviour",
-        "score": 28
+        "kind": "FUNCTION",
+        "symbol": "QACamera.install",
+        "context": "function QACamera.install(config,screenGui,pointProvider)",
+        "score": 58
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 54,
-        "kind": "METHOD",
-        "symbol": "EnsureScene",
-        "context": "private static void EnsureScene()",
-        "score": 24
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 15,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAssetAtom",
+        "context": "local function hasStudioAssetAtom(atom)",
+        "score": 50
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 22,
-        "kind": "METHOD",
-        "symbol": "Awake",
-        "context": "private void Awake()",
-        "score": 24
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 203,
+        "kind": "FUNCTION",
+        "symbol": "prompt",
+        "context": "local function prompt(target,objectText,actionText)",
+        "score": 50
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 115,
-        "kind": "METHOD",
-        "symbol": "PerformAction",
-        "context": "private void PerformAction(bool mobile)",
-        "score": 24
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 256,
+        "kind": "FUNCTION",
+        "symbol": "wearMedievalChest",
+        "context": "local function wearMedievalChest(model,folder,variant)",
+        "score": 50
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 7,
-        "kind": "STATE",
-        "symbol": "STATE:ACTION",
-        "context": "private const string Mode = \"ACTION\";",
-        "score": 18
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 304,
+        "kind": "FUNCTION",
+        "symbol": "pulseWeaponTrail",
+        "context": "local function pulseWeaponTrail(character)",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 310,
+        "kind": "FUNCTION",
+        "symbol": "combatFlash",
+        "context": "local function combatFlash(pos,color,size)",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 316,
+        "kind": "FUNCTION",
+        "symbol": "attackTelegraph",
+        "context": "local function attackTelegraph(e,attack,target)",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 568,
+        "kind": "FUNCTION",
+        "symbol": "companionUnlocked",
+        "context": "local function companionUnlocked(p,id)",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 601,
+        "kind": "FUNCTION",
+        "symbol": "fantasyHouse",
+        "context": "local function fantasyHouse(parent,index,pos,yaw)",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 1066,
+        "kind": "FUNCTION",
+        "symbol": "wakeMeadowRunBossIfReady",
+        "context": "local function wakeMeadowRunBossIfReady()",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 57,
+        "kind": "FUNCTION",
+        "symbol": "corner",
+        "context": "local function corner(x,r)local c=Instance.new(\"UICorner\");c.CornerRadius=UDim.new(0,r or 10);c.Parent=x end",
+        "score": 42
+      },
+      {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 58,
+        "kind": "FUNCTION",
+        "symbol": "stroke",
+        "context": "local function stroke(x,t)local s=Instance.new(\"UIStroke\");s.Thickness=1.3;s.Transparency=t or .5;s.Parent=x end",
+        "score": 42
+      },
+      {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 59,
+        "kind": "FUNCTION",
+        "symbol": "button",
+        "context": "local function button(parent,text,color)",
+        "score": 42
+      },
+      {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 146,
+        "kind": "FUNCTION",
+        "symbol": "zoneName",
+        "context": "local function zoneName(id)",
+        "score": 34
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
+        "line": 11,
+        "kind": "FUNCTION",
+        "symbol": "roundify",
+        "context": "local function roundify(target,radius)",
+        "score": 34
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
+        "line": 71,
+        "kind": "FUNCTION",
+        "symbol": "uploadSavedCapture",
+        "context": "local function uploadSavedCapture(capture)",
+        "score": 34
+      },
+      {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 28,
+        "kind": "FUNCTION",
+        "symbol": "sound",
+        "context": "local function sound(name,id,volume)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 106,
+        "kind": "FUNCTION",
+        "symbol": "setBlock",
+        "context": "local function setBlock(on)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 150,
+        "kind": "FUNCTION",
+        "symbol": "renderClassPanel",
+        "context": "local function renderClassPanel()",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 165,
+        "kind": "FUNCTION",
+        "symbol": "render",
+        "context": "local function render()",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
+        "line": 47,
+        "kind": "FUNCTION",
+        "symbol": "report",
+        "context": "local function report(label,value)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/daechung-rpg/shared/QACamera.luau",
+        "line": 51,
+        "kind": "FUNCTION",
+        "symbol": "takeOne",
+        "context": "local function takeOne()",
+        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-    "previousFocus": "USABILITY",
+    "previousGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
+    "previousFocus": "PRESENTATION",
     "previousGeneration": null,
-    "previousSourceTreeFingerprint": "4fbba76ec6324eaac1be0a3f4bf8859cc1d8ae9ca091923dafd42877d74f7c2d",
-    "currentSourceTreeFingerprint": "4fbba76ec6324eaac1be0a3f4bf8859cc1d8ae9ca091923dafd42877d74f7c2d",
-    "sourceChanged": false,
+    "previousSourceTreeFingerprint": "6b3cee6a19248d81d4582ae74b10d162e836e80402a72c3a036c38539a769619",
+    "currentSourceTreeFingerprint": "9afb73f9a58d389d143398f4d9dd5e97175e0d8413d75e49b59e99e2cc3b0828",
+    "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "failureStage": "",
     "failureSignature": "",
-    "blockers": [
-      "roblox-runtime-foundation-awaiting-observation"
-    ],
+    "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -310,8 +548,8 @@
     },
     {
       "domain": "QUESTS",
-      "state": "NOT_APPLICABLE",
-      "reason": "no quest/story objective signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CONTENT_VARIETY",
@@ -380,13 +618,13 @@
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
@@ -400,8 +638,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SESSION_FLOW",
@@ -425,18 +663,18 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "RECONNECT_RECOVERY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MULTIPLAYER_AND_SYNC",
-      "state": "NOT_APPLICABLE",
-      "reason": "approved design and current source do not require multiplayer"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "INPUT",
@@ -510,8 +748,8 @@
     },
     {
       "domain": "NARRATIVE_STORY",
-      "state": "NOT_APPLICABLE",
-      "reason": "no narrative or story signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
@@ -520,8 +758,8 @@
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
-      "state": "NOT_APPLICABLE",
-      "reason": "no explicit replay variation signal in approved design"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CHARACTER_VISUALS",
@@ -580,8 +818,8 @@
     },
     {
       "domain": "VFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CAMERA",
@@ -605,23 +843,23 @@
     },
     {
       "domain": "PERFORMANCE",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "RUNTIME_STABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "ERROR_RECOVERY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     }
   ],
   "allDomainImplementationDirectives": [
@@ -630,7 +868,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "직조 연결 시스템가 단순 반복 입력이 아니라 상황을 읽고 선택을 바꾸는 핵심 재미가 되게 한다. 같은 선택의 반복 이득을 줄이고 성공/실패 이유가 즉시 보이게 한다.",
+      "directive": "4인 파티 고정가 단순 반복 입력이 아니라 상황을 읽고 선택을 바꾸는 핵심 재미가 되게 한다. 같은 선택의 반복 이득을 줄이고 성공/실패 이유가 즉시 보이게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -639,7 +877,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "직조 연결 시스템의 입력→전조/준비→판정→결과→회복 흐름을 실제 상태 머신에 연결하고 타이밍·거리·위험/보상 중 게임에 맞는 최소 두 축에서 선택 차이를 만든다.",
+      "directive": "4인 파티 고정의 입력→전조/준비→판정→결과→회복 흐름을 실제 상태 머신에 연결하고 타이밍·거리·위험/보상 중 게임에 맞는 최소 두 축에서 선택 차이를 만든다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -675,7 +913,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 직조 연결 시스템에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
+      "directive": "적 역할이 이동·타깃 선택·공격 전조·공격 패턴·후퇴/회복 또는 특수상태에서 구별되게 하고 4인 파티 고정에 대한 카운터플레이가 실제 플레이에서 가능하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -684,7 +922,7 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 보스/시그니처 순간은 일반 적의 체력만 키운 형태를 금지하고 단계 변화, 공간 압박, 전조, 대응 선택, 보상 연출을 핵심 시스템 생태계 복원 게이지와 연결한다.",
+      "directive": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 보스/시그니처 순간은 일반 적의 체력만 키운 형태를 금지하고 단계 변화, 공간 압박, 전조, 대응 선택, 보상 연출을 핵심 시스템 무한 확장 AI 동료와 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -693,16 +931,16 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "스테이지가 진행될수록 지형의 복잡도가 증가하며, 새로운 속성을 가진 조각들이 추가됩니다. 플레이어는 점진적으로 더 넓고 화려한 세계를 직조하며, 수집한 조각으로 자신만의 커스텀 맵을 구성할 수 있습니다.을 짧은 목표→보상→해금→새 선택→다음 난도로 연결하고 성장 수치만 오르는 대신 플레이 방식이 실제로 넓어지게 한다.",
+      "directive": "초기 4인 동료 확보 → 지역 스토리와 장비 파밍 → 숙명 관계·전용 퀘스트 → 히든/보스 동료 → 고난도 조합전투 → 라이벌 파티 경쟁 → 조합별 엔딩과 계속 추가되는 새 동료.을 짧은 목표→보상→해금→새 선택→다음 난도로 연결하고 성장 수치만 오르는 대신 플레이 방식이 실제로 넓어지게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "GOALS",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 목표·다음 목표·실패 조건을 플레이 중 확인 가능하게 하고, 목표가 직조 연결 시스템와 직접 연결되어 플레이어가 왜 행동하는지 분명하게 한다.",
+      "directive": "현재 목표·다음 목표·실패 조건을 플레이 중 확인 가능하게 하고, 목표가 4인 파티 고정와 직접 연결되어 플레이어가 왜 행동하는지 분명하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -726,12 +964,12 @@
     },
     {
       "domain": "QUESTS",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no quest/story objective signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "퀘스트가 적용되는 게임이면 목표·진행 추적·완료 판정·보상·세계/캐릭터 반응까지 연결하고, 핵심 루프와 무관한 심부름 반복을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "CONTENT_VARIETY",
@@ -799,7 +1037,7 @@
     {
       "domain": "WORLD_DENSITY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "넓은 공간이 비지 않게 탐색 거리마다 기능성 소품·상호작용·조우·자원·환경 이야기 중 게임에 맞는 요소를 배치하고 반복 복제 밀도를 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -808,7 +1046,7 @@
     {
       "domain": "WORLD_NAVIGATION",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "지도/미니맵/방향 표식/랜드마크/목표 추적 중 게임에 맞는 수단으로 현재 위치·목적지·잠금 경로를 읽게 하며 모바일에서도 길을 잃는 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -817,7 +1055,7 @@
     {
       "domain": "LANDMARKS",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "주요 랜드마크는 거리에서도 실루엣과 기능이 구별되고 탐색·방향 판단·목표 기억에 쓰이도록 배치하며 단순 장식물로 끝내지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -826,7 +1064,7 @@
     {
       "domain": "TRAVERSAL",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "이동은 속도만이 아니라 지형·장애물·경로 선택·위험 회피와 연결하고 모바일 입력에서 의도한 방향/행동이 안정적으로 유지되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -835,7 +1073,7 @@
     {
       "domain": "INTERACTION_DISCOVERABILITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "줍기·열기·대화·제작·장착·구매·사용 가능한 대상은 접근 전후에 형태/프롬프트/상태 피드백으로 구별되고 상호작용 실패 이유도 즉시 보이게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -846,14 +1084,14 @@
       "state": "PASS",
       "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "재화의 획득원·사용처·가격 단계·손실/회수 규칙을 스테이지가 진행될수록 지형의 복잡도가 증가하며, 새로운 속성을 가진 조각들이 추가됩니다. 플레이어는 점진적으로 더 넓고 화려한 세계를 직조하며, 수집한 조각으로 자신만의 커스텀 맵을 구성할 수 있습니다.과 연결하고 무한 축적 또는 의미 없는 구매가 생기지 않게 한다. 승인 없는 기존 수치 변경은 금지한다.",
+      "directive": "재화의 획득원·사용처·가격 단계·손실/회수 규칙을 초기 4인 동료 확보 → 지역 스토리와 장비 파밍 → 숙명 관계·전용 퀘스트 → 히든/보스 동료 → 고난도 조합전투 → 라이벌 파티 경쟁 → 조합별 엔딩과 계속 추가되는 새 동료.과 연결하고 무한 축적 또는 의미 없는 구매가 생기지 않게 한다. 승인 없는 기존 수치 변경은 금지한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "INVENTORY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리는 획득·정렬/표시·장착/사용·교체·버리기/보존 상태를 명확히 하고 실제 캐릭터/전투/진행 상태와 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -861,8 +1099,8 @@
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -888,8 +1126,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -933,8 +1171,8 @@
     },
     {
       "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -942,8 +1180,8 @@
     },
     {
       "domain": "RECONNECT_RECOVERY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "재접속/late join/일시 네트워크 실패 시 권위 상태를 다시 동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 안전한 복구 경로를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -951,17 +1189,17 @@
     },
     {
       "domain": "MULTIPLAYER_AND_SYNC",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 approved design and current source do not require multiplayer. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "멀티가 적용되는 게임이면 authoritative state, 참가/이탈, 핵심 행동 동기화, 재접속/late join, 승패/보상 일관성을 실제 2인 이상 흐름에 맞춘다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "INPUT",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 행동마다 터치 우선 입력과 키보드/패드 대체 입력을 동일 게임 상태에 연결하고 중복 입력·길게 누름·드래그·취소 경계를 명확히 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -970,7 +1208,7 @@
     {
       "domain": "MOBILE_UX",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "작은 화면에서 핵심 HUD·조작·위험 경고·선택지가 손가락과 겹치지 않게 하고 safe area, 스크롤, 팝업 닫기, 가로/세로 대응을 실제 플레이 기준으로 정리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -979,7 +1217,7 @@
     {
       "domain": "ACCESSIBILITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "색만으로 상태를 구분하지 않고 형태/아이콘/텍스트/모션을 함께 쓰며, 중요한 피드백은 크기·대비·지속시간을 확보해 정보 누락을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -988,7 +1226,7 @@
     {
       "domain": "SETTINGS_ACCESSIBILITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -997,7 +1235,7 @@
     {
       "domain": "MENU_FLOW",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리·장비·제작·상점·퀘스트·설정 등 존재하는 메뉴 사이 전환, 뒤로가기, 닫기, 팝업 중첩, 스크롤, 선택 유지가 모바일에서 예측 가능하게 동작하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1006,7 +1244,7 @@
     {
       "domain": "CONVENIENCE",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "반복 조작을 줄일 수 있는 빠른 사용/장착, 제작 가능 표시, 부족 재료 표시, 목표 추적, 비교 정보 등 현재 게임에 맞는 편의 기능을 추가하되 플레이 선택 자체를 자동화하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1015,7 +1253,7 @@
     {
       "domain": "UI_DESIGN_SYSTEM",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "HUD와 메뉴가 공통 타이포·패널·아이콘·간격·상태 색/형태 규칙을 공유하고 게임 세계의 아트 언어와 연결되며 기능마다 제각각인 임시 UI를 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1024,7 +1262,7 @@
     {
       "domain": "UI_INFORMATION_PRIORITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "현재 목표, 생존/위험, 핵심 자원, 장비/쿨다운, 다음 행동 순으로 실제 플레이 중요도에 맞게 정보 위계를 정하고 작은 화면에서 비핵심 정보가 핵심 HUD를 밀어내지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1033,7 +1271,7 @@
     {
       "domain": "FEEDBACK_CLARITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "획득·구매·제작·장착·레벨업·퀘스트·실패·사용 불가 등 중요한 상태 변화에 즉시 읽히는 UI/음향/시각 피드백과 실패 이유를 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1042,9 +1280,9 @@
     {
       "domain": "TUTORIAL_ONBOARDING",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "첫 플레이에서 직조 연결 시스템의 핵심 입력→결과→다음 목표를 실제 행동으로 학습시키고, 설명문만 읽는 튜토리얼보다 단계적 실습·즉시 피드백·도움말 회수를 연결한다.",
+      "directive": "첫 플레이에서 4인 파티 고정의 핵심 입력→결과→다음 목표를 실제 행동으로 학습시키고, 설명문만 읽는 튜토리얼보다 단계적 실습·즉시 피드백·도움말 회수를 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1060,9 +1298,9 @@
     {
       "domain": "GAME_FEEL",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 직조 연결 시스템에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
+      "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 4인 파티 고정에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1086,12 +1324,12 @@
     },
     {
       "domain": "NARRATIVE_STORY",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no narrative or story signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "스토리가 적용되는 게임이면 세계 설정·NPC 대사·환경 단서·퀘스트 결과가 서로 모순되지 않고 플레이 행동으로 드러나며 긴 설명이 핵심 루프를 끊지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
@@ -1104,19 +1342,19 @@
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
-      "state": "NOT_APPLICABLE",
-      "priority": "NOT_APPLICABLE",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
-      "directive": "현재 승인 설계상 no explicit replay variation signal in approved design. 새 설계 근거가 생기기 전에는 억지로 기능을 추가하지 않는다.",
+      "directive": "반복 플레이가 적용되는 게임이면 조우 조합·지역 경로·보상 선택·빌드/전략·이벤트 중 게임에 맞는 변주를 제공해 같은 정답만 반복되지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
-      "acceptance": "DESIGN_EVIDENCE_REQUIRED_BEFORE_ACTIVATION"
+      "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
     {
       "domain": "CHARACTER_VISUALS",
       "state": "GAP",
       "priority": "FIX_NOW",
       "developmentDepth": 1,
-      "directive": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
+      "directive": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1132,7 +1370,7 @@
     {
       "domain": "WEAPONS_AND_EQUIPMENT",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "무기/장비 외형이 실제 기능·사거리·무게감·공격 궤적·장착 상태와 맞고 플레이어 손/몸에 자연스럽게 연결되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1141,7 +1379,7 @@
     {
       "domain": "BUILDINGS_AND_PROPS",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "건물·상호작용 오브젝트·장식물은 기능과 상태가 형태/배치/재질로 구별되고 플레이 동선과 충돌하지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1152,7 +1390,7 @@
       "state": "GAP",
       "priority": "FIX_NOW",
       "developmentDepth": 1,
-      "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
+      "directive": "전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
       "acceptance": "REAL_GAME_SOURCE_AND_RUNTIME_OR_PLAY_EVIDENCE_REQUIRED"
     },
@@ -1177,7 +1415,7 @@
     {
       "domain": "PALETTE",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "팔레트는 지역/진영/위험/보상/상호작용 상태를 구분하면서 전체 게임 정체성을 유지하고 단순 색상 교체만으로 개선 완료를 주장하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1186,7 +1424,7 @@
     {
       "domain": "LIGHTING",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "조명은 시간/분위기뿐 아니라 플레이 동선, 적 전조, 상호작용 대상, 랜드마크 가독성을 지원하고 캐릭터 실루엣을 배경에서 분리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1195,7 +1433,7 @@
     {
       "domain": "ANIMATION",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "주요 캐릭터/적 행동을 idle→locomotion→anticipation→impact→recovery→hit/death 상태와 실제 게임 이벤트에 연결하고 정지 모델 판정을 금지한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1204,7 +1442,7 @@
     {
       "domain": "SECONDARY_MOTION",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "장비·의상·머리·꼬리·식생·기계 등 적합한 요소에 지연/관성/반동을 추가해 무게감과 생동감을 주되 판정/권한은 바꾸지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1212,8 +1450,8 @@
     },
     {
       "domain": "VFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1222,7 +1460,7 @@
     {
       "domain": "CAMERA",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "기본 시야·FOV·추적을 모바일 가독성에 맞추고 강한 타격/대시/보스/탐색 포인트에 짧고 단계적인 카메라 반응을 적용해 멀미와 과도한 흔들림을 피한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1240,7 +1478,7 @@
     {
       "domain": "AUDIO_VISUAL_TIMING",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "핵심 action의 animation impact, damage/state change, VFX, camera, audio가 같은 사건 타임라인에 맞게 발생하도록 오프셋을 정리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1249,7 +1487,7 @@
     {
       "domain": "ENVIRONMENTAL_MOTION",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "세계에 맞는 바람/식생/물/빛/먼지/기계 등 미세 환경 움직임을 추가해 정적인 무대를 피하되 플레이 정보와 성능을 방해하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1257,8 +1495,8 @@
     },
     {
       "domain": "PERFORMANCE",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "실제 병목 근거를 기준으로 update/tick 빈도, 객체/파티클 수명, draw/instance 수, GC/할당, 네트워크 빈도, 모바일 열/메모리 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1266,8 +1504,8 @@
     },
     {
       "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "맵·에셋·NPC·VFX를 늘릴 때 객체 수명, 동시 NPC/파티클, 업데이트 빈도, 스트리밍/LOD, 메모리·모바일 프레임 예산을 함께 정의하고 초과 시 표현 비용부터 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1275,8 +1513,8 @@
     },
     {
       "domain": "RUNTIME_STABILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 루프를 반복 실행해도 상태 누수·중복 이벤트·고착·크래시 없이 시작→플레이→실패/성공→재시작/복귀가 유지되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1284,8 +1522,8 @@
     },
     {
       "domain": "ERROR_RECOVERY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "재현된 오류는 숨기지 말고 책임 시스템에서 원인을 제거하고 실패 시 안전한 복구/재시도/사용자 피드백 경로를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -1293,31 +1531,6 @@
     }
   ],
   "detectedGaps": [
-    {
-      "domain": "INVENTORY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SAVE_COMPLETENESS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "RECONNECT_RECOVERY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
     {
       "domain": "CHARACTER_VISUALS",
       "state": "GAP",
@@ -1342,45 +1555,20 @@
       "domain": "MATERIALS",
       "state": "GAP",
       "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "VFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "PERFORMANCE",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "PERFORMANCE_BUDGET",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "RUNTIME_STABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "ERROR_RECOVERY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     }
   ],
-  "primaryFocus": "USABILITY",
-  "thisLoopPrimaryGoal": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"직조 연결 시스템\", 현재 책임 소스는 unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::LoadState, unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs::BuildWeb, unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs::Build, unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::LogState, unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::BuildWorld, unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::StartGameplay, unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs::UnityWebFloorBuild, unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::Update이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryFocus": "PRESENTATION",
+  "thisLoopPrimaryGoal": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 PRESENTATION를 우선한다. 게임 고유 앵커는 \"4인 파티 고정\", 현재 책임 소스는 roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::enemyModel, roblox-games/daechung-rpg/server/Game.server.luau::init, roblox-games/daechung-rpg/server/Game.server.luau::makeVillage, roblox-games/daechung-rpg/server/Game.server.luau::spawnEnemy, roblox-games/daechung-rpg/client/Game.client.luau::bindChar, roblox-games/daechung-rpg/server/Game.server.luau::chooseEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::unlockBossCompanion이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::LoadState, unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs::BuildWeb, unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs::Build, unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::LogState, unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::BuildWorld, unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::StartGameplay, unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs::UnityWebFloorBuild, unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::Update에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
-    "직조 연결 시스템를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
-    "생태계 복원 게이지가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
-    "고유 시스템 직조 연결 시스템, 생태계 복원 게이지 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
+    "우선 책임 소스 앵커 roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::enemyModel, roblox-games/daechung-rpg/server/Game.server.luau::init, roblox-games/daechung-rpg/server/Game.server.luau::makeVillage, roblox-games/daechung-rpg/server/Game.server.luau::spawnEnemy, roblox-games/daechung-rpg/client/Game.client.luau::bindChar, roblox-games/daechung-rpg/server/Game.server.luau::chooseEnemyAttack, roblox-games/daechung-rpg/server/Game.server.luau::unlockBossCompanion에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "4인 파티 고정를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
+    "무한 확장 AI 동료가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
+    "고유 시스템 4인 파티 고정, 무한 확장 AI 동료, 숙명 관계, 파티 기억, 보스·히든 동료, 장비가 AI를 바꿈, 라이벌 AI 파티, 조합 엔딩 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.",
     "핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다."
   ],
   "progressionContentWorldDirectives": [
-    "스테이지가 진행될수록 지형의 복잡도가 증가하며, 새로운 속성을 가진 조각들이 추가됩니다. 플레이어는 점진적으로 더 넓고 화려한 세계를 직조하며, 수집한 조각으로 자신만의 커스텀 맵을 구성할 수 있습니다.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다.",
+    "초기 4인 동료 확보 → 지역 스토리와 장비 파밍 → 숙명 관계·전용 퀘스트 → 히든/보스 동료 → 고난도 조합전투 → 라이벌 파티 경쟁 → 조합별 엔딩과 계속 추가되는 새 동료.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다.",
     "새 콘텐츠는 기존 핵심 루프와 연결되어야 하며 단순 수량 복제나 색/수치만 다른 변형으로 채우지 않는다.",
     "맵/지역이 있는 게임은 면적만 늘리지 말고 새 지역 역할·연결 경로·잠금/해금·랜드마크·조우/자원 역할·발견 피드백이 구별되도록 확장한다.",
     "인벤토리/장비/제작/상점/퀘스트가 존재하면 서로 같은 authoritative 상태를 사용해 실제 플레이와 연결하고 고립된 메뉴 기능으로 남기지 않는다.",
@@ -1405,7 +1593,7 @@
       "UNITY",
       "FORTNITE_UEFN"
     ],
-    "requestedPlatform": "WEB",
+    "requestedPlatform": "ROBLOX",
     "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
     "existingCompletenessReview": {
       "requiredEveryBuildUp": true,
@@ -1427,55 +1615,48 @@
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
     "themeDepth": 1,
-    "selectedThemeReason": "5 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=UNKNOWN_RUNTIME_EFFECT.",
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=NONE; previousEffect=UNKNOWN_RUNTIME_EFFECT.",
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 93,
+        "score": 76,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
-          "VFX",
           "CHARACTER_VISUALS",
           "ENEMY_VISUALS"
         ]
       },
       {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 64,
-        "gapDomains": [
-          "INVENTORY",
-          "INVENTORY_USABILITY",
-          "SYSTEM_CONNECTION"
-        ]
-      },
-      {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
-        "score": 26,
+        "score": 34,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
       },
       {
-        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
         "score": 22,
-        "gapDomains": [
-          "SYSTEM_CONNECTION"
-        ]
-      },
-      {
-        "theme": "MID_LATE_ENDGAME_COMPLETION",
-        "score": 14,
         "gapDomains": []
       },
       {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 12,
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 20,
+        "gapDomains": []
+      },
+      {
+        "theme": "MID_LATE_ENDGAME_COMPLETION",
+        "score": 16,
         "gapDomains": []
       },
       {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
-        "score": 10,
+        "score": 14,
+        "gapDomains": []
+      },
+      {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "score": 14,
         "gapDomains": []
       }
     ],
@@ -1551,17 +1732,17 @@
   },
   "visualBuildUpDirective": {
     "artDirection": {
-      "identity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.",
-      "visualPurpose": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 플레이 판단과 직조 연결 시스템가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
-      "distinctnessRule": "생태계 복원 게이지와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
+      "identity": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.",
+      "visualPurpose": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 플레이 판단과 4인 파티 고정가 화면만 보고도 구별되도록 시각 언어를 통일한다.",
+      "distinctnessRule": "무한 확장 AI 동료와 연결되지 않는 장식 추가보다 실루엣·동작·환경 맥락으로 게임 고유성을 강화한다.",
       "placeholderDebt": "HIGH"
     },
     "domains": {
-      "CHARACTER": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.",
-      "ENEMY_CREATURE": "직조 연결 시스템의 상대 역할마다 색만 바꾸지 말고 크기·실루엣·이동 리듬·공격 전조·피격/사망 반응을 다르게 만든다.",
+      "CHARACTER": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.",
+      "ENEMY_CREATURE": "4인 파티 고정의 상대 역할마다 색만 바꾸지 말고 크기·실루엣·이동 리듬·공격 전조·피격/사망 반응을 다르게 만든다.",
       "WEAPON_EQUIPMENT": "장비가 실제 기능과 연결되어 손에 쥔 형태, 공격 궤적, impact/recovery, 장착 피드백이 서로 일치하게 만든다.",
       "BUILDING_PROP": "상호작용 가능한 구조물과 장식물을 형태·배치·상태 변화로 구분하고 플레이 동선을 가리는 무의미한 소품 반복을 피한다.",
-      "ENVIRONMENT_TERRAIN": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 세계 역할을 지역별 지형·랜드마크·전경/중경/후경·높낮이·환경 움직임으로 구분한다.",
+      "ENVIRONMENT_TERRAIN": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 세계 역할을 지역별 지형·랜드마크·전경/중경/후경·높낮이·환경 움직임으로 구분한다.",
       "MATERIAL_SURFACE": "나무/돌/금속 등 이름 등록만 하지 말고 실제 표면 반응·거칠기·광택·마모·발광을 장면 조명과 맞춘다.",
       "PALETTE": "위험·안전·보상·상호작용 상태가 게임 팔레트 안에서 즉시 읽히게 하고 단순 색 교체를 정체성 개선으로 계산하지 않는다.",
       "LIGHTING": "핵심 동선·위험·랜드마크를 조명으로 유도하고 캐릭터와 적 실루엣이 배경에 묻히지 않게 한다.",
@@ -1569,7 +1750,7 @@
       "SECONDARY_MOTION": "무기·장비·머리·의상·식생 등 해당 오브젝트에 지연/흔들림을 추가하되 판정과 충돌 권한은 바꾸지 않는다.",
       "VFX": "일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.",
       "CAMERA": "기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.",
-      "UI_HUD": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.",
+      "UI_HUD": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.",
       "AUDIO_VISUAL_SYNC": "damage/VFX/animation/camera/audio가 같은 impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.",
       "ENVIRONMENTAL_MOTION": "정적인 배경을 피하고 식생·빛·파티클·기계/건축 요소 중 세계에 맞는 미세 움직임을 지속시킨다.",
       "SCENE_DENSITY": "빈 공간과 반복 오브젝트 밀도를 실제 플레이 동선 기준으로 조정하고 중요 영역에는 의미 있는 시각 정보가 있게 한다.",
@@ -1591,7 +1772,7 @@
       "PRIMARY_PLACEHOLDER_PRIMITIVE_CANNOT_CLOSE_VISUAL_BUILD_UP",
       "BEFORE_AFTER_COMPARISON_REQUIRED"
     ],
-    "focus": "USABILITY"
+    "focus": "PRESENTATION"
   },
   "uxInputDirectives": [
     "핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다.",
@@ -1601,144 +1782,152 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 목표 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 목표 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 목표 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
-    "FORTNITE_UEFN": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 목표 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 목표 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 목표 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
-    "UNREAL": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 목표 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UEFN": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.: 동일 공통 목표 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
+    "WEB": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "ROBLOX": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "FORTNITE_UEFN": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UNITY_WEB": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.",
+    "UNREAL": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UEFN": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.: 동일 공통 목표 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
   "robloxNativeExecution": {
     "version": 1,
     "required": true,
-    "responsibleFiles": [],
+    "responsibleFiles": [
+      "roblox-games/daechung-rpg/server/Game.server.luau",
+      "roblox-games/daechung-rpg/client/Game.client.luau",
+      "roblox-games/daechung-rpg/shared/GameConfig.luau",
+      "roblox-games/daechung-rpg/shared/QACamera.luau",
+      "roblox-games/daechung-rpg/launch-mvp.json",
+      "roblox-games/daechung-rpg/default.project.json",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau"
+    ],
     "sourceSymbolsOrStateAnchors": [
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 141,
-        "kind": "METHOD",
-        "symbol": "LoadState",
-        "currentBehavior": "private void LoadState()",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 LoadState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 414,
+        "kind": "FUNCTION",
+        "symbol": "beginEnemyAttack",
+        "currentBehavior": "local function beginEnemyAttack(e,target,now)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 beginEnemyAttack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 16,
-        "kind": "METHOD",
-        "symbol": "BuildWeb",
-        "currentBehavior": "public static void BuildWeb()",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 BuildWeb의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 770,
+        "kind": "FUNCTION",
+        "symbol": "enemyModel",
+        "currentBehavior": "local function enemyModel(parent,z,pos,boss,enemyDef)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 enemyModel의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 33,
-        "kind": "METHOD",
-        "symbol": "Build",
-        "currentBehavior": "public static void Build()",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 Build의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 515,
+        "kind": "FUNCTION",
+        "symbol": "init",
+        "currentBehavior": "local function init(p)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 init의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 149,
-        "kind": "METHOD",
-        "symbol": "LogState",
-        "currentBehavior": "private void LogState()",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 LogState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 640,
+        "kind": "FUNCTION",
+        "symbol": "makeVillage",
+        "currentBehavior": "local function makeVillage()",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 makeVillage의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 38,
-        "kind": "METHOD",
-        "symbol": "BuildWorld",
-        "currentBehavior": "private void BuildWorld()",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 BuildWorld의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 901,
+        "kind": "FUNCTION",
+        "symbol": "spawnEnemy",
+        "currentBehavior": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 spawnEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 108,
-        "kind": "METHOD",
-        "symbol": "StartGameplay",
-        "currentBehavior": "private void StartGameplay()",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 StartGameplay의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 199,
+        "kind": "FUNCTION",
+        "symbol": "bindChar",
+        "currentBehavior": "local function bindChar(c)combatTracks={};local h=c:WaitForChild(\"Humanoid\");h.HealthChanged:Connect(render);render()end",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 bindChar의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/daechung-rpg/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 11,
-        "kind": "CLASS",
-        "symbol": "UnityWebFloorBuild",
-        "currentBehavior": "public static class UnityWebFloorBuild",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 UnityWebFloorBuild의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 404,
+        "kind": "FUNCTION",
+        "symbol": "chooseEnemyAttack",
+        "currentBehavior": "local function chooseEnemyAttack(e)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 chooseEnemyAttack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 84,
-        "kind": "METHOD",
-        "symbol": "Update",
-        "currentBehavior": "private void Update()",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 Update의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 580,
+        "kind": "FUNCTION",
+        "symbol": "unlockBossCompanion",
+        "currentBehavior": "local function unlockBossCompanion(killer,e)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 unlockBossCompanion의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "symbol": "LoadState",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "symbol": "beginEnemyAttack",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "symbol": "BuildWeb",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "symbol": "enemyModel",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "symbol": "Build",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "symbol": "init",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "symbol": "LogState",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "symbol": "makeVillage",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "symbol": "BuildWorld",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "symbol": "spawnEnemy",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "symbol": "StartGameplay",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "symbol": "bindChar",
+        "role": "CLIENT_INPUT_OR_PRESENTATION",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "symbol": "UnityWebFloorBuild",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "symbol": "chooseEnemyAttack",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "symbol": "Update",
-        "role": "SHARED_MODULE_OR_STATE",
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "symbol": "unlockBossCompanion",
+        "role": "SERVER_AUTHORITY",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
-    "expectedPlayerEffect": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
+    "expectedPlayerEffect": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "observableAcceptanceScenario": "input/touch -> local handler -> RemoteEvent/RemoteFunction when required -> server validation -> authoritative state change -> client feedback",
     "sourceInspectionChecklist": [
       "SERVER_AUTHORITY",
@@ -1771,111 +1960,110 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "unity-games/seed-casual-realm-weaver/Assets/Scripts/GameCore.cs",
-      "unity-games/seed-casual-realm-weaver/Assets/Scripts/RuntimeBootstrap.cs",
-      "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-      "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-      "unity-games/seed-casual-realm-weaver/Assets/Art/unity-web-floor-domain.json",
-      "unity-games/seed-casual-realm-weaver/Assets/Animations/unity-web-floor-domain.json",
-      "unity-games/seed-casual-realm-weaver/Assets/Materials/unity-web-floor-domain.json",
-      "unity-games/seed-casual-realm-weaver/Assets/Prefabs/unity-web-floor-domain.json"
+      "roblox-games/daechung-rpg/server/Game.server.luau",
+      "roblox-games/daechung-rpg/client/Game.client.luau",
+      "roblox-games/daechung-rpg/shared/GameConfig.luau",
+      "roblox-games/daechung-rpg/shared/QACamera.luau",
+      "roblox-games/daechung-rpg/launch-mvp.json",
+      "roblox-games/daechung-rpg/default.project.json",
+      "roblox-games/daechung-rpg/shared/VisualStyle.luau"
     ],
     "sourceAnchors": [
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 141,
-        "kind": "METHOD",
-        "symbol": "LoadState",
-        "context": "private void LoadState()",
-        "score": 80,
-        "currentBehavior": "private void LoadState()",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 LoadState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::LoadState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 414,
+        "kind": "FUNCTION",
+        "symbol": "beginEnemyAttack",
+        "context": "local function beginEnemyAttack(e,target,now)",
+        "score": 170,
+        "currentBehavior": "local function beginEnemyAttack(e,target,now)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 beginEnemyAttack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::beginEnemyAttack이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 16,
-        "kind": "METHOD",
-        "symbol": "BuildWeb",
-        "context": "public static void BuildWeb()",
-        "score": 72,
-        "currentBehavior": "public static void BuildWeb()",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 BuildWeb의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs::BuildWeb이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 770,
+        "kind": "FUNCTION",
+        "symbol": "enemyModel",
+        "context": "local function enemyModel(parent,z,pos,boss,enemyDef)",
+        "score": 130,
+        "currentBehavior": "local function enemyModel(parent,z,pos,boss,enemyDef)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 enemyModel의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::enemyModel이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 33,
-        "kind": "METHOD",
-        "symbol": "Build",
-        "context": "public static void Build()",
-        "score": 72,
-        "currentBehavior": "public static void Build()",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 Build의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs::Build이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 515,
+        "kind": "FUNCTION",
+        "symbol": "init",
+        "context": "local function init(p)",
+        "score": 114,
+        "currentBehavior": "local function init(p)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 init의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::init이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 149,
-        "kind": "METHOD",
-        "symbol": "LogState",
-        "context": "private void LogState()",
-        "score": 56,
-        "currentBehavior": "private void LogState()",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 LogState의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::LogState이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 640,
+        "kind": "FUNCTION",
+        "symbol": "makeVillage",
+        "context": "local function makeVillage()",
+        "score": 114,
+        "currentBehavior": "local function makeVillage()",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 makeVillage의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::makeVillage이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 38,
-        "kind": "METHOD",
-        "symbol": "BuildWorld",
-        "context": "private void BuildWorld()",
-        "score": 48,
-        "currentBehavior": "private void BuildWorld()",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 BuildWorld의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::BuildWorld이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 901,
+        "kind": "FUNCTION",
+        "symbol": "spawnEnemy",
+        "context": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
+        "score": 98,
+        "currentBehavior": "local function spawnEnemy(z,boss,index,enemyDef,spawnOverride,hiddenBoss)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 spawnEnemy의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::spawnEnemy이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 108,
-        "kind": "METHOD",
-        "symbol": "StartGameplay",
-        "context": "private void StartGameplay()",
-        "score": 48,
-        "currentBehavior": "private void StartGameplay()",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 StartGameplay의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::StartGameplay이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/client/Game.client.luau",
+        "line": 199,
+        "kind": "FUNCTION",
+        "symbol": "bindChar",
+        "context": "local function bindChar(c)combatTracks={};local h=c:WaitForChild(\"Humanoid\");h.HealthChanged:Connect(render);render()end",
+        "score": 90,
+        "currentBehavior": "local function bindChar(c)combatTracks={};local h=c:WaitForChild(\"Humanoid\");h.HealthChanged:Connect(render);render()end",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 bindChar의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/client/Game.client.luau::bindChar이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/daechung-rpg/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "line": 11,
-        "kind": "CLASS",
-        "symbol": "UnityWebFloorBuild",
-        "context": "public static class UnityWebFloorBuild",
-        "score": 36,
-        "currentBehavior": "public static class UnityWebFloorBuild",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 UnityWebFloorBuild의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs::UnityWebFloorBuild이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 404,
+        "kind": "FUNCTION",
+        "symbol": "chooseEnemyAttack",
+        "context": "local function chooseEnemyAttack(e)",
+        "score": 82,
+        "currentBehavior": "local function chooseEnemyAttack(e)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 chooseEnemyAttack의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::chooseEnemyAttack이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
-        "file": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs",
-        "line": 84,
-        "kind": "METHOD",
-        "symbol": "Update",
-        "context": "private void Update()",
-        "score": 32,
-        "currentBehavior": "private void Update()",
-        "intendedBehavior": "USABILITY primary goal \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 Update의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs::Update이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "file": "roblox-games/daechung-rpg/server/Game.server.luau",
+        "line": 580,
+        "kind": "FUNCTION",
+        "symbol": "unlockBossCompanion",
+        "context": "local function unlockBossCompanion(killer,e)",
+        "score": 74,
+        "currentBehavior": "local function unlockBossCompanion(killer,e)",
+        "intendedBehavior": "PRESENTATION primary goal \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.의 4인 파티 고정와 무한 확장 AI 동료가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\"에 맞춰 unlockBossCompanion의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/daechung-rpg/server/Game.server.luau::unlockBossCompanion이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/daechung-rpg/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 PRESENTATION 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -1883,14 +2071,14 @@
     "currentAndIntendedBehaviorRequiredPerPrimaryAnchor": true
   },
   "effectivenessMeasurement": {
-    "expectedPlayerEffect": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끊임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
+    "expectedPlayerEffect": "스토리에서 동료를 만나 영입하고, 수십·수백 명까지 확장되는 AI 동료 풀에서 4인 파티를 구성해 직접 전투·장비 세팅·관계 조합을 연구하는 3D 파티 액션 RPG.에서 4인 파티 고정의 위험·행동·정체성이 모션·VFX·카메라·UI를 통해 더 빠르게 읽힌다.",
     "previousGeneration": {
       "classification": "UNKNOWN_RUNTIME_EFFECT",
       "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "4fbba76ec6324eaac1be0a3f4bf8859cc1d8ae9ca091923dafd42877d74f7c2d",
+      "sourceTreeFingerprint": "9afb73f9a58d389d143398f4d9dd5e97175e0d8413d75e49b59e99e2cc3b0828",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -1927,7 +2115,7 @@
   ],
   "nextEscalationCandidates": [
     "DEEPEN_CORE_FUN_DECISION_DENSITY",
-    "RAISE_VISUAL_ACTING_MOTION_AND_ENVIRONMENT_COHERENCE",
+    "CONNECT_VISUAL_LANGUAGE_TO_GAMEPLAY_TELEGRAPH_AND_WORLD_IDENTITY",
     "CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST",
     "OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED"
   ],
@@ -1938,7 +2126,7 @@
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": false,
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -1986,23 +2174,12 @@
       "PERFORMANCE_BUDGET",
       "RUNTIME_STABILITY"
     ],
-    "holisticGaps": [
-      "INVENTORY",
-      "INVENTORY_USABILITY",
-      "SYSTEM_CONNECTION",
-      "SAVE_COMPLETENESS",
-      "PERFORMANCE_BUDGET",
-      "RUNTIME_STABILITY"
-    ],
+    "holisticGaps": [],
     "notApplicable": [
-      "QUESTS",
       "CRAFTING",
-      "MULTIPLAYER_AND_SYNC",
-      "NPC_SOCIAL_BEHAVIOR",
-      "NARRATIVE_STORY",
-      "REPLAYABILITY_VARIATION"
+      "NPC_SOCIAL_BEHAVIOR"
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-09-27T12:37:39.489Z"
+  "generatedAt": "2026-09-27T12:37:39.131Z"
 }
