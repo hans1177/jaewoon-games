@@ -73,6 +73,9 @@ test('director fallback wake only re-dispatches existing queued GAME_PRIMARY wor
   assert.equal(coalescing.gamePrimaryGateCancelInProgress,false);
   assert.equal(coalescing.gamePrimaryGateActiveCompletionPreserved,true);
   assert.equal(coalescing.gamePrimaryGatePendingLatestWins,true);
+  assert.equal(coalescing.runnerDrainConcurrencyGroup,'director-runner-drain-v2');
+  assert.equal(coalescing.previousRunnerDrainConcurrencyGroup,'director-runner-drain-v1');
+  assert.equal(coalescing.runnerDrainEpochAdvancedToBypassLegacyPendingGroup,true);
 
   assert.match(directorSupervisor,/\n      - Vibe2 Continuous Core\n    types: \[completed\]/);
   assert.match(directorSupervisor,/game-primary-gate:[\s\S]*?group: director-game-primary-gate-v1[\s\S]*?cancel-in-progress: false/);
@@ -1283,7 +1286,7 @@ test('director uses job-local coalescing without workflow-wide serialization',()
   const jobsAt=directorSupervisor.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.doesNotMatch(directorSupervisor.slice(0,jobsAt),/\nconcurrency:/);
-  assert.match(directorSupervisor,/runner-drain:[\s\S]*?group:\s*director-runner-drain-v1/);
+  assert.match(directorSupervisor,/runner-drain:[\s\S]*?group:\s*director-runner-drain-v2/);
   assert.match(directorSupervisor,/game-primary-gate:[\s\S]*?group:\s*director-game-primary-gate-v1/);
   assert.match(directorSupervisor,/game-primary-gate:[\s\S]*?cancel-in-progress:\s*false/);
   assert.doesNotMatch(directorSupervisor,/game-primary-gate:\n\s+needs:\s+runner-drain/);
