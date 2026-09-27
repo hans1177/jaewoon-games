@@ -1,8 +1,8 @@
 {
-  "version": 487,
+  "version": 488,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-27",
+  "recordedAt": "2026-09-28",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -1379,7 +1379,7 @@
       "previousRemovalAt": "2026-09-22T03:45:00+09:00",
       "authority": "OWNER_DIRECTIVE_2026-09-25",
       "sharedPublishedTargetCurrentRequired": false,
-      "requiredForInternalRelease": false,
+      "requiredForInternalRelease": true,
       "requiredForActualVibeInternalPlay": true,
       "officialStudioMcpOnly": true,
       "studioMcpTransport": "STDIO",
@@ -1464,7 +1464,7 @@
         "completedSessionExitContract": "MCP_RUN_EXITS_SUCCESS_AFTER_REQUIRED_TOOLS_AND_STUDIO_SESSION_COMPLETE_EVEN_WHEN_RUNTIME_QA_FAILS"
       },
       "runtimeFoundationPassedArtifactAllowedForLocalActualPlay": true,
-      "earliestBehaviorFeedbackCheckpoint": "AFTER_RUNTIME_FOUNDATION_PASS_AND_EXACT_SOURCE_ARTIFACT_BINDING",
+      "earliestBehaviorFeedbackCheckpoint": "AFTER_EXACT_PRIVATE_RUNTIME_CANDIDATE_AND_EXACT_SOURCE_ARTIFACT_BINDING",
       "actualPlayQualityContract": {
         "version": 1,
         "status": "ACTIVE_EXECUTABLE_CONTRACT",
@@ -1491,7 +1491,9 @@
           "VISUAL_CAPTURE_SANITY",
           "APPROVED_DESIGN_RUNTIME_BINDING"
         ]
-      }
+      },
+      "serverBootObservationRequiredForInternalRelease": false,
+      "externalPublicReleaseApprovalAuthority": "OWNER_EXPLICIT_DIRECTIVE_ONLY"
     },
     "headlessValidation": {
       "version": 2,
@@ -4163,33 +4165,36 @@
       "supersededSharedTargetLocalExactArtifactPlayAllowed": true,
       "supersededSharedTargetCannotClaimCurrentPublishedRuntime": true,
       "runtimeFoundationBoundary": {
-        "version": 1,
+        "version": 2,
         "exactEngineVersionWithoutRealServerBootState": "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
         "exactEngineVersionWithoutRealServerBootBlocker": "roblox-runtime-foundation-awaiting-real-server-boot",
         "exactEngineVersionDoesNotEqualRealGameServerBoot": true,
         "studioMcpActualPlayPassRemainsValidWhileRuntimeFoundationObservationPending": true,
         "runtimeFoundationPassMustNotBeFabricatedFromOpenCloudHeadlessExecution": true,
         "runtimeFoundationEvidenceAuthority": ".github/workflows/company-development-roblox-post-runtime-qa.yml#runtime-foundation-qa",
-        "observationRetry": "UNLIMITED_OBSERVATION",
+        "observationRetry": "OPTIONAL_DIAGNOSTIC_ONLY",
         "developmentBlocking": false,
         "internalQaBlocking": false,
         "internalRegressionBlocking": false,
         "internalReleaseBlocking": false,
-        "externalPublicReleaseBlocking": true,
+        "externalPublicReleaseBlocking": false,
         "sameGameIndependentDevelopmentContinuesWhilePending": true,
-        "internalReleaseExceptionRequiresExactEngineVersionAndOfficialStudioMcpPlay": true,
+        "internalReleaseExceptionRequiresExactEngineVersionAndOfficialStudioMcpPlay": false,
         "runtimeTruthFieldsMustRemainUnfabricated": true,
         "exactPrivateRuntimeFailuresBlockInternalFlow": false,
         "exactPrivateRuntimeFailuresBlockExternalPublicRelease": true,
         "internalContinuationUsesSeparateTruthPreservingFlags": true,
         "f9ReviewRunsInParallelWithInternalPlaytestWhenOnlyExternalPublicReleaseIsBlocked": true,
         "f9PendingMayNotPauseInternalDevelopmentOrInternalPlaytest": true,
-        "nextAction": "CONTINUE_INTERNAL_DEVELOPMENT_QA_REGRESSION_INTERNAL_RELEASE_AND_INTERNAL_PLAYTEST_IN_PARALLEL_WHILE_F9_AND_RUNTIME_REPAIR_CONTINUE; BLOCK_EXTERNAL_PUBLIC_RELEASE_ONLY",
+        "nextAction": "USE_OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD_FOR_INTERNAL_VALIDATION; DO_NOT WAIT_FOR REAL_SERVER_BOOT; KEEP PUBLICATION DISABLED UNTIL EXPLICIT OWNER APPROVAL",
         "robloxPlayerAutomationForbidden": true,
         "publishedPlaceDirectStudioAutomationForbidden": true,
         "exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot": true,
         "studioActualPlayEligibilityDoesNotSetRuntimeFoundationPass": true,
-        "studioActualPlayEligibilityDoesNotSetExternalPublicReleaseReady": true
+        "studioActualPlayEligibilityDoesNotSetExternalPublicReleaseReady": true,
+        "internalReleaseUsesOfficialStudioMcpAndInternalQaOnly": true,
+        "externalPublicReleaseServerBootRequired": false,
+        "externalPublicReleaseOwnerApprovalRequired": true
       }
     },
     "deterministicGateAuthority": {
@@ -5110,10 +5115,10 @@
       "globalWindow": null
     },
     "internalPlatformReleaseAndPublicExposureGate": {
-      "version": 4,
-      "authority": "OWNER_DIRECTIVE_2026-09-21",
+      "version": 5,
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
-      "objective": "ALLOW_FAST_NATIVE_INTERNAL_RELEASE_AND_REAL_PLATFORM_TESTING_BEFORE PUBLIC EXPOSURE; REQUIRE PLATFORM-SPECIFIC QA/REGRESSION AND ADAPTATION PASS BEFORE FULL PUBLIC RELEASE",
+      "objective": "ALLOW_FAST_NATIVE_INTERNAL_RELEASE_FROM_EXACT_LOCAL_STUDIO_VALIDATION_AND_INTERNAL_QA_WITHOUT_REAL_SERVER_BOOT; KEEP EXTERNAL PUBLICATION FAIL_CLOSED UNTIL EXPLICIT OWNER APPROVAL",
       "stages": [
         "MINIMUM_DESIGN_CONTRACT_READY",
         "ROBLOX_UNITY_NATIVE_DEVELOPMENT_CONCURRENT",
@@ -5136,7 +5141,8 @@
           "state": "INTERNAL_PLATFORM_RELEASE",
           "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
           "serverPublicationAllowed": true,
-          "publicDiscoveryAllowed": false
+          "publicDiscoveryAllowed": false,
+          "internalValidationSurface": "LOCAL_EXACT_BUILD_ROBLOX_STUDIO_MCP"
         },
         "unity": {
           "state": "INTERNAL_PLATFORM_RELEASE",
@@ -5145,17 +5151,17 @@
           "localOrArtifactInternalTestingAllowed": true,
           "missingStorePublishCredentials": "MARK_INTERNAL_TEST_TRACK_READY_NOT_PUBLIC_RELEASE"
         },
-        "foundationValidationRequired": true,
+        "foundationValidationRequired": false,
         "headlessOnlyEvidenceForbidden": true,
-        "actualRuntimeFoundationF1ThroughF4Required": true,
+        "actualRuntimeFoundationF1ThroughF4Required": false,
         "multiplayerVerification": {
           "mode": "SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS_ALLOWED",
           "appliesWhenGameDesignRequiresMultiplayer": true,
           "minimumInternalEvidence": [
             "F0_MULTIPLAYER_STATE_SYNC_CONTRACT_PASS",
-            "ACTUAL_RUNTIME_FOUNDATION_F1_THROUGH_F6_AND_F8_PASS",
-            "SERVER_CLIENT_BOUNDARY_PASS",
-            "SAVE_REJOIN_PASS_WHEN_SAVE_EXISTS",
+            "OFFICIAL_STUDIO_MCP_LOCAL_MULTIPLAYER_WHEN_SUPPORTED",
+            "SERVER_CLIENT_BOUNDARY_SOURCE_AND_STUDIO_PASS",
+            "SAVE_REJOIN_STUDIO_OR_DETERMINISTIC_INTERNAL_PASS_WHEN_SAVE_EXISTS",
             "NO_CURRENT_CRITICAL_OR_HIGH_MULTIPLAYER_FAILURE"
           ],
           "actualTwoPlusClientPlatformObservationRequiredForInternalRelease": false,
@@ -5164,7 +5170,11 @@
           "fullTwoPlusClientPlatformEvidenceStillRequiredBeforeExternalPublicRelease": true,
           "recurringFullMultiplayerVerificationContinuesAfterInternalRelease": true,
           "multiplayerVerificationMayNotDelayOtherDevelopmentOrInternalPlaytest": true
-        }
+        },
+        "studioInternalValidationRequired": true,
+        "studioInternalValidationAuthority": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD_PLUS_INTERNAL_QA_REGRESSION",
+        "externalServerBootObservationRequired": false,
+        "publicServerBotPlayForbidden": true
       },
       "secondGate": {
         "role": "PUBLIC_EXPOSURE_HARD_GATE_ONLY",
@@ -5172,8 +5182,8 @@
         "mustNotRetroactivelyBlockNativeDevelopment": true,
         "requiredBeforeExternalPublicRelease": true,
         "commonRequirements": [
-          "NATIVE_FOUNDATION_F0_TO_F4_PASS",
-          "NATIVE_RUNTIME_PASS",
+          "NATIVE_BUILD_F0_PASS",
+          "OFFICIAL_STUDIO_INTERNAL_VALIDATION_PASS",
           "INDEPENDENT_QA_PASS",
           "REGRESSION_PASS",
           "NO_OPEN_CRITICAL_OR_HIGH_REPRODUCIBLE_TESTER_BUG",
@@ -5237,7 +5247,12 @@
         "secondGatePassAloneDoesNotClaimPublication": true,
         "externalHardGate": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
         "publicReadyMayNotBeSetByInternalReleaseOrF9Alone": true,
-        "publicReadyRequiresHardGatePass": true
+        "publicReadyRequiresHardGatePass": true,
+        "ownerExplicitApprovalRequired": true,
+        "ownerApprovalCannotBeInferred": true,
+        "automaticExternalPublicationForbidden": true,
+        "publicReadyDoesNotEqualOwnerApproval": true,
+        "approvalAuthority": "OWNER_EXPLICIT_DIRECTIVE_ONLY"
       },
       "implementation": {
         "controlTool": "tools/company-platform-exposure-control.mjs",
@@ -5284,7 +5299,11 @@
       "publicRelease": {
         "platformIndependent": true,
         "onePlatformDoesNotWaitForOther": true,
-        "explicitExternalExposureEvidenceRequired": true
+        "explicitExternalExposureEvidenceRequired": true,
+        "explicitOwnerApprovalRequired": true,
+        "ownerApprovalCannotBeInferred": true,
+        "automatedApprovalForbidden": true,
+        "automaticPublicationForbidden": true
       },
       "internalBuildupLoop": {
         "version": 2,
@@ -5377,11 +5396,11 @@
         "actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease": true
       },
       "externalPublicReleaseHardGate": {
-        "version": 1,
-        "authority": "OWNER_DIRECTIVE_2026-09-25",
+        "version": 2,
+        "authority": "OWNER_DIRECTIVE_2026-09-28",
         "status": "FAIL_CLOSED",
         "platform": "ROBLOX",
-        "objective": "PUBLIC_EXPOSURE_ONLY_AFTER_GAME_COMPLETION_ACTUAL_VIBE_PLAY_ROBLOX_ADAPTATION_STABILITY_SECURITY_AND_EXACT_CANDIDATE_EVIDENCE_ALL_PASS",
+        "objective": "PUBLIC_EXPOSURE_ONLY_AFTER_INTERNAL_STUDIO_VALIDATION_AND QUALITY EVIDENCE PASS; ACTUAL PUBLICATION REQUIRES EXPLICIT OWNER APPROVAL",
         "independentFromPerpetualBuildupLoop": true,
         "buildupLoopContinuesWhetherGateFailsOrPasses": true,
         "criteriaMode": "EVIDENCE_AND_COMPLETION_ONLY",
@@ -5403,10 +5422,10 @@
           "NO_CONFIRMED_SECURITY_RELEASE_BLOCKER",
           "ROBLOX_PLATFORM_REBUILD_COMPLETED",
           "ROBLOX_PLATFORM_ADAPTATION_RUNTIME_EVIDENCE_PASS",
-          "NATIVE_RUNTIME_PASS",
+          "OFFICIAL_STUDIO_INTERNAL_VALIDATION_PASS",
           "REGRESSION_PASS",
           "SAVE_REJOIN_PASS_WHEN_APPLICABLE",
-          "MULTIPLAYER_2PLUS_PASS_WHEN_REQUIRED",
+          "STUDIO_MULTIPLAYER_VALIDATION_PASS_WHEN_REQUIRED",
           "SERVER_CLIENT_AUTHORITY_AND_REMOTE_SECURITY_PASS",
           "MOBILE_INPUT_UI_AND_LOW_END_PERFORMANCE_PASS",
           "PRESENTATION_COMPLETION_EVIDENCE_PASS",
@@ -5465,7 +5484,12 @@
         "passState": "PUBLIC_RELEASE_READY",
         "publicationRequiresExplicitExternalPublicationEvidenceAfterPass": true,
         "publicationSuccessState": "PUBLIC_RELEASE",
-        "failAction": "KEEP_EXTERNAL_EXPOSURE_DISABLED_AND_CONTINUE_INTERNAL_BUILDUP_LOOP"
+        "failAction": "KEEP_EXTERNAL_EXPOSURE_DISABLED_AND_CONTINUE_INTERNAL_BUILDUP_LOOP",
+        "publicServerBootObservationRequired": false,
+        "ownerApprovalRequiredForPublication": true,
+        "ownerApprovalIsSeparateFromReadiness": true,
+        "ownerApprovalCannotBeInferred": true,
+        "automaticPublicationForbidden": true
       }
     },
     "autonomousBottleneckRecovery": {
@@ -10153,6 +10177,19 @@
         "seedHomepageStatusDirectPushCount": 0,
         "residualUnnecessaryWorkflow": "Company DNA Learning"
       }
+    },
+    "robloxInternalStudioOnlyOwnerPublicApproval20260928": {
+      "id": "ROBLOX_INTERNAL_STUDIO_ONLY_OWNER_PUBLIC_APPROVAL_2026-09-28",
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
+      "documentationFirst": true,
+      "summary": "Roblox internal completion uses exact local Studio MCP validation plus internal QA/regression without requiring real-server boot observation. External/public release remains fail-closed until explicit owner approval; automated Roblox Player/public-server bot play remains forbidden.",
+      "internalServerBootRequired": false,
+      "internalValidationAuthority": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD_PLUS_INTERNAL_QA_REGRESSION",
+      "externalPublicReleaseRequiresExplicitOwnerApproval": true,
+      "ownerApprovalCannotBeInferred": true,
+      "automaticPublicReleaseForbidden": true,
+      "robloxPlayerAutomationForbidden": true,
+      "publicServerBotPlayForbidden": true
     }
   },
   "vibeExecutionLaneContract": {
