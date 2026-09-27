@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-13iy7rn",
-      "worker": "vibe2",
-      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/Game.server.luau",
-        "roblox-games/cozy-island/client/Game.client.luau",
-        "roblox-games/cozy-island/shared/GameConfig.luau"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T13:09:36.217Z",
-      "expiresAt": "2026-09-27T13:54:36.217Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-post-release-focus-12c1a7e2ae6288fd"
-      ]
-    },
-    {
       "id": "wl-1ho8u4z",
       "worker": "vibe2",
       "taskId": "seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1",
@@ -599,6 +580,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:bug-defense-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1nuwb7y",
+      "worker": "vibe2",
+      "taskId": "seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-casual-realm-weaver",
+      "files": [
+        "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+        "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
+        "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau"
+      ],
+      "baseSha": "0136064ac8c56e718a0700cf3c8d96e458f56be5",
+      "acquiredAt": "2026-09-27T13:54:59.945Z",
+      "expiresAt": "2026-09-27T14:39:59.945Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
