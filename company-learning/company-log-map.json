@@ -1,5 +1,5 @@
 {
-  "version": 150,
+  "version": 151,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1196,7 +1196,8 @@
       "EXISTING_GAME_HOLISTIC_BACKFILL_STATE",
       "HOLISTIC_CORE_DOMAIN_PASS_GAP_NOT_APPLICABLE_RESULT",
       "FIRST_10_MINUTES_AND_SESSION_FLOW_REVIEW",
-      "MAP_INVENTORY_UI_CONVENIENCE_SYSTEM_CONNECTION_REVIEW_WHEN_APPLICABLE"
+      "MAP_INVENTORY_UI_CONVENIENCE_SYSTEM_CONNECTION_REVIEW_WHEN_APPLICABLE",
+      "GAME_SPECIFIC_MENU_STRUCTURE_DECISION"
     ],
     "visualEvidenceDomains": [
       "CHARACTER",
@@ -1246,7 +1247,13 @@
     "presentationOnlyEvidenceCannotHideApplicableGameplayWorldInventoryUiGap": true,
     "existingGamesUseCurrentHolisticStandard": true,
     "existingGameGrandfatherExemptionForbidden": true,
-    "allFiveBackfillPillarsRequiredBeforeExistingHolisticBaseline": true
+    "allFiveBackfillPillarsRequiredBeforeExistingHolisticBaseline": true,
+    "gameSpecificMenuDiversity": {
+      "required": true,
+      "crossGameCopyPasteForbidden": true,
+      "applicableMenuSelectionEvidenceRequired": true,
+      "mobileNavigationEvidenceRequired": true
+    }
   },
   "minimumNecessaryProcedureDevelopmentEvidence": {
     "version": 1,
