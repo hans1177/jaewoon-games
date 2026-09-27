@@ -2208,7 +2208,8 @@ function hasCurrentAutonomousContentExpansionDirective(directive={}){
     &&expansion?.autonomousDecisionOwner==='VIBE'
     &&Number(ledger?.version||0)>=1
     &&Array.isArray(ledger?.requiredThemes)
-    &&ledger.requiredThemes.length>=7
+    &&ledger.requiredThemes.length>=8
+    &&ledger.requiredThemes.includes('MENU_UI_EXPERIENCE_SYSTEM')
   );
 }
 
