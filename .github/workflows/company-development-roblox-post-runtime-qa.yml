@@ -684,12 +684,19 @@ jobs:
               multiplayerPromotionPending:result.multiplayerPromotionPending,
               blockers:result.blockers,
             }));
-            if(result.exactGame===true&&result.exactPlace===true&&result.exactVersion!==true){
-              const exactEngineVersionAwaitingRealServerBoot=
-                engineProbe?.engineExecuted===true
-                &&engineProbe?.exactPlace===true
-                &&engineProbe?.exactVersion===true
-                &&engineProbe?.serverBootObserved!==true;
+            const exactEngineVersionAwaitingRealServerBoot=
+              engineProbe?.engineExecuted===true
+              &&engineProbe?.exactPlace===true
+              &&engineProbe?.exactVersion===true
+              &&engineProbe?.serverBootObserved!==true;
+            if(
+              result.exactGame===true
+              &&result.exactPlace===true
+              &&(
+                result.exactVersion!==true
+                ||(result.runtimeFoundationPassed!==true&&exactEngineVersionAwaitingRealServerBoot)
+              )
+            ){
               const attempts=Math.max(0,Number(item.robloxRuntimeRetryCount||0))+1;
               item.robloxRuntimeRetryCount=attempts;
               item.robloxRuntimeLastObservationAttemptAt=stamp;
@@ -708,7 +715,7 @@ jobs:
                 observedVersionNumber:Number(sentinel.placeVersion||0),
                 exactGame:result.exactGame,
                 exactPlace:result.exactPlace,
-                exactVersion:false,
+                exactVersion:result.exactVersion===true,
                 exactEngineVersion:engineProbe?.exactVersion===true,
                 engineExecuted:engineProbe?.engineExecuted===true,
                 simulationRunning:engineProbe?.simulationRunning===true,
