@@ -1091,7 +1091,15 @@ function startBlueprint(r){
 function blueprintPlacementValid(bp,x=bp?.x,y=bp?.y){
  if(!bp||state.area!=='surface'||!Number.isFinite(x)||!Number.isFinite(y))return false;
  if(pointInGiantLakeWater(x,y)||insideSnowOutpost(x,y,45))return false;
- return structurePositions().every(s=>dist(x,y,s.x,s.y)>=88)
+ const wallDoor=bp.id==='wood-wall'||bp.id==='wood-door';
+ return structurePositions().every(s=>{
+  const existingWallDoor=state.walls.includes(s)||state.doors.includes(s);
+  if(wallDoor&&existingWallDoor){
+   const ax=bp.vertical?17:48,ay=bp.vertical?48:17,bx=s.vertical?17:48,by=s.vertical?48:17;
+   return Math.abs(x-s.x)>=ax+bx||Math.abs(y-s.y)>=ay+by
+  }
+  return dist(x,y,s.x,s.y)>=88
+ })
 }
 function cancelBlueprint(){
  if(!state.blueprint)return;const name=item(state.blueprint.id)?.name||'건축물';state.blueprint=null;state.dirty=true;updateHud();showNotice(name+' 청사진 취소')
@@ -2002,7 +2010,15 @@ function hostApplyStructurePlace(payload){
  const pos=sharedStructurePos(payload.pos);if(!pos)return;const raw=payload.pos&&typeof payload.pos==='object'?payload.pos:{};pos.vertical=!!raw.vertical;if(id==='wood-wall'){pos.material=['wood','iron','gold'].includes(raw.material)?raw.material:'wood';pos.refund=raw.refund&&typeof raw.refund==='object'?{...raw.refund}:{wood:5}}
  if(id!=='flag'&&structureExists(id))return;
  if(id==='flag'&&state.flags.some(x=>dist(x.x,x.y,pos.x,pos.y)<24))return;
- if(structurePositions().some(x=>dist(x.x,x.y,pos.x,pos.y)<88))return;
+ const wallDoor=id==='wood-wall'||id==='wood-door';
+ if(structurePositions().some(s=>{
+  const existingWallDoor=state.walls.includes(s)||state.doors.includes(s);
+  if(wallDoor&&existingWallDoor){
+   const ax=pos.vertical?17:48,ay=pos.vertical?48:17,bx=s.vertical?17:48,by=s.vertical?48:17;
+   return Math.abs(pos.x-s.x)<ax+bx&&Math.abs(pos.y-s.y)<ay+by
+  }
+  return dist(pos.x,pos.y,s.x,s.y)<88
+ }))return;
  if(!placeStructure(id,pos))return;
  rememberItem(id);state.dirty=true;multiplayer.worldAt=0;saveGame(false)
 }
