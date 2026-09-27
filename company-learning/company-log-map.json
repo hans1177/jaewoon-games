@@ -2210,7 +2210,7 @@
     "manualEmptyBatchRunScoped": true
   },
   "lightweightGameIngressRunnerReliefEvidence": {
-    "version": 2,
+    "version": 3,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "source": "company-learning/platform-release-roadmap.json#changeRecord.lightweightGameIngressRunnerRelief20260927",
     "observedBeforeChange": {
@@ -2222,10 +2222,11 @@
       "centralNativePlan": "ubuntu-slim",
       "robloxSourcePlan": "ubuntu-24.04",
       "unityPrepare": "ubuntu-slim",
-      "vibe2Reserve": "ubuntu-slim",
+      "vibe2Reserve": "ubuntu-24.04",
       "directorRunnerDrain": "ubuntu-24.04",
       "vibe2FanIn": "ubuntu-24.04-arm",
-      "heavyGameExecution": "ubuntu-latest"
+      "heavyGameExecution": "ubuntu-latest",
+      "vibe2AuxiliaryReserve": "ubuntu-slim"
     },
     "expectedConcurrency": {
       "centralMainPushCoalesced": true,
@@ -2374,5 +2375,35 @@
     "previousConcurrencyGroup": "company-development-queue-reconcile-runtime",
     "epochAdvancedToBypassLegacyPendingGroup": true,
     "observedLegacyPendingRunId": 36292590267
+  },
+  "vibeGamePrimaryReserveRunnerIsolationEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.vibeGamePrimaryReserveRunnerIsolation20260927",
+    "observed": {
+      "queuedWorkflowRuns": 36,
+      "pendingWorkflowRuns": 16,
+      "mainPushReserveRunId": 36292913438,
+      "repositoryDispatchReserveRunId": 36292923491,
+      "fixedRunnerDirectorRunId": 36292913479,
+      "directorDrainCompletedWhileSlimReserveQueued": true
+    },
+    "expectedRunnerLabels": {
+      "gamePrimaryReserve": "ubuntu-24.04",
+      "auxiliaryReserve": "ubuntu-slim",
+      "fanInRefillReserve": "ubuntu-24.04-arm",
+      "heavyWorker": "ubuntu-latest",
+      "modelCache": "ubuntu-latest"
+    },
+    "expectedSemantics": {
+      "gamePrimaryOnlyMoved": true,
+      "auxiliaryLanesRemainSlim": true,
+      "fanInRefillBypassPreserved": true,
+      "heavyExecutionUnchanged": true,
+      "sharedStateOptimisticRetryPreserved": true,
+      "activeGameCancellationForbidden": true,
+      "independentGameParallelismPreserved": true,
+      "qualitySecurityReleaseGatesUnchanged": true
+    }
   }
 }
