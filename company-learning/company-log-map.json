@@ -1,5 +1,5 @@
 {
-  "version": 132,
+  "version": 133,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2350,5 +2350,26 @@
     "exactSourceArtifactBindingRequired": true,
     "privateRuntimeRecoveryUsesExactF0Evidence": true,
     "privateRuntimeRecoverySharedCurrentStepDependencyForbidden": true
+  },
+  "developmentQueueReconcileRunnerIsolationEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "workflow": ".github/workflows/company-development-queue-reconcile.yml",
+    "expectedRunnerLabels": {
+      "gamePrimaryGate": "ubuntu-24.04",
+      "reconcile": "ubuntu-24.04"
+    },
+    "previousRunner": "ubuntu-slim",
+    "observedQueuedRunId": 36292590267,
+    "observedQueuedJob": "game-primary-gate",
+    "expectedMarkers": [
+      "GAME_PRIMARY_GATE=RUN_PARALLEL_RECONCILE",
+      "DEVELOPMENT_QUEUE_RECONCILE_ATTEMPT",
+      "DEVELOPMENT_QUEUE_RUNTIME_CHANGE"
+    ],
+    "concurrencyGroup": "company-development-queue-reconcile-runtime",
+    "cancelInProgress": false,
+    "serializedStateWritePreserved": true,
+    "exactRobloxRecoveryRequired": true
   }
 }
