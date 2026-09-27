@@ -695,6 +695,41 @@ jobs:
           path: vibe2-contract
           fetch-depth: 1
 
+      - name: Checkout verified learning memory
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-learning-runtime
+          path: vibe2-learning-memory
+          fetch-depth: 1
+          sparse-checkout: |
+            company-learning/vibe3-task-playbooks.json
+          sparse-checkout-cone-mode: false
+
+      - name: Verify commercial learning memory is reusable
+        shell: bash
+        run: |
+          set -euo pipefail
+          learning_root="$GITHUB_WORKSPACE/vibe2-learning-memory"
+          playbooks="$learning_root/company-learning/vibe3-task-playbooks.json"
+          test -s "$playbooks"
+          node - "$playbooks" <<'NODE'
+          const fs=require('fs');
+          const file=process.argv[2];
+          const data=JSON.parse(fs.readFileSync(file,'utf8'));
+          if(String(data.generatedFrom||'')!=='VERIFIED_MEMORY_ONLY')throw new Error('VERIFIED_PLAYBOOK_SOURCE_REQUIRED');
+          const taskTypes=data.taskTypes&&typeof data.taskTypes==='object'?data.taskTypes:{};
+          if(!Object.keys(taskTypes).length)throw new Error('VERIFIED_PLAYBOOK_TASK_TYPES_REQUIRED');
+          for(const [kind,row] of Object.entries(taskTypes)){
+            if(String(row?.authority||'')!=='verified-task-playbook')throw new Error('VERIFIED_PLAYBOOK_AUTHORITY_REQUIRED:'+kind);
+            if(!Array.isArray(row?.reuse))throw new Error('VERIFIED_PLAYBOOK_REUSE_ARRAY_REQUIRED:'+kind);
+            for(const item of row.reuse){
+              if(!String(item?.id||'').trim())throw new Error('VERIFIED_PLAYBOOK_REUSE_ID_REQUIRED:'+kind);
+            }
+          }
+          console.log('VIBE2_VERIFIED_COMMERCIAL_PLAYBOOK=PASS');
+          NODE
+          echo "VIBE2_VERIFIED_LEARNING_MEMORY_SHA=$(git -C "$learning_root" rev-parse HEAD)" >> "$GITHUB_ENV"
+
       - name: Measure worker checkout
         id: checkout_metrics
         shell: bash
@@ -758,6 +793,11 @@ jobs:
             --queue="$GITHUB_WORKSPACE/.vibe2/queue.json" \
             --control="$GITHUB_WORKSPACE/.vibe2/parallelism-control.json" \
             --experience="$GITHUB_WORKSPACE/.vibe2/experience.json" \
+            --learning-motor-state="$GITHUB_WORKSPACE/.vibe2/learning-motor-state.json" \
+            --code-patterns="$GITHUB_WORKSPACE/.vibe2/code-pattern-library.json" \
+            --practice-distilled="$GITHUB_WORKSPACE/.vibe2/practice-distilled-knowledge.json" \
+            --external-ai-distilled="$GITHUB_WORKSPACE/.vibe2/external-ai-distilled-knowledge.json" \
+            --playbooks="$GITHUB_WORKSPACE/vibe2-learning-memory/company-learning/vibe3-task-playbooks.json" \
             --project-lifecycle="$GITHUB_WORKSPACE/.vibe2/web-roblox-handoffs.json" \
             --task-id="$TASK_ID" \
             --variant="$VARIANT" \
@@ -1637,7 +1677,7 @@ jobs:
             clean(baseCodingMethod?.failureFingerprint)&&`coding-failure-fingerprint:${clean(baseCodingMethod.failureFingerprint)}`,
             clean(baseCodingMethod?.patchRecipeMode)&&`coding-patch-recipe:${clean(baseCodingMethod.patchRecipeMode)}`,
             Number(baseCodingMethod?.verifiedFailureLocalMemoryCount||0)>0&&`coding-verified-failure-memory-count:${Number(baseCodingMethod.verifiedFailureLocalMemoryCount)}`,
-            Array.isArray(workOrder?.knowledgeApplicationContract?.exactInjectedKnowledgeIds)&&workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds.length>0&&`learning-knowledge-ids:${encodeURIComponent(JSON.stringify(workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds.slice(0,40)))}`,
+            Array.isArray(workOrder?.knowledgeApplicationContract?.exactInjectedKnowledgeIds)&&workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds.length>0&&`learning-knowledge-ids:${encodeURIComponent(JSON.stringify(workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds))}`,
             Array.isArray(workOrder?.knowledgeApplicationContract?.primaryDomains)&&workOrder.knowledgeApplicationContract.primaryDomains.length>0&&`learning-primary-domains:${encodeURIComponent(JSON.stringify(workOrder.knowledgeApplicationContract.primaryDomains.slice(0,8)))}`,
             Array.isArray(workOrder?.knowledgeApplicationContract?.secondaryDomains)&&workOrder.knowledgeApplicationContract.secondaryDomains.length>0&&`learning-secondary-domains:${encodeURIComponent(JSON.stringify(workOrder.knowledgeApplicationContract.secondaryDomains.slice(0,12)))}`,
             Array.isArray(workOrder?.unifiedLearning?.externalAiDistilled)&&workOrder.unifiedLearning.externalAiDistilled.length>0&&`learning-external-ai-distilled-count:${workOrder.unifiedLearning.externalAiDistilled.length}`,
@@ -1752,7 +1792,14 @@ jobs:
           }:null;
           const knowledgeApplication=workOrder?.knowledgeApplicationContract&&typeof workOrder.knowledgeApplicationContract==='object'?{
             version:Number(workOrder.knowledgeApplicationContract.version||1),
-            exactInjectedKnowledgeIds:Array.isArray(workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds)?workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds.slice(0,40):[],
+            exactInjectedKnowledgeIds:Array.isArray(workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds)?workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds:[],
+            mandatoryForGameTarget:workOrder.knowledgeApplicationContract.mandatoryForGameTarget===true,
+            retrievedKnowledgeCount:Number(workOrder.knowledgeApplicationContract.retrievedKnowledgeCount||0),
+            appliedKnowledgeCount:Number(workOrder.knowledgeApplicationContract.appliedKnowledgeCount||0),
+            applicationCoveragePct:Number(workOrder.knowledgeApplicationContract.applicationCoveragePct||0),
+            allRetrievedKnowledgeApplied:workOrder.knowledgeApplicationContract.allRetrievedKnowledgeApplied===true,
+            verifiedPlaybookReuseCount:Number(workOrder.knowledgeApplicationContract.verifiedPlaybookReuseCount||0),
+            verifiedLearningMemorySha:clean(workOrder.knowledgeApplicationContract.verifiedLearningMemorySha)||clean(process.env.VIBE2_VERIFIED_LEARNING_MEMORY_SHA)||null,
             freshIndependentQaRequired:true,
             infrastructureFailurePenalizesKnowledge:false,
             authorityExpanded:false
