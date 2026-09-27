@@ -91,10 +91,10 @@ env:
   VIBE2_LEARNING_LANE_MAX: '4'
   VIBE2_ASSET_DEVELOPMENT_MAX: '64'
 
-# Keep one continuous scheduler chain. v2 releases stale pre-lane-isolation concurrency
+# Keep one continuous scheduler chain. v4 releases the stale v3 pre-ARM asset runner epoch
 # while still collapsing wake signals into one pending cycle per current scheduler epoch.
 concurrency:
-  group: vibe2-24h-cycle-singleton-v3
+  group: vibe2-24h-cycle-singleton-v4
   cancel-in-progress: false
 
 jobs:
