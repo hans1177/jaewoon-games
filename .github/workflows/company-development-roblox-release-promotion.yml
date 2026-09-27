@@ -984,7 +984,7 @@ jobs:
           set -euo pipefail
           if ! command -v rsvg-convert >/dev/null 2>&1; then
             sudo apt-get update -y
-            sudo apt-get install -y librsvg2-bin
+            sudo apt-get install -y librsvg2-bin fonts-noto-cjk
           fi
           rsvg-convert --version
 
