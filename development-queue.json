@@ -915,8 +915,8 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "status": "ACTIVE",
-      "selectedPlatform": "UNITY",
-      "targetPlatform": "UNITY",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -965,21 +965,21 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-27T01:35:34.932Z",
-      "robloxSourceCommit": "18c1b127b8ebfa0a41aa7810fabe4ad8bd07e56f",
-      "robloxSourceBootstrapPassedAt": "2026-09-26T23:15:49.419Z",
+      "updatedAt": "2026-09-27T01:36:55.574Z",
+      "robloxSourceCommit": "34c6936734a700fbaa1f5d93d9a57767d5a5ff3a",
+      "robloxSourceBootstrapPassedAt": "2026-09-27T01:36:55.574Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "18c1b127b8ebfa0a41aa7810fabe4ad8bd07e56f",
-      "robloxBuildArtifactIdentity": "sha256:31efa61ec2d1234bf5567461adb0d9f4f636e60db95e0b86e3036aa2872633b8",
-      "robloxBuildPassedAt": "2026-09-26T23:31:06.030Z",
+      "robloxBuildOrPackagePassed": false,
+      "robloxBuildSourceRevision": null,
+      "robloxBuildArtifactIdentity": null,
+      "robloxBuildPassedAt": null,
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-27T00:39:55.410Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
@@ -1094,7 +1094,7 @@
         "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
-      "robloxHeadlessFastMvpPassed": true,
+      "robloxHeadlessFastMvpPassed": false,
       "robloxHeadlessFastMvpEvidence": {
         "version": 3,
         "gameId": "horror-escape-room",
@@ -1244,11 +1244,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-foundation-stale-version"
+        "roblox-build-package-revalidation-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -1259,7 +1259,7 @@
         "capturedAt": "2026-09-25T07:09:56.124Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
       "robloxPublicationTarget": {
@@ -1721,9 +1721,9 @@
       "contractCanaryPassed": false,
       "robloxHeadlessPassedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "8816db394640fb0fc2c8ba4013bac7a810dcfcfa",
-        "newSourceRevision": "18c1b127b8ebfa0a41aa7810fabe4ad8bd07e56f",
-        "invalidatedAt": "2026-09-26T23:15:49.419Z"
+        "previousSourceRevision": "18c1b127b8ebfa0a41aa7810fabe4ad8bd07e56f",
+        "newSourceRevision": "34c6936734a700fbaa1f5d93d9a57767d5a5ff3a",
+        "invalidatedAt": "2026-09-27T01:36:55.574Z"
       }
     },
     {
@@ -9353,7 +9353,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T01:35:37.869Z",
+  "updatedAt": "2026-09-27T01:36:55.574Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
