@@ -1,5 +1,5 @@
 {
-  "version": 488,
+  "version": 489,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1970,10 +1970,10 @@
         "securityRescanBeforeRedeploy": true,
         "verifiedSecurityResultReturnsToSecurityLearning": true
       },
-      "activationBoundary": "AFTER_INITIAL_SECOND_PLATFORM_ADAPTATION_GATE_AND_PUBLIC_RELEASE",
-      "internalPlatformReleaseDoesNotActivatePostReleaseUpdateEngine": true,
+      "activationBoundary": "SUPPLEMENTAL_ONLY_RELEASE_STATE_DOES_NOT_CONTROL_F0_TO_F9",
+      "internalPlatformReleaseDoesNotActivatePostReleaseUpdateEngine": false,
       "initialPlatformRebuildHandledBy": "developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate",
-      "updateGatesMovedAfterPublicRelease": true,
+      "updateGatesMovedAfterPublicRelease": false,
       "publicReleaseEligibility": {
         "newPipeline": "SECOND_PLATFORM_GATE_PASS_PLUS_EXPLICIT_EXTERNAL_PUBLICATION_EVIDENCE",
         "legacyMigration": "PREEXISTING_VERIFIED_PUBLIC_RELEASE_REMAINS_ELIGIBLE",
@@ -1984,7 +1984,7 @@
       "responsibilityConflictIsOnlyGameLocalSerialization": true,
       "sourceRootOrGameWideFocusLockForbidden": true,
       "perpetualInternalBuildupLoop": true,
-      "startsAtInternalPlatformRelease": true,
+      "startsAtInternalPlatformRelease": false,
       "continuesAfterPublicRelease": true,
       "publicReleaseDoesNotTerminateFocus": true,
       "actualVibeInternalPlayRequiredEachBuildupCycle": true,
@@ -1992,7 +1992,10 @@
       "syntheticPlayEvidenceForbidden": true,
       "fixedDurationOrElapsedTimeExitForbidden": true,
       "limitedPublicTestRequirement": false,
-      "externalPublicReleaseGate": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate"
+      "externalPublicReleaseGate": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
+      "f0ToF9Authority": false,
+      "supplementalRobloxFocusedWorkOnly": true,
+      "mayNotReplaceOrPausePerpetualF0ToF9": true
     },
     "executionBindings": {
       "webValidationProducer": ".github/workflows/company-development-confirmed-runtime.yml",
@@ -4927,8 +4930,7 @@
       "version": 1,
       "appliesTo": [
         "ROBLOX",
-        "UNITY",
-        "FORTNITE_UEFN"
+        "UNITY"
       ],
       "currentExecutionAvailability": {
         "ROBLOX": "ACTIVE",
@@ -4972,7 +4974,11 @@
         "confirmedBackdoorOrCredentialExposure": "SECURITY_QUARANTINE",
         "ordinaryGameReviewFeedback": "VIBE_ACCEPT_PARTIAL_DEFER_OR_REJECT",
         "securityReleaseBlockersCannotBeBypassedByOrdinaryFeedbackDecision": true
-      }
+      },
+      "excludedPlatforms": [
+        "FORTNITE_UEFN"
+      ],
+      "f0ToF9ContinuesRegardlessOfReleaseState": true
     },
     "testerDebugIntake": {
       "version": 1,
@@ -5886,39 +5892,51 @@
       ]
     },
     "nativeGameFoundationValidationStack": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-09-23",
+      "version": 2,
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
       "status": "ROBLOX_IMPLEMENTED_DETERMINISTIC_QA_PASS_ACTUAL_RUNTIME_OBSERVATION_PENDING",
-      "objective": "PROVE_NATIVE_GAME_BOOT_WORLD_CHARACTER_PHYSICS_AND_CONTROL_FOUNDATIONS_BEFORE_GAMEPLAY_SYSTEM_QA_OR_INTERNAL_RELEASE",
+      "objective": "REPEAT_EXISTING_F0_THROUGH_F9_FOR_EVERY_ACTIVE_ROBLOX_AND_UNITY_SOURCE_CYCLE_WITHOUT_RELEASE_STATE_TERMINATION",
       "scope": {
         "platforms": [
           "ROBLOX",
-          "UNITY",
-          "FORTNITE_UEFN"
+          "UNITY"
         ],
         "activeImmediateImplementation": [
-          "ROBLOX"
+          "ROBLOX",
+          "UNITY"
         ],
         "unityAdapterRequiredBeforeUnityRuntimeClaim": true,
-        "fortniteUefnAdapterRequiredBeforeUefnRuntimeClaim": true,
-        "webIsValidationSurfaceNotNativeRuntimeEvidence": true
+        "fortniteUefnAdapterRequiredBeforeUefnRuntimeClaim": false,
+        "webIsValidationSurfaceNotNativeRuntimeEvidence": true,
+        "excludedPlatforms": [
+          "FORTNITE_UEFN"
+        ],
+        "fortniteUefnExcludedByOwnerDirective": true
       },
       "governingPrinciples": {
         "foundationBeforeFeatureQa": true,
         "lowerLayerFailureInvalidatesAllHigherLayerCompletion": true,
         "headlessOrSourceMarkerEvidenceCannotClaimActualRuntime": true,
         "internalReleaseIsDevelopmentSurfaceNotCompletion": true,
-        "actualPlatformRuntimeEvidenceRequiredBeforeInternalRelease": true,
+        "actualPlatformRuntimeEvidenceRequiredBeforeInternalRelease": false,
         "sourceChangeInvalidatesAffectedFoundationEvidence": true,
         "anyNativeSourceChangeAlwaysRerunsF0ThroughF4": true,
-        "f5ThroughF9MayUseImpactScopedSelectionWhenUnaffected": true,
+        "f5ThroughF9MayUseImpactScopedSelectionWhenUnaffected": false,
         "fabricatedRuntimePassForbidden": true,
         "failClosedOnMissingExecutorOrEvidence": true,
         "safeSpawnMustExistBeforePlayerBinding": true,
         "coreLoopRuntimeCheckpointRequiresSuccessfulGameStateTransition": true,
         "newRuntimeCandidateInvalidatesPriorReleasePassState": true,
         "f9ExactCandidateMustBindSourceArtifactUniversePlaceAndVersion": true,
-        "mainGameSourceDriftInvalidatesBoundRobloxEvidence": true
+        "mainGameSourceDriftInvalidatesBoundRobloxEvidence": true,
+        "publicReleaseIsDevelopmentSurfaceNotCompletion": true,
+        "releaseStateDoesNotStopF0ThroughF9": true,
+        "internalPlatformValidationEvidenceRequiredBeforeInternalRelease": true,
+        "anyNativeSourceChangeAlwaysRerunsF0ThroughF9": true,
+        "everyFloorRunsEveryNewSourceCycle": true,
+        "f9TerminatesDevelopment": false,
+        "f9ReturnsToContinuousBuildUp": true,
+        "noF10": true
       },
       "layers": [
         {
@@ -5932,7 +5950,9 @@
             "DUPLICATE_OR_MALFORMED_DECLARATION_GUARD",
             "EXACT_SOURCE_AND_ARTIFACT_IDENTITY"
           ],
-          "evidenceAuthority": "DETERMINISTIC_SOURCE_TOOLING"
+          "evidenceAuthority": "DETERMINISTIC_SOURCE_TOOLING",
+          "repeatEverySourceCycle": true,
+          "releaseStateIndependent": true
         },
         {
           "id": "F1",
@@ -5944,7 +5964,12 @@
             "NO_BOOT_EXCEPTION",
             "BOOT_CHECKPOINT_EMITTED"
           ],
-          "evidenceAuthority": "ACTUAL_PLATFORM_RUNTIME_SENTINEL"
+          "evidenceAuthority": "ACTUAL_PLATFORM_RUNTIME_SENTINEL",
+          "repeatEverySourceCycle": true,
+          "releaseStateIndependent": true,
+          "externalRealServerBootRequired": false,
+          "robloxInternalAuthority": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD",
+          "unityInternalAuthority": "EXISTING_UNITY_RUNTIME_VALIDATION"
         },
         {
           "id": "F2",
@@ -5957,7 +5982,9 @@
             "COLLISION_FOUNDATION_VALID",
             "WORLD_READY_CHECKPOINT_EMITTED"
           ],
-          "evidenceAuthority": "ACTUAL_PLATFORM_RUNTIME_SENTINEL"
+          "evidenceAuthority": "ACTUAL_PLATFORM_RUNTIME_SENTINEL",
+          "repeatEverySourceCycle": true,
+          "releaseStateIndependent": true
         },
         {
           "id": "F3",
@@ -5971,7 +5998,9 @@
             "FINITE_VALID_SPAWN_POSITION",
             "CHARACTER_READY_CHECKPOINT_EMITTED"
           ],
-          "evidenceAuthority": "ACTUAL_PLATFORM_RUNTIME_SENTINEL"
+          "evidenceAuthority": "ACTUAL_PLATFORM_RUNTIME_SENTINEL",
+          "repeatEverySourceCycle": true,
+          "releaseStateIndependent": true
         },
         {
           "id": "F4",
@@ -5986,67 +6015,79 @@
             "CONTROLLED_MOVE_CAUSES_MEASURABLE_DISPLACEMENT",
             "CAMERA_SUBJECT_VALID"
           ],
-          "evidenceAuthority": "ACTUAL_PLATFORM_RUNTIME_SENTINEL"
+          "evidenceAuthority": "ACTUAL_PLATFORM_RUNTIME_SENTINEL",
+          "repeatEverySourceCycle": true,
+          "releaseStateIndependent": true
         },
         {
           "id": "F5",
           "name": "INPUT_CAMERA_UI",
-          "alwaysRequired": false,
+          "alwaysRequired": true,
           "checks": [
             "PRIMARY_INPUT_PATH",
             "MOBILE_INPUT_WHEN_TARGETED",
             "CAMERA_CONTROL",
             "CRITICAL_UI_CREATION_AND_INTERACTION"
           ],
-          "evidenceAuthority": "ACTUAL_PLATFORM_RUNTIME_OR_PLATFORM_AUTOMATION"
+          "evidenceAuthority": "ACTUAL_PLATFORM_RUNTIME_OR_PLATFORM_AUTOMATION",
+          "repeatEverySourceCycle": true,
+          "releaseStateIndependent": true
         },
         {
           "id": "F6",
           "name": "CORE_SERVICES",
-          "alwaysRequired": false,
+          "alwaysRequired": true,
           "checks": [
             "SERVER_CLIENT_ROUNDTRIP",
             "SAVE_LOAD_REJOIN",
             "STATE_MACHINE_TRANSITIONS",
             "ERROR_BOUNDARY"
           ],
-          "evidenceAuthority": "ACTUAL_PLATFORM_RUNTIME"
+          "evidenceAuthority": "ACTUAL_PLATFORM_RUNTIME",
+          "repeatEverySourceCycle": true,
+          "releaseStateIndependent": true
         },
         {
           "id": "F7",
           "name": "MULTIPLAYER_FOUNDATION",
-          "alwaysRequired": false,
+          "alwaysRequired": true,
           "checks": [
             "MINIMUM_TWO_PARTICIPANTS_SAME_SERVER",
             "ONE_AUTHORITATIVE_SHARED_STATE_BROADCAST",
             "CLIENT_MULTIPLAYER_SYNC_HANDLER_CONTRACT"
           ],
           "evidenceAuthority": "ACTUAL_TWO_CLIENT_PLATFORM_RUNTIME_PLUS_STATIC_SERVER_CLIENT_SYNC_CONTRACT",
-          "releaseGateMode": "TWO_CLIENT_ONE_SYNC"
+          "releaseGateMode": "TWO_CLIENT_ONE_SYNC",
+          "repeatEverySourceCycle": true,
+          "releaseStateIndependent": true
         },
         {
           "id": "F8",
           "name": "GAMEPLAY_SYSTEMS",
-          "alwaysRequired": false,
+          "alwaysRequired": true,
           "checks": [
             "GAME_SPECIFIC_ACCEPTANCE_SCENARIOS",
             "CORE_LOOP",
             "PROGRESSION",
             "COMBAT_OR_INTERACTION_WHEN_APPLICABLE"
           ],
-          "evidenceAuthority": "GAME_SPECIFIC_RUNTIME_ACCEPTANCE"
+          "evidenceAuthority": "GAME_SPECIFIC_RUNTIME_ACCEPTANCE",
+          "repeatEverySourceCycle": true,
+          "releaseStateIndependent": true
         },
         {
           "id": "F9",
           "name": "RELEASE_REGRESSION",
-          "alwaysRequired": false,
+          "alwaysRequired": true,
           "checks": [
             "ALL_REQUIRED_FOUNDATION_LAYERS_PASS",
             "IMPACT_SCOPED_FEATURE_REGRESSION",
             "NO_OPEN_CRITICAL_OR_HIGH_RUNTIME_FAILURE",
             "EXACT_CANDIDATE_EVIDENCE"
           ],
-          "evidenceAuthority": "DETERMINISTIC_QA_PLUS_ACTUAL_RUNTIME"
+          "evidenceAuthority": "DETERMINISTIC_QA_PLUS_ACTUAL_RUNTIME",
+          "repeatEverySourceCycle": true,
+          "releaseStateIndependent": true
         }
       ],
       "runtimeSentinel": {
@@ -6277,7 +6318,12 @@
           "exactSourceRevisionFetchedOnDemand": true,
           "ancestryVerifiedByGitHubCompare": true,
           "fullHistoryRequired": false
-        }
+        },
+        "releaseStateIndependentCycle": true,
+        "internalReleaseIsNotTerminal": true,
+        "publicReleaseIsNotTerminal": true,
+        "f9SuccessAction": "CONTINUE_BUILD_UP_NEXT_SOURCE_DELTA_RESTART_F0",
+        "f10Exists": false
       },
       "failureRouting": {
         "foundationFailureIsCompanyWideHighImpactBlocker": true,
@@ -6358,7 +6404,8 @@
         "sameExactArtifactMustBeUsedForRuntimeProbe": true,
         "candidateDeploymentMayOccurAfterF0BeforeF1": true,
         "candidateDeploymentDoesNotSatisfyAnyOfF1ThroughF9": true,
-        "promotionAfterFoundationPassMayReuseSameExactArtifact": true
+        "promotionAfterFoundationPassMayReuseSameExactArtifact": true,
+        "externalRealServerBootRequiredForInternalCycle": false
       },
       "ownership": {
         "newDepartmentCreated": false,
@@ -6403,8 +6450,8 @@
         "deterministicF9ExactCandidatePromotion": "IMPLEMENTED",
         "testerDebugRecoveryIntegration": "IMPLEMENTED",
         "cozyIslandSourceAndSpawnRepair": "IMPLEMENTED",
-        "unityFoundationAdapter": "PENDING_NO_FALSE_PASS",
-        "fortniteUefnFoundationAdapter": "PENDING_OWNER_HOLD_NO_FALSE_PASS",
+        "unityFoundationAdapter": "EXISTING_UNITY_RUNTIME_PIPELINE_REUSED_FOR_F0_TO_F9_CONTINUOUS_CYCLE",
+        "fortniteUefnFoundationAdapter": "EXCLUDED_OWNER_DIRECTIVE_2026_09_28",
         "robloxF0NativeLanguageCompile": "IMPLEMENTED_PINNED_OFFICIAL_LUAU_0_739",
         "cozyIslandSpawnOrderingRaceRepair": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
         "runtimeCandidateStaleEvidenceInvalidation": "IMPLEMENTED_DETERMINISTIC_QA_REQUIRED",
@@ -6522,7 +6569,48 @@
         "prGate": ".github/workflows/vibe3-engine-contract.yml"
       }
     },
-    "qualityFailureRecoveryPolicySource": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit"
+    "qualityFailureRecoveryPolicySource": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit",
+    "perpetualF0ToF9Cycle": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
+      "enabled": true,
+      "platforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "excludedPlatforms": [
+        "FORTNITE_UEFN"
+      ],
+      "sequence": [
+        "F0",
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "f10Exists": false,
+      "releaseStateIndependent": true,
+      "appliesBeforeInternalRelease": true,
+      "appliesDuringInternalRelease": true,
+      "appliesBeforeExternalRelease": true,
+      "appliesDuringExternalRelease": true,
+      "appliesAfterExternalRelease": true,
+      "internalOrPublicReleaseCannotMarkDevelopmentComplete": true,
+      "everyFloorRunsOnEachNewVerifiedSourceCycle": true,
+      "impactScopedFloorSkippingForbidden": true,
+      "f9IsCycleReviewNotDevelopmentTermination": true,
+      "f9SuccessAction": "RETURN_TO_CONTINUOUS_BUILD_UP_AND_RUN_NEXT_SOURCE_CYCLE_FROM_F0",
+      "sameUnchangedSourceMayReuseExactEvidenceUntilNextSourceDelta": true,
+      "externalPublicationAuthority": "OWNER_EXPLICIT_DIRECTIVE_ONLY",
+      "publicationStateDoesNotControlCycleEligibility": true,
+      "existingPipelinesOnly": true,
+      "newFloorOrF10Forbidden": true
+    }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "machineSourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -10190,6 +10278,39 @@
       "automaticPublicReleaseForbidden": true,
       "robloxPlayerAutomationForbidden": true,
       "publicServerBotPlayForbidden": true
+    },
+    "perpetualF0ToF9AllActivePlatforms20260928": {
+      "id": "PERPETUAL_F0_TO_F9_ALL_ACTIVE_PLATFORMS_2026-09-28",
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
+      "summary": "Keep the existing F0 through F9 validation floors repeating before release, during internal release, during owner-approved external release, and after release on all active native platforms. Fortnite/UEFN is excluded. No F10 is created.",
+      "sequence": [
+        "F0",
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "f10Exists": false,
+      "activePlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "excludedPlatforms": [
+        "FORTNITE_UEFN"
+      ],
+      "releaseStateIndependent": true,
+      "internalReleaseDoesNotStopCycle": true,
+      "externalReleaseDoesNotStopCycle": true,
+      "ownerPublicApprovalRemainsSeparate": true,
+      "nextVerifiedSourceCycleRestartsAt": "F0",
+      "sameSourceRedundantBusyLoopRequired": false,
+      "existingPipelinesOnly": true,
+      "shadowPipelineCreated": false
     }
   },
   "vibeExecutionLaneContract": {
