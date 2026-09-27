@@ -32146,7 +32146,7 @@
       "dependencies": [],
       "priority": "high",
       "releaseState": "other",
-      "status": "queued",
+      "status": "running",
       "retries": 67,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -33406,11 +33406,11 @@
         "architecture-neural-expansion-allowed:YES"
       ],
       "lastOutcome": "FAIL",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
-      "neuronExpectedVariants": 0,
+      "reservationId": "36316076960:1",
+      "reservationRunId": "36316076960",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-09-27T11:33:11Z",
+      "neuronExpectedVariants": 1,
       "neuronResults": [],
       "buildUpDirective": null,
       "buildUpDirectiveId": null,
@@ -142437,7 +142437,8 @@
         "build-up-directive-backfill:queued-existing-work",
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:RECONCILED_TO_ACTIVE_GENERATION",
-        "learning-motor-candidate-tournament:repeated-verified-failure"
+        "learning-motor-candidate-tournament:repeated-verified-failure",
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -143613,7 +143614,8 @@
         "build-up-directive-backfill:queued-existing-work",
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:RECONCILED_TO_ACTIVE_GENERATION",
-        "learning-motor-candidate-tournament:repeated-verified-failure"
+        "learning-motor-candidate-tournament:repeated-verified-failure",
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
       ],
       "lastOutcome": null,
       "reservationId": null,
