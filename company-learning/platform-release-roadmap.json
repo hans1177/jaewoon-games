@@ -1,5 +1,5 @@
 {
-  "version": 483,
+  "version": 484,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -10040,6 +10040,14 @@
       "sameGameStaleRuntimeProofMayNotSettle": true,
       "noNewWorkflowOrStage": true,
       "gameplaySemanticsUnchanged": true
+    },
+    "nativeCandidateCallbackMonotonicity20260928": {
+      "status": "ACTIVE",
+      "scope": "EXISTING_VIBE2_NATIVE_CANDIDATE_CALLBACKS",
+      "laterStageStateRegressionForbidden": true,
+      "runtimeAwaitAndVerifiedStatesProtected": true,
+      "candidateVerificationMayMergeEvidenceWithoutRewindingStage": true,
+      "noNewWorkflowOrStage": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -20298,6 +20306,14 @@
         "sameGameDifferentSourceMayNotSettle": true,
         "incrementalApkBuildAndMainPromotionAloneMayNotSettleBuildUpTask": true,
         "runtimePassIndependentQaAndRegressionRequiredBeforeVibePass": true
+      },
+      "nativeVerificationCallbackMonotonicity": {
+        "laterStageWaitOrVerifiedStateMayNotRegressToCandidateVerificationReview": true,
+        "candidateVerificationCallbackMayOnlyAddEvidenceWhenTaskAlreadyAdvanced": true,
+        "appliesTo": [
+          "ROBLOX",
+          "UNITY"
+        ]
       }
     }
   },
