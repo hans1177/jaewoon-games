@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1eui5qv",
-      "worker": "vibe2",
-      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "files": [
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "352cd25bf6280c47211a63bfc3e57519a984640e",
-      "acquiredAt": "2026-09-27T22:53:41.790Z",
-      "expiresAt": "2026-09-27T23:38:41.790Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-slclf9",
       "worker": "vibe2",
       "taskId": "survival-unity-web-base-implementation-v1",
@@ -576,6 +558,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:bug-defense-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-1d4a5mw",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-roblox-second-gate-rebuild-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "roblox-games/horror-escape-room/shared/GameConfig.luau",
+        "roblox-games/horror-escape-room/server/Game.server.luau",
+        "roblox-games/horror-escape-room/client/Game.client.luau"
+      ],
+      "baseSha": "4c21c3495a2225a6a0458511999afa03ace4f92d",
+      "acquiredAt": "2026-09-27T23:38:50.720Z",
+      "expiresAt": "2026-09-28T00:23:50.720Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-roblox-second-gate-rebuild-v1"
       ]
     }
   ]
