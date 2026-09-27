@@ -65,7 +65,8 @@ test('foundation workflow edits self-trigger exact current game revalidation',()
   assert.match(workflow,/paths:[\s\S]*company-development-roblox-post-runtime-qa\.yml[\s\S]*roblox-games\/\.company-runtime-trigger/);
   assert.match(workflow,/EVENT_NAME: \$\{\{ github\.event_name \}\}/);
   assert.ok((workflow.match(/TRIGGER_CHANGED:/g)||[]).length>=3);
-  assert.ok(workflow.includes("TRIGGER_CHANGED: ${{ github.event_name == 'push' && contains(toJSON(github.event.commits), 'roblox-games/.company-runtime-trigger') }}"));
+  assert.ok(workflow.includes("TRIGGER_CHANGED: ${{ github.event_name == 'push' && (contains(toJSON(github.event.head_commit.modified), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.added), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.removed), 'roblox-games/.company-runtime-trigger')) }}"));
+  assert.doesNotMatch(workflow,/TRIGGER_CHANGED: .*github\.event\.commits/);
   assert.match(workflow,/process\.env\.EVENT_NAME==='push'&&String\(process\.env\.TRIGGER_CHANGED\|\|''\)\.toLowerCase\(\)==='true'/);
   assert.match(workflow,/\$env:EVENT_NAME -eq 'push' -and \$env:TRIGGER_CHANGED -eq 'true'/);
   assert.match(workflow,/roblox-games\/\.company-runtime-trigger/);
