@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -502,6 +502,10 @@
       "incrementalApkBuildAndMainPromotionAloneMayNotSettleBuildUpTask": true,
       "runtimeIndependentQaRegressionRequiredBeforeVibePass": true,
       "sameGameDifferentSourceMayNotSettle": true
+    },
+    "nativeVerificationCallbackMonotonicity": {
+      "laterStageWaitOrVerifiedStateMayNotRegress": true,
+      "candidateVerificationMayMergeEvidenceWithoutRewinding": true
     }
   }
 }
