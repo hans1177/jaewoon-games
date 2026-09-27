@@ -8,10 +8,17 @@ const foundationCausalOrder=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','S
 export const ROBLOX_LUAU_EXECUTION_WRITE_SCOPE='universe.place.luau-execution-session:write';
 
 const transientNetworkCodes=new Set(['EAI_AGAIN','ENOTFOUND','ECONNRESET','ETIMEDOUT','ECONNREFUSED','UND_ERR_CONNECT_TIMEOUT','UND_ERR_SOCKET']);
+const transientHttpStatuses=new Set([408,429,500,502,503,504]);
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,Math.max(0,Number(ms)||0)));
 function isTransientNetworkError(error){
   const code=clean(error?.cause?.code||error?.code).toUpperCase();
   return transientNetworkCodes.has(code);
+}
+function transientHttpDelayMs(response,baseDelayMs,attempt){
+  const retryAfter=clean(response?.headers?.get?.('retry-after'));
+  const retryAfterSeconds=Number(retryAfter);
+  if(Number.isFinite(retryAfterSeconds)&&retryAfterSeconds>=0)return Math.max(baseDelayMs,retryAfterSeconds*1000);
+  return baseDelayMs*Math.max(1,attempt);
 }
 async function fetchWithNetworkRetry(fetchImpl,url,init={},options={}){
   const attempts=Math.max(1,Math.min(6,Number(options.attempts)||4));
@@ -19,8 +26,17 @@ async function fetchWithNetworkRetry(fetchImpl,url,init={},options={}){
   const label=clean(options.label)||'ROBLOX_OPEN_CLOUD';
   let lastError=null;
   for(let attempt=1;attempt<=attempts;attempt++){
-    try{return await fetchImpl(url,init);}
-    catch(error){
+    try{
+      const response=await fetchImpl(url,init);
+      const status=Number(response?.status||0);
+      if(transientHttpStatuses.has(status)&&attempt<attempts){
+        console.warn(label+'_HTTP_RETRY='+attempt+'/'+attempts+':HTTP_'+status);
+        const waitMs=transientHttpDelayMs(response,delayMs,attempt);
+        if(waitMs>0)await sleep(waitMs);
+        continue;
+      }
+      return response;
+    }catch(error){
       lastError=error;
       if(!isTransientNetworkError(error)||attempt>=attempts)throw error;
       console.warn(label+'_NETWORK_RETRY='+attempt+'/'+attempts+':'+clean(error?.cause?.code||error?.code||'TRANSIENT'));
