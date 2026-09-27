@@ -648,17 +648,54 @@ jobs:
               const message=String(error?.message||error);
               if(/HTTP_404/.test(message)){
                 const attempts=Math.max(0,Number(item.robloxRuntimeRetryCount||0))+1;
+                const exactEnginePrebootFromProbe=
+                  engineProbe?.engineExecuted===true
+                  &&engineProbe?.exactPlace===true
+                  &&engineProbe?.exactVersion===true
+                  &&engineProbe?.serverBootObserved!==true;
                 item.robloxRuntimeRetryCount=attempts;
                 item.robloxRuntimeLastObservationAttemptAt=stamp;
                 item.robloxRuntimeFoundationPassed=false;
                 item.robloxRuntimePassed=false;
                 item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
-                item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
-                item.routingBlockers=['roblox-runtime-foundation-awaiting-observation'];
-                console.log(`ROBLOX_FOUNDATION_AWAITING_FIRST_RUNTIME=${item.gameId}:attempt=${attempts}:retry=UNLIMITED_CAUSAL_REPAIR`);
+                if(exactEnginePrebootFromProbe){
+                  item.robloxRuntimeFoundationEvidence={
+                    version:2,
+                    gameId:item.gameId,
+                    sourceRevision,
+                    artifactIdentity,
+                    artifactRunId:Number(candidate.artifactRunId||0),
+                    universeId:String(candidate.universeId),
+                    placeId:String(candidate.placeId),
+                    candidateVersionNumber:Number(candidate.versionNumber),
+                    expectedVersionNumber:Number(candidate.versionNumber),
+                    observedVersionNumber:null,
+                    exactGame:true,
+                    exactPlace:true,
+                    exactVersion:false,
+                    exactEngineVersion:true,
+                    engineExecuted:true,
+                    simulationRunning:engineProbe?.simulationRunning===true,
+                    serverBootObserved:false,
+                    blockers:['runtime-sentinel-unavailable'],
+                    observedAt:stamp,
+                    workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
+                    authority:'exact-engine-version-awaiting-real-server-boot',
+                  };
+                  item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT';
+                  item.routingBlockers=['roblox-runtime-foundation-awaiting-real-server-boot'];
+                  item.updatedAt=stamp;
+                  changed=true;
+                  queueStudioFollowupIfEligible(item);
+                  console.log(`ROBLOX_FOUNDATION_EXACT_ENGINE_PREBOOT_STUDIO_FOLLOWUP=${item.gameId}:attempt=${attempts}:engineVersion=${Number(candidate.versionNumber)}:sentinel=HTTP_404`);
+                }else{
+                  item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
+                  item.routingBlockers=['roblox-runtime-foundation-awaiting-observation'];
+                  console.log(`ROBLOX_FOUNDATION_AWAITING_FIRST_RUNTIME=${item.gameId}:attempt=${attempts}:retry=UNLIMITED_CAUSAL_REPAIR`);
+                  item.updatedAt=stamp;
+                  changed=true;
+                }
                 pending++;
-                item.updatedAt=stamp;
-                changed=true;
                 continue;
               }
               throw error;
