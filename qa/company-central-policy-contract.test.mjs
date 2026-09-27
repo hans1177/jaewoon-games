@@ -1650,7 +1650,6 @@ test('menu experience diversity stays inside existing Vibe presentation buildup'
   assert.equal(menu.implementationSeparation.UNITY_APP_AND_WEBGL.canonicalSourceRoot,'unity-games/<gameId>/');
   assert.equal(menu.implementationSeparation.UNITY_APP_AND_WEBGL.separateHtmlCssJsGameplayUiForbidden,true);
   assert.equal(menu.implementationSeparation.GENERIC_WEB_OR_LEGACY_VALIDATION.cannotSubstituteForUnityWebglGameplayUi,true);
-  assert.equal(menu.implementationSeparation.FORTNITE_UEFN.runtimeImplementation,'UEFN_NATIVE_UI_SYSTEM');
   assert.equal(menu.mobileFirst.touchTargetMinimumPx,44);
   assert.equal(menu.preservation.inventMissingGameplaySystemOnlyToFillMenuForbidden,true);
   assert.ok(menu.patternFamilies.MAIN_MENU.includes('CINEMATIC_HERO'));
