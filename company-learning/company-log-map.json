@@ -1,5 +1,5 @@
 {
-  "version": 150,
+  "version": 151,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2587,5 +2587,28 @@
     "assetRefillReadyAtObservation": true,
     "expectedPostFixAssetRunner": "ubuntu-24.04-arm",
     "livePostFixEvidence": "PENDING"
+  },
+  "menuUxDiversityEvidence": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#menuUxDiversityContract",
+    "requiredMarkers": [
+      "menuSurfaces",
+      "menuVarietyRule",
+      "메뉴/UI는 모든 게임에 같은 템플릿을 복사하지 않는다"
+    ],
+    "reusableUiSubfamilies": [
+      "MAIN_MENU",
+      "PAUSE",
+      "SHOP",
+      "CRAFTING",
+      "QUEST",
+      "SETTINGS",
+      "RESULT",
+      "SOCIAL"
+    ],
+    "existingGameplaySystemsOnly": true,
+    "mobileFirst": true,
+    "liveGameVerification": "PENDING_NORMAL_VIBE_IMPLEMENTATION_CYCLES",
+    "newQueueOrPipelineCreated": false
   }
 }
