@@ -1,5 +1,5 @@
 {
-  "version": 135,
+  "version": 136,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2392,10 +2392,12 @@
     "qualityGateWeakening": false,
     "postFoundationStudioFollowup": {
       "enabled": true,
-      "reason": "PARALLEL_STUDIO_PLAN_MAY_COMPLETE_BEFORE_NEW_RUNTIME_FOUNDATION_EVIDENCE_EXISTS",
-      "trigger": "FALSE_TO_TRUE_RUNTIME_FOUNDATION_TRANSITION",
+      "reason": "OLDER_OR_PARALLEL_FOUNDATION_RUN_MAY_PERSIST_EXACT_FOUNDATION_BEFORE_NEW_WORKFLOW_REACHES_REMOTE_QA",
+      "eligibilityAuthority": "CANONICAL_STUDIO_MCP_PLANNER",
+      "coversNewFoundationTransition": true,
+      "coversExactFoundationEvidenceReuse": true,
       "exactGameWorkflowDispatch": true,
-      "repeatExactFoundationDoesNotRedispatch": true
+      "repeatAfterExactMcpObserved": false
     }
   }
 }
