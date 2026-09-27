@@ -1,5 +1,5 @@
 {
-  "version": 282,
+  "version": 283,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1402,7 +1402,7 @@
         "sharedQueue": "vibe2-unreal-core:.vibe2/queue.json",
         "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5_ON_ACTUAL_WRITE_CONFLICT",
         "workerDirectControlWrite": false,
-        "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v3",
+        "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v4",
         "gamePrimaryExternalBoundary": 256,
         "liveVerification": {
           "previousRunId": 36204978877,
@@ -5451,18 +5451,18 @@
     "authorityExpanded": false
   },
   "vibe24hSchedulerEpochTopology": {
-    "version": 1,
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.vibe24hStaleSingletonEpochRelease20260926",
+    "version": 2,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.assetArmSchedulerEpochRelease20260927",
     "workflow": ".github/workflows/vibe2-24h-runner.yml",
     "concurrency": {
-      "currentGroup": "vibe2-24h-cycle-singleton-v3",
+      "currentGroup": "vibe2-24h-cycle-singleton-v4",
       "cancelInProgress": false,
       "maxCurrentEpochChains": 1,
       "wakeSignalsCollapse": true
     },
     "staleEpochRelease": {
-      "previousGroup": "vibe2-24h-cycle-singleton-v2",
-      "reason": "PRE_PATCH_LONG_RUNNING_SOURCE_WORKER_BLOCKED_CURRENT_PATCH_VERIFICATION_AND_REPLACED_JOBLESS_PENDING_WAKE_SIGNALS",
+      "previousGroup": "vibe2-24h-cycle-singleton-v3",
+      "reason": "PRE_ARM_V3_ASSET_WORKERS_FROM_STALE_PINNED_MAIN_HELD_CURRENT_ARM_RUNNER_VERIFICATION_BEHIND_SINGLETON",
       "oldEpochReceivesNoNewWakeSignals": true,
       "oldEpochMayDrain": true,
       "currentEpochStartsIndependentOfStaleEpoch": true
