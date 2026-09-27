@@ -872,6 +872,11 @@ test('automatic Roblox Studio MCP scans collapse before heavy work while exact-g
   assert.match(workflow,/process\.stdout\.write\(String\(game\?ids\[0\]:ids\[ids\.length-1\]\)\)/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
+  const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(studioPlanBlock,/concurrency:\n\s+group: roblox-studio-mcp-plan-\$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
+  assert.match(studioPlanBlock,/cancel-in-progress: \$\{\{ inputs\.game_id == '' \}\}/);
+  assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
+  assert.doesNotMatch(studioPlanBlock,/needs\.dedupe/);
 });
 
 
