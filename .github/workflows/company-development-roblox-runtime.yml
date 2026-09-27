@@ -59,8 +59,9 @@ env:
 jobs:
   source-plan:
     name: resolve Roblox source work
-    # Critical Roblox ingress must not wait behind the saturated administrative slim pool.
-    runs-on: ubuntu-24.04
+    # Exact-game ingress uses the ARM game-control pool; batch push ingress stays on fixed 24.04.
+    # This spreads control work without consuming heavy ubuntu-latest game capacity.
+    runs-on: ${{ inputs.game_id != '' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     timeout-minutes: 8
     outputs:
       count: ${{ steps.targets.outputs.count || '0' }}
