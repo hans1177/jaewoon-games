@@ -3975,7 +3975,17 @@
       "conditionalNotApplicableInline": true,
       "noPerFloorRuntimeRelaunch": true,
       "noF9RuntimeRelaunch": true,
-      "publicPublicationAuthority": "OWNER_EXPLICIT_DIRECTIVE_ONLY"
+      "publicPublicationAuthority": "OWNER_EXPLICIT_DIRECTIVE_ONLY",
+      "parallelism": {
+        "preserveExistingParallelExecution": true,
+        "robloxAndUnityConcurrent": true,
+        "gamesConcurrent": true,
+        "independentWorkConcurrent": true,
+        "onlySameExactGameDuplicateMayCoalesce": true,
+        "noNewGlobalLock": true,
+        "noNewPlatformWideLock": true,
+        "oneSessionF1ToF8IsPerGameNotCompanyWide": true
+      }
     }
   },
   "autonomousBottleneckRecovery": {
