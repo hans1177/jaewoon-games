@@ -8,6 +8,21 @@ const names=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHA
 const good={gameId:'cozy-island',placeId:116850096561713,placeVersion:21,requirements:{saveEnabled:true,multiplayerRequired:true},checkpoints:Object.fromEntries(names.map((x,index)=>[x,checkpoint(x,index+1)]))};
 
 
+test('Roblox runtime foundation push wake ignores QA-only and descriptive architecture edits',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ const pushStart=workflow.indexOf('  push:');
+ const pushEnd=workflow.indexOf('  workflow_dispatch:',pushStart);
+ const pushBlock=workflow.slice(pushStart,pushEnd);
+ assert.ok(pushStart>=0&&pushEnd>pushStart);
+ assert.doesNotMatch(pushBlock,/qa\/company-development-roblox-runtime-foundation\.test\.mjs/);
+ assert.doesNotMatch(pushBlock,/qa\/company-development-roblox-studio-local-play\.test\.mjs/);
+ assert.doesNotMatch(pushBlock,/company-learning\/company-architecture-map\.json/);
+ assert.match(pushBlock,/tools\/company-development-roblox-runtime-foundation\.mjs/);
+ assert.match(pushBlock,/tools\/company-development-roblox-studio-local-play\.mjs/);
+ assert.match(pushBlock,/company-learning\/platform-release-roadmap\.json/);
+ assert.match(pushBlock,/roblox-games\/\.company-runtime-trigger/);
+});
+
 test('recurring Roblox runtime foundation QA does not require full git history',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/schedule:\s*\n\s*- cron: '\*\/15 \* \* \* \*'/);
