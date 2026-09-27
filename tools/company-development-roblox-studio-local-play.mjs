@@ -1161,6 +1161,7 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
     item.robloxLastSuccessfulStage='VIBE_INTERNAL_PLAY';
     item.robloxFailureStage=null;
     item.robloxFailureSignature=null;
+    item.robloxNativeFailureClass=null;
     item.routingBlockers=[];
   }else if(result.evidence.infrastructureFailure){
     item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
