@@ -1,5 +1,5 @@
 {
-  "version": 457,
+  "version": 458,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -8740,14 +8740,13 @@
     "lightweightGameIngressRunnerRelief20260927": {
       "id": "LIGHTWEIGHT_GAME_INGRESS_RUNNER_RELIEF_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#developmentSpeedExecution",
-      "status": "CODE_UPDATED_LIVE_QUEUE_EVIDENCE",
+      "status": "CODE_UPDATED_LIVE_QUEUE_EVIDENCE_WITH_ROBLOX_CRITICAL_INGRESS_EXCEPTION",
       "objective": "FREE_ARM_GAME_CONTROL_CAPACITY_BY_MOVING_ONLY_LIGHTWEIGHT_INGRESS_AND_QUEUE_RESERVATION_WORK_TO_UBUNTU_SLIM_WHILE_KEEPING_STATE_SETTLEMENT_AND_HEAVY_GAME_EXECUTION_ON_THEIR_EXISTING_POOLS",
       "lightweightIngressPool": "ubuntu-slim",
       "gameControlPool": "ubuntu-24.04-arm",
       "heavyGameExecutionPool": "ubuntu-latest",
       "movedToSlim": {
         "vibeReserve": ".github/workflows/vibe2-continuous-core.yml::reserve",
-        "robloxSourcePlan": ".github/workflows/company-development-roblox-runtime.yml::source-plan",
         "unityPrepare": ".github/workflows/company-development-unity-runtime.yml::prepare",
         "centralNativePlan": ".github/workflows/company-development-confirmed-runtime.yml::native-plan"
       },
@@ -8805,7 +8804,18 @@
         "qualitySecurityReleaseGatesUnchanged": true
       },
       "directorRunnerDrainCurrentRunner": "ubuntu-24.04",
-      "directorRunnerDrainSeparatedFromSlimCongestion": true
+      "directorRunnerDrainSeparatedFromSlimCongestion": true,
+      "robloxSourcePlanCriticalIngressException": {
+        "workflow": ".github/workflows/company-development-roblox-runtime.yml::source-plan",
+        "previousRunner": "ubuntu-slim",
+        "runner": "ubuntu-24.04",
+        "reason": "LIVE_SLIM_CONTROL_QUEUE_DELAY_AFTER_DIRECTOR_DRAIN_SUCCEEDED_ON_FIXED_2404",
+        "centralNativePlanRemains": "ubuntu-slim",
+        "unityPrepareRemains": "ubuntu-slim",
+        "vibeReserveRemains": "ubuntu-slim",
+        "heavyExecutionUnchanged": "ubuntu-latest",
+        "technicalPlanUnchanged": "ubuntu-24.04-arm"
+      }
     },
     "homepageRunnerIsolation20260926": {
       "id": "HOMEPAGE_RUNNER_ISOLATION_2026-09-26",
@@ -9372,6 +9382,38 @@
       "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
       "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
       "concurrencyEpochAdvancedForLegacyPendingQueue": true
+    },
+    "robloxSourcePlanWakeAndRunnerIsolation20260927": {
+      "id": "ROBLOX_SOURCE_PLAN_WAKE_AND_RUNNER_ISOLATION_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "WAKE_ROBLOX_SOURCE_PLAN_IMMEDIATELY_FOR_EVERY_SOURCE_PLAN_CONTRACT_CHANGE_AND_REMOVE_CRITICAL_INGRESS_DEPENDENCY_ON_THE_SATURATED_ADMINISTRATIVE_SLIM_POOL",
+      "observedEvidence": {
+        "directorDrainRunId": 36290168197,
+        "directorDrainSucceededOnFixed2404": true,
+        "robloxBatchSourcePlanStillQueuedOnSlimAfterDrain": true,
+        "sourcePlanContractIncludedRoadmapWithoutPushWake": true,
+        "staleBatchWouldOtherwiseNeed_TO_RUN_BEFORE_REDISPATCH": true
+      },
+      "sourcePlanRunner": "ubuntu-24.04",
+      "previousSourcePlanRunner": "ubuntu-slim",
+      "technicalPlanRunnerUnchanged": "ubuntu-24.04-arm",
+      "heavyExecutionRunnerUnchanged": "ubuntu-latest",
+      "sourcePlanContractPushWakeRequired": true,
+      "sourcePlanContractPaths": [
+        ".github/workflows/company-development-roblox-runtime.yml",
+        "tools/company-development-roblox-bootstrap.mjs",
+        "tools/company-development-roblox-source-reconcile.mjs",
+        "tools/company-selected-platform-router.mjs",
+        "tools/company-upper-platform-admission.mjs",
+        "company-asset-library.json",
+        "company-learning/platform-release-roadmap.json"
+      ],
+      "staleBatchFreshnessGuardPreserved": true,
+      "exactSourceBindingPreserved": true,
+      "currentArtifactBindingRequired": true,
+      "activeGameCancellationForbidden": true,
+      "qualitySecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
