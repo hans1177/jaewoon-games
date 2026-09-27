@@ -205,3 +205,37 @@ test('active same-source product quality buildup suppresses Open Cloud and downs
   assert.match(workflow,/EXTERNAL_RELEASE_PROBE_SUPPRESSED=YES/);
   assert.match(workflow,/RESUME_STAGE=REPAIR_REQUIRED/);
 });
+
+
+test('transient Open Cloud failures retry only the exact runtime-foundation gate without source rebuild',()=>{
+  assert.match(workflow,/retry_open_cloud_only:/);
+  assert.match(workflow,/type: boolean/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_TRANSIENT_RETRY_CANDIDATES=/);
+  assert.match(workflow,/gh workflow run company-development-roblox-post-runtime-qa\.yml[\s\S]*-f game_id="\$id"[\s\S]*-f retry_open_cloud_only=true/);
+  assert.match(workflow,/Run deterministic foundation protocol QA[\s\S]{0,120}if: \$\{\{ inputs\.retry_open_cloud_only != true \}\}/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_DEFERRED_TO_EXACT_RETRY=/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_EXACT_GATE_RETRY_PENDING=/);
+  assert.match(workflow,/QUALITY_FAILURE_CLASS=INFRASTRUCTURE_OR_EVIDENCE_ONLY/);
+  assert.match(workflow,/QUALITY_BUILDUP_AUTO_REQUEUE=NO/);
+  assert.match(workflow,/RESUME_STAGE=TARGET_PLATFORM_RUNTIME_FOUNDATION/);
+});
+
+test('transient 429 does not fail the whole workflow while non-transient persistent probe failures remain blocking',()=>{
+  assert.match(workflow,/transientProbeStatuses=new Set\(\[408,429,500,502,503,504\]\)/);
+  assert.match(workflow,/roblox-open-cloud-engine-probe-transient-retry/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_TRANSIENT_PROBE_RETRY=EXACT_GATE_ONLY/);
+  const classifyAt=workflow.indexOf('Enforce persistent Open Cloud probe failures after evidence persistence');
+  assert.ok(classifyAt>0);
+  const classify=workflow.slice(classifyAt,workflow.indexOf('\n  studio-local-plan:',classifyAt));
+  assert.match(classify,/if \[ -s "\$transient_file" \]; then[\s\S]*ROBLOX_OPEN_CLOUD_TRANSIENT_PROBE_RETRY=EXACT_GATE_ONLY[\s\S]*fi/);
+  assert.doesNotMatch(classify,/transient_file[\s\S]{0,500}exit 1/);
+  assert.match(classify,/if \[ -s "\$blocking_file" \]; then[\s\S]*exit 1/);
+});
+
+test('exact transient Open Cloud retry does not consume the Studio MCP lane',()=>{
+  const studioPlanAt=workflow.indexOf('\n  studio-local-plan:');
+  const studioAutoPlayAt=workflow.indexOf('\n  studio-mcp-auto-play:',studioPlanAt);
+  assert.ok(studioPlanAt>0&&studioAutoPlayAt>studioPlanAt);
+  const studioPlan=workflow.slice(studioPlanAt,studioAutoPlayAt);
+  assert.match(studioPlan,/if: \$\{\{ inputs\.retry_open_cloud_only != true \}\}/);
+});
