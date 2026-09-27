@@ -3,42 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1n25bau",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:23:25.842Z",
-      "expiresAt": "2026-09-27T05:08:25.842Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-15uzlot",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-unity-web-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:24:20.881Z",
-      "expiresAt": "2026-09-27T05:09:20.881Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-gcwiwu",
       "worker": "vibe2",
       "taskId": "cozy-island-studio-evolution-presentation-v1",
@@ -109,6 +73,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
+      ]
+    },
+    {
+      "id": "wl-jxbpgi",
+      "worker": "vibe2",
+      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1",
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "files": [
+        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
+      "acquiredAt": "2026-09-27T05:09:53.178Z",
+      "expiresAt": "2026-09-27T05:54:53.178Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1"
       ]
     }
   ]
