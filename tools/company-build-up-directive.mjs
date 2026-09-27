@@ -50,7 +50,7 @@ const AUTONOMOUS_CONTENT_EXPANSION_DEFAULT=Object.freeze({
     newStageForbidden:true,
     newApprovalGateForbidden:true,
     separateIdeaProposalStageForbidden:true,
-    platforms:Object.freeze(['WEB','ROBLOX','UNITY','FORTNITE_UEFN'])
+    platforms:Object.freeze(['WEB','ROBLOX','UNITY'])
   }),
   autonomy:Object.freeze({decisionOwner:'VIBE'}),
   completenessEvolution:Object.freeze({
@@ -769,7 +769,7 @@ function buildAutonomousContentExpansion({
     newWorkflowForbidden:true,
     newStageForbidden:true,
     ownerPromptPerExpansionForbidden:true,
-    platformScope:Object.freeze(['WEB','ROBLOX','UNITY','FORTNITE_UEFN']),
+    platformScope:Object.freeze([...(policy?.scope?.platforms||['WEB','ROBLOX','UNITY'])]),
     requestedPlatform:clean(platform).toUpperCase()||'COMMON',
     executionMode:repairFirst?'CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT':'AUTONOMOUS_CONTENT_BUILD_UP',
     existingCompletenessReview:Object.freeze({
@@ -1038,7 +1038,7 @@ export function buildGameSpecificBuildUpDirective({
     'AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP',
     'CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE',
     'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
-    'WEB_ROBLOX_UNITY_FORTNITE_UEFN_COMMON_EXPANSION_CONTRACT'
+    'WEB_ROBLOX_UNITY_COMMON_EXPANSION_CONTRACT'
   ];
   const nextCandidates=uniq([
     focus==='CORE_FUN'?'CONNECT_CORE_FUN_TO_PROGRESSION_AND_CONTENT_VARIETY':'DEEPEN_CORE_FUN_DECISION_DENSITY',
