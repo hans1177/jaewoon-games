@@ -1647,6 +1647,65 @@ test('responsible file boundary rejects unrelated model path', async () => {
   await assert.rejects(runVibe2SourceWorker({ cwd, responseFile }), /책임 파일 범위 밖 수정 금지/);
 });
 
+test('Unity bootstrap pair failure retries without collapsing to single-file focused recovery', async()=>{
+  const cwd=tempRoot();
+  const root='unity-games/missing-unity';
+  const gameCore='Assets/Scripts/GameCore.cs';
+  const runtimeBootstrap='Assets/Scripts/RuntimeBootstrap.cs';
+  const bad=path.join(cwd,'unity-bootstrap-one-file.json');
+  const good=path.join(cwd,'unity-bootstrap-pair.json');
+  const workOrder=order({
+    target:'unity',
+    root,
+    responsibleFiles:[`${root}/${gameCore}`,`${root}/${runtimeBootstrap}`],
+    taskId:'unity-bootstrap-pair-retry'
+  });
+  workOrder.gameId='missing-unity';
+  workOrder.selectedTask={evidence:['source-root-bootstrap-required','unity-web-source-root-bootstrap-required']};
+  workOrder.workerPolicy={directMainWrite:false,sourceRootBootstrapAllowed:true};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const gameFind='// Vibe가 승인 설계의 실제 상태/규칙/세이브 책임으로 교체한다.';
+  const runtimeFind='Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=missing-unity status=BOOTSTRAP_STUB");';
+  write(bad,JSON.stringify({edits:[{path:gameCore,find:gameFind,replace:'public int RuntimeState = 1;'}],newFiles:[]}));
+  write(good,JSON.stringify({edits:[
+    {path:gameCore,find:gameFind,replace:'public int RuntimeState = 1;'},
+    {path:runtimeBootstrap,find:runtimeFind,replace:'Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=missing-unity status=READY");'}
+  ],newFiles:[]}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad,good]});
+  assert.equal(generationFailureClass(new Error('UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED:Assets/Scripts/RuntimeBootstrap.cs')),'UNITY_BOOTSTRAP_PAIR');
+  assert.equal(result.sourceRootBootstrap,true);
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',result.taskId,'files',gameCore),'utf8'),/RuntimeState = 1/);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',result.taskId,'files',runtimeBootstrap),'utf8'),/status=READY/);
+});
+
+test('Unity bootstrap pair contract keeps timeout recovery multi-file',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/const zeroOutputTimeoutRecovery=!allowFullRewrite\n\s+&&!multiFilePairRequired/);
+  assert.match(source,/focusedFinal=!allowFullRewrite&&!multiFilePairRequired/);
+  assert.match(source,/multiFilePairRequired:bootstrap&&target==='unity'/);
+  assert.match(source,/VIBE2_UNITY_BOOTSTRAP_PAIR_RECOVERY_RETRY/);
+  const retry=buildGenerationRetryPrompt([
+    'Engine: unity',
+    'Goal: bootstrap real Unity Web gameplay',
+    'Allowed edit paths: Assets/Scripts/GameCore.cs, Assets/Scripts/RuntimeBootstrap.cs',
+    'UNITY WEB BOOTSTRAP: You MUST edit BOTH Assets/Scripts/GameCore.cs and Assets/Scripts/RuntimeBootstrap.cs.',
+    '=== FILE Assets/Scripts/GameCore.cs [EDITABLE] ===',
+    'class GameCore {}',
+    '=== FILE Assets/Scripts/RuntimeBootstrap.cs [EDITABLE] ===',
+    'class RuntimeBootstrap {}'
+  ].join('\n'),{
+    error:new Error('UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED:Assets/Scripts/RuntimeBootstrap.cs'),
+    responsibleFiles:['Assets/Scripts/GameCore.cs','Assets/Scripts/RuntimeBootstrap.cs'],
+    attempt:2,
+    multiFilePairRequired:true
+  });
+  assert.match(retry,/at least one exact edit for EACH Allowed edit path/i);
+  assert.match(retry,/GameCore\.cs and RuntimeBootstrap\.cs must both change/i);
+  assert.doesNotMatch(retry,/exactly one edit/i);
+});
+
 test('approved missing Web root produces isolated index.html bootstrap candidate without touching source', async () => {
   const cwd=tempRoot();
   const responseFile=path.join(cwd,'bootstrap.html');
