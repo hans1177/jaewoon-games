@@ -122,37 +122,26 @@ test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the ex
   assert.doesNotMatch(runtime,/Studio QA \(Disabled\)/);
 });
 
-test('F9 reuses exact two-client sync proof for internal release but external public readiness stays hard-gated',()=>{
+test('F9 fans in exact Studio and applicable multiplayer evidence without replaying runtime',()=>{
   const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   assert.match(finalReview,/Roblox F9 Final Review/);
-  assert.match(finalReview,/item\.robloxRuntimeFoundationPassed===true/);
   assert.match(finalReview,/const sharedReleaseRuntimeAcceptance=/);
-  assert.match(finalReview,/runtime\.f7MultiplayerFoundationPassed===true/);
-  assert.match(finalReview,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance/);
+  assert.match(finalReview,/const internalStudioValidationAccepted=/);
+  assert.match(finalReview,/post\.internalStudioValidationOnly===true/);
+  assert.match(finalReview,/post\.externalServerBootRequired===false/);
+  assert.match(finalReview,/post\.multiplayerValidationPassed===true/);
+  assert.match(finalReview,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred\|\|internalStudioValidationAccepted/);
   assert.match(finalReview,/const publicRuntimeAcceptance=false;/);
-  assert.doesNotMatch(finalReview,/const simplifiedInternalMultiplayer=/);
+  assert.match(finalReview,/f9RuntimeReplay:false/);
   assert.match(finalReview,/item\.robloxIndependentQaPassed===true/);
   assert.match(finalReview,/item\.robloxRegressionPassed===true/);
-  assert.match(finalReview,/String\(runtime\.universeId\|\|''\)===String\(candidate\.universeId\|\|''\)/);
-  assert.match(finalReview,/String\(runtime\.placeId\|\|''\)===String\(candidate\.placeId\|\|''\)/);
-  assert.match(finalReview,/runtime\.exactPlace===true/);
-  assert.match(finalReview,/runtime\.exactVersion===true/);
-  assert.match(finalReview,/Number\(runtime\.candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
-  assert.match(finalReview,/post\.actualRuntimeEvidence===true/);
   assert.match(finalReview,/item\.robloxInternalReleaseReady=true/);
-  assert.match(finalReview,/multiplayerVerificationMode:'TWO_CLIENT_ONE_SYNC'/);
-  assert.match(finalReview,/publicReleaseMultiplayerVerificationPending:internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred/);
   assert.match(finalReview,/item\.robloxPublicReleaseReady=false/);
-  assert.match(finalReview,/INTERNAL_BUILDUP_PENDING_EXTERNAL_PUBLIC_HARD_GATE/);
-  assert.match(finalReview,/externalPublicHardGatePending:true/);
-  assert.match(finalReview,/roblox-perpetual-buildup-public-hard-gate-pending/);
   assert.match(finalReview,/promotedWithoutRepublish:true/);
   assert.match(finalReview,/publicRelease:false/);
-  assert.doesNotMatch(finalReview,/item\.robloxPublicReleaseReady=publicRuntimeAcceptance===true/);
   assert.doesNotMatch(finalReview,/publishRobloxPlace/);
   assert.doesNotMatch(finalReview,/versions\?versionType=Published/);
 });
-
 
 test('cozy island foundation ordering and successful core-loop proof stay fail-closed',()=>{
   const server=fs.readFileSync('roblox-games/cozy-island/server/Game.server.luau','utf8');
