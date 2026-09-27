@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-13849dv",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "352cd25bf6280c47211a63bfc3e57519a984640e",
-      "acquiredAt": "2026-09-27T22:43:43.221Z",
-      "expiresAt": "2026-09-27T23:28:43.221Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-jqgwtx",
       "worker": "vibe2",
       "taskId": "monster-adventure-unity-web-base-implementation-v1",
@@ -752,6 +734,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:village-dungeons-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1h9ibh5",
+      "worker": "vibe2",
+      "taskId": "bug-defense-unity-web-base-implementation-v1",
+      "gameId": "bug-defense",
+      "files": [
+        "unity-games/bug-defense/Assets/Scripts/GameCore.cs",
+        "unity-games/bug-defense/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "4c21c3495a2225a6a0458511999afa03ace4f92d",
+      "acquiredAt": "2026-09-27T23:29:35.055Z",
+      "expiresAt": "2026-09-28T00:14:35.055Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:bug-defense-unity-web-base-implementation-v1"
       ]
     }
   ]
