@@ -249,7 +249,7 @@ assert.match(seedDesignRuntime,/needs: game-primary-gate/);
 assert.match(seedDesignRuntime,/if: needs\.game-primary-gate\.outputs\.defer != 'true'/);
 assert.match(directorSupervisor,/game-primary-gate:/);
 assert.match(directorSupervisor,/GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK/);
-assert.match(directorSupervisor,/needs: game-primary-gate/);
+assert.match(directorSupervisor,/needs: \[runner-drain, game-primary-gate\]/);
 assert.match(directorSupervisor,/needs\.game-primary-gate\.outputs\.defer != 'true'/);
 assert.match(directorSupervisor,/github\.event\.workflow_run\.conclusion != 'cancelled'/);
 assert.match(seedDesignRuntime,/COMPANY_GEMINI_LEAD_MODELS: '[^']*gemini-3\.8-flash[^']*gemini-3\.7-flash[^']*'/);
