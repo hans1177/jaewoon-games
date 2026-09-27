@@ -453,12 +453,67 @@ jobs:
             attempt_settled=0
             git -C /tmp/vibe2-f9-control fetch origin vibe2-unreal-core --quiet
             git -C /tmp/vibe2-f9-control reset --hard origin/vibe2-unreal-core >/dev/null
-            while IFS=$'\t' read -r game_id studio_required source_revision version_number; do
+            while IFS=
+              for task_id in "${task_ids[@]}"; do
+                evidence="roblox-runtime-acceptance-pass,roblox-final-review-pass,roblox-runtime-source-revision:${source_revision},roblox-runtime-source-tree:${runtime_source_tree_sha},roblox-runtime-version:${version_number},verification-conclusion:success,target-engine-qa-ref:roblox-f9-${GITHUB_RUN_ID},actions-run:${GITHUB_RUN_ID}"
+                if [ "$studio_required" = YES ]; then
+                  evidence="${evidence},ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS,roblox-studio-asset-runtime-binding-pass"
+                fi
+                (
+                  cd /tmp/vibe2-f9-control
+                  node "$GITHUB_WORKSPACE/main/tools/vibe2-queue-control.mjs" pass --id="$task_id" --evidence="$evidence"
+                )
+                echo "ROBLOX_F9_VIBE_TASK_PASS=${game_id}:${task_id}:studio=${studio_required}:source_tree=${runtime_source_tree_sha}"
+                attempt_settled=$((attempt_settled+1))
+              done
+            done < "$proof_tsv"
+
+            git -C /tmp/vibe2-f9-control add .vibe2/queue.json
+            if git -C /tmp/vibe2-f9-control diff --cached --quiet; then
+              pushed=1
+              settled_count=$attempt_settled
+              break
+            fi
+            git -C /tmp/vibe2-f9-control commit -m 'vibe2: settle Roblox tasks after exact F9 runtime proof [skip ci]'
+            if git -C /tmp/vibe2-f9-control push origin HEAD:vibe2-unreal-core; then
+              pushed=1
+              settled_count=$attempt_settled
+              break
+            fi
+            sleep $((attempt*2))
+          done
+          test "$pushed" = '1'
+          echo "ROBLOX_F9_VIBE_SETTLED_COUNT=$settled_count"
+          if [ "$settled_count" -gt 0 ]; then
+            payload="$(jq -nc \
+              --arg run "${GITHUB_RUN_ID:-}" \
+              --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+              --arg game "${REQUESTED_GAME_ID:-}" \
+              '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$game,source_outcome:"VERIFIED",reason:"roblox-f9-verified"}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+              --data "$payload"
+            echo "ROBLOX_F9_VIBE_REFILL_DISPATCHED=$settled_count"
+          else
+            echo 'ROBLOX_F9_VIBE_REFILL_DISPATCHED=0'
+          fi
+          echo 'ROBLOX_F9_VIBE_FANIN=PASS'
+\t' read -r game_id studio_required source_revision version_number; do
               [ -n "$game_id" ] || continue
-              mapfile -t task_ids < <(GAME_ID="$game_id" node --input-type=module <<'NODE'
+              git -C main fetch --no-tags origin "$source_revision" --quiet
+              runtime_source_tree_sha="$(git -C main rev-parse "$source_revision:roblox-games/$game_id")"
+              [[ "$runtime_source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+              echo "ROBLOX_F9_RUNTIME_SOURCE_TREE_SHA=$game_id:$runtime_source_tree_sha"
+              mapfile -t task_ids < <(GAME_ID="$game_id" RUNTIME_SOURCE_TREE_SHA="$runtime_source_tree_sha" node --input-type=module <<'NODE'
               import fs from 'node:fs';
               const q=JSON.parse(fs.readFileSync('/tmp/vibe2-f9-control/.vibe2/queue.json','utf8'));
               const game=String(process.env.GAME_ID||'').trim();
+              const sourceTree=String(process.env.RUNTIME_SOURCE_TREE_SHA||'').trim();
+              const exactTreeMarker='roblox-runtime-await-source-tree:'+sourceTree;
               for(const task of q.tasks||[]){
                 const evidence=(task.evidence||[]).map(String);
                 if(task.gameId!==game)continue;
@@ -466,6 +521,7 @@ jobs:
                 if(String(task.status||'').toLowerCase()!=='running')continue;
                 if(String(task.blocker||'')!=='candidate-awaiting-roblox-runtime-qa')continue;
                 if(!evidence.includes('roblox-runtime-await-game:'+game))continue;
+                if(!evidence.includes(exactTreeMarker))continue;
                 process.stdout.write(String(task.id)+'\n');
               }
               NODE
