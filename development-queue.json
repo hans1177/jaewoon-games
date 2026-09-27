@@ -2275,10 +2275,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-27T00:41:33.237Z",
+      "updatedAt": "2026-09-27T00:43:40.765Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2506,7 +2506,25 @@
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
-      "robloxRuntimeCandidateEvidence": null,
+      "robloxRuntimeCandidateEvidence": {
+        "version": 1,
+        "gameId": "amusement-tycoon",
+        "platform": "ROBLOX",
+        "sourceRevision": "a409c988ab054f07893edf816c81a79ba89608dd",
+        "artifactIdentity": "sha256:960b22ec24ccb9e4bc7281203d5369083f961ff8ed79eb42a6e06063e07c804c",
+        "artifactRunId": 36283195951,
+        "universeId": "10768075841",
+        "placeId": "72938557172866",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": false,
+        "exposure": "PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 3,
+        "workflowRunId": 36283337178,
+        "publishedAt": "2026-09-27T00:43:40.765Z",
+        "authority": "roblox-open-cloud-private-runtime-candidate"
+      },
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -2536,11 +2554,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -2700,7 +2718,7 @@
         "placeId": "72938557172866",
         "verified": true,
         "verifiedAt": "2026-09-26T13:18:03.829Z",
-        "lastVerifiedAt": "2026-09-26T13:18:03.829Z",
+        "lastVerifiedAt": "2026-09-27T00:43:40.765Z",
         "source": "canonical-dedicated-open-cloud-bootstrap",
         "authority": "roblox-canonical-publication-target",
         "dedicated": true,
@@ -2751,9 +2769,9 @@
         "independentQaPassed": false,
         "regressionPassed": false,
         "exactRevision": false,
-        "lastSuccessfulStage": "CHEAP_PRECHECK",
-        "failureStage": "SINGLE_BUILD_OR_PACKAGE",
-        "failureSignature": "4dd87fcb9d4c2e66f74d3ddc1b220c1f00c7208c659e691ff13645f96d2079ad"
+        "lastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+        "failureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+        "failureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING"
       },
       "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
       "failureCount": 1,
@@ -9269,7 +9287,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T00:43:17.246Z",
+  "updatedAt": "2026-09-27T00:43:40.765Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
