@@ -144,11 +144,33 @@ export function expandPresentationResponsibleFiles({task={},target='',repoRoot=p
       ?[`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,`${root}/Assets/Scripts/RuntimeBootstrap.cs`,`${root}/Assets/Scripts/GameCore.cs`]
       :resolvedTarget==='web'
         ?[`${root}/index.html`,`${root}/style.css`,`${root}/game.js`]
-        :[];
+        :['fortnite-uefn','uefn','unreal'].includes(resolvedTarget)
+          ?[`${root}/Game.verse`,`${root}/Island.verse`,`${root}/Main.verse`,`${root}/Presentation.verse`,`${root}/UI.verse`,`${root}/Verse/Presentation.verse`,`${root}/Verse/UI.verse`]
+          :[];
   const discovered=candidates.filter(relative=>{
     try{return fs.existsSync(path.resolve(repoRoot,relative))&&fs.statSync(path.resolve(repoRoot,relative)).isFile();}
     catch{return false;}
   });
+  if(['fortnite-uefn','uefn','unreal'].includes(resolvedTarget)){
+    const rootDir=path.resolve(repoRoot,root),verse=[];
+    if(fs.existsSync(rootDir)){
+      const stack=[rootDir];
+      while(stack.length&&verse.length<12){
+        const current=stack.pop();
+        let entries=[];
+        try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+        for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
+          if(['Binaries','Intermediate','Saved','DerivedDataCache','.git'].includes(entry.name))continue;
+          const full=path.join(current,entry.name);
+          if(entry.isDirectory()){stack.push(full);continue;}
+          if(!/\.verse$/i.test(entry.name))continue;
+          verse.push(posix(path.relative(repoRoot,full)));
+          if(verse.length>=12)break;
+        }
+      }
+    }
+    return freezeList([...base,...discovered,...verse]).slice(0,6);
+  }
   return freezeList([...base,...discovered]).slice(0,6);
 }
 
