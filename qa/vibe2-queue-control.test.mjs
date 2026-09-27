@@ -1672,7 +1672,8 @@ test('asset production tasks use the dedicated asset-development lane and never 
       id:'asset-visual',gameId:'asset-game',target:'roblox',department:'development',type:'implementation',
       goal:'character motion and environment asset production',status:'queued',
       sourceRoot:'roblox-games/asset-game',responsibleFiles:['client/Game.client.luau'],
-      assetProductionLane:true,evidence:['asset-production-parallel:v1','presentation-pass:LIVING_MOTION']
+      assetProductionLane:true,estimatedRisk:'high',speculativeEligible:true,
+      evidence:['asset-production-parallel:v1','presentation-pass:LIVING_MOTION']
     },
     {
       id:'game-logic',gameId:'logic-game',target:'roblox',department:'development',type:'implementation',
