@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1iu1tnv",
-      "worker": "vibe2",
-      "taskId": "seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "files": [
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "c7bb6fa0e18deefbf3a38c374ff821f3bc96b8c6",
-      "acquiredAt": "2026-09-27T10:29:54.703Z",
-      "expiresAt": "2026-09-27T11:14:54.703Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-1iswusz",
       "worker": "vibe2",
       "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
@@ -517,6 +499,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:village-dungeons-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-wl9xdi",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-28a2f2747401-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-queue-control.mjs",
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-queue-control.test.mjs"
+      ],
+      "baseSha": "7bbae1f7f5c446f08d1ee9e337605dce92dd7277",
+      "acquiredAt": "2026-09-27T11:16:59.393Z",
+      "expiresAt": "2026-09-27T12:01:59.393Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-28a2f2747401-v1"
       ]
     }
   ]
