@@ -636,6 +636,26 @@ test('Roblox source persistence rejects results when the source-plan control con
   assert.match(workflow,/staleReconciliationCount=Math\.max\(reconciliation\.length,expected\.length,1\)/);
 });
 
+
+test('every Roblox source-plan contract path wakes a fresh batch immediately',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const change=roadmap.changeRecord?.robloxSourcePlanWakeAndRunnerIsolation20260927||{};
+  const pushStart=workflow.indexOf('  push:');
+  const pushEnd=workflow.indexOf('  workflow_call:',pushStart);
+  assert.ok(pushStart>=0&&pushEnd>pushStart);
+  const pushBlock=workflow.slice(pushStart,pushEnd);
+  const contractStart=workflow.indexOf('  ROBLOX_SOURCE_PLAN_CONTRACT_PATHS: >-');
+  const contractEnd=workflow.indexOf('\n\njobs:',contractStart);
+  assert.ok(contractStart>=0&&contractEnd>contractStart);
+  const contractBlock=workflow.slice(contractStart,contractEnd);
+  assert.equal(change.sourcePlanContractPushWakeRequired,true);
+  for(const required of change.sourcePlanContractPaths||[]){
+    assert.ok(contractBlock.includes(required),'contract path missing: '+required);
+    assert.ok(pushBlock.includes(`'${required}'`),'push wake missing: '+required);
+  }
+});
+
 test('Roblox source worker bases candidate on current main without leaking workflow diffs and requeues stale contracts',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const workerStart=workflow.indexOf('  source-worker:');
@@ -652,11 +672,18 @@ test('Roblox source worker bases candidate on current main without leaking workf
   assert.match(worker,/ROBLOX_WORKER_RESULT=\$\{id\}:\$\{superseded\?'SUPERSEDED'/);
 });
 
-test('Roblox batch scheduler v5 uses slim control-plane capacity without capping per-game matrix parallelism',()=>{
+test('Roblox batch scheduler isolates critical source-plan ingress without capping per-game matrix parallelism',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
   assert.match(workflow,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
   assert.match(workflow,/cancel-in-progress: false/);
+  assert.match(workflow,/\n  source-plan:\n[\s\S]*?runs-on: ubuntu-24\.04/);
+  assert.doesNotMatch(workflow,/\n  source-plan:\n[\s\S]{0,220}?runs-on: ubuntu-slim/);
+  const sourcePlanIsolation=roadmap.changeRecord?.robloxSourcePlanWakeAndRunnerIsolation20260927||{};
+  assert.equal(sourcePlanIsolation.sourcePlanRunner,'ubuntu-24.04');
+  assert.equal(sourcePlanIsolation.previousSourcePlanRunner,'ubuntu-slim');
+  assert.equal(sourcePlanIsolation.technicalPlanRunnerUnchanged,'ubuntu-24.04-arm');
+  assert.equal(sourcePlanIsolation.heavyExecutionRunnerUnchanged,'ubuntu-latest');
   assert.doesNotMatch(workflow,/max-parallel:/);
   assert.match(workflow,/const EXECUTION_BATCH_MAX=256;/);
   assert.equal(roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.matrixBatchMax,256);
