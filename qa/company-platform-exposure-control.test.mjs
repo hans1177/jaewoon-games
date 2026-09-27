@@ -12,7 +12,7 @@ const technicalBase=()=>({
   robloxSourceCommit:source,robloxBuildArtifactIdentity:artifact,
   robloxRuntimeCandidateEvidence:{...candidate},
   executionEvidence:{runtimePassed:true,independentQaPassed:true,regressionPassed:true,exactRevision:true},
-  robloxRuntimePassed:true,robloxIndependentQaPassed:true,robloxRegressionPassed:true,
+  robloxRuntimePassed:true,robloxF1ToF8Passed:true,robloxIndependentQaPassed:true,robloxRegressionPassed:true,
   robloxExactRevisionPassed:true,robloxF9ReleaseRegressionPassed:true,robloxFinalReviewPassed:true,
   robloxFoundationF0Passed:true,robloxDatastoreRejoinPassed:true,robloxMultiplayerQaPassed:true,
   robloxServerClientBoundaryPassed:true,robloxMobileControlUiPassed:true
@@ -47,7 +47,7 @@ test('technical pass becomes internal-release ready but never public by itself',
   assert.equal(g.publicReleaseReady,false);
 });
 
-test('real-server observation pending keeps Roblox internally ready but blocks public release',()=>{
+test('real-server observation is not an F0-F9 or public-readiness gate',()=>{
   const item={
     ...technicalBase(),
     robloxRuntimePassed:false,
@@ -58,12 +58,12 @@ test('real-server observation pending keeps Roblox internally ready but blocks p
     ...strictRobloxEvidence()
   };
   const r=controlPlatformExposure({developmentQueue:{items:[item]},ticketQueue:{tickets:[]},vibeQueue:{tasks:[]}});
-  const p=r.state.games[0].platforms.find(x=>x.platform==='ROBLOX');
-  assert.equal(p.internalReleaseReady,true);
-  assert.equal(p.externalExposureState,'INTERNAL_ONLY');
-  assert.equal(p.publicReleaseReady,false);
-  assert.ok(p.publicHardGate.blockers.includes('ROBLOX_PUBLIC_HARD_GATE_TECHNICAL'));
-  assert.ok(p.publicHardGate.blockers.includes('ROBLOX_PUBLIC_HARD_GATE_REALSERVERBOOT'));
+  const state=r.state.games[0].platforms.find(x=>x.platform==='ROBLOX');
+  assert.equal(state.internalReleaseReady,true);
+  assert.equal(state.publicReleaseReady,true);
+  assert.equal(state.externalExposureState,'PUBLIC_RELEASE_READY');
+  assert.equal(state.publicHardGate.blockers.includes('ROBLOX_PUBLIC_HARD_GATE_REALSERVERBOOT'),false);
+  assert.equal(state.publication.ownerApproved,false);
 });
 
 test('old internal playtest flag cannot bypass actual Vibe play and hard gate',()=>{
@@ -113,7 +113,14 @@ test('critical or high tester bug blocks strict public gate',()=>{
 test('public release remains platform-independent after Roblox hard gate',()=>{
   const item={
     ...technicalBase(),...strictRobloxEvidence(),
-    robloxInternalReleasePublished:true,robloxExternalPublicReleaseConfirmed:true,
+    robloxInternalReleasePublished:true,
+    robloxExternalPublicReleaseConfirmed:true,
+    robloxOwnerPublicReleaseApproved:true,
+    robloxOwnerPublicReleaseApprovalEvidence:{
+      approved:true,authority:'OWNER_EXPLICIT_DIRECTIVE_ONLY',
+      sourceRevision:source,artifactIdentity:artifact,
+      universeId:'123',placeId:'456',versionNumber:7
+    },
     unityInternalReleasePublished:true,unityInternalPlaytestPassed:true
   };
   const r=controlPlatformExposure({developmentQueue:{items:[item]},ticketQueue:{tickets:[]},vibeQueue:{tasks:[]}});
