@@ -291,8 +291,8 @@
     "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
     "gamePrimaryControlRunnerPool": {
       "authority": "company-learning/platform-release-roadmap.json#changeRecord.lightweightGameIngressRunnerRelief20260927",
-      "reserve": "ubuntu-slim",
-      "reserveDefault": "ubuntu-slim",
+      "reserve": "ubuntu-24.04",
+      "reserveDefault": "ubuntu-24.04",
       "fanInRefillReserve": "ubuntu-24.04-arm",
       "fanIn": "ubuntu-24.04-arm",
       "worker": "ubuntu-latest",
@@ -301,7 +301,11 @@
       "fanInRefillBypassesSlimPressure": true,
       "heavyGameExecutionUnchanged": true,
       "queueReservationAndStateFanInOnly": true,
-      "ingressControl": "ubuntu-slim"
+      "ingressControl": "ubuntu-slim",
+      "gamePrimaryReserve": "ubuntu-24.04",
+      "auxiliaryReserve": "ubuntu-slim",
+      "gamePrimaryCriticalIngressSeparatedFromSlim": true,
+      "auxiliaryIngressRemainsSlim": true
     },
     "slotRefillTrigger": "vibe2-neuron-complete",
     "slotRefillBranchPrefix": "vibe2/refill/",
