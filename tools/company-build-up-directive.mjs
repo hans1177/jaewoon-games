@@ -605,6 +605,202 @@ function buildVisualDirective({gameId,design,source,focus}){
   };
 }
 
+const AUTONOMOUS_EXPANSION_THEMES=Object.freeze([
+  Object.freeze({
+    id:'WORLD_ECOLOGY_STORY_CHAIN',
+    domains:Object.freeze(['MAP_EXPANSION','REGIONS','WORLD_DENSITY','LANDMARKS','CONTENT_DISCOVERY','SPAWN_ENCOUNTER_DIRECTOR','NARRATIVE_STORY','NPC_SOCIAL_BEHAVIOR']),
+    focuses:Object.freeze(['PROGRESSION','PRESENTATION','CORE_FUN']),
+    bundle:Object.freeze([
+      'BACKGROUND_ENVIRONMENT_IDENTITY: 배경·지형·조명·소품이 지역 역할과 세계 분위기를 설명해야 한다.',
+      'REGION_TOPOLOGY_AND_LANDMARK: 기존 지역과 이어지는 진입 경로·랜드마크·우회/잠금 경로를 만든다.',
+      'REGION_NATIVE_ENCOUNTER: 그 장소에 존재할 이유가 있는 몬스터/적/상호작용 역할과 서로 다른 행동 패턴을 만든다.',
+      'REGION_RESOURCE_OR_ITEM: 지역 고유 자원·아이템·장비·보상이 탐험이나 전투 선택에 실제 의미를 갖게 한다.',
+      'QUEST_EVENT_REASON_TO_ENTER: 플레이어가 왜 지금 이 지역에 가는지 목표·퀘스트·사건과 연결한다.',
+      'STORY_AND_WORLD_CAUSALITY: 환경 단서·NPC·적·보상·지역 변화가 같은 세계 원인과 결과를 공유하게 한다.',
+      'REGION_RULE_OR_HAZARD: 지형·날씨·시간·위험·상태·접근 조건 중 게임에 맞는 규칙을 플레이 선택과 연결한다.',
+      'RETURN_OR_FORWARD_CONNECTION: 기존 지역으로 돌아올 이유 또는 다음 지역·보스·해금으로 이어지는 결과를 남긴다.'
+    ])
+  }),
+  Object.freeze({
+    id:'ENEMY_BOSS_COMBAT_ECOLOGY',
+    domains:Object.freeze(['ENEMY_AI','BOSS_AND_SIGNATURE_MOMENTS','CONTENT_VARIETY','GAME_FEEL','SPAWN_ENCOUNTER_DIRECTOR','DIFFICULTY_PACING','ENEMY_VISUALS']),
+    focuses:Object.freeze(['CORE_FUN','PRESENTATION']),
+    bundle:Object.freeze([
+      'ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.',
+      'BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.',
+      'ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.',
+      'ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.',
+      'ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.',
+      'DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.',
+      'VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다.'
+    ])
+  }),
+  Object.freeze({
+    id:'QUEST_STORY_PROGRESSION_CHAIN',
+    domains:Object.freeze(['QUESTS','NARRATIVE_STORY','GOALS','REWARDS','UNLOCKS','PROGRESSION','NPC_SOCIAL_BEHAVIOR','CONTENT_DISCOVERY']),
+    focuses:Object.freeze(['PROGRESSION','CORE_FUN']),
+    bundle:Object.freeze([
+      'WORLD_REASON: 퀘스트가 세계 상황·NPC 역할·지역 변화에서 자연스럽게 발생해야 한다.',
+      'DISTINCT_OBJECTIVE_STRUCTURE: 단순 수집·처치 숫자 복제 대신 탐색·선택·방어·추적·전투·상호작용을 게임에 맞게 변주한다.',
+      'STATEFUL_PROGRESS: 진행 단계와 선행·후속 상태가 실제 게임 상태에 연결되어야 한다.',
+      'MEANINGFUL_REWARD: 보상은 다음 행동·지역·장비·능력·정보를 열어 플레이 선택을 넓혀야 한다.',
+      'FOLLOWUP_CONSEQUENCE: 완료 결과가 NPC·지역·이벤트·후속 퀘스트 또는 시스템 상태에 반영되어야 한다.',
+      'LORE_THROUGH_PLAY: 긴 설명만 추가하지 말고 플레이 행동·환경·대사·결과로 세계관을 보여준다.',
+      'CHAIN_PACING: 초반→중반→후반의 목표 복잡도와 위험·보상 상승이 갑자기 튀지 않게 이어진다.'
+    ])
+  }),
+  Object.freeze({
+    id:'ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN',
+    domains:Object.freeze(['INVENTORY','INVENTORY_USABILITY','EQUIPMENT_LOADOUT','CRAFTING','ECONOMY','REWARDS','SYSTEM_CONNECTION','WEAPONS_AND_EQUIPMENT']),
+    focuses:Object.freeze(['PROGRESSION','USABILITY','CORE_FUN']),
+    bundle:Object.freeze([
+      'SOURCE_AND_DISCOVERY: 아이템이 어디서 왜 나오는지 지역·몹·퀘스트·제작과 연결한다.',
+      'DISTINCT_USE_CASE: 데미지 숫자만 다른 복제 장비가 아니라 사거리·타이밍·상태·위험·보상·조합 역할이 달라야 한다.',
+      'INVENTORY_AND_EQUIP_FLOW: 획득→비교→장착·사용→교체→피드백이 같은 authoritative 상태를 사용한다.',
+      'CRAFT_OR_UPGRADE_CONNECTION: 재료·레시피·제작·강화 결과가 실제 플레이 선택을 바꾼다.',
+      'PROGRESSION_PURPOSE: 아이템이 특정 지역·적·빌드·퀘스트·해금과 연결되어 성장 경로에 의미를 가진다.',
+      'SYNERGY_AND_TRADEOFF: 장비·스킬·소모품 사이에 조합 또는 선택 비용이 있어 하나의 정답만 반복되지 않게 한다.',
+      'WORLD_PRESENTATION: 외형·이름·설명·획득 연출이 실제 기능과 세계 설정을 일치시킨다.'
+    ])
+  }),
+  Object.freeze({
+    id:'RULES_EVENTS_REPLAYABILITY_SYSTEM',
+    domains:Object.freeze(['PLAYER_AGENCY','REPLAYABILITY_VARIATION','DIFFICULTY_PACING','SPAWN_ENCOUNTER_DIRECTOR','MULTIPLAYER_AND_SYNC','FAILURE_RESPAWN_CHECKPOINTS','SYSTEM_CONNECTION']),
+    focuses:Object.freeze(['CORE_FUN','PROGRESSION','STABILITY']),
+    bundle:Object.freeze([
+      'DERIVED_GAMEPLAY_RULE: 승인된 기존 규칙을 깨지 않으면서 환경·적 관계·아이템 조합·퀘스트 상태·지역 접근 같은 새 상호작용 규칙을 만든다.',
+      'TRIGGER_CONDITION: 규칙이 언제 발동하고 언제 끝나는지 명확히 한다.',
+      'PLAYER_DECISION_EFFECT: 규칙이 실제 선택·위험·경로·장비·협동 방식 중 하나 이상을 바꾸게 한다.',
+      'EVENT_VARIATION: 랜덤 숫자만 바꾸지 말고 조우·목표·경로·보상 구조를 변주한다.',
+      'FAILURE_AND_RECOVERY: 실패 시 손실·복구·재도전이 이해 가능하고 진행을 무의미하게 되감지 않게 한다.',
+      'MULTIPLAYER_INTERACTION_WHEN_APPLICABLE: 협동·경쟁이면 역할 분담·권한·동기화·보상 규칙을 실제 2인 이상 상태와 연결한다.',
+      'SYSTEM_CONSEQUENCE: 규칙 결과가 퀘스트·지역·보상·NPC·다음 세션 중 관련 시스템에 남는다.'
+    ])
+  }),
+  Object.freeze({
+    id:'MID_LATE_ENDGAME_COMPLETION',
+    domains:Object.freeze(['MID_LATE_GAME_DEPTH','PROGRESSION','UNLOCKS','BOSS_AND_SIGNATURE_MOMENTS','MAP_EXPANSION','CONTENT_VARIETY','ANTI_GRIND','REPLAYABILITY_VARIATION']),
+    focuses:Object.freeze(['PROGRESSION','CORE_FUN']),
+    bundle:Object.freeze([
+      'MIDGAME_TRANSITION: 초반에 배운 행동을 새로운 적·지역·장비 조합·목표 압박으로 재해석한다.',
+      'LATEGAME_SYSTEM_CONNECTION: 중후반은 수치만 커지지 않고 여러 시스템을 함께 사용하도록 깊어진다.',
+      'SIGNATURE_CHALLENGE: 고유 보스·던전·습격·이벤트 등 게임 정체성을 압축한 고난도 목표를 만든다.',
+      'MEANINGFUL_UNLOCK: 새 지역·능력·장비·전략·루트 중 플레이 방식을 실제로 넓히는 보상을 연결한다.',
+      'ENDGAME_OR_LONG_TERM_GOAL: 완주 이후 반복 가치가 필요한 게임이면 변주·선택·도전 목표를 만든다.',
+      'ANTI_GRIND_VARIATION: 반복 횟수만 늘리는 대신 새로운 조합·위험·경로·단축·선택이 주기적으로 열린다.',
+      'EARLY_CONTENT_RELEVANCE: 후반 확장이 기존 지역·재료·시스템 일부를 다시 의미 있게 사용할 이유를 남긴다.'
+    ])
+  }),
+  Object.freeze({
+    id:'PRESENTATION_WORLD_COHESION',
+    domains:Object.freeze(['ENVIRONMENT','TERRAIN','LIGHTING','ANIMATION','VFX','CHARACTER_VISUALS','ENEMY_VISUALS','UI_HUD','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION']),
+    focuses:Object.freeze(['PRESENTATION','USABILITY']),
+    bundle:Object.freeze([
+      'BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.',
+      'CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.',
+      'ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.',
+      'ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.',
+      'STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.',
+      'REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.',
+      'PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다.'
+    ])
+  })
+]);
+
+function autonomousContentExpansionPolicy(repoRoot=process.cwd()){
+  const loaded=readJson(path.join(repoRoot,AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH),null);
+  if(loaded?.status==='ACTIVE'&&clean(loaded?.scope?.lifecycle)==='EXISTING_BUILD_UP_ONLY')return loaded;
+  return AUTONOMOUS_CONTENT_EXPANSION_DEFAULT;
+}
+
+function buildAutonomousContentExpansion({
+  repoRoot=process.cwd(),source={},states=[],focus='CORE_FUN',previousDirective=null,
+  previousEffectiveness={},nextActionDecision={},platform='COMMON'
+}={}){
+  const policy=autonomousContentExpansionPolicy(repoRoot);
+  const stateByDomain=new Map(states.map(row=>[clean(row.domain),clean(row.state).toUpperCase()]));
+  const previousExpansion=previousDirective?.autonomousContentExpansion||null;
+  const previousTheme=clean(previousExpansion?.selectedTheme);
+  const effectClass=clean(previousEffectiveness?.classification).toUpperCase();
+  const continueSame=['REGRESSION','NO_MEANINGFUL_EFFECT','PARTIAL_EFFECT','UNKNOWN_RUNTIME_EFFECT'].includes(effectClass);
+  const scored=AUTONOMOUS_EXPANSION_THEMES.map((theme,index)=>{
+    const gapDomains=theme.domains.filter(domain=>stateByDomain.get(domain)==='GAP');
+    const applicableDomains=theme.domains.filter(domain=>stateByDomain.get(domain)!=='NOT_APPLICABLE');
+    let score=gapDomains.length*12+applicableDomains.length*2+(theme.focuses.includes(focus)?8:0);
+    if(previousTheme===theme.id)score+=continueSame?6:-18;
+    if(theme.id==='WORLD_ECOLOGY_STORY_CHAIN'){if(Number(source?.signals?.map||0)<8)score+=5;if(Number(source?.signals?.content||0)<8)score+=5;}
+    if(theme.id==='ENEMY_BOSS_COMBAT_ECOLOGY'&&Number(source?.signals?.ai||0)<4)score+=6;
+    if(theme.id==='QUEST_STORY_PROGRESSION_CHAIN'&&Number(source?.signals?.progression||0)<8)score+=6;
+    if(theme.id==='ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN'&&Number(source?.signals?.connection||0)<3)score+=6;
+    if(theme.id==='PRESENTATION_WORLD_COHESION'&&(Number(source?.signals?.animation||0)<3||Number(source?.signals?.vfx||0)<3))score+=5;
+    return{theme,index,score,gapDomains,applicableDomains};
+  }).sort((a,b)=>b.score-a.score||a.index-b.index);
+  const selected=scored[0]||{theme:AUTONOMOUS_EXPANSION_THEMES[0],score:0,gapDomains:[],applicableDomains:[]};
+  const selectedTheme=selected.theme;
+  const sameThemeDepth=previousTheme===selectedTheme.id?Math.max(1,Number(previousExpansion?.themeDepth||1)+1):1;
+  const repairFirst=clean(nextActionDecision?.action).toUpperCase()==='CAUSAL_REPAIR';
+  return Object.freeze({
+    version:1,
+    policySource:AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH,
+    policyStatus:clean(policy?.status)||'ACTIVE',
+    executionBoundary:'EXISTING_BUILD_UP_ONLY',
+    autonomousDecisionOwner:'VIBE',
+    assistantManualIdeaDependencyForbidden:true,
+    newWorkflowForbidden:true,
+    newStageForbidden:true,
+    ownerPromptPerExpansionForbidden:true,
+    platformScope:Object.freeze(['WEB','ROBLOX','UNITY','FORTNITE_UEFN']),
+    requestedPlatform:clean(platform).toUpperCase()||'COMMON',
+    executionMode:repairFirst?'CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT':'AUTONOMOUS_CONTENT_BUILD_UP',
+    existingCompletenessReview:Object.freeze({
+      requiredEveryBuildUp:true,
+      mode:'CHECK_EXISTING_AND_EXPAND_OR_IMPROVE_WHICHEVER_HAS_HIGHER_PLAYER_VALUE',
+      dimensions:Object.freeze([
+        'CORE_LOOP_COMPLETENESS','QUEST_AND_GOAL_FLOW','WORLD_AND_REGION_FLOW','MONSTER_ENEMY_ROLE_COVERAGE',
+        'ITEM_EQUIPMENT_REWARD_PURPOSE','STORY_WORLD_CAUSALITY','GAMEPLAY_RULE_CONNECTIONS',
+        'PROGRESSION_PACING','MID_LATE_ENDGAME_DEPTH','MULTIPLAYER_WHEN_APPLICABLE','PRESENTATION_AND_FEEDBACK'
+      ]),
+      weakExistingContentMayPreemptNewContent:true
+    }),
+    selectedTheme:selectedTheme.id,
+    themeDepth:sameThemeDepth,
+    selectedThemeReason:String(selected.gapDomains.length)+' explicit GAP(s) and '+String(selected.applicableDomains.length)+' applicable domain(s); focus='+focus+'; previousTheme='+(previousTheme||'NONE')+'; previousEffect='+(effectClass||'NONE')+'.',
+    scoredThemes:Object.freeze(scored.map(row=>Object.freeze({theme:row.theme.id,score:row.score,gapDomains:Object.freeze(row.gapDomains)}))),
+    coherentContentBundle:Object.freeze(selectedTheme.bundle),
+    bundleRule:'MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT',
+    antiCloneContract:Object.freeze({
+      compareAgainstExistingContentBeforeAdding:true,
+      nameColorOrStatOnlyCloneForbidden:true,
+      repeatedTemplateExpansionForbidden:true,
+      distinctionAxes:Object.freeze(['ROLE','BEHAVIOR','PLAYER_DECISION','WORLD_REASON','SOURCE_OR_TRIGGER','REWARD_OR_CONSEQUENCE','SYSTEM_CONNECTION','PRESENTATION']),
+      minimumMeaningfulDistinctAxes:2
+    }),
+    continuityAndCausality:Object.freeze({
+      required:true,
+      preserveApprovedIdentity:true,
+      preserveExistingCanonicalRuleMeaning:true,
+      preserveProgressionFlow:true,
+      questions:Object.freeze([
+        'WHY_DOES_THIS_EXIST_IN_THIS_GAME','WHY_DOES_IT_EXIST_IN_THIS_LOCATION_OR_WORLD_STATE',
+        'WHY_DOES_THE_PLAYER_ENCOUNTER_OR_NEED_IT_NOW','WHAT_EXISTING_CONTENT_OR_STATE_LEADS_INTO_IT',
+        'WHAT_PLAYER_DECISION_DOES_IT_CHANGE','WHAT_REWARD_STATE_WORLD_OR_NEXT_GOAL_CHANGES_AFTER_IT',
+        'HOW_DOES_IT_CONNECT_BACK_TO_EXISTING_SYSTEMS'
+      ])
+    }),
+    derivedRuleEvolution:Object.freeze({
+      allowed:true,
+      rule:'MAY_ADD_DERIVED_GAMEPLAY_INTERACTION_RULES_WHEN_THEY_REINFORCE_APPROVED_IDENTITY_AND_DO_NOT_CONTRADICT_CANONICAL_RULES_OR_PROTECTED_VALUES',
+      examples:Object.freeze(['ENVIRONMENTAL_RULE','ENEMY_RELATIONSHIP_RULE','BOSS_PHASE_RULE','ITEM_SYNERGY_RULE','QUEST_STATE_RULE','REGION_ACCESS_RULE','MULTIPLAYER_INTERACTION_RULE']),
+      protected:Object.freeze(['EXISTING_CANONICAL_RULE_SEMANTICS','AUTHORIZED_BALANCE_VALUES','ECONOMY_MEANING','SAVE_MEANING','NETWORK_AUTHORITY'])
+    }),
+    completionAcceptance:Object.freeze([
+      'REAL_GAME_SOURCE_DELTA_REQUIRED','PLAYER_FACING_OR_GAMEPLAY_SYSTEM_EFFECT_REQUIRED',
+      'DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS','CONNECTED_TO_EXISTING_GAME_FLOW',
+      'CONTINUITY_AND_CAUSALITY_PRESERVED','EXISTING_RELEVANT_INCREMENTAL_QA_PASSES'
+    ])
+  });
+}
+
 function platformDirectives({identity,goal}){
   return{
     UNITY_WEB:`${identity}: 동일 공통 목표 "${goal}"를 canonical unity-games 소스에 구현하고 WebGL/브라우저 터치/카메라/렌더 비용을 맞춘다. 별도 Web 게임 코드베이스를 만들지 않는다.`,
