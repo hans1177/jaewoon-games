@@ -3551,3 +3551,12 @@ test('failed source generation still performs post-work shared-context validatio
   assert.equal(workflow.indexOf(after,afterAt+1),-1);
 });
 
+test('focused replace Ollama requests keep canonical budget and enforce one-key schema',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/JSON_FOCUSED_REPLACE_TIMEOUT_MS=90000/);
+  assert.match(source,/JSON_FOCUSED_REPLACE_MAX_PREDICT=384/);
+  assert.match(source,/JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192/);
+  assert.ok(source.includes("focusedReplaceOnly?0.08"));
+  assert.ok(source.includes("completionMode==='JSON_REPLACE_ONLY'?{type:'object',properties:{replace:{type:'string'}},required:['replace'],additionalProperties:false}:(/^JSON_/.test(completionMode)?'json':null)"));
+  assert.ok(source.includes("...(format?{format}:{}),options"));
+});
