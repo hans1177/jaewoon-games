@@ -768,3 +768,19 @@ test('incremental QA rejects graphics count inflation after source-worker valida
     /GRAPHICS_REPLACEMENT_GROUNDING_QA_FAILED:.*ACTUAL_COUNT_EQUALS_EVIDENCE/
   );
 });
+
+
+test('continuous worker and fan-in preserve grounded graphics proof instead of metadata-only PASS',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const fanIn=fs.readFileSync(new URL('../tools/vibe2-fan-in-review.mjs',import.meta.url),'utf8');
+  const sourceWorker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(sourceWorker,/graphicsReplacementValidation:semanticDiffEnforcement\?\.graphicsReplacementReport/);
+  assert.match(workflow,/graphicsReplacementReport/);
+  assert.match(workflow,/graphicsReplacementValidation/);
+  assert.match(workflow,/graphicsReplacementQa/);
+  assert.match(workflow,/graphics-replacement-grounding:PASS:/);
+  assert.match(fanIn,/graphicsReplacementGroundingFailures/);
+  assert.match(fanIn,/graphics-replacement-source-worker-validation/);
+  assert.match(fanIn,/graphics-replacement-incremental-qa/);
+  assert.match(fanIn,/graphics-replacement-fan-in-gate:PASS/);
+});
