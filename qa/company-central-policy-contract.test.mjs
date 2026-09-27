@@ -1152,10 +1152,13 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.equal(isolation?.runtimeFoundationQaRunner,'ubuntu-24.04');
   assert.equal(isolation?.localStudioExecutionMoved,false);
   assert.equal(isolation?.exactSourceArtifactVersionGatePreserved,true);
-  assert.equal(isolation?.postFoundationStudioFollowup?.trigger,'NEW_EXACT_RUNTIME_FOUNDATION_PASS_ONLY');
+  assert.equal(isolation?.postFoundationStudioFollowup?.trigger,'CANONICAL_STUDIO_PLANNER_REQUIRES_EXACT_PLAY');
+  assert.equal(isolation?.postFoundationStudioFollowup?.coversExactFoundationEvidenceReuse,true);
   assert.equal(isolation?.postFoundationStudioFollowup?.repeatExactFoundationRedispatch,false);
   assert.match(workflow,/ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH=/);
-  assert.match(workflow,/!runtimeFoundationWasPassed&&item\.robloxRuntimeFoundationPassed===true/);
+  assert.match(workflow,/planLocalStudioCandidates/);
+  assert.match(workflow,/queueStudioFollowupIfEligible\(item\)/);
+  assert.doesNotMatch(workflow,/!runtimeFoundationWasPassed&&item\.robloxRuntimeFoundationPassed===true/);
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
 });
 
