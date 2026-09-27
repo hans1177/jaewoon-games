@@ -1,8 +1,8 @@
 {
-  "version": 488,
+  "version": 487,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-28",
+  "recordedAt": "2026-09-27",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -6768,7 +6768,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-28",
+  "updatedAt": "2026-09-27",
   "priorityTiers": [
     {
       "tier": 1,
@@ -6940,7 +6940,7 @@
           "ROBLOX",
           "UNITY"
         ],
-        "visibility": "ROBLOX_UNITY_PLUS_EXISTING_WEB_COMPANION",
+        "visibility": "ROBLOX_UNITY_PLUS_VERIFIED_PLAYABLE_WEB_COMPANION",
         "releasedLinkBehavior": "SHOW_DIRECT_LINK_WHEN_VERIFIED",
         "unreleasedBehavior": "SHOW_DEVELOPMENT_STATE",
         "selectedPlatformDoesNotHideOtherTracks": true,
@@ -6955,7 +6955,7 @@
           "UNITY_WEB",
           "WEB_COMPANION"
         ],
-        "webAlwaysVisible": true,
+        "webAlwaysVisible": false,
         "concurrentPlatformSlotsVisible": true,
         "verifiedReleaseLinksActivateAutomatically": true,
         "platformAvailableShelfRequiresInternalRelease": true,
@@ -6969,12 +6969,10 @@
         "playableWebCompanionActionEnabled": true,
         "playableWebCompanionActionLabel": "웹 플레이",
         "playableWebCompanionSource": "COMPANY_RUNTIME_GAME_CATALOG",
-        "playableWebCompanionRequiresPlayableAndArchive": false,
+        "playableWebCompanionRequiresPlayableAndArchive": true,
         "playableWebCompanionRequiresExistingCanonicalIndex": true,
         "playableWebCompanionMayBeDirectLaunchFallback": true,
-        "playableWebCompanionDoesNotClaimRelease": true,
-        "playableWebCompanionAvailability": "ACTIVE_OR_REBUILD_CARD_AND_EXISTING_WEB_GAMES_GAME_ID_INDEX",
-        "missingPlayableWebCompanionState": "DISABLED_WEB_BUILD_MISSING"
+        "playableWebCompanionDoesNotClaimRelease": true
       },
       "recentUpdates": {
         "enabled": true,
@@ -7063,7 +7061,7 @@
       "ROBLOX",
       "UNITY"
     ],
-    "showWebPlay": true,
+    "showWebPlay": false,
     "showUnityWeb": true,
     "showInternalReleaseState": true,
     "showPublicReleaseState": true,
@@ -7305,17 +7303,6 @@
       "runtimeMissingGamesMayBeMergedWhenLiveQueueEligible": true,
       "canonicalNormalizationRequiredBeforePublication": true,
       "normalizationOwner": "tools/company-status-sync.mjs + tools/game-catalog-normalization.mjs"
-    },
-    "webPlayExposure": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-09-28",
-      "scope": "ALL_HOMEPAGE_VISIBLE_GAME_CARDS",
-      "linkTemplate": "/web-games/<gameId>/",
-      "requiredEntryFile": "web-games/<gameId>/index.html",
-      "playableAndArchiveCatalogFlagsRequired": false,
-      "missingEntryFile": "DISABLED_WEB_BUILD_MISSING",
-      "releaseAuthority": false,
-      "preserveExistingHomepageClassification": true
     }
   },
   "longHorizonVision": {
@@ -10101,24 +10088,6 @@
       "speculativeVariantsPerAssetTask": 1,
       "gamePrimaryWorkerPolicyUnchanged": true,
       "qaSecurityReleaseGatesUnchanged": true
-    },
-    "homepageWebPlayAllVisibleCards20260928": {
-      "authority": "OWNER_DIRECTIVE_2026-09-28",
-      "summary": "Expose Web Play on every existing homepage game card when its canonical web-games/<gameId>/index.html is actually reachable, without changing existing homepage classification or native platform actions.",
-      "codeBindings": [
-        "assets/homepage-enhancements.js",
-        "qa/company-homepage-runtime-propagation.test.mjs"
-      ],
-      "preserved": [
-        "HOMEPAGE_SHELVES",
-        "PRODUCTION_CLASS",
-        "ROBLOX_ACTIONS",
-        "UNITY_ACTIONS",
-        "UNITY_WEB_ACTIONS",
-        "RELEASE_AUTHORITY"
-      ],
-      "catalogPlayableArchiveFlagsNoLongerGateHomepageWebAction": true,
-      "actualEntryProbeRequired": true
     }
   },
   "vibeExecutionLaneContract": {
