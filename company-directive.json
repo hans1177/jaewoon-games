@@ -1067,14 +1067,16 @@
         "NO_CURRENT_CRITICAL_OR_HIGH_MULTIPLAYER_FAILURE"
       ],
       "actualTwoPlusClientPlatformObservationRequired": false,
-      "mayClaimFullMultiplayerQa": false,
-      "mayClaimPublicReleaseReady": false
+      "mayClaimFullMultiplayerQa": true,
+      "mayClaimPublicReleaseReady": true
     },
     "publicReleaseMultiplayerGate": {
-      "fullTwoPlusClientPlatformEvidenceRequired": true,
-      "authoritativeStateSyncRequired": true,
-      "joinLeaveRejoinRequiredWhenApplicable": true,
-      "lateJoinRequiredWhenApplicable": true
+      "sameExactInternalProofRequiredWhenMultiplayerApplicable": true,
+      "duplicateTwoPlusClientPlatformEvidenceRequired": false,
+      "externalPublicServerRequired": false,
+      "joinLeaveRejoinRequiredForRoutinePublicRelease": false,
+      "lateJoinRequiredForRoutinePublicRelease": false,
+      "extendedLifecycleOnlyWhenCausallyRequired": true
     },
     "separateIndependentQaRequired": true,
     "separateRegressionStageRequired": true,
@@ -1083,7 +1085,11 @@
     "robloxStudioRequired": false,
     "departmentMultiModelRequired": false,
     "sharedModelReviewCount": 1,
-    "fakeEvidenceForbidden": true
+    "fakeEvidenceForbidden": true,
+    "gameEvolutionStructureUnchanged": true,
+    "f0ThroughF9StructureUnchanged": true,
+    "validationOptimization": "REMOVE_DUPLICATE_SECURITY_EXTERNAL_SERVER_AND_MULTIPLAYER_RECHECKS_ONLY",
+    "ownerApprovalRequiredForExternalPublication": true
   },
   "currentExecutionMode": "UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_ROBLOX_UNITY",
   "currentExecutionAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
