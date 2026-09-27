@@ -69,9 +69,20 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.ok(directive.gameplayImplementationDirectives.some(x=>/서식지 상성/.test(x)));
   assert.ok(directive.acceptanceEvidence.includes('WORKFLOW_QA_HOMEPAGE_ONLY_CHANGE_DOES_NOT_COUNT'));
   assert.ok(directive.acceptanceEvidence.includes('VISUAL_CLAIM_REQUIRES_ACTUAL_RENDERED_DELTA'));
-  assert.ok(directive.platformAdaptationDirectives.UNITY_WEB);
+  assert.ok(directive.platformAdaptationDirectives.WEB);
   assert.ok(directive.platformAdaptationDirectives.ROBLOX);
+  assert.ok(directive.platformAdaptationDirectives.UNITY);
+  assert.ok(directive.platformAdaptationDirectives.FORTNITE_UEFN);
+  assert.ok(directive.platformAdaptationDirectives.UNITY_WEB);
   assert.ok(directive.platformAdaptationDirectives.UNITY_APP);
+  assert.equal(directive.autonomousContentExpansion.executionBoundary,'EXISTING_BUILD_UP_ONLY');
+  assert.equal(directive.autonomousContentExpansion.autonomousDecisionOwner,'VIBE');
+  assert.deepEqual([...directive.autonomousContentExpansion.platformScope],['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.equal(directive.autonomousContentExpansion.existingCompletenessReview.requiredEveryBuildUp,true);
+  assert.equal(directive.autonomousContentExpansion.antiCloneContract.nameColorOrStatOnlyCloneForbidden,true);
+  assert.equal(directive.autonomousContentExpansion.continuityAndCausality.required,true);
+  assert.equal(directive.autonomousContentExpansion.derivedRuleEvolution.allowed,true);
+  assert.ok(directive.autonomousContentExpansion.coherentContentBundle.length>=6);
   assert.equal(directive.robloxNativeExecution.required,true);
   assert.ok(directive.robloxNativeExecution.responsibleFiles.some(file=>/roblox-games\/bug-defense/.test(file)));
   assert.ok(directive.robloxNativeExecution.sourceSymbolsOrStateAnchors.some(row=>row.symbol==='attack'));
@@ -92,6 +103,11 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.match(directivePrompt(directive),/SOURCE_ANCHORS:/);
   assert.match(directivePrompt(directive),/EXPECTED_PLAYER_EFFECT:/);
   assert.match(directivePrompt(directive),/HOLISTIC_CORE_DOMAIN_STATUS:/);
+  assert.match(directivePrompt(directive),/AUTONOMOUS_CONTENT_EXPANSION:/);
+  assert.match(directivePrompt(directive),/COHERENT_CONTENT_BUNDLE:/);
+  assert.match(directivePrompt(directive),/ANTI_CLONE:/);
+  assert.match(directivePrompt(directive),/CONTINUITY_CAUSALITY:/);
+  assert.match(directivePrompt(directive),/DERIVED_RULE_EVOLUTION:/);
 });
 
 test('holistic build-up marks sparse map inventory UI session and convenience systems as explicit gaps',()=>{
@@ -334,4 +350,85 @@ test('verified product-quality failure routes first buildup generation directly 
   assert.equal(directive.effectivenessMeasurement.previousGeneration.classification,'REGRESSION');
   assert.equal(directive.nextActionDecision.action,'CAUSAL_REPAIR');
   assert.match(directive.nextActionDecision.reason,/failure|regression/i);
+});
+
+
+test('autonomous content expansion rotates after a verified effective generation instead of cloning the same content theme',()=>{
+  const sourceObservation={
+    sourceRoot:'roblox-games/expansion-demo',
+    sourceTreeFingerprint:'3'.repeat(64),
+    fileCount:4,
+    topFiles:[{file:'roblox-games/expansion-demo/server/World.server.luau',score:30}],
+    sourceAnchors:[{file:'roblox-games/expansion-demo/server/World.server.luau',line:2,kind:'FUNCTION',symbol:'updateWorld',context:'function updateWorld()',score:40}],
+    signals:{
+      combat:4,progression:3,ai:1,save:1,multiplayer:0,animation:1,vfx:1,camera:1,ui:2,uiFlow:1,input:2,
+      map:2,landmark:0,interaction:1,inventory:1,equipment:1,settings:0,feedback:1,session:1,content:3,
+      choice:1,connection:0,performance:1,lighting:1,primitive:3,todo:0,errorRecovery:1
+    },
+    observations:['CURRENT_SOURCE_FILES=4','WORLD_MAP_IMPLEMENTATION_SPARSE']
+  };
+  const first=buildGameSpecificBuildUpDirective({
+    gameId:'expansion-demo',
+    gameName:'확장 데모',
+    designRecord:{
+      content:{
+        identity:'지역 탐험과 생태 전투가 이어지는 성장 게임',
+        coreFun:'지역 위험과 적 역할을 읽고 장비와 경로를 바꾸는 재미',
+        coreLoop:['지역 진입','탐험과 전투','자원 획득','장비 선택','다음 지역 해금'],
+        signatureSystems:[
+          {name:'지역 생태',purpose:'지역마다 다른 위험과 보상을 만든다',playerChoice:'어느 지역과 적을 먼저 상대할지 선택'},
+          {name:'장비 조합',purpose:'획득품이 다음 전투 전략을 바꾼다',playerChoice:'장비 조합을 선택'}
+        ],
+        progressionDirection:'지역·적·장비·퀘스트가 연결되며 중후반 선택지가 확장된다',
+        multiplayerMode:'SINGLE'
+      }
+    },
+    sourceObservation
+  });
+  const second=buildGameSpecificBuildUpDirective({
+    gameId:'expansion-demo',
+    gameName:'확장 데모',
+    designRecord:{
+      content:{
+        identity:'지역 탐험과 생태 전투가 이어지는 성장 게임',
+        coreFun:'지역 위험과 적 역할을 읽고 장비와 경로를 바꾸는 재미',
+        coreLoop:['지역 진입','탐험과 전투','자원 획득','장비 선택','다음 지역 해금'],
+        signatureSystems:[
+          {name:'지역 생태',purpose:'지역마다 다른 위험과 보상을 만든다',playerChoice:'어느 지역과 적을 먼저 상대할지 선택'},
+          {name:'장비 조합',purpose:'획득품이 다음 전투 전략을 바꾼다',playerChoice:'장비 조합을 선택'}
+        ],
+        progressionDirection:'지역·적·장비·퀘스트가 연결되며 중후반 선택지가 확장된다',
+        multiplayerMode:'SINGLE'
+      }
+    },
+    sourceObservation:{...sourceObservation,sourceTreeFingerprint:'4'.repeat(64)},
+    previousDirective:first,
+    previousDirectiveOutcome:'verified',
+    runtimeEvidence:{runtimeObserved:true,runtimePassed:true}
+  });
+  assert.notEqual(second.autonomousContentExpansion.selectedTheme,first.autonomousContentExpansion.selectedTheme);
+  assert.equal(second.autonomousContentExpansion.executionBoundary,'EXISTING_BUILD_UP_ONLY');
+  assert.equal(second.autonomousContentExpansion.existingCompletenessReview.weakExistingContentMayPreemptNewContent,true);
+  assert.equal(second.autonomousContentExpansion.antiCloneContract.minimumMeaningfulDistinctAxes,2);
+});
+
+test('verified product-quality failure keeps autonomous expansion inside existing buildup but causal repair goes first',()=>{
+  const d=buildGameSpecificBuildUpDirective({
+    gameId:'repair-before-expansion',
+    designRecord:design(),
+    sourceObservation:{
+      sourceRoot:'roblox-games/repair-before-expansion',
+      sourceTreeFingerprint:'6'.repeat(64),
+      fileCount:1,
+      topFiles:[],
+      sourceAnchors:[],
+      signals:{combat:2,progression:2,ai:1,save:1,multiplayer:0,animation:1,vfx:1,camera:0,ui:1,uiFlow:0,input:1,map:1,landmark:0,interaction:1,inventory:0,equipment:0,settings:0,feedback:0,session:1,content:2,choice:0,connection:0,performance:1,lighting:0,primitive:2,todo:0,errorRecovery:1},
+      observations:['CURRENT_SOURCE_FILES=1']
+    },
+    runtimeEvidence:{runtimeObserved:true,runtimePassed:false,failureStage:'PLAYTEST',failureSignature:'verified-product-quality-failure'}
+  });
+  assert.equal(d.nextActionDecision.action,'CAUSAL_REPAIR');
+  assert.equal(d.autonomousContentExpansion.executionMode,'CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT');
+  assert.equal(d.autonomousContentExpansion.newWorkflowForbidden,true);
+  assert.equal(d.autonomousContentExpansion.newStageForbidden,true);
 });
