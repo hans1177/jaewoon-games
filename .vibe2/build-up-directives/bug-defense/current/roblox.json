@@ -2,8 +2,8 @@
   "version": 2,
   "directiveId": "bug-defense-build-up-g1-9372df2a3a79",
   "directiveFingerprint": "9372df2a3a798bdbeb5e31243fadb2f3101ee5c7672ac3e7cac85a9e53b8ea07",
-  "previousDirectiveFingerprint": "95ff066175ec83cbbd8d8f7a30fe0e63fbb907c2712c022f627500d5dc0226a7",
-  "forbiddenRepeatFingerprint": "95ff066175ec83cbbd8d8f7a30fe0e63fbb907c2712c022f627500d5dc0226a7",
+  "previousDirectiveFingerprint": "9372df2a3a798bdbeb5e31243fadb2f3101ee5c7672ac3e7cac85a9e53b8ea07",
+  "forbiddenRepeatFingerprint": "9372df2a3a798bdbeb5e31243fadb2f3101ee5c7672ac3e7cac85a9e53b8ea07",
   "gameId": "bug-defense",
   "gameName": "곤충 디펜스",
   "generation": 1,
@@ -227,9 +227,9 @@
     "previousGoal": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
     "previousGeneration": null,
-    "previousSourceTreeFingerprint": "d68d590933a2c78bebadd082b1fb76d7d466fe15235b392b7c95fba6e729625e",
+    "previousSourceTreeFingerprint": "e8b4bac33720abbfdc28051082fc428119d4787c1b9135d672a2a261bc486bf5",
     "currentSourceTreeFingerprint": "e8b4bac33720abbfdc28051082fc428119d4787c1b9135d672a2a261bc486bf5",
-    "sourceChanged": true,
+    "sourceChanged": false,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
@@ -1349,7 +1349,7 @@
     "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
   ],
   "autonomousContentExpansion": {
-    "version": 1,
+    "version": 2,
     "policySource": "company-learning/vibe-autonomous-content-expansion-policy.json",
     "policyStatus": "ACTIVE",
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
@@ -1385,12 +1385,57 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 1,
-    "selectedThemeReason": "2 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=NONE; previousEffect=UNKNOWN_RUNTIME_EFFECT.",
+    "themeDepth": 2,
+    "selectedThemeReason": "2 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeCoverageLedger": {
+      "version": 1,
+      "counts": {
+        "WORLD_ECOLOGY_STORY_CHAIN": 2,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "QUEST_STORY_PROGRESSION_CHAIN": 0,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
+        "MID_LATE_ENDGAME_COMPLETION": 0,
+        "PRESENTATION_WORLD_COHESION": 0
+      },
+      "sequence": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "WORLD_ECOLOGY_STORY_CHAIN"
+      ],
+      "requiredThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "distinctCovered": 1,
+      "totalThemes": 7,
+      "breadthCycleComplete": false,
+      "missingThemes": [
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "leastCoveredThemes": [
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
+    },
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 43,
+        "score": 185,
         "gapDomains": [
           "MAP_EXPANSION",
           "REGIONS"
@@ -1896,7 +1941,7 @@
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -1963,5 +2008,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-09-27T12:37:39.182Z"
+  "generatedAt": "2026-09-27T13:32:11.994Z"
 }

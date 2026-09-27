@@ -2,8 +2,8 @@
   "version": 2,
   "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g1-66813d7b3379",
   "directiveFingerprint": "66813d7b3379e36f00c0a88fe3fb23ee15fe4b55e3a344eff27f1c475ba84b4a",
-  "previousDirectiveFingerprint": "f933a4e7e2145758e124b3e08883fb8d65b1896feb560a7c47dffd7e18486588",
-  "forbiddenRepeatFingerprint": "f933a4e7e2145758e124b3e08883fb8d65b1896feb560a7c47dffd7e18486588",
+  "previousDirectiveFingerprint": "66813d7b3379e36f00c0a88fe3fb23ee15fe4b55e3a344eff27f1c475ba84b4a",
+  "forbiddenRepeatFingerprint": "66813d7b3379e36f00c0a88fe3fb23ee15fe4b55e3a344eff27f1c475ba84b4a",
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "gameName": "엘도리아 연대기",
   "generation": 1,
@@ -218,9 +218,9 @@
     "previousGoal": "엘도리아 연대기는 고전 RPG의 서사적 깊이와 현대적인 모바일 최적화 전략 전투를 결합한 턴제 RPG입니다. 플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
     "previousGeneration": null,
-    "previousSourceTreeFingerprint": "88560bd68847523b5c17f69477e94b4f0d3f2b5ab19e39745bbb5984538395af",
+    "previousSourceTreeFingerprint": "3e44f6d4c55eb68ef804e77c1b98bc1b151930908ffd3ebba3e63acc79645409",
     "currentSourceTreeFingerprint": "3e44f6d4c55eb68ef804e77c1b98bc1b151930908ffd3ebba3e63acc79645409",
-    "sourceChanged": true,
+    "sourceChanged": false,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
@@ -1330,7 +1330,7 @@
     "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
   ],
   "autonomousContentExpansion": {
-    "version": 1,
+    "version": 2,
     "policySource": "company-learning/vibe-autonomous-content-expansion-policy.json",
     "policyStatus": "ACTIVE",
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
@@ -1366,12 +1366,57 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "WORLD_ECOLOGY_STORY_CHAIN",
-    "themeDepth": 1,
-    "selectedThemeReason": "2 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=NONE; previousEffect=UNKNOWN_RUNTIME_EFFECT.",
+    "themeDepth": 2,
+    "selectedThemeReason": "2 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=WORLD_ECOLOGY_STORY_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeCoverageLedger": {
+      "version": 1,
+      "counts": {
+        "WORLD_ECOLOGY_STORY_CHAIN": 2,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "QUEST_STORY_PROGRESSION_CHAIN": 0,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
+        "MID_LATE_ENDGAME_COMPLETION": 0,
+        "PRESENTATION_WORLD_COHESION": 0
+      },
+      "sequence": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "WORLD_ECOLOGY_STORY_CHAIN"
+      ],
+      "requiredThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "distinctCovered": 1,
+      "totalThemes": 7,
+      "breadthCycleComplete": false,
+      "missingThemes": [
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "leastCoveredThemes": [
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
+    },
     "scoredThemes": [
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 43,
+        "score": 185,
         "gapDomains": [
           "MAP_EXPANSION",
           "REGIONS"
@@ -1877,7 +1922,7 @@
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -1943,5 +1988,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-09-27T12:37:39.291Z"
+  "generatedAt": "2026-09-27T13:32:12.104Z"
 }

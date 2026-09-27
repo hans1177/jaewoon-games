@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g1-e18cca0e1e9a",
-  "directiveFingerprint": "e18cca0e1e9aab1fb3feb0f85bd881691c8f18e04b38e533271a56036b0b1da0",
-  "previousDirectiveFingerprint": "d4e8186adf1112d67a4ec21f9f0844eb031b7506c2889100616238d32238ca64",
-  "forbiddenRepeatFingerprint": "d4e8186adf1112d67a4ec21f9f0844eb031b7506c2889100616238d32238ca64",
+  "directiveId": "seed-story-complete-rpg-chronicles-of-eldoria-build-up-g1-a14ee6cd7c1a",
+  "directiveFingerprint": "a14ee6cd7c1ae85e6e63170265a46b8f3fdd839a9cd8454da0d855382098b843",
+  "previousDirectiveFingerprint": "e18cca0e1e9aab1fb3feb0f85bd881691c8f18e04b38e533271a56036b0b1da0",
+  "forbiddenRepeatFingerprint": "e18cca0e1e9aab1fb3feb0f85bd881691c8f18e04b38e533271a56036b0b1da0",
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "gameName": "엘도리아 연대기",
   "generation": 1,
@@ -244,7 +244,7 @@
     "failureStage": "SINGLE_BUILD_OR_PACKAGE",
     "failureSignature": "4dd87fcb9d4c2e66f74d3ddc1b220c1f00c7208c659e691ff13645f96d2079ad",
     "blockers": [
-      "roblox-open-cloud-engine-probe-transient-retry"
+      "roblox-runtime-foundation-awaiting-observation"
     ],
     "runtimeObserved": true,
     "runtimePassed": false,
@@ -1389,7 +1389,7 @@
     "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
   ],
   "autonomousContentExpansion": {
-    "version": 1,
+    "version": 2,
     "policySource": "company-learning/vibe-autonomous-content-expansion-policy.json",
     "policyStatus": "ACTIVE",
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
@@ -1425,12 +1425,57 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "5 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=REGRESSION.",
+    "themeDepth": 2,
+    "selectedThemeReason": "5 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=REGRESSION; previousCoverage=1; uncoveredBefore=6.",
+    "themeCoverageLedger": {
+      "version": 1,
+      "counts": {
+        "WORLD_ECOLOGY_STORY_CHAIN": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "QUEST_STORY_PROGRESSION_CHAIN": 0,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
+        "MID_LATE_ENDGAME_COMPLETION": 0,
+        "PRESENTATION_WORLD_COHESION": 2
+      },
+      "sequence": [
+        "PRESENTATION_WORLD_COHESION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "requiredThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "distinctCovered": 1,
+      "totalThemes": 7,
+      "breadthCycleComplete": false,
+      "missingThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION"
+      ],
+      "leastCoveredThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION"
+      ],
+      "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
+    },
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 93,
+        "score": 235,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -2002,5 +2047,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-09-27T12:37:39.542Z"
+  "generatedAt": "2026-09-27T13:32:12.367Z"
 }

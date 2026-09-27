@@ -2,8 +2,8 @@
   "version": 2,
   "directiveId": "fantasy-survival-build-up-g1-baa2f7d4bbcc",
   "directiveFingerprint": "baa2f7d4bbcccd3cad30cf4337e3648d6fcca729ce807cd1fc6e62bde2502dbe",
-  "previousDirectiveFingerprint": "92799d0e66c848d1a6c468a50f673a73b210f1a0220cd792b1a01b088011a165",
-  "forbiddenRepeatFingerprint": "92799d0e66c848d1a6c468a50f673a73b210f1a0220cd792b1a01b088011a165",
+  "previousDirectiveFingerprint": "baa2f7d4bbcccd3cad30cf4337e3648d6fcca729ce807cd1fc6e62bde2502dbe",
+  "forbiddenRepeatFingerprint": "baa2f7d4bbcccd3cad30cf4337e3648d6fcca729ce807cd1fc6e62bde2502dbe",
   "gameId": "fantasy-survival",
   "gameName": "마력숲 생존기",
   "generation": 1,
@@ -218,9 +218,9 @@
     "previousGoal": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
     "previousGeneration": null,
-    "previousSourceTreeFingerprint": "c2468febe2005607af1a0c83b6aa536e2ca3816df102508a6c856ede908827ba",
+    "previousSourceTreeFingerprint": "43e31b514fb8048902e333160934c49921e6c0ce22f1a79da852027246acc0b8",
     "currentSourceTreeFingerprint": "43e31b514fb8048902e333160934c49921e6c0ce22f1a79da852027246acc0b8",
-    "sourceChanged": true,
+    "sourceChanged": false,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
@@ -1360,7 +1360,7 @@
     "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
   ],
   "autonomousContentExpansion": {
-    "version": 1,
+    "version": 2,
     "policySource": "company-learning/vibe-autonomous-content-expansion-policy.json",
     "policyStatus": "ACTIVE",
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
@@ -1396,12 +1396,57 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=UNKNOWN_RUNTIME_EFFECT.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 8 applicable domain(s); focus=USABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeCoverageLedger": {
+      "version": 1,
+      "counts": {
+        "WORLD_ECOLOGY_STORY_CHAIN": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "QUEST_STORY_PROGRESSION_CHAIN": 0,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 2,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
+        "MID_LATE_ENDGAME_COMPLETION": 0,
+        "PRESENTATION_WORLD_COHESION": 0
+      },
+      "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
+      ],
+      "requiredThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "distinctCovered": 1,
+      "totalThemes": 7,
+      "breadthCycleComplete": false,
+      "missingThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "leastCoveredThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
+    },
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 78,
+        "score": 220,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -1909,7 +1954,7 @@
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -1975,5 +2020,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-09-27T12:37:39.382Z"
+  "generatedAt": "2026-09-27T13:32:12.211Z"
 }

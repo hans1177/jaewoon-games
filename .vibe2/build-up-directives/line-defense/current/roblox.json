@@ -2,8 +2,8 @@
   "version": 2,
   "directiveId": "line-defense-build-up-g1-5012dcc362df",
   "directiveFingerprint": "5012dcc362df1e1ba69d0b2375cfc0d08acc7f3be510f1c7f111a38aa6701cf1",
-  "previousDirectiveFingerprint": "d4d56a171ebbd4985d1fc8a2e8452f2ed4e6ee8e6d46005a177550da846449c7",
-  "forbiddenRepeatFingerprint": "d4d56a171ebbd4985d1fc8a2e8452f2ed4e6ee8e6d46005a177550da846449c7",
+  "previousDirectiveFingerprint": "5012dcc362df1e1ba69d0b2375cfc0d08acc7f3be510f1c7f111a38aa6701cf1",
+  "forbiddenRepeatFingerprint": "5012dcc362df1e1ba69d0b2375cfc0d08acc7f3be510f1c7f111a38aa6701cf1",
   "gameId": "line-defense",
   "gameName": "골목 군단 대전",
   "generation": 1,
@@ -218,9 +218,9 @@
     "previousGoal": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
     "previousGeneration": null,
-    "previousSourceTreeFingerprint": "5acecafa696bfd9f7ae795823b873ca6b8a96f653cd70f5010585c806d440d1b",
+    "previousSourceTreeFingerprint": "e6b4ce37a8dc42ed9b32b904d07ceee69c7997a092ef0c60055bfdc689e9172f",
     "currentSourceTreeFingerprint": "e6b4ce37a8dc42ed9b32b904d07ceee69c7997a092ef0c60055bfdc689e9172f",
-    "sourceChanged": true,
+    "sourceChanged": false,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
@@ -1355,7 +1355,7 @@
     "새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다."
   ],
   "autonomousContentExpansion": {
-    "version": 1,
+    "version": 2,
     "policySource": "company-learning/vibe-autonomous-content-expansion-policy.json",
     "policyStatus": "ACTIVE",
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
@@ -1391,12 +1391,57 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-    "themeDepth": 1,
-    "selectedThemeReason": "3 explicit GAP(s) and 6 applicable domain(s); focus=STABILITY; previousTheme=NONE; previousEffect=UNKNOWN_RUNTIME_EFFECT.",
+    "themeDepth": 2,
+    "selectedThemeReason": "3 explicit GAP(s) and 6 applicable domain(s); focus=STABILITY; previousTheme=ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeCoverageLedger": {
+      "version": 1,
+      "counts": {
+        "WORLD_ECOLOGY_STORY_CHAIN": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "QUEST_STORY_PROGRESSION_CHAIN": 0,
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 2,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
+        "MID_LATE_ENDGAME_COMPLETION": 0,
+        "PRESENTATION_WORLD_COHESION": 0
+      },
+      "sequence": [
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN"
+      ],
+      "requiredThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "distinctCovered": 1,
+      "totalThemes": 7,
+      "breadthCycleComplete": false,
+      "missingThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "leastCoveredThemes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
+    },
     "scoredThemes": [
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 54,
+        "score": 196,
         "gapDomains": [
           "INVENTORY",
           "INVENTORY_USABILITY",
@@ -1903,7 +1948,7 @@
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
     "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-    "sourceChangedSincePrevious": true,
+    "sourceChangedSincePrevious": false,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -1971,5 +2016,5 @@
     ],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-09-27T12:37:39.353Z"
+  "generatedAt": "2026-09-27T13:32:12.173Z"
 }
