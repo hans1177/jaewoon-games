@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-gcwiwu",
-      "worker": "vibe2",
-      "taskId": "cozy-island-studio-evolution-presentation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/BattleVisual.luau",
-        "roblox-games/cozy-island/shared/QACamera.luau"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:25:38.261Z",
-      "expiresAt": "2026-09-27T05:10:38.261Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-studio-evolution-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-rz6nqq",
       "worker": "vibe2",
       "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1",
@@ -180,6 +162,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-1ih485r",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "unity-games/horror-escape-room/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
+      "acquiredAt": "2026-09-27T05:10:39.858Z",
+      "expiresAt": "2026-09-27T05:55:39.858Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
       ]
     }
   ]
