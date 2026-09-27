@@ -1077,7 +1077,7 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
     version:1,
     executionBoundary:'EXISTING_PRESENTATION_OR_BUILD_UP_ONLY',
     decisionOwner:'VIBE',
-    platforms:Object.freeze(['WEB','ROBLOX','UNITY','FORTNITE_UEFN']),
+    platforms:Object.freeze(['WEB','ROBLOX','UNITY']),
     platform,
     pass:clean(pass).toUpperCase()||'ASSET_ADAPTATION',
     adaptiveCount:Object.freeze({
@@ -1109,8 +1109,13 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
   });
 }
 
+function adaptiveGraphicsReplacementSupported(project={}){
+  return ['web','roblox','unity'].includes(clean(project?.engine).toLowerCase());
+}
+
 function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_ADAPTATION'){
   if(!taskInput)return taskInput;
+  if(!adaptiveGraphicsReplacementSupported(project))return taskInput;
   const contract=buildAdaptiveGraphicsReplacementContract(project,pass);
   const guidance=[
     '',
