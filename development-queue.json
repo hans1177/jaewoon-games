@@ -1488,7 +1488,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-27T15:35:50.980Z",
+      "updatedAt": "2026-09-27T15:50:02.543Z",
       "robloxSourceCommit": "c2bd4470028498f826818a5cd0b10fc1c79b7123",
       "robloxSourceBootstrapPassedAt": "2026-09-27T09:51:36.652Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1698,23 +1698,85 @@
         "publishedAt": "2026-09-27T10:26:20.581Z",
         "authority": "roblox-open-cloud-private-runtime-candidate"
       },
-      "robloxRuntimeFoundationPassed": false,
+      "robloxRuntimeFoundationPassed": true,
       "robloxRuntimeFoundationEvidence": {
-        "version": 1,
+        "version": 3,
+        "platform": "ROBLOX",
         "gameId": "horror-escape-room",
+        "placeId": "98222620265768",
+        "placeVersion": 25,
+        "exactGame": true,
+        "exactPlace": true,
+        "exactVersion": true,
+        "requirements": {
+          "saveEnabled": true,
+          "multiplayerRequired": true
+        },
+        "requiredCheckpoints": [
+          "SERVER_BOOT",
+          "MODULE_GRAPH_READY",
+          "WORLD_READY",
+          "SPAWN_READY",
+          "CHARACTER_READY",
+          "GROUND_CONTACT",
+          "CAMERA_READY",
+          "INPUT_READY",
+          "MOVEMENT_CONFIRMED",
+          "REMOTE_ROUNDTRIP",
+          "CORE_LOOP_READY",
+          "SAVE_ROUNDTRIP",
+          "MULTIPLAYER_SYNC"
+        ],
+        "checkpointPass": {
+          "SERVER_BOOT": true,
+          "MODULE_GRAPH_READY": true,
+          "WORLD_READY": true,
+          "SPAWN_READY": true,
+          "CHARACTER_READY": true,
+          "GROUND_CONTACT": true,
+          "CAMERA_READY": true,
+          "INPUT_READY": true,
+          "MOVEMENT_CONFIRMED": true,
+          "REMOTE_ROUNDTRIP": true,
+          "CORE_LOOP_READY": true,
+          "SAVE_ROUNDTRIP": false,
+          "MULTIPLAYER_SYNC": false
+        },
+        "checkpointOrderPassed": true,
+        "foundationCausalOrder": [
+          "SERVER_BOOT",
+          "MODULE_GRAPH_READY",
+          "WORLD_READY",
+          "SPAWN_READY",
+          "CHARACTER_READY",
+          "GROUND_CONTACT"
+        ],
+        "f1ServerBootPassed": true,
+        "f2WorldFoundationPassed": true,
+        "f3CharacterFoundationPassed": true,
+        "f4PhysicsAndMovementPassed": true,
+        "f5InputCameraUiPassed": true,
+        "f6CoreServicesPassed": false,
+        "f7MultiplayerFoundationPassed": false,
+        "f8GameplaySystemsPassed": true,
+        "runtimeFoundationPassed": true,
+        "developmentContinuationPassed": false,
+        "runtimeAcceptancePassed": false,
+        "multiplayerPromotionPending": true,
+        "actualRuntimeEvidence": true,
+        "state": "FOUNDATION_PASS_ACCEPTANCE_PENDING",
+        "blockers": [
+          "checkpoint:SAVE_ROUNDTRIP",
+          "checkpoint:MULTIPLAYER_SYNC"
+        ],
+        "authority": "existing-game-tester-roblox-runtime-foundation-v1",
         "sourceRevision": "c2bd4470028498f826818a5cd0b10fc1c79b7123",
         "artifactIdentity": "sha256:5f53ec14362106137b410cfa59e99c5ffbcd8200642fdd426098c3f53bd414bc",
         "artifactRunId": 36309369387,
         "universeId": "10767445796",
-        "placeId": "98222620265768",
         "candidateVersionNumber": 25,
-        "httpStatus": 429,
-        "failureStage": "PROBE",
-        "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
-        "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"errors\":[{\"code\":0,\"message\":\"\"}]}\n",
-        "observedAt": "2026-09-27T15:35:50.980Z",
-        "workflowRunId": 36327746686,
-        "authority": "roblox-open-cloud-engine-probe-failure"
+        "observedAt": "2026-09-27T15:50:02.543Z",
+        "workflowRunId": 36330950900
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": {
@@ -1913,8 +1975,8 @@
         "artifactRunId": 36309369387,
         "universeId": "10767445796",
         "candidateVersionNumber": 25,
-        "observedAt": "2026-09-27T14:47:42.801Z",
-        "workflowRunId": 36326995032,
+        "observedAt": "2026-09-27T15:50:02.543Z",
+        "workflowRunId": 36330950900,
         "runtimePassed": false,
         "serverClientBoundaryPassed": false,
         "datastoreRejoinPassed": false,
@@ -2043,8 +2105,8 @@
           "artifactRunId": 36309369387,
           "universeId": "10767445796",
           "candidateVersionNumber": 25,
-          "observedAt": "2026-09-27T14:47:42.801Z",
-          "workflowRunId": 36326995032
+          "observedAt": "2026-09-27T15:50:02.543Z",
+          "workflowRunId": 36330950900
         },
         "exactRevision": true,
         "independentQaPassed": false,
@@ -2176,7 +2238,7 @@
           "verifiedAt": null
         },
         "authority": "roblox-internal-flow-runtime-finding-external-release-only",
-        "verifiedAt": "2026-09-27T14:47:42.801Z"
+        "verifiedAt": "2026-09-27T15:50:02.543Z"
       },
       "robloxInternalReleaseReady": true,
       "robloxInternalReleaseAt": "2026-09-27T13:09:11.659Z",
@@ -2274,11 +2336,9 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "INTERNAL_PLATFORM_RELEASE",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
-      "routingBlockers": [
-        "roblox-open-cloud-engine-probe-transient-retry"
-      ],
+      "robloxFailureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_ACCEPTANCE_PENDING",
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -2958,8 +3018,8 @@
         "regressionPassed": false,
         "exactRevision": false,
         "lastSuccessfulStage": "CHEAP_PRECHECK",
-        "failureStage": "SINGLE_BUILD_OR_PACKAGE",
-        "failureSignature": "4dd87fcb9d4c2e66f74d3ddc1b220c1f00c7208c659e691ff13645f96d2079ad"
+        "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
+        "failureSignature": "ROBLOX_RUNTIME_ACCEPTANCE_PENDING"
       },
       "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
       "failureCount": 1,
@@ -11293,7 +11353,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T15:35:50.980Z",
+  "updatedAt": "2026-09-27T15:50:02.543Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
