@@ -1,7 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {activeRobloxDevelopmentItem,reconcileChangedRobloxItems} from '../tools/company-roblox-source-drift-sync.mjs';
+import {
+  activeRobloxDevelopmentItem,
+  reconcileChangedRobloxItems,
+  robloxBuildInputGameId,
+  changedRobloxBuildGameIds,
+  restoreMetadataOnlyRobloxInvalidation
+} from '../tools/company-roblox-source-drift-sync.mjs';
 
 function item(){
   return {
@@ -173,4 +179,58 @@ test('changed Roblox source repairs a stale missing development queue through ca
   assert.match(workflow,/gh workflow run company-design-promotion-sync\.yml/);
   assert.match(workflow,/ROBLOX_SOURCE_SYNC_CANONICAL_PROMOTION_RECOVERY=DISPATCHED/);
   assert.doesNotMatch(workflow,/new-shadow|shadow-pipeline/i);
+});
+
+
+test('Roblox build source drift ignores QA metadata while tracking Rojo build inputs',()=>{
+  assert.equal(robloxBuildInputGameId('roblox-games/horror-escape-room/launch-mvp.json'),'');
+  assert.equal(robloxBuildInputGameId('roblox-games/horror-escape-room/roblox-source-bootstrap.json'),'');
+  assert.equal(robloxBuildInputGameId('roblox-games/.company-runtime-trigger'),'');
+  assert.equal(robloxBuildInputGameId('roblox-games/horror-escape-room/default.project.json'),'horror-escape-room');
+  assert.equal(robloxBuildInputGameId('roblox-games/horror-escape-room/server/Game.server.luau'),'horror-escape-room');
+  assert.equal(robloxBuildInputGameId('roblox-games/horror-escape-room/client/Game.client.luau'),'horror-escape-room');
+  assert.equal(robloxBuildInputGameId('roblox-games/horror-escape-room/shared/GameConfig.luau'),'horror-escape-room');
+  assert.deepEqual(changedRobloxBuildGameIds([
+    'roblox-games/horror-escape-room/launch-mvp.json',
+    'roblox-games/horror-escape-room/server/Game.server.luau',
+    'roblox-games/horror-escape-room/client/Game.client.luau'
+  ]),['horror-escape-room']);
+});
+
+test('metadata-only mistaken invalidation restores preserved exact build evidence without fabricating runtime pass',()=>{
+  const x=item();
+  x.concurrentTargetPlatforms=['ROBLOX','UNITY'];
+  x.platformExecutionMode='ROBLOX_UNITY_CONCURRENT_SAME_GAME';
+  x.selectedPlatform='UNITY';
+  x.targetPlatform='UNITY';
+  x.robloxSourceCommit='c'.repeat(40);
+  x.robloxBuildOrPackagePassed=false;
+  x.robloxBuildSourceRevision=null;
+  x.robloxBuildArtifactIdentity=null;
+  x.robloxBuildPreflightPassed=false;
+  x.robloxHeadlessFastMvpPassed=false;
+  x.robloxRuntimePassed=false;
+  x.robloxInternalVibePlayEvidence={pass:true};
+  x.robloxEvidenceInvalidatedBySourceChange={previousSourceRevision:'a'.repeat(40),newSourceRevision:'c'.repeat(40),invalidatedAt:'2026-09-27T01:00:00.000Z'};
+  x.robloxRuntimeCandidateEvidence={published:true,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),artifactRunId:7,versionNumber:9};
+  x.robloxBuildPreflightEvidence={pass:true,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),checkedAt:'2026-09-27T00:10:00.000Z'};
+  x.robloxHeadlessFastMvpEvidence={pass:true,sourceRevision:'a'.repeat(40),artifactIdentity:'sha256:'+'b'.repeat(64),checkedAt:'2026-09-27T00:11:00.000Z'};
+  assert.equal(restoreMetadataOnlyRobloxInvalidation(x,{stamp:'2026-09-27T02:00:00.000Z'}),true);
+  assert.equal(x.selectedPlatform,'UNITY');
+  assert.equal(x.targetPlatform,'UNITY');
+  assert.equal(x.robloxSourceCommit,'a'.repeat(40));
+  assert.equal(x.robloxBuildOrPackagePassed,true);
+  assert.equal(x.robloxBuildPreflightPassed,true);
+  assert.equal(x.robloxHeadlessFastMvpPassed,true);
+  assert.equal(x.robloxRuntimePassed,false);
+  assert.equal(x.canonicalState,'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+  assert.equal(x.robloxEvidenceInvalidatedBySourceChange,null);
+  assert.equal(x.robloxMetadataOnlySourceRecoveryEvidence.authority,'canonical-roblox-build-input-diff');
+});
+
+test('source drift workflow resolves changed games only from canonical Rojo build inputs',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(workflow,/--resolve-files=\/tmp\/roblox-merged-pr-files\.txt/);
+  assert.match(workflow,/--resolve-files=\/tmp\/roblox-push-files\.txt/);
+  assert.doesNotMatch(workflow,/awk -F\/ '\$1=="roblox-games" && NF>=3 \{print \$2\}'/);
 });

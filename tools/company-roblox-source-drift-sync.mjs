@@ -10,6 +10,100 @@ const clean=v=>String(v??'').trim();
 const upper=v=>clean(v).toUpperCase();
 const arg=(name,fallback='')=>process.argv.find(v=>v.startsWith(`--${name}=`))?.slice(name.length+3)??fallback;
 
+export function robloxBuildInputGameId(file=''){
+  const normalized=clean(file).replaceAll('\\','/').replace(/^\.\//,'');
+  const parts=normalized.split('/').filter(Boolean);
+  if(parts[0]!=='roblox-games'||parts.length<3)return '';
+  const gameId=clean(parts[1]);
+  const rel=parts.slice(2).join('/');
+  if(!/^[a-z0-9][a-z0-9-]{1,48}$/.test(gameId))return '';
+  if(rel==='default.project.json'||rel.startsWith('shared/')||rel.startsWith('server/')||rel.startsWith('client/'))return gameId;
+  return '';
+}
+export function changedRobloxBuildGameIds(files=[]){
+  return [...new Set((files||[]).map(robloxBuildInputGameId).filter(Boolean))].sort();
+}
+function robloxBuildPathspecs(gameId=''){
+  const root=`roblox-games/${clean(gameId)}`;
+  return [`${root}/default.project.json`,`${root}/shared`,`${root}/server`,`${root}/client`];
+}
+export function robloxBuildSourceChangedBetween({repoRoot='.',gameId='',fromRevision='',toRevision=''}={}){
+  const from=clean(fromRevision),to=clean(toRevision),id=clean(gameId);
+  if(!/^[0-9a-f]{40}$/i.test(from)||!/^[0-9a-f]{40}$/i.test(to)||!id)return null;
+  if(from===to)return false;
+  try{
+    execFileSync('git',['diff','--quiet',from,to,'--',...robloxBuildPathspecs(id)],{cwd:repoRoot,stdio:'ignore'});
+    return false;
+  }catch(error){
+    if(Number(error?.status)===1)return true;
+    return null;
+  }
+}
+function concurrentRobloxSelectionPatch(item={}){
+  const selected=upper(item.selectedPlatform||item.targetPlatform);
+  const concurrent=Array.isArray(item.concurrentTargetPlatforms)&&item.concurrentTargetPlatforms.some(value=>upper(value)==='ROBLOX');
+  return selected&&selected!=='ROBLOX'&&concurrent?{}:{selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX'};
+}
+export function restoreMetadataOnlyRobloxInvalidation(item,{stamp=new Date().toISOString()}={}){
+  const invalidation=item?.robloxEvidenceInvalidatedBySourceChange||{};
+  const previous=clean(invalidation.previousSourceRevision);
+  const candidate=item?.robloxRuntimeCandidateEvidence||{};
+  const preflight=item?.robloxBuildPreflightEvidence||{};
+  const headless=item?.robloxHeadlessFastMvpEvidence||{};
+  const artifact=clean(candidate.artifactIdentity||preflight.artifactIdentity||preflight?.facts?.build?.artifactIdentity);
+  const exact=Boolean(
+    /^[0-9a-f]{40}$/i.test(previous)
+    &&/^sha256:[0-9a-f]{64}$/i.test(artifact)
+    &&clean(candidate.sourceRevision||preflight.sourceRevision||preflight?.facts?.build?.sourceRevision)===previous
+    &&clean(candidate.artifactIdentity||artifact)===artifact
+    &&(candidate.published===true||preflight.pass===true||preflight.state==='PASS')
+  );
+  if(!exact)return false;
+  const preflightExact=preflight.pass===true
+    &&clean(preflight.sourceRevision)===previous
+    &&clean(preflight.artifactIdentity)===artifact;
+  const headlessExact=headless.pass===true
+    &&clean(headless.sourceRevision)===previous
+    &&clean(headless.artifactIdentity)===artifact;
+  const vibePass=item?.robloxInternalVibePlayEvidence?.pass===true;
+  const restoredState=vibePass?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'TARGET_PLATFORM_RUNTIME_FOUNDATION';
+  Object.assign(item,concurrentRobloxSelectionPatch(item),{
+    status:'ACTIVE',
+    currentStep:restoredState,
+    canonicalState:restoredState,
+    sourcePath:`roblox-games/${item.gameId}`,
+    targetSourcePath:`roblox-games/${item.gameId}`,
+    robloxProjectPath:`roblox-games/${item.gameId}`,
+    robloxSourceCommit:previous,
+    robloxBuildOrPackagePassed:true,
+    robloxBuildSourceRevision:previous,
+    robloxBuildArtifactIdentity:artifact,
+    robloxBuildPassedAt:stamp,
+    robloxBuildFailedAt:null,
+    robloxBuildPreflightPassed:preflightExact,
+    robloxBuildPreflightPassedAt:preflightExact?(clean(preflight.checkedAt)||stamp):null,
+    robloxBuildPreflightFailedAt:null,
+    robloxHeadlessFastMvpPassed:headlessExact,
+    robloxFailureStage:null,
+    robloxFailureSignature:null,
+    routingBlockers:[],
+    robloxMetadataOnlySourceRecoveryEvidence:{
+      version:1,
+      previousSourceRevision:previous,
+      ignoredMetadataRevision:clean(invalidation.newSourceRevision)||null,
+      artifactIdentity:artifact,
+      preflightEvidenceReused:preflightExact,
+      headlessEvidenceReused:headlessExact,
+      actualPlayEvidencePreserved:vibePass,
+      recoveredAt:stamp,
+      authority:'canonical-roblox-build-input-diff'
+    },
+    robloxEvidenceInvalidatedBySourceChange:null,
+    updatedAt:stamp
+  });
+  return true;
+}
+
 export function activeRobloxDevelopmentItem(item={}){
   if(upper(item.productionClass)!=='DEVELOPMENT_CONFIRMED')return false;
   if(!['ACTIVE','PENDING'].includes(upper(item.status)))return false;
@@ -22,12 +116,10 @@ export function activeRobloxDevelopmentItem(item={}){
 
 export function invalidateRobloxDownstreamEvidence(item,{sourceRevision,stamp}){
   const previousSourceRevision=clean(item.robloxSourceCommit)||null;
-  Object.assign(item,{
+  Object.assign(item,concurrentRobloxSelectionPatch(item),{
     status:'ACTIVE',
     currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',
     canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
-    selectedPlatform:'ROBLOX',
-    targetPlatform:'ROBLOX',
     sourcePath:`roblox-games/${item.gameId}`,
     targetSourcePath:`roblox-games/${item.gameId}`,
     robloxProjectPath:`roblox-games/${item.gameId}`,
@@ -85,8 +177,13 @@ export function reconcileChangedRobloxItems({queue={},changedGameIds=[],sourceRe
     if(!item||!activeRobloxDevelopmentItem(item)){results.push({gameId,skipped:true,reason:'not-active-development'});continue;}
     const verdict=validateItem(item);
     if(verdict?.pass===true){
+      if(verdict?.buildSourceChanged===false){
+        const restored=restoreMetadataOnlyRobloxInvalidation(item,{stamp});
+        results.push({gameId,pass:true,sourceRevision,buildSourceChanged:false,metadataOnly:true,restored});
+        continue;
+      }
       invalidateRobloxDownstreamEvidence(item,{sourceRevision,stamp});
-      results.push({gameId,pass:true,sourceRevision});
+      results.push({gameId,pass:true,sourceRevision,buildSourceChanged:verdict?.buildSourceChanged!==false});
     }else{
       const blockers=Array.isArray(verdict?.blockers)?verdict.blockers:['SOURCE_REVALIDATION_FAILED'];
       Object.assign(item,{
@@ -104,6 +201,12 @@ export function reconcileChangedRobloxItems({queue={},changedGameIds=[],sourceRe
 }
 
 function runCli(){
+  const resolveFiles=arg('resolve-files');
+  if(resolveFiles){
+    const files=fs.existsSync(resolveFiles)?fs.readFileSync(resolveFiles,'utf8').split(/\r?\n/).map(clean).filter(Boolean):[];
+    process.stdout.write(changedRobloxBuildGameIds(files).join(','));
+    return;
+  }
   const queueFile=arg('queue');
   const repoRoot=arg('repo-root','.');
   const runtimeRef=arg('runtime-ref');
@@ -122,7 +225,11 @@ function runCli(){
       if(!baselinePath)return {pass:false,blockers:['DESIGN_BASELINE_MISSING']};
       try{
         const baseline=JSON.parse(execFileSync('git',['show',`${runtimeRef}:${baselinePath}`],{encoding:'utf8',maxBuffer:8*1024*1024}));
-        return validateExistingRobloxSourceTree({root,baseline});
+        const verdict=validateExistingRobloxSourceTree({root,baseline});
+        const comparisonBase=clean(item?.robloxEvidenceInvalidatedBySourceChange?.previousSourceRevision)||clean(item?.robloxSourceCommit);
+        const buildSourceChanged=robloxBuildSourceChangedBetween({repoRoot,gameId:item.gameId,fromRevision:comparisonBase,toRevision:sourceRevision});
+        return {...verdict,buildSourceChanged,comparisonBaseRevision:comparisonBase};
+
       }catch(error){
         return {pass:false,blockers:['SOURCE_BASELINE_OR_VALIDATION_UNAVAILABLE'],detail:String(error?.message||error)};
       }
