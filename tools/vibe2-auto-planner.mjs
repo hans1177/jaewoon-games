@@ -1077,7 +1077,7 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
     version:1,
     executionBoundary:'EXISTING_PRESENTATION_OR_BUILD_UP_ONLY',
     decisionOwner:'VIBE',
-    platforms:Object.freeze(['WEB','ROBLOX','UNITY']),
+    platforms:Object.freeze(['WEB','ROBLOX','UNITY','FORTNITE_UEFN']),
     platform,
     pass:clean(pass).toUpperCase()||'ASSET_ADAPTATION',
     adaptiveCount:Object.freeze({
@@ -1110,7 +1110,7 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
 }
 
 function adaptiveGraphicsReplacementSupported(project={}){
-  return ['web','roblox','unity'].includes(clean(project?.engine).toLowerCase());
+  return ['web','roblox','unity','unreal'].includes(clean(project?.engine).toLowerCase());
 }
 
 function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_ADAPTATION'){
@@ -1121,6 +1121,7 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
     '',
     '[ADAPTIVE_GRAPHICS_REPLACEMENT_CONTRACT]',
     'Vibe가 현재 실제 화면과 소스를 보고 필요한 교체 수를 스스로 정한다. 고정 30개를 채우지 않는다.',
+    '같은 가변 교체 계약을 WEB / ROBLOX / UNITY / FORTNITE_UEFN에 공통 적용하되 실제 교체 구현은 각 플랫폼의 네이티브 렌더·에셋·애니메이션·UI 구조를 사용한다.',
     '실제 교체 수는 최소 1개, 최대 60개다. 작은 결함은 1~10개, 일반 개선은 대체로 10~30개, 지역/표현 대형 리프레시는 필요할 때 30~60개를 사용할 수 있다.',
     '대상에는 배경·지형·환경·건물·소품·랜드마크·캐릭터·몬스터·무기·아이템·장비·재질·텍스처·VFX·모션/애니메이션·메뉴·HUD·인벤토리·상점·제작·퀘스트 UI·아이콘·타이포·카메라·환경 연출이 포함된다. 오디오 표현도 관련 있을 때 함께 연결할 수 있다.',
     '우선순위는 placeholder → 저품질 → 컨셉/Style Lock 불일치 → 중복/과다 재사용 → 가독성 저하 → 약한 VFX/모션 → 그 밖의 검증된 표현 gap 순이다.',
@@ -1146,6 +1147,7 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
       ...(taskInput.evidence||[]),
       'adaptive-graphics-replacement:v1',
       'adaptive-graphics-replacement-range:1-60',
+      'adaptive-graphics-replacement-platforms:WEB,ROBLOX,UNITY,FORTNITE_UEFN',
       'adaptive-graphics-replacement-fixed-quota:FORBIDDEN',
       'adaptive-graphics-replacement-zero-pass:FORBIDDEN',
       'adaptive-graphics-replacement-real-source-binding:REQUIRED',
