@@ -523,7 +523,8 @@
         "game-repair-repeat-count:523",
         "game-repair-repeat-count:524",
         "recovery-queue:recovery-ticket-bug-b3e14193de493e2916b5",
-        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING"
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-repeat-count:525"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -3760,7 +3761,13 @@
         "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY%22%2C%22sampleId%22%3A%22horror-escape-room-post-release-focus-4048dd962de0ea8d%7C36281294750%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22predictedConfidence%22%3A0.98%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MATCH%22%2C%22responsibilityMatch%22%3Atrue%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22horror-escape-room-post-release-focus-4048dd962de0ea8d%7C36281294750%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_INPUT%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22horror-escape-room-post-release-focus-4048dd962de0ea8d%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
-        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22horror-escape-room-post-release-focus-4048dd962de0ea8d%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22horror-escape-room-post-release-focus-4048dd962de0ea8d%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
+        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22horror-escape-room-post-release-focus-4048dd962de0ea8d%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22horror-escape-room-post-release-focus-4048dd962de0ea8d%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A17%2C%22edgeCount%22%3A15%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A3%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "recovery-queue:recovery-ticket-bug-51e28af235567cbda4cf",
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-save-migration:REQUIRED",
+        "game-repair-multiplayer-lifecycle:MACHINE_REQUIRED",
+        "recovery-queue:recovery-ticket-bug-8993f93f8cb272a623ba",
+        "recovery-exact-stage:TARGET_PLATFORM_RUNTIME_FOUNDATION"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -8597,7 +8604,8 @@
         "neural-shadow-wave-audit:%7B%22version%22%3A1%2C%22taskId%22%3A%22cozy-island-existing-web-assessment-v1%22%2C%22sampleId%22%3A%22cozy-island-existing-web-assessment-v1%7C36281294750%3A1%7Cprimary%7Cvibe2%2Fcandidate%2Fcozy-island-existing-web-assessment-v1-primary-36281294750-1%22%2C%22actualWaveOutcome%22%3A%22WAVE_REVIEW_BLOCKED%22%2C%22proposedAction%22%3A%22NO_ROUTE%22%2C%22proposedReason%22%3Anull%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22phase2FireAllowed%22%3Afalse%2C%22comparisonClass%22%3A%22BOTH_HOLD_OR_OBSERVE%22%2C%22rootCauseState%22%3Anull%7D",
         "game-repair-repeat-count:524",
         "recovery-queue:recovery-ticket-bug-b3e14193de493e2916b5",
-        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING"
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-repeat-count:525"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -14005,7 +14013,8 @@
         "recovery-exact-stage:TARGET_PLATFORM_RUNTIME_FOUNDATION",
         "recovery-queue:recovery-ticket-bug-25e6719881325d9e82bc",
         "recovery-exact-stage:TARGET_PLATFORM_RUNTIME",
-        "game-repair-repeat-count:7"
+        "game-repair-repeat-count:7",
+        "game-repair-repeat-count:8"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -32120,7 +32129,8 @@
         "game-repair-repeat-count:523",
         "game-repair-repeat-count:524",
         "recovery-queue:recovery-ticket-bug-b3e14193de493e2916b5",
-        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING"
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-repeat-count:525"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -32500,7 +32510,8 @@
         "game-repair-repeat-count:523",
         "game-repair-repeat-count:524",
         "recovery-queue:recovery-ticket-bug-b3e14193de493e2916b5",
-        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING"
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-repeat-count:525"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -32911,7 +32922,8 @@
         "game-repair-repeat-count:523",
         "game-repair-repeat-count:524",
         "recovery-queue:recovery-ticket-bug-b3e14193de493e2916b5",
-        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING"
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-repeat-count:525"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -48727,7 +48739,8 @@
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22cozy-island-studio-evolution-presentation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22cozy-island-studio-evolution-presentation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A20%2C%22edgeCount%22%3A18%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:524",
         "recovery-queue:recovery-ticket-bug-b3e14193de493e2916b5",
-        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING"
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-repeat-count:525"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -50269,7 +50282,13 @@
         "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY%22%2C%22sampleId%22%3A%22horror-escape-room-studio-evolution-presentation-v1%7C36281294750%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22predictedConfidence%22%3A0.98%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MATCH%22%2C%22responsibilityMatch%22%3Atrue%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22horror-escape-room-studio-evolution-presentation-v1%7C36281294750%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22VALIDATOR%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22horror-escape-room-studio-evolution-presentation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
-        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22horror-escape-room-studio-evolution-presentation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22horror-escape-room-studio-evolution-presentation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A20%2C%22edgeCount%22%3A18%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
+        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22horror-escape-room-studio-evolution-presentation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22horror-escape-room-studio-evolution-presentation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A20%2C%22edgeCount%22%3A18%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "recovery-queue:recovery-ticket-bug-51e28af235567cbda4cf",
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-save-migration:REQUIRED",
+        "game-repair-multiplayer-lifecycle:MACHINE_REQUIRED",
+        "recovery-queue:recovery-ticket-bug-8993f93f8cb272a623ba",
+        "recovery-exact-stage:TARGET_PLATFORM_RUNTIME_FOUNDATION"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -54234,7 +54253,8 @@
         "game-repair-repeat-count:523",
         "game-repair-repeat-count:524",
         "recovery-queue:recovery-ticket-bug-b3e14193de493e2916b5",
-        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING"
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-repeat-count:525"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -54373,7 +54393,8 @@
         "game-repair-repeat-count:523",
         "game-repair-repeat-count:524",
         "recovery-queue:recovery-ticket-bug-b3e14193de493e2916b5",
-        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING"
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-repeat-count:525"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -54646,7 +54667,8 @@
         "game-repair-repeat-count:523",
         "game-repair-repeat-count:524",
         "recovery-queue:recovery-ticket-bug-b3e14193de493e2916b5",
-        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING"
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-repeat-count:525"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -54785,7 +54807,8 @@
         "game-repair-repeat-count:523",
         "game-repair-repeat-count:524",
         "recovery-queue:recovery-ticket-bug-b3e14193de493e2916b5",
-        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING"
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-repeat-count:525"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -58486,7 +58509,8 @@
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22cozy-island-roblox-second-gate-rebuild-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22cozy-island-roblox-second-gate-rebuild-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A15%2C%22edgeCount%22%3A13%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A2%2C%22HYPOTHESIS%22%3A6%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A2%2C%22HYPOTHESIS%22%3A4%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
         "game-repair-repeat-count:524",
         "recovery-queue:recovery-ticket-bug-b3e14193de493e2916b5",
-        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING"
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-repeat-count:525"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -59861,7 +59885,13 @@
         "game-repair-repeat-count:25",
         "game-repair-repeat-count:26",
         "recovery:transient-work-lock-requeue-v1",
-        "transient-work-lock-deferred:work-lock-conflict:file-lock-conflict"
+        "transient-work-lock-deferred:work-lock-conflict:file-lock-conflict",
+        "recovery-queue:recovery-ticket-bug-51e28af235567cbda4cf",
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-save-migration:REQUIRED",
+        "game-repair-multiplayer-lifecycle:MACHINE_REQUIRED",
+        "recovery-queue:recovery-ticket-bug-8993f93f8cb272a623ba",
+        "recovery-exact-stage:TARGET_PLATFORM_RUNTIME_FOUNDATION"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -65687,7 +65717,8 @@
         "game-repair-repeat-count:4",
         "game-repair-repeat-count:5",
         "game-repair-repeat-count:6",
-        "game-repair-repeat-count:7"
+        "game-repair-repeat-count:7",
+        "game-repair-repeat-count:8"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -69961,7 +69992,9 @@
         "recovery-queue:recovery-ticket-bug-b3e14193de493e2916b5",
         "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
         "game-repair-mode:FOCUSED_REPAIR",
-        "game-repair-repeat-count:2"
+        "game-repair-repeat-count:2",
+        "game-repair-repeat-count:525",
+        "game-repair-repeat-count:4"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -72356,7 +72389,14 @@
         "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY%22%2C%22sampleId%22%3A%22horror-escape-room-unity-web-base-implementation-v1%7C36281294750%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22predictedConfidence%22%3A0.98%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MATCH%22%2C%22responsibilityMatch%22%3Atrue%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22horror-escape-room-unity-web-base-implementation-v1%7C36281294750%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22GAME_INPUT%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22horror-escape-room-unity-web-base-implementation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
-        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22horror-escape-room-unity-web-base-implementation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22horror-escape-room-unity-web-base-implementation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A20%2C%22edgeCount%22%3A18%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A6%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A6%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
+        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22horror-escape-room-unity-web-base-implementation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22horror-escape-room-unity-web-base-implementation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A20%2C%22edgeCount%22%3A18%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A6%2C%22HYPOTHESIS%22%3A7%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A6%2C%22HYPOTHESIS%22%3A5%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "recovery-queue:recovery-ticket-bug-51e28af235567cbda4cf",
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-save-migration:REQUIRED",
+        "game-repair-multiplayer-lifecycle:MACHINE_REQUIRED",
+        "recovery-queue:recovery-ticket-bug-8993f93f8cb272a623ba",
+        "recovery-exact-stage:TARGET_PLATFORM_RUNTIME_FOUNDATION",
+        "game-repair-repeat-count:1"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -76638,7 +76678,8 @@
         "recovery-exact-stage:TARGET_PLATFORM_RUNTIME_FOUNDATION",
         "recovery-queue:recovery-ticket-bug-25e6719881325d9e82bc",
         "recovery-exact-stage:TARGET_PLATFORM_RUNTIME",
-        "game-repair-repeat-count:7"
+        "game-repair-repeat-count:7",
+        "game-repair-repeat-count:8"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -85104,7 +85145,8 @@
         "game-repair-repeat-count:4",
         "game-repair-repeat-count:5",
         "game-repair-repeat-count:6",
-        "game-repair-repeat-count:7"
+        "game-repair-repeat-count:7",
+        "game-repair-repeat-count:8"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -91473,7 +91515,8 @@
         "game-repair-repeat-count:4",
         "game-repair-repeat-count:5",
         "game-repair-repeat-count:6",
-        "game-repair-repeat-count:7"
+        "game-repair-repeat-count:7",
+        "game-repair-repeat-count:8"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -93596,7 +93639,8 @@
         "game-repair-repeat-count:6",
         "game-repair-repeat-count:7",
         "game-repair-repeat-count:8",
-        "game-repair-repeat-count:9"
+        "game-repair-repeat-count:9",
+        "game-repair-repeat-count:10"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -97993,7 +98037,8 @@
         "game-repair-repeat-count:4",
         "game-repair-repeat-count:5",
         "game-repair-repeat-count:6",
-        "game-repair-repeat-count:7"
+        "game-repair-repeat-count:7",
+        "game-repair-repeat-count:8"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -102392,7 +102437,14 @@
         "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY%22%2C%22sampleId%22%3A%22horror-escape-room-studio-evolution-unity-web-presentation-v1%7C36281294750%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22predictedConfidence%22%3A0.98%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MATCH%22%2C%22responsibilityMatch%22%3Atrue%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22horror-escape-room-studio-evolution-unity-web-presentation-v1%7C36281294750%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22VALIDATOR%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22horror-escape-room-studio-evolution-unity-web-presentation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
-        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22horror-escape-room-studio-evolution-unity-web-presentation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22horror-escape-room-studio-evolution-unity-web-presentation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A20%2C%22edgeCount%22%3A18%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
+        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22horror-escape-room-studio-evolution-unity-web-presentation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22horror-escape-room-studio-evolution-unity-web-presentation-v1%7C36281294750%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A20%2C%22edgeCount%22%3A18%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A8%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A5%2C%22HYPOTHESIS%22%3A6%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "recovery-queue:recovery-ticket-bug-51e28af235567cbda4cf",
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-save-migration:REQUIRED",
+        "game-repair-multiplayer-lifecycle:MACHINE_REQUIRED",
+        "recovery-queue:recovery-ticket-bug-8993f93f8cb272a623ba",
+        "recovery-exact-stage:TARGET_PLATFORM_RUNTIME_FOUNDATION",
+        "game-repair-repeat-count:1"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -106785,7 +106837,8 @@
         "recovery-exact-stage:TARGET_PLATFORM_RUNTIME_FOUNDATION",
         "recovery-queue:recovery-ticket-bug-25e6719881325d9e82bc",
         "recovery-exact-stage:TARGET_PLATFORM_RUNTIME",
-        "game-repair-repeat-count:7"
+        "game-repair-repeat-count:7",
+        "game-repair-repeat-count:8"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -115545,7 +115598,8 @@
         "game-repair-repeat-count:4",
         "game-repair-repeat-count:5",
         "game-repair-repeat-count:6",
-        "game-repair-repeat-count:7"
+        "game-repair-repeat-count:7",
+        "game-repair-repeat-count:8"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -122087,7 +122141,8 @@
         "game-repair-repeat-count:4",
         "game-repair-repeat-count:5",
         "game-repair-repeat-count:6",
-        "game-repair-repeat-count:7"
+        "game-repair-repeat-count:7",
+        "game-repair-repeat-count:8"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -124274,7 +124329,8 @@
         "game-repair-repeat-count:6",
         "game-repair-repeat-count:7",
         "game-repair-repeat-count:8",
-        "game-repair-repeat-count:9"
+        "game-repair-repeat-count:9",
+        "game-repair-repeat-count:10"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "36285969527:1",
@@ -130489,7 +130545,9 @@
         "recovery-queue:recovery-ticket-bug-b3e14193de493e2916b5",
         "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
         "game-repair-mode:FOCUSED_REPAIR",
-        "game-repair-repeat-count:2"
+        "game-repair-repeat-count:2",
+        "game-repair-repeat-count:525",
+        "game-repair-repeat-count:4"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -132247,7 +132305,29 @@
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:RECONCILED_TO_ACTIVE_GENERATION",
         "learning-motor-candidate-tournament:repeated-verified-failure",
-        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION"
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "recovery-queue:recovery-ticket-bug-b021616100dca0c3a206",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:F0_SOURCE_INTEGRITY",
+        "source-mutation-required:YES",
+        "game-repair-mode:FOCUSED_REPAIR",
+        "game-repair-repeat-count:2",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "recovery-queue:recovery-ticket-bug-99f6b8c5bbd5d227e80c",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:26",
+        "recovery-queue:recovery-ticket-bug-51e28af235567cbda4cf",
+        "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
+        "game-repair-save-migration:REQUIRED",
+        "game-repair-multiplayer-lifecycle:MACHINE_REQUIRED",
+        "recovery-queue:recovery-ticket-bug-8993f93f8cb272a623ba",
+        "recovery-exact-stage:TARGET_PLATFORM_RUNTIME_FOUNDATION",
+        "game-repair-repeat-count:1",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": null,

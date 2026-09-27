@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-09-27T02:05:19.263Z",
+  "updatedAt": "2026-09-27T02:14:06.711Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -234,11 +234,11 @@
       "platforms": [
         {
           "platform": "ROBLOX",
-          "technicalReady": false,
+          "technicalReady": true,
           "internalReleaseState": "INTERNAL_PLAYTEST_AND_DEBUG",
-          "internalReleaseReady": false,
+          "internalReleaseReady": true,
           "internalReleasePublished": true,
-          "internalPlaytestPassed": false,
+          "internalPlaytestPassed": true,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
           "publicReleaseReady": false,
@@ -246,9 +246,9 @@
             "pass": false,
             "checks": {
               "technical": false,
-              "realServerBoot": true,
+              "realServerBoot": false,
               "exactRuntime": false,
-              "actualVibePlay": false,
+              "actualVibePlay": true,
               "vibeScenarioCoverage": false,
               "noBlockingTickets": false,
               "gameCompletion": false,
@@ -264,8 +264,8 @@
             },
             "blockers": [
               "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
+              "ROBLOX_PUBLIC_HARD_GATE_REALSERVERBOOT",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
-              "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
               "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
@@ -286,7 +286,9 @@
             "openBlocking": [
               "bug-b021616100dca0c3a206",
               "bug-b7c064342172f6862d62",
-              "bug-7f05f545355f823c22e3"
+              "bug-7f05f545355f823c22e3",
+              "bug-51e28af235567cbda4cf",
+              "bug-8993f93f8cb272a623ba"
             ]
           },
           "publication": {
