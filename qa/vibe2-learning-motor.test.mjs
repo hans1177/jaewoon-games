@@ -199,6 +199,26 @@ test('Roblox and Unity development merge platform-specific verified playbooks wi
   assert.ok(web.playbook.checklist.includes('general-check'));
 });
 
+test('motion UI and Web work merge specialized and graphics verified commercial playbooks',()=>{
+  const row=id=>({id,project:'commercial-reference',sourceRevision:'sha256:'+id,score:0.5});
+  const playbooksInput={taskTypes:{
+    motion:{authority:'verified-task-playbook',checklist:['motion-check'],reuse:[row('motion-pattern')]},
+    ui:{authority:'verified-task-playbook',checklist:['ui-check'],reuse:[row('ui-pattern')]},
+    graphics:{authority:'verified-task-playbook',checklist:['graphics-check'],reuse:[row('graphics-pattern')]},
+    web:{authority:'verified-task-playbook',checklist:['web-check'],reuse:[row('web-pattern')]},
+    coding:{authority:'verified-task-playbook',checklist:['coding-check'],reuse:[row('coding-pattern')]},
+    general:{authority:'verified-task-playbook',checklist:['general-check'],reuse:[row('general-pattern')]}
+  }};
+  const base={gameId:'presentation-game',goal:'commercial menu graphics motion polish'};
+  const motion=retrieveUnifiedLearning({task:{...base,target:'roblox',taskType:'motion'},experienceInput:{records:[]},codePatternsInput:{patterns:[]},playbooksInput,practiceDistilledInput:{entries:[]},externalAiDistilledInput:{entries:[]},masteryInput:{}});
+  assert.deepEqual(motion.playbook.taskTypes,['motion','graphics','coding','general']);
+  for(const id of ['motion-pattern','graphics-pattern','coding-pattern','general-pattern'])assert.ok(motion.exactKnowledgeIds.includes('PLAYBOOK_REUSE:'+id));
+
+  const ui=retrieveUnifiedLearning({task:{...base,target:'web',taskType:'ui'},experienceInput:{records:[]},codePatternsInput:{patterns:[]},playbooksInput,practiceDistilledInput:{entries:[]},externalAiDistilledInput:{entries:[]},masteryInput:{}});
+  assert.deepEqual(ui.playbook.taskTypes,['ui','web','graphics','coding','general']);
+  for(const id of ['ui-pattern','web-pattern','graphics-pattern','coding-pattern','general-pattern'])assert.ok(ui.exactKnowledgeIds.includes('PLAYBOOK_REUSE:'+id));
+});
+
 test('unverified result never increases mastery',()=>{
   const result=applyVerifiedExperienceToMastery({}, {records:[
     {id:'bad',gameId:'g',engine:'web',verified:false,reusable:true,outcome:'PASS',goal:'combat'}
