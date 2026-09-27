@@ -163,6 +163,18 @@ jobs:
               &&item.robloxSharedTargetCurrent===false)return false;
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const activeQualityBuildUp=
+              item.robloxQualityBuildUpRequired===true
+              &&String(item.robloxQualityBuildUpSourceRevision||'').trim()===sourceRevision;
+            if(activeQualityBuildUp){
+              console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_ACTIVE_QUALITY_BUILDUP='+item.gameId);
+              console.log('QUALITY_FIRST_BUILDUP_SHORT_CIRCUIT=ACTIVE');
+              console.log('QUALITY_FAILURE_CLASS=PRODUCT');
+              console.log('QUALITY_BUILDUP_AUTO_REQUEUE=YES');
+              console.log('EXTERNAL_RELEASE_PROBE_SUPPRESSED=YES');
+              console.log('RESUME_STAGE=REPAIR_REQUIRED');
+              return false;
+            }
             const runtime=item.robloxRuntimeFoundationEvidence||{};
             const post=item.robloxPostRuntimeQaEvidence||{};
             const studioRequired=item.robloxStudioAssetBindingApplied===true;
@@ -330,6 +342,13 @@ jobs:
             if(isSharedCandidate(candidate)&&item.robloxSharedTargetCurrent===false)return false;
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const activeQualityBuildUp=
+              item.robloxQualityBuildUpRequired===true
+              &&String(item.robloxQualityBuildUpSourceRevision||'').trim()===sourceRevision;
+            if(activeQualityBuildUp){
+              console.log('ROBLOX_FOUNDATION_PROCESSING_SKIPPED_ACTIVE_QUALITY_BUILDUP='+item.gameId);
+              return false;
+            }
             const studioPlay=item.robloxInternalVibePlayEvidence||{};
             const explicitRuntimeStage=['TARGET_PLATFORM_RUNTIME_FOUNDATION','TARGET_PLATFORM_RUNTIME_ACCEPTANCE'].includes(String(item.robloxFailureStage||''));
             const exactStudioPlayPendingRuntime=

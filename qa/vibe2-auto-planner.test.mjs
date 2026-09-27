@@ -2964,3 +2964,65 @@ test('BUILD_UP backlog synchronization never rewrites already running work',()=>
   assert.equal(result.queue.tasks[0].buildUpDirective,null);
   assert.equal(result.queue.tasks[0].goal,'already reserved work');
 });
+
+test('Roblox product-quality failure auto-routes to canonical causal buildup before internal playtest retry',()=>{
+  const root=tempRepo();
+  const gameId='quality-first-roblox';
+  const gameRoot=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+  fs.mkdirSync(path.join(gameRoot,'client'),{recursive:true});
+  fs.mkdirSync(path.join(gameRoot,'shared'),{recursive:true});
+  fs.writeFileSync(path.join(gameRoot,'server','Game.server.luau'),'local state = {}\nfunction resolvePrimaryAction(player) state.last=player end\n','utf8');
+  fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'local input = {}\nfunction dispatchPrimaryAction() return true end\n','utf8');
+  fs.writeFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'return {RoundSeconds=90}\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'추격 중 타이밍을 읽고 주 행동으로 상대 상태를 바꾸는 재미'});
+  const source='d'.repeat(40);
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Quality First Roblox',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',robloxProjectPath:`roblox-games/${gameId}`}]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Quality First Roblox',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+      selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxProjectPath:`roblox-games/${gameId}`,
+      currentStep:'REPAIR_REQUIRED',canonicalState:'REPAIR_REQUIRED',
+      robloxSourceCommit:source,robloxBuildArtifactIdentity:'sha256:'+'e'.repeat(64),
+      robloxFailureStage:'VIBE_INTERNAL_PLAY',robloxFailureSignature:'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED',
+      robloxQualityBuildUpRequired:true,robloxQualityFailureClass:'PRODUCT',robloxQualityBuildUpSourceRevision:source,
+      robloxQualityBuildUpEvidence:{qualityFailureKinds:['primary-action-effect'],failureStage:'VIBE_INTERNAL_PLAY',failureSignature:'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED'},
+      robloxInternalReleaseReady:true,
+      robloxInternalReleaseEvidence:{sourceRevision:source,artifactIdentity:'sha256:'+'e'.repeat(64),versionNumber:24}
+    }]},
+    queue:{maxConcurrentTasks:20,tasks:[]},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:5,planningBacklogMinimum:0
+  });
+  const gameTasks=result.tasks.filter(row=>row.gameId===gameId);
+  assert.ok(gameTasks.length>0);
+  assert.equal(gameTasks.some(row=>(row.evidence||[]).includes('internal-playtest-co-development:yes')),false);
+  assert.ok(gameTasks.some(row=>row.studioQualityEvolution?.phase==='REPAIR'));
+  assert.ok(gameTasks.some(row=>row.buildUpNextAction==='CAUSAL_REPAIR'));
+  assert.ok(gameTasks.some(row=>String(row.goal||'').includes('BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR')));
+  assert.ok(gameTasks.some(row=>(row.evidence||[]).some(value=>String(value).includes('primary-action-effect'))||String(row.goal||'').includes('primary-action-effect')));
+});
+
+test('stale quality failure from an older Roblox source does not block the new source lane',()=>{
+  const root=tempRepo();
+  const gameId='quality-source-advanced';
+  const gameRoot=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+  fs.writeFileSync(path.join(gameRoot,'server','Game.server.luau'),'function currentSourceAction() return true end\n','utf8');
+  writeStudioDesign(root,gameId);
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Advanced Source',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',robloxProjectPath:`roblox-games/${gameId}`}]},
+    developmentQueue:{items:[{
+      gameId,productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',selectedPlatform:'ROBLOX',robloxProjectPath:`roblox-games/${gameId}`,
+      currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      robloxSourceCommit:'f'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'1'.repeat(64),
+      robloxQualityBuildUpRequired:true,robloxQualityFailureClass:'PRODUCT',robloxQualityBuildUpSourceRevision:'a'.repeat(40),
+      robloxInternalReleaseReady:true,
+      robloxInternalReleaseEvidence:{sourceRevision:'f'.repeat(40),artifactIdentity:'sha256:'+'1'.repeat(64),versionNumber:25}
+    }]},
+    queue:{maxConcurrentTasks:20,tasks:[]},repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:5,planningBacklogMinimum:0
+  });
+  const tasks=result.tasks.filter(row=>row.gameId===gameId);
+  assert.ok(tasks.some(row=>(row.evidence||[]).includes('internal-playtest-co-development:yes')));
+});

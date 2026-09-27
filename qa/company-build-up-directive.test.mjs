@@ -306,3 +306,32 @@ test('primary focus prioritizes core gameplay over generic presentation debt whe
   assert.equal(directive.primaryFocus,'CORE_FUN');
   assert.match(directive.thisLoopPrimaryGoal,/입력→판단→상태 변화→피드백→다음 선택/);
 });
+
+test('verified product-quality failure routes first buildup generation directly to causal repair',()=>{
+  const directive=buildGameSpecificBuildUpDirective({
+    gameId:'quality-fail-first-generation',
+    gameName:'품질 실패 첫 세대',
+    designRecord:design(),
+    sourceObservation:{
+      sourceRoot:'roblox-games/quality-fail-first-generation',
+      sourceTreeFingerprint:'8'.repeat(64),
+      fileCount:1,
+      topFiles:[{file:'roblox-games/quality-fail-first-generation/server/Game.server.luau',score:20}],
+      sourceAnchors:[{file:'roblox-games/quality-fail-first-generation/server/Game.server.luau',line:1,kind:'FUNCTION',symbol:'resolvePrimaryAction',context:'function resolvePrimaryAction(player)',score:40}],
+      signals:{combat:4,progression:2,ai:1,save:1,multiplayer:1,animation:1,vfx:1,camera:1,ui:1,uiFlow:1,input:1,map:1,landmark:1,interaction:1,inventory:0,equipment:0,settings:0,feedback:1,session:1,content:2,choice:1,connection:1,performance:1,lighting:1,primitive:1,todo:0,errorRecovery:1},
+      observations:['CURRENT_SOURCE_FILES=1']
+    },
+    runtimeEvidence:{
+      runtimeObserved:true,
+      runtimePassed:false,
+      failureStage:'VIBE_INTERNAL_PLAY',
+      failureSignature:'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED',
+      blockers:['primary-action-effect']
+    },
+    qualitySignals:['primary-action-effect']
+  });
+  assert.equal(directive.generation,1);
+  assert.equal(directive.effectivenessMeasurement.previousGeneration.classification,'REGRESSION');
+  assert.equal(directive.nextActionDecision.action,'CAUSAL_REPAIR');
+  assert.match(directive.nextActionDecision.reason,/failure|regression/i);
+});

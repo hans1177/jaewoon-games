@@ -245,6 +245,13 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     const existingRoblox=rows.find(r=>r.gameId===id&&r.engine==='roblox');
     const executionEvidenceMatchesRoblox=!executionPlatform||executionPlatform==='ROBLOX';
     const runtimeObserved=(executionEvidenceMatchesRoblox&&executionRuntimeObserved)||item?.robloxRuntimePassed===true;
+    const queueRobloxSourceCommit=clean(item?.robloxSourceCommit||(executionEvidenceMatchesRoblox?executionEvidence.sourceRevision:''));
+    const queueRobloxQualityBuildUpSourceRevision=clean(item?.robloxQualityBuildUpSourceRevision);
+    const queueRobloxQualityBuildUpRequired=Boolean(
+      item?.robloxQualityBuildUpRequired===true
+      &&queueRobloxQualityBuildUpSourceRevision
+      &&queueRobloxQualityBuildUpSourceRevision===queueRobloxSourceCommit
+    );
     const queuePatch={
       ...queueRuntimePatch,
       queueCurrentStep:clean(item?.currentStep),
@@ -252,9 +259,14 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       queueRoutingBlockers:(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,8),
       queueRobloxFailureStage:clean(item?.robloxFailureStage||(executionEvidenceMatchesRoblox?executionEvidence.failureStage:'')),
       queueRobloxFailureSignature:clean(item?.robloxFailureSignature||(executionEvidenceMatchesRoblox?executionEvidence.failureSignature:'')),
+      queueRobloxQualityBuildUpRequired,
+      queueRobloxQualityBuildUpSourceRevision,
+      queueRobloxQualityFailureClass:clean(item?.robloxQualityFailureClass),
+      queueRobloxQualityFailureKinds:(Array.isArray(item?.robloxQualityBuildUpEvidence?.qualityFailureKinds)?item.robloxQualityBuildUpEvidence.qualityFailureKinds:[]).map(clean).filter(Boolean).slice(0,24),
+      queueRobloxQualityBuildUpEvidence:item?.robloxQualityBuildUpEvidence&&typeof item.robloxQualityBuildUpEvidence==='object'?item.robloxQualityBuildUpEvidence:null,
       queueRobloxPublicReleaseFailureSignature:clean(item?.robloxPublicReleaseFailureSignature),
       queueRobloxPublicReleaseRuntimeObservationPending:item?.robloxPublicReleaseRuntimeObservationPending===true,
-      queueRobloxSourceCommit:clean(item?.robloxSourceCommit||(executionEvidenceMatchesRoblox?executionEvidence.sourceRevision:'')),
+      queueRobloxSourceCommit,
       queueRobloxArtifactIdentity:clean(item?.robloxBuildArtifactIdentity||(executionEvidenceMatchesRoblox?executionEvidence.artifactIdentity:'')),
       queueRobloxRuntimeObserved:runtimeObserved,
       queueRobloxRuntimePassed:item?.robloxRuntimePassed===true||(executionEvidenceMatchesRoblox&&executionEvidence.runtimePassed===true),
@@ -1548,6 +1560,7 @@ function findExistingWebDevelopmentContinuationTask(project,repoRoot,queue){
 }
 function findRobloxInternalPlaytestTask(project,repoRoot,queue){
   if(project.engine!=='roblox'||project.releaseState!=='development-confirmed')return null;
+  if(project.queueRobloxQualityBuildUpRequired===true)return null;
   const state=clean(project.queueCanonicalState).toUpperCase(),step=clean(project.queueCurrentStep).toUpperCase();
   if(state!=='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'&&step!=='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG')return null;
   if(project.queueRobloxInternalReleaseReady!==true)return null;
@@ -1687,9 +1700,12 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const runtimeEvidence={
     failureStage:clean(project?.queueRuntimeFailureStage||project?.queueRobloxFailureStage),
     failureSignature:clean(project?.queueRuntimeFailureSignature||project?.queueRobloxFailureSignature),
-    blockers:[...(project?.queueRoutingBlockers||[])].map(clean).filter(Boolean),
-    runtimeObserved:project?.queueRuntimeObserved===true,
-    runtimePassed:project?.queueRuntimePassed===true,
+    blockers:[
+      ...(project?.queueRoutingBlockers||[]),
+      ...(project?.queueRobloxQualityFailureKinds||[])
+    ].map(clean).filter(Boolean),
+    runtimeObserved:project?.queueRuntimeObserved===true||project?.queueRobloxQualityBuildUpRequired===true,
+    runtimePassed:project?.queueRuntimePassed===true&&project?.queueRobloxQualityBuildUpRequired!==true,
     independentQaPassed:project?.queueRuntimeIndependentQaPassed===true,
     regressionPassed:project?.queueRuntimeRegressionPassed===true
   };
@@ -1771,13 +1787,15 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const previousPhase=clean(previous?.studioQualityEvolution?.phase).toUpperCase();
   const previousIndex=previous?history.lastIndexOf(previous):-1;
   const latestFailed=[...history.slice(previousIndex+1)].reverse().find(item=>['failed','blocked'].includes(clean(item.status).toLowerCase()))||null;
+  const qualityBuildUpRequired=project?.queueRobloxQualityBuildUpRequired===true;
   const cycle=verified.length+1;
-  const phase=latestFailed?'REPAIR':previousPhase==='BUILD_UP'?'OPTIMIZE':'BUILD_UP';
+  const phase=qualityBuildUpRequired||latestFailed?'REPAIR':previousPhase==='BUILD_UP'?'OPTIMIZE':'BUILD_UP';
 
   const knownSignals=[
     ...(project?.developmentValidation?.blockers||[]),
     clean(project?.developmentValidation?.nextAction),
     clean(project?.queueVibeWebImplementationReason),
+    ...(project?.queueRobloxQualityFailureKinds||[]),
     clean(project?.queueRobloxFailureStage),
     ...(clean(project?.queueRobloxFailureSignature)==='ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT'?[]:[clean(project?.queueRobloxFailureSignature)]),
     ...(project?.queueRoutingBlockers||[]).filter(value=>clean(value)!=='roblox-runtime-foundation-awaiting-real-server-boot')
@@ -2188,15 +2206,25 @@ function findSafeTasks(project,repoRoot,queue){
   const studioTasks=findStudioContinuousImprovementTasks(project,repoRoot,queue);
   const holisticBackfillTasks=studioTasks.filter(task=>task?.studioQualityEvolution?.existingHolisticBackfillRequired===true);
   const normalStudioTasks=studioTasks.filter(task=>task?.studioQualityEvolution?.existingHolisticBackfillRequired!==true);
-  if(project.engine==='roblox')return uniqueTaskCandidates([
-    findRobloxInternalPlaytestTask(project,repoRoot,queue),
-    ...holisticBackfillTasks,
-    findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
-    findWeatherPresentationTask(project,repoRoot,queue),
-    findPresentationQualityTask(project,repoRoot,queue),
-    ...normalStudioTasks,
-    scanExplicitMarkerTask(project,repoRoot,queue)
-  ]);
+  if(project.engine==='roblox'){
+    if(project.queueRobloxQualityBuildUpRequired===true)return uniqueTaskCandidates([
+      ...holisticBackfillTasks,
+      ...normalStudioTasks,
+      findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
+      findPresentationQualityTask(project,repoRoot,queue),
+      findWeatherPresentationTask(project,repoRoot,queue),
+      scanExplicitMarkerTask(project,repoRoot,queue)
+    ]);
+    return uniqueTaskCandidates([
+      findRobloxInternalPlaytestTask(project,repoRoot,queue),
+      ...holisticBackfillTasks,
+      findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
+      findWeatherPresentationTask(project,repoRoot,queue),
+      findPresentationQualityTask(project,repoRoot,queue),
+      ...normalStudioTasks,
+      scanExplicitMarkerTask(project,repoRoot,queue)
+    ]);
+  }
   if(project.engine==='unity'){
     if(project.firstStageUnityWeb===true){
       const firstStage=findUnityWebFirstStageTask(project,repoRoot,queue);

@@ -156,3 +156,20 @@ test('post-runtime QA collapses duplicate scans before heavy work without workfl
 test('Studio MCP actual play passes each game launch contract into the official helper',()=>{
   assert.match(workflow,/--actual-play-contract=main\/roblox-games\/\$\{\{ matrix\.gameId \}\}\/launch-mvp\.json/);
 });
+
+test('active product-quality buildup suppresses Open Cloud and downstream foundation processing for the same source',()=>{
+  assert.match(workflow,/item\.robloxQualityBuildUpRequired===true/);
+  assert.match(workflow,/item\.robloxQualityBuildUpSourceRevision/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_ACTIVE_QUALITY_BUILDUP=/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_PROCESSING_SKIPPED_ACTIVE_QUALITY_BUILDUP=/);
+  assert.match(workflow,/QUALITY_FIRST_BUILDUP_SHORT_CIRCUIT=ACTIVE/);
+  assert.match(workflow,/QUALITY_FAILURE_CLASS=PRODUCT/);
+  assert.match(workflow,/QUALITY_BUILDUP_AUTO_REQUEUE=YES/);
+  assert.match(workflow,/EXTERNAL_RELEASE_PROBE_SUPPRESSED=YES/);
+  assert.match(workflow,/RESUME_STAGE=REPAIR_REQUIRED/);
+});
+
+test('quality-first release-probe suppression is exact-source scoped rather than a permanent game hold',()=>{
+  assert.match(workflow,/String\(item\.robloxQualityBuildUpSourceRevision\|\|''\)\.trim\(\)===sourceRevision/);
+  assert.doesNotMatch(workflow,/robloxQualityBuildUpRequired===true[\s\S]{0,120}process\.exit\(1\)/);
+});

@@ -1,5 +1,5 @@
 {
-  "version": 471,
+  "version": 472,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -6464,7 +6464,8 @@
         "workflow": ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
         "prGate": ".github/workflows/vibe3-engine-contract.yml"
       }
-    }
+    },
+    "qualityFailureRecoveryPolicySource": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit"
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "machineSourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -9617,6 +9618,28 @@
       "gameplayRulesChanged": false,
       "saveSchemaChanged": false,
       "qualityGateWeakening": false
+    },
+    "qualityFirstBuildupShortCircuit20260927": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-27",
+      "policySource": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit",
+      "architectureProjection": "company-learning/company-architecture-map.json#minimumNecessaryProcedurePolicyProjection.qualityFirstBuildupShortCircuit",
+      "logContract": "company-learning/company-log-map.json#qualityFirstBuildupShortCircuitEvidence",
+      "implementationBindings": [
+        "tools/company-development-roblox-studio-local-play.mjs",
+        "tools/vibe2-auto-planner.mjs",
+        ".github/workflows/company-development-roblox-post-runtime-qa.yml"
+      ],
+      "behavior": [
+        "INTERNAL_PRODUCT_QUALITY_FAIL_AUTO_REQUEUES_CANONICAL_BUILD_UP_WITHOUT_OWNER_APPROVAL",
+        "ACTIVE_SAME_SOURCE_QUALITY_FAILURE_SUPPRESSES_OPEN_CLOUD_AND_REDUNDANT_F9",
+        "HTTP_429_REMAINS_INFRASTRUCTURE_OR_EVIDENCE_ONLY_AND_DOES_NOT_CAUSE_GAME_SOURCE_CHURN",
+        "SOURCE_DELTA_RUNS_IMPACT_SCOPED_QA_THEN_RESUMES_FIRST_INVALIDATED_DOWNSTREAM_GATE"
+      ],
+      "shadowPipelineCreated": false,
+      "productQualityThresholdLowered": false,
+      "publicReleaseHardGateChanged": false,
+      "securityOrSaveIntegrityGateChanged": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -22069,8 +22092,8 @@
     "activeOwnerResetSource": "owner-design-reset-queue.json"
   },
   "minimumNecessaryProcedurePolicy": {
-    "version": 2,
-    "authority": "OWNER_DIRECTIVE_2026-09-25",
+    "version": 3,
+    "authority": "OWNER_DIRECTIVE_2026-09-27",
     "status": "ACTIVE",
     "priority": "DEVELOPMENT_THROUGHPUT_FIRST_WITH_MINIMUM_NECESSARY_PROCEDURE",
     "objective": "MINIMIZE_PROCESS_SECURITY_REVIEW_REGRESSION_AND_ADMINISTRATIVE_OVERHEAD_WHILE_PRESERVING_ONLY_EVIDENCE_RELEVANT_TO_THE_CHANGED_RISK_SCOPE",
@@ -22225,7 +22248,82 @@
       "optimizationLane": "PERFORMANCE_RESPONSIBILITY_CLEANUP_MOBILE_LATENCY_RENDER_UPDATE_COST_AND_STATE_CONSISTENCY",
       "optimizationMayRunParallelWhenResponsibleFilesDoNotConflict": true,
       "procedureReductionMayNotLowerProductQualityThreshold": true,
-      "procedureReductionMayNotFabricateOrReuseInvalidatedEvidence": true
+      "procedureReductionMayNotFabricateOrReuseInvalidatedEvidence": true,
+      "qualityFailureShortCircuitSource": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit"
+    },
+    "qualityFirstBuildupShortCircuit": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-27",
+      "status": "ACTIVE",
+      "objective": "WHEN_VERIFIED_INTERNAL_GAME_QUALITY_FAILS_PRIORITIZE_REAL_GAME_SOURCE_QUALITY_BUILD_UP_BEFORE_EXTERNAL_RELEASE_OBSERVATION_OR_DUPLICATE_EVIDENCE_PROCEDURE",
+      "precedence": [
+        "VERIFIED_INTERNAL_GAMEPLAY_OR_PRODUCT_QUALITY_FAILURE",
+        "DIRECT_CAUSAL_GAME_SOURCE_BUILD_UP_OR_REPAIR",
+        "IMPACT_SCOPED_INTERNAL_PLAY_AND_QA",
+        "RESUME_FIRST_INVALIDATED_DOWNSTREAM_GATE",
+        "F9_RELEASE_REGRESSION",
+        "EXTERNAL_RUNTIME_OR_PUBLIC_RELEASE_EVIDENCE_WHEN_STILL_REQUIRED"
+      ],
+      "failureClassification": {
+        "productQualityFailures": [
+          "CORE_FUN",
+          "GAMEPLAY",
+          "PROGRESSION",
+          "PRESENTATION",
+          "USABILITY",
+          "STABILITY",
+          "INTERNAL_PLAYTEST",
+          "DETERMINISTIC_GAME_QA",
+          "F9_PRODUCT_QUALITY"
+        ],
+        "infrastructureOrEvidenceOnlyFailures": [
+          "HTTP_429",
+          "TRANSIENT_OPEN_CLOUD",
+          "PROVIDER_RATE_LIMIT",
+          "EXTERNAL_SERVICE_OUTAGE",
+          "EXACT_EVIDENCE_FETCH_FAILURE"
+        ],
+        "rule": "PRODUCT_QUALITY_FAILURE_MUTATES_GAME_SOURCE_THROUGH_CANONICAL_BUILD_UP; INFRASTRUCTURE_OR_EVIDENCE_ONLY_FAILURE_RETRIES_OR_DEFERS_THE_EXACT_GATE_WITHOUT_FAKE_GAME_SOURCE_CHURN"
+      },
+      "automaticRouting": {
+        "ownerApprovalRequiredForApprovedScopeQualityRepair": false,
+        "canonicalRoute": "EXISTING_VIBE_PLANNER_AND_SOURCE_WORKER_ONLY",
+        "requeueMode": "AUTOMATIC_UNLIMITED_CAUSAL_BUILD_UP",
+        "preserveGameIdentity": true,
+        "preserveApprovedDesignMeaning": true,
+        "preserveSaveMeaning": true,
+        "preserveServerAuthorityAndSecurityBoundaries": true,
+        "shadowPipelineForbidden": true,
+        "wrapperOrOverrideRepairForbidden": true,
+        "directResponsibleFunctionOrModuleRepairRequired": true
+      },
+      "shortCircuit": {
+        "activeInternalQualityFailureSuppresses": [
+          "OPEN_CLOUD_EXTERNAL_RUNTIME_PROBE",
+          "PUBLIC_RELEASE_RUNTIME_OBSERVATION",
+          "REDUNDANT_F9_REVALIDATION",
+          "UNCHANGED_EXACT_EVIDENCE_REFETCH",
+          "UNRELATED_FULL_REGRESSION"
+        ],
+        "transient429MayNotPreemptActiveQualityBuildUp": true,
+        "externalObservationMayRunAgainOnlyAfterRelevantInternalQualityPass": true,
+        "validUnchangedPassingEvidenceMustBeReused": true,
+        "unrelatedPassingStagesMustNotReplay": true
+      },
+      "resume": {
+        "afterSourceDelta": "RUN_CHANGED_RESPONSIBILITY_AND_TRANSITIVE_DEPENDENCY_QA_FIRST",
+        "afterInternalQualityPass": "RESUME_AT_FIRST_INVALIDATED_DOWNSTREAM_GATE",
+        "fullPipelineRestartForbidden": true,
+        "fullRegressionOnlyAtRelevantFanIn": true,
+        "publicReleaseHardGateUnchanged": true,
+        "securityAndSaveIntegrityGatesUnchanged": true
+      },
+      "f9": {
+        "productQualityFailureAction": "AUTO_REQUEUE_CANONICAL_GAME_CODE_BUILD_UP_WITHOUT_OWNER_APPROVAL",
+        "infrastructureOrEvidenceOnlyFailureAction": "RETRY_OR_DEFER_EXACT_FAILED_GATE_WITHOUT_GAME_SOURCE_REBUILD",
+        "sourceMutationRequiredBeforeProductQualityRevalidation": true,
+        "sourceMutationForbiddenSolelyForTransient429": true
+      }
     }
   },
   "neuralGatedExecution": {
