@@ -347,12 +347,19 @@ test('central policy and architecture preserve runtime truth while real server b
  assert.equal(policy.internalReleaseBlocking,false);
  assert.equal(policy.externalPublicReleaseBlocking,true);
  assert.equal(policy.runtimeTruthFieldsMustRemainUnfabricated,true);
+ assert.equal(policy.exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot,true);
+ assert.equal(policy.studioActualPlayEligibilityDoesNotSetRuntimeFoundationPass,true);
+ assert.equal(policy.studioActualPlayEligibilityDoesNotSetExternalPublicReleaseReady,true);
  assert.equal(topology.developmentBlocking,false);
  assert.equal(topology.internalQaBlocking,false);
  assert.equal(topology.internalRegressionBlocking,false);
  assert.equal(topology.internalReleaseBlocking,false);
  assert.equal(topology.externalPublicReleaseBlocking,true);
  assert.equal(topology.runtimePassTruthRemainsFalseUntilRealServerBootEvidence,true);
+ assert.equal(topology.exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot,true);
+ assert.equal(topology.studioPlannerEligibility,'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT');
+ assert.equal(topology.studioActualPlayMayNotSetRuntimeFoundationPass,true);
+ assert.equal(topology.externalPublicReleaseRemainsBlockedUntilRealServerBoot,true);
  assert.ok(Array.isArray(stack.runtimeFoundationInternalReleaseExceptionStates));
  assert.ok(stack.runtimeFoundationInternalReleaseExceptionStates.includes('ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT'));
  assert.equal(stack.runtimeFoundationExceptionMaySetRuntimePass,false);
@@ -374,6 +381,7 @@ test('runtime QA passes internal QA and regression while exact real-server boot 
  assert.match(workflow,/actualRuntimeEvidence:false/);
  assert.match(workflow,/item\.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'/);
  assert.match(workflow,/ROBLOX_INTERNAL_FLOW_PASS_EXTERNAL_SERVER_BOOT_PENDING=/);
+ assert.match(workflow,/ROBLOX_FOUNDATION_AWAITING_REAL_SERVER_BOOT=[\\s\\S]*?queueStudioFollowupIfEligible\\(item\\);[\\s\\S]*?continue;/);
  assert.match(workflow,/item\.robloxRuntimeFoundationInternalReleaseException=false/);
  assert.match(workflow,/item\.robloxPublicReleaseRuntimeObservationPending=false/);
  assert.match(workflow,/item\.robloxPublicReleaseFailureSignature=null/);

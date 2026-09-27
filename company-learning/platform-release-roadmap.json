@@ -1,5 +1,5 @@
 {
-  "version": 464,
+  "version": 465,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -4153,7 +4153,10 @@
         "f9PendingMayNotPauseInternalDevelopmentOrInternalPlaytest": true,
         "nextAction": "CONTINUE_INTERNAL_DEVELOPMENT_QA_REGRESSION_INTERNAL_RELEASE_AND_INTERNAL_PLAYTEST_IN_PARALLEL_WHILE_F9_AND_RUNTIME_REPAIR_CONTINUE; BLOCK_EXTERNAL_PUBLIC_RELEASE_ONLY",
         "robloxPlayerAutomationForbidden": true,
-        "publishedPlaceDirectStudioAutomationForbidden": true
+        "publishedPlaceDirectStudioAutomationForbidden": true,
+        "exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot": true,
+        "studioActualPlayEligibilityDoesNotSetRuntimeFoundationPass": true,
+        "studioActualPlayEligibilityDoesNotSetExternalPublicReleaseReady": true
       }
     },
     "deterministicGateAuthority": {
@@ -9509,6 +9512,23 @@
         "coversExactFoundationEvidenceReuse": true,
         "stopCondition": "EXACT_CURRENT_STUDIO_MCP_EVIDENCE_ALREADY_OBSERVED"
       }
+    },
+    "robloxExactEngineStudioHandoff20260927": {
+      "id": "ROBLOX_EXACT_ENGINE_STUDIO_HANDOFF_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.robloxStudioUsage.runtimeFoundationBoundary",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "observedGameId": "horror-escape-room",
+      "observedCandidateVersionNumber": 24,
+      "observedRuntimeSentinelVersionNumber": 23,
+      "observedState": "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
+      "objective": "BREAK_EXACT_ENGINE_REAL_SERVER_BOOT_STUDIO_MCP_CIRCULAR_WAIT_WITHOUT_FABRICATING_RUNTIME_PASS",
+      "studioPlannerEligibility": "EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT",
+      "exactSourceArtifactCandidateBindingRequired": true,
+      "openCloudExactEngineExecutionRequired": true,
+      "realServerBootStillRequiredForRuntimeFoundationPass": true,
+      "externalPublicReleaseStillBlocked": true,
+      "officialStudioMcpRequiredForInternalContinuation": true,
+      "qualityGateWeakening": false
     }
   },
   "vibeExecutionLaneContract": {

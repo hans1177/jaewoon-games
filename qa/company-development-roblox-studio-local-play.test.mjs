@@ -167,6 +167,28 @@ test('planner selects exact runtime-foundation artifact before internal release'
   assert.equal(result.include[0].actualPlayEligibility,'RUNTIME_FOUNDATION_PASS');
 });
 
+test('planner admits exact engine version while real server boot is pending without claiming runtime foundation pass',()=>{
+  const candidate=item();
+  candidate.robloxInternalReleasePublished=false;
+  candidate.robloxInternalReleaseEvidence={};
+  candidate.robloxRuntimeFoundationPassed=false;
+  candidate.robloxRuntimeFoundationEvidence={
+    authority:'exact-engine-version-awaiting-real-server-boot',
+    sourceRevision:source,
+    artifactIdentity:artifact,
+    placeId:'456',
+    candidateVersionNumber:9,
+    engineExecuted:true,
+    exactEngineVersion:true,
+    serverBootObserved:false
+  };
+  const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
+  assert.equal(result.include.length,1);
+  assert.equal(result.include[0].actualPlayEligibility,'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT');
+  assert.equal(candidate.robloxRuntimeFoundationPassed,false);
+  assert.equal(candidate.robloxInternalReleasePublished,false);
+});
+
 test('Studio evidence maps observed failures into Roblox-native failure classes',()=>{
   const candidate=item();
   const broken=runtime();

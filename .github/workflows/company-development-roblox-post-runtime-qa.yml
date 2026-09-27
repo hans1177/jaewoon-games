@@ -545,6 +545,7 @@ jobs:
                   pending++;
                   item.updatedAt=stamp;
                   changed=true;
+                  queueStudioFollowupIfEligible(item);
                   continue;
                 }
 
