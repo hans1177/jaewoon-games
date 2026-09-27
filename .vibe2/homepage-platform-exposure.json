@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-09-27T01:35:32.132Z",
+  "updatedAt": "2026-09-27T01:41:24.162Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -240,7 +240,7 @@
           "internalReleaseState": "INTERNAL_PLAYTEST_AND_DEBUG",
           "internalReleaseReady": false,
           "internalReleasePublished": true,
-          "internalPlaytestPassed": true,
+          "internalPlaytestPassed": false,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
           "publicReleaseReady": false,
@@ -250,7 +250,7 @@
               "technical": false,
               "realServerBoot": true,
               "exactRuntime": false,
-              "actualVibePlay": true,
+              "actualVibePlay": false,
               "vibeScenarioCoverage": false,
               "noBlockingTickets": false,
               "gameCompletion": false,
@@ -267,6 +267,7 @@
             "blockers": [
               "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
+              "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
               "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
