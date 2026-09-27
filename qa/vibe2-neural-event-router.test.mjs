@@ -72,6 +72,30 @@ test('resource or lock changes can calibrate dependency reevaluation without roo
   assert.equal(route.lockAcquisitionAllowed,false);
 });
 
+test('dependency-ready event re-evaluates the graph without taking scheduler authority',()=>{
+  const route=simulateNeuralEventRoute({
+    event:{
+      id:'task-b|task-a|run-1:1|DEPENDENCY_READY',
+      type:'DEPENDENCY_READY',
+      taskId:'task-b',
+      dependencies:[{id:'task-a',required:true,state:'DONE',satisfied:true,evidence:['dependency-task:done']}]
+    },
+    diagnosis:null,
+    rootCause:null
+  });
+  assert.equal(route.proposedAction.kind,'REEVALUATE_DEPENDENCY_GRAPH');
+  assert.equal(route.proposedAction.reason,'REQUIRED_DEPENDENCIES_SATISFIED');
+  assert.equal(route.inhibitors.includes('ROOT_CAUSE_NOT_VERIFIED'),false);
+  assert.equal(route.wouldFireWithoutPhase2Authority,true);
+  assert.equal(route.workGraph.summary.dependencyCount,1);
+  assert.equal(route.workGraph.summary.unsatisfiedDependencyCount,0);
+  assert.equal(route.workGraph.summary.wouldActivateWithoutPhase2Authority,true);
+  assert.equal(route.fireAllowed,false);
+  assert.equal(route.workerCreationAllowed,false);
+  assert.equal(route.queueMutationAllowed,false);
+  assert.equal(route.waveReorderAllowed,false);
+});
+
 test('security and lock inhibitors suppress hypothetical firing',()=>{
   const route=simulateNeuralEventRoute({
     event:{type:'WORKER_RESULT',outcome:'FAIL'},

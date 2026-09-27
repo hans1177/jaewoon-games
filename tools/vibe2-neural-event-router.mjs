@@ -16,6 +16,7 @@ const EVENT_TYPES=new Set([
   'RUNTIME_RESULT',
   'SUPERVISOR_RESULT',
   'POLICY_CHANGE',
+  'DEPENDENCY_READY',
   'RESOURCE_OR_LOCK_CHANGE'
 ]);
 
@@ -47,6 +48,10 @@ function actionFromState({event,diagnosis,rootCause}={}){
     kind:'RECOMPILE_WORK_CONTRACT',
     reason:'CENTRAL_POLICY_CHANGED',
     requiresFreshPolicy:true
+  };
+  if(event.type==='DEPENDENCY_READY')return{
+    kind:'REEVALUATE_DEPENDENCY_GRAPH',
+    reason:'REQUIRED_DEPENDENCIES_SATISFIED'
   };
   if(event.type==='RESOURCE_OR_LOCK_CHANGE')return{
     kind:'REEVALUATE_DEPENDENCY_AND_LOCKS',
@@ -83,7 +88,7 @@ function actionFromState({event,diagnosis,rootCause}={}){
 }
 
 function rootCauseIndependentEvent(event={}){
-  return ['POLICY_CHANGE','RESOURCE_OR_LOCK_CHANGE'].includes(clean(event?.type).toUpperCase());
+  return ['POLICY_CHANGE','DEPENDENCY_READY','RESOURCE_OR_LOCK_CHANGE'].includes(clean(event?.type).toUpperCase());
 }
 
 function eventAllowsGatedMutation(event={}){
