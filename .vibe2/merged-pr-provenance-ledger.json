@@ -29861,11 +29861,153 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_18e7a3a2b870d5921a99d75f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-3834",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "439c4583721487c9ea9c7289413f28d5a14d62e9",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 3834,
+        "baseBranch": "main",
+        "headBranch": "fix/f0-f9-development-first-minimal-validation-v2",
+        "baseSha": "439c4583721487c9ea9c7289413f28d5a14d62e9",
+        "headSha": "b2e7273f84fe47d850bc79c7accdc8fc6c566613",
+        "mergeCommitSha": "8e9622d6cad88c15dc54c49a979ca59d40c306cb",
+        "mergedAt": "2026-09-27T23:50:11Z",
+        "authorLogin": "hans1177",
+        "titleHash": "90fd4daa6012457c75d139f1811c364424522e55b2622dd4ebf99dfa9649a245",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/f0-f9-development-first-minimal-validation-v2",
+        "candidateSha": "b2e7273f84fe47d850bc79c7accdc8fc6c566613"
+      },
+      "changeStats": {
+        "changedFileCount": 14,
+        "codingRelevantFileCount": 14,
+        "addedLineCount": 679,
+        "deletedLineCount": 190,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          "company-learning/company-architecture-map.json",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-central-policy-contract.test.mjs",
+          "qa/company-development-roblox-release-promotion.test.mjs",
+          "qa/company-development-roblox-runtime-foundation.test.mjs",
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "qa/vibe2-learning-motor.test.mjs",
+          "tools/company-development-roblox-studio-local-play.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-learning-motor.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/vibe2-continuous-core.yml",
+          "company-learning/company-architecture-map.json",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-central-policy-contract.test.mjs",
+          "qa/company-development-roblox-release-promotion.test.mjs",
+          "qa/company-development-roblox-runtime-foundation.test.mjs",
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "qa/vibe2-learning-motor.test.mjs",
+          "tools/company-development-roblox-studio-local-play.mjs",
+          "tools/vibe2-continuous-runner.mjs",
+          "tools/vibe2-learning-motor.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:3834",
+        "merge-commit:8e9622d6cad88c15dc54c49a979ca59d40c306cb",
+        "base-main:439c4583721487c9ea9c7289413f28d5a14d62e9"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 240
+    "total": 241
   }
 }
