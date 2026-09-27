@@ -2920,16 +2920,58 @@ test('queued legacy BUILD_UP directive is migrated in place to autonomous conten
   assert.equal(migrated.status,'queued');
   assert.equal(migrated.buildUpGeneration,legacy.buildUpGeneration);
   assert.notEqual(migrated.buildUpDirectiveId,legacy.buildUpDirectiveId);
-  assert.equal(migrated.buildUpDirective.autonomousContentExpansion.version,1);
+  assert.equal(migrated.buildUpDirective.autonomousContentExpansion.version,2);
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.executionBoundary,'EXISTING_BUILD_UP_ONLY');
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.autonomousDecisionOwner,'VIBE');
   assert.deepEqual([...migrated.buildUpDirective.autonomousContentExpansion.platformScope],['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.antiCloneContract.nameColorOrStatOnlyCloneForbidden,true);
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.continuityAndCausality.required,true);
-  assert.ok(migrated.evidence.includes('build-up-directive-contract-migration:AUTONOMOUS_CONTENT_EXPANSION_V1'));
+  assert.ok(migrated.evidence.includes('build-up-directive-contract-migration:AUTONOMOUS_CONTENT_EXPANSION_V2'));
   assert.ok(migrated.evidence.includes('build-up-directive-contract-migration-generation:PRESERVED'));
   assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION'));
   assert.equal((migrated.goal.match(/\[GAME_SPECIFIC_BUILD_UP_DIRECTIVE\]/g)||[]).length,1);
+});
+
+
+test('queued autonomous expansion v1 without breadth ledger upgrades to v2 without consuming a new generation',()=>{
+  const root=tempRepo();
+  const gameId='autonomous-expansion-v1-ledger-backfill';
+  const source=path.join(root,'roblox-games',gameId,'server');
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'Combat.server.luau'),'function resolveAttack(enemy) return enemy ~= nil end\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'적 상태를 읽고 공격 타이밍을 선택하는 재미'});
+  const project={gameId,name:'Expansion V1 Ledger Backfill',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const generated=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  assert.equal(generated.buildUpDirective.autonomousContentExpansion.version,2);
+  const oldExpansion={...generated.buildUpDirective.autonomousContentExpansion,version:1};
+  delete oldExpansion.themeCoverageLedger;
+  const v1Directive={...generated.buildUpDirective,autonomousContentExpansion:oldExpansion};
+  const queued={
+    ...generated,
+    id:`${gameId}-queued-v1-contract`,
+    status:'queued',
+    buildUpDirective:v1Directive,
+    buildUpDirectiveId:v1Directive.directiveId,
+    buildUpGeneration:v1Directive.generation,
+    evidence:(generated.evidence||[]).filter(value=>!String(value).startsWith('autonomous-content-expansion-'))
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
+    catalog:{games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{maxConcurrentTasks:20,tasks:[queued]},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,false);
+  assert.equal(result.buildUpDirectiveBackfillCount,1);
+  const migrated=result.queue.tasks.find(row=>row.id===queued.id);
+  assert.equal(migrated.buildUpGeneration,queued.buildUpGeneration);
+  assert.equal(migrated.buildUpDirective.autonomousContentExpansion.version,2);
+  assert.equal(migrated.buildUpDirective.autonomousContentExpansion.themeCoverageLedger.version,1);
+  assert.equal(migrated.buildUpDirective.autonomousContentExpansion.themeCoverageLedger.totalThemes,7);
+  assert.ok(migrated.buildUpDirective.autonomousContentExpansion.themeCoverageLedger.requiredThemes.length>=7);
+  assert.ok(migrated.evidence.includes('build-up-directive-contract-migration:AUTONOMOUS_CONTENT_EXPANSION_V2'));
+  assert.ok(migrated.evidence.includes('build-up-directive-contract-migration-generation:PRESERVED'));
+  assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION'));
 });
 
 test('stale queued directive rebinds to the active shared generation before reserve',()=>{
