@@ -9576,7 +9576,7 @@
     "robloxOpenCloudThrottleRecovery20260927": {
       "id": "ROBLOX_OPEN_CLOUD_THROTTLE_RECOVERY_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
-      "status": "LIVE_STUDIO_PASS_FEEDBACK_METRIC_SERIALIZATION_REPAIR_PENDING_QA",
+      "status": "CODE_QA_VERIFIED_LIVE_RUNTIME_SCAN_PENDING",
       "objective": "PREVENT_TRANSIENT_OPEN_CLOUD_THROTTLING_FROM_BLOCKING_EXACT_RUNTIME_EVIDENCE_WHILE_AVOIDING_SCAN_BURSTS",
       "observedEvidence": {
         "gameId": "horror-escape-room",
@@ -9640,7 +9640,17 @@
       "postFoundationStudioFollowupMustDelegateToCanonicalPlanner": true,
       "postFoundationStudioFollowupMayNotPreRequireRuntimeFoundationPass": true,
       "primaryActionFeedbackMetricMustPersistToRuntimeSummary": true,
-      "primaryActionScenarioPassMayNotRelyOnSerializationOmission": true
+      "primaryActionScenarioPassMayNotRelyOnSerializationOmission": true,
+      "scanProbeConcurrencyUnderVerified429": 1,
+      "transientRetryExecution": "IN_SCAN_BOUNDED_NO_WORKFLOW_FANOUT",
+      "transientRetryWorkflowFanout": false,
+      "transientRetryBackoff": "EXPONENTIAL_CAPPED_30000MS_RETRY_AFTER_AWARE",
+      "duplicateAutomaticScanPolicy": "LATEST_SCAN_CANCELS_PRIOR_SCAN_ONLY",
+      "distinctExactGameRunsRemainIndependent": true,
+      "centralPolicyQaVerifiedRunId": 36354073637,
+      "vibeCoreQaVerifiedRunId": 36354076161,
+      "vibeParallelismQaVerifiedRunId": 36354120374,
+      "runtimeFoundationScanVerificationState": "QUEUED_EXTERNAL_RUNNER_CAPACITY"
     },
     "robloxF9FaninRuntimePathRepair20260927": {
       "id": "ROBLOX_F9_FANIN_RUNTIME_PATH_REPAIR_2026-09-27",
