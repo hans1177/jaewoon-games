@@ -343,7 +343,7 @@ function sameStringSet(a=[],b=[]){
 function graphicsEvidenceLooksLikeSource(value=''){
   const text=String(value??'').trim();
   if(text.length<6)return false;
-  const meaningful=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).filter(line=>!^(?:\/\/|--|\/\*|\*|<!--)/.test(line));
+  const meaningful=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).filter(line=>!/^(?:\/\/|--|\/\*|\*|<!--)/.test(line));
   return meaningful.length>0&&/[A-Za-z0-9_$.[\](){}:=<>-]/.test(meaningful.join(' '));
 }
 function runGraphicsReplacementGroundingQa({root,data={},changed=[]}={}){
