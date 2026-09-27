@@ -199,11 +199,8 @@ jobs:
           const staleControlBefore=Date.now()-(12*60*1000);
           const supersedableInProgressControlPlane=new Set([
             '.github/workflows/director-supervisor.yml',
-            '.github/workflows/company-status-sync.yml',
-            '.github/workflows/company-platform-exposure-sync.yml',
             '.github/workflows/vibe2-merged-pr-provenance.yml',
             '.github/workflows/company-dna-learning.yml',
-            '.github/workflows/company-seed-design-runtime.yml',
           ]);
           for(const path of supersedableInProgressControlPlane){
             const rows=runs
