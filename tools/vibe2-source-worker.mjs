@@ -1754,6 +1754,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let fullWebProgressCreditCount=0;
   let robloxFullGraphicsPackageActive=false;
   let robloxZeroOutputTimeoutFocusedRecoveryActive=false;
+  let robloxTimeoutRecoveryEscalatedFullGraphics=false;
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
   const robloxGraphicsInitial=!allowFullRewrite
     &&/Engine:\s*roblox/i.test(String(prompt??''))
@@ -1799,7 +1800,16 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       &&!clean(lastRaw);
     if(robloxAssetAdaptationTask&&zeroOutputTimeoutRecovery)robloxZeroOutputTimeoutFocusedRecoveryActive=true;
     if(zeroOutputTimeoutRecovery)console.log(`VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY=${attempt}:${candidateVariant}`);
-    if(robloxAssetAdaptationTask&&robloxZeroOutputTimeoutFocusedRecoveryActive&&!zeroOutputTimeoutRecovery&&attempt>2){
+    const robloxTimeoutFocusedRecoveryNeedsPackage=robloxAssetAdaptationTask
+      &&robloxZeroOutputTimeoutFocusedRecoveryActive
+      &&!zeroOutputTimeoutRecovery
+      &&['PRESENTATION_PATCH_DELTA','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION'].includes(priorFailureClass);
+    if(robloxTimeoutFocusedRecoveryNeedsPackage){
+      robloxZeroOutputTimeoutFocusedRecoveryActive=false;
+      robloxFullGraphicsPackageActive=true;
+      robloxTimeoutRecoveryEscalatedFullGraphics=true;
+      console.log(`VIBE2_ROBLOX_TIMEOUT_RECOVERY_ESCALATE_FULL_GRAPHICS=${attempt}:${candidateVariant}:${priorFailureClass}`);
+    }else if(robloxAssetAdaptationTask&&robloxZeroOutputTimeoutFocusedRecoveryActive&&!zeroOutputTimeoutRecovery&&attempt>2){
       console.log(`VIBE2_ROBLOX_TIMEOUT_RECOVERY_CHAIN_FOCUSED=${attempt}:${candidateVariant}:${priorFailureClass||'UNKNOWN'}`);
     }
     const robloxFullGraphicsPackageRecovery=robloxAssetAdaptationTask
@@ -1904,7 +1914,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       lastRejectedCandidate=candidate;
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,studioCausalRecoveryCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,studioCausalRecoveryCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -1923,7 +1933,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
             if(focusedCandidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,focusedCandidate.edits,{dryRun:true});
             lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(focusedCandidate):null;
             console.log('VIBE2_FOCUSED_REPLACE_STRING_RECOVERED='+attempt+':'+failureClass+':'+focusedReplaceOnly.spec.path);
-            return{candidate:focusedCandidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:true,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,partialTimeoutRecovery:failureClass==='TIMEOUT',partialMalformedRecovery:failureClass==='MALFORMED_OUTPUT',streamedPartialEditRecovery:false,focusedReplaceStringRecovery:true,focusedFinalRetry:focusedFinal,focusedReplaceOnly:true,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+            return{candidate:focusedCandidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:true,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,partialTimeoutRecovery:failureClass==='TIMEOUT',partialMalformedRecovery:failureClass==='MALFORMED_OUTPUT',streamedPartialEditRecovery:false,focusedReplaceStringRecovery:true,focusedFinalRetry:focusedFinal,focusedReplaceOnly:true,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
           }catch(recoveryError){
             console.log('VIBE2_FOCUSED_REPLACE_STRING_REJECTED='+attempt+':'+generationFailureClass(recoveryError)+':'+clean(recoveryError?.message||recoveryError).replace(/\s+/g,' ').slice(0,240));
           }
@@ -1965,7 +1975,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
               generation:{
                 attempts:attempt,
                 recoveryUsed:true,
-                robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,
+                robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,
                 partialTimeoutRecovery:partialRecoveryClass==='TIMEOUT',
                 partialMalformedRecovery:partialRecoveryClass==='MALFORMED_OUTPUT',
                 focusedFinalRetry:focusedFinal,
@@ -2552,6 +2562,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     streamedPartialEditRecovery:generation.streamedPartialEditRecovery===true,
     robloxFullGraphicsInitialPackage:generation.robloxFullGraphicsInitialPackage===true,
     robloxZeroOutputTimeoutFocusedRecovery:generation.robloxZeroOutputTimeoutFocusedRecovery===true,
+    robloxTimeoutRecoveryEscalatedFullGraphics:generation.robloxTimeoutRecoveryEscalatedFullGraphics===true,
     focusedFirstEditEarlyStop:generation.focusedFirstEditEarlyStop===true,
     focusedFinalRetry:generation.focusedFinalRetry===true,
     focusedReplaceOnly:generation.focusedReplaceOnly===true,
