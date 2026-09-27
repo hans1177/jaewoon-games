@@ -2070,7 +2070,7 @@
         "robloxPlayerAutomationForLearning": false
       },
       "providerFailureSubstitution": {
-        "version": 1,
+        "version": 2,
         "authority": "OWNER_DIRECTIVE_2026-09-19",
         "enabled": true,
         "geminiFailureSignals": [
@@ -2096,7 +2096,20 @@
           "CONTINUE_CODE_PATTERN_MINING",
           "CONTINUE_ANY_INDEPENDENT_IMPLEMENTATION_WORK",
           "CHECKPOINT_ONLY_TASKS_THAT_TRULY_REQUIRE_GENERATIVE_AUTHORING"
-        ]
+        ],
+        "externalAiDisconnectSignals": [
+          "CONNECTION_LOST",
+          "PROVIDER_UNAVAILABLE",
+          "HTTP_403",
+          "HTTP_404",
+          "HTTP_429",
+          "TIMEOUT",
+          "HTTP_5XX",
+          "NO_AVAILABLE_MODELS"
+        ],
+        "externalAiUnavailableAction": "CONTINUE_SAME_CHECKPOINT_WITH_VIBE2_VIBE3_ONLY",
+        "externalAiAvailabilityMayBlockVibeDevelopment": false,
+        "externalAiReconnectAction": "OPTIONAL_REJOIN_FUTURE_ELIGIBLE_WORK_WITHOUT_REPLAYING_COMPLETED_VIBE_WORK"
       }
     },
     "gameDevelopmentAuthority": {
@@ -2166,7 +2179,17 @@
       "verifiedResultsReturnToExistingLearningMotor": true,
       "externalAiSelfAcceptance": false,
       "externalAiDirectMainWrite": false,
-      "ownsInternalPlaytestRepair": true
+      "ownsInternalPlaytestRepair": true,
+      "externalAiContinuity": {
+        "version": 1,
+        "collaborationOptionalForContinuation": true,
+        "unavailableAction": "VIBE2_VIBE3_SOLO_CONTINUE_SAME_CHECKPOINT",
+        "independentVibeWorkWaitStateForbidden": true,
+        "preserveResponsibleFilesAndApprovedScope": true,
+        "preserveCheckpoint": true,
+        "replayCompletedVibeWorkOnReconnect": false,
+        "newQueueOrPipelineCreated": false
+      }
     },
     "learningMotor": {
       "authority": "VERIFIED_LEARNING_MOTOR",
@@ -9640,6 +9663,57 @@
       "productQualityThresholdLowered": false,
       "publicReleaseHardGateChanged": false,
       "securityOrSaveIntegrityGateChanged": false
+    },
+    "assetDevelopmentRunnerOllamaRelief20260927": {
+      "id": "ASSET_DEVELOPMENT_RUNNER_OLLAMA_RELIEF_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "MOVE_ASSET_DEVELOPMENT_HEAVY_WORKERS_OFF_GAME_PRIMARY_UBUNTU_LATEST_AND_BOUND_LOCAL_OLLAMA_GRAPHICS_GENERATION_WITHOUT_CHANGING_GAME_OR_VIBE_ARCHITECTURE",
+      "observedEvidence": {
+        "runId": 36308954595,
+        "jobId": 108592089151,
+        "lane": "ASSET_DEVELOPMENT",
+        "cacheHit": true,
+        "modelPrepMs": 4400,
+        "candidateMs": 799304,
+        "failureClass": "TIMEOUT",
+        "failureMessage": "Ollama 응답 시간 초과: 240000ms",
+        "queuedAssetWorkersObserved": 24
+      },
+      "runnerRouting": {
+        "assetDevelopment": "ubuntu-24.04-arm",
+        "gamePrimary": "ubuntu-latest",
+        "architectureAwarePrepareOllama": [
+          "X64",
+          "ARM64"
+        ]
+      },
+      "generationRelief": {
+        "robloxAssetAdaptationMode": "BOUNDED_FOCUSED_EXACT_ANCHOR",
+        "maxAttempts": 3,
+        "focusedTimeoutMs": 120000,
+        "focusedMaxPredict": 768,
+        "focusedContextWindow": 8192,
+        "longFullGraphicsRetryAfterFocusedFailure": false
+      },
+      "existingCanonicalQueuePreserved": true,
+      "existingContinuousCorePreserved": true,
+      "newWorkerAuthorityCreated": false,
+      "newQueueCreated": false,
+      "newTopLevelPipelineCreated": false,
+      "gameplayQualitySecurityReleaseGatesUnchanged": true
+    },
+    "externalAiDisconnectVibeSoloContinuity20260927": {
+      "id": "EXTERNAL_AI_DISCONNECT_VIBE_SOLO_CONTINUITY_2026-09-27",
+      "authority": "OWNER_DIRECTIVE_2026-09-27",
+      "status": "ACTIVE",
+      "objective": "WHEN_ASSIGNED_EXTERNAL_AI_IS_UNAVAILABLE_KEEP_CANONICAL_DEVELOPMENT_MOVING_WITH_VIBE2_VIBE3_ALONE_FROM_THE_SAME_CHECKPOINT",
+      "externalAiCollaborationOptionalForContinuation": true,
+      "unavailableAction": "VIBE2_VIBE3_SOLO_CONTINUE_SAME_CHECKPOINT",
+      "providerWaitMayBlockIndependentVibeWork": false,
+      "completedWorkReplayOnReconnect": false,
+      "approvedScopeResponsibleFilesQualitySecurityAndReleaseGatesPreserved": true,
+      "newQueueOrPipelineCreated": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -15187,7 +15261,7 @@
     }
   },
   "assetProductionParallelContract": {
-    "version": 11,
+    "version": 12,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "enabled": true,
     "purpose": "REAL_ASSET_PRODUCTION_IS_A_FIRST_CLASS_PARALLEL_DEVELOPMENT_LANE_NOT_GRAPHICS_REVIEW_ONLY",
@@ -15303,7 +15377,23 @@
       "assetDevelopmentRunnerCapacityIndependentFromGamePrimary": true,
       "assetDevelopmentMayConsumeOnlyAssetProductionTasks": true,
       "assetDevelopmentTaskMarker": "assetProductionLane=true",
-      "newTopLevelAssetPipelineCreated": false
+      "newTopLevelAssetPipelineCreated": false,
+      "assetDevelopmentRunnerLabel": "ubuntu-24.04-arm",
+      "gamePrimaryRunnerLabel": "ubuntu-latest",
+      "assetDevelopmentPhysicalRunnerPoolSeparated": true,
+      "assetDevelopmentOllamaArchitectures": [
+        "X64",
+        "ARM64"
+      ],
+      "assetDevelopmentRobloxGeneration": {
+        "mode": "BOUNDED_FOCUSED_EXACT_ANCHOR",
+        "maxAttempts": 3,
+        "focusedTimeoutMs": 120000,
+        "focusedMaxPredict": 768,
+        "focusedContextWindow": 8192,
+        "fullGraphicsLongRetryAfterFocusedFailure": false,
+        "gamePrimaryGenerationPolicyUnchanged": true
+      }
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",
@@ -19805,7 +19895,8 @@
           "PROP"
         ],
         "qualityIntent": "HIGH_DENSITY_STYLIZED_FANTASY_RPG_VISUAL_BAR_WITH_CROSS_GENRE_REUSE"
-      }
+      },
+      "runnerLabel": "ubuntu-24.04-arm"
     }
   },
   "weatherPresentationContract": {
