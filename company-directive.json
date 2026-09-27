@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 83,
+  "revision": 84,
   "updatedAt": "2026-09-26",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -271,8 +271,7 @@
     "initialTargetPlatform": "ROBLOX",
     "allowedTargetPlatforms": [
       "ROBLOX",
-      "UNITY",
-      "FORTNITE_UEFN"
+      "UNITY"
     ],
     "projectMaySelectAnyAllowedPlatform": true,
     "primaryPlatformIsDefaultNotLock": true,
@@ -315,7 +314,10 @@
       "COMPETITIVE",
       "HYBRID"
     ],
-    "requiredFieldsSource": "tools/company-game-seed-contract.mjs#GAME_SEED_REQUIRED_FIELDS"
+    "requiredFieldsSource": "tools/company-game-seed-contract.mjs#GAME_SEED_REQUIRED_FIELDS",
+    "pausedTargetPlatforms": [
+      "FORTNITE_UEFN"
+    ]
   },
   "discardPolicy": {
     "general": {
@@ -815,12 +817,16 @@
       "legacyAndroidTrackStillValidWhenTargetIsUnity": true
     },
     "FORTNITE_UEFN": {
-      "role": "OWNER_HOLD_SUPPORTED_PLATFORM",
+      "role": "DEVELOPMENT_PAUSED_SUPPORTED_PLATFORM",
       "developmentAlwaysAllowed": false,
       "robloxOrUnityCompletionNotRequiredToDevelop": true,
       "platformSpecificPlaybookRequired": true,
       "verseUefnRuntimeQaRequiredForVerifiedSuccess": true,
-      "publishingEvidenceRequiredForReleaseClaim": true
+      "publishingEvidenceRequiredForReleaseClaim": true,
+      "developmentStatus": "DEVELOPMENT_PAUSED",
+      "statusLabel": "개발보류",
+      "autonomousBuildUpAllowed": false,
+      "ownerExplicitResumeRequired": true
     },
     "focusMilestones": {
       "ROBLOX_FAST_RELEASE_STABILIZATION": {
@@ -1115,7 +1121,9 @@
     "sameGameNonOverlappingPackagesParallel": true,
     "responsibleFileConflictSerializationOnly": true,
     "externalCapacityOnlyParallelBoundary": true,
-    "upperPlatformAdmissionAuthority": "UPPER_PLATFORM_DEVELOPMENT_READY"
+    "upperPlatformAdmissionAuthority": "UPPER_PLATFORM_DEVELOPMENT_READY",
+    "fortniteUefnDevelopmentStatus": "DEVELOPMENT_PAUSED",
+    "fortniteUefnStatusLabel": "개발보류"
   },
   "highEndVisualProduction": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.highEndVisualProductionContract",
