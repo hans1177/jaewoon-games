@@ -109,6 +109,17 @@ export function platformDevelopmentEligible(item={},platform=''){
   const releaseStateActive=requested==='ROBLOX'
     ?item.robloxInternalReleaseReady===true||item.robloxInternalReleasePublished===true||item.robloxPublicRelease===true
     :item.unityInternalReleaseReady===true||item.unityInternalReleasePublished===true||item.unityPublicRelease===true;
+  const currentSource=requested==='ROBLOX'?clean(item.robloxSourceCommit):clean(item.unitySourceCommit);
+  const currentArtifact=requested==='ROBLOX'?clean(item.robloxBuildArtifactIdentity):clean(item.executionEvidence?.artifactIdentity);
+  const completedSource=requested==='ROBLOX'?clean(item.robloxF9ValidationSourceRevision):clean(item.unityF9ValidationSourceRevision);
+  const completedArtifact=requested==='ROBLOX'?clean(item.robloxF9ValidationArtifactIdentity):clean(item.unityF9ValidationArtifactIdentity);
+  const exactCycleAlreadyComplete=Boolean(
+    releaseStateActive
+    &&currentSource
+    &&completedSource===currentSource
+    &&(!currentArtifact||!completedArtifact||completedArtifact===currentArtifact)
+  );
+  if(exactCycleAlreadyComplete)return false;
   const projected={...item,selectedPlatform:requested,targetPlatform:requested};
   if(selected!==requested||releaseStateActive)projected.currentStep='TARGET_PLATFORM_TECHNICAL_VALIDATION';
   return targetPlatformDevelopmentEligible(projected);
