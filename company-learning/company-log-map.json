@@ -2232,6 +2232,14 @@
       "independentGameCancellationForbidden": true,
       "inProgressGameCancellationForbidden": true
     },
-    "qualityGateSemanticsUnchanged": true
+    "qualityGateSemanticsUnchanged": true,
+    "expectedMainPushWakeFilter": {
+      "qaOnlyCommitCreatesContinuousCore": false,
+      "descriptiveArchitectureMapCommitCreatesContinuousCore": false,
+      "descriptiveLogMapCommitCreatesContinuousCore": false,
+      "runtimeOrExecutableContractCommitCreatesContinuousCore": true,
+      "evidenceCommit": "87fd1e73c216284a99c03c79fa1dc808166da603",
+      "evidenceObservation": "QA_ONLY_COMMIT_TRIGGERED_VIBE2_CORE_QA_WITHOUT_NEW_VIBE2_CONTINUOUS_CORE_RUN"
+    }
   }
 }
