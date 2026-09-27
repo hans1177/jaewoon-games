@@ -89,6 +89,7 @@ env:
   VIBE2_LEARNING_ALWAYS_ON: 'true'
   VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'
   VIBE2_LEARNING_LANE_MAX: '4'
+  VIBE2_ASSET_DEVELOPMENT_MAX: '64'
 
 # Keep one continuous scheduler chain. v2 releases stale pre-lane-isolation concurrency
 # while still collapsing wake signals into one pending cycle per current scheduler epoch.
@@ -108,6 +109,9 @@ jobs:
       free_worker_slots: ${{ steps.queue_state.outputs.free_worker_slots }}
       active_worker_reservations: ${{ steps.queue_state.outputs.active_worker_reservations }}
       game_primary_queued: ${{ steps.queue_state.outputs.game_primary_queued }}
+      asset_development_queued: ${{ steps.queue_state.outputs.asset_development_queued }}
+      asset_development_active: ${{ steps.queue_state.outputs.asset_development_active }}
+      asset_development_refill_ready: ${{ steps.queue_state.outputs.asset_development_refill_ready }}
       learning_idle_queued: ${{ steps.queue_state.outputs.learning_idle_queued }}
       recovery_fast_queued: ${{ steps.queue_state.outputs.recovery_fast_queued }}
       runner_pressure: ${{ steps.queue_state.outputs.runner_pressure }}
@@ -155,6 +159,7 @@ jobs:
             const ev=(t.evidence||[]).map(String);
             if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';
             if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';
+            if(t.assetProductionLane===true||ev.includes('asset-production-parallel:v1'))return'ASSET_DEVELOPMENT';
             if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';
             if(t.systemSteward===true)return'RECOVERY_FAST';
             return'CONTROL_FAST';
@@ -651,6 +656,7 @@ jobs:
             const status=String(t.status||'').toLowerCase(),blocker=String(t.blocker||''),dep=String(t.department||'').toLowerCase(),type=String(t.type||'implementation').toLowerCase(),ev=(t.evidence||[]).map(String);
             if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';
             if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';
+            if(t.assetProductionLane===true||ev.includes('asset-production-parallel:v1'))return'ASSET_DEVELOPMENT';
             if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';
             if(t.systemSteward===true)return'RECOVERY_FAST';
             return'CONTROL_FAST';
@@ -658,6 +664,8 @@ jobs:
           const tasks=q.tasks||[];
           const activeGame=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='GAME_PRIMARY').length;
           const gameQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='GAME_PRIMARY').length;
+          const activeAsset=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='ASSET_DEVELOPMENT').length;
+          const assetQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='ASSET_DEVELOPMENT').length;
           const learningQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='LEARNING_IDLE').length;
           const recoveryQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='RECOVERY_FAST').length;
           const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
@@ -669,12 +677,17 @@ jobs:
           const freeWorkerSlots=Math.max(0,effectiveMax-activeGame);
           const waveReady=activeGame===0?'YES':'NO';
           const gameRefillReady=freeWorkerSlots>0?'YES':'NO';
+          const assetMax=Math.max(1,Number(process.env.VIBE2_ASSET_DEVELOPMENT_MAX||64));
+          const assetRefillReady=Math.max(0,assetMax-activeAsset)>0?'YES':'NO';
           fs.appendFileSync(process.env.GITHUB_OUTPUT,
             'wave_ready='+waveReady+'\n'+
             'game_refill_ready='+gameRefillReady+'\n'+
             'free_worker_slots='+freeWorkerSlots+'\n'+
             'active_worker_reservations='+activeGame+'\n'+
             'game_primary_queued='+gameQueued+'\n'+
+            'asset_development_queued='+assetQueued+'\n'+
+            'asset_development_active='+activeAsset+'\n'+
+            'asset_development_refill_ready='+assetRefillReady+'\n'+
             'learning_idle_queued='+learningQueued+'\n'+
             'recovery_fast_queued='+recoveryQueued+'\n');
           console.log('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='+activeGame);
@@ -684,6 +697,9 @@ jobs:
           console.log('VIBE2_24H_FREE_GAME_WORKER_SLOTS='+freeWorkerSlots);
           console.log('VIBE2_24H_GAME_REFILL_READY='+gameRefillReady);
           console.log('VIBE2_24H_GAME_PRIMARY_QUEUED='+gameQueued);
+          console.log('VIBE2_ASSET_DEVELOPMENT_QUEUED='+assetQueued);
+          console.log('VIBE2_ASSET_DEVELOPMENT_ACTIVE='+activeAsset);
+          console.log('VIBE2_ASSET_DEVELOPMENT_REFILL_READY='+assetRefillReady);
           console.log('VIBE2_24H_LEARNING_IDLE_QUEUED='+learningQueued);
           console.log('VIBE2_24H_RECOVERY_FAST_QUEUED='+recoveryQueued);
           console.log('VIBE2_24H_WAVE_READY='+waveReady);
@@ -825,6 +841,17 @@ jobs:
       contents: write
       actions: write
 
+  asset_development:
+    needs: plan
+    if: ${{ needs.plan.outputs.asset_development_refill_ready == 'YES' && needs.plan.outputs.asset_development_queued != '0' }}
+    uses: ./.github/workflows/vibe2-continuous-core.yml
+    with:
+      execution_lane: asset-development
+      lane_max: '64'
+    permissions:
+      contents: write
+      actions: write
+
   learning_idle:
     needs: plan
     # Production preempts learning. Keep learning queued, but do not start auxiliary
@@ -847,7 +874,7 @@ jobs:
       actions: write
 
   refill:
-    needs: [plan, recovery_fast, continuous, learning_idle, game_study]
+    needs: [plan, recovery_fast, continuous, asset_development, learning_idle, game_study]
     if: ${{ always() }}
     runs-on: ubuntu-slim
     timeout-minutes: 2
