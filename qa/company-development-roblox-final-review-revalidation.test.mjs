@@ -125,3 +125,40 @@ test('F9 promotion stops at internal release and cannot self-approve external pu
   assert.match(workflow,/roblox-perpetual-buildup-public-hard-gate-pending/);
   assert.doesNotMatch(workflow,/item\.robloxPublicReleaseReady=publicRuntimeAcceptance===true/);
 });
+
+test('F9 routes only verified internal product-quality failures to canonical buildup without owner approval',()=>{
+  assert.match(workflow,/const currentProductQualityTickets=new Map\(\)/);
+  assert.match(workflow,/const infrastructureOrEvidenceOnlyTicket=ticket=>/);
+  assert.match(workflow,/HTTP\[_ -\]\?429\|RATE\[_ -\]\?LIMIT\|OPEN_CLOUD/);
+  assert.match(workflow,/PERMISSION_DENIED\|EXECUTOR_UNAVAILABLE\|INFRASTRUCTURE/);
+  assert.match(workflow,/const productQualityTickets=currentProductQualityTickets\.get\(item\.gameId\)\|\|\[\]/);
+  assert.match(workflow,/const hasProductQualityFailure=productQualityTickets\.length>0/);
+  assert.match(workflow,/ROBLOX_F9_PRODUCT_QUALITY_FAILED/);
+  assert.match(workflow,/item\.robloxQualityBuildUpRequired=true/);
+  assert.match(workflow,/item\.robloxQualityFailureClass='PRODUCT'/);
+  assert.match(workflow,/item\.robloxQualityBuildUpSourceRevision=sourceRevision/);
+  assert.match(workflow,/authority:'roblox-f9-product-quality-failure'/);
+  assert.match(workflow,/item\.currentStep='REPAIR_REQUIRED'/);
+  assert.match(workflow,/item\.canonicalState='REPAIR_REQUIRED'/);
+  assert.match(workflow,/roblox-f9-product-quality-buildup-required/);
+  assert.match(workflow,/ROBLOX_F9_PRODUCT_QUALITY_BUILDUP_REQUIRED=/);
+  assert.match(workflow,/QUALITY_BUILDUP_AUTO_REQUEUE=YES/);
+});
+
+test('F9 infrastructure or exact-evidence failures do not churn game source and product repair wakes existing Vibe scheduler',()=>{
+  assert.match(workflow,/!hasProductQualityFailure&&\(/);
+  assert.match(workflow,/!exact\?'ROBLOX_F9_EXACT_EVIDENCE_MISMATCH':'ROBLOX_F9_OPEN_TESTER_FAILURE'/);
+  assert.match(workflow,/ROBLOX_F9_QUALITY_BUILDUP_REFILL=NO_PRODUCT_QUALITY_FAILURE/);
+  assert.match(workflow,/event_type:"vibe2-fanin-refill"/);
+  assert.match(workflow,/execution_lane:"game-primary"/);
+  assert.match(workflow,/reason:"roblox-f9-product-quality-auto-buildup"/);
+  assert.match(workflow,/gh api --method POST "repos\/\$GITHUB_REPOSITORY\/dispatches"/);
+  assert.doesNotMatch(workflow,/actions:\s*write/);
+});
+
+test('successful F9 clears obsolete quality short-circuit before internal promotion',()=>{
+  assert.match(workflow,/item\.robloxQualityBuildUpRequired=false/);
+  assert.match(workflow,/item\.robloxQualityFailureClass=null/);
+  assert.match(workflow,/item\.robloxQualityBuildUpSourceRevision=null/);
+  assert.match(workflow,/item\.robloxQualityBuildUpEvidence=null/);
+});
