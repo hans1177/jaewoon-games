@@ -3,80 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1iswusz",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
-      ],
-      "baseSha": "5dee3323be9f60175ab33053d7f249cb1c1db4f1",
-      "acquiredAt": "2026-09-27T10:32:28.923Z",
-      "expiresAt": "2026-09-27T11:17:28.923Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1pvihiw",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/shared/QACamera.luau",
-        "roblox-games/horror-escape-room/shared/VisualStyle.luau"
-      ],
-      "baseSha": "c7bb6fa0e18deefbf3a38c374ff821f3bc96b8c6",
-      "acquiredAt": "2026-09-27T10:33:09.726Z",
-      "expiresAt": "2026-09-27T11:18:09.726Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-1g96oej",
-      "worker": "vibe2",
-      "taskId": "amusement-tycoon-roblox-presentation-asset-adaptation-v1",
-      "gameId": "amusement-tycoon",
-      "files": [
-        "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "roblox-games/amusement-tycoon/shared/GameConfig.luau"
-      ],
-      "baseSha": "5dee3323be9f60175ab33053d7f249cb1c1db4f1",
-      "acquiredAt": "2026-09-27T10:33:14.557Z",
-      "expiresAt": "2026-09-27T11:18:14.557Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:amusement-tycoon-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1l4m9p9",
-      "worker": "vibe2",
-      "taskId": "line-defense-unity-web-base-implementation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "c7bb6fa0e18deefbf3a38c374ff821f3bc96b8c6",
-      "acquiredAt": "2026-09-27T10:33:24.012Z",
-      "expiresAt": "2026-09-27T11:18:24.012Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-1yg5ww6",
       "worker": "vibe2",
       "taskId": "seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1",
@@ -536,6 +462,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
+      ]
+    },
+    {
+      "id": "wl-m78bpm",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
+      ],
+      "baseSha": "878275d555b2e039ab10c2789602179ab667b131",
+      "acquiredAt": "2026-09-27T11:20:02.125Z",
+      "expiresAt": "2026-09-27T12:05:02.125Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
       ]
     }
   ]
