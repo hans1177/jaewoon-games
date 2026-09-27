@@ -507,3 +507,34 @@ test('verified product-quality failure keeps autonomous expansion inside existin
   assert.equal(d.autonomousContentExpansion.newWorkflowForbidden,true);
   assert.equal(d.autonomousContentExpansion.newStageForbidden,true);
 });
+
+test('approved menu surfaces create a menu-flow build-up gap without inventing gameplay systems',()=>{
+  const base=design();
+  base.content.uxAccessibilityPlan={
+    hudPriorities:'전투 상태와 웨이브를 먼저 보여준다',
+    touchAndInput:'모바일 터치 우선',
+    readability:'고대비',
+    accessibility:'색 외 형태 신호',
+    menuSurfaces:[
+      {role:'SESSION_ENTRY',entryContext:'입장',purpose:'전투 진입',systemBinding:'기존 세션',primaryActions:['시작'],layout:'전투 테마 카드',mobileInteraction:'큰 버튼',visualLanguage:'곤충 둥지'},
+      {role:'IN_PLAY_OVERVIEW',entryContext:'전투 중',purpose:'상태 확인',systemBinding:'기존 HUD',primaryActions:['복귀'],layout:'오버레이',mobileInteraction:'엄지 영역',visualLanguage:'서식지 표식'},
+      {role:'SETTINGS_ACCESSIBILITY',entryContext:'설정',purpose:'표현 조절',systemBinding:'기존 설정',primaryActions:['설정','복귀'],layout:'목록',mobileInteraction:'큰 토글',visualLanguage:'동일 게임 UI'}
+    ],
+    menuVarietyRule:'실제 시스템만 메뉴로 노출한다'
+  };
+  const sourceObservation={
+    sourceRoot:'roblox-games/bug-defense',
+    sourceTreeFingerprint:'b'.repeat(64),
+    fileCount:2,
+    topFiles:[],
+    signals:{combat:10,progression:10,ai:5,save:2,multiplayer:0,animation:3,vfx:3,camera:1,ui:0,uiFlow:0,input:3,settings:2,feedback:3,interaction:3,content:10,map:4,landmark:2,equipment:0,inventory:0,connection:2,session:4,performance:3,errorRecovery:2,primitive:0,todo:0},
+    observations:[]
+  };
+  const d=buildGameSpecificBuildUpDirective({
+    gameId:'bug-defense',gameName:'곤충 디펜스',designRecord:base,sourceObservation,
+    responsibleFiles:['roblox-games/bug-defense/client/Game.client.luau']
+  });
+  const state=Object.fromEntries(d.qualityGapMap.map(row=>[row.domain,row.state]));
+  assert.equal(state.MENU_FLOW,'GAP');
+  assert.match(directivePrompt(d),/MENU_FLOW\[FIX_NOW\]/);
+});
