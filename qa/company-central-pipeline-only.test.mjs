@@ -259,12 +259,23 @@ test('runner drain bypasses the stale supervisor group and evicts stale legacy R
   assert.match(director,/fetch_runs 'status=queued&per_page=100'/);
   assert.match(director,/ROBLOX_STALE_LEGACY_OR_BATCH/);
   assert.match(director,/15\*60\*1000/);
+  assert.match(director,/const legacyRoblox=runs[\s\S]*?queued\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)/);
+  assert.doesNotMatch(director,/const legacyRoblox=runs[\s\S]*?active\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)/);
   assert.match(director,/actions\/runs\/\$\{run_id\}\/force-cancel/);
   assert.match(director,/String\(r\.display_title\|\|''\)==='Company DEVELOPMENT_CONFIRMED Roblox Runtime'/);
   assert.match(director,/String\(r\.display_title\|\|''\)==='Roblox runtime · batch'/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
 });
 
+
+test('director treats pending development as active and never redispatches recovery over it',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  assert.match(director,/const activeStatuses=new Set\(\['queued','pending','requested','waiting','in_progress'\]\)/);
+  assert.match(director,/const active=name=>runs\.some\(r=>r\.name===name&&activeStatuses\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)\)/);
+  assert.match(director,/DEVELOPMENT_RECOVER=\$\{pending\.length>0&&!devActive\?'true':'false'\}/);
+  assert.match(director,/DEVELOPMENT_UNITY_RECOVER=\$\{unityPending\.length>0&&!unityActive\?'true':'false'\}/);
+  assert.match(director,/for\(const stale of group\.slice\(1\)\)\{\n\s+if\(queued\.has\(String\(stale\.status\|\|''\)\.toLowerCase\(\)\)\)add\(stale,'CONTROL_PLANE_SUPERSEDED'\);/);
+});
 
 test('director cancellation cleanup does not recursively wake another drain while success and failure wakes remain eligible',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
