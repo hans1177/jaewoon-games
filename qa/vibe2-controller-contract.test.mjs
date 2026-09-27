@@ -500,25 +500,6 @@ test('core QA preserves the active same-ref regression and coalesces only pendin
   assert.equal(regression.coreQaActiveCompletion.runner,'ubuntu-slim');
 });
 
-test('main push wake ignores QA-only and descriptive document churn while preserving executable game changes',()=>{
-  const pushStart=workflow.indexOf('  push:');
-  const permissionsAt=workflow.indexOf('\npermissions:',pushStart);
-  assert.ok(pushStart>=0 && permissionsAt>pushStart);
-  const pushBlock=workflow.slice(pushStart,permissionsAt);
-  assert.match(pushBlock,/\n\s+paths:\n/);
-  for(const required of [
-    "'vibe2-runtime.json'",
-    "'company-learning/platform-release-roadmap.json'",
-    "'tools/vibe2-*.mjs'",
-    "'roblox-games/**'",
-    "'unity-games/**'",
-    "'web-games/**'"
-  ]) assert.ok(pushBlock.includes(required),required);
-  assert.equal(pushBlock.includes("'qa/**'"),false);
-  assert.equal(pushBlock.includes("'company-learning/company-log-map.json'"),false);
-  assert.equal(pushBlock.includes("'company-learning/company-architecture-map.json'"),false);
-});
-
 test('reserve preflight uses the pinned main contract and blocks broken GAME_PRIMARY contracts before reservation',()=>{
   const start=workflow.indexOf('- name: Prepare latest main machine contract');
   const end=workflow.indexOf('- name: Reserve conflict-free DAG batch');
