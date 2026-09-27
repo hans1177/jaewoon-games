@@ -56,7 +56,7 @@ test('changed source invalidates downstream pass flags but preserves prior evide
     changedGameIds:['horror-escape-room'],
     sourceRevision:source,
     stamp,
-    validateItem:()=>({pass:true,blockers:[]}),
+    validateItem:()=>({pass:true,blockers:[],buildSourceChanged:true}),
   });
   const x=result.queue.items[0];
   assert.equal(result.results[0].pass,true);
@@ -115,13 +115,10 @@ test('unrelated changed game id does not mutate the target item',()=>{
 });
 
 
-test('source drift workflow avoids full history and fetches exact event diff commits while binding current main',()=>{
+test('source drift workflow keeps full history for exact build-input comparison while binding current main',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
-  assert.match(workflow,/fetch-depth:\s*1/);
+  assert.match(workflow,/fetch-depth:\s*0/);
   assert.match(workflow,/fetch-tags:\s*false/);
-  assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
-  assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$BEFORE_SHA"/);
-  assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$CURRENT_SHA"/);
   assert.match(workflow,/id: main[\s\S]*git rev-parse HEAD/);
   assert.match(workflow,/SOURCE_REVISION: \$\{\{ steps\.main\.outputs\.sha \}\}/);
 });
@@ -254,7 +251,7 @@ test('unknown Roblox build-source diff is non-mutating',()=>{
   const before=JSON.parse(JSON.stringify(q.items[0]));
   const out=reconcileChangedRobloxItems({
     queue:q,
-    changedGameIds:['g1'],
+    changedGameIds:['horror-escape-room'],
     sourceRevision:'f'.repeat(40),
     stamp:'2026-09-27T02:30:00.000Z',
     validateItem:()=>({pass:true,buildSourceChanged:null,comparisonBaseRevision:'a'.repeat(40)})

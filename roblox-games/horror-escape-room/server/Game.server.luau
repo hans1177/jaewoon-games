@@ -903,6 +903,7 @@ end
 local function survivorDash(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"then return end
  local hf=humanForm(p);local now=os.clock();local cd=math.max(3,C.SurvivorDashCooldown+(hf.DashCooldownBonus or 0))
+ -- First use must not inherit server uptime as cooldown; only an actual prior dash starts the cooldown.
  local lastDash=dashCooldown[p]
  if lastDash and now-lastDash<cd then return end;dashCooldown[p]=now
  local r=root(p);if r then movementGraceUntil[p]=now+.7;r.AssemblyLinearVelocity=r.CFrame.LookVector*(52+(hf.DashPowerBonus or 0))+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)end
