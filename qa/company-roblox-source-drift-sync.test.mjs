@@ -29,6 +29,7 @@ function item(){
     robloxHeadlessFastMvpPassed:true,
     robloxHeadlessFinalReviewPassed:true,
     robloxInternalReleaseReady:true,
+    robloxInternalReleasePublished:true,
     robloxPublicReleaseReady:true,
     robloxPublicRelease:true,
     robloxReleaseClaim:true,
@@ -69,6 +70,7 @@ test('changed source invalidates downstream pass flags but preserves prior evide
   assert.equal(x.robloxRuntimePassed,false);
   assert.equal(x.robloxHeadlessFastMvpPassed,false);
   assert.equal(x.robloxInternalReleaseReady,false);
+  assert.equal(x.robloxInternalReleasePublished,false);
   assert.equal(x.robloxPublicReleaseReady,false);
   assert.equal(x.robloxPublicRelease,false);
   assert.equal(x.robloxReleaseClaim,false);
@@ -95,6 +97,8 @@ test('invalid changed source fails closed at source bind and cannot keep release
   const x=result.queue.items[0];
   assert.equal(result.results[0].pass,false);
   assert.equal(x.currentStep,'TARGET_PLATFORM_SOURCE_BIND');
+  assert.equal(x.robloxInternalReleaseReady,false);
+  assert.equal(x.robloxInternalReleasePublished,false);
   assert.equal(x.robloxPublicRelease,false);
   assert.equal(x.robloxReleaseClaim,false);
   assert.equal(x.robloxFailureSignature,'ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED');

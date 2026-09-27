@@ -152,6 +152,7 @@ export function invalidateRobloxDownstreamEvidence(item,{sourceRevision,stamp}){
     robloxHeadlessFinalReviewPassed:false,
     robloxHeadlessPassedAt:null,
     robloxInternalReleaseReady:false,
+    robloxInternalReleasePublished:false,
     robloxPublicReleaseReady:false,
     robloxPublicRelease:false,
     robloxReleaseClaim:false,
@@ -200,7 +201,7 @@ export function reconcileChangedRobloxItems({queue={},changedGameIds=[],sourceRe
       Object.assign(item,{
         status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
         robloxSourceBootstrapFailedAt:stamp,robloxRuntimePassed:false,robloxHeadlessFastMvpPassed:false,
-        robloxInternalReleaseReady:false,robloxPublicReleaseReady:false,robloxPublicRelease:false,robloxReleaseClaim:false,
+        robloxInternalReleaseReady:false,robloxInternalReleasePublished:false,robloxPublicReleaseReady:false,robloxPublicRelease:false,robloxReleaseClaim:false,
         robloxFailureStage:'TARGET_PLATFORM_SOURCE_BIND',robloxFailureSignature:'ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED',
         routingBlockers:[`roblox-source-drift:${blockers.join('|')}`],updatedAt:stamp,
       });

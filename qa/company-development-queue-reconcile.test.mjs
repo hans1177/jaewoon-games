@@ -334,6 +334,14 @@ test('queue reconcile restores exact Roblox F0 private-runtime deploy after a co
       robloxBuildOrPackagePassed:true,
       robloxBuildPreflightPassed:true,
       robloxFoundationF0Passed:true,
+      robloxInternalReleasePublished:true,
+      robloxInternalReleaseReady:true,
+      robloxInternalReleaseEvidence:{
+        published:true,
+        sourceRevision:'c'.repeat(40),
+        artifactIdentity:'sha256:'+'d'.repeat(64),
+        versionNumber:7
+      },
       robloxFailureStage:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',
       robloxFailureSignature:'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING',
       routingBlockers:['roblox-runtime-candidate-deploy-pending']
@@ -345,6 +353,8 @@ test('queue reconcile restores exact Roblox F0 private-runtime deploy after a co
     assert.equal(item.robloxBuildSourceRevision,revision);
     assert.equal(item.robloxBuildArtifactIdentity,artifact);
     assert.equal(item.robloxFoundationF0Passed,true);
+    assert.equal(item.robloxInternalReleasePublished,false);
+    assert.equal(item.robloxInternalReleaseReady,false);
     assert.equal(item.robloxFailureStage,'PRIVATE_RUNTIME_CANDIDATE_DEPLOY');
     assert.equal(item.robloxFailureSignature,'ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
