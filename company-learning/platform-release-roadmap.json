@@ -1,5 +1,5 @@
 {
-  "version": 479,
+  "version": 480,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9958,6 +9958,31 @@
       "fortniteUefnOwnerHoldPreserved": true,
       "newWorkflowOrStageCreated": false,
       "gameplaySemanticsChanged": false
+    },
+    "graphicsReplacementSourceGrounding20260927": {
+      "id": "GRAPHICS_REPLACEMENT_SOURCE_GROUNDING_2026-09-27",
+      "authority": "OWNER_DIRECTIVE_2026-09-27",
+      "status": "ACTIVE",
+      "executionBoundary": "EXISTING_BUILD_UP_AND_PRESENTATION_ONLY",
+      "activePlatforms": [
+        "WEB",
+        "ROBLOX",
+        "UNITY"
+      ],
+      "pausedPlatforms": [
+        "FORTNITE_UEFN"
+      ],
+      "adaptiveReplacementRange": [
+        1,
+        60
+      ],
+      "actualReplacementCountMustEqualGroundedEvidenceCount": true,
+      "eachReplacementEvidenceMustReferenceTouchedSourcePath": true,
+      "eachReplacementEvidenceSnippetMustExistInChangedSource": true,
+      "duplicateEvidenceCannotInflateCount": true,
+      "selectionMarkerOrSelfReportedCountOnlyCannotPass": true,
+      "gameplaySemanticsChanged": false,
+      "newWorkflowOrStageCreated": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -15595,7 +15620,14 @@
       "requiredAssetMissingBlocksGraphicsPass": true,
       "placeholderVisualCannotSatisfyGraphicsPass": true,
       "targetPlatformPresentationMustBeValidatedIndependently": true,
-      "crossPlatformStyleLockRequired": true
+      "crossPlatformStyleLockRequired": true,
+      "adaptiveReplacementCountMustBeGroundedPerSourceBinding": true,
+      "perReplacementSourceEvidenceRequired": true,
+      "actualReplacementCountMustEqualGroundedEvidenceCount": true,
+      "replacementEvidenceMustReferenceTouchedSourcePath": true,
+      "replacementEvidenceSnippetMustExistInChangedSource": true,
+      "duplicateReplacementEvidenceCannotInflateCount": true,
+      "selfReportedCountWithoutGroundedSourceEvidenceCannotPass": true
     },
     "parallelism": {
       "gameplayCodeAndAssetProductionConcurrent": true,
