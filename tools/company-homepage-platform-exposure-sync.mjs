@@ -4,6 +4,21 @@ import { compileHomepageCentralPolicy } from './company-shared-context.mjs';
 const clean=v=>String(v??'').trim();
 const bool=v=>v===true;
 const num=v=>Number.isFinite(Number(v))&&Number(v)>0?Number(v):null;
+function robloxOwnerApprovalExact(item={}){
+  const approval=item.robloxOwnerPublicReleaseApprovalEvidence||{};
+  const candidate=item.robloxRuntimeCandidateEvidence||item.robloxPublicReleaseEvidence||{};
+  return Boolean(
+    item.robloxOwnerPublicReleaseApproved===true
+    &&approval.approved===true
+    &&clean(approval.authority)==='OWNER_EXPLICIT_DIRECTIVE_ONLY'
+    &&clean(approval.sourceRevision)===clean(item.robloxSourceCommit)
+    &&clean(approval.artifactIdentity)===clean(item.robloxBuildArtifactIdentity)
+    &&Number(approval.versionNumber||0)>0
+    &&Number(approval.versionNumber)===Number(candidate.versionNumber||0)
+    &&String(approval.universeId||'')===String(candidate.universeId||'')
+    &&String(approval.placeId||'')===String(candidate.placeId||'')
+  );
+}
 const read=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const write=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');
 
@@ -17,8 +32,9 @@ function robloxState(item={}){
     &&Boolean(clean(pub.placeId||rel.placeId||internal.placeId));
   const placeId=staleSharedTarget?'':clean(pub.placeId||rel.placeId||internal.placeId);
   const published=!staleSharedTarget&&(bool(rel.published)||bool(pub.published)||bool(rel.verified)||bool(pub.verified));
-  const explicitPublic=!staleSharedTarget&&(bool(rel.publicRelease)||bool(rel.public)||clean(rel.exposure).toUpperCase()==='PUBLIC'||clean(pub.exposure).toUpperCase()==='PUBLIC');
-  const runtime=bool(item.robloxRuntimePassed)||bool(item.robloxRuntimeEvidence?.pass);
+  const ownerApproved=robloxOwnerApprovalExact(item);
+  const explicitPublic=!staleSharedTarget&&ownerApproved&&(bool(rel.publicRelease)||bool(rel.public)||clean(rel.exposure).toUpperCase()==='PUBLIC'||clean(pub.exposure).toUpperCase()==='PUBLIC'||bool(item.robloxExternalPublicReleaseConfirmed));
+  const runtime=bool(item.robloxF1ToF8Passed)||bool(item.robloxInternalVibePlayEvidence?.pass);
   const qa=bool(item.robloxIndependentQaPassed)||bool(item.robloxIndependentQaEvidence?.pass);
   const regression=bool(item.robloxRegressionPassed)||bool(item.robloxRegressionEvidence?.pass);
   const sourceReady=Boolean(item.robloxProjectPath||item.robloxSourceCommit||item.robloxCandidateBranch||item.targetSourcePaths?.ROBLOX);
@@ -28,7 +44,7 @@ function robloxState(item={}){
   const internalReady=preservedInternalRelease
     ||bool(item.robloxInternalReleaseReady)
     ||(!staleSharedTarget&&((published&&!explicitPublic)||(published&&runtime&&regression)));
-  const publicReleaseReady=!staleSharedTarget&&(bool(item.robloxPublicReleaseReady)||(runtime&&qa&&regression&&published));
+  const publicReleaseReady=!staleSharedTarget&&(bool(item.robloxPublicReleaseReady)||(bool(item.robloxFoundationF0Passed)&&runtime&&bool(item.robloxFinalReviewPassed)&&qa&&regression&&published));
   return{
     platform:'ROBLOX',
     developmentState:sourceReady?'NATIVE_DEVELOPMENT':'WAITING_SOURCE',
@@ -39,6 +55,8 @@ function robloxState(item={}){
     internalReleaseState:internalReady?'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE':'NOT_READY',
     publicReleaseReady,
     publicRelease:explicitPublic,
+    ownerPublicReleaseApprovalRequired:true,
+    ownerPublicReleaseApproved:ownerApproved,
     publicReleaseState:explicitPublic?'PUBLIC_RELEASE':(publicReleaseReady?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY'),
     placeId:placeId||null,
     internalUrl:placeId?`https://www.roblox.com/games/${placeId}`:null,
@@ -55,7 +73,8 @@ function unityState(item={}){
   const sourceReady=Boolean(item.unityProjectPath||item.unitySourceCommit||item.unityCandidateBranch||item.targetSourcePaths?.UNITY);
   const buildUrl=clean(item.unityInternalBuildUrl||item.unityBuildUrl||item.unityDownloadUrl);
   const internalReady=bool(item.unityInternalReleaseReady)||(Boolean(build)&&runtime&&qa&&regression);
-  const publicRelease=bool(item.unityPublicRelease)||bool(item.unityExternalReleaseEvidence?.published);
+  const ownerApproved=bool(item.unityOwnerPublicReleaseApproved);
+  const publicRelease=ownerApproved&&(bool(item.unityPublicRelease)||bool(item.unityExternalReleaseEvidence?.published));
   return{
     platform:'UNITY',
     developmentState:sourceReady?'NATIVE_DEVELOPMENT':'WAITING_SOURCE',
@@ -67,6 +86,8 @@ function unityState(item={}){
     internalReleaseState:internalReady?'INTERNAL_OR_CLOSED_APP_TEST_BUILD':'NOT_READY',
     publicReleaseReady:bool(item.unityPublicReleaseReady)||(internalReady&&bool(item.unityExternalReleaseEvidence?.ready)),
     publicRelease,
+    ownerPublicReleaseApprovalRequired:true,
+    ownerPublicReleaseApproved:ownerApproved,
     publicReleaseState:publicRelease?'PUBLIC_RELEASE':(bool(item.unityPublicReleaseReady)?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY'),
     internalUrl:buildUrl||null,
     publicUrl:publicRelease?clean(item.unityPublicUrl||item.unityStoreUrl)||null:null
