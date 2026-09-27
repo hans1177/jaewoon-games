@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-2ryboa",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
-      "gameId": "daechung-rpg",
-      "files": [
-        "roblox-games/daechung-rpg/server/Game.server.luau",
-        "roblox-games/daechung-rpg/client/Game.client.luau",
-        "roblox-games/daechung-rpg/shared/GameConfig.luau"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:35:12.086Z",
-      "expiresAt": "2026-09-27T07:20:12.086Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-post-release-focus-b0dce53053629c70"
-      ]
-    },
-    {
       "id": "wl-133trt1",
       "worker": "vibe2",
       "taskId": "village-dungeons-unity-web-base-implementation-v1",
@@ -711,6 +692,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-kmndl8",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-425305e25df9-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-system-steward.mjs",
+        "qa/vibe2-system-steward.test.mjs"
+      ],
+      "baseSha": "f930aa8ddc87534958c329af5fafc6a12209063e",
+      "acquiredAt": "2026-09-27T07:20:28.871Z",
+      "expiresAt": "2026-09-27T08:05:28.871Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-425305e25df9-v1"
       ]
     }
   ]
