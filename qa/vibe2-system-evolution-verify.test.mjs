@@ -1,13 +1,6 @@
 import test from 'node:test';
-import fs from 'node:fs';
-import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import { verifySystemEvolutionCandidate } from '../tools/vibe2-system-evolution-verify.mjs';
-
-// Restore protected projections to the exact checked-out candidate before invariant tests.
-for(const file of ['company-learning/platform-release-roadmap.json','vibe2-runtime.json']){
-  fs.writeFileSync(file,execFileSync('git',['show',`HEAD:${file}`],{encoding:'utf8'}));
-}
 
 test('system evolution verifier requires exact safe files and changed regression test',()=>{
   const manifest={
