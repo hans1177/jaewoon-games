@@ -9628,7 +9628,8 @@
       "implementationBindings": [
         "tools/company-development-roblox-studio-local-play.mjs",
         "tools/vibe2-auto-planner.mjs",
-        ".github/workflows/company-development-roblox-post-runtime-qa.yml"
+        ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+        ".github/workflows/company-development-roblox-final-review-revalidation.yml"
       ],
       "behavior": [
         "INTERNAL_PRODUCT_QUALITY_FAIL_AUTO_REQUEUES_CANONICAL_BUILD_UP_WITHOUT_OWNER_APPROVAL",
@@ -9639,7 +9640,14 @@
       "shadowPipelineCreated": false,
       "productQualityThresholdLowered": false,
       "publicReleaseHardGateChanged": false,
-      "securityOrSaveIntegrityGateChanged": false
+      "securityOrSaveIntegrityGateChanged": false,
+      "f9Binding": {
+        "productQualitySource": "CURRENT_CRITICAL_OR_HIGH_INTERNAL_FLOW_BLOCKING_REPAIR_ELIGIBLE_TESTER_TICKETS",
+        "infrastructureEvidenceOnlyExcluded": true,
+        "exactEvidenceMismatchExcludedFromGameSourceBuildUp": true,
+        "automaticVibeRefillDispatch": true,
+        "ownerApprovalRequired": false
+      }
     }
   },
   "vibeExecutionLaneContract": {
