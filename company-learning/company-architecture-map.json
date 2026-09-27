@@ -6144,16 +6144,8 @@
     "primaryActionEffectAuthority": "SUCCESSFUL_PRIMARY_INPUT_PLUS_SERVER_FEEDBACK_TRANSITION_OR_OBSERVED_MOTION",
     "gameplayRulesUnchanged": true,
     "postFoundationStudioFollowupDelegatesToCanonicalPlanner": true,
-    "prePlannerRuntimeFoundationPassGuard": false
-  },
-  "robloxF9FaninRuntimePathRepair": {
-    "version": 1,
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxF9FaninRuntimePathRepair20260927",
-    "workflow": ".github/workflows/company-development-roblox-final-review-revalidation.yml",
-    "fanInWorkingDirectory": "GITHUB_WORKSPACE_ROOT",
-    "runtimeQueuePath": "runtime/development-queue.json",
-    "exactF9PromotionPrecedesFanIn": true,
-    "promotionStateMustSurviveFanInFailure": true,
-    "publicReleaseGateUnchanged": true
+    "prePlannerRuntimeFoundationPassGuard": false,
+    "primaryActionFeedbackMetricPropagation": "EVALUATION_TO_RUNTIME_METRICS_TO_COMPANY_RUNTIME_EVIDENCE",
+    "primaryActionFeedbackSerializationOmissionAllowed": false
   }
 }

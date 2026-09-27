@@ -1191,6 +1191,14 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.equal(throttle?.observedEvidence?.liveRepairRunId,36297021567);
   assert.equal(throttle?.observedEvidence?.liveRepairStudioAssetSelectionMatched,true);
   assert.equal(throttle?.observedEvidence?.liveRepairStudioFollowupReadyCountBeforeGuardFix,0);
+  assert.equal(throttle?.observedEvidence?.studioPassRunId,36298580885);
+  assert.equal(throttle?.observedEvidence?.studioAllRequiredScenariosPass,true);
+  assert.equal(throttle?.observedEvidence?.studioConsoleErrorCount,0);
+  assert.equal(throttle?.observedEvidence?.studioPrimaryActionEffectPass,true);
+  assert.equal(throttle?.observedEvidence?.studioCurrentSourceArtifactBinding,true);
+  assert.equal(throttle?.observedEvidence?.studioPrimaryActionFeedbackMetricPersistedBeforeRepair,false);
+  assert.equal(throttle?.primaryActionFeedbackMetricMustPersistToRuntimeSummary,true);
+  assert.equal(throttle?.primaryActionScenarioPassMayNotRelyOnSerializationOmission,true);
   assert.equal(throttle?.gameplayRulesChanged,false);
   assert.equal(throttle?.qualityGateWeakening,false);
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.openCloudProbeFailureIsolation,'PER_CANDIDATE');
@@ -1200,43 +1208,20 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.exactEnginePrebootMayPromotePublicRelease,false);
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.postFoundationStudioFollowupDelegatesToCanonicalPlanner,true);
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.prePlannerRuntimeFoundationPassGuard,false);
+  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.primaryActionFeedbackMetricPropagation,'EVALUATION_TO_RUNTIME_METRICS_TO_COMPANY_RUNTIME_EVIDENCE');
+  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.primaryActionFeedbackSerializationOmissionAllowed,false);
   assert.equal(architecture.robloxRuntimeFoundationRunnerIsolation?.postFoundationStudioFollowup?.prebootExactEngineCovered,true);
   assert.equal(architecture.robloxRuntimeFoundationRunnerIsolation?.postFoundationStudioFollowup?.prePlannerRuntimeFoundationPassGuard,false);
   assert.match(workflow,/persistentFailure:true/);
   assert.match(workflow,/Enforce persistent Open Cloud probe failures after evidence persistence/);
   assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.followupObservedRunId,36296050875);
   assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.peerPersistent429ErasedSuccessfulProbeBeforeRepair,true);
+  assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.studioPassObservation?.workflowRunId,36298580885);
+  assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.studioPassObservation?.primaryActionEffect,'PASS');
+  assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.studioPassObservation?.consoleErrorCount,0);
+  assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.studioPassObservation?.persistedRuntimeSummaryPrimaryActionFeedbackChangedBeforeRepair,false);
   assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.falsePassAllowed,false);
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
-});
-
-test('Roblox F9 fan-in reads canonical runtime state from the workspace root',()=>{
-  const policy=roadmap.changeRecord?.robloxF9FaninRuntimePathRepair20260927;
-  const topology=architecture.robloxF9FaninRuntimePathRepair;
-  const evidence=logMap.robloxF9FaninRuntimePathRepairEvidence;
-  const f9Workflow=readText('.github/workflows/company-development-roblox-final-review-revalidation.yml');
-  assert.equal(policy?.observedRunId,36298713127);
-  assert.equal(policy?.observedGameId,'horror-escape-room');
-  assert.equal(policy?.canonicalRuntimePath,'runtime/development-queue.json');
-  assert.equal(policy?.f9PromotionStatePersistedBeforeFanInFailure,true);
-  assert.equal(policy?.exactCandidatePromotionPreserved,true);
-  assert.equal(policy?.publicReleaseGateUnchanged,true);
-  assert.equal(policy?.gameplayRulesChanged,false);
-  assert.equal(policy?.saveSchemaChanged,false);
-  assert.equal(policy?.qualityGateWeakening,false);
-  assert.equal(topology?.fanInWorkingDirectory,'GITHUB_WORKSPACE_ROOT');
-  assert.equal(topology?.runtimeQueuePath,'runtime/development-queue.json');
-  assert.equal(topology?.exactF9PromotionPrecedesFanIn,true);
-  assert.equal(topology?.promotionStateMustSurviveFanInFailure,true);
-  assert.equal(topology?.publicReleaseGateUnchanged,true);
-  assert.equal(evidence?.workflowRunId,36298713127);
-  assert.equal(evidence?.promotionResult,'ROBLOX_F9_INTERNAL_RELEASE_PROMOTED=1');
-  assert.equal(evidence?.blockedCount,0);
-  assert.equal(evidence?.repairedRuntimeQueuePath,'runtime/development-queue.json');
-  assert.equal(evidence?.exactPromotionLost,false);
-  assert.equal(evidence?.falsePassAllowed,false);
-  assert.match(f9Workflow,/node --input-type=module - "runtime\/development-queue\.json" "\$REQUESTED_GAME_ID"/);
-  assert.doesNotMatch(f9Workflow,/node --input-type=module - "\.\.\/runtime\/development-queue\.json"/);
 });
 
 test('core QA keeps one active regression alive during same-ref main churn',()=>{

@@ -9536,7 +9536,7 @@
     "robloxOpenCloudThrottleRecovery20260927": {
       "id": "ROBLOX_OPEN_CLOUD_THROTTLE_RECOVERY_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
-      "status": "LIVE_EXACT_PROBE_PERSISTED_PREBOOT_FOLLOWUP_GUARD_REPAIR_PENDING_QA",
+      "status": "LIVE_STUDIO_PASS_FEEDBACK_METRIC_SERIALIZATION_REPAIR_PENDING_QA",
       "objective": "PREVENT_TRANSIENT_OPEN_CLOUD_THROTTLING_FROM_BLOCKING_EXACT_RUNTIME_EVIDENCE_WHILE_AVOIDING_SCAN_BURSTS",
       "observedEvidence": {
         "gameId": "horror-escape-room",
@@ -9559,7 +9559,14 @@
         "liveRepairExactEngineVersion": true,
         "liveRepairStudioAssetSelectionMatched": true,
         "liveRepairPeerPersistent429Count": 4,
-        "liveRepairStudioFollowupReadyCountBeforeGuardFix": 0
+        "liveRepairStudioFollowupReadyCountBeforeGuardFix": 0,
+        "studioPassRunId": 36298580885,
+        "studioPassGameId": "horror-escape-room",
+        "studioAllRequiredScenariosPass": true,
+        "studioConsoleErrorCount": 0,
+        "studioPrimaryActionEffectPass": true,
+        "studioCurrentSourceArtifactBinding": true,
+        "studioPrimaryActionFeedbackMetricPersistedBeforeRepair": false
       },
       "transientHttpRetryStatuses": [
         408,
@@ -9591,23 +9598,9 @@
       "gameplayRulesChanged": false,
       "qualityGateWeakening": false,
       "postFoundationStudioFollowupMustDelegateToCanonicalPlanner": true,
-      "postFoundationStudioFollowupMayNotPreRequireRuntimeFoundationPass": true
-    },
-    "robloxF9FaninRuntimePathRepair20260927": {
-      "id": "ROBLOX_F9_FANIN_RUNTIME_PATH_REPAIR_2026-09-27",
-      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
-      "observedRunId": 36298713127,
-      "observedJobId": 108562535249,
-      "observedGameId": "horror-escape-room",
-      "observedFailure": "ENOENT ../runtime/development-queue.json",
-      "cause": "FANIN_STEP_EXECUTES_FROM_WORKSPACE_ROOT_BUT_USED_MAIN_RELATIVE_RUNTIME_PATH",
-      "canonicalRuntimePath": "runtime/development-queue.json",
-      "f9PromotionStatePersistedBeforeFanInFailure": true,
-      "exactCandidatePromotionPreserved": true,
-      "publicReleaseGateUnchanged": true,
-      "gameplayRulesChanged": false,
-      "saveSchemaChanged": false,
-      "qualityGateWeakening": false
+      "postFoundationStudioFollowupMayNotPreRequireRuntimeFoundationPass": true,
+      "primaryActionFeedbackMetricMustPersistToRuntimeSummary": true,
+      "primaryActionScenarioPassMayNotRelyOnSerializationOmission": true
     }
   },
   "vibeExecutionLaneContract": {

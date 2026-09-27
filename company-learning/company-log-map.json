@@ -2451,7 +2451,8 @@
       "MATCH_DECLARED_STUDIO_ASSET_BINDING_VERSION",
       "ALLOW_EXACT_ENGINE_PREBOOT_STUDIO_EVIDENCE_WITHOUT_RUNTIME_OR_PUBLIC_RELEASE_PASS",
       "REQUIRE_SUCCESSFUL_PRIMARY_INPUT_WITH_AUTHORITATIVE_FEEDBACK_TRANSITION_OR_OBSERVED_MOTION",
-      "DELEGATE_PREBOOT_STUDIO_FOLLOWUP_ELIGIBILITY_TO_CANONICAL_PLANNER"
+      "DELEGATE_PREBOOT_STUDIO_FOLLOWUP_ELIGIBILITY_TO_CANONICAL_PLANNER",
+      "PERSIST_PRIMARY_ACTION_FEEDBACK_METRIC_TO_RUNTIME_SUMMARY"
     ],
     "runtimeFoundationPassFabricationAllowed": false,
     "liveRepairObservation": {
@@ -2467,20 +2468,20 @@
       "companyRuntimeStatePersisted": true,
       "studioFollowupReadyCount": 0,
       "missedDispatchCause": "PRE_PLANNER_RUNTIME_FOUNDATION_PASS_GUARD"
+    },
+    "studioPassObservation": {
+      "workflowRunId": 36298580885,
+      "gameId": "horror-escape-room",
+      "allRequiredScenariosPass": true,
+      "primaryActionInput": "PASS",
+      "primaryActionEffect": "PASS",
+      "consoleErrorCount": 0,
+      "currentSourceArtifactBinding": true,
+      "sourceRevision": "b74a4ac341b7dff0ecd9f2d6cf25375534a2d268",
+      "artifactIdentity": "sha256:4109e8ab3df1273f6fb877930c128b4e717c68cefcf6050269a11e1a59e846de",
+      "candidateVersionNumber": 24,
+      "persistedRuntimeSummaryPrimaryActionFeedbackChangedBeforeRepair": false,
+      "reportingGap": "PRIMARY_ACTION_FEEDBACK_METRIC_NOT_SERIALIZED_FROM_SCENARIO_METRICS"
     }
-  },
-  "robloxF9FaninRuntimePathRepairEvidence": {
-    "version": 1,
-    "authority": "MACHINE_EXECUTION_LOG_MAP",
-    "workflowRunId": 36298713127,
-    "jobId": 108562535249,
-    "gameId": "horror-escape-room",
-    "promotedRuntimeCommit": "c66242b",
-    "promotionResult": "ROBLOX_F9_INTERNAL_RELEASE_PROMOTED=1",
-    "blockedCount": 0,
-    "fanInFailure": "ENOENT ../runtime/development-queue.json",
-    "repairedRuntimeQueuePath": "runtime/development-queue.json",
-    "exactPromotionLost": false,
-    "falsePassAllowed": false
   }
 }
