@@ -2648,6 +2648,36 @@ function comparePersistedBuildUpDirectives(a={},b={}){
   return clean(b?.directiveId).localeCompare(clean(a?.directiveId));
 }
 
+export function selectBuildUpDirectivePersistence(directives=[]){
+  const directivesByGame=new Map();
+  for(const directive of directives||[]){
+    if(!clean(directive?.directiveId)||!clean(directive?.gameId))continue;
+    const rows=directivesByGame.get(directive.gameId)||[];
+    rows.push(directive);
+    directivesByGame.set(directive.gameId,rows);
+  }
+  const games=[];
+  for(const [gameId,gameDirectives] of directivesByGame.entries()){
+    const byLane=new Map();
+    for(const directive of gameDirectives){
+      const lane=buildUpDirectivePersistenceLane(directive);
+      const rows=byLane.get(lane)||[];
+      rows.push(directive);
+      byLane.set(lane,rows);
+    }
+    const laneWinners=[];
+    for(const [lane,laneDirectives] of byLane.entries()){
+      const directive=laneDirectives.slice().sort(comparePersistedBuildUpDirectives)[0]||null;
+      if(directive)laneWinners.push({lane,directive});
+    }
+    const compatibilityWinner=laneWinners.map(row=>row.directive).sort(comparePersistedBuildUpDirectives)[0]
+      ||gameDirectives.slice().sort(comparePersistedBuildUpDirectives)[0]
+      ||null;
+    games.push({gameId,laneWinners,compatibilityWinner});
+  }
+  return games;
+}
+
 export function runVibe2AutoPlanner({
   statusFile='.vibe2/main-company-status.json', catalogFile='.vibe2/main-game-catalog.json', developmentQueueFile='', queueFile='', runtimeFile='vibe2-runtime.json',
   controlFile='', experienceFile='', recombinationFile='', historicalRegistryFile='', robloxDistillationFile='', repoRoot=process.cwd(), maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS
@@ -2680,40 +2710,26 @@ export function runVibe2AutoPlanner({
     if(!directive?.directiveId||!directive?.gameId)continue;
     directivesById.set(directive.directiveId,directive);
   }
-  const directivesByGame=new Map();
-  for(const directive of directivesById.values()){
-    const rows=directivesByGame.get(directive.gameId)||[];
-    rows.push(directive);
-    directivesByGame.set(directive.gameId,rows);
-  }
-  for(const [gameId,gameDirectives] of directivesByGame.entries()){
-    const gameRoot=path.join(directiveRoot,gameId);
+  const persistence=selectBuildUpDirectivePersistence([...directivesById.values()]);
+  for(const game of persistence){
+    const gameRoot=path.join(directiveRoot,game.gameId);
     const currentRoot=path.join(gameRoot,'current');
     const historyRoot=path.join(gameRoot,'history');
     fs.mkdirSync(currentRoot,{recursive:true});
     fs.mkdirSync(historyRoot,{recursive:true});
-    const byLane=new Map();
+    const gameDirectives=[...directivesById.values()].filter(directive=>directive.gameId===game.gameId);
     for(const directive of gameDirectives){
-      const lane=buildUpDirectivePersistenceLane(directive);
-      const rows=byLane.get(lane)||[];
-      rows.push(directive);
-      byLane.set(lane,rows);
       const historyFile=path.join(historyRoot,String(directive.generation).padStart(4,'0')+'-'+directive.directiveId+'.json');
       if(!fs.existsSync(historyFile))writeJson(historyFile,directive);
     }
-    const laneWinners=[];
-    for(const [lane,laneDirectives] of byLane.entries()){
-      const winner=laneDirectives.slice().sort(comparePersistedBuildUpDirectives)[0];
-      if(!winner)continue;
-      laneWinners.push(winner);
-      const laneFile=path.join(currentRoot,lane.toLowerCase().replaceAll('_','-')+'.json');
-      writeJson(laneFile,winner);
+    for(const row of game.laneWinners){
+      const laneFile=path.join(currentRoot,row.lane.toLowerCase().replaceAll('_','-')+'.json');
+      writeJson(laneFile,row.directive);
       directiveWrites.push(posix(path.relative(path.dirname(path.resolve(resolvedQueueFile)),laneFile)));
     }
-    const compatibilityWinner=laneWinners.slice().sort(comparePersistedBuildUpDirectives)[0]||gameDirectives.slice().sort(comparePersistedBuildUpDirectives)[0];
-    if(compatibilityWinner){
+    if(game.compatibilityWinner){
       const currentFile=path.join(gameRoot,'current.json');
-      writeJson(currentFile,compatibilityWinner);
+      writeJson(currentFile,game.compatibilityWinner);
       directiveWrites.push(posix(path.relative(path.dirname(path.resolve(resolvedQueueFile)),currentFile)));
     }
   }
