@@ -1,5 +1,5 @@
 {
-  "version": 287,
+  "version": 288,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6288,5 +6288,25 @@
       "productQuality": "EXISTING_CAUSAL_REPAIR_PREEMPTS_UNRELATED_EXPANSION",
       "transientInfrastructure": "EXACT_INFRASTRUCTURE_OR_EVIDENCE_RETRY_NO_GAME_CONTENT_REWRITE"
     }
+  },
+  "menuUxDiversityTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#menuUxDiversityContract",
+    "design": "tools/company-design-cycle.mjs#UX_ACCESSIBILITY_PLAN.menuSurfaces",
+    "legacyDesignRepair": "tools/company-design-prepromotion-repair.mjs#repairDesignRequiredFields",
+    "sourceImplementation": "tools/vibe2-source-worker.mjs",
+    "assetPlanning": "tools/vibe2-asset-production-plan.mjs",
+    "reusableUiCoverage": "assets/vibe-studio-asset-universe.js#DEFAULT_COVERAGE_BASELINES.UI",
+    "flow": [
+      "DESIGN_MENU_SURFACES",
+      "BIND_EXISTING_SYSTEMS",
+      "SELECT_RELEVANT_UI_ASSETS",
+      "IMPLEMENT_IN_EXISTING_UI_OWNER",
+      "MOBILE_RUNTIME_VALIDATE"
+    ],
+    "sameTemplateAcrossGamesForbidden": true,
+    "irrelevantSystemMenuForbidden": true,
+    "gameplayAuthorityExpanded": false,
+    "newPipelineCreated": false
   }
 }
