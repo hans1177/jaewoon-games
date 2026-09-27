@@ -168,7 +168,12 @@ test('continuation workflow and planner collapse duplicate same-game dispatches 
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-shared-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}\n\s+cancel-in-progress: false/);
-  assert.doesNotMatch(workflow,/roblox-shared-preflight-plan-/);
+  const preflightPlanAt=workflow.indexOf('\n  preflight-plan:\n');
+  const preflightWorkerAt=workflow.indexOf('\n  preflight-worker:\n',preflightPlanAt);
+  assert.ok(preflightPlanAt>0&&preflightWorkerAt>preflightPlanAt);
+  const preflightPlan=workflow.slice(preflightPlanAt,preflightWorkerAt);
+  assert.doesNotMatch(preflightPlan,/\n\s+concurrency:/);
+  assert.match(workflow.slice(0,jobsAt),/group: roblox-shared-preflight-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
 });
 
 test('continuation control jobs use slim runners while model preflight stays on full game capacity',()=>{
