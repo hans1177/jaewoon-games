@@ -172,6 +172,37 @@ test('director drains superseded runner backlog before noncritical supervision',
   assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-unity-runtime\.yml',true\)/);
 });
 
+test('runner drain keeps active same-game work but prefers the newest queued native runtime',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
+  const policy=roadmap.changeRecord?.runnerQueueDrain20260926||{};
+  const topology=architecture.runnerQueueDrainTopology||{};
+  const evidence=logMap.runnerQueueDrainEvidence||{};
+
+  assert.match(director,/const dedupeByTitle=\(path,newestQueuedWins=false\)=>/);
+  assert.match(director,/if\(inProgress\.length\)winner=inProgress\[0\]/);
+  assert.match(director,/else if\(newestQueuedWins\)winner=\[\.\.\.group\]\.sort\(\(a,b\)=>Number\(b\.id\)-Number\(a\.id\)\)\[0\]/);
+  assert.match(director,/DUPLICATE_TITLE_STALE_QUEUED/);
+  assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-roblox-runtime\.yml',true\)/);
+  assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-unity-runtime\.yml',true\)/);
+  assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-roblox-release-promotion\.yml',false\)/);
+
+  assert.equal(policy.sameTitleRuntimeQueuedWinner,'LATEST_WHEN_NO_IN_PROGRESS');
+  assert.equal(policy.sameTitleRuntimeInProgressWinner,'ACTIVE_RUN_PRESERVED');
+  assert.equal(policy.robloxExactGameNewestQueuedPreserved,true);
+  assert.equal(policy.unityExactGameNewestQueuedPreserved,true);
+  assert.equal(policy.activeSameGameCancellationForbidden,true);
+  assert.equal(policy.releaseAndQaFifoSemanticsUnchanged,true);
+  assert.equal(topology.sameTitleRuntimeQueuedWinner,'LATEST_WHEN_NO_IN_PROGRESS');
+  assert.equal(topology.sameTitleRuntimeInProgressWinner,'ACTIVE_RUN_PRESERVED');
+  assert.equal(topology.activeSameGameCancellationForbidden,true);
+  assert.equal(evidence.staleQueuedSameTitleReason,'DUPLICATE_TITLE_STALE_QUEUED');
+  assert.equal(evidence.newestQueuedSameTitlePreserved,true);
+  assert.equal(evidence.inProgressSameTitleCancellationForbidden,true);
+});
+
 test('runner drain uses a YAML-safe delimiter and preserves the game gate block',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   assert.match(director,/while IFS='\\|' read -r run_id reason; do/);
