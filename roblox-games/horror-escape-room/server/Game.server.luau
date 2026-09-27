@@ -891,7 +891,8 @@ end
 local function purify(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"then return end
  local hf=humanForm(p);local now=os.clock();local cd=math.max(2,(C.PurifyCooldown or 5)+(hf.PurifyCooldownBonus or 0))
- if now-(purifyCooldown[p]or 0)<cd then return end
+ local lastPurify=purifyCooldown[p]
+ if lastPurify and now-lastPurify<cd then return end
  local r=root(p);if not r then return end;purifyCooldown[p]=now
  local range=math.max(4,(C.PurifyDistance or 8)+(hf.PurifyRangeBonus or 0));local targetPlayer,targetBot,best=nil,nil,range
  for _,other in ipairs(Players:GetPlayers())do if other:GetAttribute("Role")=="MONSTER"then local q=root(other);if q then local d=(q.Position-r.Position).Magnitude;if d<=best then best=d;targetPlayer=other;targetBot=nil end end end end
@@ -902,12 +903,13 @@ end
 local function survivorDash(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"then return end
  local hf=humanForm(p);local now=os.clock();local cd=math.max(3,C.SurvivorDashCooldown+(hf.DashCooldownBonus or 0))
- if now-(dashCooldown[p]or 0)<cd then return end;dashCooldown[p]=now
+ local lastDash=dashCooldown[p]
+ if lastDash and now-lastDash<cd then return end;dashCooldown[p]=now
  local r=root(p);if r then movementGraceUntil[p]=now+.7;r.AssemblyLinearVelocity=r.CFrame.LookVector*(52+(hf.DashPowerBonus or 0))+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)end
 end
 local function ability(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="MONSTER"then return end
- local now=os.clock();if now-(cooldown[p]or 0)<C.MonsterAbilityCooldown then return end;cooldown[p]=now
+ local now=os.clock();local lastAbility=cooldown[p];if lastAbility and now-lastAbility<C.MonsterAbilityCooldown then return end;cooldown[p]=now
  local r=root(p);if not r then return end;local f=form(p);movementGraceUntil[p]=now+.8
  local infectedAbility=p:GetAttribute("Infected")==true and humanForm(p).InfectedAbility or nil
  if infectedAbility=="RUSH"or infectedAbility=="BREACH"then r.AssemblyLinearVelocity=r.CFrame.LookVector*82+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)

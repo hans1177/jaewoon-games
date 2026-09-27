@@ -90,3 +90,16 @@ test('horror F0 source contract passes native foundation preflight',()=>{
  assert.equal(result.checks.f0SourceIntegrity,true);
  assert.doesNotMatch(server,/movementGuardClock\+=dt movementGuardClock\+=dt/);
 });
+
+
+test('첫 액션은 서버 가동시간을 쿨다운으로 오인하지 않는다',()=>{
+ assert.match(server,/local lastPurify=purifyCooldown\[p\]/);
+ assert.match(server,/if lastPurify and now-lastPurify<cd then return end/);
+ assert.match(server,/local lastDash=dashCooldown\[p\]/);
+ assert.match(server,/if lastDash and now-lastDash<cd then return end/);
+ assert.match(server,/local lastAbility=cooldown\[p\]/);
+ assert.match(server,/if lastAbility and now-lastAbility<C\.MonsterAbilityCooldown then return end/);
+ assert.doesNotMatch(server,/now-\(dashCooldown\[p\]or 0\)<cd/);
+ assert.doesNotMatch(server,/now-\(purifyCooldown\[p\]or 0\)<cd/);
+ assert.doesNotMatch(server,/now-\(cooldown\[p\]or 0\)<C\.MonsterAbilityCooldown/);
+});
