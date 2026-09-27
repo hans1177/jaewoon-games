@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-09-27T00:03:29.054Z",
+  "updatedAt": "2026-09-27T00:41:58.535Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -1036,11 +1036,11 @@
       "platforms": [
         {
           "platform": "ROBLOX",
-          "technicalReady": false,
+          "technicalReady": true,
           "internalReleaseState": "INTERNAL_PLAYTEST_AND_DEBUG",
-          "internalReleaseReady": false,
+          "internalReleaseReady": true,
           "internalReleasePublished": true,
-          "internalPlaytestPassed": false,
+          "internalPlaytestPassed": true,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
           "publicReleaseReady": false,
@@ -1048,9 +1048,9 @@
             "pass": false,
             "checks": {
               "technical": false,
-              "realServerBoot": true,
+              "realServerBoot": false,
               "exactRuntime": false,
-              "actualVibePlay": false,
+              "actualVibePlay": true,
               "vibeScenarioCoverage": false,
               "noBlockingTickets": false,
               "gameCompletion": false,
@@ -1066,8 +1066,8 @@
             },
             "blockers": [
               "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
+              "ROBLOX_PUBLIC_HARD_GATE_REALSERVERBOOT",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
-              "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
               "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
@@ -1104,9 +1104,9 @@
         },
         {
           "platform": "UNITY",
-          "technicalReady": true,
-          "internalReleaseState": "INTERNAL_RELEASE_READY",
-          "internalReleaseReady": true,
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
           "internalReleasePublished": false,
           "internalPlaytestPassed": false,
           "externalExposureAllowed": false,

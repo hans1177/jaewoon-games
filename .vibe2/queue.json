@@ -92738,7 +92738,8 @@
         "game-repair-mode:FOCUSED_REPAIR",
         "game-repair-repeat-count:1",
         "recovery-queue:recovery-ticket-bug-2508af212a171e5e1a00",
-        "recovery-exact-stage:TARGET_PLATFORM_RUNTIME"
+        "recovery-exact-stage:TARGET_PLATFORM_RUNTIME",
+        "game-repair-repeat-count:2"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "36281294750:1",
@@ -123063,7 +123064,8 @@
         "game-repair-mode:FOCUSED_REPAIR",
         "game-repair-repeat-count:1",
         "recovery-queue:recovery-ticket-bug-2508af212a171e5e1a00",
-        "recovery-exact-stage:TARGET_PLATFORM_RUNTIME"
+        "recovery-exact-stage:TARGET_PLATFORM_RUNTIME",
+        "game-repair-repeat-count:2"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "36281294750:1",
@@ -129256,7 +129258,24 @@
         "build-up-directive-backfill:queued-existing-work",
         "build-up-pre-reserve-binding:CHECKED",
         "build-up-directive-freshness:RECONCILED_TO_ACTIVE_GENERATION",
-        "learning-motor-candidate-tournament:repeated-verified-failure"
+        "learning-motor-candidate-tournament:repeated-verified-failure",
+        "recovery-queue:recovery-ticket-bug-7d114ff3812bf7516f00",
+        "recovery-strategy:REPAIR_REPRODUCIBLE_TESTER_BUG_AND_RERUN_EXACT_FAILED_STAGE",
+        "recovery-exact-stage:TARGET_PLATFORM_RUNTIME_FOUNDATION",
+        "source-mutation-required:YES",
+        "game-repair-mode:ROOT_CAUSE_MODE",
+        "game-repair-repeat-count:523",
+        "game-repair-user-assistance-required:NO",
+        "game-repair-save-migration:REQUIRED",
+        "game-repair-multiplayer-lifecycle:MACHINE_REQUIRED",
+        "recovery-queue:recovery-ticket-bug-777444144cf066f31475",
+        "recovery-exact-stage:TARGET_PLATFORM_SOURCE_BIND",
+        "game-repair-repeat-count:26",
+        "game-repair-save-migration:NOT_APPLICABLE",
+        "game-repair-multiplayer-lifecycle:NOT_APPLICABLE",
+        "build-up-directive-freshness:CURRENT_ACTIVE_GENERATION",
+        "portfolio-decision:FOCUSED_REPAIR",
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
       ],
       "lastOutcome": null,
       "reservationId": null,
