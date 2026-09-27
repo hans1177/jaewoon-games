@@ -3899,19 +3899,21 @@
         "playerAutomation": false,
         "publishedPlaceDirectStudioAutomation": false,
         "exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot": true,
-        "studioPlannerEligibility": "EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT",
+        "studioPlannerEligibility": "EXACT_PRIVATE_RUNTIME_CANDIDATE",
         "studioActualPlayMayNotSetRuntimeFoundationPass": true,
-        "externalPublicReleaseRemainsBlockedUntilRealServerBoot": true,
+        "externalPublicReleaseRemainsBlockedUntilRealServerBoot": false,
         "studioFollowupOwner": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
         "role": "OPTIONAL_MANUAL_DIAGNOSTIC_ONLY",
-        "ownerApprovalIsPublicationAuthority": true
+        "ownerApprovalIsPublicationAuthority": true,
+        "ownerApprovalIsExternalPublicationAuthority": true
       },
-      "actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass": true,
+      "actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass": false,
       "externalServerProbeAutomatic": false,
       "externalServerObservationRequiredForInternalDevelopment": false,
       "f1ThroughF8SingleStudioSession": true,
       "f9RuntimeReplay": false,
-      "f9ConsumesExistingExactEvidence": true
+      "f9ConsumesExistingExactEvidence": true,
+      "actualPlayMayStartAfterExactPrivateCandidateBeforeRuntimeFoundationPass": true
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
