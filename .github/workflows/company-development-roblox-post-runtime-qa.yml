@@ -37,6 +37,10 @@ permissions:
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
+concurrency:
+  group: roblox-runtime-foundation-${{ inputs.game_id || 'scan' }}
+  cancel-in-progress: ${{ inputs.game_id == '' }}
+
 jobs:
   dedupe:
     name: collapse duplicate runtime foundation scans
