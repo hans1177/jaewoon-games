@@ -106,11 +106,9 @@ export function platformDevelopmentEligible(item={},platform=''){
   const targets=concurrentTargetPlatforms(item);
   if(!targets.includes(requested))return false;
   const selected=resolveSelectedPlatform(item);
-  const releaseStateActive=requested==='ROBLOX'
-    ?item.robloxInternalReleaseReady===true||item.robloxInternalReleasePublished===true||item.robloxPublicRelease===true
-    :item.unityInternalReleaseReady===true||item.unityInternalReleasePublished===true||item.unityPublicRelease===true;
   const projected={...item,selectedPlatform:requested,targetPlatform:requested};
-  if(selected!==requested||releaseStateActive)projected.currentStep='TARGET_PLATFORM_TECHNICAL_VALIDATION';
+  // Release state never blocks a new source cycle, but an unchanged completed cycle must not busy-loop.
+  if(selected!==requested&&targets.length>1)projected.currentStep='TARGET_PLATFORM_TECHNICAL_VALIDATION';
   return targetPlatformDevelopmentEligible(projected);
 }
 
