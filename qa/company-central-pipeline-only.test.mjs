@@ -259,10 +259,53 @@ test('runner drain bypasses the stale supervisor group and evicts stale legacy R
   assert.match(director,/fetch_runs 'status=queued&per_page=100'/);
   assert.match(director,/ROBLOX_STALE_LEGACY_OR_BATCH/);
   assert.match(director,/15\*60\*1000/);
+  assert.match(director,/CONTROL_PLANE_STALE_IN_PROGRESS_SUPERSEDED/);
+  assert.match(director,/12\*60\*1000/);
+  assert.match(director,/company-dna-learning\.yml/);
   assert.match(director,/actions\/runs\/\$\{run_id\}\/force-cancel/);
   assert.match(director,/String\(r\.display_title\|\|''\)==='Company DEVELOPMENT_CONFIRMED Roblox Runtime'/);
   assert.match(director,/String\(r\.display_title\|\|''\)==='Roblox runtime · batch'/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
+});
+
+
+test('runner drain cancels only superseded stale control-plane in-progress runs and never game-primary execution',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
+  const start=director.indexOf('const supersedableInProgressControlPlane=new Set([');
+  const end=director.indexOf('const staleBefore=Date.now()-(15*60*1000);',start);
+  const block=director.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(block,/director-supervisor\.yml/);
+  assert.match(block,/vibe2-merged-pr-provenance\.yml/);
+  assert.match(block,/company-dna-learning\.yml/);
+  assert.doesNotMatch(block,/company-development-roblox-runtime\.yml/);
+  assert.doesNotMatch(block,/company-development-unity-runtime\.yml/);
+  assert.doesNotMatch(block,/company-status-sync\.yml/);
+  assert.doesNotMatch(block,/company-platform-exposure-sync\.yml/);
+  assert.doesNotMatch(block,/company-seed-design-runtime\.yml/);
+  assert.doesNotMatch(block,/vibe2-continuous-core\.yml/);
+  assert.match(block,/String\(stale\.status\|\|''\)\.toLowerCase\(\)!=='in_progress'/);
+  assert.match(block,/Date\.parse\(String\(stale\.created_at\|\|0\)\)>=staleControlBefore/);
+  assert.match(block,/Number\(newest\.id\)<=Number\(stale\.id\)/);
+  assert.match(director,/CONTROL_PLANE_STALE_IN_PROGRESS_SUPERSEDED/);
+  assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
+  const policy=roadmap.changeRecord?.runnerQueueDrain20260926||{};
+  assert.equal(policy.supersededStaleInProgressControlPlaneMayCancel,true);
+  assert.equal(policy.staleInProgressControlPlaneThresholdMinutes,12);
+  assert.equal(policy.sharedStateWriterInProgressMayCancel,false);
+  assert.equal(policy.gamePrimaryInProgressMayCancel,false);
+  assert.deepEqual(policy.staleInProgressControlPlaneSafeWorkflows,[
+    '.github/workflows/director-supervisor.yml',
+    '.github/workflows/vibe2-merged-pr-provenance.yml',
+    '.github/workflows/company-dna-learning.yml'
+  ]);
+  assert.equal(architecture.runnerQueueDrainTopology?.sharedStateWriterInProgressMayCancel,false);
+  assert.equal(architecture.runnerQueueDrainTopology?.gamePrimaryInProgressMayCancel,false);
+  assert.equal(logMap.runnerQueueDrainEvidence?.runnerLabel,'ubuntu-24.04');
+  assert.equal(logMap.runnerQueueDrainEvidence?.staleSupersededInProgressControlPlaneReason,'CONTROL_PLANE_STALE_IN_PROGRESS_SUPERSEDED');
 });
 
 

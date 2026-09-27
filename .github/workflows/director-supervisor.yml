@@ -196,6 +196,27 @@ jobs:
             ))add(stale,'VIBE2_STALE_UNSTARTED_FANIN_REFILL');
           }
 
+          const staleControlBefore=Date.now()-(12*60*1000);
+          const supersedableInProgressControlPlane=new Set([
+            '.github/workflows/director-supervisor.yml',
+            '.github/workflows/vibe2-merged-pr-provenance.yml',
+            '.github/workflows/company-dna-learning.yml',
+          ]);
+          for(const path of supersedableInProgressControlPlane){
+            const rows=runs
+              .filter(r=>r.path===path&&active.has(String(r.status||'').toLowerCase()))
+              .sort((a,b)=>Number(b.id)-Number(a.id));
+            if(rows.length<2)continue;
+            const newest=rows[0];
+            for(const stale of rows.slice(1)){
+              if(String(stale.status||'').toLowerCase()!=='in_progress')continue;
+              if(Date.parse(String(stale.created_at||0))>=staleControlBefore)continue;
+              if(currentMain&&String(stale.head_sha||'')===currentMain)continue;
+              if(Number(newest.id)<=Number(stale.id))continue;
+              add(stale,'CONTROL_PLANE_STALE_IN_PROGRESS_SUPERSEDED');
+            }
+          }
+
           const staleBefore=Date.now()-(15*60*1000);
           const legacyRoblox=runs
             .filter(r=>r.path==='.github/workflows/company-development-roblox-runtime.yml'
@@ -218,7 +239,7 @@ jobs:
             if gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
               cancelled=$((cancelled+1))
               echo "DIRECTOR_RUNNER_DRAIN_CANCELLED=${run_id}:${reason}"
-            elif [ "$reason" = 'ROBLOX_STALE_LEGACY_OR_BATCH' ] && gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1; then
+            elif { [ "$reason" = 'ROBLOX_STALE_LEGACY_OR_BATCH' ] || [ "$reason" = 'CONTROL_PLANE_STALE_IN_PROGRESS_SUPERSEDED' ]; } && gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1; then
               cancelled=$((cancelled+1))
               echo "DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED=${run_id}:${reason}"
             else
