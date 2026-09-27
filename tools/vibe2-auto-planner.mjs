@@ -2073,6 +2073,15 @@ function bindSharedBuildUpDirective(taskInput,directive){
   };
 }
 
+function hasCurrentAutonomousContentExpansionDirective(directive={}){
+  return Boolean(
+    clean(directive?.directiveId)
+    &&Number(directive?.autonomousContentExpansion?.version||0)>=1
+    &&clean(directive?.autonomousContentExpansion?.executionBoundary).toUpperCase()==='EXISTING_BUILD_UP_ONLY'
+    &&directive?.autonomousContentExpansion?.autonomousDecisionOwner==='VIBE'
+  );
+}
+
 function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
   const projectByScope=new Map();
   for(const project of projects||[]){
@@ -2089,7 +2098,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
   const canonicalByScope=new Map();
   for(const row of tasks){
     const gameId=clean(row?.gameId),directive=row?.buildUpDirective,lane=studioQualityTaskLane(row),scope=gameId+'|'+lane;
-    if(!gameId||!clean(directive?.directiveId)||clean(row?.status).toLowerCase()!=='running')continue;
+    if(!gameId||!clean(directive?.directiveId)||clean(row?.status).toLowerCase()!=='running'||!hasCurrentAutonomousContentExpansionDirective(directive))continue;
     const current=canonicalByScope.get(scope);
     if(!current||Number(directive?.generation||0)>Number(current?.generation||0))canonicalByScope.set(scope,directive);
   }
@@ -2106,10 +2115,11 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     const mappedCanonical=canonicalByScope.get(scope)||null;
     const activeCanonical=mappedCanonical
       ?{buildUpDirective:mappedCanonical,status:'queued'}
-      :history.filter(row=>!terminalStatuses.has(clean(row?.status).toLowerCase())).sort(byGeneration)[0]||null;
+      :history.filter(row=>!terminalStatuses.has(clean(row?.status).toLowerCase())&&hasCurrentAutonomousContentExpansionDirective(row?.buildUpDirective)).sort(byGeneration)[0]||null;
     const latestHistorical=history.slice().sort(byGeneration)[0]||null;
     const currentId=clean(item?.buildUpDirective?.directiveId||item?.buildUpDirectiveId);
     const currentGeneration=Number(item?.buildUpDirective?.generation||item?.buildUpGeneration||0);
+    const currentDirectiveNeedsContractMigration=Boolean(currentId&&!hasCurrentAutonomousContentExpansionDirective(item?.buildUpDirective));
     const latestHistoricalGeneration=Number(latestHistorical?.buildUpDirective?.generation||0);
     let candidate=item,freshness='CURRENT_NO_NEWER_ACTIVE_GENERATION';
     if(activeCanonical?.buildUpDirective&&clean(activeCanonical.buildUpDirective.directiveId)!==currentId){
@@ -2119,7 +2129,48 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         candidate={...candidate,evidence:[...new Set([...(candidate.evidence||[]),'build-up-directive-backfill:queued-existing-work'])]};
       }
       rebound+=1;changed+=1;
-      freshness='RECONCILED_TO_ACTIVE_GENERATION';
+      freshness=currentDirectiveNeedsContractMigration?'RECONCILED_LEGACY_DIRECTIVE_TO_ACTIVE_AUTONOMOUS_GENERATION':'RECONCILED_TO_ACTIVE_GENERATION';
+    }else if(currentDirectiveNeedsContractMigration){
+      const verifiedDesign=latestVerifiedDesign(repoRoot,gameId);
+      if(!verifiedDesign){
+        designPending+=1;
+        freshness='LEGACY_AUTONOMOUS_EXPANSION_MIGRATION_DESIGN_PENDING';
+        candidate={...item,evidence:[...new Set([...(item.evidence||[]),'build-up-directive-contract-migration:DESIGN_PENDING'])]};
+      }else{
+        const legacyGeneration=Math.max(1,currentGeneration||1);
+        const syntheticPreviousGeneration=Math.max(0,legacyGeneration-1);
+        const migrationHistory=tasks.filter((row,rowIndex)=>{
+          if(rowIndex===index)return false;
+          const sameScope=clean(row?.gameId)===gameId&&studioQualityTaskLane(row)===lane;
+          if(!sameScope)return true;
+          return !clean(row?.buildUpDirective?.directiveId)||hasCurrentAutonomousContentExpansionDirective(row?.buildUpDirective);
+        });
+        const syntheticPrevious={
+          ...item,
+          id:item.id+'-legacy-contract-baseline',
+          status:'superseded',
+          blocker:'superseded-by:AUTONOMOUS_CONTENT_EXPANSION_CONTRACT_BACKFILL',
+          buildUpDirective:{...item.buildUpDirective,generation:syntheticPreviousGeneration},
+          buildUpGeneration:syntheticPreviousGeneration
+        };
+        const refreshed=attachGameSpecificBuildUpDirective(
+          item,project,repoRoot,{...queue,tasks:[...migrationHistory,syntheticPrevious]},verifiedDesign
+        );
+        if(clean(refreshed?.buildUpDirective?.directiveId)){
+          candidate=bindSharedBuildUpDirective(item,refreshed.buildUpDirective);
+          candidate={...candidate,evidence:[...new Set([
+            ...(candidate.evidence||[]),...(refreshed.evidence||[]),
+            'build-up-directive-contract-migration:AUTONOMOUS_CONTENT_EXPANSION_V1',
+            'build-up-directive-contract-migration-generation:PRESERVED'
+          ])]};
+          canonicalByScope.set(scope,refreshed.buildUpDirective);
+          rebound+=1;changed+=1;
+          freshness='MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION';
+        }else{
+          designPending+=1;
+          freshness='LEGACY_AUTONOMOUS_EXPANSION_MIGRATION_FAILED';
+        }
+      }
     }else if(!currentId){
       const verifiedDesign=latestVerifiedDesign(repoRoot,gameId);
       if(!verifiedDesign){
