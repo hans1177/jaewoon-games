@@ -1385,3 +1385,23 @@ test('candidate strategy rotation blocks task-local failed repair strategies whi
   assert.equal(candidateStrategyRole('primary',{},infraOnly).strategy,'PRIMARY_RESPONSIBILITY_MINIMAL');
   assert.deepEqual(candidateStrategyRole('primary',{},infraOnly).avoidedFailedStrategies,[]);
 });
+
+
+test('game workers bind verified learning-runtime playbooks and preserve complete knowledge attribution',()=>{
+  assert.ok(workflow.includes('Checkout verified learning memory'));
+  assert.ok(workflow.includes('ref: vibe2-learning-runtime'));
+  assert.ok(workflow.includes('company-learning/vibe3-task-playbooks.json'));
+  assert.ok(workflow.includes('VIBE2_VERIFIED_COMMERCIAL_PLAYBOOK=PASS'));
+  assert.ok(workflow.includes("generatedFrom||'')!=='VERIFIED_MEMORY_ONLY'"));
+  assert.ok(workflow.includes('VERIFIED_PLAYBOOK_AUTHORITY_REQUIRED'));
+  assert.ok(workflow.includes('--learning-motor-state="$GITHUB_WORKSPACE/.vibe2/learning-motor-state.json"'));
+  assert.ok(workflow.includes('--code-patterns="$GITHUB_WORKSPACE/.vibe2/code-pattern-library.json"'));
+  assert.ok(workflow.includes('--practice-distilled="$GITHUB_WORKSPACE/.vibe2/practice-distilled-knowledge.json"'));
+  assert.ok(workflow.includes('--external-ai-distilled="$GITHUB_WORKSPACE/.vibe2/external-ai-distilled-knowledge.json"'));
+  assert.ok(workflow.includes('--playbooks="$GITHUB_WORKSPACE/vibe2-learning-memory/company-learning/vibe3-task-playbooks.json"'));
+  assert.ok(workflow.includes('JSON.stringify(workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds)'));
+  assert.equal(workflow.includes('exactInjectedKnowledgeIds.slice(0,40)'),false);
+  assert.ok(workflow.includes('applicationCoveragePct:Number(workOrder.knowledgeApplicationContract.applicationCoveragePct||0)'));
+  assert.ok(workflow.includes('allRetrievedKnowledgeApplied:workOrder.knowledgeApplicationContract.allRetrievedKnowledgeApplied===true'));
+  assert.ok(workflow.includes('verifiedLearningMemorySha:'));
+});
