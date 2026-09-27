@@ -437,6 +437,16 @@ test('exact engine preboot enters Studio followup even when the runtime sentinel
  assert.match(workflow,/if\(exactEngineVersionAwaitingRealServerBoot\)[\s\S]*?queueStudioFollowupIfEligible\(item\);[\s\S]*?continue;/);
 });
 
+test('runtime sentinel 404 still hands exact Open Cloud engine evidence to canonical Studio planning',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/if\(\/HTTP_404\/\.test\(message\)\)[\s\S]*?const exactEnginePrebootFromProbe=/);
+ assert.match(workflow,/exactEnginePrebootFromProbe[\s\S]*?authority:'exact-engine-version-awaiting-real-server-boot'/);
+ assert.match(workflow,/exactEnginePrebootFromProbe[\s\S]*?queueStudioFollowupIfEligible\(item\)/);
+ assert.match(workflow,/ROBLOX_FOUNDATION_EXACT_ENGINE_PREBOOT_STUDIO_FOLLOWUP=/);
+ assert.match(workflow,/observedVersionNumber:null/);
+ assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false/);
+});
+
 test('central policy and architecture preserve runtime truth while real server boot blocks external release only',()=>{
  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
