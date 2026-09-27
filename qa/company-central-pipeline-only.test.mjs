@@ -542,7 +542,7 @@ test('shared Ollama model cache is opt-in for native development workers and pre
   for(const workflow of [roblox,continuation,unity]){
     assert.match(workflow,/cache-model: 'true'/);
   }
-  assert.match(vibe,/key: vibe2-ollama-v4-/);
+  assert.match(vibe,/key: vibe2-ollama-v5-/);
   assert.match(vibe,/runner\.os/);
   assert.match(vibe,/runner\.arch/);
   assert.doesNotMatch(vibe,/cache-model: 'true'/);
