@@ -20,10 +20,6 @@ permissions:
   contents: read
   actions: read
 
-concurrency:
-  group: vibe2-unity-practice-cpu-fallback
-  cancel-in-progress: false
-
 env:
   LEARNING_FOCUS: UNITY_CODING_ONLY
   PRACTICE_AUTHORITY: PRACTICE_ONLY
@@ -86,6 +82,9 @@ jobs:
 
   cpu-practice-train:
     needs: prepare-practice
+    concurrency:
+      group: vibe2-unity-practice-local-training
+      cancel-in-progress: false
     runs-on: [self-hosted, Windows, X64, jaewoon-unity]
     timeout-minutes: 180
     defaults:
