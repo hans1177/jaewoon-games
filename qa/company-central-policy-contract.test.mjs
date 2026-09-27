@@ -1318,3 +1318,53 @@ test('director uses job-local coalescing without workflow-wide serialization',()
   assert.match(directorSupervisor,/supervise:\n\s+needs: \[runner-drain, game-primary-gate\]/);
   assert.match(directorSupervisor,/supervise:[\s\S]*?group:\s*director-central-company-supervise-v3/);
 });
+
+
+test('all internal Roblox releases use one canonical title image for Roblox and homepage',()=>{
+  const contract=roadmap.robloxHomepageThumbnailSyncContract;
+  const ids=contract?.scope?.currentInternalRobloxExposureGames||[];
+  assert.equal(contract?.version,2);
+  assert.equal(ids.length,16);
+  assert.equal(contract?.scope?.currentInternalRobloxExposureGameCount,16);
+  assert.equal(contract?.scope?.selectionAuthority,'company-runtime/homepage-platform-exposure.json');
+  assert.equal(contract?.scope?.allInternalReleaseReadyRobloxGamesRequired,true);
+  assert.equal(contract?.automation?.placeRepublishRequired,false);
+  assert.equal(contract?.automation?.thumbnailOnlyUpload,true);
+
+  const catalog=readJson('game-catalog.json');
+  for(const id of ids){
+    const game=(catalog.games||[]).find(row=>String(row?.id||row?.gameId||'')===id);
+    assert.ok(game,id);
+    const image=String(game?.canonical?.marketing?.thumbnail||'');
+    assert.equal(image,`assets/roblox-thumbnails/${id}.svg`,id);
+    assert.equal(game.image,image,id);
+    assert.equal(game.marketingThumbnail,image,id);
+    assert.equal(game?.canonical?.identity?.image,image,id);
+    assert.equal(fs.existsSync(path.join(repoRoot,image)),true,image);
+    const svg=readText(image);
+    assert.match(svg,/viewBox="0 0 1920 1080"/,image);
+    assert.ok(svg.length>1000,image);
+  }
+
+  const topology=architecture.robloxHomepageThumbnailSyncTopology;
+  assert.equal(topology?.version,2);
+  assert.equal(topology?.runtimeExposureSource,'company-runtime/homepage-platform-exposure.json');
+  assert.equal(topology?.allInternalReleaseReadyGamesCovered,true);
+  assert.equal(topology?.assetOrCatalogChangeAutoSync,true);
+  assert.equal(topology?.placeRepublishForThumbnailSync,false);
+
+  const evidence=logMap.robloxHomepageThumbnailSyncEvidenceContract;
+  assert.equal(evidence?.version,2);
+  assert.equal(evidence?.batchSelectionSource,'company-runtime/homepage-platform-exposure.json');
+  assert.equal(evidence?.batchRequiresAllEligibleGames,true);
+  for(const marker of ['ROBLOX_THUMBNAIL_SYNC_GAMES=','ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS','ROBLOX_THUMBNAIL_RUNTIME_PERSIST=PASS']){
+    assert.ok(evidence.requiredMarkers.includes(marker),marker);
+  }
+
+  const workflow=readText('.github/workflows/company-development-roblox-release-promotion.yml');
+  assert.match(workflow,/- 'assets\/roblox-thumbnails\/\*\*'/);
+  assert.match(workflow,/- 'game-catalog\.json'/);
+  assert.match(workflow,/\.\.\/runtime\/homepage-platform-exposure\.json/);
+  assert.match(workflow,/thumbnail_only:/);
+  assert.match(workflow,/ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS/);
+});
