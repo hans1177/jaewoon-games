@@ -9858,6 +9858,48 @@
       "newWorkerAuthorityCreated": false,
       "gamePrimaryWorkerPolicyUnchanged": true,
       "qaSecurityReleaseGatesUnchanged": true
+    },
+    "vibeMenuUiExperienceBreadth20260927": {
+      "id": "VIBE_MENU_UI_EXPERIENCE_BREADTH_2026-09-27",
+      "authority": "OWNER_DIRECTIVE_2026-09-27",
+      "sourceContract": "company-learning/vibe-autonomous-content-expansion-policy.json#menuExperienceDiversity",
+      "status": "ACTIVE",
+      "objective": "LET_EXISTING_VIBE_BUILD_UP_AUTONOMOUSLY_IMPLEMENT_DIVERSE_GAME_SPECIFIC_MENU_AND_SCREEN_FLOWS_INSTEAD_OF_REUSING_ONE_LAYOUT",
+      "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+      "breadthTheme": "MENU_UI_EXPERIENCE_SYSTEM",
+      "applicableMenuRoles": [
+        "MAIN_MENU",
+        "PAUSE_OR_SESSION_MENU",
+        "INVENTORY",
+        "EQUIPMENT_LOADOUT",
+        "SHOP",
+        "CRAFTING",
+        "QUEST_JOURNAL",
+        "MAP_OR_REGION_NAVIGATION",
+        "SETTINGS_ACCESSIBILITY",
+        "RESULT_REWARD_SUMMARY",
+        "CONTEXT_INTERACTION_MENU",
+        "MULTIPLAYER_PARTY_OR_LOBBY_WHEN_APPLICABLE"
+      ],
+      "variationRequiredAcross": [
+        "SCREEN_PURPOSE",
+        "INFORMATION_PRIORITY",
+        "LAYOUT",
+        "PRIMARY_ACTIONS",
+        "NAVIGATION_PATTERN",
+        "WORLD_AND_GENRE_IDENTITY",
+        "CONTEXT_AVAILABILITY",
+        "MOBILE_TOUCH_FLOW",
+        "STATE_FEEDBACK"
+      ],
+      "fixedUniversalMenuCloneForbidden": true,
+      "titleSwapOnlyMenuCloneForbidden": true,
+      "authoritativeStateBindingRequired": true,
+      "mobileTouchFirst": true,
+      "existingRulesBalanceProgressionAndSavePreserved": true,
+      "newWorkflowCreated": false,
+      "newQueueCreated": false,
+      "newStageCreated": false
     }
   },
   "vibeExecutionLaneContract": {
