@@ -22,6 +22,8 @@ const unityWebWorkflow=readText('.github/workflows/unity-web-first-stage-build.y
 const nativeDatasetGate=readText('tools/vibe2-real-platform-dataset-gate.mjs');
 const directorSupervisor=readText('.github/workflows/director-supervisor.yml');
 const coreQaWorkflow=readText('.github/workflows/vibe2-core-qa.yml');
+const vibe24hRunner=readText('.github/workflows/vibe2-24h-runner.yml');
+const vibeContinuousCore=readText('.github/workflows/vibe2-continuous-core.yml');
 
 test('platform-release-roadmap is the single machine execution policy source',()=>{
   assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
@@ -1500,4 +1502,32 @@ test('quality-first buildup short-circuit is centralized in policy and projected
   assert.equal(logContract.transient429MustNotClaimGameSourceDefect,true);
   assert.equal(logContract.sourceMutationRequiredBeforeProductQualityRevalidation,true);
   assert.equal(logContract.publicReleaseHardGateEvidenceStillRequired,true);
+});
+
+test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution lane instead of creating a shadow pipeline',()=>{
+  const asset=roadmap.assetProductionParallelContract;
+  const parallel=asset.parallelism;
+  const library=asset.companyGraphicsLibrary24h;
+  const topology=architecture.assetProductionParallelism;
+  assert.equal(parallel.assetDevelopmentExecutionLane,'ASSET_DEVELOPMENT');
+  assert.equal(parallel.assetDevelopmentUsesExistingCanonicalQueue,true);
+  assert.equal(parallel.assetDevelopmentUsesExistingContinuousCore,true);
+  assert.equal(parallel.assetDevelopmentDedicatedRunner,true);
+  assert.equal(parallel.newTopLevelAssetPipelineCreated,false);
+  assert.equal(parallel.newWorkerAuthorityCreated,false);
+  assert.equal(parallel.queueMutationAuthorityCreated,false);
+  assert.equal(library.productionRoot,'GRAPHICS_PRODUCTION');
+  assert.equal(library.executionLane,'ASSET_DEVELOPMENT');
+  assert.equal(library.dedicatedRunner,true);
+  assert.equal(library.reusableProductionTarget.motion.verifiedReusableClipTarget,200);
+  assert.deepEqual(library.fullAssetDevelopmentScope,[
+    'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
+  ]);
+  assert.equal(topology.dedicatedExecution.lane,'ASSET_DEVELOPMENT');
+  assert.equal(topology.dedicatedExecution.newTopLevelPipeline,false);
+  assert.equal(logMap.assetDevelopmentDedicatedLaneEvidence.executionLane,'ASSET_DEVELOPMENT');
+  assert.match(vibe24hRunner,/asset_development:[\s\S]*execution_lane: asset-development[\s\S]*lane_max: '64'/);
+  assert.match(vibe24hRunner,/VIBE2_ASSET_DEVELOPMENT_QUEUED=/);
+  assert.match(vibe24hRunner,/VIBE2_ASSET_DEVELOPMENT_ACTIVE=/);
+  assert.match(vibeContinuousCore,/\n          - asset-development/);
 });
