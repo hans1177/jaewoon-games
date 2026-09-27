@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-121w345",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-studio-evolution-unity-web-presentation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "unity-games/monster-adventure/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/monster-adventure/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:46:46.181Z",
-      "expiresAt": "2026-09-27T07:31:46.181Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-studio-evolution-unity-web-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-1x4i6jc",
       "worker": "vibe2",
       "taskId": "horror-escape-room-unity-web-base-implementation-v1",
@@ -732,6 +714,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:amusement-tycoon-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-d57amb",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-unity-web-base-implementation-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "unity-games/amusement-tycoon/Assets/Scripts/GameCore.cs",
+        "unity-games/amusement-tycoon/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "f930aa8ddc87534958c329af5fafc6a12209063e",
+      "acquiredAt": "2026-09-27T07:32:42.065Z",
+      "expiresAt": "2026-09-27T08:17:42.065Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-unity-web-base-implementation-v1"
       ]
     }
   ]
