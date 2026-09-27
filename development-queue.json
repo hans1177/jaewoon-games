@@ -1178,10 +1178,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-27T02:16:23.361Z",
+      "updatedAt": "2026-09-27T02:16:37.308Z",
       "robloxSourceCommit": "225cfd5c9bb015378abae1a5ac942c06cde3805f",
       "robloxSourceBootstrapPassedAt": "2026-09-27T02:16:23.361Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1737,11 +1737,9 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
-      "routingBlockers": [
-        "roblox-build-package-revalidation-pending"
-      ],
+      "robloxFailureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
+      "robloxFailureSignature": "GROUND_CONTACT_FAILURE",
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -2455,6 +2453,10 @@
       "robloxF9PendingInParallel": true,
       "robloxPromotionBlockers": [
         "roblox-public-release-runtime-finding:ground_contact_failure"
+      ],
+      "robloxF9FailureSignature": "ROBLOX_F9_EXACT_EVIDENCE_MISMATCH",
+      "robloxF9Blockers": [
+        "roblox-f9-exact-evidence-mismatch"
       ]
     },
     {
@@ -10298,7 +10300,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T02:16:23.361Z",
+  "updatedAt": "2026-09-27T02:16:37.308Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
