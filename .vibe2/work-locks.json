@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-16plr8d",
-      "worker": "vibe2",
-      "taskId": "cozy-island-roblox-second-gate-rebuild-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/shared/GameConfig.luau",
-        "roblox-games/cozy-island/server/Game.server.luau",
-        "roblox-games/cozy-island/client/Game.client.luau"
-      ],
-      "baseSha": "9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-      "acquiredAt": "2026-09-27T00:56:39.040Z",
-      "expiresAt": "2026-09-27T01:41:39.040Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-roblox-second-gate-rebuild-v1"
-      ]
-    },
-    {
       "id": "wl-15z2u60",
       "worker": "vibe2",
       "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
@@ -749,6 +730,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:line-defense-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-1vvaihh",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-post-release-focus-4048dd962de0ea8d",
+      "gameId": "horror-escape-room",
+      "files": [
+        "roblox-games/horror-escape-room/server/Game.server.luau",
+        "roblox-games/horror-escape-room/client/Game.client.luau",
+        "roblox-games/horror-escape-room/shared/GameConfig.luau"
+      ],
+      "baseSha": "50673ac9ac61015195ee2db525dc6e371c67d252",
+      "acquiredAt": "2026-09-27T01:43:09.380Z",
+      "expiresAt": "2026-09-27T02:28:09.380Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-post-release-focus-4048dd962de0ea8d"
       ]
     }
   ]
