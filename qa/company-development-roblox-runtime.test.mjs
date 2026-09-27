@@ -463,6 +463,15 @@ test('owner-focused concurrent Roblox lane carries exact merged source revision 
   assert.doesNotMatch(secondaryPersist,/canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'/);
 });
 
+test('canonical concurrent Roblox source persistence preserves an existing Unity selection',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/const robloxSelectionPatch=item=>/);
+  assert.match(workflow,/const concurrentRoblox=selected!=='ROBLOX'/);
+  assert.match(workflow,/item\.concurrentTargetPlatforms\.some\(value=>String\(value\|\|''\)\.toUpperCase\(\)==='ROBLOX'\)/);
+  assert.match(workflow,/return concurrentRoblox\?\{\}:\{selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX'\}/);
+  assert.ok((workflow.match(/Object\.assign\(item,robloxSelectionPatch\(item\),\{/g)||[]).length>=5);
+});
+
 test('owner-focused Roblox package completion dispatches the existing continuation without canonical Unity mutation',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/ownerFocusedSecondaryPlatformEligible\(item,roadmap,'ROBLOX'\)/);
