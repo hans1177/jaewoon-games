@@ -8764,18 +8764,6 @@
         "gameSourceWakePreserved": true,
         "independentGameParallelismPreserved": true,
         "qualitySecurityReleaseGatesUnchanged": true
-      },
-      "coreQaBrowserSmokeIsolation": {
-        "workflow": ".github/workflows/vibe2-core-qa.yml",
-        "deterministicCoreRunner": "ubuntu-slim",
-        "browserSmokeRunner": "ubuntu-latest",
-        "browserSmokeSeparateJob": true,
-        "browserSmokeNeeds": "test",
-        "chromeRequired": true,
-        "deterministicCoreStillProtectedFromGamePrimaryRunner": true,
-        "browserValidationPreserved": true,
-        "qualityGateWeakened": false,
-        "reason": "UBUNTU_SLIM_DOES_NOT_PROVIDE_CHROME; ONLY_BROWSER_REQUIRED_VALIDATION_USES_FULL_RUNNER"
       }
     },
     "homepageRunnerIsolation20260926": {
