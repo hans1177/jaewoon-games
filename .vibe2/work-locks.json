@@ -3,42 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-ioknoo",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-unity-web-base-implementation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "unity-games/monster-adventure/Assets/Scripts/GameCore.cs",
-        "unity-games/monster-adventure/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "7e2983a1f9b7517c34e0c1bced7213be394eb942",
-      "acquiredAt": "2026-09-27T21:35:51.037Z",
-      "expiresAt": "2026-09-27T22:20:51.037Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-17zqixl",
-      "worker": "vibe2",
-      "taskId": "line-defense-unity-web-base-implementation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "7e2983a1f9b7517c34e0c1bced7213be394eb942",
-      "acquiredAt": "2026-09-27T21:36:00.958Z",
-      "expiresAt": "2026-09-27T22:21:00.958Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-1dnnxhq",
       "worker": "vibe2",
       "taskId": "cozy-island-roblox-second-gate-rebuild-v1",
@@ -747,6 +711,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1jee7p9",
+      "worker": "vibe2",
+      "taskId": "line-defense-roblox-presentation-asset-adaptation-v1",
+      "gameId": "line-defense",
+      "files": [
+        "roblox-games/line-defense/client/Game.client.luau",
+        "roblox-games/line-defense/server/Game.server.luau",
+        "roblox-games/line-defense/shared/GameConfig.luau"
+      ],
+      "baseSha": "2a09378c74537241fdce5da3315a4832b0cf728c",
+      "acquiredAt": "2026-09-27T22:21:10.333Z",
+      "expiresAt": "2026-09-27T23:06:10.333Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:line-defense-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
