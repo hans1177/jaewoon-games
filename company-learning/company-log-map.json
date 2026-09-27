@@ -1,5 +1,5 @@
 {
-  "version": 132,
+  "version": 133,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1822,7 +1822,7 @@
     "securityAndReleaseGateClaimsUnchanged": true
   },
   "runnerQueueDrainEvidence": {
-    "version": 3,
+    "version": 4,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "workflow": ".github/workflows/director-supervisor.yml",
     "markers": [
@@ -1836,7 +1836,7 @@
     ],
     "cancelledRunReasonRequired": true,
     "independentGameCancellationForbidden": true,
-    "runnerLabel": "ubuntu-slim",
+    "runnerLabel": "ubuntu-24.04",
     "staleLegacyOrBatchReason": "ROBLOX_STALE_LEGACY_OR_BATCH",
     "staleThresholdMinutes": 15,
     "scanPagesMax": null,
@@ -1844,7 +1844,16 @@
     "scanMode": "TARGETED_RECENT_AND_ACTIVE_STATUS_QUERIES",
     "staleQueuedSameTitleReason": "DUPLICATE_TITLE_STALE_QUEUED",
     "newestQueuedSameTitlePreserved": true,
-    "inProgressSameTitleCancellationForbidden": true
+    "inProgressSameTitleCancellationForbidden": true,
+    "staleSupersededInProgressControlPlaneReason": "CONTROL_PLANE_STALE_IN_PROGRESS_SUPERSEDED",
+    "staleControlPlaneThresholdMinutes": 12,
+    "safeInProgressCancellationWorkflows": [
+      ".github/workflows/director-supervisor.yml",
+      ".github/workflows/vibe2-merged-pr-provenance.yml",
+      ".github/workflows/company-dna-learning.yml"
+    ],
+    "sharedStateWriterInProgressCancellationForbidden": true,
+    "gamePrimaryInProgressCancellationForbidden": true
   },
   "controlPlaneGameRunnerEvictionEvidence": {
     "version": 1,
