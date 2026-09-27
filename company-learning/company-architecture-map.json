@@ -1,5 +1,5 @@
 {
-  "version": 277,
+  "version": 278,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6146,6 +6146,9 @@
     "postFoundationStudioFollowupDelegatesToCanonicalPlanner": true,
     "prePlannerRuntimeFoundationPassGuard": false,
     "primaryActionFeedbackMetricPropagation": "EVALUATION_TO_RUNTIME_METRICS_TO_COMPANY_RUNTIME_EVIDENCE",
-    "primaryActionFeedbackSerializationOmissionAllowed": false
+    "primaryActionFeedbackSerializationOmissionAllowed": false,
+    "studioDedupePrimaryActionEvidenceGate": "SCENARIO_PASS_PLUS_PERSISTED_FEEDBACK_OR_MOTION_PROOF",
+    "unexplainedLegacyPrimaryActionPassReplay": true,
+    "replayChangesGameSource": false
   }
 }
