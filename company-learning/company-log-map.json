@@ -1822,7 +1822,7 @@
     "securityAndReleaseGateClaimsUnchanged": true
   },
   "runnerQueueDrainEvidence": {
-    "version": 2,
+    "version": 3,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "workflow": ".github/workflows/director-supervisor.yml",
     "markers": [
@@ -1841,7 +1841,10 @@
     "staleThresholdMinutes": 15,
     "scanPagesMax": null,
     "exactNamedGameInProgressCancellationForbidden": true,
-    "scanMode": "TARGETED_RECENT_AND_ACTIVE_STATUS_QUERIES"
+    "scanMode": "TARGETED_RECENT_AND_ACTIVE_STATUS_QUERIES",
+    "staleQueuedSameTitleReason": "DUPLICATE_TITLE_STALE_QUEUED",
+    "newestQueuedSameTitlePreserved": true,
+    "inProgressSameTitleCancellationForbidden": true
   },
   "controlPlaneGameRunnerEvictionEvidence": {
     "version": 1,
