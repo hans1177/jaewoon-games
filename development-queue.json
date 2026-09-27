@@ -1369,7 +1369,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-27T06:18:58.080Z",
+      "updatedAt": "2026-09-27T06:20:31.299Z",
       "robloxSourceCommit": "b74a4ac341b7dff0ecd9f2d6cf25375534a2d268",
       "robloxSourceBootstrapPassedAt": "2026-09-27T02:19:51.568Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1635,7 +1635,7 @@
       "robloxRegressionPassed": true,
       "robloxRegressionPassedAt": "2026-09-27T06:12:57.548Z",
       "robloxFinalReviewPassed": true,
-      "robloxFinalReviewPassedAt": "2026-09-27T06:01:31.256Z",
+      "robloxFinalReviewPassedAt": "2026-09-27T06:20:31.299Z",
       "robloxF9ReleaseRegressionPassed": true,
       "robloxF9ReleaseRegressionEvidence": {
         "version": 1,
@@ -1658,7 +1658,7 @@
           "qa/vibe3-roblox-platform.test.mjs"
         ],
         "authority": "deterministic-f9-exact-runtime-candidate-review",
-        "verifiedAt": "2026-09-27T06:01:31.256Z"
+        "verifiedAt": "2026-09-27T06:20:31.299Z"
       },
       "robloxPostRuntimeQaEvidence": {
         "version": 4,
@@ -1721,7 +1721,7 @@
         "verifiedAt": "2026-09-27T06:12:57.548Z"
       },
       "robloxInternalReleaseReady": true,
-      "robloxInternalReleaseAt": "2026-09-27T06:01:31.256Z",
+      "robloxInternalReleaseAt": "2026-09-27T06:20:31.299Z",
       "robloxInternalReleaseEvidence": {
         "version": 1,
         "gameId": "horror-escape-room",
@@ -1765,7 +1765,7 @@
         "f9ReleaseRegressionPassed": true,
         "promotedWithoutRepublish": true,
         "publicRelease": false,
-        "promotedAt": "2026-09-27T06:01:31.256Z"
+        "promotedAt": "2026-09-27T06:20:31.299Z"
       },
       "robloxReleaseEvidence": {
         "version": 1,
@@ -1810,13 +1810,13 @@
         "f9ReleaseRegressionPassed": true,
         "promotedWithoutRepublish": true,
         "publicRelease": false,
-        "promotedAt": "2026-09-27T06:01:31.256Z"
+        "promotedAt": "2026-09-27T06:20:31.299Z"
       },
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "INTERNAL_PLATFORM_RELEASE",
-      "robloxFailureStage": "PUBLIC_RELEASE_RUNTIME_OBSERVATION",
+      "robloxFailureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
       "robloxFailureSignature": "ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT",
       "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
@@ -2497,9 +2497,9 @@
         "independentQaPassed": false,
         "regressionPassed": false,
         "exactRevision": false,
-        "lastSuccessfulStage": "CHEAP_PRECHECK",
-        "failureStage": "SINGLE_BUILD_OR_PACKAGE",
-        "failureSignature": "4dd87fcb9d4c2e66f74d3ddc1b220c1f00c7208c659e691ff13645f96d2079ad"
+        "lastSuccessfulStage": "INTERNAL_PLATFORM_RELEASE",
+        "failureStage": null,
+        "failureSignature": null
       },
       "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
       "failureCount": 1,
@@ -2530,7 +2530,7 @@
       "robloxPublicReleaseBlockers": [
         "roblox-public-release-awaiting-real-server-boot"
       ],
-      "robloxF9PendingInParallel": true,
+      "robloxF9PendingInParallel": false,
       "robloxPromotionBlockers": [
         "roblox-public-release-awaiting-real-server-boot",
         "roblox-perpetual-buildup-public-hard-gate-pending"
@@ -2582,7 +2582,7 @@
         "f9ReleaseRegressionPassed": true,
         "promotedWithoutRepublish": true,
         "publicRelease": false,
-        "promotedAt": "2026-09-27T06:01:31.256Z",
+        "promotedAt": "2026-09-27T06:20:31.299Z",
         "publicReleaseReady": false,
         "publicExposurePending": false,
         "externalPublicHardGatePending": true,
@@ -10449,7 +10449,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T06:19:00.024Z",
+  "updatedAt": "2026-09-27T06:20:31.299Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
