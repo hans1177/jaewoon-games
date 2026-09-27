@@ -167,7 +167,7 @@ jobs:
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('UPPER_PLATFORM_REQUESTED_GAME_ID_INVALID:'+requested);
           const rows=(q.items||[]).filter(item=>
             (!requested||item.gameId===requested)&&
-            String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&
+            ['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(String(item.productionClass||'').toUpperCase())&&
             String(item.status||'').toUpperCase()!=='DISABLED'&&
             (platformDevelopmentEligible(item,'ROBLOX')||platformDevelopmentEligible(item,'UNITY'))
           );
