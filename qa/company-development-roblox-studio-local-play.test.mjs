@@ -760,20 +760,38 @@ test('Studio MCP opens the exact local Place as the single Studio before MCP and
   );
   assert.match(bindBlock,/\$placeLaunchProcess = Start-Process -FilePath \$env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @\(\$places\[0\]\.FullName\) -PassThru/);
   assert.doesNotMatch(bindBlock,/\$warmStudioProcess\s*=\s*Start-Process/);
-  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_EXACT_ASSISTANT_READY=YES/);
+  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_EXACT_ASSISTANT_LOG_READY=YES/);
+  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_EXACT_ASSISTANT_LOG_READY=UNKNOWN_CONTINUE_OFFICIAL_HANDSHAKE/);
+  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_ASSISTANT_LOG_GATE=ADVISORY_ONLY/);
   assert.match(bindBlock,/ROBLOX_STUDIO_MCP_SINGLE_EXACT_STUDIO=YES/);
   assert.match(bindBlock,/AssistantVersion:\|Running plugin sabuiltin_Assistant\\\.rbxm/);
-  assert.match(bindBlock,/Roblox Studio Assistant did not finish loading in exact local Place/);
+  assert.doesNotMatch(bindBlock,/Roblox Studio Assistant did not finish loading in exact local Place/);
   assert.match(bindBlock,/VIBE2_STUDIO_PROCESS_IDS=/);
   assert.match(bindBlock,/ROBLOX_STUDIO_MCP_OWNED_PROCESS_IDS=/);
 
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_EXACT_PLACE_PROCESS_ID=/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_EXACT_ASSISTANT_READY=YES/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_EXACT_ASSISTANT_LOG_READY=YES/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_EXACT_ASSISTANT_LOG_READY=UNKNOWN_CONTINUE_OFFICIAL_HANDSHAKE/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_ASSISTANT_LOG_GATE=ADVISORY_ONLY/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SINGLE_EXACT_STUDIO=YES/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_STALE_OFFICIAL_PROCESS_REAPED=/);
   assert.match(studioMcpBlock,/StartsWith\(\$officialVersionsRoot,\[System\.StringComparison\]::OrdinalIgnoreCase\)/);
   assert.match(studioMcpBlock,/foreach \(\$ownedId in \$ownedIds\)/);
   assert.doesNotMatch(studioMcpBlock,/AutoHotkey|pyautogui|SendKeys|mouse_event|keybd_event/i);
+});
+
+test('Assistant log readiness is advisory and official required-tool handshake remains authoritative',()=>{
+  const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  const bindBlock=studioMcpBlock.slice(
+    studioMcpBlock.indexOf('      - name: Bind and open exact local Place artifact'),
+    studioMcpBlock.indexOf('      - name: Run actual local play through official Studio MCP')
+  );
+  assert.match(bindBlock,/for \(\$probe = 1; \$probe -le 8; \$probe\+\+\)/);
+  assert.match(bindBlock,/UNKNOWN_CONTINUE_OFFICIAL_HANDSHAKE/);
+  assert.match(bindBlock,/ASSISTANT_LOG_GATE=ADVISORY_ONLY/);
+  assert.doesNotMatch(bindBlock,/throw 'Roblox Studio Assistant did not finish loading/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_ENABLEMENT_AUTHORITY=OFFICIAL_REQUIRED_TOOL_HANDSHAKE/);
+  assert.match(studioMcpBlock,/--tool-attempts=5/);
 });
 
 test('Studio MCP planner stays independent from hosted foundation capacity while accepting foundation-pass artifacts',()=>{
