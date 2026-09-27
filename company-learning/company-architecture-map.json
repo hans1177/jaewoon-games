@@ -1,5 +1,5 @@
 {
-  "version": 298,
+  "version": 299,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -212,14 +212,14 @@
       "FULL_REGRESSION_FAN_IN",
       "ACCEPT_OR_ROLLBACK_REQUEUE",
       "MACHINE_ONLY_TWO_PLUS_CLIENT_MULTIPLAYER_REPRODUCTION",
-      "JOIN_LEAVE_REJOIN_LATE_JOIN_AUTHORITATIVE_SYNC_VALIDATION",
       "USER_ASSISTANCE_NOT_REQUIRED_FOR_MULTIPLAYER_PASS",
       "MULTIPLAYER_VALIDATION_PARALLEL_NON_BLOCKING_FOR_DEVELOPMENT",
       "MULTIPLAYER_EVIDENCE_BLOCKS_PROMOTION_ONLY_WHEN_REQUIRED",
       "UNRELATED_IMPLEMENTATION_QA_REGRESSION_AND_QUALITY_WORK_CONTINUES_WHILE_MULTIPLAYER_PENDING",
-      "SIMPLIFIED_MULTIPLAYER_CONTRACT_MAY_PROMOTE_INTERNAL_RELEASE",
-      "FULL_TWO_PLUS_CLIENT_MULTIPLAYER_EVIDENCE_REQUIRED_BEFORE_PUBLIC_RELEASE",
-      "INTERNAL_PLAYTEST_CONTINUES_WHILE_FULL_MULTIPLAYER_VALIDATION_RUNS_IN_PARALLEL"
+      "MULTIPLAYER_CHECK_ONLY_WHEN_GAME_DESIGN_OR_CHANGED_RESPONSIBILITY_REQUIRES",
+      "ONE_EXACT_INTERNAL_TWO_PARTICIPANT_SYNC_PROOF_REUSED_BY_F7_F9_INTERNAL_AND_PUBLIC",
+      "EXTERNAL_PUBLIC_SERVER_MULTIPLAYER_RECHECK_FORBIDDEN_WITH_VALID_EXACT_INTERNAL_PROOF",
+      "EXTENDED_JOIN_LEAVE_REJOIN_LATE_JOIN_ONLY_FOR_CAUSAL_MULTIPLAYER_FAILURE_REPAIR"
     ],
     "webStartupRepair": [
       "SCAN_REAL_ENTRYPOINT_AND_DEPENDENCIES",
@@ -6571,9 +6571,13 @@
     "multiplayer": {
       "ownerFloor": "F7",
       "onlyWhenApplicable": true,
-      "oneExactTwoParticipantSyncProofPerCycle": true,
+      "oneExactInternalProofPerCandidate": true,
       "reusedByF9": true,
-      "duplicateReleaseRecheck": false
+      "reusedByInternalRelease": true,
+      "reusedByOwnerApprovedPublicRelease": true,
+      "duplicatePublicRecheck": false,
+      "externalPublicServerRequired": false,
+      "extendedLifecycleOnlyOnCausalFailure": true
     },
     "f9": {
       "role": "EVIDENCE_FAN_IN_AND_REGRESSION_REVIEW",
