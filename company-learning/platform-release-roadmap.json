@@ -1,5 +1,5 @@
 {
-  "version": 458,
+  "version": 459,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9412,6 +9412,31 @@
       "staleBatchFreshnessGuardPreserved": true,
       "exactSourceBindingPreserved": true,
       "currentArtifactBindingRequired": true,
+      "activeGameCancellationForbidden": true,
+      "qualitySecurityReleaseGatesUnchanged": true
+    },
+    "concurrentPlatformSharedProgressMonotonicity20260927": {
+      "id": "CONCURRENT_PLATFORM_SHARED_PROGRESS_MONOTONICITY_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "PREVENT_ONE_NATIVE_PLATFORM_CHECKPOINT_WRITER_FROM_REGRESSING_SHARED_GAME_FLOW_AFTER_THE_SIBLING_PLATFORM_HAS_DURABLE_EXACT_PROGRESS",
+      "observedEvidence": {
+        "gameId": "horror-escape-room",
+        "robloxPackagePersistCommit": "b78d5ea9bb2834afa265bc77d23e86c01ea1f121",
+        "robloxStateBeforeUnity": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY/F0_SOURCE_PREFLIGHT_PASSED",
+        "unityPersistCommit": "8ed5ede92901fe21935b12aa642a68b89e63830e",
+        "staleStateAfterUnity": "TARGET_PLATFORM_TECHNICAL_VALIDATION/WAITING_TARGET_PLATFORM_VALIDATION",
+        "exactRobloxBuildPreserved": true,
+        "exactRobloxF0Preserved": true
+      },
+      "rule": "SHARED_CURRENT_STEP_AND_CANONICAL_STATE_MUST_BE_MONOTONIC_ACROSS_CONCURRENT_ROBLOX_UNITY_WRITERS",
+      "unityWriterMustPreserveExactRobloxF0": true,
+      "unityWriterMustPreserveExactRobloxCandidate": true,
+      "unityWriterMustPreserveRobloxInternalPlayProgress": true,
+      "queueReconcileMustRecoverExactRobloxF0PrivateDeploy": true,
+      "queueReconcileMustRecoverExactRobloxCandidateRuntimeFoundation": true,
+      "exactSourceArtifactBindingRequired": true,
+      "perPlatformEvidenceMayUpdateIndependently": true,
       "activeGameCancellationForbidden": true,
       "qualitySecurityReleaseGatesUnchanged": true
     }
