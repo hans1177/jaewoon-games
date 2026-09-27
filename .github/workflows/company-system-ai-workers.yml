@@ -275,7 +275,9 @@ jobs:
   worker:
     needs: reserve
     if: needs.reserve.outputs.count != '0'
-    runs-on: ubuntu-slim
+    # System AI source/model execution is heavy model work; keep it on the full runner.
+    # Only reserve/fan-in/control stay on ubuntu-slim per the central runner separation contract.
+    runs-on: ubuntu-latest
     timeout-minutes: 24
     strategy:
       fail-fast: false
