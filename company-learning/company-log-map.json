@@ -1900,10 +1900,10 @@
     "independentPlatformLaneMayProceedWhenSiblingAlreadyActive": true
   },
   "gameControlRunnerPoolEvidence": {
-    "version": 2,
+    "version": 3,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "expectedRunnerLabels": {
-      "robloxIngress": "ubuntu-24.04",
+      "robloxIngress": "EXACT_GAME=ubuntu-24.04-arm;BATCH=ubuntu-24.04",
       "robloxControl": "ubuntu-24.04-arm",
       "robloxHeavy": "ubuntu-latest",
       "privateRuntimeDedupe": "ubuntu-24.04-arm",
@@ -1913,7 +1913,9 @@
       "centralNativePlan": "ubuntu-slim",
       "vibe2Reserve": "ubuntu-slim",
       "vibe2FanIn": "ubuntu-24.04-arm",
-      "directorDrain": "ubuntu-24.04"
+      "directorDrain": "ubuntu-24.04",
+      "robloxExactIngress": "ubuntu-24.04-arm",
+      "robloxBatchIngress": "ubuntu-24.04"
     },
     "purpose": "START_LIGHTWEIGHT_DEVELOPMENT_INGRESS_WITHOUT_WAITING_BEHIND_ARM_OR_HEAVY_GAME_EXECUTION",
     "gateSemanticsUnchanged": true
@@ -2222,7 +2224,7 @@
     "manualEmptyBatchRunScoped": true
   },
   "lightweightGameIngressRunnerReliefEvidence": {
-    "version": 2,
+    "version": 3,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "source": "company-learning/platform-release-roadmap.json#changeRecord.lightweightGameIngressRunnerRelief20260927",
     "observedBeforeChange": {
@@ -2232,12 +2234,14 @@
     },
     "expectedRunnerLabels": {
       "centralNativePlan": "ubuntu-slim",
-      "robloxSourcePlan": "ubuntu-24.04",
+      "robloxSourcePlan": "EXACT_GAME=ubuntu-24.04-arm;BATCH=ubuntu-24.04",
       "unityPrepare": "ubuntu-slim",
       "vibe2Reserve": "ubuntu-slim",
       "directorRunnerDrain": "ubuntu-24.04",
       "vibe2FanIn": "ubuntu-24.04-arm",
-      "heavyGameExecution": "ubuntu-latest"
+      "heavyGameExecution": "ubuntu-latest",
+      "robloxSourcePlanExact": "ubuntu-24.04-arm",
+      "robloxSourcePlanBatch": "ubuntu-24.04"
     },
     "expectedConcurrency": {
       "centralMainPushCoalesced": true,
@@ -2271,10 +2275,12 @@
     },
     "robloxSourcePlanCriticalIngressException": {
       "previousRunner": "ubuntu-slim",
-      "runner": "ubuntu-24.04",
+      "runner": "SPLIT_EXACT_ARM_BATCH_FIXED_2404",
       "observedDirectorDrainRunId": 36290168197,
       "directorDrainSucceededOnFixed2404": true,
-      "sourcePlanStillQueuedOnSlimAfterDrain": true
+      "sourcePlanStillQueuedOnSlimAfterDrain": true,
+      "exactGameRunner": "ubuntu-24.04-arm",
+      "batchRunner": "ubuntu-24.04"
     }
   },
   "directorHomepageWakeDecouplingEvidence": {
@@ -2312,11 +2318,11 @@
     "epochAdvancedToBypassLegacyPendingGroup": true
   },
   "robloxSourcePlanWakeAndRunnerIsolationEvidence": {
-    "version": 1,
+    "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "workflow": ".github/workflows/company-development-roblox-runtime.yml",
     "job": "source-plan",
-    "expectedRunnerLabel": "ubuntu-24.04",
+    "expectedRunnerLabel": "EXACT_GAME=ubuntu-24.04-arm;BATCH=ubuntu-24.04",
     "previousRunnerLabel": "ubuntu-slim",
     "pushWakeMustCoverSourcePlanContractPaths": true,
     "requiredWakePaths": [
@@ -2335,7 +2341,10 @@
     ],
     "technicalPlanRunnerUnchanged": "ubuntu-24.04-arm",
     "heavyWorkerRunnerUnchanged": "ubuntu-latest",
-    "exactSourceAndArtifactBindingUnchanged": true
+    "exactSourceAndArtifactBindingUnchanged": true,
+    "expectedExactGameRunnerLabel": "ubuntu-24.04-arm",
+    "expectedBatchRunnerLabel": "ubuntu-24.04",
+    "exactGameParallelismPreserved": true
   },
   "concurrentPlatformSharedProgressMonotonicityEvidence": {
     "version": 2,
