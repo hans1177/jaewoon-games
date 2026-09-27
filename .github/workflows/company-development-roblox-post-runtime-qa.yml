@@ -40,7 +40,8 @@ concurrency:
 
 jobs:
   dedupe:
-    name: collapse duplicate runtime foundation scans
+    if: ${{ inputs.retry_open_cloud_only == true }}
+    name: collapse duplicate manual external-server diagnostics
     runs-on: ubuntu-24.04
     timeout-minutes: 3
     outputs:
@@ -85,8 +86,8 @@ jobs:
 
   runtime-foundation-qa:
     needs: dedupe
-    if: needs.dedupe.outputs.run == 'true'
-    name: existing game tester and QA validate exact Roblox runtime candidate
+    if: ${{ always() && needs.dedupe.result == 'success' && needs.dedupe.outputs.run == 'true' && inputs.retry_open_cloud_only == true }}
+    name: optional external-server diagnostic for exact Roblox runtime candidate
     # Default path only coordinates internal validation. Open Cloud is manual diagnostic-only.
     runs-on: ubuntu-24.04
     timeout-minutes: 30
