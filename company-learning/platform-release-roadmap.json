@@ -1,5 +1,5 @@
 {
-  "version": 470,
+  "version": 471,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9600,7 +9600,9 @@
       "postFoundationStudioFollowupMustDelegateToCanonicalPlanner": true,
       "postFoundationStudioFollowupMayNotPreRequireRuntimeFoundationPass": true,
       "primaryActionFeedbackMetricMustPersistToRuntimeSummary": true,
-      "primaryActionScenarioPassMayNotRelyOnSerializationOmission": true
+      "primaryActionScenarioPassMayNotRelyOnSerializationOmission": true,
+      "primaryActionEffectEvidenceCompletenessRequiredForAlreadyObserved": true,
+      "incompletePrimaryActionEffectEvidenceForcesStudioRecheck": true
     }
   },
   "vibeExecutionLaneContract": {
