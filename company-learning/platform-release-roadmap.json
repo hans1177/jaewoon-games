@@ -1,5 +1,5 @@
 {
-  "version": 472,
+  "version": 473,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -15187,7 +15187,7 @@
     }
   },
   "assetProductionParallelContract": {
-    "version": 10,
+    "version": 11,
     "authority": "OWNER_DIRECTIVE_2026-09-20",
     "enabled": true,
     "purpose": "REAL_ASSET_PRODUCTION_IS_A_FIRST_CLASS_PARALLEL_DEVELOPMENT_LANE_NOT_GRAPHICS_REVIEW_ONLY",
@@ -15227,8 +15227,12 @@
     ],
     "productionLanes": [
       "ART_DIRECTION",
+      "CHARACTER_CREATURE",
       "THREE_D_ASSET",
+      "ENVIRONMENT_BUILDING_PROP",
+      "WEAPON_TOOL",
       "MATERIAL_TEXTURE",
+      "LIGHTING_ATMOSPHERE",
       "ANIMATION",
       "VFX",
       "UI_ART",
@@ -15291,7 +15295,15 @@
       "phase2NeuralExecutionAuthorityCreated": false,
       "newWorkerAuthorityCreated": false,
       "queueMutationAuthorityCreated": false,
-      "waveReorderAuthorityCreated": false
+      "waveReorderAuthorityCreated": false,
+      "assetDevelopmentExecutionLane": "ASSET_DEVELOPMENT",
+      "assetDevelopmentUsesExistingCanonicalQueue": true,
+      "assetDevelopmentUsesExistingContinuousCore": true,
+      "assetDevelopmentDedicatedRunner": true,
+      "assetDevelopmentRunnerCapacityIndependentFromGamePrimary": true,
+      "assetDevelopmentMayConsumeOnlyAssetProductionTasks": true,
+      "assetDevelopmentTaskMarker": "assetProductionLane=true",
+      "newTopLevelAssetPipelineCreated": false
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",
@@ -19704,6 +19716,65 @@
           "positiveMasteryRequiresTargetEngineRuntimeEvidence": true,
           "gameplayBalanceSaveProgressionEconomyAndNetworkAuthorityImmutable": true
         }
+      },
+      "executionLane": "ASSET_DEVELOPMENT",
+      "dedicatedRunner": true,
+      "runnerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
+      "sharesCanonicalQueue": true,
+      "sharesVibeImplementationAuthority": true,
+      "newTopLevelPipelineCreated": false,
+      "fullAssetDevelopmentScope": [
+        "CHARACTER",
+        "CREATURE",
+        "BUILDING",
+        "ENVIRONMENT",
+        "WEAPON",
+        "SKILL",
+        "MATERIAL",
+        "AUDIO",
+        "VFX",
+        "UI",
+        "MOTION",
+        "PROP"
+      ],
+      "reusableProductionTarget": {
+        "status": "ACTIVE_TARGET",
+        "target": "HIGH_DENSITY_STYLIZED_FANTASY_RPG_AND_CROSS_GENRE_REUSABLE_ASSET_BASE",
+        "intendedReuseDomains": [
+          "RPG",
+          "SURVIVAL",
+          "ACTION",
+          "ADVENTURE",
+          "TYCOON"
+        ],
+        "motion": {
+          "verifiedReusableClipTarget": 200,
+          "baseAuthoringOrAcquisitionTarget": 60,
+          "safeDerivedVariationTarget": 140,
+          "categories": {
+            "locomotionAndTraversal": 30,
+            "combatAndWeapon": 70,
+            "defenseReactionAndRecovery": 40,
+            "survivalCraftingAndGathering": 30,
+            "interactionSocialAndUtility": 20,
+            "skillBossAndSignature": 10
+          },
+          "derivedVariationMustPreserveGameplayTiming": true,
+          "preparedSemanticDoesNotCountAsVerified": true
+        },
+        "environment": {
+          "modularBiomeAndRegionKitsRequired": true,
+          "buildingInteriorAndPropKitsRequired": true,
+          "lightingAtmosphereAndMaterialLanguageRequired": true,
+          "foregroundMidgroundBackgroundCompositionRequired": true,
+          "landmarksAndSetDressingRequired": true
+        },
+        "characterAndCombatPresentation": {
+          "characterCreatureSilhouetteAndMaterialIdentityRequired": true,
+          "weaponAndToolPresentationRequired": true,
+          "combatVfxCameraUiFeedbackRequired": true
+        },
+        "productionVerifiedCountMayAdvanceOnlyAfterNativeRuntimePass": true
       }
     }
   },
