@@ -3,43 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-h917ut",
-      "worker": "vibe2",
-      "taskId": "line-defense-unity-web-base-implementation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "fdc04521e142456575a24c12d283b3c1a332c99f",
-      "acquiredAt": "2026-09-27T09:35:50.347Z",
-      "expiresAt": "2026-09-27T10:20:50.347Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-16gu8rf",
-      "worker": "vibe2",
-      "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "files": [
-        "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
-      ],
-      "baseSha": "456c47c090c1c88523338e8483d28c591d4034ef",
-      "acquiredAt": "2026-09-27T09:36:39.066Z",
-      "expiresAt": "2026-09-27T10:21:39.066Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-9f0cxi",
       "worker": "vibe2",
       "taskId": "horror-escape-room-studio-evolution-presentation-v1",
@@ -571,6 +534,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:daechung-rpg-roblox-second-gate-rebuild-v1"
+      ]
+    },
+    {
+      "id": "wl-h8478j",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-roblox-second-gate-rebuild-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "roblox-games/horror-escape-room/shared/GameConfig.luau",
+        "roblox-games/horror-escape-room/server/Game.server.luau",
+        "roblox-games/horror-escape-room/client/Game.client.luau"
+      ],
+      "baseSha": "c7bb6fa0e18deefbf3a38c374ff821f3bc96b8c6",
+      "acquiredAt": "2026-09-27T10:21:42.191Z",
+      "expiresAt": "2026-09-27T11:06:42.191Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-roblox-second-gate-rebuild-v1"
       ]
     }
   ]
