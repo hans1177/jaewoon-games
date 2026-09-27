@@ -1249,10 +1249,13 @@
         "coreQaRunner": "ubuntu-slim",
         "coreQaConcurrencyMode": "ACTIVE_ONE_PLUS_LATEST_PENDING",
         "coreQaCancelInProgress": false,
-        "coreQaBrowserSmokeRunner": "ubuntu-latest",
+        "coreQaBrowserSmokeRunner": "ubuntu-24.04",
         "coreQaBrowserSmokeSeparateJob": true,
         "coreQaBrowserSmokeReason": "CHROME_REQUIRED; KEEP DETERMINISTIC CORE REGRESSION ON UBUNTU_SLIM",
-        "coreQaBrowserSmokeQualityGatePreserved": true
+        "coreQaBrowserSmokeQualityGatePreserved": true,
+        "coreQaBrowserSmokeParallel": true,
+        "coreQaBrowserSmokeRequiresRealBrowser": true,
+        "coreQaBrowserSmokeUsesGamePrimaryLabel": false
       },
       "capacityAuthority": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
       "globalActiveWaveBarrier": false,
