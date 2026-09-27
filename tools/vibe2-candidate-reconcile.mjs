@@ -41,13 +41,28 @@ export function reconcileVibeCandidateVerification(queueInput, { candidateBranch
   const result = clean(conclusion).toLowerCase();
   const evidence = verificationEvidence({ target, runId, headSha, conclusion: result });
   if (result === 'success') {
-    const tasks = queue.tasks.map((item) => item.id === task.id ? {
-      ...item, status:'blocked', blocker:`candidate-${clean(target) || 'engine'}-verification-passed-awaiting-review`,
-      evidence:unique([...(item.evidence || []), ...evidence]), lastOutcome:'ENGINE_QA_PASS'
-    } : { ...item });
+    const currentStatus=clean(task.status).toLowerCase();
+    const currentBlocker=clean(task.blocker);
+    const alreadyAdvanced=currentStatus==='verified'
+      ||/^candidate-awaiting-(?:roblox|unity)-runtime-qa$/i.test(currentBlocker)
+      ||(task.evidence||[]).some(value=>/^(?:roblox|unity)-runtime-await-source-tree:/i.test(clean(value)));
+    const tasks = queue.tasks.map((item) => {
+      if(item.id!==task.id)return{...item};
+      const mergedEvidence=unique([...(item.evidence || []), ...evidence]);
+      if(alreadyAdvanced)return{...item,evidence:mergedEvidence};
+      return{
+        ...item, status:'blocked', blocker:`candidate-${clean(target) || 'engine'}-verification-passed-awaiting-review`,
+        evidence:mergedEvidence, lastOutcome:'ENGINE_QA_PASS'
+      };
+    });
     const nextQueue=createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks});
     const next=nextParallel(nextQueue);
-    return Object.freeze({ updated:true, taskId:task.id, verificationPassed:true, finalPass:false, promotionAllowed:false, learningEligible:false, queue:nextQueue, next, dispatchNext:shouldRefill(next), reason:'engine-verification-passed-awaiting-review' });
+    return Object.freeze({
+      updated:true, taskId:task.id, verificationPassed:true,
+      finalPass:currentStatus==='verified', promotionAllowed:false, learningEligible:false,
+      queue:nextQueue, next, dispatchNext:shouldRefill(next),
+      reason:alreadyAdvanced?'engine-verification-evidence-merged-without-stage-rewind':'engine-verification-passed-awaiting-review'
+    });
   }
   if (['failure','timed_out','startup_failure'].includes(result)) {
     const failed=finishVibeQueueTask(queue,{ taskId:task.id, outcome:'FAIL', evidence, blocker:`candidate-${clean(target)||'engine'}-verification-failed`, retryable:true });
