@@ -1841,7 +1841,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const assetDevelopmentFocusedGraphics=assetDevelopmentLane&&robloxAssetAdaptationTask;
     const focusedFinal=!allowFullRewrite&&!multiFilePairRequired&&(!studioExpansion||zeroOutputTimeoutRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||assetDevelopmentFocusedGraphics)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(assetDevelopmentFocusedGraphics||attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
-    const diagnosticFocusedReplaceOnly=!allowFullRewrite&&!studioExpansion&&!robloxFullGraphicsPackageRecovery
+    const diagnosticFocusedReplaceOnly=!allowFullRewrite&&!studioExpansion&&!robloxFullGraphicsPackageRecovery&&!assetDevelopmentFocusedGraphics
       ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})
       :null;
     const systemAtomicPairCompletion=!allowFullRewrite&&systemAtomicPairRequired&&priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'
