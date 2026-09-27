@@ -137,5 +137,9 @@ test('post-runtime QA collapses duplicate scans before heavy work without workfl
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
   assert.match(workflow,/runtime-foundation-qa:\n\s+needs: dedupe\n\s+if: needs\.dedupe\.outputs\.run == 'true'/);
-  assert.match(workflow,/studio-local-plan:\n\s+needs: dedupe\n\s+if: needs\.dedupe\.outputs\.run == 'true'/);
+  const studioAt=workflow.indexOf('\n  studio-local-plan:');
+  assert.ok(studioAt>0);
+  const studioBlock=workflow.slice(studioAt,workflow.indexOf('\n  ',studioAt+3)>studioAt?workflow.indexOf('\n  ',studioAt+3):workflow.length);
+  assert.doesNotMatch(studioBlock,/\n\s+needs: dedupe/);
+  assert.match(workflow,/studio-local-plan:[\s\S]{0,520}?group: roblox-studio-mcp-plan-\$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
 });
