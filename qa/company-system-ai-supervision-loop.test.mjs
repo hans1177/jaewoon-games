@@ -105,9 +105,9 @@ test('workflow wait telemetry separates runnable reservation, fan-in job wait, a
   assert.match(workflow,/awaiting-supervisor/);
   assert.match(workflow,/--supervisor-review-wait-ms="\$supervisor_review_wait_ms"/);
   assert.match(workflow,/Math\.max\(\.\.\.stamps\)/);
-  assert.match(workflow,/fan_in_wait_ms="\$\(\n\s+node - <<'NODE'/);
-  assert.match(workflow,/\nNODE\n\s+\)"/);
-  assert.doesNotMatch(workflow,/\n\s{12,}NODE\n\s+\)"/);
+  assert.match(workflow,/fan_in_wait_ms="\$\(node -e "/);
+  assert.doesNotMatch(workflow,/fan_in_wait_ms="\$\([\s\S]{0,80}node - <<'NODE'/);
+  assert.match(workflow,/String\(j\.name\|\|''\)==='fan_in'/);
 });
 
 test('push-triggered System AI runs are coalesced QA-only and never reserve workers',()=>{
