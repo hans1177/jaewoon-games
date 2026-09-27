@@ -166,6 +166,32 @@ test('Open Cloud runtime reads retry transient DNS failures without weakening AP
  assert.equal(result.exactVersion,true);
 });
 
+test('Open Cloud engine probe retries transient HTTP 429 without weakening exact binding',async()=>{
+ const calls=[];
+ const responses=[
+  {ok:false,status:429,body:{errors:[{code:0,message:''}]}},
+  {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
+  {ok:true,status:200,body:{state:'COMPLETE'}},
+  {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+  ]}]}}
+ ];
+ const fetchImpl=async(url,init={})=>{
+  calls.push({url,init});
+  const row=responses.shift();
+  return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};
+ };
+ const r=await probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:2,
+  networkRetryAttempts:4,networkRetryDelayMs:0,
+ });
+ assert.equal(calls.length,4);
+ assert.equal(r.engineExecuted,true);
+ assert.equal(r.exactPlace,true);
+ assert.equal(r.exactVersion,true);
+});
+
 test('Open Cloud engine probe binds exact place version without granting runtime acceptance',async()=>{
  const calls=[];
  const responses=[
