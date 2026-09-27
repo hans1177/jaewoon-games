@@ -38,3 +38,17 @@ test('Unity release ingestëŠ” RELEASE_READY/current build/runtime/QA/merged PRë¥
   assert.match(source,/taskType: 'unity'/);
   assert.match(source,/browserQa: 'NOT_APPLICABLE'/);
 });
+
+
+test('Vibe2 Unity BUILD_UP waits for exact runtime QA after source promotion',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-unity-release-result.yml',import.meta.url),'utf8');
+  assert.match(workflow,/source_tree_sha="\$\(git rev-parse "origin\/main:\$SOURCE_ROOT"\)"/);
+  assert.match(workflow,/VIBE2_UNITY_MAIN_PROMOTION_SOURCE_TREE_SHA/);
+  assert.match(workflow,/candidate-awaiting-unity-runtime-qa/);
+  assert.match(workflow,/unity-runtime-await-game:\$\{GAME_ID\}/);
+  assert.match(workflow,/unity-runtime-await-source-tree:\$\{PROMOTED_SOURCE_TREE_SHA\}/);
+  assert.match(workflow,/unity-runtime-independent-qa-regression-required/);
+  assert.match(workflow,/gh workflow run company-development-unity-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$GAME_ID"/);
+  assert.match(workflow,/VIBE2_UNITY_TASK_FINAL_PASS=NO_RUNTIME_QA_PENDING/);
+  assert.doesNotMatch(workflow,/queue-control\.mjs pass --id="\$TASK_ID" --evidence="unity-candidate-apk-build-pass/);
+});
