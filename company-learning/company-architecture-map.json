@@ -5675,7 +5675,7 @@
     "gameParallelismReduced": false
   },
   "robloxRuntimeFoundationRunnerIsolation": {
-    "version": 2,
+    "version": 3,
     "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
     "workflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
     "runtimeFoundationQa": "ubuntu-24.04",
@@ -5703,7 +5703,19 @@
       "prebootExactEngineCovered": true,
       "prePlannerRuntimeFoundationPassGuard": false,
       "observedMissedDispatchRunId": 36297021567
-    }
+    },
+    "pushWakeFilter": {
+      "mode": "EXECUTABLE_RUNTIME_AUTHORITY_PATHS_ONLY",
+      "qaOnlyWake": false,
+      "descriptiveArchitectureMapWake": false,
+      "roadmapPolicyWake": true,
+      "runtimeFoundationImplementationWake": true,
+      "studioImplementationWake": true,
+      "runtimeTriggerWake": true,
+      "recurringSafetyScan": "*/15 * * * *",
+      "exactManualDispatchPreserved": true
+    },
+    "openCloudPressureObjective": "AVOID_NON_RUNTIME_MAIN_EDIT_PROBES_WHILE_PRESERVING_RECURRING_AND_RUNTIME_CAUSAL_OBSERVATION"
   },
   "nativeChildDispatchDedupeTopology": {
     "version": 1,
