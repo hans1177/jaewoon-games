@@ -16,9 +16,50 @@ const CINEMATIC_SCENE_INTENT=Object.freeze(['EMOTIONAL_INTENT','RISK_OR_TENSION'
 const CINEMATIC_MOTION_LAYERS=Object.freeze(['PRIMARY_MOTION','SECONDARY_MOTION','PROCEDURAL_RESPONSE']);
 const VFX_INTENSITY_HIERARCHY=Object.freeze(['AMBIENT','NORMAL','HEAVY','CRITICAL_OR_SIGNATURE','BOSS_OR_ULTIMATE']);
 const ADAPTIVE_AUDIO_STATES=Object.freeze(['EXPLORATION','DISCOVERY_OR_TENSION','COMBAT','DANGER','BOSS','VICTORY','REST_OR_HUB','SPECIAL_EVENT']);
+const MENU_LAYOUT_PATTERNS=Object.freeze(['FULL_SCREEN_HUB','SPLIT_PANE','TABBED_BOOK','GRID_DETAIL','SIDE_DRAWER','BOTTOM_SHEET','CONTEXT_PANEL','CARD_STACK','RADIAL_QUICK','MAP_OVERLAY']);
+const MENU_SURFACE_RULES=Object.freeze([
+  Object.freeze({id:'MAIN',re:/main.?menu|title.?screen|메인.?메뉴|시작.?화면/i}),
+  Object.freeze({id:'PAUSE',re:/pause|일시.?정지|정지.?메뉴/i}),
+  Object.freeze({id:'INVENTORY',re:/inventory|인벤토리|가방/i}),
+  Object.freeze({id:'EQUIPMENT',re:/equipment|loadout|장비|장착/i}),
+  Object.freeze({id:'CRAFTING',re:/craft|recipe|제작|레시피/i}),
+  Object.freeze({id:'SHOP',re:/shop|store|merchant|상점|상인/i}),
+  Object.freeze({id:'QUEST',re:/quest|mission|퀘스트|미션/i}),
+  Object.freeze({id:'MAP',re:/map|world.?map|지도/i}),
+  Object.freeze({id:'SKILL',re:/skill|ability|스킬|능력/i}),
+  Object.freeze({id:'CHARACTER',re:/character.?sheet|stats|캐릭터.?창|스탯/i}),
+  Object.freeze({id:'BUILD',re:/build.?menu|construction|건축|배치.?메뉴/i}),
+  Object.freeze({id:'PARTY',re:/party|social|friend|파티|친구|소셜/i}),
+  Object.freeze({id:'SETTINGS',re:/settings|options|설정|옵션/i}),
+  Object.freeze({id:'RESULT',re:/result|victory|defeat|score.?screen|결과|승리|패배/i}),
+  Object.freeze({id:'CODEX',re:/codex|collection|encyclopedia|도감|수집/i}),
+  Object.freeze({id:'EVENT',re:/event.?menu|event.?screen|이벤트.?메뉴|이벤트.?화면/i})
+]);
 
 export function auditVibePresentation(files=[]){const text=textOf(files).toLowerCase(),dimensions=[];for(const[name,hints]of Object.entries(DIMENSIONS)){const hits=hints.filter(x=>text.includes(x)).length,score=clamp(hits/hints.length*100);dimensions.push(Object.freeze({name,score,debt:100-score,priority:score<30?'critical':score<55?'high':score<75?'medium':'low'}))}dimensions.sort((a,b)=>b.debt-a.debt);const overall=clamp(dimensions.reduce((n,x)=>n+x.score,0)/(dimensions.length||1));return Object.freeze({score:overall,grade:overall>=85?'A':overall>=70?'B':overall>=50?'C':'D',dimensions:Object.freeze(dimensions),priority:Object.freeze(dimensions.slice(0,4).map(x=>x.name))})}
-export function createVibeDesignSystem(files=[]){const text=textOf(files),rounded=/border-radius|corner_radius/i.test(text),shadow=/box-shadow|shadow_/i.test(text),outline=/outline|stroke|border/i.test(text),largeTouch=/44px|48px|custom_minimum_size/i.test(text);return Object.freeze({version:1,principles:Object.freeze(['gameplay-first-hierarchy','one-primary-action','consistent-spacing','state-visible-at-glance','touch-first','safe-area-aware']),tokens:Object.freeze({radius:rounded?'existing':'12px-baseline',shadow:shadow?'existing':'subtle-depth',outline:outline?'existing':'readability-outline',touchTarget:largeTouch?'existing':'44px-minimum'}),protected:Object.freeze(['gameplay-layout-function','input-binding','game-rule-values','save-structure'])})}
+export function createVibeDesignSystem(files=[]){const text=textOf(files),rounded=/border-radius|corner_radius/i.test(text),shadow=/box-shadow|shadow_/i.test(text),outline=/outline|stroke|border/i.test(text),largeTouch=/44px|48px|custom_minimum_size/i.test(text);return Object.freeze({version:2,principles:Object.freeze(['gameplay-first-hierarchy','one-primary-action','consistent-spacing','state-visible-at-glance','touch-first','safe-area-aware','contextual-menu-variety-with-shared-visual-language','reuse-existing-navigation-and-state']),tokens:Object.freeze({radius:rounded?'existing':'12px-baseline',shadow:shadow?'existing':'subtle-depth',outline:outline?'existing':'readability-outline',touchTarget:largeTouch?'existing':'44px-minimum'}),protected:Object.freeze(['gameplay-layout-function','input-binding','game-rule-values','save-structure','existing-navigation-state'])})}
+export function createVibeMenuArchitecture({request='',files=[],platform='AUTO'}={}){
+  const source=textOf(files),evidence=`${clean(request)}\n${source}`,required=[];
+  for(const rule of MENU_SURFACE_RULES)if(rule.re.test(evidence))required.push(rule.id);
+  if(!required.length&&/(?:menu|메뉴|\bui\b|\bux\b|화면)/i.test(clean(request)))required.push('MAIN','PAUSE','SETTINGS');
+  const uniqueRequired=uniq(required),seed=parseInt(stablePresentationHash(`${clean(request)}|${clean(platform)}|${uniqueRequired.join('|')}`),36)||0,used=new Set();
+  const surfaces=uniqueRequired.map((id,index)=>{
+    let layout=MENU_LAYOUT_PATTERNS[(seed+index)%MENU_LAYOUT_PATTERNS.length];
+    for(let step=0;step<MENU_LAYOUT_PATTERNS.length&&used.has(layout)&&used.size<MENU_LAYOUT_PATTERNS.length;step++)layout=MENU_LAYOUT_PATTERNS[(seed+index+step+1)%MENU_LAYOUT_PATTERNS.length];
+    used.add(layout);
+    return Object.freeze({id,layout,interaction:id==='MAP'?'PAN_ZOOM_AND_LAYER_TOGGLE':id==='INVENTORY'||id==='EQUIPMENT'?'SELECT_COMPARE_EQUIP':id==='CRAFTING'||id==='SHOP'?'BROWSE_DETAIL_CONFIRM':'FOCUS_NAVIGATE_CONFIRM_BACK'});
+  });
+  return Object.freeze({
+    version:1,
+    platform:clean(platform).toUpperCase()||'AUTO',
+    requiredSurfaces:Object.freeze(uniqueRequired),
+    surfaces:Object.freeze(surfaces),
+    layoutPatterns:MENU_LAYOUT_PATTERNS,
+    varietyRules:Object.freeze(['do-not-clone-one-layout-across-every-major-menu','choose-layout-by-menu-purpose-and-information-density','keep-shared-visual-language-and-navigation-conventions','mobile-first-touch-and-safe-area','clear-back-close-path','restore-gameplay-focus-after-close']),
+    implementation:Object.freeze({reuseExistingUiRouter:true,reuseExistingMenuState:true,newParallelMenuSystemForbidden:true,directResponsibleUiEditPreferred:true,screenSpecificCompositionAllowed:true}),
+    protected:Object.freeze(['gameplay-rules','balance-values','save-structure','progression-meaning','network-authority'])
+  });
+}
 export function createVibeCinematicDirection({request=''}={}){
   return Object.freeze({
     version:1,
@@ -57,22 +98,24 @@ export function createVibeHighEndPresentationStack({request=''}={}){return Objec
 export function planVibePresentationAutopilot({files=[],events=[],request='',changeRequest=null}={}){
   const audit=auditVibePresentation(files);
   const designSystem=createVibeDesignSystem(files);
+  const menuArchitecture=createVibeMenuArchitecture({request,files});
   const timeline=buildVibePresentationTimeline(events);
   const highEnd=createVibeHighEndPresentationStack({request});
   const cinematicDirection=highEnd.cinematicDirection;
   const tasks=[];
   for(const area of audit.priority)tasks.push(Object.freeze({domain:'presentation',target:area,action:`improve-${area}`,risk:['camera','transition'].includes(area)?'medium':'low'}));
   tasks.push(Object.freeze({domain:'presentation',target:'cinematic-direction',action:'align-scene-intent-acting-motion-vfx-camera-lighting-audio',risk:'medium'}));
+  if(menuArchitecture.requiredSurfaces.length)tasks.push(Object.freeze({domain:'presentation',target:'menu-architecture',action:'implement-contextual-varied-menus-on-existing-ui-flow',risk:'low'}));
   if(timeline.length)tasks.push(Object.freeze({domain:'presentation',target:'event-timeline',action:'wire-cinematic-beats',risk:'medium'}));
   return Object.freeze({
-    version:3,
+    version:4,
     request:String(request),
     qualityProfile:'HIGH_END_COMMERCIAL_NATIVE_PRESENTATION',
-    audit,designSystem,timeline,highEnd,cinematicDirection,
+    audit,designSystem,menuArchitecture,timeline,highEnd,cinematicDirection,
     changeRequest:changeRequest||null,
     tasks:Object.freeze(tasks.slice(0,10)),
-    policy:Object.freeze({serverAI:false,checkpoint:true,checkpointIsTerminal:false,continuousEvolution:true,highEndCompletionIsReleaseGate:false,mobileFirst:true,gameplayAuthoritative:true,noRuleMutation:true,lightingIsPresentationOnly:true,signatureEventPresentationRequired:true,artDirectionCohesionRequired:true,latestOwnerIntentWinsSameScope:true,directResponsibleSystemEditPreferred:true,wrapperOrShadowAccumulationForbidden:true})
+    policy:Object.freeze({serverAI:false,checkpoint:true,checkpointIsTerminal:false,continuousEvolution:true,highEndCompletionIsReleaseGate:false,mobileFirst:true,gameplayAuthoritative:true,noRuleMutation:true,lightingIsPresentationOnly:true,signatureEventPresentationRequired:true,artDirectionCohesionRequired:true,latestOwnerIntentWinsSameScope:true,directResponsibleSystemEditPreferred:true,wrapperOrShadowAccumulationForbidden:true,menuVarietyRequiredWhenMenusPresent:true,oneTemplateForEveryMenuForbidden:true,existingUiNavigationAndStateReused:true,menuMayNotMutateGameplayRules:true})
   });
 }
 export function scoreVibeScreenComposition({primaryActions=1,overlaps=0,edgeClips=0,unreadableLabels=0,criticalHudVisible=true,touchTargetsSmall=0}={}){let score=100;score-=Math.max(0,primaryActions-1)*8;score-=overlaps*15;score-=edgeClips*18;score-=unreadableLabels*10;score-=touchTargetsSmall*8;if(!criticalHudVisible)score-=30;score=clamp(score);return Object.freeze({score,grade:score>=90?'A':score>=75?'B':score>=60?'C':'D',issues:Object.freeze([overlaps&&'overlap',edgeClips&&'edge-clip',unreadableLabels&&'readability',touchTargetsSmall&&'touch-target',!criticalHudVisible&&'critical-hud-hidden'].filter(Boolean))})}
-if(typeof window!=='undefined'){window.auditJaewoonVibePresentation=auditVibePresentation;window.createJaewoonVibeDesignSystem=createVibeDesignSystem;window.createJaewoonVibeCinematicDirection=createVibeCinematicDirection;window.createJaewoonVibeCinematicBeat=createVibeCinematicBeat;window.createJaewoonVibePresentationEvent=createVibePresentationEvent;window.compileJaewoonVibePresentationEvents=compileVibePresentationEvents;window.createJaewoonVibeAudioUIExecution=createVibeAudioUIExecution;window.executeJaewoonVibeAudioUIEvent=executeVibeAudioUIEvent;window.routeJaewoonVibePresentationEvent=routeVibePresentationEvent;window.buildJaewoonVibePresentationTimeline=buildVibePresentationTimeline;window.createJaewoonVibeHighEndPresentationStack=createVibeHighEndPresentationStack;window.planJaewoonVibePresentationAutopilot=planVibePresentationAutopilot;window.scoreJaewoonVibeScreenComposition=scoreVibeScreenComposition}
+if(typeof window!=='undefined'){window.auditJaewoonVibePresentation=auditVibePresentation;window.createJaewoonVibeDesignSystem=createVibeDesignSystem;window.createJaewoonVibeMenuArchitecture=createVibeMenuArchitecture;window.createJaewoonVibeCinematicDirection=createVibeCinematicDirection;window.createJaewoonVibeCinematicBeat=createVibeCinematicBeat;window.createJaewoonVibePresentationEvent=createVibePresentationEvent;window.compileJaewoonVibePresentationEvents=compileVibePresentationEvents;window.createJaewoonVibeAudioUIExecution=createVibeAudioUIExecution;window.executeJaewoonVibeAudioUIEvent=executeVibeAudioUIEvent;window.routeJaewoonVibePresentationEvent=routeVibePresentationEvent;window.buildJaewoonVibePresentationTimeline=buildVibePresentationTimeline;window.createJaewoonVibeHighEndPresentationStack=createVibeHighEndPresentationStack;window.planJaewoonVibePresentationAutopilot=planVibePresentationAutopilot;window.scoreJaewoonVibeScreenComposition=scoreVibeScreenComposition}
