@@ -248,6 +248,7 @@ test('exact transient Open Cloud retry is cancelled when source or artifact chan
   assert.match(workflow,/c\.sourceRevision===sourceRevision/);
   assert.match(workflow,/c\.artifactIdentity===artifactIdentity/);
   assert.match(workflow,/transientEvidence\.authority==='roblox-open-cloud-engine-probe-failure'/);
+  assert.match(workflow,/transientRetryStatuses\.has\(Number\(transientEvidence\.httpStatus\|\|0\)\)/);
   assert.match(workflow,/transientEvidence\.sourceRevision===sourceRevision/);
   assert.match(workflow,/transientEvidence\.artifactIdentity===artifactIdentity/);
   assert.match(workflow,/Number\(transientEvidence\.candidateVersionNumber\|\|0\)===Number\(c\.versionNumber\|\|0\)/);
