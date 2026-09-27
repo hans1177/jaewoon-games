@@ -3,96 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-5m02n7",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "fdc04521e142456575a24c12d283b3c1a332c99f",
-      "acquiredAt": "2026-09-27T09:28:27.353Z",
-      "expiresAt": "2026-09-27T10:13:27.353Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1rvtic",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "fdc04521e142456575a24c12d283b3c1a332c99f",
-      "acquiredAt": "2026-09-27T09:28:44.271Z",
-      "expiresAt": "2026-09-27T10:13:44.271Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-oocqjw",
-      "worker": "vibe2",
-      "taskId": "seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "files": [
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "fdc04521e142456575a24c12d283b3c1a332c99f",
-      "acquiredAt": "2026-09-27T09:30:16.683Z",
-      "expiresAt": "2026-09-27T10:15:16.683Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-qwld9c",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "fdc04521e142456575a24c12d283b3c1a332c99f",
-      "acquiredAt": "2026-09-27T09:31:42.653Z",
-      "expiresAt": "2026-09-27T10:16:42.653Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1gei7rs",
-      "worker": "vibe2",
-      "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "fdc04521e142456575a24c12d283b3c1a332c99f",
-      "acquiredAt": "2026-09-27T09:31:47.925Z",
-      "expiresAt": "2026-09-27T10:16:47.925Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-h917ut",
       "worker": "vibe2",
       "taskId": "line-defense-unity-web-base-implementation-v1",
@@ -642,6 +552,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-sh1k17",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-roblox-second-gate-rebuild-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "roblox-games/daechung-rpg/shared/GameConfig.luau",
+        "roblox-games/daechung-rpg/server/Game.server.luau",
+        "roblox-games/daechung-rpg/client/Game.client.luau"
+      ],
+      "baseSha": "c7bb6fa0e18deefbf3a38c374ff821f3bc96b8c6",
+      "acquiredAt": "2026-09-27T10:20:18.171Z",
+      "expiresAt": "2026-09-27T11:05:18.171Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-roblox-second-gate-rebuild-v1"
       ]
     }
   ]
