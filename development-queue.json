@@ -1436,8 +1436,8 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "status": "ACTIVE",
-      "selectedPlatform": "ROBLOX",
-      "targetPlatform": "ROBLOX",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -1488,7 +1488,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-27T16:05:15.178Z",
+      "updatedAt": "2026-09-27T16:07:04.188Z",
       "robloxSourceCommit": "c2bd4470028498f826818a5cd0b10fc1c79b7123",
       "robloxSourceBootstrapPassedAt": "2026-09-27T09:51:36.652Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -3018,8 +3018,8 @@
         "regressionPassed": false,
         "exactRevision": false,
         "lastSuccessfulStage": "CHEAP_PRECHECK",
-        "failureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
-        "failureSignature": "ROBLOX_RUNTIME_ACCEPTANCE_PENDING"
+        "failureStage": "SINGLE_BUILD_OR_PACKAGE",
+        "failureSignature": "4dd87fcb9d4c2e66f74d3ddc1b220c1f00c7208c659e691ff13645f96d2079ad"
       },
       "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
       "failureCount": 1,
@@ -11373,7 +11373,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T16:05:15.178Z",
+  "updatedAt": "2026-09-27T16:07:06.248Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
