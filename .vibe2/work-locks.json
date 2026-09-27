@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-6dshyj",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:11:16.668Z",
-      "expiresAt": "2026-09-27T05:56:16.668Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-w5o00r",
       "worker": "vibe2",
       "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
@@ -825,6 +806,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:cozy-island-roblox-second-gate-rebuild-v1"
+      ]
+    },
+    {
+      "id": "wl-1qws7y8",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "unity-games/horror-escape-room/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "cf668563ea8447736844a806dd135432134f0534",
+      "acquiredAt": "2026-09-27T05:56:59.686Z",
+      "expiresAt": "2026-09-27T06:41:59.686Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
       ]
     }
   ]
