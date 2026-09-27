@@ -1265,6 +1265,18 @@
         "newWorkflowCreated": false,
         "newSchedulerCreated": false
       },
+      "fanInRegressionFailureRecovery": {
+        "workflow": ".github/workflows/vibe2-continuous-core.yml",
+        "requeueAffectedTasksFirst": true,
+        "latestMainComparisonRequired": true,
+        "immediateRefillCondition": "LATEST_MAIN_SHA_DIFFERS_FROM_FAILED_PINNED_CONTRACT_SHA",
+        "refillEvent": "vibe2-fanin-refill",
+        "refillLane": "GAME_PRIMARY",
+        "sameFailedContractRedispatchForbidden": true,
+        "existingReserveContractGatePreserved": true,
+        "qaBypass": false,
+        "newSchedulerCreated": false
+      },
       "conflictSafety": "SOURCE_ROOT_FILE_AND_DEPENDENCY_LOCKS_REMAIN_ENFORCED",
       "workLockAcquireTiming": "AFTER_MODEL_PREPARATION_AND_READ_ONLY_EXPLORATION_IMMEDIATELY_BEFORE_SOURCE_WRITE",
       "workLockPreLockReadOnlyPreparationAllowed": true,
