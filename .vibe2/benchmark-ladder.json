@@ -3,40 +3,40 @@
   "kind": "vibe2-benchmark-ladder",
   "cases": [
     {
-      "id": "mastery-coding-l17-g8",
+      "id": "mastery-coding-l18-g9",
       "track": "CODING",
+      "level": 18,
+      "difficultyGeneration": 9,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-bugfix-l23-g14",
+      "track": "BUGFIX",
+      "level": 23,
+      "difficultyGeneration": 14,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-web_gameplay-l17-g8",
+      "track": "WEB_GAMEPLAY",
       "level": 17,
       "difficultyGeneration": 8,
-      "state": "READY_FOR_VERIFIED_PRACTICE",
-      "countsAsTrainingSample": false,
-      "requiredVerification": [
-        "SYNTAX",
-        "RUNTIME_WHEN_APPLICABLE",
-        "INDEPENDENT_QA",
-        "REGRESSION"
-      ],
-      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
-    },
-    {
-      "id": "mastery-bugfix-l22-g13",
-      "track": "BUGFIX",
-      "level": 22,
-      "difficultyGeneration": 13,
-      "state": "READY_FOR_VERIFIED_PRACTICE",
-      "countsAsTrainingSample": false,
-      "requiredVerification": [
-        "SYNTAX",
-        "RUNTIME_WHEN_APPLICABLE",
-        "INDEPENDENT_QA",
-        "REGRESSION"
-      ],
-      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
-    },
-    {
-      "id": "mastery-web_gameplay-l16-g7",
-      "track": "WEB_GAMEPLAY",
-      "level": 16,
-      "difficultyGeneration": 7,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
@@ -138,10 +138,10 @@
       "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
     },
     {
-      "id": "mastery-asset_production-l10-g1",
+      "id": "mastery-asset_production-l11-g2",
       "track": "ASSET_PRODUCTION",
-      "level": 10,
-      "difficultyGeneration": 1,
+      "level": 11,
+      "difficultyGeneration": 2,
       "state": "READY_FOR_VERIFIED_PRACTICE",
       "countsAsTrainingSample": false,
       "requiredVerification": [
