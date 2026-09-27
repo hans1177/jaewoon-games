@@ -3782,6 +3782,25 @@ test('graphics replacement report grounds every actual replacement in changed so
   commentOnly.graphicsReplacementReport.reuseModesUsed=['ADAPT_RESTYLE_AND_RETARGET'];
   commentOnly.graphicsReplacementReport.replacementEvidence=[{surface:'VFX',path,bindingKey:'impactVfx',reuseMode:'ADAPT_RESTYLE_AND_RETARGET',sourceEvidence:'-- impactVfx marker only'}];
   assert.match(evaluateGraphicsReplacementReport({candidate:commentOnly,contract}).reason,/SOURCE_EVIDENCE_NOT_EXECUTABLE/);
+
+  const cssCandidate={
+    edits:[{path:'style.css',find:'#menu { background: #111; }',replace:'#menu { background: linear-gradient(#18243a,#0d1422); }'}],
+    graphicsReplacementReport:{
+      actualCount:1,
+      changedSurfaces:['MENU'],
+      reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],
+      replacementEvidence:[{
+        surface:'MENU',
+        path:'style.css',
+        bindingKey:'#menu',
+        reuseMode:'ADAPT_RESTYLE_AND_RETARGET',
+        sourceEvidence:'#menu { background: linear-gradient(#18243a,#0d1422); }'
+      }],
+      before:'flat menu',
+      after:'game-specific layered menu'
+    }
+  };
+  assert.equal(evaluateGraphicsReplacementReport({candidate:cssCandidate,contract}).pass,true);
 });
 
 test('adaptive graphics replacement report failure is retriable and classified separately',()=>{
