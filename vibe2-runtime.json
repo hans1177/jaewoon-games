@@ -705,7 +705,7 @@
       ]
     },
     "cohortFanInPressureIngressEnabled": true,
-    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v5",
+    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v6",
     "reserveConcurrency": {
       "mode": "PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE",
       "crossLaneGlobalReserveLock": false,
@@ -714,6 +714,18 @@
       "gamePrimaryExternalBoundary": 256,
       "reserveJobsParallel": true,
       "serializationScope": "ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY"
+    },
+    "assetDevelopmentControlRunnerPool": {
+      "authority": "company-learning/platform-release-roadmap.json#changeRecord.assetArmControlPlaneIsolation20260927",
+      "schedulerPlan": "ubuntu-24.04-arm",
+      "reserve": "ubuntu-24.04-arm",
+      "modelCache": "ubuntu-24.04-arm",
+      "worker": "ubuntu-24.04-arm",
+      "fanIn": "ubuntu-24.04-arm",
+      "cacheKey": "vibe2-ollama-v4-${runner.os}-${runner.arch}-qwen3-1.7b",
+      "architectureAwareCache": true,
+      "gamePrimaryWorkerUnchanged": "ubuntu-latest",
+      "canonicalQueueUnchanged": true
     }
   },
   "adaptiveBackpressure": {
