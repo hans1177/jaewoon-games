@@ -147,12 +147,15 @@ test('Unity executor uses unbounded eligibility with capacity batching, canary a
   assert.match(workflowSource,/INDEPENDENT_QA=/);
   assert.match(workflowSource,/REGRESSION=/);
   assert.match(workflowSource,/unity-android-runtime-smoke\.yml/);
-  assert.match(workflowSource,/unity-android-independent-qa\.yml/);
-  assert.match(workflowSource,/unity-android-regression\.yml/);
+  assert.doesNotMatch(workflowSource,/gh workflow run unity-android-independent-qa\.yml/);
+  assert.doesNotMatch(workflowSource,/gh workflow run unity-android-regression\.yml/);
+  assert.match(workflowSource,/UNITY_INDEPENDENT_QA=SAME_RUNTIME_SESSION_PASS/);
+  assert.match(workflowSource,/UNITY_REGRESSION=F9_FAN_IN_PASS/);
   assert.match(workflowSource,/executionEvidence:evidence/);
   assert.match(workflowSource,/unityInternalReleaseReady:internalReady/);
   assert.match(workflowSource,/distribution:'INTERNAL_OR_CLOSED_APP_TEST_BUILD'/);
-  assert.match(workflowSource,/unityPublicRelease:false/);
+  assert.match(workflowSource,/UNITY_PUBLIC_RELEASE_STATE_MUTATION=NO/);
+  assert.doesNotMatch(workflowSource,/unityPublicReleaseReady:false,unityPublicRelease:false/);
   assert.match(workflowSource,/currentStep:internalReady\?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
   assert.match(workflowSource,/resumeStage:failure\|\|\(internalReady\?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'IMMEDIATE_NEXT_STAGE_DISPATCH'\)/);
   assert.match(workflowSource,/BUILD_ONCE_PER_SOURCE_FINGERPRINT=ENABLED/);
@@ -281,6 +284,17 @@ test('runtime smoke launches the exact APK activity and fails fast on missing or
   assert.match(runtimeSmokeSource,/JAEWOON_TECH_METRIC/);
 });
 
+test('runtime smoke folds input stress and background resume into the same F1-F8 session',()=>{
+  assert.match(runtimeSmokeSource,/rapid_input_stress_pass=false/);
+  assert.match(runtimeSmokeSource,/background_resume_pass=false/);
+  assert.match(runtimeSmokeSource,/adb shell input keyevent 3/);
+  assert.match(runtimeSmokeSource,/post-resume\.png/);
+  assert.match(runtimeSmokeSource,/oneRuntimeSessionF1ThroughF8/);
+  assert.match(runtimeSmokeSource,/runtimeLaunchCount':1/);
+  assert.match(runtimeSmokeSource,/perFloorRuntimeRelaunch':False/);
+  assert.match(runtimeSmokeSource,/independentQaEmbedded':True/);
+});
+
 test('exact artifact regression binds upstream APK SHA and source revision',()=>{
   assert.match(regressionSource,/Download exact upstream build artifact/);
   assert.match(regressionSource,/actual.*expected/s);
@@ -329,8 +343,9 @@ test('Unity parent accepts only actual runtime verification and avoids duplicate
 
 test('legacy Genymotion runtime gate cannot block canonical Redroid validation when credentials are absent',()=>{
   assert.match(cloudBuildSource,/Resolve legacy Genymotion gate availability/);
-  assert.match(cloudBuildSource,/LEGACY_GENYMOTION_GATE=SKIPPED_CREDENTIALS_UNAVAILABLE/);
-  assert.match(cloudBuildSource,/CANONICAL_ANDROID_RUNTIME_GATE=UNITY_ANDROID_RUNTIME_SMOKE_REDROID/);
+  assert.match(cloudBuildSource,/LEGACY_GENYMOTION_GATE=DISABLED_BY_F0_F9_SINGLE_SESSION_POLICY/);
+  assert.match(cloudBuildSource,/CANONICAL_ANDROID_RUNTIME_GATE=UNITY_ANDROID_RUNTIME_SMOKE_REDROID_SINGLE_SESSION/);
+  assert.match(cloudBuildSource,/UNITY_LEGACY_RUNTIME_RELAUNCH=NO/);
   assert.match(cloudBuildSource,/outputs:[\s\S]*verified:\s*\$\{\{ steps\.verify\.outputs\.verified \}\}/);
   assert.match(cloudBuildSource,/if:\s*steps\.legacy\.outputs\.enabled == 'true'[\s\S]*Prepare matching ARM64 Android 16 cloud runtime/);
   assert.match(cloudBuildSource,/id:\s*verify[\s\S]*verified=true/);
@@ -367,7 +382,7 @@ test('independent Unity QA ignores unrelated Redroid system crashes and scopes f
 test('Unity canonical runtime starts from native source and tracked build requests',()=>{
   assert.match(workflowSource,/push:[\s\S]*'\.build-requests\/unity\/\*\*'/);
   assert.match(workflowSource,/push:[\s\S]*'unity-games\/\*\*'/);
-  assert.match(workflowSource,/RUNTIME_THEN_INDEPENDENT_QA_THEN_REGRESSION=ENABLED/);
+  assert.match(workflowSource,/F0_ONCE_F1_F8_ONE_RUNTIME_F9_FAN_IN=ENABLED/);
 });
 
 
@@ -380,12 +395,11 @@ test('Unity runtime has no retired validation-cycle dependency',()=>{
 });
 
 
-test('independent Unity QA dispatches exact artifact regression after PASS',()=>{
-  assert.match(independentQaSource,/permissions:[\s\S]*actions:\s*write/);
-  assert.match(independentQaSource,/name: Dispatch exact artifact regression/);
-  assert.match(independentQaSource,/gh workflow run unity-android-regression\.yml/);
-  assert.match(independentQaSource,/-f run_id="\$\{\{ steps\.upstream\.outputs\.run_id \}\}"/);
-  assert.match(independentQaSource,/UNITY_ANDROID_REGRESSION_DISPATCHED=/);
+test('legacy independent Unity QA is manual diagnostic only and cannot auto-chain regression',()=>{
+  assert.doesNotMatch(independentQaSource,/workflow_run:/);
+  assert.match(independentQaSource,/UNITY_INDEPENDENT_QA_MODE=MANUAL_DIAGNOSTIC_ONLY/);
+  assert.match(independentQaSource,/UNITY_INDEPENDENT_QA_AUTO_REGRESSION_DISPATCH=NO/);
+  assert.doesNotMatch(independentQaSource,/gh workflow run unity-android-regression\.yml/);
 });
 
 
@@ -436,12 +450,14 @@ test('Unity prepare uses slim ingress capacity while technical validation stays 
   assert.match(workflowSource,/\n  unity-technical-validation:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
 });
 
-test('Unity child QA dispatch reuses an active exact immutable-build run instead of duplicating runner work',()=>{
+test('Unity F1-F8 reuses or dispatches exactly one runtime smoke and F9 does not relaunch runtime',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-unity-runtime.yml',import.meta.url),'utf8');
-  assert.match(workflow,/UNITY_ANDROID_INDEPENDENT_QA_REUSE_ACTIVE=/);
-  assert.match(workflow,/UNITY_ANDROID_REGRESSION_REUSE_ACTIVE=/);
-  assert.match(workflow,/\.status=="queued" or \.status=="pending" or \.status=="in_progress" or \.status=="requested"/);
-  assert.match(workflow,/per_page=100/);
+  assert.match(workflow,/UNITY_RUNTIME_SMOKE_REUSED_AUTO=/);
+  assert.match(workflow,/UNITY_ONE_SESSION_RUNTIME_RUN_MISSING/);
+  assert.match(workflow,/UNITY_F1_F8_RUNTIME_LAUNCH_COUNT=1/);
+  assert.match(workflow,/UNITY_REGRESSION_RUNTIME_RELAUNCH=NO/);
+  assert.doesNotMatch(workflow,/gh workflow run unity-android-independent-qa\.yml/);
+  assert.doesNotMatch(workflow,/gh workflow run unity-android-regression\.yml/);
 });
 
 
@@ -449,7 +465,7 @@ test('Unity BUILD_UP settlement requires exact source tree plus runtime independ
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-unity-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/UNITY_CHECKPOINT_SOURCE_TREE_SHA=/);
   assert.match(workflow,/sourceRootTreeSha:process\.env\.SOURCE_TREE_SHA/);
-  assert.match(workflow,/authority:'unity-exact-apk-runtime-qa-regression'/);
+  assert.match(workflow,/authority:'unity-f0-f9-one-runtime-session'/);
   assert.match(workflow,/Settle exact Vibe Unity BUILD_UP task after runtime QA and regression/);
   assert.match(workflow,/candidate-awaiting-unity-runtime-qa/);
   assert.match(workflow,/const exactTreeMarker='unity-runtime-await-source-tree:'\+sourceTree/);
