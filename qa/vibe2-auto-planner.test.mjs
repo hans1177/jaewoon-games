@@ -3277,8 +3277,8 @@ test('Roblox product-quality failure is projected into canonical planner buildup
 
 test('collectProjects keeps Fortnite UEFN inside the existing planner instead of falling back to Web',()=>{
   const root=tempRepo();
-  fs.mkdirSync(path.join(root,'unreal-games','uefn-demo'),{recursive:true});
-  fs.writeFileSync(path.join(root,'unreal-games','uefn-demo','Game.verse'),'OnBegin<override>()<suspends>:void=\n    return\n','utf8');
+  fs.mkdirSync(path.join(root,'uefn-games','uefn-demo'),{recursive:true});
+  fs.writeFileSync(path.join(root,'uefn-games','uefn-demo','Game.verse'),'OnBegin<override>()<suspends>:void=\n    return\n','utf8');
   const localCatalog={games:[{id:'uefn-demo',name:'UEFN Demo',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]};
   const rows=collectProjects(
     {projects:[]},
@@ -3289,7 +3289,7 @@ test('collectProjects keeps Fortnite UEFN inside the existing planner instead of
       gameName:'UEFN Demo',
       status:'ACTIVE',
       selectedPlatform:'FORTNITE_UEFN',
-      targetSourcePath:'unreal-games/uefn-demo',
+      targetSourcePath:'uefn-games/uefn-demo',
       currentStep:'BUILD_UP',
       canonicalState:'DEVELOPMENT_CONFIRMED'
     }]}
@@ -3298,16 +3298,16 @@ test('collectProjects keeps Fortnite UEFN inside the existing planner instead of
   assert.ok(project);
   assert.equal(project.engine,'unreal');
   assert.equal(project.target,'fortnite-uefn');
-  assert.equal(project.projectPath,'unreal-games/uefn-demo');
+  assert.equal(project.projectPath,'uefn-games/uefn-demo');
   assert.notEqual(project.engine,'web');
 });
 
 test('collectProjects recognizes status-side Fortnite UEFN projects as the Unreal native implementation lane',()=>{
   const root=tempRepo();
-  fs.mkdirSync(path.join(root,'unreal-games','status-uefn'),{recursive:true});
-  fs.writeFileSync(path.join(root,'unreal-games','status-uefn','Island.verse'),'OnBegin<override>()<suspends>:void=\n    return\n','utf8');
+  fs.mkdirSync(path.join(root,'uefn-games','status-uefn'),{recursive:true});
+  fs.writeFileSync(path.join(root,'uefn-games','status-uefn','Island.verse'),'OnBegin<override>()<suspends>:void=\n    return\n','utf8');
   const rows=collectProjects(
-    {projects:[{gameId:'status-uefn',ownerDecision:'PASS',target:'FORTNITE_UEFN',projectPath:'unreal-games/status-uefn',progress:10}]},
+    {projects:[{gameId:'status-uefn',ownerDecision:'PASS',target:'FORTNITE_UEFN',projectPath:'uefn-games/status-uefn',progress:10}]},
     {games:[{id:'status-uefn',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
     root,
     {}
@@ -3315,5 +3315,46 @@ test('collectProjects recognizes status-side Fortnite UEFN projects as the Unrea
   const project=rows.find(row=>row.gameId==='status-uefn');
   assert.ok(project);
   assert.equal(project.engine,'unreal');
-  assert.equal(project.projectPath,'unreal-games/status-uefn');
+  assert.equal(project.projectPath,'uefn-games/status-uefn');
 });
+
+
+test('Fortnite UEFN queue without an explicit source path defaults to canonical uefn-games root',()=>{
+  const root=tempRepo();
+  const rows=collectProjects(
+    {projects:[]},
+    {games:[{id:'canonical-default-uefn',name:'Canonical Default UEFN',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    root,
+    {items:[{
+      gameId:'canonical-default-uefn',
+      gameName:'Canonical Default UEFN',
+      status:'ACTIVE',
+      selectedPlatform:'FORTNITE_UEFN',
+      currentStep:'BUILD_UP',
+      canonicalState:'DEVELOPMENT_CONFIRMED'
+    }]}
+  );
+  const project=rows.find(row=>row.gameId==='canonical-default-uefn');
+  assert.ok(project);
+  assert.equal(project.engine,'unreal');
+  assert.equal(project.target,'fortnite-uefn');
+  assert.equal(project.projectPath,'uefn-games/canonical-default-uefn');
+  assert.equal(project.existing,false);
+});
+
+test('collectProjects still reads a legacy unreal-games UEFN source without making it the canonical default',()=>{
+  const root=tempRepo();
+  fs.mkdirSync(path.join(root,'unreal-games','legacy-uefn'),{recursive:true});
+  fs.writeFileSync(path.join(root,'unreal-games','legacy-uefn','Legacy.verse'),'OnBegin<override>()<suspends>:void=\n    return\n','utf8');
+  const rows=collectProjects(
+    {projects:[{gameId:'legacy-uefn',ownerDecision:'PASS',target:'FORTNITE_UEFN',projectPath:'unreal-games/legacy-uefn',progress:10}]},
+    {games:[{id:'legacy-uefn',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    root,
+    {}
+  );
+  const project=rows.find(row=>row.gameId==='legacy-uefn');
+  assert.ok(project);
+  assert.equal(project.engine,'unreal');
+  assert.equal(project.projectPath,'unreal-games/legacy-uefn');
+});
+
