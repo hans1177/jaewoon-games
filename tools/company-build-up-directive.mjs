@@ -802,19 +802,31 @@ function buildAutonomousContentExpansion({
 }
 
 function platformDirectives({identity,goal}){
+  const web=`${identity}: 동일 공통 목표 "${goal}"를 현재 canonical Web 경로에 구현하고 브라우저 터치/카메라/렌더 비용을 맞춘다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
+  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
+  const unity=`${identity}: 동일 공통 목표 "${goal}"를 Unity 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.`;
+  const fortnite=`${identity}: 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
   return{
-    UNITY_WEB:`${identity}: 동일 공통 목표 "${goal}"를 canonical unity-games 소스에 구현하고 WebGL/브라우저 터치/카메라/렌더 비용을 맞춘다. 별도 Web 게임 코드베이스를 만들지 않는다.`,
-    ROBLOX:`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 번역한다. Unity/Web 구현을 그대로 복사하지 않는다.`,
-    UNITY_APP:`${identity}: 동일 공통 목표 "${goal}"를 Unity 앱 네이티브 입력/렌더링/모바일 성능/빌드 구조로 구현한다. Unity Web과 게임 의미는 같되 플랫폼 표현은 네이티브로 최적화한다.`
+    WEB:web,
+    ROBLOX:roblox,
+    UNITY:unity,
+    FORTNITE_UEFN:fortnite,
+    UNITY_WEB:web,
+    UNITY_APP:unity,
+    UNREAL:fortnite,
+    UEFN:fortnite
   };
 }
-
 export function directivePrompt(d={}){
   if(!d?.directiveId)return'';
   const visual=Object.entries(d.visualBuildUpDirective?.domains||{}).map(([k,v])=>`- ${k}: ${v}`).join('\n');
   const domainPriority=(d.allDomainImplementationDirectives||[]).filter(row=>['FIX_NOW','BUILD_UP_NOW'].includes(row.priority)).slice(0,28).map(row=>`- ${row.domain}[${row.priority}]: ${row.directive}`).join('\n');
   const holistic=(d.allDomainImplementationDirectives||[]).filter(row=>HOLISTIC_CORE_DOMAINS.includes(row.domain)).map(row=>`- ${row.domain}=${row.state}/${row.priority}`).join('\n');
   const anchors=(d.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`- ${row.file}:${row.line||'?'} ${row.kind||'SYMBOL'} ${row.symbol||'UNKNOWN'} | CURRENT=${row.currentBehavior||row.context||'UNKNOWN'} | INTENDED=${row.intendedBehavior||'FOLLOW_PRIMARY_GOAL'} | ACCEPT=${row.observableAcceptance||'REAL_SOURCE_AND_EFFECT_DELTA'}`).join('\n');
+  const expansion=d.autonomousContentExpansion||{};
+  const expansionBundle=(expansion.coherentContentBundle||[]).map(row=>`- ${row}`).join('\n');
+  const continuityQuestions=(expansion.continuityAndCausality?.questions||[]).join(',');
+  const platformGuidance=d.platformAdaptationDirectives?.[clean(d.platform).toUpperCase()]||d.platformAdaptationDirectives?.WEB||'';
   return[
     '[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]',
     `id=${d.directiveId}; generation=${d.generation}; depth=${d.developmentDepth}; stage=${d.escalationStage}; focus=${d.primaryFocus}`,
@@ -826,6 +838,14 @@ export function directivePrompt(d={}){
     `EXPECTED_PLAYER_EFFECT: ${d.effectivenessMeasurement?.expectedPlayerEffect||'UNKNOWN'}`,
     `PREVIOUS_EFFECT: ${d.effectivenessMeasurement?.previousGeneration?.classification||'NO_PREVIOUS_GENERATION'} - ${d.effectivenessMeasurement?.previousGeneration?.reason||''}`,
     `NEXT_VIBE_ACTION: ${d.nextActionDecision?.action||'CONTINUE_BUILD_UP_CURRENT_SYSTEM'} - ${d.nextActionDecision?.reason||''}`,
+    `AUTONOMOUS_CONTENT_EXPANSION: mode=${expansion.executionMode||'AUTONOMOUS_CONTENT_BUILD_UP'}; theme=${expansion.selectedTheme||'AUTO'}; themeDepth=${expansion.themeDepth||1}; decisionOwner=${expansion.autonomousDecisionOwner||'VIBE'}; boundary=${expansion.executionBoundary||'EXISTING_BUILD_UP_ONLY'}`,
+    `EXISTING_COMPLETENESS_CHECK: ${expansion.existingCompletenessReview?.mode||'CHECK_EXISTING_AND_EXPAND_OR_IMPROVE'}; dimensions=${(expansion.existingCompletenessReview?.dimensions||[]).join(',')}`,
+    'COHERENT_CONTENT_BUNDLE:',
+    expansionBundle,
+    `ANTI_CLONE: ${expansion.antiCloneContract?.nameColorOrStatOnlyCloneForbidden===true?'NAME_COLOR_STAT_ONLY_CLONE_FORBIDDEN':'DISTINCT_CONTENT_REQUIRED'}; axes=${(expansion.antiCloneContract?.distinctionAxes||[]).join(',')}`,
+    `CONTINUITY_CAUSALITY: required=${expansion.continuityAndCausality?.required===true}; questions=${continuityQuestions}`,
+    `DERIVED_RULE_EVOLUTION: ${expansion.derivedRuleEvolution?.rule||'PRESERVE_CANONICAL_RULES'}`,
+    `PLATFORM_NATIVE_GUIDANCE: ${platformGuidance}`,
     `GAMEPLAY: ${d.gameplayImplementationDirectives.join(' | ')}`,
     `PROGRESSION_WORLD: ${d.progressionContentWorldDirectives.join(' | ')}`,
     'HOLISTIC_CORE_DOMAIN_STATUS:',
@@ -942,6 +962,9 @@ export function buildGameSpecificBuildUpDirective({
     actualPlayRule:'after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair'
   });
   const nextActionDecision=decideNextVibeAction({previousEffectiveness,previousOutcome:previousDirectiveOutcome,focus});
+  const autonomousContentExpansion=buildAutonomousContentExpansion({
+    repoRoot,source,states,focus,previousDirective,previousEffectiveness,nextActionDecision,platform
+  });
   const systemNames=design.signatureSystems.map(x=>x.name).filter(Boolean);
   const gameplay=[
     `우선 책임 소스 앵커 ${exactAnchorLabel}에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.`,
@@ -955,7 +978,10 @@ export function buildGameSpecificBuildUpDirective({
     '새 콘텐츠는 기존 핵심 루프와 연결되어야 하며 단순 수량 복제나 색/수치만 다른 변형으로 채우지 않는다.',
     '맵/지역이 있는 게임은 면적만 늘리지 말고 새 지역 역할·연결 경로·잠금/해금·랜드마크·조우/자원 역할·발견 피드백이 구별되도록 확장한다.',
     '인벤토리/장비/제작/상점/퀘스트가 존재하면 서로 같은 authoritative 상태를 사용해 실제 플레이와 연결하고 고립된 메뉴 기능으로 남기지 않는다.',
-    '초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.'
+    '초반 10분과 중후반을 각각 점검해 초반 학습·첫 보상과 중후반 전략/콘텐츠 확장이 모두 실제 소스와 플레이 흐름에 존재하게 한다.',
+    '콘텐츠 확장은 배경·지역·몹·아이템·퀘스트·스토리·보상·규칙 중 관련 요소를 서로 연결된 묶음으로 설계하고, 한 요소만 고립해서 개수만 늘리는 업데이트를 피한다.',
+    '이전 세대와 이름·색·수치만 다른 복제 콘텐츠를 추가하지 말고 역할·행동·플레이어 선택·세계 이유·결과/보상·시스템 연결 중 최소 두 축 이상에서 실제 차이를 만든다.',
+    '새 스토리·퀘스트·지역·규칙은 이전 상태에서 왜 발생하고 완료 후 무엇이 달라지는지 게임 상태와 세계 흐름에 남겨 개연성과 진행 연결을 유지한다.'
   ];
   const ux=[
     '핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다.',
@@ -975,7 +1001,11 @@ export function buildGameSpecificBuildUpDirective({
     'HOLISTIC_CORE_DOMAINS_CLASSIFIED_PASS_GAP_OR_NOT_APPLICABLE',
     'EXISTING_APPLICABLE_GAP_CANNOT_BE_SILENTLY_SKIPPED',
     'FIRST_10_MINUTES_AND_SESSION_FLOW_REVIEWED',
-    'MAP_INVENTORY_UI_CONVENIENCE_AND_SYSTEM_CONNECTION_REVIEWED_WHEN_APPLICABLE'
+    'MAP_INVENTORY_UI_CONVENIENCE_AND_SYSTEM_CONNECTION_REVIEWED_WHEN_APPLICABLE',
+    'AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP',
+    'CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE',
+    'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
+    'WEB_ROBLOX_UNITY_FORTNITE_UEFN_COMMON_EXPANSION_CONTRACT'
   ];
   const nextCandidates=uniq([
     focus==='CORE_FUN'?'CONNECT_CORE_FUN_TO_PROGRESSION_AND_CONTENT_VARIETY':'DEEPEN_CORE_FUN_DECISION_DENSITY',
@@ -1020,6 +1050,7 @@ export function buildGameSpecificBuildUpDirective({
     primaryGoalReason:depthInfo.escalationMode==='VERIFIED_STATUS_WITHOUT_GAME_SOURCE_DELTA_RETRY'?`직전 루프가 verified 상태를 기록했지만 실제 게임 source tree가 바뀌지 않았다. ${focus} 목표를 완료로 계산하지 않고 "${anchor}" 책임 소스 ${exactAnchorLabel}에서 실제 플레이 가치 변화가 생기는 구현으로 다시 지시한다.`:`현재 검증 신호와 소스에서 ${focus}를 우선한다. 게임 고유 앵커는 "${anchor}", 현재 책임 소스는 ${exactAnchorLabel}이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.`,
     gameplayImplementationDirectives:gameplay,
     progressionContentWorldDirectives:progression,
+    autonomousContentExpansion,
     visualBuildUpDirective:buildVisualDirective({gameId:id,design,source,focus}),
     uxInputDirectives:ux,
     platformAdaptationDirectives:platformDirectives({identity,goal}),
