@@ -1159,6 +1159,18 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.match(workflow,/planLocalStudioCandidates/);
   assert.match(workflow,/queueStudioFollowupIfEligible\(item\)/);
   assert.doesNotMatch(workflow,/!runtimeFoundationWasPassed&&item\.robloxRuntimeFoundationPassed===true/);
+  const throttle=roadmap.changeRecord?.robloxRuntimeThrottleStudioHandoff20260927;
+  assert.deepEqual(throttle?.openCloudProbe?.transientHttpRetryStatuses,[408,429,500,502,503,504]);
+  assert.equal(throttle?.openCloudProbe?.scanConcurrency,2);
+  assert.equal(throttle?.openCloudProbe?.exactGameConcurrency,1);
+  assert.equal(throttle?.openCloudProbe?.persistentApiFailureStillFails,true);
+  assert.equal(throttle?.studioActualPlay?.exactEngineAwaitingRealServerBootEligible,true);
+  assert.equal(throttle?.studioActualPlay?.runtimeFoundationPassFabricationForbidden,true);
+  assert.equal(throttle?.studioActualPlay?.runtimePassRemainsFalseUntilRealServerBootEvidence,true);
+  assert.match(workflow,/networkRetryAttempts:6,networkRetryDelayMs:1000/);
+  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:2,candidates\.length\|\|1\)\)/);
+  assert.equal(architecture.robloxRuntimeThrottleStudioHandoff?.runtimeFoundationTruthUnchanged,true);
+  assert.equal(architecture.robloxRuntimeThrottleStudioHandoff?.externalPublicReleaseRealServerEvidenceStillRequired,true);
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
 });
 
