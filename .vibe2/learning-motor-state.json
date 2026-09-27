@@ -4826,7 +4826,8 @@
       "coding_negative_rnbevy",
       "coding_negative_1jrh775",
       "coding_negative_xxfdpp",
-      "coding_negative_1kzdnsr"
+      "coding_negative_1kzdnsr",
+      "coding_negative_v2mkbl"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -11982,6 +11983,52 @@
         "lastEvidence": null,
         "lastFailureEvidence": "coding_negative_xxfdpp",
         "lastUpdatedAt": "2026-09-27T12:06:15.648Z"
+      },
+      "CAUSAL_EVIDENCE_REFRESH_REQUIRED": {
+        "verifiedApplications": 0,
+        "firstCandidatePasses": 0,
+        "totalGenerationAttempts": 0,
+        "verifiedFailures": 1,
+        "games": {},
+        "targets": {},
+        "contextModes": {
+          "STANDARD_CONTEXT": {
+            "verifiedApplications": 0,
+            "verifiedFailures": 1,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "totalContextBytes": 0,
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_v2mkbl",
+            "lastUpdatedAt": "2026-09-27T12:32:16.687Z"
+          }
+        },
+        "failureFingerprints": {
+          "unity|NO_OP|PRESENTATION_DELTA|PRESENTATION_PATCH_DELTA|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "daechung-rpg": 1
+            },
+            "failureTargets": {
+              "unity": 1
+            },
+            "failureClasses": {
+              "INCREMENTAL_QA": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_v2mkbl",
+            "lastUpdatedAt": "2026-09-27T12:32:16.687Z"
+          }
+        },
+        "state": "CANDIDATE",
+        "lastEvidence": null,
+        "lastFailureEvidence": "coding_negative_v2mkbl",
+        "lastUpdatedAt": "2026-09-27T12:32:16.687Z"
       }
     }
   },
@@ -14711,7 +14758,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-27T12:28:40.867Z",
+    "lastBuiltAt": "2026-09-27T12:32:16.763Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -21200,5 +21247,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-27T12:28:40.867Z"
+  "updatedAt": "2026-09-27T12:32:16.763Z"
 }
