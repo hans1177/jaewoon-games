@@ -245,6 +245,20 @@ test('runner drain uses a YAML-safe delimiter and preserves the game gate block'
   assert.doesNotMatch(director,/while IFS=\$'\\t'/);
   assert.match(director,/game-primary-gate:\n\s+if: always\(\) && \(github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.conclusion != 'cancelled'\)[\s\S]*?runs-on: ubuntu-slim[\s\S]*?outputs:/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
+  const policy=roadmap.changeRecord?.runnerQueueDrain20260926||{};
+  assert.equal(policy.supersededStaleInProgressControlPlaneMayCancel,true);
+  assert.equal(policy.staleInProgressControlPlaneThresholdMinutes,12);
+  assert.equal(policy.sharedStateWriterInProgressMayCancel,false);
+  assert.equal(policy.gamePrimaryInProgressMayCancel,false);
+  assert.deepEqual(policy.staleInProgressControlPlaneSafeWorkflows,[
+    '.github/workflows/director-supervisor.yml',
+    '.github/workflows/vibe2-merged-pr-provenance.yml',
+    '.github/workflows/company-dna-learning.yml'
+  ]);
+  assert.equal(architecture.runnerQueueDrainTopology?.sharedStateWriterInProgressMayCancel,false);
+  assert.equal(architecture.runnerQueueDrainTopology?.gamePrimaryInProgressMayCancel,false);
+  assert.equal(logMap.runnerQueueDrainEvidence?.runnerLabel,'ubuntu-24.04');
+  assert.equal(logMap.runnerQueueDrainEvidence?.staleSupersededInProgressControlPlaneReason,'CONTROL_PLANE_STALE_IN_PROGRESS_SUPERSEDED');
 });
 
 test('runner drain bypasses the stale supervisor group and evicts stale legacy Roblox runs',()=>{
@@ -271,6 +285,9 @@ test('runner drain bypasses the stale supervisor group and evicts stale legacy R
 
 test('runner drain cancels only superseded stale control-plane in-progress runs and never game-primary execution',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
   const start=director.indexOf('const supersedableInProgressControlPlane=new Set([');
   const end=director.indexOf('const staleBefore=Date.now()-(15*60*1000);',start);
   const block=director.slice(start,end);
