@@ -4822,7 +4822,10 @@
       "coding_negative_108rbri",
       "coding_negative_yu6x23",
       "coding_negative_1jt9pi4",
-      "coding_negative_rnbevy"
+      "coding_negative_rnbevy",
+      "coding_negative_1jrh775",
+      "coding_negative_xxfdpp",
+      "coding_negative_1kzdnsr"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -11886,6 +11889,98 @@
         "lastEvidence": null,
         "lastFailureEvidence": "coding_negative_rnbevy",
         "lastUpdatedAt": "2026-09-27T11:47:24.328Z"
+      },
+      "SOURCE_RESCAN_REBIND": {
+        "verifiedApplications": 0,
+        "firstCandidatePasses": 0,
+        "totalGenerationAttempts": 0,
+        "verifiedFailures": 2,
+        "games": {},
+        "targets": {},
+        "contextModes": {
+          "STANDARD_CONTEXT": {
+            "verifiedApplications": 0,
+            "verifiedFailures": 2,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "totalContextBytes": 0,
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_1kzdnsr",
+            "lastUpdatedAt": "2026-09-27T12:06:15.649Z"
+          }
+        },
+        "failureFingerprints": {
+          "unity|NO_OP|PRESENTATION_DELTA|PRESENTATION_PATCH_DELTA|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 2,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "daechung-rpg": 2
+            },
+            "failureTargets": {
+              "unity": 2
+            },
+            "failureClasses": {
+              "INCREMENTAL_QA": 2
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_1kzdnsr",
+            "lastUpdatedAt": "2026-09-27T12:06:15.649Z"
+          }
+        },
+        "state": "CANDIDATE",
+        "lastEvidence": null,
+        "lastFailureEvidence": "coding_negative_1kzdnsr",
+        "lastUpdatedAt": "2026-09-27T12:06:15.649Z"
+      },
+      "RESPONSIBILITY_SPLIT_FANIN": {
+        "verifiedApplications": 0,
+        "firstCandidatePasses": 0,
+        "totalGenerationAttempts": 0,
+        "verifiedFailures": 1,
+        "games": {},
+        "targets": {},
+        "contextModes": {
+          "STANDARD_CONTEXT": {
+            "verifiedApplications": 0,
+            "verifiedFailures": 1,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "totalContextBytes": 0,
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_xxfdpp",
+            "lastUpdatedAt": "2026-09-27T12:06:15.648Z"
+          }
+        },
+        "failureFingerprints": {
+          "unity|NO_OP|PRESENTATION_DELTA|PRESENTATION_PATCH_DELTA|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "daechung-rpg": 1
+            },
+            "failureTargets": {
+              "unity": 1
+            },
+            "failureClasses": {
+              "INCREMENTAL_QA": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_xxfdpp",
+            "lastUpdatedAt": "2026-09-27T12:06:15.648Z"
+          }
+        },
+        "state": "CANDIDATE",
+        "lastEvidence": null,
+        "lastFailureEvidence": "coding_negative_xxfdpp",
+        "lastUpdatedAt": "2026-09-27T12:06:15.648Z"
       }
     }
   },
@@ -14615,7 +14710,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-27T12:03:48.042Z",
+    "lastBuiltAt": "2026-09-27T12:06:15.713Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -21104,5 +21199,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-27T12:03:48.042Z"
+  "updatedAt": "2026-09-27T12:06:15.713Z"
 }
