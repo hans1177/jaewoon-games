@@ -678,6 +678,57 @@ function padVoice(freq,at,dur,gain=.026,filterHz=1200){if(!music.ctx)return;cons
 function glassVoice(freq,at,dur=.9,gain=.022){if(!music.ctx)return;for(const [mul,g] of [[1,gain],[2.01,gain*.32],[3.98,gain*.12]])smoothVoice(freq*mul,at,dur,g,'sine',4200,.015)}
 function noiseBrush(at,dur=.16,gain=.014,center=1800){if(!music.ctx||!music.noise)return;const src=music.ctx.createBufferSource(),f=music.ctx.createBiquadFilter(),g=music.ctx.createGain();src.buffer=music.noise;f.type='bandpass';f.frequency.value=center;f.Q.value=.8;g.gain.setValueAtTime(gain,at);g.gain.exponentialRampToValueAtTime(.0001,at+dur);src.connect(f);f.connect(g);g.connect(music.master);src.start(at);src.stop(at+dur+.02)}
 function lowDrum(at,pitch=90,gain=.065,dur=.22){if(!music.ctx)return;const o=music.ctx.createOscillator(),g=music.ctx.createGain();o.type='sine';o.frequency.setValueAtTime(pitch,at);o.frequency.exponentialRampToValueAtTime(Math.max(38,pitch*.48),at+dur*.75);g.gain.setValueAtTime(gain,at);g.gain.exponentialRampToValueAtTime(.0001,at+dur);o.connect(g);g.connect(music.master);o.start(at);o.stop(at+dur+.02)}
+const sfxState={stepAt:0,ambientAt:0,monsterVoiceAt:0};
+function sfxTone(freq,dur=.12,gain=.02,wave='sine',endFreq=null){
+ if(!music.enabled||!music.started||!music.ctx||!music.master)return;
+ const at=music.ctx.currentTime,o=music.ctx.createOscillator(),g=music.ctx.createGain();
+ o.type=wave;o.frequency.setValueAtTime(Math.max(20,freq),at);if(endFreq)o.frequency.exponentialRampToValueAtTime(Math.max(20,endFreq),at+dur);
+ g.gain.setValueAtTime(Math.max(.0001,gain),at);g.gain.exponentialRampToValueAtTime(.0001,at+dur);
+ o.connect(g);g.connect(music.master);o.start(at);o.stop(at+dur+.02)
+}
+function playGameSfx(kind,source=null){
+ if(!music.enabled||!music.started||!music.ctx)return;
+ const heavy=Math.max(.7,Math.min(1.6,Number(source?.r||20)/22));
+ if(kind==='step'){noiseBrush(music.ctx.currentTime,.045,.006,700);sfxTone(105,.055,.006,'sine',72)}
+ else if(kind==='playerAttack'){noiseBrush(music.ctx.currentTime,.065,.010,2400);sfxTone(260,.07,.009,'triangle',155)}
+ else if(kind==='playerHurt'){lowDrum(music.ctx.currentTime,78,.038,.14);noiseBrush(music.ctx.currentTime,.09,.013,950)}
+ else if(kind==='playerDeath'){lowDrum(music.ctx.currentTime,64,.065,.45);sfxTone(180,.5,.025,'sawtooth',42)}
+ else if(kind==='monsterAttack'){sfxTone(150/heavy,.13,.012,'sawtooth',82/heavy);noiseBrush(music.ctx.currentTime,.06,.009,1050)}
+ else if(kind==='monsterHurt'){sfxTone(210/heavy,.10,.010,'square',125/heavy)}
+ else if(kind==='monsterDeath'){sfxTone(150/heavy,.32,.020,'sawtooth',38);noiseBrush(music.ctx.currentTime,.16,.013,520)}
+ else if(kind==='monsterVoice'){sfxTone(120/heavy,.35,.014,'sawtooth',75/heavy)}
+ else if(kind==='petAttack'){sfxTone(155,.16,.018,'sawtooth',95);noiseBrush(music.ctx.currentTime,.06,.009,1350)}
+ else if(kind==='petHurt'){sfxTone(235,.14,.014,'triangle',135)}
+ else if(kind==='petHatch'){sfxTone(330,.18,.016,'sine',495);sfxTone(495,.28,.013,'triangle',660)}
+}
+function ambientRegionKey(){
+ if(state.area==='underwater')return pointInRect(state.player.x,state.player.y,DEEP_CORAL_FOREST)?'deepcoral':'underwater';
+ if(state.area==='underground'||state.area==='questcave'||state.area==='storylab1'||state.area==='storylab2'||String(state.area).startsWith('jungletemple'))return'cave';
+ return regionAt(state.player.x,state.player.y)
+}
+function playRegionAmbience(now){
+ if(now<(sfxState.ambientAt||0)||!music.enabled||!music.started||!music.ctx)return;
+ const key=ambientRegionKey();sfxState.ambientAt=now+rand(2600,5200);
+ if(key==='jungle'){sfxTone(rand(1300,2100),.08,.006,'sine',rand(1700,2600));setTimeout(()=>sfxTone(rand(1450,2300),.07,.005,'sine',rand(1800,2800)),110)}
+ else if(key==='snow'){noiseBrush(music.ctx.currentTime,.65,.009,520)}
+ else if(key==='giantlake'||key==='underwater'||key==='deepcoral'){noiseBrush(music.ctx.currentTime,.45,.007,key==='deepcoral'?420:760);if(key!=='deepcoral')sfxTone(160,.28,.004,'sine',125)}
+ else if(key==='volcano'){lowDrum(music.ctx.currentTime,48,.018,.38);noiseBrush(music.ctx.currentTime,.22,.006,430)}
+ else if(key==='crystal'){glassVoice(rand(620,880),music.ctx.currentTime,.65,.006)}
+ else if(key==='cave'){noiseBrush(music.ctx.currentTime,.55,.005,360);sfxTone(82,.4,.004,'sine',62)}
+ else if(key==='flowerfield'||key==='giantgarden'){sfxTone(rand(900,1450),.10,.005,'sine',rand(1300,1800))}
+ else if(key==='worldtree'){noiseBrush(music.ctx.currentTime,.28,.004,900);sfxTone(280,.22,.004,'sine',360)}
+ else if(key==='canyon'){noiseBrush(music.ctx.currentTime,.34,.006,620)}
+ else {noiseBrush(music.ctx.currentTime,.25,.004,1500);sfxTone(rand(900,1500),.07,.004,'sine',rand(1150,1850))}
+}
+function maybeMonsterVoice(now){
+ if(now<(sfxState.monsterVoiceAt||0)||!music.enabled||!music.started)return;
+ const p=state.player,near=state.enemies.filter(e=>e.hp>0&&e.area===state.area&&e.type.mood!=='harmless'&&dist(e.x,e.y,p.x,p.y)<620);
+ if(!near.length)return;sfxState.monsterVoiceAt=now+rand(3500,7500);playGameSfx('monsterVoice',near[Math.floor(Math.random()*near.length)].type)
+}
+function updateFootstepSfx(now,moving){
+ if(!moving||now<(sfxState.stepAt||0)||state.player.downedUntil)return;
+ sfxState.stepAt=now+(state.pet.mounted?270:360);playGameSfx('step')
+}
 function playCombatAudio(kind,weight=.5){
  if(!music.enabled||!music.started||!music.ctx||!music.master)return;
  const at=music.ctx.currentTime,w=Math.max(0,Math.min(1,Number(weight)||0));
@@ -2452,7 +2503,7 @@ function localCombatTarget(e,baseTarget){
 }
 function hatchShadowWolf(){
  const pet=state.pet;pet.hatched=true;pet.alive=true;pet.hp=pet.maxHp=250;pet.x=state.player.x+55;pet.y=state.player.y+25;pet.respawnAt=0;pet.reviveClickUntil=0;pet.mounted=false;pet.targetId=null;
- state.incubation.eggPlaced=false;state.incubation.hatchAt=0;state.dirty=true;unlockAchievement('shadow-friend',true);showNotice('그림자 늑대가 부화했어');saveGame(false)
+ state.incubation.eggPlaced=false;state.incubation.hatchAt=0;state.dirty=true;playGameSfx('petHatch');unlockAchievement('shadow-friend',true);showNotice('그림자 늑대가 부화했어');saveGame(false)
 }
 function interactIncubator(){
  if(!state.incubator||state.area!=='surface')return;
@@ -2483,7 +2534,7 @@ function revivePetByClick(){
  pet.alive=true;pet.hp=pet.maxHp;pet.respawnAt=0;pet.reviveClickUntil=0;pet.targetId=null;pet.x=state.player.x+55;pet.y=state.player.y+25;state.dirty=true;showNotice('그림자 늑대 즉시 부활');updateHud();saveGame(false)
 }
 function damagePet(n,attacker=null){
- if(!petAlive())return false;state.pet.hp=Math.max(0,state.pet.hp-n);if(attacker)engagePet(attacker);if(state.pet.hp<=0)killPet();state.dirty=true;return true
+ if(!petAlive())return false;state.pet.hp=Math.max(0,state.pet.hp-n);playGameSfx('petHurt');if(attacker)engagePet(attacker);if(state.pet.hp<=0)killPet();state.dirty=true;return true
 }
 function finishPetEnemyKill(e,ownerId=multiplayer.playerId){
  queueDeathAnimation(e,performance.now());e.hp=0;
@@ -2496,7 +2547,7 @@ function hostApplyPetAttack(a){
 }
 function petStrike(e,manual=false){
  if(!petAlive()||!e||e.hp<=0)return false;const now=performance.now();if(now-state.pet.attackAt<750)return false;
- if(dist(state.pet.x,state.pet.y,e.x,e.y)>105+e.type.r)return false;state.pet.attackAt=now;
+ if(dist(state.pet.x,state.pet.y,e.x,e.y)>105+e.type.r)return false;state.pet.attackAt=now;playGameSfx('petAttack');
  if(multiplayer.connected&&!multiIsHost())multiSend('pet-attack',{ownerId:multiplayer.playerId,targetId:e.netId});
  else{const dmg=enemyIncomingDamage(e,42,now);e.hp-=dmg;e.hitAt=now+110;markEnemyHitByPet(e);if(e.hp<=0)finishPetEnemyKill(e,multiplayer.playerId)}
  if(manual)showNotice('그림자 늑대 공격 · 42');return true
@@ -2540,6 +2591,7 @@ function firePlayerArrow(now,p,w,arrow){
 }
 function attack(){
  const now=performance.now(),p=state.player,w=currentWeapon();if(p.downedUntil){showNotice('쓰러진 상태야');return}if(p.restingBedId){p.restingBedId=null;showNotice('침대에서 일어났어')};interruptAutoGather(now);if(now<(p.attackBlockedUntil||0)){showNotice('공격 불가');return}if(petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
+ playGameSfx('playerAttack');
  if(w?.ranged==='spore'){const target=nearestSporeTarget(p,w);if(!target){showNotice('근처에 적이 없어');return}p.attackAt=now;p.attackFx=now+150;playCombatAudio('swing',.35);fireSporeSeeker(now,p,w,target);return}
  if(w?.ranged==='bow'){const arrow=selectedArrow();if(!arrow){showNotice('화살이 없어');return}p.attackAt=now;p.attackFx=now+150;playCombatAudio('swing',Math.max(0,Math.min(1,(Number(w.power)||0)/180)));firePlayerArrow(now,p,w,arrow);return}
  p.attackAt=now;p.attackFx=now+150;
@@ -2564,10 +2616,10 @@ function attack(){
      dmg=(15+bonus)+(25+bonus)+(30+bonus);
      showNotice('곰 창 3연타 · 15 / 25 / 30')
    }
-   dmg=enemyIncomingDamage(e,dmg,now);e.hp-=dmg;if(w?.bleedChance&&Math.random()<w.bleedChance){e.hp-=Number(w.bleedDamage)||0;showNotice(e.type.name+' 출혈 · '+(Number(w.bleedDamage)||0)+' 추가 피해')}e.hitAt=now+110;hit=true;engagePet(e);if(e.type.mood==='neutral'){markEnemyHitByPlayer(e);if(e.type.id==='giantbee')alertBeeKin(e)};
+   dmg=enemyIncomingDamage(e,dmg,now);e.hp-=dmg;if(w?.bleedChance&&Math.random()<w.bleedChance){e.hp-=Number(w.bleedDamage)||0;showNotice(e.type.name+' 출혈 · '+(Number(w.bleedDamage)||0)+' 추가 피해')}e.hitAt=now+110;playGameSfx('monsterHurt',e.type);hit=true;engagePet(e);if(e.type.mood==='neutral'){markEnemyHitByPlayer(e);if(e.type.id==='giantbee')alertBeeKin(e)};
    if(w?.bindChance&&Math.random()<w.bindChance){e.stunnedUntil=now+2000;showNotice(e.type.name+' 속박 · 2초')}if(w?.slowChance&&Math.random()<w.slowChance){e.slowedUntil=Math.max(e.slowedUntil||0,now+(w.slowDuration||3000));showNotice(e.type.name+' 이동속도 50% 감소')}
    if(e.hp<=0){
-     queueDeathAnimation(e,now);
+     playGameSfx('monsterDeath',e.type);queueDeathAnimation(e,now);
      p.kills++;
      if(e.type.labBoss){finishStoryLabBoss(e)}
      else{awardLoot(e);if(e.type.boss){rewardBoss()}else{if(!e.type.summoned&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+enemyRespawnDelay(e.type)});showNotice(e.type.name+' 처치')}}
@@ -2576,7 +2628,7 @@ function attack(){
  if(hit){playCombatAudio('hit',audioWeight);state.dirty=true}updateHud()
 }
 function knockoutPlayer(message='쓰러져 숲 중앙에서 부활했어',immediate=false){
- const p=state.player;if(p.downedUntil&&!immediate)return;
+ const p=state.player;playGameSfx('playerDeath');if(p.downedUntil&&!immediate)return;
  if(multiplayer.connected&&!immediate&&multiplayer.presenceIds.size>1){if(state.pet.mounted)dismountPet(false);p.hp=0;p.restingBedId=null;p.downedUntil=Date.now()+30000;interruptAutoGather(performance.now());state.dirty=true;showNotice('쓰러짐 · 동료가 30초 안에 부활 가능');updateHud();return}
  completePlayerRespawn(message)
 }
@@ -2596,7 +2648,7 @@ function enemyDamageTarget(e,n,force=false){
  damagePlayer(n,force,e);return'player'
 }
 function damagePlayer(n,force=false,attacker=null){
- const p=state.player,now=performance.now();if(p.downedUntil)return;if(p.restingBedId)p.restingBedId=null;if(attacker)engagePet(attacker);if(state.pet.mounted&&petAlive()){damagePet(n,attacker);return}if(!force&&now<p.invuln)return;interruptAutoGather(now);const armor=item(p.armor);if(now>=(p.vulnerableUntil||0))n*=1-effectiveStat(p.armor,'reduce');p.hp=Math.max(0,p.hp-n);p.invuln=now+520;playCombatAudio('hurt',Math.max(0,Math.min(1,n/100)));ui.flash.classList.add('on');setTimeout(()=>ui.flash.classList.remove('on'),100);if(p.hp<=0){knockoutPlayer()}else{state.dirty=true;updateHud()}
+ const p=state.player,now=performance.now();if(p.downedUntil)return;if(p.restingBedId)p.restingBedId=null;if(attacker)engagePet(attacker);if(state.pet.mounted&&petAlive()){damagePet(n,attacker);return}if(!force&&now<p.invuln)return;interruptAutoGather(now);const armor=item(p.armor);if(now>=(p.vulnerableUntil||0))n*=1-effectiveStat(p.armor,'reduce');p.hp=Math.max(0,p.hp-n);p.invuln=now+520;playCombatAudio('hurt',Math.max(0,Math.min(1,n/100)));playGameSfx('playerHurt');ui.flash.classList.add('on');setTimeout(()=>ui.flash.classList.remove('on'),100);if(p.hp<=0){knockoutPlayer()}else{state.dirty=true;updateHud()}
 }
 function applyBurn(){const p=state.player;p.burnTicks=4;p.burnNext=performance.now()+1000;showNotice('화염 상태 · 4초')}
 const SMELT_SPECS={
@@ -2975,7 +3027,7 @@ function damageMonster(target,amount,attacker,now){
   if(!target||target.hp<=0)return;
   amount=enemyIncomingDamage(target,amount,now);
   target.hp-=amount;
-  target.hitAt=now+110;
+  target.hitAt=now+110;playGameSfx(target.hp<=0?'monsterDeath':'monsterHurt',target.type);
   if(attacker&&attacker!==target)target.enemyTarget=attacker;
   if(target.hp<=0){
     queueDeathAnimation(target,now);
@@ -2992,7 +3044,7 @@ function enemyAttackReady(e,now,fallback=900){
  return now>=(e.nextAttackAt||0)
 }
 function markEnemyAttack(e,now){
- e.attackAt=now;
+ e.attackAt=now;playGameSfx('monsterAttack',e.type);
  if(e.type.id==='lakecroc')e.nextAttackAt=now+rand(2000,3000);
  else if(e.type.id==='gorilla')e.nextAttackAt=now+3500;
  else if(['giantleech','anaconda','mudwalker','yetileader'].includes(e.type.id))e.nextAttackAt=now+3000;
@@ -3784,6 +3836,7 @@ function update(dt,now){
     }
     state.enemies=state.enemies.filter(e=>e.hp>0);
   }
+  updateFootstepSfx(now,m>.01);playRegionAmbience(now);maybeMonsterVoice(now);
   if(now>=achievementCheckAt){achievementCheckAt=now+1000;checkAchievementProgress(true)}
   updateGrabbedPlayer(now);
   weatherTick(Date.now());
