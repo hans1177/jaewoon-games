@@ -124,7 +124,6 @@ function selectPrimarySourceAnchors(source={},responsibleFiles=[],limit=6){
 }
 
 function classifyPreviousEffectiveness({previousDirective=null,previousOutcome='',depthInfo={},runtimeEvidence={}}={}){
-  if(!previousDirective)return Object.freeze({classification:'NO_PREVIOUS_GENERATION',reason:'initial build-up generation',runtimeObserved:false});
   const outcome=clean(previousOutcome).toLowerCase();
   const failed=['failed','error','rejected','repair_required'].includes(outcome);
   const verified=['verified','done','completed','pass','passed'].includes(outcome);
@@ -133,6 +132,7 @@ function classifyPreviousEffectiveness({previousDirective=null,previousOutcome='
   const failure=clean(runtimeEvidence?.failureSignature)||clean(runtimeEvidence?.failureStage);
   const observedRuntimeFailure=runtimeObserved&&!runtimePassed&&Boolean(failure);
   if(failed||observedRuntimeFailure)return Object.freeze({classification:'REGRESSION',reason:failure||('previous generation outcome='+outcome),runtimeObserved});
+  if(!previousDirective)return Object.freeze({classification:'NO_PREVIOUS_GENERATION',reason:'initial build-up generation',runtimeObserved:false});
   if(verified&&!depthInfo?.sourceChangedSincePrevious)return Object.freeze({classification:'NO_MEANINGFUL_EFFECT',reason:'verified status without real game source delta',runtimeObserved});
   if(verified&&depthInfo?.sourceChangedSincePrevious&&runtimeObserved&&runtimePassed)return Object.freeze({classification:'EFFECT_CONFIRMED',reason:'verified generation changed game source and current runtime observation passed',runtimeObserved});
   if(verified&&depthInfo?.sourceChangedSincePrevious&&runtimeObserved)return Object.freeze({classification:'PARTIAL_EFFECT',reason:'game source changed but runtime evidence is not a full pass',runtimeObserved});
