@@ -136,6 +136,12 @@ function restoreDedicatedTargetIdentity(item,{registry,gameId,stamp}){
 function recoverExactPrivateRuntimeCheckpoint(item,design){
   const priorDesignSource=clean(item?.minimumDesignContract?.source||item?.designBaselineSource);
   if(priorDesignSource&&priorDesignSource!==clean(design?.file))return null;
+  const internalReleaseAlreadyPublished=item?.robloxInternalReleasePublished===true
+    ||item?.robloxInternalReleaseEvidence?.published===true
+    ||(item?.robloxReleaseEvidence?.published===true&&item?.robloxExternalPublicReleaseConfirmed!==true);
+  if(internalReleaseAlreadyPublished){
+    return{currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'};
+  }
   const candidate=item?.robloxRuntimeCandidateEvidence||{};
   const exactCandidate=candidate?.published===true
     &&clean(candidate.sourceRevision)===clean(item?.robloxSourceCommit)
