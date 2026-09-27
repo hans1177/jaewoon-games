@@ -94,9 +94,9 @@ env:
 
 jobs:
   reserve:
-    # Default ingress stays on slim. Pressure-driven fan-in refill bypasses a saturated slim control queue
-    # through the existing ARM game-control pool; heavy model workers remain on ubuntu-latest.
-    runs-on: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && 'ubuntu-24.04-arm' || 'ubuntu-slim' }}
+    # Asset reserve and pressure-driven fan-in refill use the ARM control pool.
+    # Default game-primary ingress stays on slim; heavy game workers remain on ubuntu-latest.
+    runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || (github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && 'ubuntu-24.04-arm' || 'ubuntu-slim') }}
     timeout-minutes: 7
     # Reserve jobs may run concurrently. Only the existing optimistic shared-state
     # fetch/reset/replan/push retry section serializes on an actual write conflict.
@@ -586,7 +586,7 @@ jobs:
             ~/.ollama/models
             ~/.cache/vibe2-ollama/bin/ollama
             ~/.cache/vibe2-ollama/lib/ollama
-          key: vibe2-ollama-v3-Linux-qwen3-1.7b
+          key: vibe2-ollama-v4-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
           lookup-only: true
 
       - name: Record reserve model cache decision
@@ -604,7 +604,7 @@ jobs:
   model_cache:
     needs: reserve
     if: needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_cache_hit != 'true'
-    runs-on: ubuntu-latest
+    runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     timeout-minutes: 12
     continue-on-error: true
     steps:
@@ -616,7 +616,7 @@ jobs:
             ~/.ollama/models
             ~/.cache/vibe2-ollama/bin/ollama
             ~/.cache/vibe2-ollama/lib/ollama
-          key: vibe2-ollama-v3-Linux-qwen3-1.7b
+          key: vibe2-ollama-v4-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
           lookup-only: true
 
       - name: Record model cache probe
@@ -812,7 +812,7 @@ jobs:
             ~/.ollama/models
             ~/.cache/vibe2-ollama/bin/ollama
             ~/.cache/vibe2-ollama/lib/ollama
-          key: vibe2-ollama-v3-Linux-qwen3-1.7b
+          key: vibe2-ollama-v4-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
 
       - name: Mark worker Ollama preparation start
         id: worker_ollama_prepare_start
