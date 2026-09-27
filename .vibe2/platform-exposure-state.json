@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-09-27T01:53:33.438Z",
+  "updatedAt": "2026-09-27T02:05:19.263Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -91,9 +91,9 @@
               "noBlockingTickets": false,
               "gameCompletion": false,
               "platformAdaptation": false,
-              "saveRejoin": false,
+              "saveRejoin": true,
               "multiplayer": false,
-              "serverClientAuthority": false,
+              "serverClientAuthority": true,
               "mobileAndPerformance": false,
               "security": false,
               "presentation": false,
@@ -108,9 +108,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
-              "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
               "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
-              "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
               "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
               "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
               "ROBLOX_PUBLIC_HARD_GATE_PRESENTATION",
@@ -1076,9 +1074,9 @@
               "noBlockingTickets": false,
               "gameCompletion": false,
               "platformAdaptation": false,
-              "saveRejoin": false,
+              "saveRejoin": true,
               "multiplayer": false,
-              "serverClientAuthority": false,
+              "serverClientAuthority": true,
               "mobileAndPerformance": false,
               "security": false,
               "presentation": false,
@@ -1093,9 +1091,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
-              "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
               "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
-              "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
               "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
               "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
               "ROBLOX_PUBLIC_HARD_GATE_PRESENTATION",
@@ -1110,7 +1106,8 @@
               "bug-7d114ff3812bf7516f00",
               "bug-46e896c798b79a75427e",
               "bug-2250b8aab02c0059e33b",
-              "bug-78676ace4e581b78c1ef"
+              "bug-78676ace4e581b78c1ef",
+              "bug-b3e14193de493e2916b5"
             ]
           },
           "publication": {
