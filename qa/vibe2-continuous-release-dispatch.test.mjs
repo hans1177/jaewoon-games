@@ -105,12 +105,31 @@ test('web candidate release blocks inline script syntax and generic storage-cont
 test('candidate release queue recovery always fetches main into an explicit remote-tracking ref',()=>{
   const explicit='git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet';
   const legacy='git -C /tmp/vibe2-control fetch origin main --quiet';
-  const clones=releaseWorkflow.split('git clone --branch vibe2-unreal-core --single-branch').length-1;
+  const clones=releaseWorkflow.split('gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch').length-1;
   const explicitFetches=releaseWorkflow.split(explicit).length-1;
   assert.ok(clones>=4);
   assert.equal(explicitFetches,clones);
   assert.equal(releaseWorkflow.includes(legacy),false);
   assert.match(releaseWorkflow,/worktree add --detach \/tmp\/vibe2-main-contract origin\/main/);
+});
+
+test('Web BUILD_UP closes on exact deployed Web source and never substitutes Roblox runtime',()=>{
+  const start=releaseWorkflow.indexOf('  web-release:');
+  const end=releaseWorkflow.indexOf('\n  unity-build:',start);
+  assert.ok(start>=0&&end>start);
+  const section=releaseWorkflow.slice(start,end);
+  assert.match(section,/source_tree_sha="\$\(git rev-parse "origin\/main:\$SOURCE_ROOT"\)"/);
+  assert.match(section,/VIBE2_WEB_MAIN_PROMOTION_SOURCE_TREE_SHA/);
+  assert.match(section,/PROMOTED_SOURCE_TREE_SHA:/);
+  assert.match(section,/WEB_PROMOTED_SOURCE_TREE_IDENTITY=INVALID/);
+  assert.match(section,/web-cloudflare-deployment-pass/);
+  assert.match(section,/web-runtime-source-tree:\$\{PROMOTED_SOURCE_TREE_SHA\}/);
+  assert.match(section,/VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT/);
+  assert.match(section,/VIBE2_RELEASE_PAGES_CHECK=/);
+  assert.match(section,/VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=/);
+  assert.doesNotMatch(section,/company-development-roblox-runtime\.yml/);
+  assert.doesNotMatch(section,/VIBE2_ROBLOX_RUNTIME_QA_DISPATCHED/);
+  assert.doesNotMatch(section,/RUNTIME_QA_PENDING/);
 });
 
 test('Unity release baseline uses minimum design and Unity native evidence without Web gameplay authority',()=>{
