@@ -48,6 +48,31 @@ test('legacy presentation tasks expand to existing native visual responsibility 
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+
+test('adaptive graphics replacement worker contract covers UEFN Verse and rejects zero-replacement PASS',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-uefn-presentation-scope-'));
+  try{
+    const gameRoot=path.join(root,'uefn-games','demo','Content','Verse');
+    fs.mkdirSync(gameRoot,{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'Presentation.verse'),'Presentation := class():\n    Apply():void = {}\n');
+    const files=expandPresentationResponsibleFiles({
+      repoRoot:root,target:'fortnite-uefn',
+      task:{
+        target:'fortnite-uefn',
+        sourceRoot:'uefn-games/demo',
+        responsibleFiles:[],
+        evidence:['presentation-pass:ASSET_ADAPTATION']
+      }
+    });
+    assert.ok(files.includes('uefn-games/demo/Content/Verse/Presentation.verse'));
+    assert.match(continuousRunnerSource,/adaptive-graphics-replacement=required/);
+    assert.match(continuousRunnerSource,/actual-range=/);
+    assert.match(continuousRunnerSource,/zero-replacement-pass-forbidden/);
+    assert.match(continuousRunnerSource,/실제 교체 개수/);
+    assert.match(continuousRunnerSource,/재사용\/변형\/재조합/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('Unreal C++ routes to text worker but Blueprint/uasset route to editor',()=>{
   const adapter=createVibeEngineAdapter({target:'unreal',gameSlug:'demo'});
   assert.equal(classifyVibeExecutionRoute({target:'unreal',task:{type:'implementation',goal:'Hero.cpp 수정',responsibleFiles:['unreal-games/demo/Source/Demo/Hero.cpp']},adapter}).route,'text-source-worker');
