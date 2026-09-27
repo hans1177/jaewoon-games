@@ -6939,7 +6939,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-27T20:48:14.069Z",
+      "updatedAt": "2026-09-27T20:54:34.046Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -7168,8 +7168,8 @@
         "failureStage": "PROBE",
         "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
         "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"errors\":[{\"code\":0,\"message\":\"\"}]}\n",
-        "observedAt": "2026-09-27T19:37:50.225Z",
-        "workflowRunId": 36345007214,
+        "observedAt": "2026-09-27T20:54:34.046Z",
+        "workflowRunId": 36349685589,
         "authority": "roblox-open-cloud-engine-probe-failure"
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -7201,9 +7201,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -11245,7 +11245,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T20:54:27.323Z",
+  "updatedAt": "2026-09-27T20:54:34.046Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
