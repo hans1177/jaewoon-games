@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-7a0qsf",
-      "worker": "vibe2",
-      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "files": [
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "c7bb6fa0e18deefbf3a38c374ff821f3bc96b8c6",
-      "acquiredAt": "2026-09-27T10:51:13.985Z",
-      "expiresAt": "2026-09-27T11:36:13.985Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-1yupjof",
       "worker": "vibe2",
       "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1",
@@ -318,6 +300,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
+      ]
+    },
+    {
+      "id": "wl-1sycb69",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-28a2f2747401-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-queue-control.mjs",
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-queue-control.test.mjs"
+      ],
+      "baseSha": "878275d555b2e039ab10c2789602179ab667b131",
+      "acquiredAt": "2026-09-27T11:38:11.251Z",
+      "expiresAt": "2026-09-27T12:23:11.251Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-28a2f2747401-v1"
       ]
     }
   ]
