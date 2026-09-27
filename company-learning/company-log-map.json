@@ -2389,6 +2389,13 @@
     "studioLocalPlanRunner": "self-hosted:Windows:X64:roblox-studio-authenticated",
     "studioMcpAutoPlayRunner": "self-hosted:Windows:X64:roblox-studio-authenticated",
     "heavyGameExecutionRunnerChanged": false,
-    "qualityGateWeakening": false
+    "qualityGateWeakening": false,
+    "postFoundationStudioFollowup": {
+      "enabled": true,
+      "reason": "PARALLEL_STUDIO_PLAN_MAY_COMPLETE_BEFORE_NEW_RUNTIME_FOUNDATION_EVIDENCE_EXISTS",
+      "trigger": "FALSE_TO_TRUE_RUNTIME_FOUNDATION_TRANSITION",
+      "exactGameWorkflowDispatch": true,
+      "repeatExactFoundationDoesNotRedispatch": true
+    }
   }
 }
