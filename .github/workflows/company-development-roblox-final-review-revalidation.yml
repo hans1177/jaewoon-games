@@ -124,6 +124,16 @@ jobs:
           const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
           const fresh=ingestTesterDebug({developmentQueue:q,ticketQueue:{tickets:[]},recoveryQueue:{tasks:[]}});
           const currentBlockingTickets=new Map();
+          const currentProductQualityTickets=new Map();
+          const infrastructureOrEvidenceOnlyTicket=ticket=>{
+            const text=[
+              ticket?.signature,
+              ticket?.route,
+              ticket?.category,
+              ticket?.exactFailedStage,
+            ].map(value=>String(value||'').toUpperCase()).join('|');
+            return /HTTP[_ -]?429|RATE[_ -]?LIMIT|OPEN_CLOUD|PERMISSION_DENIED|EXECUTOR_UNAVAILABLE|INFRASTRUCTURE|EXACT_EVIDENCE|EVIDENCE_MISMATCH|EXTERNAL_CREDENTIAL|SYSTEM_AI_RUNTIME_EXECUTOR|AWAITING|UNVERIFIED/.test(text);
+          };
           for(const ticket of fresh.tickets.tickets||[]){
             if(
               ticket.status!=='OPEN'
@@ -133,8 +143,14 @@ jobs:
               ||!['CRITICAL','HIGH'].includes(ticket.severity)
             )continue;
             const rows=currentBlockingTickets.get(ticket.gameId)||[];rows.push(ticket);currentBlockingTickets.set(ticket.gameId,rows);
+            if(!infrastructureOrEvidenceOnlyTicket(ticket)){
+              const productRows=currentProductQualityTickets.get(ticket.gameId)||[];
+              productRows.push(ticket);
+              currentProductQualityTickets.set(ticket.gameId,productRows);
+            }
           }
           const stamp=new Date().toISOString();
+          const qualityBuildupIds=[];
           let promoted=0,blocked=0;
 
           for(const item of q.items||[]){
@@ -241,18 +257,60 @@ jobs:
               )
               &&studioAssetRuntimeBindingExact===true;
             const tickets=currentBlockingTickets.get(item.gameId)||[];
+            const productQualityTickets=currentProductQualityTickets.get(item.gameId)||[];
+            const hasProductQualityFailure=productQualityTickets.length>0;
             if(!exact||tickets.length){
-              const f9FailureSignature=!exact?'ROBLOX_F9_EXACT_EVIDENCE_MISMATCH':'ROBLOX_F9_OPEN_TESTER_FAILURE';
-              const f9Blocker=!exact?'roblox-f9-exact-evidence-mismatch':'roblox-f9-open-tester-failure';
-              const internalFlowNonBlocking=
+              const f9FailureSignature=hasProductQualityFailure
+                ?'ROBLOX_F9_PRODUCT_QUALITY_FAILED'
+                :!exact?'ROBLOX_F9_EXACT_EVIDENCE_MISMATCH':'ROBLOX_F9_OPEN_TESTER_FAILURE';
+              const f9Blocker=hasProductQualityFailure
+                ?'roblox-f9-product-quality-buildup-required'
+                :!exact?'roblox-f9-exact-evidence-mismatch':'roblox-f9-open-tester-failure';
+              const internalFlowNonBlocking=!hasProductQualityFailure&&(
                 item.robloxRuntimeFailureExternalReleaseOnly===true
                 ||item.robloxRuntimeFoundationInternalReleaseException===true
-                ||item.robloxInternalReleaseReady===true;
+                ||item.robloxInternalReleaseReady===true
+              );
               item.robloxFinalReviewPassed=false;
               item.robloxF9PendingInParallel=internalFlowNonBlocking;
               item.robloxF9FailureSignature=f9FailureSignature;
               item.robloxF9Blockers=[f9Blocker];
-              if(internalFlowNonBlocking){
+              if(hasProductQualityFailure){
+                item.robloxQualityBuildUpRequired=true;
+                item.robloxQualityFailureClass='PRODUCT';
+                item.robloxQualityBuildUpSourceRevision=sourceRevision;
+                item.robloxQualityBuildUpEvidence={
+                  version:1,
+                  sourceRevision,
+                  artifactIdentity,
+                  artifactRunId:Number(candidate.artifactRunId||0),
+                  versionNumber:Number(candidate.versionNumber||0),
+                  failureStage:'ROBLOX_FINAL_REVIEW_REVALIDATION',
+                  failureSignature:f9FailureSignature,
+                  qualityFailureKinds:[...new Set(productQualityTickets.map(ticket=>String(ticket.signature||ticket.category||'F9_PRODUCT_QUALITY_FAILURE')).filter(Boolean))],
+                  ticketIds:productQualityTickets.map(ticket=>String(ticket.id||'')).filter(Boolean),
+                  ticketSeverities:productQualityTickets.map(ticket=>String(ticket.severity||'')).filter(Boolean),
+                  testedAt:stamp,
+                  workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
+                  authority:'roblox-f9-product-quality-failure',
+                };
+                item.robloxInternalReleaseReady=false;
+                item.robloxPublicReleaseReady=false;
+                item.robloxPublicRelease=false;
+                item.robloxReleaseClaim=false;
+                item.currentStep='REPAIR_REQUIRED';
+                item.canonicalState='REPAIR_REQUIRED';
+                item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+                item.robloxFailureSignature=f9FailureSignature;
+                item.routingBlockers=[f9Blocker];
+                qualityBuildupIds.push(item.gameId);
+                console.log('ROBLOX_F9_PRODUCT_QUALITY_BUILDUP_REQUIRED='+item.gameId+':tickets='+productQualityTickets.length);
+                console.log('QUALITY_FIRST_BUILDUP_SHORT_CIRCUIT=ACTIVE');
+                console.log('QUALITY_FAILURE_CLASS=PRODUCT');
+                console.log('QUALITY_BUILDUP_AUTO_REQUEUE=YES');
+                console.log('EXTERNAL_RELEASE_PROBE_SUPPRESSED=YES');
+                console.log('RESUME_STAGE=REPAIR_REQUIRED');
+              }else if(internalFlowNonBlocking){
                 item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
                 item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
                 item.robloxFailureStage=item.robloxRuntimeFailureExternalReleaseOnly===true
@@ -269,6 +327,10 @@ jobs:
               continue;
             }
 
+            item.robloxQualityBuildUpRequired=false;
+            item.robloxQualityFailureClass=null;
+            item.robloxQualityBuildUpSourceRevision=null;
+            item.robloxQualityBuildUpEvidence=null;
             item.robloxFinalReviewPassed=true;
             item.robloxFinalReviewPassedAt=stamp;
             item.robloxF9PendingInParallel=false;
@@ -386,8 +448,10 @@ jobs:
             q.updatedAt=stamp;
             fs.writeFileSync(queuePath,JSON.stringify(q,null,2)+'\n');
           }
+          fs.writeFileSync('/tmp/roblox-f9-quality-buildup-ids',[...new Set(qualityBuildupIds)].join('\n')+(qualityBuildupIds.length?'\n':''));
           console.log(`ROBLOX_F9_INTERNAL_RELEASE_PROMOTED=${promoted}`);
           console.log(`ROBLOX_F9_BLOCKED=${blocked}`);
+          console.log(`ROBLOX_F9_PRODUCT_QUALITY_BUILDUP_COUNT=${new Set(qualityBuildupIds).size}`);
           NODE
 
       - name: Persist F9 internal release state
