@@ -1,5 +1,5 @@
 {
-  "version": 488,
+  "version": 489,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -5157,7 +5157,7 @@
         "headlessOnlyEvidenceForbidden": true,
         "actualRuntimeFoundationF1ThroughF4Required": true,
         "multiplayerVerification": {
-          "mode": "SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS_ALLOWED",
+          "mode": "ONE_EXACT_INTERNAL_MULTIPLAYER_PROOF_REUSED_WHEN_APPLICABLE",
           "appliesWhenGameDesignRequiresMultiplayer": true,
           "minimumInternalEvidence": [
             "F0_MULTIPLAYER_STATE_SYNC_CONTRACT_PASS",
@@ -5167,11 +5167,15 @@
             "NO_CURRENT_CRITICAL_OR_HIGH_MULTIPLAYER_FAILURE"
           ],
           "actualTwoPlusClientPlatformObservationRequiredForInternalRelease": false,
-          "simplifiedPassMayClaimFullMultiplayerQa": false,
-          "simplifiedPassMayClaimPublicReleaseReady": false,
-          "fullTwoPlusClientPlatformEvidenceStillRequiredBeforeExternalPublicRelease": true,
-          "recurringFullMultiplayerVerificationContinuesAfterInternalRelease": true,
-          "multiplayerVerificationMayNotDelayOtherDevelopmentOrInternalPlaytest": true
+          "simplifiedPassMayClaimFullMultiplayerQa": true,
+          "simplifiedPassMayClaimPublicReleaseReady": true,
+          "fullTwoPlusClientPlatformEvidenceStillRequiredBeforeExternalPublicRelease": false,
+          "recurringFullMultiplayerVerificationContinuesAfterInternalRelease": false,
+          "multiplayerVerificationMayNotDelayOtherDevelopmentOrInternalPlaytest": true,
+          "sameExactProofReusedForF7F9InternalAndPublic": true,
+          "externalPublicServerMultiplayerObservationRequired": false,
+          "duplicatePublicMultiplayerVerificationForbidden": true,
+          "extendedMultiplayerLifecycleOnlyWhenCausallyRequiredByFailure": true
         }
       },
       "secondGate": {
@@ -10303,6 +10307,19 @@
         "unchangedExactEvidence": "REUSE_WITHIN_SAME_SOURCE_ARTIFACT_CANDIDATE_BINDING",
         "developmentPriority": "REAL_GAME_SOURCE_IMPROVEMENT_AND_NEXT_BUILD_UP_DIRECTIVE"
       }
+    },
+    "multiplayerDuplicateValidationRemoval20260928": {
+      "id": "MULTIPLAYER_DUPLICATE_VALIDATION_REMOVAL_2026-09-28",
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
+      "summary": "Preserve the existing autonomous game evolution and F0-F9 structure while removing duplicate external/public multiplayer validation. One exact internal multiplayer proof is reused across F7, F9, internal readiness, and owner-approved public publication when multiplayer is applicable.",
+      "gameEvolutionUnchanged": true,
+      "f0ThroughF9Unchanged": true,
+      "multiplayerNonApplicableResult": "NOT_APPLICABLE",
+      "externalServerMultiplayerValidationRequired": false,
+      "duplicatePublicMultiplayerCheckRequired": false,
+      "ownerExternalPublicationApprovalStillRequired": true,
+      "securityAuthorityAndRemoteValidationPreserved": true,
+      "extendedMultiplayerRepairOnlyOnCausalFailure": true
     }
   },
   "vibeExecutionLaneContract": {
