@@ -12,11 +12,11 @@
       "lastEvidence": "capability_ctrace_5f74ba87502b8d922847049e"
     },
     "STATE_MACHINE": {
-      "xp": 3094,
+      "xp": 3099,
       "level": 21,
       "verifiedSuccesses": 129,
-      "verifiedFailureLessons": 318,
-      "lastEvidence": "capability_ctrace_cdca42fbe01796a741921cab"
+      "verifiedFailureLessons": 319,
+      "lastEvidence": "capability_ctrace_b0c245cda448c52961697a38"
     },
     "COMBAT": {
       "xp": 1517,
@@ -26,18 +26,18 @@
       "lastEvidence": "capability_ctrace_833915de80d59c5f2ca6aae8"
     },
     "AI": {
-      "xp": 742,
+      "xp": 747,
       "level": 10,
       "verifiedSuccesses": 64,
-      "verifiedFailureLessons": 2,
-      "lastEvidence": "capability_ctrace_6507b0b70b2051c25809eaee"
+      "verifiedFailureLessons": 3,
+      "lastEvidence": "capability_ctrace_b0c245cda448c52961697a38"
     },
     "PROGRESSION": {
-      "xp": 1410,
+      "xp": 1415,
       "level": 13,
       "verifiedSuccesses": 95,
-      "verifiedFailureLessons": 54,
-      "lastEvidence": "capability_ctrace_95de7232f84ba4b5bedf5f65"
+      "verifiedFailureLessons": 55,
+      "lastEvidence": "capability_ctrace_b0c245cda448c52961697a38"
     },
     "ECONOMY": {
       "xp": 1297,
@@ -61,18 +61,18 @@
       "lastEvidence": "capability_ctrace_cdca42fbe01796a741921cab"
     },
     "UI_STATE": {
-      "xp": 1066,
+      "xp": 1071,
       "level": 11,
       "verifiedSuccesses": 16,
-      "verifiedFailureLessons": 182,
-      "lastEvidence": "capability_ctrace_cdca42fbe01796a741921cab"
+      "verifiedFailureLessons": 183,
+      "lastEvidence": "capability_ctrace_b0c245cda448c52961697a38"
     },
     "DEBUGGING": {
-      "xp": 3106,
+      "xp": 3111,
       "level": 21,
       "verifiedSuccesses": 132,
-      "verifiedFailureLessons": 318,
-      "lastEvidence": "capability_ctrace_cdca42fbe01796a741921cab"
+      "verifiedFailureLessons": 319,
+      "lastEvidence": "capability_ctrace_b0c245cda448c52961697a38"
     },
     "RECOVERY": {
       "xp": 1452,
@@ -166,11 +166,11 @@
       "lastEvidence": "capability_ctrace_cdca42fbe01796a741921cab"
     },
     "CHARACTER_ARC": {
-      "xp": 148,
+      "xp": 153,
       "level": 4,
       "verifiedSuccesses": 9,
-      "verifiedFailureLessons": 8,
-      "lastEvidence": "capability_ctrace_3a6f5acbd3114f56752482c1"
+      "verifiedFailureLessons": 9,
+      "lastEvidence": "capability_ctrace_b0c245cda448c52961697a38"
     },
     "DIALOGUE": {
       "xp": 0,
@@ -348,11 +348,11 @@
       "lastEvidence": "capability_ctrace_cdca42fbe01796a741921cab"
     },
     "ROBLOX_STUDIO": {
-      "xp": 731,
+      "xp": 736,
       "level": 10,
       "verifiedSuccesses": 3,
-      "verifiedFailureLessons": 139,
-      "lastEvidence": "capability_ctrace_8a3476c338c227118453cacb"
+      "verifiedFailureLessons": 140,
+      "lastEvidence": "capability_ctrace_b0c245cda448c52961697a38"
     },
     "ROBLOX_DATASTORE": {
       "xp": 0,
@@ -890,7 +890,8 @@
     "capability_ctrace_76073be2787652e8b31ed8df",
     "capability_ctrace_437696c6d8ffca84d5d8c865",
     "capability_ctrace_fe9d73e05509e02dee1d9fcf",
-    "capability_ctrace_cdca42fbe01796a741921cab"
+    "capability_ctrace_cdca42fbe01796a741921cab",
+    "capability_ctrace_b0c245cda448c52961697a38"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -1014,8 +1015,8 @@
       ]
     },
     "fail_3e38u6": {
-      "count": 28,
-      "lastEvidence": "capability_ctrace_0e8231ccfdc7c1f188aeb74e",
+      "count": 29,
+      "lastEvidence": "capability_ctrace_b0c245cda448c52961697a38",
       "example": "SOURCE_CANDIDATE_GENERATION:MALFORMED_OUTPUT",
       "domains": [
         "CORE_LOOP",
@@ -1036,7 +1037,8 @@
         "CONCEPT_DIRECTION",
         "ROBLOX_STUDIO",
         "CHARACTER_ARC",
-        "UNITY_RUNTIME"
+        "UNITY_RUNTIME",
+        "AI"
       ]
     },
     "fail_wu3qnk": {
@@ -14094,7 +14096,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-27T05:58:11.524Z",
+    "lastBuiltAt": "2026-09-27T06:04:17.890Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -20496,5 +20498,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-27T05:58:11.524Z"
+  "updatedAt": "2026-09-27T06:04:17.890Z"
 }
