@@ -8538,7 +8538,15 @@
       "exactShaReuseByGamePrimaryReservePreserved": true,
       "localExactShaFallbackPreserved": true,
       "qualityGateWeakened": false,
-      "gamePrimaryRunnerCapacityConsumed": false
+      "gamePrimaryRunnerCapacityConsumed": false,
+      "browserSmoke": {
+        "runner": "ubuntu-24.04",
+        "separateJob": true,
+        "parallelWithCoreTests": true,
+        "realBrowserRequired": true,
+        "browserGatePreserved": true,
+        "gamePrimaryUbuntuLatestLabelUsed": false
+      }
     },
     "runnerQueueDrainV2_20260926": {
       "id": "RUNNER_QUEUE_DRAIN_V2_2026-09-26",
