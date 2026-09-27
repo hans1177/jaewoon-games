@@ -1334,3 +1334,55 @@ test('deep Studio scenario separates console-runtime errors from gameplay-qualit
   assert.match(helper,/checkpoint\('no-release-blocking-runtime-errors',consoleClassification\.errors\.length===0\)/);
   assert.match(helper,/consoleErrorCount:consoleClassification\.errors\.length/);
 });
+
+test('product-quality Studio failure short-circuits repeated Studio and release observation until source buildup changes',()=>{
+  const candidate=item();
+  const failedRuntime=runtime();
+  failedRuntime.scenarioContractRequired=true;
+  failedRuntime.scenarioContractVersion=2;
+  failedRuntime.scenarioContractFingerprint='sha256:'+'c'.repeat(64);
+  failedRuntime.scenarioCoverage=[
+    {id:'primary-action-input',pass:true},
+    {id:'primary-action-effect',pass:false}
+  ];
+  failedRuntime.qualityFailureKinds=['primary-action-effect'];
+  const applied=applyLocalStudioPlayResult({
+    queue:{items:[candidate]},
+    gameId:'g1',
+    runtime:failedRuntime,
+    expected,
+    workflowRunId:901,
+    studioStepSucceeded:true,
+    testedAt:'2026-09-27T07:30:00.000Z'
+  });
+  assert.equal(applied.result.pass,false);
+  assert.equal(applied.item.robloxQualityBuildUpRequired,true);
+  assert.equal(applied.item.robloxQualityFailureClass,'PRODUCT');
+  assert.equal(applied.item.robloxQualityBuildUpSourceRevision,source);
+  assert.equal(applied.item.currentStep,'REPAIR_REQUIRED');
+  assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
+  assert.deepEqual(applied.item.robloxQualityBuildUpEvidence.qualityFailureKinds,['primary-action-effect']);
+  assert.equal(planLocalStudioCandidates({queue:applied.queue,roadmap:roadmap()}).include.length,0);
+});
+
+test('successful exact Studio play clears prior product-quality buildup short circuit',()=>{
+  const candidate=item();
+  candidate.robloxQualityBuildUpRequired=true;
+  candidate.robloxQualityFailureClass='PRODUCT';
+  candidate.robloxQualityBuildUpSourceRevision=source;
+  candidate.robloxQualityBuildUpEvidence={failureSignature:'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED'};
+  const applied=applyLocalStudioPlayResult({
+    queue:{items:[candidate]},
+    gameId:'g1',
+    runtime:runtime(),
+    expected,
+    workflowRunId:902,
+    studioStepSucceeded:true,
+    testedAt:'2026-09-27T07:31:00.000Z'
+  });
+  assert.equal(applied.result.pass,true);
+  assert.equal(applied.item.robloxQualityBuildUpRequired,false);
+  assert.equal(applied.item.robloxQualityFailureClass,null);
+  assert.equal(applied.item.robloxQualityBuildUpSourceRevision,null);
+  assert.equal(applied.item.robloxQualityBuildUpEvidence,null);
+});
