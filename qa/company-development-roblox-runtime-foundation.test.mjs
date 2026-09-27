@@ -372,6 +372,8 @@ test('F9 final review requires exact Studio asset runtime proof when a binding w
 test('F9 returns exact Roblox runtime and Studio asset proof to waiting Vibe tasks',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
  assert.match(workflow,/Fan verified F9 runtime proof into waiting Vibe Roblox tasks/);
+ assert.match(workflow,/node --input-type=module - "runtime\/development-queue\.json" "\$REQUESTED_GAME_ID"/);
+ assert.doesNotMatch(workflow,/node --input-type=module - "\.\.\/runtime\/development-queue\.json"/);
  assert.match(workflow,/candidate-awaiting-roblox-runtime-qa/);
  assert.match(workflow,/roblox-runtime-await-game:/);
  assert.match(workflow,/robloxRuntimePassed!==true/);
