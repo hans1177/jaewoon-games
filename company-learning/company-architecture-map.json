@@ -6507,12 +6507,15 @@
     "affectedWorkflows": [
       ".github/workflows/company-seed-design-runtime.yml",
       ".github/workflows/homepage-manager.yml",
-      ".github/workflows/company-status-sync.yml"
+      ".github/workflows/company-status-sync.yml",
+      ".github/workflows/company-dna-learning.yml"
     ],
     "roadmapWakePreserved": true,
     "workflowRunContinuationPreserved": true,
     "centralPolicyQaPreserved": true,
     "securityMainPushValidationPreserved": true,
-    "runtimeExecutionSemanticsChanged": false
+    "runtimeExecutionSemanticsChanged": false,
+    "dnaLearningMainPushScope": "VERIFIED_LEARNING_INPUTS_ONLY",
+    "dnaLearningBroadCompanyLearningWildcardForbidden": true
   }
 }

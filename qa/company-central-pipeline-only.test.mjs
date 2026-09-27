@@ -187,6 +187,7 @@ test('descriptive central mirrors do not fan out runtime main-push wakes',()=>{
   const seed=read('.github/workflows/company-seed-design-runtime.yml');
   const homepage=read('.github/workflows/homepage-manager.yml');
   const status=read('.github/workflows/company-status-sync.yml');
+  const dna=read('.github/workflows/company-dna-learning.yml');
   const security=read('.github/workflows/company-security-immune.yml');
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
@@ -197,11 +198,23 @@ test('descriptive central mirrors do not fan out runtime main-push wakes',()=>{
     assert.doesNotMatch(push,/company-learning\/company-log-map\.json/);
     assert.match(push,/company-learning\/platform-release-roadmap\.json/);
   }
+  const dnaPush=pushBlock(dna);
+  assert.doesNotMatch(dnaPush,/company-learning\/\*\*/);
+  assert.doesNotMatch(dnaPush,/company-learning\/company-architecture-map\.json/);
+  assert.doesNotMatch(dnaPush,/company-learning\/company-log-map\.json/);
+  for(const required of [
+    'company-learning/evidence/**',
+    'company-learning/training-samples/**',
+    'company-learning/company-dna.json',
+    'company-learning/distillation-status.json',
+    'company-learning/invalidated-learning-sources.json',
+  ]) assert.ok(dnaPush.includes(required),required);
   const securityPush=pushBlock(security);
   assert.match(securityPush,/company-learning\/company-architecture-map\.json/);
   assert.match(securityPush,/company-learning\/company-log-map\.json/);
   const change=roadmap.changeRecord?.descriptiveMirrorPushWakeReduction20260928||{};
   assert.equal(change.securityMainPushValidationPreserved,true);
+  assert.equal(change.dnaLearningEvidencePathsOnly,true);
   assert.equal(change.centralPolicyQaPreserved,true);
   assert.equal(architecture.descriptiveMirrorPushWakeReduction?.mirrorOnlyRuntimeWakeRemoved,true);
   assert.equal(logMap.descriptiveMirrorPushWakeReductionEvidence?.securityMainPushValidationPreserved,true);

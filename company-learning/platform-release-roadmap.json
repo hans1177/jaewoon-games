@@ -10125,7 +10125,8 @@
       "mainPushWakeRemovedFrom": [
         ".github/workflows/company-seed-design-runtime.yml",
         ".github/workflows/homepage-manager.yml",
-        ".github/workflows/company-status-sync.yml"
+        ".github/workflows/company-status-sync.yml",
+        ".github/workflows/company-dna-learning.yml"
       ],
       "roadmapWakePreserved": true,
       "workflowRunContinuationPreserved": true,
@@ -10133,7 +10134,25 @@
       "securityMainPushValidationPreserved": true,
       "securityPullRequestValidationPreserved": true,
       "mirrorPolicyCreationAuthority": false,
-      "runtimeGameQualitySecurityGatesUnchanged": true
+      "runtimeGameQualitySecurityGatesUnchanged": true,
+      "dnaLearningEvidencePathsOnly": true,
+      "dnaLearningAllowedMainPushPaths": [
+        "company-learning/evidence/**",
+        "company-learning/training-samples/**",
+        "company-learning/company-dna.json",
+        "company-learning/distillation-status.json",
+        "company-learning/invalidated-learning-sources.json"
+      ],
+      "observedResidualMirrorOnlyWake": {
+        "probeCommit": "553f39d65de552d95245c4ef557dcd59df1b515c",
+        "directPushWorkflows": [
+          "Company Central Policy Contract QA",
+          "Company DNA Learning",
+          "Company Security Immune System"
+        ],
+        "seedHomepageStatusDirectPushCount": 0,
+        "residualUnnecessaryWorkflow": "Company DNA Learning"
+      }
     }
   },
   "vibeExecutionLaneContract": {

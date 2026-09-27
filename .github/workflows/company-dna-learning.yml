@@ -14,7 +14,11 @@ on:
       - 'qa/department-learning-memory.test.mjs'
       - 'qa/vibe2-weight-learning.test.mjs'
       - 'qa/vibe2-distillation-status.test.mjs'
-      - 'company-learning/**'
+      - 'company-learning/evidence/**'
+      - 'company-learning/training-samples/**'
+      - 'company-learning/company-dna.json'
+      - 'company-learning/distillation-status.json'
+      - 'company-learning/invalidated-learning-sources.json'
       - '.github/workflows/company-dna-learning.yml'
   pull_request:
     paths:
