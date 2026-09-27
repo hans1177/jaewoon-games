@@ -10,6 +10,12 @@ import {
 } from '../tools/company-roblox-thumbnail-sync.mjs';
 
 const ids=['cozy-island','daechung-rpg','horror-escape-room','village-dungeons'];
+const titles={
+  'cozy-island':['COZY ISLAND','포근섬: 작은 왕국 키우기'],
+  'daechung-rpg':['5 PORTAL RPG','5포탈 RPG: 던전 파티'],
+  'horror-escape-room':['MIDNIGHT INFECTION','심야 감염전 [4대4]'],
+  'village-dungeons':['VILLAGE DUNGEONS','마을 던전 RPG']
+};
 
 test('current internal Roblox exposure games share one canonical thumbnail with homepage',()=>{
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
@@ -26,6 +32,12 @@ test('current internal Roblox exposure games share one canonical thumbnail with 
     const svg=fs.readFileSync(canonical.marketing.thumbnail,'utf8');
     assert.match(svg,/viewBox="0 0 1920 1080"/);
     assert.ok(svg.length>1000);
+    assert.ok(Buffer.byteLength(svg,'utf8')<=12*1024,`${id} thumbnail must stay <=12KB`);
+    assert.match(svg,new RegExp(titles[id][0].replace(/[.*+?^${}()|[\]\\]/g,'\\    assert.match(svg,/viewBox="0 0 1920 1080"/);
+    assert.ok(svg.length>1000);
+    images.add(canonical.marketing.thumbnail);')));
+    assert.ok(svg.includes(titles[id][1]),`${id} Korean subtitle missing`);
+    assert.match(svg,/Noto Sans CJK KR/);
     images.add(canonical.marketing.thumbnail);
   }
   assert.equal(images.size,ids.length);
@@ -53,6 +65,8 @@ test('thumbnail target resolves verified runtime universe without changing publi
   assert.equal(target.source,'assets/roblox-thumbnails/cozy-island.svg');
   const validated=validateCanonicalThumbnail({root:'.',target});
   assert.equal(validated.ext,'.svg');
+  assert.ok(validated.size<=12*1024);
+  assert.equal(validated.maxBytes,12*1024);
   assert.equal(validated.sha256.length,64);
 });
 
@@ -101,6 +115,7 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.match(workflow,/ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS/);
   assert.match(workflow,/company-roblox-thumbnail-sync\.mjs/);
   assert.match(workflow,/librsvg2-bin/);
+  assert.match(workflow,/fonts-noto-cjk/);
   assert.match(workflow,/ROBLOX_THUMBNAIL_RUNTIME_PERSIST=PASS/);
   assert.doesNotMatch(workflow,/Roblox Player automation/i);
 });
@@ -113,6 +128,13 @@ test('central contract requires same thumbnail source for Roblox and homepage',(
   assert.equal(contract.canonicalImageAuthority.homepageUsesSameAsset,true);
   assert.equal(contract.canonicalImageAuthority.robloxUploadUsesSameAsset,true);
   assert.equal(contract.robloxOpenCloud.requiredScope,'universe.thumbnail:write');
+  assert.equal(contract.requiredFormat.canonicalSvgMaxBytes,12*1024);
+  assert.equal(contract.requiredFormat.englishTitleDominant,true);
+  assert.equal(contract.requiredFormat.koreanSubtitleSecondary,true);
+  assert.equal(contract.requiredFormat.blocky3dGameCardDirection,true);
+  assert.equal(contract.requiredFormat.koreanUploadFontPackage,'fonts-noto-cjk');
   assert.equal(architecture.robloxHomepageThumbnailSyncTopology.sameSourceAssetForHomepageAndRoblox,true);
+  assert.equal(architecture.robloxHomepageThumbnailSyncTopology.lowSizeCanonicalSvgMaxBytes,12*1024);
+  assert.equal(architecture.robloxHomepageThumbnailSyncTopology.koreanUploadFontProvisioned,true);
   assert.equal(security.robloxThumbnailOpenCloudSecurity.verifiedUniverseTargetRequired,true);
 });
