@@ -1823,7 +1823,7 @@
     "securityAndReleaseGateClaimsUnchanged": true
   },
   "runnerQueueDrainEvidence": {
-    "version": 3,
+    "version": 4,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "workflow": ".github/workflows/director-supervisor.yml",
     "markers": [
@@ -1833,7 +1833,10 @@
       "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED_COUNT",
       "DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN",
       "DIRECTOR_RUNNER_DRAIN_FORCE_CANCELLED",
-      "DIRECTOR_RUNNER_DRAIN_FETCH_RETRY"
+      "DIRECTOR_RUNNER_DRAIN_FETCH_RETRY",
+      "CENTRAL_DEVELOPMENT_STALE_HEAD_REPLACED_BY_CURRENT_RUN",
+      "NATIVE_STALE_BATCH_PUSH_REPLACED_BY_CURRENT_CENTRAL",
+      "DUPLICATE_TITLE_STALE_QUEUED"
     ],
     "cancelledRunReasonRequired": true,
     "independentGameCancellationForbidden": true,
@@ -1845,7 +1848,11 @@
     "scanMode": "TARGETED_RECENT_AND_ACTIVE_STATUS_QUERIES",
     "staleQueuedSameTitleReason": "DUPLICATE_TITLE_STALE_QUEUED",
     "newestQueuedSameTitlePreserved": true,
-    "inProgressSameTitleCancellationForbidden": true
+    "inProgressSameTitleCancellationForbidden": true,
+    "staleCentralPushReplacementRequired": true,
+    "staleNativeBatchPushReplacementRequired": true,
+    "vibe24hSchedulerDuplicateDedupe": true,
+    "vibe24hSchedulerActiveRunPreserved": true
   },
   "controlPlaneGameRunnerEvictionEvidence": {
     "version": 1,
