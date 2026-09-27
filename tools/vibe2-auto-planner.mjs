@@ -1519,7 +1519,7 @@ export function findWeatherPresentationTask(project,repoRoot,queue){
 
 function scanExplicitMarkerTask(project,repoRoot,queue){
   const root=sourceFile(repoRoot,project.projectPath);if(!fs.existsSync(root))return null;
-  const extensions=project.engine==='roblox'?new Set(['.luau','.lua','.json']):project.engine==='web'?new Set(['.html','.css','.js','.mjs','.json']):project.engine==='unity'?new Set(['.cs']):project.engine==='unreal'?new Set(['.cpp','.h','.hpp','.ini']):new Set(['.gd']);
+  const extensions=project.engine==='roblox'?new Set(['.luau','.lua','.json']):project.engine==='web'?new Set(['.html','.css','.js','.mjs','.json']):project.engine==='unity'?new Set(['.cs']):project.engine==='unreal'?new Set(['.verse','.cpp','.h','.hpp','.ini']):new Set(['.gd']);
   const stack=[root],rows=[];
   while(stack.length&&rows.length<3){
     const current=stack.pop();
@@ -1895,7 +1895,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const extensions=project.engine==='roblox'?new Set(['.luau','.lua'])
     :project.engine==='unity'?new Set(['.cs','.uxml','.uss'])
     :project.engine==='web'?new Set(['.html','.htm','.js','.mjs','.css'])
-    :project.engine==='unreal'?new Set(['.cpp','.h','.hpp','.ini'])
+    :project.engine==='unreal'?new Set(['.verse','.cpp','.h','.hpp','.ini'])
     :new Set(['.gd','.tscn']);
   const candidates=[],stack=[sourceDir];
   while(stack.length){
