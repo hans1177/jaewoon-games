@@ -391,6 +391,21 @@ test('stale exact-artifact binding is rejected before evidence persistence',()=>
   }),/ROBLOX_STUDIO_MCP_CANDIDATE_STALE/);
 });
 
+test('verified Studio pass clears a stale native failure classification',()=>{
+  const candidate=item();
+  candidate.robloxNativeFailureClass='ROBLOX_DATASTORE_SAVE_LOAD';
+  candidate.robloxFailureStage='VIBE_INTERNAL_PLAY';
+  candidate.robloxFailureSignature='ROBLOX_STUDIO_MCP_RUNTIME_ERROR';
+  const applied=applyLocalStudioPlayResult({
+    queue:{items:[candidate]},gameId:'g1',runtime:runtime(),expected,workflowRunId:42,studioStepSucceeded:true,
+    testedAt:'2026-09-25T09:00:00.000Z'
+  });
+  assert.equal(applied.result.pass,true);
+  assert.equal(applied.item.robloxNativeFailureClass,null);
+  assert.equal(applied.item.robloxFailureStage,null);
+  assert.equal(applied.item.robloxFailureSignature,null);
+});
+
 test('verified runtime error routes exact game to repair while infrastructure failure does not fabricate a game bug',()=>{
   const bad=runtime();
   bad.runtimeVerified=false;
