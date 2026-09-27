@@ -1,5 +1,5 @@
 {
-  "version": 471,
+  "version": 472,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9536,7 +9536,7 @@
     "robloxOpenCloudThrottleRecovery20260927": {
       "id": "ROBLOX_OPEN_CLOUD_THROTTLE_RECOVERY_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
-      "status": "LIVE_STUDIO_PASS_FEEDBACK_METRIC_SERIALIZATION_REPAIR_PENDING_QA",
+      "status": "LIVE_STUDIO_PASS_EVIDENCE_REPLAY_REPAIR_PENDING_QA",
       "objective": "PREVENT_TRANSIENT_OPEN_CLOUD_THROTTLING_FROM_BLOCKING_EXACT_RUNTIME_EVIDENCE_WHILE_AVOIDING_SCAN_BURSTS",
       "observedEvidence": {
         "gameId": "horror-escape-room",
@@ -9566,7 +9566,10 @@
         "studioConsoleErrorCount": 0,
         "studioPrimaryActionEffectPass": true,
         "studioCurrentSourceArtifactBinding": true,
-        "studioPrimaryActionFeedbackMetricPersistedBeforeRepair": false
+        "studioPrimaryActionFeedbackMetricPersistedBeforeRepair": false,
+        "feedbackSerializationMergeSha": "94644be0f519836b6ea7f763416444be3662bc2c",
+        "feedbackSerializationFollowupRunId": 36299267618,
+        "feedbackSerializationFollowupStudioPlannerSkippedExistingEvidence": true
       },
       "transientHttpRetryStatuses": [
         408,
@@ -9600,7 +9603,10 @@
       "postFoundationStudioFollowupMustDelegateToCanonicalPlanner": true,
       "postFoundationStudioFollowupMayNotPreRequireRuntimeFoundationPass": true,
       "primaryActionFeedbackMetricMustPersistToRuntimeSummary": true,
-      "primaryActionScenarioPassMayNotRelyOnSerializationOmission": true
+      "primaryActionScenarioPassMayNotRelyOnSerializationOmission": true,
+      "primaryActionEffectStoredProofMustExplainScenarioPass": true,
+      "primaryActionEffectUnexplainedLegacyEvidenceMustReplay": true,
+      "primaryActionEffectReplayMustKeepExactSourceArtifactVersion": true
     },
     "robloxF9FaninRuntimePathRepair20260927": {
       "id": "ROBLOX_F9_FANIN_RUNTIME_PATH_REPAIR_2026-09-27",

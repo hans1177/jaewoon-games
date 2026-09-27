@@ -1199,6 +1199,12 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.equal(throttle?.observedEvidence?.studioPrimaryActionFeedbackMetricPersistedBeforeRepair,false);
   assert.equal(throttle?.primaryActionFeedbackMetricMustPersistToRuntimeSummary,true);
   assert.equal(throttle?.primaryActionScenarioPassMayNotRelyOnSerializationOmission,true);
+  assert.equal(throttle?.observedEvidence?.feedbackSerializationMergeSha,'94644be0f519836b6ea7f763416444be3662bc2c');
+  assert.equal(throttle?.observedEvidence?.feedbackSerializationFollowupRunId,36299267618);
+  assert.equal(throttle?.observedEvidence?.feedbackSerializationFollowupStudioPlannerSkippedExistingEvidence,true);
+  assert.equal(throttle?.primaryActionEffectStoredProofMustExplainScenarioPass,true);
+  assert.equal(throttle?.primaryActionEffectUnexplainedLegacyEvidenceMustReplay,true);
+  assert.equal(throttle?.primaryActionEffectReplayMustKeepExactSourceArtifactVersion,true);
   assert.equal(throttle?.gameplayRulesChanged,false);
   assert.equal(throttle?.qualityGateWeakening,false);
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.openCloudProbeFailureIsolation,'PER_CANDIDATE');
@@ -1210,6 +1216,9 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.prePlannerRuntimeFoundationPassGuard,false);
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.primaryActionFeedbackMetricPropagation,'EVALUATION_TO_RUNTIME_METRICS_TO_COMPANY_RUNTIME_EVIDENCE');
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.primaryActionFeedbackSerializationOmissionAllowed,false);
+  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.studioDedupePrimaryActionEvidenceGate,'SCENARIO_PASS_PLUS_PERSISTED_FEEDBACK_OR_MOTION_PROOF');
+  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.unexplainedLegacyPrimaryActionPassReplay,true);
+  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.replayChangesGameSource,false);
   assert.equal(architecture.robloxRuntimeFoundationRunnerIsolation?.postFoundationStudioFollowup?.prebootExactEngineCovered,true);
   assert.equal(architecture.robloxRuntimeFoundationRunnerIsolation?.postFoundationStudioFollowup?.prePlannerRuntimeFoundationPassGuard,false);
   assert.match(workflow,/persistentFailure:true/);
@@ -1220,6 +1229,9 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.studioPassObservation?.primaryActionEffect,'PASS');
   assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.studioPassObservation?.consoleErrorCount,0);
   assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.studioPassObservation?.persistedRuntimeSummaryPrimaryActionFeedbackChangedBeforeRepair,false);
+  assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.primaryActionEvidenceReplayObservation?.workflowRunId,36299267618);
+  assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.primaryActionEvidenceReplayObservation?.studioPlannerSkipped,true);
+  assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.primaryActionEvidenceReplayObservation?.replayRequired,true);
   assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.falsePassAllowed,false);
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
 });
