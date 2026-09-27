@@ -1407,4 +1407,9 @@ test('game and asset-development workers bind verified learning-runtime playbook
   assert.ok(workflow.includes('verifiedLearningMemorySha:'));
   assert.ok(workflow.includes("Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs"));
   assert.ok(workflow.includes("asset-development"));
+  assert.ok(workflow.includes('VERIFIED_COMMERCIAL_BLACK_BOX_DISTILLATION_REQUIRED_FOR_INTERNAL_ASSET_PRODUCTION'));
+  assert.ok(workflow.includes('verified-commercial-distillation-internal-asset-contract'));
+  assert.ok(workflow.includes('VIBE2_COMMERCIAL_BLACK_BOX_INTERNAL_ASSET_DISTILLATION='));
+  assert.ok(workflow.includes('VIBE2_COMMERCIAL_BLACK_BOX_REUSE_COUNT='));
+  assert.ok(workflow.includes('VIBE2_INTERNAL_ASSET_EVOLUTION_MODE='));
 });
