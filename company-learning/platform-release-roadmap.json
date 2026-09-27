@@ -1,5 +1,5 @@
 {
-  "version": 468,
+  "version": 469,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9510,7 +9510,10 @@
         "repeatExactFoundationRedispatch": false,
         "eligibilityAuthority": "tools/company-development-roblox-studio-local-play.mjs#planLocalStudioCandidates",
         "coversExactFoundationEvidenceReuse": true,
-        "stopCondition": "EXACT_CURRENT_STUDIO_MCP_EVIDENCE_ALREADY_OBSERVED"
+        "stopCondition": "EXACT_CURRENT_STUDIO_MCP_EVIDENCE_ALREADY_OBSERVED",
+        "coversExactEnginePrebootEvidence": true,
+        "prePlannerRuntimeFoundationPassGuardForbidden": true,
+        "observedMissedDispatchRunId": 36297021567
       }
     },
     "robloxExactEngineStudioHandoff20260927": {
@@ -9533,7 +9536,7 @@
     "robloxOpenCloudThrottleRecovery20260927": {
       "id": "ROBLOX_OPEN_CLOUD_THROTTLE_RECOVERY_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
-      "status": "LIVE_EXACT_PROBE_OBSERVED_FOLLOWUP_REPAIR_PENDING_QA",
+      "status": "LIVE_EXACT_PROBE_PERSISTED_PREBOOT_FOLLOWUP_GUARD_REPAIR_PENDING_QA",
       "objective": "PREVENT_TRANSIENT_OPEN_CLOUD_THROTTLING_FROM_BLOCKING_EXACT_RUNTIME_EVIDENCE_WHILE_AVOIDING_SCAN_BURSTS",
       "observedEvidence": {
         "gameId": "horror-escape-room",
@@ -9550,7 +9553,13 @@
         "studioActualPlayConsoleErrorCount": 0,
         "studioActualPlayPrimaryActionEffectBeforeRepair": "FAIL",
         "studioEvidencePersistFailureBeforeRepair": "ROBLOX_STUDIO_MCP_CANDIDATE_STALE",
-        "studioAssetBindingObservedVersion": 2
+        "studioAssetBindingObservedVersion": 2,
+        "liveRepairRunId": 36297021567,
+        "liveRepairExactEngineHttpStatus": 200,
+        "liveRepairExactEngineVersion": true,
+        "liveRepairStudioAssetSelectionMatched": true,
+        "liveRepairPeerPersistent429Count": 4,
+        "liveRepairStudioFollowupReadyCountBeforeGuardFix": 0
       },
       "transientHttpRetryStatuses": [
         408,
@@ -9580,7 +9589,9 @@
       "primaryActionFeedbackRequiresSuccessfulPrimaryInput": true,
       "sourceArtifactCandidateBindingMustRemainExact": true,
       "gameplayRulesChanged": false,
-      "qualityGateWeakening": false
+      "qualityGateWeakening": false,
+      "postFoundationStudioFollowupMustDelegateToCanonicalPlanner": true,
+      "postFoundationStudioFollowupMayNotPreRequireRuntimeFoundationPass": true
     }
   },
   "vibeExecutionLaneContract": {
