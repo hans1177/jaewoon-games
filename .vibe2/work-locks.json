@@ -3,60 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-fx3r0d",
-      "worker": "vibe2",
-      "taskId": "survival-studio-evolution-unity-web-usability-v1",
-      "gameId": "survival",
-      "files": [
-        "unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T13:27:50.611Z",
-      "expiresAt": "2026-09-27T14:12:50.611Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1qklur5",
-      "worker": "vibe2",
-      "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T13:28:27.413Z",
-      "expiresAt": "2026-09-27T14:13:27.413Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-143qnk4",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T13:28:44.147Z",
-      "expiresAt": "2026-09-27T14:13:44.147Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-e921nv",
       "worker": "vibe2",
       "taskId": "horror-escape-room-studio-evolution-presentation-v1",
@@ -163,6 +109,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-28a2f2747401-v1"
+      ]
+    },
+    {
+      "id": "wl-qqfpci",
+      "worker": "vibe2",
+      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "files": [
+        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau"
+      ],
+      "baseSha": "6bec89582afa4db20dec68b3a52bbd0c63cfbd9b",
+      "acquiredAt": "2026-09-27T14:14:21.494Z",
+      "expiresAt": "2026-09-27T14:59:21.494Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
