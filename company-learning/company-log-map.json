@@ -1,5 +1,5 @@
 {
-  "version": 141,
+  "version": 142,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2468,5 +2468,19 @@
       "studioFollowupReadyCount": 0,
       "missedDispatchCause": "PRE_PLANNER_RUNTIME_FOUNDATION_PASS_GUARD"
     }
+  },
+  "robloxF9FaninRuntimePathRepairEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "workflowRunId": 36298713127,
+    "jobId": 108562535249,
+    "gameId": "horror-escape-room",
+    "promotedRuntimeCommit": "c66242b",
+    "promotionResult": "ROBLOX_F9_INTERNAL_RELEASE_PROMOTED=1",
+    "blockedCount": 0,
+    "fanInFailure": "ENOENT ../runtime/development-queue.json",
+    "repairedRuntimeQueuePath": "runtime/development-queue.json",
+    "exactPromotionLost": false,
+    "falsePassAllowed": false
   }
 }
