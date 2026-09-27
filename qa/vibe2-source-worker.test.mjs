@@ -3520,24 +3520,23 @@ test('focused replace-only compacts build-up directive without losing exact goal
   assert.ok(Buffer.byteLength(focused.prompt,'utf8')<Buffer.byteLength(prompt,'utf8'));
 });
 
-test('Roblox zero-output timeout stays on focused recovery for the remaining existing attempt budget',()=>{
+test('Roblox zero-output timeout escalates from focused recovery to the full graphics package when the focused candidate fails visual-domain quality',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(source,/let robloxZeroOutputTimeoutFocusedRecoveryActive=false/);
+  assert.match(source,/let robloxTimeoutRecoveryEscalatedFullGraphics=false/);
   assert.match(source,/const zeroOutputTimeoutRecovery=!allowFullRewrite[\s\S]*?priorFailureClass==='TIMEOUT'[\s\S]*?!clean\(lastRaw\)/);
   assert.match(source,/robloxAssetAdaptationTask&&zeroOutputTimeoutRecovery\)robloxZeroOutputTimeoutFocusedRecoveryActive=true/);
+  assert.match(source,/robloxTimeoutFocusedRecoveryNeedsPackage[\s\S]*?PRESENTATION_PATCH_DELTA[\s\S]*?ROBLOX_VISUAL_DOMAINS[\s\S]*?ROBLOX_VISUAL_MOTION/);
+  assert.match(source,/robloxZeroOutputTimeoutFocusedRecoveryActive=false;[\s\S]*?robloxFullGraphicsPackageActive=true;[\s\S]*?robloxTimeoutRecoveryEscalatedFullGraphics=true/);
+  assert.match(source,/VIBE2_ROBLOX_TIMEOUT_RECOVERY_ESCALATE_FULL_GRAPHICS/);
+  assert.match(source,/robloxTimeoutRecoveryEscalatedFullGraphics:generation\.robloxTimeoutRecoveryEscalatedFullGraphics===true/);
   assert.match(source,/ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES\.has\(priorFailureClass\)[\s\S]*?&&!zeroOutputTimeoutRecovery[\s\S]*?&&!robloxZeroOutputTimeoutFocusedRecoveryActive/);
-  assert.match(source,/VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY/);
-  assert.match(source,/VIBE2_ROBLOX_TIMEOUT_RECOVERY_CHAIN_FOCUSED/);
-  assert.match(source,/robloxZeroOutputTimeoutFocusedRecovery:generation\.robloxZeroOutputTimeoutFocusedRecovery===true/);
-  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
-  assert.match(workflow,/coding-roblox-zero-timeout-focused-recovery:YES/);
-  assert.match(source,/\(!studioExpansion\|\|zeroOutputTimeoutRecovery\|\|robloxZeroOutputTimeoutFocusedRecoveryActive\)/);
-  assert.match(source,/presentationPatchDeltaRecovery\|\|robloxZeroOutputTimeoutFocusedRecoveryActive/);
-  assert.match(source,/\(systemAtomicPairCompletion\|\|focusedReplaceOnly\)\?\(systemAtomicPairCompletion\?JSON_RETRY_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS\)/);
-  assert.match(source,/\(systemAtomicPairCompletion\|\|focusedReplaceOnly\)\?\(systemAtomicPairCompletion\?JSON_RETRY_MAX_PREDICT:JSON_FOCUSED_REPLACE_MAX_PREDICT\)/);
   assert.match(source,/JSON_FOCUSED_REPLACE_TIMEOUT_MS=90000/);
   assert.match(source,/JSON_FOCUSED_REPLACE_MAX_PREDICT=384/);
   assert.match(source,/JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192/);
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workflow,/coding-roblox-zero-timeout-focused-recovery:YES/);
+  assert.match(workflow,/coding-roblox-timeout-recovery-escalated-full-graphics:YES/);
 });
 
 test('failed source generation still performs post-work shared-context validation before exiting the candidate step',()=>{
