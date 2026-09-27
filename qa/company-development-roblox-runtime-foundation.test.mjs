@@ -166,6 +166,42 @@ test('Open Cloud runtime reads retry transient DNS failures without weakening AP
  assert.equal(result.exactVersion,true);
 });
 
+test('Open Cloud engine probe retries transient HTTP throttling without weakening persistent API failures',async()=>{
+ let calls=0;
+ const responses=[
+  {ok:false,status:429,body:{errors:[{code:0,message:'rate limited'}]}},
+  {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
+  {ok:true,status:200,body:{state:'COMPLETE'}},
+  {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+  ]}]}}
+ ];
+ const result=await probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',pollIntervalMs:0,maxPolls:2,
+  networkRetryAttempts:4,networkRetryDelayMs:0,
+  fetchImpl:async()=>{
+   calls++;
+   const row=responses.shift();
+   return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};
+  },
+ });
+ assert.equal(calls,4);
+ assert.equal(result.engineExecuted,true);
+ assert.equal(result.exactVersion,true);
+
+ let persistentCalls=0;
+ await assert.rejects(()=>probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',pollIntervalMs:0,maxPolls:1,
+  networkRetryAttempts:3,networkRetryDelayMs:0,
+  fetchImpl:async()=>{
+   persistentCalls++;
+   return {ok:false,status:429,text:async()=>JSON.stringify({errors:[{code:0,message:'rate limited'}]})};
+  },
+ }),/ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429/);
+ assert.equal(persistentCalls,3);
+});
+
 test('Open Cloud engine probe binds exact place version without granting runtime acceptance',async()=>{
  const calls=[];
  const responses=[
@@ -332,6 +368,14 @@ test('F9 returns exact Roblox runtime and Studio asset proof to waiting Vibe tas
  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=\$settled_count/);
 });
 
+test('post-runtime Open Cloud engine probes use bounded external API concurrency and stronger throttling retry',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:2,candidates\.length\|\|1\)\)/);
+ assert.match(workflow,/networkRetryAttempts:6,networkRetryDelayMs:1000/);
+ assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_PROBE_COUNT=/);
+ assert.doesNotMatch(workflow,/Promise\.all\(candidates\.map/);
+});
+
 test('central policy and architecture preserve runtime truth while real server boot blocks external release only',()=>{
  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
@@ -381,7 +425,7 @@ test('runtime QA passes internal QA and regression while exact real-server boot 
  assert.match(workflow,/actualRuntimeEvidence:false/);
  assert.match(workflow,/item\.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'/);
  assert.match(workflow,/ROBLOX_INTERNAL_FLOW_PASS_EXTERNAL_SERVER_BOOT_PENDING=/);
- assert.match(workflow,/ROBLOX_FOUNDATION_AWAITING_REAL_SERVER_BOOT=[\\s\\S]*?queueStudioFollowupIfEligible\\(item\\);[\\s\\S]*?continue;/);
+ assert.match(workflow,/ROBLOX_FOUNDATION_AWAITING_REAL_SERVER_BOOT=[\s\S]*?queueStudioFollowupIfEligible\(item\);[\s\S]*?continue;/);
  assert.match(workflow,/item\.robloxRuntimeFoundationInternalReleaseException=false/);
  assert.match(workflow,/item\.robloxPublicReleaseRuntimeObservationPending=false/);
  assert.match(workflow,/item\.robloxPublicReleaseFailureSignature=null/);
@@ -514,7 +558,9 @@ test('central policy requires Roblox checkout through final promotion to stay ga
   assert.deepEqual(parallel.serverBootEvidenceReuse.requiredExactBindings,['SOURCE_REVISION','BUILD_ARTIFACT_IDENTITY','PLACE_ID','CANDIDATE_VERSION_NUMBER']);
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.doesNotMatch(workflow,/candidates\.slice\(0,4\)/);
-  assert.match(workflow,/Promise\.all\(candidates\.map\(async item=>/);
+  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:2,candidates\.length\|\|1\)\)/);
+  assert.match(workflow,/await Promise\.all\(Array\.from\(\{length:probeConcurrency\},\(\)=>runProbeWorker\(\)\)\)/);
+  assert.doesNotMatch(workflow,/Promise\.all\(candidates\.map\(async item=>/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_PARALLEL_COUNT=/);
 });
 
