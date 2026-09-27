@@ -24,7 +24,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: company-development-queue-reconcile-runtime
+  group: company-development-queue-reconcile-runtime-v2
   cancel-in-progress: false
 
 env:
