@@ -303,8 +303,14 @@ test('runner drain bypasses the stale supervisor group and evicts stale legacy R
   assert.match(director,/supervise:[\s\S]*?group: director-central-company-supervise-v3/);
   assert.match(director,/runner-drain:[\s\S]*runs-on: ubuntu-24\.04/);
   assert.doesNotMatch(director,/for page in \$\(seq 1 20\); do/);
-  assert.match(director,/fetch_runs 'status=in_progress&per_page=100'/);
-  assert.match(director,/fetch_runs 'status=queued&per_page=100'/);
+  assert.match(director,/local paginate="\$\{2:-false\}"/);
+  assert.match(director,/page_query="\$\{query\}&page=\$\{page\}"/);
+  assert.match(director,/DIRECTOR_RUNNER_DRAIN_FETCH_PAGE=/);
+  assert.match(director,/fetch_runs 'per_page=100'\n/);
+  assert.match(director,/fetch_runs 'status=in_progress&per_page=100' true/);
+  assert.match(director,/fetch_runs 'status=queued&per_page=100' true/);
+  assert.match(director,/fetch_runs 'status=requested&per_page=100' true \|\| true/);
+  assert.match(director,/fetch_runs 'status=waiting&per_page=100' true \|\| true/);
   assert.match(director,/ROBLOX_STALE_LEGACY_OR_BATCH/);
   assert.match(director,/15\*60\*1000/);
   assert.match(director,/actions\/runs\/\$\{run_id\}\/force-cancel/);
