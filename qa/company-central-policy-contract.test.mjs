@@ -1774,6 +1774,14 @@ test('BUILD_UP grounding stays connected from source proof through exact target 
   assert.equal(closure.roblox.f9SettlementMustMatchWaitingSourceTreeSha,true);
   assert.equal(closure.roblox.sameGameDifferentSourceMayNotSettle,true);
   assert.equal(closure.roblox.runtimePassWithoutExactBuildUpSourceIdentityCannotSettleTask,true);
+  assert.equal(closure.web.finalRuntimeAuthority,'WEB_CANDIDATE_BROWSER_RUNTIME_PLUS_CLOUDFLARE_DEPLOYMENT');
+  assert.equal(closure.web.candidateRuntimeBeforeAfterRequired,true);
+  assert.equal(closure.web.cloudflarePagesDeploymentCheckRequired,true);
+  assert.equal(closure.web.reviewedMainPromotionRequired,true);
+  assert.equal(closure.web.promotedSourceTreeShaRequired,true);
+  assert.equal(closure.web.exactPromotedSourceRequiredForSettlement,true);
+  assert.equal(closure.web.anotherPlatformRuntimeMayNotSubstitute,true);
+  assert.equal(closure.web.robloxRuntimeDispatchForbidden,true);
   assert.equal(closure.newWorkflowOrShadowPipelineForbidden,true);
 
   const completion=autonomousExpansionPolicy.presentationEvolution.completion;
@@ -1788,6 +1796,13 @@ test('BUILD_UP grounding stays connected from source proof through exact target 
   assert.deepEqual(projected.pausedPlatforms,['FORTNITE_UEFN']);
   assert.equal(projected.sourceIdentity,'SOURCE_ROOT_TREE_SHA');
   assert.equal(projected.robloxSameGameDifferentSourceMayNotSettle,true);
+  assert.equal(projected.web.candidateRuntimeBeforeAfterRequired,true);
+  assert.equal(projected.web.releaseDeploymentTarget,'CLOUDFLARE_PAGES');
+  assert.equal(projected.web.releaseDeploymentPreviewMustPass,true);
+  assert.equal(projected.web.promotedSourceTreeShaRequired,true);
+  assert.equal(projected.web.finalSettlementRequiresExactPromotedSourceTree,true);
+  assert.equal(projected.web.crossPlatformRuntimeDispatchForbidden,true);
+  assert.equal(projected.web.robloxRuntimeMayNotSubstituteForWebRuntime,true);
   assert.equal(projected.noNewWorkflowOrShadowPipeline,true);
 
   const topology=architecture.buildUpRuntimeGroundingTopology;
@@ -1798,10 +1813,34 @@ test('BUILD_UP grounding stays connected from source proof through exact target 
   assert.equal(topology.exactSourceRules.sameGameIdAloneInsufficient,true);
   assert.equal(topology.exactSourceRules.promotedSourceTreeMustMatchRuntimeSourceTree,true);
   assert.equal(topology.exactSourceRules.staleOrDifferentBuildUpGenerationCannotSettle,true);
+  assert.deepEqual(topology.webRuntimePath,[
+    'VIBE2_SOURCE_WORKER_GROUNDED_VALIDATION',
+    'CANDIDATE_BROWSER_RUNTIME_BEFORE_AFTER',
+    'VIBE2_FAN_IN_GROUNDED_AND_RUNTIME_VISUAL_GATE',
+    'WEB_STATIC_AND_SAVE_COMPATIBILITY_QA',
+    'CLOUDFLARE_PAGES_RELEASE_COMMIT_PREVIEW',
+    'REVIEWED_MAIN_PROMOTION',
+    'PROMOTED_SOURCE_ROOT_TREE_SHA_RECORDED',
+    'VIBE2_WEB_TASK_SETTLEMENT_ON_EXACT_PROMOTED_SOURCE'
+  ]);
+  assert.equal(topology.webExactSourceRules.candidateRuntimeBeforeAfterRequired,true);
+  assert.equal(topology.webExactSourceRules.cloudflarePagesPreviewRequired,true);
+  assert.equal(topology.webExactSourceRules.promotedSourceTreeMustMatchReviewedCandidateSource,true);
+  assert.equal(topology.webExactSourceRules.robloxRuntimeDispatchForbidden,true);
+  assert.equal(topology.webExactSourceRules.anotherPlatformRuntimeMayNotSubstitute,true);
   assert.equal(topology.fortniteUefnOwnerHoldRespected,true);
 
   const change=roadmap.changeRecord.buildUpEndToEndGrounding20260928;
   assert.equal(change.sameGameStaleRuntimeProofMayNotPassNewerBuildUp,true);
   assert.equal(change.noNewWorkflowOrStage,true);
   assert.equal(change.gameplaySemanticsUnchanged,true);
+  const webChange=roadmap.changeRecord.buildUpWebRuntimeClosure20260928;
+  assert.equal(webChange.activePlatform,'WEB');
+  assert.equal(webChange.candidateRuntimeBeforeAfterRequired,true);
+  assert.equal(webChange.cloudflarePagesDeploymentPreviewRequired,true);
+  assert.equal(webChange.promotedSourceTreeShaRequired,true);
+  assert.equal(webChange.finalSettlementRequiresExactPromotedSourceTree,true);
+  assert.equal(webChange.robloxRuntimeDispatchFromWebReleaseForbidden,true);
+  assert.equal(webChange.noNewWorkflowOrStage,true);
+  assert.equal(webChange.gameplaySemanticsUnchanged,true);
 });
