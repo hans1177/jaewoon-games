@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -190,7 +190,13 @@
       "USE_EXISTING_INCREMENTAL_QA_AND_REGRESSION_SCOPE",
       "PERSIST_EFFECT_FOR_NEXT_BUILD_UP_ITERATION"
     ],
-    "note": "These are responsibilities inside the existing BUILD_UP task, not new pipeline stages."
+    "note": "These are responsibilities inside the existing BUILD_UP task, not new pipeline stages.",
+    "breadthCyclePersistence": [
+      "READ_PRIOR_THEME_COVERAGE_LEDGER",
+      "KEEP_CAUSAL_REPAIR_ON_THE_SAME_THEME_WHEN_REQUIRED",
+      "AFTER_VERIFIED_EFFECT_PRIORITIZE_AN_UNCOVERED_OR_LEAST_COVERED_THEME",
+      "PERSIST_THEME_COVERAGE_FOR_THE_NEXT_EXISTING_BUILD_UP_ITERATION"
+    ]
   },
   "acceptance": {
     "expansionCountsOnlyWhen": [
@@ -202,5 +208,32 @@
     ],
     "completionDirectionRequired": true,
     "regressionsRouteToExistingCausalRepair": true
+  },
+  "breadthCycle": {
+    "enabled": true,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "requiredThemes": [
+      "WORLD_ECOLOGY_STORY_CHAIN",
+      "ENEMY_BOSS_COMBAT_ECOLOGY",
+      "QUEST_STORY_PROGRESSION_CHAIN",
+      "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+      "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+      "MID_LATE_ENDGAME_COMPLETION",
+      "PRESENTATION_WORLD_COHESION"
+    ],
+    "successfulGenerationRule": "PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEME_BEFORE_REPEATING_A_THEME",
+    "causalFailureException": "VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME_UNTIL_THE_FAILURE_IS_RESOLVED",
+    "repetitionGuard": "DO_NOT_REPEAT_THE_SAME_CONTENT_SHAPE_WHILE_OTHER_MAJOR_GAME_CONTENT_THEMES_REMAIN_UNCOVERED",
+    "crossSurfaceExpectation": {
+      "majorExpansionMinimumConnectedImprovements": 3,
+      "examples": [
+        "BACKGROUND_OR_REGION_PLUS_DISTINCT_ENCOUNTER_PLUS_REWARD_OR_ITEM",
+        "QUEST_OR_STORY_PLUS_WORLD_STATE_CHANGE_PLUS_UNLOCK_OR_RULE",
+        "ENEMY_OR_BOSS_PLUS_COUNTERPLAY_PLUS_REGION_OR_REWARD_CONNECTION",
+        "ITEM_OR_EQUIPMENT_PLUS_SOURCE_PLUS_SYNERGY_OR_PROGRESSION_PURPOSE",
+        "GAMEPLAY_RULE_PLUS_TRIGGER_PLUS_PLAYER_DECISION_PLUS_SYSTEM_CONSEQUENCE"
+      ]
+    },
+    "completionMeaning": "A breadth cycle means the game has received meaningful connected improvements across world/background, enemies/bosses, quests/story, items/equipment, gameplay rules/events, mid-late/endgame depth, and presentation. It does not mean cloning one feature into seven names."
   }
 }
