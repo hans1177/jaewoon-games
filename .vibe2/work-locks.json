@@ -3,117 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-12w6v5b",
-      "worker": "vibe2",
-      "taskId": "village-dungeons-unity-web-base-implementation-v1",
-      "gameId": "village-dungeons",
-      "files": [
-        "unity-games/village-dungeons/Assets/Scripts/GameCore.cs",
-        "unity-games/village-dungeons/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T03:50:00.612Z",
-      "expiresAt": "2026-09-27T04:35:00.612Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:village-dungeons-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-e33xrk",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "roblox-games/monster-adventure/client/Game.client.luau",
-        "roblox-games/monster-adventure/server/Game.server.luau",
-        "roblox-games/monster-adventure/shared/GameConfig.luau"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T03:50:03.080Z",
-      "expiresAt": "2026-09-27T04:35:03.080Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-9x04fe",
-      "worker": "vibe2",
-      "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T03:50:36.317Z",
-      "expiresAt": "2026-09-27T04:35:36.317Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-x9cuuo",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
-        "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
-        "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T03:50:39.199Z",
-      "expiresAt": "2026-09-27T04:35:39.199Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1gglxfy",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
-        "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
-        "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T03:50:58.112Z",
-      "expiresAt": "2026-09-27T04:35:58.112Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-11lsimt",
-      "worker": "vibe2",
-      "taskId": "survival-studio-evolution-unity-web-usability-v1",
-      "gameId": "survival",
-      "files": [
-        "unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T03:51:15.562Z",
-      "expiresAt": "2026-09-27T04:36:15.562Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-a0k1wj",
       "worker": "vibe2",
       "taskId": "seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1",
@@ -841,6 +730,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-5xkrgb",
+      "worker": "vibe2",
+      "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
+      "gameId": "monster-adventure",
+      "files": [
+        "roblox-games/monster-adventure/client/Game.client.luau",
+        "roblox-games/monster-adventure/server/Game.server.luau",
+        "roblox-games/monster-adventure/shared/GameConfig.luau"
+      ],
+      "baseSha": "030bba2df3bf52826ca4bcfa8d35e6c207a25ca8",
+      "acquiredAt": "2026-09-27T04:37:05.082Z",
+      "expiresAt": "2026-09-27T05:22:05.082Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:monster-adventure-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
