@@ -85,7 +85,7 @@ const MAX_GENERATION_ATTEMPTS=4;
 const SPECULATIVE_FULL_WEB_MAX_GENERATION_ATTEMPTS=3;
 const SPECULATIVE_JSON_MAX_GENERATION_ATTEMPTS=2;
 const ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS=new Set([
-  'TIMEOUT','EDIT_MATCH','PRESENTATION_PATCH_DELTA','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION'
+  'TIMEOUT','EDIT_MATCH','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION'
 ]);
 const ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES=new Set([
   ...ROBLOX_FULL_GRAPHICS_PACKAGE_TRIGGERS,
@@ -630,7 +630,46 @@ function recoverMissingEditPaths(raw,{responsibleFiles=[],sourceRoot=''}={}){
   return{value:{...parsed,edits},recovered};
 }
 
-function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES}){const envelope=typeof raw==='string'&&allowFullRewrite?parseFullFileEnvelope(raw):null;const directHtml=typeof raw==='string'&&allowFullRewrite&&!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null;const parsed=envelope||directHtml||(typeof raw==='string'?extractJson(raw):raw);if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');const edits=(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>({path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??'')}));for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length&&target!=='system')throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:target==='system'?responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);const requiredFullRewriteBytes=Math.max(MIN_FULL_REWRITE_BYTES,Math.min(MAX_FILE_BYTES,Number(minFullRewriteBytes)||MIN_FULL_REWRITE_BYTES));const replaceFiles=(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]).map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시된 Web 재구축 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<requiredFullRewriteBytes||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}:bytes=${bytes}:min=${requiredFullRewriteBytes}:max=${MAX_FILE_BYTES}`);return{path:relative,content};});const editPaths=new Set(edits.map(x=>x.path)),newPaths=new Set(newFiles.map(x=>x.path)),replacePaths=new Set(replaceFiles.map(x=>x.path));if(newPaths.size!==newFiles.length)throw new Error('같은 새 파일 중복 생성 금지');if(replacePaths.size!==replaceFiles.length)throw new Error('같은 전체 교체 파일 중복 금지');for(const file of editPaths)if(newPaths.has(file)||replacePaths.has(file))throw new Error('같은 파일에 edit와 new/replace 혼합 작업 금지');for(const file of newPaths)if(replacePaths.has(file))throw new Error('같은 파일에 new와 replace 혼합 작업 금지');const touched=[...editPaths,...newPaths,...replacePaths];const touchedCount=touched.length;if(!touchedCount)throw new Error('후보가 실제 source 변경을 생성하지 않음');if(touchedCount>MAX_CHANGED_FILES)throw new Error(`변경 파일 수가 최대 ${MAX_CHANGED_FILES}개를 초과함`);return{summary:clean(parsed.summary)||'Vibe2 source candidate',expectedEffect:clean(parsed.expectedEffect),edits,newFiles,replaceFiles,tests:(Array.isArray(parsed.tests)?parsed.tests:[]).map(clean).filter(Boolean).slice(0,12)};}
+const GRAPHICS_REPLACEMENT_REUSE_MODES=Object.freeze([
+  'DIRECT_REUSE_WHEN_ALREADY_CONCEPT_MATCHED',
+  'ADAPT_RESTYLE_AND_RETARGET',
+  'TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES',
+  'NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER'
+]);
+function normalizeGraphicsReplacementReport(value){
+  if(!value||typeof value!=='object'||Array.isArray(value))return null;
+  const actualCount=Math.floor(Number(value.actualCount||0));
+  const changedSurfaces=unique((Array.isArray(value.changedSurfaces)?value.changedSurfaces:[]).map(v=>clean(v).toUpperCase()).filter(Boolean)).slice(0,40);
+  const reuseModesUsed=unique((Array.isArray(value.reuseModesUsed)?value.reuseModesUsed:[]).map(v=>clean(v).toUpperCase()).filter(Boolean)).slice(0,8);
+  return{
+    actualCount,
+    changedSurfaces,
+    reuseModesUsed,
+    before:clean(value.before).slice(0,800),
+    after:clean(value.after).slice(0,800)
+  };
+}
+
+export function evaluateGraphicsReplacementReport({candidate={},contract={}}={}){
+  if(contract?.required!==true)return{required:false,pass:true,reason:'NOT_REQUIRED',report:null};
+  const report=normalizeGraphicsReplacementReport(candidate?.graphicsReplacementReport);
+  if(!report)return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_REPORT_MISSING',report:null};
+  const min=Math.max(1,Math.floor(Number(contract?.adaptiveCount?.minimumActual||1)));
+  const max=Math.min(60,Math.max(min,Math.floor(Number(contract?.adaptiveCount?.maximumActual||60))));
+  const allowedSurfaces=new Set((contract?.surfaces||[]).map(v=>clean(v).toUpperCase()).filter(Boolean));
+  const allowedModes=new Set((contract?.reuseModes||GRAPHICS_REPLACEMENT_REUSE_MODES).map(v=>clean(v).toUpperCase()).filter(Boolean));
+  if(report.actualCount<min||report.actualCount>max)return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_COUNT_OUT_OF_RANGE',report,min,max};
+  if(!report.changedSurfaces.length)return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_SURFACES_MISSING',report,min,max};
+  const invalidSurfaces=report.changedSurfaces.filter(v=>allowedSurfaces.size&&!allowedSurfaces.has(v));
+  if(invalidSurfaces.length)return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_SURFACE_INVALID:'+invalidSurfaces.join(','),report,min,max};
+  if(!report.reuseModesUsed.length)return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_REUSE_MODE_MISSING',report,min,max};
+  const invalidModes=report.reuseModesUsed.filter(v=>!allowedModes.has(v));
+  if(invalidModes.length)return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_REUSE_MODE_INVALID:'+invalidModes.join(','),report,min,max};
+  if(contract?.beforeAfterEvidenceRequired!==false&&(!report.before||!report.after))return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_BEFORE_AFTER_MISSING',report,min,max};
+  return{required:true,pass:true,reason:'GRAPHICS_REPLACEMENT_REPORT_VALID',report,min,max};
+}
+
+function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES}){const envelope=typeof raw==='string'&&allowFullRewrite?parseFullFileEnvelope(raw):null;const directHtml=typeof raw==='string'&&allowFullRewrite&&!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null;const parsed=envelope||directHtml||(typeof raw==='string'?extractJson(raw):raw);if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');const edits=(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>({path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??'')}));for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length&&target!=='system')throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:target==='system'?responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);const requiredFullRewriteBytes=Math.max(MIN_FULL_REWRITE_BYTES,Math.min(MAX_FILE_BYTES,Number(minFullRewriteBytes)||MIN_FULL_REWRITE_BYTES));const replaceFiles=(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]).map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시된 Web 재구축 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<requiredFullRewriteBytes||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}:bytes=${bytes}:min=${requiredFullRewriteBytes}:max=${MAX_FILE_BYTES}`);return{path:relative,content};});const editPaths=new Set(edits.map(x=>x.path)),newPaths=new Set(newFiles.map(x=>x.path)),replacePaths=new Set(replaceFiles.map(x=>x.path));if(newPaths.size!==newFiles.length)throw new Error('같은 새 파일 중복 생성 금지');if(replacePaths.size!==replaceFiles.length)throw new Error('같은 전체 교체 파일 중복 금지');for(const file of editPaths)if(newPaths.has(file)||replacePaths.has(file))throw new Error('같은 파일에 edit와 new/replace 혼합 작업 금지');for(const file of newPaths)if(replacePaths.has(file))throw new Error('같은 파일에 new와 replace 혼합 작업 금지');const touched=[...editPaths,...newPaths,...replacePaths];const touchedCount=touched.length;if(!touchedCount)throw new Error('후보가 실제 source 변경을 생성하지 않음');if(touchedCount>MAX_CHANGED_FILES)throw new Error(`변경 파일 수가 최대 ${MAX_CHANGED_FILES}개를 초과함`);return{summary:clean(parsed.summary)||'Vibe2 source candidate',expectedEffect:clean(parsed.expectedEffect),edits,newFiles,replaceFiles,tests:(Array.isArray(parsed.tests)?parsed.tests:[]).map(clean).filter(Boolean).slice(0,12),graphicsReplacementReport:normalizeGraphicsReplacementReport(parsed.graphicsReplacementReport)};}
 
 const PRESENTATION_PATCH_PATTERNS=Object.freeze({
   ASSET_ADAPTATION:/(?:drawImage|fillStyle|strokeStyle|background|gradient|border|shadow|filter|opacity|font|transform|sprite|texture|mesh|material|shader|lighting|light\b|Color3|BrickColor|SurfaceAppearance|MeshPart|SpecialMesh|ImageLabel|ImageButton|Instance\.new|GameObject(?:\.CreatePrimitive)?|MeshRenderer|SpriteRenderer|Renderer\b|CFrame|Vector3|\.Size\b|\.Position\b|localScale|localPosition)/i,
@@ -1086,7 +1125,8 @@ sourceRootBootstrap&&clean(order.target).toLowerCase()==='unity'?'UNITY WEB BOOT
 'Read-only impact context may explain dependencies but MUST NOT be edited unless it is also listed in Allowed edit paths.',
 allowFullRewrite?'':'This is an implementation candidate. You MUST produce at least one real source change. Never return empty edits/newFiles/replaceFiles. When responsible files are listed, use an edits[] entry on an exact allowed path; copy find text exactly from the FILE block and make replace materially different.',
 focusedWebRepair&&!allowFullRewrite?'FOCUSED WEB REPAIR STREAM CONTRACT: put the edits array first. Emit the smallest single complete edits[0] object before optional summary/tests. The worker may stop generation immediately after one complete exact edit is available, so that first edit must independently satisfy the Goal and preserve unrelated behavior.':'',
-allowFullRewrite?'The replacement must be self-contained enough to run from the existing game root and must finish before the VIBE2_FILE_END marker.':'JSON schema: {"summary":"...","expectedEffect":"...","edits":[{"path":"exact allowed path","find":"exact unique old text","replace":"new text"}],"newFiles":[],"replaceFiles":[],"tests":["..."]}',
+allowFullRewrite?'The replacement must be self-contained enough to run from the existing game root and must finish before the VIBE2_FILE_END marker.':order?.presentationQuality?.graphicsReplacement?.required===true?'GRAPHICS REPLACEMENT RESULT REPORT REQUIRED: add graphicsReplacementReport={"actualCount":1..60,"changedSurfaces":["VFX","MOTION","MENU",...],"reuseModesUsed":["DIRECT_REUSE_WHEN_ALREADY_CONCEPT_MATCHED"|"ADAPT_RESTYLE_AND_RETARGET"|"TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES"|"NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER"],"before":"what was weak before","after":"what is actually improved now"}. Count only real source/binding replacements actually implemented in this candidate.':'',
+'JSON schema: {"summary":"...","expectedEffect":"...","edits":[{"path":"exact allowed path","find":"exact unique old text","replace":"new text"}],"newFiles":[],"replaceFiles":[],"tests":["..."],"graphicsReplacementReport":{"actualCount":1,"changedSurfaces":["VFX"],"reuseModesUsed":["ADAPT_RESTYLE_AND_RETARGET"],"before":"...","after":"..."}}',
 `Required QA: ${(order.qa||[]).join(', ')}`,
 sourceText
 ].filter(Boolean).join('\n');}
@@ -1229,6 +1269,7 @@ export function generationFailureClass(error){
   if(/ROBLOX_ASSET_ADAPTATION_DOMAINS_REQUIRED/i.test(message))return'ROBLOX_VISUAL_DOMAINS';
   if(/ROBLOX_ASSET_ADAPTATION_MOTION_REQUIRED/i.test(message))return'ROBLOX_VISUAL_MOTION';
   if(/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(message))return'PRESENTATION_PATCH_DELTA';
+  if(/GRAPHICS_REPLACEMENT_REPORT_REQUIRED/i.test(message))return'GRAPHICS_REPLACEMENT_REPORT';
   if(/STUDIO_QUALITY_DELTA_REQUIRED/i.test(message))return'STUDIO_QUALITY_DELTA';
   if(/SEMANTIC_DIFF_BUDGET_VIOLATION/i.test(message))return'SEMANTIC_DIFF_BUDGET';
   if(/잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path/i.test(message))return'INVALID_PATH';
@@ -1237,11 +1278,11 @@ export function generationFailureClass(error){
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
-function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX'].includes(generationFailureClass(error));}
+function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX'].includes(generationFailureClass(error));}
 function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|prediction aborted|token repeat limit/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|GRAPHICS_REPLACEMENT_REPORT_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|prediction aborted|token repeat limit/i.test(message);
 }
 export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[],preferredTargets=[]}={}){
   const raw=String(prompt??'');
@@ -2470,6 +2511,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(!diagnosticPostcondition.pass)throw new Error('DIAGNOSTIC_POSTCONDITION_MISSING:'+diagnosticPostcondition.type+':'+diagnosticPostcondition.file+':'+diagnosticPostcondition.reason);
     const presentationDelta=evaluatePresentationCandidateDelta({candidate,sourceRoot,contract:order?.presentationQuality||{}});
     if(presentationDelta.required&&!presentationDelta.pass)throw new Error('PRESENTATION_PATCH_DELTA_REQUIRED:'+presentationDelta.presentationPass);
+    const graphicsReplacementReport=evaluateGraphicsReplacementReport({candidate,contract:order?.presentationQuality?.graphicsReplacement||{}});
+    if(graphicsReplacementReport.required&&!graphicsReplacementReport.pass)throw new Error('GRAPHICS_REPLACEMENT_REPORT_REQUIRED:'+graphicsReplacementReport.reason);
     const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
     if(target==='roblox'&&presentationPass==='ASSET_ADAPTATION'){
       const changedPresentationText=[
@@ -2495,7 +2538,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
       throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:${studioQualityDelta.reason}`);
     }
-    return{...result,diagnosticPostcondition,presentationDelta,studioQualityDelta};
+    return{...result,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   const deterministicDiagnostic=!allowFullRewrite?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles}):null;
@@ -2653,6 +2696,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     specializedVerificationRequest:buildSpecializedVerificationRequest(order),
     assetProduction:order?.assetProduction&&typeof order.assetProduction==='object'?order.assetProduction:{required:false},
     presentationQuality:order?.presentationQuality&&typeof order.presentationQuality==='object'?order.presentationQuality:{required:false,pass:null,authorityExpanded:false},
+    graphicsReplacementReport:candidate.graphicsReplacementReport||null,
     presentationCandidateDelta,
     studioQualityCandidateDelta,
     fullFileRewriteAllowed:allowFullRewrite,

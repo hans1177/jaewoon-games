@@ -192,7 +192,7 @@ function buildPresentationQualityContract(task = {}, target = '') {
     required:true,
     version:Number(replacementInput.version||1),
     decisionOwner:clean(replacementInput.decisionOwner)||'VIBE',
-    platforms:freezeList(replacementInput.platforms||['WEB','ROBLOX','UNITY','FORTNITE_UEFN']),
+    platforms:freezeList(replacementInput.platforms||['WEB','ROBLOX','UNITY']),
     platform:clean(replacementInput.platform)||null,
     adaptiveCount:freeze({
       minimumActual:Math.max(1,Number(replacementInput?.adaptiveCount?.minimumActual||1)),
