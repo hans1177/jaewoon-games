@@ -6499,5 +6499,20 @@
       "robloxRuntimeDispatchForbidden": true,
       "anotherPlatformRuntimeMayNotSubstitute": true
     }
+  },
+  "descriptiveMirrorPushWakeReduction": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.descriptiveMirrorPushWakeReduction20260928",
+    "mirrorOnlyRuntimeWakeRemoved": true,
+    "affectedWorkflows": [
+      ".github/workflows/company-seed-design-runtime.yml",
+      ".github/workflows/homepage-manager.yml",
+      ".github/workflows/company-status-sync.yml"
+    ],
+    "roadmapWakePreserved": true,
+    "workflowRunContinuationPreserved": true,
+    "centralPolicyQaPreserved": true,
+    "securityMainPushValidationPreserved": true,
+    "runtimeExecutionSemanticsChanged": false
   }
 }

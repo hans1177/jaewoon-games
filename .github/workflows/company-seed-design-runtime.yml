@@ -19,8 +19,6 @@ on:
       - 'owner-design-reset-queue.json'
       - 'qa/company-shared-context.test.mjs'
       - 'tools/company-shared-context.mjs'
-      - 'company-learning/company-architecture-map.json'
-      - 'company-learning/company-log-map.json'
       - '.github/workflows/company-seed-design-runtime.yml'
   schedule:
     - cron: '0 16 * * *' # 01:00 KST fallback; event chain remains primary

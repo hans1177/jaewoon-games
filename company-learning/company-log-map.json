@@ -2648,5 +2648,19 @@
     "assetRefillReadyAtObservation": true,
     "expectedPostFixAssetRunner": "ubuntu-24.04-arm",
     "livePostFixEvidence": "PENDING"
+  },
+  "descriptiveMirrorPushWakeReductionEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.descriptiveMirrorPushWakeReduction20260928",
+    "mirrorPaths": [
+      "company-learning/company-architecture-map.json",
+      "company-learning/company-log-map.json"
+    ],
+    "removedRuntimeMainPushWakeCount": 3,
+    "centralPolicyQaPreserved": true,
+    "securityMainPushValidationPreserved": true,
+    "roadmapWakePreserved": true,
+    "expectedResult": "MIRROR_ONLY_MAIN_PUSH_DOES_NOT_CREATE_SEED_HOMEPAGE_STATUS_RUNTIME_FANOUT"
   }
 }

@@ -175,6 +175,38 @@ test('director drains superseded runner backlog before noncritical supervision',
   assert.match(director,/NATIVE_STALE_BATCH_PUSH_REPLACED_BY_CURRENT_CENTRAL/);
 });
 
+test('descriptive central mirrors do not fan out runtime main-push wakes',()=>{
+  const pushBlock=workflow=>{
+    const start=workflow.indexOf('\n  push:\n');
+    assert.ok(start>=0);
+    const markers=['\n  pull_request:\n','\n  workflow_dispatch:\n','\n  schedule:\n','\npermissions:\n','\nconcurrency:\n','\nenv:\n','\njobs:\n'];
+    const ends=markers.map(marker=>workflow.indexOf(marker,start+1)).filter(index=>index>start);
+    const end=ends.length?Math.min(...ends):workflow.length;
+    return workflow.slice(start,end);
+  };
+  const seed=read('.github/workflows/company-seed-design-runtime.yml');
+  const homepage=read('.github/workflows/homepage-manager.yml');
+  const status=read('.github/workflows/company-status-sync.yml');
+  const security=read('.github/workflows/company-security-immune.yml');
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
+  for(const workflow of [seed,homepage,status]){
+    const push=pushBlock(workflow);
+    assert.doesNotMatch(push,/company-learning\/company-architecture-map\.json/);
+    assert.doesNotMatch(push,/company-learning\/company-log-map\.json/);
+    assert.match(push,/company-learning\/platform-release-roadmap\.json/);
+  }
+  const securityPush=pushBlock(security);
+  assert.match(securityPush,/company-learning\/company-architecture-map\.json/);
+  assert.match(securityPush,/company-learning\/company-log-map\.json/);
+  const change=roadmap.changeRecord?.descriptiveMirrorPushWakeReduction20260928||{};
+  assert.equal(change.securityMainPushValidationPreserved,true);
+  assert.equal(change.centralPolicyQaPreserved,true);
+  assert.equal(architecture.descriptiveMirrorPushWakeReduction?.mirrorOnlyRuntimeWakeRemoved,true);
+  assert.equal(logMap.descriptiveMirrorPushWakeReductionEvidence?.securityMainPushValidationPreserved,true);
+});
+
 test('homepage completion does not redundantly wake the full central Director',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   const homepage=read('.github/workflows/homepage-manager.yml');

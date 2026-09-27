@@ -10112,6 +10112,28 @@
       "speculativeVariantsPerAssetTask": 1,
       "gamePrimaryWorkerPolicyUnchanged": true,
       "qaSecurityReleaseGatesUnchanged": true
+    },
+    "descriptiveMirrorPushWakeReduction20260928": {
+      "id": "DESCRIPTIVE_MIRROR_PUSH_WAKE_REDUCTION_2026-09-28",
+      "authority": "company-learning/platform-release-roadmap.json#centralDocumentation",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "PREVENT_NON_AUTHORITATIVE_ARCHITECTURE_AND_LOG_MIRROR_ONLY_MAIN_PUSHES_FROM_FANNING_OUT_RUNTIME_CONTROL_WORK",
+      "mirrorPaths": [
+        "company-learning/company-architecture-map.json",
+        "company-learning/company-log-map.json"
+      ],
+      "mainPushWakeRemovedFrom": [
+        ".github/workflows/company-seed-design-runtime.yml",
+        ".github/workflows/homepage-manager.yml",
+        ".github/workflows/company-status-sync.yml"
+      ],
+      "roadmapWakePreserved": true,
+      "workflowRunContinuationPreserved": true,
+      "centralPolicyQaPreserved": true,
+      "securityMainPushValidationPreserved": true,
+      "securityPullRequestValidationPreserved": true,
+      "mirrorPolicyCreationAuthority": false,
+      "runtimeGameQualitySecurityGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
