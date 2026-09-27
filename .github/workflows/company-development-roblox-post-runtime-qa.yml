@@ -20,7 +20,7 @@ on:
         required: false
         type: string
       retry_open_cloud_only:
-        description: Retry only the exact transient Open Cloud runtime-foundation gate for game_id.
+        description: Optional manual Open Cloud external-server diagnostic for game_id; never an internal F0-F9 gate.
         required: false
         default: false
         type: boolean
@@ -87,7 +87,7 @@ jobs:
     needs: dedupe
     if: needs.dedupe.outputs.run == 'true'
     name: existing game tester and QA validate exact Roblox runtime candidate
-    # Remote Open Cloud probe + deterministic Node QA only. Studio execution remains on authenticated self-hosted Windows jobs.
+    # Default path only coordinates internal validation. Open Cloud is manual diagnostic-only.
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -112,6 +112,7 @@ jobs:
           node-version: '22'
 
       - name: Classify transient Open Cloud retry scope
+        if: ${{ inputs.retry_open_cloud_only == true }}
         id: transient_retry
         working-directory: main
         env:
@@ -152,7 +153,7 @@ jobs:
           echo 'ROBLOX_FOUNDATION_SHARED_CONTEXT=PASS'
 
       - name: Keep transient Open Cloud retries inside bounded scan
-        if: ${{ inputs.game_id == '' && inputs.retry_open_cloud_only != true && steps.transient_retry.outputs.count != '0' }}
+        if: ${{ inputs.retry_open_cloud_only == true && inputs.game_id == '' && steps.transient_retry.outputs.count != '0' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -160,7 +161,7 @@ jobs:
           cat /tmp/roblox-open-cloud-transient-retry-ids
 
       - name: Run deterministic foundation protocol QA
-        if: ${{ inputs.retry_open_cloud_only != true }}
+        if: ${{ github.event_name != 'schedule' && inputs.retry_open_cloud_only != true }}
         working-directory: main
         shell: bash
         run: |
@@ -173,6 +174,7 @@ jobs:
           echo 'ROBLOX_FOUNDATION_DETERMINISTIC_QA=PASS'
 
       - name: Probe exact Roblox Open Cloud engine execution
+        if: ${{ inputs.retry_open_cloud_only == true }}
         working-directory: main
         continue-on-error: true
         env:
@@ -329,6 +331,7 @@ jobs:
           NODE
 
       - name: Read exact runtime sentinel and persist tester QA evidence
+        if: ${{ inputs.retry_open_cloud_only == true }}
         working-directory: main
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
@@ -1152,6 +1155,7 @@ jobs:
           NODE
 
       - name: Persist runtime tester and QA evidence
+        if: ${{ inputs.retry_open_cloud_only == true }}
         working-directory: runtime
         shell: bash
         run: |
@@ -1180,6 +1184,7 @@ jobs:
           echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES'
 
       - name: Dispatch F9 review for runtime-accepted candidates
+        if: ${{ inputs.retry_open_cloud_only == true }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -1193,6 +1198,7 @@ jobs:
           done < /tmp/roblox-f9-ids
 
       - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
+        if: ${{ inputs.retry_open_cloud_only == true }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -1209,6 +1215,7 @@ jobs:
           echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH_COUNT=$dispatch_count"
 
       - name: Enforce persistent Open Cloud probe failures after evidence persistence
+        if: ${{ inputs.retry_open_cloud_only == true }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1988,6 +1995,27 @@ jobs:
             Write-Host "ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING=$env:GAME_ID"
           } else {
             throw "ROBLOX_STUDIO_MCP_PLAY_FAILED:$env:GAME_ID"
+          }
+
+      - name: Dispatch F9 aggregation after exact internal Studio validation
+        if: steps.studio_play.outcome == 'success' && steps.persist.outcome == 'success'
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.gameId }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git -C runtime fetch --no-tags origin company-runtime
+          if ($LASTEXITCODE -ne 0) { throw 'company-runtime refresh failed before F9 dispatch' }
+          git -C runtime reset --hard origin/company-runtime
+          if ($LASTEXITCODE -ne 0) { throw 'company-runtime reset failed before F9 dispatch' }
+          $ready = (& node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));const x=(q.items||[]).find(v=>v.gameId===process.env.GAME_ID);process.stdout.write(x?.robloxInternalStudioValidationAccepted===true&&x?.robloxFailureSignature==='ROBLOX_FINAL_REVIEW_PENDING'?'YES':'NO')" ).Trim()
+          if ($ready -eq 'YES') {
+            gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$env:GITHUB_REPOSITORY" --ref main -f game_id="$env:GAME_ID"
+            if ($LASTEXITCODE -ne 0) { throw 'F9 aggregation dispatch failed' }
+            Write-Host "ROBLOX_INTERNAL_STUDIO_F9_DISPATCHED=$env:GAME_ID"
+          } else {
+            Write-Host "ROBLOX_INTERNAL_STUDIO_F9_DISPATCHED=NO:$env:GAME_ID"
           }
 
       - name: Refill existing 24H development loop after verified play
