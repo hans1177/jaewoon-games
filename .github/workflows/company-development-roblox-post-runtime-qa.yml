@@ -22,6 +22,11 @@ on:
         description: Optional exact gameId. Empty means all pending Roblox runtime candidates.
         required: false
         type: string
+      retry_open_cloud_only:
+        description: Retry only the exact transient Open Cloud runtime-foundation gate for game_id.
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: '*/15 * * * *'
 
@@ -105,6 +110,37 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Classify transient Open Cloud retry scope
+        id: transient_retry
+        working-directory: main
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const transientStatuses=new Set([408,429,500,502,503,504]);
+          const rows=(q.items||[]).filter(item=>{
+            if(requested&&item.gameId!==requested)return false;
+            const evidence=item.robloxRuntimeFoundationEvidence||{};
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            return evidence.authority==='roblox-open-cloud-engine-probe-failure'
+              &&transientStatuses.has(Number(evidence.httpStatus||0))
+              &&evidence.sourceRevision===sourceRevision
+              &&evidence.artifactIdentity===artifactIdentity
+              &&Number(evidence.candidateVersionNumber||0)===Number(candidate.versionNumber||0);
+          });
+          const ids=[...new Set(rows.map(item=>String(item.gameId||'').trim()).filter(Boolean))];
+          fs.writeFileSync('/tmp/roblox-open-cloud-transient-retry-ids',ids.join('\n')+(ids.length?'\n':''));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'count='+ids.length+'\n');
+          console.log('ROBLOX_OPEN_CLOUD_TRANSIENT_RETRY_CANDIDATES='+(ids.join(',')||'NONE'));
+          NODE
+
       - name: Synchronize worker with constitution central policy and compiled architecture
         working-directory: main
         shell: bash
@@ -114,7 +150,21 @@ jobs:
           node -e "const x=require('/tmp/roblox-foundation-worker-context.json');if(x.pass!==true||x.architectureProjection?.valid!==true)process.exit(1)"
           echo 'ROBLOX_FOUNDATION_SHARED_CONTEXT=PASS'
 
+      - name: Dispatch exact transient Open Cloud gate retries
+        if: ${{ inputs.game_id == '' && inputs.retry_open_cloud_only != true && steps.transient_retry.outputs.count != '0' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while read -r id; do
+            [ -n "$id" ] || continue
+            gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" -f retry_open_cloud_only=true
+            echo "ROBLOX_OPEN_CLOUD_EXACT_GATE_RETRY_DISPATCHED=$id"
+          done < /tmp/roblox-open-cloud-transient-retry-ids
+
       - name: Run deterministic foundation protocol QA
+        if: ${{ inputs.retry_open_cloud_only != true }}
         working-directory: main
         shell: bash
         run: |
@@ -150,12 +200,18 @@ jobs:
           }
           const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const transientRetryPath='/tmp/roblox-open-cloud-transient-retry-ids';
+          const transientRetryIds=new Set(fs.existsSync(transientRetryPath)?fs.readFileSync(transientRetryPath,'utf8').split(/\r?\n/).map(v=>v.trim()).filter(Boolean):[]);
           const sharedTarget=roadmap?.roblox?.deploymentControl?.ownerPinnedPublicationTarget||{};
           const sharedUniverse=String(sharedTarget.universeId||'').trim();
           const sharedPlace=String(sharedTarget.placeId||'').trim();
           const sharedRotationEnabled=sharedTarget.enabled===true&&sharedTarget.sharedFastMvpRotationAllowed===true;
           const candidates=(q.items||[]).filter(item=>{
             if(requested&&item.gameId!==requested)return false;
+            if(!requested&&transientRetryIds.has(item.gameId)){
+              console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_DEFERRED_TO_EXACT_RETRY='+item.gameId);
+              return false;
+            }
             const c=item.robloxRuntimeCandidateEvidence||{};
             if(sharedRotationEnabled
               &&String(c.universeId||'').trim()===sharedUniverse
@@ -334,10 +390,23 @@ jobs:
           }
           const probePath='/tmp/roblox-open-cloud-engine-probes.json';
           const probeRows=fs.existsSync(probePath)?JSON.parse(fs.readFileSync(probePath,'utf8')):[];
+          const transientProbeStatuses=new Set([408,429,500,502,503,504]);
+          const transientProbeFailure=row=>Boolean(
+            row?.persistentFailure===true
+            &&(
+              transientProbeStatuses.has(Number(row?.status||0))
+              ||(Number(row?.status||0)===0&&/EAI_AGAIN|ENOTFOUND|ECONNRESET|ETIMEDOUT|ECONNREFUSED|UND_ERR_CONNECT_TIMEOUT|UND_ERR_SOCKET|fetch failed|network/i.test(String(row?.error||'')))
+            )
+          );
           const persistentProbeFailures=(Array.isArray(probeRows)?probeRows:[]).filter(row=>row?.persistentFailure===true);
+          const transientProbeFailures=persistentProbeFailures.filter(transientProbeFailure);
+          const blockingProbeFailures=persistentProbeFailures.filter(row=>!transientProbeFailure(row));
+          const transientRetryPath='/tmp/roblox-open-cloud-transient-retry-ids';
+          const transientRetryIds=new Set(fs.existsSync(transientRetryPath)?fs.readFileSync(transientRetryPath,'utf8').split(/\r?\n/).map(v=>v.trim()).filter(Boolean):[]);
           const engineProbeByGame=new Map((Array.isArray(probeRows)?probeRows:[]).map(row=>[String(row?.gameId||''),row]));
           const candidates=(q.items||[]).filter(item=>{
             if(requested&&item.gameId!==requested)return false;
+            if(!requested&&transientRetryIds.has(item.gameId))return false;
             const candidate=item.robloxRuntimeCandidateEvidence||{};
             if(isSharedCandidate(candidate)&&item.robloxSharedTargetCurrent===false)return false;
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
@@ -454,7 +523,10 @@ jobs:
 
             const engineProbe=engineProbeByGame.get(item.gameId);
             if(engineProbe?.persistentFailure===true){
-              const failureSignature='ROBLOX_OPEN_CLOUD_ENGINE_PROBE_PERSISTENT_FAILURE';
+              const infrastructureOnly=transientProbeFailure(engineProbe);
+              const failureSignature=infrastructureOnly
+                ?'ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE'
+                :'ROBLOX_OPEN_CLOUD_ENGINE_PROBE_PERSISTENT_FAILURE';
               const sameProbeFailure=
                 item.robloxFailureSignature===failureSignature
                 &&item.robloxRuntimeFoundationEvidence?.authority==='roblox-open-cloud-engine-probe-failure'
@@ -465,7 +537,9 @@ jobs:
               item.robloxRuntimePassed=false;
               item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
               item.robloxFailureSignature=failureSignature;
-              item.routingBlockers=['roblox-open-cloud-engine-probe-persistent-failure','roblox-runtime-foundation-awaiting-observation'];
+              item.routingBlockers=infrastructureOnly
+                ?['roblox-open-cloud-engine-probe-transient-retry']
+                :['roblox-open-cloud-engine-probe-persistent-failure','roblox-runtime-foundation-awaiting-observation'];
               if(!sameProbeFailure){
                 item.robloxRuntimeFoundationEvidence={
                   version:1,
@@ -478,6 +552,7 @@ jobs:
                   candidateVersionNumber:Number(candidate.versionNumber),
                   httpStatus:Number(engineProbe.status||0),
                   failureStage:String(engineProbe.failureStage||'PROBE'),
+                  failureClass:infrastructureOnly?'INFRASTRUCTURE_OR_EVIDENCE_ONLY':'EXTERNAL_PROBE_BLOCKING_FAILURE',
                   error:String(engineProbe.error||'').slice(0,500),
                   observedAt:stamp,
                   workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
@@ -486,7 +561,16 @@ jobs:
                 item.updatedAt=stamp;
                 changed=true;
               }
-              console.log('ROBLOX_FOUNDATION_OPEN_CLOUD_PROBE_PERSISTENT_FAILURE='+item.gameId+':HTTP_'+Number(engineProbe.status||0));
+              if(infrastructureOnly){
+                console.log('QUALITY_FIRST_BUILDUP_SHORT_CIRCUIT=ACTIVE');
+                console.log('QUALITY_FAILURE_CLASS=INFRASTRUCTURE_OR_EVIDENCE_ONLY');
+                console.log('QUALITY_BUILDUP_AUTO_REQUEUE=NO');
+                console.log('EXTERNAL_RELEASE_PROBE_SUPPRESSED=NO');
+                console.log('RESUME_STAGE=TARGET_PLATFORM_RUNTIME_FOUNDATION');
+                console.log('ROBLOX_OPEN_CLOUD_EXACT_GATE_RETRY_PENDING='+item.gameId+':HTTP_'+Number(engineProbe.status||0));
+              }else{
+                console.log('ROBLOX_FOUNDATION_OPEN_CLOUD_PROBE_PERSISTENT_FAILURE='+item.gameId+':HTTP_'+Number(engineProbe.status||0));
+              }
               pending++;
               continue;
             }
@@ -993,9 +1077,11 @@ jobs:
           console.log(`ROBLOX_FOUNDATION_RUNTIME_PENDING=${pending}`);
           fs.writeFileSync('/tmp/roblox-f9-ids',f9Ids.join('\n')+(f9Ids.length?'\n':''));
           fs.writeFileSync('/tmp/roblox-studio-followup-ids',[...new Set(studioFollowupIds)].join('\n')+(studioFollowupIds.length?'\n':''));
-          fs.writeFileSync('/tmp/roblox-open-cloud-persistent-probe-failures',persistentProbeFailures.map(row=>String(row?.gameId||'')+':HTTP_'+Number(row?.status||0)).filter(Boolean).join('\n')+(persistentProbeFailures.length?'\n':''));
+          fs.writeFileSync('/tmp/roblox-open-cloud-transient-probe-failures',transientProbeFailures.map(row=>String(row?.gameId||'')+':HTTP_'+Number(row?.status||0)).filter(Boolean).join('\n')+(transientProbeFailures.length?'\n':''));
+          fs.writeFileSync('/tmp/roblox-open-cloud-blocking-probe-failures',blockingProbeFailures.map(row=>String(row?.gameId||'')+':HTTP_'+Number(row?.status||0)).filter(Boolean).join('\n')+(blockingProbeFailures.length?'\n':''));
           console.log(`ROBLOX_STUDIO_MCP_POST_FOUNDATION_READY_COUNT=${new Set(studioFollowupIds).size}`);
-          console.log(`ROBLOX_OPEN_CLOUD_PERSISTENT_PROBE_FAILURE_COUNT=${persistentProbeFailures.length}`);
+          console.log(`ROBLOX_OPEN_CLOUD_TRANSIENT_PROBE_FAILURE_COUNT=${transientProbeFailures.length}`);
+          console.log(`ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE_COUNT=${blockingProbeFailures.length}`);
           console.log(`ROBLOX_FOUNDATION_RUNTIME_FAILURE=${failed}`);
           NODE
 
@@ -1056,19 +1142,30 @@ jobs:
           done < /tmp/roblox-studio-followup-ids
           echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH_COUNT=$dispatch_count"
 
-      - name: Enforce persistent Open Cloud probe failures after evidence persistence
+      - name: Classify Open Cloud probe failures after evidence persistence
         shell: bash
         run: |
           set -euo pipefail
-          failure_file=/tmp/roblox-open-cloud-persistent-probe-failures
-          if [ -s "$failure_file" ]; then
-            cat "$failure_file"
-            echo 'ROBLOX_OPEN_CLOUD_PERSISTENT_PROBE_FAILURE=YES'
+          transient_file=/tmp/roblox-open-cloud-transient-probe-failures
+          blocking_file=/tmp/roblox-open-cloud-blocking-probe-failures
+          if [ -s "$transient_file" ]; then
+            cat "$transient_file"
+            echo 'QUALITY_FIRST_BUILDUP_SHORT_CIRCUIT=ACTIVE'
+            echo 'QUALITY_FAILURE_CLASS=INFRASTRUCTURE_OR_EVIDENCE_ONLY'
+            echo 'QUALITY_BUILDUP_AUTO_REQUEUE=NO'
+            echo 'EXTERNAL_RELEASE_PROBE_SUPPRESSED=NO'
+            echo 'RESUME_STAGE=TARGET_PLATFORM_RUNTIME_FOUNDATION'
+            echo 'ROBLOX_OPEN_CLOUD_TRANSIENT_PROBE_RETRY=EXACT_GATE_ONLY'
+          fi
+          if [ -s "$blocking_file" ]; then
+            cat "$blocking_file"
+            echo 'ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE=YES'
             exit 1
           fi
-          echo 'ROBLOX_OPEN_CLOUD_PERSISTENT_PROBE_FAILURE=NO'
+          echo 'ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE=NO'
 
   studio-local-plan:
+    if: ${{ inputs.retry_open_cloud_only != true }}
     # Studio planning must not wait behind GitHub-hosted dedupe/runtime-foundation capacity.
     # Coalesce only the same planner identity so duplicate push scans do not consume the authenticated runner.
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
