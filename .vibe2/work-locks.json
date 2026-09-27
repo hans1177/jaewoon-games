@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1s9e5xk",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "unity-games/horror-escape-room/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:07:17.815Z",
-      "expiresAt": "2026-09-27T04:52:17.815Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-1urg7u2",
       "worker": "vibe2",
       "taskId": "monster-adventure-unity-web-base-implementation-v1",
@@ -676,6 +658,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:monster-adventure-studio-evolution-unity-web-presentation-v1"
+      ]
+    },
+    {
+      "id": "wl-1krewlb",
+      "worker": "vibe2",
+      "taskId": "cozy-island-roblox-second-gate-rebuild-v1",
+      "gameId": "cozy-island",
+      "files": [
+        "roblox-games/cozy-island/shared/GameConfig.luau",
+        "roblox-games/cozy-island/server/Game.server.luau",
+        "roblox-games/cozy-island/client/Game.client.luau"
+      ],
+      "baseSha": "030bba2df3bf52826ca4bcfa8d35e6c207a25ca8",
+      "acquiredAt": "2026-09-27T04:52:26.555Z",
+      "expiresAt": "2026-09-27T05:37:26.555Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-roblox-second-gate-rebuild-v1"
       ]
     }
   ]
