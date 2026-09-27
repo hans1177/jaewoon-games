@@ -1519,7 +1519,7 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(library.productionRoot,'GRAPHICS_PRODUCTION');
   assert.equal(library.executionLane,'ASSET_DEVELOPMENT');
   assert.equal(library.dedicatedRunner,true);
-  assert.equal(library.reusableProductionTarget.motion.verifiedReusableClipTarget,200);
+  assert.equal(library.reusableProductionTarget.motion.verifiedReusableClipTarget,300);
   assert.deepEqual(library.fullAssetDevelopmentScope,[
     'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
   ]);
