@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -344,7 +344,8 @@
       "incrementalQaMustRevalidateGroundedEvidenceAgainstCandidateSource": true,
       "fanInMustRequireGroundedGraphicsEvidence": true,
       "targetRuntimeEvidenceMustBindExactBuildUpSourceIdentity": true,
-      "robloxF9SettlementRequiresExactPromotedSourceTree": true
+      "robloxF9SettlementRequiresExactPromotedSourceTree": true,
+      "unityRuntimeIndependentQaRegressionRequiredBeforeBuildUpPass": true
     },
     "menuExperienceDiversity": {
       "status": "ACTIVE",
@@ -494,6 +495,13 @@
     ],
     "sourceIdentity": "SOURCE_ROOT_TREE_SHA",
     "robloxSameGameDifferentSourceMayNotSettle": true,
-    "noNewWorkflowOrShadowPipeline": true
+    "noNewWorkflowOrShadowPipeline": true,
+    "unity": {
+      "waitingTaskMustRecordPromotedSourceTreeSha": true,
+      "runtimeSettlementMustMatchWaitingSourceTreeSha": true,
+      "incrementalApkBuildAndMainPromotionAloneMayNotSettleBuildUpTask": true,
+      "runtimeIndependentQaRegressionRequiredBeforeVibePass": true,
+      "sameGameDifferentSourceMayNotSettle": true
+    }
   }
 }
