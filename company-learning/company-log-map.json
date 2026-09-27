@@ -1,5 +1,5 @@
 {
-  "version": 150,
+  "version": 151,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2587,5 +2587,19 @@
     "assetRefillReadyAtObservation": true,
     "expectedPostFixAssetRunner": "ubuntu-24.04-arm",
     "livePostFixEvidence": "PENDING"
+  },
+  "menuVarietyEvidence": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#changeRecord.menuVarietyImplementation20260927",
+    "designField": "uxAccessibilityPlan.menuArchitecture",
+    "sourceMarker": "MENU VARIETY CONTRACT",
+    "uiCoverageFamily": "UI",
+    "requiredChecks": [
+      "GENRE_OR_SYSTEM_FIT",
+      "MOBILE_NAVIGATION",
+      "STATE_SAFETY",
+      "ANTI_TEMPLATE_RULE"
+    ],
+    "rawDuplicateLogForbidden": true
   }
 }
