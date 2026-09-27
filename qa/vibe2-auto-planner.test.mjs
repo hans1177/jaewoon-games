@@ -3405,8 +3405,18 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
   assert.match(contract.menuDiversity.genreGuidance,/생존 장르는/);
   assert.equal(contract.implementation.zeroActualReplacementCannotPass,true);
   assert.equal(contract.implementation.actualReplacementCountMustBeRecorded,true);
+  assert.equal(contract.implementation.perReplacementSourceEvidenceRequired,true);
+  assert.equal(contract.implementation.actualReplacementCountMustEqualGroundedEvidenceCount,true);
+  assert.equal(contract.implementation.replacementEvidenceMustReferenceTouchedSourcePath,true);
+  assert.equal(contract.implementation.replacementEvidenceSnippetMustExistInChangedSource,true);
+  assert.equal(contract.implementation.duplicateReplacementEvidenceCannotInflateCount,true);
+  assert.equal(contract.implementation.selfReportedCountWithoutGroundedSourceEvidenceCannotPass,true);
   assert.ok(task.completionCriteria.includes('GRAPHICS_ZERO_REPLACEMENT_PASS_FORBIDDEN'));
+  assert.ok(task.completionCriteria.includes('GRAPHICS_REPLACEMENT_PER_ITEM_SOURCE_GROUNDING_REQUIRED'));
+  assert.ok(task.completionCriteria.includes('GRAPHICS_REPLACEMENT_ACTUAL_COUNT_EQUALS_GROUNDED_EVIDENCE_COUNT'));
   assert.ok(task.evidence.includes('adaptive-graphics-replacement-range:1-60'));
+  assert.ok(task.evidence.includes('adaptive-graphics-replacement-grounded-evidence:REQUIRED'));
+  assert.ok(task.evidence.includes('adaptive-graphics-replacement-count-equals-grounded-evidence:REQUIRED'));
   assert.ok(task.evidence.includes('menu-experience-diversity:v1'));
   assert.ok(task.completionCriteria.includes('MENU_UI_CHANGE_IF_SELECTED_MUST_BE_GAME_GENRE_SPECIFIC'));
   assert.ok(task.completionCriteria.includes('UNITY_WEB_MENU_SAME_CANONICAL_UNITY_SOURCE_IF_APPLICABLE'));
