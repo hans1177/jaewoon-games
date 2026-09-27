@@ -1080,6 +1080,7 @@ jobs:
           fs.writeFileSync('/tmp/roblox-open-cloud-transient-probe-failures',transientProbeFailures.map(row=>String(row?.gameId||'')+':HTTP_'+Number(row?.status||0)).filter(Boolean).join('\n')+(transientProbeFailures.length?'\n':''));
           fs.writeFileSync('/tmp/roblox-open-cloud-blocking-probe-failures',blockingProbeFailures.map(row=>String(row?.gameId||'')+':HTTP_'+Number(row?.status||0)).filter(Boolean).join('\n')+(blockingProbeFailures.length?'\n':''));
           console.log(`ROBLOX_STUDIO_MCP_POST_FOUNDATION_READY_COUNT=${new Set(studioFollowupIds).size}`);
+          console.log(`ROBLOX_OPEN_CLOUD_PERSISTENT_PROBE_FAILURE_COUNT=${persistentProbeFailures.length}`);
           console.log(`ROBLOX_OPEN_CLOUD_TRANSIENT_PROBE_FAILURE_COUNT=${transientProbeFailures.length}`);
           console.log(`ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE_COUNT=${blockingProbeFailures.length}`);
           console.log(`ROBLOX_FOUNDATION_RUNTIME_FAILURE=${failed}`);
