@@ -1,5 +1,5 @@
 {
-  "version": 299,
+  "version": 300,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3999,7 +3999,13 @@
       "exactEvidenceReuseUntilRelevantDelta": true,
       "unchangedSourceBusyLoop": false,
       "nextSourceDeltaRestart": "F0",
-      "ownerPublicApprovalSeparate": true
+      "ownerPublicApprovalSeparate": true,
+      "unityRuntimeExecutorSelection": {
+        "preferred": "GENYMOTION_SINGLE_SESSION_WHEN_CREDENTIALS_AVAILABLE",
+        "fallback": "REDROID_SINGLE_SESSION",
+        "exactlyOne": true,
+        "duplicateRuntimeLaunch": false
+      }
     }
   },
   "autonomousBottleneckRecovery": {
