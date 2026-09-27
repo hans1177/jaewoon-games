@@ -2533,7 +2533,16 @@ function updatePet(dt,now){
   else if(d>72){pet.x+=((p.x-pet.x)/(d||1))*220*dt;pet.y+=((p.y-pet.y)/(d||1))*220*dt}
  }
 }
-function nearestSporeTarget(p,w){let best=null,bd=Number(w?.range)||760;for(const e of state.enemies){if(e.hp<=0||e.area!==state.area||(e.type.mood==='harmless'&&!e.type.huntable))continue;const d=dist(p.x,p.y,e.x,e.y);if(d<bd){best=e;bd=d}}return best}
+function nearestSporeTarget(p,w){
+ let best=null,bd=Number(w?.range)||760;
+ const cam=state.camera,viewPad=40,left=cam.x-viewPad,top=cam.y-viewPad,right=cam.x+innerWidth+viewPad,bottom=cam.y+innerHeight+viewPad;
+ for(const e of state.enemies){
+  if(e.hp<=0||e.area!==state.area||(e.type.mood==='harmless'&&!e.type.huntable))continue;
+  if(e.x+e.type.r<left||e.x-e.type.r>right||e.y+e.type.r<top||e.y-e.type.r>bottom)continue;
+  const d=dist(p.x,p.y,e.x,e.y);if(d<bd){best=e;bd=d}
+ }
+ return best
+}
 function fireSporeSeeker(now,p,w,target){
  const dx=target.x-p.x,dy=target.y-p.y,d=Math.hypot(dx,dy)||1,speed=360;
  const projectile={x:p.x+dx/d*28,y:p.y+dy/d*28,vx:dx/d*speed,vy:dy/d*speed,speed,damage:0,createdAt:now,life:2000,area:state.area,sourceId:multiplayer.playerId,ownerId:multiplayer.playerId,kind:'sporeOrb',targetId:target.netId,playerOwned:true};
