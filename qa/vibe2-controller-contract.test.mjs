@@ -779,7 +779,7 @@ test('free-slot refill keeps game-study idle-gated while learning-idle yields fi
 });
 
 test('24H cycle preserves continuity without multiplying independent scheduler chains',()=>{
-  assert(safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton-v5'));
+  assert(safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton-v6'));
   assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-singleton\n'));
   assert(!safetyNetWorkflow.includes('group: vibe2-24h-cycle-${{ github.run_id }}'));
   assert(safetyNetWorkflow.includes('cancel-in-progress: false'));
@@ -864,9 +864,9 @@ test('worker never mutates shared queue state and only emits an atomic completio
   assert(workerPart.includes('VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'));
 });
 
-test('worker model cache keeps the existing key while runtime preparation reuses the shared pinned action',()=>{
+test('worker model cache is architecture-aware while runtime preparation reuses the shared pinned action',()=>{
   assert(workflow.includes('~/.cache/vibe2-ollama/lib/ollama'));
-  assert(workflow.includes('vibe2-ollama-v3-Linux-qwen3-1.7b'));
+  assert(workflow.includes('vibe2-ollama-v4-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b'));
   assert(workflow.includes('uses: ./vibe2-contract/.github/actions/prepare-ollama'));
   assert(workflow.includes("pull-model: 'true'"));
   const workerStart=workflow.indexOf('\n  worker:');
