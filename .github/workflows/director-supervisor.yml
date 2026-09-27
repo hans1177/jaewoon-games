@@ -132,7 +132,7 @@ jobs:
             if(queued.has(String(stale.status||'').toLowerCase()))add(stale,'CENTRAL_DEVELOPMENT_PUSH_SUPERSEDED');
           }
 
-          const dedupeByTitle=(path,batchNewest=false)=>{
+          const dedupeByTitle=(path,newestQueuedWins=false)=>{
             const rows=runs.filter(r=>r.path===path&&active.has(String(r.status||'').toLowerCase()));
             const groups=new Map();
             for(const run of rows){
@@ -148,14 +148,18 @@ jobs:
                 .sort((a,b)=>Number(a.id)-Number(b.id));
               let winner;
               if(inProgress.length)winner=inProgress[0];
-              else if(batchNewest&&title.endsWith(' · batch'))winner=[...group].sort((a,b)=>Number(b.id)-Number(a.id))[0];
+              else if(newestQueuedWins)winner=[...group].sort((a,b)=>Number(b.id)-Number(a.id))[0];
               else winner=[...group].sort((a,b)=>Number(a.id)-Number(b.id))[0];
               for(const stale of group){
                 if(Number(stale.id)===Number(winner.id))continue;
-                if(queued.has(String(stale.status||'').toLowerCase()))add(stale,'DUPLICATE_TITLE');
+                if(queued.has(String(stale.status||'').toLowerCase())){
+                  add(stale,newestQueuedWins?'DUPLICATE_TITLE_STALE_QUEUED':'DUPLICATE_TITLE');
+                }
               }
             }
           };
+          // Native runtime duplicates for the same title carry newer source/runtime state.
+          // Never cancel active same-title work; when none is active, keep only the newest queued run.
           dedupeByTitle('.github/workflows/company-development-roblox-runtime.yml',true);
           dedupeByTitle('.github/workflows/company-development-unity-runtime.yml',true);
           dedupeByTitle('.github/workflows/company-development-roblox-release-promotion.yml',false);
