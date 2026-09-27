@@ -1,5 +1,5 @@
 {
-  "version": 287,
+  "version": 288,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6287,6 +6287,22 @@
     "failurePriority": {
       "productQuality": "EXISTING_CAUSAL_REPAIR_PREEMPTS_UNRELATED_EXPANSION",
       "transientInfrastructure": "EXACT_INFRASTRUCTURE_OR_EVIDENCE_RETRY_NO_GAME_CONTENT_REWRITE"
+    },
+    "breadthCycleRule": {
+      "themes": [
+        "WORLD_ECOLOGY_STORY_CHAIN",
+        "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "QUEST_STORY_PROGRESSION_CHAIN",
+        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "MID_LATE_ENDGAME_COMPLETION",
+        "PRESENTATION_WORLD_COHESION"
+      ],
+      "persistence": "BUILD_UP_DIRECTIVE_THEME_COVERAGE_LEDGER",
+      "verifiedSuccess": "ROTATE_TO_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEME",
+      "verifiedFailure": "KEEP_SAME_CAUSAL_THEME_WHEN_NEEDED_FOR_REPAIR",
+      "majorExpansion": "MINIMUM_THREE_CONNECTED_PLAYER_FACING_IMPROVEMENTS_WHEN_APPLICABLE",
+      "topologyChange": "NONE"
     }
   }
 }
