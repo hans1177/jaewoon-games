@@ -1158,6 +1158,9 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.match(workflow,/ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH=/);
   assert.match(workflow,/planLocalStudioCandidates/);
   assert.match(workflow,/queueStudioFollowupIfEligible\(item\)/);
+  const studioFollowupHelper=workflow.slice(workflow.indexOf('const queueStudioFollowupIfEligible=item=>{'),workflow.indexOf('\n\n          for(const item of candidates)',workflow.indexOf('const queueStudioFollowupIfEligible=item=>{')));
+  assert.match(studioFollowupHelper,/planLocalStudioCandidates/);
+  assert.doesNotMatch(studioFollowupHelper,/robloxRuntimeFoundationPassed!==true/);
   assert.doesNotMatch(workflow,/!runtimeFoundationWasPassed&&item\.robloxRuntimeFoundationPassed===true/);
   const throttle=roadmap.changeRecord?.robloxOpenCloudThrottleRecovery20260927;
   assert.deepEqual(throttle?.transientHttpRetryStatuses,[408,429,500,502,503,504]);
