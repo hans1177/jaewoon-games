@@ -3,99 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-nasfum",
-      "worker": "vibe2",
-      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/Game.server.luau",
-        "roblox-games/cozy-island/client/Game.client.luau",
-        "roblox-games/cozy-island/shared/GameConfig.luau"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T02:37:45.282Z",
-      "expiresAt": "2026-09-27T03:22:45.282Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-post-release-focus-12c1a7e2ae6288fd"
-      ]
-    },
-    {
-      "id": "wl-15pl69l",
-      "worker": "vibe2",
-      "taskId": "bug-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "unity-games/bug-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T02:38:03.506Z",
-      "expiresAt": "2026-09-27T03:23:03.506Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1f6wfqu",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
-        "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
-        "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T02:38:34.454Z",
-      "expiresAt": "2026-09-27T03:23:34.454Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-bi0ccu",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
-        "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
-        "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T02:40:06.203Z",
-      "expiresAt": "2026-09-27T03:25:06.203Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-14z5szw",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-unity-web-base-implementation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "unity-games/horror-escape-room/Assets/Scripts/GameCore.cs",
-        "unity-games/horror-escape-room/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T02:41:00.748Z",
-      "expiresAt": "2026-09-27T03:26:00.748Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-1jw4j44",
       "worker": "vibe2",
       "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1",
@@ -695,6 +602,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-1d7s73l",
+      "worker": "vibe2",
+      "taskId": "line-defense-roblox-presentation-asset-adaptation-v1",
+      "gameId": "line-defense",
+      "files": [
+        "roblox-games/line-defense/client/Game.client.luau",
+        "roblox-games/line-defense/server/Game.server.luau",
+        "roblox-games/line-defense/shared/GameConfig.luau"
+      ],
+      "baseSha": "af46e74c9ade8f4af412a18f175596ab9d3ba7b8",
+      "acquiredAt": "2026-09-27T03:27:13.391Z",
+      "expiresAt": "2026-09-27T04:12:13.391Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:line-defense-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
