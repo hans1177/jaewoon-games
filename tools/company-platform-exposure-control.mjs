@@ -17,6 +17,21 @@ function internalReady(item={},platform=''){
   if(platform==='ROBLOX')return item.robloxInternalReleaseReady===true||(item.robloxRuntimePassed===true&&item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true);
   return false;
 }
+function robloxOwnerApprovalExact(item={}){
+  const approval=item.robloxOwnerPublicReleaseApprovalEvidence||{};
+  const candidate=item.robloxRuntimeCandidateEvidence||item.robloxInternalReleaseEvidence||{};
+  return Boolean(
+    item.robloxOwnerPublicReleaseApproved===true
+    &&approval.approved===true
+    &&clean(approval.authority)==='OWNER_EXPLICIT_DIRECTIVE_ONLY'
+    &&clean(approval.sourceRevision)===clean(item.robloxSourceCommit)
+    &&clean(approval.artifactIdentity)===clean(item.robloxBuildArtifactIdentity)
+    &&Number(approval.versionNumber||0)>0
+    &&Number(approval.versionNumber)===Number(candidate.versionNumber||0)
+    &&String(approval.universeId||'')===String(candidate.universeId||'')
+    &&String(approval.placeId||'')===String(candidate.placeId||'')
+  );
+}
 function adaptationEvidence(item={},platform=''){
   if(platform==='UNITY')return item.unityPlatformAdaptationEvidence||item.platformAdaptationEvidence?.UNITY||{};
   if(platform==='ROBLOX')return item.robloxPlatformAdaptationEvidence||item.platformAdaptationEvidence?.ROBLOX||{};
@@ -127,7 +142,7 @@ function platformState(item,tickets,platform,roadmap={}){
     :item.unityInternalReleasePublished===true||item.unityInternalTestBuildPublished===true;
   const playtestPassed=item[lower+'InternalPlaytestPassed']===true;
   const explicitPublic=platform==='ROBLOX'?item.robloxExternalPublicReleaseConfirmed===true:item.unityExternalPublicReleaseConfirmed===true;
-  const ownerApproved=platform==='ROBLOX'?item.robloxOwnerPublicReleaseApproved===true:item.unityOwnerPublicReleaseApproved===true;
+  const ownerApproved=platform==='ROBLOX'?robloxOwnerApprovalExact(item):item.unityOwnerPublicReleaseApproved===true;
   const hardGate=platform==='ROBLOX'?robloxPublicHardGate(item,blocking):null;
   const publicReady=platform==='ROBLOX'
     ?technical&&internalPublished&&hardGate.pass===true
