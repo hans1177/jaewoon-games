@@ -3318,6 +3318,30 @@ test('collectProjects recognizes status-side Fortnite UEFN projects as the Unrea
   assert.equal(project.projectPath,'uefn-games/status-uefn');
 });
 
+
+test('Fortnite UEFN queue without an explicit source path defaults to canonical uefn-games root',()=>{
+  const root=tempRepo();
+  const rows=collectProjects(
+    {projects:[]},
+    {games:[{id:'canonical-default-uefn',name:'Canonical Default UEFN',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    root,
+    {items:[{
+      gameId:'canonical-default-uefn',
+      gameName:'Canonical Default UEFN',
+      status:'ACTIVE',
+      selectedPlatform:'FORTNITE_UEFN',
+      currentStep:'BUILD_UP',
+      canonicalState:'DEVELOPMENT_CONFIRMED'
+    }]}
+  );
+  const project=rows.find(row=>row.gameId==='canonical-default-uefn');
+  assert.ok(project);
+  assert.equal(project.engine,'unreal');
+  assert.equal(project.target,'fortnite-uefn');
+  assert.equal(project.projectPath,'uefn-games/canonical-default-uefn');
+  assert.equal(project.existing,false);
+});
+
 test('collectProjects still reads a legacy unreal-games UEFN source without making it the canonical default',()=>{
   const root=tempRepo();
   fs.mkdirSync(path.join(root,'unreal-games','legacy-uefn'),{recursive:true});
