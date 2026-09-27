@@ -53,6 +53,7 @@ test('studio asset universe exposes broad reusable catalogs',()=>{
   assert.equal(CLOTHING_LAYER_SLOTS.length,15);
   assert.ok(BIOME_FAMILIES.length>=18);
   assert.ok(BUILDING_THEMES.length>=12);
+  for(const menuFamily of ['MAIN_MENU','PAUSE','SHOP','CRAFTING','QUEST','SETTINGS','RESULT','SOCIAL'])assert.ok(DEFAULT_COVERAGE_BASELINES.UI[menuFamily]>=8,menuFamily);
   for(const style of ['INK_WASH','WATERCOLOR','NOIR','TOON_NOIR','SOLARPUNK','BIOPUNK','RETRO_FUTURISM','COZY','PAPER_CRAFT','VOXEL','DREAMCORE','HISTORICAL_EAST_ASIAN','SPACE_OPERA','UNDERWATER_FANTASY','DESERT_FANTASY','MYTHIC_NORDIC']){
     assert.ok(createStudioAssetUniversePlan({styleFamily:style}).styleFamilies.includes(style),style);
   }
