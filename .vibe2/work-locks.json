@@ -3,43 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-3qrpnm",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-      "acquiredAt": "2026-09-27T01:13:53.240Z",
-      "expiresAt": "2026-09-27T01:58:53.240Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-7penjq",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
-        "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
-        "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau"
-      ],
-      "baseSha": "9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-      "acquiredAt": "2026-09-27T01:13:54.120Z",
-      "expiresAt": "2026-09-27T01:58:54.120Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-1yob23f",
       "worker": "vibe2",
       "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
@@ -551,6 +514,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-1jnccao",
+      "worker": "vibe2",
+      "taskId": "survival-studio-evolution-unity-web-usability-v1",
+      "gameId": "survival",
+      "files": [
+        "unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "50673ac9ac61015195ee2db525dc6e371c67d252",
+      "acquiredAt": "2026-09-27T01:59:04.547Z",
+      "expiresAt": "2026-09-27T02:44:04.547Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:survival-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
