@@ -1374,12 +1374,12 @@
       "actualPlayEvidenceField": "company-runtime:development-queue.json#robloxInternalVibePlayEvidence",
       "canonicalLearningIngress": "tools/vibe2-learning-motor.mjs#collectVerifiedRobloxStudioPlayExperience",
       "publicationRoute": "OPEN_CLOUD",
-      "publishedCandidateVerificationRoute": "OPEN_CLOUD_ONLY",
+      "publishedCandidateVerificationRoute": "COMPANY_RUNTIME_EXACT_CANDIDATE_BINDING",
       "reEnabledAt": "2026-09-25",
       "previousRemovalAt": "2026-09-22T03:45:00+09:00",
       "authority": "OWNER_DIRECTIVE_2026-09-25",
       "sharedPublishedTargetCurrentRequired": false,
-      "requiredForInternalRelease": false,
+      "requiredForInternalRelease": true,
       "requiredForActualVibeInternalPlay": true,
       "officialStudioMcpOnly": true,
       "studioMcpTransport": "STDIO",
@@ -1464,7 +1464,7 @@
         "completedSessionExitContract": "MCP_RUN_EXITS_SUCCESS_AFTER_REQUIRED_TOOLS_AND_STUDIO_SESSION_COMPLETE_EVEN_WHEN_RUNTIME_QA_FAILS"
       },
       "runtimeFoundationPassedArtifactAllowedForLocalActualPlay": true,
-      "earliestBehaviorFeedbackCheckpoint": "AFTER_RUNTIME_FOUNDATION_PASS_AND_EXACT_SOURCE_ARTIFACT_BINDING",
+      "earliestBehaviorFeedbackCheckpoint": "AFTER_EXACT_PRIVATE_RUNTIME_CANDIDATE_AND_EXACT_SOURCE_ARTIFACT_BINDING",
       "actualPlayQualityContract": {
         "version": 1,
         "status": "ACTIVE_EXECUTABLE_CONTRACT",
@@ -1491,7 +1491,10 @@
           "VISUAL_CAPTURE_SANITY",
           "APPROVED_DESIGN_RUNTIME_BINDING"
         ]
-      }
+      },
+      "externalServerBootRequiredForInternalRelease": false,
+      "oneExactSessionMaySatisfyApplicableF1ThroughF8": true,
+      "duplicateSessionForSameExactCandidateForbidden": true
     },
     "headlessValidation": {
       "version": 2,
@@ -5308,7 +5311,7 @@
           "VIBE_INTERNAL_PLAY": "ACTUAL_INTERNAL_ROBLOX_BUILD_PLAY_BY_VIBE_AGENT_WITH_ACTION_AND_STATE_EVIDENCE",
           "CAUSAL_REPAIR_AND_DEVELOPMENT": "EXISTING_VIBE_DEVELOPMENT_QUEUE_REPAIRS_REPRODUCIBLE_BUGS_COMPLETENESS_UX_BALANCE_GRAPHICS_AUDIO_AND_PERFORMANCE_GAPS",
           "ROBLOX_PLATFORM_REBUILD": "EXISTING_ROBLOX_SOURCE_IS_REBUILT_FOR_MOBILE_INPUT_UI_FAST_ENTRY_REPEATABLE_GOALS_SOCIAL_OR_MULTIPLAYER_SERVER_AUTHORITY_NATIVE_SERVICES_AND_LOW_END_DENSITY_WHEN_APPLICABLE",
-          "EXACT_CANDIDATE_REVALIDATION": "EXISTING_ROBLOX_RUNTIME_QA_REGRESSION_SECURITY_SAVE_MULTIPLAYER_AND_EXACT_ARTIFACT_EVIDENCE_REVALIDATES_CHANGED_AREAS"
+          "EXACT_CANDIDATE_REVALIDATION": "EXISTING_ROBLOX_INTERNAL_STUDIO_QA_REGRESSION_SECURITY_SAVE_AND_MULTIPLAYER_EVIDENCE_REVALIDATES_ONLY_CHANGED_OR_APPLICABLE_AREAS"
         },
         "actualVibePlayEvidenceRequired": true,
         "syntheticStaticOrDeclaredPlayPassForbidden": true,
@@ -5339,7 +5342,7 @@
         "actualVibePlayExecution": "SELF_HOSTED_WINDOWS_ROBLOX_STUDIO_MCP_LOCAL_EXACT_ARTIFACT",
         "actualVibePlayPublishedPlaceDirectAutomation": false,
         "actualVibePlayLearningReuse": "STRUCTURED_VERIFIED_QA_FACTS_ONLY_NO_RAW_GAMEPLAY_TRAINING",
-        "publishedCandidateIdentityCrossCheck": "COMPANY_RUNTIME_EXACT_SOURCE_ARTIFACT_TARGET_VERSION",
+        "publishedCandidateIdentityCrossCheck": "COMPANY_RUNTIME_EXACT_SOURCE_ARTIFACT_TARGET_VERSION_NO_EXTERNAL_SERVER_OBSERVATION_REQUIRED",
         "rawStudioSourceDirectLearningForbidden": true,
         "rawGameplayValuesDirectLearningForbidden": true,
         "actualVibePlaySurface": "ROBLOX_STUDIO_MCP_PLAY_MODE",
@@ -5369,12 +5372,15 @@
         "studioMcpUnconfirmedSettingIsInfrastructureNotGameFailure": true,
         "studioMcpUnconfirmedSettingMayNotConsumePlayRetry": true,
         "studioMcpAutomaticSettingMutationForbidden": true,
-        "actualVibePlayEligibility": "RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING",
+        "actualVibePlayEligibility": "EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_EXACT_SOURCE_ARTIFACT_BINDING",
         "actualVibePlayEligibilityMustNotDependOnExclusiveCurrentStep": true,
         "foundationOrFinalRevalidationMayRunParallelWithActualVibePlayAfterInternalRelease": true,
         "currentStepMayRepresentParallelRuntimeRevalidationWithoutRevokingInternalReleasePlayEligibility": true,
         "explicitDisabledGameRemainsIneligible": true,
-        "actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease": true
+        "actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease": false,
+        "actualVibePlayMayStartAfterExactPrivateCandidateBeforeRuntimeFoundationPass": true,
+        "validationEfficiency": "ONE_EXACT_STUDIO_SESSION_COLLECTS_APPLICABLE_F1_TO_F8; F9_FANS_IN_EVIDENCE_ONLY",
+        "externalServerObservationRole": "OPTIONAL_MANUAL_DIAGNOSTIC_ONLY"
       },
       "externalPublicReleaseHardGate": {
         "version": 1,
