@@ -3130,3 +3130,13 @@ test('stale quality-failure source does not force rebuilt source back through th
   assert.ok(project);
   assert.equal(project.queueRobloxQualityBuildUpRequired,false);
 });
+
+test('Roblox product-quality failure is projected into canonical planner buildup instead of internal-play replay',()=>{
+  const planner=fs.readFileSync(path.join(process.cwd(),'tools','vibe2-auto-planner.mjs'),'utf8');
+  assert.match(planner,/queueRobloxQualityBuildUpRequired/);
+  assert.match(planner,/queueRobloxQualityBuildUpSourceRevision/);
+  assert.match(planner,/if\(project\.queueRobloxQualityBuildUpRequired===true\)return null;/);
+  assert.match(planner,/const qualityBuildUpRequired=project\?\.queueRobloxQualityBuildUpRequired===true;/);
+  assert.match(planner,/const phase=qualityBuildUpRequired\|\|latestFailed\?'REPAIR'/);
+  assert.match(planner,/if\(project\.queueRobloxQualityBuildUpRequired===true\)return uniqueTaskCandidates/);
+});
