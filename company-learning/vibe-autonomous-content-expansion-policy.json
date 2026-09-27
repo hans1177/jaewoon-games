@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -411,6 +411,45 @@
         "inventMissingGameplaySystemOnlyToFillMenuForbidden": true,
         "gameplayEconomySaveQuestAndProgressionMeaningUnchanged": true,
         "sameGameStyleLockRequired": true
+      },
+      "version": 2,
+      "unityWebIsUnityBuildTargetNotIndependentPlatform": true,
+      "implementationSeparation": {
+        "version": 1,
+        "sharedExperienceLayer": {
+          "reusableAcrossPlatforms": true,
+          "includes": [
+            "GAME_STYLE_LOCK",
+            "INFORMATION_HIERARCHY_INTENT",
+            "MENU_PATTERN_FAMILY",
+            "ICON_AND_TEXTURE_SOURCE_IDENTITY",
+            "UI_MOTION_LANGUAGE",
+            "PLAYER_FLOW_SEMANTICS"
+          ],
+          "runtimeCodeSharingNotImplied": true
+        },
+        "ROBLOX": {
+          "runtimeImplementation": "ROBLOX_NATIVE_EXISTING_UI_SYSTEM",
+          "directUnityRuntimeCodeReuseForbidden": true,
+          "sharedSourceAssetReuseRequiresExplicitCompatibility": true
+        },
+        "UNITY_APP_AND_WEBGL": {
+          "runtimeImplementation": "SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE",
+          "canonicalSourceRoot": "unity-games/<gameId>/",
+          "unityAppAndWebglUiSourceSharedByDefault": true,
+          "separateHtmlCssJsGameplayUiForbidden": true,
+          "webglCompatibilityAdaptationAllowedInsideCanonicalUnityProject": true,
+          "gameplayUiSemanticForkForbidden": true
+        },
+        "GENERIC_WEB_OR_LEGACY_VALIDATION": {
+          "runtimeImplementation": "EXISTING_WEB_UI_SYSTEM_ONLY",
+          "mayRemainForExistingWebProjects": true,
+          "cannotSubstituteForUnityWebglGameplayUi": true
+        },
+        "FORTNITE_UEFN": {
+          "runtimeImplementation": "UEFN_NATIVE_UI_SYSTEM",
+          "directUnityOrRobloxRuntimeCodeReuseForbidden": true
+        }
       }
     }
   }

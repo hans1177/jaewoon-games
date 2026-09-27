@@ -1,5 +1,5 @@
 {
-  "version": 289,
+  "version": 290,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6310,7 +6310,7 @@
     }
   },
   "menuExperienceDiversityTopology": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/vibe-autonomous-content-expansion-policy.json#presentationEvolution.menuExperienceDiversity",
     "status": "ACTIVE",
     "executionModel": "RESPONSIBILITY_INSIDE_EXISTING_PRESENTATION_BUILD_UP_NOT_A_NEW_STAGE",
@@ -6339,6 +6339,16 @@
     "gameplayEconomySaveQuestSemanticsPreserved": true,
     "newWorkflow": false,
     "newStage": false,
-    "implementation": "tools/vibe2-auto-planner.mjs::buildAdaptiveGraphicsReplacementContract"
+    "implementation": "tools/vibe2-auto-planner.mjs::buildAdaptiveGraphicsReplacementContract",
+    "unityWebIdentity": "UNITY_WEBGL_BUILD_OF_SAME_CANONICAL_UNITY_PROJECT",
+    "platformBinding": {
+      "sharedExperienceContract": true,
+      "ROBLOX": "SEPARATE_ROBLOX_NATIVE_UI_RUNTIME",
+      "UNITY_APP_AND_WEBGL": "SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE",
+      "GENERIC_WEB_OR_LEGACY_VALIDATION": "EXISTING_WEB_UI_ONLY_NOT_A_UNITY_WEBGL_SUBSTITUTE",
+      "FORTNITE_UEFN": "SEPARATE_UEFN_NATIVE_UI_RUNTIME"
+    },
+    "unityWebSeparateHtmlCssJsGameplayUiForbidden": true,
+    "unityWebCanonicalSourceRoot": "unity-games/<gameId>/"
   }
 }

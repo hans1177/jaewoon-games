@@ -1,5 +1,5 @@
 {
-  "version": 476,
+  "version": 477,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9886,6 +9886,21 @@
       "genericOneTemplateForAllGamesForbidden": true,
       "newWorkflowOrStageCreated": false,
       "gameplayEconomySaveQuestSemanticsPreserved": true
+    },
+    "unityWebMenuSourceIdentity20260927": {
+      "id": "UNITY_WEB_MENU_SOURCE_IDENTITY_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebDevelopmentLane.menuUiSourceIdentity",
+      "status": "ACTIVE",
+      "objective": "KEEP_UNITY_APP_AND_UNITY_WEBGL_MENU_UI_ON_THE_SAME_CANONICAL_UNITY_SOURCE_WHILE_ROBLOX_AND_UEFN_KEEP_PLATFORM_NATIVE_RUNTIME_IMPLEMENTATIONS",
+      "sharedExperienceContractPreserved": true,
+      "unityAndUnityWebSameSourceRequired": true,
+      "separateUnityWebHtmlCssJsGameplayUiForbidden": true,
+      "robloxNativeUiBoundaryPreserved": true,
+      "uefnNativeUiBoundaryPreserved": true,
+      "legacyGenericWebCannotSubstituteUnityWeb": true,
+      "newWorkflowOrStageCreated": false,
+      "gameplayEconomySaveQuestProgressionMeaningUnchanged": true,
+      "securityAuthorityChanged": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -15605,7 +15620,16 @@
         "MATERIAL_AND_LIGHTING_LANGUAGE",
         "VFX_LANGUAGE",
         "UI_MOTION_LANGUAGE"
-      ]
+      ],
+      "sharedMenuExperienceContractAllowed": true,
+      "unityWebIsNotGenericWebAssetLane": true,
+      "robloxMenuRuntimeMustBeRobloxNative": true,
+      "unityMenuRuntimeMustUseCanonicalUnityProject": true,
+      "unityWebMenuRuntimeMustUseSameCanonicalUnityProjectAsUnity": true,
+      "unityAndUnityWebShareUiSourceByDefault": true,
+      "unityWebSeparateHtmlCssJsGameplayUiForbidden": true,
+      "unityWebPlatformCompatibilityAdaptationAllowedInsideCanonicalUnityProject": true,
+      "genericWebUiMayNotSubstituteForUnityWebglGameplayUi": true
     },
     "webPresentationQuality": {
       "target": "POLISHED_COMMERCIAL_MOBILE_WEB_2D_OR_2_5D",
@@ -24463,7 +24487,20 @@
       "readinessFailNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR",
       "readinessPassNextAction": "START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT",
       "upperPlatformReadinessGate": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate",
-      "oneLaneFailureMigrationMeaning": "DOES_NOT_CANCEL_ALREADY_STARTED_GRANDFATHERED_NATIVE_DEVELOPMENT; DOES_BLOCK_NEW_UPPER_PLATFORM_ENTRY"
+      "oneLaneFailureMigrationMeaning": "DOES_NOT_CANCEL_ALREADY_STARTED_GRANDFATHERED_NATIVE_DEVELOPMENT; DOES_BLOCK_NEW_UPPER_PLATFORM_ENTRY",
+      "menuUiSourceIdentity": {
+        "version": 1,
+        "mode": "UNITY_APP_AND_WEBGL_SAME_CANONICAL_UI_SOURCE",
+        "canonicalSourceRoot": "unity-games/<gameId>/",
+        "sameCanonicalUnityProjectAsUnityAppRequired": true,
+        "sameUiSourceAsUnityAppByDefault": true,
+        "webBuildTarget": "UNITY_WEBGL",
+        "separateHtmlCssJsGameplayUiForbidden": true,
+        "platformSpecificWebglCompatibilityAdjustmentsAllowed": true,
+        "compatibilityAdjustmentsMustRemainInsideCanonicalUnityProject": true,
+        "compatibilityAdjustmentsMayNotForkGameplayUiMeaning": true,
+        "genericLegacyWebUiCannotSatisfyUnityWebRequirement": true
+      }
     },
     "upperPlatformAdmission": "UPPER_PLATFORM_DEVELOPMENT_READY",
     "upperPlatformDevelopmentReadinessGate": {

@@ -3390,6 +3390,12 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
   assert.equal(contract.menuDiversity.genericOneTemplateForAllGamesForbidden,true);
   assert.equal(contract.menuDiversity.colorOrBackgroundOnlyVariationDoesNotCount,true);
   assert.equal(contract.menuDiversity.projectSpecificPatternAllowed,true);
+  assert.equal(contract.menuDiversity.unityWebIsUnityBuildTargetNotIndependentPlatform,true);
+  assert.equal(contract.menuDiversity.platformBinding.ROBLOX,'SEPARATE_ROBLOX_NATIVE_UI_RUNTIME');
+  assert.equal(contract.menuDiversity.platformBinding.UNITY_APP_AND_WEBGL,'SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE');
+  assert.equal(contract.menuDiversity.platformBinding.UNITY_CANONICAL_SOURCE_ROOT,'unity-games/<gameId>/');
+  assert.equal(contract.menuDiversity.platformBinding.UNITY_WEBGL_SEPARATE_HTML_CSS_JS_GAMEPLAY_UI,'FORBIDDEN');
+  assert.equal(contract.menuDiversity.platformBinding.GENERIC_WEB_OR_LEGACY_VALIDATION,'EXISTING_WEB_UI_ONLY_NOT_A_UNITY_WEBGL_SUBSTITUTE');
   assert.equal(contract.menuDiversity.mobileFirst.touchTargetMinimumPx,44);
   assert.ok(contract.menuDiversity.patternFamilies.MAIN_MENU.includes('WORLD_INTEGRATED_HUB'));
   assert.ok(contract.menuDiversity.patternFamilies.RESULT_UI.includes('NEXT_OBJECTIVE'));
@@ -3400,6 +3406,12 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
   assert.ok(task.evidence.includes('adaptive-graphics-replacement-range:1-60'));
   assert.ok(task.evidence.includes('menu-experience-diversity:v1'));
   assert.ok(task.completionCriteria.includes('MENU_UI_CHANGE_IF_SELECTED_MUST_BE_GAME_GENRE_SPECIFIC'));
+  assert.ok(task.completionCriteria.includes('UNITY_WEB_MENU_SAME_CANONICAL_UNITY_SOURCE_IF_APPLICABLE'));
+  assert.ok(task.completionCriteria.includes('UNITY_WEB_SEPARATE_HTML_CSS_JS_GAMEPLAY_UI_FORBIDDEN'));
+  assert.ok(task.evidence.includes('menu-platform-binding:v1'));
+  assert.ok(task.evidence.includes('unity-web-menu-source:SAME_CANONICAL_UNITY_PROJECT'));
+  assert.match(task.goal,/같은 canonical Unity 프로젝트와 같은 UI 소스/);
+  assert.match(task.goal,/Unity Web 전용 HTML\/CSS\/JS gameplay UI/);
   assert.match(task.goal,/작은 결함은 1~10개/);
   assert.match(task.goal,/응용·재조합/);
   assert.match(task.goal,/메인메뉴·인벤토리·상점·제작·퀘스트·설정·결과창/);
