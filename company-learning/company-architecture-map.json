@@ -1,5 +1,5 @@
 {
-  "version": 278,
+  "version": 279,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -80,7 +80,23 @@
     "developmentLoopOptimization": "RUN_ONLY_DIRECTLY_RELEVANT_PROCEDURE_OR_NONBLOCKING_REUSED_EVIDENCE",
     "unrelatedSecurityQaReviewMaySerializeBuildUp": false,
     "optimizationLaneRemainsLive": true,
-    "optimizationParallelWhenNoResponsibleFileConflict": true
+    "optimizationParallelWhenNoResponsibleFileConflict": true,
+    "qualityFirstBuildupShortCircuit": {
+      "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit",
+      "internalProductQualityFailurePreemptsExternalReleaseObservation": true,
+      "approvedScopeQualityRepairOwnerApprovalRequired": false,
+      "automaticCanonicalRoute": "VIBE_PLANNER_TO_VIBE_SOURCE_WORKER",
+      "transient429Classification": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
+      "transient429DoesNotCauseGameSourceRebuild": true,
+      "activeQualityFailureSuppressesExternalProbe": true,
+      "changedResponsibilityQaFirst": true,
+      "resumeAtFirstInvalidatedDownstreamGate": true,
+      "fullPipelineRestartForbidden": true,
+      "validUnchangedPassingEvidenceReuseRequired": true,
+      "f9ProductQualityFailureReturnsToBuildUp": true,
+      "publicReleaseHardGateUnchanged": true,
+      "securityAndSaveIntegrityGatesUnchanged": true
+    }
   },
   "executionTopology": {
     "design": [
@@ -214,6 +230,15 @@
       "DIRECT_RESPONSIBLE_SOURCE_REPAIR",
       "RUNTIME_REVALIDATION",
       "KEEP_HOMEPAGE_EXPOSURE_FALSE_UNTIL_PASS"
+    ],
+    "qualityFailureRecovery": [
+      "VERIFIED_INTERNAL_PRODUCT_QUALITY_FAILURE",
+      "AUTO_REQUEUE_EXISTING_VIBE_BUILD_UP_WITHOUT_OWNER_APPROVAL",
+      "DIRECT_RESPONSIBLE_GAME_SOURCE_REPAIR",
+      "IMPACT_SCOPED_QA_AND_PLAY",
+      "RESUME_FIRST_INVALIDATED_DOWNSTREAM_GATE",
+      "F9_WHEN_RELEVANT",
+      "EXTERNAL_RUNTIME_AND_PUBLIC_RELEASE_EVIDENCE_WHEN_STILL_REQUIRED"
     ]
   },
   "workerRoles": {
@@ -4824,14 +4849,17 @@
       "unchangedEvidenceReuse": true,
       "duplicateFullRegression": false,
       "fullRegressionOnceAtFanIn": true,
-      "runtimeOnlyWhenRequired": true
+      "runtimeOnlyWhenRequired": true,
+      "internalQualityFailureBeforeExternalProbe": true,
+      "transientInfrastructureFailureDoesNotCreateGameSourceChurn": true
     },
     "policyBoundary": {
       "architectureMapDoesNotCreatePolicy": true,
       "protectedSemanticsPreserved": true,
       "gateThresholdsUnchanged": true,
       "learningDoesNotExpandAuthority": true
-    }
+    },
+    "qualityFailureShortCircuitSource": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit"
   },
   "continuousGameplaySystemEvolutionTopology": {
     "version": 2,
