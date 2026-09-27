@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1lt73lb",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau",
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/shared/GameConfig.luau"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:06:09.980Z",
-      "expiresAt": "2026-09-27T04:51:09.980Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-1s9e5xk",
       "worker": "vibe2",
       "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
@@ -677,6 +658,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1pxlpq6",
+      "worker": "vibe2",
+      "taskId": "monster-adventure-studio-evolution-unity-web-presentation-v1",
+      "gameId": "monster-adventure",
+      "files": [
+        "unity-games/monster-adventure/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/monster-adventure/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "030bba2df3bf52826ca4bcfa8d35e6c207a25ca8",
+      "acquiredAt": "2026-09-27T04:51:33.874Z",
+      "expiresAt": "2026-09-27T05:36:33.874Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:monster-adventure-studio-evolution-unity-web-presentation-v1"
       ]
     }
   ]
