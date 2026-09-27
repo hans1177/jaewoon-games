@@ -653,16 +653,24 @@ const MUSIC_THEMES={
  battle3:{bpm:160,mode:'minor',root:98,progression:[0,5,1,6,0,3,5,1],riff:[0,6,5,3,1,5,4,2],style:'battle3'},
  boss:{bpm:118,mode:'minor',root:73.42,progression:[0,1,6,5,0,3,1,6],riff:[0,3,5,1,6,3,1,-2],style:'boss'}
 };
-const music={ctx:null,master:null,started:false,enabled:true,volume:1.44,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null,noiseInitPending:false,battleActive:false,battleTheme:null};
+const music={ctx:null,master:null,started:false,enabled:true,volume:1.44,theme:null,nextAt:0,beatIndex:0,trackStart:0,noise:null,noiseInitPending:false,battleActive:false,battleTheme:null,warmupUntil:0,startPending:false};
 function initMusicNoiseDeferred(){
  if(!music.ctx||music.noise||music.noiseInitPending)return;music.noiseInitPending=true;
  const build=()=>{music.noiseInitPending=false;if(!music.ctx||music.noise)return;const len=Math.max(1,Math.floor(music.ctx.sampleRate*.12)),buf=music.ctx.createBuffer(1,len,music.ctx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;music.noise=buf};
  if('requestIdleCallback'in window)requestIdleCallback(build,{timeout:700});else setTimeout(build,250)
 }
 function ensureMusicStarted(){
- if(!music.enabled)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
- if(!music.ctx){music.ctx=new AC({latencyHint:'interactive'});music.master=music.ctx.createGain();music.master.gain.value=music.volume;music.master.connect(music.ctx.destination)}
- if(music.ctx.state==='suspended')music.ctx.resume().catch(()=>{});music.started=true;if(!music.nextAt){music.nextAt=music.ctx.currentTime+.08;music.trackStart=music.ctx.currentTime+.08}initMusicNoiseDeferred()
+ if(!music.enabled||music.startPending)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+ music.startPending=true;
+ const boot=()=>{
+  music.startPending=false;if(!music.enabled)return;
+  if(!music.ctx){music.ctx=new AC({latencyHint:'playback'});music.master=music.ctx.createGain();music.master.gain.value=music.volume;music.master.connect(music.ctx.destination)}
+  if(music.ctx.state==='suspended')music.ctx.resume().catch(()=>{});
+  music.started=true;music.warmupUntil=performance.now()+1800;
+  if(!music.nextAt){music.nextAt=music.ctx.currentTime+.18;music.trackStart=music.ctx.currentTime+.18}
+  initMusicNoiseDeferred()
+ };
+ if('requestIdleCallback'in window)requestIdleCallback(boot,{timeout:500});else setTimeout(boot,220)
 }
 function scaleFreq(root,degree,minor=false,oct=0){const major=[0,2,4,5,7,9,11],min=[0,2,3,5,7,8,10],scale=minor?min:major;let d=degree,shift=0;while(d<0){d+=7;shift--}while(d>=7){d-=7;shift++}return root*Math.pow(2,(scale[d]+12*(shift+oct))/12)}
 function smoothVoice(freq,at,dur,gain=.035,wave='sine',filterHz=1600,attack=.06){if(!music.ctx)return;const o=music.ctx.createOscillator(),g=music.ctx.createGain(),f=music.ctx.createBiquadFilter();o.type=wave;o.frequency.setValueAtTime(freq,at);f.type='lowpass';f.frequency.value=filterHz;f.Q.value=.5;g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(gain,at+Math.min(attack,dur*.35));g.gain.exponentialRampToValueAtTime(.0001,at+dur);o.connect(f);f.connect(g);g.connect(music.master);o.start(at);o.stop(at+dur+.04)}
@@ -783,7 +791,7 @@ function scheduleBandBeat(key,t,beat,at){
   case'boss':lowDrum(at,b===0?70:55,b===0?.14:.075,beatDur*.72);if(b===0)padVoice(root,at,beatDur*4,.042,520);if(b===1||b===3)noiseBrush(at,beatDur*.42,.026,900);smoothVoice(lead,at,beatDur*.8,.034,'triangle',1100,.03);break;
  }
 }
-function musicTick(){if(!music.started||!music.enabled||!music.ctx)return;const key=desiredMusicTheme(),t=MUSIC_THEMES[key]||MUSIC_THEMES.forest,beatDur=60/t.bpm;if(music.theme!==key){music.theme=key;music.beatIndex=0;music.trackStart=music.ctx.currentTime+.03;music.nextAt=music.trackStart}const now=music.ctx.currentTime,elapsed=now-music.trackStart;if(elapsed>=MUSIC_TRACK_SECONDS){music.beatIndex=0;music.trackStart=now+.03;music.nextAt=music.trackStart}while(music.nextAt<now+.08){scheduleBandBeat(key,t,music.beatIndex,music.nextAt);music.beatIndex++;music.nextAt+=beatDur}}
+function musicTick(){if(!music.started||!music.enabled||!music.ctx)return;const key=desiredMusicTheme(),t=MUSIC_THEMES[key]||MUSIC_THEMES.forest,beatDur=60/t.bpm;if(music.theme!==key){music.theme=key;music.beatIndex=0;music.trackStart=music.ctx.currentTime+.10;music.nextAt=music.trackStart}const now=music.ctx.currentTime,elapsed=now-music.trackStart;if(elapsed>=MUSIC_TRACK_SECONDS){music.beatIndex=0;music.trackStart=now+.10;music.nextAt=music.trackStart}if(music.nextAt<now-.25)music.nextAt=now+.04;let scheduled=0,maxPerFrame=performance.now()<(music.warmupUntil||0)?1:2;while(music.nextAt<now+.08&&scheduled<maxPerFrame){scheduleBandBeat(key,t,music.beatIndex,music.nextAt);music.beatIndex++;music.nextAt+=beatDur;scheduled++}}
 function setBgmVolume(raw){const pct=clamp(Number(raw)||0,0,100)/100;music.volume=1.44*pct;if(music.master&&music.ctx&&music.enabled)music.master.gain.setValueAtTime(Math.max(.0001,music.volume),music.ctx.currentTime)}
 function toggleBgm(){music.enabled=!music.enabled;if(music.enabled){ensureMusicStarted();music.theme=null;music.nextAt=music.ctx?music.ctx.currentTime:0}else if(music.master&&music.ctx){music.master.gain.cancelScheduledValues(music.ctx.currentTime);music.master.gain.setValueAtTime(.0001,music.ctx.currentTime)}if(music.enabled&&music.master&&music.ctx)music.master.gain.setValueAtTime(Math.max(.0001,music.volume),music.ctx.currentTime);state.dirty=true;syncOptionsUi();saveGame(false)}
 function markExplored(){
