@@ -552,7 +552,7 @@ test('post-runtime dedupe job runs without a same-game concurrency lock',()=>{
   const start=workflow.indexOf('  dedupe:');
   const end=workflow.indexOf('\n  runtime-foundation-qa:',start);
   const block=workflow.slice(start,end);
-  assert.match(block,/runs-on:\s*ubuntu-slim/);
+  assert.match(block,/runs-on:\s*ubuntu-24\.04/);
   assert.doesNotMatch(block,/concurrency:/);
   assert.match(block,/ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=/);
 });
