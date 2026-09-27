@@ -473,10 +473,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo 'enabled=false' >> "$GITHUB_OUTPUT"
-          echo 'LEGACY_GENYMOTION_GATE=DISABLED_BY_F0_F9_SINGLE_SESSION_POLICY'
-          echo 'CANONICAL_ANDROID_RUNTIME_GATE=UNITY_ANDROID_RUNTIME_SMOKE_REDROID_SINGLE_SESSION'
-          echo 'UNITY_LEGACY_RUNTIME_RELAUNCH=NO'
+          if [[ -n "$GENYMOTION_API_TOKEN" && -n "$GENYMOTION_RECIPE_UUID" ]]; then
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+            echo 'UNITY_F1_F8_EXECUTOR=GENYMOTION_SINGLE_SESSION'
+            echo 'UNITY_REDROID_FALLBACK_REQUIRED=NO'
+          else
+            echo 'enabled=false' >> "$GITHUB_OUTPUT"
+            echo 'UNITY_F1_F8_EXECUTOR=REDROID_SINGLE_SESSION'
+            echo 'UNITY_GENYMOTION_CREDENTIALS=UNAVAILABLE'
+          fi
+          echo 'UNITY_PER_FLOOR_RUNTIME_RELAUNCH=NO'
 
       - name: Checkout runtime QA tools
         if: steps.legacy.outputs.enabled == 'true'
