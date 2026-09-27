@@ -778,6 +778,7 @@ jobs:
                   &&studioPlay.artifactIdentity===artifactIdentity
                   &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
                   &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0;
+                if(exactStudioPlay)item.robloxNativeFailureClass=null;
                 const exactPrivateRuntimeFinding=
                   result.exactGame===true
                   &&result.exactPlace===true
