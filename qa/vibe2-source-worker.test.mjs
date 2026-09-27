@@ -2473,7 +2473,7 @@ test('timeout partial recovery is persisted in coding method and immutable worke
 test('zero-output timeout keeps focused recovery enabled for studio build-up',()=>{
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/const zeroOutputTimeoutRecovery=!allowFullRewrite/);
-  assert.match(workerSource,/&&\s*!zeroOutputTimeoutRecovery;/);
+  assert.match(workerSource,/&&\s*!zeroOutputTimeoutRecovery\b/);
   assert.match(workerSource,/\(!studioExpansion\|\|zeroOutputTimeoutRecovery\)/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY/);
 });
@@ -3178,7 +3178,8 @@ test('model edit paths may carry line locators without becoming invalid file pat
   }));
   const result=await runVibe2SourceWorker({cwd,responseFile});
   assert.deepEqual(result.changedFiles,[relative]);
-  assert.match(fs.readFileSync(path.join(cwd,'unity-games/demo',relative),'utf8'),/return 2;/);
+  assert.match(fs.readFileSync(path.join(cwd,'unity-games/demo',relative),'utf8'),/return 1;/);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',result.taskId,'files',relative),'utf8'),/return 2;/);
 });
 
 test('Ollama transport uses streaming instead of one giant non-streaming response', () => {
