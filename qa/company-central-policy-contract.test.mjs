@@ -1202,7 +1202,10 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.equal(throttle?.exactGameProbeConcurrency,1);
   assert.equal(throttle?.persistentApiFailureStillFails,true);
   assert.match(workflow,/networkRetryAttempts:6,networkRetryDelayMs:1000/);
-  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:2,candidates\.length\|\|1\)\)/);
+  assert.equal(throttle?.scanProbeConcurrencyUnderVerified429,1);
+  assert.match(workflow,/const throttlePressure=candidates\.some/);
+  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:\(throttlePressure\?1:2\),candidates\.length\|\|1\)\)/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_THROTTLE_PRESSURE=/);
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.runtimeTruthGateUnchanged,true);
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.publicReleaseGateUnchanged,true);
   assert.equal(Object.hasOwn(roadmap.changeRecord||{},'robloxExactEvidenceRaceRepair20260927'),false);
@@ -1549,7 +1552,7 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(parallel.assetDevelopmentReserveRunner,'ubuntu-24.04-arm');
   assert.equal(parallel.assetDevelopmentModelCacheRunner,'ubuntu-24.04-arm');
   assert.equal(parallel.assetDevelopmentArchitectureAwareCache,true);
-  assert.equal(parallel.assetDevelopmentOllamaCacheKey,'vibe2-ollama-v4-${runner.os}-${runner.arch}-qwen3-1.7b');
+  assert.equal(parallel.assetDevelopmentOllamaCacheKey,'vibe2-ollama-v5-${runner.os}-${runner.arch}-qwen3-1.7b');
   assert.equal(parallel.gamePrimaryRunnerLabel,'ubuntu-latest');
   assert.equal(parallel.assetDevelopmentPhysicalRunnerPoolSeparated,true);
   assert.deepEqual(parallel.assetDevelopmentOllamaArchitectures,['X64','ARM64']);
