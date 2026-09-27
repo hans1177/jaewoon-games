@@ -1,5 +1,5 @@
 {
-  "version": 279,
+  "version": 280,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2583,16 +2583,20 @@
     "ownerControlledFinancialActions": true
   },
   "assetProductionParallelism": {
-    "version": 4,
+    "version": 5,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract",
-    "executionAuthority": "EXISTING_WAVE_SCHEDULER_ONLY",
+    "executionAuthority": "EXISTING_DAG_SCHEDULER_WITH_ATOMIC_COMPLETION_CALLBACK",
     "codeAndAssetWorkMayRunConcurrently": true,
     "isolatedResponsibilitiesRequired": true,
     "sameResponsibleFileParallelForbidden": true,
     "logicalLanes": [
       "ART_DIRECTION",
+      "CHARACTER_CREATURE",
       "THREE_D_ASSET",
+      "ENVIRONMENT_BUILDING_PROP",
+      "WEAPON_TOOL",
       "MATERIAL_TEXTURE",
+      "LIGHTING_ATMOSPHERE",
       "ANIMATION",
       "VFX",
       "UI_ART",
@@ -3008,7 +3012,37 @@
         "shadowTrainerForbidden": true,
         "exactMapTemplateReuseForbidden": true,
         "directProductionPassAuthority": false
-      }
+      },
+      "executionLane": "ASSET_DEVELOPMENT",
+      "dedicatedRunner": true,
+      "runnerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
+      "fullAssetDevelopmentScope": [
+        "CHARACTER",
+        "CREATURE",
+        "BUILDING",
+        "ENVIRONMENT",
+        "WEAPON",
+        "SKILL",
+        "MATERIAL",
+        "AUDIO",
+        "VFX",
+        "UI",
+        "MOTION",
+        "PROP"
+      ],
+      "reusableMotionVerifiedTarget": 200
+    },
+    "dedicatedExecution": {
+      "lane": "ASSET_DEVELOPMENT",
+      "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+      "executor": ".github/workflows/vibe2-continuous-core.yml",
+      "queue": "EXISTING_CANONICAL_VIBE_QUEUE",
+      "separateRunnerCapacityFromGamePrimary": true,
+      "assetTasksOnly": true,
+      "taskMarker": "assetProductionLane=true",
+      "newWorkerAuthority": false,
+      "newQueueAuthority": false,
+      "newTopLevelPipeline": false
     }
   },
   "platformPresentationSeparation": {
