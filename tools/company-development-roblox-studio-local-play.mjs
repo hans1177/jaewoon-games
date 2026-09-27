@@ -122,7 +122,26 @@ export function detectStudioMcpAssistantSetting({settingsRoot=''}={}){
 }
 
 function artifactRunIdFor(item={},candidate={}){
-  return Number(candidate?.artifactRunId||item?.robloxFoundationF0Evidence?.artifactRunId||item?.robloxHeadlessFastMvpEvidence?.artifactRunId||0);
+  const sourceRevision=clean(item?.robloxSourceCommit);
+  const artifactIdentity=clean(item?.robloxBuildArtifactIdentity);
+  const f0=item?.robloxFoundationF0Evidence||{};
+  if(
+    Number(f0?.artifactRunId||0)>0
+    &&clean(f0?.sourceRevision||sourceRevision)===sourceRevision
+    &&clean(f0?.artifactIdentity||artifactIdentity)===artifactIdentity
+  )return Number(f0.artifactRunId);
+  const headless=item?.robloxHeadlessFastMvpEvidence||{};
+  if(
+    Number(headless?.artifactRunId||0)>0
+    &&clean(headless?.sourceRevision||sourceRevision)===sourceRevision
+    &&clean(headless?.artifactIdentity||artifactIdentity)===artifactIdentity
+  )return Number(headless.artifactRunId);
+  if(
+    Number(candidate?.artifactRunId||0)>0
+    &&clean(candidate?.sourceRevision)===sourceRevision
+    &&clean(candidate?.artifactIdentity)===artifactIdentity
+  )return Number(candidate.artifactRunId);
+  return 0;
 }
 
 function runtimeFoundationObserved(item={},candidate={}){
@@ -209,6 +228,11 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&/^[1-9][0-9]*$/.test(String(candidate?.universeId||''))
       &&/^[1-9][0-9]*$/.test(String(candidate?.placeId||''))
       &&Number(candidate?.versionNumber||0)>0
+    );
+    const currentCandidateExact=Boolean(
+      candidateExact
+      &&candidateSourceRevision===currentSourceRevision
+      &&candidateArtifactIdentity===currentArtifactIdentity
     );
 
     const runtimeFoundationExact=Boolean(
@@ -318,9 +342,9 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       sourceRevision,
       artifactIdentity,
       artifactRunId,
-      universeId:candidateExact?String(candidate.universeId):'',
-      placeId:candidateExact?String(candidate.placeId):'',
-      versionNumber:candidateExact?Number(candidate.versionNumber):0,
+      universeId:currentCandidateExact?String(candidate.universeId):'',
+      placeId:currentCandidateExact?String(candidate.placeId):'',
+      versionNumber:currentCandidateExact?Number(candidate.versionNumber):0,
       sharedTargetCurrent:item?.robloxSharedTargetCurrent===true,
       historicalExactPublishedArtifact:infrastructurePrerequisiteReplay,
       infrastructurePrerequisiteReplay,
