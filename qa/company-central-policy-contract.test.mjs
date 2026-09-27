@@ -898,9 +898,12 @@ test('minimum necessary procedure policy keeps development throughput ahead of u
   assert.equal(p.qaAndReview.reviewMayNotBecomeRoutineSerializationPoint,true);
   assert.equal(p.execution.nonblockingChecksUseSpareOrSeparateCapacity,true);
   const robloxParallel=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution;
-  assert.equal(robloxParallel.workflowLevelGameWideSerializationForbidden,true);
-  assert.equal(robloxParallel.workflowLevelConcurrencyGroupByGameIdForbidden,true);
-  assert.equal(robloxParallel.sameGameConflictSerializationScope,'RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY');
+  assert.equal(robloxParallel.workflowLevelGameWideSerializationForbidden,false);
+  assert.equal(robloxParallel.workflowLevelConcurrencyGroupByGameIdForbidden,false);
+  assert.equal(robloxParallel.sameGameConflictSerializationScope,'EXACT_DUPLICATE_WORKFLOW_OR_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY');
+  assert.equal(robloxParallel.crossGameWorkflowSerializationForbidden,true);
+  assert.equal(robloxParallel.exactGameDuplicateWorkflowSerializationAllowed,true);
+  assert.equal(robloxParallel.internalSameWorkflowGameMatrixParallelismPreserved,true);
   const noGameWideLock=roadmap.changeRecord?.robloxGameWideWorkflowSerializationRemoval20260926;
   assert.equal(noGameWideLock.gameIdStillCanonicalTaskIdentity,true);
   assert.equal(noGameWideLock.internalArtificialParallelCapAdded,false);
@@ -1084,9 +1087,21 @@ test('core QA keeps one active regression alive during same-ref main churn',()=>
   assert.equal(policy?.pendingPolicy,'KEEP_ONLY_LATEST_PENDING_SAME_REF');
   assert.equal(policy?.exactShaReuseByGamePrimaryReservePreserved,true);
   assert.equal(policy?.qualityGateWeakened,false);
-  assert.match(coreQaWorkflow,/concurrency:\n\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}[\s\S]*?cancel-in-progress:\s*false/);
+  assert.match(coreQaWorkflow,/concurrency:\n(?:\s+#.*\n)*\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}[\s\S]*?cancel-in-progress:\s*false/);
   assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaRunner,'ubuntu-slim');
   assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaConcurrencyMode,'ACTIVE_ONE_PLUS_LATEST_PENDING');
+  assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaBrowserSmokeRunner,'ubuntu-24.04');
+  assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaBrowserSmokeSeparateJob,true);
+  assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaBrowserSmokeParallel,true);
+  assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaBrowserSmokeRequiresRealBrowser,true);
+  assert.equal(policy?.browserSmoke?.runner,'ubuntu-24.04');
+  assert.equal(policy?.browserSmoke?.separateJob,true);
+  assert.equal(policy?.browserSmoke?.parallelWithCoreTests,true);
+  assert.equal(policy?.browserSmoke?.realBrowserRequired,true);
+  assert.equal(policy?.browserSmoke?.browserGatePreserved,true);
+  assert.equal(policy?.browserSmoke?.gamePrimaryUbuntuLatestLabelUsed,false);
+  assert.match(coreQaWorkflow,/\n  browser-smoke:\n\s+name: Development Web browser startup smoke\n\s+runs-on: ubuntu-24\.04/);
+  assert.doesNotMatch(coreQaWorkflow,/\n  browser-smoke:\n[\s\S]{0,120}?needs:\s*test/);
 });
 
 test('focused retry history reuse stays evidence-gated without weakening QA',()=>{

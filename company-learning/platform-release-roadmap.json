@@ -8566,7 +8566,15 @@
       "exactShaReuseByGamePrimaryReservePreserved": true,
       "localExactShaFallbackPreserved": true,
       "qualityGateWeakened": false,
-      "gamePrimaryRunnerCapacityConsumed": false
+      "gamePrimaryRunnerCapacityConsumed": false,
+      "browserSmoke": {
+        "runner": "ubuntu-24.04",
+        "separateJob": true,
+        "parallelWithCoreTests": true,
+        "realBrowserRequired": true,
+        "browserGatePreserved": true,
+        "gamePrimaryUbuntuLatestLabelUsed": false
+      }
     },
     "runnerQueueDrainV2_20260926": {
       "id": "RUNNER_QUEUE_DRAIN_V2_2026-09-26",
@@ -8772,7 +8780,19 @@
         "independentGameCancellationForbidden": true,
         "inProgressGameCancellationForbidden": true
       },
-      "noArtificialGlobalGameCountCap": true
+      "noArtificialGlobalGameCountCap": true,
+      "safetyNetPushTriggerNoiseReduction": {
+        "workflow": ".github/workflows/vibe2-24h-runner.yml",
+        "qaOnlyWakeRemoved": true,
+        "descriptiveArchitectureMapWakeRemoved": true,
+        "descriptiveLogMapWakeRemoved": true,
+        "humanVibeDocumentWakeRemoved": true,
+        "runtimeAuthorityAndExecutableContractWakesPreserved": true,
+        "fiveMinuteSafetyNetPreserved": true,
+        "gameSourceWakePreserved": true,
+        "independentGameParallelismPreserved": true,
+        "qualitySecurityReleaseGatesUnchanged": true
+      }
     },
     "homepageRunnerIsolation20260926": {
       "id": "HOMEPAGE_RUNNER_ISOLATION_2026-09-26",

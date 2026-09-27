@@ -216,7 +216,7 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.doesNotMatch(seedWorkflow,/actions\/runs\/\$run_id\/cancel/);
 
   assert.match(seedDesignWorkflow,/group: company-seed-design-runtime/);
-  assert.match(seedDesignWorkflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(seedDesignWorkflow,/cancel-in-progress:\s*false/);
   assert.match(seedDesignWorkflow,/tools\/company-design-seed-normalize\.mjs/);
   assert.match(seedDesignWorkflow,/design-engine-canary\.json/);
   assert.match(seedDesignWorkflow,/canary_mode=/);

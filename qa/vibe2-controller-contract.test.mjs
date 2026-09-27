@@ -500,6 +500,19 @@ test('core QA preserves the active same-ref regression and coalesces only pendin
   assert.equal(regression.coreQaActiveCompletion.runner,'ubuntu-slim');
 });
 
+test('core QA isolates Chrome browser smoke from the slim regression runner',()=>{
+  const testAt=coreQaWorkflow.indexOf('\n  test:\n');
+  const browserAt=coreQaWorkflow.indexOf('\n  browser-smoke:\n');
+  assert.ok(testAt>=0&&browserAt>testAt);
+  const testJob=coreQaWorkflow.slice(testAt,browserAt);
+  const browserJob=coreQaWorkflow.slice(browserAt);
+  assert.match(testJob,/runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(testJob,/node qa\/vibe2-development-web-browser-smoke\.mjs/);
+  assert.doesNotMatch(browserJob,/needs:\s*test/);
+  assert.match(browserJob,/runs-on:\s*ubuntu-24\.04/);
+  assert.match(browserJob,/node qa\/vibe2-development-web-browser-smoke\.mjs/);
+});
+
 test('main push wake ignores QA-only and descriptive document churn while preserving executable game changes',()=>{
   const pushStart=workflow.indexOf('  push:');
   const permissionsAt=workflow.indexOf('\npermissions:',pushStart);
@@ -517,6 +530,25 @@ test('main push wake ignores QA-only and descriptive document churn while preser
   assert.equal(pushBlock.includes("'qa/**'"),false);
   assert.equal(pushBlock.includes("'company-learning/company-log-map.json'"),false);
   assert.equal(pushBlock.includes("'company-learning/company-architecture-map.json'"),false);
+});
+
+test('24H safety-net push ignores QA-only and descriptive document churn',()=>{
+  const pushStart=safetyNetWorkflow.indexOf('  push:');
+  const workflowRunAt=safetyNetWorkflow.indexOf('  workflow_run:',pushStart);
+  assert.ok(pushStart>=0 && workflowRunAt>pushStart);
+  const pushBlock=safetyNetWorkflow.slice(pushStart,workflowRunAt);
+  for(const required of [
+    "'company-learning/platform-release-roadmap.json'",
+    "'vibe2-runtime.json'",
+    "'web-games/**'",
+    "'unity-games/**'",
+    "'roblox-games/**'"
+  ]) assert.ok(pushBlock.includes(required),required);
+  assert.equal(pushBlock.includes("'qa/"),false);
+  assert.equal(pushBlock.includes("'company-learning/company-log-map.json'"),false);
+  assert.equal(pushBlock.includes("'company-learning/company-architecture-map.json'"),false);
+  assert.equal(pushBlock.includes("'VIBE2.md'"),false);
+  assert.match(safetyNetWorkflow,/cron: '\*\/5 \* \* \* \*'/);
 });
 
 test('reserve preflight uses the pinned main contract and blocks broken GAME_PRIMARY contracts before reservation',()=>{

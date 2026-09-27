@@ -1248,7 +1248,14 @@
         "ingressControl": "ubuntu-slim",
         "coreQaRunner": "ubuntu-slim",
         "coreQaConcurrencyMode": "ACTIVE_ONE_PLUS_LATEST_PENDING",
-        "coreQaCancelInProgress": false
+        "coreQaCancelInProgress": false,
+        "coreQaBrowserSmokeRunner": "ubuntu-24.04",
+        "coreQaBrowserSmokeSeparateJob": true,
+        "coreQaBrowserSmokeReason": "CHROME_REQUIRED; KEEP DETERMINISTIC CORE REGRESSION ON UBUNTU_SLIM",
+        "coreQaBrowserSmokeQualityGatePreserved": true,
+        "coreQaBrowserSmokeParallel": true,
+        "coreQaBrowserSmokeRequiresRealBrowser": true,
+        "coreQaBrowserSmokeUsesGamePrimaryLabel": false
       },
       "capacityAuthority": "tools/vibe2-queue-control.mjs::reserveVibeTaskBatch",
       "globalActiveWaveBarrier": false,
@@ -5923,6 +5930,16 @@
       ],
       "preservesExactGameParallelism": true,
       "workflow": ".github/workflows/vibe2-continuous-core.yml"
+    },
+    "safetyNetPushTriggerFilter": {
+      "workflow": ".github/workflows/vibe2-24h-runner.yml",
+      "mainPushMode": "EXECUTABLE_RUNTIME_AUTHORITY_PATHS_ONLY",
+      "qaOnlyWake": false,
+      "descriptiveArchitectureMapWake": false,
+      "descriptiveLogMapWake": false,
+      "humanVibeDocumentWake": false,
+      "fiveMinuteSchedulePreserved": true,
+      "productionQueueContinuityPreserved": true
     }
   }
 }

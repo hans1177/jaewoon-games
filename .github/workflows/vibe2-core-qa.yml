@@ -344,13 +344,25 @@ jobs:
           node --test qa/vibe2-system-evolution-verify.test.mjs
           node --test qa/company-machine-development-lifecycle.test.mjs
 
-      - name: Development Web browser startup smoke
-        run: |
-          set -euo pipefail
-          node qa/vibe2-development-web-browser-smoke.mjs
-
       - name: Generate machine handoff
         run: |
           set -euo pipefail
           node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff.json >/tmp/vibe2-handoff.log
           node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/vibe2-handoff.json','utf8'));if(x.kind!=='vibe2-machine-handoff')process.exit(1)"
+
+  browser-smoke:
+    name: Development Web browser startup smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run browser startup smoke
+        run: |
+          set -euo pipefail
+          node qa/vibe2-development-web-browser-smoke.mjs
+
