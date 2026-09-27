@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -294,7 +294,10 @@
       "TYPOGRAPHY",
       "CAMERA_PRESENTATION",
       "ENVIRONMENTAL_PRESENTATION",
-      "AUDIO_PRESENTATION_WHEN_RELEVANT"
+      "AUDIO_PRESENTATION_WHEN_RELEVANT",
+      "MAIN_MENU",
+      "SETTINGS_UI",
+      "RESULT_UI"
     ],
     "candidateUseModes": [
       "DIRECT_REUSE_WHEN_ALREADY_CONCEPT_MATCHED",
@@ -327,6 +330,88 @@
       "reuseModesUsedMustBeRecorded": true,
       "zeroActualReplacementCannotPass": true,
       "beforeAfterEvidenceRequired": true
+    },
+    "menuExperienceDiversity": {
+      "status": "ACTIVE",
+      "executionBoundary": "EXISTING_MENU_AND_UI_BUILD_UP_ONLY",
+      "runtimePlatforms": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "surfaces": [
+        "MAIN_MENU",
+        "INVENTORY_UI",
+        "SHOP_UI",
+        "CRAFT_UI",
+        "QUEST_UI",
+        "SETTINGS_UI",
+        "RESULT_UI"
+      ],
+      "genericOneTemplateForAllGamesForbidden": true,
+      "colorOrBackgroundOnlyVariationDoesNotCount": true,
+      "gameAndGenreContextRequired": true,
+      "chooseAdaptOrHybridizePatternFamilies": true,
+      "projectSpecificPatternAllowed": true,
+      "patternFamilies": {
+        "MAIN_MENU": [
+          "CINEMATIC_HERO",
+          "WORLD_INTEGRATED_HUB",
+          "COMPACT_ACTION",
+          "PROJECT_SPECIFIC_HYBRID"
+        ],
+        "INVENTORY_UI": [
+          "GRID_LOADOUT",
+          "CATEGORY_LIST_DETAIL",
+          "QUICKSLOT_FIRST",
+          "PROJECT_SPECIFIC_HYBRID"
+        ],
+        "SHOP_UI": [
+          "CATALOG_COMPARE",
+          "MERCHANT_CONTEXT",
+          "UPGRADE_FIRST",
+          "PROJECT_SPECIFIC_HYBRID"
+        ],
+        "CRAFT_UI": [
+          "RECIPE_TREE",
+          "STATION_CONTEXT",
+          "MATERIAL_FIRST",
+          "PROJECT_SPECIFIC_HYBRID"
+        ],
+        "QUEST_UI": [
+          "TRACKER_BOARD",
+          "JOURNAL_CHAIN",
+          "WORLD_OBJECTIVE",
+          "PROJECT_SPECIFIC_HYBRID"
+        ],
+        "SETTINGS_UI": [
+          "TAB_PANEL",
+          "QUICK_OVERLAY",
+          "ACCESSIBILITY_FIRST",
+          "PROJECT_SPECIFIC_HYBRID"
+        ],
+        "RESULT_UI": [
+          "RUN_SUMMARY",
+          "REWARD_BREAKDOWN",
+          "NEXT_OBJECTIVE",
+          "PROJECT_SPECIFIC_HYBRID"
+        ]
+      },
+      "selectionRule": "DO_NOT_ASSIGN_ONE_FIXED_TEMPLATE_PER_GENRE; VIBE_CHOOSES_OR_HYBRIDIZES_INFORMATION_HIERARCHY_NAVIGATION_LAYOUT_AND_INTERACTION_FROM_ACTUAL_GAME_RULES_GENRE_SESSION_FLOW_AND_EXISTING_UI_RESPONSIBILITY",
+      "mobileFirst": {
+        "touchTargetMinimumPx": 44,
+        "safeAreaRequired": true,
+        "narrowScreenNoClipping": true,
+        "scrollReachabilityRequired": true,
+        "thumbReachabilityRequired": true
+      },
+      "preservation": {
+        "reuseExistingUiSystemAndResponsibleFiles": true,
+        "inventMissingGameplaySystemOnlyToFillMenuForbidden": true,
+        "gameplayEconomySaveQuestAndProgressionMeaningUnchanged": true,
+        "sameGameStyleLockRequired": true
+      }
     }
   }
 }

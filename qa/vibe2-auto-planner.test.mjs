@@ -3366,7 +3366,7 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
   const dir=path.join(root,'web-games',gameId);
   fs.mkdirSync(dir,{recursive:true});
   fs.writeFileSync(path.join(dir,'index.html'),'<!doctype html><canvas id="game"></canvas><div id="menu"></div>\n','utf8');
-  const project={gameId,name:'Adaptive Graphics Web',engine:'web',target:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const project={gameId,name:'Adaptive Graphics Web',genre:'survival',engine:'web',target:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
   const task=findWebPresentationQualityTask(project,root,{tasks:[]});
   assert.ok(task);
   const contract=task.graphicsReplacementContract;
@@ -3377,7 +3377,7 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
   assert.deepEqual(contract.adaptiveCount.bands.micro,[1,10]);
   assert.deepEqual(contract.adaptiveCount.bands.normal,[10,30]);
   assert.deepEqual(contract.adaptiveCount.bands.major,[30,60]);
-  for(const surface of ['BACKGROUND','MONSTER','VFX','MOTION','MENU','HUD','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','ICON','CAMERA_PRESENTATION']){
+  for(const surface of ['BACKGROUND','MONSTER','VFX','MOTION','MENU','MAIN_MENU','HUD','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI','ICON','CAMERA_PRESENTATION']){
     assert.ok(contract.surfaces.includes(surface),surface);
   }
   assert.deepEqual([...contract.reuseModes],[
@@ -3386,12 +3386,24 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
     'TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES',
     'NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER'
   ]);
+  assert.deepEqual([...contract.menuDiversity.surfaces],['MAIN_MENU','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI']);
+  assert.equal(contract.menuDiversity.genericOneTemplateForAllGamesForbidden,true);
+  assert.equal(contract.menuDiversity.colorOrBackgroundOnlyVariationDoesNotCount,true);
+  assert.equal(contract.menuDiversity.projectSpecificPatternAllowed,true);
+  assert.equal(contract.menuDiversity.mobileFirst.touchTargetMinimumPx,44);
+  assert.ok(contract.menuDiversity.patternFamilies.MAIN_MENU.includes('WORLD_INTEGRATED_HUB'));
+  assert.ok(contract.menuDiversity.patternFamilies.RESULT_UI.includes('NEXT_OBJECTIVE'));
+  assert.match(contract.menuDiversity.genreGuidance,/생존 장르는/);
   assert.equal(contract.implementation.zeroActualReplacementCannotPass,true);
   assert.equal(contract.implementation.actualReplacementCountMustBeRecorded,true);
   assert.ok(task.completionCriteria.includes('GRAPHICS_ZERO_REPLACEMENT_PASS_FORBIDDEN'));
   assert.ok(task.evidence.includes('adaptive-graphics-replacement-range:1-60'));
+  assert.ok(task.evidence.includes('menu-experience-diversity:v1'));
+  assert.ok(task.completionCriteria.includes('MENU_UI_CHANGE_IF_SELECTED_MUST_BE_GAME_GENRE_SPECIFIC'));
   assert.match(task.goal,/작은 결함은 1~10개/);
   assert.match(task.goal,/응용·재조합/);
+  assert.match(task.goal,/메인메뉴·인벤토리·상점·제작·퀘스트·설정·결과창/);
+  assert.match(task.goal,/같은 카드\/그리드\/탭 템플릿/);
 });
 
 test('studio PRESENTATION focus receives the same adaptive replacement contract inside existing BUILD_UP',()=>{
@@ -3429,7 +3441,7 @@ test('Fortnite UEFN presentation uses the same adaptive 1-60 graphics replacemen
   assert.deepEqual([...task.graphicsReplacementContract.platforms],['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
   assert.equal(task.graphicsReplacementContract.adaptiveCount.minimumActual,1);
   assert.equal(task.graphicsReplacementContract.adaptiveCount.maximumActual,60);
-  for(const surface of ['VFX','MOTION','MENU','HUD','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI']){
+  for(const surface of ['VFX','MOTION','MENU','MAIN_MENU','HUD','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI']){
     assert.ok(task.graphicsReplacementContract.surfaces.includes(surface),surface);
   }
   assert.equal(task.graphicsReplacementContract.implementation.zeroActualReplacementCannotPass,true);

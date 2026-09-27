@@ -1061,7 +1061,7 @@ function findWebDiagnosticTask(project,repoRoot,queue){
 const ADAPTIVE_GRAPHICS_REPLACEMENT_SURFACES=Object.freeze([
   'BACKGROUND','TERRAIN','ENVIRONMENT','BUILDING','PROP','LANDMARK',
   'CHARACTER','MONSTER','CREATURE','WEAPON','ITEM','EQUIPMENT','MATERIAL','TEXTURE',
-  'VFX','MOTION','ANIMATION','MENU','HUD','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','ICON','TYPOGRAPHY',
+  'VFX','MOTION','ANIMATION','MENU','MAIN_MENU','HUD','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI','ICON','TYPOGRAPHY',
   'CAMERA_PRESENTATION','ENVIRONMENTAL_PRESENTATION','AUDIO_PRESENTATION_WHEN_RELEVANT'
 ]);
 const ADAPTIVE_GRAPHICS_REUSE_MODES=Object.freeze([
@@ -1070,6 +1070,16 @@ const ADAPTIVE_GRAPHICS_REUSE_MODES=Object.freeze([
   'TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES',
   'NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER'
 ]);
+const MENU_EXPERIENCE_SURFACES=Object.freeze(['MAIN_MENU','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI']);
+const MENU_EXPERIENCE_PATTERN_FAMILIES=Object.freeze({
+  MAIN_MENU:Object.freeze(['CINEMATIC_HERO','WORLD_INTEGRATED_HUB','COMPACT_ACTION','PROJECT_SPECIFIC_HYBRID']),
+  INVENTORY_UI:Object.freeze(['GRID_LOADOUT','CATEGORY_LIST_DETAIL','QUICKSLOT_FIRST','PROJECT_SPECIFIC_HYBRID']),
+  SHOP_UI:Object.freeze(['CATALOG_COMPARE','MERCHANT_CONTEXT','UPGRADE_FIRST','PROJECT_SPECIFIC_HYBRID']),
+  CRAFT_UI:Object.freeze(['RECIPE_TREE','STATION_CONTEXT','MATERIAL_FIRST','PROJECT_SPECIFIC_HYBRID']),
+  QUEST_UI:Object.freeze(['TRACKER_BOARD','JOURNAL_CHAIN','WORLD_OBJECTIVE','PROJECT_SPECIFIC_HYBRID']),
+  SETTINGS_UI:Object.freeze(['TAB_PANEL','QUICK_OVERLAY','ACCESSIBILITY_FIRST','PROJECT_SPECIFIC_HYBRID']),
+  RESULT_UI:Object.freeze(['RUN_SUMMARY','REWARD_BREAKDOWN','NEXT_OBJECTIVE','PROJECT_SPECIFIC_HYBRID'])
+});
 
 function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTATION'){
   const platform=buildUpPlatformToken(project,studioQualityLane(project));
@@ -1091,6 +1101,19 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
     surfaces:ADAPTIVE_GRAPHICS_REPLACEMENT_SURFACES,
     priorityOrder:Object.freeze(['PLACEHOLDER','LOW_QUALITY','STYLE_MISMATCH','DUPLICATE_OR_OVERREUSED','POOR_READABILITY','WEAK_VFX_OR_MOTION','OTHER_VERIFIED_PRESENTATION_GAP']),
     reuseModes:ADAPTIVE_GRAPHICS_REUSE_MODES,
+    menuDiversity:Object.freeze({
+      version:1,
+      executionBoundary:'EXISTING_MENU_AND_UI_BUILD_UP_ONLY',
+      surfaces:MENU_EXPERIENCE_SURFACES,
+      genericOneTemplateForAllGamesForbidden:true,
+      colorOrBackgroundOnlyVariationDoesNotCount:true,
+      chooseAdaptOrHybridizePatterns:true,
+      projectSpecificPatternAllowed:true,
+      genreGuidance:genreCommercialGuidance(project),
+      patternFamilies:MENU_EXPERIENCE_PATTERN_FAMILIES,
+      mobileFirst:Object.freeze({touchTargetMinimumPx:44,safeAreaRequired:true,narrowScreenNoClipping:true,scrollReachabilityRequired:true,thumbReachabilityRequired:true}),
+      preservation:Object.freeze({reuseExistingUiSystemAndResponsibleFiles:true,inventMissingGameplaySystemOnlyToFillMenuForbidden:true,gameplayEconomySaveQuestAndProgressionMeaningUnchanged:true,sameGameStyleLockRequired:true})
+    }),
     compositionRule:'DO_NOT_LIMIT_TO_READY_MADE_ASSETS. VIBE MAY DIRECTLY_REUSE_WHEN_ALREADY_CORRECT, ADAPT_OR_RESTYLE, OR RECOMBINE_MULTIPLE_COMPATIBLE_ASSET_MOTION_VFX_UI_IDEAS INTO_A_NEW_PROJECT_SPECIFIC_EXPRESSION.',
     conceptRule:'EVERY_APPLIED_RESULT_MUST_MATCH_CURRENT_GAME_IDENTITY_STYLE_LOCK_WORLD_CONTEXT_REGION_ROLE_AND_GAMEPLAY_READABILITY.',
     antiMashupRule:'RAW_UNPROCESSED_ASSET_PACK_MIXING_OR_STYLE_COLLISION_IS_FORBIDDEN; RECOMBINATION_MUST_BE_NORMALIZED_INTO_ONE_GAME_SPECIFIC_VISUAL_LANGUAGE.',
@@ -1123,7 +1146,10 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
     'Vibe가 현재 실제 화면과 소스를 보고 필요한 교체 수를 스스로 정한다. 고정 30개를 채우지 않는다.',
     '같은 가변 교체 계약을 WEB / ROBLOX / UNITY / FORTNITE_UEFN에 공통 적용하되 실제 교체 구현은 각 플랫폼의 네이티브 렌더·에셋·애니메이션·UI 구조를 사용한다.',
     '실제 교체 수는 최소 1개, 최대 60개다. 작은 결함은 1~10개, 일반 개선은 대체로 10~30개, 지역/표현 대형 리프레시는 필요할 때 30~60개를 사용할 수 있다.',
-    '대상에는 배경·지형·환경·건물·소품·랜드마크·캐릭터·몬스터·무기·아이템·장비·재질·텍스처·VFX·모션/애니메이션·메뉴·HUD·인벤토리·상점·제작·퀘스트 UI·아이콘·타이포·카메라·환경 연출이 포함된다. 오디오 표현도 관련 있을 때 함께 연결할 수 있다.',
+    '대상에는 배경·지형·환경·건물·소품·랜드마크·캐릭터·몬스터·무기·아이템·장비·재질·텍스처·VFX·모션/애니메이션·메뉴·HUD·인벤토리·상점·제작·퀘스트·설정·결과 UI·아이콘·타이포·카메라·환경 연출이 포함된다. 오디오 표현도 관련 있을 때 함께 연결할 수 있다.',
+    '메뉴/UI를 이번 작업에서 건드릴 때는 메인메뉴·인벤토리·상점·제작·퀘스트·설정·결과창 중 실제 게임에 존재하는 화면의 정보구조·탐색·레이아웃·상호작용을 현재 장르와 규칙에 맞게 선택하거나 혼합한다.',
+    '모든 게임에 같은 카드/그리드/탭 템플릿을 복사한 뒤 색이나 배경만 바꾸는 방식은 메뉴 다양화로 인정하지 않는다. 정해진 장르별 단일 템플릿도 금지하며 Vibe가 기존 UI 책임 구조와 플레이 흐름을 보고 패턴을 선택·응용·혼합하거나 프로젝트 전용 구성을 만든다.',
+    '없는 게임플레이 시스템을 메뉴를 채우려고 새로 만들지 않는다. 기존 경제·저장·퀘스트·진행 의미를 보존하고 모바일 44px 터치, safe area, 좁은 화면 잘림 방지, 스크롤 도달성, 엄지 도달성을 지킨다.',
     '우선순위는 placeholder → 저품질 → 컨셉/Style Lock 불일치 → 중복/과다 재사용 → 가독성 저하 → 약한 VFX/모션 → 그 밖의 검증된 표현 gap 순이다.',
     '이미 만들어진 것을 그대로 쓰는 것만 고집하지 않는다. 현재 컨셉에 이미 정확히 맞으면 직접 재사용하고, 더 맞게 만들 수 있으면 변형/재질·색·비율·타이밍·레이아웃을 재설계하며, 여러 호환 후보의 장점이 필요하면 모델/재질/모션/VFX/UI 아이디어를 응용·재조합해 현재 게임 전용 새 표현으로 만든다.',
     '서로 다른 에셋팩을 무가공으로 짬뽕하지 않는다. 재조합 결과는 하나의 게임별 Style Lock과 세계/지역 맥락으로 정규화해야 한다.',
@@ -1141,6 +1167,9 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
       'GRAPHICS_REPLACEMENT_COUNT_AND_SURFACES_RECORDED',
       'GRAPHICS_REUSE_ADAPT_RECOMBINE_DECISION_RECORDED',
       'GRAPHICS_CONCEPT_STYLE_LOCK_COHERENCE_PRESERVED',
+      'MENU_UI_CHANGE_IF_SELECTED_MUST_BE_GAME_GENRE_SPECIFIC',
+      'MENU_COLOR_OR_BACKGROUND_ONLY_VARIATION_FORBIDDEN_IF_CHANGED',
+      'MENU_MOBILE_FLOW_AND_GAMEPLAY_SEMANTICS_PRESERVED',
       'GRAPHICS_ZERO_REPLACEMENT_PASS_FORBIDDEN'
     ])],
     evidence:[...new Set([
@@ -1152,7 +1181,10 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
       'adaptive-graphics-replacement-zero-pass:FORBIDDEN',
       'adaptive-graphics-replacement-real-source-binding:REQUIRED',
       'adaptive-graphics-replacement-surfaces:'+ADAPTIVE_GRAPHICS_REPLACEMENT_SURFACES.join(','),
-      'adaptive-graphics-reuse-modes:'+ADAPTIVE_GRAPHICS_REUSE_MODES.join(',')
+      'adaptive-graphics-reuse-modes:'+ADAPTIVE_GRAPHICS_REUSE_MODES.join(','),
+      'menu-experience-diversity:v1',
+      'menu-one-template-for-all:FORBIDDEN',
+      'menu-experience-surfaces:'+MENU_EXPERIENCE_SURFACES.join(',')
     ])]
   };
 }

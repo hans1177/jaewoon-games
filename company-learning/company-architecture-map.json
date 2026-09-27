@@ -1,5 +1,5 @@
 {
-  "version": 288,
+  "version": 289,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3083,7 +3083,11 @@
       "reserveRunner": "ubuntu-24.04-arm",
       "modelCacheRunner": "ubuntu-24.04-arm",
       "cacheKey": "vibe2-ollama-v4-${runner.os}-${runner.arch}-qwen3-1.7b",
-      "architectureAwareCache": true
+      "architectureAwareCache": true,
+      "speculativeVariantsPerTask": 1,
+      "speculativeVariantsSuppressed": true,
+      "distinctTaskParallelismPreserved": true,
+      "suppressionReason": "AVOID_DUPLICATE_OLLAMA_WORKERS_FOR_THE_SAME_ASSET_TASK"
     }
   },
   "platformPresentationSeparation": {
@@ -6304,5 +6308,37 @@
       "majorExpansion": "MINIMUM_THREE_CONNECTED_PLAYER_FACING_IMPROVEMENTS_WHEN_APPLICABLE",
       "topologyChange": "NONE"
     }
+  },
+  "menuExperienceDiversityTopology": {
+    "version": 1,
+    "source": "company-learning/vibe-autonomous-content-expansion-policy.json#presentationEvolution.menuExperienceDiversity",
+    "status": "ACTIVE",
+    "executionModel": "RESPONSIBILITY_INSIDE_EXISTING_PRESENTATION_BUILD_UP_NOT_A_NEW_STAGE",
+    "platforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
+    "surfaces": [
+      "MAIN_MENU",
+      "INVENTORY_UI",
+      "SHOP_UI",
+      "CRAFT_UI",
+      "QUEST_UI",
+      "SETTINGS_UI",
+      "RESULT_UI"
+    ],
+    "selectionOwner": "VIBE",
+    "selectionRule": "CHOOSE_ADAPT_OR_HYBRIDIZE_MENU_PATTERN_BY_GAME_GENRE_ACTUAL_SYSTEMS_AND_PLAYER_FLOW",
+    "genericOneTemplateForAllGamesForbidden": true,
+    "colorOrBackgroundOnlyVariationDoesNotCount": true,
+    "projectSpecificPatternAllowed": true,
+    "mobileFirst": true,
+    "existingUiResponsibilityReused": true,
+    "gameplayEconomySaveQuestSemanticsPreserved": true,
+    "newWorkflow": false,
+    "newStage": false,
+    "implementation": "tools/vibe2-auto-planner.mjs::buildAdaptiveGraphicsReplacementContract"
   }
 }

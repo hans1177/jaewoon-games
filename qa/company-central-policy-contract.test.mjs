@@ -12,6 +12,7 @@ const obsoleteAgentsPath=path.join(repoRoot,'AGENTS.md');
 const directive=readJson('company-directive.json');
 const roadmap=readJson('company-learning/platform-release-roadmap.json');
 const architecture=readJson('company-learning/company-architecture-map.json');
+const autonomousExpansionPolicy=readJson('company-learning/vibe-autonomous-content-expansion-policy.json');
 const logMap=readJson('company-learning/company-log-map.json');
 const multimodelWorkflow=readText('.github/workflows/artbook-free-department-bots.yml');
 const designCycle=readText('tools/company-design-cycle.mjs');
@@ -24,6 +25,7 @@ const directorSupervisor=readText('.github/workflows/director-supervisor.yml');
 const coreQaWorkflow=readText('.github/workflows/vibe2-core-qa.yml');
 const vibe24hRunner=readText('.github/workflows/vibe2-24h-runner.yml');
 const vibeContinuousCore=readText('.github/workflows/vibe2-continuous-core.yml');
+const vibeAutoPlanner=readText('tools/vibe2-auto-planner.mjs');
 
 test('platform-release-roadmap is the single machine execution policy source',()=>{
   assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
@@ -1527,6 +1529,9 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(parallel.assetDevelopmentRobloxGeneration.focusedTimeoutMs,120000);
   assert.equal(parallel.assetDevelopmentRobloxGeneration.focusedMaxPredict,768);
   assert.equal(parallel.assetDevelopmentRobloxGeneration.gamePrimaryGenerationPolicyUnchanged,true);
+  assert.equal(parallel.assetDevelopmentSpeculativeVariantsPerTask,1);
+  assert.equal(parallel.assetDevelopmentSpeculativeVariantsSuppressed,true);
+  assert.equal(parallel.assetDevelopmentDistinctTaskParallelismPreserved,true);
   assert.equal(parallel.newTopLevelAssetPipelineCreated,false);
   assert.equal(parallel.newWorkerAuthorityCreated,false);
   assert.equal(parallel.queueMutationAuthorityCreated,false);
@@ -1546,6 +1551,9 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(topology.dedicatedExecution.gamePrimaryRunnerLabel,'ubuntu-latest');
   assert.equal(topology.dedicatedExecution.physicalRunnerPoolSeparated,true);
   assert.equal(topology.dedicatedExecution.robloxGeneration.maxAttempts,3);
+  assert.equal(topology.dedicatedExecution.speculativeVariantsPerTask,1);
+  assert.equal(topology.dedicatedExecution.speculativeVariantsSuppressed,true);
+  assert.equal(topology.dedicatedExecution.distinctTaskParallelismPreserved,true);
   assert.equal(topology.dedicatedExecution.newTopLevelPipeline,false);
   assert.equal(logMap.assetDevelopmentDedicatedLaneEvidence.executionLane,'ASSET_DEVELOPMENT');
   assert.equal(logMap.assetDevelopmentDedicatedLaneEvidence.runnerLabel,'ubuntu-24.04-arm');
@@ -1557,6 +1565,9 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.match(vibe24hRunner,/asset_development_queued == '0'[\s\S]*asset_development_active == '0'/);
   assert.match(vibeContinuousCore,/\n          - asset-development/);
   assert.match(vibeContinuousCore,/asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest'/);
+  assert.match(vibeContinuousCore,/assetLane\?1:requestedVariantCount/);
+  assert.match(vibeContinuousCore,/VIBE2_ASSET_SPECULATIVE_VARIANTS_SUPPRESSED=/);
+  assert.match(vibeContinuousCore,/VIBE2_ASSET_SPECULATIVE_WORKERS_AVOIDED=/);
   const laneIsolation=roadmap.changeRecord.reusableCoreLaneConcurrencyIsolation20260927;
   assert.equal(laneIsolation.fix.workflowCallLaneScope,'RUN_ID_PLUS_EXECUTION_LANE');
   assert.equal(laneIsolation.fix.assetDevelopmentPreserved,true);
@@ -1585,4 +1596,35 @@ test('external AI loss never stops independent Vibe development and resumes from
   assert.equal(architecture.externalAiRules.externalAiUnavailableAction,'VIBE2_VIBE3_SOLO_CONTINUE_SAME_CHECKPOINT');
   assert.equal(architecture.externalAiRules.externalAiAvailabilityMayBlockIndependentVibeWork,false);
   assert.equal(architecture.externalAiRules.externalAiReconnectReplaysCompletedVibeWork,false);
+});
+
+test('menu experience diversity stays inside existing Vibe presentation buildup',()=>{
+  const menu=autonomousExpansionPolicy.presentationEvolution.menuExperienceDiversity;
+  assert.equal(menu.status,'ACTIVE');
+  assert.equal(menu.executionBoundary,'EXISTING_MENU_AND_UI_BUILD_UP_ONLY');
+  assert.deepEqual(menu.runtimePlatforms,['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.deepEqual(menu.surfaces,['MAIN_MENU','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI']);
+  assert.equal(menu.genericOneTemplateForAllGamesForbidden,true);
+  assert.equal(menu.colorOrBackgroundOnlyVariationDoesNotCount,true);
+  assert.equal(menu.gameAndGenreContextRequired,true);
+  assert.equal(menu.chooseAdaptOrHybridizePatternFamilies,true);
+  assert.equal(menu.projectSpecificPatternAllowed,true);
+  assert.equal(menu.mobileFirst.touchTargetMinimumPx,44);
+  assert.equal(menu.preservation.inventMissingGameplaySystemOnlyToFillMenuForbidden,true);
+  assert.ok(menu.patternFamilies.MAIN_MENU.includes('CINEMATIC_HERO'));
+  assert.ok(menu.patternFamilies.INVENTORY_UI.includes('QUICKSLOT_FIRST'));
+  assert.ok(menu.patternFamilies.SHOP_UI.includes('MERCHANT_CONTEXT'));
+  assert.ok(menu.patternFamilies.CRAFT_UI.includes('STATION_CONTEXT'));
+  assert.ok(menu.patternFamilies.QUEST_UI.includes('JOURNAL_CHAIN'));
+  assert.ok(menu.patternFamilies.SETTINGS_UI.includes('ACCESSIBILITY_FIRST'));
+  assert.ok(menu.patternFamilies.RESULT_UI.includes('NEXT_OBJECTIVE'));
+  const topology=architecture.menuExperienceDiversityTopology;
+  assert.equal(topology.executionModel,'RESPONSIBILITY_INSIDE_EXISTING_PRESENTATION_BUILD_UP_NOT_A_NEW_STAGE');
+  assert.equal(topology.genericOneTemplateForAllGamesForbidden,true);
+  assert.equal(topology.colorOrBackgroundOnlyVariationDoesNotCount,true);
+  assert.equal(topology.newWorkflow,false);
+  assert.equal(topology.newStage,false);
+  assert.match(vibeAutoPlanner,/MENU_EXPERIENCE_SURFACES/);
+  assert.match(vibeAutoPlanner,/menu-experience-diversity:v1/);
+  assert.match(vibeAutoPlanner,/메인메뉴·인벤토리·상점·제작·퀘스트·설정·결과창/);
 });

@@ -1,5 +1,5 @@
 {
-  "version": 475,
+  "version": 476,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9858,6 +9858,34 @@
       "newWorkerAuthorityCreated": false,
       "gamePrimaryWorkerPolicyUnchanged": true,
       "qaSecurityReleaseGatesUnchanged": true
+    },
+    "assetDevelopmentSpeculativeVariantSuppression20260927": {
+      "id": "ASSET_DEVELOPMENT_SPECULATIVE_VARIANT_SUPPRESSION_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism",
+      "status": "ACTIVE",
+      "objective": "REDUCE_ARM_OLLAMA_QUEUE_PRESSURE_BY_RUNNING_ONE_MODEL_WORKER_PER_ASSET_TASK_WHILE_KEEPING_DISTINCT_ASSET_TASKS_PARALLEL",
+      "executionLane": "ASSET_DEVELOPMENT",
+      "speculativeVariantsPerTask": 1,
+      "distinctAssetTaskParallelismPreserved": true,
+      "existingCanonicalQueuePreserved": true,
+      "existingContinuousCorePreserved": true,
+      "newQueueOrPipelineCreated": false,
+      "gamePrimarySpeculativePolicyUnchanged": true
+    },
+    "menuExperienceDiversity20260927": {
+      "id": "MENU_EXPERIENCE_DIVERSITY_2026-09-27",
+      "authority": "company-learning/vibe-autonomous-content-expansion-policy.json#presentationEvolution.menuExperienceDiversity",
+      "status": "ACTIVE",
+      "objective": "LET_VIBE_CREATE_GAME_AND_GENRE_SPECIFIC_MAIN_INVENTORY_SHOP_CRAFT_QUEST_SETTINGS_AND_RESULT_MENU_EXPERIENCES_INSIDE_EXISTING_PRESENTATION_BUILD_UP",
+      "runtimePlatforms": [
+        "WEB",
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "genericOneTemplateForAllGamesForbidden": true,
+      "newWorkflowOrStageCreated": false,
+      "gameplayEconomySaveQuestSemanticsPreserved": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -15542,7 +15570,11 @@
       "assetDevelopmentReserveRunner": "ubuntu-24.04-arm",
       "assetDevelopmentModelCacheRunner": "ubuntu-24.04-arm",
       "assetDevelopmentOllamaCacheKey": "vibe2-ollama-v4-${runner.os}-${runner.arch}-qwen3-1.7b",
-      "assetDevelopmentArchitectureAwareCache": true
+      "assetDevelopmentArchitectureAwareCache": true,
+      "assetDevelopmentSpeculativeVariantsPerTask": 1,
+      "assetDevelopmentSpeculativeVariantsSuppressed": true,
+      "assetDevelopmentDistinctTaskParallelismPreserved": true,
+      "assetDevelopmentSpeculativeSuppressionReason": "AVOID_DUPLICATE_OLLAMA_WORKERS_FOR_THE_SAME_ASSET_TASK_WHILE_PRESERVING_PARALLEL_DISTINCT_ASSET_TASKS"
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",

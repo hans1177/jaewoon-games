@@ -554,9 +554,13 @@ jobs:
           const safe=value=>String(value||'task').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'task';
           const pressureRefillEligible=String(process.env.VIBE2_EXECUTION_LANE||'').toLowerCase()==='game-primary';
           let pressureRefillLeaderAssigned=false;
+          let suppressedSpeculativeWorkers=0;
+          const assetLane=String(process.env.VIBE2_EXECUTION_LANE||'').toLowerCase()==='asset-development';
           for(const row of batch.matrix||[]){
             const safeTask=safe(row.taskId);
-            const variantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
+            const requestedVariantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
+            const variantCount=assetLane?1:requestedVariantCount;
+            if(assetLane)suppressedSpeculativeWorkers+=Math.max(0,requestedVariantCount-1);
             const shared={taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256),expectedVariants:variantCount};
             const pressureRefillLeader=pressureRefillEligible&&!pressureRefillLeaderAssigned;
             workers.push({...shared,variant:'primary',pressureRefillLeader});
@@ -572,7 +576,9 @@ jobs:
           console.log(`VIBE2_RESERVED_TASK_COUNT=${(batch.matrix||[]).length}`);
           console.log(`VIBE2_PRIMARY_TASK_COUNT=${Number(batch.scheduler?.primaryTaskCount||(batch.matrix||[]).length)}`);
           console.log(`VIBE2_SPECULATIVE_WORKER_COUNT=${Math.max(0,workers.length-Number(batch.scheduler?.primaryTaskCount||(batch.matrix||[]).length))}`);
-          console.log(`VIBE2_SPECULATIVE_EXPANSION=${batch.scheduler?.speculativeExpansionAllowed===false?'SUPPRESSED_RUNNER_PRESSURE':'ENABLED'}`);
+          console.log(`VIBE2_ASSET_SPECULATIVE_VARIANTS_SUPPRESSED=${assetLane?'YES':'NO'}`);
+          console.log(`VIBE2_ASSET_SPECULATIVE_WORKERS_AVOIDED=${suppressedSpeculativeWorkers}`);
+          console.log(`VIBE2_SPECULATIVE_EXPANSION=${assetLane?'SUPPRESSED_ASSET_OLLAMA_DUPLICATION':(batch.scheduler?.speculativeExpansionAllowed===false?'SUPPRESSED_RUNNER_PRESSURE':'ENABLED')}`);
           console.log(`VIBE2_SPECULATIVE_EXPANSION_REASON=${String(batch.scheduler?.speculativeExpansionReason||'AVAILABLE')}`);
           console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
           NODE
