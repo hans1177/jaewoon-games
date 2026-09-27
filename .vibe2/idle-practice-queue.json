@@ -1661,7 +1661,7 @@
       ]
     },
     {
-      "id": "gap-camera_language-l3",
+      "id": "gap-camera_language-l4",
       "kind": "CAMERA_LANGUAGE_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -1711,26 +1711,6 @@
       ]
     },
     {
-      "id": "gap-vfx-l7",
-      "kind": "VFX_READABILITY_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "VFX"
-      ]
-    },
-    {
-      "id": "gap-visual_identity-l7",
-      "kind": "GAME_VISUAL_DNA_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "VISUAL_IDENTITY"
-      ]
-    },
-    {
       "id": "gap-save-l8",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1741,13 +1721,23 @@
       ]
     },
     {
-      "id": "gap-unity_runtime-l9",
-      "kind": "UNITY_NATIVE_DRILL",
+      "id": "gap-vfx-l8",
+      "kind": "VFX_READABILITY_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "UNITY_RUNTIME"
+        "VFX"
+      ]
+    },
+    {
+      "id": "gap-visual_identity-l8",
+      "kind": "GAME_VISUAL_DNA_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "VISUAL_IDENTITY"
       ]
     },
     {
@@ -1761,13 +1751,13 @@
       ]
     },
     {
-      "id": "gap-roblox_studio-l10",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "id": "gap-unity_runtime-l10",
+      "kind": "UNITY_NATIVE_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "ROBLOX_STUDIO"
+        "UNITY_RUNTIME"
       ]
     },
     {
@@ -1778,6 +1768,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "ASSET_PRODUCTION"
+      ]
+    },
+    {
+      "id": "gap-roblox_studio-l11",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROBLOX_STUDIO"
       ]
     },
     {
@@ -1798,16 +1798,6 @@
       "countsAsProductionPass": false,
       "domains": [
         "ECONOMY"
-      ]
-    },
-    {
-      "id": "gap-ui_state-l12",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "UI_STATE"
       ]
     },
     {
@@ -1841,6 +1831,16 @@
       ]
     },
     {
+      "id": "gap-ui_state-l13",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "UI_STATE"
+      ]
+    },
+    {
       "id": "gap-animation_feel-l14",
       "kind": "ANIMATION_FEEL_DRILL",
       "priority": "low",
@@ -1861,7 +1861,7 @@
       ]
     },
     {
-      "id": "gap-quest_design-l14",
+      "id": "gap-quest_design-l15",
       "kind": "QUEST_CAUSALITY_DRILL",
       "priority": "low",
       "productionPreemptible": true,
