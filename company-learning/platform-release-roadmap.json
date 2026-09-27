@@ -8779,7 +8779,9 @@
       ],
       "vibe2Reserve": "ubuntu-slim",
       "vibe2FanIn": "ubuntu-24.04-arm",
-      "directorRunnerDrain": "ubuntu-slim"
+      "directorRunnerDrain": "ubuntu-slim",
+      "robloxSourcePlanExactGameRunner": "ubuntu-24.04-arm",
+      "robloxSourcePlanBatchRunner": "ubuntu-24.04"
     },
     "lightweightGameIngressRunnerRelief20260927": {
       "id": "LIGHTWEIGHT_GAME_INGRESS_RUNNER_RELIEF_2026-09-27",
@@ -8852,13 +8854,15 @@
       "robloxSourcePlanCriticalIngressException": {
         "workflow": ".github/workflows/company-development-roblox-runtime.yml::source-plan",
         "previousRunner": "ubuntu-slim",
-        "runner": "ubuntu-24.04",
-        "reason": "LIVE_SLIM_CONTROL_QUEUE_DELAY_AFTER_DIRECTOR_DRAIN_SUCCEEDED_ON_FIXED_2404",
+        "runner": "SPLIT_EXACT_ARM_BATCH_FIXED_2404",
+        "reason": "EXACT_GAME_FANOUT_PRESSURE_ON_FIXED_2404_WITH_CANONICAL_GAME_CONTROL_ARM_AVAILABLE",
         "centralNativePlanRemains": "ubuntu-slim",
         "unityPrepareRemains": "ubuntu-slim",
         "vibeReserveRemains": "ubuntu-slim",
         "heavyExecutionUnchanged": "ubuntu-latest",
-        "technicalPlanUnchanged": "ubuntu-24.04-arm"
+        "technicalPlanUnchanged": "ubuntu-24.04-arm",
+        "exactGameRunner": "ubuntu-24.04-arm",
+        "batchRunner": "ubuntu-24.04"
       }
     },
     "homepageRunnerIsolation20260926": {
@@ -9435,7 +9439,7 @@
       "id": "ROBLOX_SOURCE_PLAN_WAKE_AND_RUNNER_ISOLATION_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
       "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
-      "objective": "WAKE_ROBLOX_SOURCE_PLAN_IMMEDIATELY_FOR_EVERY_SOURCE_PLAN_CONTRACT_CHANGE_AND_REMOVE_CRITICAL_INGRESS_DEPENDENCY_ON_THE_SATURATED_ADMINISTRATIVE_SLIM_POOL",
+      "objective": "WAKE_ROBLOX_SOURCE_PLAN_IMMEDIATELY_AND_SPREAD_EXACT_GAME_INGRESS_TO_ARM_WHILE_KEEPING_BATCH_PUSH_INGRESS_ON_FIXED_2404_WITHOUT_TOUCHING_HEAVY_GAME_CAPACITY",
       "observedEvidence": {
         "directorDrainRunId": 36290168197,
         "directorDrainSucceededOnFixed2404": true,
@@ -9443,7 +9447,7 @@
         "sourcePlanContractIncludedRoadmapWithoutPushWake": true,
         "staleBatchWouldOtherwiseNeed_TO_RUN_BEFORE_REDISPATCH": true
       },
-      "sourcePlanRunner": "ubuntu-24.04",
+      "sourcePlanRunner": "EXACT_GAME=ubuntu-24.04-arm;BATCH=ubuntu-24.04",
       "previousSourcePlanRunner": "ubuntu-slim",
       "technicalPlanRunnerUnchanged": "ubuntu-24.04-arm",
       "heavyExecutionRunnerUnchanged": "ubuntu-latest",
@@ -9461,7 +9465,12 @@
       "exactSourceBindingPreserved": true,
       "currentArtifactBindingRequired": true,
       "activeGameCancellationForbidden": true,
-      "qualitySecurityReleaseGatesUnchanged": true
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "sourcePlanExactGameRunner": "ubuntu-24.04-arm",
+      "sourcePlanBatchRunner": "ubuntu-24.04",
+      "runnerRoutingReason": "CURRENT_EXACT_GAME_FANOUT_SATURATED_FIXED_2404_WHILE_ARM_IS_THE_CANONICAL_GAME_CONTROL_POOL",
+      "exactGameParallelismPreserved": true,
+      "batchFreshnessGuardPreserved": true
     },
     "concurrentPlatformSharedProgressMonotonicity20260927": {
       "id": "CONCURRENT_PLATFORM_SHARED_PROGRESS_MONOTONICITY_2026-09-27",
