@@ -3618,4 +3618,5 @@ test('focused replace Ollama requests keep canonical budget and enforce one-key 
   assert.ok(source.includes("focusedReplaceOnly?0.08"));
   assert.ok(source.includes("completionMode==='JSON_REPLACE_ONLY'?{type:'object',properties:{replace:{type:'string'}},required:['replace'],additionalProperties:false}:(/^JSON_/.test(completionMode)?'json':null)"));
   assert.ok(source.includes("...(format?{format}:{}),options"));
+  assert.ok(source.includes("VIBE2_FOCUSED_REPLACE_SCHEMA=ONE_KEY_REPLACE"));
 });
