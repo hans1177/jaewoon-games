@@ -5000,7 +5000,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-27T00:28:34.113Z",
+      "updatedAt": "2026-09-27T00:40:44.295Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -5016,20 +5016,21 @@
       "robloxBuildArtifactIdentity": "sha256:b9561e92843a02f6c0482096750686005cb50a4a8613a6d5dfc96cc912774e5d",
       "robloxBuildPassedAt": "2026-09-26T17:35:04.080Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-09-26T17:35:04.080Z",
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-09-27T00:40:44.295Z",
+      "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "monster-adventure",
-        "pass": false,
-        "state": "BLOCKED",
-        "checkedAt": "2026-09-26T17:23:48.211Z",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-09-27T00:40:20.100Z",
+        "sourceRevision": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
+        "artifactIdentity": "sha256:b9561e92843a02f6c0482096750686005cb50a4a8613a6d5dfc96cc912774e5d",
+        "secondaryOwnerFocus": false,
         "facts": {
-          "pass": false,
-          "blockers": [
-            "roblox-platform-required"
-          ],
+          "pass": true,
+          "blockers": [],
           "leads": {
             "planning": "llama3.2:1b",
             "graphics": "llama3.2:1b",
@@ -5040,6 +5041,9 @@
           "sharedModel": "llama3.2:1b",
           "distinctLeadCount": 1,
           "secondaryOwnerFocus": false,
+          "robloxLaneEligible": true,
+          "directRoblox": false,
+          "concurrentRoblox": true,
           "build": {
             "sourceRevision": "1389a2ca589005149b7786b3fb84baeea3b53ad0",
             "artifactIdentity": "sha256:b9561e92843a02f6c0482096750686005cb50a4a8613a6d5dfc96cc912774e5d",
@@ -5052,10 +5056,16 @@
             "buildOrPackagePassed": true
           }
         },
-        "leadReviews": [],
-        "blockers": [
-          "roblox-platform-required"
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "llama3.2:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blockers found."
+          }
         ],
+        "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
       "robloxFoundationF0Passed": false,
@@ -5094,11 +5104,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
+      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureStage": "F0_SOURCE_INTEGRITY",
+      "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_PENDING",
       "routingBlockers": [
-        "roblox-build-preflight-blocked"
+        "roblox-f0-source-preflight-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -8726,7 +8736,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T00:40:35.411Z",
+  "updatedAt": "2026-09-27T00:40:44.295Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
