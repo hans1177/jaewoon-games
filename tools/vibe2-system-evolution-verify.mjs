@@ -8,8 +8,9 @@ const clean=v=>String(v??'').trim();
 const posix=v=>clean(v).replaceAll('\\','/').replace(/^\.\//,'');
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const GIT_SHOW_MAX_BUFFER=8*1024*1024;
 function gitShowJson(root,ref,file){
-  return JSON.parse(execFileSync('git',['show',`${ref}:${file}`],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe']}));
+  return JSON.parse(execFileSync('git',['show',`${ref}:${file}`],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe'],maxBuffer:GIT_SHOW_MAX_BUFFER}));
 }
 function roadmapInvariantProjection(p={}){
   const d=p?.developmentLifecycleMachine||{},s=d?.sharedWorkerContext||{},r=d?.selfRecoveryAndBottleneckRelief||{};
