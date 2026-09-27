@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-17d8x71",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/shared/QACamera.luau",
-        "roblox-games/horror-escape-room/shared/VisualStyle.luau"
-      ],
-      "baseSha": "352cd25bf6280c47211a63bfc3e57519a984640e",
-      "acquiredAt": "2026-09-27T22:41:33.949Z",
-      "expiresAt": "2026-09-27T23:26:33.949Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-13849dv",
       "worker": "vibe2",
       "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1",
@@ -799,6 +781,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1r66ogi",
+      "worker": "vibe2",
+      "taskId": "bug-defense-roblox-presentation-asset-adaptation-v1",
+      "gameId": "bug-defense",
+      "files": [
+        "roblox-games/bug-defense/client/Game.client.luau",
+        "roblox-games/bug-defense/server/Game.server.luau",
+        "roblox-games/bug-defense/shared/GameConfig.luau"
+      ],
+      "baseSha": "4c21c3495a2225a6a0458511999afa03ace4f92d",
+      "acquiredAt": "2026-09-27T23:27:05.491Z",
+      "expiresAt": "2026-09-28T00:12:05.491Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:bug-defense-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
