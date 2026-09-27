@@ -1513,6 +1513,15 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(parallel.assetDevelopmentUsesExistingCanonicalQueue,true);
   assert.equal(parallel.assetDevelopmentUsesExistingContinuousCore,true);
   assert.equal(parallel.assetDevelopmentDedicatedRunner,true);
+  assert.equal(parallel.assetDevelopmentRunnerLabel,'ubuntu-24.04-arm');
+  assert.equal(parallel.gamePrimaryRunnerLabel,'ubuntu-latest');
+  assert.equal(parallel.assetDevelopmentPhysicalRunnerPoolSeparated,true);
+  assert.deepEqual(parallel.assetDevelopmentOllamaArchitectures,['X64','ARM64']);
+  assert.equal(parallel.assetDevelopmentRobloxGeneration.mode,'BOUNDED_FOCUSED_EXACT_ANCHOR');
+  assert.equal(parallel.assetDevelopmentRobloxGeneration.maxAttempts,3);
+  assert.equal(parallel.assetDevelopmentRobloxGeneration.focusedTimeoutMs,120000);
+  assert.equal(parallel.assetDevelopmentRobloxGeneration.focusedMaxPredict,768);
+  assert.equal(parallel.assetDevelopmentRobloxGeneration.gamePrimaryGenerationPolicyUnchanged,true);
   assert.equal(parallel.newTopLevelAssetPipelineCreated,false);
   assert.equal(parallel.newWorkerAuthorityCreated,false);
   assert.equal(parallel.queueMutationAuthorityCreated,false);
@@ -1524,12 +1533,38 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
     'CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'
   ]);
   assert.equal(topology.dedicatedExecution.lane,'ASSET_DEVELOPMENT');
+  assert.equal(topology.dedicatedExecution.runnerLabel,'ubuntu-24.04-arm');
+  assert.equal(topology.dedicatedExecution.gamePrimaryRunnerLabel,'ubuntu-latest');
+  assert.equal(topology.dedicatedExecution.physicalRunnerPoolSeparated,true);
+  assert.equal(topology.dedicatedExecution.robloxGeneration.maxAttempts,3);
   assert.equal(topology.dedicatedExecution.newTopLevelPipeline,false);
   assert.equal(logMap.assetDevelopmentDedicatedLaneEvidence.executionLane,'ASSET_DEVELOPMENT');
+  assert.equal(logMap.assetDevelopmentDedicatedLaneEvidence.runnerLabel,'ubuntu-24.04-arm');
+  assert.equal(logMap.assetDevelopmentDedicatedLaneEvidence.physicalRunnerPoolSeparated,true);
   assert.match(vibe24hRunner,/asset_development:[\s\S]*execution_lane: asset-development[\s\S]*lane_max: '64'/);
   assert.match(vibe24hRunner,/VIBE2_ASSET_DEVELOPMENT_QUEUED=/);
   assert.match(vibe24hRunner,/VIBE2_ASSET_DEVELOPMENT_ACTIVE=/);
   assert.match(vibe24hRunner,/game_study:[\s\S]*needs: \[plan, continuous, asset_development, learning_idle\]/);
   assert.match(vibe24hRunner,/asset_development_queued == '0'[\s\S]*asset_development_active == '0'/);
   assert.match(vibeContinuousCore,/\n          - asset-development/);
+  assert.match(vibeContinuousCore,/asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest'/);
+});
+
+test('external AI loss never stops independent Vibe development and resumes from the same checkpoint',()=>{
+  const continuity=roadmap.developmentLifecycleMachine.modelQuotaContinuity.providerFailureSubstitution;
+  const authority=roadmap.developmentLifecycleMachine.gameDevelopmentAuthority.externalAiContinuity;
+  assert.equal(continuity.version,2);
+  assert.ok(continuity.externalAiDisconnectSignals.includes('CONNECTION_LOST'));
+  assert.ok(continuity.externalAiDisconnectSignals.includes('PROVIDER_UNAVAILABLE'));
+  assert.equal(continuity.externalAiUnavailableAction,'CONTINUE_SAME_CHECKPOINT_WITH_VIBE2_VIBE3_ONLY');
+  assert.equal(continuity.externalAiAvailabilityMayBlockVibeDevelopment,false);
+  assert.equal(continuity.externalAiReconnectAction,'OPTIONAL_REJOIN_FUTURE_ELIGIBLE_WORK_WITHOUT_REPLAYING_COMPLETED_VIBE_WORK');
+  assert.equal(authority.collaborationOptionalForContinuation,true);
+  assert.equal(authority.unavailableAction,'VIBE2_VIBE3_SOLO_CONTINUE_SAME_CHECKPOINT');
+  assert.equal(authority.independentVibeWorkWaitStateForbidden,true);
+  assert.equal(authority.preserveCheckpoint,true);
+  assert.equal(authority.replayCompletedVibeWorkOnReconnect,false);
+  assert.equal(architecture.externalAiRules.externalAiUnavailableAction,'VIBE2_VIBE3_SOLO_CONTINUE_SAME_CHECKPOINT');
+  assert.equal(architecture.externalAiRules.externalAiAvailabilityMayBlockIndependentVibeWork,false);
+  assert.equal(architecture.externalAiRules.externalAiReconnectReplaysCompletedVibeWork,false);
 });

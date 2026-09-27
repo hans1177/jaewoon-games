@@ -236,6 +236,47 @@ test('Roblox full graphics first source-worker attempt completes as a full packa
   assert.match(candidate,/weapon\.Orientation\s*=/);
 });
 
+test('asset-development Roblox graphics starts with bounded focused local-model generation',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local score = 0',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    'return score'
+  ].join('\n')+'\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${relative}`],taskId:'asset-development-focused-graphics'});
+  workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve full Roblox graphics and native motion without changing gameplay';
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  const focused=path.join(cwd,'asset-focused.json');
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(focused,JSON.stringify({replace:robloxFullGraphicsMotionPatch('96,126,164')}));
+
+  const previousLane=process.env.VIBE2_EXECUTION_LANE;
+  process.env.VIBE2_EXECUTION_LANE='asset-development';
+  try{
+    const result=await runVibe2SourceWorker({cwd,responseFiles:[focused]});
+    assert.equal(result.generation.attempts,1);
+    assert.equal(result.generation.baseAttemptBudget,3);
+    assert.equal(result.generation.effectiveAttemptBudget,3);
+    assert.equal(result.generation.focusedReplaceOnly,true);
+    assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
+    assert.equal(result.generation.maxPredict,768);
+    assert.equal(result.generation.timeoutMs,120000);
+    assert.equal(result.generation.contextWindow,8192);
+    assert.equal(result.presentationCandidateDelta.pass,true);
+    const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+    assert.match(candidate,/EnemyBody/);
+    assert.match(candidate,/SwordEquipment/);
+    assert.match(candidate,/TerrainRockEnvironment/);
+    assert.match(candidate,/RenderStepped/);
+  }finally{
+    if(previousLane===undefined)delete process.env.VIBE2_EXECUTION_LANE;
+    else process.env.VIBE2_EXECUTION_LANE=previousLane;
+  }
+});
+
 test('Roblox full graphics keeps package mode after repeated no-op failures',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/demo';
@@ -2533,7 +2574,7 @@ test('zero-output timeout keeps focused recovery enabled for studio build-up',()
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/const zeroOutputTimeoutRecovery=!allowFullRewrite/);
   assert.match(workerSource,/&&\s*!zeroOutputTimeoutRecovery\b/);
-  assert.match(workerSource,/\(!studioExpansion\|\|zeroOutputTimeoutRecovery\|\|robloxZeroOutputTimeoutFocusedRecoveryActive\)/);
+  assert.match(workerSource,/\(!studioExpansion\|\|zeroOutputTimeoutRecovery\|\|robloxZeroOutputTimeoutFocusedRecoveryActive\|\|assetDevelopmentFocusedGraphics\)/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY/);
 });
 
@@ -3579,20 +3620,18 @@ test('focused replace-only compacts build-up directive without losing exact goal
   assert.ok(Buffer.byteLength(focused.prompt,'utf8')<Buffer.byteLength(prompt,'utf8'));
 });
 
-test('Roblox zero-output timeout escalates from focused recovery to the full graphics package when the focused candidate fails visual-domain quality',()=>{
+test('asset-development Roblox graphics stays on bounded focused retries while game-primary keeps existing escalation',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
-  assert.match(source,/let robloxZeroOutputTimeoutFocusedRecoveryActive=false/);
-  assert.match(source,/let robloxTimeoutRecoveryEscalatedFullGraphics=false/);
-  assert.match(source,/const zeroOutputTimeoutRecovery=!allowFullRewrite[\s\S]*?priorFailureClass==='TIMEOUT'[\s\S]*?!clean\(lastRaw\)/);
-  assert.match(source,/robloxAssetAdaptationTask&&zeroOutputTimeoutRecovery\)robloxZeroOutputTimeoutFocusedRecoveryActive=true/);
-  assert.match(source,/robloxTimeoutFocusedRecoveryNeedsPackage[\s\S]*?PRESENTATION_PATCH_DELTA[\s\S]*?ROBLOX_VISUAL_DOMAINS[\s\S]*?ROBLOX_VISUAL_MOTION/);
-  assert.match(source,/robloxZeroOutputTimeoutFocusedRecoveryActive=false;[\s\S]*?robloxFullGraphicsPackageActive=true;[\s\S]*?robloxTimeoutRecoveryEscalatedFullGraphics=true/);
+  assert.match(source,/const assetDevelopmentLane=clean\(process\.env\.VIBE2_EXECUTION_LANE\)\.toLowerCase\(\)==='asset-development'/);
+  assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS=3/);
+  assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS=120000/);
+  assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT=768/);
+  assert.match(source,/ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=8192/);
+  assert.match(source,/robloxTimeoutFocusedRecoveryNeedsPackage=robloxAssetAdaptationTask[\s\S]*?&&!assetDevelopmentLane/);
+  assert.match(source,/robloxFullGraphicsPackageRecovery=robloxAssetAdaptationTask[\s\S]*?&&!assetDevelopmentLane/);
+  assert.match(source,/const assetDevelopmentFocusedGraphics=assetDevelopmentLane&&robloxAssetAdaptationTask/);
+  assert.match(source,/assetDevelopmentFocusedGraphics\|\|attempt>=3/);
   assert.match(source,/VIBE2_ROBLOX_TIMEOUT_RECOVERY_ESCALATE_FULL_GRAPHICS/);
-  assert.match(source,/robloxTimeoutRecoveryEscalatedFullGraphics:generation\.robloxTimeoutRecoveryEscalatedFullGraphics===true/);
-  assert.match(source,/ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES\.has\(priorFailureClass\)[\s\S]*?&&!zeroOutputTimeoutRecovery[\s\S]*?&&!robloxZeroOutputTimeoutFocusedRecoveryActive/);
-  assert.match(source,/JSON_FOCUSED_REPLACE_TIMEOUT_MS=90000/);
-  assert.match(source,/JSON_FOCUSED_REPLACE_MAX_PREDICT=384/);
-  assert.match(source,/JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192/);
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   assert.match(workflow,/coding-roblox-zero-timeout-focused-recovery:YES/);
   assert.match(workflow,/coding-roblox-timeout-recovery-escalated-full-graphics:YES/);
