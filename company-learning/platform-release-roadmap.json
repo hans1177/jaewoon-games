@@ -1,5 +1,5 @@
 {
-  "version": 489,
+  "version": 490,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -5161,13 +5161,12 @@
           "appliesWhenGameDesignRequiresMultiplayer": true,
           "minimumInternalEvidence": [
             "F0_MULTIPLAYER_STATE_SYNC_CONTRACT_PASS",
-            "ACTUAL_RUNTIME_FOUNDATION_F1_THROUGH_F6_AND_F8_PASS",
-            "SERVER_CLIENT_BOUNDARY_PASS",
-            "SAVE_REJOIN_PASS_WHEN_SAVE_EXISTS",
+            "SERVER_CLIENT_BOUNDARY_STATIC_PASS",
+            "EXACT_INTERNAL_STUDIO_RUNTIME_PASS",
             "NO_CURRENT_CRITICAL_OR_HIGH_MULTIPLAYER_FAILURE"
           ],
           "actualTwoPlusClientPlatformObservationRequiredForInternalRelease": false,
-          "simplifiedPassMayClaimFullMultiplayerQa": true,
+          "simplifiedPassMayClaimFullMultiplayerQa": false,
           "simplifiedPassMayClaimPublicReleaseReady": true,
           "fullTwoPlusClientPlatformEvidenceStillRequiredBeforeExternalPublicRelease": false,
           "recurringFullMultiplayerVerificationContinuesAfterInternalRelease": false,
@@ -5175,7 +5174,8 @@
           "sameExactProofReusedForF7F9InternalAndPublic": true,
           "externalPublicServerMultiplayerObservationRequired": false,
           "duplicatePublicMultiplayerVerificationForbidden": true,
-          "extendedMultiplayerLifecycleOnlyWhenCausallyRequiredByFailure": true
+          "extendedMultiplayerLifecycleOnlyWhenCausallyRequiredByFailure": true,
+          "routineTwoClientLifecycleRequired": false
         }
       },
       "secondGate": {
@@ -6034,19 +6034,22 @@
           "name": "MULTIPLAYER_FOUNDATION",
           "alwaysRequired": false,
           "checks": [
-            "MINIMUM_TWO_PARTICIPANTS_SAME_SERVER",
-            "ONE_AUTHORITATIVE_SHARED_STATE_BROADCAST",
-            "CLIENT_MULTIPLAYER_SYNC_HANDLER_CONTRACT"
+            "MULTIPLAYER_STATE_SYNC_STATIC_CONTRACT_WHEN_APPLICABLE",
+            "SERVER_CLIENT_AUTHORITY_CONTRACT_WHEN_APPLICABLE",
+            "EXACT_INTERNAL_STUDIO_RUNTIME_SESSION_WHEN_APPLICABLE"
           ],
-          "evidenceAuthority": "INTERNAL_TWO_PARTICIPANT_SYNC_WHEN_APPLICABLE_PLUS_STATIC_AUTHORITY_CONTRACT",
-          "releaseGateMode": "TWO_CLIENT_ONE_SYNC",
+          "evidenceAuthority": "EXACT_F0_MULTIPLAYER_SYNC_CONTRACT_PLUS_SAME_EXACT_INTERNAL_STUDIO_RUNTIME",
+          "releaseGateMode": "INTERNAL_SYNC_CONTRACT_PLUS_STUDIO_RUNTIME",
           "repeatDuplicateCheckForbidden": true,
           "sameSessionEvidenceAllowed": true,
           "newRuntimeSessionRequired": false,
           "applicability": "MULTIPLAYER_ONLY",
           "nonMultiplayerResult": "NOT_APPLICABLE",
           "singleExactProofPerCycle": true,
-          "duplicateF9OrPublicRecheckForbidden": true
+          "duplicateF9OrPublicRecheckForbidden": true,
+          "minimumTwoParticipantsRequiredForRoutineCycle": false,
+          "extendedTwoClientLifecycleOnlyOnCausalFailure": true,
+          "externalServerRequired": false
         },
         {
           "id": "F8",
@@ -6186,11 +6189,11 @@
           "successfulGameStateTransitionRequired": true
         },
         "multiplayerReleaseProof": {
-          "version": 2,
-          "mode": "TWO_CLIENT_ONE_SYNC",
-          "minimumParticipants": 2,
-          "sameServerRequired": true,
-          "actualRuntimeCheckpoint": "MULTIPLAYER_SYNC",
+          "version": 3,
+          "mode": "INTERNAL_SYNC_CONTRACT_PLUS_EXACT_STUDIO_RUNTIME",
+          "minimumParticipants": null,
+          "sameServerRequired": false,
+          "actualRuntimeCheckpoint": "INTERNAL_STUDIO_RUNTIME_PLUS_STATIC_SYNC_CONTRACT",
           "participantCountField": "participantCount",
           "minimumParticipantCount": 2,
           "authoritativeBroadcastEvent": "MULTIPLAYER_SYNC",
@@ -6215,7 +6218,11 @@
           "nonMultiplayerResult": "NOT_APPLICABLE",
           "internalEvidenceAuthority": "OFFICIAL_STUDIO_MCP_LOCAL_MULTIPLAYER_OR_EXISTING_INTERNAL_MULTIPLAYER_EXECUTOR",
           "sameProofReusedForF9AndReleaseReadiness": true,
-          "externalPublicServerRequired": false
+          "externalPublicServerRequired": false,
+          "headlessContractPlusStudioRuntimeSufficient": true,
+          "twoClientProofRequiredForRoutineGate": false,
+          "joinLeaveRejoinLateJoinRequiredForRoutineReleaseGate": false,
+          "extendedTwoClientLifecycleOnlyOnCausalFailure": true
         },
         "externalServerBootRequiredForInternalRelease": false
       },
