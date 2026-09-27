@@ -3,42 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1xlpz0m",
-      "worker": "vibe2",
-      "taskId": "cozy-island-unity-web-base-implementation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "unity-games/cozy-island/Assets/Scripts/GameCore.cs",
-        "unity-games/cozy-island/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T02:46:54.440Z",
-      "expiresAt": "2026-09-27T03:31:54.440Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1syi07f",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T02:47:09.282Z",
-      "expiresAt": "2026-09-27T03:32:09.282Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-a7m0ea",
       "worker": "vibe2",
       "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1",
@@ -695,6 +659,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:bug-defense-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-196a12",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-studio-evolution-unity-web-usability-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "unity-games/amusement-tycoon/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/amusement-tycoon/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "af46e74c9ade8f4af412a18f175596ab9d3ba7b8",
+      "acquiredAt": "2026-09-27T03:32:29.638Z",
+      "expiresAt": "2026-09-27T04:17:29.638Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
