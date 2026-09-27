@@ -335,6 +335,68 @@ function presentationSourceText(root, changed = []) {
 function patternHits(text='',patterns=[]){
   return patterns.reduce((count,re)=>count+(re.test(text)?1:0),0);
 }
+function sameStringSet(a=[],b=[]){
+  const aa=[...new Set(a.map(clean).filter(Boolean))].sort();
+  const bb=[...new Set(b.map(clean).filter(Boolean))].sort();
+  return aa.length===bb.length&&aa.every((value,index)=>value===bb[index]);
+}
+function graphicsEvidenceLooksLikeSource(value=''){
+  const text=String(value??'').trim();
+  if(text.length<6)return false;
+  const meaningful=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).filter(line=>!^(?:\/\/|--|\/\*|\*|<!--)/.test(line));
+  return meaningful.length>0&&/[A-Za-z0-9_$.[\](){}:=<>-]/.test(meaningful.join(' '));
+}
+function runGraphicsReplacementGroundingQa({root,data={},changed=[]}={}){
+  const presentation=presentationContract(data);
+  const contract=presentation?.graphicsReplacement&&typeof presentation.graphicsReplacement==='object'?presentation.graphicsReplacement:null;
+  if(!contract||contract.required!==true)return{status:'NOT_REQUIRED',required:false,actualCount:0,groundedCount:0,checks:[],authorityExpanded:false};
+  const report=data?.graphicsReplacementReport&&typeof data.graphicsReplacementReport==='object'?data.graphicsReplacementReport:null;
+  const validation=data?.graphicsReplacementValidation&&typeof data.graphicsReplacementValidation==='object'?data.graphicsReplacementValidation:null;
+  const checks=[],issues=[];
+  const require=(name,ok)=>{checks.push({name,pass:Boolean(ok)});if(!ok)issues.push(name);};
+  require('SOURCE_WORKER_GROUNDED_VALIDATION',validation?.required===true&&validation?.pass===true&&clean(validation?.reason)==='GRAPHICS_REPLACEMENT_REPORT_VALID');
+  const actualCount=Math.floor(Number(report?.actualCount||0));
+  const evidence=Array.isArray(report?.replacementEvidence)?report.replacementEvidence:[];
+  const min=Math.max(1,Math.floor(Number(contract?.adaptiveCount?.minimumActual||1)));
+  const max=Math.min(60,Math.max(min,Math.floor(Number(contract?.adaptiveCount?.maximumActual||60))));
+  require('ACTUAL_COUNT_RANGE',actualCount>=min&&actualCount<=max);
+  require('ACTUAL_COUNT_EQUALS_EVIDENCE',actualCount===evidence.length);
+  require('VALIDATION_GROUNDED_COUNT_MATCH',Number(validation?.groundedCount||0)===actualCount);
+  require('BEFORE_AFTER_PRESENT',clean(report?.before).length>0&&clean(report?.after).length>0);
+  const allowedSurfaces=new Set((contract?.surfaces||[]).map(v=>clean(v).toUpperCase()).filter(Boolean));
+  const allowedModes=new Set((contract?.reuseModes||[]).map(v=>clean(v).toUpperCase()).filter(Boolean));
+  const changedSet=new Set(changed.map(posix));
+  const seen=new Set(),groundedSurfaces=[],groundedModes=[];
+  evidence.forEach((row,index)=>{
+    const surface=clean(row?.surface).toUpperCase();
+    const reuseMode=clean(row?.reuseMode).toUpperCase();
+    const bindingKey=clean(row?.bindingKey);
+    const sourceEvidence=String(row?.sourceEvidence??'').trim();
+    const resolved=resolveManifestRelative(root,data,row?.path);
+    const prefix='REPLACEMENT_'+(index+1)+'_';
+    require(prefix+'SURFACE_ALLOWED',Boolean(surface)&&(!allowedSurfaces.size||allowedSurfaces.has(surface)));
+    require(prefix+'REUSE_MODE_ALLOWED',Boolean(reuseMode)&&(!allowedModes.size||allowedModes.has(reuseMode)));
+    require(prefix+'PATH_CHANGED',Boolean(resolved)&&changedSet.has(posix(resolved)));
+    require(prefix+'BINDING_KEY_PRESENT',Boolean(bindingKey));
+    require(prefix+'SOURCE_EVIDENCE_EXECUTABLE',graphicsEvidenceLooksLikeSource(sourceEvidence));
+    require(prefix+'BINDING_IN_EVIDENCE',Boolean(bindingKey)&&sourceEvidence.toLowerCase().includes(bindingKey.toLowerCase()));
+    let source='';
+    try{
+      const file=assertInside(root,resolved);
+      if(fs.existsSync(file)&&fs.statSync(file).isFile())source=fs.readFileSync(file,'utf8');
+    }catch{}
+    require(prefix+'SOURCE_EVIDENCE_PERSISTS',Boolean(sourceEvidence)&&source.includes(sourceEvidence));
+    const key=[posix(resolved),bindingKey.toLowerCase(),sourceEvidence].join('\u0000');
+    require(prefix+'UNIQUE',!seen.has(key));
+    seen.add(key);
+    if(surface)groundedSurfaces.push(surface);
+    if(reuseMode)groundedModes.push(reuseMode);
+  });
+  require('SURFACES_MATCH_GROUNDED_EVIDENCE',sameStringSet((report?.changedSurfaces||[]).map(v=>clean(v).toUpperCase()),groundedSurfaces));
+  require('REUSE_MODES_MATCH_GROUNDED_EVIDENCE',sameStringSet((report?.reuseModesUsed||[]).map(v=>clean(v).toUpperCase()),groundedModes));
+  if(issues.length)throw new Error('GRAPHICS_REPLACEMENT_GROUNDING_QA_FAILED:'+issues.join('|'));
+  return{status:'GROUNDED_PASS',required:true,actualCount,groundedCount:evidence.length,checks,sourceWorkerValidationPass:true,candidateSourcePersistencePass:true,authorityExpanded:false};
+}
 function specializedVerificationRequest(data={}){
   const request=data?.specializedVerificationRequest;
   return request&&request.required===true?request:null;
@@ -796,7 +858,9 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const weatherPresentation=weatherPresentationContract(data);
   const specializedRequest=specializedVerificationRequest(data);
   const studioAssetBinding=robloxStudioAssetBindingContract(data);
-  const payload = ['vibe2-incremental-qa-v14', namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null)];
+  const graphicsReplacementReport=data?.graphicsReplacementReport||null;
+  const graphicsReplacementValidation=data?.graphicsReplacementValidation||null;
+  const payload = ['vibe2-incremental-qa-v15', namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null), JSON.stringify(graphicsReplacementReport), JSON.stringify(graphicsReplacementValidation)];
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
@@ -805,10 +869,10 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   for(const target of replayTargets)payload.push('CAUSAL_REPLAY:'+target.relative,fs.readFileSync(target.absolute));
   const contentHash = sha256(payload);
   const cachePath = clean(cacheFile);
-  const cache = cachePath ? readJson(cachePath,{version:12,entries:{}}) : {version:12,entries:{}};
+  const cache = cachePath ? readJson(cachePath,{version:13,entries:{}}) : {version:13,entries:{}};
   const cached = cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
-    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, gameRepairQa:cached.gameRepairQa||{status:'NOT_REQUIRED',required:false,fullRegressionStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, robloxStudioAssetBindingQa:cached.robloxStudioAssetBindingQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, specializedVerificationQa:cached.specializedVerificationQa||{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY',runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, gameRepairQa:cached.gameRepairQa||{status:'NOT_REQUIRED',required:false,fullRegressionStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, graphicsReplacementQa:cached.graphicsReplacementQa||{status:'NOT_REQUIRED',required:false,actualCount:0,groundedCount:0,checks:[],authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, robloxStudioAssetBindingQa:cached.robloxStudioAssetBindingQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, specializedVerificationQa:cached.specializedVerificationQa||{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY',runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   }
 
   const checks = changed.map((relative)=>deterministicCheck(root,relative));
@@ -817,13 +881,14 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const gameRepairQa=runGameRepairQa({root,data,causalReplay});
   const architectureDrift=runArchitectureDrift({root,data});
   const presentationQa=runPresentationStaticQa({root,data,changed});
+  const graphicsReplacementQa=runGraphicsReplacementGroundingQa({root,data,changed});
   const weatherPresentationQa=runWeatherPresentationStaticQa({root,data,changed});
   const robloxStudioAssetBindingQa=runRobloxStudioAssetBindingQa({root,data,changed});
   const specializedVerificationQa=runSpecializedFocusedQa({root,data,changed});
-  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, graphicsReplacementQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
     cache.entries=cache.entries||{};
-    cache.version=12; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, savedAt:new Date().toISOString() };
+    cache.version=13; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, gameRepairQa, architectureDrift, presentationQa, graphicsReplacementQa, weatherPresentationQa, robloxStudioAssetBindingQa, specializedVerificationQa, savedAt:new Date().toISOString() };
     const entries=Object.entries(cache.entries).slice(-200);
     cache.entries=Object.fromEntries(entries);
     writeJson(cachePath,cache);
@@ -839,6 +904,7 @@ export function incrementalQaFailureSignature(error){
     'CAUSAL_REPLAY_DIAGNOSTIC_IDENTITY_REQUIRED',
     'CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT',
     'PRESENTATION_STATIC_QA_FAILED',
+    'GRAPHICS_REPLACEMENT_GROUNDING_QA_FAILED',
     'WEATHER_PRESENTATION_STATIC_QA_FAILED',
     'WEATHER_PRESENTATION_QA_SOURCE_REQUIRED',
     'CAUSAL_REPLAY_TARGET_ESCAPED_SOURCE_ROOT',
@@ -898,6 +964,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_PRESENTATION_QA_STATUS=${result.presentationQa?.status||'NOT_REQUIRED'}`);
     console.log(`VIBE2_PRESENTATION_QA_PASS=${result.presentationQa?.pass||'NONE'}`);
     console.log(`VIBE2_PRESENTATION_RUNTIME_REQUIRED=${result.presentationQa?.runtimeStillRequired===true?'YES':'NO'}`);
+    console.log(`VIBE2_GRAPHICS_REPLACEMENT_GROUNDING=${result.graphicsReplacementQa?.status||'NOT_REQUIRED'}`);
+    console.log(`VIBE2_GRAPHICS_REPLACEMENT_GROUNDED_COUNT=${Number(result.graphicsReplacementQa?.groundedCount||0)}`);
     console.log(`VIBE2_GOLDEN_SCENE_RUNTIME_REQUIRED=${result.presentationQa?.goldenSceneRuntimeEvidenceRequired===true?'YES':'NO'}`);
     console.log(`VIBE2_GOLDEN_SCENE_ROLES=${(result.presentationQa?.goldenSceneRoles||[]).join(',')||'NONE'}`);
     console.log(`VIBE2_WEATHER_PRESENTATION_QA_STATUS=${result.weatherPresentationQa?.status||'NOT_REQUIRED'}`);
