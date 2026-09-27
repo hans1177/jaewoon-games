@@ -833,6 +833,9 @@ test('pending private runtime candidates retry even when technical target count 
   assert.equal(roadmap.developmentSpeedExecution.retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches,true);
   assert.equal(roadmap.developmentSpeedExecution.successfulStepMustNotBeRepeatedWithoutInvalidatingChange,true);
   assert.equal(roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.privateRuntimeCandidateDeploymentParallel,true);
+  const monotonicity=roadmap.changeRecord?.concurrentPlatformSharedProgressMonotonicity20260927||{};
+  assert.equal(monotonicity.privateRuntimeRecoveryUsesExactF0Evidence,true);
+  assert.equal(monotonicity.privateRuntimeRecoverySharedCurrentStepDependencyForbidden,true);
   assert.match(workflow,/name: Route pending private runtime candidates through exact game dispatcher[\s\S]*?if: always\(\)/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH_COUNT=/);
