@@ -10,7 +10,8 @@ on:
       - Company DESIGN_ONLY Promotion Sync
       - Company DEVELOPMENT_CONFIRMED Runtime
       - Company DEVELOPMENT_CONFIRMED Unity Runtime
-      - Homepage Manager
+      # Homepage Manager already contains its own Director supervision/publication stage.
+      # Do not re-wake the full central supervisor after that sink completes.
       - Public Game Health
       - Unity Hybrid Android Build
       - Unity Android Runtime Smoke
