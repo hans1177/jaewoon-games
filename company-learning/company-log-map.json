@@ -2413,5 +2413,17 @@
     "runtimeFoundationPassFabricated": false,
     "externalPublicReleaseReadyFabricated": false,
     "officialStudioMcpStillRequired": true
+  },
+  "directorPendingRecoveryAndSafeDrainEvidence": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.directorPendingRecoveryAndSafeDrain20260927",
+    "workflow": ".github/workflows/director-supervisor.yml",
+    "expectedSignals": [
+      "DEVELOPMENT_RUNTIME_ACTIVE=true_WHEN_PENDING_REQUESTED_WAITING_QUEUED_OR_IN_PROGRESS",
+      "DIRECTOR_RECOVERY=NOT_REQUIRED_WHEN_ANY_CENTRAL_DEVELOPMENT_RUN_IS_ACTIVE",
+      "DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN"
+    ],
+    "staleRobloxCancellationRequiresUnstartedState": true,
+    "inProgressRobloxCancellationForbidden": true
   }
 }
