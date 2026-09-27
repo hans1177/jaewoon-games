@@ -2628,6 +2628,56 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
 }
 
 export function planVibe2AutonomousTask(args={}){return planVibe2AutonomousTasks(args);}
+function buildUpDirectivePersistenceLane(directive={}){
+  const raw=clean(directive?.platform).toUpperCase();
+  if(raw==='UNITY_WEB')return'WEB';
+  if(raw==='UNITY_APP')return'UNITY';
+  if(raw==='UEFN'||raw==='UNREAL')return'FORTNITE_UEFN';
+  if(['WEB','ROBLOX','UNITY','FORTNITE_UEFN'].includes(raw))return raw;
+  return raw||'COMMON';
+}
+
+function comparePersistedBuildUpDirectives(a={},b={}){
+  const aCurrent=hasCurrentAutonomousContentExpansionDirective(a)?1:0;
+  const bCurrent=hasCurrentAutonomousContentExpansionDirective(b)?1:0;
+  if(aCurrent!==bCurrent)return bCurrent-aCurrent;
+  const aGeneration=Number(a?.generation||0),bGeneration=Number(b?.generation||0);
+  if(aGeneration!==bGeneration)return bGeneration-aGeneration;
+  const aTime=Date.parse(clean(a?.generatedAt))||0,bTime=Date.parse(clean(b?.generatedAt))||0;
+  if(aTime!==bTime)return bTime-aTime;
+  return clean(b?.directiveId).localeCompare(clean(a?.directiveId));
+}
+
+export function selectBuildUpDirectivePersistence(directives=[]){
+  const directivesByGame=new Map();
+  for(const directive of directives||[]){
+    if(!clean(directive?.directiveId)||!clean(directive?.gameId))continue;
+    const rows=directivesByGame.get(directive.gameId)||[];
+    rows.push(directive);
+    directivesByGame.set(directive.gameId,rows);
+  }
+  const games=[];
+  for(const [gameId,gameDirectives] of directivesByGame.entries()){
+    const byLane=new Map();
+    for(const directive of gameDirectives){
+      const lane=buildUpDirectivePersistenceLane(directive);
+      const rows=byLane.get(lane)||[];
+      rows.push(directive);
+      byLane.set(lane,rows);
+    }
+    const laneWinners=[];
+    for(const [lane,laneDirectives] of byLane.entries()){
+      const directive=laneDirectives.slice().sort(comparePersistedBuildUpDirectives)[0]||null;
+      if(directive)laneWinners.push({lane,directive});
+    }
+    const compatibilityWinner=laneWinners.map(row=>row.directive).sort(comparePersistedBuildUpDirectives)[0]
+      ||gameDirectives.slice().sort(comparePersistedBuildUpDirectives)[0]
+      ||null;
+    games.push({gameId,laneWinners,compatibilityWinner});
+  }
+  return games;
+}
+
 export function runVibe2AutoPlanner({
   statusFile='.vibe2/main-company-status.json', catalogFile='.vibe2/main-game-catalog.json', developmentQueueFile='', queueFile='', runtimeFile='vibe2-runtime.json',
   controlFile='', experienceFile='', recombinationFile='', historicalRegistryFile='', robloxDistillationFile='', repoRoot=process.cwd(), maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS
@@ -2660,15 +2710,28 @@ export function runVibe2AutoPlanner({
     if(!directive?.directiveId||!directive?.gameId)continue;
     directivesById.set(directive.directiveId,directive);
   }
-  for(const directive of directivesById.values()){
-    const gameRoot=path.join(directiveRoot,directive.gameId);
+  const persistence=selectBuildUpDirectivePersistence([...directivesById.values()]);
+  for(const game of persistence){
+    const gameRoot=path.join(directiveRoot,game.gameId);
+    const currentRoot=path.join(gameRoot,'current');
     const historyRoot=path.join(gameRoot,'history');
+    fs.mkdirSync(currentRoot,{recursive:true});
     fs.mkdirSync(historyRoot,{recursive:true});
-    const currentFile=path.join(gameRoot,'current.json');
-    const historyFile=path.join(historyRoot,String(directive.generation).padStart(4,'0')+'-'+directive.directiveId+'.json');
-    writeJson(currentFile,directive);
-    if(!fs.existsSync(historyFile))writeJson(historyFile,directive);
-    directiveWrites.push(posix(path.relative(path.dirname(path.resolve(resolvedQueueFile)),currentFile)));
+    const gameDirectives=[...directivesById.values()].filter(directive=>directive.gameId===game.gameId);
+    for(const directive of gameDirectives){
+      const historyFile=path.join(historyRoot,String(directive.generation).padStart(4,'0')+'-'+directive.directiveId+'.json');
+      if(!fs.existsSync(historyFile))writeJson(historyFile,directive);
+    }
+    for(const row of game.laneWinners){
+      const laneFile=path.join(currentRoot,row.lane.toLowerCase().replaceAll('_','-')+'.json');
+      writeJson(laneFile,row.directive);
+      directiveWrites.push(posix(path.relative(path.dirname(path.resolve(resolvedQueueFile)),laneFile)));
+    }
+    if(game.compatibilityWinner){
+      const currentFile=path.join(gameRoot,'current.json');
+      writeJson(currentFile,game.compatibilityWinner);
+      directiveWrites.push(posix(path.relative(path.dirname(path.resolve(resolvedQueueFile)),currentFile)));
+    }
   }
   if(result.planned||queueSynchronized)writeJson(resolvedQueueFile,result.queue);
   return{...result,queueSynchronized,directiveWrites,machineHandoff,effectivePlannerMax,recombinationContext:{file:posix(resolvedRecombinationFile),recipes:Array.isArray(recombinationMemory?.recipes)?recombinationMemory.recipes.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).some(value=>clean(value).startsWith('recombination-recipe:'))).length},robloxDistillationContext:{file:posix(resolvedRobloxDistillationFile),records:Array.isArray(robloxDistillationLedger?.records)?robloxDistillationLedger.records.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).includes('roblox-distilled-context:advisory')).length}};

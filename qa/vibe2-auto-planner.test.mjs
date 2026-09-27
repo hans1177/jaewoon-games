@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
@@ -70,6 +70,48 @@ const catalog={games:[
   {id:'dev-web',name:'Dev Web',webPath:'/web-games/dev-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'},
   {id:'third-web',name:'Third Web',webPath:'/web-games/third-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}
 ]};
+
+
+test('build-up directive persistence keeps platform currents independent and compatibility current prefers autonomous contract',()=>{
+  const legacyUnity={
+    directiveId:'demo-build-up-g1-legacy-unity',
+    gameId:'demo',
+    generation:1,
+    platform:'UNITY_WEB',
+    generatedAt:'2026-09-26T00:00:00Z'
+  };
+  const currentRoblox={
+    directiveId:'demo-build-up-g1-current-roblox',
+    gameId:'demo',
+    generation:1,
+    platform:'ROBLOX',
+    generatedAt:'2026-09-27T00:00:00Z',
+    autonomousContentExpansion:{
+      version:1,
+      executionBoundary:'EXISTING_BUILD_UP_ONLY',
+      autonomousDecisionOwner:'VIBE'
+    }
+  };
+  const currentWeb={
+    directiveId:'demo-build-up-g2-current-web',
+    gameId:'demo',
+    generation:2,
+    platform:'WEB',
+    generatedAt:'2026-09-27T01:00:00Z',
+    autonomousContentExpansion:{
+      version:1,
+      executionBoundary:'EXISTING_BUILD_UP_ONLY',
+      autonomousDecisionOwner:'VIBE'
+    }
+  };
+  const rows=selectBuildUpDirectivePersistence([legacyUnity,currentRoblox,currentWeb]);
+  assert.equal(rows.length,1);
+  assert.equal(rows[0].gameId,'demo');
+  const lanes=new Map(rows[0].laneWinners.map(row=>[row.lane,row.directive]));
+  assert.equal(lanes.get('ROBLOX').directiveId,currentRoblox.directiveId);
+  assert.equal(lanes.get('WEB').directiveId,currentWeb.directiveId);
+  assert.equal(rows[0].compatibilityWinner.directiveId,currentWeb.directiveId);
+});
 
 test('active independent work no longer blocks autonomous planning when slots remain',()=>{
   const root=tempRepo();
