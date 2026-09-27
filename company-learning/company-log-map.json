@@ -1,5 +1,5 @@
 {
-  "version": 133,
+  "version": 134,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2352,7 +2352,7 @@
     "privateRuntimeRecoverySharedCurrentStepDependencyForbidden": true
   },
   "developmentQueueReconcileRunnerIsolationEvidence": {
-    "version": 1,
+    "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "workflow": ".github/workflows/company-development-queue-reconcile.yml",
     "expectedRunnerLabels": {
@@ -2367,9 +2367,12 @@
       "DEVELOPMENT_QUEUE_RECONCILE_ATTEMPT",
       "DEVELOPMENT_QUEUE_RUNTIME_CHANGE"
     ],
-    "concurrencyGroup": "company-development-queue-reconcile-runtime",
+    "concurrencyGroup": "company-development-queue-reconcile-runtime-v2",
     "cancelInProgress": false,
     "serializedStateWritePreserved": true,
-    "exactRobloxRecoveryRequired": true
+    "exactRobloxRecoveryRequired": true,
+    "previousConcurrencyGroup": "company-development-queue-reconcile-runtime",
+    "epochAdvancedToBypassLegacyPendingGroup": true,
+    "observedLegacyPendingRunId": 36292590267
   }
 }
