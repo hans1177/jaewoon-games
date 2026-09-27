@@ -73,6 +73,10 @@ const JSON_FINAL_RETRY_TIMEOUT_MS=150000;
 const JSON_FINAL_RETRY_MAX_PREDICT=768;
 const JSON_FOCUSED_REPLACE_MAX_PREDICT=384;
 const JSON_FOCUSED_REPLACE_TIMEOUT_MS=90000;
+const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT=768;
+const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS=120000;
+const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=8192;
+const ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS=3;
 const JSON_CONTEXT_WINDOW=16384;
 const JSON_FINAL_CONTEXT_WINDOW=16384;
 const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192;
@@ -1377,7 +1381,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'replace MUST be materially different from the exact find anchor, syntactically valid in the shown source context, and the smallest coherent behavior change that advances the Goal.',
       presentationTask?'PRESENTATION TASK HARD RULE: replace MUST change real visible render/material/color/lighting/motion/camera/VFX/UI source behavior even when the previous failure was timeout or malformed output; marker-only constants, comments, metadata, or gameplay-only changes are invalid.':'',
       robloxPresentationTask?'ROBLOX VISUAL ANCHOR RULE: the fixed anchor must be treated as presentation-owned source. Change native Roblox presentation primitives such as Color3, Material, Lighting, Camera/FieldOfView, Tween/CFrame motion, Particle/Trail/Beam VFX, or ScreenGui/Frame/Image UI while preserving gameplay numbers and save/progression semantics.':'',
-      robloxAssetAdaptationTask?'ROBLOX FULL GRAPHICS CONTRACT: replace MUST cover these minimum required core domains together: character/enemy visual form, weapon/equipment visual form, environment/terrain visual form, and material/color/style language. These core domains are mandatory, but there is no maximum visual-domain count; add UI, VFX, lighting, props, camera presentation, or other coherent visual domains when useful.':'',
+      robloxAssetAdaptationTask?'ROBLOX FULL GRAPHICS CONTRACT: replace MUST cover these minimum required core domains together: character/enemy visual form, weapon/equipment visual form, environment/terrain visual form, and material/color/style language. These core domains are mandatory, but there is no maximum visual-domain count; add UI, VFX, lighting, props, camera presentation, or other coherent visual domains when useful. Keep the composite replacement bounded to this exact anchor so it can finish quickly on the local model.':'',
       robloxAssetAdaptationTask?'ROBLOX MOTION CONTRACT: motion is mandatory. The replacement must apply a native motion driver such as TweenService, RenderStepped/Heartbeat, Animator/AnimationTrack, or Motor6D/Bone together with a real motion target such as CFrame, Transform, Position, or Orientation. Static-only presentation is invalid.':'',
       presentationDeltaFailure?'This recovery is specifically for a PRESENTATION_PATCH_DELTA failure. Do not return another nonvisual candidate.':'',
       robloxPresentationDeltaFailure?'ROBLOX PRESENTATION DELTA RECOVERY: produce an observable native visual delta at this exact client/visual owner anchor.':'',
@@ -1762,6 +1766,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let robloxZeroOutputTimeoutFocusedRecoveryActive=false;
   let robloxTimeoutRecoveryEscalatedFullGraphics=false;
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
+  const assetDevelopmentLane=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
   const robloxGraphicsInitial=!allowFullRewrite
     &&/Engine:\s*roblox/i.test(String(prompt??''))
     &&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(String(prompt??''));
@@ -1772,9 +1777,11 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,robloxGraphicsInitial:true,robloxFullGraphicsPackageActive:true})
       :prompt;
   const configuredBaseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
-  const baseMaxAttempts=studioExpansion&&!allowFullRewrite
-    ?Math.min(3,configuredBaseMaxAttempts)
-    :configuredBaseMaxAttempts;
+  const baseMaxAttempts=assetDevelopmentLane&&robloxGraphicsInitial
+    ?Math.min(ASSET_DEVELOPMENT_ROBLOX_MAX_GENERATION_ATTEMPTS,configuredBaseMaxAttempts)
+    :(studioExpansion&&!allowFullRewrite
+      ?Math.min(3,configuredBaseMaxAttempts)
+      :configuredBaseMaxAttempts);
   let maxAttempts=baseMaxAttempts;
   let additiveAttemptCreditUsed=false;
   let additiveAttemptCreditLogged=false;
@@ -1808,6 +1815,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     if(robloxAssetAdaptationTask&&zeroOutputTimeoutRecovery)robloxZeroOutputTimeoutFocusedRecoveryActive=true;
     if(zeroOutputTimeoutRecovery)console.log(`VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY=${attempt}:${candidateVariant}`);
     const robloxTimeoutFocusedRecoveryNeedsPackage=robloxAssetAdaptationTask
+      &&!assetDevelopmentLane
       &&robloxZeroOutputTimeoutFocusedRecoveryActive
       &&!zeroOutputTimeoutRecovery
       &&['PRESENTATION_PATCH_DELTA','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION'].includes(priorFailureClass);
@@ -1820,6 +1828,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       console.log(`VIBE2_ROBLOX_TIMEOUT_RECOVERY_CHAIN_FOCUSED=${attempt}:${candidateVariant}:${priorFailureClass||'UNKNOWN'}`);
     }
     const robloxFullGraphicsPackageRecovery=robloxAssetAdaptationTask
+      &&!assetDevelopmentLane
       &&robloxFullGraphicsPackageActive
       &&ROBLOX_FULL_GRAPHICS_PACKAGE_FAILURES.has(priorFailureClass)
       &&!zeroOutputTimeoutRecovery
@@ -1829,7 +1838,8 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const malformedFastEscalation=focusedWebRepair&&!allowFullRewrite&&attempt>=2&&priorFailureClass==='MALFORMED_OUTPUT';
     const systemCausalPairRecovery=priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'||priorFailureClass==='SYSTEM_CANDIDATE_SYNTAX';
     const presentationPatchDeltaRecovery=!allowFullRewrite&&priorFailureClass==='PRESENTATION_PATCH_DELTA';
-    const focusedFinal=!allowFullRewrite&&!multiFilePairRequired&&(!studioExpansion||zeroOutputTimeoutRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||(speculativeVariant&&attempt>=2));
+    const assetDevelopmentFocusedGraphics=assetDevelopmentLane&&robloxAssetAdaptationTask;
+    const focusedFinal=!allowFullRewrite&&!multiFilePairRequired&&(!studioExpansion||zeroOutputTimeoutRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||assetDevelopmentFocusedGraphics)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(assetDevelopmentFocusedGraphics||attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const diagnosticFocusedReplaceOnly=!allowFullRewrite&&!studioExpansion&&!robloxFullGraphicsPackageRecovery
       ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})
@@ -1852,15 +1862,15 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       ?FULL_WEB_EXPANSION_MAX_PREDICT
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_MAX_PREDICT:(retry?FULL_WEB_RETRY_MAX_PREDICT:FULL_WEB_MAX_PREDICT))
-        :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_MAX_PREDICT:JSON_FOCUSED_REPLACE_MAX_PREDICT):(focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT)))));
+        :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_MAX_PREDICT:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT:JSON_FOCUSED_REPLACE_MAX_PREDICT)):(focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT)))));
     const timeoutMs=expansionMode
       ?FULL_WEB_EXPANSION_TIMEOUT_MS
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
-        :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))));
+        :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS)):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))));
     const contextWindow=expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
-      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
+      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW)):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
     if(allowFullRewrite&&retry)console.log(`VIBE2_FULL_WEB_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
