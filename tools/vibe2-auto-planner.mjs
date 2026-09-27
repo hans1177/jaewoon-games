@@ -2074,11 +2074,16 @@ function bindSharedBuildUpDirective(taskInput,directive){
 }
 
 function hasCurrentAutonomousContentExpansionDirective(directive={}){
+  const expansion=directive?.autonomousContentExpansion;
+  const ledger=expansion?.themeCoverageLedger;
   return Boolean(
     clean(directive?.directiveId)
-    &&Number(directive?.autonomousContentExpansion?.version||0)>=1
-    &&clean(directive?.autonomousContentExpansion?.executionBoundary).toUpperCase()==='EXISTING_BUILD_UP_ONLY'
-    &&directive?.autonomousContentExpansion?.autonomousDecisionOwner==='VIBE'
+    &&Number(expansion?.version||0)>=2
+    &&clean(expansion?.executionBoundary).toUpperCase()==='EXISTING_BUILD_UP_ONLY'
+    &&expansion?.autonomousDecisionOwner==='VIBE'
+    &&Number(ledger?.version||0)>=1
+    &&Array.isArray(ledger?.requiredThemes)
+    &&ledger.requiredThemes.length>=7
   );
 }
 
@@ -2160,7 +2165,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
           candidate=bindSharedBuildUpDirective(item,refreshed.buildUpDirective);
           candidate={...candidate,evidence:[...new Set([
             ...(candidate.evidence||[]),...(refreshed.evidence||[]),
-            'build-up-directive-contract-migration:AUTONOMOUS_CONTENT_EXPANSION_V1',
+            'build-up-directive-contract-migration:AUTONOMOUS_CONTENT_EXPANSION_V2',
             'build-up-directive-contract-migration-generation:PRESERVED'
           ])]};
           canonicalByScope.set(scope,refreshed.buildUpDirective);
