@@ -287,6 +287,43 @@ test('planner skips only an already verified exact Studio MCP play record',()=>{
   assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()}).include.length,0);
 });
 
+test('planner replays an exact Studio pass when required primary action proof cannot be explained by persisted evidence',()=>{
+  const candidate=item();
+  candidate.gameId='horror-escape-room';
+  const initial=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:process.cwd()});
+  assert.equal(initial.include.length,1);
+  const planned=initial.include[0];
+  candidate.robloxInternalVibePlayEvidence={
+    pass:true,
+    actualPlay:true,
+    officialStudioMcp:true,
+    localPlaceFile:true,
+    onlinePlaceDirectOpen:false,
+    robloxPlayerAutomation:false,
+    sourceRevision:source,
+    artifactIdentity:artifact,
+    artifactRunId:777,
+    universeId:'123',
+    placeId:'456',
+    versionNumber:9,
+    testedAt:'2026-09-27T05:57:45.929Z',
+    scenarioContractRequired:true,
+    scenarioContractVersion:planned.scenarioContractVersion,
+    scenarioContractFingerprint:planned.scenarioContractFingerprint,
+    scenarioCoverage:[{id:'primary-action-effect',pass:true}],
+    runtimeSummary:{
+      primaryActionDisplacement:0.001,
+      primaryActionVelocity:0.0001,
+      primaryActionFeedbackChanged:false
+    }
+  };
+  const replay=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:process.cwd()});
+  assert.equal(replay.include.length,1);
+  candidate.robloxInternalVibePlayEvidence.runtimeSummary.primaryActionFeedbackChanged=true;
+  const complete=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:process.cwd()});
+  assert.equal(complete.include.length,0);
+});
+
 test('planner collapses repeated shared Studio MCP infrastructure failures to one rotating canary',()=>{
   const rows=['g1','g2','g3'].map((gameId,index)=>{
     const candidate=item();
