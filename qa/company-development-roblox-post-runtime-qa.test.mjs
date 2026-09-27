@@ -224,7 +224,7 @@ test('transient 429 does not fail the whole workflow while non-transient persist
   assert.match(workflow,/transientProbeStatuses=new Set\(\[408,429,500,502,503,504\]\)/);
   assert.match(workflow,/roblox-open-cloud-engine-probe-transient-retry/);
   assert.match(workflow,/ROBLOX_OPEN_CLOUD_TRANSIENT_PROBE_RETRY=EXACT_GATE_ONLY/);
-  const classifyAt=workflow.indexOf('Classify Open Cloud probe failures after evidence persistence');
+  const classifyAt=workflow.indexOf('Enforce persistent Open Cloud probe failures after evidence persistence');
   assert.ok(classifyAt>0);
   const classify=workflow.slice(classifyAt,workflow.indexOf('\n  studio-local-plan:',classifyAt));
   assert.match(classify,/if \[ -s "\$transient_file" \]; then[\s\S]*ROBLOX_OPEN_CLOUD_TRANSIENT_PROBE_RETRY=EXACT_GATE_ONLY[\s\S]*fi/);
