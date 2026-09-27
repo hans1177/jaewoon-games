@@ -17,7 +17,10 @@ function robloxState(item={}){
     &&Boolean(clean(pub.placeId||rel.placeId||internal.placeId));
   const placeId=staleSharedTarget?'':clean(pub.placeId||rel.placeId||internal.placeId);
   const published=!staleSharedTarget&&(bool(rel.published)||bool(pub.published)||bool(rel.verified)||bool(pub.verified));
-  const explicitPublic=!staleSharedTarget&&(bool(rel.publicRelease)||bool(rel.public)||clean(rel.exposure).toUpperCase()==='PUBLIC'||clean(pub.exposure).toUpperCase()==='PUBLIC');
+  const explicitPublicEvidence=!staleSharedTarget&&(bool(rel.publicRelease)||bool(rel.public)||clean(rel.exposure).toUpperCase()==='PUBLIC'||clean(pub.exposure).toUpperCase()==='PUBLIC');
+  const ownerApproved=item.robloxOwnerPublicReleaseApproved===true;
+  const legacyPublic=item.preexistingPublicReleaseBeforeExposureGate===true&&explicitPublicEvidence;
+  const explicitPublic=legacyPublic||(explicitPublicEvidence&&ownerApproved);
   const runtime=bool(item.robloxRuntimePassed)||bool(item.robloxRuntimeEvidence?.pass);
   const qa=bool(item.robloxIndependentQaPassed)||bool(item.robloxIndependentQaEvidence?.pass);
   const regression=bool(item.robloxRegressionPassed)||bool(item.robloxRegressionEvidence?.pass);
@@ -28,7 +31,7 @@ function robloxState(item={}){
   const internalReady=preservedInternalRelease
     ||bool(item.robloxInternalReleaseReady)
     ||(!staleSharedTarget&&((published&&!explicitPublic)||(published&&runtime&&regression)));
-  const publicReleaseReady=!staleSharedTarget&&(bool(item.robloxPublicReleaseReady)||(runtime&&qa&&regression&&published));
+  const publicReleaseReady=!staleSharedTarget&&bool(item.robloxPublicReleaseReady);
   return{
     platform:'ROBLOX',
     developmentState:sourceReady?'NATIVE_DEVELOPMENT':'WAITING_SOURCE',
@@ -38,6 +41,8 @@ function robloxState(item={}){
     internalReleaseReady:internalReady,
     internalReleaseState:internalReady?'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE':'NOT_READY',
     publicReleaseReady,
+    ownerPublicReleaseApprovalRequired:true,
+    ownerPublicReleaseApproved:ownerApproved||legacyPublic,
     publicRelease:explicitPublic,
     publicReleaseState:explicitPublic?'PUBLIC_RELEASE':(publicReleaseReady?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY'),
     placeId:placeId||null,
