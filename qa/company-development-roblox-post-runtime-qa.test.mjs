@@ -173,3 +173,25 @@ test('quality-first release-probe suppression is exact-source scoped rather than
   assert.match(workflow,/String\(item\.robloxQualityBuildUpSourceRevision\|\|''\)\.trim\(\)===sourceRevision/);
   assert.doesNotMatch(workflow,/robloxQualityBuildUpRequired===true[\s\S]{0,120}process\.exit\(1\)/);
 });
+
+
+test('active internal product-quality buildup suppresses same-source Open Cloud and foundation processing',()=>{
+  assert.match(workflow,/robloxQualityBuildUpRequired===true/);
+  assert.match(workflow,/robloxQualityBuildUpSourceRevision/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_ACTIVE_QUALITY_BUILDUP=/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_PROCESSING_SKIPPED_ACTIVE_QUALITY_BUILDUP=/);
+  assert.match(workflow,/QUALITY_FIRST_BUILDUP_SHORT_CIRCUIT=ACTIVE/);
+  assert.match(workflow,/QUALITY_FAILURE_CLASS=PRODUCT/);
+  assert.match(workflow,/QUALITY_BUILDUP_AUTO_REQUEUE=YES/);
+  assert.match(workflow,/EXTERNAL_RELEASE_PROBE_SUPPRESSED=YES/);
+  assert.match(workflow,/RESUME_STAGE=REPAIR_REQUIRED/);
+});
+
+test('quality-first suppression keeps public release and exact candidate gates intact',()=>{
+  assert.match(workflow,/item\.robloxPublicRelease!==true/);
+  assert.match(workflow,/candidate\.sourceRevision===sourceRevision/);
+  assert.match(workflow,/candidate\.artifactIdentity===artifactIdentity/);
+  assert.match(workflow,/candidate\.versionNumber/);
+  assert.match(workflow,/ROBLOX_FINAL_REVIEW_PENDING/);
+  assert.doesNotMatch(workflow,/robloxQualityBuildUpRequired\s*=\s*false/);
+});
