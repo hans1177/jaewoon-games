@@ -636,18 +636,59 @@ const GRAPHICS_REPLACEMENT_REUSE_MODES=Object.freeze([
   'TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES',
   'NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER'
 ]);
+function normalizeGraphicsReplacementEvidence(value){
+  if(!value||typeof value!=='object'||Array.isArray(value))return null;
+  return{
+    surface:clean(value.surface).toUpperCase(),
+    path:posix(value.path),
+    bindingKey:clean(value.bindingKey).slice(0,180),
+    reuseMode:clean(value.reuseMode).toUpperCase(),
+    sourceEvidence:String(value.sourceEvidence??'').trim().slice(0,800)
+  };
+}
 function normalizeGraphicsReplacementReport(value){
   if(!value||typeof value!=='object'||Array.isArray(value))return null;
   const actualCount=Math.floor(Number(value.actualCount||0));
   const changedSurfaces=unique((Array.isArray(value.changedSurfaces)?value.changedSurfaces:[]).map(v=>clean(v).toUpperCase()).filter(Boolean)).slice(0,40);
   const reuseModesUsed=unique((Array.isArray(value.reuseModesUsed)?value.reuseModesUsed:[]).map(v=>clean(v).toUpperCase()).filter(Boolean)).slice(0,8);
+  const replacementEvidence=(Array.isArray(value.replacementEvidence)?value.replacementEvidence:[])
+    .map(normalizeGraphicsReplacementEvidence)
+    .filter(Boolean)
+    .slice(0,60);
   return{
     actualCount,
     changedSurfaces,
     reuseModesUsed,
+    replacementEvidence,
     before:clean(value.before).slice(0,800),
     after:clean(value.after).slice(0,800)
   };
+}
+function changedGraphicsSourceByPath(candidate={}){
+  const rows=new Map();
+  const append=(rawPath,text)=>{
+    const file=posix(rawPath);
+    const value=String(text??'');
+    if(!file||!value)return;
+    rows.set(file,(rows.get(file)||'')+(rows.has(file)?'\n':'')+value);
+  };
+  for(const row of candidate?.edits||[])append(row?.path,row?.replace);
+  for(const row of candidate?.newFiles||[])append(row?.path,row?.content);
+  for(const row of candidate?.replaceFiles||[])append(row?.path,row?.content);
+  return rows;
+}
+function graphicsEvidenceLooksLikeSource(value=''){
+  const text=String(value??'').trim();
+  if(text.length<6)return false;
+  const meaningful=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).filter(line=>
+    !/^(?:\/\/|--|#|\/\*|\*|<!--)/.test(line)
+  );
+  return meaningful.length>0&&/[A-Za-z0-9_$.[\](){}:=<>-]/.test(meaningful.join(' '));
+}
+function sameStringSet(a=[],b=[]){
+  const aa=[...new Set(a.map(clean).filter(Boolean))].sort();
+  const bb=[...new Set(b.map(clean).filter(Boolean))].sort();
+  return aa.length===bb.length&&aa.every((value,index)=>value===bb[index]);
 }
 
 export function evaluateGraphicsReplacementReport({candidate={},contract={}}={}){
@@ -666,7 +707,35 @@ export function evaluateGraphicsReplacementReport({candidate={},contract={}}={})
   const invalidModes=report.reuseModesUsed.filter(v=>!allowedModes.has(v));
   if(invalidModes.length)return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_REUSE_MODE_INVALID:'+invalidModes.join(','),report,min,max};
   if(contract?.beforeAfterEvidenceRequired!==false&&(!report.before||!report.after))return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_BEFORE_AFTER_MISSING',report,min,max};
-  return{required:true,pass:true,reason:'GRAPHICS_REPLACEMENT_REPORT_VALID',report,min,max};
+
+  const groundingRequired=contract?.perReplacementSourceEvidenceRequired!==false
+    ||contract?.actualReplacementCountMustEqualGroundedEvidenceCount!==false
+    ||contract?.selfReportedCountWithoutGroundedSourceEvidenceCannotPass!==false;
+  if(groundingRequired){
+    if(!report.replacementEvidence.length)return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_EVIDENCE_MISSING',report,min,max};
+    if(report.actualCount!==report.replacementEvidence.length)return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_COUNT_EVIDENCE_MISMATCH',report,min,max};
+    const changedByPath=changedGraphicsSourceByPath(candidate);
+    const seen=new Set();
+    for(let index=0;index<report.replacementEvidence.length;index++){
+      const evidence=report.replacementEvidence[index];
+      const prefix='GRAPHICS_REPLACEMENT_EVIDENCE_'+(index+1)+'_';
+      if(!evidence.surface||allowedSurfaces.size&&!allowedSurfaces.has(evidence.surface))return{required:true,pass:false,reason:prefix+'SURFACE_INVALID',report,min,max};
+      if(!evidence.reuseMode||!allowedModes.has(evidence.reuseMode))return{required:true,pass:false,reason:prefix+'REUSE_MODE_INVALID',report,min,max};
+      if(!evidence.path||!changedByPath.has(evidence.path))return{required:true,pass:false,reason:prefix+'PATH_NOT_TOUCHED',report,min,max};
+      if(!evidence.bindingKey)return{required:true,pass:false,reason:prefix+'BINDING_KEY_MISSING',report,min,max};
+      if(!graphicsEvidenceLooksLikeSource(evidence.sourceEvidence))return{required:true,pass:false,reason:prefix+'SOURCE_EVIDENCE_NOT_EXECUTABLE',report,min,max};
+      if(!evidence.sourceEvidence.toLowerCase().includes(evidence.bindingKey.toLowerCase()))return{required:true,pass:false,reason:prefix+'BINDING_KEY_NOT_IN_SOURCE_EVIDENCE',report,min,max};
+      if(!changedByPath.get(evidence.path).includes(evidence.sourceEvidence))return{required:true,pass:false,reason:prefix+'SOURCE_EVIDENCE_NOT_IN_CHANGED_SOURCE',report,min,max};
+      const key=[evidence.path,evidence.bindingKey.toLowerCase(),evidence.sourceEvidence].join('\u0000');
+      if(seen.has(key))return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_EVIDENCE_DUPLICATE',report,min,max};
+      seen.add(key);
+    }
+    const groundedSurfaces=unique(report.replacementEvidence.map(row=>row.surface));
+    if(!sameStringSet(report.changedSurfaces,groundedSurfaces))return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_SURFACE_EVIDENCE_MISMATCH',report,min,max};
+    const groundedModes=unique(report.replacementEvidence.map(row=>row.reuseMode));
+    if(!sameStringSet(report.reuseModesUsed,groundedModes))return{required:true,pass:false,reason:'GRAPHICS_REPLACEMENT_REUSE_MODE_EVIDENCE_MISMATCH',report,min,max};
+  }
+  return{required:true,pass:true,reason:'GRAPHICS_REPLACEMENT_REPORT_VALID',report,min,max,groundedCount:report.replacementEvidence.length};
 }
 
 function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES}){const envelope=typeof raw==='string'&&allowFullRewrite?parseFullFileEnvelope(raw):null;const directHtml=typeof raw==='string'&&allowFullRewrite&&!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null;const parsed=envelope||directHtml||(typeof raw==='string'?extractJson(raw):raw);if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');const edits=(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>({path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??'')}));for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length&&target!=='system')throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:target==='system'?responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);const requiredFullRewriteBytes=Math.max(MIN_FULL_REWRITE_BYTES,Math.min(MAX_FILE_BYTES,Number(minFullRewriteBytes)||MIN_FULL_REWRITE_BYTES));const replaceFiles=(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]).map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시된 Web 재구축 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<requiredFullRewriteBytes||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}:bytes=${bytes}:min=${requiredFullRewriteBytes}:max=${MAX_FILE_BYTES}`);return{path:relative,content};});const editPaths=new Set(edits.map(x=>x.path)),newPaths=new Set(newFiles.map(x=>x.path)),replacePaths=new Set(replaceFiles.map(x=>x.path));if(newPaths.size!==newFiles.length)throw new Error('같은 새 파일 중복 생성 금지');if(replacePaths.size!==replaceFiles.length)throw new Error('같은 전체 교체 파일 중복 금지');for(const file of editPaths)if(newPaths.has(file)||replacePaths.has(file))throw new Error('같은 파일에 edit와 new/replace 혼합 작업 금지');for(const file of newPaths)if(replacePaths.has(file))throw new Error('같은 파일에 new와 replace 혼합 작업 금지');const touched=[...editPaths,...newPaths,...replacePaths];const touchedCount=touched.length;if(!touchedCount)throw new Error('후보가 실제 source 변경을 생성하지 않음');if(touchedCount>MAX_CHANGED_FILES)throw new Error(`변경 파일 수가 최대 ${MAX_CHANGED_FILES}개를 초과함`);return{summary:clean(parsed.summary)||'Vibe2 source candidate',expectedEffect:clean(parsed.expectedEffect),edits,newFiles,replaceFiles,tests:(Array.isArray(parsed.tests)?parsed.tests:[]).map(clean).filter(Boolean).slice(0,12),graphicsReplacementReport:normalizeGraphicsReplacementReport(parsed.graphicsReplacementReport)};}
@@ -1125,8 +1194,8 @@ sourceRootBootstrap&&clean(order.target).toLowerCase()==='unity'?'UNITY WEB BOOT
 'Read-only impact context may explain dependencies but MUST NOT be edited unless it is also listed in Allowed edit paths.',
 allowFullRewrite?'':'This is an implementation candidate. You MUST produce at least one real source change. Never return empty edits/newFiles/replaceFiles. When responsible files are listed, use an edits[] entry on an exact allowed path; copy find text exactly from the FILE block and make replace materially different.',
 focusedWebRepair&&!allowFullRewrite?'FOCUSED WEB REPAIR STREAM CONTRACT: put the edits array first. Emit the smallest single complete edits[0] object before optional summary/tests. The worker may stop generation immediately after one complete exact edit is available, so that first edit must independently satisfy the Goal and preserve unrelated behavior.':'',
-allowFullRewrite?'The replacement must be self-contained enough to run from the existing game root and must finish before the VIBE2_FILE_END marker.':order?.presentationQuality?.graphicsReplacement?.required===true?'GRAPHICS REPLACEMENT RESULT REPORT REQUIRED: add graphicsReplacementReport={"actualCount":1..60,"changedSurfaces":["VFX","MOTION","MENU",...],"reuseModesUsed":["DIRECT_REUSE_WHEN_ALREADY_CONCEPT_MATCHED"|"ADAPT_RESTYLE_AND_RETARGET"|"TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES"|"NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER"],"before":"what was weak before","after":"what is actually improved now"}. Count only real source/binding replacements actually implemented in this candidate.':'',
-'JSON schema: {"summary":"...","expectedEffect":"...","edits":[{"path":"exact allowed path","find":"exact unique old text","replace":"new text"}],"newFiles":[],"replaceFiles":[],"tests":["..."],"graphicsReplacementReport":{"actualCount":1,"changedSurfaces":["VFX"],"reuseModesUsed":["ADAPT_RESTYLE_AND_RETARGET"],"before":"...","after":"..."}}',
+allowFullRewrite?'The replacement must be self-contained enough to run from the existing game root and must finish before the VIBE2_FILE_END marker.':order?.presentationQuality?.graphicsReplacement?.required===true?'GRAPHICS REPLACEMENT RESULT REPORT REQUIRED: graphicsReplacementReport.actualCount must equal replacementEvidence.length exactly. Every replacementEvidence item must name one real replacement with surface, exact touched relative path, an exact runtime bindingKey/identifier, reuseMode, and a short sourceEvidence snippet copied verbatim from NEW changed source for that path. bindingKey must literally occur inside sourceEvidence. Duplicate evidence, comments/markers, untouched paths, or a self-reported count without grounded source evidence cannot pass.':'',
+'JSON schema: {"summary":"...","expectedEffect":"...","edits":[{"path":"exact allowed path","find":"exact unique old text","replace":"new text"}],"newFiles":[],"replaceFiles":[],"tests":["..."],"graphicsReplacementReport":{"actualCount":1,"changedSurfaces":["VFX"],"reuseModesUsed":["ADAPT_RESTYLE_AND_RETARGET"],"replacementEvidence":[{"surface":"VFX","path":"exact changed path","bindingKey":"impactVfx","reuseMode":"ADAPT_RESTYLE_AND_RETARGET","sourceEvidence":"const impactVfx = createImpactVfx()"}],"before":"...","after":"..."}}',
 `Required QA: ${(order.qa||[]).join(', ')}`,
 sourceText
 ].filter(Boolean).join('\n');}
