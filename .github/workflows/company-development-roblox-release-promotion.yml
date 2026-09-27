@@ -811,7 +811,7 @@ jobs:
           item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
           item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
           item.routingBlockers=['roblox-runtime-foundation-awaiting-observation'];
-          if(item.executionEvidence){
+          if(item.executionEvidence&&String(item.executionEvidence.platform||'').toUpperCase()==='ROBLOX'){
             item.executionEvidence.lastSuccessfulStage='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
             item.executionEvidence.failureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
             item.executionEvidence.failureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
