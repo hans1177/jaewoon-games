@@ -672,3 +672,99 @@ test('missing specialized structural evidence blocks learning promotion without 
   assert.equal(result.specializedVerificationQa.gameReleaseBlockedBySpecializedQa,false);
   assert.deepEqual(result.specializedVerificationQa.finalVerifiedMarkers,[]);
 });
+
+
+test('grounded graphics replacement survives candidate source and incremental QA',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/grounded-graphics');
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  const source=[
+    '#menuGlow { background-image:url("hero.png"); box-shadow:0 0 8px #fff; }',
+    '.weapon-visual { background-image:url("sword.png"); }',
+    '.forest-environment { background:linear-gradient(#123,#234); }',
+    '/* style lock palette player weapon background forest */'
+  ].join('\n')+'\n';
+  fs.writeFileSync(path.join(sourceRoot,'style.css'),source,'utf8');
+  const manifest=path.join(root,'manifest.json');
+  const contract={
+    required:true,
+    adaptiveCount:{minimumActual:1,maximumActual:60},
+    surfaces:['MENU'],
+    reuseModes:['ADAPT_RESTYLE_AND_RETARGET'],
+    beforeAfterEvidenceRequired:true
+  };
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/grounded-graphics',
+    target:'web',
+    changedFiles:['style.css'],
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION',graphicsReplacement:contract},
+    graphicsReplacementReport:{
+      actualCount:1,
+      changedSurfaces:['MENU'],
+      reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],
+      replacementEvidence:[{
+        surface:'MENU',
+        path:'style.css',
+        bindingKey:'menuGlow',
+        reuseMode:'ADAPT_RESTYLE_AND_RETARGET',
+        sourceEvidence:'#menuGlow { background-image:url("hero.png"); box-shadow:0 0 8px #fff; }'
+      }],
+      before:'plain menu',
+      after:'grounded menu visual'
+    },
+    graphicsReplacementValidation:{
+      required:true,pass:true,reason:'GRAPHICS_REPLACEMENT_REPORT_VALID',groundedCount:1
+    }
+  },null,2));
+  const result=runIncrementalQa({root,manifest,namespace:'web:grounded-graphics'});
+  assert.equal(result.outcome,'PASS');
+  assert.equal(result.graphicsReplacementQa.status,'GROUNDED_PASS');
+  assert.equal(result.graphicsReplacementQa.actualCount,1);
+  assert.equal(result.graphicsReplacementQa.groundedCount,1);
+});
+
+test('incremental QA rejects graphics count inflation after source-worker validation',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/grounded-graphics-inflated');
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'style.css'),[
+    '#menuGlow { background-image:url("hero.png"); box-shadow:0 0 8px #fff; }',
+    '.weapon-visual { background-image:url("sword.png"); }',
+    '.forest-environment { background:linear-gradient(#123,#234); }',
+    '/* style lock palette player weapon background forest */'
+  ].join('\n')+'\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/grounded-graphics-inflated',
+    target:'web',
+    changedFiles:['style.css'],
+    presentationQuality:{required:true,pass:'ASSET_ADAPTATION',graphicsReplacement:{
+      required:true,
+      adaptiveCount:{minimumActual:1,maximumActual:60},
+      surfaces:['MENU'],
+      reuseModes:['ADAPT_RESTYLE_AND_RETARGET'],
+      beforeAfterEvidenceRequired:true
+    }},
+    graphicsReplacementReport:{
+      actualCount:2,
+      changedSurfaces:['MENU'],
+      reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],
+      replacementEvidence:[{
+        surface:'MENU',
+        path:'style.css',
+        bindingKey:'menuGlow',
+        reuseMode:'ADAPT_RESTYLE_AND_RETARGET',
+        sourceEvidence:'#menuGlow { background-image:url("hero.png"); box-shadow:0 0 8px #fff; }'
+      }],
+      before:'plain menu',
+      after:'grounded menu visual'
+    },
+    graphicsReplacementValidation:{
+      required:true,pass:true,reason:'GRAPHICS_REPLACEMENT_REPORT_VALID',groundedCount:2
+    }
+  },null,2));
+  assert.throws(
+    ()=>runIncrementalQa({root,manifest,namespace:'web:grounded-graphics-inflated'}),
+    /GRAPHICS_REPLACEMENT_GROUNDING_QA_FAILED:.*ACTUAL_COUNT_EQUALS_EVIDENCE/
+  );
+});
