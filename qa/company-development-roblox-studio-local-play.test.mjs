@@ -167,6 +167,48 @@ test('planner selects exact runtime-foundation artifact before internal release'
   assert.equal(result.include[0].actualPlayEligibility,'RUNTIME_FOUNDATION_PASS');
 });
 
+test('planner selects exact engine version awaiting real server boot without fabricating runtime foundation PASS',()=>{
+  const candidate=item();
+  candidate.robloxInternalReleasePublished=false;
+  candidate.robloxInternalReleaseEvidence={};
+  candidate.robloxRuntimeFoundationPassed=false;
+  candidate.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT';
+  candidate.robloxRuntimeFoundationEvidence={
+    authority:'exact-engine-version-awaiting-real-server-boot',
+    sourceRevision:source,
+    artifactIdentity:artifact,
+    placeId:'456',
+    candidateVersionNumber:9,
+    engineExecuted:true,
+    exactEngineVersion:true,
+    serverBootObserved:false
+  };
+  const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
+  assert.equal(candidate.robloxRuntimeFoundationPassed,false);
+  assert.equal(result.include.length,1);
+  assert.equal(result.include[0].actualPlayEligibility,'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT');
+});
+
+test('planner rejects stale or unbound exact-engine evidence',()=>{
+  const candidate=item();
+  candidate.robloxInternalReleasePublished=false;
+  candidate.robloxInternalReleaseEvidence={};
+  candidate.robloxRuntimeFoundationPassed=false;
+  candidate.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT';
+  candidate.robloxRuntimeFoundationEvidence={
+    authority:'exact-engine-version-awaiting-real-server-boot',
+    sourceRevision:source,
+    artifactIdentity:artifact,
+    placeId:'456',
+    candidateVersionNumber:8,
+    engineExecuted:true,
+    exactEngineVersion:true,
+    serverBootObserved:false
+  };
+  const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
+  assert.equal(result.include.length,0);
+});
+
 test('Studio evidence maps observed failures into Roblox-native failure classes',()=>{
   const candidate=item();
   const broken=runtime();
