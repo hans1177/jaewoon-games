@@ -32,7 +32,8 @@ permissions:
   actions: write
 
 concurrency:
-  group: unity-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
+  # Exact-game runs remain independent; all empty-game batch sweeps coalesce to active one + latest pending.
+  group: unity-native-exact-${{ inputs.game_id || 'batch' }}
   cancel-in-progress: false
 
 jobs:
