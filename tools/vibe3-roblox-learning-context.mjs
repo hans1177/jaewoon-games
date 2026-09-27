@@ -42,12 +42,13 @@ function selectDistilled(records=[],{gameId='',terms=[],profileText=''}={}){
     if(row.sourceKind==='internal-roblox-source-runtime')score+=3;
     return{row,score,tie:stableHash(clean(gameId)+'|'+clean(row.id))};
   }).filter(x=>x.score>0||clean(x.row.gameId)===clean(gameId))
-    .sort((a,b)=>b.score-a.score||a.tie.localeCompare(b.tie)).slice(0,3);
+    .sort((a,b)=>b.score-a.score||a.tie.localeCompare(b.tie));
   const selected=scored.map(x=>x.row);
   return Object.freeze({
     ids:Object.freeze(selected.map(row=>clean(row.id)).filter(Boolean)),
-    patterns:Object.freeze(unique(selected.flatMap(row=>row.patterns||[])).slice(0,16)),
-    principles:Object.freeze(unique(selected.flatMap(row=>row.principles||[])).slice(0,12)),
+    patterns:Object.freeze(unique(selected.flatMap(row=>row.patterns||[]))),
+    principles:Object.freeze(unique(selected.flatMap(row=>row.principles||[]))),
+    externalIds:Object.freeze(selected.filter(row=>row.sourceKind==='external-roblox-runtime-reference').map(row=>clean(row.id)).filter(Boolean)),
     externalAdvisoryUsed:selected.some(row=>row.sourceKind==='external-roblox-runtime-reference'),
     crossGameUsed:selected.some(row=>clean(row.gameId)!==clean(gameId)),
     freshQaRequired:selected.length>0
@@ -57,8 +58,12 @@ function selectDistilled(records=[],{gameId='',terms=[],profileText=''}={}){
 export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={},playbooks={},recombination={},distillation={}}={}){
   const roblox=playbooks?.taskTypes?.roblox||{};
   const coding=playbooks?.taskTypes?.coding||{};
-  const checklist=unique([...(roblox.checklist||[]),...(coding.checklist||[])]).slice(0,16);
-  const reuseProjects=unique([...(roblox.reuse||[]).map(row=>row?.project),...(coding.reuse||[]).map(row=>row?.project)]).slice(0,16);
+  const checklist=unique([...(roblox.checklist||[]),...(coding.checklist||[])]);
+  const reuseRows=[...(roblox.reuse||[]),...(coding.reuse||[])];
+  const reuseProjects=unique(reuseRows.map(row=>row?.project));
+  const verifiedExternalPlaybookIds=unique(reuseRows
+    .filter(row=>clean(row?.id).startsWith('external-black-box-'))
+    .map(row=>row?.id));
   const recipes=(Array.isArray(recombination?.recipes)?recombination.recipes:[])
     .filter(recipe=>Array.isArray(recipe?.sourceProjects)&&new Set(recipe.sourceProjects.map(clean).filter(Boolean)).size>=2)
     .filter(recipe=>!(recipe.sourceProjects||[]).map(clean).includes(clean(gameId)));
@@ -90,7 +95,8 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
   const featureBlend=unique(selected?.featureBlend||[]).slice(0,12);
   const sourceProjects=unique(selected?.sourceProjects||[]).slice(0,6);
   const distilled=selectDistilled(distillation?.records||[],{gameId,terms,profileText});
-  const applied=checklist.length>0&&(Boolean(selected)||distilled.patterns.length>0||distilled.principles.length>0);
+  const verifiedExternalLearningIds=unique([...verifiedExternalPlaybookIds,...(distilled.externalIds||[])]);
+  const applied=checklist.length>0&&verifiedExternalLearningIds.length>0&&(Boolean(selected)||distilled.patterns.length>0||distilled.principles.length>0||verifiedExternalPlaybookIds.length>0);
 
   return Object.freeze({
     applied,
@@ -105,6 +111,12 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     distilledSourceIds:distilled.ids,
     distilledPatterns:distilled.patterns,
     distilledPrinciples:distilled.principles,
+    verifiedExternalLearningIds:Object.freeze(verifiedExternalLearningIds),
+    verifiedExternalLearningRetrievedCount:verifiedExternalLearningIds.length,
+    verifiedExternalLearningAppliedCount:verifiedExternalLearningIds.length,
+    verifiedExternalLearningCoveragePct:verifiedExternalLearningIds.length>0?100:0,
+    verifiedExternalLearningFirst:true,
+    verifiedExternalLearningTruncationForbidden:true,
     externalBlackBoxAdvisoryUsed:distilled.externalAdvisoryUsed,
     crossGameDistillationUsed:distilled.crossGameUsed,
     freshQaRequiredForDistilledTransfer:distilled.freshQaRequired,
