@@ -508,8 +508,8 @@ test('core QA isolates Chrome browser smoke from the slim regression runner',()=
   const browserJob=coreQaWorkflow.slice(browserAt);
   assert.match(testJob,/runs-on:\s*ubuntu-slim/);
   assert.doesNotMatch(testJob,/node qa\/vibe2-development-web-browser-smoke\.mjs/);
-  assert.match(browserJob,/needs:\s*test/);
-  assert.match(browserJob,/runs-on:\s*ubuntu-latest/);
+  assert.doesNotMatch(browserJob,/needs:\s*test/);
+  assert.match(browserJob,/runs-on:\s*ubuntu-24\.04/);
   assert.match(browserJob,/node qa\/vibe2-development-web-browser-smoke\.mjs/);
 });
 
