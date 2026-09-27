@@ -6666,7 +6666,23 @@
       "publicReleaseApprovalSeparate": true,
       "publicReleaseApprovalAuthority": "OWNER_EXPLICIT_DIRECTIVE_ONLY",
       "externalServerBootNotRequiredForInternalCompletion": true,
-      "newPipelineForbidden": true
+      "newPipelineForbidden": true,
+      "parallelism": {
+        "preserveExistingParallelism": true,
+        "crossGameParallelism": "UNCHANGED",
+        "crossPlatformParallelism": "ROBLOX_AND_UNITY_REMAIN_CONCURRENT",
+        "independentQaParallelism": "UNCHANGED_WHERE_DEPENDENCIES_ALLOW",
+        "regressionParallelism": "UNCHANGED_WHERE_DEPENDENCIES_ALLOW",
+        "f0AcrossGamesParallel": true,
+        "f1ToF8AcrossGamesParallel": true,
+        "f9AcrossGamesParallel": true,
+        "sameGameF1ToF8": "ONE_SHARED_INTERNAL_SESSION_TO_REMOVE_DUPLICATE_RUNTIME_LAUNCHES",
+        "exactSameGameDuplicateExecution": "COALESCE_ONLY_DUPLICATE_IDENTITY",
+        "globalSerializationForbidden": true,
+        "crossGameSerializationForbidden": true,
+        "platformSerializationForbidden": true,
+        "externalProviderCapacityRemainsOnlyHeavyExecutionBoundary": true
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
