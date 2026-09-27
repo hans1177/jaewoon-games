@@ -17,6 +17,8 @@ const CINEMATIC_MOTION_LAYERS=Object.freeze(['PRIMARY_MOTION','SECONDARY_MOTION'
 const VFX_INTENSITY_HIERARCHY=Object.freeze(['AMBIENT','NORMAL','HEAVY','CRITICAL_OR_SIGNATURE','BOSS_OR_ULTIMATE']);
 const ADAPTIVE_AUDIO_STATES=Object.freeze(['EXPLORATION','DISCOVERY_OR_TENSION','COMBAT','DANGER','BOSS','VICTORY','REST_OR_HUB','SPECIAL_EVENT']);
 const MENU_LAYOUT_PATTERNS=Object.freeze(['FULL_SCREEN_HUB','SPLIT_PANE','TABBED_BOOK','GRID_DETAIL','SIDE_DRAWER','BOTTOM_SHEET','CONTEXT_PANEL','CARD_STACK','RADIAL_QUICK','MAP_OVERLAY']);
+const BUTTON_PRESENTATION_PATTERNS=Object.freeze(['PRIMARY_WIDE','SECONDARY_COMPACT','ICON_LABEL','ICON_ONLY_WITH_TOOLTIP','SEGMENTED_TAB','CARD_ACTION','FLOATING_CONTEXT','RADIAL_ACTION','TOGGLE_ROW','HOLD_TO_CONFIRM']);
+const BUTTON_USABILITY_RULES=Object.freeze(['semantic-priority-controls-size-and-emphasis','destructive-actions-separated-and-confirmed','frequent-actions-thumb-reachable-on-mobile','icon-only-needs-clear-symbol-or-tooltip','disabled-state-must-explain-unavailable-action','loading-state-blocks-double-submit','back-close-always-visible-or-native','long-lists-use-search-filter-sort-when-useful','preserve-selection-and-scroll-when-returning','minimum-touch-target-44px-or-engine-equivalent']);
 const MENU_SURFACE_RULES=Object.freeze([
   Object.freeze({id:'MAIN',re:/main.?menu|title.?screen|메인.?메뉴|시작.?화면/i}),
   Object.freeze({id:'PAUSE',re:/pause|일시.?정지|정지.?메뉴/i}),
@@ -47,7 +49,9 @@ export function createVibeMenuArchitecture({request='',files=[],platform='AUTO'}
     let layout=MENU_LAYOUT_PATTERNS[(seed+index)%MENU_LAYOUT_PATTERNS.length];
     for(let step=0;step<MENU_LAYOUT_PATTERNS.length&&used.has(layout)&&used.size<MENU_LAYOUT_PATTERNS.length;step++)layout=MENU_LAYOUT_PATTERNS[(seed+index+step+1)%MENU_LAYOUT_PATTERNS.length];
     used.add(layout);
-    return Object.freeze({id,layout,interaction:id==='MAP'?'PAN_ZOOM_AND_LAYER_TOGGLE':id==='INVENTORY'||id==='EQUIPMENT'?'SELECT_COMPARE_EQUIP':id==='CRAFTING'||id==='SHOP'?'BROWSE_DETAIL_CONFIRM':'FOCUS_NAVIGATE_CONFIRM_BACK'});
+    const buttonPattern=BUTTON_PRESENTATION_PATTERNS[(seed+index*3)%BUTTON_PRESENTATION_PATTERNS.length];
+    const destructive=id==='SETTINGS'?'SECONDARY_COMPACT':id==='RESULT'?'PRIMARY_WIDE':'';
+    return Object.freeze({id,layout,buttonPattern,destructivePattern:destructive||null,interaction:id==='MAP'?'PAN_ZOOM_AND_LAYER_TOGGLE':id==='INVENTORY'||id==='EQUIPMENT'?'SELECT_COMPARE_EQUIP':id==='CRAFTING'||id==='SHOP'?'BROWSE_DETAIL_CONFIRM':'FOCUS_NAVIGATE_CONFIRM_BACK'});
   });
   return Object.freeze({
     version:1,
@@ -55,8 +59,10 @@ export function createVibeMenuArchitecture({request='',files=[],platform='AUTO'}
     requiredSurfaces:Object.freeze(uniqueRequired),
     surfaces:Object.freeze(surfaces),
     layoutPatterns:MENU_LAYOUT_PATTERNS,
-    varietyRules:Object.freeze(['do-not-clone-one-layout-across-every-major-menu','choose-layout-by-menu-purpose-and-information-density','keep-shared-visual-language-and-navigation-conventions','mobile-first-touch-and-safe-area','clear-back-close-path','restore-gameplay-focus-after-close']),
-    implementation:Object.freeze({reuseExistingUiRouter:true,reuseExistingMenuState:true,newParallelMenuSystemForbidden:true,directResponsibleUiEditPreferred:true,screenSpecificCompositionAllowed:true}),
+    buttonPatterns:BUTTON_PRESENTATION_PATTERNS,
+    buttonUsabilityRules:BUTTON_USABILITY_RULES,
+    varietyRules:Object.freeze(['do-not-clone-one-layout-across-every-major-menu','do-not-repeat-one-button-style-for-every-action','choose-layout-by-menu-purpose-and-information-density','vary-button-emphasis-by-action-priority-not-random-decoration','keep-shared-visual-language-and-navigation-conventions','mobile-first-touch-and-safe-area','clear-back-close-path','restore-gameplay-focus-after-close','preserve-context-selection-and-scroll-when-returning']),
+    implementation:Object.freeze({reuseExistingUiRouter:true,reuseExistingMenuState:true,reuseExistingInputBindings:true,newParallelMenuSystemForbidden:true,directResponsibleUiEditPreferred:true,screenSpecificCompositionAllowed:true,buttonSpecificPresentationAllowed:true}),
     protected:Object.freeze(['gameplay-rules','balance-values','save-structure','progression-meaning','network-authority'])
   });
 }
@@ -114,7 +120,7 @@ export function planVibePresentationAutopilot({files=[],events=[],request='',cha
     audit,designSystem,menuArchitecture,timeline,highEnd,cinematicDirection,
     changeRequest:changeRequest||null,
     tasks:Object.freeze(tasks.slice(0,10)),
-    policy:Object.freeze({serverAI:false,checkpoint:true,checkpointIsTerminal:false,continuousEvolution:true,highEndCompletionIsReleaseGate:false,mobileFirst:true,gameplayAuthoritative:true,noRuleMutation:true,lightingIsPresentationOnly:true,signatureEventPresentationRequired:true,artDirectionCohesionRequired:true,latestOwnerIntentWinsSameScope:true,directResponsibleSystemEditPreferred:true,wrapperOrShadowAccumulationForbidden:true,menuVarietyRequiredWhenMenusPresent:true,oneTemplateForEveryMenuForbidden:true,existingUiNavigationAndStateReused:true,menuMayNotMutateGameplayRules:true})
+    policy:Object.freeze({serverAI:false,checkpoint:true,checkpointIsTerminal:false,continuousEvolution:true,highEndCompletionIsReleaseGate:false,mobileFirst:true,gameplayAuthoritative:true,noRuleMutation:true,lightingIsPresentationOnly:true,signatureEventPresentationRequired:true,artDirectionCohesionRequired:true,latestOwnerIntentWinsSameScope:true,directResponsibleSystemEditPreferred:true,wrapperOrShadowAccumulationForbidden:true,menuVarietyRequiredWhenMenusPresent:true,oneTemplateForEveryMenuForbidden:true,existingUiNavigationAndStateReused:true,menuMayNotMutateGameplayRules:true,buttonUsabilityRequired:true,buttonPriorityAndFeedbackRequired:true,buttonTouchReachabilityRequired:true})
   });
 }
 export function scoreVibeScreenComposition({primaryActions=1,overlaps=0,edgeClips=0,unreadableLabels=0,criticalHudVisible=true,touchTargetsSmall=0}={}){let score=100;score-=Math.max(0,primaryActions-1)*8;score-=overlaps*15;score-=edgeClips*18;score-=unreadableLabels*10;score-=touchTargetsSmall*8;if(!criticalHudVisible)score-=30;score=clamp(score);return Object.freeze({score,grade:score>=90?'A':score>=75?'B':score>=60?'C':'D',issues:Object.freeze([overlaps&&'overlap',edgeClips&&'edge-clip',unreadableLabels&&'readability',touchTargetsSmall&&'touch-target',!criticalHudVisible&&'critical-hud-hidden'].filter(Boolean))})}
