@@ -195,3 +195,13 @@ test('quality-first suppression keeps public release and exact candidate gates i
   assert.match(workflow,/ROBLOX_FINAL_REVIEW_PENDING/);
   assert.doesNotMatch(workflow,/robloxQualityBuildUpRequired\s*=\s*false/);
 });
+
+test('active same-source product quality buildup suppresses Open Cloud and downstream foundation processing',()=>{
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_ACTIVE_QUALITY_BUILDUP=/);
+  assert.match(workflow,/ROBLOX_FOUNDATION_PROCESSING_SKIPPED_ACTIVE_QUALITY_BUILDUP=/);
+  assert.match(workflow,/item\.robloxQualityBuildUpRequired===true/);
+  assert.match(workflow,/item\.robloxQualityBuildUpSourceRevision/);
+  assert.match(workflow,/QUALITY_FIRST_BUILDUP_SHORT_CIRCUIT=ACTIVE/);
+  assert.match(workflow,/EXTERNAL_RELEASE_PROBE_SUPPRESSED=YES/);
+  assert.match(workflow,/RESUME_STAGE=REPAIR_REQUIRED/);
+});
