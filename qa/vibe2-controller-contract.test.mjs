@@ -604,6 +604,8 @@ test('neuron callbacks keep every ingress event and reconcile shared queue state
   assert(!workflow.includes("format('vibe2-fanin-refill-{0}', github.event.client_payload.execution_lane || 'game-primary')"));
   assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
   assert(workflow.includes("'vibe2-main-push-game-primary-wake'"));
+  assert(workflow.includes("github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == ''"));
+  assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
   assert(workflow.includes('cancel-in-progress: false'));
   assert(!workflow.includes('vibe2-fanin-refill-singleton'));
   assert(!workflow.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
