@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-a0k1wj",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T03:54:02.456Z",
-      "expiresAt": "2026-09-27T04:39:02.456Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-1k96m5s",
       "worker": "vibe2",
       "taskId": "horror-escape-room-post-release-focus-4048dd962de0ea8d",
@@ -711,6 +693,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:ant-simulator-existing-web-assessment-v1"
+      ]
+    },
+    {
+      "id": "wl-uhj1se",
+      "worker": "vibe2",
+      "taskId": "seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "files": [
+        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "030bba2df3bf52826ca4bcfa8d35e6c207a25ca8",
+      "acquiredAt": "2026-09-27T04:39:58.310Z",
+      "expiresAt": "2026-09-27T05:24:58.310Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1"
       ]
     }
   ]
