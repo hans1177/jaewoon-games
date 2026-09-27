@@ -414,6 +414,13 @@ test('post-runtime scan persists successful sibling probes before surfacing pers
  assert.ok(stateWriteAt>0&&studioDispatchAt>stateWriteAt&&failGateAt>studioDispatchAt);
 });
 
+test('post-runtime Studio followup delegates exact-engine preboot eligibility to the canonical planner',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/const queueStudioFollowupIfEligible=item=>\{[\s\S]*?planLocalStudioCandidates\(/);
+ assert.doesNotMatch(workflow,/queueStudioFollowupIfEligible=item=>\{\s*if\(item\?\.robloxRuntimeFoundationPassed!==true\)return;/);
+ assert.match(workflow,/ROBLOX_FOUNDATION_AWAITING_REAL_SERVER_BOOT=[\s\S]*?queueStudioFollowupIfEligible\(item\);[\s\S]*?continue;/);
+});
+
 test('central policy and architecture preserve runtime truth while real server boot blocks external release only',()=>{
  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
