@@ -1386,3 +1386,50 @@ test('successful exact Studio play clears prior product-quality buildup short ci
   assert.equal(applied.item.robloxQualityBuildUpSourceRevision,null);
   assert.equal(applied.item.robloxQualityBuildUpEvidence,null);
 });
+
+
+test('verified Studio product-quality failure enters canonical buildup repair and suppresses same-source replay',()=>{
+  const queue={items:[item()]};
+  const failedRuntime=runtime();
+  failedRuntime.errors=[{type:'studio-console-error',signature:'Script Runtime Error: primary action state did not advance'}];
+  const applied=applyLocalStudioPlayResult({
+    queue,
+    gameId:'g1',
+    runtime:failedRuntime,
+    expected,
+    workflowRunId:991,
+    studioStepSucceeded:true,
+    testedAt:'2026-09-27T08:00:00.000Z'
+  });
+  assert.equal(applied.result.pass,false);
+  assert.equal(applied.result.evidence.infrastructureFailure,false);
+  assert.equal(applied.item.robloxQualityBuildUpRequired,true);
+  assert.equal(applied.item.robloxQualityFailureClass,'PRODUCT');
+  assert.equal(applied.item.robloxQualityBuildUpSourceRevision,source);
+  assert.equal(applied.item.currentStep,'REPAIR_REQUIRED');
+  assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
+  assert.equal(applied.item.robloxQualityBuildUpEvidence?.authority,'roblox-official-studio-mcp-product-quality-failure');
+  assert.equal(applied.item.robloxQualityBuildUpEvidence?.failureStage,'VIBE_INTERNAL_PLAY');
+  assert.equal(planLocalStudioCandidates({queue:applied.queue,roadmap:roadmap()}).include.length,0);
+});
+
+test('Studio infrastructure failure does not fabricate a product-quality buildup requirement',()=>{
+  const candidate=item();
+  const queue={items:[candidate]};
+  const failedRuntime=runtime();
+  failedRuntime.errors=[{type:'infrastructure',signature:'NO_STUDIO'}];
+  const applied=applyLocalStudioPlayResult({
+    queue,
+    gameId:'g1',
+    runtime:failedRuntime,
+    expected,
+    workflowRunId:992,
+    studioStepSucceeded:true,
+    testedAt:'2026-09-27T08:01:00.000Z'
+  });
+  assert.equal(applied.result.pass,false);
+  assert.equal(applied.result.evidence.infrastructureFailure,true);
+  assert.notEqual(applied.item.robloxQualityBuildUpRequired,true);
+  assert.equal(applied.item.robloxQualityFailureClass,'INFRASTRUCTURE_OR_EVIDENCE_ONLY');
+  assert.equal(applied.item.canonicalState,'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+});
