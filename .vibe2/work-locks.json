@@ -3,134 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1wt1kp1",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:02:37.628Z",
-      "expiresAt": "2026-09-27T04:47:37.628Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1rhvkq1",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/shared/QACamera.luau",
-        "roblox-games/horror-escape-room/shared/VisualStyle.luau"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:02:49.177Z",
-      "expiresAt": "2026-09-27T04:47:49.177Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-15dvuh4",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-unity-web-base-implementation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "unity-games/horror-escape-room/Assets/Scripts/GameCore.cs",
-        "unity-games/horror-escape-room/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:03:04.582Z",
-      "expiresAt": "2026-09-27T04:48:04.582Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1fgqj3r",
-      "worker": "vibe2",
-      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "files": [
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:03:13.500Z",
-      "expiresAt": "2026-09-27T04:48:13.500Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-ykezbe",
-      "worker": "vibe2",
-      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/Game.server.luau",
-        "roblox-games/cozy-island/client/Game.client.luau",
-        "roblox-games/cozy-island/shared/GameConfig.luau"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:03:14.551Z",
-      "expiresAt": "2026-09-27T04:48:14.551Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-post-release-focus-12c1a7e2ae6288fd"
-      ]
-    },
-    {
-      "id": "wl-1axy2ba",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-unity-web-base-implementation-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:03:22.527Z",
-      "expiresAt": "2026-09-27T04:48:22.527Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1y31enh",
-      "worker": "vibe2",
-      "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "files": [
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:04:43.539Z",
-      "expiresAt": "2026-09-27T04:49:43.539Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-1lt73lb",
       "worker": "vibe2",
       "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
@@ -767,6 +639,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:daechung-rpg-roblox-second-gate-rebuild-v1"
+      ]
+    },
+    {
+      "id": "wl-5vas5f",
+      "worker": "vibe2",
+      "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "files": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+      ],
+      "baseSha": "030bba2df3bf52826ca4bcfa8d35e6c207a25ca8",
+      "acquiredAt": "2026-09-27T04:50:21.915Z",
+      "expiresAt": "2026-09-27T05:35:21.915Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
