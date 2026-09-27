@@ -784,10 +784,13 @@ jobs:
           RUNTIME_PASS: ${{ steps.runtimestate.outputs.passed }}
           QA_PASS: ${{ steps.independentstate.outputs.passed }}
           REGRESSION_PASS: ${{ steps.regressionstate.outputs.passed }}
+          RUNTIME_RUN_CANONICAL: ${{ steps.canonical.outputs.runtime_run }}
           RUNTIME_RUN_NEW: ${{ steps.runtime.outputs.run_id }}
           RUNTIME_RUN_OLD: ${{ matrix.item.unityRuntimeSmokeRunId }}
+          QA_RUN_CANONICAL: ${{ steps.canonical.outputs.qa_run }}
           QA_RUN_NEW: ${{ steps.independent.outputs.run_id }}
           QA_RUN_OLD: ${{ matrix.item.unityIndependentQaRunId }}
+          REGRESSION_RUN_CANONICAL: ${{ steps.canonical.outputs.regression_run }}
           REGRESSION_RUN_NEW: ${{ steps.regression.outputs.run_id }}
           REGRESSION_RUN_OLD: ${{ matrix.item.unityRegressionRunId }}
           IS_CANARY: ${{ needs.prepare.outputs.canary }}
@@ -812,13 +815,13 @@ jobs:
           if(runtime&&!qa)failure='INDEPENDENT_QA';else if(qa)last='INDEPENDENT_QA';
           if(qa&&!regression)failure='REGRESSION';else if(regression)last='REGRESSION';
           const canonical=process.env.MEETING_STATE||'WAITING_TARGET_PLATFORM_VALIDATION';
-          const runtimeRun=Number(process.env.RUNTIME_RUN_NEW||process.env.RUNTIME_RUN_OLD||0)||null;
-          const qaRun=Number(process.env.QA_RUN_NEW||process.env.QA_RUN_OLD||0)||null;
-          const regressionRun=Number(process.env.REGRESSION_RUN_NEW||process.env.REGRESSION_RUN_OLD||0)||null;
+          const runtimeRun=Number(process.env.RUNTIME_RUN_CANONICAL||process.env.RUNTIME_RUN_NEW||process.env.RUNTIME_RUN_OLD||process.env.QA_RUN_NEW||0)||null;
+          const qaRun=Number(process.env.QA_RUN_CANONICAL||process.env.QA_RUN_NEW||process.env.QA_RUN_OLD||runtimeRun||0)||null;
+          const regressionRun=Number(process.env.REGRESSION_RUN_CANONICAL||process.env.REGRESSION_RUN_NEW||process.env.REGRESSION_RUN_OLD||runtimeRun||0)||null;
           const buildRun=Number(process.env.BUILD_RUN||0)||null;
           const artifactIdentity=process.env.ARTIFACT_ID||null;
           const stamp=new Date().toISOString();
-          const evidence={version:2,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION||null,sourceRootTreeSha:process.env.SOURCE_TREE_SHA||null,sourceFingerprint:process.env.SOURCE_FINGERPRINT||null,buildOrPackagePassed:build,artifactIdentity,runtimePassed:runtime,independentQaPassed:qa,regressionPassed:regression,exactRevision:Boolean(artifactIdentity&&process.env.SOURCE_REVISION&&process.env.SOURCE_TREE_SHA),lastSuccessfulStage:last,failureStage:failure,failureSignature:failure?failureSignature({stage:failure,code:'STAGE_NOT_PASSED',message:`${process.env.GAME_ID}:${failure}`}):null};
+          const evidence={version:3,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION||null,sourceRootTreeSha:process.env.SOURCE_TREE_SHA||null,sourceFingerprint:process.env.SOURCE_FINGERPRINT||null,buildOrPackagePassed:build,artifactIdentity,runtimePassed:runtime,independentQaPassed:qa,regressionPassed:regression,exactRevision:Boolean(artifactIdentity&&process.env.SOURCE_REVISION&&process.env.SOURCE_TREE_SHA),f1ThroughF8SingleSession:runtime&&qa,runtimeLaunchCount:runtime?1:null,perFloorRuntimeRelaunch:false,f9AggregationOnly:regression,lastSuccessfulStage:last,failureStage:failure,failureSignature:failure?failureSignature({stage:failure,code:'STAGE_NOT_PASSED',message:`${process.env.GAME_ID}:${failure}`}):null};
           const internalReady=build&&runtime&&qa&&regression&&Boolean(artifactIdentity)&&Boolean(process.env.SOURCE_REVISION);
           const row={
             gameId:process.env.GAME_ID,status:'ACTIVE',selectedPlatform:'UNITY',targetPlatform:'UNITY',
@@ -830,18 +833,18 @@ jobs:
             unityInternalReleaseReady:internalReady,
             unityInternalReleaseAt:internalReady?stamp:null,
             unityInternalReleaseEvidence:internalReady?{
-              version:2,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION,sourceRootTreeSha:process.env.SOURCE_TREE_SHA,artifactIdentity,
+              version:3,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION,sourceRootTreeSha:process.env.SOURCE_TREE_SHA,artifactIdentity,
               buildRunId:buildRun,runtimeRunId:runtimeRun,independentQaRunId:qaRun,regressionRunId:regressionRun,
-              distribution:'INTERNAL_OR_CLOSED_APP_TEST_BUILD',artifactInternalTestingAllowed:true,publicRelease:false,
-              authority:'unity-exact-apk-runtime-qa-regression'
+              f1ThroughF8SingleSession:true,runtimeLaunchCount:1,perFloorRuntimeRelaunch:false,f9AggregationOnly:true,
+              distribution:'INTERNAL_OR_CLOSED_APP_TEST_BUILD',artifactInternalTestingAllowed:true,externalPublicationAuthority:false,
+              authority:'unity-f0-f9-one-runtime-session'
             }:null,
-            unityPublicReleaseReady:false,unityPublicRelease:false,
             executionEvidence:evidence,resumeStage:failure||(internalReady?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'IMMEDIATE_NEXT_STAGE_DISPATCH'),
             failureCount:failure?1:0,contractCanaryPassed:String(process.env.IS_CANARY).toLowerCase()==='true'&&regression,updatedAt:stamp
           };
           fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.json`,JSON.stringify(row,null,2)+'\n');
           fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.evidence.json`,JSON.stringify(evidence,null,2)+'\n');
-          console.log(`CHECKPOINT_LAST_SUCCESS=${last}`);console.log(`CHECKPOINT_FAILURE_STAGE=${failure||'NONE'}`);console.log(`UNITY_INTERNAL_RELEASE_READY=${internalReady?'YES':'NO'}`);console.log('UNITY_PUBLIC_RELEASE=NO');
+          console.log(`CHECKPOINT_LAST_SUCCESS=${last}`);console.log(`CHECKPOINT_FAILURE_STAGE=${failure||'NONE'}`);console.log(`UNITY_INTERNAL_RELEASE_READY=${internalReady?'YES':'NO'}`);console.log('UNITY_PUBLIC_RELEASE_STATE_MUTATION=NO');
           NODE
 
       - name: Upload checkpoint for company-runtime persistence
