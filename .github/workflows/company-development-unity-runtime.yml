@@ -796,6 +796,9 @@ jobs:
           const robloxInternal=item.robloxInternalReleaseReady===true
             ||item.robloxInternalReleasePublished===true
             ||item.robloxInternalReleaseEvidence?.published===true;
+          const robloxRepairRequired=
+            String(item.canonicalState||'').toUpperCase()==='TARGET_PLATFORM_REPAIR_REQUIRED'
+            &&Boolean(String(item.robloxFailureStage||'').trim());
           if(concurrent&&update.unityInternalReleaseReady!==true){
             if(robloxInternal){
               mergedUpdate.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
@@ -809,6 +812,10 @@ jobs:
               mergedUpdate.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
               mergedUpdate.canonicalState='F0_SOURCE_PREFLIGHT_PASSED';
               console.log('UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX='+update.gameId+':PRIVATE_RUNTIME_CANDIDATE_DEPLOY');
+            }else if(robloxRepairRequired){
+              mergedUpdate.currentStep=String(item.currentStep||'TARGET_PLATFORM_TECHNICAL_VALIDATION');
+              mergedUpdate.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED';
+              console.log('UNITY_SHARED_REPAIR_PRESERVED_FROM_ROBLOX='+update.gameId+':'+mergedUpdate.currentStep);
             }
           }
           Object.assign(item,mergedUpdate);
