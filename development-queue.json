@@ -3569,7 +3569,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-27T00:36:18.352Z",
+      "updatedAt": "2026-09-27T00:37:51.083Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -4393,7 +4393,11 @@
       "robloxPublicReleaseBlockers": [
         "roblox-public-release-awaiting-real-server-boot"
       ],
-      "robloxF9PendingInParallel": true
+      "robloxF9PendingInParallel": true,
+      "robloxF9FailureSignature": "ROBLOX_F9_EXACT_EVIDENCE_MISMATCH",
+      "robloxF9Blockers": [
+        "roblox-f9-exact-evidence-mismatch"
+      ]
     },
     {
       "gameId": "fantasy-survival",
@@ -8566,7 +8570,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T00:37:38.667Z",
+  "updatedAt": "2026-09-27T00:37:51.083Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
