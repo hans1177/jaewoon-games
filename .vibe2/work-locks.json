@@ -3,80 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-5dzz9k",
-      "worker": "vibe2",
-      "taskId": "bug-defense-unity-web-base-implementation-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "unity-games/bug-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/bug-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:57:19.767Z",
-      "expiresAt": "2026-09-27T07:42:19.767Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-f97rdv",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:57:38.346Z",
-      "expiresAt": "2026-09-27T07:42:38.346Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1o5042u",
-      "worker": "vibe2",
-      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "files": [
-        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
-        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:58:58.219Z",
-      "expiresAt": "2026-09-27T07:43:58.219Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1d89wxq",
-      "worker": "vibe2",
-      "taskId": "cozy-island-studio-evolution-presentation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/BattleVisual.luau",
-        "roblox-games/cozy-island/shared/QACamera.luau"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T07:01:34.670Z",
-      "expiresAt": "2026-09-27T07:46:34.670Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-studio-evolution-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-tioe2z",
       "worker": "vibe2",
       "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
@@ -692,6 +618,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
+      ]
+    },
+    {
+      "id": "wl-bp3xf5",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-28a2f2747401-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-queue-control.mjs",
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-queue-control.test.mjs"
+      ],
+      "baseSha": "a04680f4a6e5ead3869094a55f6bec4284dca9d9",
+      "acquiredAt": "2026-09-27T07:47:56.794Z",
+      "expiresAt": "2026-09-27T08:32:56.794Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-28a2f2747401-v1"
       ]
     }
   ]
