@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-rz6nqq",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:25:53.211Z",
-      "expiresAt": "2026-09-27T05:10:53.211Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-5smgsn",
       "worker": "vibe2",
       "taskId": "SYS-ARCH-425305e25df9-v1",
@@ -199,6 +181,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:bug-defense-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1c5h6xw",
+      "worker": "vibe2",
+      "taskId": "bug-defense-studio-evolution-unity-web-usability-v1",
+      "gameId": "bug-defense",
+      "files": [
+        "unity-games/bug-defense/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
+      "acquiredAt": "2026-09-27T05:11:07.159Z",
+      "expiresAt": "2026-09-27T05:56:07.159Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:bug-defense-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
