@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1xroo3r",
-      "worker": "vibe2",
-      "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "7e2983a1f9b7517c34e0c1bced7213be394eb942",
-      "acquiredAt": "2026-09-27T21:58:35.205Z",
-      "expiresAt": "2026-09-27T22:43:35.205Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-a13rbu",
       "worker": "vibe2",
       "taskId": "seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1",
@@ -297,6 +279,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-13849dv",
+      "worker": "vibe2",
+      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "files": [
+        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "352cd25bf6280c47211a63bfc3e57519a984640e",
+      "acquiredAt": "2026-09-27T22:43:43.221Z",
+      "expiresAt": "2026-09-27T23:28:43.221Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
       ]
     }
   ]
