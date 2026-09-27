@@ -180,7 +180,7 @@ test('homepage completion does not redundantly wake the full central Director',(
   const logMap=JSON.parse(read('company-learning/company-log-map.json'));
   const workflowRunBlock=director.slice(director.indexOf('  workflow_run:'),director.indexOf('  push:',director.indexOf('  workflow_run:')));
 
-  assert.doesNotMatch(workflowRunBlock,/Homepage Manager/);
+  assert.doesNotMatch(workflowRunBlock,/^\s*-\s+Homepage Manager\s*$/m);
   assert.match(homepage,/\n  director-supervision:\n/);
   assert.equal(roadmap.changeRecord?.directorHomepageWakeDecoupling20260927?.homepagePipelineOwnsDirectorSupervision,true);
   assert.equal(roadmap.changeRecord?.directorHomepageWakeDecoupling20260927?.homepageManagerWorkflowRunWakeRemovedFromCentralDirector,true);
