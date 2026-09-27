@@ -304,12 +304,54 @@ function incrementalQaPlan(task, target, responsibleFiles, speculativeVariants =
   });
 }
 
-function candidateStrategyRole(variant='primary',preference={}){
+function failedCandidateStrategies(task={}){
+  const prefix='coding-strategy-negative:',rows=[];
+  for(const raw of Array.isArray(task?.evidence)?task.evidence:[]){
+    const value=clean(raw);
+    if(!value.startsWith(prefix))continue;
+    try{
+      const parsed=JSON.parse(decodeURIComponent(value.slice(prefix.length)));
+      const strategy=clean(parsed?.strategy);
+      if(!strategy||parsed?.infrastructureFailure===true||rows.includes(strategy))continue;
+      rows.push(strategy);
+    }catch{}
+  }
+  return freezeList(rows);
+}
+function candidateVariantRank(variant='primary'){
   const normalized=clean(variant)||'primary';
-  if(normalized==='speculative-1')return freeze({variant:normalized,strategy:'DEPENDENCY_SAFE_COHERENT_PATCH',directive:'Patch the primary responsibility plus only the directly required dependent symbols. Prefer a coherent dependency-safe change over an ultra-local patch that leaves the behavior chain broken.'});
-  if(normalized==='speculative-2')return freeze({variant:normalized,strategy:clean(preference?.strategy)||'CAUSAL_TRACE_CROSSCHECK',directive:'Cross-check the full causal chain from input or failure evidence to owned state and observable result. Reuse a verified preferred strategy only when it fits this exact edit contract.'});
-  if(/^speculative-/.test(normalized))return freeze({variant:normalized,strategy:'INVARIANT_PRESERVING_ALTERNATIVE',directive:'Produce a genuinely different invariant-preserving implementation approach inside the exact same writable scope. Do not widen files or bypass the compiled edit contract.'});
-  return freeze({variant:normalized,strategy:'PRIMARY_RESPONSIBILITY_MINIMAL',directive:'Start at the compiled primary responsibility and make the minimum coherent change that produces the required observable result.'});
+  if(normalized==='primary')return 0;
+  const match=/^speculative-(\d+)$/.exec(normalized);
+  return match?Math.max(1,Number(match[1])||1):0;
+}
+export function candidateStrategyRole(variant='primary',preference={},task={}){
+  const normalized=clean(variant)||'primary';
+  const failed=failedCandidateStrategies(task),failedSet=new Set(failed);
+  const preferred=clean(preference?.strategy);
+  const catalog=[
+    {strategy:'PRIMARY_RESPONSIBILITY_MINIMAL',directive:'Start at the compiled primary responsibility and make the minimum coherent change that produces the required observable result.'},
+    {strategy:'DEPENDENCY_SAFE_COHERENT_PATCH',directive:'Patch the primary responsibility plus only the directly required dependent symbols. Prefer a coherent dependency-safe change over an ultra-local patch that leaves the behavior chain broken.'},
+    ...(preferred?[{strategy:preferred,directive:'Use the verified preferred coding strategy only inside this exact compiled edit contract; do not expand writable scope, protected semantics, or QA.'}]:[]),
+    {strategy:'CAUSAL_TRACE_CROSSCHECK',directive:'Cross-check the full causal chain from input or failure evidence to owned state and observable result before choosing the bounded edit.'},
+    {strategy:'INVARIANT_PRESERVING_ALTERNATIVE',directive:'Produce a genuinely different invariant-preserving implementation approach inside the exact same writable scope. Do not widen files or bypass the compiled edit contract.'},
+    {strategy:'PATH_VERIFIED_ANCHOR_FIRST',directive:'Re-read the exact responsible files and verify the target path and edit anchor before changing source. Use a different exact anchor or symbol path from prior failed edits while preserving the same writable scope.'},
+    {strategy:'OBSERVABLE_DELTA_FIRST',directive:'Start from the required observable runtime or presentation delta, trace backward to the smallest responsible source change, and reject no-op or marker-only edits.'},
+    {strategy:'BOUNDED_OUTPUT_COMMIT_FIRST',directive:'Produce the smallest complete valid output envelope and one coherent bounded source delta first, then add only directly required dependent edits. Avoid oversized or malformed model output.'},
+    {strategy:'SOURCE_RESCAN_REBIND',directive:'Rescan the approved responsible files, rebind the task to the currently existing symbols, and implement through those live symbols instead of repeating stale edit matches.'},
+    {strategy:'RESPONSIBILITY_SPLIT_FANIN',directive:'Split the same approved responsibility into independently coherent source deltas and fan them back into one bounded candidate without adding files, systems, or authority.'}
+  ].filter((row,index,all)=>row.strategy&&!all.slice(0,index).some(other=>other.strategy===row.strategy));
+  const available=catalog.filter(row=>!failedSet.has(row.strategy));
+  const rank=candidateVariantRank(normalized);
+  const selected=available.length
+    ?available[rank%available.length]
+    :{strategy:'CAUSAL_EVIDENCE_REFRESH_REQUIRED',directive:'All recorded implementation strategies for this task have failed. Do not repeat a known failed patch. Refresh exact causal evidence inside the same approved scope and form a materially different implementation hypothesis before source mutation.'};
+  return freeze({
+    variant:normalized,
+    strategy:selected.strategy,
+    directive:selected.directive,
+    avoidedFailedStrategies:failed,
+    repeatedFailedStrategyBlocked:failed.length>0&&selected.strategy!=='CAUSAL_EVIDENCE_REFRESH_REQUIRED'
+  });
 }
 
 function buildSystemArchitectureWorkOrder({base,task,centralPolicy,centralPolicyLiveRef='',runtime={},variant='primary'}={}){
@@ -322,7 +364,7 @@ function buildSystemArchitectureWorkOrder({base,task,centralPolicy,centralPolicy
     mainSha:clean(process.env.VIBE2_BASE_MAIN_SHA)||clean(process.env.GITHUB_SHA)||'',livePolicyRef:clean(centralPolicyLiveRef)
   });
   const contractGuidance=compiledWorkContractGuidance(compiledWorkContract);
-  const strategy=candidateStrategyRole(variant,{strategy:'STRUCTURAL_CAUSE_FIRST'});
+  const strategy=candidateStrategyRole(variant,{strategy:'STRUCTURAL_CAUSE_FIRST'},task);
   const goal=[
     systemArchitectureGuidance(task),task.goal,contractGuidance,
     '[SYSTEM EVOLUTION IMPLEMENTATION METHOD]',
@@ -507,7 +549,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const verifiedArchitectureDriftGuidance=architectureDriftGuidance(architectureDriftRisk);
   const codingConstitutionRule=codingConstitutionRuleForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
   const verifiedCodingConstitutionGuidance=codingConstitutionGuidance(codingConstitutionRule);
-  const baseCandidateStrategy=candidateStrategyRole(variant,codingStrategyPreference);
+  const baseCandidateStrategy=candidateStrategyRole(variant,codingStrategyPreference,task);
   const candidateStrategy=phase4BenchmarkVerification.active===true
     ?freeze({
       variant:'phase4-controlled',
