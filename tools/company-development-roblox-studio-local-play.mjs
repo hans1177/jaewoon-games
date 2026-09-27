@@ -163,8 +163,15 @@ function localStudioActualPlayContractMetadata(repoRoot='',gameId=''){
   let launch={};
   try{launch=readJson(file);}catch{return{required:false,version:0,fingerprint:null};}
   const contract=launch?.studioActualPlayContract||{};
-  if(contract?.required!==true)return{required:false,version:Number(contract?.version||0),fingerprint:null};
-  return{required:true,version:Number(contract?.version||0),fingerprint:'sha256:'+stableSha256(contract)};
+  if(contract?.required!==true)return{required:false,version:Number(contract?.version||0),fingerprint:null,primaryActionEffectRequired:false,minimumPrimaryActionDisplacement:0.25};
+  const requiredScenarios=Array.isArray(contract?.requiredScenarios)?contract.requiredScenarios.map(clean).filter(Boolean):[];
+  return{
+    required:true,
+    version:Number(contract?.version||0),
+    fingerprint:'sha256:'+stableSha256(contract),
+    primaryActionEffectRequired:Boolean(clean(contract?.primaryActionButtonText)&&requiredScenarios.includes('primary-action-effect')),
+    minimumPrimaryActionDisplacement:Number(contract?.expectations?.minimumPrimaryActionDisplacement||0.25)
+  };
 }
 
 export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='',repoRoot=''}={}){
@@ -272,6 +279,13 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
     const artifactIdentity=currentExact?currentArtifactIdentity:candidateArtifactIdentity;
     const artifactRunId=candidateArtifactRunId;
 
+    const priorPrimaryActionEffectEvidenceComplete=Boolean(
+      scenarioContract.primaryActionEffectRequired!==true
+      ||prior?.runtimeSummary?.primaryActionFeedbackChanged===true
+      ||Number(prior?.runtimeSummary?.primaryActionDisplacement||0)>=Number(scenarioContract.minimumPrimaryActionDisplacement||0.25)
+      ||Number(prior?.runtimeSummary?.primaryActionVelocity||0)>=1
+    );
+
     const alreadyObserved=Boolean(
       prior?.pass===true
       &&prior?.actualPlay===true
@@ -292,6 +306,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
           prior?.scenarioContractRequired===true
           &&Number(prior?.scenarioContractVersion||0)===Number(scenarioContract.version||0)
           &&clean(prior?.scenarioContractFingerprint)===clean(scenarioContract.fingerprint)
+          &&priorPrimaryActionEffectEvidenceComplete
         )
       )
     );
