@@ -3,43 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1843bv6",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-studio-evolution-presentation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T02:20:52.012Z",
-      "expiresAt": "2026-09-27T03:05:52.012Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-1sgkmjw",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
-      "gameId": "daechung-rpg",
-      "files": [
-        "roblox-games/daechung-rpg/server/Game.server.luau",
-        "roblox-games/daechung-rpg/client/Game.client.luau",
-        "roblox-games/daechung-rpg/shared/GameConfig.luau"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T02:20:58.393Z",
-      "expiresAt": "2026-09-27T03:05:58.393Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-post-release-focus-b0dce53053629c70"
-      ]
-    },
-    {
       "id": "wl-luyhsz",
       "worker": "vibe2",
       "taskId": "cozy-island-existing-web-assessment-v1",
@@ -840,6 +803,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-lig1u3",
+      "worker": "vibe2",
+      "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "files": [
+        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
+      "acquiredAt": "2026-09-27T03:06:15.490Z",
+      "expiresAt": "2026-09-27T03:51:15.490Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
