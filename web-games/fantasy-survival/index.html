@@ -262,6 +262,63 @@ const HANDCRAFTED_COOKING_COMBOS={
  'cooked-greens|cooked-lizard-meat':'meal-lake-lizard-greens',
  'cooked-crystal-deer-meat|cooked-greens':'meal-lake-deer-greens'
 };
+const AUTO_COOKING_NAMES={
+ 'carrot|cooked-hare-meat':'숲토끼 당근말이',
+ 'carrot|cooked-bird-meat':'세계수 꼬치구이',
+ 'carrot|cooked-lizard-meat':'협곡 꼬치구이',
+ 'carrot|cooked-crystal-goat-meat':'수정 산양 꼬치',
+ 'carrot|cooked-greens':'숲채소 직화구이',
+ 'carrot|cooked-fish':'호숫가 생선꼬치',
+ 'carrot|cooked-crystal-deer-meat':'수정 꼬치구이',
+ 'carrot|cooked-squid-meat':'심해 오징어꼬치',
+ 'cooked-deer-meat|cooked-hare-meat':'숲사냥 모둠구이',
+ 'cooked-bird-meat|cooked-deer-meat':'세계수 사냥구이',
+ 'cooked-deer-meat|cooked-lizard-meat':'협곡 사냥구이',
+ 'cooked-crystal-goat-meat|cooked-deer-meat':'수정 들판구이',
+ 'cooked-deer-meat|cooked-greens':'사슴 채소전골',
+ 'cooked-deer-meat|cooked-fish':'호수 사냥꾼 정식',
+ 'cooked-crystal-deer-meat|cooked-deer-meat':'쌍사슴 수정구이',
+ 'cooked-deer-meat|cooked-squid-meat':'사슴 오징어 불판구이',
+ 'cooked-bug-meat|cooked-hare-meat':'숲속 단백질 꼬치',
+ 'cooked-bird-meat|cooked-bug-meat':'수관 사냥꾼 꼬치',
+ 'cooked-bug-meat|cooked-lizard-meat':'돌껍질 바삭구이',
+ 'cooked-bug-meat|cooked-crystal-goat-meat':'수정벌레 산적',
+ 'cooked-bug-meat|cooked-greens':'숲벌레 채소볶음',
+ 'cooked-bug-meat|cooked-fish':'호수 단백질 꼬치',
+ 'cooked-bug-meat|cooked-crystal-deer-meat':'수정벌레 꼬치',
+ 'cooked-bug-meat|cooked-squid-meat':'심해 단백질 구이',
+ 'cooked-hare-meat|firewolf-cooked-meat':'화염토끼 직화구이',
+ 'cooked-bird-meat|firewolf-cooked-meat':'불새 꼬치구이',
+ 'cooked-lizard-meat|firewolf-cooked-meat':'용암도마뱀 구이',
+ 'cooked-crystal-goat-meat|firewolf-cooked-meat':'화염수정 산적',
+ 'cooked-greens|firewolf-cooked-meat':'불꽃 채소고기볶음',
+ 'cooked-fish|firewolf-cooked-meat':'화염어 직화구이',
+ 'cooked-crystal-deer-meat|firewolf-cooked-meat':'화염수정 사슴구이',
+ 'cooked-squid-meat|firewolf-cooked-meat':'용암 오징어구이',
+ 'cooked-bird-meat|cooked-hare-meat':'숲날개 모둠구이',
+ 'cooked-hare-meat|cooked-lizard-meat':'들숲 꼬치구이',
+ 'cooked-crystal-goat-meat|cooked-hare-meat':'수정 들토끼 꼬치',
+ 'cooked-fish|cooked-hare-meat':'호숫가 토끼구이',
+ 'cooked-crystal-deer-meat|cooked-hare-meat':'수정숲 사냥구이',
+ 'cooked-hare-meat|cooked-squid-meat':'달빛 오징어꼬치',
+ 'cooked-bird-meat|cooked-lizard-meat':'세계수 협곡구이',
+ 'cooked-bird-meat|cooked-crystal-goat-meat':'수정날개 꼬치',
+ 'cooked-bird-meat|cooked-fish':'호수새 숯불구이',
+ 'cooked-bird-meat|cooked-crystal-deer-meat':'수정날개 사냥정식',
+ 'cooked-bird-meat|cooked-squid-meat':'하늘바다 꼬치',
+ 'cooked-crystal-goat-meat|cooked-lizard-meat':'수정협곡 산적',
+ 'cooked-fish|cooked-lizard-meat':'물비늘 숯불구이',
+ 'cooked-crystal-deer-meat|cooked-lizard-meat':'수정협곡 꼬치',
+ 'cooked-lizard-meat|cooked-squid-meat':'협곡심해 꼬치',
+ 'cooked-crystal-goat-meat|cooked-fish':'수정호수 정식',
+ 'cooked-crystal-deer-meat|cooked-crystal-goat-meat':'수정숲 만찬',
+ 'cooked-crystal-goat-meat|cooked-squid-meat':'수정심해 꼬치',
+ 'cooked-greens|cooked-squid-meat':'심해 채소볶음',
+ 'cooked-fish|cooked-squid-meat':'심해 해산물구이',
+ 'cooked-crystal-deer-meat|cooked-crystal-deer-meat':'수정사슴 왕실구이',
+ 'cooked-crystal-deer-meat|cooked-squid-meat':'수정심해 만찬',
+ 'cooked-squid-meat|cooked-squid-meat':'심해 오징어 통구이'
+};
 const COOKING_COMBOS={};
 for(const [pair,mealId] of Object.entries(HANDCRAFTED_COOKING_COMBOS)){
  const [a,b]=pair.split('|');
@@ -274,12 +331,13 @@ function registerAllCookingCombos(){
    if(COOKING_COMBOS[key])continue;
    const foodA=recipes.find(r=>r.id===a),foodB=recipes.find(r=>r.id===b);
    if(!foodA||!foodB)throw new Error('요리 재료 정의 누락: '+a+' / '+b);
+   const name=AUTO_COOKING_NAMES[key];
+   if(!name)throw new Error('요리 이름 정의 누락: '+key);
    const hungerA=Number(foodA.hunger)||0,hungerB=Number(foodB.hunger)||0;
    const hunger=Math.min(100,Math.max(20,Math.round(hungerA+hungerB+10)));
    const foodRegen=Math.max(6,Math.min(30,Math.round((hungerA+hungerB)/4)));
    const foodRegenSeconds=hunger>=90?5:hunger>=65?4:3;
    const id='meal-auto-'+i+'-'+j;
-   const name=a===b?foodA.name+' 특선요리':foodA.name+' · '+foodB.name+' 요리';
    recipes.push({id,name,where:'meal',cost:{},desc:'밥 +'+hunger+' · 초당 체력 '+foodRegen+' 회복 · '+foodRegenSeconds+'초',kind:'consumable',hunger,foodRegen,foodRegenSeconds});
    COOKING_COMBOS[key]=id
   }
