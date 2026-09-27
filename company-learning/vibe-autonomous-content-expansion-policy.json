@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -345,7 +345,10 @@
       "fanInMustRequireGroundedGraphicsEvidence": true,
       "targetRuntimeEvidenceMustBindExactBuildUpSourceIdentity": true,
       "robloxF9SettlementRequiresExactPromotedSourceTree": true,
-      "unityRuntimeIndependentQaRegressionRequiredBeforeBuildUpPass": true
+      "unityRuntimeIndependentQaRegressionRequiredBeforeBuildUpPass": true,
+      "webBuildUpPassRequiresCandidateRuntimeBeforeAfterAndDeploymentPreview": true,
+      "webPromotedSourceTreeMustBeRecordedBeforeSettlement": true,
+      "webReleaseMustNotDispatchAnotherPlatformRuntime": true
     },
     "menuExperienceDiversity": {
       "status": "ACTIVE",
@@ -484,7 +487,7 @@
     "pausedPlatformRule": "FORTNITE_UEFN_OWNER_HOLD_NO_AUTONOMOUS_BUILD_UP_UNTIL_EXPLICIT_RESUME"
   },
   "buildUpRuntimeClosure": {
-    "version": 1,
+    "version": 2,
     "activePlatforms": [
       "WEB",
       "ROBLOX",
@@ -506,6 +509,16 @@
     "nativeVerificationCallbackMonotonicity": {
       "laterStageWaitOrVerifiedStateMayNotRegress": true,
       "candidateVerificationMayMergeEvidenceWithoutRewinding": true
+    },
+    "web": {
+      "candidateRuntimeBeforeAfterRequired": true,
+      "releaseDeploymentTarget": "CLOUDFLARE_PAGES",
+      "releaseDeploymentPreviewMustPass": true,
+      "reviewedMainPromotionRequired": true,
+      "promotedSourceTreeShaRequired": true,
+      "finalSettlementRequiresExactPromotedSourceTree": true,
+      "crossPlatformRuntimeDispatchForbidden": true,
+      "robloxRuntimeMayNotSubstituteForWebRuntime": true
     }
   }
 }
