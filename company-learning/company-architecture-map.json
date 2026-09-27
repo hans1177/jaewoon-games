@@ -1,5 +1,5 @@
 {
-  "version": 286,
+  "version": 287,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6260,5 +6260,33 @@
     "exactF9PromotionPrecedesFanIn": true,
     "promotionStateMustSurviveFanInFailure": true,
     "publicReleaseGateUnchanged": true
+  },
+  "autonomousContentExpansionBuildUpProjection": {
+    "source": "company-learning/vibe-autonomous-content-expansion-policy.json",
+    "status": "ACTIVE",
+    "topologyBinding": "executionTopology.sustainedDevelopment -> VIBE_PLANNER -> VIBE_SOURCE_WORKER",
+    "executionModel": "RESPONSIBILITY_INSIDE_EXISTING_BUILD_UP_NOT_A_NEW_STAGE",
+    "platforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
+    "autonomousDecisionOwner": "VIBE",
+    "manualAssistantIdeaDependencyForbidden": true,
+    "newWorkflowForbidden": true,
+    "newStageForbidden": true,
+    "ownerPromptPerExpansionForbidden": true,
+    "completenessRule": "EACH_BUILD_UP_RECHECKS_EXISTING_COMPLETENESS_AND_MAY_IMPROVE_EXISTING_CONTENT_OR_EXPAND_THE_HIGHEST_VALUE_COHERENT_GAP",
+    "coherenceRule": "PRESERVE_APPROVED_IDENTITY_CAUSALITY_WORLD_LOGIC_AND_PROGRESSION_FLOW",
+    "varietyRule": "NO_NAME_ONLY_STAT_ONLY_OR_TEMPLATE_CLONE_EXPANSION",
+    "bundleRule": "MAJOR_EXPANSION_SHOULD_CONNECT_CONTEXT_GOAL_ENCOUNTER_REWARD_PROGRESSION_STORY_OR_RULES_AS_RELEVANT",
+    "ruleEvolution": "DERIVED_GAMEPLAY_RULES_MAY_EXPAND_AUTONOMOUSLY_WHEN_CONSISTENT_WITH_APPROVED_IDENTITY_AND_EXISTING_CANONICAL_RULES",
+    "sourceImplementationRequired": true,
+    "qaBinding": "EXISTING_CHANGED_RESPONSIBILITY_INCREMENTAL_QA_AND_VALID_EVIDENCE_REUSE",
+    "failurePriority": {
+      "productQuality": "EXISTING_CAUSAL_REPAIR_PREEMPTS_UNRELATED_EXPANSION",
+      "transientInfrastructure": "EXACT_INFRASTRUCTURE_OR_EVIDENCE_RETRY_NO_GAME_CONTENT_REWRITE"
+    }
   }
 }
