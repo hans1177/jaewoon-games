@@ -118,7 +118,7 @@ test('F9 runs in parallel and cannot pause internal playtest under an external-o
 });
 
 test('F9 promotion stops at internal release and cannot self-approve external public readiness',()=>{
-  assert.match(workflow,/const publicRuntimeAcceptance=false; \/\/ Internal F9 cannot satisfy the external public hard gate\./);
+  assert.match(workflow,/const publicRuntimeAcceptance=false;/);
   assert.match(workflow,/item\.robloxPublicReleaseReady=false;/);
   assert.match(workflow,/INTERNAL_BUILDUP_PENDING_EXTERNAL_PUBLIC_HARD_GATE/);
   assert.match(workflow,/externalPublicHardGatePending:true/);
