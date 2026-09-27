@@ -63,7 +63,7 @@ jobs:
               const j=JSON.parse(s);
               const states=new Set(['queued','pending','in_progress','requested']);
               const game=String(process.env.GAME_ID||'').trim();
-              const title='Roblox runtime foundation QA · '+(game||'scan');
+              const title='Roblox internal F1-F8 · '+(game||'scan');
               const ids=(j.workflow_runs||[])
                 .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title)
                 .map(r=>Number(r.id))
