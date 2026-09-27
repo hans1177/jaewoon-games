@@ -70,7 +70,27 @@ test('secondary concurrent platform stays eligible while the primary platform ow
   assert.equal(platformDevelopmentEligible(item,'ROBLOX'),false);
   assert.equal(platformDevelopmentEligible(item,'UNITY'),true);
   assert.equal(selectTargetPlatformDevelopmentWindow([item]).length,1);
-  assert.equal(platformDevelopmentEligible({...item,unityInternalReleaseReady:true},'UNITY'),false);
+  assert.equal(platformDevelopmentEligible({...item,unityInternalReleaseReady:true},'UNITY'),true);
+});
+
+test('internal and public release states stay eligible for perpetual Roblox and Unity validation while UEFN stays excluded',()=>{
+  const released={
+    ...nativeItem('released','ROBLOX'),
+    productionClass:'RELEASE_CONFIRMED',
+    currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+    canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+    robloxInternalReleaseReady:true,
+    robloxInternalReleasePublished:true,
+    robloxPublicRelease:true,
+    unityInternalReleaseReady:true,
+    unityInternalReleasePublished:true,
+    unityPublicRelease:true
+  };
+  assert.deepEqual(concurrentTargetPlatforms(released),['ROBLOX','UNITY']);
+  assert.equal(platformDevelopmentEligible(released,'ROBLOX'),true);
+  assert.equal(platformDevelopmentEligible(released,'UNITY'),true);
+  assert.equal(platformDevelopmentEligible(released,'FORTNITE_UEFN'),false);
+  assert.equal(selectTargetPlatformDevelopmentWindow([released]).length,1);
 });
 
 test('owner direct development starts from an owner basic baseline without waiting for design admission',()=>{
