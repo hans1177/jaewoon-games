@@ -7,7 +7,7 @@ import { pathToFileURL } from 'node:url';
 const DIRECT_MAIN_PATTERNS=[
   /git\s+push\b[^\n]*\borigin\b[^\n]*(?:HEAD:main|\bmain\b)/i,
   /gh\s+api\b[^\n]*\/git\/refs\/heads\/main\b/i,
-  /refs\/heads\/main\b[^\n]*(?:PATCH|POST|PUT)/i,
+  /refs\/heads\/main\b[^\n]*(?:\bPATCH\b|\bPOST\b|\bPUT\b)/i,
 ];
 const WORKFLOW_EXT=/\.ya?ml$/i;
 
