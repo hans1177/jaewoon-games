@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-2dngn5",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "fdc04521e142456575a24c12d283b3c1a332c99f",
-      "acquiredAt": "2026-09-27T09:41:49.073Z",
-      "expiresAt": "2026-09-27T10:26:49.073Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-1tcbpc",
       "worker": "vibe2",
       "taskId": "village-dungeons-unity-web-base-implementation-v1",
@@ -571,6 +553,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:horror-escape-room-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-13wpxmw",
+      "worker": "vibe2",
+      "taskId": "seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "files": [
+        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "c7bb6fa0e18deefbf3a38c374ff821f3bc96b8c6",
+      "acquiredAt": "2026-09-27T10:27:10.908Z",
+      "expiresAt": "2026-09-27T11:12:10.908Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1"
       ]
     }
   ]
