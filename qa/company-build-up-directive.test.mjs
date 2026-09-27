@@ -75,6 +75,7 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.ok(directive.platformAdaptationDirectives.FORTNITE_UEFN);
   assert.ok(directive.platformAdaptationDirectives.UNITY_WEB);
   assert.ok(directive.platformAdaptationDirectives.UNITY_APP);
+  assert.equal(directive.autonomousContentExpansion.version,2);
   assert.equal(directive.autonomousContentExpansion.executionBoundary,'EXISTING_BUILD_UP_ONLY');
   assert.equal(directive.autonomousContentExpansion.autonomousDecisionOwner,'VIBE');
   assert.deepEqual([...directive.autonomousContentExpansion.platformScope],['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
