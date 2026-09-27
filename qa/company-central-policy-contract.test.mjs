@@ -1224,6 +1224,35 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
 });
 
+test('Roblox F9 fan-in reads canonical runtime state from the workspace root',()=>{
+  const policy=roadmap.changeRecord?.robloxF9FaninRuntimePathRepair20260927;
+  const topology=architecture.robloxF9FaninRuntimePathRepair;
+  const evidence=logMap.robloxF9FaninRuntimePathRepairEvidence;
+  const f9Workflow=readText('.github/workflows/company-development-roblox-final-review-revalidation.yml');
+  assert.equal(policy?.observedRunId,36298713127);
+  assert.equal(policy?.observedGameId,'horror-escape-room');
+  assert.equal(policy?.canonicalRuntimePath,'runtime/development-queue.json');
+  assert.equal(policy?.f9PromotionStatePersistedBeforeFanInFailure,true);
+  assert.equal(policy?.exactCandidatePromotionPreserved,true);
+  assert.equal(policy?.publicReleaseGateUnchanged,true);
+  assert.equal(policy?.gameplayRulesChanged,false);
+  assert.equal(policy?.saveSchemaChanged,false);
+  assert.equal(policy?.qualityGateWeakening,false);
+  assert.equal(topology?.fanInWorkingDirectory,'GITHUB_WORKSPACE_ROOT');
+  assert.equal(topology?.runtimeQueuePath,'runtime/development-queue.json');
+  assert.equal(topology?.exactF9PromotionPrecedesFanIn,true);
+  assert.equal(topology?.promotionStateMustSurviveFanInFailure,true);
+  assert.equal(topology?.publicReleaseGateUnchanged,true);
+  assert.equal(evidence?.workflowRunId,36298713127);
+  assert.equal(evidence?.promotionResult,'ROBLOX_F9_INTERNAL_RELEASE_PROMOTED=1');
+  assert.equal(evidence?.blockedCount,0);
+  assert.equal(evidence?.repairedRuntimeQueuePath,'runtime/development-queue.json');
+  assert.equal(evidence?.exactPromotionLost,false);
+  assert.equal(evidence?.falsePassAllowed,false);
+  assert.match(f9Workflow,/node --input-type=module - "runtime\/development-queue\.json" "\$REQUESTED_GAME_ID"/);
+  assert.doesNotMatch(f9Workflow,/node --input-type=module - "\.\.\/runtime\/development-queue\.json"/);
+});
+
 test('core QA keeps one active regression alive during same-ref main churn',()=>{
   const policy=roadmap.changeRecord?.vibe2CoreQaActiveCompletion20260927;
   assert.equal(policy?.cancelActiveValidation,false);
