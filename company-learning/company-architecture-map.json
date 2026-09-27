@@ -1,5 +1,5 @@
 {
-  "version": 288,
+  "version": 289,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6296,6 +6296,7 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION",
+        "MENU_UI_EXPERIENCE_SYSTEM",
         "PRESENTATION_WORLD_COHESION"
       ],
       "persistence": "BUILD_UP_DIRECTIVE_THEME_COVERAGE_LEDGER",
@@ -6303,6 +6304,16 @@
       "verifiedFailure": "KEEP_SAME_CAUSAL_THEME_WHEN_NEEDED_FOR_REPAIR",
       "majorExpansion": "MINIMUM_THREE_CONNECTED_PLAYER_FACING_IMPROVEMENTS_WHEN_APPLICABLE",
       "topologyChange": "NONE"
+    },
+    "menuExperienceDiversity": {
+      "owner": "tools/company-build-up-directive.mjs::MENU_UI_EXPERIENCE_SYSTEM",
+      "execution": "EXISTING_VIBE_SOURCE_WORKER",
+      "screenRoles": "SELECT_APPLICABLE_MAIN_INVENTORY_EQUIPMENT_SHOP_CRAFTING_QUEST_MAP_SETTINGS_RESULT_CONTEXTUAL_MULTIPLAYER_MENUS",
+      "variationRule": "DIFFERENT_PLAYER_TASKS_REQUIRE_DIFFERENT_INFORMATION_HIERARCHY_LAYOUT_PRIMARY_ACTIONS_AND_NAVIGATION",
+      "fixedUniversalMenuCloneForbidden": true,
+      "authoritativeGameStateBindingRequired": true,
+      "mobileTouchFirst": true,
+      "newPipeline": false
     }
   }
 }
