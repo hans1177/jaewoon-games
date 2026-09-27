@@ -1,5 +1,5 @@
 {
-  "version": 149,
+  "version": 150,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2553,10 +2553,10 @@
     }
   },
   "assetArmSchedulerEpochEvidence": {
-    "version": 2,
+    "version": 3,
     "centralContract": "company-learning/platform-release-roadmap.json#changeRecord.assetArmSchedulerEpochRelease20260927",
-    "previousEpoch": "vibe2-24h-cycle-singleton-v4",
-    "currentEpoch": "vibe2-24h-cycle-singleton-v5",
+    "previousEpoch": "vibe2-24h-cycle-singleton-v5",
+    "currentEpoch": "vibe2-24h-cycle-singleton-v6",
     "staleHoldingRunId": 36308954595,
     "staleHoldingHead": "df004bd40b823015bc7a223c8f437f7d9fa1c539",
     "currentArmRunnerExpected": "ubuntu-24.04-arm",
@@ -2564,9 +2564,14 @@
     "oldEpochMayDrain": true,
     "cancelInProgress": false,
     "newQueueOrPipelineCreated": false,
-    "liveArmWorkerEvidence": "PENDING_POST_V5_MERGE",
+    "liveArmWorkerEvidence": "PENDING_POST_V6_MERGE",
     "postConcurrencyFixHead": "816fea99e56d2e9b1d7d56c88fc6f69eab8827e7",
-    "postConcurrencyFixPr": 3775
+    "postConcurrencyFixPr": 3775,
+    "schedulerPlanRunner": "ubuntu-24.04-arm",
+    "assetReserveRunner": "ubuntu-24.04-arm",
+    "assetModelCacheRunner": "ubuntu-24.04-arm",
+    "ollamaCacheKey": "vibe2-ollama-v4-${runner.os}-${runner.arch}-qwen3-1.7b",
+    "architectureAwareCache": true
   },
   "reusableCoreLaneConcurrencyEvidence": {
     "version": 1,
