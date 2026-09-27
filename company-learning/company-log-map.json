@@ -1484,14 +1484,17 @@
     "gamePrimaryBoundaryMustRemain": 256
   },
   "robloxHomepageThumbnailSyncEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#robloxHomepageThumbnailSyncContract",
     "requiredMarkers": [
       "ROBLOX_THUMBNAIL_SOURCE=",
       "ROBLOX_THUMBNAIL_RENDER=PASS",
       "ROBLOX_THUMBNAIL_UPLOAD=",
       "ROBLOX_THUMBNAIL_VERIFY=",
-      "HOMEPAGE_MARKETING_IMAGE_SYNC=PASS"
+      "HOMEPAGE_MARKETING_IMAGE_SYNC=PASS",
+      "ROBLOX_THUMBNAIL_SYNC_GAMES=",
+      "ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS",
+      "ROBLOX_THUMBNAIL_RUNTIME_PERSIST=PASS"
     ],
     "correlationKeys": [
       "GAME_ID",
@@ -1503,7 +1506,9 @@
     "secretRedactionRequired": true,
     "rawApiKeyForbidden": true,
     "uploadPassRequiresHttpSuccessAndOperationEvidence": true,
-    "verifyPassRequiresProcessingOrListedThumbnailEvidence": true
+    "verifyPassRequiresProcessingOrListedThumbnailEvidence": true,
+    "batchSelectionSource": "company-runtime/homepage-platform-exposure.json",
+    "batchRequiresAllEligibleGames": true
   },
   "vibeWorkerConditionalModelRestore": {
     "version": 1,
