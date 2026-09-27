@@ -549,6 +549,9 @@ test('reusable asset coverage drives 300 verified motion slots and all studio fa
   for(const role of ['LOCOMOTION','TRAVERSAL','COMBAT','WEAPON_COMBAT','SURVIVAL_CRAFTING','INTERACTION_UTILITY','REACTION']){
     assert.ok(DEFAULT_COVERAGE_BASELINES.MOTION[role]>0,role);
   }
+  for(const menu of ['MAIN_MENU','PAUSE','INVENTORY','LOADOUT','SHOP','CRAFTING','QUEST','MAP','SETTINGS','RESULTS','BUILD','RESEARCH','SOCIAL','DIALOG','CODEX']){
+    assert.ok(DEFAULT_COVERAGE_BASELINES.UI[menu]>0,menu);
+  }
   const registry=JSON.parse(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
   assert.equal(registry.motionCoverage.reusableVerifiedTarget,300);
   assert.equal(registry.universalCoverage.reusableProductionTargets.motionVerifiedReusableTarget,300);
