@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-a13rbu",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "7e2983a1f9b7517c34e0c1bced7213be394eb942",
-      "acquiredAt": "2026-09-27T21:58:48.808Z",
-      "expiresAt": "2026-09-27T22:43:48.808Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-1xaxify",
       "worker": "vibe2",
       "taskId": "seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1",
@@ -297,6 +279,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-az0p8p",
+      "worker": "vibe2",
+      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
+      "gameId": "cozy-island",
+      "files": [
+        "roblox-games/cozy-island/server/Game.server.luau",
+        "roblox-games/cozy-island/client/Game.client.luau",
+        "roblox-games/cozy-island/shared/GameConfig.luau"
+      ],
+      "baseSha": "352cd25bf6280c47211a63bfc3e57519a984640e",
+      "acquiredAt": "2026-09-27T22:43:50.593Z",
+      "expiresAt": "2026-09-27T23:28:50.593Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-post-release-focus-12c1a7e2ae6288fd"
       ]
     }
   ]
