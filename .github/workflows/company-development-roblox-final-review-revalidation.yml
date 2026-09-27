@@ -453,7 +453,30 @@ jobs:
             attempt_settled=0
             git -C /tmp/vibe2-f9-control fetch origin vibe2-unreal-core --quiet
             git -C /tmp/vibe2-f9-control reset --hard origin/vibe2-unreal-core >/dev/null
-            while IFS=
+            while IFS=$'\t' read -r game_id studio_required source_revision version_number; do
+              [ -n "$game_id" ] || continue
+              git -C main fetch --no-tags origin "$source_revision" --quiet
+              runtime_source_tree_sha="$(git -C main rev-parse "$source_revision:roblox-games/$game_id")"
+              [[ "$runtime_source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+              echo "ROBLOX_F9_RUNTIME_SOURCE_TREE_SHA=$game_id:$runtime_source_tree_sha"
+              mapfile -t task_ids < <(GAME_ID="$game_id" RUNTIME_SOURCE_TREE_SHA="$runtime_source_tree_sha" node --input-type=module <<'NODE'
+              import fs from 'node:fs';
+              const q=JSON.parse(fs.readFileSync('/tmp/vibe2-f9-control/.vibe2/queue.json','utf8'));
+              const game=String(process.env.GAME_ID||'').trim();
+              const sourceTree=String(process.env.RUNTIME_SOURCE_TREE_SHA||'').trim();
+              const exactTreeMarker='roblox-runtime-await-source-tree:'+sourceTree;
+              for(const task of q.tasks||[]){
+                const evidence=(task.evidence||[]).map(String);
+                if(task.gameId!==game)continue;
+                if(String(task.target||'').toLowerCase()!=='roblox')continue;
+                if(String(task.status||'').toLowerCase()!=='running')continue;
+                if(String(task.blocker||'')!=='candidate-awaiting-roblox-runtime-qa')continue;
+                if(!evidence.includes('roblox-runtime-await-game:'+game))continue;
+                if(!evidence.includes(exactTreeMarker))continue;
+                process.stdout.write(String(task.id)+'\n');
+              }
+              NODE
+              )
               for task_id in "${task_ids[@]}"; do
                 evidence="roblox-runtime-acceptance-pass,roblox-final-review-pass,roblox-runtime-source-revision:${source_revision},roblox-runtime-source-tree:${runtime_source_tree_sha},roblox-runtime-version:${version_number},verification-conclusion:success,target-engine-qa-ref:roblox-f9-${GITHUB_RUN_ID},actions-run:${GITHUB_RUN_ID}"
                 if [ "$studio_required" = YES ]; then
