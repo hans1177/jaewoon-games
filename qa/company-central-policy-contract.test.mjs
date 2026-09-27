@@ -1516,7 +1516,7 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(parallel.newTopLevelAssetPipelineCreated,false);
   assert.equal(parallel.newWorkerAuthorityCreated,false);
   assert.equal(parallel.queueMutationAuthorityCreated,false);
-  assert.equal(library.productionRoot,'GRAPHICS_PRODUCTION');
+  assert.equal(library.graphicsProductionRoot,'GRAPHICS_PRODUCTION');
   assert.equal(library.executionLane,'ASSET_DEVELOPMENT');
   assert.equal(library.dedicatedRunner,true);
   assert.equal(library.reusableProductionTarget.motion.verifiedReusableClipTarget,300);
