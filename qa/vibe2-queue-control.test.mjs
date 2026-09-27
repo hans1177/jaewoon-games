@@ -1689,6 +1689,8 @@ test('asset production tasks use the dedicated asset-development lane and never 
   const assetBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:64,lane:'asset-development',reservation:{id:'asset:1',runId:'asset-run',runAttempt:1,reservedAt:'2026-09-27T08:30:00Z'}});
   assert.deepEqual(assetBatch.tasks.map(task=>task.id),['asset-visual']);
   assert.ok(assetBatch.tasks.every(task=>task.executionLane==='ASSET_DEVELOPMENT'));
+  assert.equal(assetBatch.workerCount,3);
+  assert.equal(assetBatch.matrix[0].speculativeVariants,3);
 
   const gameBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:256,lane:'game-primary',reservation:{id:'game:1',runId:'game-run',runAttempt:1,reservedAt:'2026-09-27T08:30:00Z'}});
   assert.deepEqual(gameBatch.tasks.map(task=>task.id),['game-logic']);
