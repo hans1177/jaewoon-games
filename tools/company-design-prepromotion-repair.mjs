@@ -191,6 +191,23 @@ export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNK
   setMissing(out,'progressionDirection',session,900,repairs,'GAME_SEED.TARGET_SESSION_DIRECTION');
   setMissing(out,'visualDirection',firstText(factText(factPack,'visualDirection','artDirection'),identity&&`GAME_SEED 정체성 '${identity}'을 유지하는 시각 방향`),900,repairs,'FACT_PACK_OR_GAME_SEED_IDENTITY');
   setMissing(out,'mobileUx',targetPlatform&&`선택 플랫폼 ${targetPlatform}에서 핵심 조작과 정보 우선순위를 유지한다${targetAudience?`; 대상 ${targetAudience}`:''}`,900,repairs,'GAME_SEED.INITIAL_TARGET_PLATFORM_AND_TARGET_AUDIENCE');
+  {
+    const currentUx=out.uxAccessibilityPlan&&typeof out.uxAccessibilityPlan==='object'&&!Array.isArray(out.uxAccessibilityPlan)?out.uxAccessibilityPlan:{};
+    const fallbackMenus=[
+      {role:'SESSION_ENTRY',entryContext:'게임 진입 또는 현재 세션으로 복귀할 때',purpose:'현재 게임의 플레이 진입점을 명확히 보여준다.',systemBinding:'기존 세션 시작·복귀 흐름에만 연결하며 새 진행 규칙을 만들지 않는다.',primaryActions:['플레이 진입'],layout:'게임 정체성과 핵심 목표를 먼저 읽히게 하는 단순 계층',mobileInteraction:'한 손 터치가 가능한 큰 핵심 액션과 safe-area 배치',visualLanguage:'현재 게임의 시각 정체성과 HUD 언어를 공유한다.'},
+      {role:'IN_PLAY_OVERVIEW',entryContext:'플레이 중 상태 확인 또는 일시정지 맥락',purpose:'현재 상태와 기존 기능 진입점을 플레이를 가리지 않게 정리한다.',systemBinding:'기존 HUD·일시정지·상태 표시 책임에 연결한다.',primaryActions:['플레이 복귀'],layout:'상태 우선순위가 분명한 오버레이 또는 패널 구조',mobileInteraction:'엄지 도달 영역과 닫기/복귀 동작을 명확히 분리한다.',visualLanguage:'전투·탐험 가독성을 해치지 않는 동일 게임 UI 언어를 사용한다.'},
+      {role:'SETTINGS_ACCESSIBILITY',entryContext:'설정 또는 접근성 조정이 필요할 때',purpose:'입력·가독성·오디오·표현 강도를 기존 지원 범위에서 조절한다.',systemBinding:'기존 설정·접근성 값에만 연결하고 gameplay 수치를 바꾸지 않는다.',primaryActions:['설정 조정','복귀'],layout:'항목 그룹과 현재 값을 빠르게 비교할 수 있는 목록 구조',mobileInteraction:'44px 이상 터치 목표와 스크롤/토글 충돌 방지',visualLanguage:'다른 메뉴와 동일한 글꼴·프레임·상태 피드백을 유지한다.'}
+    ];
+    const nextUx={
+      hudPriorities:clean(currentUx.hudPriorities)||'핵심 생존·목표·상호작용 정보를 우선하고 장식 정보가 플레이를 가리지 않게 한다.',
+      touchAndInput:clean(currentUx.touchAndInput)||'모바일 터치와 키보드/게임패드의 동일 기능 접근성을 유지한다.',
+      readability:clean(currentUx.readability)||'핵심 텍스트 대비와 상태 차이를 명확히 유지한다.',
+      accessibility:clean(currentUx.accessibility)||'색상 외 형태·텍스트 신호와 표현 강도 조절 경로를 제공한다.',
+      menuSurfaces:Array.isArray(currentUx.menuSurfaces)&&currentUx.menuSurfaces.length>=3?currentUx.menuSurfaces.slice(0,10):fallbackMenus,
+      menuVarietyRule:clean(currentUx.menuVarietyRule)||'게임의 실제 시스템만 메뉴로 노출하고 모든 게임에 같은 메뉴 묶음·레이아웃을 복사하지 않으며 장르·세션 맥락에 맞게 정보 구조와 진입 방식을 다르게 한다.'
+    };
+    if(JSON.stringify(currentUx)!==JSON.stringify(nextUx)){out.uxAccessibilityPlan=nextUx;repairs.push({field:'uxAccessibilityPlan',source:'SAFE_UI_STRUCTURE_DEFAULTS_WITHOUT_GAMEPLAY_RULE_CHANGE'});}
+  }
   setMissing(out,'marketTargetDirection',firstText([market,targetAudience].filter(Boolean).join(' / '),targetAudience),900,repairs,'GAME_SEED.MARKET_EVIDENCE_SUMMARY_AND_TARGET_AUDIENCE');
   setMissing(out,'steamExpansionDecision',firstText(expansion,targetPlatform&&`선택 플랫폼 ${targetPlatform} 검증을 우선하고 추가 PC 확장은 검증 후 결정한다`),500,repairs,'GAME_SEED.CROSS_PLATFORM_EXPANSION_VALUE_OR_TARGET_PLATFORM');
   if(!MODES.has(clean(out.multiplayerMode).toUpperCase())&&mode){out.multiplayerMode=mode;repairs.push({field:'multiplayerMode',source:'GAME_SEED.MULTIPLAYER_DESIGN_MODE_OR_INITIAL_PLAY_MODE'});}
