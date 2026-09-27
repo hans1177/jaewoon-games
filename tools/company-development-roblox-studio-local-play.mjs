@@ -210,13 +210,29 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&currentArtifactIdentity===candidateArtifactIdentity
       &&runtimeFoundationObserved(item,candidate)
     );
+    const exactEngineAwaitingRealServerBoot=Boolean(
+      candidateExact
+      &&item?.robloxBuildOrPackagePassed===true
+      &&clean(item?.robloxBuildSourceRevision)===currentSourceRevision
+      &&currentSourceRevision===candidateSourceRevision
+      &&currentArtifactIdentity===candidateArtifactIdentity
+      &&item?.robloxRuntimeFoundationPassed!==true
+      &&clean(item?.robloxRuntimeFoundationEvidence?.authority)==='exact-engine-version-awaiting-real-server-boot'
+      &&clean(item?.robloxRuntimeFoundationEvidence?.sourceRevision)===currentSourceRevision
+      &&clean(item?.robloxRuntimeFoundationEvidence?.artifactIdentity)===currentArtifactIdentity
+      &&String(item?.robloxRuntimeFoundationEvidence?.placeId||'')===String(candidate?.placeId||'')
+      &&Number(item?.robloxRuntimeFoundationEvidence?.candidateVersionNumber||0)===Number(candidate?.versionNumber||0)
+      &&item?.robloxRuntimeFoundationEvidence?.engineExecuted===true
+      &&item?.robloxRuntimeFoundationEvidence?.exactEngineVersion===true
+      &&item?.robloxRuntimeFoundationEvidence?.serverBootObserved!==true
+    );
     const currentExact=Boolean(
       candidateExact
       &&item?.robloxBuildOrPackagePassed===true
       &&clean(item?.robloxBuildSourceRevision)===currentSourceRevision
       &&currentSourceRevision===candidateSourceRevision
       &&currentArtifactIdentity===candidateArtifactIdentity
-      &&(runtimeFoundationExact||internalReleaseObserved(item,candidate))
+      &&(runtimeFoundationExact||internalReleaseObserved(item,candidate)||exactEngineAwaitingRealServerBoot)
     );
 
     const historicalInternalReleaseExact=Boolean(
@@ -292,7 +308,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       sharedTargetCurrent:item?.robloxSharedTargetCurrent===true,
       historicalExactPublishedArtifact:infrastructurePrerequisiteReplay||item?.robloxSharedTargetCurrent!==true,
       infrastructurePrerequisiteReplay,
-      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
+      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
       scenarioContractRequired:scenarioContract.required===true,
       scenarioContractVersion:Number(scenarioContract.version||0),
       scenarioContractFingerprint:scenarioContract.fingerprint
