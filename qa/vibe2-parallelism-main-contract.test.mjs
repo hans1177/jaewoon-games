@@ -130,7 +130,7 @@ test('lightweight reserve uses slim while fan-in stays on ARM and heavy executio
 
   assert.match(core,/asset-development' && 'ubuntu-24\.04-arm'/);
   assert.match(core,/\n  fan_in:[\s\S]{0,260}?\n    runs-on: ubuntu-24\.04-arm/);
-  assert.match(core,/\n  model_cache:[\s\S]{0,180}?\n    runs-on: ubuntu-latest/);
+  assert.match(core,/\n  model_cache:[\s\S]{0,240}?\n    runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest' \}\}/);
   assert.match(core,/\n  worker:[\s\S]{0,260}?\n    runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest' \}\}/);
   assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentRunnerLabel,'ubuntu-24.04-arm');
   assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentSchedulerPlanRunner,'ubuntu-24.04-arm');
