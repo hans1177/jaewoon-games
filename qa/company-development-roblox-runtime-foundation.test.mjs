@@ -268,7 +268,7 @@ test('Open Cloud engine probe matches the exact selected Studio material atoms i
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=0'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_FOUNDATION_SERVER_BOOT=true'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_APPLIED=true'},
-   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=1'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_BINDING_VERSION=2'},
    {message:'JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS=BAR_HEALTH,BUTTON_PRIMARY,FRAME_PANEL'},
   ]}]}}
  ];
@@ -277,7 +277,7 @@ test('Open Cloud engine probe matches the exact selected Studio material atoms i
   const row=responses.shift();
   return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};
  };
- const expected={applied:true,families:{UI:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH']}};
+ const expected={applied:true,bindingVersion:2,families:{UI:['FRAME_PANEL','BUTTON_PRIMARY','BAR_HEALTH']}};
  const r=await probeRobloxOpenCloudEngine({
   universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',fetchImpl,pollIntervalMs:0,maxPolls:2,
   expectedStudioAssetBinding:expected,
@@ -285,7 +285,8 @@ test('Open Cloud engine probe matches the exact selected Studio material atoms i
  assert.equal(r.engineExecuted,true);
  assert.equal(r.studioAssetBindingRequired,true);
  assert.equal(r.studioAssetApplied,true);
- assert.equal(r.studioAssetBindingVersion,1);
+ assert.equal(r.studioAssetBindingVersion,2);
+ assert.equal(r.expectedStudioAssetBindingVersion,2);
  assert.deepEqual(r.expectedStudioAssetAtoms,['BAR_HEALTH','BUTTON_PRIMARY','FRAME_PANEL']);
  assert.deepEqual(r.observedStudioAssetAtoms,['BAR_HEALTH','BUTTON_PRIMARY','FRAME_PANEL']);
  assert.equal(r.studioAssetSelectionMatched,true);
@@ -368,11 +369,18 @@ test('F9 returns exact Roblox runtime and Studio asset proof to waiting Vibe tas
  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=\$settled_count/);
 });
 
-test('post-runtime Open Cloud engine probes use bounded external API concurrency and stronger throttling retry',()=>{
+test('post-runtime Open Cloud engine probes use bounded concurrency and preserve successful evidence before any batch failure',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:2,candidates\.length\|\|1\)\)/);
  assert.match(workflow,/networkRetryAttempts:6,networkRetryDelayMs:1000/);
- assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_PROBE_COUNT=/);
+ assert.match(workflow,/const probeFailures=\[\]/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_FAILED=/);
+ assert.match(workflow,/const persistedProbes=probes\.filter\(Boolean\)/);
+ assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_PROBE_FAILURE_COUNT=/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_BATCH_FAILURES:/);
+ const writeAt=workflow.indexOf("fs.writeFileSync('/tmp/roblox-open-cloud-engine-probes.json'");
+ const failAt=workflow.indexOf("throw new Error('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_BATCH_FAILURES:");
+ assert.ok(writeAt>0&&failAt>writeAt,'successful exact probe rows must be persisted before persistent peer failures fail the probe step');
  assert.doesNotMatch(workflow,/Promise\.all\(candidates\.map/);
 });
 
