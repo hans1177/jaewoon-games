@@ -725,6 +725,21 @@ jobs:
             platformAdapter:'tools/company-development-unity-platform.mjs',
             unityProjectPath:process.env.PROJECT,unityCandidateBranch:process.env.BRANCH||null,unitySourceCommit:process.env.SOURCE_REVISION||null,
             unityBuildRunId:buildRun,unityRuntimeSmokeRunId:runtimeRun,unityIndependentQaRunId:qaRun,unityRegressionRunId:regressionRun,
+            unityF1ToF8Passed:runtime,
+            unityF1ToF8Evidence:runtime?{
+              version:1,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION||null,artifactIdentity,
+              executionGroup:'G1_SINGLE_INTERNAL_SESSION',floors:['F1','F2','F3','F4','F5','F6','F7','F8'],
+              singleRuntimeSession:true,runtimeRunId:runtimeRun,externalServerBootRequired:false,
+              conditionalNotApplicableHandledInline:true,authority:'unity-existing-exact-runtime-single-session'
+            }:null,
+            unityF9ValidationSourceRevision:internalReady?(process.env.SOURCE_REVISION||null):null,
+            unityF9ValidationArtifactIdentity:internalReady?artifactIdentity:null,
+            unityF0ToF9CycleEvidence:internalReady?{
+              version:1,sequence:['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9'],
+              f0DeterministicPreflight:true,f1ToF8SingleRuntimeSession:true,f9FanInOnly:true,
+              runtimeLaunchesForF9:0,sourceRevision:process.env.SOURCE_REVISION||null,artifactIdentity,
+              authority:'unity-f0-f9-single-session-fanin',verifiedAt:stamp
+            }:null,
             unityInternalReleaseReady:internalReady,
             unityInternalReleaseAt:internalReady?stamp:null,
             unityInternalReleaseEvidence:internalReady?{
