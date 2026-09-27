@@ -1041,15 +1041,26 @@ test('Unity learning preparation stays off game-primary ubuntu-latest capacity',
   assert.equal(policy?.learningAuthorityChanged,false);
   assert.equal(policy?.qualitySecurityReleaseGatesUnchanged,true);
   assert.equal(policy?.gamePrimaryUbuntuLatestCapacityProtected,true);
+  assert.equal(policy?.workflowLevelConcurrencyRemoved,true);
+  assert.equal(policy?.controlPlanePreparationBlockedByLocalTraining,false);
+  assert.equal(policy?.localRunnerOfflineMayBlockPreparation,false);
+  assert.equal(policy?.localRunnerOfflineMayBlockOnlyLocalTraining,true);
+  assert.equal(policy?.localTrainingConcurrency?.practiceGroup,'vibe2-unity-practice-local-training');
+  assert.equal(policy?.localTrainingConcurrency?.verifiedGroup,'vibe2-unity-verified-local-training');
+  assert.equal(policy?.localTrainingConcurrency?.cancelInProgress,false);
 
   const practice=readText('.github/workflows/vibe2-practice-cpu-fallback.yml');
   const prepareStart=practice.indexOf('\n  prepare-practice:\n');
   const trainStart=practice.indexOf('\n  cpu-practice-train:\n',prepareStart);
   assert.ok(prepareStart>=0&&trainStart>prepareStart);
   const prepare=practice.slice(prepareStart,trainStart);
+  const practiceHeader=practice.slice(0,practice.indexOf('\njobs:\n'));
+  const localPractice=practice.slice(trainStart);
+  assert.doesNotMatch(practiceHeader,/\nconcurrency:\n/);
   assert.match(prepare,/runs-on:\s*ubuntu-slim/);
   assert.doesNotMatch(prepare,/runs-on:\s*ubuntu-latest/);
-  assert.match(practice.slice(trainStart),/runs-on:\s*\[self-hosted, Windows, X64, jaewoon-unity\]/);
+  assert.match(localPractice,/concurrency:\n\s+group:\s*vibe2-unity-practice-local-training\n\s+cancel-in-progress:\s*false/);
+  assert.match(localPractice,/runs-on:\s*\[self-hosted, Windows, X64, jaewoon-unity\]/);
 
   const structural=readText('.github/workflows/vibe2-structural-repair-distillation.yml');
   const staticStart=structural.indexOf('\n  static-gate:\n');
@@ -1058,12 +1069,17 @@ test('Unity learning preparation stays off game-primary ubuntu-latest capacity',
   assert.ok(staticStart>=0&&teacherStart>staticStart&&practiceTrainStart>teacherStart);
   const staticGate=structural.slice(staticStart,teacherStart);
   const teacher=structural.slice(teacherStart,practiceTrainStart);
+  const structuralHeader=structural.slice(0,structural.indexOf('\njobs:\n'));
+  const localStructural=structural.slice(practiceTrainStart);
+  assert.doesNotMatch(structuralHeader,/\nconcurrency:\n/);
   assert.match(staticGate,/runs-on:\s*ubuntu-slim/);
   assert.match(staticGate,/actions\/setup-python@v5/);
   assert.doesNotMatch(staticGate,/runs-on:\s*ubuntu-latest/);
   assert.match(teacher,/runs-on:\s*ubuntu-slim/);
   assert.doesNotMatch(teacher,/runs-on:\s*ubuntu-latest/);
-  assert.match(structural.slice(practiceTrainStart),/runs-on:\s*\[self-hosted, Windows, X64, jaewoon-unity\]/);
+  assert.match(localStructural,/unity-practice-train:[\s\S]*?group:\s*vibe2-unity-practice-local-training[\s\S]*?cancel-in-progress:\s*false/);
+  assert.match(localStructural,/unity-train:[\s\S]*?group:\s*vibe2-unity-verified-local-training[\s\S]*?cancel-in-progress:\s*false/);
+  assert.match(localStructural,/runs-on:\s*\[self-hosted, Windows, X64, jaewoon-unity\]/);
 
   const projection=architecture.learningPreparationRunnerIsolation;
   assert.equal(projection?.practiceCpuFallback?.preparePracticeRunner,'ubuntu-slim');
@@ -1071,6 +1087,11 @@ test('Unity learning preparation stays off game-primary ubuntu-latest capacity',
   assert.equal(projection?.structuralDistillation?.onlineTeacherRunner,'ubuntu-slim');
   assert.equal(projection?.selfHostedTrainingMoved,false);
   assert.equal(projection?.gamePrimaryUbuntuLatestCapacityProtected,true);
+  assert.equal(projection?.workflowLevelConcurrencyRemoved,true);
+  assert.equal(projection?.controlPlanePreparationBlockedByLocalTraining,false);
+  assert.equal(projection?.localRunnerOfflineMayBlockOnlyLocalTraining,true);
+  assert.equal(projection?.localTrainingConcurrency?.practiceGroup,'vibe2-unity-practice-local-training');
+  assert.equal(projection?.localTrainingConcurrency?.verifiedGroup,'vibe2-unity-verified-local-training');
 });
 
 test('administrative control-plane QA stays off game-primary ubuntu-latest capacity',()=>{
