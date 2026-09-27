@@ -1,10 +1,7 @@
 name: Unity Android Independent QA
-run-name: Unity Android Independent QA ${{ inputs.run_id || github.event.workflow_run.id }}
+run-name: Unity Android Independent QA diagnostic ${{ inputs.run_id }}
 
 on:
-  workflow_run:
-    workflows: ["Unity Hybrid Android Build"]
-    types: [completed]
   workflow_dispatch:
     inputs:
       run_id:
@@ -17,12 +14,11 @@ permissions:
   actions: write
 
 concurrency:
-  group: unity-android-independent-qa-${{ inputs.run_id || github.event.workflow_run.id }}
+  group: unity-android-independent-qa-diagnostic-${{ inputs.run_id }}
   cancel-in-progress: false
 
 jobs:
   independent-qa:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 45
     env:
@@ -38,11 +34,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ '${{ github.event_name }}' == 'workflow_run' ]]; then
-            run_id='${{ github.event.workflow_run.id }}'
-          else
-            run_id='${{ inputs.run_id }}'
-          fi
+          run_id='${{ inputs.run_id }}'
+          echo 'UNITY_INDEPENDENT_QA_MODE=MANUAL_DIAGNOSTIC_ONLY'
           [[ "$run_id" =~ ^[0-9]+$ ]] || { echo 'invalid upstream run id' >&2; exit 2; }
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
 
@@ -232,18 +225,11 @@ jobs:
           echo "INDEPENDENT_SOURCE_COMMIT=$BUILD_SOURCE_COMMIT"
           echo "INDEPENDENT_SOURCE_TREE=$BUILD_SOURCE_TREE"
 
-      - name: Dispatch exact artifact regression
+      - name: Keep regression relaunch disabled
         if: success()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
         run: |
-          set -euo pipefail
-          gh workflow run unity-android-regression.yml \
-            --repo "$GITHUB_REPOSITORY" \
-            --ref main \
-            -f run_id="${{ steps.upstream.outputs.run_id }}"
-          echo "UNITY_ANDROID_REGRESSION_DISPATCHED=${{ steps.upstream.outputs.run_id }}"
+          echo 'UNITY_INDEPENDENT_QA_AUTO_REGRESSION_DISPATCH=NO'
+          echo 'UNITY_F9_AUTHORITY=CANONICAL_SINGLE_SESSION_FAN_IN'
 
       - name: Upload independent Unity QA evidence
         if: always()
