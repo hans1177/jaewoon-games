@@ -1154,6 +1154,9 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.equal(isolation?.exactSourceArtifactVersionGatePreserved,true);
   assert.equal(isolation?.postFoundationStudioFollowup?.trigger,'CANONICAL_STUDIO_PLANNER_REQUIRES_EXACT_PLAY');
   assert.equal(isolation?.postFoundationStudioFollowup?.coversExactFoundationEvidenceReuse,true);
+  assert.equal(isolation?.postFoundationStudioFollowup?.coversExactEnginePrebootEvidence,true);
+  assert.equal(isolation?.postFoundationStudioFollowup?.prePlannerRuntimeFoundationPassGuardForbidden,true);
+  assert.equal(isolation?.postFoundationStudioFollowup?.observedMissedDispatchRunId,36297021567);
   assert.equal(isolation?.postFoundationStudioFollowup?.repeatExactFoundationRedispatch,false);
   assert.match(workflow,/ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH=/);
   assert.match(workflow,/planLocalStudioCandidates/);
@@ -1183,6 +1186,11 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.equal(throttle?.primaryActionEffectMayUseAuthoritativeServerFeedbackTransition,true);
   assert.equal(throttle?.primaryActionFeedbackRequiresSuccessfulPrimaryInput,true);
   assert.equal(throttle?.sourceArtifactCandidateBindingMustRemainExact,true);
+  assert.equal(throttle?.postFoundationStudioFollowupMustDelegateToCanonicalPlanner,true);
+  assert.equal(throttle?.postFoundationStudioFollowupMayNotPreRequireRuntimeFoundationPass,true);
+  assert.equal(throttle?.observedEvidence?.liveRepairRunId,36297021567);
+  assert.equal(throttle?.observedEvidence?.liveRepairStudioAssetSelectionMatched,true);
+  assert.equal(throttle?.observedEvidence?.liveRepairStudioFollowupReadyCountBeforeGuardFix,0);
   assert.equal(throttle?.gameplayRulesChanged,false);
   assert.equal(throttle?.qualityGateWeakening,false);
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.openCloudProbeFailureIsolation,'PER_CANDIDATE');
@@ -1190,6 +1198,10 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.persistentThrottleFailClosed,true);
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.exactEnginePrebootMayPromoteRuntimeFoundation,false);
   assert.equal(architecture.robloxOpenCloudThrottleRecovery?.exactEnginePrebootMayPromotePublicRelease,false);
+  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.postFoundationStudioFollowupDelegatesToCanonicalPlanner,true);
+  assert.equal(architecture.robloxOpenCloudThrottleRecovery?.prePlannerRuntimeFoundationPassGuard,false);
+  assert.equal(architecture.robloxRuntimeFoundationRunnerIsolation?.postFoundationStudioFollowup?.prebootExactEngineCovered,true);
+  assert.equal(architecture.robloxRuntimeFoundationRunnerIsolation?.postFoundationStudioFollowup?.prePlannerRuntimeFoundationPassGuard,false);
   assert.match(workflow,/persistentFailure:true/);
   assert.match(workflow,/Enforce persistent Open Cloud probe failures after evidence persistence/);
   assert.equal(logMap.robloxOpenCloudThrottleRecoveryEvidence?.followupObservedRunId,36296050875);
