@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
@@ -3689,4 +3689,44 @@ test('focused replace Ollama requests keep canonical budget and enforce one-key 
   assert.ok(source.includes("completionMode==='JSON_REPLACE_ONLY'?{type:'object',properties:{replace:{type:'string'}},required:['replace'],additionalProperties:false}:(/^JSON_/.test(completionMode)?'json':null)"));
   assert.ok(source.includes("...(format?{format}:{}),options"));
   assert.ok(source.includes("VIBE2_FOCUSED_REPLACE_SCHEMA=ONE_KEY_REPLACE"));
+});
+
+
+test('graphics replacement report enforces actual 1-60 count surfaces reuse mode and before-after evidence',()=>{
+  const contract={
+    required:true,
+    adaptiveCount:{minimumActual:1,maximumActual:60},
+    surfaces:['BACKGROUND','VFX','MOTION','MENU','HUD'],
+    reuseModes:[
+      'DIRECT_REUSE_WHEN_ALREADY_CONCEPT_MATCHED',
+      'ADAPT_RESTYLE_AND_RETARGET',
+      'TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES',
+      'NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER'
+    ],
+    beforeAfterEvidenceRequired:true
+  };
+  const valid=evaluateGraphicsReplacementReport({
+    candidate:{graphicsReplacementReport:{
+      actualCount:8,
+      changedSurfaces:['VFX','MOTION','MENU'],
+      reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET','TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES'],
+      before:'공격 이펙트와 메뉴가 임시 표현이었다.',
+      after:'공격 이펙트·모션·메뉴를 같은 컨셉 언어로 실제 교체했다.'
+    }},
+    contract
+  });
+  assert.equal(valid.pass,true);
+  assert.equal(valid.report.actualCount,8);
+
+  assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:0,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).pass,false);
+  assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:61,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).pass,false);
+  assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:[],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_SURFACES_MISSING');
+  assert.match(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:['VFX'],reuseModesUsed:['RAW_COPY'],before:'a',after:'b'}},contract}).reason,/GRAPHICS_REPLACEMENT_REUSE_MODE_INVALID/);
+  assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_BEFORE_AFTER_MISSING');
+});
+
+test('adaptive graphics replacement report failure is retriable and classified separately',()=>{
+  const error=new Error('GRAPHICS_REPLACEMENT_REPORT_REQUIRED:GRAPHICS_REPLACEMENT_REPORT_MISSING');
+  assert.equal(generationFailureClass(error),'GRAPHICS_REPLACEMENT_REPORT');
+  assert.equal(shouldRetryGenerationError(error),true);
 });
