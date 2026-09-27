@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence } from '../tools/vibe2-auto-planner.mjs';
+import { latestDevelopmentBaselineEvidence, planVibe2AutonomousTask, planVibe2AutonomousTasks, findPresentationQualityTask, findWebPresentationQualityTask, findRobloxStudioAssetBackfillTask, findStudioContinuousImprovementTask, findStudioContinuousImprovementTasks, applyBuildUpNextActionController, compileRuntimeNeuralEvent, applyRuntimeNeuralEventsToQueue, collectProjects, selectBuildUpDirectivePersistence } from '../tools/vibe2-auto-planner.mjs';
 import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-continuous-queue.js';
 
 function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
@@ -3358,3 +3358,74 @@ test('collectProjects still reads a legacy unreal-games UEFN source without maki
   assert.equal(project.projectPath,'unreal-games/legacy-uefn');
 });
 
+
+
+test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX motion menus and UI without fixed quota',()=>{
+  const root=tempRepo();
+  const gameId='adaptive-graphics-web';
+  const dir=path.join(root,'web-games',gameId);
+  fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'index.html'),'<!doctype html><canvas id="game"></canvas><div id="menu"></div>\n','utf8');
+  const project={gameId,name:'Adaptive Graphics Web',engine:'web',target:'web',releaseState:'development-confirmed',projectPath:`web-games/${gameId}`};
+  const task=findWebPresentationQualityTask(project,root,{tasks:[]});
+  assert.ok(task);
+  const contract=task.graphicsReplacementContract;
+  assert.ok(contract);
+  assert.equal(contract.adaptiveCount.minimumActual,1);
+  assert.equal(contract.adaptiveCount.maximumActual,60);
+  assert.equal(contract.adaptiveCount.fixedQuotaForbidden,true);
+  assert.deepEqual(contract.adaptiveCount.bands.micro,[1,10]);
+  assert.deepEqual(contract.adaptiveCount.bands.normal,[10,30]);
+  assert.deepEqual(contract.adaptiveCount.bands.major,[30,60]);
+  for(const surface of ['BACKGROUND','MONSTER','VFX','MOTION','MENU','HUD','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','ICON','CAMERA_PRESENTATION']){
+    assert.ok(contract.surfaces.includes(surface),surface);
+  }
+  assert.deepEqual([...contract.reuseModes],[
+    'DIRECT_REUSE_WHEN_ALREADY_CONCEPT_MATCHED',
+    'ADAPT_RESTYLE_AND_RETARGET',
+    'TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES',
+    'NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER'
+  ]);
+  assert.equal(contract.implementation.zeroActualReplacementCannotPass,true);
+  assert.equal(contract.implementation.actualReplacementCountMustBeRecorded,true);
+  assert.ok(task.completionCriteria.includes('GRAPHICS_ZERO_REPLACEMENT_PASS_FORBIDDEN'));
+  assert.ok(task.evidence.includes('adaptive-graphics-replacement-range:1-60'));
+  assert.match(task.goal,/작은 결함은 1~10개/);
+  assert.match(task.goal,/응용·재조합/);
+});
+
+test('studio PRESENTATION focus receives the same adaptive replacement contract inside existing BUILD_UP',()=>{
+  const root=tempRepo();
+  const gameId='adaptive-studio-presentation';
+  const dir=path.join(root,'roblox-games',gameId,'client');
+  fs.mkdirSync(dir,{recursive:true});
+  fs.writeFileSync(path.join(dir,'Game.client.luau'),'local ui = {}\nlocal effects = {}\n','utf8');
+  const project={gameId,name:'Adaptive Studio Presentation',engine:'roblox',target:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`,existing:true};
+  const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION');
+  assert.ok(task);
+  assert.equal(task.studioQualityEvolution.focusPillar,'PRESENTATION');
+  assert.equal(task.graphicsReplacementContract.executionBoundary,'EXISTING_PRESENTATION_OR_BUILD_UP_ONLY');
+  assert.equal(task.graphicsReplacementContract.decisionOwner,'VIBE');
+  assert.deepEqual([...task.graphicsReplacementContract.platforms],['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.ok(task.evidence.includes('adaptive-graphics-replacement:v1'));
+  assert.match(task.goal,/ADAPTIVE_GRAPHICS_REPLACEMENT_CONTRACT/);
+});
+
+test('Fortnite UEFN presentation uses Verse source and the same adaptive replacement contract',()=>{
+  const root=tempRepo();
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.assetProductionParallelContract={enabled:true};
+  fs.writeFileSync(policyPath,JSON.stringify(policy,null,2)+'\n','utf8');
+  const gameId='adaptive-uefn';
+  const verseDir=path.join(root,'uefn-games',gameId,'Content','Verse');
+  fs.mkdirSync(verseDir,{recursive:true});
+  fs.writeFileSync(path.join(verseDir,'Presentation.verse'),'AdaptivePresentation := class():\n    Apply():void = {}\n','utf8');
+  const project={gameId,name:'Adaptive UEFN',engine:'unreal',target:'fortnite-uefn',releaseState:'development-confirmed',projectPath:`uefn-games/${gameId}`};
+  const task=findPresentationQualityTask(project,root,{tasks:[]});
+  assert.ok(task);
+  assert.equal(task.graphicsReplacementContract.platform,'FORTNITE_UEFN');
+  assert.ok(task.responsibleFiles.some(file=>file.endsWith('Content/Verse/Presentation.verse')));
+  assert.ok(task.evidence.includes('adaptive-graphics-replacement:v1'));
+  assert.equal(task.graphicsReplacementContract.adaptiveCount.maximumActual,60);
+});
