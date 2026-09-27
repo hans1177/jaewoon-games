@@ -136,15 +136,25 @@ function restoreDedicatedTargetIdentity(item,{registry,gameId,stamp}){
 function recoverExactPrivateRuntimeCheckpoint(item,design){
   const priorDesignSource=clean(item?.minimumDesignContract?.source||item?.designBaselineSource);
   if(priorDesignSource&&priorDesignSource!==clean(design?.file))return null;
-  const step=upper(item?.currentStep),state=upper(item?.canonicalState);
-  if(step&&step!=='TARGET_PLATFORM_SOURCE_BIND'&&state!=='PENDING_DUAL_NATIVE_SOURCE_BIND')return null;
   const candidate=item?.robloxRuntimeCandidateEvidence||{};
-  const exact=candidate?.published===true
+  const exactCandidate=candidate?.published===true
     &&clean(candidate.sourceRevision)===clean(item?.robloxSourceCommit)
     &&clean(candidate.artifactIdentity)===clean(item?.robloxBuildArtifactIdentity)
     &&Number(candidate.versionNumber)>0;
-  if(!exact)return null;
-  return{currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',canonicalState:'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED'};
+  if(exactCandidate){
+    return{currentStep:'TARGET_PLATFORM_RUNTIME_FOUNDATION',canonicalState:'PRIVATE_RUNTIME_CANDIDATE_DEPLOYED'};
+  }
+  const exactF0=item?.robloxBuildOrPackagePassed===true
+    &&item?.robloxBuildPreflightPassed===true
+    &&item?.robloxFoundationF0Passed===true
+    &&clean(item?.robloxBuildSourceRevision)===clean(item?.robloxSourceCommit)
+    &&/^sha256:[a-f0-9]{64}$/i.test(clean(item?.robloxBuildArtifactIdentity));
+  const privateDeployPending=upper(item?.robloxFailureStage)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
+    &&upper(item?.robloxFailureSignature)==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING';
+  if(exactF0&&privateDeployPending){
+    return{currentStep:'PRIVATE_RUNTIME_CANDIDATE_DEPLOY',canonicalState:'F0_SOURCE_PREFLIGHT_PASSED'};
+  }
+  return null;
 }
 function migrateSharedRobloxFallbackToDedicatedTarget(item){
   const target=item?.robloxPublicationTarget||{};
