@@ -56,3 +56,41 @@ test('non Vibe2 candidate branch is ignored',()=>{
   assert.equal(result.updated,false);
   assert.equal(result.reason,'not-vibe2-candidate');
 });
+
+
+test('late native verification callback cannot rewind a Unity runtime-wait task',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    {
+      id:'task-a',gameId:'daechung-rpg',target:'unity',sourceRoot:'unity-games/daechung-rpg',
+      goal:'후보 수정',status:'blocked',blocker:'candidate-awaiting-unity-runtime-qa',
+      evidence:['vibe2/candidate/task-a-100','unity-runtime-await-source-tree:1111111111111111111111111111111111111111']
+    }
+  ]});
+  const result=reconcileVibeCandidateVerification(queue,{
+    candidateBranch:'vibe2/candidate/task-a-100',target:'unity',conclusion:'success',runId:'204',headSha:'abc123'
+  });
+  const task=result.queue.tasks.find(item=>item.id==='task-a');
+  assert.equal(task.status,'blocked');
+  assert.equal(task.blocker,'candidate-awaiting-unity-runtime-qa');
+  assert(task.evidence.includes('unity-verification-run:204'));
+  assert.equal(result.reason,'engine-verification-evidence-merged-without-stage-rewind');
+});
+
+test('late native verification callback cannot rewind an already verified task',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[
+    {
+      id:'task-a',gameId:'daechung-rpg',target:'unity',sourceRoot:'unity-games/daechung-rpg',
+      goal:'후보 수정',status:'verified',blocker:null,
+      evidence:['vibe2/candidate/task-a-100','unity-runtime-source-tree:1111111111111111111111111111111111111111']
+    }
+  ]});
+  const result=reconcileVibeCandidateVerification(queue,{
+    candidateBranch:'vibe2/candidate/task-a-100',target:'unity',conclusion:'success',runId:'205',headSha:'abc123'
+  });
+  const task=result.queue.tasks.find(item=>item.id==='task-a');
+  assert.equal(task.status,'verified');
+  assert.equal(task.blocker,null);
+  assert(task.evidence.includes('unity-verification-run:205'));
+  assert.equal(result.finalPass,true);
+  assert.equal(result.reason,'engine-verification-evidence-merged-without-stage-rewind');
+});
