@@ -784,7 +784,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
   const d=order?.selectedTask?.buildUpDirective||order?.buildUpDirective||null;
   if(!d||typeof d!=='object'||!clean(d.directiveId))return'';
   const target=clean(order?.target).toUpperCase();
-  const platformKey=target==='ROBLOX'?'ROBLOX':target==='UNITY'?(order?.selectedTask?.firstStageUnityWeb===true?'UNITY_WEB':'UNITY_APP'):target==='WEB'?'UNITY_WEB':'';
+  const platformKey=target==='ROBLOX'?'ROBLOX':target==='UNITY'?(order?.selectedTask?.firstStageUnityWeb===true?'UNITY_WEB':'UNITY_APP'):target==='WEB'?'WEB':['FORTNITE_UEFN','FORTNITE-UEFN','UEFN','UNREAL'].includes(target)?'FORTNITE_UEFN':'';
   const visual=Object.entries(d?.visualBuildUpDirective?.domains||{})
     .map(([domain,instruction])=>`${domain}=${clean(instruction)}`)
     .filter(Boolean);
@@ -794,6 +794,11 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     .map(row=>`${clean(row.domain)}[${clean(row.priority)}]=${clean(row.directive)}`)
     .filter(Boolean);
   const sourceAnchors=(d?.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`${clean(row?.file)}:${Number(row?.line||0)||'?'} ${clean(row?.kind)||'SYMBOL'} ${clean(row?.symbol)||'UNKNOWN'} CURRENT=${clean(row?.currentBehavior||row?.context)||'UNKNOWN'} INTENDED=${clean(row?.intendedBehavior)||'FOLLOW_PRIMARY_GOAL'} ACCEPT=${clean(row?.observableAcceptance)||'REAL_SOURCE_AND_EFFECT_DELTA'}`).filter(Boolean);
+  const expansion=d?.autonomousContentExpansion||{};
+  const breadth=expansion?.themeCoverageLedger||{};
+  const contentBundle=(expansion?.coherentContentBundle||[]).map(clean).filter(Boolean).slice(0,10);
+  const antiCloneAxes=(expansion?.antiCloneContract?.distinctionAxes||[]).map(clean).filter(Boolean);
+  const continuityQuestions=(expansion?.continuityAndCausality?.questions||[]).map(clean).filter(Boolean);
   return[
     '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
     `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
@@ -804,6 +809,14 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     `expectedPlayerEffect=${clean(d?.effectivenessMeasurement?.expectedPlayerEffect)||'UNKNOWN'}`,
     `previousEffectiveness=${clean(d?.effectivenessMeasurement?.previousGeneration?.classification)||'NO_PREVIOUS_GENERATION'}`,
     `nextVibeAction=${clean(d?.nextActionDecision?.action)||'CONTINUE_BUILD_UP_CURRENT_SYSTEM'}`,
+    `contentExpansionVersion=${Number(expansion?.version||0)} executionBoundary=${clean(expansion?.executionBoundary)||'EXISTING_BUILD_UP_ONLY'} decisionOwner=${clean(expansion?.autonomousDecisionOwner)||'VIBE'}`,
+    `contentTheme=${clean(expansion?.selectedTheme)||'AUTO'} themeDepth=${Number(expansion?.themeDepth||1)} mode=${clean(expansion?.executionMode)||'AUTONOMOUS_CONTENT_BUILD_UP'}`,
+    `contentBreadth=covered:${Number(breadth?.distinctCovered||0)}/${Number(breadth?.totalThemes||0)} missing:${(breadth?.missingThemes||[]).map(clean).filter(Boolean).join(',')||'NONE'} leastCovered:${(breadth?.leastCoveredThemes||[]).map(clean).filter(Boolean).join(',')||'NONE'}`,
+    `contentBundle=${contentBundle.join(' | ')}`,
+    `antiClone=${expansion?.antiCloneContract?.nameColorOrStatOnlyCloneForbidden===true?'NAME_COLOR_STAT_ONLY_CLONE_FORBIDDEN':'DISTINCT_CONTENT_REQUIRED'} minimumDistinctAxes=${Number(expansion?.antiCloneContract?.minimumMeaningfulDistinctAxes||2)} axes=${antiCloneAxes.join(',')}`,
+    `continuity=required:${expansion?.continuityAndCausality?.required===true} preserveIdentity:${expansion?.continuityAndCausality?.preserveApprovedIdentity===true} preserveProgression:${expansion?.continuityAndCausality?.preserveProgressionFlow===true} questions:${continuityQuestions.join(',')}`,
+    `derivedRuleEvolution=${clean(expansion?.derivedRuleEvolution?.rule)||'PRESERVE_CANONICAL_RULES'}`,
+    'contentRule=Stay inside the existing BUILD_UP responsibility. Implement the selected coherent content theme as connected player-facing source changes; do not satisfy it with count-only clones, labels, comments, or presentation-only changes when the selected bundle requires gameplay/world/progression connections.',
     `gameplay=${(d.gameplayImplementationDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
     `priorityDomains=${priorityDomains.join(' | ')}`,
     `progressionWorld=${(d.progressionContentWorldDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
@@ -831,7 +844,9 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false}={}){
   if(!compact)return block;
   const keepPrefixes=[
     'directiveId=','gameIdentity=','primaryGoal=','sourceAnchors=','expectedPlayerEffect=',
-    'nextVibeAction=','visual=','platform=','preserve=','acceptance='
+    'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','contentBundle=',
+    'antiClone=','continuity=','derivedRuleEvolution=','contentRule=',
+    'visual=','platform=','preserve=','acceptance='
   ];
   return block.split('\n').filter(line=>
     line===begin||line===end||keepPrefixes.some(prefix=>line.startsWith(prefix))
