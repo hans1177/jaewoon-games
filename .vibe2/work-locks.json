@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-f7061u",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T13:29:43.225Z",
-      "expiresAt": "2026-09-27T14:14:43.225Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-go379a",
       "worker": "vibe2",
       "taskId": "bug-defense-studio-evolution-unity-web-usability-v1",
@@ -167,6 +149,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1qjby7g",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-roblox-presentation-asset-adaptation-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "roblox-games/amusement-tycoon/client/Game.client.luau",
+        "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "roblox-games/amusement-tycoon/shared/GameConfig.luau"
+      ],
+      "baseSha": "6bec89582afa4db20dec68b3a52bbd0c63cfbd9b",
+      "acquiredAt": "2026-09-27T14:14:58.788Z",
+      "expiresAt": "2026-09-27T14:59:58.788Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
