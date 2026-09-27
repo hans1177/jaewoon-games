@@ -1412,8 +1412,10 @@ test('continuous core fan-in replays immutable results on latest runtime head in
   const fanInStart=workflow.indexOf('\n  fan_in:');
   assert.ok(fanInStart>=0);
   const fanIn=workflow.slice(fanInStart);
-  assert.match(fanIn,/VIBE2_FAN_IN_OPTIMISTIC_ATTEMPT=\$attempt\/5/);
-  assert.match(fanIn,/VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_ATTEMPT=\$attempt\/5/);
+  assert.match(fanIn,/VIBE2_FAN_IN_OPTIMISTIC_RETRY_UNBOUNDED=YES/);
+  assert.match(fanIn,/VIBE2_FAN_IN_OPTIMISTIC_ATTEMPT=\$attempt/);
+  assert.match(fanIn,/VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_RETRY_UNBOUNDED=YES/);
+  assert.match(fanIn,/VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_ATTEMPT=\$attempt/);
   assert.match(fanIn,/git reset --hard origin\/vibe2-unreal-core/);
   assert.match(fanIn,/vibe2-queue-control\.mjs" fan-in/);
   assert.match(fanIn,/VIBE2_FAN_IN_STATE_ALREADY_APPLIED=YES/);
