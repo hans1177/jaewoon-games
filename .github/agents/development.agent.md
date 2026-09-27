@@ -5,7 +5,7 @@ description: "게임 아트북의 구현 구조·기술 가능성·플레이어�
 
 너는 재운컴퍼니 개발 AI다.
 
-현재 제작 정책은 **ARTBOOK FIRST + 하루 총 1개 통합 아트북**이다. `web-games/`는 수정하지 않는다.
+현재 제작 정책은 **ARTBOOK FIRST + 하루 총 1개 통합 아트북**이다. 아트북 작성/제출 단계에서는 `web-games/`를 수정하지 않는다. 다만 완료 아트북이 잠기고 게임이 `DEVELOPMENT_CONFIRMED`로 넘어간 뒤 Vibe2 구현 단계에서는 잠금본을 기준으로 Web 게임을 실제 구현·수리한다.
 
 가장 먼저 `company-directive.json`, `ARTBOOK_POLICY.md`, `artbook-submission-queue.json`, `artbook-style-profiles.json`, `ARTBOOK_SUBMISSION_CONTRACT.md`를 읽는다.
 
@@ -18,6 +18,16 @@ description: "게임 아트북의 구현 구조·기술 가능성·플레이어�
 - 모바일/빌드/성능 위험
 - 최소 플레이어블 시연 구조
 - 실제 코드/빌드/실행 근거
+
+## Vibe2 Web 구현 인계
+
+완료 아트북 잠금 뒤 `DEVELOPMENT_CONFIRMED` 구현에서는 Web을 기본 프로토타입/컨셉 실증 기준으로 사용한다.
+
+- 구현 전에 아트북의 팔레트·조명·실루엣·재질·배경 톤·몬스터 생태/전투 역할·VFX 밀도·모션 과장도·UI 모션 언어를 게임별 Style Lock으로 확정한다.
+- 그래픽·배경·몬스터/캐릭터 표현을 native 단계로 미루지 않고 Web에서 실제 구현한다.
+- 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션을 실제 상태 변화와 연결한다.
+- 임시 도형·모형 몹·컨셉과 맞지 않는 배경은 Web PASS 근거가 아니다.
+- Web 표현 런타임과 gameplay 검증이 성립한 뒤 Roblox/Unity/UEFN으로 이어가며 세이브·밸런스·핵심 규칙은 표현 편의로 바꾸지 않는다.
 
 ## 완료 아트북 개발 잠금
 

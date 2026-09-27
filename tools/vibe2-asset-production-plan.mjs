@@ -125,6 +125,13 @@ export function buildVibeAssetProductionPlan({
     }),
     policy:freeze({
       qualityAndGameIdentityFirst:true,
+      artDirectionStyleLockRequiredBeforeAssetChoice:true,
+      backgroundMustMatchWorldRegionAndNarrativeContext:true,
+      monsterVisualMustMatchWorldEcologyAndCombatRole:true,
+      actionActorStateSetRequired:freezeList(['IDLE','MOVE','ATTACK','HIT','DEATH']),
+      webPresentationMustPassBeforeNativeHandoff:true,
+      noPlaceholderMonsterOrCharacter:true,
+      noContextMismatchBackground:true,
       existingAssetIsCandidateNotMandatory:true,
       licenseAndCommercialUseGateRequired:true,
       animationEvidenceRequiredForActors:true,
@@ -147,6 +154,9 @@ export function assetProductionGuidance(plan={}){
   const lines=[
     '[VIBE ASSET PRODUCTION - implementation owner decision]',
     'Vibe2/Vibe3가 게임 구현 주체이며 현재 게임 정체성과 실제 화면 품질을 기준으로 필요한 에셋 방식을 직접 선택한다.',
+    '에셋 선택 전에 승인 설계·최신 아트북에서 게임별 아트 방향과 Style Lock을 먼저 확정한다.',
+    '배경은 세계관·지역·서사 맥락에 맞고 몬스터는 생태·전투 역할이 읽혀야 하며 액션 배우는 Web부터 IDLE/MOVE/ATTACK/HIT/DEATH 상태를 실제 게임 상태에 연결한다.',
+    '임시 모형 몹·단순 도형·무맥락 배경은 PASS 근거가 아니며 Web 표현 런타임 통과 후 native 플랫폼으로 이어간다.',
     '선택 순서 후보: 검증된 회사 에셋 재사용 / Vibe 직접 제작 / 별도 authoring generator 요청. 기존 에셋 재사용은 강제가 아니다.',
     'Web에서 SVG/CSS/Canvas/절차적 JavaScript/WebAudio/Motion Engine으로 최종 품질을 만들 수 있으면 Vibe가 직접 제작한다.',
     '이모지/단순 도형/검증용 임시 그래픽을 최종 에셋으로 사용하지 않는다.',
