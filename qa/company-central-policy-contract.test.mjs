@@ -1405,7 +1405,8 @@ test('director runner drain uses targeted active-run queries instead of deep Act
   assert.match(directorSupervisor,/DIRECTOR_RUNNER_DRAIN_FETCH_RETRY=/);
   assert.match(directorSupervisor,/VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE/);
   assert.doesNotMatch(directorSupervisor,/for page in \$\(seq 1 20\)/);
-  assert.doesNotMatch(directorSupervisor,/page=\$\{page\}/);
+  assert.match(directorSupervisor,/page_query="\$\{query\}&page=\$\{page\}"/);
+  assert.doesNotMatch(directorSupervisor,/for page in \$\(seq 1 20\)/);
 });
 
 test('administrative operational control workflows stay off game-primary ubuntu-latest capacity',()=>{

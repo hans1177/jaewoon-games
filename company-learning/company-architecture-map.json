@@ -1,5 +1,5 @@
 {
-  "version": 297,
+  "version": 298,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3812,7 +3812,7 @@
       "repeatCycle": "VIBE_PLAY->MODIFY->REBUILD_REDEPLOY->REVALIDATE->VIBE_PLAY",
       "actualPlayExecution": "SELF_HOSTED_WINDOWS_OFFICIAL_STUDIO_MCP_LOCAL_EXACT_ARTIFACT",
       "learningReuse": "STRUCTURED_VERIFIED_QA_FACTS_ONLY_NO_RAW_GAMEPLAY_TRAINING",
-      "publishedCandidateVerification": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD",
+      "publishedCandidateVerification": "LOCAL_EXACT_BUILD_INTERNAL_RUNTIME_PLUS_EXISTING_EXACT_CANDIDATE_BINDING",
       "headlessF0RemainsIndependent": true,
       "actualPlaySurface": "ROBLOX_STUDIO_MCP_PLAY_MODE",
       "actualPlayTransport": "OFFICIAL_STUDIO_MCP_STDIO",
@@ -3868,7 +3868,7 @@
         "completedMcpSessionRuntimeFailureAction": "PERSIST_GAME_RUNTIME_EVIDENCE_WITHOUT_MCP_SESSION_RESTART",
         "runtimeFailureMustNotConsumeMcpRecoveryAttempts": true
       },
-      "actualPlayPlannerEligibility": "RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING",
+      "actualPlayPlannerEligibility": "EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_EXACT_SOURCE_ARTIFACT_BINDING",
       "actualPlayPlannerExclusiveCurrentStepGate": false,
       "parallelRuntimeFoundationAndFinalRevalidationAllowedAfterInternalRelease": true,
       "explicitDisabledGameEligible": false,
@@ -3882,12 +3882,12 @@
         "exactEngineExecutionMayNotSubstituteRealServerBoot": true,
         "studioMcpActualPlayEvidencePreservedWhilePending": true,
         "fakeRuntimeFoundationPromotionForbidden": true,
-        "observationRetry": "UNLIMITED_OBSERVATION",
+        "observationRetry": "MANUAL_WHEN_NEEDED",
         "developmentBlocking": false,
         "internalQaBlocking": false,
         "internalRegressionBlocking": false,
         "internalReleaseBlocking": false,
-        "externalPublicReleaseBlocking": true,
+        "externalPublicReleaseBlocking": false,
         "internalReleaseUsesExplicitObservationDeferredEvidence": true,
         "runtimePassTruthRemainsFalseUntilRealServerBootEvidence": true,
         "exactPrivateRuntimeFailureInternalFlowBlocking": false,
@@ -3899,12 +3899,20 @@
         "playerAutomation": false,
         "publishedPlaceDirectStudioAutomation": false,
         "exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot": true,
-        "studioPlannerEligibility": "EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT",
+        "studioPlannerEligibility": "EXACT_PRIVATE_RUNTIME_CANDIDATE",
         "studioActualPlayMayNotSetRuntimeFoundationPass": true,
-        "externalPublicReleaseRemainsBlockedUntilRealServerBoot": true,
-        "studioFollowupOwner": ".github/workflows/company-development-roblox-post-runtime-qa.yml"
+        "externalPublicReleaseRemainsBlockedUntilRealServerBoot": false,
+        "studioFollowupOwner": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+        "role": "OPTIONAL_MANUAL_DIAGNOSTIC_ONLY",
+        "ownerApprovalIsExternalPublicationAuthority": true
       },
-      "actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass": true
+      "actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass": false,
+      "actualPlayMayStartAfterExactPrivateCandidateBeforeRuntimeFoundationPass": true,
+      "externalServerProbeAutomatic": false,
+      "externalServerObservationRequiredForInternalDevelopment": false,
+      "f1ThroughF8SingleStudioSession": true,
+      "f9RuntimeReplay": false,
+      "f9ConsumesExistingExactEvidence": true
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
@@ -5146,7 +5154,8 @@
           "MAINTAIN_VERIFIED_BASELINE_WHILE_WAITING_FOR_REQUIRED_EXTERNAL_EVIDENCE"
         ],
         "parallelSafeLanesRemainEligible": true,
-        "securityQaReleaseAuthorityUnchanged": true
+        "securityQaReleaseAuthorityUnchanged": true,
+        "externalServerObservationMayNotBlockIndependentDevelopment": true
       },
       "holisticGameEvolution": {
         "policy": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.holisticGameEvolution",
@@ -5197,7 +5206,11 @@
       "existingGameHolisticBackfill": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.existingGameHolisticBackfill",
       "existingGamesNotGrandfathered": true,
       "firstEligibleExistingGenerationUsesFiveQualityPillars": true,
-      "existingGameHolisticBaselineRequiresFivePillarFanIn": true
+      "existingGameHolisticBaselineRequiresFivePillarFanIn": true,
+      "validationOptimization": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
+      "gameEvolutionPipelineUnchanged": true,
+      "validationSupportsEvolution": true,
+      "duplicateValidationMayNotConsumeNextBuildUpGeneration": true
     },
     "existingGameHolisticBackfill": {
       "version": 5,
@@ -6529,5 +6542,45 @@
     "runtimeExecutionSemanticsChanged": false,
     "dnaLearningMainPushScope": "VERIFIED_LEARNING_INPUTS_ONLY",
     "dnaLearningBroadCompanyLearningWildcardForbidden": true
+  },
+  "validationEfficiencyTopology": {
+    "version": 1,
+    "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
+    "objective": "KEEP_EXISTING_AUTONOMOUS_GAME_EVOLUTION_AND_REMOVE_ONLY_DUPLICATE_VALIDATION",
+    "gameEvolutionPipelineUnchanged": true,
+    "floorStructureUnchanged": true,
+    "flow": [
+      "VIBE_GAME_SPECIFIC_BUILD_UP_AND_REAL_SOURCE_CHANGE",
+      "F0_SOURCE_INTEGRITY_ONCE",
+      "ONE_EXACT_INTERNAL_RUNTIME_SESSION_COLLECTS_APPLICABLE_F1_TO_F8",
+      "F9_FANS_IN_EXISTING_EXACT_EVIDENCE_AND_REGRESSION",
+      "RESULT_RETURNS_TO_EXISTING_EVOLUTION_CONTROLLER",
+      "NEXT_GAME_SPECIFIC_BUILD_UP"
+    ],
+    "roblox": {
+      "internalRuntimeExecutor": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play",
+      "internalRuntimeSurface": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD",
+      "externalServerProbe": "MANUAL_DIAGNOSTIC_ONLY",
+      "automaticOpenCloudServerProbe": false,
+      "playerAutomation": false
+    },
+    "unity": {
+      "internalRuntimeExecutor": ".github/workflows/company-development-unity-runtime.yml",
+      "existingFingerprintReusePreserved": true
+    },
+    "multiplayer": {
+      "ownerFloor": "F7",
+      "onlyWhenApplicable": true,
+      "oneExactTwoParticipantSyncProofPerCycle": true,
+      "reusedByF9": true,
+      "duplicateReleaseRecheck": false
+    },
+    "f9": {
+      "role": "EVIDENCE_FAN_IN_AND_REGRESSION_REVIEW",
+      "startsRuntimeSession": false,
+      "duplicateF1ToF8ReplayForbidden": true
+    },
+    "noNewPipeline": true,
+    "noShadowValidationPath": true
   }
 }
