@@ -177,6 +177,17 @@ export function reconcileChangedRobloxItems({queue={},changedGameIds=[],sourceRe
     if(!item||!activeRobloxDevelopmentItem(item)){results.push({gameId,skipped:true,reason:'not-active-development'});continue;}
     const verdict=validateItem(item);
     if(verdict?.pass===true){
+      if(verdict?.buildSourceChanged==null){
+        results.push({
+          gameId,
+          pass:false,
+          sourceRevision,
+          blockers:['ROBLOX_BUILD_SOURCE_DIFF_UNAVAILABLE'],
+          comparisonBaseRevision:clean(verdict?.comparisonBaseRevision)||null,
+          nonMutating:true
+        });
+        continue;
+      }
       if(verdict?.buildSourceChanged===false){
         const restored=restoreMetadataOnlyRobloxInvalidation(item,{stamp});
         results.push({gameId,pass:true,sourceRevision,buildSourceChanged:false,metadataOnly:true,restored});

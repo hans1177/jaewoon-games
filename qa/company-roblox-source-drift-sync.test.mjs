@@ -242,3 +242,24 @@ test('runtime trigger wakes Studio QA without rebinding Roblox build source iden
   assert.doesNotMatch(workflow,/sed -n 's\/\^gameId:/);
   assert.doesNotMatch(workflow,/grep -Fxq 'roblox-games\/\.company-runtime-trigger'/);
 });
+
+
+test('source drift workflow uses full git history for exact build-input comparison',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(workflow,/fetch-depth:\s*0/);
+});
+
+test('unknown Roblox build-source diff is non-mutating',()=>{
+  const q={items:[item()]};
+  const before=JSON.parse(JSON.stringify(q.items[0]));
+  const out=reconcileChangedRobloxItems({
+    queue:q,
+    changedGameIds:['g1'],
+    sourceRevision:'f'.repeat(40),
+    stamp:'2026-09-27T02:30:00.000Z',
+    validateItem:()=>({pass:true,buildSourceChanged:null,comparisonBaseRevision:'a'.repeat(40)})
+  });
+  assert.equal(out.results[0].pass,false);
+  assert.equal(out.results[0].nonMutating,true);
+  assert.deepEqual(q.items[0],before);
+});

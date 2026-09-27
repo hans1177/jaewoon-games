@@ -730,7 +730,7 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     'local function attr(inst,name) if not inst then return nil end;local ok,value=pcall(function() return inst:GetAttribute(name) end);if ok then return value end;return nil end',
     'local payload={',
     ' context='+JSON.stringify(context)+',',
-    ' player={present=p~=nil,characterPresent=p~=nil and p.Character~=nil,humanoidPresent=hum~=nil,rootPresent=root~=nil,rootX=root and root.Position.X or nil,rootY=root and root.Position.Y or nil,rootZ=root and root.Position.Z or nil,velocityX=root and root.AssemblyLinearVelocity.X or nil,velocityY=root and root.AssemblyLinearVelocity.Y or nil,velocityZ=root and root.AssemblyLinearVelocity.Z or nil,health=hum and hum.Health or nil,roundState=attr(p,"RoundState"),role=attr(p,"Role"),currentMap=attr(p,"CurrentMap"),currentMapEvent=attr(p,"CurrentMapEvent"),humanCount=attr(p,"HumanCount"),monsterCount=attr(p,"MonsterCount"),objectivesDone=attr(p,"ObjectivesDone"),objectivesTotal=attr(p,"ObjectivesTotal")},',
+    ' player={present=p~=nil,characterPresent=p~=nil and p.Character~=nil,humanoidPresent=hum~=nil,rootPresent=root~=nil,rootX=root and root.Position.X or nil,rootY=root and root.Position.Y or nil,rootZ=root and root.Position.Z or nil,velocityX=root and root.AssemblyLinearVelocity.X or nil,velocityY=root and root.AssemblyLinearVelocity.Y or nil,velocityZ=root and root.AssemblyLinearVelocity.Z or nil,health=hum and hum.Health or nil,roundState=attr(p,"RoundState"),role=attr(p,"Role"),monsterPreference=attr(p,"MonsterPreference"),soloRole=attr(p,"SoloRole"),currentMap=attr(p,"CurrentMap"),currentMapEvent=attr(p,"CurrentMapEvent"),humanCount=attr(p,"HumanCount"),monsterCount=attr(p,"MonsterCount"),objectivesDone=attr(p,"ObjectivesDone"),objectivesTotal=attr(p,"ObjectivesTotal")},',
     ' camera={present=camera~=nil,viewportX=viewport.X,viewportY=viewport.Y,fieldOfView=camera and camera.FieldOfView or nil},',
     ' ui=gui,',
     ' world={arenaPresent=arena~=nil,arenaPartCount=parts,proximityPromptCount=prompts},',
@@ -786,13 +786,14 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const designPrefixes=Object.entries(prefixes).every(([key,value])=>clean(ws[key]).startsWith(clean(value)));
   const actionOk=id=>(actions||[]).some(row=>row?.id===id&&row?.dispatched===true&&row?.ok===true);
   const selectionPlayer=preActionClientProbe?.player||player;
+  const selectionIntent=clean(selectionPlayer?.monsterPreference||selectionPlayer?.soloRole);
   const actionPlayer=postActionClientProbe?.player||player;
   const displacement=pointDistance(preActionClientProbe?.player||{},actionPlayer);
   const velocity=Math.hypot(Number(actionPlayer.velocityX||0),Number(actionPlayer.velocityY||0),Number(actionPlayer.velocityZ||0));
   const lightingBrightness=Number(client?.lighting?.brightness??server?.lighting?.brightness??0);
   const rows=[
     {id:'character-camera-ready',pass:player.characterPresent===true&&player.humanoidPresent===true&&player.rootPresent===true&&client?.camera?.present===true},
-    {id:'role-selection-interaction',pass:!clean(contract.selectionButtonText)||(actionOk('ui-role-selection')&&acceptedRoles.includes(clean(selectionPlayer.role)))},
+    {id:'role-selection-interaction',pass:!clean(contract.selectionButtonText)||(actionOk('ui-role-selection')&&(selectionIntent==='SURVIVOR'||acceptedRoles.includes(clean(selectionPlayer.role))))},
     {id:'round-running',pass:acceptedRoundStates.length===0||acceptedRoundStates.includes(clean(selectionPlayer.roundState||player.roundState))},
     {id:'logical-population-eight',pass:logicalPopulation<=0||(humanCount+monsterCount===logicalPopulation&&humanCount>=Number(exp.minimumHumans||0)&&monsterCount>=Number(exp.minimumMonsters||0))},
     {id:'hud-visible',pass:!clean(exp.screenGuiName)||ui.screenGuiPresent===true},
@@ -1031,17 +1032,29 @@ export async function runOfficialStudioMcpPlay({
     }
 
     if(actualPlayContract?.required===true){
-      preActionClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+      const primaryText=clean(actualPlayContract.primaryActionButtonText);
+      const probeAttempts=primaryText?10:1;
+      for(let probeAttempt=1;probeAttempt<=probeAttempts;probeAttempt++){
+        preActionClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+        const readyTarget=preActionClientProbe?.ui?.buttons?.[primaryText]||null;
+        if(!primaryText||readyTarget?.visible===true)break;
+        if(probeAttempt<probeAttempts)await wait(300);
+      }
       checkpoint('actual-play-pre-action-client-probe',preActionClientProbe!=null);
-      if(clean(actualPlayContract.primaryActionButtonText)){
-        const target=preActionClientProbe?.ui?.buttons?.[clean(actualPlayContract.primaryActionButtonText)]||null;
+      if(primaryText){
+        const target=preActionClientProbe?.ui?.buttons?.[primaryText]||null;
         let ok=false;
         if(target?.visible===true&&Number.isFinite(Number(target.centerX))&&Number.isFinite(Number(target.centerY))){
-          try{const mouseTool=client.tool('user_mouse_input');const result=await client.call('user_mouse_input',mouseClickArgs(mouseTool.inputSchema||{},studioId,target.centerX,target.centerY));ok=result?.isError!==true;}catch{}
+          try{
+            const mouseTool=client.tool('user_mouse_input');
+            console.log('ROBLOX_STUDIO_MCP_MOUSE_SCHEMA='+JSON.stringify(mouseTool.inputSchema||{}).slice(0,3000));
+            const result=await client.call('user_mouse_input',mouseClickArgs(mouseTool.inputSchema||{},studioId,target.centerX,target.centerY));
+            ok=result?.isError!==true;
+          }catch{}
         }
         actions.push({id:'ui-primary-action',type:'mcp-mouse-input',dispatched:target!=null,ok});
         checkpoint('primary-action-input-dispatched',ok);
-        await wait(Math.max(250,Number(actualPlayContract.postActionWaitMs||1200)));
+        await wait(Math.max(200,Number(actualPlayContract.postActionWaitMs||350)));
         postActionClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
         checkpoint('actual-play-post-action-client-probe',postActionClientProbe!=null);
       }
@@ -1125,7 +1138,7 @@ export async function runOfficialStudioMcpPlay({
     console.log('ROBLOX_STUDIO_MCP_CONSOLE_STRUCTURED_ENTRY_COUNT='+consoleClassification.structuredEntryCount);
     console.log('ROBLOX_STUDIO_MCP_CONSOLE_WARNING_COUNT='+consoleClassification.warningCount);
     for(const row of consoleClassification.errors)errors.push(row);
-    checkpoint('no-release-blocking-runtime-errors',errors.length===0);
+    checkpoint('no-release-blocking-runtime-errors',consoleClassification.errors.length===0);
 
     await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,false));
     started=false;

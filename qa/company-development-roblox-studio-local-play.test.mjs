@@ -1220,3 +1220,35 @@ test('declared Studio scenario probes the primary action before generic movement
   assert.doesNotMatch(helper,/if\(row\.pass!==true\)errors\.push\(\{type:'actual-play-quality-error'/);
   assert.match(helper,/acceptedRoles\.includes\(clean\(selectionPlayer\.role\)\)/);
 });
+
+
+test('role preference intent survives later infection in scenario evaluation',()=>{
+  const contract=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8')).studioActualPlayContract;
+  const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
+  const image={type:'image',mimeType:'image/png',data:png.toString('base64')};
+  const result=evaluateStudioActualPlayContract({
+    contract,
+    initialClientProbe:{player:{roundState:'INTERMISSION'},workspace:{ActivePopulation:0}},
+    preActionClientProbe:{player:{roundState:'RUNNING',role:'MONSTER',monsterPreference:'SURVIVOR',soloRole:'SURVIVOR',rootX:0,rootY:3,rootZ:0}},
+    postActionClientProbe:{player:{rootX:2,rootY:3,rootZ:0,velocityX:18,velocityY:0,velocityZ:0}},
+    clientProbe:{
+      player:{characterPresent:true,humanoidPresent:true,rootPresent:true,roundState:'RUNNING',role:'MONSTER',humanCount:4,monsterCount:4},
+      camera:{present:true},
+      ui:{screenGuiPresent:true,visibleButtons:2,required:{MidnightTopHUD:{present:true,visible:true,offscreen:false},RoundActions:{present:true,visible:true,offscreen:false}}},
+      world:{arenaPresent:true,arenaPartCount:80,proximityPromptCount:5},
+      workspace:{MapReady:true,ActivePopulation:8,HumanCount:4,MonsterCount:4,WorldArtPass:'MIDNIGHT_SCHOOL_INFECTION_HORROR_V9',CharacterArtDirection:'REALISTIC_HUMANS_ABERRANT_MONSTERS',DesignCodeSync:'PRIMARY_THREE_FINAL_4V4_INFECTION_V1'},
+      lighting:{brightness:1.8}
+    },
+    serverProbe:{workspace:{MapReady:true,ActivePopulation:8,HumanCount:4,MonsterCount:4}},
+    actions:[{id:'ui-role-selection',dispatched:true,ok:true},{id:'ui-primary-action',dispatched:true,ok:true}],
+    beforeImages:[image],afterImages:[image]
+  });
+  assert.equal(result.scenarios.find(x=>x.id==='role-selection-interaction').pass,true);
+  assert.equal(result.scenarios.find(x=>x.id==='primary-action-input').pass,true);
+  assert.equal(result.scenarios.find(x=>x.id==='primary-action-effect').pass,true);
+});
+
+test('deep Studio scenario separates console-runtime errors from gameplay-quality failures',()=>{
+  assert.match(helper,/checkpoint\('no-release-blocking-runtime-errors',consoleClassification\.errors\.length===0\)/);
+  assert.match(helper,/consoleErrorCount:consoleClassification\.errors\.length/);
+});
