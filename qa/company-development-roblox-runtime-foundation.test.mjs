@@ -394,8 +394,13 @@ test('F9 returns exact Roblox runtime and Studio asset proof to waiting Vibe tas
 
 test('post-runtime Open Cloud engine probes use bounded external API concurrency and stronger throttling retry',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:2,candidates\.length\|\|1\)\)/);
+ const foundation=fs.readFileSync('tools/company-development-roblox-runtime-foundation.mjs','utf8');
+ assert.match(workflow,/const throttlePressure=candidates\.some/);
+ assert.match(workflow,/Number\(evidence\.httpStatus\|\|0\)===429/);
+ assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:\(throttlePressure\?1:2\),candidates\.length\|\|1\)\)/);
+ assert.match(workflow,/ROBLOX_OPEN_CLOUD_THROTTLE_PRESSURE=/);
  assert.match(workflow,/networkRetryAttempts:6,networkRetryDelayMs:1000/);
+ assert.match(foundation,/const exponentialDelay=Math\.min\(30000,baseDelayMs\*Math\.max\(1,2\*\*Math\.max\(0,attempt-1\)\)\)/);
  assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_FAILURE=/);
  assert.match(workflow,/probes\[index\]=probe/);
  assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_PROBE_COUNT=/);
