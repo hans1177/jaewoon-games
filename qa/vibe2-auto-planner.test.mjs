@@ -3406,12 +3406,12 @@ test('studio PRESENTATION focus receives the same adaptive replacement contract 
   assert.equal(task.studioQualityEvolution.focusPillar,'PRESENTATION');
   assert.equal(task.graphicsReplacementContract.executionBoundary,'EXISTING_PRESENTATION_OR_BUILD_UP_ONLY');
   assert.equal(task.graphicsReplacementContract.decisionOwner,'VIBE');
-  assert.deepEqual([...task.graphicsReplacementContract.platforms],['WEB','ROBLOX','UNITY']);
+  assert.deepEqual([...task.graphicsReplacementContract.platforms],['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
   assert.ok(task.evidence.includes('adaptive-graphics-replacement:v1'));
   assert.match(task.goal,/ADAPTIVE_GRAPHICS_REPLACEMENT_CONTRACT/);
 });
 
-test('Fortnite UEFN presentation remains outside the new adaptive graphics replacement rollout while paused',()=>{
+test('Fortnite UEFN presentation uses the same adaptive 1-60 graphics replacement contract',()=>{
   const root=tempRepo();
   const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
   const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
@@ -3424,7 +3424,17 @@ test('Fortnite UEFN presentation remains outside the new adaptive graphics repla
   const project={gameId,name:'Adaptive UEFN',engine:'unreal',target:'fortnite-uefn',releaseState:'development-confirmed',projectPath:`uefn-games/${gameId}`};
   const task=findPresentationQualityTask(project,root,{tasks:[]});
   assert.ok(task);
-  assert.equal(task.graphicsReplacementContract,undefined);
+  assert.ok(task.graphicsReplacementContract);
+  assert.equal(task.graphicsReplacementContract.platform,'FORTNITE_UEFN');
+  assert.deepEqual([...task.graphicsReplacementContract.platforms],['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.equal(task.graphicsReplacementContract.adaptiveCount.minimumActual,1);
+  assert.equal(task.graphicsReplacementContract.adaptiveCount.maximumActual,60);
+  for(const surface of ['VFX','MOTION','MENU','HUD','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI']){
+    assert.ok(task.graphicsReplacementContract.surfaces.includes(surface),surface);
+  }
+  assert.equal(task.graphicsReplacementContract.implementation.zeroActualReplacementCannotPass,true);
   assert.ok(task.responsibleFiles.some(file=>file.endsWith('Content/Verse/Presentation.verse')));
-  assert.equal(task.evidence.includes('adaptive-graphics-replacement:v1'),false);
+  assert.ok(task.evidence.includes('adaptive-graphics-replacement:v1'));
+  assert.ok(task.evidence.includes('adaptive-graphics-replacement-platforms:WEB,ROBLOX,UNITY,FORTNITE_UEFN'));
+  assert.match(task.goal,/WEB \/ ROBLOX \/ UNITY \/ FORTNITE_UEFN/);
 });
