@@ -187,7 +187,7 @@
     return Object.freeze({file:rel,safe:true,reason:'VISUAL_PRESENTATION_SCOPE'});
   }
 
-  function planGraphicsImplementation({anomalies=[],files=[],goal='',deviceTier='MID',leasedFiles=[],maxFiles=2}={}) {
+  function planGraphicsImplementation({anomalies=[],files=[],goal='',deviceTier='MID',leasedFiles=[],maxFiles=2,adaptiveReplacement=false}={}) {
     const explicit=[...new Set([...(Array.isArray(anomalies)?anomalies:[]),...inferVisualAnomalies(goal)])];
     const actionText=clean(goal);
     const actionable=explicit.length>0||(/(?:그래픽|화면|ui|hud|render|sprite|animation|effect|vfx|스타일|애니메이션|이펙트)/i.test(actionText)&&/(?:수정|구현|추가|개선|연결|고치|fix|implement|improve|update|adjust)/i.test(actionText));
@@ -200,11 +200,12 @@
       if(/\.(?:css|svg)$/.test(lower))score+=3;
       return {...item,path:posix(item.path),authority,score,index};
     }).filter(Boolean).sort((a,b)=>b.score-a.score||a.index-b.index||a.path.localeCompare(b.path));
-    const limit=Math.max(1,Math.min(2,Number(maxFiles)||2)),scope=candidates.slice(0,limit).map(row=>row.path);
+    const requested=Math.max(1,Number(maxFiles)||2),hardMax=adaptiveReplacement===true?12:2;
+    const limit=Math.max(1,Math.min(hardMax,requested)),scope=candidates.slice(0,limit).map(row=>row.path);
     if(!scope.length)return Object.freeze({run:false,scope:Object.freeze([]),tasks:Object.freeze([]),reason:'NO_SAFE_VISUAL_SCOPE',anomalies:Object.freeze(explicit),deviceBudget:deviceVisualBudget(deviceTier)});
     const primary=explicit[0]||'VISUAL_QUALITY';
     const tasks=scope.map(file=>Object.freeze({path:file,action:`${primary} 시각 문제를 이 표현 계층에서 최소 수정`,authority:'GAMEPLAY_STATE_READ_ONLY'}));
-    return Object.freeze({run:true,scope:Object.freeze(scope),tasks:Object.freeze(tasks),reason:'ACTIONABLE_VISUAL_SCOPE',anomalies:Object.freeze(explicit),deviceBudget:deviceVisualBudget(deviceTier),maxChangedFiles:2});
+    return Object.freeze({run:true,scope:Object.freeze(scope),tasks:Object.freeze(tasks),reason:'ACTIONABLE_VISUAL_SCOPE',anomalies:Object.freeze(explicit),deviceBudget:deviceVisualBudget(deviceTier),maxChangedFiles:limit,adaptiveReplacement:adaptiveReplacement===true});
   }
 
   function graphicsImplementationImpact({changedFiles=[]}={}) {
