@@ -1,5 +1,5 @@
 {
-  "version": 138,
+  "version": 139,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2415,7 +2415,7 @@
     "officialStudioMcpStillRequired": true
   },
   "robloxOpenCloudThrottleRecoveryEvidence": {
-    "version": 1,
+    "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxOpenCloudThrottleRecovery20260927",
     "observedRunId": 36294623143,
@@ -2428,6 +2428,27 @@
       "KEEP_EXACT_GAME_PROBE_CONCURRENCY_AT_ONE"
     ],
     "falsePassAllowed": false,
-    "persistentApiFailureStillFails": true
+    "persistentApiFailureStillFails": true,
+    "followupObservedRunId": 36296050875,
+    "followupObservedExactEngineStatus": 200,
+    "followupObservedExactEngineExecuted": true,
+    "followupObservedExactEngineVersion": true,
+    "followupObservedSentinelVersion": 23,
+    "peerPersistent429ErasedSuccessfulProbeBeforeRepair": true,
+    "studioActualPlayObserved": {
+      "gameId": "horror-escape-room",
+      "consoleErrorCount": 0,
+      "primaryActionInput": "PASS",
+      "primaryActionEffect": "FAIL_BEFORE_AUTHORITATIVE_EFFECT_OBSERVATION",
+      "evidencePersistFailure": "ROBLOX_STUDIO_MCP_CANDIDATE_STALE"
+    },
+    "repairContract": [
+      "PERSIST_SUCCESSFUL_PROBES_BEFORE_BATCH_FAILURE",
+      "ISOLATE_PER_CANDIDATE_PROBE_FAILURE",
+      "MATCH_EXPECTED_STUDIO_ASSET_BINDING_VERSION",
+      "ALLOW_EXACT_ENGINE_PREBOOT_STUDIO_EVIDENCE_PERSIST_WITHOUT_RUNTIME_PASS",
+      "OBSERVE_EXISTING_SERVER_AUTHORITATIVE_FEEDBACK_EVENT_FOR_PRIMARY_ACTION_EFFECT"
+    ],
+    "runtimeFoundationPassFabricationAllowed": false
   }
 }
