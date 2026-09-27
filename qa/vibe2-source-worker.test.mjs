@@ -3659,3 +3659,10 @@ test('focused replace Ollama requests keep canonical budget and enforce one-key 
   assert.ok(source.includes("...(format?{format}:{}),options"));
   assert.ok(source.includes("VIBE2_FOCUSED_REPLACE_SCHEMA=ONE_KEY_REPLACE"));
 });
+
+test('studio source worker keeps menu UI game-specific without inventing systems',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/메뉴\/UI는 모든 게임에 같은 템플릿을 복사하지 않는다/);
+  assert.match(source,/메인·일시정지·인벤토리\/장비·상점·제작·퀘스트\/스토리·지도·파티\/멀티·건설\/연구·설정·결과 화면/);
+  assert.match(source,/존재하지 않는 시스템용 메뉴를 새 gameplay 규칙처럼 추가하지 않는다/);
+});
