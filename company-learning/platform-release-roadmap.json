@@ -9529,6 +9529,34 @@
       "externalPublicReleaseStillBlocked": true,
       "officialStudioMcpRequiredForInternalContinuation": true,
       "qualityGateWeakening": false
+    },
+    "directorPendingRecoveryAndSafeDrain20260927": {
+      "id": "DIRECTOR_PENDING_RECOVERY_AND_SAFE_DRAIN_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "STOP_DUPLICATE_CENTRAL_DEVELOPMENT_RECOVERY_WHEN_A_RUN_IS_ALREADY_PENDING_AND_FORBID_DIRECTOR_DRAIN_FROM_CANCELLING_IN_PROGRESS_GAME_WORK",
+      "supervisor": ".github/workflows/director-supervisor.yml",
+      "activeDevelopmentStatuses": [
+        "queued",
+        "pending",
+        "requested",
+        "waiting",
+        "in_progress"
+      ],
+      "pendingDevelopmentCountsAsActive": true,
+      "requestedDevelopmentCountsAsActive": true,
+      "waitingDevelopmentCountsAsActive": true,
+      "recoveryDispatchWhileAnyActiveDevelopmentRunExists": false,
+      "duplicateRecoveryCause": "PENDING_REQUESTED_WAITING_WERE_PREVIOUSLY_IGNORED_BY_DIRECTOR_ACTIVE_SCAN",
+      "controlPlaneDrainScope": "SUPERSEDED_UNSTARTED_ONLY",
+      "legacyRobloxDrainScope": "STALE_UNSTARTED_ONLY",
+      "inProgressRobloxCancellationForbidden": true,
+      "inProgressIndependentGameCancellationForbidden": true,
+      "forceCancelInProgressGameForbidden": true,
+      "alreadyRunningGameWorkDrainsNaturally": true,
+      "exactGameConcurrencyPreserved": true,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "noArtificialGlobalGameCap": true
     }
   },
   "vibeExecutionLaneContract": {
