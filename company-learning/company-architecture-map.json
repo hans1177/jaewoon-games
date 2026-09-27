@@ -6400,7 +6400,7 @@
     ]
   },
   "buildUpRuntimeGroundingTopology": {
-    "version": 1,
+    "version": 2,
     "executionModel": "EXISTING_BUILD_UP_FLOW_NO_NEW_STAGE_OR_SHADOW_PIPELINE",
     "activePlatforms": [
       "WEB",
@@ -6457,6 +6457,23 @@
         "VERIFIED"
       ],
       "callbackBehaviorAfterAdvance": "MERGE_EVIDENCE_ONLY_NO_STAGE_REWIND"
+    },
+    "webRuntimePath": [
+      "VIBE2_SOURCE_WORKER_GROUNDED_VALIDATION",
+      "CANDIDATE_BROWSER_RUNTIME_BEFORE_AFTER",
+      "VIBE2_FAN_IN_GROUNDED_AND_RUNTIME_VISUAL_GATE",
+      "WEB_STATIC_AND_SAVE_COMPATIBILITY_QA",
+      "CLOUDFLARE_PAGES_RELEASE_COMMIT_PREVIEW",
+      "REVIEWED_MAIN_PROMOTION",
+      "PROMOTED_SOURCE_ROOT_TREE_SHA_RECORDED",
+      "VIBE2_WEB_TASK_SETTLEMENT_ON_EXACT_PROMOTED_SOURCE"
+    ],
+    "webExactSourceRules": {
+      "candidateRuntimeBeforeAfterRequired": true,
+      "cloudflarePagesPreviewRequired": true,
+      "promotedSourceTreeMustMatchReviewedCandidateSource": true,
+      "robloxRuntimeDispatchForbidden": true,
+      "anotherPlatformRuntimeMayNotSubstitute": true
     }
   }
 }
