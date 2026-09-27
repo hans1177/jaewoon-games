@@ -117,7 +117,9 @@ jobs:
             }
             for(const group of groups.values()){
               group.sort((a,b)=>Number(b.id)-Number(a.id));
-              for(const stale of group.slice(1))add(stale,'CONTROL_PLANE_SUPERSEDED');
+              for(const stale of group.slice(1)){
+                if(queued.has(String(stale.status||'').toLowerCase()))add(stale,'CONTROL_PLANE_SUPERSEDED');
+              }
             }
           }
 
@@ -199,7 +201,7 @@ jobs:
           const staleBefore=Date.now()-(15*60*1000);
           const legacyRoblox=runs
             .filter(r=>r.path==='.github/workflows/company-development-roblox-runtime.yml'
-              &&active.has(String(r.status||'').toLowerCase())
+              &&queued.has(String(r.status||'').toLowerCase())
               &&String(r.head_sha||'')!==String(process.env.GITHUB_SHA||'')
               &&Date.parse(String(r.created_at||0))<staleBefore
               &&(
@@ -376,7 +378,8 @@ jobs:
           const queue=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const actions=JSON.parse(fs.readFileSync('/tmp/actions-runs.json','utf8'));
           const runs=actions.workflow_runs||[];
-          const active=name=>runs.some(r=>r.name===name&&['queued','in_progress'].includes(String(r.status||'')));
+          const activeStatuses=new Set(['queued','pending','requested','waiting','in_progress']);
+          const active=name=>runs.some(r=>r.name===name&&activeStatuses.has(String(r.status||'').toLowerCase()));
           const latest=name=>runs.filter(r=>r.name===name).sort((a,b)=>new Date(b.updated_at||b.created_at||0)-new Date(a.updated_at||a.created_at||0))[0]||null;
           const development=(queue.items||[]).filter(x=>String(x.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED');
           const pending=development.filter(x=>String(x.status||'').toUpperCase()==='PENDING');

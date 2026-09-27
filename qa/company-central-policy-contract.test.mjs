@@ -1262,6 +1262,37 @@ test('Director runner drain uses separate fixed 24.04 capacity while gate and su
   assert.match(directorSupervisor,/supervise:[\s\S]*?runs-on:\s*ubuntu-slim/);
 });
 
+test('director recovery pending-awareness and safe drain stay aligned across central records',()=>{
+  const change=roadmap.changeRecord?.directorPendingRecoveryAndSafeDrain20260927;
+  assert.deepEqual(change?.activeDevelopmentStatuses,['queued','pending','requested','waiting','in_progress']);
+  assert.equal(change?.pendingDevelopmentCountsAsActive,true);
+  assert.equal(change?.requestedDevelopmentCountsAsActive,true);
+  assert.equal(change?.waitingDevelopmentCountsAsActive,true);
+  assert.equal(change?.recoveryDispatchWhileAnyActiveDevelopmentRunExists,false);
+  assert.equal(change?.controlPlaneDrainScope,'SUPERSEDED_UNSTARTED_ONLY');
+  assert.equal(change?.legacyRobloxDrainScope,'STALE_UNSTARTED_ONLY');
+  assert.equal(change?.inProgressRobloxCancellationForbidden,true);
+  assert.equal(change?.inProgressIndependentGameCancellationForbidden,true);
+  assert.equal(change?.forceCancelInProgressGameForbidden,true);
+  assert.equal(change?.alreadyRunningGameWorkDrainsNaturally,true);
+
+  const topology=architecture.directorPendingRecoveryAndSafeDrain;
+  assert.deepEqual(topology?.activeDevelopmentStatuses,['queued','pending','requested','waiting','in_progress']);
+  assert.equal(topology?.recoveryDispatchRequiresNoActiveDevelopmentRun,true);
+  assert.equal(topology?.controlPlaneDrain,'SUPERSEDED_UNSTARTED_ONLY');
+  assert.equal(topology?.legacyRobloxDrain,'STALE_UNSTARTED_ONLY');
+  assert.equal(topology?.inProgressGameCancellationForbidden,true);
+  assert.equal(topology?.forceCancelInProgressGameForbidden,true);
+
+  const evidence=logMap.directorPendingRecoveryAndSafeDrainEvidence;
+  assert.equal(evidence?.staleRobloxCancellationRequiresUnstartedState,true);
+  assert.equal(evidence?.inProgressRobloxCancellationForbidden,true);
+
+  assert.match(directorSupervisor,/const activeStatuses=new Set\(\['queued','pending','requested','waiting','in_progress'\]\)/);
+  assert.match(directorSupervisor,/const legacyRoblox=runs[\s\S]*?queued\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)/);
+  assert.doesNotMatch(directorSupervisor,/const legacyRoblox=runs[\s\S]*?active\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)/);
+});
+
 test('director supervisor runner drain remains structurally valid and jobs are unique',()=>{
   assert.equal((directorSupervisor.match(/\n  runner-drain:\n/g)||[]).length,1);
   assert.equal((directorSupervisor.match(/\n  game-primary-gate:\n/g)||[]).length,1);
