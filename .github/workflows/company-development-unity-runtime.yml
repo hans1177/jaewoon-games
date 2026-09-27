@@ -122,7 +122,7 @@ jobs:
           const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const rows=(q.items||[]).filter(item=>{
             if(!windowIds.has(item.gameId))return false;
-            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
+            if(!['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(String(item.productionClass||'').toUpperCase()))return false;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')return false;
             const admission=classifyUpperPlatformAdmission(item,{repoRoot:process.cwd(),grandfatherGameIds});
             if(admission.state!=='UPPER_PLATFORM'){
@@ -382,9 +382,10 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`fingerprint=${plan.sourceFingerprint}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`reuse_build=${reusable?'true':'false'}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`resume_stage=${plan.resumeStage}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`previous_runtime=${plan.sameFingerprint&&previous.runtimePassed===true?'true':'false'}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`previous_qa=${plan.sameFingerprint&&previous.independentQaPassed===true?'true':'false'}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`previous_regression=${plan.sameFingerprint&&previous.regressionPassed===true?'true':'false'}\n`);
+          const oneSession=plan.sameFingerprint&&previous.f1ThroughF8SingleSession===true&&previous.runtimeLaunchCount===1;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`previous_runtime=${oneSession&&previous.runtimePassed===true?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`previous_qa=${oneSession&&previous.independentQaPassed===true?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`previous_regression=${oneSession&&previous.regressionPassed===true&&previous.f9AggregationOnly===true?'true':'false'}\n`);
           if(!plan.precheck.pass)process.exitCode=2;
           console.log(`CHEAP_PRECHECK=${plan.precheck.pass?'PASS':'FAIL'}`);
           console.log(`SOURCE_FINGERPRINT=${plan.sourceFingerprint}`);
@@ -542,71 +543,179 @@ jobs:
           echo "passed=$pass" >> "$GITHUB_OUTPUT"
           echo "TARGET_PLATFORM_RUNTIME=$pass"
 
-      - name: Run independent QA only after runtime PASS
+      - name: Derive independent QA from the same F1-F8 runtime session
         id: independent
-        if: steps.runtimestate.outputs.passed == 'true' && steps.plan.outputs.previous_qa != 'true'
+        if: steps.runtimestate.outputs.passed == 'true'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
+          RUNTIME_RUN_NEW: ${{ steps.runtime.outputs.run_id }}
+          RUNTIME_RUN_OLD: ${{ matrix.item.unityRuntimeSmokeRunId }}
+          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
         shell: bash
         run: |
           set -euo pipefail
-          api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-independent-qa.yml"; title="Unity Android Independent QA $BUILD_RUN"
-          active="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" | jq -r --arg title "$title" '[.workflow_runs[]|select(.display_title==$title and (.status=="queued" or .status=="pending" or .status=="in_progress" or .status=="requested"))|.id]|min//empty')"
-          if [[ "$active" =~ ^[0-9]+$ ]]; then
-            child="$active"
-            echo "UNITY_ANDROID_INDEPENDENT_QA_REUSE_ACTIVE=$BUILD_RUN:$child"
-          else
+          runtime_run="${RUNTIME_RUN_NEW:-$RUNTIME_RUN_OLD}"
+          api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-runtime-smoke.yml"
+          title="Unity Android Runtime Smoke $BUILD_RUN"
+          if [[ ! "$runtime_run" =~ ^[0-9]+$ ]]; then
+            for _ in $(seq 1 60); do
+              runtime_run="$(gh api "$api/runs?per_page=100" | jq -r --arg title "$title" '[.workflow_runs[]|select(.display_title==$title)|.id]|max//empty')"
+              [[ "$runtime_run" =~ ^[0-9]+$ ]] && break
+              sleep 2
+            done
+          fi
+          if [[ ! "$runtime_run" =~ ^[0-9]+$ ]]; then
             baseline="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" --jq '[.workflow_runs[].id] | max // 0')"
             jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$api/dispatches" --input -
-            child=''; for _ in $(seq 1 60); do child="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" | jq -r --argjson b "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$b and .display_title==$title)|.id]|max//empty')"; [[ "$child" =~ ^[0-9]+$ ]]&&break; sleep 4; done
-            echo "UNITY_ANDROID_INDEPENDENT_QA_DISPATCHED=$BUILD_RUN:${child:-NONE}"
+            for _ in $(seq 1 60); do
+              runtime_run="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" | jq -r --argjson b "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$b and .display_title==$title)|.id]|max//empty')"
+              [[ "$runtime_run" =~ ^[0-9]+$ ]] && break
+              sleep 4
+            done
           fi
-          [[ "$child" =~ ^[0-9]+$ ]]||exit 8; echo "run_id=$child" >> "$GITHUB_OUTPUT"
-          for _ in $(seq 1 420); do row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$child" --jq '[.status,.conclusion]|@tsv')"; s="${row%%$'\t'*}"; c="${row#*$'\t'}"; if [[ "$s" == completed ]];then [[ "$c" == success ]]&&exit 0||exit 9;fi;sleep 5;done;exit 10
+          [[ "$runtime_run" =~ ^[0-9]+$ ]] || { echo 'UNITY_ONE_SESSION_RUNTIME_RUN_MISSING' >&2; exit 8; }
+
+          for _ in $(seq 1 540); do
+            row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$runtime_run" --jq '[.status,.conclusion]|@tsv')"
+            status="${row%%$'\t'*}"; conclusion="${row#*$'\t'}"
+            if [[ "$status" == completed ]]; then
+              [[ "$conclusion" == success ]] || { echo "UNITY_ONE_SESSION_RUNTIME_FAILED=$runtime_run:$conclusion" >&2; exit 9; }
+              break
+            fi
+            sleep 5
+          done
+
+          rm -rf /tmp/unity-runtime-single-session /tmp/unity-independent-single-session
+          mkdir -p /tmp/unity-runtime-single-session /tmp/unity-independent-single-session
+          gh run download "$runtime_run" -D /tmp/unity-runtime-single-session
+          runtime_json="$(find /tmp/unity-runtime-single-session -type f -name evidence.json -size +0c | head -n1)"
+          build_info="$(find /tmp/unity-build -type f -name build-info.json -size +0c | head -n1)"
+          test -n "$runtime_json" -a -n "$build_info"
+          RUNTIME_JSON="$runtime_json" BUILD_INFO="$build_info" SOURCE_REVISION="$SOURCE_REVISION" node <<'NODE'
+          const fs=require('fs');
+          const runtime=JSON.parse(fs.readFileSync(process.env.RUNTIME_JSON,'utf8'));
+          const build=JSON.parse(fs.readFileSync(process.env.BUILD_INFO,'utf8').replace(/^\uFEFF/,''));
+          const sha=String(build.sha256||'').toLowerCase();
+          const source=String(build.sourceCommit||'').toLowerCase();
+          const exact=String(runtime.apkSha256||runtime.buildId||'').toLowerCase()===sha
+            &&String(runtime.buildSourceCommit||'').toLowerCase()===source
+            &&source===String(process.env.SOURCE_REVISION||'').toLowerCase();
+          const checks={
+            architectureCompatibleRuntime:runtime.runtimeAbiCompatible===true,
+            freshInstall:runtime.freshInstallPassed===true,
+            processLaunch:runtime.launcherCommandPassed===true&&runtime.processObservedAfterLaunch===true,
+            rapidInputStress:runtime.rapidInputStressPassed===true,
+            backgroundResume:runtime.backgroundResumePassed===true,
+            processAliveAfterStress:runtime.processAliveAfterStress===true,
+            fatalCrashScan:runtime.fatalRuntimeErrorDetected===false,
+            screenshotCaptured:runtime.postResumeScreenshotPassed===true
+          };
+          const pass=runtime.qaPassEligibleRuntimeEvidence===true
+            &&runtime.oneRuntimeSessionF1ThroughF8===true
+            &&Number(runtime.runtimeLaunchCount)===1
+            &&runtime.perFloorRuntimeRelaunch===false
+            &&runtime.independentQaEmbedded===true
+            &&exact
+            &&Object.values(checks).every(Boolean);
+          const evidence={
+            version:3,
+            state:pass?'PASS':'FAIL',
+            independentQa:pass?'PASS':'FAIL',
+            independent:pass,
+            singleRuntimeSession:true,
+            runtimeRelaunch:false,
+            f1ThroughF8SingleSession:pass,
+            upstreamBuildRunId:Number(runtime.upstreamBuildRunId||0),
+            buildId:sha,
+            apkSha256:sha,
+            buildSourceCommit:source,
+            sourceTreeSha:runtime.sourceTreeSha||build.sourceTreeSha||null,
+            runtimeEvidenceSource:'UNITY_ANDROID_RUNTIME_SMOKE_SINGLE_SESSION',
+            checks:Object.fromEntries(Object.entries(checks).map(([k,v])=>[k,v?'PASS':'FAIL']))
+          };
+          fs.writeFileSync('/tmp/unity-independent-single-session/evidence.json',JSON.stringify(evidence,null,2)+'\n');
+          if(!pass)process.exit(2);
+          NODE
+          echo "run_id=$runtime_run" >> "$GITHUB_OUTPUT"
+          echo "UNITY_INDEPENDENT_QA=SAME_RUNTIME_SESSION_PASS"
+          echo "UNITY_F1_F8_RUNTIME_LAUNCH_COUNT=1"
 
       - name: Resolve independent QA checkpoint result
         id: independentstate
         env:
-          PREVIOUS: ${{ steps.plan.outputs.previous_qa }}
           OUTCOME: ${{ steps.independent.outcome }}
         run: |
-          if [[ "$PREVIOUS" == true || "$OUTCOME" == success ]]; then pass=true; else pass=false; fi
+          if [[ "$OUTCOME" == success ]]; then pass=true; else pass=false; fi
           echo "passed=$pass" >> "$GITHUB_OUTPUT"
           echo "INDEPENDENT_QA=$pass"
 
-      - name: Run regression on the same immutable APK
+      - name: Aggregate F9 regression without another Unity runtime launch
         id: regression
-        if: steps.independentstate.outputs.passed == 'true' && steps.plan.outputs.previous_regression != 'true'
+        if: steps.independentstate.outputs.passed == 'true'
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ github.token }}
           BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
+          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
+          RUNTIME_RUN: ${{ steps.independent.outputs.run_id }}
         shell: bash
         run: |
           set -euo pipefail
-          api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-regression.yml"; title="Unity Android Regression $BUILD_RUN"
-          active="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" | jq -r --arg title "$title" '[.workflow_runs[]|select(.display_title==$title and (.status=="queued" or .status=="pending" or .status=="in_progress" or .status=="requested"))|.id]|min//empty')"
-          if [[ "$active" =~ ^[0-9]+$ ]]; then
-            child="$active"
-            echo "UNITY_ANDROID_REGRESSION_REUSE_ACTIVE=$BUILD_RUN:$child"
-          else
-            baseline="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" --jq '[.workflow_runs[].id] | max // 0')"
-            jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$api/dispatches" --input -
-            child=''; for _ in $(seq 1 60); do child="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" | jq -r --argjson b "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$b and .display_title==$title)|.id]|max//empty')"; [[ "$child" =~ ^[0-9]+$ ]]&&break; sleep 4; done
-            echo "UNITY_ANDROID_REGRESSION_DISPATCHED=$BUILD_RUN:${child:-NONE}"
-          fi
-          [[ "$child" =~ ^[0-9]+$ ]]||exit 11; echo "run_id=$child" >> "$GITHUB_OUTPUT"
-          for _ in $(seq 1 420); do row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$child" --jq '[.status,.conclusion]|@tsv')"; s="${row%%$'\t'*}"; c="${row#*$'\t'}"; if [[ "$s" == completed ]];then [[ "$c" == success ]]&&exit 0||exit 12;fi;sleep 5;done;exit 13
+          node --test qa/unity-package-fatal-logcat.test.mjs
+          mkdir -p /tmp/unity-regression-fanin
+          runtime_json="$(find /tmp/unity-runtime-single-session -type f -name evidence.json -size +0c | head -n1)"
+          independent_json="/tmp/unity-independent-single-session/evidence.json"
+          build_info="$(find /tmp/unity-build -type f -name build-info.json -size +0c | head -n1)"
+          test -n "$runtime_json" -a -s "$independent_json" -a -n "$build_info"
+          RUNTIME_JSON="$runtime_json" INDEPENDENT_JSON="$independent_json" BUILD_INFO="$build_info" SOURCE_REVISION="$SOURCE_REVISION" BUILD_RUN="$BUILD_RUN" node <<'NODE'
+          const fs=require('fs');
+          const runtime=JSON.parse(fs.readFileSync(process.env.RUNTIME_JSON,'utf8'));
+          const independent=JSON.parse(fs.readFileSync(process.env.INDEPENDENT_JSON,'utf8'));
+          const build=JSON.parse(fs.readFileSync(process.env.BUILD_INFO,'utf8').replace(/^\uFEFF/,''));
+          const sha=String(build.sha256||'').toLowerCase();
+          const source=String(build.sourceCommit||'').toLowerCase();
+          const exact=String(runtime.apkSha256||runtime.buildId||'').toLowerCase()===sha
+            &&String(runtime.buildSourceCommit||'').toLowerCase()===source
+            &&String(independent.apkSha256||'').toLowerCase()===sha
+            &&String(independent.buildSourceCommit||'').toLowerCase()===source
+            &&source===String(process.env.SOURCE_REVISION||'').toLowerCase();
+          const pass=exact
+            &&runtime.qaPassEligibleRuntimeEvidence===true
+            &&runtime.oneRuntimeSessionF1ThroughF8===true
+            &&Number(runtime.runtimeLaunchCount)===1
+            &&runtime.perFloorRuntimeRelaunch===false
+            &&independent.independent===true
+            &&independent.singleRuntimeSession===true;
+          const evidence={
+            version:3,
+            state:pass?'PASS':'FAIL',
+            regression:pass?'PASS':'FAIL',
+            regressionPassed:pass,
+            exactArtifactRegression:pass,
+            f9AggregationOnly:true,
+            runtimeRelaunch:false,
+            runtimeLaunchCount:1,
+            upstreamBuildRunId:Number(process.env.BUILD_RUN||0),
+            buildId:sha,
+            apkSha256:sha,
+            buildSourceCommit:source,
+            sourceTreeSha:runtime.sourceTreeSha||build.sourceTreeSha||null,
+            authority:'unity-f9-one-runtime-session-fan-in'
+          };
+          fs.writeFileSync('/tmp/unity-regression-fanin/evidence.json',JSON.stringify(evidence,null,2)+'\n');
+          if(!pass)process.exit(2);
+          NODE
+          echo "run_id=$RUNTIME_RUN" >> "$GITHUB_OUTPUT"
+          echo "UNITY_REGRESSION=F9_FAN_IN_PASS"
+          echo "UNITY_REGRESSION_RUNTIME_RELAUNCH=NO"
 
       - name: Resolve regression checkpoint result
         id: regressionstate
         env:
-          PREVIOUS: ${{ steps.plan.outputs.previous_regression }}
           OUTCOME: ${{ steps.regression.outcome }}
         run: |
-          if [[ "$PREVIOUS" == true || "$OUTCOME" == success ]]; then pass=true; else pass=false; fi
+          if [[ "$OUTCOME" == success ]]; then pass=true; else pass=false; fi
           echo "passed=$pass" >> "$GITHUB_OUTPUT"
           echo "REGRESSION=$pass"
 
@@ -614,36 +723,29 @@ jobs:
         id: canonical
         if: steps.regressionstate.outputs.passed == 'true'
         env:
-          GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.item.gameId }}
           BASE: ${{ steps.context.outputs.base }}
           PROJECT: ${{ steps.context.outputs.project }}
           BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
-          RUNTIME_RUN_NEW: ${{ steps.runtime.outputs.run_id }}
-          RUNTIME_RUN_OLD: ${{ matrix.item.unityRuntimeSmokeRunId }}
-          QA_RUN_NEW: ${{ steps.independent.outputs.run_id }}
-          QA_RUN_OLD: ${{ matrix.item.unityIndependentQaRunId }}
-          REGRESSION_RUN_NEW: ${{ steps.regression.outputs.run_id }}
-          REGRESSION_RUN_OLD: ${{ matrix.item.unityRegressionRunId }}
+          RUNTIME_RUN: ${{ steps.independent.outputs.run_id }}
           SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
         shell: bash
         run: |
           set -euo pipefail
-          runtime_run="${RUNTIME_RUN_NEW:-$RUNTIME_RUN_OLD}"; qa_run="${QA_RUN_NEW:-$QA_RUN_OLD}"; regression_run="${REGRESSION_RUN_NEW:-$REGRESSION_RUN_OLD}"
-          rm -rf /tmp/unity-runtime /tmp/unity-independent /tmp/unity-regression
-          mkdir -p /tmp/unity-runtime /tmp/unity-independent /tmp/unity-regression
-          if [[ "$runtime_run" =~ ^[0-9]+$ ]]; then gh run download "$runtime_run" -D /tmp/unity-runtime; else cp -R /tmp/unity-build/. /tmp/unity-runtime/; fi
-          [[ "$qa_run" =~ ^[0-9]+$ ]] && gh run download "$qa_run" -D /tmp/unity-independent
-          [[ "$regression_run" =~ ^[0-9]+$ ]] && gh run download "$regression_run" -D /tmp/unity-regression
+          runtime_run="$RUNTIME_RUN"
+          test -d /tmp/unity-runtime-single-session
           build_info="$(find /tmp/unity-build -type f -name build-info.json | head -n1)"
-          runtime_json="$(find /tmp/unity-runtime -type f -name evidence.json | head -n1)"
-          independent_json="$(find /tmp/unity-independent -type f -name evidence.json | head -n1)"
-          runtime_log="$(find /tmp/unity-runtime -type f -name logcat.txt | head -n1 || true)"
-          independent_log="$(find /tmp/unity-independent -type f -name logcat.txt | head -n1 || true)"
-          test -n "$build_info" -a -n "$runtime_json" -a -n "$independent_json"
-          node tools/company-development-unity-evidence.mjs --game-id="$GAME_ID" --build-info="$build_info" --runtime="$runtime_json" --independent="$independent_json" --runtime-log="$runtime_log" --independent-log="$independent_log" --project="$PROJECT" --output="$BASE/unity-technical-validation.json"
-          regression_json="$(find /tmp/unity-regression -type f -name evidence.json | head -n1 || true)"; [[ -n "$regression_json" ]] && cp "$regression_json" "$BASE/unity-regression-validation.json"
-          echo "runtime_run=$runtime_run" >> "$GITHUB_OUTPUT"; echo "qa_run=$qa_run" >> "$GITHUB_OUTPUT"; echo "regression_run=$regression_run" >> "$GITHUB_OUTPUT"
+          runtime_json="$(find /tmp/unity-runtime-single-session -type f -name evidence.json | head -n1)"
+          independent_json="/tmp/unity-independent-single-session/evidence.json"
+          regression_json="/tmp/unity-regression-fanin/evidence.json"
+          runtime_log="$(find /tmp/unity-runtime-single-session -type f -name logcat.txt | head -n1 || true)"
+          test -n "$build_info" -a -n "$runtime_json" -a -s "$independent_json" -a -s "$regression_json"
+          node tools/company-development-unity-evidence.mjs --game-id="$GAME_ID" --build-info="$build_info" --runtime="$runtime_json" --independent="$independent_json" --runtime-log="$runtime_log" --independent-log="$runtime_log" --project="$PROJECT" --output="$BASE/unity-technical-validation.json"
+          cp "$regression_json" "$BASE/unity-regression-validation.json"
+          echo "runtime_run=$runtime_run" >> "$GITHUB_OUTPUT"
+          echo "qa_run=$runtime_run" >> "$GITHUB_OUTPUT"
+          echo "regression_run=$runtime_run" >> "$GITHUB_OUTPUT"
+          echo "UNITY_F0_F9_PHYSICAL_EXECUTION=F0_ONCE_F1_F8_ONE_RUNTIME_F9_FAN_IN"
 
       - name: Prepare free models only after technical stages pass
         if: steps.regressionstate.outputs.passed == 'true'
