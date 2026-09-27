@@ -1748,7 +1748,7 @@ function mergeRefund(base,extra){const out={...(base||{})};for(const [k,v] of Ob
 function syncStructureEdit(action,b){
  if(!multiplayer.connected)return;
  if(multiIsHost()){multiplayer.worldAt=0;return}
- const payload={action,id:b?.id||state.activeWallId,buildId:b?.buildId||null};
+ const payload={action,id:b?.id||state.activeWallId,buildId:b?.buildId||null,x:Number(b?.x)||0,y:Number(b?.y)||0};
  if(action==='upgrade'){payload.material=b?.material;payload.refund=b?.refund}
  else if(action==='door')payload.open=!!b?.open;
  else if(action==='chest')payload.storage=b?.storage&&typeof b.storage==='object'?{...b.storage}:{};
@@ -1799,7 +1799,7 @@ function playerBuildingAt(x,y,range=70){
 }
 function demolishBuilding(hit){
  if(!hit||!hit.b)return false;const r=item(hit.buildId);if(!r)return false;
- if(hit.type==='furnace'&&state.smelting?.endAt>Date.now()){showNotice('제련 중에는 화로를 철거할 수 없어');return false}
+ if(hit.buildId==='furnace'&&state.smelting?.endAt>Date.now()){showNotice('제련 중에는 화로를 철거할 수 없어');return false}
  if(hit.type==='single'){
   if(hit.buildId==='cooking-station'){for(const id of state.cookingSlots||[])if(id)addInv(id,1);state.cookingSlots=[null,null]}
   if(hit.buildId==='shadow-wolf-incubator'&&state.incubation?.eggPlaced){addInv('shadow-wolf-egg',1);state.incubation={eggPlaced:false,hatchAt:0}}
@@ -1814,7 +1814,7 @@ function demolishBuilding(hit){
   state[key]=state[key].filter(x=>x!==hit.b)
  }
  for(const [k,v] of Object.entries(normalizeCost(r.cost)))if(v)addMaterial(k,v);
- state.dirty=true;syncStructureEdit('demolish',{id:hit.b.id||'',buildId:hit.buildId});updateHud();saveGame(false);showNotice(r.name+' 철거 · 재료 반환');return true
+ state.dirty=true;syncStructureEdit('demolish',{id:hit.b.id||'',buildId:hit.buildId,x:hit.b.x,y:hit.b.y});updateHud();saveGame(false);showNotice(r.name+' 철거 · 재료 반환');return true
 }
 function blockedByPlayerBuilding(x,y){
  if(state.area!=='surface')return false;if(insideSnowOutpost(x,y,18))return true;
@@ -2116,7 +2116,7 @@ function hostApplyStructureEdit(payload){
   const buildId=String(payload.buildId||'');
   const singleMap={'bench':'bench','furnace':'furnace','iron-bench':'ironBench','gold-bench':'goldBench','jungle-bench':'jungleBench','blacksmith-anvil':'blacksmithAnvil','cooking-station':'cookingStation','shadow-wolf-incubator':'incubator'};
   if(singleMap[buildId])state[singleMap[buildId]]=null;
-  else if(buildId==='flag')state.flags=state.flags.filter(x=>x.id!==id);
+  else if(buildId==='flag')state.flags=state.flags.filter(x=>id?x.id!==id:dist(x.x,x.y,Number(payload.x)||0,Number(payload.y)||0)>20);
   else{const listMap={'wood-wall':'walls','storage-chest':'chests','wood-door':'doors','defense-tower':'towers','bed':'beds','garden-plot':'gardens'},key=listMap[buildId];if(!key)return;state[key]=state[key].filter(x=>x.id!==id)}
  }else if(action==='delete'){
   const i=state.walls.findIndex(w=>w.id===id);if(i<0)return;state.walls.splice(i,1)
