@@ -656,7 +656,8 @@
         "game-repair-repeat-count:74",
         "game-repair-repeat-count:76",
         "game-repair-repeat-count:78",
-        "game-repair-repeat-count:80"
+        "game-repair-repeat-count:80",
+        "game-repair-repeat-count:82"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -9314,7 +9315,8 @@
         "game-repair-repeat-count:74",
         "game-repair-repeat-count:76",
         "game-repair-repeat-count:78",
-        "game-repair-repeat-count:80"
+        "game-repair-repeat-count:80",
+        "game-repair-repeat-count:82"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -34796,7 +34798,8 @@
         "game-repair-repeat-count:74",
         "game-repair-repeat-count:76",
         "game-repair-repeat-count:78",
-        "game-repair-repeat-count:80"
+        "game-repair-repeat-count:80",
+        "game-repair-repeat-count:82"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -35233,7 +35236,8 @@
         "game-repair-repeat-count:74",
         "game-repair-repeat-count:76",
         "game-repair-repeat-count:78",
-        "game-repair-repeat-count:80"
+        "game-repair-repeat-count:80",
+        "game-repair-repeat-count:82"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -35701,7 +35705,8 @@
         "game-repair-repeat-count:74",
         "game-repair-repeat-count:76",
         "game-repair-repeat-count:78",
-        "game-repair-repeat-count:80"
+        "game-repair-repeat-count:80",
+        "game-repair-repeat-count:82"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -38526,10 +38531,6 @@
         "release-dispatch-recovery-requested:vibe2/candidate/SYS-ARCH-28a2f2747401-v1-primary-36315030479-1",
         "release-dispatch-recovery-at:1790508837232",
         "release-dispatch-recovery-candidate-sha:93fc09c64e1c8b17e812a26174d311ed259a400e",
-        "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
-        "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
-        "architecture-neural-expansion-readiness:PASS",
-        "architecture-neural-expansion-allowed:YES",
         "vibe2/candidate/SYS-ARCH-28a2f2747401-v1-primary-36316084924-1",
         "candidate-sha:bf1864a69ff21f927e6907c9abcce848590f4f39",
         "base-main:878275d555b2e039ab10c2789602179ab667b131",
@@ -38543,7 +38544,11 @@
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C36316084924%3A1%7Cprimary%7Cvibe2%2Fcandidate%2FSYS-ARCH-28a2f2747401-v1-primary-36316084924-1%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3Anull%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C36316084924%3A1%7Cprimary%7Cvibe2%2Fcandidate%2FSYS-ARCH-28a2f2747401-v1-primary-36316084924-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C36316084924%3A1%7Cprimary%7Cvibe2%2Fcandidate%2FSYS-ARCH-28a2f2747401-v1-primary-36316084924-1%7CWORKER_RESULT%22%2C%22eventId%22%3A%22SYS-ARCH-28a2f2747401-v1%7C36316084924%3A1%7Cprimary%7Cvibe2%2Fcandidate%2FSYS-ARCH-28a2f2747401-v1-primary-36316084924-1%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A5%2C%22edgeCount%22%3A3%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22HYPOTHESIS%22%3A1%2C%22RISK%22%3A1%2C%22ACTION%22%3A1%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22CAUSAL%22%3A1%2C%22SUPERVISOR%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
-        "actions-run-36316146405"
+        "actions-run-36316146405",
+        "architecture-neural-expansion-phase:LAST_STAGE_ONLY",
+        "architecture-neural-expansion-mode:EVIDENCE_GATED_SELF_EXPANSION",
+        "architecture-neural-expansion-readiness:PASS",
+        "architecture-neural-expansion-allowed:YES"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -52129,7 +52134,8 @@
         "game-repair-repeat-count:74",
         "game-repair-repeat-count:76",
         "game-repair-repeat-count:78",
-        "game-repair-repeat-count:80"
+        "game-repair-repeat-count:80",
+        "game-repair-repeat-count:82"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -57817,7 +57823,8 @@
         "game-repair-repeat-count:74",
         "game-repair-repeat-count:76",
         "game-repair-repeat-count:78",
-        "game-repair-repeat-count:80"
+        "game-repair-repeat-count:80",
+        "game-repair-repeat-count:82"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -58011,7 +58018,8 @@
         "game-repair-repeat-count:74",
         "game-repair-repeat-count:76",
         "game-repair-repeat-count:78",
-        "game-repair-repeat-count:80"
+        "game-repair-repeat-count:80",
+        "game-repair-repeat-count:82"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -58353,7 +58361,8 @@
         "game-repair-repeat-count:74",
         "game-repair-repeat-count:76",
         "game-repair-repeat-count:78",
-        "game-repair-repeat-count:80"
+        "game-repair-repeat-count:80",
+        "game-repair-repeat-count:82"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -58547,7 +58556,8 @@
         "game-repair-repeat-count:74",
         "game-repair-repeat-count:76",
         "game-repair-repeat-count:78",
-        "game-repair-repeat-count:80"
+        "game-repair-repeat-count:80",
+        "game-repair-repeat-count:82"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -62482,7 +62492,8 @@
         "game-repair-repeat-count:74",
         "game-repair-repeat-count:76",
         "game-repair-repeat-count:78",
-        "game-repair-repeat-count:80"
+        "game-repair-repeat-count:80",
+        "game-repair-repeat-count:82"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -74490,7 +74501,8 @@
         "game-repair-repeat-count:74",
         "game-repair-repeat-count:76",
         "game-repair-repeat-count:78",
-        "game-repair-repeat-count:80"
+        "game-repair-repeat-count:80",
+        "game-repair-repeat-count:82"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -137405,7 +137417,8 @@
         "game-repair-repeat-count:74",
         "game-repair-repeat-count:76",
         "game-repair-repeat-count:78",
-        "game-repair-repeat-count:80"
+        "game-repair-repeat-count:80",
+        "game-repair-repeat-count:82"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -143327,7 +143340,8 @@
         "recovery-exact-stage:PUBLIC_RELEASE_RUNTIME_FINDING",
         "game-repair-repeat-count:80",
         "portfolio-decision:FOCUSED_REPAIR",
-        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER"
+        "portfolio-reason:CURRENT_CRITICAL_OR_REPEATED_CAUSAL_BLOCKER",
+        "game-repair-repeat-count:82"
       ],
       "lastOutcome": null,
       "reservationId": null,
