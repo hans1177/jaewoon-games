@@ -176,7 +176,7 @@ test('runner drain uses a YAML-safe delimiter and preserves the game gate block'
   const director=read('.github/workflows/director-supervisor.yml');
   assert.match(director,/while IFS='\\|' read -r run_id reason; do/);
   assert.doesNotMatch(director,/while IFS=\$'\\t'/);
-  assert.match(director,/game-primary-gate:\n\s+if: github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.conclusion != 'cancelled'[\s\S]{0,260}?runs-on: ubuntu-slim[\s\S]{0,180}?outputs:/);
+  assert.match(director,/game-primary-gate:\n\s+if: always\(\) && \(github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.conclusion != 'cancelled'\)[\s\S]{0,520}?runs-on: ubuntu-slim[\s\S]{0,220}?outputs:/);
   assert.match(director,/DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN/);
 });
 
@@ -202,7 +202,7 @@ test('runner drain bypasses the stale supervisor group and evicts stale legacy R
 test('director cancellation cleanup does not recursively wake another drain while success and failure wakes remain eligible',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   assert.match(director,/runner-drain:\n[\s\S]{0,220}?if: github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.conclusion != 'cancelled'/);
-  assert.match(director,/game-primary-gate:\n[\s\S]{0,220}?if: github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.conclusion != 'cancelled'/);
+  assert.match(director,/game-primary-gate:\n[\s\S]{0,220}?if: always\(\) && \(github\.event_name != 'workflow_run' \|\| github\.event\.workflow_run\.conclusion != 'cancelled'\)/);
   assert.match(director,/supervise:\n[\s\S]{0,260}?github\.event\.workflow_run\.conclusion != 'cancelled'/);
 });
 
