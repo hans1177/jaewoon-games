@@ -4702,10 +4702,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-27T10:23:46.481Z",
+      "updatedAt": "2026-09-27T10:37:19.923Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -4901,7 +4901,25 @@
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
-      "robloxRuntimeCandidateEvidence": null,
+      "robloxRuntimeCandidateEvidence": {
+        "version": 1,
+        "gameId": "monster-adventure",
+        "platform": "ROBLOX",
+        "sourceRevision": "fd213ffcce80880a5e4256aa2fe02f10d044f780",
+        "artifactIdentity": "sha256:0a2a0d1083db224e346b1c734a1b00f8c123efaf8ca65f98af8ed6bc14ee05db",
+        "artifactRunId": 36310239788,
+        "universeId": "10768076016",
+        "placeId": "76876235310971",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": false,
+        "exposure": "PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 4,
+        "workflowRunId": 36312684302,
+        "publishedAt": "2026-09-27T10:37:19.923Z",
+        "authority": "roblox-open-cloud-private-runtime-candidate"
+      },
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -4931,11 +4949,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -5124,7 +5142,7 @@
         "placeId": "76876235310971",
         "verified": true,
         "verifiedAt": "2026-09-26T03:56:44.214Z",
-        "lastVerifiedAt": "2026-09-27T00:44:48.873Z",
+        "lastVerifiedAt": "2026-09-27T10:37:19.923Z",
         "source": "canonical-dedicated-open-cloud-bootstrap",
         "authority": "roblox-canonical-publication-target",
         "dedicated": true,
@@ -5136,7 +5154,7 @@
       },
       "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
-      "robloxReleaseVersionNumber": 3,
+      "robloxReleaseVersionNumber": 4,
       "robloxPublicRelease": false,
       "robloxInternalVibePlayEvidence": null,
       "robloxGameCompletionEvidence": null,
@@ -8811,7 +8829,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T10:37:09.991Z",
+  "updatedAt": "2026-09-27T10:37:19.923Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
