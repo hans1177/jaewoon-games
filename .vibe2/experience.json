@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -53492,74 +53490,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_85f5f333b723765c5cd19f5d",
-          "taskId": "ant-simulator-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "ant-simulator",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_c487582246e9035b791501b3",
-            "capability_ctrace_ca07155796f1d9843b59a64b",
-            "capability_ctrace_8f46ea8c8412790f7b83bfab",
-            "capability_ctrace_a670473591ad9b9fb242be1b",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "candidate-sha:2eb8eea0b82623b54018305b8c320afbe8ed0a8e",
-            "base-main:eeeeba2e96422a190917c853b8689586569b5ec8",
-            "actions-run:35825037803",
-            "reservation-id:35825037803:1",
-            "capability-application-sample:cf2a3176cc6fef911a71"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_51c8a60701a81ef84d29e072",
-          "taskId": "ant-simulator-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "ant-simulator",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_c487582246e9035b791501b3",
-            "capability_ctrace_ca07155796f1d9843b59a64b",
-            "capability_ctrace_8f46ea8c8412790f7b83bfab",
-            "capability_ctrace_a670473591ad9b9fb242be1b",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "candidate-sha:09574a00e4e7e56ac0813f707089027c33931044",
-            "base-main:eeeeba2e96422a190917c853b8689586569b5ec8",
-            "actions-run:35825037803",
-            "reservation-id:35825037803:1",
-            "capability-application-sample:8ce9fbb7103d87e63cbe"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_2b55399a56cf811e0ae4bd02",
           "taskId": "ant-simulator-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -55750,6 +55680,72 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c292c84ccf960704379a8202",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e2762d21c39e8e64f0e9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_cadd9626387cdf8f9ddf1a5f",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:0b7c118dbe35e7afe082"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -55839,74 +55835,6 @@
       "confirmations": 2,
       "confidence": 0.6667,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_968a6a4b2aa6a47f9ca91e18",
-          "taskId": "ant-simulator-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "ant-simulator",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_c487582246e9035b791501b3",
-            "capability_ctrace_ca07155796f1d9843b59a64b",
-            "capability_ctrace_8f46ea8c8412790f7b83bfab",
-            "capability_ctrace_a670473591ad9b9fb242be1b",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "candidate-sha:2eb8eea0b82623b54018305b8c320afbe8ed0a8e",
-            "base-main:eeeeba2e96422a190917c853b8689586569b5ec8",
-            "actions-run:35825037803",
-            "reservation-id:35825037803:1",
-            "capability-application-sample:cf2a3176cc6fef911a71"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_d97ca5975b8bfd65a86e39bf",
-          "taskId": "ant-simulator-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "ant-simulator",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_c487582246e9035b791501b3",
-            "capability_ctrace_ca07155796f1d9843b59a64b",
-            "capability_ctrace_8f46ea8c8412790f7b83bfab",
-            "capability_ctrace_a670473591ad9b9fb242be1b",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "candidate-sha:09574a00e4e7e56ac0813f707089027c33931044",
-            "base-main:eeeeba2e96422a190917c853b8689586569b5ec8",
-            "actions-run:35825037803",
-            "reservation-id:35825037803:1",
-            "capability-application-sample:8ce9fbb7103d87e63cbe"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_994137b99a7ce26a72476008",
@@ -58099,6 +58027,72 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_78c5daf808e350b2f2bc873f",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e2762d21c39e8e64f0e9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4cc3a389ea75933b05e89c99",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:0b7c118dbe35e7afe082"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -58208,74 +58202,6 @@
       "confirmations": 7,
       "confidence": 0.875,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_2cd9faadb923e41f7d53b035",
-          "taskId": "ant-simulator-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "ant-simulator",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_c487582246e9035b791501b3",
-            "capability_ctrace_ca07155796f1d9843b59a64b",
-            "capability_ctrace_8f46ea8c8412790f7b83bfab",
-            "capability_ctrace_a670473591ad9b9fb242be1b",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "candidate-sha:2eb8eea0b82623b54018305b8c320afbe8ed0a8e",
-            "base-main:eeeeba2e96422a190917c853b8689586569b5ec8",
-            "actions-run:35825037803",
-            "reservation-id:35825037803:1",
-            "capability-application-sample:cf2a3176cc6fef911a71"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_65645251d50c46963279b569",
-          "taskId": "ant-simulator-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "ant-simulator",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_c487582246e9035b791501b3",
-            "capability_ctrace_ca07155796f1d9843b59a64b",
-            "capability_ctrace_8f46ea8c8412790f7b83bfab",
-            "capability_ctrace_a670473591ad9b9fb242be1b",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "candidate-sha:09574a00e4e7e56ac0813f707089027c33931044",
-            "base-main:eeeeba2e96422a190917c853b8689586569b5ec8",
-            "actions-run:35825037803",
-            "reservation-id:35825037803:1",
-            "capability-application-sample:8ce9fbb7103d87e63cbe"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_9ba39b2e8e78285ba1a7eb7a",
@@ -60468,6 +60394,72 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_7e5380a8bc148b89e753869d",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e2762d21c39e8e64f0e9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_dd4d588d0a2ac232fdf8b732",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:0b7c118dbe35e7afe082"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -60569,74 +60561,6 @@
       "confirmations": 5,
       "confidence": 0.8333,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_8ed38919de9264fec0264398",
-          "taskId": "ant-simulator-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "ant-simulator",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_c487582246e9035b791501b3",
-            "capability_ctrace_ca07155796f1d9843b59a64b",
-            "capability_ctrace_8f46ea8c8412790f7b83bfab",
-            "capability_ctrace_a670473591ad9b9fb242be1b",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "candidate-sha:2eb8eea0b82623b54018305b8c320afbe8ed0a8e",
-            "base-main:eeeeba2e96422a190917c853b8689586569b5ec8",
-            "actions-run:35825037803",
-            "reservation-id:35825037803:1",
-            "capability-application-sample:cf2a3176cc6fef911a71"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_06806e6aded5a51b3db9c494",
-          "taskId": "ant-simulator-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "ant-simulator",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_c487582246e9035b791501b3",
-            "capability_ctrace_ca07155796f1d9843b59a64b",
-            "capability_ctrace_8f46ea8c8412790f7b83bfab",
-            "capability_ctrace_a670473591ad9b9fb242be1b",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "candidate-sha:09574a00e4e7e56ac0813f707089027c33931044",
-            "base-main:eeeeba2e96422a190917c853b8689586569b5ec8",
-            "actions-run:35825037803",
-            "reservation-id:35825037803:1",
-            "capability-application-sample:8ce9fbb7103d87e63cbe"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_6b6122c083fa6ae2a926d036",
@@ -62823,6 +62747,72 @@
             "actions-run:36350776978",
             "reservation-id:36350776978:1",
             "capability-application-sample:65e4ffdda931f3748f5b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_7972a85a31f0d52eb83c9b13",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e2762d21c39e8e64f0e9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_29874a0f711837911257a341",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:0b7c118dbe35e7afe082"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -123879,39 +123869,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_4556fcb1fadb0772f6974bfc",
-          "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
-          "workKey": null,
-          "gameId": "daechung-rpg",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_814d6a07fce5ecfa02330b64",
-            "capability_ctrace_98ff2306686a32e38f808a33",
-            "capability_ctrace_f470c4ec19f0640b43497e47",
-            "capability_ctrace_cc6bed7b5957878fd2293955",
-            "capability_ctrace_c42b48a673bc1019bd202884"
-          ],
-          "evidence": [
-            "base-main:09b511947ea8694bfda94cba074b0c6d8ae76502",
-            "actions-run:36276800605",
-            "reservation-id:36276800605:1",
-            "capability-application-sample:caa9928934b09bb04c5b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_9f1fb24e090aca6fa3cafd8b",
           "taskId": "daechung-rpg-studio-evolution-presentation-v1",
           "workKey": null,
@@ -126049,6 +126006,39 @@
             "actions-run:36350776978",
             "reservation-id:36350776978:1",
             "capability-application-sample:5192b601893d43308d1e"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_245e52768049d7cae86365a1",
+          "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_814d6a07fce5ecfa02330b64",
+            "capability_ctrace_a9c2d9b0583c4479cb57709e",
+            "capability_ctrace_f470c4ec19f0640b43497e47",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_92cfc4c5120316608f7624fa"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b9f6325f943add86672b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -148923,76 +148913,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_aebd1b8c4c04027604a71a77",
-          "taskId": "ant-simulator-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "ant-simulator",
-          "engine": "web",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_c487582246e9035b791501b3",
-            "capability_ctrace_ca07155796f1d9843b59a64b",
-            "capability_ctrace_8f46ea8c8412790f7b83bfab",
-            "capability_ctrace_a670473591ad9b9fb242be1b",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
-          ],
-          "evidence": [
-            "candidate-sha:b89956d8fe1b9a8b8c6940636816c254ed81c0fe",
-            "base-main:9a1e4fb94ac87e3456f17d205adbcb14e2709754",
-            "incremental-qa-hash:342f560e0c33ab434d4778d5265a73113d264fc17ddb58c62f784a28260c9918",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:ANALYZED",
-            "actions-run:36242804329",
-            "reservation-id:36242804329:1",
-            "capability-application-sample:283481ba98fa14a805eb"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_c5d8d76bd9c91b15f1f951d1",
-          "taskId": "line-defense-roblox-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_7e8205ce09f2f476e5aedafa",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_061bbbee164f6b943e5d7293",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:9a1e4fb94ac87e3456f17d205adbcb14e2709754",
-            "actions-run:36242804329",
-            "reservation-id:36242804329:1",
-            "capability-application-sample:99fb7a295f76863caebb"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_2ec1b69cac86d3e02e525756",
           "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
           "workKey": null,
@@ -151122,6 +151042,72 @@
             "actions-run:36350776978",
             "reservation-id:36350776978:1",
             "capability-application-sample:65e4ffdda931f3748f5b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_3a199e575409ea8c22fb2e22",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e2762d21c39e8e64f0e9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_91005b0bca9f03a0484985f6",
+          "taskId": "ant-simulator-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "ant-simulator",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_c487582246e9035b791501b3",
+            "capability_ctrace_ca07155796f1d9843b59a64b",
+            "capability_ctrace_8f46ea8c8412790f7b83bfab",
+            "capability_ctrace_a670473591ad9b9fb242be1b",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:0b7c118dbe35e7afe082"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -214894,105 +214880,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_2885f86bc1657cdd22a8e767",
-          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
-            "capability_ctrace_d7de6d6e30f11163f10bab77"
-          ],
-          "evidence": [
-            "base-main:d92a5c9d41ae3d8d3662e0f083b618589906d92c",
-            "actions-run:36009208552",
-            "reservation-id:36009208552:1",
-            "capability-application-sample:060950258112b785c89b"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_e48927f05362faf1d4a5a3f1",
-          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
-            "capability_ctrace_d7de6d6e30f11163f10bab77"
-          ],
-          "evidence": [
-            "base-main:d92a5c9d41ae3d8d3662e0f083b618589906d92c",
-            "actions-run:36009208552",
-            "reservation-id:36009208552:1",
-            "capability-application-sample:8d54bd963d3236c91f85"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_a3c94292358c6461d0b15800",
-          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
-            "capability_ctrace_d7de6d6e30f11163f10bab77"
-          ],
-          "evidence": [
-            "base-main:d92a5c9d41ae3d8d3662e0f083b618589906d92c",
-            "actions-run:36009208552",
-            "reservation-id:36009208552:1",
-            "capability-application-sample:b1aa8e159f4200e8e722"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_80768ec2554f63a866c52912",
           "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
           "workKey": null,
@@ -217125,6 +217012,105 @@
             "actions-run:36350776978",
             "reservation-id:36350776978:1",
             "capability-application-sample:b4087c18efddb4969cfb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_6c05b493109592dd9193c01b",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b1585b16c4c80f85594b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c5d68a9e3c8800e9f2eda597",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:bc451b682f1104d41b65"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f48bb9f4ef425902aa5db8ea",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:4a3dfa9af447485a9244"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -220278,105 +220264,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_e3522b498aa70213cadce169",
-          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
-            "capability_ctrace_d7de6d6e30f11163f10bab77"
-          ],
-          "evidence": [
-            "base-main:d92a5c9d41ae3d8d3662e0f083b618589906d92c",
-            "actions-run:36009208552",
-            "reservation-id:36009208552:1",
-            "capability-application-sample:d3b1846a3e5362ae5d92"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_e9a78e2b7c1b5f42278cd378",
-          "taskId": "cozy-island-diagnostic-bundle-VAL-CLEANUP-RISK-economy-west-v2-js-INTERVAL-CLEANUP-RISK-farm-smithy-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
-            "capability_ctrace_d7de6d6e30f11163f10bab77"
-          ],
-          "evidence": [
-            "base-main:d92a5c9d41ae3d8d3662e0f083b618589906d92c",
-            "actions-run:36009208552",
-            "reservation-id:36009208552:1",
-            "capability-application-sample:32ad4bec443ba8b51f70"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_cd0daeed3489227ea1a9f868",
-          "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
-            "capability_ctrace_d7de6d6e30f11163f10bab77"
-          ],
-          "evidence": [
-            "base-main:10600f4e198fcdd0130535e3b2c81195f2a2405a",
-            "actions-run:36046520882",
-            "reservation-id:36046520882:1",
-            "capability-application-sample:6ba13a179f1f76888ce8"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_5930469f91dd8ec7c6a9049e",
           "taskId": "cozy-island-diagnostic-bundle-ISK-production-buildings-js-INTERVAL-CLEANUP-RISK-region-discount-v10-js",
           "workKey": null,
@@ -222515,6 +222402,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_92be901f57e383bae8b52968",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b1585b16c4c80f85594b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_212d2edc1082906b3e337ab0",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:bc451b682f1104d41b65"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_6e0cf7ddf60d95ee1e977e67",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:4a3dfa9af447485a9244"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -222754,113 +222740,6 @@
       "confirmations": 43,
       "confidence": 0.9773,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_8b15f0c0f53b061df328a4be",
-          "taskId": "cozy-island-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
-            "capability_ctrace_d7de6d6e30f11163f10bab77"
-          ],
-          "evidence": [
-            "candidate-sha:bd198e7f28b6e94e3cc6d0f49bfec5e110739447",
-            "base-main:051b003a0d51d669104e347c197b0ab26999f0a5",
-            "incremental-qa-hash:3437b0e83a532af24cc670264bdf2986fdf55edd1b99d3f027189bae232e7387",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:ANALYZED",
-            "actions-run:36229097447",
-            "reservation-id:36229097447:1",
-            "capability-application-sample:47fcb67508edd3070733"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_8d8533f90332ed9e0f961792",
-          "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_694d98ebd713acfd3b0a9289",
-            "capability_ctrace_e24add62615bf96a065576ab",
-            "capability_ctrace_8e48a7db9ae2c9be9596da00",
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_54427da2204e4033e8fa26ba"
-          ],
-          "evidence": [
-            "candidate-sha:b810168050ad3c6bff4d171352e971ce9b9e8d2a",
-            "base-main:051b003a0d51d669104e347c197b0ab26999f0a5",
-            "incremental-qa-hash:085bf8a41a2ef35228946c50acc170fa01292eb817c0e12cd10b1eaff36152ca",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:36229097447",
-            "reservation-id:36229097447:1",
-            "capability-application-sample:f699f5e8778cca55c446"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_a11b00a9f45f666e89f4cf31",
-          "taskId": "cozy-island-studio-evolution-presentation-v1",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_694d98ebd713acfd3b0a9289",
-            "capability_ctrace_e24add62615bf96a065576ab",
-            "capability_ctrace_8e48a7db9ae2c9be9596da00",
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_54427da2204e4033e8fa26ba"
-          ],
-          "evidence": [
-            "base-main:051b003a0d51d669104e347c197b0ab26999f0a5",
-            "actions-run:36229097447",
-            "reservation-id:36229097447:1",
-            "capability-application-sample:21be3cd6eb2c9e447469"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_68cd476f1558c529919a62b3",
@@ -224989,6 +224868,105 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_223acbec13534ff517e8e6a0",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b1585b16c4c80f85594b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a0172ef5955b6b6af008d385",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:bc451b682f1104d41b65"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_91bd7eec8562a763261bc5b5",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:4a3dfa9af447485a9244"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -225221,104 +225199,6 @@
       "confirmations": 41,
       "confidence": 0.9762,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_583359b6a75a2e753023088a",
-          "taskId": "cozy-island-diagnostic-bundle-AL-CLEANUP-RISK-bounty-fix-v10-js-INTERVAL-CLEANUP-RISK-bounty-tax-v6-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_d7de6d6e30f11163f10bab77",
-            "capability_ctrace_ee8cb53f66d6c380ff75cd8d"
-          ],
-          "evidence": [
-            "base-main:5d7ecd71df4dea9902731ca29483b6803707735b",
-            "actions-run:36004523130",
-            "reservation-id:36004523130:1",
-            "capability-application-sample:acefc0fa7a0cc676986c"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_50023f7520fe79088cb71c90",
-          "taskId": "cozy-island-diagnostic-bundle-AL-CLEANUP-RISK-bounty-fix-v10-js-INTERVAL-CLEANUP-RISK-bounty-tax-v6-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_d7de6d6e30f11163f10bab77",
-            "capability_ctrace_ee8cb53f66d6c380ff75cd8d"
-          ],
-          "evidence": [
-            "actions-run:36004523130",
-            "reservation-id:36004523130:1",
-            "capability-application-sample:427d32d167a16a70e7c0"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_617b4cf9fef740fddf211e4b",
-          "taskId": "cozy-island-diagnostic-bundle-LEANUP-RISK-village-defense-js-INTERVAL-CLEANUP-RISK-world-upgrade-v3-js",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_d7de6d6e30f11163f10bab77",
-            "capability_ctrace_ee8cb53f66d6c380ff75cd8d"
-          ],
-          "evidence": [
-            "base-main:5d7ecd71df4dea9902731ca29483b6803707735b",
-            "actions-run:36004523130",
-            "reservation-id:36004523130:1",
-            "capability-application-sample:c773a6a7011b24335aa8"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_99bdbd885b4426581e49a247",
@@ -227452,6 +227332,105 @@
             "actions-run:36350776978",
             "reservation-id:36350776978:1",
             "capability-application-sample:b4087c18efddb4969cfb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_92fc42abb1c1ff0ff4cf88b5",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b1585b16c4c80f85594b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_881d88541d2e48d0726a2c6a",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:bc451b682f1104d41b65"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a7ecdada4ee471fd7db0a923",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:4a3dfa9af447485a9244"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -230138,113 +230117,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_b3660b5d3a029d01ef4c5174",
-          "taskId": "cozy-island-roblox-second-gate-rebuild-v1",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_694d98ebd713acfd3b0a9289",
-            "capability_ctrace_e24add62615bf96a065576ab",
-            "capability_ctrace_8e48a7db9ae2c9be9596da00",
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_54427da2204e4033e8fa26ba"
-          ],
-          "evidence": [
-            "base-main:ca3c7bb156666517e1b590290525d85a4107efcd",
-            "actions-run:36223991015",
-            "reservation-id:36223991015:1",
-            "capability-application-sample:f7cba2faff3827c3383d"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_98db1923fbf750ab3c5853e3",
-          "taskId": "cozy-island-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
-            "capability_ctrace_d7de6d6e30f11163f10bab77"
-          ],
-          "evidence": [
-            "candidate-sha:e7f73091cbd73cc0eb710d40aeda5fe77a9ab6f5",
-            "base-main:051b003a0d51d669104e347c197b0ab26999f0a5",
-            "incremental-qa-hash:3437b0e83a532af24cc670264bdf2986fdf55edd1b99d3f027189bae232e7387",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:ANALYZED",
-            "actions-run:36229097447",
-            "reservation-id:36229097447:1",
-            "capability-application-sample:fdb655112930c037f795"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_de89ba99d7fedd70a0f49468",
-          "taskId": "cozy-island-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "cozy-island",
-          "engine": "web",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_9826195dac24dccb5a25672d",
-            "capability_ctrace_54427da2204e4033e8fa26ba",
-            "capability_ctrace_67cbe292d92c17ee1773a10c",
-            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
-            "capability_ctrace_d7de6d6e30f11163f10bab77"
-          ],
-          "evidence": [
-            "candidate-sha:4a2da67a64042a28915cb84e7da32b15546b9c44",
-            "base-main:051b003a0d51d669104e347c197b0ab26999f0a5",
-            "incremental-qa-hash:3437b0e83a532af24cc670264bdf2986fdf55edd1b99d3f027189bae232e7387",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:ANALYZED",
-            "actions-run:36229097447",
-            "reservation-id:36229097447:1",
-            "capability-application-sample:2ab1bdd29ccb22259574"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_c52e0a632529fe47a692ce5c",
           "taskId": "cozy-island-existing-web-assessment-v1",
           "workKey": null,
@@ -232373,6 +232245,105 @@
             "actions-run:36350776978",
             "reservation-id:36350776978:1",
             "capability-application-sample:4c17e1ae43163345638d"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_5c04682af045cc32f592087a",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b1585b16c4c80f85594b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4cef861a361daa851e472229",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:bc451b682f1104d41b65"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2d30508cb22d9170afc2aca3",
+          "taskId": "cozy-island-existing-web-assessment-v1",
+          "workKey": null,
+          "gameId": "cozy-island",
+          "engine": "web",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_9826195dac24dccb5a25672d",
+            "capability_ctrace_54427da2204e4033e8fa26ba",
+            "capability_ctrace_67cbe292d92c17ee1773a10c",
+            "capability_ctrace_ee8cb53f66d6c380ff75cd8d",
+            "capability_ctrace_d7de6d6e30f11163f10bab77"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:4a3dfa9af447485a9244"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -235560,39 +235531,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_55cf108767e413bb3d6cf66a",
-          "taskId": "horror-escape-room-studio-evolution-presentation-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_257da6a3fae15f846f251574",
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_89bdf8efa5ad3402d34d018b"
-          ],
-          "evidence": [
-            "base-main:58a6c16427756883868a685290b14815e6dccb19",
-            "actions-run:36252291958",
-            "reservation-id:36252291958:1",
-            "capability-application-sample:dca997a797dd3e0a7794"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_f2f1aea635aa0cc3e26b1a15",
           "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
           "workKey": null,
@@ -237667,6 +237605,39 @@
             "actions-run:36350776978",
             "reservation-id:36350776978:1",
             "capability-application-sample:cf30e9dd3da15023c311"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4758d0c69de817fb616a3363",
+          "taskId": "horror-escape-room-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:279fe19e28ee03595dbd"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -283332,6 +283303,72 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_916e292fb2bd4b9465ed7878",
+          "taskId": "amusement-tycoon-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_9781b1502c8927f6ef26bf86",
+            "capability_ctrace_1fd13e53f42c956d1a6ba0b6",
+            "capability_ctrace_103520cd8f954d2962974bda",
+            "capability_ctrace_87e667b0585ccab114c69be5"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:d59a505e5811f7b3427b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_cd5ea9ad1c247b04e5627766",
+          "taskId": "amusement-tycoon-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_9781b1502c8927f6ef26bf86",
+            "capability_ctrace_1fd13e53f42c956d1a6ba0b6",
+            "capability_ctrace_103520cd8f954d2962974bda",
+            "capability_ctrace_87e667b0585ccab114c69be5"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b4b7272ff90074a0dbd9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -283350,7 +283387,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 16,
+        "applicationCount": 18,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -285032,6 +285069,72 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_30dfb6cdab8652f494874b28",
+          "taskId": "amusement-tycoon-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_9781b1502c8927f6ef26bf86",
+            "capability_ctrace_1fd13e53f42c956d1a6ba0b6",
+            "capability_ctrace_103520cd8f954d2962974bda",
+            "capability_ctrace_87e667b0585ccab114c69be5"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:d59a505e5811f7b3427b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_cd866fc9df69f74485d330ca",
+          "taskId": "amusement-tycoon-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_9781b1502c8927f6ef26bf86",
+            "capability_ctrace_1fd13e53f42c956d1a6ba0b6",
+            "capability_ctrace_103520cd8f954d2962974bda",
+            "capability_ctrace_87e667b0585ccab114c69be5"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b4b7272ff90074a0dbd9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -285050,7 +285153,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 48,
+        "applicationCount": 50,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -289693,6 +289796,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d52f7cad6d09f3aa1a075f8b",
+          "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_814d6a07fce5ecfa02330b64",
+            "capability_ctrace_a9c2d9b0583c4479cb57709e",
+            "capability_ctrace_f470c4ec19f0640b43497e47",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_92cfc4c5120316608f7624fa"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b9f6325f943add86672b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -289711,7 +289847,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 42,
+        "applicationCount": 43,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -292595,6 +292731,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d159772410b706ff79187177",
+          "taskId": "fantasy-survival-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_de31124d749f456035b606b6",
+            "capability_ctrace_304d66b8684f47eec4dfe5c8",
+            "capability_ctrace_1500a06c262134cbfd91df18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e5ead4513cf0cf188798"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -292613,7 +292782,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 57,
+        "applicationCount": 58,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -293583,6 +293752,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_11852eef632b5a897381c648",
+          "taskId": "horror-escape-room-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:279fe19e28ee03595dbd"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -293601,7 +293803,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 16,
+        "applicationCount": 17,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -298160,6 +298362,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c3b2b5723fbe2033d4a013a1",
+          "taskId": "line-defense-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea",
+            "capability_ctrace_c0040bcb117c7b3465ea6a6e",
+            "capability_ctrace_25bf3e940d5c7e66d3694a6c",
+            "capability_ctrace_5460f74d1cffa90fab8122d4"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:407ae5241a6a95457a9b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -298178,7 +298413,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 43,
+        "applicationCount": 44,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -313906,6 +314141,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f1c230f4e3d7ed6742b4d90e",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_6302273f93b5aeb91e76cce4",
+            "capability_ctrace_e829220708a8cd005d123a42",
+            "capability_ctrace_99f0149f2fc979788ac89cb8",
+            "capability_ctrace_63b4e563a715fefde5789f41",
+            "capability_ctrace_7a3a53a4340a1d717c7d517e"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e0bf08bbdd8df85fccfb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -313924,7 +314192,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 58,
+        "applicationCount": 59,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -330261,6 +330529,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a638710cc572d358b5e108fd",
+          "taskId": "horror-escape-room-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:279fe19e28ee03595dbd"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -330279,7 +330580,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 41,
+        "applicationCount": 42,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -331640,6 +331941,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_99504f01072cc0f893d7f9ae",
+          "taskId": "line-defense-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea",
+            "capability_ctrace_c0040bcb117c7b3465ea6a6e",
+            "capability_ctrace_25bf3e940d5c7e66d3694a6c",
+            "capability_ctrace_5460f74d1cffa90fab8122d4"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:407ae5241a6a95457a9b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -331658,7 +331992,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 39,
+        "applicationCount": 40,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -333608,6 +333942,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_167ccb8e783665dcf95a577a",
+          "taskId": "line-defense-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea",
+            "capability_ctrace_c0040bcb117c7b3465ea6a6e",
+            "capability_ctrace_25bf3e940d5c7e66d3694a6c",
+            "capability_ctrace_5460f74d1cffa90fab8122d4"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:407ae5241a6a95457a9b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -333626,7 +333993,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 56,
+        "applicationCount": 57,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -342210,6 +342577,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f2aae9277dd13fb3a1108891",
+          "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_814d6a07fce5ecfa02330b64",
+            "capability_ctrace_a9c2d9b0583c4479cb57709e",
+            "capability_ctrace_f470c4ec19f0640b43497e47",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_92cfc4c5120316608f7624fa"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b9f6325f943add86672b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -342228,7 +342628,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 46,
+        "applicationCount": 47,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -345675,6 +346075,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_afd1ff28ccfda71c827272ed",
+          "taskId": "fantasy-survival-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_de31124d749f456035b606b6",
+            "capability_ctrace_304d66b8684f47eec4dfe5c8",
+            "capability_ctrace_1500a06c262134cbfd91df18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e5ead4513cf0cf188798"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -345693,7 +346126,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 61,
+        "applicationCount": 62,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -347242,6 +347675,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_ef4fef8896e24ca66c6a1033",
+          "taskId": "horror-escape-room-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:279fe19e28ee03595dbd"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -347260,7 +347726,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 43,
+        "applicationCount": 44,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -348575,6 +349041,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_cfc64e896230e3ee16e4a153",
+          "taskId": "horror-escape-room-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:279fe19e28ee03595dbd"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -348593,7 +349092,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 37,
+        "applicationCount": 38,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -351092,6 +351591,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_6c81b7c1b22f883190788b57",
+          "taskId": "line-defense-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea",
+            "capability_ctrace_c0040bcb117c7b3465ea6a6e",
+            "capability_ctrace_25bf3e940d5c7e66d3694a6c",
+            "capability_ctrace_5460f74d1cffa90fab8122d4"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:407ae5241a6a95457a9b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -351110,7 +351642,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 32,
+        "applicationCount": 33,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -354055,6 +354587,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f7ff5f5c8164583b58944560",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_6302273f93b5aeb91e76cce4",
+            "capability_ctrace_e829220708a8cd005d123a42",
+            "capability_ctrace_99f0149f2fc979788ac89cb8",
+            "capability_ctrace_63b4e563a715fefde5789f41",
+            "capability_ctrace_7a3a53a4340a1d717c7d517e"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e0bf08bbdd8df85fccfb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -354073,7 +354638,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 38,
+        "applicationCount": 39,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -363346,6 +363911,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_666b7ea7949d1073f11496ef",
+          "taskId": "fantasy-survival-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_de31124d749f456035b606b6",
+            "capability_ctrace_304d66b8684f47eec4dfe5c8",
+            "capability_ctrace_1500a06c262134cbfd91df18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e5ead4513cf0cf188798"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -363364,7 +363962,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 35,
+        "applicationCount": 36,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -364897,6 +365495,72 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2fee038e580bb17c6126c9aa",
+          "taskId": "amusement-tycoon-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_9781b1502c8927f6ef26bf86",
+            "capability_ctrace_1fd13e53f42c956d1a6ba0b6",
+            "capability_ctrace_103520cd8f954d2962974bda",
+            "capability_ctrace_87e667b0585ccab114c69be5"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:d59a505e5811f7b3427b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_58ddc869ab5fb7fa649ddf74",
+          "taskId": "amusement-tycoon-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_9781b1502c8927f6ef26bf86",
+            "capability_ctrace_1fd13e53f42c956d1a6ba0b6",
+            "capability_ctrace_103520cd8f954d2962974bda",
+            "capability_ctrace_87e667b0585ccab114c69be5"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b4b7272ff90074a0dbd9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -364915,7 +365579,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 40,
+        "applicationCount": 42,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -373358,6 +374022,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_8ae5c813f1edeb119bebb5cc",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_6302273f93b5aeb91e76cce4",
+            "capability_ctrace_e829220708a8cd005d123a42",
+            "capability_ctrace_99f0149f2fc979788ac89cb8",
+            "capability_ctrace_63b4e563a715fefde5789f41",
+            "capability_ctrace_7a3a53a4340a1d717c7d517e"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e0bf08bbdd8df85fccfb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -373376,7 +374073,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 38,
+        "applicationCount": 39,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -385164,6 +385861,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b13d502ea3466788c4457895",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_6302273f93b5aeb91e76cce4",
+            "capability_ctrace_e829220708a8cd005d123a42",
+            "capability_ctrace_99f0149f2fc979788ac89cb8",
+            "capability_ctrace_63b4e563a715fefde5789f41",
+            "capability_ctrace_7a3a53a4340a1d717c7d517e"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e0bf08bbdd8df85fccfb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -385182,7 +385912,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 10,
+        "applicationCount": 11,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -387280,6 +388010,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_49118b74d47a45f5eb635ab4",
+          "taskId": "fantasy-survival-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_de31124d749f456035b606b6",
+            "capability_ctrace_304d66b8684f47eec4dfe5c8",
+            "capability_ctrace_1500a06c262134cbfd91df18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e5ead4513cf0cf188798"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -387298,7 +388061,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 17,
+        "applicationCount": 18,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -389778,6 +390541,72 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b39a7639ce839a8855dead71",
+          "taskId": "amusement-tycoon-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_9781b1502c8927f6ef26bf86",
+            "capability_ctrace_1fd13e53f42c956d1a6ba0b6",
+            "capability_ctrace_103520cd8f954d2962974bda",
+            "capability_ctrace_87e667b0585ccab114c69be5"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:d59a505e5811f7b3427b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f525c9debdfb0e111f406798",
+          "taskId": "amusement-tycoon-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_9781b1502c8927f6ef26bf86",
+            "capability_ctrace_1fd13e53f42c956d1a6ba0b6",
+            "capability_ctrace_103520cd8f954d2962974bda",
+            "capability_ctrace_87e667b0585ccab114c69be5"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b4b7272ff90074a0dbd9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -389796,7 +390625,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 18,
+        "applicationCount": 20,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -390825,6 +391654,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0aa6f23f249e807c1785a87a",
+          "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_814d6a07fce5ecfa02330b64",
+            "capability_ctrace_a9c2d9b0583c4479cb57709e",
+            "capability_ctrace_f470c4ec19f0640b43497e47",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_92cfc4c5120316608f7624fa"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b9f6325f943add86672b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -390843,7 +391705,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 27,
+        "applicationCount": 28,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -392500,6 +393362,72 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_83690944848b631da5e193e1",
+          "taskId": "amusement-tycoon-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_9781b1502c8927f6ef26bf86",
+            "capability_ctrace_1fd13e53f42c956d1a6ba0b6",
+            "capability_ctrace_103520cd8f954d2962974bda",
+            "capability_ctrace_87e667b0585ccab114c69be5"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:d59a505e5811f7b3427b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_667952e20694448bed21bc99",
+          "taskId": "amusement-tycoon-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "amusement-tycoon",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d1777761fbb21feb3437efef",
+            "capability_ctrace_9781b1502c8927f6ef26bf86",
+            "capability_ctrace_1fd13e53f42c956d1a6ba0b6",
+            "capability_ctrace_103520cd8f954d2962974bda",
+            "capability_ctrace_87e667b0585ccab114c69be5"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b4b7272ff90074a0dbd9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -392518,7 +393446,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 22,
+        "applicationCount": 24,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -395180,6 +396108,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_1ca2037e45a31512ff29ab04",
+          "taskId": "line-defense-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea",
+            "capability_ctrace_c0040bcb117c7b3465ea6a6e",
+            "capability_ctrace_25bf3e940d5c7e66d3694a6c",
+            "capability_ctrace_5460f74d1cffa90fab8122d4"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:407ae5241a6a95457a9b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -395198,7 +396159,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 22,
+        "applicationCount": 23,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -401427,6 +402388,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_70a845e576638faea1d32eb0",
+          "taskId": "fantasy-survival-unity-web-base-implementation-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_de31124d749f456035b606b6",
+            "capability_ctrace_304d66b8684f47eec4dfe5c8",
+            "capability_ctrace_1500a06c262134cbfd91df18"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e5ead4513cf0cf188798"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -401445,7 +402439,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 9,
+        "applicationCount": 10,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -402335,6 +403329,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_796716a9d95dfb899f69d6b8",
+          "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_814d6a07fce5ecfa02330b64",
+            "capability_ctrace_a9c2d9b0583c4479cb57709e",
+            "capability_ctrace_f470c4ec19f0640b43497e47",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_92cfc4c5120316608f7624fa"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:b9f6325f943add86672b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -402353,7 +403380,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 4,
+        "applicationCount": 5,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -402495,7 +403522,11 @@
         "actions-run:36311775719",
         "reservation-id:36311775719:1",
         "coding-trace:ctrace_7489f6e6a4687cddcd7529fe",
-        "verified-coding-failure:MALFORMED_OUTPUT"
+        "verified-coding-failure:MALFORMED_OUTPUT",
+        "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+        "actions-run:36352841044",
+        "reservation-id:36352841044:1",
+        "coding-trace:ctrace_5a514e25bb7c43b35a6ae447"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -402504,8 +403535,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 1,
-      "confidence": 0.5,
+      "confirmations": 2,
+      "confidence": 0.6667,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
@@ -402847,7 +403878,11 @@
         "base-main:7e2983a1f9b7517c34e0c1bced7213be394eb942",
         "actions-run:36350776978",
         "reservation-id:36350776978:1",
-        "coding-trace:ctrace_8fa977ff37fbe63652ee2860"
+        "coding-trace:ctrace_8fa977ff37fbe63652ee2860",
+        "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+        "actions-run:36352841044",
+        "reservation-id:36352841044:1",
+        "coding-trace:ctrace_618e63c0439706180dd820d7"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -402856,8 +403891,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 3,
-      "confidence": 0.75,
+      "confirmations": 4,
+      "confidence": 0.8,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
@@ -403496,6 +404531,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_299fe40cb052847267f27c1a",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_6302273f93b5aeb91e76cce4",
+            "capability_ctrace_e829220708a8cd005d123a42",
+            "capability_ctrace_99f0149f2fc979788ac89cb8",
+            "capability_ctrace_63b4e563a715fefde5789f41",
+            "capability_ctrace_7a3a53a4340a1d717c7d517e"
+          ],
+          "evidence": [
+            "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+            "actions-run:36352841044",
+            "reservation-id:36352841044:1",
+            "capability-application-sample:e0bf08bbdd8df85fccfb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -403514,7 +404582,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 4,
+        "applicationCount": 5,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -405945,7 +407013,11 @@
         "actions-run:36350776978",
         "reservation-id:36350776978:1",
         "coding-trace:ctrace_d1767263d963f8fbacc05f76",
-        "verified-coding-failure:NO_OP"
+        "verified-coding-failure:NO_OP",
+        "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+        "actions-run:36352841044",
+        "reservation-id:36352841044:1",
+        "coding-trace:ctrace_5fdea509f0ff6a05e72987ce"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -405954,8 +407026,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 1,
-      "confidence": 0.5,
+      "confirmations": 2,
+      "confidence": 0.6667,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
@@ -407522,6 +408594,670 @@
         "actions-run:36350776978",
         "reservation-id:36350776978:1",
         "coding-trace:ctrace_d2d2129b81cec4dfdda92283",
+        "verified-coding-failure:NO_OP"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:NO_OP",
+        "CAPABILITY_AVOID:STRATEGY:DEPENDENCY_SAFE_COHERENT_PATCH:FAILURE:NO_OP"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "capabilityApplications": [],
+      "capabilityBenchmarks": [],
+      "capabilityPortfolio": {
+        "version": 1,
+        "state": "ACTIVE",
+        "decisionId": null,
+        "reason": null,
+        "reviewed": false,
+        "capabilitySpecificEvidence": false,
+        "supersededByCapabilityId": null,
+        "evidence": [],
+        "observedAt": null,
+        "authorityExpanded": false
+      },
+      "capabilityLifecycle": {
+        "version": 2,
+        "state": "VERIFIED_REUSABLE",
+        "applicationCount": 0,
+        "independentPassCount": 0,
+        "crossGameVerifiedApplicationCount": 0,
+        "directSupportCount": 0,
+        "contradictionCount": 0,
+        "confidence": 0.5,
+        "generalizationCandidate": false,
+        "benchmarkCount": 0,
+        "unseenBenchmarkPassCount": 0,
+        "unseenBenchmarkDistinctGameCount": 0,
+        "benchmarkContradictionCount": 0,
+        "strongGeneralizationVerified": false,
+        "portfolioState": "ACTIVE",
+        "retrievalEligible": true,
+        "singlePassAutomaticPromotion": false,
+        "singleFailureAutomaticDeprecation": false,
+        "unrelatedFailurePenaltyApplied": false,
+        "confidenceDecayApplied": false,
+        "unseenProblemBenchmarkRequired": true,
+        "automaticDeprecation": false,
+        "automaticSupersession": false,
+        "authorityExpanded": false
+      },
+      "capabilityConfidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_20e6cfdb326859c47ec9e59b",
+      "fingerprint": "fp_10fnnqh",
+      "gameId": "amusement-tycoon",
+      "engine": "unity",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:NO_OP",
+      "goal": "[STUDIO_QUALITY_EVOLUTION] cycle=1; phase=BUILD_UP; focus=USABILITY; baseline=source:unity-games/amusement-tycoon\n 기존 게임 품질 백필 세대다. 현재 구현을 새 게임처럼 초기화하지 말고 기존 기능·세이브·진행·권한·핵심 규칙을 보존한다. 현재 BUILD_UP의 전체 PASS/GAP/NOT_APPLICABLE 도메인을 다시 판정하고, 이 focus에 속한 실제 GAP를 기존 책임 소스에서 직접 닫는다. 기존 게임이라는 이유로 맵·게임플레이·인벤토리·UI·편의성·세션 흐름·중후반 깊이·성능 결함을 grandfather 처리하지 않는다.설계 문장에 적힌 항목 수를 구현 상한으로 취급하지 않는다. 승인된 게임 의미 안에서 기존 시스템을 실제 플레이 기준으로 더 완성한다. 서로 연결된 구현을 최소 3개 이상 필요한 만큼 한 패키지에서 완성하고, 기능 연결·피드백·연출·예외 처리 중 적어도 두 축을 체감 가능하게 개선한다. 승인 설계 맥락을 보존한다. APPROVED_DESIGN_SOURCE=design/amusement-tycoon/2026-09-19/design-revised.json Unity Web 백필은 같은 Unity 프로젝트를 사용하더라도 WebGL 브라우저에서 Pointer/Touch 입력, HUD/메뉴 흐름, 로딩/저장복구, 프레임·메모리",
+      "change": "strategy DEPENDENCY_SAFE_COHERENT_PATCH | variant primary | attempts 0 | changed-files 0",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:NO_OP",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:36352841044",
+      "evidence": [
+        "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+        "source-generation-failure:NO_OP",
+        "actions-run:36352841044",
+        "reservation-id:36352841044:1",
+        "coding-trace:ctrace_20e6cfdb326859c47ec9e59b",
+        "verified-coding-failure:NO_OP"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:NO_OP",
+        "CAPABILITY_AVOID:STRATEGY:DEPENDENCY_SAFE_COHERENT_PATCH:FAILURE:NO_OP"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "capabilityApplications": [],
+      "capabilityBenchmarks": [],
+      "capabilityPortfolio": {
+        "version": 1,
+        "state": "ACTIVE",
+        "decisionId": null,
+        "reason": null,
+        "reviewed": false,
+        "capabilitySpecificEvidence": false,
+        "supersededByCapabilityId": null,
+        "evidence": [],
+        "observedAt": null,
+        "authorityExpanded": false
+      },
+      "capabilityLifecycle": {
+        "version": 2,
+        "state": "VERIFIED_REUSABLE",
+        "applicationCount": 0,
+        "independentPassCount": 0,
+        "crossGameVerifiedApplicationCount": 0,
+        "directSupportCount": 0,
+        "contradictionCount": 0,
+        "confidence": 0.5,
+        "generalizationCandidate": false,
+        "benchmarkCount": 0,
+        "unseenBenchmarkPassCount": 0,
+        "unseenBenchmarkDistinctGameCount": 0,
+        "benchmarkContradictionCount": 0,
+        "strongGeneralizationVerified": false,
+        "portfolioState": "ACTIVE",
+        "retrievalEligible": true,
+        "singlePassAutomaticPromotion": false,
+        "singleFailureAutomaticDeprecation": false,
+        "unrelatedFailurePenaltyApplied": false,
+        "confidenceDecayApplied": false,
+        "unseenProblemBenchmarkRequired": true,
+        "automaticDeprecation": false,
+        "automaticSupersession": false,
+        "authorityExpanded": false
+      },
+      "capabilityConfidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_2647ba0464633fcb69275b96",
+      "fingerprint": "fp_1jqdydo",
+      "gameId": "ant-simulator",
+      "engine": "web",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+      "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: 개미 시뮬레이터\n기존 Web 소스를 먼저 읽고 승인 설계와 비교하며 게임별 아트 방향과 Style Lock도 함께 확정한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. KEEP 여부와 무관하게 Web에서 플레이어·몬스터·배경·모션 표현을 실제 컨셉과 대조하고, 임시 도형/모형 몹/무맥락 배경을 완성 상태로 인정하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션이 실제 상태에 연결돼야 하며 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.\n[TRANSFORMATIVE_RECOMBINATION_CONTEXT]\nr",
+      "change": "strategy DEPENDENCY_SAFE_COHERENT_PATCH | variant speculative-1 | attempts 2 | context PRIMARY_SYMBOL_WINDOWS | changed-files 1",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:36352841044",
+      "evidence": [
+        "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+        "source-generation-failure:CANDIDATE_BRANCH_PUBLISH",
+        "actions-run:36352841044",
+        "reservation-id:36352841044:1",
+        "coding-trace:ctrace_2647ba0464633fcb69275b96",
+        "verified-coding-failure:CANDIDATE_BRANCH_PUBLISH"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+        "CAPABILITY_AVOID:STRATEGY:DEPENDENCY_SAFE_COHERENT_PATCH:FAILURE:CANDIDATE_BRANCH_PUBLISH"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "capabilityApplications": [],
+      "capabilityBenchmarks": [],
+      "capabilityPortfolio": {
+        "version": 1,
+        "state": "ACTIVE",
+        "decisionId": null,
+        "reason": null,
+        "reviewed": false,
+        "capabilitySpecificEvidence": false,
+        "supersededByCapabilityId": null,
+        "evidence": [],
+        "observedAt": null,
+        "authorityExpanded": false
+      },
+      "capabilityLifecycle": {
+        "version": 2,
+        "state": "VERIFIED_REUSABLE",
+        "applicationCount": 0,
+        "independentPassCount": 0,
+        "crossGameVerifiedApplicationCount": 0,
+        "directSupportCount": 0,
+        "contradictionCount": 0,
+        "confidence": 0.5,
+        "generalizationCandidate": false,
+        "benchmarkCount": 0,
+        "unseenBenchmarkPassCount": 0,
+        "unseenBenchmarkDistinctGameCount": 0,
+        "benchmarkContradictionCount": 0,
+        "strongGeneralizationVerified": false,
+        "portfolioState": "ACTIVE",
+        "retrievalEligible": true,
+        "singlePassAutomaticPromotion": false,
+        "singleFailureAutomaticDeprecation": false,
+        "unrelatedFailurePenaltyApplied": false,
+        "confidenceDecayApplied": false,
+        "unseenProblemBenchmarkRequired": true,
+        "automaticDeprecation": false,
+        "automaticSupersession": false,
+        "authorityExpanded": false
+      },
+      "capabilityConfidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_c88049f4a6640b8b7977e8c6",
+      "fingerprint": "fp_1ao75ly",
+      "gameId": "ant-simulator",
+      "engine": "web",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+      "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: 개미 시뮬레이터\n기존 Web 소스를 먼저 읽고 승인 설계와 비교하며 게임별 아트 방향과 Style Lock도 함께 확정한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. KEEP 여부와 무관하게 Web에서 플레이어·몬스터·배경·모션 표현을 실제 컨셉과 대조하고, 임시 도형/모형 몹/무맥락 배경을 완성 상태로 인정하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션이 실제 상태에 연결돼야 하며 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.\n[TRANSFORMATIVE_RECOMBINATION_CONTEXT]\nr",
+      "change": "strategy CAUSAL_TRACE_CROSSCHECK | variant speculative-2 | attempts 2 | context PRIMARY_SYMBOL_WINDOWS | changed-files 1",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:36352841044",
+      "evidence": [
+        "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+        "source-generation-failure:CANDIDATE_BRANCH_PUBLISH",
+        "actions-run:36352841044",
+        "reservation-id:36352841044:1",
+        "coding-trace:ctrace_c88049f4a6640b8b7977e8c6",
+        "verified-coding-failure:CANDIDATE_BRANCH_PUBLISH"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+        "CAPABILITY_AVOID:STRATEGY:CAUSAL_TRACE_CROSSCHECK:FAILURE:CANDIDATE_BRANCH_PUBLISH"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "capabilityApplications": [],
+      "capabilityBenchmarks": [],
+      "capabilityPortfolio": {
+        "version": 1,
+        "state": "ACTIVE",
+        "decisionId": null,
+        "reason": null,
+        "reviewed": false,
+        "capabilitySpecificEvidence": false,
+        "supersededByCapabilityId": null,
+        "evidence": [],
+        "observedAt": null,
+        "authorityExpanded": false
+      },
+      "capabilityLifecycle": {
+        "version": 2,
+        "state": "VERIFIED_REUSABLE",
+        "applicationCount": 0,
+        "independentPassCount": 0,
+        "crossGameVerifiedApplicationCount": 0,
+        "directSupportCount": 0,
+        "contradictionCount": 0,
+        "confidence": 0.5,
+        "generalizationCandidate": false,
+        "benchmarkCount": 0,
+        "unseenBenchmarkPassCount": 0,
+        "unseenBenchmarkDistinctGameCount": 0,
+        "benchmarkContradictionCount": 0,
+        "strongGeneralizationVerified": false,
+        "portfolioState": "ACTIVE",
+        "retrievalEligible": true,
+        "singlePassAutomaticPromotion": false,
+        "singleFailureAutomaticDeprecation": false,
+        "unrelatedFailurePenaltyApplied": false,
+        "confidenceDecayApplied": false,
+        "unseenProblemBenchmarkRequired": true,
+        "automaticDeprecation": false,
+        "automaticSupersession": false,
+        "authorityExpanded": false
+      },
+      "capabilityConfidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_2c039e9a8a3c8e3e29ddaa2b",
+      "fingerprint": "fp_17r3vqu",
+      "gameId": "cozy-island",
+      "engine": "web",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+      "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: 포근섬: 작은 왕국 키우기\n기존 Web 소스를 먼저 읽고 승인 설계와 비교하며 게임별 아트 방향과 Style Lock도 함께 확정한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. KEEP 여부와 무관하게 Web에서 플레이어·몬스터·배경·모션 표현을 실제 컨셉과 대조하고, 임시 도형/모형 몹/무맥락 배경을 완성 상태로 인정하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션이 실제 상태에 연결돼야 하며 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.\n[TRANSFORMATIVE_RECOMBINATION_CONT",
+      "change": "strategy DEPENDENCY_SAFE_COHERENT_PATCH | variant primary | attempts 1 | context BOUNDED_FILE_EXCERPT_FALLBACK | changed-files 1",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:36352841044",
+      "evidence": [
+        "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+        "source-generation-failure:CANDIDATE_BRANCH_PUBLISH",
+        "actions-run:36352841044",
+        "reservation-id:36352841044:1",
+        "coding-trace:ctrace_2c039e9a8a3c8e3e29ddaa2b",
+        "verified-coding-failure:CANDIDATE_BRANCH_PUBLISH"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+        "CAPABILITY_AVOID:STRATEGY:DEPENDENCY_SAFE_COHERENT_PATCH:FAILURE:CANDIDATE_BRANCH_PUBLISH"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "capabilityApplications": [],
+      "capabilityBenchmarks": [],
+      "capabilityPortfolio": {
+        "version": 1,
+        "state": "ACTIVE",
+        "decisionId": null,
+        "reason": null,
+        "reviewed": false,
+        "capabilitySpecificEvidence": false,
+        "supersededByCapabilityId": null,
+        "evidence": [],
+        "observedAt": null,
+        "authorityExpanded": false
+      },
+      "capabilityLifecycle": {
+        "version": 2,
+        "state": "VERIFIED_REUSABLE",
+        "applicationCount": 0,
+        "independentPassCount": 0,
+        "crossGameVerifiedApplicationCount": 0,
+        "directSupportCount": 0,
+        "contradictionCount": 0,
+        "confidence": 0.5,
+        "generalizationCandidate": false,
+        "benchmarkCount": 0,
+        "unseenBenchmarkPassCount": 0,
+        "unseenBenchmarkDistinctGameCount": 0,
+        "benchmarkContradictionCount": 0,
+        "strongGeneralizationVerified": false,
+        "portfolioState": "ACTIVE",
+        "retrievalEligible": true,
+        "singlePassAutomaticPromotion": false,
+        "singleFailureAutomaticDeprecation": false,
+        "unrelatedFailurePenaltyApplied": false,
+        "confidenceDecayApplied": false,
+        "unseenProblemBenchmarkRequired": true,
+        "automaticDeprecation": false,
+        "automaticSupersession": false,
+        "authorityExpanded": false
+      },
+      "capabilityConfidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_bf49fd80f0ec7ae2fb124958",
+      "fingerprint": "fp_11ltaf7",
+      "gameId": "cozy-island",
+      "engine": "web",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+      "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: 포근섬: 작은 왕국 키우기\n기존 Web 소스를 먼저 읽고 승인 설계와 비교하며 게임별 아트 방향과 Style Lock도 함께 확정한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. KEEP 여부와 무관하게 Web에서 플레이어·몬스터·배경·모션 표현을 실제 컨셉과 대조하고, 임시 도형/모형 몹/무맥락 배경을 완성 상태로 인정하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션이 실제 상태에 연결돼야 하며 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.\n[TRANSFORMATIVE_RECOMBINATION_CONT",
+      "change": "strategy CAUSAL_TRACE_CROSSCHECK | variant speculative-1 | attempts 2 | context BOUNDED_FILE_EXCERPT_FALLBACK | changed-files 1",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:36352841044",
+      "evidence": [
+        "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+        "source-generation-failure:CANDIDATE_BRANCH_PUBLISH",
+        "actions-run:36352841044",
+        "reservation-id:36352841044:1",
+        "coding-trace:ctrace_bf49fd80f0ec7ae2fb124958",
+        "verified-coding-failure:CANDIDATE_BRANCH_PUBLISH"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+        "CAPABILITY_AVOID:STRATEGY:CAUSAL_TRACE_CROSSCHECK:FAILURE:CANDIDATE_BRANCH_PUBLISH"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "capabilityApplications": [],
+      "capabilityBenchmarks": [],
+      "capabilityPortfolio": {
+        "version": 1,
+        "state": "ACTIVE",
+        "decisionId": null,
+        "reason": null,
+        "reviewed": false,
+        "capabilitySpecificEvidence": false,
+        "supersededByCapabilityId": null,
+        "evidence": [],
+        "observedAt": null,
+        "authorityExpanded": false
+      },
+      "capabilityLifecycle": {
+        "version": 2,
+        "state": "VERIFIED_REUSABLE",
+        "applicationCount": 0,
+        "independentPassCount": 0,
+        "crossGameVerifiedApplicationCount": 0,
+        "directSupportCount": 0,
+        "contradictionCount": 0,
+        "confidence": 0.5,
+        "generalizationCandidate": false,
+        "benchmarkCount": 0,
+        "unseenBenchmarkPassCount": 0,
+        "unseenBenchmarkDistinctGameCount": 0,
+        "benchmarkContradictionCount": 0,
+        "strongGeneralizationVerified": false,
+        "portfolioState": "ACTIVE",
+        "retrievalEligible": true,
+        "singlePassAutomaticPromotion": false,
+        "singleFailureAutomaticDeprecation": false,
+        "unrelatedFailurePenaltyApplied": false,
+        "confidenceDecayApplied": false,
+        "unseenProblemBenchmarkRequired": true,
+        "automaticDeprecation": false,
+        "automaticSupersession": false,
+        "authorityExpanded": false
+      },
+      "capabilityConfidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_dc73660b899b6bfbead731d7",
+      "fingerprint": "fp_izhd24",
+      "gameId": "cozy-island",
+      "engine": "web",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+      "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: 포근섬: 작은 왕국 키우기\n기존 Web 소스를 먼저 읽고 승인 설계와 비교하며 게임별 아트 방향과 Style Lock도 함께 확정한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. KEEP 여부와 무관하게 Web에서 플레이어·몬스터·배경·모션 표현을 실제 컨셉과 대조하고, 임시 도형/모형 몹/무맥락 배경을 완성 상태로 인정하지 않는다. 액션·전투 게임은 idle/move/attack/hit/death와 공격·피격·사망 애니메이션이 실제 상태에 연결돼야 하며 이 Web 표현 기준이 런타임에서 성립한 뒤에만 Roblox/Unity/UEFN 이관 대상으로 본다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.\n[TRANSFORMATIVE_RECOMBINATION_CONT",
+      "change": "strategy INVARIANT_PRESERVING_ALTERNATIVE | variant speculative-2 | attempts 4 | context BOUNDED_FILE_EXCERPT_FALLBACK | changed-files 1",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:36352841044",
+      "evidence": [
+        "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+        "source-generation-failure:CANDIDATE_BRANCH_PUBLISH",
+        "actions-run:36352841044",
+        "reservation-id:36352841044:1",
+        "coding-trace:ctrace_dc73660b899b6bfbead731d7",
+        "verified-coding-failure:CANDIDATE_BRANCH_PUBLISH"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:CANDIDATE_BRANCH_PUBLISH",
+        "CAPABILITY_AVOID:STRATEGY:INVARIANT_PRESERVING_ALTERNATIVE:FAILURE:CANDIDATE_BRANCH_PUBLISH"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "capabilityApplications": [],
+      "capabilityBenchmarks": [],
+      "capabilityPortfolio": {
+        "version": 1,
+        "state": "ACTIVE",
+        "decisionId": null,
+        "reason": null,
+        "reviewed": false,
+        "capabilitySpecificEvidence": false,
+        "supersededByCapabilityId": null,
+        "evidence": [],
+        "observedAt": null,
+        "authorityExpanded": false
+      },
+      "capabilityLifecycle": {
+        "version": 2,
+        "state": "VERIFIED_REUSABLE",
+        "applicationCount": 0,
+        "independentPassCount": 0,
+        "crossGameVerifiedApplicationCount": 0,
+        "directSupportCount": 0,
+        "contradictionCount": 0,
+        "confidence": 0.5,
+        "generalizationCandidate": false,
+        "benchmarkCount": 0,
+        "unseenBenchmarkPassCount": 0,
+        "unseenBenchmarkDistinctGameCount": 0,
+        "benchmarkContradictionCount": 0,
+        "strongGeneralizationVerified": false,
+        "portfolioState": "ACTIVE",
+        "retrievalEligible": true,
+        "singlePassAutomaticPromotion": false,
+        "singleFailureAutomaticDeprecation": false,
+        "unrelatedFailurePenaltyApplied": false,
+        "confidenceDecayApplied": false,
+        "unseenProblemBenchmarkRequired": true,
+        "automaticDeprecation": false,
+        "automaticSupersession": false,
+        "authorityExpanded": false
+      },
+      "capabilityConfidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_00598377ddb4db455fe9adfe",
+      "fingerprint": "fp_3u6dmd",
+      "gameId": "fantasy-survival",
+      "engine": "unity",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:INVALID_PATH",
+      "goal": "[UNITY_WEB_BASE_IMPLEMENTATION] UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED\n게임: 마력숲 생존기\n1차 Web 게임 원본을 unity-games/fantasy-survival/ Unity 프로젝트로 제작한다. HTML/Canvas/PlayCanvas 신규 게임을 만들지 않는다.\n승인 설계의 핵심 게임 규칙·수치·맵·전투·퀘스트·아이템·멀티 규칙·저장 의미를 보존하고 실제 Unity C# 게임으로 구현한다.\nGameCore.cs에는 게임 상태/데이터/규칙 책임을 두고 RuntimeBootstrap.cs에는 실제 실행/입력/UI/씬 연결 책임을 둔다. 한 파일에 모든 책임을 몰아넣지 않는다.\nUnity Input System 기반 모바일 입력을 사용하고, ?qa=1에서는 Digit1=실제 첫 플레이 진입, Space=실제 핵심 행동, KeyR=실제 안전 복귀/리셋을 기존 게임 함수에 연결한다. QA 전용 가짜 보상/승리/상태 덮어쓰기는 금지한다.\n실제 화면의 모바일 핵심 액션 컨트롤 위치를 JAEWOON_UNITY_WEB_QA MOBILE_TARGET role=action x=<0..1> y=<0..1>로 내보내고, 그 실제 컨트롤이 Pointer/Touch 입력으로 작동했을 때만 MOBILE_INPUT role=action status=PASS를 남긴다. 키보드 QA 입력으로",
+      "change": "strategy DEPENDENCY_SAFE_COHERENT_PATCH | variant primary | attempts 0 | changed-files 0",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:INVALID_PATH",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:36352841044",
+      "evidence": [
+        "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+        "source-generation-failure:INVALID_PATH",
+        "actions-run:36352841044",
+        "reservation-id:36352841044:1",
+        "coding-trace:ctrace_00598377ddb4db455fe9adfe",
+        "verified-coding-failure:INVALID_PATH"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "CAPABILITY_AVOID:SOURCE_GENERATION:INVALID_PATH",
+        "CAPABILITY_AVOID:STRATEGY:DEPENDENCY_SAFE_COHERENT_PATCH:FAILURE:INVALID_PATH"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "capabilityApplications": [],
+      "capabilityBenchmarks": [],
+      "capabilityPortfolio": {
+        "version": 1,
+        "state": "ACTIVE",
+        "decisionId": null,
+        "reason": null,
+        "reviewed": false,
+        "capabilitySpecificEvidence": false,
+        "supersededByCapabilityId": null,
+        "evidence": [],
+        "observedAt": null,
+        "authorityExpanded": false
+      },
+      "capabilityLifecycle": {
+        "version": 2,
+        "state": "VERIFIED_REUSABLE",
+        "applicationCount": 0,
+        "independentPassCount": 0,
+        "crossGameVerifiedApplicationCount": 0,
+        "directSupportCount": 0,
+        "contradictionCount": 0,
+        "confidence": 0.5,
+        "generalizationCandidate": false,
+        "benchmarkCount": 0,
+        "unseenBenchmarkPassCount": 0,
+        "unseenBenchmarkDistinctGameCount": 0,
+        "benchmarkContradictionCount": 0,
+        "strongGeneralizationVerified": false,
+        "portfolioState": "ACTIVE",
+        "retrievalEligible": true,
+        "singlePassAutomaticPromotion": false,
+        "singleFailureAutomaticDeprecation": false,
+        "unrelatedFailurePenaltyApplied": false,
+        "confidenceDecayApplied": false,
+        "unseenProblemBenchmarkRequired": true,
+        "automaticDeprecation": false,
+        "automaticSupersession": false,
+        "authorityExpanded": false
+      },
+      "capabilityConfidence": 0.5,
+      "createdAt": null,
+      "lastVerifiedAt": null,
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "capability_ctrace_4037f3d223b6230769590d19",
+      "fingerprint": "fp_1tjsf0a",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "engine": "unity",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "coding-capability-distillation",
+      "problem": "SOURCE_CANDIDATE_GENERATION:NO_OP",
+      "goal": "[STUDIO_QUALITY_EVOLUTION] cycle=1; phase=BUILD_UP; focus=USABILITY; baseline=source:unity-games/seed-idle-growth-rpg-crystal-bloom\n 기존 게임 품질 백필 세대다. 현재 구현을 새 게임처럼 초기화하지 말고 기존 기능·세이브·진행·권한·핵심 규칙을 보존한다. 현재 BUILD_UP의 전체 PASS/GAP/NOT_APPLICABLE 도메인을 다시 판정하고, 이 focus에 속한 실제 GAP를 기존 책임 소스에서 직접 닫는다. 기존 게임이라는 이유로 맵·게임플레이·인벤토리·UI·편의성·세션 흐름·중후반 깊이·성능 결함을 grandfather 처리하지 않는다.설계 문장에 적힌 항목 수를 구현 상한으로 취급하지 않는다. 승인된 게임 의미 안에서 기존 시스템을 실제 플레이 기준으로 더 완성한다. 서로 연결된 구현을 최소 3개 이상 필요한 만큼 한 패키지에서 완성하고, 기능 연결·피드백·연출·예외 처리 중 적어도 두 축을 체감 가능하게 개선한다. 승인 설계 맥락을 보존한다. APPROVED_DESIGN_SOURCE=design/seed-idle-growth-rpg-crystal-bloom/2026-09-19/design-revised.json Unity Web 백필은 같은 Unity 프로젝트를 사용하더라도 WebGL 브라우저에서 Pointer/T",
+      "change": "strategy DEPENDENCY_SAFE_COHERENT_PATCH | variant primary | attempts 0 | changed-files 0",
+      "outcome": "FAIL",
+      "failureCause": "SOURCE_CANDIDATE_GENERATION:NO_OP",
+      "qa": [
+        "observed-source-generation-failure"
+      ],
+      "build": "actions-run:36352841044",
+      "evidence": [
+        "base-main:6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+        "source-generation-failure:NO_OP",
+        "actions-run:36352841044",
+        "reservation-id:36352841044:1",
+        "coding-trace:ctrace_4037f3d223b6230769590d19",
         "verified-coding-failure:NO_OP"
       ],
       "reusablePatterns": [],
