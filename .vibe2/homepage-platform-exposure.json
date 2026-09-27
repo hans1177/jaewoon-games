@@ -2,7 +2,7 @@
   "version": 3,
   "publicSafe": true,
   "internalCompanySurface": true,
-  "updatedAt": "2026-09-27T14:37:22.505Z",
+  "updatedAt": "2026-09-27T21:24:07.729Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -85,7 +85,7 @@
             "checks": {
               "technical": false,
               "realServerBoot": false,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "actualVibePlay": true,
               "vibeScenarioCoverage": false,
               "noBlockingTickets": false,
@@ -103,6 +103,7 @@
             "blockers": [
               "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
               "ROBLOX_PUBLIC_HARD_GATE_REALSERVERBOOT",
+              "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
               "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
@@ -246,7 +247,7 @@
             "checks": {
               "technical": false,
               "realServerBoot": false,
-              "exactRuntime": true,
+              "exactRuntime": false,
               "actualVibePlay": true,
               "vibeScenarioCoverage": false,
               "noBlockingTickets": false,
@@ -264,6 +265,7 @@
             "blockers": [
               "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
               "ROBLOX_PUBLIC_HARD_GATE_REALSERVERBOOT",
+              "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
               "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
               "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
