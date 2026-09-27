@@ -190,6 +190,14 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
     const candidateSourceRevision=clean(candidate?.sourceRevision);
     const candidateArtifactIdentity=clean(candidate?.artifactIdentity);
     const candidateArtifactRunId=Number(candidate?.artifactRunId||0);
+    const activeQualityBuildUp=Boolean(
+      item?.robloxQualityBuildUpRequired===true
+      &&clean(item?.robloxQualityBuildUpSourceRevision)===currentSourceRevision
+    );
+    if(activeQualityBuildUp){
+      console.log('ROBLOX_STUDIO_MCP_QUALITY_BUILDUP_SUPPRESSED='+clean(item?.gameId)+':source='+currentSourceRevision);
+      continue;
+    }
 
     const candidateExact=Boolean(
       candidate?.published===true
@@ -1510,6 +1518,11 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
   item.robloxStudioLocalPlayRepairRequired=!result.pass&&!result.evidence.infrastructureFailure;
   item.robloxStudioLocalPlayInfrastructurePending=result.evidence.infrastructureFailure===true;
   if(result.pass){
+    item.robloxQualityBuildUpRequired=false;
+    item.robloxQualityFailureClass=null;
+    item.robloxQualityBuildUpSourceRevision=null;
+    item.robloxQualityBuildUpEvidence=null;
+    item.robloxQualityBuildUpLastPassedAt=result.evidence.testedAt;
     item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
     item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
     item.robloxLastSuccessfulStage='VIBE_INTERNAL_PLAY';
@@ -1518,15 +1531,34 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
     item.robloxNativeFailureClass=null;
     item.routingBlockers=[];
   }else if(result.evidence.infrastructureFailure){
+    if(item.robloxQualityBuildUpRequired!==true)item.robloxQualityFailureClass='INFRASTRUCTURE_OR_EVIDENCE_ONLY';
     item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
     item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
     item.robloxFailureStage='VIBE_INTERNAL_PLAY';
     item.robloxFailureSignature='ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING';
     item.routingBlockers=['roblox-studio-mcp-infrastructure-pending'];
   }else{
+    const qualityFailureSignature=result.evidence.qualityFailureKinds?.length?'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED':result.evidence.errors.length?'ROBLOX_STUDIO_MCP_RUNTIME_ERROR':'ROBLOX_STUDIO_MCP_PLAY_CHECKPOINT_FAILED';
+    item.robloxQualityBuildUpRequired=true;
+    item.robloxQualityFailureClass='PRODUCT';
+    item.robloxQualityBuildUpSourceRevision=clean(item.robloxSourceCommit)||clean(result.evidence.sourceRevision);
+    item.robloxQualityBuildUpEvidence={
+      version:1,
+      sourceRevision:item.robloxQualityBuildUpSourceRevision,
+      artifactIdentity:clean(result.evidence.artifactIdentity),
+      versionNumber:Number(result.evidence.versionNumber||0),
+      failureStage:'VIBE_INTERNAL_PLAY',
+      failureSignature:qualityFailureSignature,
+      qualityFailureKinds:Array.isArray(result.evidence.qualityFailureKinds)?result.evidence.qualityFailureKinds.slice(0,24):[],
+      robloxFailureClass:result.evidence.robloxFailureClass||null,
+      testedAt:result.evidence.testedAt,
+      workflowRunId:Number(result.evidence.workflowRunId||0),
+      authority:'roblox-official-studio-mcp-product-quality-failure'
+    };
+    item.currentStep='REPAIR_REQUIRED';
     item.canonicalState='REPAIR_REQUIRED';
     item.robloxFailureStage='VIBE_INTERNAL_PLAY';
-    item.robloxFailureSignature=result.evidence.qualityFailureKinds?.length?'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED':result.evidence.errors.length?'ROBLOX_STUDIO_MCP_RUNTIME_ERROR':'ROBLOX_STUDIO_MCP_PLAY_CHECKPOINT_FAILED';
+    item.robloxFailureSignature=qualityFailureSignature;
     item.robloxNativeFailureClass=result.evidence.robloxFailureClass||null;
     item.routingBlockers=['roblox-studio-mcp-play-repair-required'];
   }
@@ -1647,6 +1679,11 @@ async function main(){
     console.log('ROBLOX_NATIVE_FAILURE_CLASS='+(applied.result.evidence.robloxFailureClass||'NONE'));
     console.log('ROBLOX_NATIVE_FUNCTIONAL_CHAIN='+(applied.result.evidence.scenarioCoveragePass?'PASS':applied.result.evidence.functionalChainEvidence?.inputDispatched?'PARTIAL':'FAIL'));
     console.log('ROBLOX_STUDIO_MCP_PLAY_LEARNING='+(applied.result.evidence.learningReusable?'STRUCTURED_VERIFIED':'NO'));
+    console.log('QUALITY_FIRST_BUILDUP_SHORT_CIRCUIT=ACTIVE');
+    console.log('QUALITY_FAILURE_CLASS='+(applied.item.robloxQualityBuildUpRequired===true?'PRODUCT':applied.result.evidence.infrastructureFailure===true?'INFRASTRUCTURE_OR_EVIDENCE_ONLY':'NONE'));
+    console.log('QUALITY_BUILDUP_AUTO_REQUEUE='+(applied.item.robloxQualityBuildUpRequired===true?'YES':'NO'));
+    console.log('EXTERNAL_RELEASE_PROBE_SUPPRESSED='+(applied.item.robloxQualityBuildUpRequired===true?'YES':'NO'));
+    console.log('RESUME_STAGE='+(applied.item.robloxQualityBuildUpRequired===true?'REPAIR_REQUIRED':'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'));
     return;
   }
   throw new Error('unsupported --mode; expected diagnose-setting, plan, mcp-run, or persist');
