@@ -2574,7 +2574,7 @@ test('zero-output timeout keeps focused recovery enabled for studio build-up',()
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/const zeroOutputTimeoutRecovery=!allowFullRewrite/);
   assert.match(workerSource,/&&\s*!zeroOutputTimeoutRecovery\b/);
-  assert.match(workerSource,/\(!studioExpansion\|\|zeroOutputTimeoutRecovery\|\|robloxZeroOutputTimeoutFocusedRecoveryActive\)/);
+  assert.match(workerSource,/\(!studioExpansion\|\|zeroOutputTimeoutRecovery\|\|robloxZeroOutputTimeoutFocusedRecoveryActive\|\|assetDevelopmentFocusedGraphics\)/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY/);
 });
 
