@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-13wpxmw",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "c7bb6fa0e18deefbf3a38c374ff821f3bc96b8c6",
-      "acquiredAt": "2026-09-27T10:27:10.908Z",
-      "expiresAt": "2026-09-27T11:12:10.908Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-5ovcnm",
       "worker": "vibe2",
       "taskId": "amusement-tycoon-studio-evolution-unity-web-usability-v1",
@@ -601,25 +583,6 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:monster-adventure-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1l7z6qn",
-      "worker": "vibe2",
-      "taskId": "SYS-ARCH-28a2f2747401-v1",
-      "gameId": "__vibe_system__",
-      "files": [
-        "tools/vibe2-queue-control.mjs",
-        ".github/workflows/vibe2-continuous-core.yml",
-        "qa/vibe2-queue-control.test.mjs"
-      ],
-      "baseSha": "5dee3323be9f60175ab33053d7f249cb1c1db4f1",
-      "acquiredAt": "2026-09-27T10:57:32.178Z",
-      "expiresAt": "2026-09-27T11:42:32.178Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:SYS-ARCH-28a2f2747401-v1"
       ]
     },
     {
