@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-tioe2z",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "roblox-games/monster-adventure/client/Game.client.luau",
-        "roblox-games/monster-adventure/server/Game.server.luau",
-        "roblox-games/monster-adventure/shared/GameConfig.luau"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T07:03:43.079Z",
-      "expiresAt": "2026-09-27T07:48:43.079Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-1u9teps",
       "worker": "vibe2",
       "taskId": "horror-escape-room-studio-evolution-presentation-v1",
@@ -600,24 +581,6 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1bq29qi",
-      "worker": "vibe2",
-      "taskId": "SYS-ARCH-425305e25df9-v1",
-      "gameId": "__vibe_system__",
-      "files": [
-        "tools/vibe2-system-steward.mjs",
-        "qa/vibe2-system-steward.test.mjs"
-      ],
-      "baseSha": "f4d73341705f2b74b2df5ac32cad740a43c3d9c2",
-      "acquiredAt": "2026-09-27T07:42:12.221Z",
-      "expiresAt": "2026-09-27T08:27:12.221Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:SYS-ARCH-425305e25df9-v1"
       ]
     },
     {
