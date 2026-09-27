@@ -35,7 +35,7 @@ env:
 jobs:
   dedupe:
     name: collapse duplicate runtime foundation scans
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04
     timeout-minutes: 3
     outputs:
       run: ${{ steps.guard.outputs.run }}
@@ -82,7 +82,7 @@ jobs:
     if: needs.dedupe.outputs.run == 'true'
     name: existing game tester and QA validate exact Roblox runtime candidate
     # Remote Open Cloud probe + deterministic Node QA only. Studio execution remains on authenticated self-hosted Windows jobs.
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - name: Checkout current canonical implementation
@@ -321,6 +321,7 @@ jobs:
               &&(explicitRuntimeStage||exactStudioPlayPendingRuntime||externalRuntimeObservationPending);
           });
           const f9Ids=[];
+          const studioFollowupIds=[];
           const stamp=new Date().toISOString();
 
           for(const item of candidates){
@@ -605,8 +606,10 @@ jobs:
               workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
               authority:'existing-game-tester-roblox-runtime-foundation-v1',
             };
+            const runtimeFoundationWasPassed=item.robloxRuntimeFoundationPassed===true;
             item.robloxRuntimeFoundationEvidence=evidence;
             item.robloxRuntimeFoundationPassed=result.runtimeFoundationPassed===true;
+            if(!runtimeFoundationWasPassed&&item.robloxRuntimeFoundationPassed===true)studioFollowupIds.push(item.gameId);
             item.robloxRuntimePassed=result.runtimeAcceptancePassed===true;
             item.robloxServerClientBoundaryPassed=result.f6CoreServicesPassed===true;
             item.robloxDatastoreRejoinPassed=result.f6CoreServicesPassed===true;
@@ -890,6 +893,8 @@ jobs:
           console.log(`ROBLOX_FOUNDATION_RUNTIME_PASS=${passed}`);
           console.log(`ROBLOX_FOUNDATION_RUNTIME_PENDING=${pending}`);
           fs.writeFileSync('/tmp/roblox-f9-ids',f9Ids.join('\n')+(f9Ids.length?'\n':''));
+          fs.writeFileSync('/tmp/roblox-studio-followup-ids',[...new Set(studioFollowupIds)].join('\n')+(studioFollowupIds.length?'\n':''));
+          console.log(`ROBLOX_STUDIO_MCP_POST_FOUNDATION_READY_COUNT=${new Set(studioFollowupIds).size}`);
           console.log(`ROBLOX_FOUNDATION_RUNTIME_FAILURE=${failed}`);
           NODE
 
@@ -933,6 +938,22 @@ jobs:
             gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
             echo "ROBLOX_F9_DISPATCHED=$id"
           done < /tmp/roblox-f9-ids
+
+      - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/roblox-studio-followup-ids || exit 0
+          dispatch_count=0
+          while read -r id; do
+            [ -n "$id" ] || continue
+            gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            dispatch_count=$((dispatch_count+1))
+            echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH=$id"
+          done < /tmp/roblox-studio-followup-ids
+          echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH_COUNT=$dispatch_count"
 
   studio-local-plan:
     # Studio planning must not wait behind GitHub-hosted dedupe/runtime-foundation capacity.

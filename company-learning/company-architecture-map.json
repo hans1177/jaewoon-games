@@ -1,5 +1,5 @@
 {
-  "version": 269,
+  "version": 270,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5540,16 +5540,30 @@
     "gameParallelismReduced": false
   },
   "robloxRuntimeFoundationRunnerIsolation": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
     "workflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
-    "runtimeFoundationQa": "ubuntu-slim",
+    "runtimeFoundationQa": "ubuntu-24.04",
     "runtimeFoundationRole": "REMOTE_OPEN_CLOUD_PROBE_AND_DETERMINISTIC_NODE_QA",
     "studioLocalPlan": "self-hosted:Windows:X64:roblox-studio-authenticated",
     "studioMcpAutoPlay": "self-hosted:Windows:X64:roblox-studio-authenticated",
     "localStudioExecutionMoved": false,
     "gamePrimaryUbuntuLatestCapacityProtected": true,
-    "qualityGateWeakening": false
+    "qualityGateWeakening": false,
+    "dedupeRunner": "ubuntu-24.04",
+    "previousRunner": "ubuntu-slim",
+    "observedBlockingRunId": 36293301968,
+    "observedBlockingJob": "collapse duplicate runtime foundation scans",
+    "observedExactGame": "horror-escape-room",
+    "fixedCapacityIsolation": true,
+    "postFoundationStudioFollowup": {
+      "enabled": true,
+      "trigger": "NEW_EXACT_RUNTIME_FOUNDATION_PASS_ONLY",
+      "dispatchOwner": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+      "exactGameDispatch": true,
+      "qualityGateOrderPreserved": true,
+      "duplicateLoopPreventedByTransitionOnly": true
+    }
   },
   "nativeChildDispatchDedupeTopology": {
     "version": 1,
