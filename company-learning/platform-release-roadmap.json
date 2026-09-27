@@ -1,5 +1,5 @@
 {
-  "version": 464,
+  "version": 465,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9509,6 +9509,32 @@
         "coversExactFoundationEvidenceReuse": true,
         "stopCondition": "EXACT_CURRENT_STUDIO_MCP_EVIDENCE_ALREADY_OBSERVED"
       }
+    },
+    "robloxOpenCloudTransient429Retry20260927": {
+      "id": "ROBLOX_OPEN_CLOUD_TRANSIENT_429_RETRY_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "RETRY_TRANSIENT_ROBLOX_OPEN_CLOUD_RATE_LIMITS_WITHOUT_REUSING_STALE_RUNTIME_EVIDENCE_OR_WEAKENING_EXACT_VERSION_GATES",
+      "observedEvidence": {
+        "workflowRunId": 36294623143,
+        "gameId": "horror-escape-room",
+        "sourceRevision": "b74a4ac341b7dff0ecd9f2d6cf25375534a2d268",
+        "artifactIdentity": "sha256:4109e8ab3df1273f6fb877930c128b4e717c68cefcf6050269a11e1a59e846de",
+        "candidateVersionNumber": 24,
+        "observedSentinelVersionNumber": 23,
+        "engineCreateHttpStatus": 429
+      },
+      "owner": "tools/company-development-roblox-runtime-foundation.mjs#fetchWithNetworkRetry",
+      "transientHttpStatuses": [
+        429
+      ],
+      "retryAttemptsBoundedPerProbe": true,
+      "retryCycleUnlimitedByExistingRuntimeRevalidation": true,
+      "permission401403BehaviorChanged": false,
+      "otherHttpFailureBehaviorChanged": false,
+      "exactSourceArtifactVersionGatePreserved": true,
+      "staleSentinelMayNotPass": true,
+      "qualitySecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
