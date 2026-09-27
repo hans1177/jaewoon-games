@@ -36,6 +36,34 @@ test('shared preflight requires exact immutable build and one shared model',()=>
   assert.equal(result.sharedModel,'llama3.2:1b');
 });
 
+test('shared preflight admits canonical Roblox Unity concurrent lane without changing selected platform',()=>{
+  const item={
+    gameId:'dual',productionClass:'DEVELOPMENT_CONFIRMED',
+    selectedPlatform:'UNITY',targetPlatform:'UNITY',
+    concurrentTargetPlatforms:['ROBLOX','UNITY'],
+    platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
+    robloxSourceBootstrapPassedAt:'2026-09-22T00:00:00Z',
+    robloxSourceCommit:'a'.repeat(40),robloxBuildOrPackagePassed:true,
+    robloxBuildSourceRevision:'a'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+  };
+  const result=inspectRobloxBuildPreflight({item,directive});
+  assert.equal(result.pass,true,result.blockers.join(','));
+  assert.equal(result.robloxLaneEligible,true);
+  assert.equal(result.directRoblox,false);
+  assert.equal(result.concurrentRoblox,true);
+  assert.ok(!result.blockers.includes('roblox-platform-required'));
+  assert.equal(item.selectedPlatform,'UNITY');
+  assert.equal(item.targetPlatform,'UNITY');
+});
+
+test('continuation planner recognizes canonical concurrent Roblox lane before owner-focus fallback',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  assert.match(workflow,/platformExecutionMode\|\|''\)\.toUpperCase\(\)==='ROBLOX_UNITY_CONCURRENT_SAME_GAME'/);
+  assert.match(workflow,/item\.concurrentTargetPlatforms\.some\(value=>String\(value\|\|''\)\.toUpperCase\(\)==='ROBLOX'\)/);
+  assert.match(workflow,/const secondaryOwnerFocus=platform!=='ROBLOX'&&!concurrentRoblox&&ownerFocusedSecondaryPlatformEligible/);
+  assert.match(workflow,/if\(platform!=='ROBLOX'&&!concurrentRoblox&&!secondaryOwnerFocus\)continue/);
+});
+
 test('preflight persistence promotes only exact source and artifact',()=>{
   assert.ok(preflight.includes('result?.sourceRevision===sourceRevision'));
   assert.ok(preflight.includes('result?.artifactIdentity===artifactIdentity'));
