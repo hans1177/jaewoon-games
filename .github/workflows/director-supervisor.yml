@@ -10,7 +10,8 @@ on:
       - Company DESIGN_ONLY Promotion Sync
       - Company DEVELOPMENT_CONFIRMED Runtime
       - Company DEVELOPMENT_CONFIRMED Unity Runtime
-      - Homepage Manager
+      # Homepage Manager already contains its own Director supervision/publication stage.
+      # Do not re-wake the full central supervisor after that sink completes.
       - Public Game Health
       - Unity Hybrid Android Build
       - Unity Android Runtime Smoke
@@ -39,7 +40,9 @@ jobs:
     concurrency:
       group: director-runner-drain-v1
       cancel-in-progress: false
-    runs-on: ubuntu-slim
+    # Queue eviction must not wait behind the saturated slim control pool.
+    # Keep game-heavy ubuntu-latest untouched and use the already-allowed fixed 24.04 pool.
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
       contents: read

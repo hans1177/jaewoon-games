@@ -1214,6 +1214,26 @@ test('duplicate administrative QA keeps only the latest same-ref validation',()=
 });
 
 
+test('Director runner drain uses separate fixed 24.04 capacity while gate and supervision remain slim',()=>{
+  const policy=roadmap.changeRecord?.directorDrainRunnerIsolation20260927;
+  const topology=architecture.directorDrainRunnerIsolation;
+  assert.equal(policy?.runnerDrainRunner,'ubuntu-24.04');
+  assert.equal(policy?.gamePrimaryGateRunner,'ubuntu-slim');
+  assert.equal(policy?.superviseRunner,'ubuntu-slim');
+  assert.equal(policy?.heavyGameExecutionRunner,'ubuntu-latest');
+  assert.equal(policy?.gameHeavyExecutionChanged,false);
+  assert.equal(policy?.drainLogicChanged,false);
+  assert.equal(policy?.activeGameCancellationForbidden,true);
+  assert.equal(policy?.independentGameCancellationForbidden,true);
+  assert.equal(topology?.runnerDrain,'ubuntu-24.04');
+  assert.equal(topology?.gamePrimaryGate,'ubuntu-slim');
+  assert.equal(topology?.supervise,'ubuntu-slim');
+  assert.equal(topology?.heavyGameExecution,'ubuntu-latest');
+  assert.match(directorSupervisor,/runner-drain:[\s\S]*?runs-on:\s*ubuntu-24\.04/);
+  assert.match(directorSupervisor,/game-primary-gate:[\s\S]*?runs-on:\s*ubuntu-slim/);
+  assert.match(directorSupervisor,/supervise:[\s\S]*?runs-on:\s*ubuntu-slim/);
+});
+
 test('director supervisor runner drain remains structurally valid and jobs are unique',()=>{
   assert.equal((directorSupervisor.match(/\n  runner-drain:\n/g)||[]).length,1);
   assert.equal((directorSupervisor.match(/\n  game-primary-gate:\n/g)||[]).length,1);
@@ -1245,7 +1265,7 @@ test('administrative operational control workflows stay off game-primary ubuntu-
     assert.match(source,/runs-on:\s*ubuntu-slim/,workflowFile);
     assert.doesNotMatch(source,/runs-on:\s*ubuntu-latest/,workflowFile);
   }
-  assert.match(directorSupervisor,/runner-drain:[\s\S]*?runs-on:\s*ubuntu-slim/);
+  assert.match(directorSupervisor,/runner-drain:[\s\S]*?runs-on:\s*ubuntu-24\.04/);
   assert.match(directorSupervisor,/game-primary-gate:[\s\S]*?runs-on:\s*ubuntu-slim/);
   assert.match(directorSupervisor,/supervise:[\s\S]*?runs-on:\s*ubuntu-slim/);
 });
@@ -1254,7 +1274,7 @@ test('director runner drain remains parallel while supervise alone is serialized
   const jobsAt=directorSupervisor.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.doesNotMatch(directorSupervisor.slice(0,jobsAt),/\nconcurrency:/);
-  assert.match(directorSupervisor,/runner-drain:[\s\S]*?runs-on:\s*ubuntu-slim/);
+  assert.match(directorSupervisor,/runner-drain:[\s\S]*?runs-on:\s*ubuntu-24\.04/);
   assert.match(directorSupervisor,/supervise:[\s\S]*?concurrency:\n\s+group:\s*director-central-company-supervise-v3/);
 });
 

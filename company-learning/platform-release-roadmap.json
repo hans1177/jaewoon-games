@@ -8558,7 +8558,9 @@
       "robloxExactGameNewestQueuedPreserved": true,
       "unityExactGameNewestQueuedPreserved": true,
       "activeSameGameCancellationForbidden": true,
-      "releaseAndQaFifoSemanticsUnchanged": true
+      "releaseAndQaFifoSemanticsUnchanged": true,
+      "runnerDrainRunner": "ubuntu-24.04",
+      "gamePrimaryGateRunner": "ubuntu-slim"
     },
     "vibe2CoreQaActiveCompletion20260927": {
       "id": "VIBE2_CORE_QA_ACTIVE_COMPLETION_2026-09-27",
@@ -8744,7 +8746,6 @@
         "vibeReserve": ".github/workflows/vibe2-continuous-core.yml::reserve",
         "robloxSourcePlan": ".github/workflows/company-development-roblox-runtime.yml::source-plan",
         "unityPrepare": ".github/workflows/company-development-unity-runtime.yml::prepare",
-        "directorRunnerDrain": ".github/workflows/director-supervisor.yml::runner-drain",
         "centralNativePlan": ".github/workflows/company-development-confirmed-runtime.yml::native-plan"
       },
       "directorRunnerDrainCancelInProgress": false,
@@ -8799,7 +8800,9 @@
         "gameSourceWakePreserved": true,
         "independentGameParallelismPreserved": true,
         "qualitySecurityReleaseGatesUnchanged": true
-      }
+      },
+      "directorRunnerDrainCurrentRunner": "ubuntu-24.04",
+      "directorRunnerDrainSeparatedFromSlimCongestion": true
     },
     "homepageRunnerIsolation20260926": {
       "id": "HOMEPAGE_RUNNER_ISOLATION_2026-09-26",
@@ -9324,6 +9327,41 @@
       },
       "localRunnerOfflineMayBlockPreparation": false,
       "localRunnerOfflineMayBlockOnlyLocalTraining": true
+    },
+    "directorHomepageWakeDecoupling20260927": {
+      "id": "DIRECTOR_HOMEPAGE_WAKE_DECOUPLING_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "REMOVE_REDUNDANT_FULL_DIRECTOR_WORKFLOW_WAKE_AFTER_HOMEPAGE_MANAGER_COMPLETION_WHILE_PRESERVING_HOMEPAGE_INTERNAL_DIRECTOR_SUPERVISION",
+      "homepagePipelineOwnsDirectorSupervision": true,
+      "homepageManagerWorkflowRunWakeRemovedFromCentralDirector": true,
+      "homepagePublicationAuthorityUnchanged": true,
+      "homepageSelfQaUnchanged": true,
+      "centralDirectorManualSchedulePushAndRelevantWorkflowRunWakesPreserved": true,
+      "gamePrimaryGateUnchanged": true,
+      "runnerDrainUnchanged": true,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "expectedEffect": "REDUCE_DIRECTOR_WORKFLOW_RUN_BURSTS_AND_ALLOW_RUNNER_DRAIN_TO_REACH_EXECUTION_SOONER"
+    },
+    "directorDrainRunnerIsolation20260927": {
+      "id": "DIRECTOR_DRAIN_RUNNER_ISOLATION_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "LET_STALE_QUEUE_EVICTION_RUN_WITHOUT_WAITING_BEHIND_SATURATED_UBUNTU_SLIM_CONTROL_JOBS_WHILE_KEEPING_GAME_HEAVY_EXECUTION_UNCHANGED",
+      "observedEvidence": {
+        "prSlimControlJobsQueued": true,
+        "ubuntu2404BrowserSmokeStartedAndPassedWhileSlimQueued": true,
+        "directorDrainObservedDelayedOnSlim": true
+      },
+      "runnerDrainRunner": "ubuntu-24.04",
+      "gamePrimaryGateRunner": "ubuntu-slim",
+      "superviseRunner": "ubuntu-slim",
+      "heavyGameExecutionRunner": "ubuntu-latest",
+      "gameHeavyExecutionChanged": false,
+      "activeGameCancellationForbidden": true,
+      "independentGameCancellationForbidden": true,
+      "drainLogicChanged": false,
+      "qualitySecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
