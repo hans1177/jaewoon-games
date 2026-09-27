@@ -5241,7 +5241,7 @@
     }
   },
   "robloxHomepageThumbnailSyncTopology": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#robloxHomepageThumbnailSyncContract",
     "flow": [
       "canonical-marketing-thumbnail-asset",
@@ -5256,7 +5256,14 @@
     "noNewQueue": true,
     "releasePromotionWorkflowExtendedOnly": true,
     "verifiedUniverseIdRequired": true,
-    "gameCatalogBackwardCompatibilityPreserved": true
+    "gameCatalogBackwardCompatibilityPreserved": true,
+    "lowSizeCanonicalSvgMaxBytes": 12288,
+    "rasterCanonicalMaxBytes": 163840,
+    "englishTitleDominant": true,
+    "koreanSubtitleSecondary": true,
+    "blocky3dGameCardDirection": true,
+    "koreanUploadFontProvisioned": true,
+    "canonicalAssetRemainsHomepageAndRobloxSingleSource": true
   },
   "universalAssetFirstUpgradeTopology": {
     "version": 1,
