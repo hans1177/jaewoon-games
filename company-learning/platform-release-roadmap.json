@@ -1,5 +1,5 @@
 {
-  "version": 465,
+  "version": 466,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9529,6 +9529,36 @@
       "externalPublicReleaseStillBlocked": true,
       "officialStudioMcpRequiredForInternalContinuation": true,
       "qualityGateWeakening": false
+    },
+    "robloxOpenCloudThrottleRecovery20260927": {
+      "id": "ROBLOX_OPEN_CLOUD_THROTTLE_RECOVERY_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "PREVENT_TRANSIENT_OPEN_CLOUD_THROTTLING_FROM_BLOCKING_EXACT_RUNTIME_EVIDENCE_WHILE_AVOIDING_SCAN_BURSTS",
+      "observedEvidence": {
+        "gameId": "horror-escape-room",
+        "runtimeFoundationRunId": 36294623143,
+        "sourceRevision": "b74a4ac341b7dff0ecd9f2d6cf25375534a2d268",
+        "artifactIdentity": "sha256:4109e8ab3df1273f6fb877930c128b4e717c68cefcf6050269a11e1a59e846de",
+        "candidateVersionNumber": 24,
+        "openCloudCreateStatus": 429
+      },
+      "transientHttpRetryStatuses": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryAttempts": 6,
+      "retryBaseDelayMs": 1000,
+      "scanProbeConcurrency": 2,
+      "exactGameProbeConcurrency": 1,
+      "persistentApiFailureStillFails": true,
+      "gameHeavyParallelismReduced": false,
+      "runtimeTruthGateUnchanged": true,
+      "exactSourceArtifactVersionGateUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
