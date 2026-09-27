@@ -41,6 +41,7 @@ const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
 const JUNGLE_REGION={x:18000,y:0,w:7200,h:3840}; // 기존 밀림의 0.4배
+const SWAMP_REGION={x:25200,y:0,w:3600,h:3840}; // 밀림 오른쪽 늪지대
 const SNOW_REGION={x:18000,y:3840,w:18000,h:4800}; // 축소된 밀림 바로 아래
 const FLOWER_FIELD={x:18000,y:8640,w:18000,h:2880};
 const GIANT_GARDEN={x:28800,y:8640,w:7200,h:2880};
@@ -220,6 +221,12 @@ const recipes=[
 {id:'mud-spear',name:'머드 워커 창',where:'junglebench',cost:{mudCore:6,monopolyIngot:6,goldIngot:4,wood:3},desc:'공격력 160 · 긴 사거리 · 적중 시 10% 확률로 3초간 이동속도 50% 감소',kind:'weapon',power:160,range:120,cooldown:860,slowChance:.10,slowDuration:3000},
 {id:'jungle-guardian-glaive',name:'밀림 수호자의 장창',where:'junglebench',cost:{jungleGuardianCore:1,monopolyIngot:8,goldIngot:6},desc:'공격력 215 · 긴 사거리 · 밀림 신전 수호자 전리품으로 만드는 4티어 무기',kind:'weapon',power:215,range:122,cooldown:900},
 {id:'tiger-twin-blades',name:'호랑이 쌍검',where:'hidden',cost:{},desc:'히든 4티어 무기 · 공격력 222 · 공격속도 1초',kind:'weapon',power:222,range:90,cooldown:1000},
+{id:'toxic-spore-seeker',name:'맹독 포자 추적구',where:'junglebench',cost:{toxicMycelium:4,sporeSac:3,monopolyIngot:8,goldIngot:6},desc:'5티어 · 공격력 130 · 공격속도 1초 · 적중 지점에 작은 독가스 3초 · 0.05초마다 3 피해(플레이어 제외)',kind:'weapon',power:130,range:820,cooldown:1000,ranged:'spore',enhancedSpore:true},
+{id:'toxic-mycelium-armor',name:'맹독 균사체 갑옷',where:'junglebench',cost:{toxicMycelium:7,monopolyIngot:10,flowerLeather:5},desc:'5티어 · 최대 체력 +405 · 피해 35% 감소 · 가스 피해 면역',kind:'armor',maxHp:405,reduce:.35,gasImmune:true},
+{id:'swamp-golem-armor',name:'늪 골렘 갑옷',where:'junglebench',cost:{swampCore:6,monopolyIngot:8,goldIngot:4},desc:'4티어 · 최대 체력 +280 · 피해 24% 감소 · 공격 시 20% 확률로 10초간 받는 피해 50% 감소',kind:'armor',maxHp:280,reduce:.24,guardProc:.20,guardDuration:10000},
+{id:'fear-bear-claw',name:'공포 곰 발톱검',where:'junglebench',cost:{fearBearClaw:5,fearBearHide:3,monopolyIngot:7},desc:'4티어 · 공격력 230 · 공격속도 0.8초',kind:'weapon',power:230,range:90,cooldown:800},
+{id:'fear-bear-armor',name:'공포 곰 중갑',where:'junglebench',cost:{fearBearHide:7,fearBearClaw:2,monopolyIngot:8},desc:'4티어 · 최대 체력 +290 · 피해 25% 감소 · 공격 시 30% 확률 체력 200 회복',kind:'armor',maxHp:290,reduce:.25,healOnAttack:.30,healAmount:200},
+{id:'fear-bear-hunter-armor',name:'공포 곰 사냥갑',where:'junglebench',cost:{fearBearHide:6,fearBearClaw:4,monopolyIngot:7,flowerLeather:3},desc:'4티어 · 최대 체력 +250 · 공격력 +25 · 공격 시 30% 확률 체력 200 회복',kind:'armor',maxHp:250,reduce:.20,bonusDamage:25,healOnAttack:.30,healAmount:200},
 {id:'jungle-bench',name:'독점석 제작대',where:'goldbench',cost:{monopolyIngot:5,goldIngot:3,wood:2,flowerLeather:4},desc:'밀림과 설원 장비를 제작하는 상위 제작대',kind:'structure'},
 {id:'cooked-bird-meat',name:'구운 꿩고기',where:'smelt',cost:{},desc:'세계수 꿩고기를 구운 음식 · 밥 +55',kind:'consumable',hunger:55},
 {id:'cooked-crystal-goat-meat',name:'구운 수정염소고기',where:'smelt',cost:{},desc:'수정염소고기를 구운 음식 · 밥 +65',kind:'consumable',hunger:65},
@@ -350,15 +357,15 @@ function registerAllCookingCombos(){
 registerAllCookingCombos();
 const ITEM_TIER_2=new Set(['flower-leather','rune-shield','iron-bench','good-bandage','cooking-station','shadow-wolf-incubator','iron-sword','iron-axe','iron-pick','gold-greatsword','gold-dagger','gold-axe','gold-pick','forest-wooden-sword','boar-spear','boar-armor','goblin-dagger','goblin-armor','wolf-blade','ironspirit-sword','ironspirit-armor','wolf-armor','bear-spear','bear-armor','spore-seeker','golem-hammer','golem-armor','firewolf-saber','firewolf-armor','burrower-lance','burrower-armor','firesnake-blade','firesnake-armor','ironibex-spear','ironibex-armor']);
 const ITEM_TIER_3=new Set(['mantis-scythe','spider-fang-blade','spider-silk-spear','spider-silk-armor','gold-bench','walker-greatsword','sand-armor','calm-golem-maul','calm-golem-armor','rage-golem-axe','rage-golem-armor','crystal-boar-armor','crystal-core-greatsword','leech-cleaver','mud-blade','mud-spear','jungle-bench']);
-const ITEM_TIER_4=new Set(['sovereign-cleaver','sovereign-armor','croc-jaw-blade','croc-tooth-spear','croc-armor','diving-suit','deep-diver-armor','gorilla-armor','gorilla-guard-armor','anaconda-armor','jungle-guardian-glaive','tiger-twin-blades','polar-bear-axe','polar-bear-spear','polar-bear-armor','polar-wolf-blade','polar-wolf-armor','polar-wolf-hunter-armor']);
-const ITEM_TIER_5=new Set(['yeti-horn-maul','yeti-armor']);
+const ITEM_TIER_4=new Set(['swamp-golem-armor','fear-bear-claw','fear-bear-armor','fear-bear-hunter-armor','sovereign-cleaver','sovereign-armor','croc-jaw-blade','croc-tooth-spear','croc-armor','diving-suit','deep-diver-armor','gorilla-armor','gorilla-guard-armor','anaconda-armor','jungle-guardian-glaive','tiger-twin-blades','polar-bear-axe','polar-bear-spear','polar-bear-armor','polar-wolf-blade','polar-wolf-armor','polar-wolf-hunter-armor']);
+const ITEM_TIER_5=new Set(['toxic-spore-seeker','toxic-mycelium-armor','yeti-horn-maul','yeti-armor']);
 function itemTier(id){return ITEM_TIER_5.has(id)?5:ITEM_TIER_4.has(id)?4:ITEM_TIER_3.has(id)?3:ITEM_TIER_2.has(id)?2:1}
 const BOW_IDS=new Set(['wood-bow','reinforced-bow','iron-bow','gold-bow','jungle-bow']);
 const ARROW_IDS=['wood-arrow','iron-arrow','spider-arrow','firewolf-arrow','shark-arrow','yeti-arrow'];
 const LEGACY_ARROW_MIGRATION={'stone-arrow':'firewolf-arrow','gold-arrow':'yeti-arrow'};
 const TWO_HANDED_WEAPONS=new Set(['gold-greatsword','walker-greatsword','crystal-core-greatsword','sovereign-cleaver','golem-hammer','calm-golem-maul','rage-golem-axe','yeti-horn-maul',...BOW_IDS]);
 function isTwoHandedWeapon(id){return!!id&&TWO_HANDED_WEAPONS.has(id)}
-const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,ironhidehound:2,crystalgoat:2,ironspirit:1,worldtreebear:2,foreststag:1,thornhound:2,sporegiant:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:3,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,giantSquid:4,deepAngler:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,jungletiger:4,primitiveSpearman:3,primitiveArcher:3,jungleGuardian:4,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3,froststalker:3,icegolem:4,flowergoblin:2,giantbee:3,thornmantis:3,giantspider:3,giantspiderling:2};
+const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,ironhidehound:2,crystalgoat:2,ironspirit:1,worldtreebear:2,foreststag:1,thornhound:2,sporegiant:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:3,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,giantSquid:4,deepAngler:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,jungletiger:4,primitiveSpearman:3,primitiveArcher:3,jungleGuardian:4,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3,froststalker:3,icegolem:4,flowergoblin:2,giantbee:3,thornmantis:3,giantspider:3,giantspiderling:2,toxicmycelium:5,toxicsporeorb:5,swampgolem:4,fearbear:4};
 function creatureTier(id){return CREATURE_TIERS[id]||1}
 const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},foreststag:{id:'foreststag',name:'이끼뿔사슴',mood:'neutral',hp:105,dmg:12,speed:68,r:21,color:'#789766',detect:420,attackCooldown:1100,foodDrop:'raw-deer-meat'},thornhound:{id:'thornhound',name:'가시숲 사냥개',mood:'aggressive',hp:128,dmg:18,speed:86,r:20,color:'#536f4f',detect:480,attackCooldown:950},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},sporegiant:{id:'sporegiant',name:'독포자 거대버섯',mood:'aggressive',hp:340,dmg:24,speed:54,r:32,color:'#76609a',detect:500,attackCooldown:1100,worldtree:true,mushroomGas:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:4500,dmg:150,speed:186,r:40,color:'#3a1728',detect:2100,boss:true,area:'underground'},
 firewolf:{id:'firewolf',name:'화염 늑대',mood:'aggressive',hp:150,dmg:10,speed:96,r:21,color:'#d95832',detect:520,attackCooldown:1000,flame:true,volcanoZone:'colosseum'},
@@ -411,7 +418,11 @@ flowergoblin:{id:'flowergoblin',name:'꽃 고블린',mood:'neutral',hp:222,dmg:3
 giantbee:{id:'giantbee',name:'거대 꿀벌',mood:'neutral',hp:350,dmg:40,speed:110,r:22,color:'#e3b341',detect:620,attackCooldown:1000,flowerZone:true},
 thornmantis:{id:'thornmantis',name:'가시 사마귀',mood:'aggressive',hp:600,dmg:40,speed:88,r:28,color:'#668f52',detect:520,attackCooldown:1000,flowerZone:true,stealthMantis:true},
 giantspider:{id:'giantspider',name:'거대 거미',mood:'aggressive',hp:555,dmg:50,speed:76,r:30,color:'#4d3d52',detect:620,attackCooldown:1000,flowerZone:true},
-giantspiderling:{id:'giantspiderling',name:'새끼 거대거미',mood:'aggressive',hp:100,dmg:15,speed:92,r:15,color:'#76627a',detect:360,attackCooldown:850,flowerZone:true}
+giantspiderling:{id:'giantspiderling',name:'새끼 거대거미',mood:'aggressive',hp:100,dmg:15,speed:92,r:15,color:'#76627a',detect:360,attackCooldown:850,flowerZone:true},
+toxicmycelium:{id:'toxicmycelium',name:'맹독 균사체 버섯',mood:'aggressive',hp:2000,dmg:60,speed:54,r:38,color:'#5f7f45',detect:900,attackCooldown:1200,swamp:true,toxicMycelium:true},
+toxicsporeorb:{id:'toxicsporeorb',name:'맹독 포자 구슬',mood:'aggressive',hp:100,dmg:0,speed:0,r:15,color:'#b6d85e',detect:0,swamp:true,summoned:true,sporeShieldOrb:true},
+swampgolem:{id:'swampgolem',name:'늪 골렘',mood:'neutral',hp:1888,dmg:70,speed:52,r:37,color:'#65725a',detect:620,attackCooldown:1200,swamp:true,swampHarden:true},
+fearbear:{id:'fearbear',name:'공포 곰',mood:'aggressive',hp:1800,dmg:60,speed:82,r:34,color:'#392e3f',detect:700,attackCooldown:1100,swamp:true,fearSpecial:true}
 
 };
 const DROP_MATERIAL_NAMES={
@@ -419,11 +430,11 @@ const DROP_MATERIAL_NAMES={
  ironSpiritCore:'철 정령 핵',bearClaw:'곰발톱',bearHide:'곰가죽',bearFang:'곰이빨',
  sovereignCore:'근원포식자 핵',fireWolfFang:'화염 늑대 송곳니',burrowerShell:'초거대 벌레 갑각',
  walkerClaw:'샌드워커 집게',calmMagmaCore:'고요한 화염 핵',rageMagmaCore:'격노한 화염 핵',
- fireSnakeScale:'화염 뱀 비늘',ironHorn:'철갑 산양 뿔',hardShell:'단단한 갑각',crystalCore:'수정코어',crocHide:'악어 껍질',crocTooth:'악어 이빨',sharkSkin:'상어 가죽',leechSucker:'초거대 거머리 흡반',gorillaHide:'고릴라 가죽',anacondaScale:'아나콘다 비늘',mudCore:'머드 워커 진흙핵',monopolyStone:'독점석',monopolyIngot:'구운 독점석',yetiHide:'예티 가죽',yetiHorn:'예티 뿔',polarBearHide:'북극곰 가죽',polarBearClaw:'북극곰 발톱',polarWolfPelt:'북극늑대 가죽',tigerOffering:'호랑이 제물',jungleGuardianCore:'밀림 수호자 핵',giantPetal:'거대 꽃잎',flowerLeather:'꽃가죽',giantSpiderSilk:'거대거미 실',giantSpiderWeb:'거대거미 거미줄',giantSpiderFang:'거대거미 송곳니',mantisBlade:'사마귀 낫날',sporeSac:'독포자 주머니',crystalShard:'수정'
+ fireSnakeScale:'화염 뱀 비늘',ironHorn:'철갑 산양 뿔',hardShell:'단단한 갑각',crystalCore:'수정코어',crocHide:'악어 껍질',crocTooth:'악어 이빨',sharkSkin:'상어 가죽',leechSucker:'초거대 거머리 흡반',gorillaHide:'고릴라 가죽',anacondaScale:'아나콘다 비늘',mudCore:'머드 워커 진흙핵',monopolyStone:'독점석',monopolyIngot:'구운 독점석',yetiHide:'예티 가죽',yetiHorn:'예티 뿔',polarBearHide:'북극곰 가죽',polarBearClaw:'북극곰 발톱',polarWolfPelt:'북극늑대 가죽',tigerOffering:'호랑이 제물',jungleGuardianCore:'밀림 수호자 핵',giantPetal:'거대 꽃잎',flowerLeather:'꽃가죽',giantSpiderSilk:'거대거미 실',giantSpiderWeb:'거대거미 거미줄',giantSpiderFang:'거대거미 송곳니',mantisBlade:'사마귀 낫날',sporeSac:'독포자 주머니',toxicMycelium:'맹독 균사체',swampCore:'늪 골렘 핵',fearBearHide:'공포 곰 가죽',fearBearClaw:'공포 곰 발톱',crystalShard:'수정'
 };
-const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone','monopolyIngot','yetiHide','yetiHorn','polarBearHide','polarBearClaw','polarWolfPelt','tigerOffering','jungleGuardianCore','giantPetal','flowerLeather','giantSpiderSilk','giantSpiderWeb','giantSpiderFang','mantisBlade','sporeSac','crystalShard'];
+const NEW_LOOT_KEYS=['mossTusk','stoneCore','goblinCharm','ironSpiritCore','sovereignCore','fireWolfFang','burrowerShell','calmMagmaCore','rageMagmaCore','fireSnakeScale','ironHorn','hardShell','crystalCore','crocHide','crocTooth','sharkSkin','leechSucker','gorillaHide','anacondaScale','mudCore','monopolyStone','monopolyIngot','yetiHide','yetiHorn','polarBearHide','polarBearClaw','polarWolfPelt','tigerOffering','jungleGuardianCore','giantPetal','flowerLeather','giantSpiderSilk','giantSpiderWeb','giantSpiderFang','mantisBlade','sporeSac','toxicMycelium','swampCore','fearBearHide','fearBearClaw','crystalShard'];
 
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},arrowType:null,attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,poisonDamage:5,mudSlowUntil:0,templeSlowUntil:0,attackBlockedUntil:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,inkUntil:0,anglerLureUntil:0,anglerLureSource:null,anglerStruggle:0,restingBedId:null,bedHealAt:0,downedUntil:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,blacksmithAnvil:null,cookingStation:null,cookingSlots:[null,null],incubator:null,upgrades:{},flags:[],chests:[],walls:[],doors:[],towers:[],beds:[],gardens:[],crops:[],snowChests:[false,false],respawnPos:null,blueprint:null,activeWallId:null,activeTowerId:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],crystals:[],carrots:[],poisonStones:[],flowerGiantFlowers:[],flowerWebs:[],flowerBuildingLoot:[false,false,false,false],enemies:[],projectiles:[],sporeClouds:[],raid:{count:0,nextAt:Date.now()+raidSpawnDelayMs(1),active:null,warnedFor:0},camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false,flowerfield:false,giantgarden:false,deepcoralforest:false},explored:{},underwaterExplored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeDiscovered:false,flowerBuildingLoot:[false,false,false,false],templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,templeTrapSince:0,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},arrowAim:{targetId:null,tapTargetId:null,taps:0,lastTapAt:0},bookCategory:'neutral',settings:{difficulty:'normal'},dirty:false};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,essence:0,wolfHide:0,walkerClaw:0,bearClaw:0,bearHide:0,bearFang:0,loot:{},kills:0,weapon:null,tool:null,armor:null,torch:false,torchEquipped:false,torchDurability:300000,map:false,root:0,inventory:{},arrowType:null,attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0,stunnedUntil:0,weakenedUntil:0,grabbedUntil:0,grabbedBy:null,vulnerableUntil:0,oxygen:40000,oxygenEndsAt:0,oxygenDamageAt:0,poisonUntil:0,poisonNext:0,poisonDamage:5,mudSlowUntil:0,templeSlowUntil:0,attackBlockedUntil:0,cold:0,coldTickAt:0,coldFrozenAt:0,coldDamageAt:0,coldBurstUntil:0,hunger:100,hungerNext:performance.now()+20000,foodRegenTicks:0,foodRegenNext:0,foodRegenAmount:0,inkUntil:0,anglerLureUntil:0,anglerLureSource:null,anglerStruggle:0,restingBedId:null,bedHealAt:0,downedUntil:0},bench:null,furnace:null,ironBench:null,goldBench:null,jungleBench:null,blacksmithAnvil:null,cookingStation:null,cookingSlots:[null,null],incubator:null,upgrades:{},flags:[],chests:[],walls:[],doors:[],towers:[],beds:[],gardens:[],crops:[],snowChests:[false,false],respawnPos:null,blueprint:null,activeWallId:null,activeTowerId:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],essences:[],crystals:[],carrots:[],poisonStones:[],flowerGiantFlowers:[],flowerWebs:[],flowerBuildingLoot:[false,false,false,false],enemies:[],projectiles:[],sporeClouds:[],swampHazards:[],raid:{count:0,nextAt:Date.now()+raidSpawnDelayMs(1),active:null,warnedFor:0},camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',smelting:{endAt:0,type:null,duration:0,queue:[]},knownMaterials:{},knownItems:{},knownCookingRecipes:{},discovered:{canyon:false,worldtree:false,volcano:false,crystal:false,giantlake:false,jungle:false,snow:false,flowerfield:false,giantgarden:false,swamp:false,deepcoralforest:false},explored:{},underwaterExplored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,rootRespawnAt:0,lakeReturnPos:null,templeReturnPos:null,templeDiscovered:false,flowerBuildingLoot:[false,false,false,false],templeOfferingUsed:false,templeChestOpened:false,templeUpperSpawned:false,templeGuardianSpawned:false,templeTrapSince:0,altarUsed:false,bossSummoned:false,bossDefeated:false,bossExitAt:0,crystalSealReleased:false,crystalSealClicks:0,crystalSealLastTap:0,bestiary:{},achievements:{},records:{lab:false,construction:false},story:{stage:'find-survivor',treated:false,path:null,radioPart:false,completed:false,labUnlocked:false,labChestLooted:false,labBossDefeated:false,sensorTaken:false,reportTaken:false,crystalTouched:false},storyDialog:null,questCaveInit:false,shadowEggTaken:false,incubation:{eggPlaced:false,hatchAt:0},pet:{hatched:false,alive:false,hp:250,maxHp:250,x:START.x+50,y:START.y+20,respawnAt:0,reviveClickUntil:0,mounted:false,attackAt:0,targetId:null},weather:{kind:'CLEAR',changedAt:Date.now(),nextAt:Date.now()+110000,seed:Math.floor(Math.random()*1000000),lightningAt:0},gathering:{auto:false,target:null,manualTarget:null,nextAt:0,blockedUntil:0},arrowAim:{targetId:null,tapTargetId:null,taps:0,lastTapAt:0},bookCategory:'neutral',settings:{difficulty:'normal'},dirty:false};
 const RAID_DIFFICULTY_SCALE=1;
 const RAID_WAVES=[
  [{id:'goblin',count:5},{id:'shadowwolf',count:3},{id:'golem',count:1}],
@@ -490,6 +501,8 @@ function pointInVolcano(x,y){return pointInPoly(x,y,VOLCANO_POLY)}
 function pointInCrystalRegion(x,y){return pointInRect(x,y,CRYSTAL_REGION)}
 function pointInSnow(x,y){return pointInRect(x,y,SNOW_REGION)}
 function pointInJungle(x,y){return pointInRect(x,y,JUNGLE_REGION)}
+function pointInSwamp(x,y){return pointInRect(x,y,SWAMP_REGION)}
+function randomSwampPoint(margin=120){return{x:rand(SWAMP_REGION.x+margin,SWAMP_REGION.x+SWAMP_REGION.w-margin),y:rand(SWAMP_REGION.y+margin,SWAMP_REGION.y+SWAMP_REGION.h-margin)}}
 function pointInJungleLake(x,y){return JUNGLE_LAKES.some(l=>dist(x,y,l.x,l.y)<=l.r)}
 function randomSnowPoint(margin=120){return{x:rand(SNOW_REGION.x+margin,SNOW_REGION.x+SNOW_REGION.w-margin),y:rand(SNOW_REGION.y+margin,SNOW_REGION.y+SNOW_REGION.h-margin)}}
 function randomJunglePoint(margin=120){let x,y,tries=0;do{x=rand(JUNGLE_REGION.x+margin,JUNGLE_REGION.x+JUNGLE_REGION.w-margin);y=rand(JUNGLE_REGION.y+margin,JUNGLE_REGION.y+JUNGLE_REGION.h-margin);tries++}while(pointInJungleLake(x,y)&&tries<80);return{x,y}}
@@ -534,6 +547,7 @@ function interactFlowerBuilding(index){
  state.dirty=true;updateHud();saveGame(false)
 }
 function regionAt(x,y){
+ if(pointInSwamp(x,y))return'swamp';
  if(pointInGiantGarden(x,y))return'giantgarden';
  if(pointInFlowerField(x,y))return'flowerfield';
  if(pointInSnow(x,y))return'snow';
@@ -608,6 +622,7 @@ function drawWeatherOverlay(now){
   ctx.fillStyle='rgba(176,218,184,.025)';ctx.fillRect(0,0,w,h)
  }
  const region=regionAt(state.player.x,state.player.y);
+ if(region==='swamp'){ctx.fillStyle='rgba(55,84,48,.10)';ctx.fillRect(0,0,w,h)}
  if(region==='volcano'){
   const ashCount=Math.floor(30*budget);ctx.fillStyle='rgba(77,64,58,.35)';
   for(let i=0;i<ashCount;i++){const x=((i*151+seed*3+t*18)%(w+40))-20,y=((i*71+seed+t*16)%(h+40))-20;ctx.beginPath();ctx.arc(x,y,1+(i%3)*.5,0,Math.PI*2);ctx.fill()}
@@ -844,7 +859,7 @@ function makeNode(kind,i){
  else if(kind==='essence'){const p=randomCrystalPoint(140);x=p.x;y=p.y}
  else if(kind==='crystal'){const p=randomCrystalPoint(180);x=p.x;y=p.y}
  else if(kind==='poisonstone'){const p=randomPoisonStonePoint();x=p.x;y=p.y}
- else if(kind==='carrot'){do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeWater(x,y)||pointInJungle(x,y))}
+ else if(kind==='carrot'){do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeWater(x,y)||pointInJungle(x,y)||pointInSwamp(x,y))}
  else{do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(dist(x,y,START.x,START.y)<170||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeWater(x,y))}
  const maxHp=kind==='poisonstone'?10:kind==='crystal'?4:kind==='tree'?3:kind==='rock'?4:kind==='iron'?3:kind==='gold'?6:kind==='essence'||kind==='carrot'?1:2;
  return{id:kind+i,kind,x,y,hp:maxHp,maxHp,dead:false,respawnAt:0}
@@ -896,8 +911,8 @@ function spawnCreature(type,index=0,anchor=null,packId=null){
  else if(type.volcanoZone){const p=randomVolcanoPoint(type.volcanoZone);x=p.x;y=p.y}
  else if(type.worldtree){const p=randomWorldTreePoint();x=p.x;y=p.y}
  else if(type.canyon){if(anchor){x=clamp(anchor.x+rand(-55,55),11560,14320);y=clamp(anchor.y+rand(-55,55),5070,8480);if(!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)){x=anchor.x;y=anchor.y}}else{const p=randomCanyonPoint();x=p.x;y=p.y}}
- else if(type.mood==='aggressive'){let band=0,tries=0;do{x=rand(80,WORLD.w-80);y=rand(80,WORLD.h-80);const nx=Math.abs(x-START.x)/(WORLD.w/2),ny=Math.abs(y-START.y)/(WORLD.h/2);band=Math.max(nx,ny);tries++}while((band<.38||band>.92||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeSurface(x,y)||pointInJungle(x,y))&&tries<300)}
- else{const a=index*2.399+rand(-.7,.7),d=type.mood==='neutral'?rand(420,2600):rand(250,1800);x=clamp(START.x+Math.cos(a)*d,60,WORLD.w-60);y=clamp(START.y+Math.sin(a)*d,60,WORLD.h-60);if(pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeSurface(x,y)||pointInJungle(x,y)){x=START.x+rand(-1000,1000);y=START.y+rand(-900,900)}}
+ else if(type.mood==='aggressive'){let band=0,tries=0;do{x=rand(80,WORLD.w-80);y=rand(80,WORLD.h-80);const nx=Math.abs(x-START.x)/(WORLD.w/2),ny=Math.abs(y-START.y)/(WORLD.h/2);band=Math.max(nx,ny);tries++}while((band<.38||band>.92||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeSurface(x,y)||pointInJungle(x,y)||pointInSwamp(x,y))&&tries<300)}
+ else{const a=index*2.399+rand(-.7,.7),d=type.mood==='neutral'?rand(420,2600):rand(250,1800);x=clamp(START.x+Math.cos(a)*d,60,WORLD.w-60);y=clamp(START.y+Math.sin(a)*d,60,WORLD.h-60);if(pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)||pointInCrystalRegion(x,y)||pointInGiantLakeSurface(x,y)||pointInJungle(x,y)||pointInSwamp(x,y)){x=START.x+rand(-1000,1000);y=START.y+rand(-900,900)}}
  const scaledHp=enemyDifficultyMaxHp(type);return{type,hp:scaledHp,maxHp:scaledHp,x,y,spawnX:x,spawnY:y,packId,area:type.underwater?'underwater':(type.area||'surface'),enemyTarget:null,stunnedUntil:0,slowedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,nextAttackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,attackTurn:'player',faceX:1,faceY:0,moving:false,netId:'e'+(++enemySeq)}
 }
 function spawnAt(type,x,y,packId=null){const scaledHp=enemyDifficultyMaxHp(type);return{type,hp:scaledHp,maxHp:scaledHp,x,y,spawnX:x,spawnY:y,packId,area:type.underwater?'underwater':(type.area||'surface'),enemyTarget:null,stunnedUntil:0,slowedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,nextAttackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0,special:null,crocState:null,sharkCombo:null,gorillaCombo:null,anacondaWrap:null,rageUsed:false,rageUntil:0,nextThrowAt:0,nextRoarAt:0,nextSpecialAt:0,nextCommonSpecialAt:0,nextGorillaSlamAt:0,nextMudShotAt:0,attackTurn:'player',faceX:1,faceY:0,moving:false,netId:'e'+(++enemySeq)}}
@@ -911,8 +926,12 @@ function initWorld(){
   state.crystals=Array.from({length:16},(_,i)=>makeNode('crystal',i));
   state.carrots=Array.from({length:360},(_,i)=>makeNode('carrot',i));
   state.poisonStones=Array.from({length:5},(_,i)=>makeNode('poisonstone',i));
+  for(let i=0;i<4;i++){const p=randomSwampPoint(260);state.poisonStones.push({id:'swamppois'+i,kind:'poisonstone',x:p.x,y:p.y,hp:5,maxHp:5,dead:false,respawnAt:0})}
   state.enemies=[];
   state.flowerGiantFlowers=Array.from({length:18},(_,i)=>{const p=randomFlowerPoint(true);return{id:'giantflower'+i,kind:'giantflower',x:p.x,y:p.y,hp:6,maxHp:6,dead:false,respawnAt:0}});state.flowerWebs=Array.from({length:14},(_,i)=>{const p=randomFlowerPoint(true);return{id:'flowerweb'+i,x:p.x,y:p.y,r:58,hits:3,lastAlertAt:0}});
+  for(let i=0;i<4;i++){const p=randomSwampPoint(260);state.enemies.push(spawnAt(creatures.toxicmycelium,p.x,p.y,null))}
+  for(let i=0;i<5;i++){const p=randomSwampPoint(220);state.enemies.push(spawnAt(creatures.swampgolem,p.x,p.y,null))}
+  for(let i=0;i<5;i++){const p=randomSwampPoint(220);state.enemies.push(spawnAt(creatures.fearbear,p.x,p.y,null))}
   const counts={mossboar:18,goblin:18,shadowwolf:15,fairy:8,foreststag:6,thornhound:7};
   for(const [id,count] of Object.entries(counts))for(let i=0;i<count;i++)state.enemies.push(spawnCreature(creatures[id],i));
   const starter=[
@@ -1013,7 +1032,7 @@ function updateHud(){
  ui.foodfill.style.width=clamp(p.hunger,0,100)+'%';ui.foodtext.textContent=Math.ceil(p.hunger)+'/100';
  const equippedWeapon=item(p.weapon),equippedArrow=p.arrowType&&item(p.arrowType);ui.weapon.textContent=nameOf(p.weapon,'맨손')+(equippedWeapon?.ranged==='bow'&&equippedArrow?' · '+equippedArrow.name+' ×'+invCount(p.arrowType):'');ui.tool.textContent=nameOf(p.tool);ui.armor.textContent=nameOf(p.armor);
  const z=state.area==='underwater'?'underwater':state.area==='underground'?'underground':state.area==='questcave'?'questcave':state.area==='storylab1'?'storylab1':state.area==='storylab2'?'storylab2':state.area==='jungletemple'?'jungletemple':state.area==='jungletemple-upper'?'jungletemple-upper':state.area==='jungletemple-lower'?'jungletemple-lower':state.area==='jungletemple-secret'?'jungletemple-secret':regionAt(p.x,p.y);
- let zoneName=z==='underwater'?'거대 호수 수중':z==='underground'?'세계수 지하':z==='questcave'?'황무지 동굴':z==='storylab1'?'연구소 1층':z==='storylab2'?'연구소 2층':z==='jungletemple'?'밀림 신전':z==='jungletemple-upper'?'밀림 신전 위층':z==='jungletemple-lower'?'밀림 신전 지하':z==='jungletemple-secret'?'밀림 신전 비밀공간':z==='worldtree'?'세계수':z==='canyon'?'동쪽 철 협곡':z==='volcano'?'화산':z==='crystal'?'수정 지대':z==='giantlake'?'거대 호수':z==='jungle'?'밀림':z==='snow'?'설원':z==='giantgarden'?'거대화원':z==='flowerfield'?'꽃밭 지역':'마력숲';
+ let zoneName=z==='underwater'?'거대 호수 수중':z==='underground'?'세계수 지하':z==='questcave'?'황무지 동굴':z==='storylab1'?'연구소 1층':z==='storylab2'?'연구소 2층':z==='jungletemple'?'밀림 신전':z==='jungletemple-upper'?'밀림 신전 위층':z==='jungletemple-lower'?'밀림 신전 지하':z==='jungletemple-secret'?'밀림 신전 비밀공간':z==='worldtree'?'세계수':z==='canyon'?'동쪽 철 협곡':z==='volcano'?'화산':z==='crystal'?'수정 지대':z==='giantlake'?'거대 호수':z==='jungle'?'밀림':z==='swamp'?'늪지대':z==='snow'?'설원':z==='giantgarden'?'거대화원':z==='flowerfield'?'꽃밭 지역':'마력숲';
  if(z==='underwater')zoneName+=' · 산소 '+(item(p.armor)?.underwaterBreath?'∞':Math.ceil(Math.max(0,p.oxygen||0)/1000)+'초');
  if(z==='snow')zoneName+=' · 추위 '+(item(p.armor)?.coldImmune?'면역':Math.floor(p.cold||0)+'/100');
  ui.zone.textContent=zoneName;
@@ -2024,6 +2043,9 @@ function awardLoot(e){
  if(e.type.id==='giantspiderling'){addMaterial('giantSpiderWeb',1);if(Math.random()<.5)addMaterial('giantSpiderSilk',1);showNotice('전리품 · 거대거미 거미줄 +1')}
  if(e.type.id==='thornmantis'){addMaterial('mantisBlade',1);showNotice('전리품 · 사마귀 낫날 +1')}
  if(e.type.id==='sporegiant'){addMaterial('sporeSac',1);showNotice('전리품 · 독포자 주머니 +1')}
+ if(e.type.id==='toxicmycelium'){addMaterial('toxicMycelium',2);showNotice('전리품 · 맹독 균사체 +2')}
+ if(e.type.id==='swampgolem'){addMaterial('swampCore',2);showNotice('전리품 · 늪 골렘 핵 +2')}
+ if(e.type.id==='fearbear'){addMaterial('fearBearHide',2);addMaterial('fearBearClaw',1);showNotice('전리품 · 공포 곰 가죽 +2 · 발톱 +1')}
  if(e.type.foodDrop){addInv(e.type.foodDrop,1);food.push(item(e.type.foodDrop)?.name||e.type.foodDrop)}
  if(e.type.vegetableDrop){addInv(e.type.vegetableDrop,1);food.push(item(e.type.vegetableDrop)?.name||e.type.vegetableDrop);if(Math.random()<.5){addInv('greens-seed',1);food.push('야채 씨앗')}}
  if(food.length)showNotice('전리품 · '+food.join(' + '));
@@ -2545,7 +2567,7 @@ function nearestSporeTarget(p,w){
 }
 function fireSporeSeeker(now,p,w,target){
  const dx=target.x-p.x,dy=target.y-p.y,d=Math.hypot(dx,dy)||1,speed=360;
- const projectile={x:p.x+dx/d*28,y:p.y+dy/d*28,vx:dx/d*speed,vy:dy/d*speed,speed,damage:0,createdAt:now,life:2000,area:state.area,sourceId:multiplayer.playerId,ownerId:multiplayer.playerId,kind:'sporeOrb',targetId:target.netId,playerOwned:true};
+ const projectile={x:p.x+dx/d*28,y:p.y+dy/d*28,vx:dx/d*speed,vy:dy/d*speed,speed,damage:0,createdAt:now,life:2000,area:state.area,sourceId:multiplayer.playerId,ownerId:multiplayer.playerId,kind:'sporeOrb',targetId:target.netId,enhanced:!!w.enhancedSpore,playerOwned:true};
  if(multiplayer.connected&&!multiIsHost()&&state.area!=='storylab1'&&state.area!=='storylab2')multiSend('player-spore',{ownerId:multiplayer.playerId,area:state.area,x:p.x,y:p.y,targetId:target.netId});else state.projectiles.push(projectile)
 }
 function currentArrowAimTarget(){
@@ -2572,6 +2594,9 @@ function firePlayerArrow(now,p,w,arrow){
 function attack(){
  const now=performance.now(),p=state.player,w=currentWeapon();if(p.downedUntil){showNotice('쓰러진 상태야');return}if(p.restingBedId){p.restingBedId=null;showNotice('침대에서 일어났어')};interruptAutoGather(now);if(now<(p.attackBlockedUntil||0)){showNotice('공격 불가');return}if(petMountedAttack())return;if(now<(p.stunnedUntil||0)){showNotice('기절 중');return}if(!p.weapon||now-p.attackAt<currentCooldown())return;
  playGameSfx('playerAttack');
+ const armor=item(p.armor);
+ if(armor?.guardProc&&Math.random()<armor.guardProc){p.guardUntil=now+(armor.guardDuration||10000);showNotice('늪 골렘 방어 · 10초간 받는 피해 50% 감소')}
+ if(armor?.healOnAttack&&Math.random()<armor.healOnAttack){const heal=Number(armor.healAmount)||200;p.hp=Math.min(p.maxHp,p.hp+heal);showNotice('공포 곰 방어구 · 체력 '+heal+' 회복');updateHud()}
  if(w?.ranged==='spore'){const target=nearestSporeTarget(p,w);if(!target){showNotice('근처에 적이 없어');return}p.attackAt=now;p.attackFx=now+150;playCombatAudio('swing',.35);fireSporeSeeker(now,p,w,target);return}
  if(w?.ranged==='bow'){const arrow=selectedArrow();if(!arrow){showNotice('화살이 없어');return}p.attackAt=now;p.attackFx=now+150;playCombatAudio('swing',Math.max(0,Math.min(1,(Number(w.power)||0)/180)));firePlayerArrow(now,p,w,arrow);return}
  p.attackAt=now;p.attackFx=now+150;
@@ -2628,7 +2653,7 @@ function enemyDamageTarget(e,n,force=false){
  damagePlayer(n,force,e);return'player'
 }
 function damagePlayer(n,force=false,attacker=null){
- const p=state.player,now=performance.now();if(p.downedUntil)return;if(p.restingBedId)p.restingBedId=null;if(attacker)engagePet(attacker);if(state.pet.mounted&&petAlive()){damagePet(n,attacker);return}if(!force&&now<p.invuln)return;interruptAutoGather(now);const armor=item(p.armor);if(now>=(p.vulnerableUntil||0))n*=1-effectiveStat(p.armor,'reduce');p.hp=Math.max(0,p.hp-n);p.invuln=now+520;playCombatAudio('hurt',Math.max(0,Math.min(1,n/100)));playGameSfx('playerHurt');ui.flash.classList.add('on');setTimeout(()=>ui.flash.classList.remove('on'),100);if(p.hp<=0){knockoutPlayer()}else{state.dirty=true;updateHud()}
+ const p=state.player,now=performance.now();if(p.downedUntil)return;if(p.restingBedId)p.restingBedId=null;if(attacker)engagePet(attacker);if(state.pet.mounted&&petAlive()){damagePet(n,attacker);return}if(!force&&now<p.invuln)return;interruptAutoGather(now);const armor=item(p.armor);if(now>=(p.vulnerableUntil||0))n*=1-effectiveStat(p.armor,'reduce');if(now<(p.guardUntil||0))n*=.5;p.hp=Math.max(0,p.hp-n);p.invuln=now+520;playCombatAudio('hurt',Math.max(0,Math.min(1,n/100)));playGameSfx('playerHurt');ui.flash.classList.add('on');setTimeout(()=>ui.flash.classList.remove('on'),100);if(p.hp<=0){knockoutPlayer()}else{state.dirty=true;updateHud()}
 }
 function applyBurn(){const p=state.player;p.burnTicks=4;p.burnNext=performance.now()+1000;showNotice('화염 상태 · 4초')}
 const SMELT_SPECS={
@@ -3001,6 +3026,11 @@ function monsterTargetForIronSpirit(e){
 }
 function enemyRespawnDelay(type){return type&&(type.lakeZone||type.underwater||type.jungle||type.snow)?60000:12000}
 function enemyIncomingDamage(target,amount,now=performance.now()){
+ if(target?.type?.toxicMycelium){
+  const shielded=state.enemies.some(o=>o.hp>0&&o.type?.sporeShieldOrb&&o.parentId===target.netId);
+  if(shielded)return 0
+ }
+ if(target?.type?.swampHarden&&now<(target.hardenedUntil||0))amount*=.5;
  return target?.type?.id==='lakecroc'&&now<(target.stunnedUntil||0)?amount*2:amount
 }
 function damageMonster(target,amount,attacker,now){
@@ -3069,6 +3099,39 @@ function updateMushroomGas(e,targetP,now,playerD){
  }
  return false
 }
+
+function spawnToxicPools(e,targetP,now){
+ for(let i=0;i<5;i++){const a=i*Math.PI*2/5+Math.random()*.4,r=80+Math.random()*100;state.swampHazards.push({kind:'pool',x:targetP.x+Math.cos(a)*r,y:targetP.y+Math.sin(a)*r,r:42,until:now+4000,nextTick:now})}
+}
+function spawnToxicShieldOrbs(e,now){
+ if(state.enemies.some(o=>o.hp>0&&o.type?.sporeShieldOrb&&o.parentId===e.netId))return;
+ for(let i=0;i<4;i++){const a=i*Math.PI/2,o=spawnAt(creatures.toxicsporeorb,e.x+Math.cos(a)*72,e.y+Math.sin(a)*72,null);o.parentId=e.netId;o.noRespawn=true;state.enemies.push(o)}
+ showNotice('맹독 균사체 · 포자 구슬 4개 · 전부 파괴해야 본체 공격 가능')
+}
+function updateSwampSpecial(e,targetP,now,playerD){
+ if(e.type.toxicMycelium&&e.hostile){
+  if(!e.nextToxicThrow)e.nextToxicThrow=now+2500;if(now>=e.nextToxicThrow){e.nextToxicThrow=now+2500;if(Math.random()<.48){if(Math.random()<.5){enemyDamageTarget(e,70,true);showNotice('맹독 균사체 · 독 투척 70 피해')}else{spawnToxicPools(e,targetP,now);showNotice('맹독 균사체 · 독 장판 5개')}}}
+  if(!e.nextShieldRoll)e.nextShieldRoll=now+3000;if(now>=e.nextShieldRoll){e.nextShieldRoll=now+3000;if(Math.random()<.40)spawnToxicShieldOrbs(e,now)}
+  if(now<(e.toxicGasUntil||0)){if(!item(state.player.armor)?.gasImmune&&playerD<155&&now>=(e.toxicGasTick||0)){e.toxicGasTick=now+500;enemyDamageTarget(e,22,true)}
+   const c=e.toxicCharge;if(c&&c.left>0){if(now>=c.endAt){c.left--;if(c.left<=0){e.toxicCharge=null;return null}const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;c.dirX=dx/d;c.dirY=dy/d;c.endAt=now+850;c.hit=false}
+    if(!c.hit&&playerD<e.type.r+28){c.hit=true;enemyDamageTarget(e,60,true);applyEnemyEffectTarget(e,targetP,'stun',3000);showNotice('가스 돌진 적중 · 60 피해 · 3초 기절')}
+    const sp=(Number(targetP.speed)||185)*3;return{vx:c.dirX*sp,vy:c.dirY*sp}
+   }}
+  if(!e.nextGasRush)e.nextGasRush=now+2000;if(now>=e.nextGasRush){e.nextGasRush=now+2000;if(Math.random()<.30){const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;e.toxicGasUntil=now+10000;e.toxicGasTick=now;e.toxicCharge={left:3,dirX:dx/d,dirY:dy/d,endAt:now+850,hit:false};showNotice('맹독 균사체 · 가스 돌진 3회');return{vx:dx/d*(targetP.speed||185)*3,vy:dy/d*(targetP.speed||185)*3}}}
+ }
+ if(e.type.swampHarden){
+  if(!e.nextHardenRoll)e.nextHardenRoll=now+3000;if(now>=e.nextHardenRoll){e.nextHardenRoll=now+3000;if(Math.random()<.30){e.hardenedUntil=now+20000;showNotice('늪 골렘 · 굳음 20초 · 받는 피해 50% 감소')}}
+ }
+ if(e.type.fearSpecial&&e.hostile){
+  if(!e.nextFearRoll)e.nextFearRoll=now+3000;if(now>=e.nextFearRoll){e.nextFearRoll=now+3000;if(Math.random()<.50){targetP.attackBlockedUntil=Math.max(targetP.attackBlockedUntil||0,now+5000);e.hp=Math.min(e.maxHp,e.hp+200);showNotice('공포 곰 · 공포 5초 · 공격 불가 · 곰 체력 200 회복')}}
+ }
+ return null
+}
+function updateSwampHazards(now){
+ const p=state.player;
+ for(let i=state.swampHazards.length-1;i>=0;i--){const h=state.swampHazards[i];if(now>=h.until){state.swampHazards.splice(i,1);continue}if(dist(p.x,p.y,h.x,h.y)<=h.r&&now>=(h.nextTick||0)){h.nextTick=now+500;damagePlayer(20,true,null)}}
+}
+
 function updateCrocodileSpecial(e,targetP,now,playerD){
  if(e.type.id!=='lakecroc'||!e.hostile)return null;
  if(now<(e.stunnedUntil||0))return{vx:0,vy:0,active:true};
@@ -3477,9 +3540,9 @@ function finishPlayerArrowKill(e,ownerId,now){
  if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+enemyRespawnDelay(e.type)});
  if(ownerId===multiplayer.playerId||!multiplayer.connected){state.player.kills++;awardLoot(e);showNotice(e.type.name+' 처치');updateHud()}else multiSend('kill-reward',{targetId:ownerId,typeId:e.type.id})
 }
-function spawnSporeCloud(x,y,area,ownerId,now){state.sporeClouds.push({x,y,r:115,area,ownerId,createdAt:now,until:now+3000,nextTick:now})}
+function spawnSporeCloud(x,y,area,ownerId,now,enhanced=false){state.sporeClouds.push({x,y,r:115,area,ownerId,createdAt:now,until:now+3000,nextTick:now,tick:enhanced?50:500,damage:enhanced?3:5})}
 function updateSporeClouds(now){
- for(let i=state.sporeClouds.length-1;i>=0;i--){const g=state.sporeClouds[i];if(now>=g.until){state.sporeClouds.splice(i,1);continue}if(multiplayer.connected&&!multiIsHost())continue;if(now<(g.nextTick||0))continue;g.nextTick=now+500;for(const e of state.enemies){if(e.hp<=0||e.area!==g.area||(e.type.mood==='harmless'&&!e.type.huntable)||dist(g.x,g.y,e.x,e.y)>g.r+e.type.r)continue;const dmg=enemyIncomingDamage(e,5,now);e.hp-=dmg;e.hitAt=now+110;if(e.type.mood==='neutral')markEnemyHitByPlayer(e);if(e.hp<=0)finishPlayerArrowKill(e,g.ownerId||multiplayer.playerId,now)}}
+ for(let i=state.sporeClouds.length-1;i>=0;i--){const g=state.sporeClouds[i];if(now>=g.until){state.sporeClouds.splice(i,1);continue}if(multiplayer.connected&&!multiIsHost())continue;if(now<(g.nextTick||0))continue;g.nextTick=now+(g.tick||500);for(const e of state.enemies){if(e.hp<=0||e.area!==g.area||(e.type.mood==='harmless'&&!e.type.huntable)||dist(g.x,g.y,e.x,e.y)>g.r+e.type.r)continue;const dmg=enemyIncomingDamage(e,Number(g.damage)||5,now);e.hp-=dmg;e.hitAt=now+110;if(e.type.mood==='neutral')markEnemyHitByPlayer(e);if(e.hp<=0)finishPlayerArrowKill(e,g.ownerId||multiplayer.playerId,now)}}
 }
 function updateProjectiles(dt,now){
  const p=state.player;
@@ -3496,7 +3559,7 @@ function updateProjectiles(dt,now){
    if(multiplayer.connected&&!multiIsHost())continue;
    let hitEnemy=null;
    for(const e of state.enemies){if(e.hp<=0||e.area!==q.area||(e.type.mood==='harmless'&&!e.type.huntable)||(e.type.labBoss&&now<(e.submergedUntil||0)))continue;if(dist(q.x,q.y,e.x,e.y)>e.type.r+10)continue;hitEnemy=e;break}
-   if(hitEnemy){if(q.kind==='sporeOrb')spawnSporeCloud(hitEnemy.x,hitEnemy.y,q.area,q.ownerId||q.sourceId||multiplayer.playerId,now);if(hitEnemy.type.burrower)hitEnemy.provokedByPlayer=true;const dmg=enemyIncomingDamage(hitEnemy,Number(q.damage)||0,now);hitEnemy.hp-=dmg;hitEnemy.hitAt=now+110;engagePet(hitEnemy);if(hitEnemy.type.mood==='neutral'){markEnemyHitByPlayer(hitEnemy);if(hitEnemy.type.id==='giantbee')alertBeeKin(hitEnemy)};if(q.arrowId==='spider-arrow'){hitEnemy.slowedUntil=Math.max(hitEnemy.slowedUntil||0,now+3000);if((q.ownerId||q.sourceId)===multiplayer.playerId||!multiplayer.connected)showNotice(hitEnemy.type.name+' · 거미줄에 걸려 3초간 이동속도 50% 감소')}if(hitEnemy.hp<=0)finishPlayerArrowKill(hitEnemy,q.ownerId||q.sourceId||multiplayer.playerId,now);state.projectiles.splice(i,1);state.dirty=true;continue}
+   if(hitEnemy){if(q.kind==='sporeOrb')spawnSporeCloud(hitEnemy.x,hitEnemy.y,q.area,q.ownerId||q.sourceId||multiplayer.playerId,now,!!q.enhanced);if(hitEnemy.type.burrower)hitEnemy.provokedByPlayer=true;const dmg=enemyIncomingDamage(hitEnemy,Number(q.damage)||0,now);hitEnemy.hp-=dmg;hitEnemy.hitAt=now+110;engagePet(hitEnemy);if(hitEnemy.type.mood==='neutral'){markEnemyHitByPlayer(hitEnemy);if(hitEnemy.type.id==='giantbee')alertBeeKin(hitEnemy)};if(q.arrowId==='spider-arrow'){hitEnemy.slowedUntil=Math.max(hitEnemy.slowedUntil||0,now+3000);if((q.ownerId||q.sourceId)===multiplayer.playerId||!multiplayer.connected)showNotice(hitEnemy.type.name+' · 거미줄에 걸려 3초간 이동속도 50% 감소')}if(hitEnemy.hp<=0)finishPlayerArrowKill(hitEnemy,q.ownerId||q.sourceId||multiplayer.playerId,now);state.projectiles.splice(i,1);state.dirty=true;continue}
    continue
   }
   if(q.area===state.area&&dist(q.x,q.y,p.x,p.y)<25){
@@ -3679,6 +3742,7 @@ function update(dt,now){
         if(pick){e.enemyTarget=pick.target;const chase=chaseMonster(e,pick.target,now);if(chase){vx=chase.vx;vy=chase.vy;monsterFight=true}}
       }
       updateMushroomGas(e,targetP,now,playerD);
+      const swampMove=!monsterFight?updateSwampSpecial(e,targetP,now,playerD):null;if(swampMove){vx=swampMove.vx;vy=swampMove.vy;monsterFight=true}
       const crocMove=!monsterFight?updateCrocodileSpecial(e,targetP,now,playerD):null;if(crocMove){vx=crocMove.vx;vy=crocMove.vy;monsterFight=true}
       if(!monsterFight&&updateGorillaSpecial(e,targetP,now,playerD))monsterFight=true;
       if(!monsterFight&&updateAnacondaWrap(e,now))monsterFight=true;
@@ -3801,7 +3865,7 @@ function update(dt,now){
         if(!blockedByPlayerBuilding(e.x,nextEnemyY,er))e.y=nextEnemyY
       }else{e.x=nextEnemyX;e.y=nextEnemyY}
     }
-    updateProjectiles(dt,now);updateSporeClouds(now);
+    updateProjectiles(dt,now);updateSporeClouds(now);updateSwampHazards(now);
     for(let i=state.respawns.length-1;i>=0;i--)if(now>=state.respawns[i].at){
       const r=state.respawns[i],type=creatures[r.typeId];
       if(type&&!type.boss){
@@ -4436,6 +4500,9 @@ function drawProjectiles(cx,cy){
   ctx.restore()
  }
 }
+function drawSwampHazards(cx,cy,now){
+ for(const h of state.swampHazards){const x=h.x-cx,y=h.y-cy;if(x<-90||y<-90||x>innerWidth+90||y>innerHeight+90)continue;ctx.save();ctx.globalAlpha=.42;ctx.fillStyle='#79a83f';ctx.beginPath();ctx.arc(x,y,h.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#b6df67';ctx.lineWidth=2;ctx.stroke();ctx.restore()}
+}
 function drawPlayer(cx,cy,now){
  const p=state.player,x=p.x-cx,y=p.y-cy;
  if(p.downedUntil){ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI/2);ctx.globalAlpha=.7;ctx.fillStyle='#394b50';roundRect(-24,-30,48,60,10);ctx.fill();ctx.restore();ctx.fillStyle='#ffd2d2';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText('쓰러짐 · 동료 부활 가능',x,y-38);return}
@@ -4553,7 +4620,7 @@ function draw(){
   drawStructure(state.bench,cx,cy,'bench');drawStructure(state.furnace,cx,cy,'furnace');drawStructure(state.ironBench,cx,cy,'ironbench');drawStructure(state.goldBench,cx,cy,'goldbench');drawStructure(state.jungleBench,cx,cy,'junglebench');drawStructure(state.blacksmithAnvil,cx,cy,'anvil');drawStructure(state.cookingStation,cx,cy,'cookingstation');drawStructure(state.incubator,cx,cy,'incubator');for(const flag of state.flags)drawStructure(flag,cx,cy,'flag');for(const b of state.chests)drawPlayerBuilding(b,cx,cy,'chest');for(const b of state.walls)drawPlayerBuilding(b,cx,cy,'wall');for(const b of state.doors)drawPlayerBuilding(b,cx,cy,'door');for(const b of state.towers)drawPlayerBuilding(b,cx,cy,'tower');for(const b of state.beds)drawPlayerBuilding(b,cx,cy,'bed');for(const b of state.gardens)drawPlayerBuilding(b,cx,cy,'garden');for(const crop of state.crops)drawCrop(crop,cx,cy);drawSnowOutposts(cx,cy);drawFlowerWorld(cx,cy);drawBlueprint(cx,cy);drawShadowEgg(cx,cy)
  }
  for(const e of state.enemies)if(e.area===state.area)drawCreature(e,cx,cy);
- drawDeathEffects(cx,cy,now);drawSporeClouds(cx,cy);drawProjectiles(cx,cy);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawWeatherOverlay(now);drawUnderwaterDarkness(now);drawQuestDarkness();drawMiniMap(now)
+ drawDeathEffects(cx,cy,now);drawSporeClouds(cx,cy);drawProjectiles(cx,cy);drawSwampHazards(cx,cy,now);drawPet(cx,cy);drawRemotePlayers(cx,cy);drawPlayer(cx,cy,now);drawWeatherOverlay(now);drawUnderwaterDarkness(now);drawQuestDarkness();drawMiniMap(now)
 }
 function syncRuntimeMeta(){const root=document.body,p=state.player,c=state.camera;if(!root||!p)return;root.dataset.playerX=Number(p.x||0).toFixed(2);root.dataset.playerY=Number(p.y||0).toFixed(2);root.dataset.cameraX=Number(c?.x||0).toFixed(2);root.dataset.cameraY=Number(c?.y||0).toFixed(2);root.dataset.area=String(state.area||'surface');root.dataset.motionState=(state.keys.size||Math.hypot(state.stick.x,state.stick.y)>.01)?'move':'idle';root.dataset.autoGather=state.gathering.auto?'on':'off';root.dataset.autoGatherTarget=state.gathering.target?.kind||'';root.dataset.audioState=!music.enabled?'muted':music.ctx?.state==='running'?'running':music.ctx?.state==='suspended'?'suspended':'idle'}
 function resize(){const mobileCanvas=innerWidth<=900||innerHeight<=600,d=Math.min(mobileCanvas?1.5:2,devicePixelRatio||1);canvas.width=Math.floor(innerWidth*d);canvas.height=Math.floor(innerHeight*d);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';ctx.setTransform(d,0,0,d,0,0)}function loop(now){const dt=Math.min(.033,(now-state.last)/1000);state.last=now;update(dt,now);syncRuntimeMeta();draw();requestAnimationFrame(loop)}
