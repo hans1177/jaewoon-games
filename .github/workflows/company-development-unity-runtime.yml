@@ -779,7 +779,39 @@ jobs:
           const update=JSON.parse(fs.readFileSync(process.env.ROW_PATH,'utf8'));
           const item=(queue.items||[]).find(x=>x.gameId===update.gameId);
           if(!item)throw new Error('queue item missing: '+update.gameId);
-          Object.assign(item,update);
+          const mergedUpdate={...update};
+          const concurrent=Array.isArray(item.concurrentTargetPlatforms)
+            &&item.concurrentTargetPlatforms.includes('ROBLOX')
+            &&item.concurrentTargetPlatforms.includes('UNITY');
+          const exactRobloxBuild=item.robloxBuildOrPackagePassed===true
+            &&item.robloxBuildPreflightPassed===true
+            &&item.robloxFoundationF0Passed===true
+            &&String(item.robloxBuildSourceRevision||'')===String(item.robloxSourceCommit||'')
+            &&/^sha256:[a-f0-9]{64}$/i.test(String(item.robloxBuildArtifactIdentity||''));
+          const exactCandidate=item.robloxRuntimeCandidateEvidence||{};
+          const exactRobloxCandidate=exactCandidate.published===true
+            &&String(exactCandidate.sourceRevision||'')===String(item.robloxSourceCommit||'')
+            &&String(exactCandidate.artifactIdentity||'')===String(item.robloxBuildArtifactIdentity||'')
+            &&Number(exactCandidate.versionNumber)>0;
+          const robloxInternal=item.robloxInternalReleaseReady===true
+            ||item.robloxInternalReleasePublished===true
+            ||item.robloxInternalReleaseEvidence?.published===true;
+          if(concurrent&&update.unityInternalReleaseReady!==true){
+            if(robloxInternal){
+              mergedUpdate.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+              mergedUpdate.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+              console.log('UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX='+update.gameId+':INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+            }else if(exactRobloxCandidate){
+              mergedUpdate.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              mergedUpdate.canonicalState='PRIVATE_RUNTIME_CANDIDATE_DEPLOYED';
+              console.log('UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX='+update.gameId+':TARGET_PLATFORM_RUNTIME_FOUNDATION');
+            }else if(exactRobloxBuild){
+              mergedUpdate.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+              mergedUpdate.canonicalState='F0_SOURCE_PREFLIGHT_PASSED';
+              console.log('UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX='+update.gameId+':PRIVATE_RUNTIME_CANDIDATE_DEPLOY');
+            }
+          }
+          Object.assign(item,mergedUpdate);
           if(update.contractCanaryPassed)queue.executionContractVersion=1;
           queue.executionContract='CHANGE_DETECTION>CHEAP_PRECHECK>REPRESENTATIVE_CANARY>SINGLE_BUILD_OR_PACKAGE>IMMUTABLE_ARTIFACT_BIND>TARGET_PLATFORM_RUNTIME>INDEPENDENT_QA>REGRESSION>IMMEDIATE_NEXT_STAGE_DISPATCH>RESUME_EXACT_FAILURE_POINT';
           queue.developmentGameWipMax=null;
