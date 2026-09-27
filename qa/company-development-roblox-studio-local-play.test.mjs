@@ -12,7 +12,8 @@ import {
   planLocalStudioCandidates,
   createLocalStudioPlayEvidence,
   applyLocalStudioPlayResult,
-  evaluateStudioActualPlayContract
+  evaluateStudioActualPlayContract,
+  deriveF1ToF8SingleSessionEvidence
 } from '../tools/company-development-roblox-studio-local-play.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
@@ -97,7 +98,8 @@ function runtime(){
       playMode:true,
       mcpInput:true,
       screenCapture:true,
-      consoleCapture:true
+      consoleCapture:true,
+      executeLuauRuntimeProbe:true
     },
     actions:[
       {id:'keyboard-w',type:'mcp-keyboard-input',dispatched:true,ok:true},
@@ -113,6 +115,14 @@ function runtime(){
       {id:'play-mode-stopped',required:true,pass:true}
     ],
     errors:[],
+    runtimeProbes:{
+      finalClient:{
+        player:{present:true,characterPresent:true,humanoidPresent:true,rootPresent:true},
+        camera:{present:true},
+        workspace:{MapReady:true}
+      },
+      finalServer:{workspace:{MapReady:true}}
+    },
     metrics:{consoleErrorCount:0,distinctFrameChange:true},
     rawSourceIncluded:false,
     rawGameplayValuesIncluded:false,
@@ -148,6 +158,41 @@ test('planner selects exact internally released artifact during parallel foundat
   assert.equal(result.include.length,1);
   assert.equal(result.include[0].artifactRunId,777);
   assert.equal(result.include[0].historicalExactPublishedArtifact,true);
+});
+
+test('planner selects an exact private candidate before runtime foundation or internal release',()=>{
+  const candidate=item();
+  candidate.robloxInternalReleasePublished=false;
+  candidate.robloxInternalReleaseEvidence={};
+  candidate.robloxRuntimeFoundationPassed=false;
+  candidate.robloxRuntimeFoundationEvidence={};
+  const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
+  assert.equal(result.include.length,1);
+  assert.equal(result.include[0].actualPlayEligibility,'PRIVATE_CANDIDATE_EXACT_F1_F8_SINGLE_SESSION');
+});
+
+test('one Studio play session derives all F1 through F8 floors without real-server boot',()=>{
+  const candidate=item();
+  candidate.robloxInternalReleasePublished=false;
+  candidate.robloxInternalReleaseEvidence={};
+  candidate.robloxRuntimeFoundationPassed=false;
+  candidate.robloxRuntimeFoundationEvidence={};
+  const applied=applyLocalStudioPlayResult({
+    queue:{items:[candidate]},gameId:'g1',runtime:runtime(),expected,workflowRunId:202,
+    studioStepSucceeded:true,testedAt:'2026-09-28T00:00:00.000Z'
+  });
+  assert.equal(applied.result.pass,true);
+  const single=deriveF1ToF8SingleSessionEvidence({
+    item:applied.item,
+    design:{content:{multiplayerMode:'SINGLE_PLAYER',platformProfiles:{ROBLOX:{saveAndNetwork:'SESSION_ONLY'}}}}
+  });
+  assert.equal(single.pass,true);
+  assert.equal(single.oneStudioPlaySession,true);
+  assert.equal(single.externalServerBootRequired,false);
+  assert.equal(single.perFloorRuntimeRelaunch,false);
+  assert.deepEqual(Object.keys(single.floors),['F1','F2','F3','F4','F5','F6','F7','F8']);
+  assert.equal(single.floors.F7.mode,'NOT_APPLICABLE_VERIFIED_DESIGN_SINGLE_PLAYER');
+  assert.equal(Object.values(single.floors).every(row=>row.pass===true),true);
 });
 
 test('planner selects exact runtime-foundation artifact before internal release',()=>{
@@ -248,22 +293,24 @@ test('planner excludes only explicit disabled games rather than using currentSte
   assert.deepEqual(result.include.map(row=>row.gameId).sort(),['g1','g2']);
 });
 
-test('central contract makes actual play evidence-gated and parallel to foundation revalidation after internal release',()=>{
+test('central contract routes exact private candidates to one Studio F1-F8 session independent of release state',()=>{
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const loop=central.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.internalBuildupLoop||{};
-  assert.equal(loop.actualVibePlayEligibility,'RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING');
-  assert.equal(loop.actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease,true);
-  assert.equal(loop.actualVibePlayEligibilityMustNotDependOnExclusiveCurrentStep,true);
-  assert.equal(loop.foundationOrFinalRevalidationMayRunParallelWithActualVibePlayAfterInternalRelease,true);
-  assert.equal(loop.currentStepMayRepresentParallelRuntimeRevalidationWithoutRevokingInternalReleasePlayEligibility,true);
-  assert.equal(loop.explicitDisabledGameRemainsIneligible,true);
+  assert.equal(loop.actualVibePlayEligibility,'EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_EXACT_SOURCE_ARTIFACT_BINDING');
+  assert.equal(loop.actualVibePlayMayStartAfterExactPrivateCandidateBeforeRuntimeFoundationPass,true);
+  const cycle=central.developmentLifecycleMachine?.perpetualF0ToF9Cycle||{};
+  assert.deepEqual(cycle.floors,['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9']);
+  assert.equal(cycle.f10Exists,false);
+  assert.deepEqual(cycle.platforms,['ROBLOX','UNITY']);
+  assert.deepEqual(cycle.excludedPlatforms,['FORTNITE_UEFN']);
+  assert.equal(cycle.executionPlan?.f1ThroughF8?.singleInternalRuntimeSession,true);
+  assert.equal(cycle.executionPlan?.f9?.runtimeRelaunchForbidden,true);
   const arch=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup||{};
-  assert.equal(arch.actualPlayPlannerEligibility,'RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING');
-  assert.equal(arch.actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass,true);
-  assert.equal(arch.actualPlayPlannerExclusiveCurrentStepGate,false);
-  assert.equal(arch.parallelRuntimeFoundationAndFinalRevalidationAllowedAfterInternalRelease,true);
-  assert.equal(arch.explicitDisabledGameEligible,false);
+  assert.equal(arch.actualPlayPlannerEligibility,'EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_EXACT_SOURCE_ARTIFACT_BINDING');
+  assert.equal(arch.actualPlayMayStartBeforeRuntimeFoundationPassAfterExactPrivateCandidate,true);
+  assert.equal(arch.internalServerBootRequired,false);
+  assert.equal(arch.perFloorStudioRelaunchForbidden,true);
 });
 
 
