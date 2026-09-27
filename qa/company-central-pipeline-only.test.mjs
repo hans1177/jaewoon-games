@@ -136,8 +136,8 @@ test('native development trigger ownership avoids duplicate central plus child p
   ]) assert.ok(!developmentPush.includes(nonRuntimeWake),nonRuntimeWake);
   assert.match(development,/group: company-development-confirmed-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'main-push'\) \|\| github\.run_id \}\}/);
   assert.match(development,/group: company-development-confirmed-[\s\S]{0,180}?cancel-in-progress: false/);
-  assert.match(roblox,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
-  assert.match(unity,/group: unity-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
+  assert.match(roblox,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(unity,/group: unity-native-exact-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
   for(const childPath of [
     '.github/workflows/company-development-roblox-runtime.yml',
     '.github/workflows/company-development-roblox-runtime-continuation.yml',
@@ -606,7 +606,7 @@ test('Unity Web bottleneck optimizations are bound consistently across central p
 });
 
 
-test('exact-game native workflow concurrency closes dedupe races without global serialization',()=>{
+test('exact-game native workflow concurrency closes dedupe races while coalescing empty-game batches',()=>{
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
   const logMap=JSON.parse(read('company-learning/company-log-map.json'));
@@ -614,29 +614,36 @@ test('exact-game native workflow concurrency closes dedupe races without global 
   const unity=read('.github/workflows/company-development-unity-runtime.yml');
   const central=read('.github/workflows/company-development-confirmed-runtime.yml');
   const change=roadmap.changeRecord?.nativeExactGameWorkflowConcurrency20260927;
-
-  assert.match(roblox,/concurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n\s+cancel-in-progress: false/);
-  assert.match(unity,/concurrency:\n\s+group: unity-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n\s+cancel-in-progress: false/);
+  assert.match(roblox,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(unity,/group: unity-native-exact-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(roblox,/concurrency:[\s\S]{0,220}?cancel-in-progress: false/);
+  assert.match(unity,/concurrency:[\s\S]{0,220}?cancel-in-progress: false/);
   assert.match(central,/ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
   assert.match(central,/UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
-
   assert.equal(change?.exactGameIdentity,'inputs.game_id');
-  assert.equal(change?.pushBatchIdentity,'batch-push');
-  assert.equal(change?.nonPushEmptyBatchIdentity,'github.run_id');
+  assert.equal(change?.pushBatchIdentity,'batch');
+  assert.equal(change?.nonPushEmptyBatchIdentity,'batch');
   assert.equal(change?.cancelInProgress,false);
   assert.equal(change?.distinctGamesParallel,true);
   assert.equal(change?.pushBatchRunsCoalesced,true);
-  assert.equal(change?.manualEmptyBatchRunsRunScoped,true);
-  assert.equal(change?.batchRunsGloballySerialized,false);
+  assert.equal(change?.manualEmptyBatchRunsRunScoped,false);
+  assert.equal(change?.manualEmptyBatchRunsCoalesced,true);
+  assert.equal(change?.batchRunsGloballySerialized,true);
+  assert.equal(change?.batchPendingPolicy,'KEEP_ACTIVE_ONE_PLUS_LATEST_PENDING');
   assert.equal(change?.globalNativeSerializationForbidden,true);
   assert.equal(architecture.nativeExactGameWorkflowConcurrency?.distinctGamesParallel,true);
-  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.batchGlobalSerialization,false);
+  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.batchGlobalSerialization,true);
+  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.batchPendingPolicy,'ACTIVE_ONE_PLUS_LATEST_PENDING');
   assert.equal(architecture.nativeExactGameWorkflowConcurrency?.pushBatchCoalesced,true);
-  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.manualEmptyBatchRunScoped,true);
+  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.manualEmptyBatchRunScoped,false);
+  assert.equal(architecture.nativeExactGameWorkflowConcurrency?.manualEmptyBatchCoalesced,true);
   assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.exactGameOverlapForbidden,true);
   assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.distinctGameParallelismRequired,true);
+  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.batchGlobalSerialization,true);
+  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.batchPendingPolicy,'ACTIVE_ONE_PLUS_LATEST_PENDING');
   assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.pushBatchCoalesced,true);
-  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.manualEmptyBatchRunScoped,true);
+  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.manualEmptyBatchRunScoped,false);
+  assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.manualEmptyBatchCoalesced,true);
 });
 
 test('Roblox source-plan wake and runner isolation stay aligned across central records',()=>{
