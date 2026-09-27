@@ -494,10 +494,10 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const task = resolved.task;
   const taskTarget=clean(task?.target).toLowerCase();
   const taskSourceRoot=posix(task?.sourceRoot);
-  const taskEvidence=(task?.evidence||[]).map(clean);
+  const holdEvidence=(task?.evidence||[]).map(clean);
   const fortniteUefnTask=['fortnite-uefn','fortnite_uefn','fortnite','uefn'].includes(taskTarget)
     ||taskSourceRoot.startsWith('uefn-games/')
-    ||taskEvidence.some(value=>/fortnite[_-]?uefn|\buefn\b/i.test(value));
+    ||holdEvidence.some(value=>/fortnite[_-]?uefn|\buefn\b/i.test(value));
   if(fortniteUefnTask&&presentationPassFromTask(task)){
     return freeze({...base,reason:'OWNER_HOLD_FORTNITE_UEFN_PRESENTATION',selectedTask:task,hold:true,authorityExpanded:false});
   }
