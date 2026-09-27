@@ -112,7 +112,8 @@ const PLACEHOLDER_PATHS=new Set(['relative/to/source/root','relative/path','path
 function readJson(file,fallback=null){if(!file||!fs.existsSync(file))return fallback;return JSON.parse(fs.readFileSync(file,'utf8'));}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,`${JSON.stringify(value,null,2)}\n`,'utf8');}
 function parseArgs(argv=process.argv.slice(2)){const args={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)args[body]=true;else args[body.slice(0,at)]=body.slice(at+1);}return args;}
-function targetExtensions(target){const x=TARGET_EXTENSIONS[clean(target).toLowerCase()];if(!x)throw new Error(`지원하지 않는 Vibe2 source target: ${target}`);return x;}
+function normalizeSourceTarget(target){const value=clean(target).toLowerCase();return['fortnite-uefn','fortnite_uefn','fortnite','uefn'].includes(value)?'unreal':value;}
+function targetExtensions(target){const normalized=normalizeSourceTarget(target);const x=TARGET_EXTENSIONS[normalized];if(!x)throw new Error(`지원하지 않는 Vibe2 source target: ${target}`);return x;}
 function sourcePrefixes(target){if(target==='roblox')return['roblox-games/'];if(target==='web')return['web-games/'];if(target==='unity')return['unity-games/'];if(target==='unreal')return['uefn-games/','unreal-games/'];if(target==='godot')return['godot-games/'];return[];}
 function sourcePrefix(target){return sourcePrefixes(target)[0]||'';}
 function assertSourceRoot(root,target){const normalized=posix(root);if(target==='system'){if(normalized!=='.')throw new Error(`system source root must be repo root: ${root}`);return normalized;}const prefixes=sourcePrefixes(target);if(!prefixes.length||!prefixes.some(prefix=>normalized.startsWith(prefix))||normalized.includes('..'))throw new Error(`허용되지 않은 source root: ${root}`);if(target==='web'&&normalized.split('/').length!==2)throw new Error(`기존 웹게임 루트만 허용: ${root}`);return normalized;}
@@ -2408,7 +2409,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   if(!order?.run||order?.workMode!=='source-change-candidate')throw new Error('실행 가능한 source-change work order 필요');
   if(order?.workerPolicy?.directMainWrite!==false)throw new Error('directMainWrite 정책 위반');
   const centralPolicyPreflight=assertCompiledWorkContractFresh({cwd,contract:order?.compiledWorkContract||{},phase:'PRE_SOURCE_GENERATION'});
-  const target=clean(order.target).toLowerCase();
+  const target=normalizeSourceTarget(order.target);
   const developmentAuthority=target==='system'
     ?{owner:'VIBE2_VIBE3',provider:'LOCAL_OLLAMA',model:DEFAULT_MODEL,role:'SYSTEM_ARCHITECTURE_EVOLUTION',...assertSystemArchitectureTask(order.selectedTask||{}),directMainWrite:false}
     :assertGameDevelopmentAuthority();
