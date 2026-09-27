@@ -3,114 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-jxbpgi",
-      "worker": "vibe2",
-      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "files": [
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:09:53.178Z",
-      "expiresAt": "2026-09-27T05:54:53.178Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-hp6ej3",
-      "worker": "vibe2",
-      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/Game.server.luau",
-        "roblox-games/cozy-island/client/Game.client.luau",
-        "roblox-games/cozy-island/shared/GameConfig.luau"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:09:56.163Z",
-      "expiresAt": "2026-09-27T05:54:56.163Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-post-release-focus-12c1a7e2ae6288fd"
-      ]
-    },
-    {
-      "id": "wl-9ii8kp",
-      "worker": "vibe2",
-      "taskId": "cozy-island-existing-web-assessment-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "web-games/cozy-island/index.html"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:09:58.171Z",
-      "expiresAt": "2026-09-27T05:54:58.171Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-existing-web-assessment-v1"
-      ]
-    },
-    {
-      "id": "wl-1xzzzz",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-unity-web-base-implementation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "unity-games/monster-adventure/Assets/Scripts/GameCore.cs",
-        "unity-games/monster-adventure/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:10:00.311Z",
-      "expiresAt": "2026-09-27T05:55:00.311Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-8506e",
-      "worker": "vibe2",
-      "taskId": "bug-defense-unity-web-base-implementation-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "unity-games/bug-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/bug-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:10:01.368Z",
-      "expiresAt": "2026-09-27T05:55:01.368Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1l4zysj",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:10:20.490Z",
-      "expiresAt": "2026-09-27T05:55:20.490Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-yerhi7",
       "worker": "vibe2",
       "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1",
@@ -932,24 +824,6 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:amusement-tycoon-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1hghl2y",
-      "worker": "vibe2",
-      "taskId": "SYS-ARCH-425305e25df9-v1",
-      "gameId": "__vibe_system__",
-      "files": [
-        "tools/vibe2-system-steward.mjs",
-        "qa/vibe2-system-steward.test.mjs"
-      ],
-      "baseSha": "1745128b9b1ebbd5ebd8a056f7974734e6fede60",
-      "acquiredAt": "2026-09-27T05:48:13.931Z",
-      "expiresAt": "2026-09-27T06:33:13.931Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:SYS-ARCH-425305e25df9-v1"
       ]
     }
   ]
