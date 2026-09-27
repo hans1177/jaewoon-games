@@ -696,6 +696,7 @@ jobs:
           fetch-depth: 1
 
       - name: Checkout verified learning memory
+        if: env.VIBE2_EXECUTION_LANE == 'game-primary'
         uses: actions/checkout@v4
         with:
           ref: vibe2-learning-runtime
@@ -706,6 +707,7 @@ jobs:
           sparse-checkout-cone-mode: false
 
       - name: Verify commercial learning memory is reusable
+        if: env.VIBE2_EXECUTION_LANE == 'game-primary'
         shell: bash
         run: |
           set -euo pipefail
