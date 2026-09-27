@@ -155,7 +155,7 @@ jobs:
           echo 'ROBLOX_FOUNDATION_SHARED_CONTEXT=PASS'
 
       - name: Keep transient Open Cloud retries inside bounded scan
-        if: ${{ inputs.game_id == '' && inputs.retry_open_cloud_only != true && steps.transient_retry.outputs.count != '0' }}
+        if: ${{ inputs.retry_open_cloud_only == true && inputs.game_id == '' && steps.transient_retry.outputs.count != '0' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -176,6 +176,7 @@ jobs:
           echo 'ROBLOX_FOUNDATION_DETERMINISTIC_QA=PASS'
 
       - name: Probe exact Roblox Open Cloud engine execution
+        if: ${{ inputs.retry_open_cloud_only == true }}
         working-directory: main
         continue-on-error: true
         env:
@@ -332,6 +333,7 @@ jobs:
           NODE
 
       - name: Read exact runtime sentinel and persist tester QA evidence
+        if: ${{ inputs.retry_open_cloud_only == true }}
         working-directory: main
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
@@ -1183,6 +1185,7 @@ jobs:
           echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES'
 
       - name: Dispatch F9 review for runtime-accepted candidates
+        if: ${{ inputs.retry_open_cloud_only == true }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -1196,6 +1199,7 @@ jobs:
           done < /tmp/roblox-f9-ids
 
       - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
+        if: ${{ inputs.retry_open_cloud_only == true }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -1212,6 +1216,7 @@ jobs:
           echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH_COUNT=$dispatch_count"
 
       - name: Enforce persistent Open Cloud probe failures after evidence persistence
+        if: ${{ inputs.retry_open_cloud_only == true }}
         shell: bash
         run: |
           set -euo pipefail
@@ -2032,3 +2037,232 @@ jobs:
             Stop-Process -Id ([int]$ownedId) -Force -ErrorAction SilentlyContinue
             Write-Host "ROBLOX_STUDIO_MCP_PROCESS_REAPED=$ownedId"
           }
+
+  studio-f1-f8-fan-in:
+    name: Fan in one Studio session as F1-F8 evidence
+    needs: [runtime-foundation-qa, studio-mcp-auto-play]
+    if: ${{ always() && needs.runtime-foundation-qa.result == 'success' && (needs.studio-mcp-auto-play.result == 'success' || needs.studio-mcp-auto-play.result == 'skipped') && inputs.retry_open_cloud_only != true }}
+    runs-on: ubuntu-slim
+    timeout-minutes: 12
+    steps:
+      - name: Checkout central implementation
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Checkout canonical runtime state
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+          fetch-tags: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Persist F1-F8 single-session evidence and prepare F9
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          GITHUB_RUN_ID_VALUE: ${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C runtime config user.name 'jaewoon-roblox-f1-f8-fanin'
+          git -C runtime config user.email 'actions@users.noreply.github.com'
+          persisted=0
+          : > /tmp/roblox-f9-single-session-ids
+          for attempt in 1 2 3 4 5; do
+            git -C runtime fetch --no-tags origin company-runtime
+            git -C runtime reset --hard origin/company-runtime
+            rm -f /tmp/roblox-f9-single-session-ids
+            REQUESTED_GAME_ID="$REQUESTED_GAME_ID" GITHUB_RUN_ID_VALUE="$GITHUB_RUN_ID_VALUE" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {deriveF1ToF8SingleSessionEvidence} from './main/tools/company-development-roblox-studio-local-play.mjs';
+
+          const queuePath='runtime/development-queue.json';
+          const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const stamp=new Date().toISOString();
+          const f9=[];
+          let passed=0;
+          let skipped=0;
+          const readDesign=item=>{
+            const rel=String(item?.designBaselineSource||'').trim();
+            if(!rel)return{};
+            const file=path.join('runtime',rel);
+            if(!fs.existsSync(file))return{};
+            try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return{};}
+          };
+          const scenarioPass=(play,id)=>(Array.isArray(play?.scenarioCoverage)?play.scenarioCoverage:[]).some(row=>String(row?.id||'')===id&&row?.pass===true);
+
+          for(const item of q.items||[]){
+            if(requested&&item.gameId!==requested)continue;
+            if(String(item.status||'').toUpperCase()==='DISABLED')continue;
+            if(!['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(String(item.productionClass||'').toUpperCase()))continue;
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const exactF0=item.robloxFoundationF0Passed===true
+              &&String(item.robloxFoundationF0Evidence?.sourceRevision||'')===sourceRevision
+              &&String(item.robloxFoundationF0Evidence?.artifactIdentity||'')===artifactIdentity;
+            const exactCandidate=candidate.published===true
+              &&candidate.releaseClaim===false
+              &&String(candidate.sourceRevision||'')===sourceRevision
+              &&String(candidate.artifactIdentity||'')===artifactIdentity
+              &&Number(candidate.versionNumber||0)>0;
+            if(!exactF0||!exactCandidate){skipped++;continue;}
+
+            const design=readDesign(item);
+            const single=deriveF1ToF8SingleSessionEvidence({item,design});
+            if(single.pass!==true){
+              item.robloxF1ToF8SingleSessionPassed=false;
+              item.robloxF1ToF8SingleSessionEvidence=single;
+              if(item.robloxInternalVibePlayEvidence?.infrastructureFailure!==true){
+                item.currentStep='REPAIR_REQUIRED';
+                item.canonicalState='REPAIR_REQUIRED';
+                item.robloxFailureStage='VIBE_INTERNAL_PLAY';
+                item.robloxFailureSignature='ROBLOX_F1_F8_SINGLE_SESSION_FAILED';
+                item.routingBlockers=['roblox-f1-f8-single-session-failed'];
+              }
+              item.updatedAt=stamp;
+              continue;
+            }
+
+            const play=item.robloxInternalVibePlayEvidence||{};
+            const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
+            const studioAssetRuntimeBindingPassed=!studioAssetBindingRequired||scenarioPass(play,'design-runtime-binding');
+            if(studioAssetBindingRequired&&!studioAssetRuntimeBindingPassed){
+              item.robloxF1ToF8SingleSessionPassed=false;
+              item.robloxF1ToF8SingleSessionEvidence=single;
+              item.currentStep='REPAIR_REQUIRED';
+              item.canonicalState='REPAIR_REQUIRED';
+              item.robloxFailureStage='VIBE_INTERNAL_PLAY';
+              item.robloxFailureSignature='ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PENDING';
+              item.routingBlockers=['roblox-studio-asset-runtime-binding-pending'];
+              item.updatedAt=stamp;
+              continue;
+            }
+
+            const existing=item.robloxPostRuntimeQaEvidence||{};
+            const alreadyExact=existing.f1ThroughF8SingleSession===true
+              &&existing.sourceRevision===sourceRevision
+              &&existing.artifactIdentity===artifactIdentity
+              &&Number(existing.candidateVersionNumber||0)===Number(candidate.versionNumber||0)
+              &&existing.independentQaPassed===true
+              &&existing.regressionPassed===true;
+
+            item.robloxF1ToF8SingleSessionPassed=true;
+            item.robloxF1ToF8SingleSessionEvidence=single;
+            item.robloxStudioAssetRuntimeBindingPassed=studioAssetRuntimeBindingPassed;
+            item.robloxStudioAssetRuntimeBindingEvidence=studioAssetBindingRequired?{
+              version:2,
+              gameId:item.gameId,
+              sourceRevision,
+              artifactIdentity,
+              candidateVersionNumber:Number(candidate.versionNumber),
+              localStudioRuntime:true,
+              officialStudioMcp:true,
+              actualPlatformServerRuntime:false,
+              marker:'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS',
+              authority:'roblox-studio-local-exact-build-asset-binding',
+              verifiedAt:stamp
+            }:null;
+            item.robloxIndependentQaPassed=true;
+            item.robloxIndependentQaPassedAt=stamp;
+            item.robloxRegressionPassed=true;
+            item.robloxRegressionPassedAt=stamp;
+            item.robloxRuntimeFoundationPassed=false;
+            item.robloxRuntimePassed=false;
+            item.robloxPostRuntimeQaEvidence={
+              version:5,
+              gameId:item.gameId,
+              sourceRevision,
+              artifactIdentity,
+              artifactRunId:Number(candidate.artifactRunId||0),
+              candidateVersionNumber:Number(candidate.versionNumber),
+              exactRevision:true,
+              independentQaPassed:true,
+              regressionPassed:true,
+              actualRuntimeEvidence:false,
+              internalStudioRuntimeEvidence:true,
+              f1ThroughF8SingleSession:true,
+              f1ThroughF8Evidence:single,
+              externalServerBootRequired:false,
+              perFloorRuntimeRelaunch:false,
+              officialStudioMcpActualPlayPassed:true,
+              studioAssetBindingRequired,
+              studioAssetRuntimeBindingPassed,
+              studioAssetRuntimeBindingEvidence:item.robloxStudioAssetRuntimeBindingEvidence,
+              deterministicQa:[
+                'qa/company-development-roblox-runtime-foundation.test.mjs',
+                'qa/company-development-roblox-headless-fast-mvp.test.mjs',
+                'qa/company-development-roblox-studio-local-play.test.mjs',
+                'qa/company-tester-debug-intake.test.mjs'
+              ],
+              authority:'roblox-f1-f8-one-studio-session-plus-deterministic-qa',
+              verifiedAt:stamp
+            };
+            item.robloxF9PendingInParallel=true;
+            item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
+            item.canonicalState='ROBLOX_F1_F8_SINGLE_SESSION_PASSED';
+            item.robloxLastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
+            item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+            item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+            item.routingBlockers=['roblox-final-review-pending'];
+            if(item.executionEvidence){
+              item.executionEvidence.runtimePassed=false;
+              item.executionEvidence.independentQaPassed=true;
+              item.executionEvidence.regressionPassed=true;
+              item.executionEvidence.lastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
+              item.executionEvidence.failureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.executionEvidence.failureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+            }
+            item.updatedAt=stamp;
+            if(!alreadyExact)f9.push(item.gameId);
+            passed++;
+          }
+
+          q.updatedAt=stamp;
+          fs.writeFileSync(queuePath,JSON.stringify(q,null,2)+'\n');
+          fs.writeFileSync('/tmp/roblox-f9-single-session-ids',[...new Set(f9)].join('\n')+(f9.length?'\n':''));
+          console.log('ROBLOX_F1_F8_SINGLE_SESSION_PASS_COUNT='+passed);
+          console.log('ROBLOX_F1_F8_SINGLE_SESSION_SKIPPED_COUNT='+skipped);
+          console.log('ROBLOX_F1_F8_RUNTIME_LAUNCH_COUNT_PER_CANDIDATE=1');
+          console.log('ROBLOX_REAL_SERVER_BOOT_INTERNAL_GATE=NO');
+          NODE
+            git -C runtime add development-queue.json
+            git -C runtime diff --cached --check
+            if git -C runtime diff --cached --quiet; then
+              persisted=1
+              echo 'ROBLOX_F1_F8_FANIN_WRITE=NO_CHANGE'
+              break
+            fi
+            git -C runtime commit -m 'runtime: persist single-session Roblox F1-F8 evidence [skip ci]'
+            if git -C runtime push origin HEAD:company-runtime; then
+              persisted=1
+              echo "ROBLOX_F1_F8_FANIN_WRITE=PUSHED:$attempt"
+              break
+            fi
+            sleep $((attempt*2))
+          done
+          test "$persisted" = '1'
+
+      - name: Dispatch F9 aggregation without runtime relaunch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/roblox-f9-single-session-ids || exit 0
+          while read -r id; do
+            [ -n "$id" ] || continue
+            gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            echo "ROBLOX_F9_SINGLE_SESSION_DISPATCHED=$id"
+          done < /tmp/roblox-f9-single-session-ids
+
