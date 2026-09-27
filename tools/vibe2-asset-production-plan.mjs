@@ -990,6 +990,7 @@ export function assetProductionGuidance(plan={}){
     'Vibe2/Vibe3가 게임 소스 구현 주체이며 현재 게임 정체성과 실제 화면 품질을 기준으로 필요한 에셋 방식을 선택한다.',
     '에셋 선택 전에 승인 설계·최신 아트북에서 게임별 Art Bible, Style Lock, Material/Environment/Animation/VFX/Lighting/UI 언어와 Visual Target Frame을 먼저 확정한다.',
     '기본값은 플레이어·적·NPC·무기·아이템·건축물·지형·배경·식생·소품·UI·VFX·오디오까지 목적 있는 에셋을 적용하는 것이다. primitive/샘플 모형은 prototype fallback만 허용하고 Visual Debt로 남긴다.',
+    'UI 자산은 ICON/FRAME/BUTTON/HUD뿐 아니라 MAIN_MENU/PAUSE/INVENTORY/EQUIPMENT/SHOP/CRAFTING/QUEST/SKILL/MAP/SETTINGS/RESULT/SOCIAL_MULTIPLAYER 역할까지 공용 라이브러리에서 준비한다. 실제 게임에는 존재하는 시스템에 필요한 역할만 선택하며 장르가 다른 게임에 동일 메뉴 레이아웃을 복사하지 않는다. 메뉴 외형은 게임별 Style Lock을 따르고 실제 상태·데이터와 연결한다.',
     'Hero 품질 대상(플레이어, 주 보스/적, 시그니처 무기, 핵심 랜드마크/시작지역)은 전체 게임의 스타일 기준점으로 먼저 완성한다.',
     '배경과 환경은 후순위 장식이 아니다. 전경/중경/배경, 지역 랜드마크, set dressing, 환경 스토리텔링, 이동/전투 가독성을 실제 플레이 화면에서 확보한다.',
     '권리가 검증된 기존 에셋은 원본을 덮어쓰지 않고 파츠 재조합·실루엣/비율·재질·지역/정예/보스 파생·LOD 최적화 등 derived 변형으로 게임 고유 에셋화할 수 있다.',

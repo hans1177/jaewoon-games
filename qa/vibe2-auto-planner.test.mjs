@@ -3140,3 +3140,12 @@ test('Roblox product-quality failure is projected into canonical planner buildup
   assert.match(planner,/const phase=qualityBuildUpRequired\|\|latestFailed\?'REPAIR'/);
   assert.match(planner,/if\(project\.queueRobloxQualityBuildUpRequired===true\)return uniqueTaskCandidates/);
 });
+
+test('planner guidance supports varied real menus without cloning every menu into every game',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-auto-planner.mjs',import.meta.url),'utf8');
+  assert.match(source,/메인\/일시정지\/인벤토리\/장비\/상점\/제작\/퀘스트\/스킬\/맵\/설정\/결과\/소셜·멀티 메뉴/);
+  assert.match(source,/실제 시스템에 필요한 역할만 선택/);
+  assert.match(source,/모든 게임에 동일 메뉴 세트 강제를 금지/);
+  assert.match(source,/실제 상태와 연결/);
+});
+

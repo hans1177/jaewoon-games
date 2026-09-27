@@ -417,3 +417,11 @@ test('canonical central policy documents bind the intelligent design loop to exi
   assert.doesNotMatch(cycle,/centralPolicy:'COMPANY_FLOW\.md'/);
   assert.match(cycle,/DESIGN_CHECKPOINT_CONTRACT_VERSION=4/);
 });
+
+test('design intelligence chooses contextual menus instead of cloning one menu set across games',()=>{
+  const result=buildVibeDesignIntelligence({task:{goal:'생존 게임 UI와 제작 흐름 개선'}});
+  assert.match(result.guidance,/메인\/일시정지\/인벤토리\/장비\/상점\/제작\/퀘스트\/스킬\/맵\/설정\/결과\/소셜·멀티/);
+  assert.match(result.guidance,/모든 게임에 같은 메뉴 세트를 복제하지 않는다/);
+  assert.match(result.guidance,/기존 저장\/밸런스\/권한 의미를 바꾸지 않는다/);
+});
+

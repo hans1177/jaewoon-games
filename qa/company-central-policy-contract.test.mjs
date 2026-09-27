@@ -1586,3 +1586,26 @@ test('external AI loss never stops independent Vibe development and resumes from
   assert.equal(architecture.externalAiRules.externalAiAvailabilityMayBlockIndependentVibeWork,false);
   assert.equal(architecture.externalAiRules.externalAiReconnectReplaysCompletedVibeWork,false);
 });
+
+test('menu diversity stays game-specific and reuses the existing Vibe and GRAPHICS_PRODUCTION flow',()=>{
+  const contract=roadmap.developmentLifecycleMachine.gameDevelopmentAuthority.menuDiversityImplementation;
+  assert.equal(contract.enabled,true);
+  assert.equal(contract.selectionAuthority,'VIBE2_VIBE3_WITHIN_APPROVED_GAME_SCOPE');
+  assert.deepEqual(contract.candidateMenuRoles,[
+    'MAIN_MENU','PAUSE','INVENTORY','EQUIPMENT','SHOP','CRAFTING','QUEST','SKILL','MAP','SETTINGS','RESULT','SOCIAL_MULTIPLAYER'
+  ]);
+  assert.equal(contract.selectOnlyRolesBackedByExistingOrApprovedGameSystems,true);
+  assert.equal(contract.genericCrossGenreMenuCloneForbidden,true);
+  assert.equal(contract.identicalMenuSetForcedAcrossAllGames,false);
+  assert.equal(contract.bindSelectedMenusToRealRuntimeStateAndData,true);
+  assert.equal(contract.preserveExistingSaveKeysAndSaveMeaning,true);
+  assert.equal(contract.preserveGameplayBalanceAndEconomySemantics,true);
+  assert.equal(contract.preserveNetworkAuthority,true);
+  assert.equal(contract.newQueueOrPipelineCreated,false);
+  assert.equal(architecture.menuDiversityImplementationTopology.selectionRule,'ONLY_EXISTING_OR_APPROVED_GAME_SYSTEMS');
+  assert.equal(architecture.menuDiversityImplementationTopology.sameMenuSetAcrossAllGamesForbidden,true);
+  assert.equal(architecture.menuDiversityImplementationTopology.newQueue,false);
+  assert.equal(logMap.contextualMenuDiversityEvidence.runtimeStateBindingRequired,true);
+  assert.equal(logMap.contextualMenuDiversityEvidence.genericCrossGenreMenuCloneForbidden,true);
+});
+

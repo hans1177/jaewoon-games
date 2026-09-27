@@ -582,6 +582,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
     `안정성 우선: ${stability.status}; 원인 소유권=${defectOwnership.owner}; route=${defectOwnership.route}. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다.`,
     blueprint.materialDesignChange ? `설계 밑그림: Plan A/B 이상 비교=${blueprint.alternatives.length>=2?'READY':'MISSING'}; 선택안=${blueprint.selectedPlan||'UNSELECTED'}. 기본 컨셉은 기준점이며 검증 가능한 창의적 장르/구조 도전은 허용한다.` : '설계 밑그림: 물질적 설계 변경 아님.',
     `설계 도달성 검사: ${integrity.status}; 콘텐츠 다양성: ${diversity.status}.`,
+    'UI/메뉴는 게임의 실제 장르·규칙·현재 시스템에서 필요한 역할만 선택한다. 메인/일시정지/인벤토리/장비/상점/제작/퀘스트/스킬/맵/설정/결과/소셜·멀티 메뉴를 후보로 보되 모든 게임에 같은 메뉴 세트를 복제하지 않는다. 선택한 메뉴는 실제 게임 상태·아이템·경제·퀘스트·설정 데이터에 연결하고 기존 저장/밸런스/권한 의미를 바꾸지 않는다.',
     '설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.',
     constraintText ? `보존 제약: ${constraintText}` : '명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.',
     critic.issues.length ? `비평 경고: ${critic.issues.join(', ')}` : '비평 게이트: 명시적 구조 문제 없음.',
