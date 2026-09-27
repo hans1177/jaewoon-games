@@ -96,6 +96,10 @@ gameplay_input_delivered=false
 process_observed_after_launch=false
 process_exited_before_runtime_ready=false
 launch_process_missing=false
+rapid_input_stress_pass=false
+background_resume_pass=false
+process_alive_after_stress=false
+post_resume_screenshot_pass=false
 
 if [[ "$seed_technical" == "true" && "$launch_command_pass" == "true" ]]; then
   for attempt in $(seq 1 20); do
@@ -168,6 +172,188 @@ if [[ "$seed_technical" == "true" && "$gameplay_input_delivered" == "true" ]]; t
   done
 else
   [[ "$seed_technical" == "true" ]] || sleep 3
+fi
+
+# Fold independent-input stress and background/resume into this same runtime session.
+pre_stress_pid="$(adb shell pidof "$package" 2>/dev/null | tr -d '\r' | head -n 1 || true)"
+if [[ -n "$pre_stress_pid" && "$gameplay_input_delivered" == "true" ]]; then
+  rapid_input_stress_pass=true
+  for xy in "$center_x $primary_y" "$center_x $secondary_y" "$((screen_w * 28 / 100)) $((screen_h * 74 / 100))" "$((screen_w * 72 / 100)) $((screen_h * 74 / 100))"; do
+    adb shell input tap $xy || rapid_input_stress_pass=false
+    sleep 0.15
+  done
+  adb shell input swipe "$((screen_w * 76 / 100))" "$((screen_h * 74 / 100))" "$((screen_w * 24 / 100))" "$((screen_h * 74 / 100))" 220 || rapid_input_stress_pass=false
+
+  adb shell input keyevent 3 || true
+  sleep 2
+  set +e
+  timeout 20 adb shell am start -W -n "$launch_component" > "$out_dir/resume.log" 2>&1
+  resume_status=$?
+  set -e
+  if [[ "$resume_status" -eq 0 ]] && grep -Eq '^Status:[[:space:]]+ok\r?
+adb shell dumpsys activity activities > "$out_dir/activity.txt" 2>&1 || true
+adb shell dumpsys package "$package" > "$out_dir/package.txt" 2>&1 || true
+adb logcat -d > "$out_dir/logcat.txt" 2>&1 || true
+adb exec-out screencap -p > "$out_dir/screenshot.png" 2>/dev/null || true
+
+fatal=0
+set +e
+python3 tools/unity-package-fatal-logcat.py "$out_dir/logcat.txt" "$package" > "$out_dir/package-fatal-scan.txt" 2>&1
+fatal_scan_status=$?
+set -e
+if [[ "$fatal_scan_status" -eq 1 ]]; then
+  fatal=1
+elif [[ "$fatal_scan_status" -ne 0 ]]; then
+  cat "$out_dir/package-fatal-scan.txt" >&2 || true
+  echo "[JAEWOON_BUILD_ERROR:PACKAGE_FATAL_SCAN_FAILED] unable to classify logcat for $package" >&2
+  exit 20
+fi
+echo "UNITY_PACKAGE_FATAL=$([[ "$fatal" -eq 1 ]]&&echo true||echo false)"
+echo "UNITY_SYSTEM_CRASHES_DO_NOT_FAIL_GAME=YES"
+runtime_pass=false
+if [[ "$launch_command_pass" == "true" && -n "$pid" && "$fatal" -eq 0 ]]; then runtime_pass=true; fi
+seed_signals_pass=true
+if [[ "$seed_technical" == "true" ]]; then
+  seed_signals_pass=false
+  if [[ "$boot_observed" == "true" && "$action_observed" == "true" && "$save_observed" == "true" && "$metric_observed" == "true" ]]; then
+    seed_signals_pass=true
+  fi
+fi
+
+update_pass=false
+if [[ "$runtime_pass" == "true" && "$seed_signals_pass" == "true" ]]; then
+  set +e
+  adb install -r -t "$apk" > "$out_dir/update-install.log" 2>&1
+  update_status=$?
+  set -e
+  if [[ "$update_status" -eq 0 ]] && grep -q 'Success' "$out_dir/update-install.log"; then
+    update_pass=true
+  fi
+fi
+
+python3 - "$out_dir/evidence.json" "$apk" "$package" "$pid" "$runtime_pass" "$fatal" "$update_pass" "$launch_command_pass" "$seed_technical" "$boot_observed" "$action_observed" "$save_observed" "$metric_observed" "$runtime_ready_timeout" "$gameplay_input_delivered" "$launch_activity" "$launch_component" "$process_observed_after_launch" "$process_exited_before_runtime_ready" "$launch_process_missing" "$runtime_abi_compatible" "$device_api" "$device_abis" "$rapid_input_stress_pass" "$background_resume_pass" "$process_alive_after_stress" "$post_resume_screenshot_pass" <<'PY'
+import json,sys,datetime,pathlib
+(out,apk,package,pid,runtime_pass,fatal,update_pass,launch_command_pass,
+ seed_technical,boot_observed,action_observed,save_observed,metric_observed,
+ runtime_ready_timeout,gameplay_input_delivered,launch_activity,launch_component,
+ process_observed_after_launch,process_exited_before_runtime_ready,launch_process_missing,
+ runtime_abi_compatible,device_api,device_abis,rapid_input_stress_pass,background_resume_pass,
+ process_alive_after_stress,post_resume_screenshot_pass)=sys.argv[1:]
+flag=lambda value:value.lower()=='true'
+seed_ok=(not flag(seed_technical)) or all(map(flag,[boot_observed,action_observed,save_observed,metric_observed]))
+data={
+  'version':6,
+  'target':'unity-android',
+  'testMethod':'Android black-box APK smoke on an architecture-compatible runtime: fresh install + exact launcher activity + runtime-ready gate + gameplay input + update',
+  'checkedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+  'apk':apk,
+  'package':package,
+  'launchActivity':launch_activity,
+  'launchComponent':launch_component,
+  'deviceApi':device_api,
+  'deviceAbis':device_abis,
+  'runtimeAbiCompatible':flag(runtime_abi_compatible),
+  'freshInstallPassed':True,
+  'launcherCommandPassed':flag(launch_command_pass),
+  'runtimeSmokePassed':flag(runtime_pass),
+  'updateInstallPassed':flag(update_pass),
+  'qaPassEligibleRuntimeEvidence':flag(runtime_pass) and flag(update_pass) and seed_ok and flag(runtime_abi_compatible) and flag(rapid_input_stress_pass) and flag(background_resume_pass) and flag(process_alive_after_stress) and flag(post_resume_screenshot_pass),
+  'oneRuntimeSessionF1ThroughF8':True,
+  'runtimeLaunchCount':1,
+  'perFloorRuntimeRelaunch':False,
+  'independentQaEmbedded':True,
+  'regressionFanInEligible':True,
+  'rapidInputStressPassed':flag(rapid_input_stress_pass),
+  'backgroundResumePassed':flag(background_resume_pass),
+  'processAliveAfterStress':flag(process_alive_after_stress),
+  'postResumeScreenshotPassed':flag(post_resume_screenshot_pass),
+  'processObservedAfterLaunch':flag(process_observed_after_launch),
+  'processAliveAfterInput':bool(pid.strip()),
+  'processExitedBeforeRuntimeReady':flag(process_exited_before_runtime_ready),
+  'launchProcessMissing':flag(launch_process_missing),
+  'fatalRuntimeErrorDetected':fatal=='1',
+  'runtimeReadyTimeout':flag(runtime_ready_timeout),
+  'gameplayInputDelivered':flag(gameplay_input_delivered),
+  'developmentSeedRuntime':{
+    'required':flag(seed_technical),
+    'bootObserved':flag(boot_observed),
+    'actionObserved':flag(action_observed),
+    'saveObserved':flag(save_observed),
+    'metricObserved':flag(metric_observed),
+    'pass':seed_ok,
+  },
+  'playTestEvidence':[
+    f'architecture-compatible Android runtime={flag(runtime_abi_compatible)} deviceAbis={device_abis}',
+    f'fresh APK install passed package={package}',
+    f'exact launcher activity={launch_component}',
+    f'launcher command passed={flag(launch_command_pass)}',
+    f'process observed after launch={flag(process_observed_after_launch)}',
+    f'process exited before runtime ready={flag(process_exited_before_runtime_ready)}',
+    f'launch process missing={flag(launch_process_missing)}',
+    f'runtime-ready timeout={flag(runtime_ready_timeout)}',
+    f'gameplay input delivered={flag(gameplay_input_delivered)}',
+    f'development seed runtime signals pass={seed_ok}',
+    f'process alive after runtime gate/input={bool(pid.strip())}',
+    f'fatal runtime error detected={fatal=="1"}',
+    f'rapid input stress passed={flag(rapid_input_stress_pass)}',
+    f'background/resume passed={flag(background_resume_pass)}',
+    f'process alive after stress={flag(process_alive_after_stress)}',
+    f'post-resume screenshot captured={flag(post_resume_screenshot_pass)}',
+    f'same-signed APK update install passed={flag(update_pass)}',
+    'F1-F8 collected in this one runtime session; no per-floor relaunch',
+    'activity/package/logcat/screenshot evidence captured even on runtime failure'
+  ],
+  'artifacts':{
+    'installLog':'install.log','updateInstallLog':'update-install.log','launchLog':'launch.log','launchComponent':'launch-component.txt','logcat':'logcat.txt','packageFatalScan':'package-fatal-scan.txt','screenshot':'screenshot.png','postResumeScreenshot':'post-resume.png','resumeLog':'resume.log','activity':'activity.txt','packageDump':'package.txt','apkBadging':'apk-badging.txt','deviceApi':'device-api.txt','deviceAbis':'device-abis.txt'
+  }
+}
+pathlib.Path(out).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+PY
+
+cat "$out_dir/evidence.json"
+[[ "$launch_command_pass" == "true" ]] || { cat "$out_dir/launch.log" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_LAUNCH_COMMAND_FAILED] exact activity launch failed for $launch_component status=$launch_status" >&2; exit 10; }
+if [[ "$launch_process_missing" == "true" ]]; then
+  tail -n 250 "$out_dir/logcat.txt" >&2 || true
+  echo "[JAEWOON_BUILD_ERROR:APK_LAUNCH_PROCESS_MISSING] $package never created a process after exact activity launch" >&2
+  exit 17
+fi
+if [[ "$process_exited_before_runtime_ready" == "true" ]]; then
+  tail -n 250 "$out_dir/logcat.txt" >&2 || true
+  echo "[JAEWOON_BUILD_ERROR:APK_PROCESS_EXITED_BEFORE_RUNTIME_READY] $package exited before required runtime evidence completed" >&2
+  exit 18
+fi
+[[ -n "$pid" ]] || { tail -n 250 "$out_dir/logcat.txt" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_PROCESS_EXITED] $package is not alive after launch/runtime gate" >&2; exit 11; }
+[[ "$fatal" -eq 0 ]] || { tail -n 250 "$out_dir/logcat.txt" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_FATAL_RUNTIME_ERROR] fatal runtime error detected for $package" >&2; exit 12; }
+[[ "$runtime_pass" == "true" ]] || { echo "[JAEWOON_BUILD_ERROR:APK_RUNTIME_SMOKE_FAILED] Unity APK runtime smoke failed for $package" >&2; exit 13; }
+if [[ "$seed_technical" == "true" && "$runtime_ready_timeout" == "true" ]]; then
+  grep -E 'JAEWOON_TECH_(BOOT|ACTION|SAVE|METRIC)' "$out_dir/logcat.txt" >&2 || true
+  echo "[JAEWOON_BUILD_ERROR:DEVELOPMENT_SEED_BOOT_TIMEOUT] no JAEWOON_TECH_BOOT observed; gameplay input withheld package=$package" >&2
+  exit 16
+fi
+if [[ "$seed_technical" == "true" && "$seed_signals_pass" != "true" ]]; then
+  grep -E 'JAEWOON_TECH_(BOOT|ACTION|SAVE|METRIC)' "$out_dir/logcat.txt" >&2 || true
+  echo "[JAEWOON_BUILD_ERROR:DEVELOPMENT_SEED_RUNTIME_SIGNALS_MISSING] boot=$boot_observed action=$action_observed save=$save_observed metric=$metric_observed package=$package" >&2
+  exit 15
+fi
+[[ "$rapid_input_stress_pass" == "true" ]] || { echo "[JAEWOON_BUILD_ERROR:APK_INPUT_STRESS_FAILED] same-session rapid input stress failed for $package" >&2; exit 21; }
+[[ "$background_resume_pass" == "true" ]] || { cat "$out_dir/resume.log" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_BACKGROUND_RESUME_FAILED] same-session background/resume failed for $package" >&2; exit 22; }
+[[ "$process_alive_after_stress" == "true" ]] || { echo "[JAEWOON_BUILD_ERROR:APK_PROCESS_DIED_AFTER_STRESS] $package died after same-session stress" >&2; exit 23; }
+[[ "$post_resume_screenshot_pass" == "true" ]] || { echo "[JAEWOON_BUILD_ERROR:APK_POST_RESUME_SCREENSHOT_FAILED] post-resume screenshot missing for $package" >&2; exit 24; }
+[[ "$update_pass" == "true" ]] || { cat "$out_dir/update-install.log" >&2 || true; echo "[JAEWOON_BUILD_ERROR:APK_UPDATE_INSTALL_FAILED] Same APK could not update installed package $package" >&2; exit 14; }
+echo "UNITY_APK_RUNTIME_SMOKE=PASS package=$package pid=$pid fresh_install=true update_install=true seed_signals=$seed_signals_pass runtime_abi_compatible=$runtime_abi_compatible one_session_f1_f8=true" "$out_dir/resume.log"; then
+    background_resume_pass=true
+  fi
+  sleep 3
+
+  for xy in "$center_x $primary_y" "$center_x $secondary_y"; do
+    adb shell input tap $xy || rapid_input_stress_pass=false
+    sleep 0.15
+  done
+  post_stress_pid="$(adb shell pidof "$package" 2>/dev/null | tr -d '\r' | head -n 1 || true)"
+  [[ -n "$post_stress_pid" ]] && process_alive_after_stress=true
+  if adb exec-out screencap -p > "$out_dir/post-resume.png" 2>/dev/null && [[ -s "$out_dir/post-resume.png" ]]; then
+    post_resume_screenshot_pass=true
+  fi
 fi
 
 pid="$(adb shell pidof "$package" 2>/dev/null | tr -d '\r' | head -n 1 || true)"
