@@ -23,6 +23,9 @@ namespace JaewoonGames.JungleExpedition.Editor
 
             PlayerSettings.companyName = "Jaewoon Games";
             PlayerSettings.productName = "Jungle Expedition";
+            PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Brotli;
+            PlayerSettings.WebGL.decompressionFallback = false;
+            PlayerSettings.SetManagedStrippingLevel(NamedBuildTarget.WebGL, ManagedStrippingLevel.High);
 
             var output = Output("WebGL", "jungle-expedition");
             Build(new BuildPlayerOptions
@@ -30,7 +33,7 @@ namespace JaewoonGames.JungleExpedition.Editor
                 scenes = new[] { ScenePath },
                 locationPathName = output,
                 target = BuildTarget.WebGL,
-                options = BuildOptions.Development
+                options = BuildOptions.None
             }, "WEBGL_BUILD_FAILED");
 
             var index = Path.Combine(output, "index.html");
