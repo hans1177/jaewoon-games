@@ -37,11 +37,22 @@ for(const dir of ['Assets','Packages','ProjectSettings']){
   const walk=d=>{for(const e of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,e.name);if(e.isDirectory())walk(p);else files.push(p);}};walk(root);
 }
 const requiredRuntimeSignals=metricMatches.length>0&&actionObserved&&saveObserved&&pauseObserved;
-const pass=runtimePass&&independentPass&&sameBinding&&requiredRuntimeSignals&&/^[0-9a-f]{64}$/.test(sha)&&/^[0-9a-f]{40}$/.test(sourceCommit)&&/^[0-9a-f]{40}$/.test(sourceTreeSha);
+const oneRuntimeSession=runtime.oneRuntimeSessionF1ThroughF8===true
+  &&Number(runtime.runtimeLaunchCount)===1
+  &&runtime.perFloorRuntimeRelaunch===false
+  &&runtime.independentQaEmbedded===true
+  &&independent.singleRuntimeSession===true
+  &&independent.runtimeRelaunch===false
+  &&independent.f1ThroughF8SingleSession===true;
+const pass=runtimePass&&independentPass&&sameBinding&&requiredRuntimeSignals&&oneRuntimeSession&&/^[0-9a-f]{64}$/.test(sha)&&/^[0-9a-f]{40}$/.test(sourceCommit)&&/^[0-9a-f]{40}$/.test(sourceTreeSha);
 const evidence={
-  version:1,gameId,state:pass?'PASS':'FAIL',pass,validated:pass,target:'UNITY_ANDROID_TECHNICAL_VALIDATION',checkedAt:new Date().toISOString(),
+  version:2,gameId,state:pass?'PASS':'FAIL',pass,validated:pass,target:'UNITY_ANDROID_TECHNICAL_VALIDATION',checkedAt:new Date().toISOString(),
+  f1ThroughF8SingleSession:oneRuntimeSession,
+  runtimeLaunchCount:oneRuntimeSession?1:null,
+  perFloorRuntimeRelaunch:false,
+  f9AggregationOnly:true,
   sourceBinding:{upstreamBuildRunId:Number(build.runId||runtime.upstreamBuildRunId||0),sourceCommit,sourceTreeSha,apkSha256:sha,sameBinding},
-  realEvidence:{runtimeSmoke:runtimePass,independentQa:independentPass,metricSamples:metricMatches.length,actionObserved,saveObserved,pauseResumeObserved:pauseObserved},
+  realEvidence:{runtimeSmoke:runtimePass,independentQa:independentPass,metricSamples:metricMatches.length,actionObserved,saveObserved,pauseResumeObserved:pauseObserved,oneRuntimeSession},
   coverage:{
     ANDROID_FPS_FRAME_STABILITY:{state:metricMatches.length?'PASS':'FAIL',sampleCount:fpsSamples.length,minFps:fpsMinimum,avgFps:fpsAverage,scope:'ANDROID_16_EMULATOR_TECHNICAL_PROTOTYPE'},
     MEMORY_HEAT_LOADING:{state:metricMatches.length&&runtimePass?'PASS_WITH_LIMITATION':'FAIL',maxAllocatedMemoryBytes:memoryMax,loading:'PASS',heat:'EMULATOR_ONLY_NOT_PHYSICAL_DEVICE',limitation:'Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern.'},
@@ -55,7 +66,7 @@ const evidence={
     ASSET_AND_QA_COST:{state:'PASS',externalRuntimeAssets:0,reason:'No external art/audio package dependency in technical prototype; QA uses existing Android smoke and independent QA pipelines.'},
     FUTURE_EXPANSION_FEASIBILITY:{state:'REVIEW_REQUIRED_BY_DEPARTMENT_MEETING',reason:'Seed expansion decisions are preserved for Unity evidence meeting; technical prototype does not claim Steam/multiplayer production readiness.'}
   },
-  limitations:['This is DEVELOPMENT_CONFIRMED technical-validation evidence, not RELEASE_CONFIRMED approval.','Physical-device thermal behavior is not inferred from emulator evidence.'],
+  limitations:['This validation evidence does not grant external/public release authority.','Physical-device thermal behavior is not inferred from emulator evidence.'],
   provenance:{buildInfo:buildInfoPath,runtimeEvidence:runtimePath,independentEvidence:independentPath,projectPath}
 };
 fs.mkdirSync(path.dirname(output),{recursive:true});
