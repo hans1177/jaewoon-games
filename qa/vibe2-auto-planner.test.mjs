@@ -2841,6 +2841,55 @@ test('queued game work without verified design stays DESIGN_PENDING and cannot c
   assert.ok(row.evidence.includes('build-up-directive-freshness:DESIGN_PENDING'));
 });
 
+
+test('queued legacy BUILD_UP directive is migrated in place to autonomous content expansion before reserve',()=>{
+  const root=tempRepo();
+  const gameId='legacy-autonomous-expansion-backfill';
+  const source=path.join(root,'roblox-games',gameId,'server');
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'Combat.server.luau'),'function resolveAttack(enemy) return enemy ~= nil end\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'적 상태를 읽고 공격 타이밍을 선택하는 재미'});
+  const project={gameId,name:'Legacy Expansion Backfill',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const generated=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  assert.ok(generated?.buildUpDirective?.autonomousContentExpansion);
+  const legacyDirective={...generated.buildUpDirective};
+  delete legacyDirective.autonomousContentExpansion;
+  const legacy={
+    ...generated,
+    id:`${gameId}-legacy-g1`,
+    status:'queued',
+    goal:'legacy queued goal\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]\nlegacy contract prompt',
+    buildUpDirective:legacyDirective,
+    buildUpDirectiveId:legacyDirective.directiveId,
+    buildUpGeneration:legacyDirective.generation,
+    evidence:(generated.evidence||[]).filter(value=>!String(value).startsWith('autonomous-content-expansion-'))
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
+    catalog:{games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{maxConcurrentTasks:20,tasks:[legacy]},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  assert.equal(result.planned,false);
+  assert.equal(result.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+  assert.equal(result.buildUpDirectiveBackfillCount,1);
+  const migrated=result.queue.tasks.find(row=>row.id===legacy.id);
+  assert.ok(migrated);
+  assert.equal(migrated.status,'queued');
+  assert.equal(migrated.buildUpGeneration,legacy.buildUpGeneration);
+  assert.notEqual(migrated.buildUpDirectiveId,legacy.buildUpDirectiveId);
+  assert.equal(migrated.buildUpDirective.autonomousContentExpansion.version,1);
+  assert.equal(migrated.buildUpDirective.autonomousContentExpansion.executionBoundary,'EXISTING_BUILD_UP_ONLY');
+  assert.equal(migrated.buildUpDirective.autonomousContentExpansion.autonomousDecisionOwner,'VIBE');
+  assert.deepEqual([...migrated.buildUpDirective.autonomousContentExpansion.platformScope],['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.equal(migrated.buildUpDirective.autonomousContentExpansion.antiCloneContract.nameColorOrStatOnlyCloneForbidden,true);
+  assert.equal(migrated.buildUpDirective.autonomousContentExpansion.continuityAndCausality.required,true);
+  assert.ok(migrated.evidence.includes('build-up-directive-contract-migration:AUTONOMOUS_CONTENT_EXPANSION_V1'));
+  assert.ok(migrated.evidence.includes('build-up-directive-contract-migration-generation:PRESERVED'));
+  assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION'));
+  assert.equal((migrated.goal.match(/\[GAME_SPECIFIC_BUILD_UP_DIRECTIVE\]/g)||[]).length,1);
+});
+
 test('stale queued directive rebinds to the active shared generation before reserve',()=>{
   const root=tempRepo();
   const gameId='stale-build-up-rebind';
