@@ -66,6 +66,10 @@ test('game designer schema supplies every stage gate v2 evidence axis',()=>{
   assert.match(design,/failureStates:\{type:'array',minItems:2/);
   assert.match(design,/implementationTraceability:\{type:'array',minItems:3/);
   assert.match(design,/targetPlatform:\{type:'string',enum:\['ROBLOX','UNITY','FORTNITE_UEFN'\]\}/);
+  assert.match(design,/const MENU_SURFACE=\{type:'object',required:\['role','entryContext','purpose','systemBinding','primaryActions','layout','mobileInteraction','visualLanguage'\]/);
+  assert.match(design,/menuSurfaces:\{type:'array',minItems:3,maxItems:10,items:MENU_SURFACE\}/);
+  assert.match(design,/menuVarietyRule:\{type:'string',maxLength:700\}/);
+  assert.match(design,/모든 게임에 같은 메뉴 묶음을 복사하거나 존재하지 않는 시스템용 메뉴를 새 gameplay 규칙처럼 추가하지 않는다/);
 });
 
 test('same game designer splits large design schema without bypassing the full gate schema',()=>{
