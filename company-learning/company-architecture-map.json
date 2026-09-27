@@ -1,5 +1,5 @@
 {
-  "version": 271,
+  "version": 272,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6104,5 +6104,29 @@
     "qualitySecurityReleaseGatesUnchanged": true,
     "previousConcurrencyGroup": "company-development-queue-reconcile-runtime",
     "epochAdvancedToBypassLegacyPendingGroup": true
+  },
+  "robloxRuntimeThrottleStudioHandoff": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxRuntimeThrottleStudioHandoff20260927",
+    "workflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+    "foundationModule": "tools/company-development-roblox-runtime-foundation.mjs",
+    "studioPlanner": "tools/company-development-roblox-studio-local-play.mjs",
+    "remoteProbeConcurrency": {
+      "scan": 2,
+      "exactGame": 1
+    },
+    "transientHttpRetryStatuses": [
+      408,
+      429,
+      500,
+      502,
+      503,
+      504
+    ],
+    "exactEngineAwaitingRealServerBootStudioEligible": true,
+    "exactBindingRequired": true,
+    "runtimeFoundationTruthUnchanged": true,
+    "runtimePassTruthUnchanged": true,
+    "externalPublicReleaseRealServerEvidenceStillRequired": true
   }
 }
