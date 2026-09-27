@@ -980,3 +980,17 @@ test('exact-game dedupe always prefers the newest active run so stale source run
   assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
   assert.doesNotMatch(workflow,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
 });
+
+
+test('Roblox BUILD_UP runtime settlement is bound to the exact promoted source tree',()=>{
+  const release=fs.readFileSync(new URL('../.github/workflows/vibe2-candidate-release.yml',import.meta.url),'utf8');
+  const f9=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-final-review-revalidation.yml',import.meta.url),'utf8');
+  assert.match(release,/promoted_source_tree_sha="\$\(git rev-parse "origin\/main:\$SOURCE_ROOT"\)"/);
+  assert.match(release,/roblox-runtime-await-source-tree:\$\{PROMOTED_SOURCE_TREE_SHA\}/);
+  assert.match(release,/ROBLOX_MAIN_PROMOTION_SOURCE_TREE_SHA/);
+  assert.match(f9,/runtime_source_tree_sha="\$\(git -C main rev-parse "\$source_revision:roblox-games\/\$game_id"\)"/);
+  assert.match(f9,/RUNTIME_SOURCE_TREE_SHA="\$runtime_source_tree_sha"/);
+  assert.match(f9,/const exactTreeMarker='roblox-runtime-await-source-tree:'\+sourceTree/);
+  assert.match(f9,/if\(!evidence\.includes\(exactTreeMarker\)\)continue/);
+  assert.match(f9,/roblox-runtime-source-tree:\$\{runtime_source_tree_sha\}/);
+});
