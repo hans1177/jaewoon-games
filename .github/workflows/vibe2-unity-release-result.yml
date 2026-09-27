@@ -111,8 +111,13 @@ jobs:
           gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
           git fetch origin main --quiet
           git diff --quiet "$release_commit" origin/main -- "$SOURCE_ROOT"
-          echo "promotion_sha=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
-          echo "VIBE2_MAIN_PROMOTION_SHA=$(git rev-parse origin/main)"
+          promotion_sha="$(git rev-parse origin/main)"
+          source_tree_sha="$(git rev-parse "origin/main:$SOURCE_ROOT")"
+          [[ "$source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "promotion_sha=$promotion_sha" >> "$GITHUB_OUTPUT"
+          echo "source_tree_sha=$source_tree_sha" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_MAIN_PROMOTION_SHA=$promotion_sha"
+          echo "VIBE2_UNITY_MAIN_PROMOTION_SOURCE_TREE_SHA=$source_tree_sha"
           echo "VIBE2_RELEASE_PR=$pr_url"
           echo 'DIRECT_MAIN_WRITE=NO'
 
@@ -196,6 +201,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TASK_ID: ${{ steps.manifest.outputs.task_id }}
+          GAME_ID: ${{ steps.manifest.outputs.game_id }}
+          PROMOTED_MAIN_SHA: ${{ steps.promote.outputs.promotion_sha }}
+          PROMOTED_SOURCE_TREE_SHA: ${{ steps.promote.outputs.source_tree_sha }}
           BUILD_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           REVALIDATE_OUTCOME: ${{ steps.revalidate.outcome }}
           PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
@@ -208,6 +216,10 @@ jobs:
           test -n "$TASK_ID"
           if [ "$BUILD_CONCLUSION" = success ] && [ "$REVALIDATE_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
           if [ "$PRODUCTION_CLASS" = 'RELEASE_CONFIRMED' ] && [ "$result" = PASS ] && [ "$EVIDENCE_OUTCOME" != success ]; then result=FAIL; fi
+          if [ "$result" = PASS ] && [[ ! "$PROMOTED_SOURCE_TREE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo 'UNITY_PROMOTED_SOURCE_TREE_IDENTITY=INVALID' >&2
+            result=FAIL
+          fi
           if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
             if [ "$result" = PASS ]; then
               active="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow artbook-free-department-bots.yml --limit 10 --json status --jq '[.[]|select(.status=="in_progress" or .status=="queued" or .status=="pending")]|length')"
@@ -233,23 +245,30 @@ jobs:
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
           if [ "$result" = PASS ]; then
-            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="unity-candidate-apk-build-pass,unity-build-run-${{ github.event.workflow_run.id }},main-pr-merged,incremental-release-evidence-${EVIDENCE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs block --id="$TASK_ID" --blocker=candidate-awaiting-unity-runtime-qa --evidence="unity-candidate-apk-build-pass,unity-build-run-${{ github.event.workflow_run.id }},main-pr-merged,unity-runtime-await-game:${GAME_ID},unity-runtime-await-source-tree:${PROMOTED_SOURCE_TREE_SHA},unity-runtime-await-main-sha:${PROMOTED_MAIN_SHA},unity-runtime-independent-qa-regression-required,incremental-release-evidence-${EVIDENCE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
           else
             node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-promotion-or-release-evidence-failed --evidence="build-${BUILD_CONCLUSION},revalidate-${REVALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},release-evidence-${EVIDENCE_OUTCOME},unity-build-run-${{ github.event.workflow_run.id }}"
           fi
           git add .vibe2/queue.json
-          git commit -m "vibe2: settle Unity task ${TASK_ID} ${result} [skip ci]"
-          for attempt in 1 2 3; do
-            git pull --rebase origin vibe2-unreal-core
-            git push origin HEAD:vibe2-unreal-core && break
-            test "$attempt" -lt 3
-            sleep $((attempt * 2))
-          done
+          if ! git diff --cached --quiet; then
+            git commit -m "vibe2: settle Unity task ${TASK_ID} ${result} [skip ci]"
+            pushed=0
+            for attempt in 1 2 3; do
+              if git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
+              git pull --rebase origin vibe2-unreal-core
+              sleep $((attempt * 2))
+            done
+            test "$pushed" = 1
+          fi
+          if [ "$result" = PASS ]; then
+            gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
+            echo "VIBE2_UNITY_RUNTIME_QA_DISPATCHED=$GAME_ID"
+          fi
           payload="$(jq -nc \
             --arg run "${GITHUB_RUN_ID:-}" \
             --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
             --arg task "${TASK_ID:-}" \
-            --arg outcome "${result:-QUEUE_UPDATED}" \
+            --arg outcome "$([ "$result" = PASS ] && printf 'RUNTIME_QA_PENDING' || printf '%s' "${result:-QUEUE_UPDATED}")" \
             '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"dependency-or-retry-ready"}}')"
           curl --fail-with-body --silent --show-error \
             --request POST \
@@ -260,4 +279,5 @@ jobs:
             --data "$payload"
           echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:${result:-QUEUE_UPDATED}"
           echo "VIBE2_UNITY_INCREMENTAL_BUILD=$result"
+          if [ "$result" = PASS ]; then echo 'VIBE2_UNITY_TASK_FINAL_PASS=NO_RUNTIME_QA_PENDING'; fi
           [ "$result" = PASS ]
