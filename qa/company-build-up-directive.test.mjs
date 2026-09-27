@@ -85,7 +85,8 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.equal(directive.autonomousContentExpansion.derivedRuleEvolution.allowed,true);
   assert.equal(directive.autonomousContentExpansion.themeCoverageLedger.version,1);
   assert.equal(directive.autonomousContentExpansion.themeCoverageLedger.distinctCovered,1);
-  assert.equal(directive.autonomousContentExpansion.themeCoverageLedger.totalThemes,7);
+  assert.equal(directive.autonomousContentExpansion.themeCoverageLedger.totalThemes,8);
+  assert.ok(directive.autonomousContentExpansion.themeCoverageLedger.requiredThemes.includes('MENU_UI_EXPERIENCE_SYSTEM'));
   assert.ok(directive.autonomousContentExpansion.coherentContentBundle.length>=6);
   assert.equal(directive.robloxNativeExecution.required,true);
   assert.ok(directive.robloxNativeExecution.responsibleFiles.some(file=>/roblox-games\/bug-defense/.test(file)));
@@ -434,7 +435,7 @@ test('successful buildup generations cover every major content theme before star
   };
   const directives=[];
   let previous=null;
-  for(let index=0;index<7;index+=1){
+  for(let index=0;index<8;index+=1){
     const directive=buildGameSpecificBuildUpDirective({
       gameId:'breadth-demo',
       gameName:'Breadth Demo',
@@ -448,13 +449,56 @@ test('successful buildup generations cover every major content theme before star
     previous=directive;
   }
   const themes=directives.map(row=>row.autonomousContentExpansion.selectedTheme);
-  assert.equal(new Set(themes).size,7);
+  assert.equal(new Set(themes).size,8);
+  assert.ok(themes.includes('MENU_UI_EXPERIENCE_SYSTEM'));
   const finalLedger=directives.at(-1).autonomousContentExpansion.themeCoverageLedger;
-  assert.equal(finalLedger.distinctCovered,7);
-  assert.equal(finalLedger.totalThemes,7);
+  assert.equal(finalLedger.distinctCovered,8);
+  assert.equal(finalLedger.totalThemes,8);
   assert.equal(finalLedger.breadthCycleComplete,true);
   assert.deepEqual([...finalLedger.missingThemes],[]);
   assert.ok(Object.values(finalLedger.counts).every(value=>value===1));
+});
+
+test('menu breadth theme produces varied connected screen roles instead of title-swapped clones',()=>{
+  const sourceObservation={
+    sourceRoot:'roblox-games/menu-demo',
+    sourceTreeFingerprint:'m'.repeat(64),
+    fileCount:4,
+    topFiles:[],
+    sourceAnchors:[],
+    signals:{
+      combat:8,progression:10,ai:6,save:5,multiplayer:0,animation:5,vfx:5,camera:4,ui:2,uiFlow:0,input:6,map:10,landmark:5,
+      interaction:8,inventory:8,equipment:8,settings:0,feedback:2,session:5,content:14,choice:8,connection:8,performance:5,lighting:4,primitive:0,todo:0,errorRecovery:4
+    },
+    observations:['CURRENT_SOURCE_FILES=4','MENU_FLOW_SPARSE']
+  };
+  let previous=null;
+  const seen=[];
+  for(let index=0;index<8;index+=1){
+    const d=buildGameSpecificBuildUpDirective({
+      gameId:'menu-demo',
+      gameName:'Menu Demo',
+      designRecord:design(),
+      sourceObservation:{...sourceObservation,sourceTreeFingerprint:String(index+1).repeat(64)},
+      previousDirective:previous,
+      previousDirectiveOutcome:previous?'verified':'',
+      runtimeEvidence:previous?{runtimeObserved:true,runtimePassed:true}:{}
+    });
+    seen.push(d);
+    previous=d;
+  }
+  const menu=seen.find(row=>row.autonomousContentExpansion.selectedTheme==='MENU_UI_EXPERIENCE_SYSTEM');
+  assert.ok(menu);
+  const bundle=menu.autonomousContentExpansion.coherentContentBundle.join('\n');
+  assert.match(bundle,/MAIN_MENU|메인/);
+  assert.match(bundle,/INVENTORY|인벤토리/);
+  assert.match(bundle,/SHOP|상점/);
+  assert.match(bundle,/CRAFT|제작/);
+  assert.match(bundle,/QUEST|퀘스트/);
+  assert.match(bundle,/SETTINGS|설정/);
+  assert.match(bundle,/RESULT|결과/);
+  assert.match(bundle,/MOBILE_TOUCH_FLOW/);
+  assert.match(bundle,/DISTINCT_SCREEN_PURPOSE/);
 });
 
 test('failed effectiveness may stay on the same content theme instead of breadth rotation hiding the causal repair',()=>{
