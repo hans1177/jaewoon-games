@@ -519,6 +519,25 @@ test('main push wake ignores QA-only and descriptive document churn while preser
   assert.equal(pushBlock.includes("'company-learning/company-architecture-map.json'"),false);
 });
 
+test('24H safety-net push ignores QA-only and descriptive document churn',()=>{
+  const pushStart=safetyNetWorkflow.indexOf('  push:');
+  const workflowRunAt=safetyNetWorkflow.indexOf('  workflow_run:',pushStart);
+  assert.ok(pushStart>=0 && workflowRunAt>pushStart);
+  const pushBlock=safetyNetWorkflow.slice(pushStart,workflowRunAt);
+  for(const required of [
+    "'company-learning/platform-release-roadmap.json'",
+    "'vibe2-runtime.json'",
+    "'web-games/**'",
+    "'unity-games/**'",
+    "'roblox-games/**'"
+  ]) assert.ok(pushBlock.includes(required),required);
+  assert.equal(pushBlock.includes("'qa/"),false);
+  assert.equal(pushBlock.includes("'company-learning/company-log-map.json'"),false);
+  assert.equal(pushBlock.includes("'company-learning/company-architecture-map.json'"),false);
+  assert.equal(pushBlock.includes("'VIBE2.md'"),false);
+  assert.match(safetyNetWorkflow,/cron: '\*\/5 \* \* \* \*'/);
+});
+
 test('reserve preflight uses the pinned main contract and blocks broken GAME_PRIMARY contracts before reservation',()=>{
   const start=workflow.indexOf('- name: Prepare latest main machine contract');
   const end=workflow.indexOf('- name: Reserve conflict-free DAG batch');
