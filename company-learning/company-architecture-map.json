@@ -5154,8 +5154,7 @@
         ],
         "parallelSafeLanesRemainEligible": true,
         "securityQaReleaseAuthorityUnchanged": true,
-        "externalServerObservationMayNotBlockIndependentDevelopment": true,
-        "securityFullRescanOnlyOnRelevantDelta": true
+        "externalServerObservationMayNotBlockIndependentDevelopment": true
       },
       "holisticGameEvolution": {
         "policy": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.holisticGameEvolution",
@@ -6562,12 +6561,6 @@
       "oneExactTwoParticipantSyncProofPerCycle": true,
       "reusedByF9": true,
       "duplicateReleaseRecheck": false
-    },
-    "security": {
-      "mode": "IMPACT_SCOPED",
-      "fullRescanOnlyOnSecurityRelevantDeltaOrOpenCriticalHighFinding": true,
-      "unrelatedGameplayPresentationDeltaReusesUnchangedSecurityEvidence": true,
-      "criticalGuardsRemainMandatory": true
     },
     "f9": {
       "role": "EVIDENCE_FAN_IN_AND_REGRESSION_REVIEW",
