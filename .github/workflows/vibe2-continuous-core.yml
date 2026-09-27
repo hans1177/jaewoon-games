@@ -33,6 +33,33 @@ on:
     branches:
       - main
       - 'vibe2/refill/fanin/**'
+    # Wake only when executable/runtime authority can change queued game work.
+    # QA-only and descriptive architecture/log-map commits must not churn the runner queue.
+    paths:
+      - '.vibe2/**'
+      - '.github/workflows/vibe2-*.yml'
+      - '.github/actions/prepare-ollama/**'
+      - 'vibe2-runtime.json'
+      - 'company-directive.json'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/security-immune-system.json'
+      - 'company-learning/vibe2-learning-motor.json'
+      - 'tools/vibe2-*.mjs'
+      - 'tools/company-shared-context.mjs'
+      - 'tools/company-constitution-enforcer.mjs'
+      - 'tools/company-build-up-directive.mjs'
+      - 'tools/company-recovery-*.mjs'
+      - 'assets/vibe-*.js'
+      - 'assets/asset-selector.js'
+      - 'assets/asset-manifest.json'
+      - 'company-asset-library.json'
+      - 'roblox-games/**'
+      - 'unity-games/**'
+      - 'web-games/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+      - 'yarn.lock'
 
 permissions:
   contents: write
