@@ -1,5 +1,5 @@
 {
-  "version": 146,
+  "version": 147,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2547,5 +2547,19 @@
       "maxPredict": 768,
       "contextWindow": 8192
     }
+  },
+  "assetArmSchedulerEpochEvidence": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#changeRecord.assetArmSchedulerEpochRelease20260927",
+    "previousEpoch": "vibe2-24h-cycle-singleton-v3",
+    "currentEpoch": "vibe2-24h-cycle-singleton-v4",
+    "staleHoldingRunId": 36308954595,
+    "staleHoldingHead": "df004bd40b823015bc7a223c8f437f7d9fa1c539",
+    "currentArmRunnerExpected": "ubuntu-24.04-arm",
+    "gamePrimaryRunnerUnchanged": "ubuntu-latest",
+    "oldEpochMayDrain": true,
+    "cancelInProgress": false,
+    "newQueueOrPipelineCreated": false,
+    "liveArmWorkerEvidence": "PENDING_POST_MERGE"
   }
 }
