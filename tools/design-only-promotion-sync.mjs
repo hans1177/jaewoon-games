@@ -54,12 +54,14 @@ function assertCanonicalDirectNativePolicy(root='.'){
     &&d.minimumDesignRequired===true
     &&d.strictDesignScoreRequiredForDevelopmentAdmission===false
     &&d.legacyWebFirstFallbackForbidden===true
-    &&d.webDevelopmentStageRemoved===true
+    &&d.webDevelopmentStageRemoved===false
     &&d.unityWebEnabled===true
-    &&d.unityWebRequired===false
-    &&d.unityWebGateRequired===false
-    &&d.unityWebMode==='VALIDATION_SURFACE_ONLY'
-    &&web.requiredForDevelopmentAdmission===false
+    &&d.unityWebRequired===true
+    &&d.unityWebGateRequired===true
+    &&d.unityWebMode==='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'
+    &&web.requiredForDevelopmentAdmission===true
+    &&d.automaticPairing?.ROBLOX?.join(',')==='UNITY_WEB_FLOOR,ROBLOX,UNITY'
+    &&d.automaticPairing?.UNITY?.join(',')==='UNITY_WEB_FLOOR,UNITY,ROBLOX'
     &&Array.isArray(d.supportedDevelopmentPlatforms)
     &&d.supportedDevelopmentPlatforms.join(',')==='ROBLOX,UNITY';
   if(!ok)throw new Error('CANONICAL_DIRECT_NATIVE_POLICY_REQUIRED');
@@ -152,9 +154,9 @@ function bindDirectNativeQueueItem(item,{seed,design,stamp}){
     selectedPlatform,
     targetPlatform:selectedPlatform,
     concurrentTargetPlatforms:['ROBLOX','UNITY'],
-    platformExecutionMode:'ROBLOX_UNITY_CONCURRENT_SAME_GAME',
+    platformExecutionMode:'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT',
     bidirectionalAutoPair:true,
-    requestEitherStartsBoth:true,
+    requestEitherStartsBoth:false,
     targetSourcePaths:paths,
     robloxProjectPath:paths.ROBLOX,
     unityProjectPath:paths.UNITY,
@@ -405,5 +407,5 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DEVELOPMENT_QUEUE_COUNT=${result.queueCount}`);
   console.log('DEVELOPMENT_ADMISSION_GATE=MINIMUM_DUAL_PLATFORM_DESIGN_READY');
   console.log('STRICT_DESIGN_REVIEW=PARALLEL_NON_ADMISSION_GATE');
-  console.log('UNITY_WEB_ROLE=OPTIONAL_NON_BLOCKING_VALIDATION_SURFACE');
+  console.log('UNITY_WEB_ROLE=REQUIRED_UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
 }
