@@ -1,5 +1,5 @@
 {
-  "version": 480,
+  "version": 481,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9983,6 +9983,34 @@
       "selectionMarkerOrSelfReportedCountOnlyCannotPass": true,
       "gameplaySemanticsChanged": false,
       "newWorkflowOrStageCreated": false
+    },
+    "assetDevelopmentLiveBottleneckRepair20260928": {
+      "id": "ASSET_DEVELOPMENT_LIVE_BOTTLENECK_REPAIR_2026-09-28",
+      "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism",
+      "status": "ACTIVE",
+      "observedRunId": 36346873852,
+      "observedExecutionLane": "asset-development",
+      "observedReserveRunner": "ubuntu-24.04-arm",
+      "observedPrimaryTasks": 13,
+      "observedSpeculativeWorkersAvoided": 26,
+      "observedOllamaCacheKey": "vibe2-ollama-v4-Linux-ARM64-qwen3-1.7b",
+      "observedOllamaCacheHit": true,
+      "observedFanInFailure": "NON_FAST_FORWARD_CONTROL_BRANCH_CONTENTION_AFTER_5_ATTEMPTS",
+      "observedSourceGenerationFailure": "BUILD_UP_CONTENT_RULE_STRING_TAGGED_TEMPLATE_SYNTAX_MISSING_COMMA",
+      "fixes": [
+        "SOURCE_WORKER_CONTENT_RULE_ARRAY_SEPARATOR_RESTORED",
+        "ASSET_REPOSITORY_DISPATCH_DEFAULT_LANE_MAX_64",
+        "FAN_IN_OPTIMISTIC_RETRY_HARD_ATTEMPT_CAP_REMOVED",
+        "FAN_IN_EVERY_RETRY_FETCH_RESET_REAPPLY_LATEST_CONTROL_STATE",
+        "FAN_IN_FORCE_PUSH_REMAINS_FORBIDDEN"
+      ],
+      "existingCanonicalQueuePreserved": true,
+      "existingContinuousCorePreserved": true,
+      "distinctAssetTaskParallelismPreserved": true,
+      "speculativeVariantsPerAssetTask": 1,
+      "newQueueOrPipelineCreated": false,
+      "gamePrimaryWorkerPolicyUnchanged": true,
+      "qaSecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -15678,7 +15706,17 @@
       "assetDevelopmentSpeculativeVariantsPerTask": 1,
       "assetDevelopmentSpeculativeVariantsSuppressed": true,
       "assetDevelopmentDistinctTaskParallelismPreserved": true,
-      "assetDevelopmentSpeculativeSuppressionReason": "AVOID_DUPLICATE_OLLAMA_WORKERS_FOR_THE_SAME_ASSET_TASK_WHILE_PRESERVING_PARALLEL_DISTINCT_ASSET_TASKS"
+      "assetDevelopmentSpeculativeSuppressionReason": "AVOID_DUPLICATE_OLLAMA_WORKERS_FOR_THE_SAME_ASSET_TASK_WHILE_PRESERVING_PARALLEL_DISTINCT_ASSET_TASKS",
+      "assetDevelopmentLaneMax": 64,
+      "assetDevelopmentLaneMaxAppliesToWorkflowCallDispatchAndRepositoryDispatch": true,
+      "assetDevelopmentFanInOptimisticRetryHardAttemptCap": false,
+      "assetDevelopmentFanInOptimisticRetryMode": "RETRY_UNTIL_SUCCESS_WITH_LATEST_CONTROL_STATE",
+      "assetDevelopmentFanInRetryBackoffMaxSeconds": 10,
+      "assetDevelopmentFanInForcePushForbidden": true,
+      "assetDevelopmentFanInReapplyLatestControlStateEveryRetry": true,
+      "assetDevelopmentLiveSpeculativeWorkersAvoidedEvidence": 26,
+      "assetDevelopmentLivePrimaryWorkerCountEvidence": 13,
+      "assetDevelopmentSourceWorkerBuildUpDirectiveSyntaxGuard": true
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",

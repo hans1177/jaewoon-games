@@ -927,7 +927,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     `continuity=required:${expansion?.continuityAndCausality?.required===true} preserveIdentity:${expansion?.continuityAndCausality?.preserveApprovedIdentity===true} preserveProgression:${expansion?.continuityAndCausality?.preserveProgressionFlow===true} questions:${continuityQuestions.join(',')}`,
     `derivedRuleEvolution=${clean(expansion?.derivedRuleEvolution?.rule)||'PRESERVE_CANONICAL_RULES'}`,
     `contentCompletionAcceptance=${completionAcceptance.join(' | ')}`,
-    'contentRule=Stay inside the existing BUILD_UP responsibility. Before adding net-new content, recheck existing completeness and repair a weaker existing connection when that has higher player value. Implement the selected coherent content theme as connected player-facing source changes; do not satisfy it with count-only clones, labels, comments, or presentation-only changes when the selected bundle requires gameplay/world/progression connections.'
+    'contentRule=Stay inside the existing BUILD_UP responsibility. Before adding net-new content, recheck existing completeness and repair a weaker existing connection when that has higher player value. Implement the selected coherent content theme as connected player-facing source changes; do not satisfy it with count-only clones, labels, comments, or presentation-only changes when the selected bundle requires gameplay/world/progression connections.',
     `gameplay=${(d.gameplayImplementationDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
     `priorityDomains=${priorityDomains.join(' | ')}`,
     `progressionWorld=${(d.progressionContentWorldDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,

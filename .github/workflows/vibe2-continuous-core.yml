@@ -10,7 +10,7 @@ on:
       lane_max:
         required: false
         type: string
-        default: '256'
+        default: ''
   workflow_dispatch:
     inputs:
       execution_lane:
@@ -25,7 +25,7 @@ on:
       lane_max:
         required: false
         type: string
-        default: '256'
+        default: ''
   repository_dispatch:
     types: [vibe2-neuron-complete, vibe2-fanin-refill]
   # GAME_PRIMARY_MAIN_PUSH_WAKE: main churn must not starve queued game work behind
@@ -90,7 +90,7 @@ env:
   VIBE2_OPENAI_PAID_API_ALLOWED: 'false'
   VIBE2_SHARED_CONTEXT_REQUIRED: 'true'
   VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}
-  VIBE2_LANE_MAX: ${{ inputs.lane_max || '256' }}
+  VIBE2_LANE_MAX: ${{ inputs.lane_max || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '4') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || '256' }}
 
 jobs:
   reserve:
@@ -1976,8 +1976,11 @@ jobs:
           set -e
           if [ "$regression_rc" -ne 0 ]; then
             pushed=0
-            for attempt in 1 2 3 4 5; do
-              echo "VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_ATTEMPT=$attempt/5"
+            attempt=0
+            echo 'VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_RETRY_UNBOUNDED=YES'
+            while [ "$pushed" != 1 ]; do
+              attempt=$((attempt+1))
+              echo "VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_ATTEMPT=$attempt"
               git fetch origin vibe2-unreal-core --quiet
               git reset --hard origin/vibe2-unreal-core
               node "$contract_root/tools/vibe2-queue-control.mjs" fan-in \
@@ -2003,7 +2006,10 @@ jobs:
                 break
               fi
               echo "VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_RETRY=$attempt"
-              sleep $((attempt * 2))
+              retry_sleep=$((attempt * 2))
+              if [ "$retry_sleep" -gt 10 ]; then retry_sleep=10; fi
+              echo "VIBE2_FAN_IN_REGRESSION_RETRY_BACKOFF_SECONDS=$retry_sleep"
+              sleep "$retry_sleep"
             done
             test "$pushed" = 1
             echo 'VIBE2_REGRESSION_ROLE=FAIL_REQUEUED'
@@ -2047,8 +2053,11 @@ jobs:
           echo 'VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state.json'
           pushed=0
           state_write='NO'
-          for attempt in 1 2 3 4 5; do
-            echo "VIBE2_FAN_IN_OPTIMISTIC_ATTEMPT=$attempt/5"
+          attempt=0
+          echo 'VIBE2_FAN_IN_OPTIMISTIC_RETRY_UNBOUNDED=YES'
+          while [ "$pushed" != 1 ]; do
+            attempt=$((attempt+1))
+            echo "VIBE2_FAN_IN_OPTIMISTIC_ATTEMPT=$attempt"
             git fetch origin vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
 
@@ -2109,7 +2118,10 @@ jobs:
             fi
 
             echo "VIBE2_FAN_IN_OPTIMISTIC_RETRY=$attempt"
-            sleep $((attempt * 2))
+            retry_sleep=$((attempt * 2))
+            if [ "$retry_sleep" -gt 10 ]; then retry_sleep=10; fi
+            echo "VIBE2_FAN_IN_RETRY_BACKOFF_SECONDS=$retry_sleep"
+            sleep "$retry_sleep"
           done
           test "$pushed" = 1
           echo "VIBE2_FAN_IN_QUEUE_WRITE=$state_write"
@@ -2249,7 +2261,7 @@ jobs:
         if: always()
         continue-on-error: true
         env:
-          REQUESTED_MAX: ${{ inputs.lane_max || '256' }}
+          REQUESTED_MAX: ${{ inputs.lane_max || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '4') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || '256' }}
           EFFECTIVE_MAX: ${{ needs.reserve.outputs.effective_max }}
           TASK_COUNT: ${{ needs.reserve.outputs.task_count }}
           FAN_CHECKOUT_MS: ${{ steps.fan_checkout_metrics.outputs.ms }}

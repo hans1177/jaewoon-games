@@ -26,6 +26,7 @@ const coreQaWorkflow=readText('.github/workflows/vibe2-core-qa.yml');
 const vibe24hRunner=readText('.github/workflows/vibe2-24h-runner.yml');
 const vibeContinuousCore=readText('.github/workflows/vibe2-continuous-core.yml');
 const vibeAutoPlanner=readText('tools/vibe2-auto-planner.mjs');
+const vibeSourceWorker=readText('tools/vibe2-source-worker.mjs');
 
 test('platform-release-roadmap is the single machine execution policy source',()=>{
   assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
@@ -1559,6 +1560,14 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(parallel.assetDevelopmentSpeculativeVariantsPerTask,1);
   assert.equal(parallel.assetDevelopmentSpeculativeVariantsSuppressed,true);
   assert.equal(parallel.assetDevelopmentDistinctTaskParallelismPreserved,true);
+  assert.equal(parallel.assetDevelopmentLaneMax,64);
+  assert.equal(parallel.assetDevelopmentLaneMaxAppliesToWorkflowCallDispatchAndRepositoryDispatch,true);
+  assert.equal(parallel.assetDevelopmentFanInOptimisticRetryHardAttemptCap,false);
+  assert.equal(parallel.assetDevelopmentFanInOptimisticRetryMode,'RETRY_UNTIL_SUCCESS_WITH_LATEST_CONTROL_STATE');
+  assert.equal(parallel.assetDevelopmentFanInRetryBackoffMaxSeconds,10);
+  assert.equal(parallel.assetDevelopmentFanInForcePushForbidden,true);
+  assert.equal(parallel.assetDevelopmentFanInReapplyLatestControlStateEveryRetry,true);
+  assert.equal(parallel.assetDevelopmentSourceWorkerBuildUpDirectiveSyntaxGuard,true);
   assert.equal(parallel.newTopLevelAssetPipelineCreated,false);
   assert.equal(parallel.newWorkerAuthorityCreated,false);
   assert.equal(parallel.queueMutationAuthorityCreated,false);
@@ -1581,6 +1590,10 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(topology.dedicatedExecution.speculativeVariantsPerTask,1);
   assert.equal(topology.dedicatedExecution.speculativeVariantsSuppressed,true);
   assert.equal(topology.dedicatedExecution.distinctTaskParallelismPreserved,true);
+  assert.equal(topology.dedicatedExecution.laneMax,64);
+  assert.equal(topology.dedicatedExecution.laneMaxAppliesToWorkflowCallDispatchAndRepositoryDispatch,true);
+  assert.equal(topology.dedicatedExecution.fanInOptimisticRetryHardAttemptCap,false);
+  assert.equal(topology.dedicatedExecution.fanInForcePushForbidden,true);
   assert.equal(topology.dedicatedExecution.newTopLevelPipeline,false);
   assert.equal(logMap.assetDevelopmentDedicatedLaneEvidence.executionLane,'ASSET_DEVELOPMENT');
   assert.equal(logMap.assetDevelopmentDedicatedLaneEvidence.runnerLabel,'ubuntu-24.04-arm');
@@ -1595,6 +1608,12 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.match(vibeContinuousCore,/assetLane\?1:requestedVariantCount/);
   assert.match(vibeContinuousCore,/VIBE2_ASSET_SPECULATIVE_VARIANTS_SUPPRESSED=/);
   assert.match(vibeContinuousCore,/VIBE2_ASSET_SPECULATIVE_WORKERS_AVOIDED=/);
+  assert.match(vibeContinuousCore,/github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && '64'/);
+  assert.match(vibeContinuousCore,/VIBE2_FAN_IN_OPTIMISTIC_RETRY_UNBOUNDED=YES/);
+  assert.match(vibeContinuousCore,/VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_RETRY_UNBOUNDED=YES/);
+  assert.doesNotMatch(vibeContinuousCore,/for attempt in 1 2 3 4 5; do/);
+  assert.doesNotMatch(vibeContinuousCore,/git push --force|git push -f/);
+  assert.match(vibeSourceWorker,/contentRule=Stay inside the existing BUILD_UP responsibility\.[\s\S]*?',\n\s+\`gameplay=/);
   const laneIsolation=roadmap.changeRecord.reusableCoreLaneConcurrencyIsolation20260927;
   assert.equal(laneIsolation.fix.workflowCallLaneScope,'RUN_ID_PLUS_EXECUTION_LANE');
   assert.equal(laneIsolation.fix.assetDevelopmentPreserved,true);

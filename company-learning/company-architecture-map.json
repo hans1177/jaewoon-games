@@ -1,5 +1,5 @@
 {
-  "version": 292,
+  "version": 293,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2595,7 +2595,7 @@
     "ownerControlledFinancialActions": true
   },
   "assetProductionParallelism": {
-    "version": 7,
+    "version": 8,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract",
     "executionAuthority": "EXISTING_DAG_SCHEDULER_WITH_ATOMIC_COMPLETION_CALLBACK",
     "codeAndAssetWorkMayRunConcurrently": true,
@@ -3087,7 +3087,17 @@
       "speculativeVariantsPerTask": 1,
       "speculativeVariantsSuppressed": true,
       "distinctTaskParallelismPreserved": true,
-      "suppressionReason": "AVOID_DUPLICATE_OLLAMA_WORKERS_FOR_THE_SAME_ASSET_TASK"
+      "suppressionReason": "AVOID_DUPLICATE_OLLAMA_WORKERS_FOR_THE_SAME_ASSET_TASK",
+      "laneMax": 64,
+      "laneMaxAppliesToWorkflowCallDispatchAndRepositoryDispatch": true,
+      "fanInOptimisticRetryHardAttemptCap": false,
+      "fanInOptimisticRetryMode": "RETRY_UNTIL_SUCCESS_WITH_LATEST_CONTROL_STATE",
+      "fanInRetryBackoffMaxSeconds": 10,
+      "fanInForcePushForbidden": true,
+      "fanInReapplyLatestControlStateEveryRetry": true,
+      "liveVerifiedPrimaryWorkers": 13,
+      "liveVerifiedSpeculativeWorkersAvoided": 26,
+      "sourceWorkerBuildUpDirectiveSyntaxGuard": true
     }
   },
   "platformPresentationSeparation": {
