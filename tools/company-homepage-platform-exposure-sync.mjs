@@ -18,7 +18,8 @@ function robloxState(item={}){
   const placeId=staleSharedTarget?'':clean(pub.placeId||rel.placeId||internal.placeId);
   const published=!staleSharedTarget&&(bool(rel.published)||bool(pub.published)||bool(rel.verified)||bool(pub.verified));
   const explicitPublic=!staleSharedTarget&&(bool(rel.publicRelease)||bool(rel.public)||clean(rel.exposure).toUpperCase()==='PUBLIC'||clean(pub.exposure).toUpperCase()==='PUBLIC');
-  const runtime=bool(item.robloxRuntimePassed)||bool(item.robloxRuntimeEvidence?.pass)||bool(item.robloxIndependentQaPassed);
+  const runtime=bool(item.robloxRuntimePassed)||bool(item.robloxRuntimeEvidence?.pass);
+  const qa=bool(item.robloxIndependentQaPassed)||bool(item.robloxIndependentQaEvidence?.pass);
   const regression=bool(item.robloxRegressionPassed)||bool(item.robloxRegressionEvidence?.pass);
   const sourceReady=Boolean(item.robloxProjectPath||item.robloxSourceCommit||item.robloxCandidateBranch||item.targetSourcePaths?.ROBLOX);
   const preservedInternalRelease=bool(item.robloxInternalReleasePublished)
@@ -27,12 +28,12 @@ function robloxState(item={}){
   const internalReady=preservedInternalRelease
     ||bool(item.robloxInternalReleaseReady)
     ||(!staleSharedTarget&&((published&&!explicitPublic)||(published&&runtime&&regression)));
-  const publicReleaseReady=!staleSharedTarget&&(bool(item.robloxPublicReleaseReady)||(runtime&&regression&&published));
+  const publicReleaseReady=!staleSharedTarget&&(bool(item.robloxPublicReleaseReady)||(runtime&&qa&&regression&&published));
   return{
     platform:'ROBLOX',
     developmentState:sourceReady?'NATIVE_DEVELOPMENT':'WAITING_SOURCE',
     runtimePassed:runtime,
-    independentQaPassed:bool(item.robloxIndependentQaPassed)||bool(item.robloxIndependentQaEvidence?.pass),
+    independentQaPassed:qa,
     regressionPassed:regression,
     internalReleaseReady:internalReady,
     internalReleaseState:internalReady?'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE':'NOT_READY',
