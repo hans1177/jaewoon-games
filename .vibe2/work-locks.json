@@ -3,62 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-14jzqop",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau",
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/shared/GameConfig.luau"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:54:03.380Z",
-      "expiresAt": "2026-09-27T07:39:03.380Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1eblmyp",
-      "worker": "vibe2",
-      "taskId": "line-defense-roblox-presentation-asset-adaptation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "roblox-games/line-defense/client/Game.client.luau",
-        "roblox-games/line-defense/server/Game.server.luau",
-        "roblox-games/line-defense/shared/GameConfig.luau"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:54:05.041Z",
-      "expiresAt": "2026-09-27T07:39:05.041Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1ijldp2",
-      "worker": "vibe2",
-      "taskId": "village-dungeons-studio-evolution-unity-web-usability-v1",
-      "gameId": "village-dungeons",
-      "files": [
-        "unity-games/village-dungeons/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/village-dungeons/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:54:15.579Z",
-      "expiresAt": "2026-09-27T07:39:15.579Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:village-dungeons-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-6yd40x",
       "worker": "vibe2",
       "taskId": "monster-adventure-unity-web-base-implementation-v1",
@@ -695,6 +639,23 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:survival-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-i8p8ka",
+      "worker": "vibe2",
+      "taskId": "cozy-island-existing-web-assessment-v1",
+      "gameId": "cozy-island",
+      "files": [
+        "web-games/cozy-island/index.html"
+      ],
+      "baseSha": "f930aa8ddc87534958c329af5fafc6a12209063e",
+      "acquiredAt": "2026-09-27T07:40:15.096Z",
+      "expiresAt": "2026-09-27T08:25:15.096Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-existing-web-assessment-v1"
       ]
     }
   ]
