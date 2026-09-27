@@ -81,7 +81,7 @@ runs:
       if: steps.model-need.outputs.skip != 'true'
       uses: actions/cache@v4
       with:
-        path: ~/.cache/jaewoon-ollama/ollama-linux-amd64-cpu-${{ inputs.version }}.tar.zst
+        path: ~/.cache/jaewoon-ollama/ollama-linux-*-cpu-${{ inputs.version }}.tar.zst
         key: jaewoon-ollama-cpu-runtime-v2-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
         lookup-only: ${{ inputs.pull-model == 'false' }}
 
@@ -119,17 +119,23 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
+        case "${{ runner.arch }}" in
+          X64) ollama_arch=amd64 ;;
+          ARM64) ollama_arch=arm64 ;;
+          *) echo "OLLAMA_UNSUPPORTED_RUNNER_ARCH=${{ runner.arch }}" >&2; exit 1 ;;
+        esac
         cache_dir="$HOME/.cache/jaewoon-ollama"
-        slim="$cache_dir/ollama-linux-amd64-cpu-${{ inputs.version }}.tar.zst"
-        upstream="$RUNNER_TEMP/ollama-linux-amd64-${{ inputs.version }}.tar.zst"
+        slim="$cache_dir/ollama-linux-${ollama_arch}-cpu-${{ inputs.version }}.tar.zst"
+        upstream="$RUNNER_TEMP/ollama-linux-${ollama_arch}-${{ inputs.version }}.tar.zst"
         stage="$RUNNER_TEMP/ollama-cpu-${{ inputs.version }}"
         manifest="$RUNNER_TEMP/ollama-cpu-files-${{ inputs.version }}.txt"
         mkdir -p "$cache_dir" "$stage"
+        echo "OLLAMA_RUNTIME_ARCH=${ollama_arch}"
         downloaded=0
         for attempt in 1 2 3; do
           echo "OLLAMA_UPSTREAM_DOWNLOAD_ATTEMPT=$attempt/3"
           if curl -fL --retry 3 --retry-all-errors --connect-timeout 15 \
-            "https://ollama.com/download/ollama-linux-amd64.tar.zst?version=${{ inputs.version }}" \
+            "https://ollama.com/download/ollama-linux-${ollama_arch}.tar.zst?version=${{ inputs.version }}" \
             -o "$upstream"; then
             downloaded=1
             break
@@ -171,7 +177,12 @@ runs:
         if [ "$cache_hit" = 'true' ]; then
           echo 'OLLAMA_CPU_RUNTIME_RESTORE=SKIPPED_CACHE_HIT'
         else
-          slim="$HOME/.cache/jaewoon-ollama/ollama-linux-amd64-cpu-${{ inputs.version }}.tar.zst"
+          case "${{ runner.arch }}" in
+            X64) ollama_arch=amd64 ;;
+            ARM64) ollama_arch=arm64 ;;
+            *) echo "OLLAMA_UNSUPPORTED_RUNNER_ARCH=${{ runner.arch }}" >&2; exit 1 ;;
+          esac
+          slim="$HOME/.cache/jaewoon-ollama/ollama-linux-${ollama_arch}-cpu-${{ inputs.version }}.tar.zst"
           test -s "$slim"
           echo "OLLAMA_CPU_SLIM_BYTES=$(stat -c %s "$slim")"
           echo 'OLLAMA_CPU_RUNTIME_REBUILT=YES'
@@ -185,7 +196,12 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        slim="$HOME/.cache/jaewoon-ollama/ollama-linux-amd64-cpu-${{ inputs.version }}.tar.zst"
+        case "${{ runner.arch }}" in
+          X64) ollama_arch=amd64 ;;
+          ARM64) ollama_arch=arm64 ;;
+          *) echo "OLLAMA_UNSUPPORTED_RUNNER_ARCH=${{ runner.arch }}" >&2; exit 1 ;;
+        esac
+        slim="$HOME/.cache/jaewoon-ollama/ollama-linux-${ollama_arch}-cpu-${{ inputs.version }}.tar.zst"
         test -s "$slim"
         command -v zstd >/dev/null
         sudo tar --zstd -xf "$slim" -C /usr
