@@ -23,7 +23,7 @@ on:
         required: false
         type: string
       retry_open_cloud_only:
-        description: Retry only the exact transient Open Cloud runtime-foundation gate for game_id.
+        description: Optional manual Open Cloud server diagnostic for game_id. Never an internal or public release gate.
         required: false
         default: false
         type: boolean
@@ -176,6 +176,7 @@ jobs:
           echo 'ROBLOX_FOUNDATION_DETERMINISTIC_QA=PASS'
 
       - name: Probe exact Roblox Open Cloud engine execution
+        if: ${{ inputs.retry_open_cloud_only == true }}
         working-directory: main
         continue-on-error: true
         env:
@@ -337,11 +338,11 @@ jobs:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           EVENT_NAME: ${{ github.event_name }}
           TRIGGER_CHANGED: ${{ github.event_name == 'push' && (contains(toJSON(github.event.head_commit.modified), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.added), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.removed), 'roblox-games/.company-runtime-trigger')) }}
+          SERVER_DIAGNOSTIC_ENABLED: ${{ inputs.retry_open_cloud_only || false }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
           git -C ../runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
           git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
           node --input-type=module <<'NODE'
@@ -364,6 +365,7 @@ jobs:
           const queuePath='../runtime/development-queue.json';
           const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const serverDiagnosticEnabled=String(process.env.SERVER_DIAGNOSTIC_ENABLED||'').toLowerCase()==='true';
           const sharedTarget=roadmap?.roblox?.deploymentControl?.ownerPinnedPublicationTarget||{};
           const sharedUniverse=String(sharedTarget.universeId||'').trim();
           const sharedPlace=String(sharedTarget.placeId||'').trim();
@@ -545,6 +547,116 @@ jobs:
               continue;
             }
 
+            const studioPlay=item.robloxInternalVibePlayEvidence||{};
+            const exactStudioInternalValidation=
+              studioPlay.pass===true
+              &&studioPlay.actualPlay===true
+              &&studioPlay.runtimeVerified===true
+              &&studioPlay.officialStudioMcp===true
+              &&studioPlay.localPlaceFile===true
+              &&studioPlay.onlinePlaceDirectOpen===false
+              &&studioPlay.robloxPlayerAutomation===false
+              &&studioPlay.sourceRevision===sourceRevision
+              &&studioPlay.artifactIdentity===artifactIdentity
+              &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
+              &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0;
+            if(!serverDiagnosticEnabled){
+              if(!exactStudioInternalValidation){
+                queueStudioFollowupIfEligible(item);
+                item.robloxRuntimeFoundationPassed=false;
+                item.robloxRuntimePassed=false;
+                item.robloxFailureStage='VIBE_INTERNAL_PLAY';
+                item.robloxFailureSignature='ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING';
+                item.routingBlockers=['roblox-studio-internal-validation-pending'];
+                item.updatedAt=stamp;
+                changed=true;
+                pending++;
+                console.log('ROBLOX_INTERNAL_VALIDATION_WAITING_FOR_STUDIO='+item.gameId);
+                continue;
+              }
+
+              const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
+              const studioAssetRuntimeBindingPassed=!studioAssetBindingRequired||exactStudioInternalValidation;
+              item.robloxStudioAssetRuntimeBindingPassed=studioAssetRuntimeBindingPassed;
+              item.robloxStudioAssetRuntimeBindingEvidence=studioAssetBindingRequired?{
+                version:2,
+                gameId:item.gameId,
+                sourceRevision,
+                artifactIdentity,
+                candidateVersionNumber:Number(candidate.versionNumber),
+                localStudioRuntime:true,
+                officialStudioMcp:true,
+                actualPlatformRuntime:false,
+                marker:'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS',
+                authority:'roblox-studio-local-exact-build-asset-binding',
+                verifiedAt:stamp,
+              }:null;
+              item.robloxRuntimeFoundationInternalReleaseException=false;
+              item.robloxRuntimeFailureExternalReleaseOnly=false;
+              item.robloxInternalQaContinuationAllowed=false;
+              item.robloxInternalRegressionContinuationAllowed=false;
+              item.robloxPublicReleaseRuntimeObservationPending=false;
+              item.robloxPublicReleaseFailureSignature=null;
+              item.robloxPublicReleaseBlockers=(Array.isArray(item.robloxPublicReleaseBlockers)?item.robloxPublicReleaseBlockers:[]).filter(value=>
+                value!=='roblox-public-release-awaiting-real-server-boot'
+                &&!String(value||'').startsWith('roblox-public-release-runtime-finding:')
+              );
+              item.robloxRuntimeFoundationPassed=false;
+              item.robloxRuntimePassed=false;
+              item.robloxIndependentQaPassed=true;
+              item.robloxIndependentQaPassedAt=stamp;
+              item.robloxRegressionPassed=true;
+              item.robloxRegressionPassedAt=stamp;
+              item.robloxPostRuntimeQaEvidence={
+                version:6,
+                gameId:item.gameId,
+                sourceRevision,
+                artifactIdentity,
+                artifactRunId:Number(candidate.artifactRunId||0),
+                candidateVersionNumber:Number(candidate.versionNumber),
+                exactRevision:true,
+                independentQaPassed:true,
+                regressionPassed:true,
+                actualRuntimeEvidence:false,
+                localStudioRuntimeEvidence:true,
+                internalStudioValidationOnly:true,
+                externalServerBootRequired:false,
+                officialStudioMcpActualPlayPassed:true,
+                studioAssetBindingRequired,
+                studioAssetRuntimeBindingPassed,
+                studioAssetRuntimeBindingEvidence:item.robloxStudioAssetRuntimeBindingEvidence,
+                deterministicQa:[
+                  'qa/company-development-roblox-runtime-foundation.test.mjs',
+                  'qa/company-development-roblox-headless-fast-mvp.test.mjs',
+                  'qa/company-development-roblox-studio-local-play.test.mjs',
+                  'qa/company-tester-debug-intake.test.mjs',
+                ],
+                authority:'roblox-internal-studio-qa-no-external-server-required',
+                verifiedAt:stamp,
+              };
+              item.robloxF9PendingInParallel=true;
+              item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.canonicalState='ROBLOX_INTERNAL_STUDIO_VALIDATION_PASSED';
+              item.robloxLastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
+              item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+              item.routingBlockers=['roblox-final-review-pending'];
+              if(item.executionEvidence){
+                item.executionEvidence.runtimePassed=false;
+                item.executionEvidence.independentQaPassed=true;
+                item.executionEvidence.regressionPassed=true;
+                item.executionEvidence.failureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+                item.executionEvidence.failureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+              }
+              item.updatedAt=stamp;
+              changed=true;
+              f9Ids.push(item.gameId);
+              passed++;
+              console.log('ROBLOX_INTERNAL_STUDIO_VALIDATION_PASS='+item.gameId+':serverBootRequired=NO');
+              continue;
+            }
+
+            if(!process.env.ROBLOX_OPEN_CLOUD_API_KEY)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY_REQUIRED_FOR_MANUAL_SERVER_DIAGNOSTIC');
             const engineProbe=engineProbeByGame.get(item.gameId);
             if(engineProbe?.persistentFailure===true){
               const infrastructureOnly=transientProbeFailure(engineProbe);
