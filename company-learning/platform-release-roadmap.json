@@ -1,5 +1,5 @@
 {
-  "version": 473,
+  "version": 474,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -19748,19 +19748,34 @@
           "TYCOON"
         ],
         "motion": {
-          "verifiedReusableClipTarget": 200,
-          "baseAuthoringOrAcquisitionTarget": 60,
-          "safeDerivedVariationTarget": 140,
-          "categories": {
-            "locomotionAndTraversal": 30,
-            "combatAndWeapon": 70,
-            "defenseReactionAndRecovery": 40,
-            "survivalCraftingAndGathering": 30,
-            "interactionSocialAndUtility": 20,
-            "skillBossAndSignature": 10
+          "status": "ACTIVE_TARGET",
+          "verifiedReusableClipTarget": 300,
+          "baseAuthoringOrAcquisitionTarget": 90,
+          "safeDerivedVariationTarget": 210,
+          "crossGenreReuse": [
+            "RPG",
+            "SURVIVAL",
+            "ACTION",
+            "ADVENTURE",
+            "TYCOON"
+          ],
+          "categoryTargets": {
+            "LOCOMOTION": 32,
+            "TRAVERSAL": 20,
+            "COMBAT": 64,
+            "WEAPON_COMBAT": 44,
+            "SKILL": 24,
+            "DEFENSE": 20,
+            "REACTION": 24,
+            "SURVIVAL_CRAFTING": 24,
+            "INTERACTION_UTILITY": 20,
+            "PAIR": 8,
+            "ACTING": 12,
+            "DEATH": 8
           },
           "derivedVariationMustPreserveGameplayTiming": true,
-          "preparedSemanticDoesNotCountAsVerified": true
+          "preparedSemanticDoesNotCountAsVerified": true,
+          "targetGameNativeRuntimePassRequired": true
         },
         "environment": {
           "modularBiomeAndRegionKitsRequired": true,
@@ -19774,7 +19789,22 @@
           "weaponAndToolPresentationRequired": true,
           "combatVfxCameraUiFeedbackRequired": true
         },
-        "productionVerifiedCountMayAdvanceOnlyAfterNativeRuntimePass": true
+        "productionVerifiedCountMayAdvanceOnlyAfterNativeRuntimePass": true,
+        "fullPresentationFamilies": [
+          "CHARACTER",
+          "CREATURE",
+          "BUILDING",
+          "ENVIRONMENT",
+          "WEAPON",
+          "SKILL",
+          "MATERIAL",
+          "AUDIO",
+          "VFX",
+          "UI",
+          "MOTION",
+          "PROP"
+        ],
+        "qualityIntent": "HIGH_DENSITY_STYLIZED_FANTASY_RPG_VISUAL_BAR_WITH_CROSS_GENRE_REUSE"
       }
     }
   },
