@@ -1,5 +1,5 @@
 {
-  "version": 475,
+  "version": 476,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -2188,6 +2188,38 @@
         "preserveResponsibleFilesAndApprovedScope": true,
         "preserveCheckpoint": true,
         "replayCompletedVibeWorkOnReconnect": false,
+        "newQueueOrPipelineCreated": false
+      },
+      "menuDiversityImplementation": {
+        "version": 1,
+        "enabled": true,
+        "selectionAuthority": "VIBE2_VIBE3_WITHIN_APPROVED_GAME_SCOPE",
+        "candidateMenuRoles": [
+          "MAIN_MENU",
+          "PAUSE",
+          "INVENTORY",
+          "EQUIPMENT",
+          "SHOP",
+          "CRAFTING",
+          "QUEST",
+          "SKILL",
+          "MAP",
+          "SETTINGS",
+          "RESULT",
+          "SOCIAL_MULTIPLAYER"
+        ],
+        "selectOnlyRolesBackedByExistingOrApprovedGameSystems": true,
+        "gameSpecificLayoutAndInformationHierarchyRequired": true,
+        "genericCrossGenreMenuCloneForbidden": true,
+        "identicalMenuSetForcedAcrossAllGames": false,
+        "bindSelectedMenusToRealRuntimeStateAndData": true,
+        "mobileFirstInteractionRequired": true,
+        "accessibilityRequired": true,
+        "styleLockAndGenreIdentityRequired": true,
+        "preserveExistingSaveKeysAndSaveMeaning": true,
+        "preserveGameplayBalanceAndEconomySemantics": true,
+        "preserveNetworkAuthority": true,
+        "missingMenuRoleMayUseExistingUiAssetGapFill": true,
         "newQueueOrPipelineCreated": false
       }
     },
@@ -9858,6 +9890,41 @@
       "newWorkerAuthorityCreated": false,
       "gamePrimaryWorkerPolicyUnchanged": true,
       "qaSecurityReleaseGatesUnchanged": true
+    },
+    "contextualMenuDiversity20260927": {
+      "authority": "OWNER_DIRECTIVE_2026-09-27",
+      "status": "ACTIVE",
+      "objective": "ALLOW_VIBE_TO_IMPLEMENT_GAME_SPECIFIC_MENU_VARIETY_WITHIN_EXISTING_DESIGN_DEVELOPMENT_AND_GRAPHICS_PRODUCTION_FLOW",
+      "menuRoles": [
+        "MAIN_MENU",
+        "PAUSE",
+        "INVENTORY",
+        "EQUIPMENT",
+        "SHOP",
+        "CRAFTING",
+        "QUEST",
+        "SKILL",
+        "MAP",
+        "SETTINGS",
+        "RESULT",
+        "SOCIAL_MULTIPLAYER"
+      ],
+      "rules": [
+        "SELECT_ONLY_MENUS_SUPPORTED_BY_REAL_GAME_SYSTEMS",
+        "NO_IDENTICAL_CROSS_GENRE_MENU_TEMPLATE",
+        "BIND_MENU_TO_REAL_RUNTIME_STATE_AND_DATA",
+        "MOBILE_FIRST_AND_ACCESSIBLE",
+        "PRESERVE_SAVE_BALANCE_ECONOMY_AND_NETWORK_AUTHORITY"
+      ],
+      "implementationFiles": [
+        "tools/vibe2-design-intelligence.mjs",
+        "tools/vibe2-auto-planner.mjs",
+        "tools/vibe2-asset-production-plan.mjs",
+        "assets/vibe-studio-asset-universe.js"
+      ],
+      "existingCanonicalQueuePreserved": true,
+      "existingGraphicsProductionRootPreserved": true,
+      "newQueueOrPipelineCreated": false
     }
   },
   "vibeExecutionLaneContract": {
