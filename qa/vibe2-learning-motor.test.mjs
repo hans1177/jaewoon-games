@@ -169,6 +169,36 @@ test('unverified playbook authority cannot enter development knowledge',()=>{
   assert.equal(ctx.exactKnowledgeIds.includes('PLAYBOOK_REUSE:unsafe'),false);
 });
 
+test('Roblox and Unity development merge platform-specific verified playbooks with coding and general guidance',()=>{
+  const sharedReuse=[{id:'commercial-shared',project:'commercial-app',sourceRevision:'sha256:shared',score:0.2}];
+  const playbooksInput={taskTypes:{
+    coding:{authority:'verified-task-playbook',checklist:['coding-check'],reuse:sharedReuse},
+    general:{authority:'verified-task-playbook',checklist:['general-check'],reuse:sharedReuse},
+    roblox:{authority:'verified-task-playbook',checklist:['roblox-native-check'],reuse:[{...sharedReuse[0],score:0.7}]},
+    unity:{authority:'verified-task-playbook',checklist:['unity-native-check'],reuse:[{...sharedReuse[0],score:0.6}]}
+  }};
+  const base={gameId:'platform-game',taskType:'coding',goal:'commercial game implementation'};
+  const roblox=retrieveUnifiedLearning({task:{...base,target:'roblox'},experienceInput:{records:[]},codePatternsInput:{patterns:[]},playbooksInput,practiceDistilledInput:{entries:[]},externalAiDistilledInput:{entries:[]},masteryInput:{}});
+  assert.deepEqual(roblox.playbook.taskTypes,['coding','roblox','general']);
+  assert.ok(roblox.playbook.checklist.includes('roblox-native-check'));
+  assert.ok(roblox.playbook.checklist.includes('coding-check'));
+  assert.ok(roblox.playbook.checklist.includes('general-check'));
+  assert.equal(roblox.playbookReuse.length,1);
+  assert.equal(roblox.playbookReuse[0].score,0.7);
+  assert.deepEqual(roblox.playbookReuse[0].sourcePlaybooks,['coding','roblox','general']);
+
+  const unity=retrieveUnifiedLearning({task:{...base,target:'unity'},experienceInput:{records:[]},codePatternsInput:{patterns:[]},playbooksInput,practiceDistilledInput:{entries:[]},externalAiDistilledInput:{entries:[]},masteryInput:{}});
+  assert.deepEqual(unity.playbook.taskTypes,['coding','unity','general']);
+  assert.ok(unity.playbook.checklist.includes('unity-native-check'));
+  assert.equal(unity.playbookReuse[0].score,0.6);
+  assert.ok(unity.exactKnowledgeIds.includes('PLAYBOOK_REUSE:commercial-shared'));
+
+  const web=retrieveUnifiedLearning({task:{...base,target:'web'},experienceInput:{records:[]},codePatternsInput:{patterns:[]},playbooksInput,practiceDistilledInput:{entries:[]},externalAiDistilledInput:{entries:[]},masteryInput:{}});
+  assert.deepEqual(web.playbook.taskTypes,['coding','general']);
+  assert.ok(web.playbook.checklist.includes('coding-check'));
+  assert.ok(web.playbook.checklist.includes('general-check'));
+});
+
 test('unverified result never increases mastery',()=>{
   const result=applyVerifiedExperienceToMastery({}, {records:[
     {id:'bad',gameId:'g',engine:'web',verified:false,reusable:true,outcome:'PASS',goal:'combat'}
