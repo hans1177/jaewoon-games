@@ -22,7 +22,7 @@ test('one canonical machine policy source owns class design meeting and release 
 
 test('GAME_SEED mirrors the current selected-platform policy while preserving legacy input compatibility',()=>{
   assert.equal(directive.gameSeed.initialTargetPlatform,'ROBLOX');
-  assert.deepEqual(directive.gameSeed.allowedTargetPlatforms,['ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.deepEqual(directive.gameSeed.allowedTargetPlatforms,['ROBLOX','UNITY']);
   assert.equal(directive.gameSeed.projectMaySelectAnyAllowedPlatform,true);
   assert.equal(directive.gameSeed.primaryPlatformIsDefaultNotLock,true);
   assert.equal(directive.gameSeed.initialPlayMode,'PROJECT_DEFINED');
@@ -36,7 +36,7 @@ test('GAME_SEED mirrors the current selected-platform policy while preserving le
   assert.equal(GAME_SEED_POLICY.seedMaterialCombineMax,4);
   assert.equal(GAME_SEED_POLICY.targetSessionMinutes,30);
   assert.equal(GAME_SEED_POLICY.initialTargetPlatform,'ROBLOX');
-  assert.deepEqual([...GAME_SEED_POLICY.allowedTargetPlatforms],['ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.deepEqual([...GAME_SEED_POLICY.allowedTargetPlatforms],['ROBLOX','UNITY']);
 });
 
 test('GAME_SEED validator accepts any allowed selected platform and rejects unsupported targets',()=>{
@@ -176,7 +176,7 @@ test('RELEASE_CONFIRMED targets the project selected platform',()=>{
   assert.match(pipeline,/RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION/);
 });
 
-test('Roblox and Unity are the active equal tier while UEFN remains owner-held',()=>{
+test('Roblox and Unity are the active equal tier while UEFN remains owner-held and development-paused',()=>{
   const strategy=directive.platformStrategy;
   assert.equal(strategy.primaryPlatform,'ROBLOX');
   assert.deepEqual(strategy.priority,['ROBLOX','UNITY']);
@@ -192,7 +192,7 @@ test('Roblox and Unity are the active equal tier while UEFN remains owner-held',
   assert.equal(strategy.UNITY.existingPathPreserved,true);
   assert.equal(strategy.UNITY.robloxDoesNotReplaceUnity,true);
   assert.equal(strategy.FORTNITE_UEFN.developmentAlwaysAllowed,false);
-  assert.equal(strategy.FORTNITE_UEFN.role,'OWNER_HOLD_SUPPORTED_PLATFORM');
+  assert.equal(strategy.FORTNITE_UEFN.role,'DEVELOPMENT_PAUSED_SUPPORTED_PLATFORM');
   assert.equal(machinePolicy.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
 });
 test('artbook authorship and provenance rules remain unchanged',()=>{
