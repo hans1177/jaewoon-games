@@ -1630,7 +1630,7 @@ test('candidate manifest persists design intelligence requirements and starts ev
   write(responseFile, JSON.stringify({ edits: [{ path: 'Assets/Player.cs', find: 'return 1;', replace: 'return 2;' }], newFiles: [] }));
   const result = await runVibe2SourceWorker({ cwd, responseFile });
   const persisted = JSON.parse(fs.readFileSync(path.join(cwd, '.vibe2/candidates/design-contract/manifest.json'), 'utf8'));
-  assert.equal(result.version, 6);
+  assert.equal(result.version, 7);
   assert.equal(result.designIntelligence.required, true);
   assert.equal(result.designIntelligence.implementationGate.allowed, true);
   assert.equal(result.designIntelligence.authorityExpanded, false);
