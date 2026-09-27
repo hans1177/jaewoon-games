@@ -529,6 +529,20 @@ test('reserve preflight uses the pinned main contract and blocks broken GAME_PRI
   assert.equal(regression.observationFailureAction,'RUN_LOCAL_REGRESSION');
   assert.equal(regression.blocksReservationOnFailure,true);
   assert.equal(regression.gameWorkerStartBeforePass,false);
+
+  const recovery=runtime.continuous.fanInRegressionFailureRecovery;
+  assert.equal(recovery.enabled,true);
+  assert.equal(recovery.requeueAffectedTasksFirst,true);
+  assert.equal(recovery.immediateRefillOnlyWhenNewerMainExists,true);
+  assert.equal(recovery.pinnedFailedContractMustDifferFromLatestMain,true);
+  assert.equal(recovery.refillEvent,'vibe2-fanin-refill');
+  assert.equal(recovery.refillExecutionLane,'GAME_PRIMARY');
+  assert.equal(recovery.sameFailedContractRedispatchForbidden,true);
+  assert.equal(recovery.qaBypass,false);
+  assert.match(workflow,/VIBE2_FAN_IN_REGRESSION_LATEST_MAIN=/);
+  assert.match(workflow,/VIBE2_FAN_IN_REGRESSION_REFILL=DISPATCHED_NEWER_MAIN/);
+  assert.match(workflow,/VIBE2_FAN_IN_REGRESSION_REFILL=SKIPPED_NO_NEWER_MAIN/);
+  assert.match(workflow,/fan-in-regression-failed-requeued-newer-main/);
 });
 
 test('neuron callbacks keep every ingress event and reconcile shared queue state optimistically',()=>{
