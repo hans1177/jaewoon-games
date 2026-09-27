@@ -125,3 +125,19 @@ test('F9 promotion stops at internal release and cannot self-approve external pu
   assert.match(workflow,/roblox-perpetual-buildup-public-hard-gate-pending/);
   assert.doesNotMatch(workflow,/item\.robloxPublicReleaseReady=publicRuntimeAcceptance===true/);
 });
+
+
+test('F9 runtime persistence retries from latest company-runtime with a field-scoped optimistic patch',()=>{
+  assert.match(workflow,/ROBLOX_F9_RUNTIME_PATCH_COUNT=/);
+  assert.match(workflow,/roblox-f9-runtime-patch\.json/);
+  assert.match(workflow,/ROBLOX_F9_PERSIST_OPTIMISTIC_ATTEMPT=/);
+  assert.match(workflow,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(workflow,/ROBLOX_F9_PERSIST_CONFLICT_RETRY=/);
+  assert.match(workflow,/ROBLOX_F9_PERSIST_SAME_FIELD_CONFLICT=/);
+  assert.match(workflow,/ROBLOX_F9_PERSIST_REVALIDATION_REQUIRED=/);
+  assert.match(workflow,/EXACT_CANDIDATE_IDENTITY/);
+  assert.match(workflow,/currentPresent===change\.beforePresent/);
+  assert.match(workflow,/currentPresent===change\.afterPresent/);
+  assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.doesNotMatch(workflow,/group:.*company-runtime-writer/);
+});
