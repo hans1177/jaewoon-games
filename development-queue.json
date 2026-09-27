@@ -3688,7 +3688,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-27T00:38:17.234Z",
+      "updatedAt": "2026-09-27T01:01:45.544Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3915,8 +3915,8 @@
         "exactGame": true,
         "exactPlace": true,
         "exactVersion": false,
-        "exactEngineVersion": false,
-        "engineExecuted": false,
+        "exactEngineVersion": true,
+        "engineExecuted": true,
         "simulationRunning": false,
         "serverBootObserved": false,
         "blockers": [
@@ -3936,9 +3936,9 @@
           "checkpoint:SAVE_ROUNDTRIP",
           "checkpoint:MULTIPLAYER_SYNC"
         ],
-        "observedAt": "2026-09-27T00:38:17.234Z",
-        "workflowRunId": 36283041348,
-        "authority": "stale-runtime-sentinel-observation"
+        "observedAt": "2026-09-27T01:01:45.544Z",
+        "workflowRunId": 36283832727,
+        "authority": "exact-engine-version-awaiting-real-server-boot"
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
@@ -3946,15 +3946,15 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 2,
+      "robloxRuntimeRetryCount": 3,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
       "robloxMultiplayerQaPassed": false,
       "robloxIndependentQaPassed": true,
-      "robloxIndependentQaPassedAt": "2026-09-27T00:36:18.352Z",
+      "robloxIndependentQaPassedAt": "2026-09-27T01:01:45.544Z",
       "robloxRegressionPassed": true,
-      "robloxRegressionPassedAt": "2026-09-27T00:36:18.352Z",
+      "robloxRegressionPassedAt": "2026-09-27T01:01:45.544Z",
       "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": null,
       "robloxF9ReleaseRegressionPassed": false,
@@ -4001,8 +4001,8 @@
             "checkpoint:SAVE_ROUNDTRIP",
             "checkpoint:MULTIPLAYER_SYNC"
           ],
-          "observedAt": "2026-09-27T00:36:18.352Z",
-          "workflowRunId": 36282879218,
+          "observedAt": "2026-09-27T01:01:45.544Z",
+          "workflowRunId": 36283832727,
           "authority": "exact-engine-version-awaiting-real-server-boot"
         },
         "exactRevision": true,
@@ -4017,7 +4017,7 @@
         "studioAssetRuntimeBindingPassed": false,
         "studioAssetEngineBindingMatched": false,
         "authority": "roblox-internal-qa-external-real-server-observation-deferred",
-        "verifiedAt": "2026-09-27T00:36:18.352Z"
+        "verifiedAt": "2026-09-27T01:01:45.544Z"
       },
       "robloxInternalReleaseReady": true,
       "robloxInternalReleaseAt": null,
@@ -4027,11 +4027,9 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
-      "routingBlockers": [
-        "roblox-runtime-foundation-stale-version"
-      ],
+      "robloxFailureStage": "PUBLIC_RELEASE_RUNTIME_OBSERVATION",
+      "robloxFailureSignature": "ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT",
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -4458,7 +4456,7 @@
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
       "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T00:38:17.234Z",
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T01:01:45.544Z",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-cozy-island-36190508441",
       "unitySourceCommit": "34bd3a9cf2f93f1bc32fbd87eb53471fe3fadcd4",
@@ -9140,7 +9138,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T00:44:47.682Z",
+  "updatedAt": "2026-09-27T01:01:45.544Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
