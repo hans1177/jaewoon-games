@@ -1514,6 +1514,11 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(parallel.assetDevelopmentUsesExistingContinuousCore,true);
   assert.equal(parallel.assetDevelopmentDedicatedRunner,true);
   assert.equal(parallel.assetDevelopmentRunnerLabel,'ubuntu-24.04-arm');
+  assert.equal(parallel.assetDevelopmentSchedulerPlanRunner,'ubuntu-24.04-arm');
+  assert.equal(parallel.assetDevelopmentReserveRunner,'ubuntu-24.04-arm');
+  assert.equal(parallel.assetDevelopmentModelCacheRunner,'ubuntu-24.04-arm');
+  assert.equal(parallel.assetDevelopmentArchitectureAwareCache,true);
+  assert.equal(parallel.assetDevelopmentOllamaCacheKey,'vibe2-ollama-v4-${runner.os}-${runner.arch}-qwen3-1.7b');
   assert.equal(parallel.gamePrimaryRunnerLabel,'ubuntu-latest');
   assert.equal(parallel.assetDevelopmentPhysicalRunnerPoolSeparated,true);
   assert.deepEqual(parallel.assetDevelopmentOllamaArchitectures,['X64','ARM64']);
@@ -1534,6 +1539,10 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   ]);
   assert.equal(topology.dedicatedExecution.lane,'ASSET_DEVELOPMENT');
   assert.equal(topology.dedicatedExecution.runnerLabel,'ubuntu-24.04-arm');
+  assert.equal(topology.dedicatedExecution.schedulerPlanRunner,'ubuntu-24.04-arm');
+  assert.equal(topology.dedicatedExecution.reserveRunner,'ubuntu-24.04-arm');
+  assert.equal(topology.dedicatedExecution.modelCacheRunner,'ubuntu-24.04-arm');
+  assert.equal(topology.dedicatedExecution.architectureAwareCache,true);
   assert.equal(topology.dedicatedExecution.gamePrimaryRunnerLabel,'ubuntu-latest');
   assert.equal(topology.dedicatedExecution.physicalRunnerPoolSeparated,true);
   assert.equal(topology.dedicatedExecution.robloxGeneration.maxAttempts,3);
