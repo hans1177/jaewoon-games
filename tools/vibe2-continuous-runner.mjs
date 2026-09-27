@@ -212,6 +212,12 @@ function buildPresentationQualityContract(task = {}, target = '') {
     actualReplacementCountMustBeRecorded:replacementInput?.implementation?.actualReplacementCountMustBeRecorded!==false,
     changedSurfacesMustBeRecorded:replacementInput?.implementation?.changedSurfacesMustBeRecorded!==false,
     reuseModesUsedMustBeRecorded:replacementInput?.implementation?.reuseModesUsedMustBeRecorded!==false,
+    perReplacementSourceEvidenceRequired:replacementInput?.implementation?.perReplacementSourceEvidenceRequired!==false,
+    actualReplacementCountMustEqualGroundedEvidenceCount:replacementInput?.implementation?.actualReplacementCountMustEqualGroundedEvidenceCount!==false,
+    replacementEvidenceMustReferenceTouchedSourcePath:replacementInput?.implementation?.replacementEvidenceMustReferenceTouchedSourcePath!==false,
+    replacementEvidenceSnippetMustExistInChangedSource:replacementInput?.implementation?.replacementEvidenceSnippetMustExistInChangedSource!==false,
+    duplicateReplacementEvidenceCannotInflateCount:replacementInput?.implementation?.duplicateReplacementEvidenceCannotInflateCount!==false,
+    selfReportedCountWithoutGroundedSourceEvidenceCannotPass:replacementInput?.implementation?.selfReportedCountWithoutGroundedSourceEvidenceCannotPass!==false,
     zeroActualReplacementCannotPass:replacementInput?.implementation?.zeroActualReplacementCannotPass!==false,
     beforeAfterEvidenceRequired:replacementInput?.implementation?.beforeAfterEvidenceRequired!==false
   }):freeze({required:false,version:1});
@@ -297,7 +303,7 @@ function presentationQualityGuidance(contract = {}) {
       `candidate-use-modes=${(contract.graphicsReplacement.reuseModes||[]).join(',')}`,
       '교체 개수는 Vibe가 실제 결함에 맞춰 정한다. 1~10개만 고쳐야 하면 그만큼만 고치고, 일반 개선은 대체로 10~30개, 큰 일관된 리프레시는 필요할 때 30~60개까지 가능하다. 개수 채우기를 위해 멀쩡한 표현을 바꾸면 안 된다.',
       '완성 자산 그대로 사용에만 묶이지 않는다. 현재 컨셉에 정확히 맞으면 재사용하고, 필요하면 재질·비율·색·모션·VFX·레이아웃을 응용하며, 여러 호환 후보의 장점을 재조합해 하나의 게임 전용 표현으로 만든다. 무가공 에셋팩 짬뽕은 금지한다.',
-      '완료 결과에는 실제 교체 개수, 변경한 표현 계열, 사용한 재사용/변형/재조합 방식을 기록해야 한다. 실제 source/binding 교체가 0개면 이 그래픽/presentation 작업은 PASS가 아니다.'
+      '완료 결과에는 실제 교체 개수, 변경한 표현 계열, 사용한 재사용/변형/재조합 방식을 기록해야 한다. actualCount의 각 1개는 touched source path + bindingKey + 그 변경 소스에 실제 존재하는 sourceEvidence로 개별 근거가 있어야 하며, 근거 없는 숫자 부풀리기는 PASS가 아니다. 실제 source/binding 교체가 0개면 이 그래픽/presentation 작업은 PASS가 아니다.'
     ]:[]),
     '실제 대상 플랫폼 플레이 화면에 컨셉에 맞는 배경/환경, 임시 primitive가 아닌 캐릭터·몬스터 표현, 상태 기반 idle/move/attack/hit/death, gameplay event에 연결된 VFX·카메라, 모바일 터치/프레임 근거가 있어야 PASS다.',
     '마커·설명문·정적 CSS 장식만 추가하거나 컨셉 불일치 배경/모형 몹을 남긴 상태는 presentation 완료로 인정하지 않는다.',
