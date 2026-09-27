@@ -638,3 +638,33 @@ test('exact-game native workflow concurrency closes dedupe races without global 
   assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.pushBatchCoalesced,true);
   assert.equal(logMap.nativeExactGameWorkflowConcurrencyEvidence?.manualEmptyBatchRunScoped,true);
 });
+
+test('Roblox source-plan wake and runner isolation stay aligned across central records',()=>{
+  const workflow=read('.github/workflows/company-development-roblox-runtime.yml');
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
+  const change=roadmap.changeRecord?.robloxSourcePlanWakeAndRunnerIsolation20260927||{};
+  const relief=roadmap.changeRecord?.lightweightGameIngressRunnerRelief20260927||{};
+  const topology=architecture.robloxSourcePlanWakeAndRunnerIsolation||{};
+  const evidence=logMap.robloxSourcePlanWakeAndRunnerIsolationEvidence||{};
+
+  assert.match(workflow,/\n  source-plan:\n[\s\S]*?runs-on: ubuntu-24\.04/);
+  assert.equal(change.sourcePlanRunner,'ubuntu-24.04');
+  assert.equal(change.previousSourcePlanRunner,'ubuntu-slim');
+  assert.equal(change.sourcePlanContractPushWakeRequired,true);
+  assert.equal(topology.sourcePlanRunner,'ubuntu-24.04');
+  assert.equal(topology.pushWakeMatchesContractPaths,true);
+  assert.equal(architecture.gameControlRunnerPools?.roblox?.sourcePlanRunner,'ubuntu-24.04');
+  assert.equal(logMap.gameControlRunnerPoolEvidence?.expectedRunnerLabels?.robloxIngress,'ubuntu-24.04');
+  assert.equal(logMap.lightweightGameIngressRunnerReliefEvidence?.expectedRunnerLabels?.robloxSourcePlan,'ubuntu-24.04');
+  assert.equal(evidence.expectedRunnerLabel,'ubuntu-24.04');
+  assert.equal(evidence.pushWakeMustCoverSourcePlanContractPaths,true);
+  assert.equal(Object.hasOwn(relief.movedToSlim||{},'robloxSourcePlan'),false);
+  assert.equal(relief.robloxSourcePlanCriticalIngressException?.centralNativePlanRemains,'ubuntu-slim');
+  assert.equal(relief.robloxSourcePlanCriticalIngressException?.unityPrepareRemains,'ubuntu-slim');
+  assert.equal(relief.robloxSourcePlanCriticalIngressException?.vibeReserveRemains,'ubuntu-slim');
+  assert.equal(change.technicalPlanRunnerUnchanged,'ubuntu-24.04-arm');
+  assert.equal(change.heavyExecutionRunnerUnchanged,'ubuntu-latest');
+});
+
