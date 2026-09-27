@@ -106,12 +106,11 @@ export function platformDevelopmentEligible(item={},platform=''){
   const targets=concurrentTargetPlatforms(item);
   if(!targets.includes(requested))return false;
   const selected=resolveSelectedPlatform(item);
-  const completed=requested==='ROBLOX'
-    ?item.robloxInternalReleaseReady===true||item.robloxPublicRelease===true
-    :item.unityInternalReleaseReady===true||item.unityPublicRelease===true;
-  if(completed)return false;
+  const releaseStateActive=requested==='ROBLOX'
+    ?item.robloxInternalReleaseReady===true||item.robloxInternalReleasePublished===true||item.robloxPublicRelease===true
+    :item.unityInternalReleaseReady===true||item.unityInternalReleasePublished===true||item.unityPublicRelease===true;
   const projected={...item,selectedPlatform:requested,targetPlatform:requested};
-  if(selected!==requested&&targets.length>1)projected.currentStep='TARGET_PLATFORM_TECHNICAL_VALIDATION';
+  if(selected!==requested||releaseStateActive)projected.currentStep='TARGET_PLATFORM_TECHNICAL_VALIDATION';
   return targetPlatformDevelopmentEligible(projected);
 }
 
@@ -146,7 +145,7 @@ export function firstWebGatePlatformDevelopmentEligible(item={}){
 }
 
 export function targetPlatformDevelopmentEligible(item={}){
-  if(upper(item.productionClass)!=='DEVELOPMENT_CONFIRMED')return false;
+  if(!['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(upper(item.productionClass)))return false;
   const status=upper(item.status);
   if(status!=='ACTIVE'&&status!=='PENDING')return false;
   const state=upper(item.canonicalState);
