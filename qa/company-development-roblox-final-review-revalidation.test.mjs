@@ -68,25 +68,28 @@ test('canonical evaluator preserves fail-closed multiplayer and release gates', 
 });
 
 
-test('exact Roblox F9 review is isolated per game after multiplayer acceptance',()=>{
+test('exact Roblox F9 review is isolated per game and only aggregates exact evidence',()=>{
   assert.match(workflow,/group: company-development-roblox-f9-final-review-\$\{\{ inputs\.game_id/);
   assert.match(workflow,/scheduled-scan/);
   assert.match(workflow,/manual-scan/);
   assert.doesNotMatch(workflow,/group: company-development-roblox-f9-final-review\s*\n/);
 });
 
-test('F9 allows internal release when exact engine and official Studio MCP pass while real-server observation remains public-only',()=>{
-  assert.match(workflow,/const internalRuntimeObservationDeferred=/);
-  assert.match(workflow,/item\.robloxRuntimeFoundationInternalReleaseException===true/);
-  assert.match(workflow,/item\.robloxPublicReleaseRuntimeObservationPending===true/);
-  assert.match(workflow,/runtime\.authority==='exact-engine-version-awaiting-real-server-boot'/);
-  assert.match(workflow,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalRuntimeObservationDeferred/);
-  assert.match(workflow,/item\.robloxRuntimeFoundationPassed===true\|\|internalRuntimeObservationDeferred/);
-  assert.match(workflow,/actualRuntimeFoundationPassed:item\.robloxRuntimeFoundationPassed===true/);
-  assert.match(workflow,/publicReleaseRuntimeObservationPending:internalRuntimeObservationDeferred/);
-  assert.match(workflow,/internalRuntimeObservationDeferred&&post\.studioAssetEngineBindingMatched===true/);
-  assert.match(workflow,/roblox-public-release-awaiting-real-server-boot/);
+test('F9 accepts exact internal Studio validation without external server or duplicate multiplayer execution',()=>{
+  assert.match(workflow,/const internalStudioValidationAccepted=/);
+  assert.match(workflow,/post\.internalStudioValidationOnly===true/);
+  assert.match(workflow,/post\.externalServerBootRequired===false/);
+  assert.match(workflow,/post\.f1ThroughF8SingleInternalSession===true/);
+  assert.match(workflow,/post\.multiplayerContractPassed===true/);
+  assert.match(workflow,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalStudioValidationAccepted\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred/);
+  assert.match(workflow,/internalStudioValidationAccepted\s*\|\|\s*\(/);
+  assert.match(workflow,/runtimeFoundationEvidenceAuthority:internalStudioValidationAccepted\?'OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD'/);
+  assert.match(workflow,/duplicateSecurityScan:false/);
+  assert.match(workflow,/duplicateMultiplayerExecution:false/);
+  assert.match(workflow,/roblox-internal-release-after-f9-studio-validation-only/);
   assert.match(workflow,/item\.robloxPublicReleaseReady=false/);
+  assert.match(workflow,/Run F9 exact-evidence aggregation contract/);
+  assert.doesNotMatch(workflow,/node --test\s+qa\/company-development-roblox-runtime-foundation\.test\.mjs/);
 });
 
 test('F9 accepts truth-preserving exact runtime failure continuation for internal release only',()=>{
@@ -95,8 +98,8 @@ test('F9 accepts truth-preserving exact runtime failure continuation for interna
   assert.match(workflow,/item\.robloxInternalQaContinuationAllowed===true/);
   assert.match(workflow,/item\.robloxInternalRegressionContinuationAllowed===true/);
   assert.match(workflow,/post\.runtimeFailureExternalReleaseOnly===true/);
-  assert.match(workflow,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred/);
-  assert.match(workflow,/item\.robloxRuntimeFoundationPassed===true\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred/);
+  assert.match(workflow,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalStudioValidationAccepted\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred/);
+  assert.match(workflow,/internalStudioValidationAccepted[\s\S]*item\.robloxRuntimeFoundationPassed===true\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred/);
   assert.match(workflow,/internalRuntimeFindingDeferred/);
   assert.match(workflow,/runtimeFailureExternalReleaseOnly:internalRuntimeFindingDeferred/);
   assert.match(workflow,/ticket\.internalFlowBlocking===false/);

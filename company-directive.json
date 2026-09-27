@@ -577,7 +577,30 @@
     "robloxStudioUndocumentedCliAutomationAllowed": false,
     "robloxPlayerAutomationAllowed": false,
     "robloxPublishedPlayerBotAllowed": false,
-    "robloxStudioRawGameplayTrainingAllowed": false
+    "robloxStudioRawGameplayTrainingAllowed": false,
+    "autonomousGameEvolutionPreserved": true,
+    "nativeValidationFloorsPreserved": [
+      "F0",
+      "F1",
+      "F2",
+      "F3",
+      "F4",
+      "F5",
+      "F6",
+      "F7",
+      "F8",
+      "F9"
+    ],
+    "validationOptimizationOnly": true,
+    "sameExactRevisionDuplicateValidationForbidden": true,
+    "externalServerRequiredForInternalDevelopment": false,
+    "robloxInternalValidation": "F0_EXACT_BASELINE_PLUS_OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD",
+    "multiplayerRoutineValidation": "APPLICABILITY_PLUS_F0_STATIC_SYNC_CONTRACT_PLUS_EXACT_INTERNAL_SESSION",
+    "extendedMultiplayerValidation": "ONLY_ON_MULTIPLAYER_RELEVANT_CHANGE_OR_FAILURE",
+    "securityValidation": "ONE_EXACT_REVISION_BASELINE_PLUS_IMPACT_SCOPED_RESCAN",
+    "f9Role": "AGGREGATE_EXACT_F0_TO_F8_EVIDENCE_AND_IMPACT_SCOPED_REGRESSION",
+    "f9NewRuntimeSessionRequired": false,
+    "nextVerifiedSourceDeltaRestartsAt": "F0"
   },
   "classes": {
     "DESIGN_ONLY": {

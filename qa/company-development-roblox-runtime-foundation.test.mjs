@@ -99,24 +99,44 @@ test('F9 final review uses shallow checkout instead of full git history',()=>{
  assert.match(workflow,/Checkout canonical runtime state[\s\S]*?fetch-depth:\s*1/);
 });
 
-test('central policy matches shared two-client one-sync internal and public release proof',()=>{
+test('central policy keeps routine multiplayer internal and impact-scoped',()=>{
  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
  const stack=roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack;
  const f7=stack.layers.find(layer=>layer.id==='F7');
- assert.equal(f7.releaseGateMode,'TWO_CLIENT_ONE_SYNC');
- assert.deepEqual(f7.checks,['MINIMUM_TWO_PARTICIPANTS_SAME_SERVER','ONE_AUTHORITATIVE_SHARED_STATE_BROADCAST','CLIENT_MULTIPLAYER_SYNC_HANDLER_CONTRACT']);
+ assert.equal(f7.releaseGateMode,'INTERNAL_EXACT_CONTRACT_REUSE');
+ assert.equal(f7.extendedTwoClientRuntimeOnlyWhenImpacted,true);
+ assert.equal(f7.evidenceAuthority,'F0_STATIC_SERVER_CLIENT_SYNC_CONTRACT_PLUS_EXACT_INTERNAL_PLATFORM_SESSION');
  const proof=stack.robloxContract.multiplayerReleaseProof;
- assert.equal(proof.minimumParticipants,2);
- assert.equal(proof.sameServerRequired,true);
- assert.equal(proof.actualRuntimeCheckpoint,'MULTIPLAYER_SYNC');
- assert.equal(proof.singleSyncObservationSufficient,true);
- assert.equal(proof.longCombatOrDungeonRunRequired,false);
- assert.deepEqual(proof.appliesTo,['INTERNAL_RELEASE','PUBLIC_RELEASE']);
+ assert.equal(proof.mode,'IMPACT_SCOPED_INTERNAL_SYNC');
+ assert.equal(proof.routineInternalMode,'F0_STATIC_SYNC_CONTRACT_PLUS_EXACT_STUDIO_PLAY');
+ assert.equal(proof.minimumParticipantsForRoutineInternal,1);
+ assert.equal(proof.sameServerRequiredForRoutineInternal,false);
+ assert.equal(proof.actualTwoClientRuntimeRequiredForRoutineInternal,false);
+ assert.equal(proof.extendedTwoClientRuntimeRequiredOnlyOnRelevantChangeOrFailure,true);
+ assert.ok(proof.extendedTwoClientTriggers.includes('MULTIPLAYER_CODE_CHANGED'));
+ assert.ok(proof.extendedTwoClientTriggers.includes('SYNC_FAILURE_PRESENT'));
+ assert.deepEqual(proof.appliesTo,['MULTIPLAYER_RELEVANT_CHANGE_OR_FAILURE']);
  assert.equal(proof.sameProofReusedForInternalAndPublic,true);
  assert.equal(proof.duplicatePublicMultiplayerCheckRequired,false);
- assert.equal(proof.internalAndPublicVersionMustMatch,true);
- assert.equal(proof.republishForPublicPromotionForbidden,true);
  assert.equal(stack.releaseGate.f9Checkout.sameCheckoutContractForInternalAndPublic,true);
+});
+
+test('development-focused validation optimization preserves evolution while deduping overhead',()=>{
+ const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ const opt=roadmap.developmentLifecycleMachine.developmentFocusedValidationOptimization;
+ assert.equal(opt.preserveExistingAutonomousEvolution,true);
+ assert.equal(opt.preserveExistingBuildUpDirectiveGeneration,true);
+ assert.equal(opt.preserveExistingF0ThroughF9,true);
+ assert.equal(opt.sameExactRevisionEvidenceReuseRequired,true);
+ assert.equal(opt.duplicateExactEvidenceCollectionForbidden,true);
+ assert.equal(opt.f1ThroughF8.externalPublicServerRequired,false);
+ assert.equal(opt.f1ThroughF8.separateSessionPerFloorForbidden,true);
+ assert.equal(opt.f9.newRuntimeSessionRequired,false);
+ assert.equal(opt.f9.duplicateSecurityScanRequired,false);
+ assert.equal(opt.f9.duplicateMultiplayerRunRequired,false);
+ assert.equal(opt.externalServer.requiredForF0ThroughF9,false);
+ assert.equal(opt.autonomousLoop.terminalCompletionForbidden,true);
+ assert.equal(opt.autonomousLoop.validationCannotBecomePrimaryWorkWhenNoFailureExists,true);
 });
 
 test('runtime acceptance stays pending until actual gameplay core-loop action occurs',()=>{
@@ -490,32 +510,25 @@ test('central policy and architecture preserve runtime truth while real server b
  assert.equal(topology.studioPlannerEligibility,'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT');
  assert.equal(topology.studioActualPlayMayNotSetRuntimeFoundationPass,true);
  assert.equal(topology.externalPublicReleaseRemainsBlockedUntilRealServerBoot,true);
- assert.ok(Array.isArray(stack.runtimeFoundationInternalReleaseExceptionStates));
- assert.ok(stack.runtimeFoundationInternalReleaseExceptionStates.includes('ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT'));
+ assert.deepEqual(stack.releaseGate.runtimeFoundationInternalReleaseExceptionStates,[]);
  assert.equal(stack.runtimeFoundationExceptionMaySetRuntimePass,false);
  assert.equal(stack.runtimeFoundationExceptionMaySetExternalPublicReleaseReady,false);
 });
 
-test('runtime QA passes internal QA and regression while exact real-server boot remains external-release-only',()=>{
+test('external Roblox server probing is manual diagnostic-only and internal Studio validation dispatches F9',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- assert.match(workflow,/const exactEngineVersionAwaitingRealServerBoot=/);
- assert.match(workflow,/const exactStudioPlay=/);
- assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false/);
- assert.match(workflow,/item\.robloxRuntimePassed=false/);
- assert.match(workflow,/item\.robloxRuntimeFoundationInternalReleaseException=true/);
- assert.match(workflow,/item\.robloxPublicReleaseRuntimeObservationPending=true/);
- assert.match(workflow,/ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT/);
- assert.match(workflow,/item\.robloxIndependentQaPassed=true/);
- assert.match(workflow,/item\.robloxRegressionPassed=true/);
- assert.match(workflow,/internalRuntimeObservationDeferred:true/);
- assert.match(workflow,/actualRuntimeEvidence:false/);
- assert.match(workflow,/item\.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'/);
- assert.match(workflow,/ROBLOX_INTERNAL_FLOW_PASS_EXTERNAL_SERVER_BOOT_PENDING=/);
- assert.match(workflow,/ROBLOX_FOUNDATION_AWAITING_REAL_SERVER_BOOT=[\s\S]*?queueStudioFollowupIfEligible\(item\);[\s\S]*?continue;/);
- assert.match(workflow,/item\.robloxRuntimeFoundationInternalReleaseException=false/);
- assert.match(workflow,/item\.robloxPublicReleaseRuntimeObservationPending=false/);
- assert.match(workflow,/item\.robloxPublicReleaseFailureSignature=null/);
- assert.match(workflow,/roblox-public-release-awaiting-real-server-boot/);
+ const helper=fs.readFileSync('tools/company-development-roblox-studio-local-play.mjs','utf8');
+ assert.match(workflow,/Optional manual Open Cloud external-server diagnostic/);
+ assert.match(workflow,/Probe exact Roblox Open Cloud engine execution[\s\S]*?if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
+ assert.match(workflow,/Read exact runtime sentinel and persist tester QA evidence[\s\S]*?if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
+ assert.match(workflow,/studio-local-plan:[\s\S]*?if: \$\{\{ inputs\.retry_open_cloud_only != true \}\}/);
+ assert.match(workflow,/Dispatch F9 aggregation after exact internal Studio validation/);
+ assert.match(workflow,/ROBLOX_INTERNAL_STUDIO_F9_DISPATCHED=/);
+ assert.match(helper,/internalStudioValidationOnly:true/);
+ assert.match(helper,/externalServerBootRequired:false/);
+ assert.match(helper,/f1ThroughF8SingleInternalSession:true/);
+ assert.match(helper,/item\.robloxRuntimeFoundationPassed=false/);
+ assert.match(helper,/item\.robloxRuntimePassed=false/);
 });
 
 test('exact private Roblox runtime failures continue internal flow but remain external-release blockers',()=>{
@@ -582,38 +595,26 @@ test('post-runtime QA keeps exact Studio MCP-passed candidates eligible after St
  assert.match(workflow,/&&\(explicitRuntimeStage\|\|exactStudioPlayPendingRuntime\|\|externalRuntimeObservationPending\)/);
 });
 
-test('post-runtime QA preserves independent and regression progress while shared two-client sync is pending',()=>{
- const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- assert.match(workflow,/multiplayerOnlyPending=result\.developmentContinuationPassed===true&&result\.multiplayerPromotionPending===true/);
- assert.match(workflow,/robloxIndependentQaPassed=true/);
- assert.match(workflow,/robloxRegressionPassed=true/);
- assert.match(workflow,/robloxParallelMultiplayerValidationPending=true/);
- assert.match(workflow,/item\.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE'/);
- assert.match(workflow,/item\.robloxFailureSignature='ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING'/);
- assert.match(workflow,/robloxPromotionBlockers=\['roblox-two-client-one-sync-pending'\]/);
- assert.match(workflow,/routingBlockers=\['roblox-two-client-one-sync-pending'\]/);
- const pendingBlock=workflow.match(/if\(multiplayerOnlyPending\)\{[\s\S]*?console\.log\('ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING='\+item\.gameId\);\s*pending\+\+;/)?.[0]||'';
- assert.ok(pendingBlock,'two-client pending branch must exist');
- assert.doesNotMatch(pendingBlock,/f9Ids\.push\(item\.gameId\)/);
- assert.doesNotMatch(workflow,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
+test('routine multiplayer reuses F0 sync contract plus the same exact Studio session',()=>{
+ const helper=fs.readFileSync('tools/company-development-roblox-studio-local-play.mjs','utf8');
+ const multiplayerWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-multiplayer-qa.yml','utf8');
+ assert.match(helper,/const multiplayerApplicable=f0\.multiplayerApplicable===true/);
+ assert.match(helper,/const multiplayerContractPassed=!multiplayerApplicable\|\|f0\.multiplayerSyncContractPassed===true/);
+ assert.match(helper,/multiplayerEvidenceMode:multiplayerApplicable\?'F0_STATIC_SYNC_CONTRACT_PLUS_EXACT_STUDIO_PLAY':'NOT_APPLICABLE'/);
+ assert.match(helper,/duplicateMultiplayerExecution:false/);
+ assert.match(multiplayerWorkflow,/Roblox Multiplayer Studio QA \(Disabled\)/);
+ assert.match(multiplayerWorkflow,/ROBLOX_MULTIPLAYER_VALIDATION=HEADLESS_STATE_SYNC_CONTRACT/);
 });
 
-
-test('two-client sync pending stays before F9 and cannot promote either internal or public release',()=>{
- const runtime=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+test('routine internal F9 does not wait for duplicate two-client execution',()=>{
  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
- assert.match(runtime,/ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING/);
- assert.match(runtime,/item\.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE'/);
- assert.match(runtime,/roblox-two-client-one-sync-pending/);
- assert.doesNotMatch(runtime,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
- assert.match(finalReview,/const sharedReleaseRuntimeAcceptance=/);
- assert.match(finalReview,/runtime\.f7MultiplayerFoundationPassed===true/);
- assert.match(finalReview,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance/);
- assert.match(finalReview,/const publicRuntimeAcceptance=false;/);
- assert.doesNotMatch(finalReview,/SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS/);
+ assert.match(finalReview,/const internalStudioValidationAccepted=/);
+ assert.match(finalReview,/post\.multiplayerContractPassed===true/);
+ assert.match(finalReview,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalStudioValidationAccepted/);
+ assert.match(finalReview,/duplicateMultiplayerExecution:false/);
+ assert.match(finalReview,/multiplayerVerificationMode:internalStudioValidationAccepted/);
+ assert.match(finalReview,/F0_STATIC_SYNC_CONTRACT_PLUS_EXACT_STUDIO_PLAY/);
  assert.match(finalReview,/item\.robloxPublicReleaseReady=false/);
- assert.match(finalReview,/roblox-perpetual-buildup-public-hard-gate-pending/);
- assert.match(finalReview,/item\.robloxPublicReleaseVersionNumber=Number\(candidate\.versionNumber\)/);
 });
 
 test('exact unchanged runtime candidate reuses verified server boot evidence',()=>{

@@ -1,5 +1,5 @@
 {
-  "version": 59,
+  "version": 60,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -466,7 +466,7 @@
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
   },
-  "updatedAt": "2026-09-26",
+  "updatedAt": "2026-09-28",
   "graphicsProductionUnificationSecurity": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -879,5 +879,32 @@
     "retryBudgetExpansion": false,
     "workerAuthorityExpansion": false,
     "sharedContextRevalidationRequiredOnFailurePath": true
+  },
+  "validationDeduplicationSecurity": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.developmentFocusedValidationOptimization",
+    "purpose": "PRESERVE_SECURITY INVARIANTS WITHOUT REPEATING IDENTICAL SECURITY WORK ACROSS F0_TO_F9",
+    "protections": {
+      "exactSourceRevisionBindingRequired": true,
+      "exactArtifactBindingRequiredWhenArtifactExists": true,
+      "oneBaselineSecurityEvaluationPerExactRevision": true,
+      "unchangedSecurityRelevantSourceMayReuseExactEvidence": true,
+      "securityRelevantSourceChangeRequiresImpactScopedRescan": true,
+      "unresolvedSecurityFailureRequiresRescan": true,
+      "sameExactSecuritySuiteAtEveryFloorForbidden": true,
+      "networkAuthorityRemoteValidationSaveEconomyCombatAuthorityRemainProtected": true,
+      "unrelatedDevelopmentMustNotBeStoppedByUnchangedSecurityEvidence": true,
+      "externalServerObservationCannotSubstituteSecurityEvidence": true,
+      "reusedSecurityEvidenceCannotCrossSourceRevision": true
+    },
+    "securityRelevantChangeDomains": [
+      "NETWORK_REMOTE_AUTHORITY",
+      "SAVE_PERSISTENCE",
+      "ECONOMY_REWARD_INVENTORY",
+      "DAMAGE_COOLDOWN_HITBOX_COMBAT_AUTHORITY",
+      "PERMISSION_EXTERNAL_CODE_EXECUTION"
+    ],
+    "failureAction": "BLOCK_AFFECTED_SCOPE_AND_ROUTE_EXISTING_SECURITY_RECOVERY_WHILE_UNRELATED_BUILD_UP_CONTINUES",
+    "authorityExpansion": false
   }
 }
