@@ -2967,8 +2967,9 @@ test('queued autonomous expansion v1 without breadth ledger upgrades to v2 witho
   assert.equal(migrated.buildUpGeneration,queued.buildUpGeneration);
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.version,2);
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.themeCoverageLedger.version,1);
-  assert.equal(migrated.buildUpDirective.autonomousContentExpansion.themeCoverageLedger.totalThemes,7);
-  assert.ok(migrated.buildUpDirective.autonomousContentExpansion.themeCoverageLedger.requiredThemes.length>=7);
+  assert.equal(migrated.buildUpDirective.autonomousContentExpansion.themeCoverageLedger.totalThemes,8);
+  assert.ok(migrated.buildUpDirective.autonomousContentExpansion.themeCoverageLedger.requiredThemes.length>=8);
+  assert.ok(migrated.buildUpDirective.autonomousContentExpansion.themeCoverageLedger.requiredThemes.includes('MENU_UI_EXPERIENCE_SYSTEM'));
   assert.ok(migrated.evidence.includes('build-up-directive-contract-migration:AUTONOMOUS_CONTENT_EXPANSION_V2'));
   assert.ok(migrated.evidence.includes('build-up-directive-contract-migration-generation:PRESERVED'));
   assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION'));
