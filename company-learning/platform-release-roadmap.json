@@ -1,5 +1,5 @@
 {
-  "version": 466,
+  "version": 467,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9559,6 +9559,28 @@
       "gameHeavyParallelismReduced": false,
       "runtimeTruthGateUnchanged": true,
       "exactSourceArtifactVersionGateUnchanged": true
+    },
+    "robloxExactEvidenceRaceRepair20260927": {
+      "id": "ROBLOX_EXACT_EVIDENCE_RACE_REPAIR_2026-09-27",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "observedRunId": 36296050875,
+      "observedGameId": "horror-escape-room",
+      "candidateVersionNumber": 24,
+      "observedExactEngineHttpStatus": 200,
+      "observedExactEngineVersion": true,
+      "observedRealServerBoot": false,
+      "observedStudioPrimaryActionEffectFailure": true,
+      "observedStudioConsoleErrorCount": 0,
+      "observedStudioPersistFailure": "ROBLOX_STUDIO_MCP_CANDIDATE_STALE",
+      "observedStudioAssetBindingVersion": 2,
+      "successfulProbeMustSurviveSiblingPersistentThrottle": true,
+      "persistentProbeFailureMustRemainCandidateFailClosed": true,
+      "exactEnginePrebootStudioEvidencePersistenceAllowed": true,
+      "exactEnginePrebootStudioEvidenceMaySetRuntimeFoundationPass": false,
+      "exactEnginePrebootStudioEvidenceMaySetPublicReleaseReady": false,
+      "studioAssetBindingVersionMustMatchDeclaredBindingVersion": true,
+      "primaryActionEffectMayUseAuthoritativeServerFeedbackTransition": true,
+      "sourceArtifactCandidateBindingMustRemainExact": true
     }
   },
   "vibeExecutionLaneContract": {
