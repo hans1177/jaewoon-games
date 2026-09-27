@@ -122,6 +122,10 @@ jobs:
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           const queuePath='../runtime/development-queue.json';
           const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
+          const beforeById=new Map((q.items||[]).map(item=>[
+            String(item?.gameId||''),
+            JSON.parse(JSON.stringify(item)),
+          ]));
           const fresh=ingestTesterDebug({developmentQueue:q,ticketQueue:{tickets:[]},recoveryQueue:{tasks:[]}});
           const currentBlockingTickets=new Map();
           for(const ticket of fresh.tickets.tickets||[]){
@@ -382,10 +386,44 @@ jobs:
             item.updatedAt=stamp;promoted++;
           }
 
+          const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+          const patches=[];
+          for(const item of q.items||[]){
+            const gameId=String(item?.gameId||'');
+            const before=beforeById.get(gameId);
+            if(!before)continue;
+            const fields={};
+            const keys=new Set([...Object.keys(before),...Object.keys(item)]);
+            keys.delete('gameId');
+            keys.delete('updatedAt');
+            for(const key of [...keys].sort()){
+              const beforePresent=Object.prototype.hasOwnProperty.call(before,key);
+              const afterPresent=Object.prototype.hasOwnProperty.call(item,key);
+              if(beforePresent===afterPresent&&(!beforePresent||equal(before[key],item[key])))continue;
+              fields[key]={
+                beforePresent,
+                ...(beforePresent?{before:before[key]}:{}),
+                afterPresent,
+                ...(afterPresent?{after:item[key]}:{}),
+              };
+            }
+            if(!Object.keys(fields).length)continue;
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            patches.push({
+              gameId,
+              sourceRevision:String(item.robloxSourceCommit||''),
+              artifactIdentity:String(item.robloxBuildArtifactIdentity||''),
+              candidateVersionNumber:Number(candidate.versionNumber||0),
+              updatedAt:String(item.updatedAt||stamp),
+              fields,
+            });
+          }
+          fs.writeFileSync('/tmp/roblox-f9-runtime-patch.json',JSON.stringify({version:1,generatedAt:stamp,patches},null,2)+'\n');
           if(promoted||blocked){
             q.updatedAt=stamp;
             fs.writeFileSync(queuePath,JSON.stringify(q,null,2)+'\n');
           }
+          console.log(`ROBLOX_F9_RUNTIME_PATCH_COUNT=${patches.length}`);
           console.log(`ROBLOX_F9_INTERNAL_RELEASE_PROMOTED=${promoted}`);
           console.log(`ROBLOX_F9_BLOCKED=${blocked}`);
           NODE
@@ -397,22 +435,107 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-roblox-f9-qa'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
-          git diff --cached --check
-          if git diff --cached --quiet; then
-            echo 'ROBLOX_F9_RUNTIME_STATE_CHANGE=NO'
-            exit 0
-          fi
-          git commit -m 'runtime: promote exact Roblox candidate after F9 [skip ci]'
-          pushed=0
-          for attempt in 1 2 3; do
-            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+          patch_file=/tmp/roblox-f9-runtime-patch.json
+          test -f "$patch_file"
+          persisted=0
+          : > /tmp/roblox-f9-persist-same-field-conflicts
+          for attempt in 1 2 3 4 5; do
+            echo "ROBLOX_F9_PERSIST_OPTIMISTIC_ATTEMPT=$attempt/5"
             git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
-            git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            PATCH_FILE="$patch_file" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const patch=JSON.parse(fs.readFileSync(process.env.PATCH_FILE,'utf8'));
+          const queuePath='development-queue.json';
+          const queue=JSON.parse(fs.readFileSync(queuePath,'utf8'));
+          const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+          const conflicts=[];
+          let applied=0;
+
+          for(const delta of patch.patches||[]){
+            const item=(queue.items||[]).find(row=>String(row?.gameId||'')===String(delta.gameId||''));
+            if(!item){
+              conflicts.push({gameId:delta.gameId,field:'GAME_ID_MISSING'});
+              continue;
+            }
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const identityExact=
+              String(item.robloxSourceCommit||'')===String(delta.sourceRevision||'')
+              &&String(item.robloxBuildArtifactIdentity||'')===String(delta.artifactIdentity||'')
+              &&Number(candidate.versionNumber||0)===Number(delta.candidateVersionNumber||0)
+              &&String(candidate.sourceRevision||'')===String(delta.sourceRevision||'')
+              &&String(candidate.artifactIdentity||'')===String(delta.artifactIdentity||'');
+            if(!identityExact){
+              conflicts.push({gameId:delta.gameId,field:'EXACT_CANDIDATE_IDENTITY'});
+              continue;
+            }
+
+            let conflictField='';
+            for(const [key,change] of Object.entries(delta.fields||{})){
+              const currentPresent=Object.prototype.hasOwnProperty.call(item,key);
+              const alreadyAfter=
+                currentPresent===change.afterPresent
+                &&(!currentPresent||equal(item[key],change.after));
+              if(alreadyAfter)continue;
+              const matchesBefore=
+                currentPresent===change.beforePresent
+                &&(!currentPresent||equal(item[key],change.before));
+              if(!matchesBefore){
+                conflictField=key;
+                break;
+              }
+            }
+            if(conflictField){
+              conflicts.push({gameId:delta.gameId,field:conflictField});
+              continue;
+            }
+
+            for(const [key,change] of Object.entries(delta.fields||{})){
+              if(change.afterPresent)item[key]=change.after;
+              else delete item[key];
+            }
+            const currentUpdated=Date.parse(String(item.updatedAt||''))||0;
+            const patchUpdated=Date.parse(String(delta.updatedAt||''))||0;
+            if(patchUpdated>currentUpdated)item.updatedAt=delta.updatedAt;
+            applied++;
+          }
+
+          if(applied>0){
+            const now=String(patch.generatedAt||new Date().toISOString());
+            const currentQueueUpdated=Date.parse(String(queue.updatedAt||''))||0;
+            const patchUpdated=Date.parse(now)||0;
+            if(patchUpdated>currentQueueUpdated)queue.updatedAt=now;
+            fs.writeFileSync(queuePath,JSON.stringify(queue,null,2)+'\n');
+          }
+          fs.writeFileSync('/tmp/roblox-f9-persist-same-field-conflicts',conflicts.map(row=>row.gameId+'|'+row.field).join('\n')+(conflicts.length?'\n':''));
+          console.log('ROBLOX_F9_PERSIST_PATCH_APPLIED='+applied);
+          console.log('ROBLOX_F9_PERSIST_SAME_FIELD_CONFLICT_COUNT='+conflicts.length);
+          for(const row of conflicts)console.log('ROBLOX_F9_PERSIST_SAME_FIELD_CONFLICT='+row.gameId+':'+row.field);
+          NODE
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              persisted=1
+              echo 'ROBLOX_F9_RUNTIME_STATE_CHANGE=NO_CHANGE_OR_ALREADY_MERGED'
+              break
+            fi
+            git commit -m 'runtime: promote exact Roblox candidate after F9 [skip ci]'
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              persisted=1
+              echo "ROBLOX_F9_PERSIST_WRITE=PUSHED:$attempt"
+              break
+            fi
+            echo "ROBLOX_F9_PERSIST_CONFLICT_RETRY=$attempt"
             sleep $((attempt*2))
           done
-          test "$pushed" = '1'
-          echo 'ROBLOX_F9_RUNTIME_STATE_CHANGE=YES'
+          test "$persisted" = '1'
+          if [ -s /tmp/roblox-f9-persist-same-field-conflicts ]; then
+            echo 'ROBLOX_F9_PERSIST_REVALIDATION_REQUIRED=YES'
+            cat /tmp/roblox-f9-persist-same-field-conflicts
+          else
+            echo 'ROBLOX_F9_PERSIST_REVALIDATION_REQUIRED=NO'
+          fi
+          echo 'ROBLOX_F9_RUNTIME_STATE_CHANGE=YES_OR_ALREADY_MERGED'
 
       - name: Fan verified F9 runtime proof into waiting Vibe Roblox tasks
         env:
