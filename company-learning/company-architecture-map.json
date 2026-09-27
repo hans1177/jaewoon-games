@@ -1,5 +1,5 @@
 {
-  "version": 273,
+  "version": 274,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6111,7 +6111,7 @@
     "epochAdvancedToBypassLegacyPendingGroup": true
   },
   "robloxOpenCloudThrottleRecovery": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxOpenCloudThrottleRecovery20260927",
     "module": "tools/company-development-roblox-runtime-foundation.mjs",
     "workflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
@@ -6128,6 +6128,14 @@
     "persistentApiFailureStillFails": true,
     "runtimeTruthGateUnchanged": true,
     "studioMcpGateUnchanged": true,
-    "publicReleaseGateUnchanged": true
+    "publicReleaseGateUnchanged": true,
+    "perCandidateProbeFailureIsolation": true,
+    "successfulProbeEvidencePersistsBeforeBatchFailure": true,
+    "persistentPeerFailureStillFailsProbeStep": true,
+    "expectedStudioAssetBindingVersionRequired": true,
+    "exactEnginePrebootStudioEvidencePersistence": true,
+    "exactEnginePrebootMayPromoteRuntimeFoundation": false,
+    "primaryActionEffectAuthoritativeFeedbackObservation": true,
+    "gameplayRulesUnchanged": true
   }
 }
