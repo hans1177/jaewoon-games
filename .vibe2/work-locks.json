@@ -3,60 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1ijzc36",
-      "worker": "vibe2",
-      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "files": [
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "7e2983a1f9b7517c34e0c1bced7213be394eb942",
-      "acquiredAt": "2026-09-27T21:42:43.005Z",
-      "expiresAt": "2026-09-27T22:27:43.005Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1dvcjyv",
-      "worker": "vibe2",
-      "taskId": "cozy-island-unity-web-base-implementation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "unity-games/cozy-island/Assets/Scripts/GameCore.cs",
-        "unity-games/cozy-island/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "7e2983a1f9b7517c34e0c1bced7213be394eb942",
-      "acquiredAt": "2026-09-27T21:42:57.180Z",
-      "expiresAt": "2026-09-27T22:27:57.180Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1x9fguf",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-studio-evolution-unity-web-presentation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "unity-games/monster-adventure/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/monster-adventure/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "7e2983a1f9b7517c34e0c1bced7213be394eb942",
-      "acquiredAt": "2026-09-27T21:44:19.691Z",
-      "expiresAt": "2026-09-27T22:29:19.691Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-studio-evolution-unity-web-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-19199di",
       "worker": "vibe2",
       "taskId": "horror-escape-room-studio-evolution-presentation-v1",
@@ -805,6 +751,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-52tib8",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
+      ],
+      "baseSha": "2a09378c74537241fdce5da3315a4832b0cf728c",
+      "acquiredAt": "2026-09-27T22:29:32.528Z",
+      "expiresAt": "2026-09-27T23:14:32.528Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
       ]
     }
   ]
