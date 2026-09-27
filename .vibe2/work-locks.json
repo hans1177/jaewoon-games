@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-iylxoq",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
-      "gameId": "daechung-rpg",
-      "files": [
-        "roblox-games/daechung-rpg/server/Game.server.luau",
-        "roblox-games/daechung-rpg/client/Game.client.luau",
-        "roblox-games/daechung-rpg/shared/GameConfig.luau"
-      ],
-      "baseSha": "7e2983a1f9b7517c34e0c1bced7213be394eb942",
-      "acquiredAt": "2026-09-27T21:16:21.818Z",
-      "expiresAt": "2026-09-27T22:01:21.818Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-post-release-focus-b0dce53053629c70"
-      ]
-    },
-    {
       "id": "wl-1ierpnu",
       "worker": "vibe2",
       "taskId": "fantasy-survival-unity-web-base-implementation-v1",
@@ -913,6 +894,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-o24slc",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-425305e25df9-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-system-steward.mjs",
+        "qa/vibe2-system-steward.test.mjs"
+      ],
+      "baseSha": "a5fd4f0d373b2ad157778716bbda36c92a3a1fca",
+      "acquiredAt": "2026-09-27T22:02:43.447Z",
+      "expiresAt": "2026-09-27T22:47:43.447Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-425305e25df9-v1"
       ]
     }
   ]
