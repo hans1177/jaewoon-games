@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-r2uxzh",
-      "worker": "vibe2",
-      "taskId": "survival-unity-web-base-implementation-v1",
-      "gameId": "survival",
-      "files": [
-        "unity-games/survival/Assets/Scripts/GameCore.cs",
-        "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T13:31:58.826Z",
-      "expiresAt": "2026-09-27T14:16:58.826Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-mbt9sh",
       "worker": "vibe2",
       "taskId": "SYS-ARCH-425305e25df9-v1",
@@ -226,6 +208,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:monster-adventure-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-oc0q5f",
+      "worker": "vibe2",
+      "taskId": "village-dungeons-roblox-presentation-asset-adaptation-v1",
+      "gameId": "village-dungeons",
+      "files": [
+        "roblox-games/village-dungeons/client/Game.client.luau",
+        "roblox-games/village-dungeons/server/Game.server.luau",
+        "roblox-games/village-dungeons/shared/GameConfig.luau"
+      ],
+      "baseSha": "6bec89582afa4db20dec68b3a52bbd0c63cfbd9b",
+      "acquiredAt": "2026-09-27T14:17:11.217Z",
+      "expiresAt": "2026-09-27T15:02:11.217Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:village-dungeons-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
