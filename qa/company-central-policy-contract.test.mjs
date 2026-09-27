@@ -1232,6 +1232,16 @@ test('Director runner drain uses separate fixed 24.04 capacity while gate and su
   assert.equal(topology?.gamePrimaryGate,'ubuntu-slim');
   assert.equal(topology?.supervise,'ubuntu-slim');
   assert.equal(topology?.heavyGameExecution,'ubuntu-latest');
+  const queueReconcile=readText('.github/workflows/company-development-queue-reconcile.yml');
+  assert.match(queueReconcile,/game-primary-gate:[\s\S]*?runs-on:\s*ubuntu-24\.04/);
+  assert.match(queueReconcile,/reconcile:[\s\S]*?runs-on:\s*ubuntu-24\.04/);
+  assert.doesNotMatch(queueReconcile,/runs-on:\s*ubuntu-latest/);
+  const queueIsolation=roadmap.changeRecord?.developmentQueueReconcileRunnerIsolation20260927||{};
+  assert.equal(queueIsolation.gamePrimaryGateRunner,'ubuntu-24.04');
+  assert.equal(queueIsolation.reconcileRunner,'ubuntu-24.04');
+  assert.equal(queueIsolation.previousRunner,'ubuntu-slim');
+  assert.equal(architecture.developmentQueueReconcileRunnerIsolation?.gamePrimaryGateRunner,'ubuntu-24.04');
+  assert.equal(logMap.developmentQueueReconcileRunnerIsolationEvidence?.expectedRunnerLabels?.reconcile,'ubuntu-24.04');
   assert.match(directorSupervisor,/runner-drain:[\s\S]*?runs-on:\s*ubuntu-24\.04/);
   assert.match(directorSupervisor,/game-primary-gate:[\s\S]*?runs-on:\s*ubuntu-slim/);
   assert.match(directorSupervisor,/supervise:[\s\S]*?runs-on:\s*ubuntu-slim/);
@@ -1259,7 +1269,6 @@ test('director runner drain uses targeted active-run queries instead of deep Act
 test('administrative operational control workflows stay off game-primary ubuntu-latest capacity',()=>{
   for(const workflowFile of [
     '.github/workflows/company-status-sync.yml',
-    '.github/workflows/company-development-queue-reconcile.yml',
     '.github/workflows/company-design-promotion-sync.yml',
     '.github/workflows/company-platform-exposure-sync.yml',
     '.github/workflows/vibe2-recovery-fast.yml',

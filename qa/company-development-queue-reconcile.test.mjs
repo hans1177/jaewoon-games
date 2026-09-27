@@ -587,3 +587,29 @@ test('queue reconcile restores durable dedicated Roblox target identity before s
     assert.equal(item.robloxDedicatedTargetRegistryBinding.source,'roblox-dedicated-targets.json');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('queue reconcile uses fixed 24.04 control capacity without changing serialized state writes',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-queue-reconcile.yml','utf8');
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  const logMap=JSON.parse(fs.readFileSync('company-learning/company-log-map.json','utf8'));
+  const gateStart=workflow.indexOf('\n  game-primary-gate:\n');
+  const reconcileStart=workflow.indexOf('\n  reconcile:\n',gateStart);
+  assert.ok(gateStart>=0&&reconcileStart>gateStart);
+  const gate=workflow.slice(gateStart,reconcileStart);
+  const reconcile=workflow.slice(reconcileStart);
+  assert.match(gate,/runs-on:\s*ubuntu-24\.04/);
+  assert.match(reconcile,/runs-on:\s*ubuntu-24\.04/);
+  assert.match(workflow,/group:\s*company-development-queue-reconcile-runtime\s+cancel-in-progress:\s*false/);
+  const policy=roadmap.changeRecord?.developmentQueueReconcileRunnerIsolation20260927||{};
+  assert.equal(policy.gamePrimaryGateRunner,'ubuntu-24.04');
+  assert.equal(policy.reconcileRunner,'ubuntu-24.04');
+  assert.equal(policy.previousRunner,'ubuntu-slim');
+  assert.equal(policy.serializeStateWrites,true);
+  assert.equal(policy.stateMutationLogicChanged,false);
+  assert.equal(architecture.developmentQueueReconcileRunnerIsolation?.gamePrimaryGateRunner,'ubuntu-24.04');
+  assert.equal(architecture.developmentQueueReconcileRunnerIsolation?.reconcileRunner,'ubuntu-24.04');
+  assert.equal(logMap.developmentQueueReconcileRunnerIsolationEvidence?.expectedRunnerLabels?.gamePrimaryGate,'ubuntu-24.04');
+  assert.equal(logMap.developmentQueueReconcileRunnerIsolationEvidence?.expectedRunnerLabels?.reconcile,'ubuntu-24.04');
+});
+
