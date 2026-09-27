@@ -1,5 +1,5 @@
 {
-  "version": 283,
+  "version": 284,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1240,7 +1240,11 @@
         "staleAction": "NOOP_BEFORE_CONTRACT_PREFLIGHT_AND_RESERVE",
         "staleWakeMayWriteControlState": false,
         "staleWakeMayStartGameWorker": false,
-        "runningOrCompletedGameWorkerCancellation": false
+        "runningOrCompletedGameWorkerCancellation": false,
+        "directMainPushOnly": true,
+        "explicitExecutionLaneBypassesMainPushSingleton": true,
+        "workflowCallLaneRunsRunScoped": true,
+        "workflowCallInheritedPushEventMustNotCoalesce": true
       },
       "directorGamePrimaryFallbackWake": {
         "enabled": true,

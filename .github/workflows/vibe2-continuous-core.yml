@@ -69,9 +69,9 @@ permissions:
 # Coalesce duplicate refill control events only within the same execution lane.
 # GAME_PRIMARY must never wait behind recovery-fast, learning-idle or control-fast refill work.
 concurrency:
-  # Main-push wake signals are disposable duplicates. Keep the active wake alive and
-  # retain only the newest pending wake; repository/callable lane runs stay run-scoped.
-  group: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'vibe2-main-push-game-primary-wake' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
+  # Only a direct main push without an explicit lane uses the disposable main-wake singleton.
+  # Reusable workflow_call lanes inherit the caller event name, so explicit lane inputs must stay run-scoped.
+  group: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
 env:

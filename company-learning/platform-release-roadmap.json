@@ -9048,7 +9048,11 @@
       "staleQueuedWakeMayCancel": true,
       "inProgressWakeCancellationForbidden": true,
       "staleQueuedWakeCancellationScope": "MAIN_PUSH_WAKE_ONLY",
-      "staleQueuedWakeCancellationRequiresHeadShaNotCurrentMain": true
+      "staleQueuedWakeCancellationRequiresHeadShaNotCurrentMain": true,
+      "directMainPushOnly": true,
+      "explicitExecutionLaneBypassesMainPushSingleton": true,
+      "workflowCallInheritedPushEventMustRemainRunScoped": true,
+      "workflowCallLaneCancellationForbiddenByMainPushSingleton": true
     },
     "directorGamePrimaryFallbackWake20260927": {
       "id": "DIRECTOR_GAME_PRIMARY_FALLBACK_WAKE_2026-09-27",
@@ -9745,6 +9749,39 @@
       "authorityChange": "NONE",
       "qualityGateWeakening": false,
       "securityBoundaryChange": false
+    },
+    "reusableCoreLaneConcurrencyIsolation20260927": {
+      "id": "REUSABLE_CORE_LANE_CONCURRENCY_ISOLATION_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "PREVENT_WORKFLOW_CALL_ASSET_RECOVERY_AND_GAME_LANES_FROM_INHERITING_THE_DIRECT_MAIN_PUSH_SINGLETON_GROUP",
+      "observed": {
+        "schedulerRunId": 36312200908,
+        "schedulerHead": "ca40e4cd8600d5d32cbda1cbe0d7ca4345eab9d6",
+        "planResult": "SUCCESS",
+        "assetQueued": 13,
+        "assetActive": 0,
+        "assetRefillReady": "YES",
+        "gamePrimaryQueued": 5,
+        "recoveryFastQueued": 5,
+        "assetReserveJobId": 108600668238,
+        "assetReserveConclusion": "CANCELLED_BEFORE_EXECUTION",
+        "recoveryReserveJobId": 108600668272,
+        "recoveryReserveConclusion": "CANCELLED_BEFORE_EXECUTION",
+        "diagnosis": "CALLED_REUSABLE_WORKFLOW_INHERITED_PARENT_PUSH_EVENT_AND_MATCHED_DIRECT_MAIN_PUSH_CONCURRENCY_GROUP"
+      },
+      "fix": {
+        "directMainPushSingletonCondition": "MAIN_PUSH_AND_MAIN_REF_AND_NO_EXPLICIT_EXECUTION_LANE",
+        "workflowCallLaneScope": "RUN_ID_PLUS_EXECUTION_LANE",
+        "assetDevelopmentPreserved": true,
+        "recoveryFastPreserved": true,
+        "gamePrimaryCallablePreserved": true
+      },
+      "existingQueuePreserved": true,
+      "newSchedulerCreated": false,
+      "newQueueOrWorkerAuthorityCreated": false,
+      "cancelInProgressRemainsFalse": true,
+      "qualitySecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
