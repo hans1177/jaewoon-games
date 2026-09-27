@@ -97,29 +97,43 @@ test('maximum parallelism is default and source-root locks are permanently disab
   assert.match(core,/VIBE2_RESERVE_CONTRACT_REGRESSION=PASS/);
 });
 
-test('lightweight reserve uses slim while fan-in stays on ARM and heavy execution stays on ubuntu-latest',()=>{
+test('game-primary reserve bypasses slim saturation while auxiliary reserve and heavy execution keep their pools',()=>{
   const pool=runtime.continuous?.gamePrimaryControlRunnerPool||{};
   const architecturePool=architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool||{};
+  const isolation=roadmap.changeRecord?.vibeGamePrimaryReserveRunnerIsolation20260927||{};
 
-  assert.equal(pool.reserve,'ubuntu-slim');
+  assert.equal(pool.reserve,'ubuntu-24.04');
+  assert.equal(pool.reserveDefault,'ubuntu-24.04');
+  assert.equal(pool.gamePrimaryReserve,'ubuntu-24.04');
+  assert.equal(pool.auxiliaryReserve,'ubuntu-slim');
+  assert.equal(pool.fanInRefillReserve,'ubuntu-24.04-arm');
   assert.equal(pool.fanIn,'ubuntu-24.04-arm');
   assert.equal(pool.worker,'ubuntu-latest');
   assert.equal(pool.modelCache,'ubuntu-latest');
-  assert.equal(pool.lightweightReserveSeparatedFromArmFanIn,true);
-  assert.equal(pool.queueReservationAndStateFanInOnly,true);
+  assert.equal(pool.gamePrimaryCriticalIngressSeparatedFromSlim,true);
+  assert.equal(pool.auxiliaryIngressRemainsSlim,true);
   assert.equal(pool.heavyGameExecutionUnchanged,true);
 
-  assert.equal(architecturePool.reserve,'ubuntu-slim');
+  assert.equal(architecturePool.reserve,'ubuntu-24.04');
+  assert.equal(architecturePool.gamePrimaryReserve,'ubuntu-24.04');
+  assert.equal(architecturePool.auxiliaryReserve,'ubuntu-slim');
   assert.equal(architecturePool.fanIn,'ubuntu-24.04-arm');
   assert.equal(architecturePool.worker,'ubuntu-latest');
   assert.equal(architecturePool.modelCache,'ubuntu-latest');
-  assert.equal(architecturePool.lightweightReserveSeparatedFromArmFanIn,true);
-  assert.equal(architecturePool.queueReservationAndStateFanInOnly,true);
+  assert.equal(architecturePool.gamePrimaryCriticalIngressSeparatedFromSlim,true);
+  assert.equal(architecturePool.auxiliaryIngressRemainsSlim,true);
   assert.equal(architecturePool.heavyGameExecutionUnchanged,true);
-  assert.equal(roadmap.changeRecord?.fanInRefillRunnerPressureBypass20260927?.runnerRouting?.defaultReserve,'ubuntu-slim');
-  assert.equal(roadmap.changeRecord?.fanInRefillRunnerPressureBypass20260927?.runnerRouting?.fanInRefillReserve,'ubuntu-24.04-arm');
 
-  assert.match(core,/\n  reserve:\n(?:    #[^\n]*\n)*    runs-on: \$\{\{ github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-slim' \}\}/);
+  assert.equal(isolation.routing?.gamePrimaryReserve,'ubuntu-24.04');
+  assert.equal(isolation.routing?.auxiliaryReserve,'ubuntu-slim');
+  assert.equal(isolation.routing?.fanInRefillReserve,'ubuntu-24.04-arm');
+  assert.equal(isolation.routing?.heavyWorker,'ubuntu-latest');
+  assert.equal(isolation.gamePrimaryScopeOnly,true);
+  assert.equal(isolation.recoveryFastLearningIdleControlFastRemainSlim,true);
+  assert.equal(isolation.fanInRefillArmBypassPreserved,true);
+  assert.equal(isolation.qualitySecurityReleaseGatesUnchanged,true);
+
+  assert.match(core,/\n  reserve:\n(?:    #[^\n]*\n)*    runs-on: \$\{\{ github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && 'ubuntu-24\.04-arm' \|\| \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'game-primary' && 'ubuntu-24\.04' \|\| 'ubuntu-slim' \}\}/);
   assert.match(core,/\n  fan_in:[\s\S]{0,260}?\n    runs-on: ubuntu-24\.04-arm/);
   assert.match(core,/\n  model_cache:[\s\S]{0,180}?\n    runs-on: ubuntu-latest/);
   assert.match(core,/\n  worker:[\s\S]{0,180}?\n    runs-on: ubuntu-latest/);
