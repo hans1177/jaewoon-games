@@ -189,6 +189,28 @@ test('planner admits exact engine version while real server boot is pending with
   assert.equal(candidate.robloxInternalReleasePublished,false);
 });
 
+test('Studio evidence persists for the same exact engine preboot candidate without fabricating runtime foundation',()=>{
+  const candidate=item();
+  candidate.robloxInternalReleasePublished=false;
+  candidate.robloxInternalReleaseEvidence={};
+  candidate.robloxRuntimeFoundationPassed=false;
+  candidate.robloxRuntimeFoundationEvidence={
+    authority:'exact-engine-version-awaiting-real-server-boot',
+    sourceRevision:source,
+    artifactIdentity:artifact,
+    placeId:'456',
+    candidateVersionNumber:9,
+    engineExecuted:true,
+    exactEngineVersion:true,
+    serverBootObserved:false
+  };
+  const result=createLocalStudioPlayEvidence({item:candidate,runtime:runtime(),expected,workflowRunId:100,studioStepSucceeded:true});
+  assert.equal(result.evidence.currentSourceArtifactBinding,true);
+  assert.equal(result.evidence.currentPublishedRuntimeClaim,false);
+  assert.equal(candidate.robloxRuntimeFoundationPassed,false);
+  assert.equal(candidate.robloxInternalReleasePublished,false);
+});
+
 test('Studio evidence maps observed failures into Roblox-native failure classes',()=>{
   const candidate=item();
   const broken=runtime();
@@ -1159,6 +1181,34 @@ test('declared Studio actual-play contract requires core progression UI action e
   assert.ok(result.metrics.primaryActionDisplacement>=2);
 });
 
+test('primary action effect accepts existing server-authoritative FeedbackEvent when dash movement has already settled',()=>{
+  const contract=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8')).studioActualPlayContract;
+  const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
+  const image={type:'image',mimeType:'image/png',data:png.toString('base64')};
+  const result=evaluateStudioActualPlayContract({
+    contract,
+    initialClientProbe:{player:{roundState:'INTERMISSION'},workspace:{ActivePopulation:0}},
+    preActionClientProbe:{player:{roundState:'RUNNING',role:'SURVIVOR',monsterPreference:'SURVIVOR',rootX:0,rootY:3,rootZ:0,velocityX:0,velocityY:0,velocityZ:0,feedbackEvent:''}},
+    postActionClientProbe:{player:{roundState:'RUNNING',role:'SURVIVOR',rootX:0,rootY:3,rootZ:0,velocityX:0,velocityY:0,velocityZ:0,feedbackEvent:'DASH:12345'}},
+    clientProbe:{
+      player:{characterPresent:true,humanoidPresent:true,rootPresent:true,roundState:'RUNNING',role:'SURVIVOR',humanCount:4,monsterCount:4},
+      camera:{present:true},
+      ui:{screenGuiPresent:true,visibleButtons:2,required:{MidnightTopHUD:{present:true,visible:true,offscreen:false},RoundActions:{present:true,visible:true,offscreen:false}}},
+      world:{arenaPresent:true,arenaPartCount:80,proximityPromptCount:5},
+      workspace:{MapReady:true,ActivePopulation:8,HumanCount:4,MonsterCount:4,WorldArtPass:'MIDNIGHT_SCHOOL_INFECTION_HORROR_V9',CharacterArtDirection:'REALISTIC_HUMANS_ABERRANT_MONSTERS',DesignCodeSync:'PRIMARY_THREE_FINAL_4V4_INFECTION_V1'},
+      lighting:{brightness:1.8}
+    },
+    serverProbe:{workspace:{MapReady:true,ActivePopulation:8,HumanCount:4,MonsterCount:4}},
+    actions:[{id:'ui-role-selection',dispatched:true,ok:true},{id:'ui-primary-action',dispatched:true,ok:true}],
+    beforeImages:[image],afterImages:[image]
+  });
+  assert.equal(result.scenarios.find(x=>x.id==='primary-action-effect').pass,true);
+  assert.equal(result.metrics.primaryActionDisplacement,0);
+  assert.equal(result.metrics.primaryActionVelocity,0);
+  assert.equal(result.metrics.primaryActionFeedbackChanged,true);
+  assert.equal(result.authoritativeStateChangeObserved,true);
+});
+
 test('movement alone cannot pass a declared Studio actual-play scenario contract',()=>{
   const contract=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8')).studioActualPlayContract;
   const result=evaluateStudioActualPlayContract({
@@ -1231,6 +1281,11 @@ test('planner reruns exact artifact when a declared Studio scenario contract is 
   }
 });
 
+
+test('Studio actual-play read-only probe captures the existing authoritative gameplay feedback attribute',()=>{
+  assert.match(helper,/feedbackEvent=attr\(p,"FeedbackEvent"\)/);
+  assert.match(helper,/const authoritativeActionFeedback=Boolean\(feedbackAfter&&feedbackAfter!==feedbackBefore\)/);
+});
 
 test('declared Studio scenario probes the primary action before generic movement and keeps console errors separate from scenario failures',()=>{
   const preActionAt=helper.indexOf("preActionClientProbe=await collectStudioActualPlayProbe");
