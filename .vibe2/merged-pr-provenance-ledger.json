@@ -27815,11 +27815,159 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_a7666aa69f2664556e1488b7",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-3616",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "50673ac9ac61015195ee2db525dc6e371c67d252",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 3616,
+        "baseBranch": "main",
+        "headBranch": "fix/runner-bottleneck-v2",
+        "baseSha": "50673ac9ac61015195ee2db525dc6e371c67d252",
+        "headSha": "19dba670100a9e1f56882d6bf50b83d94e3fe47c",
+        "mergeCommitSha": "251aa8f587a8b685412c847f56ba471f64a6897c",
+        "mergedAt": "2026-09-27T01:37:31Z",
+        "authorLogin": "hans1177",
+        "titleHash": "9cb72b031311b63932df8488f9c52bff3db7ab0e1019cb53a67eeb654f694d97",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/runner-bottleneck-v2",
+        "candidateSha": "19dba670100a9e1f56882d6bf50b83d94e3fe47c"
+      },
+      "changeStats": {
+        "changedFileCount": 17,
+        "codingRelevantFileCount": 17,
+        "addedLineCount": 605,
+        "deletedLineCount": 63,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/vibe2-24h-runner.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "company-learning/company-architecture-map.json",
+          "company-learning/company-log-map.json",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-central-policy-contract.test.mjs",
+          "qa/company-development-roblox-post-runtime-qa.test.mjs",
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/company-game-seed-flow.test.mjs",
+          "qa/main-write-guard.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "qa/vibe2-parallelism-main-contract.test.mjs",
+          "roblox-games/horror-escape-room/launch-mvp.json",
+          "tools/company-development-roblox-studio-local-play.mjs",
+          "tools/main-write-guard.mjs",
+          "tools/vibe2-system-evolution-verify.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/vibe2-24h-runner.yml",
+          ".github/workflows/vibe2-core-qa.yml",
+          "company-learning/company-architecture-map.json",
+          "company-learning/company-log-map.json",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-central-policy-contract.test.mjs",
+          "qa/company-development-roblox-post-runtime-qa.test.mjs",
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/company-game-seed-flow.test.mjs",
+          "qa/main-write-guard.test.mjs",
+          "qa/vibe2-controller-contract.test.mjs",
+          "qa/vibe2-parallelism-main-contract.test.mjs",
+          "roblox-games/horror-escape-room/launch-mvp.json",
+          "tools/company-development-roblox-studio-local-play.mjs",
+          "tools/main-write-guard.mjs",
+          "tools/vibe2-system-evolution-verify.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:3616",
+        "merge-commit:251aa8f587a8b685412c847f56ba471f64a6897c",
+        "base-main:50673ac9ac61015195ee2db525dc6e371c67d252"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 224
+    "total": 225
   }
 }
