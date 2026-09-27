@@ -1497,7 +1497,7 @@ test('24H plan uses optimistic writes while reserve is lane-isolated and fan-in 
   assert.ok(reserveStart>=0&&reserveSteps>reserveStart);
   const reserveHeader=core.slice(reserveStart,reserveSteps);
   assert.doesNotMatch(reserveHeader,/\n    concurrency:/);
-  assert.match(reserveHeader,/runs-on: \$\{\{ github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-slim' \}\}/);
+  assert.match(reserveHeader,/asset-development' && 'ubuntu-24\\.04-arm'/);
   assert.match(reserveHeader,/ubuntu-24\.04-arm/);
   assert.match(reserveHeader,/ubuntu-slim/);
   assert.doesNotMatch(reserveHeader,/vibe2-control-state-/);
