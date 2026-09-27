@@ -631,7 +631,23 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     'For Roblox, Unity, Web, and asset-development work, every knowledge item retrieved into this work order must be applied as a transformative implementation input. Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs; do not silently ignore verified playbook reuse or raw-copy commercial source assets.',
     'Only these injected knowledge items may receive credit or blame from this task. Infrastructure failures must not penalize knowledge. Fresh QA/regression/review is required before attribution.'
   ].join('\n'):'';
-  const assetProduction = buildVibeAssetProductionPlan({ task, target:plan.target, repoRoot:process.cwd() });
+  const assetProduction = buildVibeAssetProductionPlan({
+    task,
+    target:plan.target,
+    repoRoot:process.cwd(),
+    verifiedLearning:unifiedLearning,
+    executionLane:process.env.VIBE2_EXECUTION_LANE||'game-primary'
+  });
+  if(assetProduction?.commercialDistillation?.required===true&&assetProduction.commercialDistillation.ready!==true){
+    return freeze({
+      ...base,
+      reason:'VERIFIED_COMMERCIAL_BLACK_BOX_DISTILLATION_REQUIRED_FOR_INTERNAL_ASSET_PRODUCTION',
+      selectedTask:task,
+      unifiedLearning,
+      knowledgeApplicationContract,
+      assetProduction
+    });
+  }
   const assetGuidance = assetProductionGuidance(assetProduction);
   const presentationQuality = buildPresentationQualityContract(task,plan.target);
   const presentationGuidance = presentationQualityGuidance(presentationQuality);
@@ -738,6 +754,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     'design-intelligence-contract',
     'verified-learning-motor-contract',
     'asset-production-plan-contract',
+    'verified-commercial-distillation-internal-asset-contract',
     'asset-runtime-visual-qa-required',
     ...(presentationQuality.required?['presentation-quality-static-check','presentation-quality-runtime-check','presentation-gameplay-semantics-preservation']:[]),
     ...(weatherPresentation.required?['weather-presentation-static-check','weather-presentation-runtime-check','weather-multiplayer-sync-check','weather-gameplay-semantics-preservation']:[]),
