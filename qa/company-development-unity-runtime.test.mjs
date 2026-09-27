@@ -443,3 +443,18 @@ test('Unity child QA dispatch reuses an active exact immutable-build run instead
   assert.match(workflow,/\.status=="queued" or \.status=="pending" or \.status=="in_progress" or \.status=="requested"/);
   assert.match(workflow,/per_page=100/);
 });
+
+
+test('Unity BUILD_UP settlement requires exact source tree plus runtime independent QA and regression',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-unity-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/UNITY_CHECKPOINT_SOURCE_TREE_SHA=/);
+  assert.match(workflow,/sourceRootTreeSha:process\.env\.SOURCE_TREE_SHA/);
+  assert.match(workflow,/authority:'unity-exact-apk-runtime-qa-regression'/);
+  assert.match(workflow,/Settle exact Vibe Unity BUILD_UP task after runtime QA and regression/);
+  assert.match(workflow,/candidate-awaiting-unity-runtime-qa/);
+  assert.match(workflow,/const exactTreeMarker='unity-runtime-await-source-tree:'\+sourceTree/);
+  assert.match(workflow,/if\(!evidence\.includes\(exactTreeMarker\)\)continue/);
+  assert.match(workflow,/unity-runtime-pass,unity-independent-qa-pass,unity-regression-pass/);
+  assert.match(workflow,/unity-runtime-source-tree:\$\{runtime_source_tree_sha\}/);
+  assert.match(workflow,/UNITY_BUILD_UP_VIBE_TASK_PASS=/);
+});
