@@ -350,8 +350,14 @@ function secondaryDesignAnchor(design={}){
 
 function domainState(domain,{design={},source={}}={}){
   const s=source?.signals||{};
+  const approvedMenuSurfaces=Array.isArray(design?.uxAccessibilityPlan?.menuSurfaces)
+    ?design.uxAccessibilityPlan.menuSurfaces.filter(row=>row&&typeof row==='object').slice(0,10)
+    :[];
   const relevantByText=qualitySignalText([
-    design.identity,design.coreFun,design.progressionDirection,...(design.coreLoop||[]),
+    design.identity,design.coreFun,design.progressionDirection,design.mobileUx,
+    design.uxAccessibilityPlan,
+    ...approvedMenuSurfaces.flatMap(row=>[row.role,row.entryContext,row.purpose,row.systemBinding,...(row.primaryActions||[]),row.layout,row.mobileInteraction,row.visualLanguage]),
+    ...(design.coreLoop||[]),
     ...(design.signatureSystems||[]).flatMap(x=>[x.name,x.purpose,x.playerChoice])
   ]);
   const no=(reason)=>({domain,state:'NOT_APPLICABLE',reason});
@@ -406,7 +412,9 @@ function domainState(domain,{design={},source={}}={}){
     INPUT:Number(s.input||0)<3,
     MOBILE_UX:Number(s.input||0)<3||Number(s.ui||0)<3,
     SETTINGS_ACCESSIBILITY:Number(s.settings||0)<2,
-    MENU_FLOW:Number(s.ui||0)>0&&Number(s.uiFlow||0)<3,
+    MENU_FLOW:approvedMenuSurfaces.length>=3
+      ?Number(s.uiFlow||0)<Math.min(3,approvedMenuSurfaces.length)
+      :Number(s.ui||0)>0&&Number(s.uiFlow||0)<3,
     CONVENIENCE:(Number(s.ui||0)+Number(s.interaction||0)+Number(s.progression||0))>0&&Number(s.uiFlow||0)<3,
     UI_DESIGN_SYSTEM:Number(s.ui||0)<4,
     UI_INFORMATION_PRIORITY:Number(s.ui||0)<4||Number(s.feedback||0)<2,
