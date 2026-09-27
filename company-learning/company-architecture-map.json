@@ -1,5 +1,5 @@
 {
-  "version": 267,
+  "version": 268,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6070,5 +6070,20 @@
     "qualitySecurityReleaseGatesUnchanged": true,
     "privateRuntimeRecoveryUsesExactF0Evidence": true,
     "privateRuntimeRecoverySharedCurrentStepDependencyForbidden": true
+  },
+  "developmentQueueReconcileRunnerIsolation": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.developmentQueueReconcileRunnerIsolation20260927",
+    "workflow": ".github/workflows/company-development-queue-reconcile.yml",
+    "gamePrimaryGateRunner": "ubuntu-24.04",
+    "reconcileRunner": "ubuntu-24.04",
+    "previousRunner": "ubuntu-slim",
+    "concurrencyGroup": "company-development-queue-reconcile-runtime",
+    "cancelInProgress": false,
+    "serializedStateWritePreserved": true,
+    "observationalVibeTelemetryPreserved": true,
+    "heavyGameExecutionUnchanged": true,
+    "stateMutationLogicChanged": false,
+    "qualitySecurityReleaseGatesUnchanged": true
   }
 }
