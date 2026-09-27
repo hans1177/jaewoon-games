@@ -58,30 +58,50 @@ jobs:
           : > /tmp/director-run-drain.ndjson
           fetch_runs() {
             local query="$1"
-            local attempt code body
-            for attempt in 1 2 3; do
-              body="$(mktemp)"
-              code="$(curl --silent --show-error --output "$body" --write-out '%{http_code}' \
-                --header 'Accept: application/vnd.github+json' \
-                --header "Authorization: Bearer $GH_TOKEN" \
-                --header 'X-GitHub-Api-Version: 2022-11-28' \
-                "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?${query}" || true)"
-              if [ "$code" = '200' ]; then
-                node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(JSON.stringify(j)+'\\n')" "$body" >> /tmp/director-run-drain.ndjson
+            local paginate="${2:-false}"
+            local page=1
+            local attempt code body count page_query fetched
+            while :; do
+              page_query="$query"
+              if [ "$paginate" = 'true' ]; then
+                page_query="${query}&page=${page}"
+              fi
+              fetched=0
+              for attempt in 1 2 3; do
+                body="$(mktemp)"
+                code="$(curl --silent --show-error --output "$body" --write-out '%{http_code}' \
+                  --header 'Accept: application/vnd.github+json' \
+                  --header "Authorization: Bearer $GH_TOKEN" \
+                  --header 'X-GitHub-Api-Version: 2022-11-28' \
+                  "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?${page_query}" || true)"
+                if [ "$code" = '200' ]; then
+                  count="$(node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(String((j.workflow_runs||[]).length))" "$body")"
+                  node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(JSON.stringify(j)+'\\n')" "$body" >> /tmp/director-run-drain.ndjson
+                  echo "DIRECTOR_RUNNER_DRAIN_FETCH_PAGE=${page}:${count}:${query}"
+                  rm -f "$body"
+                  fetched=1
+                  break
+                fi
+                echo "DIRECTOR_RUNNER_DRAIN_FETCH_RETRY=${attempt}:${code}:${page_query}"
                 rm -f "$body"
+                sleep $((attempt*2))
+              done
+              if [ "$fetched" != '1' ]; then
+                return 1
+              fi
+              if [ "$paginate" != 'true' ] || [ "${count:-0}" -lt 100 ]; then
                 return 0
               fi
-              echo "DIRECTOR_RUNNER_DRAIN_FETCH_RETRY=${attempt}:${code}:${query}"
-              rm -f "$body"
-              sleep $((attempt*2))
+              page=$((page+1))
             done
-            return 1
           }
+          # Keep one recent mixed page for statuses GitHub may surface outside the targeted filters,
+          # then exhaust every documented active-status query so old stale work cannot hide past row 100.
           fetch_runs 'per_page=100'
-          fetch_runs 'status=in_progress&per_page=100'
-          fetch_runs 'status=queued&per_page=100'
-          fetch_runs 'status=requested&per_page=100' || true
-          fetch_runs 'status=waiting&per_page=100' || true
+          fetch_runs 'status=in_progress&per_page=100' true
+          fetch_runs 'status=queued&per_page=100' true
+          fetch_runs 'status=requested&per_page=100' true || true
+          fetch_runs 'status=waiting&per_page=100' true || true
           current_main="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq '.sha')"
           CURRENT_MAIN_SHA="$current_main" node <<'NODE' > /tmp/director-run-cancel.list
           const fs=require('fs');
