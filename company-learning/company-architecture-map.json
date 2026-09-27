@@ -1,5 +1,5 @@
 {
-  "version": 263,
+  "version": 264,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5440,7 +5440,7 @@
     ]
   },
   "runnerQueueDrainTopology": {
-    "version": 5,
+    "version": 6,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerQueueDrain20260926",
     "owner": ".github/workflows/director-supervisor.yml#runner-drain",
     "runner": "ubuntu-24.04",
@@ -5468,7 +5468,7 @@
     "scanMode": "TARGETED_RECENT_AND_ACTIVE_STATUS_QUERIES",
     "workflowLevelConcurrencyGroup": null,
     "workflowLevelConcurrencyForbidden": true,
-    "runnerDrainConcurrencyGroup": "director-runner-drain-v1",
+    "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
     "runnerDrainMayRunInParallel": true,
     "runnerDrainRunsInParallelWithGamePrimaryGate": true,
     "superviseWaitsForRunnerDrainAndGamePrimaryGate": true,
@@ -5486,7 +5486,9 @@
     "homepageInternalDirectorSupervisionPreserved": true,
     "gamePrimaryGateRunner": "ubuntu-slim",
     "superviseRunner": "ubuntu-slim",
-    "gameHeavyRunnerUnchanged": "ubuntu-latest"
+    "gameHeavyRunnerUnchanged": "ubuntu-latest",
+    "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
+    "runnerDrainEpochAdvancedToBypassLegacyPendingGroup": true
   },
   "controlPlaneOperationalRunnerIsolation": {
     "version": 1,
@@ -5661,13 +5663,15 @@
     ]
   },
   "directorPreSupervisionCoalescing": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.directorPreSupervisionCoalescing20260927",
     "runnerDrain": {
-      "group": "director-runner-drain-v1",
+      "group": "director-runner-drain-v2",
       "activeCompletionPreserved": true,
       "pendingLatestWins": true,
-      "cancelInProgress": false
+      "cancelInProgress": false,
+      "previousGroup": "director-runner-drain-v1",
+      "epochAdvancedToBypassLegacyPendingGroup": true
     },
     "gamePrimaryGate": {
       "group": "director-game-primary-gate-v1",
@@ -5995,7 +5999,7 @@
     "gamePrimaryCapacityProtected": true
   },
   "directorDrainRunnerIsolation": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.directorDrainRunnerIsolation20260927",
     "runnerDrain": "ubuntu-24.04",
     "gamePrimaryGate": "ubuntu-slim",
@@ -6003,6 +6007,9 @@
     "heavyGameExecution": "ubuntu-latest",
     "drainLogicChanged": false,
     "activeGameCancellationForbidden": true,
-    "independentGameCancellationForbidden": true
+    "independentGameCancellationForbidden": true,
+    "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
+    "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
+    "epochAdvancedToBypassLegacyPendingGroup": true
   }
 }
