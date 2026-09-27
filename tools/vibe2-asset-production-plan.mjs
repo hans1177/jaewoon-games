@@ -617,6 +617,8 @@ export function buildVibeAssetProductionPlan({
       enabled:companyLibraryActive,
       graphicsProductionRoot:clean(companyLibrary?.graphicsProductionRoot)||'GRAPHICS_PRODUCTION',
       scheduler:clean(companyLibrary?.scheduler)||null,
+      executionLane:clean(companyLibrary?.executionLane)||null,
+      reusableProductionTarget:freeze(companyLibrary?.reusableProductionTarget||companyRegistry?.universalCoverage?.reusableProductionTargets||{}),
       platformProfile:resolvedTarget==='unity'?'UNITY':resolvedTarget==='roblox'?'ROBLOX':'WEB_REFERENCE_ONLY',
       baseArchetypes:freezeList(companyLibrary?.characterPreparation?.baseArchetypes||[]),
       modularParts:freezeList(companyLibrary?.characterPreparation?.modularParts||[]),
@@ -997,6 +999,9 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.enabled?'회사 공용 그래픽 라이브러리는 24시간 idle 준비를 계속하지만 연습 산출물은 바로 production asset이 아니다. 실제 게임의 Unity/Roblox 네이티브 적용과 runtime 시각·모션·모바일 QA를 통과한 것만 검증 공용 자산으로 승격한다.':'',
     plan.companyGraphicsLibrary?.enabled?`캐릭터 플랫폼 프로필=${plan.companyGraphicsLibrary.platformProfile}; Unity/Roblox 바이너리·리그는 직접 공유하지 않고 공통 실루엣/체형/장비 의미만 공유한 뒤 네이티브 재authoring한다.`:'',
     plan.companyGraphicsLibrary?.enabled?`액션 모션 최소 커버리지=${JSON.stringify(plan.companyGraphicsLibrary.motionMinimums)}; weaponPacks=${plan.companyGraphicsLibrary.weaponPacks.join('|')}`:'',
+    plan.companyGraphicsLibrary?.reusableProductionTarget?.motion?.verifiedReusableClipTarget?`공용 모션 runtime-verified 목표=${plan.companyGraphicsLibrary.reusableProductionTarget.motion.verifiedReusableClipTarget}; base author/acquire=${plan.companyGraphicsLibrary.reusableProductionTarget.motion.baseAuthoringOrAcquisitionTarget}; safe derived=${plan.companyGraphicsLibrary.reusableProductionTarget.motion.safeDerivedVariationTarget}; reuse=${(plan.companyGraphicsLibrary.reusableProductionTarget.motion.crossGenreReuse||[]).join('|')}. PREPARED_SEMANTIC은 목표 달성으로 세지 않는다.`:'',
+    plan.companyGraphicsLibrary?.reusableProductionTarget?.fullPresentationFamilies?.length?`공용 자산 전체 범위=${plan.companyGraphicsLibrary.reusableProductionTarget.fullPresentationFamilies.join('|')}; 새 시스템을 만들지 않고 기존 Studio Asset Universe gap-fill/GRAPHICS_PRODUCTION에서 채운다.`:'',
+
     plan.companyGraphicsLibrary?.enabled?`스튜디오 모션=${plan.companyGraphicsLibrary.studioMotionTarget}; 우선 구축=${plan.companyGraphicsLibrary.studioMotionPriority.join('→')}; 리타겟 클린업=${plan.companyGraphicsLibrary.retargetCleanupRequirements.join('|')}`:'',
     plan.companyGraphicsLibrary?.unarmedCombat?.enabled?`맨손 대전 액션=${plan.companyGraphicsLibrary.unarmedCombat.target}; 스타일=${plan.companyGraphicsLibrary.unarmedCombat.styleFamilies.join('|')}; comboRoles=${plan.companyGraphicsLibrary.unarmedCombat.comboRoles.join('|')}; 모션 메타데이터=${plan.companyGraphicsLibrary.unarmedCombat.motionMetadata.join('|')}`:'',
     plan.companyGraphicsLibrary?.unarmedCombat?.enabled?'맨손 모션은 가드/보법/주먹/팔꿈치/무릎/킥/방어·카운터/잡기·던지기/낙법·기상/무협 판타지/대전 리액션을 계속 확장한다. 애니메이션 타이밍 마커는 표현·동기화 정보이며 데미지·히트박스·쿨다운·콤보 판정 권한을 갖지 않는다.':'',
