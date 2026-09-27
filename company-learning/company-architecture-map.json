@@ -1,5 +1,5 @@
 {
-  "version": 267,
+  "version": 268,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5440,7 +5440,7 @@
     ]
   },
   "runnerQueueDrainTopology": {
-    "version": 6,
+    "version": 7,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerQueueDrain20260926",
     "owner": ".github/workflows/director-supervisor.yml#runner-drain",
     "runner": "ubuntu-24.04",
@@ -5488,7 +5488,15 @@
     "superviseRunner": "ubuntu-slim",
     "gameHeavyRunnerUnchanged": "ubuntu-latest",
     "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
-    "runnerDrainEpochAdvancedToBypassLegacyPendingGroup": true
+    "runnerDrainEpochAdvancedToBypassLegacyPendingGroup": true,
+    "staleSupersededInProgressControlPlaneCancellable": [
+      ".github/workflows/director-supervisor.yml",
+      ".github/workflows/vibe2-merged-pr-provenance.yml",
+      ".github/workflows/company-dna-learning.yml"
+    ],
+    "staleControlPlaneThresholdMinutes": 12,
+    "sharedStateWriterInProgressMayCancel": false,
+    "gamePrimaryInProgressMayCancel": false
   },
   "controlPlaneOperationalRunnerIsolation": {
     "version": 1,
