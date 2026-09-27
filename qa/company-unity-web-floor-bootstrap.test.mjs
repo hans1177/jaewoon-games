@@ -7,6 +7,21 @@ import {execFileSync} from 'node:child_process';
 
 const tool=new URL('../tools/company-unity-web-floor-bootstrap.mjs',import.meta.url);
 
+function writeVerifiedPlaybooks(root){
+  const file=path.join(root,'vibe3-task-playbooks.json');
+  const reuse=[
+    {id:'external-black-box-alpha',project:'alpha',sourceRevision:'sha256:'+ 'a'.repeat(64)},
+    {id:'external-black-box-beta',project:'beta',sourceRevision:'sha256:'+ 'b'.repeat(64)}
+  ];
+  fs.writeFileSync(file,JSON.stringify({version:1,generatedFrom:'VERIFIED_MEMORY_ONLY',taskTypes:{
+    unity:{authority:'verified-task-playbook',checklist:['unity-runtime-check'],reuse},
+    graphics:{authority:'verified-task-playbook',checklist:['graphics-style-check'],reuse},
+    coding:{authority:'verified-task-playbook',checklist:['coding-qa-check'],reuse},
+    general:{authority:'verified-task-playbook',checklist:['general-verified-check'],reuse}
+  }},null,2));
+  return file;
+}
+
 test('Unity Web floor bootstrap creates canonical non-release source and remains below graphics readiness',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-floor-bootstrap-'));
   const old=process.cwd();
@@ -30,11 +45,14 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
         validationEvidence:'runtime qa regression evidence'
       }}
     }},null,2));
+    const playbooks=writeVerifiedPlaybooks(root);
     execFileSync(process.execPath,[tool.pathname,
       '--game-id=test-survival',
       '--game-name=Test Survival',
       '--baseline='+baseline,
-      '--output=unity-games/test-survival'
+      '--output=unity-games/test-survival',
+      '--playbooks='+playbooks,
+      '--learning-revision='+ 'c'.repeat(40)
     ],{stdio:'pipe'});
     const source=JSON.parse(fs.readFileSync('unity-games/test-survival/unity-web-floor-source.json','utf8'));
     const runtime=fs.readFileSync('unity-games/test-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
@@ -47,6 +65,13 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.equal(source.buildUpDirectiveCompletionClaim,false);
     assert.equal(source.buildUpDirectiveId,null);
     assert.equal(source.buildMethod,'UnityWebFloorBuild.BuildWeb');
+    assert.equal(source.verifiedLearningApplication.mandatoryApplicationCoveragePct,100);
+    assert.equal(source.verifiedLearningApplication.allRetrievedVerifiedExternalLearningApplied,true);
+    assert.equal(source.verifiedLearningApplication.retrievedCount,2);
+    assert.equal(source.verifiedLearningApplication.appliedCount,2);
+    assert.deepEqual(source.verifiedLearningApplication.externalLearningIds,['external-black-box-alpha','external-black-box-beta']);
+    assert.ok(source.verifiedLearningApplication.applyAxes.includes('MENU_FLOW_AND_INFORMATION_ARCHITECTURE'));
+    assert.ok(source.verifiedLearningApplication.applyAxes.includes('MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION'));
     assert.match(build,/public static void BuildWeb\(\)/);
     assert.match(runtime,/JAEWOON_UNITY_WEB_QA BOOT/);
     assert.match(runtime,/JAEWOON_UNITY_WEB_QA MOBILE_TARGET/);
@@ -116,9 +141,11 @@ test('Unity Web floor consumes the exact Vibe directive without creating a platf
       generation:7,
       thisLoopPrimaryGoal:'곤충별 역할과 공격 전조를 실제 전투에서 구별한다.'
     }));
+    const playbooks=writeVerifiedPlaybooks(root);
     execFileSync(process.execPath,[tool.pathname,
       '--game-id=test-survival','--game-name=Test Survival','--baseline='+baseline,
-      '--output=unity-games/test-survival','--build-up-directive='+directive
+      '--output=unity-games/test-survival','--build-up-directive='+directive,
+      '--playbooks='+playbooks,'--learning-revision='+ 'd'.repeat(40)
     ],{stdio:'pipe'});
     const source=JSON.parse(fs.readFileSync('unity-games/test-survival/unity-web-floor-source.json','utf8'));
     assert.equal(source.buildUpDirectiveConsumed,true);
@@ -133,6 +160,26 @@ test('Unity Web floor consumes the exact Vibe directive without creating a platf
 });
 
 
+test('Unity Web floor bootstrap refuses development when verified external learning is missing',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-floor-learning-required-'));
+  const old=process.cwd();
+  try{
+    process.chdir(root);
+    const baseline=path.join(root,'design-revised.json');
+    fs.writeFileSync(baseline,JSON.stringify({content:{platformProfiles:{UNITY:{
+      platform:'UNITY',inputModel:'mobile input model',sessionModel:'session model long enough',multiplayerRuntime:'single player runtime',
+      performanceBudget:'performance budget enough',uiUx:'touch first ui ux',saveAndNetwork:'save and network contract',
+      platformContentAdaptation:'platform adaptation contract',internalReleaseTarget:'private internal release',validationEvidence:'runtime evidence contract'
+    }}}}));
+    assert.throws(()=>execFileSync(process.execPath,[tool.pathname,
+      '--game-id=test-game','--baseline='+baseline,'--output=unity-games/test-game'
+    ],{stdio:'pipe'}),/Command failed/);
+  }finally{
+    process.chdir(old);
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
 test('Unity Web floor bootstrap runs per game without a global workflow serialization lock',()=>{
   const parent=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
   const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
@@ -144,6 +191,10 @@ test('Unity Web floor bootstrap runs per game without a global workflow serializ
   assert.match(workflow,/workflow_call:[\s\S]*game_id:/);
   assert.doesNotMatch(header,/^concurrency:\s*$/m);
   assert.match(workflow,/GAME_ID: \$\{\{ inputs\.game_id \}\}/);
+  assert.match(workflow,/git fetch --no-tags --depth=1 origin vibe2-learning-runtime/);
+  assert.match(workflow,/vibe3-task-playbooks\.json > \/tmp\/vibe3-task-playbooks\.json/);
+  assert.match(workflow,/--playbooks=\/tmp\/vibe3-task-playbooks\.json/);
+  assert.match(workflow,/--learning-revision=/);
   assert.doesNotMatch(workflow,/for\(const gameId of ids\)/);
   assert.match(workflow,/git add "unity-games\/\$GAME_ID"/);
 });
