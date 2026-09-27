@@ -482,37 +482,32 @@ test('runtime sentinel 404 still hands exact Open Cloud engine evidence to canon
  assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false/);
 });
 
-test('central policy and architecture preserve runtime truth while real server boot blocks external release only',()=>{
- const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
- const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
- const policy=roadmap.developmentLifecycleMachine?.robloxStudioUsage?.runtimeFoundationBoundary||{};
- const topology=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.runtimeFoundationObservation||{};
- const stack=roadmap.developmentLifecycleMachine?.nativeGameFoundationValidationStack?.releaseGate||{};
- assert.equal(policy.exactEngineVersionWithoutRealServerBootState,'ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT');
- assert.equal(policy.exactEngineVersionDoesNotEqualRealGameServerBoot,true);
- assert.equal(policy.runtimeFoundationPassMustNotBeFabricatedFromOpenCloudHeadlessExecution,true);
- assert.equal(policy.developmentBlocking,false);
- assert.equal(policy.internalQaBlocking,false);
- assert.equal(policy.internalRegressionBlocking,false);
- assert.equal(policy.internalReleaseBlocking,false);
- assert.equal(policy.externalPublicReleaseBlocking,true);
- assert.equal(policy.runtimeTruthFieldsMustRemainUnfabricated,true);
- assert.equal(policy.exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot,true);
- assert.equal(policy.studioActualPlayEligibilityDoesNotSetRuntimeFoundationPass,true);
- assert.equal(policy.studioActualPlayEligibilityDoesNotSetExternalPublicReleaseReady,true);
- assert.equal(topology.developmentBlocking,false);
- assert.equal(topology.internalQaBlocking,false);
- assert.equal(topology.internalRegressionBlocking,false);
- assert.equal(topology.internalReleaseBlocking,false);
- assert.equal(topology.externalPublicReleaseBlocking,true);
- assert.equal(topology.runtimePassTruthRemainsFalseUntilRealServerBootEvidence,true);
- assert.equal(topology.exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot,true);
- assert.equal(topology.studioPlannerEligibility,'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT');
- assert.equal(topology.studioActualPlayMayNotSetRuntimeFoundationPass,true);
- assert.equal(topology.externalPublicReleaseRemainsBlockedUntilRealServerBoot,true);
- assert.deepEqual(stack.releaseGate.runtimeFoundationInternalReleaseExceptionStates,[]);
- assert.equal(stack.runtimeFoundationExceptionMaySetRuntimePass,false);
- assert.equal(stack.runtimeFoundationExceptionMaySetExternalPublicReleaseReady,false);
+test('central policy keeps external runtime truth diagnostic-only while Studio internal validation stays authoritative',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+  const policy=roadmap.developmentLifecycleMachine?.robloxStudioUsage?.runtimeFoundationBoundary||{};
+  const topology=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.runtimeFoundationObservation||{};
+  const gate=roadmap.developmentLifecycleMachine?.nativeGameFoundationValidationStack?.releaseGate||{};
+  assert.equal(policy.runtimeFoundationPassMustNotBeFabricatedFromOpenCloudHeadlessExecution,true);
+  assert.equal(policy.runtimeTruthFieldsMustRemainUnfabricated,true);
+  assert.equal(policy.developmentBlocking,false);
+  assert.equal(policy.internalQaBlocking,false);
+  assert.equal(policy.internalRegressionBlocking,false);
+  assert.equal(policy.internalReleaseBlocking,false);
+  assert.equal(policy.externalPublicReleaseBlocking,false);
+  assert.equal(policy.externalServerObservationPrerequisite,false);
+  assert.equal(policy.ownerApprovalIsExternalPublicationAuthority,true);
+  assert.equal(topology.role,'OPTIONAL_DIAGNOSTIC_RUNTIME_TRUTH_ONLY');
+  assert.equal(topology.developmentBlocking,false);
+  assert.equal(topology.internalReleaseBlocking,false);
+  assert.equal(topology.externalPublicReleaseBlocking,false);
+  assert.equal(topology.studioPlannerEligibility,'EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_F0_EXACT_SOURCE_ARTIFACT_BINDING');
+  assert.equal(topology.externalPublicReleaseRemainsBlockedUntilRealServerBoot,false);
+  assert.equal(gate.runtimeFoundationRequiredForInternalRelease,false);
+  assert.equal(gate.externalServerBootObservationRequired,false);
+  assert.deepEqual(gate.runtimeFoundationInternalReleaseExceptionStates,[]);
+  assert.equal(gate.runtimeFoundationExceptionMaySetRuntimePass,false);
+  assert.equal(gate.runtimeFoundationExceptionMaySetExternalPublicReleaseReady,false);
 });
 
 test('external Roblox server probing is manual diagnostic-only and internal Studio validation dispatches F9',()=>{
