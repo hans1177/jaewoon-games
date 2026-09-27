@@ -60,6 +60,28 @@ function studioQualityImplementationFailures(task={},row={}){
   return[];
 }
 
+function graphicsReplacementGroundingFailures(row={}){
+  const contract=row?.presentationQuality?.graphicsReplacement&&typeof row.presentationQuality.graphicsReplacement==='object'
+    ?row.presentationQuality.graphicsReplacement:null;
+  if(!contract||contract.required!==true)return[];
+  const report=row?.graphicsReplacementReport&&typeof row.graphicsReplacementReport==='object'?row.graphicsReplacementReport:null;
+  const validation=row?.graphicsReplacementValidation&&typeof row.graphicsReplacementValidation==='object'?row.graphicsReplacementValidation:null;
+  const qa=row?.graphicsReplacementQa&&typeof row.graphicsReplacementQa==='object'?row.graphicsReplacementQa:null;
+  const failures=[];
+  const actualCount=Math.floor(Number(report?.actualCount||0));
+  const evidence=Array.isArray(report?.replacementEvidence)?report.replacementEvidence:[];
+  const min=Math.max(1,Math.floor(Number(contract?.adaptiveCount?.minimumActual||1)));
+  const max=Math.min(60,Math.max(min,Math.floor(Number(contract?.adaptiveCount?.maximumActual||60))));
+  if(!report)failures.push('graphics-replacement-report');
+  if(actualCount<min||actualCount>max)failures.push('graphics-replacement-count-range');
+  if(actualCount!==evidence.length)failures.push('graphics-replacement-count-grounding');
+  if(validation?.required!==true||validation?.pass!==true||clean(validation?.reason)!=='GRAPHICS_REPLACEMENT_REPORT_VALID')failures.push('graphics-replacement-source-worker-validation');
+  if(Number(validation?.groundedCount||0)!==actualCount)failures.push('graphics-replacement-source-worker-grounded-count');
+  if(qa?.required!==true||clean(qa?.status)!=='GROUNDED_PASS')failures.push('graphics-replacement-incremental-qa');
+  if(Number(qa?.groundedCount||0)!==actualCount)failures.push('graphics-replacement-incremental-grounded-count');
+  return[...new Set(failures)];
+}
+
 function gameRepairEvidenceFailures(row={}){
   const repair=row?.gameRepairQa&&typeof row.gameRepairQa==='object'?row.gameRepairQa:null;
   if(!repair||repair.required!==true)return[];
@@ -232,6 +254,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       else {
         missing.push(...candidateIdentityFailures(task,selectedResult,candidateBranch));
         missing.push(...studioQualityImplementationFailures(task,selectedResult));
+        missing.push(...graphicsReplacementGroundingFailures(selectedResult));
         missing.push(...gameRepairEvidenceFailures(selectedResult));
         presentationRuntimeVisual=presentationRuntimeVisualDecision(task,selectedResult);
         if(presentationRuntimeVisual.required){
@@ -282,6 +305,11 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       evidence.add('package-review:all-required-roles-pass');
       evidence.add('candidate-identity:PASS');
       if(task?.studioQualityEvolution?.realSourceDeltaRequired===true)evidence.add('studio-quality-implementation-delta:PASS');
+      if(selectedResult?.presentationQuality?.graphicsReplacement?.required===true){
+        evidence.add('graphics-replacement-grounding:PASS');
+        evidence.add(`graphics-replacement-grounded-count:${Number(selectedResult?.graphicsReplacementQa?.groundedCount||0)}`);
+        evidence.add('graphics-replacement-fan-in-gate:PASS');
+      }
       if(selectedResult?.gameRepairQa?.required===true){
         evidence.add('game-repair-source-evidence:PASS');
         evidence.add('game-repair-impact-regression:PASS');
