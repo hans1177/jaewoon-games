@@ -38,7 +38,7 @@ function roadmap(){
       studioMcpTransport:'STDIO',
       historicalExactPublishedArtifactAllowedForLocalActualPlay:true,
       runtimeFoundationPassedArtifactAllowedForLocalActualPlay:true,
-      earliestBehaviorFeedbackCheckpoint:'AFTER_RUNTIME_FOUNDATION_PASS_AND_EXACT_SOURCE_ARTIFACT_BINDING',
+      earliestBehaviorFeedbackCheckpoint:'AFTER_F0_EXACT_PRIVATE_CANDIDATE_AND_EXACT_SOURCE_ARTIFACT_BINDING',
       mcpUnavailableRecovery:{automaticResumeAfterPrerequisite:true}
     }},
     developmentLifecycleMachine:{robloxStudioUsage:{
