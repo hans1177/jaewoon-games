@@ -70,6 +70,7 @@ test('dormant UEFN Verse worker scope remains available while planner scheduling
     assert.match(continuousRunnerSource,/zero-replacement-pass-forbidden/);
     assert.match(continuousRunnerSource,/실제 교체 개수/);
     assert.match(continuousRunnerSource,/재사용\/변형\/재조합/);
+    assert.match(continuousRunnerSource,/OWNER_HOLD_FORTNITE_UEFN_PRESENTATION/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
