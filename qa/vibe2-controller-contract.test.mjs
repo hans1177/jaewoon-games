@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
-import { classifyVibeExecutionRoute, runVibeContinuousRunner, expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
+import { classifyVibeExecutionRoute, runVibeContinuousRunner, expandPresentationResponsibleFiles, candidateStrategyRole } from '../tools/vibe2-continuous-runner.mjs';
 import { buildVibeDesignIntelligence, DESIGN_INTELLIGENCE_STAGES } from '../tools/vibe2-design-intelligence.mjs';
 import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
 
@@ -259,7 +259,8 @@ test('controller reserves a batch and fans workers out to the external matrix bo
   assert(workflow.includes('--variant="$VARIANT"'));
   assert(continuousRunnerSource.includes("strategy:'PRIMARY_RESPONSIBILITY_MINIMAL'"));
   assert(continuousRunnerSource.includes("strategy:'DEPENDENCY_SAFE_COHERENT_PATCH'"));
-  assert(continuousRunnerSource.includes("strategy:clean(preference?.strategy)||'CAUSAL_TRACE_CROSSCHECK'"));
+  assert(continuousRunnerSource.includes("...(preferred?[{strategy:preferred"));
+  assert(continuousRunnerSource.includes("strategy:'CAUSAL_TRACE_CROSSCHECK'"));
 });
 
 test('24h planner uses latest main contract and tools while control branch stores state only',()=>{
@@ -1327,4 +1328,33 @@ test('fan-in refill reserve runs are run-scoped and never serialize same-lane re
   assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
   assert.equal(runtime.continuous.reserveConcurrency.reserveJobsParallel,true);
   assert.equal(runtime.continuous.executionLanes.RECOVERY_FAST.gameWorkerDispatch,'GAME_PRIMARY_ATOMIC_REFILL_EVENT');
+});
+
+
+test('candidate strategy rotation blocks task-local failed repair strategies while preserving the same compiled scope',()=>{
+  const negative=(strategy,{infrastructureFailure=false,run='r1'}={})=>'coding-strategy-negative:'+encodeURIComponent(JSON.stringify({
+    version:1,variant:'primary',strategy,failureFingerprint:'roblox|EDIT_MATCH|TIMEOUT',
+    failureClass:'TIMEOUT',runEvidence:'actions-run:'+run,verifiedBy:'IMMUTABLE_WORKER_RESULT',infrastructureFailure
+  }));
+  const task={id:'asset-repeat',gameId:'asset-repeat',target:'roblox',lastOutcome:'FAIL',evidence:[negative('PRIMARY_RESPONSIBILITY_MINIMAL')]};
+  const primary=candidateStrategyRole('primary',{},task);
+  const speculative1=candidateStrategyRole('speculative-1',{},task);
+  const speculative2=candidateStrategyRole('speculative-2',{},task);
+  assert.equal(primary.strategy,'DEPENDENCY_SAFE_COHERENT_PATCH');
+  assert.equal(speculative1.strategy,'CAUSAL_TRACE_CROSSCHECK');
+  assert.equal(speculative2.strategy,'INVARIANT_PRESERVING_ALTERNATIVE');
+  assert.deepEqual(primary.avoidedFailedStrategies,['PRIMARY_RESPONSIBILITY_MINIMAL']);
+  assert.equal(primary.repeatedFailedStrategyBlocked,true);
+  assert.equal(new Set([primary.strategy,speculative1.strategy,speculative2.strategy]).size,3);
+  const escalated={...task,evidence:[
+    negative('PRIMARY_RESPONSIBILITY_MINIMAL',{run:'r1'}),
+    negative('DEPENDENCY_SAFE_COHERENT_PATCH',{run:'r2'}),
+    negative('CAUSAL_TRACE_CROSSCHECK',{run:'r3'})
+  ]};
+  assert.equal(candidateStrategyRole('primary',{},escalated).strategy,'INVARIANT_PRESERVING_ALTERNATIVE');
+  assert.equal(candidateStrategyRole('speculative-1',{},escalated).strategy,'PATH_VERIFIED_ANCHOR_FIRST');
+  assert.equal(candidateStrategyRole('speculative-2',{},escalated).strategy,'OBSERVABLE_DELTA_FIRST');
+  const infraOnly={...task,evidence:[negative('PRIMARY_RESPONSIBILITY_MINIMAL',{infrastructureFailure:true,run:'infra'})]};
+  assert.equal(candidateStrategyRole('primary',{},infraOnly).strategy,'PRIMARY_RESPONSIBILITY_MINIMAL');
+  assert.deepEqual(candidateStrategyRole('primary',{},infraOnly).avoidedFailedStrategies,[]);
 });
