@@ -3,97 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-c6cdzp",
-      "worker": "vibe2",
-      "taskId": "ant-simulator-existing-web-assessment-v1",
-      "gameId": "ant-simulator",
-      "files": [
-        "web-games/ant-simulator/index.html"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T03:49:31.944Z",
-      "expiresAt": "2026-09-27T04:34:31.944Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:ant-simulator-existing-web-assessment-v1"
-      ]
-    },
-    {
-      "id": "wl-152eog1",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T03:49:34.811Z",
-      "expiresAt": "2026-09-27T04:34:34.811Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-12vcaql",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T03:49:39.152Z",
-      "expiresAt": "2026-09-27T04:34:39.152Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-n72t39",
-      "worker": "vibe2",
-      "taskId": "cozy-island-unity-web-base-implementation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "unity-games/cozy-island/Assets/Scripts/GameCore.cs",
-        "unity-games/cozy-island/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T03:49:44.725Z",
-      "expiresAt": "2026-09-27T04:34:44.725Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-dcxhfa",
-      "worker": "vibe2",
-      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "files": [
-        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
-        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
-        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T03:49:51.452Z",
-      "expiresAt": "2026-09-27T04:34:51.452Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-12w6v5b",
       "worker": "vibe2",
       "taskId": "village-dungeons-unity-web-base-implementation-v1",
@@ -932,25 +841,6 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1ws1r8k",
-      "worker": "vibe2",
-      "taskId": "SYS-ARCH-28a2f2747401-v1",
-      "gameId": "__vibe_system__",
-      "files": [
-        "tools/vibe2-queue-control.mjs",
-        ".github/workflows/vibe2-continuous-core.yml",
-        "qa/vibe2-queue-control.test.mjs"
-      ],
-      "baseSha": "e1639fe98d1633d915222f130576ffffb69002aa",
-      "acquiredAt": "2026-09-27T04:26:37.843Z",
-      "expiresAt": "2026-09-27T05:11:37.843Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:SYS-ARCH-28a2f2747401-v1"
       ]
     },
     {
