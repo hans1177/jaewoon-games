@@ -2923,7 +2923,7 @@ test('queued legacy BUILD_UP directive is migrated in place to autonomous conten
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.version,2);
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.executionBoundary,'EXISTING_BUILD_UP_ONLY');
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.autonomousDecisionOwner,'VIBE');
-  assert.deepEqual([...migrated.buildUpDirective.autonomousContentExpansion.platformScope],['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.deepEqual([...migrated.buildUpDirective.autonomousContentExpansion.platformScope],['WEB','ROBLOX','UNITY']);
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.antiCloneContract.nameColorOrStatOnlyCloneForbidden,true);
   assert.equal(migrated.buildUpDirective.autonomousContentExpansion.continuityAndCausality.required,true);
   assert.ok(migrated.evidence.includes('build-up-directive-contract-migration:AUTONOMOUS_CONTENT_EXPANSION_V2'));
@@ -3430,35 +3430,22 @@ test('studio PRESENTATION focus receives the same adaptive replacement contract 
   assert.equal(task.studioQualityEvolution.focusPillar,'PRESENTATION');
   assert.equal(task.graphicsReplacementContract.executionBoundary,'EXISTING_PRESENTATION_OR_BUILD_UP_ONLY');
   assert.equal(task.graphicsReplacementContract.decisionOwner,'VIBE');
-  assert.deepEqual([...task.graphicsReplacementContract.platforms],['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.deepEqual([...task.graphicsReplacementContract.platforms],['WEB','ROBLOX','UNITY']);
   assert.ok(task.evidence.includes('adaptive-graphics-replacement:v1'));
   assert.match(task.goal,/ADAPTIVE_GRAPHICS_REPLACEMENT_CONTRACT/);
 });
 
-test('Fortnite UEFN presentation uses the same adaptive 1-60 graphics replacement contract',()=>{
+test('Fortnite UEFN presentation stays paused and does not enter adaptive graphics BUILD_UP',()=>{
   const root=tempRepo();
-  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
-  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
-  policy.assetProductionParallelContract={enabled:true};
-  fs.writeFileSync(policyPath,JSON.stringify(policy,null,2)+'\n','utf8');
-  const gameId='adaptive-uefn';
+  const gameId='adaptive-uefn-paused';
   const verseDir=path.join(root,'uefn-games',gameId,'Content','Verse');
   fs.mkdirSync(verseDir,{recursive:true});
   fs.writeFileSync(path.join(verseDir,'Presentation.verse'),'AdaptivePresentation := class():\n    Apply():void = {}\n','utf8');
-  const project={gameId,name:'Adaptive UEFN',engine:'unreal',target:'fortnite-uefn',releaseState:'development-confirmed',projectPath:`uefn-games/${gameId}`};
-  const task=findPresentationQualityTask(project,root,{tasks:[]});
-  assert.ok(task);
-  assert.ok(task.graphicsReplacementContract);
-  assert.equal(task.graphicsReplacementContract.platform,'FORTNITE_UEFN');
-  assert.deepEqual([...task.graphicsReplacementContract.platforms],['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
-  assert.equal(task.graphicsReplacementContract.adaptiveCount.minimumActual,1);
-  assert.equal(task.graphicsReplacementContract.adaptiveCount.maximumActual,60);
-  for(const surface of ['VFX','MOTION','MENU','MAIN_MENU','HUD','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI']){
-    assert.ok(task.graphicsReplacementContract.surfaces.includes(surface),surface);
-  }
-  assert.equal(task.graphicsReplacementContract.implementation.zeroActualReplacementCannotPass,true);
-  assert.ok(task.responsibleFiles.some(file=>file.endsWith('Content/Verse/Presentation.verse')));
-  assert.ok(task.evidence.includes('adaptive-graphics-replacement:v1'));
-  assert.ok(task.evidence.includes('adaptive-graphics-replacement-platforms:WEB,ROBLOX,UNITY,FORTNITE_UEFN'));
-  assert.match(task.goal,/WEB \/ ROBLOX \/ UNITY \/ FORTNITE_UEFN/);
+  const policy=JSON.parse(fs.readFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),'utf8'));
+  assert.equal(policy.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
+  assert.equal(policy.fortniteUefn.developmentStatus,'DEVELOPMENT_PAUSED');
+  assert.equal(policy.fortniteUefn.developmentStatusLabel,'개발보류');
+  assert.equal(policy.fortniteUefn.developmentExecutionAllowed,false);
+  const project={gameId,name:'Adaptive UEFN Paused',engine:'unreal',target:'fortnite-uefn',releaseState:'development-confirmed',projectPath:`uefn-games/${gameId}`};
+  assert.equal(findPresentationQualityTask(project,root,{tasks:[]}),null);
 });
