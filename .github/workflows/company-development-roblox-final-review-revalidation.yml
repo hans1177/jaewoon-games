@@ -211,7 +211,7 @@ jobs:
               &&runtime.exactVersion===true
               &&Number(runtime.candidateVersionNumber)===Number(candidate.versionNumber);
             const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance||internalStudioValidationAccepted||internalRuntimeObservationDeferred||internalRuntimeFindingDeferred;
-            const publicRuntimeAcceptance=false;
+            const publicRuntimeAcceptance=false; // Internal F9 cannot satisfy the external public hard gate.
             const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
             const studioAssetRuntimeBindingExact=!studioAssetBindingRequired||(
               item.robloxStudioAssetRuntimeBindingPassed===true
