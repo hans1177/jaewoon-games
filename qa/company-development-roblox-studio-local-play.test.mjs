@@ -287,6 +287,53 @@ test('planner skips only an already verified exact Studio MCP play record',()=>{
   assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()}).include.length,0);
 });
 
+test('planner rechecks an exact Studio pass when primary action effect evidence was not fully serialized',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'studio-effect-evidence-'));
+  const gameDir=path.join(root,'roblox-games','g1');
+  fs.mkdirSync(gameDir,{recursive:true});
+  fs.writeFileSync(path.join(gameDir,'launch-mvp.json'),JSON.stringify({
+    studioActualPlayContract:{
+      version:2,
+      required:true,
+      primaryActionButtonText:'대시',
+      requiredScenarios:['primary-action-input','primary-action-effect'],
+      expectations:{minimumPrimaryActionDisplacement:0.25}
+    }
+  }));
+
+  const candidate=item();
+  const planned=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root});
+  assert.equal(planned.include.length,1);
+
+  candidate.robloxInternalVibePlayEvidence={
+    pass:true,
+    actualPlay:true,
+    officialStudioMcp:true,
+    localPlaceFile:true,
+    onlinePlaceDirectOpen:false,
+    robloxPlayerAutomation:false,
+    sourceRevision:source,
+    artifactIdentity:artifact,
+    artifactRunId:777,
+    universeId:'123',
+    placeId:'456',
+    versionNumber:9,
+    testedAt:'2026-09-27T05:57:45.929Z',
+    scenarioContractRequired:true,
+    scenarioContractVersion:2,
+    scenarioContractFingerprint:planned.include[0].scenarioContractFingerprint,
+    runtimeSummary:{
+      primaryActionFeedbackChanged:false,
+      primaryActionDisplacement:0.001,
+      primaryActionVelocity:0.0001
+    }
+  };
+  assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root}).include.length,1);
+
+  candidate.robloxInternalVibePlayEvidence.runtimeSummary.primaryActionFeedbackChanged=true;
+  assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root}).include.length,0);
+});
+
 test('planner collapses repeated shared Studio MCP infrastructure failures to one rotating canary',()=>{
   const rows=['g1','g2','g3'].map((gameId,index)=>{
     const candidate=item();
