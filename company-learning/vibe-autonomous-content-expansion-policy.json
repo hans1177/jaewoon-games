@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -333,7 +333,13 @@
       "changedSurfacesMustBeRecorded": true,
       "reuseModesUsedMustBeRecorded": true,
       "zeroActualReplacementCannotPass": true,
-      "beforeAfterEvidenceRequired": true
+      "beforeAfterEvidenceRequired": true,
+      "perReplacementSourceEvidenceRequired": true,
+      "actualReplacementCountMustEqualGroundedEvidenceCount": true,
+      "replacementEvidenceMustReferenceTouchedSourcePath": true,
+      "replacementEvidenceSnippetMustExistInChangedSource": true,
+      "duplicateReplacementEvidenceCannotInflateCount": true,
+      "selfReportedCountWithoutGroundedSourceEvidenceCannotPass": true
     },
     "menuExperienceDiversity": {
       "status": "ACTIVE",
