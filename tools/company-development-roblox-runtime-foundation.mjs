@@ -17,10 +17,18 @@ async function fetchWithNetworkRetry(fetchImpl,url,init={},options={}){
   const attempts=Math.max(1,Math.min(6,Number(options.attempts)||4));
   const delayMs=Math.max(0,Number(options.delayMs)||0);
   const label=clean(options.label)||'ROBLOX_OPEN_CLOUD';
+  const retryStatuses=new Set((Array.isArray(options.retryStatuses)?options.retryStatuses:[429]).map(Number).filter(Number.isInteger));
   let lastError=null;
   for(let attempt=1;attempt<=attempts;attempt++){
-    try{return await fetchImpl(url,init);}
-    catch(error){
+    try{
+      const response=await fetchImpl(url,init);
+      if(retryStatuses.has(Number(response?.status))&&attempt<attempts){
+        console.warn(label+'_HTTP_RETRY='+attempt+'/'+attempts+':HTTP_'+Number(response.status));
+        if(delayMs>0)await sleep(delayMs*attempt);
+        continue;
+      }
+      return response;
+    }catch(error){
       lastError=error;
       if(!isTransientNetworkError(error)||attempt>=attempts)throw error;
       console.warn(label+'_NETWORK_RETRY='+attempt+'/'+attempts+':'+clean(error?.cause?.code||error?.code||'TRANSIENT'));
