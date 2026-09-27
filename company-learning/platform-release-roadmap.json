@@ -5905,7 +5905,6 @@
         "robloxExternalServerBootRequiredBeforeInternalRelease": false,
         "oneExactInternalRuntimeSessionMaySatisfyMultipleApplicableFloors": true,
         "duplicateRuntimeSessionForSameExactCandidateForbidden": true,
-        "securityValidationImpactScoped": true,
         "multiplayerValidationOnlyWhenApplicable": true,
         "f9MayNotReplayF1ThroughF8WithoutNewFailureOrSourceDelta": true
       },
@@ -6589,7 +6588,6 @@
         "externalServerObservationNotRequiredForInternalDevelopment": true,
         "f9EvidenceAggregationNotRuntimeReplay": true,
         "unchangedExactEvidenceMayBeReused": true,
-        "securityChecksImpactScoped": true,
         "multiplayerChecksApplicableOnly": true
       },
       "roblox": {
@@ -6611,19 +6609,6 @@
         "reuseAcrossF9AndReleaseReadiness": true,
         "duplicatePublicCheck": false,
         "nonMultiplayerResult": "NOT_APPLICABLE"
-      },
-      "security": {
-        "routineMode": "IMPACT_SCOPED",
-        "fullRescanTriggers": [
-          "REMOTE_OR_NETWORK_AUTHORITY_CHANGE",
-          "SAVE_SCHEMA_OR_SAVE_AUTHORITY_CHANGE",
-          "ECONOMY_OR_REWARD_AUTHORITY_CHANGE",
-          "SECURITY_RELEVANT_DEPENDENCY_OR_PERMISSION_CHANGE",
-          "OPEN_CRITICAL_OR_HIGH_SECURITY_FINDING"
-        ],
-        "unchangedSecurityResponsibilitiesReusePriorExactEvidence": true,
-        "unrelatedGameplayOrPresentationChangeMustNotTriggerFullSecurityRescan": true,
-        "criticalSecurityGuardsMayNotBeDisabled": true
       },
       "f9": {
         "mode": "EVIDENCE_FAN_IN_AND_REGRESSION_REVIEW",
@@ -10316,7 +10301,6 @@
         "robloxInternalRuntime": "ONE_OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD_SESSION_MAY_SATISFY_APPLICABLE_F1_TO_F8",
         "unityInternalRuntime": "ONE_EXISTING_EXACT_RUNTIME_SESSION_MAY_SATISFY_APPLICABLE_F1_TO_F8",
         "multiplayer": "F7_ONLY_WHEN_GAME_REQUIRES_MULTIPLAYER; ONE_EXACT_SYNC_PROOF_PER_SOURCE_ARTIFACT_CYCLE; NO_DUPLICATE_F9_OR_PUBLIC_RECHECK",
-        "security": "CHANGE_IMPACT_SCOPED; FULL_RESCAN_ONLY_FOR_SECURITY_RELEVANT_SOURCE_DELTA_OR_EXISTING_SECURITY_FAILURE",
         "f9": "AGGREGATE_AND_REVIEW_EXISTING_EXACT_EVIDENCE; DO_NOT START_DUPLICATE_RUNTIME_SESSION",
         "unchangedExactEvidence": "REUSE_WITHIN_SAME_SOURCE_ARTIFACT_CANDIDATE_BINDING",
         "developmentPriority": "REAL_GAME_SOURCE_IMPROVEMENT_AND_NEXT_BUILD_UP_DIRECTIVE"
