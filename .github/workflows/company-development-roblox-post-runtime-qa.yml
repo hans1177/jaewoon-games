@@ -931,8 +931,8 @@ jobs:
           done < /tmp/roblox-f9-ids
 
   studio-local-plan:
-    needs: dedupe
-    if: needs.dedupe.outputs.run == 'true'
+    # Studio planning must not wait behind GitHub-hosted dedupe/runtime-foundation capacity.
+    # The authenticated Windows runner reads the latest canonical runtime state directly.
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 8
