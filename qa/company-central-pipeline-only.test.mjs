@@ -663,7 +663,7 @@ test('Roblox source-plan wake and runner isolation stay aligned across central r
   assert.equal(Object.hasOwn(relief.movedToSlim||{},'robloxSourcePlan'),false);
   assert.equal(relief.robloxSourcePlanCriticalIngressException?.centralNativePlanRemains,'ubuntu-slim');
   assert.equal(relief.robloxSourcePlanCriticalIngressException?.unityPrepareRemains,'ubuntu-slim');
-  assert.equal(relief.robloxSourcePlanCriticalIngressException?.vibeReserveRemains,'ubuntu-slim');
+  assert.equal(relief.robloxSourcePlanCriticalIngressException?.vibeReserveRemains,'ubuntu-24.04(game-primary)/ubuntu-slim(auxiliary)');
   assert.equal(change.technicalPlanRunnerUnchanged,'ubuntu-24.04-arm');
   assert.equal(change.heavyExecutionRunnerUnchanged,'ubuntu-latest');
 });
