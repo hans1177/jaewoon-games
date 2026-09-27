@@ -569,6 +569,13 @@ jobs:
             if(!byId.has(target.gameId))results.push({gameId:target.gameId,pass:false,candidateReady:false,sourcePath:target.target,failure:'worker-result-missing'});
           }
           const stamp=new Date().toISOString();
+          const robloxSelectionPatch=item=>{
+            const selected=String(item?.selectedPlatform||item?.targetPlatform||'').toUpperCase();
+            const concurrentRoblox=selected!=='ROBLOX'
+              &&Array.isArray(item?.concurrentTargetPlatforms)
+              &&item.concurrentTargetPlatforms.some(value=>String(value||'').toUpperCase()==='ROBLOX');
+            return concurrentRoblox?{}:{selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX'};
+          };
           let reconciliationPass=0,reconciliationFail=0,staleReconciliationCount=0;
           const supersededWorkerCount=results.filter(result=>result?.superseded===true).length;
           if(sourcePlanContractStale){
@@ -599,9 +606,9 @@ jobs:
               console.log(`ROBLOX_SOURCE_RECONCILIATION_UNRELATED_MAIN_ADVANCE_ACCEPTED=${result.gameId}:${reconciliationRevision}:${currentMainRevision}:tree=${reconciliationTreeSha}`);
             }
             if(result.pass===true){
-              Object.assign(item,{
+              Object.assign(item,robloxSelectionPatch(item),{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
-                selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
+                sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
                 robloxProjectPath:result.sourcePath,robloxSourceCommit:result.sourceRevision,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
                 robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
                 robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:null,robloxBuildArtifactIdentity:null,robloxBuildPassedAt:null,robloxBuildFailedAt:null,
@@ -622,9 +629,9 @@ jobs:
               reconciliationPass++;
             }else{
               const detail=Array.isArray(result.blockers)&&result.blockers.length?`:${result.blockers.join('|')}`:'';
-              Object.assign(item,{
+              Object.assign(item,robloxSelectionPatch(item),{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
-                selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxSourceBootstrapFailedAt:stamp,
+                robloxSourceBootstrapFailedAt:stamp,
                 robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
                 robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:null,robloxBuildArtifactIdentity:null,robloxBuildPassedAt:null,
                 robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:null,
@@ -691,9 +698,9 @@ jobs:
               continue;
             }
             if(result.pass===true){
-              Object.assign(item,{
+              Object.assign(item,robloxSelectionPatch(item),{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
-                selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
+                sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
                 robloxProjectPath:result.sourcePath,robloxSourceCommit:result.sourceRevision,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
                 robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
                 robloxStudioAssetBindingApplied:result.studioAssetBindingApplied===true,
@@ -704,17 +711,16 @@ jobs:
               });
               passCount++;
             }else if(result.candidateReady===true&&String(result.candidateBranch||'').trim()){
-              Object.assign(item,{
+              Object.assign(item,robloxSelectionPatch(item),{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
-                selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',
                 robloxSourceCandidateBranch:result.candidateBranch,robloxSourceCandidateReadyAt:stamp,robloxSourceBootstrapFailedAt:null,
                 robloxRuntimePassed:false,routingBlockers:['roblox-source-promotion-pending'],updatedAt:stamp,
               });
               candidateCount++;
             }else{
-              Object.assign(item,{
+              Object.assign(item,robloxSelectionPatch(item),{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
-                selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxSourceBootstrapFailedAt:stamp,
+                robloxSourceBootstrapFailedAt:stamp,
                 robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
                 robloxRuntimePassed:false,routingBlockers:[`roblox-source-bootstrap:${result.failure||'unknown-failure'}`],updatedAt:stamp,
               });
