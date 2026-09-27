@@ -5909,6 +5909,20 @@
     "duplicateUnityBatchDrain": true,
     "exactGameParallelismPreserved": true,
     "activeGameWorkerCancellationForbidden": true,
-    "qualitySecurityReleaseGatesUnchanged": true
+    "qualitySecurityReleaseGatesUnchanged": true,
+    "mainPushWakeTriggerFilter": {
+      "mode": "EXECUTABLE_RUNTIME_AUTHORITY_PATHS_ONLY",
+      "qaOnlyWake": false,
+      "descriptiveArchitectureMapWake": false,
+      "descriptiveLogMapWake": false,
+      "executableAndRuntimeAuthorityWake": true,
+      "gameSourceRoots": [
+        "roblox-games/**",
+        "unity-games/**",
+        "web-games/**"
+      ],
+      "preservesExactGameParallelism": true,
+      "workflow": ".github/workflows/vibe2-continuous-core.yml"
+    }
   }
 }
