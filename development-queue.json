@@ -1178,10 +1178,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-      "canonicalState": "REPAIR_REQUIRED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-27T02:08:19.368Z",
+      "updatedAt": "2026-09-27T02:10:21.820Z",
       "robloxSourceCommit": "34c6936734a700fbaa1f5d93d9a57767d5a5ff3a",
       "robloxSourceBootstrapPassedAt": "2026-09-27T01:52:18.681Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1420,12 +1420,10 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
-      "routingBlockers": [
-        "roblox-studio-mcp-play-repair-required"
-      ],
+      "robloxLastSuccessfulStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -1461,14 +1459,14 @@
         "version": 2,
         "gameId": "horror-escape-room",
         "authority": "roblox-official-studio-mcp-runtime",
-        "pass": false,
+        "pass": true,
         "actualPlay": true,
-        "runtimeVerified": false,
+        "runtimeVerified": true,
         "learningReusable": true,
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
         "infrastructureFailure": false,
-        "failureClass": "STUDIO_MCP_REQUIRED_CHECKPOINT_FAILURE",
-        "robloxFailureClass": "ROBLOX_STUDIO_RUNTIME",
+        "failureClass": null,
+        "robloxFailureClass": null,
         "actualPlayEligibility": "INTERNAL_RELEASE_OR_HISTORICAL_REPLAY",
         "studioMcpServerEnablementRequired": false,
         "operatorPrerequisite": null,
@@ -1691,7 +1689,7 @@
             "id": "scenario-primary-action-effect",
             "name": "scenario-primary-action-effect",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-visual-capture-sane",
@@ -1726,9 +1724,9 @@
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 1,
-          "primaryActionDisplacement": 0.19231224060058594,
-          "primaryActionVelocity": 0.000052029860786981075
+          "scenarioFailureCount": 0,
+          "primaryActionDisplacement": 1.263874537470202,
+          "primaryActionVelocity": 0.000052008023856588
         },
         "characterMotionRuntime": {
           "required": false,
@@ -1768,11 +1766,11 @@
           "scenario-interaction-surface-present",
           "scenario-world-geometry-present",
           "scenario-primary-action-input",
+          "scenario-primary-action-effect",
           "scenario-visual-capture-sane",
           "console-output-captured",
           "no-release-blocking-runtime-errors",
-          "play-mode-stopped",
-          "ROBLOX_STUDIO_RUNTIME"
+          "play-mode-stopped"
         ],
         "rawSourceIncluded": false,
         "rawGameplayValuesIncluded": false,
@@ -1827,26 +1825,24 @@
           },
           {
             "id": "primary-action-effect",
-            "pass": false
+            "pass": true
           },
           {
             "id": "visual-capture-sane",
             "pass": true
           }
         ],
-        "scenarioCoveragePass": false,
-        "qualityFailureKinds": [
-          "primary-action-effect"
-        ],
+        "scenarioCoveragePass": true,
+        "qualityFailureKinds": [],
         "functionalChainEvidence": {
           "inputDispatched": true,
-          "runtimeVerified": false,
+          "runtimeVerified": true,
           "screenChanged": true,
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-27T02:07:12.853Z",
-        "workflowRunId": 36287402849,
+        "testedAt": "2026-09-27T02:10:21.820Z",
+        "workflowRunId": 36287516909,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false
       },
@@ -1876,9 +1872,9 @@
         "completedAt": "2026-09-25T14:08:10.303Z"
       },
       "robloxInternalReleasePublished": true,
-      "robloxInternalPlaytestPassed": false,
-      "robloxInternalPlaytestPassedAt": null,
-      "robloxStudioLocalPlayRepairRequired": true,
+      "robloxInternalPlaytestPassed": true,
+      "robloxInternalPlaytestPassedAt": "2026-09-27T02:10:21.820Z",
+      "robloxStudioLocalPlayRepairRequired": false,
       "robloxStudioLocalPlayInfrastructurePending": false,
       "robloxDedicatedTargetRegistryBinding": {
         "version": 1,
@@ -1941,7 +1937,7 @@
       },
       "ownerWebEditPropagationPending": true,
       "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z",
-      "robloxNativeFailureClass": "ROBLOX_STUDIO_RUNTIME",
+      "robloxNativeFailureClass": null,
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -9967,7 +9963,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T02:08:19.368Z",
+  "updatedAt": "2026-09-27T02:10:21.820Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
