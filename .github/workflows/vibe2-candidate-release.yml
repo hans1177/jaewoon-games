@@ -607,7 +607,13 @@ jobs:
           gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
           git fetch origin main --quiet
           git diff --quiet "$release_commit" origin/main -- "$SOURCE_ROOT"
-          echo "ROBLOX_MAIN_PROMOTION_SHA=$(git rev-parse origin/main)"
+          promoted_main_sha="$(git rev-parse origin/main)"
+          promoted_source_tree_sha="$(git rev-parse "origin/main:$SOURCE_ROOT")"
+          [[ "$promoted_source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "main_sha=$promoted_main_sha" >> "$GITHUB_OUTPUT"
+          echo "source_tree_sha=$promoted_source_tree_sha" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_MAIN_PROMOTION_SHA=$promoted_main_sha"
+          echo "ROBLOX_MAIN_PROMOTION_SOURCE_TREE_SHA=$promoted_source_tree_sha"
           echo "ROBLOX_RELEASE_PR=$pr_url"
           echo 'DIRECT_MAIN_WRITE=NO'
 
@@ -642,10 +648,16 @@ jobs:
           PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
           CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
+          PROMOTED_MAIN_SHA: ${{ steps.promote.outputs.main_sha }}
+          PROMOTED_SOURCE_TREE_SHA: ${{ steps.promote.outputs.source_tree_sha }}
         shell: bash
         run: |
           set -euo pipefail
           if [ "$VALIDATE_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ] && [ "$PUBLISH_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
+          if [ "$result" = PASS ] && [[ ! "$PROMOTED_SOURCE_TREE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo 'ROBLOX_PROMOTED_SOURCE_TREE_IDENTITY=INVALID' >&2
+            result=FAIL
+          fi
           if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
             if [ "$result" = PASS ]; then
               gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main
@@ -672,7 +684,7 @@ jobs:
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs await \
                 --id="$TASK_ID" \
                 --blocker=candidate-awaiting-roblox-runtime-qa \
-                --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-open-cloud-published,roblox-runtime-await-game:${GAME_ID},roblox-runtime-verification-required,roblox-studio-asset-runtime-proof-required,actions-run-${GITHUB_RUN_ID}"
+                --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-open-cloud-published,roblox-runtime-await-game:${GAME_ID},roblox-runtime-await-source-tree:${PROMOTED_SOURCE_TREE_SHA},roblox-runtime-await-main-sha:${PROMOTED_MAIN_SHA},roblox-runtime-verification-required,roblox-studio-asset-runtime-proof-required,actions-run-${GITHUB_RUN_ID}"
             else
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=roblox-release-or-evidence-failed --evidence="roblox-validate-${VALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},publish-${PUBLISH_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             fi
