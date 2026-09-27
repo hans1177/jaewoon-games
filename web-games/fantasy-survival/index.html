@@ -90,10 +90,12 @@ const recipes=[
 {id:'garden-plot',name:'텃밭',where:'hand',cost:{wood:5},desc:'맨손 제작 · 씨앗을 최대 6개까지 심을 수 있는 텃밭',kind:'structure'},
 {id:'wood-spear',name:'나무창',where:'hand',cost:{wood:6,fiber:3},desc:'공격력 10 · 긴 사거리',kind:'weapon',power:10,range:96,cooldown:480},
 {id:'wood-bow',name:'나무 활',where:'hand',cost:{wood:5,fiber:4},desc:'원거리 공격 · 기본 공격력 12 · 화살 필요',kind:'weapon',power:12,range:405,cooldown:700,ranged:'bow'},
+{id:'wood-arrow',name:'나무화살',where:'hand',cost:{wood:2,fiber:1},desc:'화살 5개 제작 · 추가 공격력 4 · 기본 화살 · 비행 3초',kind:'ammo',power:4,output:5},
 {id:'spider-arrow',name:'거미 화살',where:'ironbench',cost:{wood:2,fiber:1,giantSpiderWeb:1},desc:'화살 5개 제작 · 추가 공격력 8 · 적중 시 3초간 이동속도 50% 감소 · 비행 3초',kind:'ammo',power:8,output:5,slowDuration:3000},
 {id:'reinforced-bow',name:'강화 활',where:'bench',cost:{wood:6,stone:4,fiber:5},desc:'원거리 공격 · 기본 공격력 20 · 화살 필요',kind:'weapon',power:20,range:405,cooldown:650,ranged:'bow'},
 {id:'firewolf-arrow',name:'화염늑대 화살',where:'ironbench',cost:{wood:2,fiber:1,fireWolfFang:1},desc:'화살 5개 제작 · 추가 공격력 12 · 화염늑대 전리품 화살 · 비행 3초',kind:'ammo',power:12,output:5},
 {id:'iron-bow',name:'철 활',where:'ironbench',cost:{wood:4,fiber:5,ironIngot:4},desc:'원거리 공격 · 기본 공격력 32 · 화살 필요',kind:'weapon',power:32,range:405,cooldown:600,ranged:'bow'},
+{id:'iron-arrow',name:'철화살',where:'ironbench',cost:{wood:1,fiber:1,ironIngot:1},desc:'화살 5개 제작 · 추가 공격력 15 · 철촉 화살 · 비행 3초',kind:'ammo',power:15,output:5},
 {id:'shark-arrow',name:'상어 화살',where:'goldbench',cost:{wood:2,fiber:1,sharkSkin:1},desc:'화살 5개 제작 · 추가 공격력 18 · 상어 전리품 화살 · 비행 3초',kind:'ammo',power:18,output:5},
 {id:'gold-bow',name:'황금 활',where:'goldbench',cost:{wood:4,fiber:5,goldIngot:5},desc:'원거리 공격 · 기본 공격력 48 · 화살 필요',kind:'weapon',power:48,range:405,cooldown:520,ranged:'bow'},
 {id:'yeti-arrow',name:'예티 화살',where:'junglebench',cost:{wood:2,fiber:1,yetiHide:1},desc:'화살 5개 제작 · 추가 공격력 26 · 예티 전리품 화살 · 비행 3초',kind:'ammo',power:26,output:5},
@@ -352,8 +354,8 @@ const ITEM_TIER_4=new Set(['sovereign-cleaver','sovereign-armor','croc-jaw-blade
 const ITEM_TIER_5=new Set(['yeti-horn-maul','yeti-armor']);
 function itemTier(id){return ITEM_TIER_5.has(id)?5:ITEM_TIER_4.has(id)?4:ITEM_TIER_3.has(id)?3:ITEM_TIER_2.has(id)?2:1}
 const BOW_IDS=new Set(['wood-bow','reinforced-bow','iron-bow','gold-bow','jungle-bow']);
-const ARROW_IDS=['spider-arrow','firewolf-arrow','shark-arrow','yeti-arrow'];
-const LEGACY_ARROW_MIGRATION={'wood-arrow':'spider-arrow','stone-arrow':'firewolf-arrow','iron-arrow':'shark-arrow','gold-arrow':'yeti-arrow'};
+const ARROW_IDS=['wood-arrow','iron-arrow','spider-arrow','firewolf-arrow','shark-arrow','yeti-arrow'];
+const LEGACY_ARROW_MIGRATION={'stone-arrow':'firewolf-arrow','gold-arrow':'yeti-arrow'};
 const TWO_HANDED_WEAPONS=new Set(['gold-greatsword','walker-greatsword','crystal-core-greatsword','sovereign-cleaver','golem-hammer','calm-golem-maul','rage-golem-axe','yeti-horn-maul',...BOW_IDS]);
 function isTwoHandedWeapon(id){return!!id&&TWO_HANDED_WEAPONS.has(id)}
 const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,foresthare:1,worldpheasant:1,ironhidehound:2,crystalgoat:2,ironspirit:1,worldtreebear:2,foreststag:1,thornhound:2,sporegiant:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1,crystalboar:3,crystalboarjunior:3,crystalguardian:3,crystalgoblin:3,crystalironspirit:3,crystalbear:3,crystalfiresnake:3,crystalibex:3,shadowwolfleader:2,vampirebat:2,crystalfiregolem:3,lakecroc:4,lakebuffalo:3,crystaldeer:3,lakeheron:2,shark:4,giantSquid:4,deepAngler:4,lakefish:1,giantleech:3,gorilla:4,anaconda:4,mudwalker:3,jungletiger:4,primitiveSpearman:3,primitiveArcher:3,jungleGuardian:4,yetileader:5,yeticub:3,polarbear:4,polarwolf:4,polarfox:3,froststalker:3,icegolem:4,flowergoblin:2,giantbee:3,thornmantis:3,giantspider:3,giantspiderling:2};
@@ -4376,7 +4378,7 @@ function drawProjectiles(cx,cy){
  for(const q of state.projectiles){
   if(q.area!==state.area)continue;const x=q.x-cx,y=q.y-cy;if(x<-30||y<-30||x>innerWidth+30||y>innerHeight+30)continue;
   ctx.save();ctx.translate(x,y);ctx.rotate(Math.atan2(q.vy,q.vx)+Math.PI/2);
-  if(q.kind==='playerArrow'){const colors=q.arrowId==='spider-arrow'?['#8f6fa4','#d9b8ef']:q.arrowId==='firewolf-arrow'?['#c85835','#ffab55']:q.arrowId==='shark-arrow'?['#668da3','#cde7ef']:['#d8e5ed','#ffffff'];ctx.strokeStyle=colors[0];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,16);ctx.lineTo(0,-15);ctx.stroke();ctx.fillStyle=colors[1];ctx.beginPath();ctx.moveTo(0,-21);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill();ctx.strokeStyle='#d8c09d';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-5,12);ctx.lineTo(0,7);ctx.lineTo(5,12);ctx.stroke()}
+  if(q.kind==='playerArrow'){const colors=q.arrowId==='wood-arrow'?['#8b6a43','#d7b37a']:q.arrowId==='iron-arrow'?['#7d878c','#e0e6e8']:q.arrowId==='spider-arrow'?['#8f6fa4','#d9b8ef']:q.arrowId==='firewolf-arrow'?['#c85835','#ffab55']:q.arrowId==='shark-arrow'?['#668da3','#cde7ef']:['#d8e5ed','#ffffff'];ctx.strokeStyle=colors[0];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,16);ctx.lineTo(0,-15);ctx.stroke();ctx.fillStyle=colors[1];ctx.beginPath();ctx.moveTo(0,-21);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill();ctx.strokeStyle='#d8c09d';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-5,12);ctx.lineTo(0,7);ctx.lineTo(5,12);ctx.stroke()}
   else if(q.kind==='sporeOrb'){ctx.fillStyle='#b786d9';ctx.strokeStyle='#e6c9ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='mud'){ctx.fillStyle='#70583f';ctx.strokeStyle='#ad8c65';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='poisonArrow'){ctx.strokeStyle='#8bcf6a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,14);ctx.lineTo(0,-16);ctx.stroke();ctx.fillStyle='#b7f58c';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill()}
