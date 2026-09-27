@@ -5719,7 +5719,7 @@
     "gameParallelismReduced": false
   },
   "gameControlRunnerPools": {
-    "version": 2,
+    "version": 3,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.gameControlRunnerPoolSeparation20260926",
     "gameControl": "ubuntu-24.04-arm",
     "administrativeControl": "ubuntu-slim",
@@ -5739,9 +5739,11 @@
         "technical-worker",
         "private-runtime-publish"
       ],
-      "sourcePlanRunner": "ubuntu-24.04",
+      "sourcePlanRunner": "EXACT_GAME=ubuntu-24.04-arm;BATCH=ubuntu-24.04",
       "sourcePlanPreviousRunner": "ubuntu-slim",
-      "sourcePlanCriticalIngressException": true
+      "sourcePlanCriticalIngressException": true,
+      "sourcePlanExactGameRunner": "ubuntu-24.04-arm",
+      "sourcePlanBatchRunner": "ubuntu-24.04"
     },
     "unity": {
       "ingress": [
@@ -6116,14 +6118,16 @@
     },
     "robloxSourcePlanCriticalIngressException": {
       "previousRunner": "ubuntu-slim",
-      "runner": "ubuntu-24.04",
+      "runner": "SPLIT_EXACT_ARM_BATCH_FIXED_2404",
       "administrativeSlimPoolStillUsedBy": [
         "centralNativePlan",
         "unityPrepare",
         "vibe2Reserve"
       ],
       "technicalPlanRunner": "ubuntu-24.04-arm",
-      "heavyExecutionRunner": "ubuntu-latest"
+      "heavyExecutionRunner": "ubuntu-latest",
+      "exactGameRunner": "ubuntu-24.04-arm",
+      "batchRunner": "ubuntu-24.04"
     }
   },
   "learningPreparationRunnerIsolation": {
@@ -6182,10 +6186,10 @@
     "epochAdvancedToBypassLegacyPendingGroup": true
   },
   "robloxSourcePlanWakeAndRunnerIsolation": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxSourcePlanWakeAndRunnerIsolation20260927",
     "workflow": ".github/workflows/company-development-roblox-runtime.yml",
-    "sourcePlanRunner": "ubuntu-24.04",
+    "sourcePlanRunner": "EXACT_GAME=ubuntu-24.04-arm;BATCH=ubuntu-24.04",
     "previousSourcePlanRunner": "ubuntu-slim",
     "pushWakeMatchesContractPaths": true,
     "sourcePlanContractPaths": [
@@ -6201,7 +6205,9 @@
     "technicalPlanRunnerUnchanged": "ubuntu-24.04-arm",
     "heavyGameRunnerUnchanged": "ubuntu-latest",
     "exactGameParallelismPreserved": true,
-    "qualitySecurityReleaseGatesUnchanged": true
+    "qualitySecurityReleaseGatesUnchanged": true,
+    "sourcePlanExactGameRunner": "ubuntu-24.04-arm",
+    "sourcePlanBatchRunner": "ubuntu-24.04"
   },
   "concurrentPlatformSharedProgressMonotonicity": {
     "version": 2,
