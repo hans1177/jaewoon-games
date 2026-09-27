@@ -1704,6 +1704,9 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       ...(project?.queueRoutingBlockers||[]),
       ...(project?.queueRobloxQualityFailureKinds||[])
     ].map(clean).filter(Boolean),
+    qualityBuildUpRequired:project?.queueRobloxQualityBuildUpRequired===true,
+    qualityFailureClass:clean(project?.queueRobloxQualityFailureClass),
+    qualityFailureKinds:[...(project?.queueRobloxQualityFailureKinds||[])].map(clean).filter(Boolean),
     runtimeObserved:project?.queueRuntimeObserved===true||project?.queueRobloxQualityBuildUpRequired===true,
     runtimePassed:project?.queueRuntimePassed===true&&project?.queueRobloxQualityBuildUpRequired!==true,
     independentQaPassed:project?.queueRuntimeIndependentQaPassed===true,
