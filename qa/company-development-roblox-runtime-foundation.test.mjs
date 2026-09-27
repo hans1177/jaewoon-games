@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {probeRobloxOpenCloudEngine,validateRobloxRuntimeFoundationEvidence} from '../tools/company-development-roblox-runtime-foundation.mjs';
+import {fetchRobloxRuntimeFoundationEvidence,probeRobloxOpenCloudEngine,validateRobloxRuntimeFoundationEvidence} from '../tools/company-development-roblox-runtime-foundation.mjs';
 
 const checkpoint=(name,sequence)=>({name,at:1,sequence,userId:1,gameId:'cozy-island',placeId:116850096561713,placeVersion:21,...(name==='MULTIPLAYER_SYNC'?{participantCount:2}:{})});
 const names=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','SAVE_ROUNDTRIP','MULTIPLAYER_SYNC','CORE_LOOP_READY'];
@@ -126,6 +126,45 @@ test('foundation sentinel rejects checkpoints carried over from an older publish
  assert.ok(r.blockers.includes('checkpoint:SERVER_BOOT'));
 });
 
+
+test('Open Cloud runtime reads retry transient DNS failures without weakening API errors',async()=>{
+ const dnsError=()=>Object.assign(new TypeError('fetch failed'),{cause:{code:'EAI_AGAIN'}});
+ let datastoreCalls=0;
+ const sentinel=await fetchRobloxRuntimeFoundationEvidence({
+  universeId:'1',apiKey:'k',networkRetryAttempts:3,networkRetryDelayMs:0,
+  fetchImpl:async()=>{
+   datastoreCalls++;
+   if(datastoreCalls===1)throw dnsError();
+   return {ok:true,status:200,text:async()=>JSON.stringify({value:{gameId:'g',placeId:'2',placeVersion:3,checkpoints:{}}})};
+  },
+ });
+ assert.equal(datastoreCalls,2);
+ assert.equal(sentinel.gameId,'g');
+
+ const responses=[
+  {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
+  {ok:true,status:200,body:{state:'COMPLETE'}},
+  {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+  ]}]}}
+ ];
+ let engineCalls=0;
+ const result=await probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',pollIntervalMs:0,maxPolls:2,
+  networkRetryAttempts:3,networkRetryDelayMs:0,
+  fetchImpl:async()=>{
+   engineCalls++;
+   if(engineCalls===1)throw dnsError();
+   const row=responses.shift();
+   return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};
+  },
+ });
+ assert.equal(engineCalls,4);
+ assert.equal(result.engineExecuted,true);
+ assert.equal(result.exactPlace,true);
+ assert.equal(result.exactVersion,true);
+});
 
 test('Open Cloud engine probe binds exact place version without granting runtime acceptance',async()=>{
  const calls=[];
