@@ -512,7 +512,7 @@ export function buildVibeAssetProductionPlan({
     MATERIAL:/MATERIAL|재질|표면|금속|나무|돌|천|가죽/i,
     AUDIO:/AUDIO|SOUND|BGM|음악|소리|효과음/i,
     VFX:/VFX|이펙트|파티클|폭발|피격효과/i,
-    UI:/UI|HUD|인벤토리|아이콘|버튼|맵/i,
+    UI:/UI|HUD|MENU|메뉴|인벤토리|장비|상점|제작|퀘스트|스토리|지도|파티|멀티|건설|연구|설정|결과|PAUSE|SHOP|CRAFT|QUEST|SETTINGS|RESULT|아이콘|버튼|맵/i,
     MOTION:/MOTION|ANIMATION|모션|동작|애니메이션/i,
     PROP:/PROP|소품|가구|상자|배럴|장식|작업대/i
   };
@@ -994,6 +994,7 @@ export function assetProductionGuidance(plan={}){
     '배경과 환경은 후순위 장식이 아니다. 전경/중경/배경, 지역 랜드마크, set dressing, 환경 스토리텔링, 이동/전투 가독성을 실제 플레이 화면에서 확보한다.',
     '권리가 검증된 기존 에셋은 원본을 덮어쓰지 않고 파츠 재조합·실루엣/비율·재질·지역/정예/보스 파생·LOD 최적화 등 derived 변형으로 게임 고유 에셋화할 수 있다.',
     '서로 다른 에셋 팩을 원형 그대로 섞은 kitbash/sample-project 느낌은 완료가 아니다. Art Bible/재질/실루엣/조명/UI/VFX 언어를 통일한다.',
+    'UI 자산은 버튼/프레임/HUD만 반복 생산하지 않는다. 게임별 실제 시스템과 승인 메뉴 설계를 기준으로 메인·일시정지·인벤토리/장비·상점·제작·퀘스트/스토리·지도·파티/멀티·건설/연구·설정·결과 화면에 필요한 아이콘·프레임·탭·상태·전환 표현을 선택해 만들고, 모든 게임에 같은 메뉴 세트를 강제하지 않는다.',
     '배경은 세계관·지역·서사 맥락에 맞고 몬스터는 생태·전투 역할이 읽히는 실루엣과 표현을 가져야 한다.',
     '액션·전투 캐릭터는 Web부터 IDLE/MOVE/ATTACK/HIT/DEATH 상태를 실제 게임 상태와 연결하고 표현 런타임을 통과한 뒤 native 플랫폼으로 이어간다.',
     plan.companyGraphicsLibrary?.enabled?'회사 공용 그래픽 라이브러리는 24시간 idle 준비를 계속하지만 연습 산출물은 바로 production asset이 아니다. 실제 게임의 Unity/Roblox 네이티브 적용과 runtime 시각·모션·모바일 QA를 통과한 것만 검증 공용 자산으로 승격한다.':'',
