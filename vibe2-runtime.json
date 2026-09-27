@@ -681,6 +681,25 @@
       "newWorkflowCreated": false,
       "newSchedulerCreated": false
     },
+    "fanInRegressionFailureRecovery": {
+      "enabled": true,
+      "requeueAffectedTasksFirst": true,
+      "immediateRefillOnlyWhenNewerMainExists": true,
+      "pinnedFailedContractMustDifferFromLatestMain": true,
+      "refillEvent": "vibe2-fanin-refill",
+      "refillExecutionLane": "GAME_PRIMARY",
+      "refillTarget": "LATEST_MAIN_EXISTING_CONTINUOUS_CORE",
+      "sameFailedContractRedispatchForbidden": true,
+      "newSchedulerCreated": false,
+      "qaBypass": false,
+      "originalRegressionFailurePreserved": true,
+      "markers": [
+        "VIBE2_FAN_IN_REGRESSION_LATEST_MAIN",
+        "VIBE2_FAN_IN_REGRESSION_REFILL=DISPATCHED_NEWER_MAIN",
+        "VIBE2_FAN_IN_REGRESSION_REFILL=SKIPPED_NO_NEWER_MAIN",
+        "VIBE2_FAN_IN_REGRESSION_REFILL=DISPATCH_FAILED_FAIL_OPEN"
+      ]
+    },
     "cohortFanInPressureIngressEnabled": true,
     "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v3",
     "reserveConcurrency": {
