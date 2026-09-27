@@ -229,6 +229,7 @@ jobs:
             fetchRobloxRuntimeFoundationEvidence,
             validateRobloxRuntimeFoundationEvidence,
           } from './tools/company-development-roblox-runtime-foundation.mjs';
+          import {planLocalStudioCandidates} from './tools/company-development-roblox-studio-local-play.mjs';
 
           let requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(!requested&&process.env.EVENT_NAME==='push'&&String(process.env.TRIGGER_CHANGED||'').toLowerCase()==='true'){
@@ -323,6 +324,16 @@ jobs:
           const f9Ids=[];
           const studioFollowupIds=[];
           const stamp=new Date().toISOString();
+          const queueStudioFollowupIfEligible=item=>{
+            if(item?.robloxRuntimeFoundationPassed!==true)return;
+            const matrix=planLocalStudioCandidates({
+              queue:{items:[item]},
+              roadmap,
+              requestedGameId:String(item.gameId||''),
+              repoRoot:process.cwd(),
+            });
+            if((matrix.include||[]).some(row=>row.gameId===item.gameId))studioFollowupIds.push(item.gameId);
+          };
 
           for(const item of candidates){
             const candidate=item.robloxRuntimeCandidateEvidence||{};
@@ -386,6 +397,7 @@ jobs:
               changed=true;
               f9Ids.push(item.gameId);
               passed++;
+              queueStudioFollowupIfEligible(item);
               console.log('ROBLOX_RUNTIME_EVIDENCE_REUSED='+item.gameId+':version='+candidate.versionNumber);
               continue;
             }
@@ -606,10 +618,8 @@ jobs:
               workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
               authority:'existing-game-tester-roblox-runtime-foundation-v1',
             };
-            const runtimeFoundationWasPassed=item.robloxRuntimeFoundationPassed===true;
             item.robloxRuntimeFoundationEvidence=evidence;
             item.robloxRuntimeFoundationPassed=result.runtimeFoundationPassed===true;
-            if(!runtimeFoundationWasPassed&&item.robloxRuntimeFoundationPassed===true)studioFollowupIds.push(item.gameId);
             item.robloxRuntimePassed=result.runtimeAcceptancePassed===true;
             item.robloxServerClientBoundaryPassed=result.f6CoreServicesPassed===true;
             item.robloxDatastoreRejoinPassed=result.f6CoreServicesPassed===true;
@@ -882,6 +892,7 @@ jobs:
                 }
               }
             }
+            queueStudioFollowupIfEligible(item);
             item.updatedAt=stamp;changed=true;
           }
 
