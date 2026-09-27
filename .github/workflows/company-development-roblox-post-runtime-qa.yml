@@ -282,7 +282,13 @@ jobs:
             return c.published===true&&Number(c.versionNumber)>0&&c.universeId&&c.placeId;
           });
           const probes=new Array(candidates.length);
-          const probeConcurrency=Math.max(1,Math.min(requested?1:2,candidates.length||1));
+          const throttlePressure=candidates.some(item=>{
+            const evidence=item.robloxRuntimeFoundationEvidence||{};
+            return item.robloxFailureSignature==='ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE'
+              &&Number(evidence.httpStatus||0)===429;
+          });
+          const probeConcurrency=Math.max(1,Math.min(requested?1:(throttlePressure?1:2),candidates.length||1));
+          console.log('ROBLOX_OPEN_CLOUD_THROTTLE_PRESSURE='+(throttlePressure?'ACTIVE_SERIAL':'CLEAR_PARALLEL'));
           let probeCursor=0;
           const runProbeWorker=async()=>{
             while(true){
