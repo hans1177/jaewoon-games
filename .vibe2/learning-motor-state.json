@@ -4864,14 +4864,19 @@
       "coding_negative_1jrh775",
       "coding_negative_xxfdpp",
       "coding_negative_1kzdnsr",
-      "coding_negative_v2mkbl"
+      "coding_negative_v2mkbl",
+      "coding_negative_e18aud",
+      "coding_negative_qexvr4",
+      "coding_negative_1qfvwqy",
+      "coding_negative_b0dad3",
+      "coding_negative_qbq21w"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
         "verifiedApplications": 125,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 307,
-        "verifiedFailures": 575,
+        "verifiedFailures": 580,
         "games": {
           "territory-war": 2,
           "island-village": 3,
@@ -4942,13 +4947,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 25,
-            "verifiedFailures": 179,
+            "verifiedFailures": 183,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 81,
             "totalContextBytes": 1056651,
             "lastEvidence": "coding_1m6b66q",
-            "lastFailureEvidence": "coding_negative_lz2l0v",
-            "lastUpdatedAt": "2026-09-27T15:19:24.006Z"
+            "lastFailureEvidence": "coding_negative_b0dad3",
+            "lastUpdatedAt": "2026-09-27T22:10:16.667Z"
           }
         },
         "failureFingerprints": {
@@ -6098,12 +6103,93 @@
             "lastEvidence": "coding_1m6b66q",
             "lastFailureEvidence": null,
             "lastUpdatedAt": "2026-09-27T15:19:24.006Z"
+          },
+          "roblox|EDIT_MATCH|INVALID_PATH|OTHER|PRESENTATION_PATCH_DELTA|ROBLOX_VISUAL_DOMAINS|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "seed-casual-realm-weaver": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "TIMEOUT": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_e18aud",
+            "lastUpdatedAt": "2026-09-27T22:10:16.664Z"
+          },
+          "roblox|EDIT_MATCH|MALFORMED_OUTPUT|OTHER|PRESENTATION_PATCH_DELTA|ROBLOX_VISUAL_DOMAINS|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 2,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "seed-idle-growth-rpg-crystal-bloom": 1,
+              "village-dungeons": 1
+            },
+            "failureTargets": {
+              "roblox": 2
+            },
+            "failureClasses": {
+              "TIMEOUT": 2
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_b0dad3",
+            "lastUpdatedAt": "2026-09-27T22:10:16.667Z"
+          },
+          "roblox|EDIT_MATCH|INVALID_PATH|OTHER|PRESENTATION_DELTA|PRESENTATION_PATCH_DELTA|ROBLOX_VISUAL_DOMAINS|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "survival": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "TIMEOUT": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_1qfvwqy",
+            "lastUpdatedAt": "2026-09-27T22:10:16.667Z"
+          },
+          "roblox|EDIT_MATCH|INVALID_PATH|OTHER|ROBLOX_VISUAL_DOMAINS|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "line-defense": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "TIMEOUT": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_qbq21w",
+            "lastUpdatedAt": "2026-09-27T22:10:16.670Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_1m6b66q",
-        "lastFailureEvidence": "coding_negative_lz2l0v",
-        "lastUpdatedAt": "2026-09-27T15:19:24.006Z"
+        "lastFailureEvidence": "coding_negative_qbq21w",
+        "lastUpdatedAt": "2026-09-27T22:10:16.670Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
         "verifiedApplications": 217,
@@ -14815,7 +14901,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-27T22:09:00.366Z",
+    "lastBuiltAt": "2026-09-27T22:10:16.729Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -21332,5 +21418,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-27T22:09:00.366Z"
+  "updatedAt": "2026-09-27T22:10:16.729Z"
 }
