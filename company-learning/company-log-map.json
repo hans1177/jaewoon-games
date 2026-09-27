@@ -2661,6 +2661,16 @@
     "centralPolicyQaPreserved": true,
     "securityMainPushValidationPreserved": true,
     "roadmapWakePreserved": true,
-    "expectedResult": "MIRROR_ONLY_MAIN_PUSH_DOES_NOT_CREATE_SEED_HOMEPAGE_STATUS_RUNTIME_FANOUT"
+    "expectedResult": "MIRROR_ONLY_MAIN_PUSH_DOES_NOT_CREATE_SEED_HOMEPAGE_STATUS_RUNTIME_FANOUT",
+    "liveVerificationProbe": {
+      "kind": "LOG_MAP_ONLY_MAIN_PUSH",
+      "expectedNoDirectPushWorkflows": [
+        "Company Seed DESIGN_ONLY Runtime",
+        "Homepage Manager",
+        "Company Status Sync"
+      ],
+      "securityValidationExpected": true,
+      "centralPolicyQaExpected": true
+    }
   }
 }
