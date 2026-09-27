@@ -150,7 +150,8 @@ test('holistic build-up marks sparse map inventory UI session and convenience sy
   assert.ok(d.coverage.holisticGaps.includes('UI_DESIGN_SYSTEM'));
   assert.match(directivePrompt(d),/MAP_EXPANSION\[FIX_NOW\]/);
   assert.match(directivePrompt(d),/INVENTORY_USABILITY\[FIX_NOW\]/);
-  assert.match(directivePrompt(d),/모든 게임에 같은 메뉴 세트\/같은 패널 복붙을 금지한다/);
+  const menuDirective=d.allDomainImplementationDirectives.find(row=>row.domain==='MENU_FLOW');
+  assert.match(menuDirective.directive,/모든 게임에 같은 메뉴 세트\/같은 패널 복붙을 금지한다/);
   assert.ok(d.acceptanceEvidence.includes('MENU_STRUCTURE_IS_GAME_SPECIFIC_AND_NOT_CROSS_GAME_COPY_PASTE'));
 });
 
