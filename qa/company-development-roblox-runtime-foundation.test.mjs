@@ -428,6 +428,15 @@ test('post-runtime Studio followup delegates exact-engine preboot eligibility to
  assert.match(workflow,/ROBLOX_FOUNDATION_AWAITING_REAL_SERVER_BOOT=[\s\S]*?queueStudioFollowupIfEligible\(item\);[\s\S]*?continue;/);
 });
 
+test('exact engine preboot enters Studio followup even when the runtime sentinel already matches the candidate version',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/const exactEngineVersionAwaitingRealServerBoot=[\s\S]*?engineProbe\?\.serverBootObserved!==true/);
+ assert.match(workflow,/result\.exactVersion!==true[\s\S]*?\|\|\(result\.runtimeFoundationPassed!==true&&exactEngineVersionAwaitingRealServerBoot\)/);
+ assert.match(workflow,/exactVersion:result\.exactVersion===true/);
+ assert.match(workflow,/authority:exactEngineVersionAwaitingRealServerBoot[\s\S]*?'exact-engine-version-awaiting-real-server-boot'/);
+ assert.match(workflow,/if\(exactEngineVersionAwaitingRealServerBoot\)[\s\S]*?queueStudioFollowupIfEligible\(item\);[\s\S]*?continue;/);
+});
+
 test('central policy and architecture preserve runtime truth while real server boot blocks external release only',()=>{
  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
