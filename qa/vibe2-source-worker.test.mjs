@@ -1003,7 +1003,7 @@ test('JSON source generation uses bounded context and structured output mode',()
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
   assert.match(source,/const MAX_CONTEXT_BYTES=96000;/);
   assert.match(source,/const JSON_CONTEXT_WINDOW=16384;/);
-  assert.match(source,/\^JSON_\/\.test\(completionMode\)\?\{format:'json'\}/);
+  assert.match(source,/const format=completionMode==='JSON_REPLACE_ONLY'[\s\S]*?\(\/\^JSON_\/\.test\(completionMode\)\?'json':null\)/);
   assert.match(source,/const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=28000;/);
   assert.match(source,/const FULL_WEB_CONTEXT_WINDOW=32768;/);
 });
@@ -1702,7 +1702,7 @@ test('Unity bootstrap pair contract keeps timeout recovery multi-file',()=>{
     multiFilePairRequired:true
   });
   assert.match(retry,/at least one exact edit for EACH Allowed edit path/i);
-  assert.match(retry,/GameCore\.cs and RuntimeBootstrap\.cs must both change/i);
+  assert.match(retry,/both Assets\/Scripts\/GameCore\.cs and Assets\/Scripts\/RuntimeBootstrap\.cs in the same candidate/i);
   assert.doesNotMatch(retry,/exactly one edit/i);
 });
 
@@ -2077,7 +2077,7 @@ test('second no-op receives one short focused third retry', async () => {
   assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.generation.timeoutMs,90000);
   assert.equal(result.generation.maxPredict,384);
-  assert.equal(result.generation.temperature,0.26);
+  assert.equal(result.generation.temperature,0.08);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
@@ -3215,7 +3215,7 @@ test('second malformed JSON receives the bounded focused third retry', async () 
   assert.equal(result.generation.attempts,3);
   assert.equal(result.generation.focusedFinalRetry,true);
   assert.equal(result.generation.focusedReplaceOnly,true);
-  assert.equal(result.generation.temperature,0.26);
+  assert.equal(result.generation.temperature,0.08);
   assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
   assert.deepEqual(result.changedFiles,['index.html']);
 });
