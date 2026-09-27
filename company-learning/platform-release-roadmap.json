@@ -9618,6 +9618,28 @@
       "gameplayRulesChanged": false,
       "saveSchemaChanged": false,
       "qualityGateWeakening": false
+    },
+    "qualityFirstBuildupShortCircuit20260927": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-27",
+      "policySource": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit",
+      "architectureProjection": "company-learning/company-architecture-map.json#minimumNecessaryProcedurePolicyProjection.qualityFirstBuildupShortCircuit",
+      "logContract": "company-learning/company-log-map.json#qualityFirstBuildupShortCircuitEvidence",
+      "implementationBindings": [
+        "tools/company-development-roblox-studio-local-play.mjs",
+        "tools/vibe2-auto-planner.mjs",
+        ".github/workflows/company-development-roblox-post-runtime-qa.yml"
+      ],
+      "behavior": [
+        "INTERNAL_PRODUCT_QUALITY_FAIL_AUTO_REQUEUES_CANONICAL_BUILD_UP_WITHOUT_OWNER_APPROVAL",
+        "ACTIVE_SAME_SOURCE_QUALITY_FAILURE_SUPPRESSES_OPEN_CLOUD_AND_REDUNDANT_F9",
+        "HTTP_429_REMAINS_INFRASTRUCTURE_OR_EVIDENCE_ONLY_AND_DOES_NOT_CAUSE_GAME_SOURCE_CHURN",
+        "SOURCE_DELTA_RUNS_IMPACT_SCOPED_QA_THEN_RESUMES_FIRST_INVALIDATED_DOWNSTREAM_GATE"
+      ],
+      "shadowPipelineCreated": false,
+      "productQualityThresholdLowered": false,
+      "publicReleaseHardGateChanged": false,
+      "securityOrSaveIntegrityGateChanged": false
     }
   },
   "vibeExecutionLaneContract": {
