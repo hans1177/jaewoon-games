@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1urg7u2",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-unity-web-base-implementation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "unity-games/monster-adventure/Assets/Scripts/GameCore.cs",
-        "unity-games/monster-adventure/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:08:10.273Z",
-      "expiresAt": "2026-09-27T04:53:10.273Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-hoz7h0",
       "worker": "vibe2",
       "taskId": "line-defense-roblox-presentation-asset-adaptation-v1",
@@ -696,6 +678,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1kt0bxy",
+      "worker": "vibe2",
+      "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "files": [
+        "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
+        "roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau",
+        "roblox-games/seed-idle-growth-rpg-crystal-bloom/shared/GameConfig.luau"
+      ],
+      "baseSha": "030bba2df3bf52826ca4bcfa8d35e6c207a25ca8",
+      "acquiredAt": "2026-09-27T04:53:17.657Z",
+      "expiresAt": "2026-09-27T05:38:17.657Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
