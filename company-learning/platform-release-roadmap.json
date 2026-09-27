@@ -8568,7 +8568,7 @@
       "id": "RUNNER_QUEUE_DRAIN_2026-09-26",
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
       "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
-      "objective": "FREE_GAME_EXECUTION_CAPACITY_BY_CANCELLING_ONLY_SUPERSEDED_CONTROL_PLANE_AND_DUPLICATE_SAME_GAME_QUEUED_RUNS",
+      "objective": "FREE_GAME_EXECUTION_CAPACITY_BY_CANCELLING_ONLY_SUPERSEDED_CONTROL_PLANE_STALE_REPLACED_CENTRAL_WAKES_AND_DUPLICATE_QUEUED_CONTROL_OR_NATIVE_RUNS",
       "supervisor": ".github/workflows/director-supervisor.yml",
       "supervisorRunner": "ubuntu-slim",
       "directorCancelInProgress": false,
@@ -8602,7 +8602,12 @@
       "gamePrimaryGateRunner": "ubuntu-slim",
       "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
       "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
-      "runnerDrainEpochAdvancedToBypassLegacyPendingGroup": true
+      "runnerDrainEpochAdvancedToBypassLegacyPendingGroup": true,
+      "staleCentralPushMayCancelWhenCurrentHeadReplacementActive": true,
+      "staleNativeBatchPushMayCancelWhenCurrentHeadCentralReplacementActive": true,
+      "sameTitleSchedulerQueuedDuplicateMayCancel": true,
+      "sameTitleSchedulerInProgressWinner": "ACTIVE_RUN_PRESERVED",
+      "schedulerDedupeWorkflow": ".github/workflows/vibe2-24h-runner.yml"
     },
     "vibe2CoreQaActiveCompletion20260927": {
       "id": "VIBE2_CORE_QA_ACTIVE_COMPLETION_2026-09-27",
