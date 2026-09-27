@@ -1,5 +1,5 @@
 {
-  "version": 285,
+  "version": 286,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -1406,7 +1406,7 @@
         "sharedQueue": "vibe2-unreal-core:.vibe2/queue.json",
         "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5_ON_ACTUAL_WRITE_CONFLICT",
         "workerDirectControlWrite": false,
-        "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v5",
+        "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v6",
         "gamePrimaryExternalBoundary": 256,
         "liveVerification": {
           "previousRunId": 36204978877,
@@ -1442,9 +1442,9 @@
       },
       "nextObservedInfrastructureBottleneck": "RUNNER_CAPACITY_AND_MODEL_CACHE_STARTUP_PRESSURE",
       "modelCacheStartupRelief": {
-        "version": 2,
+        "version": 3,
         "workflow": ".github/workflows/vibe2-continuous-core.yml",
-        "cacheKey": "vibe2-ollama-v3-Linux-qwen3-1.7b",
+        "cacheKey": "vibe2-ollama-v4-${runner.os}-${runner.arch}-qwen3-1.7b",
         "cacheProbeJob": "reserve",
         "cacheProbeBehavior": "LOOKUP_ONLY_NO_PAYLOAD_RESTORE",
         "prewarmJob": "model_cache",
@@ -1471,7 +1471,12 @@
         "gamePrimaryExternalBoundary": 256,
         "liveVerificationRun": 36208311596,
         "prewarmRunnerReliefLiveVerified": true,
-        "nextObservedInfrastructureBottleneck": "WORKER_MODEL_CACHE_RESTORE_BEFORE_WORK_ORDER_AND_LOCK"
+        "nextObservedInfrastructureBottleneck": "WORKER_MODEL_CACHE_RESTORE_BEFORE_WORK_ORDER_AND_LOCK",
+        "architectureAwareCache": true,
+        "assetDevelopmentReserveRunner": "ubuntu-24.04-arm",
+        "assetDevelopmentPrewarmRunner": "ubuntu-24.04-arm",
+        "assetDevelopmentWorkerRunner": "ubuntu-24.04-arm",
+        "gamePrimaryPrewarmRunner": "ubuntu-latest"
       },
       "externalSpareBeyond30": "AVAILABLE_TO_GAME_PRIMARY; 30_IS_PRESSURE_FLOOR_NOT_CAP"
     },
@@ -3073,7 +3078,12 @@
         "focusedTimeoutMs": 120000,
         "focusedMaxPredict": 768,
         "focusedContextWindow": 8192
-      }
+      },
+      "schedulerPlanRunner": "ubuntu-24.04-arm",
+      "reserveRunner": "ubuntu-24.04-arm",
+      "modelCacheRunner": "ubuntu-24.04-arm",
+      "cacheKey": "vibe2-ollama-v4-${runner.os}-${runner.arch}-qwen3-1.7b",
+      "architectureAwareCache": true
     }
   },
   "platformPresentationSeparation": {
@@ -5455,18 +5465,18 @@
     "authorityExpanded": false
   },
   "vibe24hSchedulerEpochTopology": {
-    "version": 3,
-    "source": "company-learning/platform-release-roadmap.json#changeRecord.reusableLaneSchedulerEpochRelease20260927",
+    "version": 4,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.assetArmControlPlaneIsolation20260927",
     "workflow": ".github/workflows/vibe2-24h-runner.yml",
     "concurrency": {
-      "currentGroup": "vibe2-24h-cycle-singleton-v5",
+      "currentGroup": "vibe2-24h-cycle-singleton-v6",
       "cancelInProgress": false,
       "maxCurrentEpochChains": 1,
       "wakeSignalsCollapse": true
     },
     "staleEpochRelease": {
-      "previousGroup": "vibe2-24h-cycle-singleton-v4",
-      "reason": "PRE_CONCURRENCY_FIX_V4_CHAIN_BLOCKED_POST_FIX_ASSET_LANE_LIVE_VERIFICATION",
+      "previousGroup": "vibe2-24h-cycle-singleton-v5",
+      "reason": "SLIM_PLAN_QUEUE_BLOCKED_CURRENT_ASSET_ARM_CONTROL_PLANE_LIVE_VERIFICATION",
       "oldEpochReceivesNoNewWakeSignals": true,
       "oldEpochMayDrain": true,
       "currentEpochStartsIndependentOfStaleEpoch": true
