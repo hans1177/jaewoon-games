@@ -118,7 +118,7 @@ test('holistic build-up marks sparse map inventory UI session and convenience sy
     topFiles:[],
     sourceAnchors:[],
     signals:{
-      combat:8,progression:3,ai:2,save:2,multiplayer:0,animation:2,vfx:2,camera:1,ui:2,uiFlow:0,input:1,
+      combat:8,progression:3,ai:2,save:2,multiplayer:0,animation:2,vfx:2,camera:1,ui:2,uiFlow:0,menuSurfaceKinds:1,input:1,
       map:3,landmark:0,interaction:1,inventory:2,equipment:1,settings:0,feedback:0,session:1,content:5,
       choice:0,connection:0,performance:0,lighting:1,primitive:2,todo:0,errorRecovery:1
     },
@@ -150,6 +150,8 @@ test('holistic build-up marks sparse map inventory UI session and convenience sy
   assert.ok(d.coverage.holisticGaps.includes('UI_DESIGN_SYSTEM'));
   assert.match(directivePrompt(d),/MAP_EXPANSION\[FIX_NOW\]/);
   assert.match(directivePrompt(d),/INVENTORY_USABILITY\[FIX_NOW\]/);
+  assert.match(directivePrompt(d),/모든 게임에 같은 메뉴 세트\/같은 패널 복붙을 금지한다/);
+  assert.ok(d.acceptanceEvidence.includes('MENU_STRUCTURE_IS_GAME_SPECIFIC_AND_NOT_CROSS_GAME_COPY_PASTE'));
 });
 
 test('unverified history raises generation but does not rotate focus without a verified source delta',()=>{
