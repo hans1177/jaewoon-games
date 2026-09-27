@@ -280,6 +280,9 @@ namespace JaewoonGames.DaechungRpg
                 var column = i % columns;
                 var row = i / columns;
                 var x = column * frameWidth;
+                var y = row * frameHeight;
+                var frameCount = manifest.frames;
+                var frames = new Sprite[frameCount];
                 var y = texture.height - ((row + 1) * frameHeight);
                 var rect = new Rect(x, y, frameWidth, frameHeight);
                 frames[i] = Sprite.Create(texture, rect, new Vector2(0.5f, 0.06f), 128f);
