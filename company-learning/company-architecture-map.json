@@ -4364,7 +4364,7 @@
       ]
     }
   },
-  "updatedAt": "2026-09-27",
+  "updatedAt": "2026-09-28",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -6237,7 +6237,7 @@
     "epochAdvancedToBypassLegacyPendingGroup": true
   },
   "robloxOpenCloudThrottleRecovery": {
-    "version": 2,
+    "version": 3,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxOpenCloudThrottleRecovery20260927",
     "module": "tools/company-development-roblox-runtime-foundation.mjs",
     "workflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
@@ -6269,7 +6269,15 @@
     "postFoundationStudioFollowupDelegatesToCanonicalPlanner": true,
     "prePlannerRuntimeFoundationPassGuard": false,
     "primaryActionFeedbackMetricPropagation": "EVALUATION_TO_RUNTIME_METRICS_TO_COMPANY_RUNTIME_EVIDENCE",
-    "primaryActionFeedbackSerializationOmissionAllowed": false
+    "primaryActionFeedbackSerializationOmissionAllowed": false,
+    "scanProbeConcurrencyUnderVerified429": 1,
+    "transientRetryExecution": "IN_SCAN_BOUNDED_NO_WORKFLOW_FANOUT",
+    "transientRetryWorkflowFanout": false,
+    "transientRetryBackoff": "EXPONENTIAL_CAPPED_30000MS_RETRY_AFTER_AWARE",
+    "automaticScanConcurrencyGroup": "roblox-runtime-foundation-scan",
+    "automaticScanCancelInProgress": true,
+    "distinctExactGameRunsRemainIndependent": true,
+    "externalRunnerBacklogDoesNotCreateMoreRetryRuns": true
   },
   "robloxF9FaninRuntimePathRepair": {
     "version": 1,
