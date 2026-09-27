@@ -60,7 +60,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-26T23:50:43.164Z",
+      "updatedAt": "2026-09-27T00:38:17.234Z",
       "robloxSourceCommit": "6d226665fc3edfa8cbbbdc02245bc97df3cf6973",
       "robloxSourceBootstrapPassedAt": "2026-09-26T15:18:18.812Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -282,8 +282,8 @@
         "exactGame": true,
         "exactPlace": true,
         "exactVersion": false,
-        "exactEngineVersion": true,
-        "engineExecuted": true,
+        "exactEngineVersion": false,
+        "engineExecuted": false,
         "simulationRunning": false,
         "serverBootObserved": false,
         "blockers": [
@@ -303,9 +303,9 @@
           "checkpoint:SAVE_ROUNDTRIP",
           "checkpoint:MULTIPLAYER_SYNC"
         ],
-        "observedAt": "2026-09-26T23:07:40.815Z",
-        "workflowRunId": 36278023173,
-        "authority": "exact-engine-version-awaiting-real-server-boot"
+        "observedAt": "2026-09-27T00:38:17.234Z",
+        "workflowRunId": 36283041348,
+        "authority": "stale-runtime-sentinel-observation"
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
@@ -313,7 +313,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 16,
+      "robloxRuntimeRetryCount": 17,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -394,9 +394,11 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
-      "robloxFailureSignature": "ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT",
-      "routingBlockers": [],
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "routingBlockers": [
+        "roblox-runtime-foundation-stale-version"
+      ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -671,7 +673,7 @@
         "newSourceRevision": "51eadc7b331419af8319c664c539023aed1e7403",
         "invalidatedAt": "2026-09-25T17:30:08.745Z"
       },
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-26T23:07:40.815Z",
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T00:38:17.234Z",
       "robloxParallelMultiplayerValidationPending": true,
       "robloxPromotionBlockers": [
         "roblox-two-client-one-sync-pending"
@@ -1603,7 +1605,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T23:45:29.195Z",
+      "updatedAt": "2026-09-27T00:38:17.234Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1823,7 +1825,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 1,
+      "robloxRuntimeRetryCount": 2,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -2027,7 +2029,7 @@
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-26T23:36:17.149Z",
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T00:38:17.234Z",
       "ownerWebEditPropagation": {
         "version": 1,
         "authority": "OWNER_DIRECTIVE",
@@ -2552,7 +2554,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T16:44:25.333Z",
+      "updatedAt": "2026-09-27T00:38:17.234Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2772,7 +2774,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 2,
+      "robloxRuntimeRetryCount": 3,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -3015,7 +3017,7 @@
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-26T16:44:25.333Z"
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T00:38:17.234Z"
     },
     {
       "gameId": "line-defense",
@@ -3076,7 +3078,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T16:44:25.333Z",
+      "updatedAt": "2026-09-27T00:38:17.234Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3438,7 +3440,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 2,
+      "robloxRuntimeRetryCount": 3,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -3508,7 +3510,7 @@
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-26T16:44:25.333Z"
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T00:38:17.234Z"
     },
     {
       "gameId": "cozy-island",
@@ -3569,7 +3571,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-27T00:37:51.083Z",
+      "updatedAt": "2026-09-27T00:38:17.234Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3796,8 +3798,8 @@
         "exactGame": true,
         "exactPlace": true,
         "exactVersion": false,
-        "exactEngineVersion": true,
-        "engineExecuted": true,
+        "exactEngineVersion": false,
+        "engineExecuted": false,
         "simulationRunning": false,
         "serverBootObserved": false,
         "blockers": [
@@ -3817,9 +3819,9 @@
           "checkpoint:SAVE_ROUNDTRIP",
           "checkpoint:MULTIPLAYER_SYNC"
         ],
-        "observedAt": "2026-09-27T00:36:18.352Z",
-        "workflowRunId": 36282879218,
-        "authority": "exact-engine-version-awaiting-real-server-boot"
+        "observedAt": "2026-09-27T00:38:17.234Z",
+        "workflowRunId": 36283041348,
+        "authority": "stale-runtime-sentinel-observation"
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
@@ -3827,7 +3829,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 1,
+      "robloxRuntimeRetryCount": 2,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -3908,9 +3910,11 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureStage": "PUBLIC_RELEASE_RUNTIME_OBSERVATION",
-      "robloxFailureSignature": "ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT",
-      "routingBlockers": [],
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "routingBlockers": [
+        "roblox-runtime-foundation-stale-version"
+      ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -4337,7 +4341,7 @@
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
       "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T00:36:18.352Z",
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T00:38:17.234Z",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-cozy-island-36190508441",
       "unitySourceCommit": "34bd3a9cf2f93f1bc32fbd87eb53471fe3fadcd4",
@@ -4458,7 +4462,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T16:44:25.333Z",
+      "updatedAt": "2026-09-27T00:38:17.234Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -4820,7 +4824,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 1,
+      "robloxRuntimeRetryCount": 2,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -4915,7 +4919,7 @@
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-26T16:44:25.333Z"
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T00:38:17.234Z"
     },
     {
       "gameId": "monster-adventure",
@@ -5375,7 +5379,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T16:44:25.333Z",
+      "updatedAt": "2026-09-27T00:38:17.234Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -5595,7 +5599,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 2,
+      "robloxRuntimeRetryCount": 3,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -5826,7 +5830,7 @@
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-26T16:44:25.333Z"
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T00:38:17.234Z"
     },
     {
       "gameId": "seed-casual-realm-weaver",
@@ -5887,7 +5891,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T16:44:25.333Z",
+      "updatedAt": "2026-09-27T00:38:17.234Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -6107,7 +6111,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 1,
+      "robloxRuntimeRetryCount": 2,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -6311,7 +6315,7 @@
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-26T16:44:25.333Z"
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T00:38:17.234Z"
     },
     {
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -6372,7 +6376,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T16:44:25.333Z",
+      "updatedAt": "2026-09-27T00:38:17.234Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -6592,7 +6596,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 2,
+      "robloxRuntimeRetryCount": 3,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -6796,7 +6800,7 @@
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-26T16:44:25.333Z"
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T00:38:17.234Z"
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -7259,7 +7263,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T16:44:25.333Z",
+      "updatedAt": "2026-09-27T00:38:17.234Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -7479,7 +7483,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 2,
+      "robloxRuntimeRetryCount": 3,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -7683,7 +7687,7 @@
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-26T16:44:25.333Z"
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T00:38:17.234Z"
     },
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -7744,7 +7748,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-26T16:44:25.333Z",
+      "updatedAt": "2026-09-27T00:38:17.234Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -7964,7 +7968,7 @@
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 1,
+      "robloxRuntimeRetryCount": 2,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -8168,7 +8172,7 @@
       "robloxPresentationCompletionEvidence": null,
       "robloxReleaseStabilityEvidence": null,
       "robloxPublicReleaseFinalEvidence": null,
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-26T16:44:25.333Z"
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T00:38:17.234Z"
     },
     {
       "gameId": "survival",
@@ -8580,7 +8584,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T00:38:03.305Z",
+  "updatedAt": "2026-09-27T00:38:17.234Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
