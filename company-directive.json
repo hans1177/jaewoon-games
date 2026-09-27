@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "revision": 84,
-  "updatedAt": "2026-09-26",
+  "revision": 85,
+  "updatedAt": "2026-09-28",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -133,15 +133,17 @@
       "unityWebLegacyBuildCompatibility": true,
       "playableWebCompanionButtonEnabled": true,
       "playableWebCompanionButtonLabel": "웹 플레이",
-      "playableWebCompanionSource": "COMPANY_RUNTIME_GAME_CATALOG",
-      "playableWebCompanionRequiresPlayableAndArchive": true,
+      "playableWebCompanionSource": "ACTUAL_CANONICAL_WEB_ENTRY",
+      "playableWebCompanionRequiresPlayableAndArchive": false,
       "playableWebCompanionRequiresExistingCanonicalIndex": true,
       "runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync": true,
       "mainCatalogMayNotOverrideFresherCompanyRuntime": true,
       "runtimeCatalogMirrorMode": "RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY",
       "rawRuntimeCatalogDirectCopyForbidden": true,
       "actualGameFileSourceMetadataPreserved": true,
-      "canonicalNormalizationRequiredBeforeHomepagePublication": true
+      "canonicalNormalizationRequiredBeforeHomepagePublication": true,
+      "playableWebCompanionAvailability": "ALL_VISIBLE_GAME_CARDS_WHEN_WEB_GAMES_GAME_ID_INDEX_EXISTS",
+      "playableWebCompanionMissingEntryState": "DISABLED_WEB_BUILD_MISSING"
     },
     "autoClassification": {
       "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
