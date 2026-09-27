@@ -833,6 +833,9 @@ test('pending private runtime candidates retry even when technical target count 
   assert.equal(roadmap.developmentSpeedExecution.retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches,true);
   assert.equal(roadmap.developmentSpeedExecution.successfulStepMustNotBeRepeatedWithoutInvalidatingChange,true);
   assert.equal(roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.privateRuntimeCandidateDeploymentParallel,true);
+  const monotonicity=roadmap.changeRecord?.concurrentPlatformSharedProgressMonotonicity20260927||{};
+  assert.equal(monotonicity.privateRuntimeRecoveryUsesExactF0Evidence,true);
+  assert.equal(monotonicity.privateRuntimeRecoverySharedCurrentStepDependencyForbidden,true);
   assert.match(workflow,/name: Route pending private runtime candidates through exact game dispatcher[\s\S]*?if: always\(\)/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH_COUNT=/);
@@ -844,11 +847,28 @@ test('pending private runtime candidates retry even when technical target count 
   assert.match(workflow,/actions\/workflows\/company-development-roblox-release-promotion\.yml\/runs\?per_page=100/);
   assert.match(workflow,/display_title/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_PENDING_COUNT=/);
-  assert.match(workflow,/String\(x\.currentStep\|\|''\)\.toUpperCase\(\)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+  assert.doesNotMatch(workflow,/String\(x\.currentStep\|\|''\)\.toUpperCase\(\)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+  assert.match(workflow,/String\(x\.robloxFailureStage\|\|''\)\.toUpperCase\(\)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
   assert.match(workflow,/String\(x\.robloxFailureSignature\|\|''\)\.toUpperCase\(\)==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'/);
   assert.doesNotMatch(workflow,/Dispatch private runtime candidate for fused F0 passes/);
 });
 
+
+
+test('private runtime recovery uses exact F0 failure evidence even when a concurrent platform regressed shared step',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('      - name: Route pending private runtime candidates through exact game dispatcher');
+  const end=workflow.indexOf('      - name: Dispatch Roblox HEADLESS FAST_MVP continuation',start);
+  const block=workflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(block,/x\.robloxFoundationF0Passed===true/);
+  assert.match(block,/x\.robloxBuildPreflightPassed===true/);
+  assert.match(block,/x\.robloxBuildOrPackagePassed===true/);
+  assert.match(block,/x\.robloxBuildSourceRevision===revision/);
+  assert.match(block,/String\(x\.robloxFailureStage\|\|''\)\.toUpperCase\(\)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+  assert.match(block,/String\(x\.robloxFailureSignature\|\|''\)\.toUpperCase\(\)==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'/);
+  assert.doesNotMatch(block,/String\(x\.currentStep\|\|''\)\.toUpperCase\(\)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+});
 
 test('pending private candidate dispatch reuses only a candidate bound to the current Roblox publication target',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');

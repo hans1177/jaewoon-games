@@ -1531,7 +1531,6 @@ jobs:
               &&x.robloxBuildPreflightPassed===true
               &&x.robloxBuildOrPackagePassed===true
               &&x.robloxBuildSourceRevision===revision
-              &&String(x.currentStep||'').toUpperCase()==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
               &&String(x.robloxFailureStage||'').toUpperCase()==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
               &&String(x.robloxFailureSignature||'').toUpperCase()==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'
               &&x.robloxRuntimeFoundationPassed!==true

@@ -1,5 +1,5 @@
 {
-  "version": 459,
+  "version": 460,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9438,7 +9438,11 @@
       "exactSourceArtifactBindingRequired": true,
       "perPlatformEvidenceMayUpdateIndependently": true,
       "activeGameCancellationForbidden": true,
-      "qualitySecurityReleaseGatesUnchanged": true
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "privateRuntimeRecoveryUsesExactF0Evidence": true,
+      "privateRuntimeRecoverySharedCurrentStepDependencyForbidden": true,
+      "privateRuntimeRecoveryFailureStageAuthority": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "privateRuntimeRecoveryFailureSignatureAuthority": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
     }
   },
   "vibeExecutionLaneContract": {
