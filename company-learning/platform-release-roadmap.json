@@ -1,5 +1,5 @@
 {
-  "version": 460,
+  "version": 461,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9443,6 +9443,30 @@
       "privateRuntimeRecoverySharedCurrentStepDependencyForbidden": true,
       "privateRuntimeRecoveryFailureStageAuthority": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "privateRuntimeRecoveryFailureSignatureAuthority": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING"
+    },
+    "developmentQueueReconcileRunnerIsolation20260927": {
+      "id": "DEVELOPMENT_QUEUE_RECONCILE_RUNNER_ISOLATION_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "KEEP_CANONICAL_DEVELOPMENT_QUEUE_RECONCILIATION_FROM_STARVING_BEHIND_THE_ADMINISTRATIVE_UBUNTU_SLIM_POOL",
+      "observedEvidence": {
+        "queuedRunId": 36292590267,
+        "queuedJob": "game-primary-gate",
+        "queuedRunner": "ubuntu-slim",
+        "horrorGameId": "horror-escape-room",
+        "exactRobloxF0AlreadyPassed": true,
+        "canonicalRecoveryWaitingOnReconcile": true
+      },
+      "workflow": ".github/workflows/company-development-queue-reconcile.yml",
+      "gamePrimaryGateRunner": "ubuntu-24.04",
+      "reconcileRunner": "ubuntu-24.04",
+      "previousRunner": "ubuntu-slim",
+      "serializeStateWrites": true,
+      "cancelRunningReconcileOnNewTrigger": false,
+      "gamePrimaryTelemetryRemainsObservational": true,
+      "stateMutationLogicChanged": false,
+      "heavyGameExecutionChanged": false,
+      "qualitySecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
