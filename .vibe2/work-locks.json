@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-9f0cxi",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/shared/QACamera.luau",
-        "roblox-games/horror-escape-room/shared/VisualStyle.luau"
-      ],
-      "baseSha": "fdc04521e142456575a24c12d283b3c1a332c99f",
-      "acquiredAt": "2026-09-27T09:37:52.872Z",
-      "expiresAt": "2026-09-27T10:22:52.872Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-1iqfxon",
       "worker": "vibe2",
       "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1",
@@ -553,6 +535,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:horror-escape-room-roblox-second-gate-rebuild-v1"
+      ]
+    },
+    {
+      "id": "wl-bhmp8n",
+      "worker": "vibe2",
+      "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
+      "gameId": "fantasy-survival",
+      "files": [
+        "roblox-games/fantasy-survival/client/Game.client.luau",
+        "roblox-games/fantasy-survival/server/Game.server.luau"
+      ],
+      "baseSha": "c7bb6fa0e18deefbf3a38c374ff821f3bc96b8c6",
+      "acquiredAt": "2026-09-27T10:24:43.659Z",
+      "expiresAt": "2026-09-27T11:09:43.659Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:fantasy-survival-studio-evolution-roblox-usability-v1"
       ]
     }
   ]
