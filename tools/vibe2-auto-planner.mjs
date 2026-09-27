@@ -1055,6 +1055,98 @@ function findWebDiagnosticTask(project,repoRoot,queue){
   out.workUnits=Math.max(3,Math.min(6,rows.length+1));
   return out;
 }
+const ADAPTIVE_GRAPHICS_REPLACEMENT_SURFACES=Object.freeze([
+  'BACKGROUND','TERRAIN','ENVIRONMENT','BUILDING','PROP','LANDMARK',
+  'CHARACTER','MONSTER','CREATURE','WEAPON','ITEM','EQUIPMENT','MATERIAL','TEXTURE',
+  'VFX','MOTION','ANIMATION','MENU','HUD','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','ICON','TYPOGRAPHY',
+  'CAMERA_PRESENTATION','ENVIRONMENTAL_PRESENTATION','AUDIO_PRESENTATION_WHEN_RELEVANT'
+]);
+const ADAPTIVE_GRAPHICS_REUSE_MODES=Object.freeze([
+  'DIRECT_REUSE_WHEN_ALREADY_CONCEPT_MATCHED',
+  'ADAPT_RESTYLE_AND_RETARGET',
+  'TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES',
+  'NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER'
+]);
+
+function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTATION'){
+  const platform=buildUpPlatformToken(project,studioQualityLane(project));
+  return Object.freeze({
+    version:1,
+    executionBoundary:'EXISTING_PRESENTATION_OR_BUILD_UP_ONLY',
+    decisionOwner:'VIBE',
+    platforms:Object.freeze(['WEB','ROBLOX','UNITY','FORTNITE_UEFN']),
+    platform,
+    pass:clean(pass).toUpperCase()||'ASSET_ADAPTATION',
+    adaptiveCount:Object.freeze({
+      minimumActual:1,
+      maximumActual:60,
+      fixedQuotaForbidden:true,
+      chooseOnlyWhatActuallyNeedsImprovement:true,
+      bands:Object.freeze({micro:Object.freeze([1,10]),normal:Object.freeze([10,30]),major:Object.freeze([30,60])}),
+      examples:Object.freeze(['3_BAD_MENU_ELEMENTS_CAN_MEAN_3_REPLACEMENTS','8_BAD_MONSTER_MOTIONS_CAN_MEAN_8_REPLACEMENTS','WHOLE_REGION_REFRESH_MAY_USE_30_TO_60'])
+    }),
+    surfaces:ADAPTIVE_GRAPHICS_REPLACEMENT_SURFACES,
+    priorityOrder:Object.freeze(['PLACEHOLDER','LOW_QUALITY','STYLE_MISMATCH','DUPLICATE_OR_OVERREUSED','POOR_READABILITY','WEAK_VFX_OR_MOTION','OTHER_VERIFIED_PRESENTATION_GAP']),
+    reuseModes:ADAPTIVE_GRAPHICS_REUSE_MODES,
+    compositionRule:'DO_NOT_LIMIT_TO_READY_MADE_ASSETS. VIBE MAY DIRECTLY_REUSE_WHEN_ALREADY_CORRECT, ADAPT_OR_RESTYLE, OR RECOMBINE_MULTIPLE_COMPATIBLE_ASSET_MOTION_VFX_UI_IDEAS INTO_A_NEW_PROJECT_SPECIFIC_EXPRESSION.',
+    conceptRule:'EVERY_APPLIED_RESULT_MUST_MATCH_CURRENT_GAME_IDENTITY_STYLE_LOCK_WORLD_CONTEXT_REGION_ROLE_AND_GAMEPLAY_READABILITY.',
+    antiMashupRule:'RAW_UNPROCESSED_ASSET_PACK_MIXING_OR_STYLE_COLLISION_IS_FORBIDDEN; RECOMBINATION_MUST_BE_NORMALIZED_INTO_ONE_GAME_SPECIFIC_VISUAL_LANGUAGE.',
+    copyRule:'DO_NOT_COPY_FOREIGN_RAW_SOURCE_ASSET_BYTES_PROTECTED_IDENTIFIERS_OR_VERBATIM_IMPLEMENTATION; TRANSFORM_REFERENCES_INTO_NEW_PROJECT_SPECIFIC_EXPRESSION.',
+    implementation:Object.freeze({
+      actualSourceOrBindingDeltaRequired:true,
+      selectionOnlyDoesNotCount:true,
+      markerOnlyDoesNotCount:true,
+      actualReplacementCountMustBeRecorded:true,
+      changedSurfacesMustBeRecorded:true,
+      reuseModesUsedMustBeRecorded:true,
+      zeroActualReplacementCannotPass:true,
+      beforeAfterEvidenceRequired:true,
+      preserveGameplayBalanceSaveProgressionHitSemanticsAndNetworkAuthority:true
+    })
+  });
+}
+
+function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_ADAPTATION'){
+  if(!taskInput)return taskInput;
+  const contract=buildAdaptiveGraphicsReplacementContract(project,pass);
+  const guidance=[
+    '',
+    '[ADAPTIVE_GRAPHICS_REPLACEMENT_CONTRACT]',
+    'Vibe가 현재 실제 화면과 소스를 보고 필요한 교체 수를 스스로 정한다. 고정 30개를 채우지 않는다.',
+    '실제 교체 수는 최소 1개, 최대 60개다. 작은 결함은 1~10개, 일반 개선은 대체로 10~30개, 지역/표현 대형 리프레시는 필요할 때 30~60개를 사용할 수 있다.',
+    '대상에는 배경·지형·환경·건물·소품·랜드마크·캐릭터·몬스터·무기·아이템·장비·재질·텍스처·VFX·모션/애니메이션·메뉴·HUD·인벤토리·상점·제작·퀘스트 UI·아이콘·타이포·카메라·환경 연출이 포함된다. 오디오 표현도 관련 있을 때 함께 연결할 수 있다.',
+    '우선순위는 placeholder → 저품질 → 컨셉/Style Lock 불일치 → 중복/과다 재사용 → 가독성 저하 → 약한 VFX/모션 → 그 밖의 검증된 표현 gap 순이다.',
+    '이미 만들어진 것을 그대로 쓰는 것만 고집하지 않는다. 현재 컨셉에 이미 정확히 맞으면 직접 재사용하고, 더 맞게 만들 수 있으면 변형/재질·색·비율·타이밍·레이아웃을 재설계하며, 여러 호환 후보의 장점이 필요하면 모델/재질/모션/VFX/UI 아이디어를 응용·재조합해 현재 게임 전용 새 표현으로 만든다.',
+    '서로 다른 에셋팩을 무가공으로 짬뽕하지 않는다. 재조합 결과는 하나의 게임별 Style Lock과 세계/지역 맥락으로 정규화해야 한다.',
+    '완료 시 실제 교체 개수, 변경한 표현 계열, DIRECT_REUSE/ADAPT_RESTYLE/TRANSFORMATIVE_RECOMBINATION/NEW_EXPRESSION 중 사용 방식을 결과 근거에 기록한다.',
+    '선택만 하고 미적용, 마커/주석만 변경, 실제 교체 0개는 이 presentation/graphics 작업의 PASS가 아니다. 실제 source/binding과 플레이 화면이 바뀌어야 한다.'
+  ].join('\n');
+  return{
+    ...taskInput,
+    goal:clean(taskInput.goal)+guidance,
+    graphicsReplacementContract:contract,
+    completionCriteria:[...new Set([
+      ...(taskInput.completionCriteria||[]),
+      'GRAPHICS_REPLACEMENT_ACTUAL_COUNT_BETWEEN_1_AND_60',
+      'GRAPHICS_REPLACEMENT_REAL_SOURCE_OR_BINDING_DELTA',
+      'GRAPHICS_REPLACEMENT_COUNT_AND_SURFACES_RECORDED',
+      'GRAPHICS_REUSE_ADAPT_RECOMBINE_DECISION_RECORDED',
+      'GRAPHICS_CONCEPT_STYLE_LOCK_COHERENCE_PRESERVED',
+      'GRAPHICS_ZERO_REPLACEMENT_PASS_FORBIDDEN'
+    ])],
+    evidence:[...new Set([
+      ...(taskInput.evidence||[]),
+      'adaptive-graphics-replacement:v1',
+      'adaptive-graphics-replacement-range:1-60',
+      'adaptive-graphics-replacement-fixed-quota:FORBIDDEN',
+      'adaptive-graphics-replacement-zero-pass:FORBIDDEN',
+      'adaptive-graphics-replacement-real-source-binding:REQUIRED',
+      'adaptive-graphics-replacement-surfaces:'+ADAPTIVE_GRAPHICS_REPLACEMENT_SURFACES.join(','),
+      'adaptive-graphics-reuse-modes:'+ADAPTIVE_GRAPHICS_REUSE_MODES.join(',')
+    ])]
+  };
+}
+
 function presentationSourcesForProject(project,repoRoot){
   const root=posix(project.projectPath),engine=clean(project.engine).toLowerCase();
   let candidates=[];
@@ -1082,6 +1174,11 @@ function presentationSourcesForProject(project,repoRoot){
     candidates=[`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,`${root}/Assets/Scripts/RuntimeBootstrap.cs`,`${root}/Assets/Scripts/GameCore.cs`];
   }else if(engine==='roblox'){
     candidates=[`${root}/client/Game.client.luau`,`${root}/server/Game.server.luau`,`${root}/shared/GameConfig.luau`,`${root}/shared/VisualStyle.luau`,`${root}/client/BattleVisual.luau`];
+  }else if(engine==='unreal'){
+    candidates=[
+      `${root}/Game.verse`,`${root}/Island.verse`,`${root}/Main.verse`,`${root}/Presentation.verse`,`${root}/UI.verse`,
+      `${root}/Verse/Game.verse`,`${root}/Verse/Main.verse`,`${root}/Verse/Presentation.verse`,`${root}/Verse/UI.verse`
+    ];
   }
   return [...new Set(candidates)].filter(relative=>fs.existsSync(sourceFile(repoRoot,relative))).slice(0,6);
 }
@@ -1113,7 +1210,9 @@ function presentationStagesForProject(project={}){
     ?'gameplay root 또는 body에 data-presentation-quality-version="2"와 data-commercial-readiness-version="1"을 실제 품질 계약 선언으로 기록한다.'
     :engine==='unity'
       ?'표현 책임 C# 소스에 public const int PresentationQualityVersion = 2 형태의 실제 품질 계약 마커를 기록한다.'
-      :'표현 책임 Luau 소스에 local PRESENTATION_QUALITY_VERSION = 2 형태의 실제 품질 계약 마커를 기록한다.';
+      :engine==='unreal'
+        ?'표현 책임 Verse 소스에 PRESENTATION_QUALITY_VERSION := 2 또는 동등한 실제 품질 계약 상태를 기록한다.'
+        :'표현 책임 Luau 소스에 local PRESENTATION_QUALITY_VERSION = 2 형태의 실제 품질 계약 마커를 기록한다.';
   const stages=[
     {key:'asset-adaptation',pass:'ASSET_ADAPTATION',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 실제 플레이 화면의 그래픽을 게임 정체성에 맞게 개선한다. 컨셉에 맞는 배경·지형·환경 레이어를 실제 렌더에 연결하고, 검증된 기존 에셋을 재사용하거나 현재 엔진의 텍스트 소스에서 최종 품질의 저폴리 모델·재질·조명·UI 표현을 직접 제작한다. 단일 primitive/원/사각형/임시 placeholder만으로 된 몬스터·캐릭터는 완료로 인정하지 않고 Style Lock을 일관되게 적용한다. UI·아이콘·타이포·배경·캐릭터·몬스터·VFX가 같은 게임의 표현 언어를 사용해야 하며 서로 다른 에셋팩을 무가공으로 섞거나 색만 바꾼 동일 몬스터를 별도 타입으로 완료 처리하지 않는다. 그래픽 검토 문장만 남기지 말고 실제 렌더 소스를 변경한다.'},
     {key:'living-motion',pass:'LIVING_MOTION',goal:'[PRESENTATION_PASS:LIVING_MOTION] 캐릭터와 주요 엔티티가 정지 상태에서도 살아 움직이도록 미세 호흡/자세 변화를 넣고, Idle↔Walk↔Run 또는 현재 게임의 등가 이동 상태를 속도 기반으로 부드럽게 연결한다. 가속·감속·회전 후행·무기/장식 secondary motion을 적용하고 순간 스냅과 끊긴 상태 전환을 줄인다. 몬스터/유닛 종류별로 체형·생태·전투 역할에 맞는 이동/대기 차이를 만들고 발 미끄러짐·이동속도와 모션 불일치를 줄인다. 장식용 무한 애니메이션만 추가해서 PASS하지 말고 gameplay state가 바뀔 때 실제 모션 상태도 바뀌게 한다. 판정·이동속도·밸런스는 변경하지 않는다.'},
@@ -1126,7 +1225,9 @@ function presentationStagesForProject(project={}){
     ?'Web은 첫 사용자 제스처 이후 오디오를 시작하고 mute/volume을 유지하며 백그라운드 복귀 중복 재생을 막는다.'
     :engine==='unity'
       ?'Unity는 기존 AudioSource/AudioMixer 또는 책임 오디오 시스템을 사용해 BGM/SFX/UI/환경 버스를 분리하고, 씬/전투/보스/보상 상태 전환을 실제 게임 이벤트에 연결한다. 중복 AudioSource 생성과 씬 재진입 중복 재생을 막는다.'
-      :'Roblox는 기존 SoundService/Sound 또는 책임 오디오 시스템을 사용해 Music/SFX/UI/Ambient 역할을 분리하고, 전투/보스/보상 상태를 실제 서버·클라이언트 이벤트에 맞춰 전환한다. 중복 Sound 생성과 Respawn/재접속 중복 재생을 막는다.';
+      :engine==='unreal'
+        ?'Fortnite UEFN은 Verse/device/audio player 및 현재 섬의 네이티브 표현 책임을 사용해 상태 전환에 맞는 오디오를 연결하고 장치 중복 재생을 막는다.'
+        :'Roblox는 기존 SoundService/Sound 또는 책임 오디오 시스템을 사용해 Music/SFX/UI/Ambient 역할을 분리하고, 전투/보스/보상 상태를 실제 서버·클라이언트 이벤트에 맞춰 전환한다. 중복 Sound 생성과 Respawn/재접속 중복 재생을 막는다.';
   stages.splice(4,0,{key:'audio-feel',pass:'AUDIO_FEEL',goal:`[PRESENTATION_PASS:AUDIO_FEEL] 기존 오디오 구조를 먼저 재사용해서 탐험/긴장/전투/보스/보상 중 실제 필요한 상태의 음악 전환과 핵심 효과음을 자연스럽게 연결한다. ${audioEngineGuidance} BGM·전투음·UI음·환경음의 역할을 분리하고 타격음은 기존 authoritative impact event와 맞추며 반복음은 pitch/sample/volume 미세 변형 등으로 기계적인 반복감을 줄인다. 오디오는 표현 계층이며 데미지·쿨다운·드랍·저장·진행 의미를 바꾸면 안 된다.`});
   const genreGuide=genreCommercialGuidance(project),commercialGuide=commercialReadinessGuidance();
   return stages.map(stage=>({...stage,goal:`${stage.goal}\n[GENRE_PRESENTATION_GUIDANCE] ${genreGuide}\n[COMMERCIAL_READINESS_GUIDANCE] ${commercialGuide}`}));
@@ -1345,7 +1446,7 @@ function nextGraphicsEvolutionTask(project,repoRoot,queue,relatives,stages){
     out.graphicsEvolutionDecision={loop:['OBSERVE','SCORE','CHOOSE','IMPROVE','COMPARE','LEARN','REPLAN'],alternativesRequired,minimumAlternatives:alternativesRequired?2:1,history:{...signal.history},releaseAuthority:false};
     if(signal.source==='OWNER_CHANGE_REQUEST')out.ownerDirective=true;
     out.evidence=[...new Set([...(out.evidence||[]),'atomic-neuron-stream:presentation','atomic-neuron-micro-fanin:per-task','graphics-atomic-candidate-isolation-required'])];
-    return out;
+    return applyAdaptiveGraphicsReplacementContract(out,project,stage.pass);
   }
   return null;
 }
@@ -1405,12 +1506,12 @@ local STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION, STUDIO_ASSET_FAM
     'atomic-neuron-micro-fanin:per-task',
     'graphics-atomic-candidate-isolation-required'
   ])];
-  return out;
+  return applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION');
 }
 
 export function findPresentationQualityTask(project,repoRoot,queue){
   const engine=clean(project.engine).toLowerCase();
-  if(!['web','unity','roblox'].includes(engine))return null;
+  if(!['web','unity','roblox','unreal'].includes(engine))return null;
   if(!['development-confirmed','release-confirmed'].includes(clean(project.releaseState).toLowerCase()))return null;
   if(engine!=='web'&&!assetProductionEnabled(repoRoot))return null;
   const relatives=presentationSourcesForProject(project,repoRoot);
@@ -1456,7 +1557,7 @@ export function findPresentationQualityTask(project,repoRoot,queue){
       'atomic-neuron-micro-fanin:per-task',
       'graphics-atomic-candidate-isolation-required'
     ])];
-    return out;
+    return applyAdaptiveGraphicsReplacementContract(out,project,stage.pass);
   }
   return nextGraphicsEvolutionTask(project,repoRoot,queue,relatives,stages);
 }
