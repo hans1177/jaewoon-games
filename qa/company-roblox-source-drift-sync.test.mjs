@@ -144,7 +144,7 @@ test('single changed Roblox game redispatches exact runtime game id',()=>{
 
 test('source drift sync has a dedicated non-starving concurrency lane',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
-  assert.match(workflow,/concurrency:\s*\n\s*group: roblox-source-drift-runtime-writer\s*\n\s*cancel-in-progress: false/);
+  assert.match(workflow,/concurrency:\s*\n\s*group: roblox-source-drift-runtime-writer-v2\s*\n\s*cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/group: company-runtime-writer/);
   assert.match(workflow,/for i in 1 2 3 4 5; do[\s\S]*git push origin HEAD:"\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(workflow,/regenerate_runtime_state/);
@@ -258,4 +258,14 @@ test('unknown Roblox build-source diff is non-mutating',()=>{
   assert.equal(out.results[0].pass,false);
   assert.equal(out.results[0].nonMutating,true);
   assert.deepEqual(q.items[0],before);
+});
+
+
+test('source drift writer generation invalidates stale queued writers before runtime mutation',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  const source=fs.readFileSync('tools/company-roblox-source-drift-sync.mjs','utf8');
+  assert.match(workflow,/group: roblox-source-drift-runtime-writer-v2/);
+  assert.match(workflow,/ROBLOX_SOURCE_DRIFT_SYNC_GENERATION: v2/);
+  assert.match(source,/ROBLOX_SOURCE_DRIFT_SYNC_GENERATION_STALE/);
+  assert.match(source,/generation!==['"]v2['"]/);
 });

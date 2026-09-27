@@ -23,11 +23,12 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: roblox-source-drift-runtime-writer
+  group: roblox-source-drift-runtime-writer-v2
   cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
+  ROBLOX_SOURCE_DRIFT_SYNC_GENERATION: v2
 
 jobs:
   sync:

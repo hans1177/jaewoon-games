@@ -218,6 +218,8 @@ function runCli(){
     process.stdout.write(changedRobloxBuildGameIds(files).join(','));
     return;
   }
+  const generation=clean(process.env.ROBLOX_SOURCE_DRIFT_SYNC_GENERATION);
+  if(generation!=='v2')throw new Error('ROBLOX_SOURCE_DRIFT_SYNC_GENERATION_STALE:'+(generation||'MISSING'));
   const queueFile=arg('queue');
   const repoRoot=arg('repo-root','.');
   const runtimeRef=arg('runtime-ref');
