@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-p2oer9",
-      "worker": "vibe2",
-      "taskId": "cozy-island-unity-web-base-implementation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "unity-games/cozy-island/Assets/Scripts/GameCore.cs",
-        "unity-games/cozy-island/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-      "acquiredAt": "2026-09-27T00:53:12.999Z",
-      "expiresAt": "2026-09-27T01:38:12.999Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-16plr8d",
       "worker": "vibe2",
       "taskId": "cozy-island-roblox-second-gate-rebuild-v1",
@@ -712,6 +694,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-casual-realm-weaver-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-vj5n5r",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-roblox-presentation-asset-adaptation-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "roblox-games/amusement-tycoon/client/Game.client.luau",
+        "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "roblox-games/amusement-tycoon/shared/GameConfig.luau"
+      ],
+      "baseSha": "50673ac9ac61015195ee2db525dc6e371c67d252",
+      "acquiredAt": "2026-09-27T01:39:25.716Z",
+      "expiresAt": "2026-09-27T02:24:25.716Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
