@@ -13,6 +13,7 @@ const directive=readJson('company-directive.json');
 const roadmap=readJson('company-learning/platform-release-roadmap.json');
 const architecture=readJson('company-learning/company-architecture-map.json');
 const logMap=readJson('company-learning/company-log-map.json');
+const autonomousExpansionPolicy=readJson('company-learning/vibe-autonomous-content-expansion-policy.json');
 const multimodelWorkflow=readText('.github/workflows/artbook-free-department-bots.yml');
 const designCycle=readText('tools/company-design-cycle.mjs');
 const pipeline=readText('tools/artbook-production-pipeline.mjs');
@@ -56,6 +57,40 @@ test('platform-release-roadmap is the single machine execution policy source',()
     'tools/apply-common-development-quality-policy.mjs'
   ]) assert.equal(fs.existsSync(path.join(repoRoot,removed)),false,removed);
 });
+test('autonomous build-up menu diversity stays inside the existing Vibe pipeline',()=>{
+  const record=roadmap.changeRecord?.vibeMenuUiExperienceBreadth20260927||{};
+  const projection=architecture.autonomousContentExpansionBuildUpProjection||{};
+  const menu=autonomousExpansionPolicy.menuExperienceDiversity||{};
+  const themes=autonomousExpansionPolicy.breadthCycle?.requiredThemes||[];
+
+  assert.equal(record.status,'ACTIVE');
+  assert.equal(record.executionBoundary,'EXISTING_BUILD_UP_ONLY');
+  assert.equal(record.breadthTheme,'MENU_UI_EXPERIENCE_SYSTEM');
+  assert.equal(record.newWorkflowCreated,false);
+  assert.equal(record.newQueueCreated,false);
+  assert.equal(record.newStageCreated,false);
+  assert.equal(record.existingRulesBalanceProgressionAndSavePreserved,true);
+
+  assert.equal(menu.enabled,true);
+  assert.equal(menu.autonomousSelection,true);
+  assert.equal(menu.fixedOneLayoutForAllGamesForbidden,true);
+  assert.equal(menu.titleSwapOnlyScreenClonesForbidden,true);
+  assert.equal(menu.chooseOnlyApplicableMenus,true);
+  assert.equal(menu.connectedStateRequired,true);
+  assert.equal(menu.mobileTouchFirst,true);
+  assert.ok(menu.candidateMenuRoles.includes('SHOP'));
+  assert.ok(menu.candidateMenuRoles.includes('CRAFTING'));
+  assert.ok(menu.candidateMenuRoles.includes('QUEST_JOURNAL'));
+  assert.ok(menu.candidateMenuRoles.includes('RESULT_REWARD_SUMMARY'));
+  assert.ok(themes.includes('MENU_UI_EXPERIENCE_SYSTEM'));
+
+  assert.equal(projection.menuExperienceDiversity?.newPipeline,false);
+  assert.equal(projection.menuExperienceDiversity?.fixedUniversalMenuCloneForbidden,true);
+  assert.equal(projection.menuExperienceDiversity?.authoritativeGameStateBindingRequired,true);
+  assert.equal(projection.menuExperienceDiversity?.mobileTouchFirst,true);
+  assert.ok(projection.breadthCycleRule?.themes?.includes('MENU_UI_EXPERIENCE_SYSTEM'));
+});
+
 test('director fallback wake only re-dispatches existing queued GAME_PRIMARY work',()=>{
   const fallback=roadmap.changeRecord?.directorGamePrimaryFallbackWake20260927||{};
   assert.equal(fallback.existingQueuedTaskDispatchOnly,true);
