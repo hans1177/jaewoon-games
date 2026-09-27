@@ -871,7 +871,9 @@ test('worker model cache keeps the existing key while runtime preparation reuses
   const workerPart=workflow.slice(workerStart,fanInStart);
   assert.equal(workerPart.includes('ollama.com/install.sh'),false);
   assert(prepareOllamaAction.includes("default: '0.33.3'"));
-  assert(prepareOllamaAction.includes('https://ollama.com/download/ollama-linux-amd64.tar.zst?version='));
+  assert(prepareOllamaAction.includes('X64) ollama_arch=amd64'));
+  assert(prepareOllamaAction.includes('ARM64) ollama_arch=arm64'));
+  assert(prepareOllamaAction.includes('https://ollama.com/download/ollama-linux-${ollama_arch}.tar.zst?version='));
   assert(prepareOllamaAction.includes("grep -qx 'lib/ollama/llama-server'"));
   assert(prepareOllamaAction.includes('sudo tar --zstd -xf "$slim" -C /usr'));
   assert(!workflow.includes('key: vibe2-ollama-v2-Linux-qwen3-1.7b'));
@@ -1303,7 +1305,7 @@ test('Vibe2 control-plane jobs use slim runners while heavy workers retain full 
   const runnerWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
   assert.match(coreWorkflow,/\n  reserve:\n(?:\s+#.*\n)*\s+runs-on: \$\{\{ github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-slim' \}\}/);
   assert.match(coreWorkflow,/\n  fan_in:[\s\S]*?runs-on: ubuntu-24\.04-arm/);
-  assert.match(coreWorkflow,/\n  worker:[\s\S]*?runs-on: ubuntu-latest/);
+  assert.match(coreWorkflow,/\n  worker:[\s\S]*?runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest' \}\}/);
   assert.match(runnerWorkflow,/\n  plan:[\s\S]{0,180}?runs-on: ubuntu-slim/);
   assert.match(runnerWorkflow,/\n  refill:[\s\S]{0,220}?runs-on: ubuntu-slim/);
 });
