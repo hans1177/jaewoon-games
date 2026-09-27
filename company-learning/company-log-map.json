@@ -460,7 +460,7 @@
     "continuousEvolutionEvidenceAllowedAfterInternalAndPublicRelease": true,
     "standaloneReleaseAuthority": false
   },
-  "updatedAt": "2026-09-27",
+  "updatedAt": "2026-09-28",
   "graphicsProductionEvidenceContract": {
     "version": 5,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -2420,7 +2420,7 @@
     "officialStudioMcpStillRequired": true
   },
   "robloxOpenCloudThrottleRecoveryEvidence": {
-    "version": 2,
+    "version": 3,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxOpenCloudThrottleRecovery20260927",
     "observedRunId": 36294623143,
@@ -2428,9 +2428,12 @@
     "observedOpenCloudCreateStatus": 429,
     "observedCandidateVersion": 24,
     "causalRepair": [
-      "RETRY_TRANSIENT_HTTP_429_AND_SERVER_ERRORS",
+      "RETRY_TRANSIENT_HTTP_429_AND_SERVER_ERRORS_WITH_EXPONENTIAL_RETRY_AFTER_AWARE_BACKOFF",
       "BOUND_SCAN_PROBE_CONCURRENCY_TO_TWO",
-      "KEEP_EXACT_GAME_PROBE_CONCURRENCY_AT_ONE"
+      "DOWNSHIFT_SCAN_PROBE_CONCURRENCY_TO_ONE_AFTER_VERIFIED_HTTP_429",
+      "KEEP_EXACT_GAME_PROBE_CONCURRENCY_AT_ONE",
+      "KEEP_TRANSIENT_RETRIES_INSIDE_CURRENT_BOUNDED_SCAN",
+      "CANCEL_ONLY_DUPLICATE_AUTOMATIC_SCAN_RUNS_BEFORE_HEAVY_WORK"
     ],
     "falsePassAllowed": false,
     "persistentApiFailureStillFails": true,
@@ -2487,6 +2490,25 @@
       "candidateVersionNumber": 24,
       "persistedRuntimeSummaryPrimaryActionFeedbackChangedBeforeRepair": false,
       "reportingGap": "PRIMARY_ACTION_FEEDBACK_METRIC_NOT_SERIALIZED_FROM_SCENARIO_METRICS"
+    },
+    "requiredMarkers": [
+      "ROBLOX_OPEN_CLOUD_THROTTLE_PRESSURE=",
+      "ROBLOX_OPEN_CLOUD_TRANSIENT_RETRY_MODE=IN_SCAN_BOUNDED",
+      "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_RETRY_IN_CURRENT_SCAN=",
+      "ROBLOX_OPEN_CLOUD_RUNTIME_STATE_RETRY_IN_CURRENT_SCAN=",
+      "ROBLOX_OPEN_CLOUD_TRANSIENT_PROBE_RETRY=IN_SCAN_BOUNDED"
+    ],
+    "transientRetryWorkflowFanoutForbidden": true,
+    "externalRunnerBacklogIsQualityFailure": false,
+    "latestContractVerification": {
+      "centralPolicyContractQaRunId": 36354073637,
+      "vibeCoreQaRunId": 36354076161,
+      "vibeParallelismQaRunId": 36354120374,
+      "conclusions": [
+        "SUCCESS",
+        "SUCCESS",
+        "SUCCESS"
+      ]
     }
   },
   "robloxF9FaninRuntimePathRepairEvidence": {
