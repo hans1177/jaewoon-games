@@ -8744,7 +8744,19 @@
         "independentGameCancellationForbidden": true,
         "inProgressGameCancellationForbidden": true
       },
-      "noArtificialGlobalGameCountCap": true
+      "noArtificialGlobalGameCountCap": true,
+      "safetyNetPushTriggerNoiseReduction": {
+        "workflow": ".github/workflows/vibe2-24h-runner.yml",
+        "qaOnlyWakeRemoved": true,
+        "descriptiveArchitectureMapWakeRemoved": true,
+        "descriptiveLogMapWakeRemoved": true,
+        "humanVibeDocumentWakeRemoved": true,
+        "runtimeAuthorityAndExecutableContractWakesPreserved": true,
+        "fiveMinuteSafetyNetPreserved": true,
+        "gameSourceWakePreserved": true,
+        "independentGameParallelismPreserved": true,
+        "qualitySecurityReleaseGatesUnchanged": true
+      }
     },
     "homepageRunnerIsolation20260926": {
       "id": "HOMEPAGE_RUNNER_ISOLATION_2026-09-26",
