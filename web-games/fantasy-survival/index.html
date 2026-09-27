@@ -3089,7 +3089,7 @@ function updateSnowSpecial(e,targetP,now,playerD){
   if(!e.nextYetiSlamAt)e.nextYetiSlamAt=now+4000;
   if(now>=e.nextYetiSlamAt){e.nextYetiSlamAt=now+4000;if(Math.random()<.30){applyEnemyEffectTarget(e,targetP,'coldburst',5000);showNotice('예티 지면강타 · 5초간 추위 3배');return true}}
  }
- if(e.type.polarWolfSpecial&&e.hostile&&!e.howlSummoned&&(e.howlCount||0)<3&&playerD<(e.type.detect||560)){
+ if(e.type.polarWolfSpecial&&!e.raidId&&e.hostile&&!e.howlSummoned&&(e.howlCount||0)<3&&playerD<(e.type.detect||560)){
   if(!e.nextHowlAt)e.nextHowlAt=now+8000;
   if(now>=e.nextHowlAt){
    e.nextHowlAt=now+8000;
