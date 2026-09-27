@@ -916,12 +916,28 @@
     "sourceCandidateGenerationBottleneckMitigation": {
       "version": 8,
       "priority": "SOURCE_CANDIDATE_GENERATION_FIRST",
-      "status": "FOCUSED_TIMEOUT_CHAIN_POLICY_SYNC_CODE_PENDING",
+      "status": "FOCUSED_REPLACE_STRUCTURED_OUTPUT_CODE_APPLIED_CI_PENDING",
       "focusedWebRepairFirstAttemptMode": "RESPONSIBILITY_SELECTED_JSON_EDIT",
       "modelGeneratedPathOrFindOnFocusedFirstAttempt": true,
       "focusedReplaceTimeoutMs": 90000,
       "focusedReplaceMaxPredict": 384,
       "focusedReplaceContextWindow": 8192,
+      "focusedReplaceStructuredOutput": {
+        "mode": "OLLAMA_JSON_SCHEMA_ONE_KEY_REPLACE",
+        "temperature": 0.08,
+        "requiredKeys": [
+          "replace"
+        ],
+        "additionalProperties": false,
+        "sourceCommit": "e03ab086a3dde493252bc45753c224b5e6cff01c",
+        "testCommit": "4fc4a4f18f9e1c135ddd62af1f97bb294ede400d",
+        "state": "CODE_APPLIED_CI_PENDING",
+        "retryBudgetIncrease": false,
+        "timeoutIncrease": false,
+        "contextWindowIncrease": false,
+        "qaBypassAllowed": false,
+        "authorityChange": "NONE"
+      },
       "minifiedLongLineAnchorFallback": true,
       "focusedAnchorContextRadiusChars": 1400,
       "baselineSuccessRatePercent": 25,
