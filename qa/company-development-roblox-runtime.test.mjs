@@ -584,7 +584,7 @@ test('exact Roblox dispatch stays per-game while batch runs and runtime writers 
   const sourcePlanStart=workflow.indexOf('  source-plan:\n');
   const sourceWorkerStart=workflow.indexOf('\n  source-worker:',sourcePlanStart);
   assert.ok(sourcePlanStart>=0&&sourceWorkerStart>sourcePlanStart);
-  assert.match(workflow.slice(sourcePlanStart,sourceWorkerStart),/runs-on: ubuntu-slim/);
+  assert.match(workflow.slice(sourcePlanStart,sourceWorkerStart),/runs-on: ubuntu-24\.04/);
   const technicalWorkerStart=workflow.indexOf('  technical-worker:\n');
   const technicalWorkerEnd=workflow.indexOf('\n  technical-persist:',technicalWorkerStart);
   assert.match(workflow.slice(technicalWorkerStart,technicalWorkerEnd),/runs-on: ubuntu-latest/);
@@ -890,18 +890,18 @@ test('Roblox runtime collapses duplicate exact-game and batch planners with same
   assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n\s+cancel-in-progress: false/);
 });
 
-test('source-plan dedupe job itself has no job lock and stays on slim ingress capacity',()=>{
+test('source-plan dedupe job itself has no job lock and uses fixed critical ingress capacity',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const start=workflow.indexOf('\n  source-plan:\n');
   const end=workflow.indexOf('\n  source-worker:\n',start);
   const block=workflow.slice(start,end);
   assert.ok(start>=0&&end>start);
-  assert.match(block,/runs-on:\s*ubuntu-slim/);
+  assert.match(block,/runs-on:\s*ubuntu-24\.04/);
   assert.doesNotMatch(block,/\n    concurrency:/);
   assert.match(block,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
 });
 
-test('Roblox ingress uses slim while later game-control jobs stay on ARM and heavy workers stay full',()=>{
+test('Roblox source-plan uses fixed 24.04 while later game-control jobs stay on ARM and heavy workers stay full',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const section=(job,next)=>{
     const start=workflow.indexOf('\n  '+job+':\n');
@@ -909,7 +909,7 @@ test('Roblox ingress uses slim while later game-control jobs stay on ARM and hea
     const end=next?workflow.indexOf('\n  '+next+':\n',start):workflow.length;
     return workflow.slice(start,end);
   };
-  assert.match(section('source-plan','source-worker'),/runs-on:\s*ubuntu-slim/);
+  assert.match(section('source-plan','source-worker'),/runs-on:\s*ubuntu-24\.04/);
   for(const [job,next] of [['source-bootstrap','technical-plan'],['technical-plan','technical-worker'],['technical-persist',null]]){
     assert.match(section(job,next),/runs-on:\s*ubuntu-24\.04-arm/,job);
   }
