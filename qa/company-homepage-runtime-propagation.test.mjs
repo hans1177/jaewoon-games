@@ -140,6 +140,33 @@ test('homepage exposes Unity Web as the required pre-native development test sur
   assert.doesNotMatch(renderer,/unityWebValidationVerified===true/);
 });
 
+test('homepage keeps Roblox runtime truth separate from independent QA',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const snap=buildHomepagePlatformExposure({
+    policy,
+    catalog:{games:[{id:'runtime-truth',name:'Runtime Truth'}]},
+    queue:{items:[{
+      gameId:'runtime-truth',
+      gameName:'Runtime Truth',
+      robloxProjectPath:'roblox-games/runtime-truth',
+      robloxPublicationTarget:{placeId:'1234567890',verified:true,dedicated:true},
+      robloxInternalReleaseReady:true,
+      robloxIndependentQaPassed:true,
+      robloxRegressionPassed:true,
+      robloxRuntimePassed:false,
+      robloxRuntimeEvidence:null
+    }]}
+  });
+  const row=snap.games[0];
+  const roblox=row.platforms.find(platform=>platform.platform==='ROBLOX');
+  assert.equal(roblox.runtimePassed,false);
+  assert.equal(roblox.independentQaPassed,true);
+  assert.equal(roblox.regressionPassed,true);
+  assert.equal(roblox.internalReleaseReady,true);
+  assert.equal(roblox.publicReleaseReady,false);
+  assert.equal(row.externalPublicReleaseState,'INTERNAL_ONLY');
+});
+
 test('homepage platform exposure fails closed when central policy adds a platform without an implementation adapter',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const changed=structuredClone(policy);
