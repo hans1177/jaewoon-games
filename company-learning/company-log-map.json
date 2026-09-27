@@ -1,5 +1,5 @@
 {
-  "version": 142,
+  "version": 143,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2482,6 +2482,19 @@
       "candidateVersionNumber": 24,
       "persistedRuntimeSummaryPrimaryActionFeedbackChangedBeforeRepair": false,
       "reportingGap": "PRIMARY_ACTION_FEEDBACK_METRIC_NOT_SERIALIZED_FROM_SCENARIO_METRICS"
+    },
+    "primaryActionEvidenceReplayObservation": {
+      "workflowRunId": 36299267618,
+      "mergeSha": "94644be0f519836b6ea7f763416444be3662bc2c",
+      "gameId": "horror-escape-room",
+      "studioPlannerSkipped": true,
+      "priorScenarioPrimaryActionEffect": "PASS",
+      "priorRuntimeSummaryPrimaryActionFeedbackChanged": false,
+      "priorPrimaryActionDisplacement": 0.0010461807250976562,
+      "priorPrimaryActionVelocity": 0.000051992157378780275,
+      "minimumPrimaryActionDisplacement": 0.25,
+      "replayRequired": true,
+      "reason": "PRIMARY_ACTION_PASS_NOT_EXPLAINED_BY_PERSISTED_FEEDBACK_OR_MOTION_PROOF"
     }
   }
 }
