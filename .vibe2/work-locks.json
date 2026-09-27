@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-e921nv",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/shared/QACamera.luau",
-        "roblox-games/horror-escape-room/shared/VisualStyle.luau"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T13:29:37.520Z",
-      "expiresAt": "2026-09-27T14:14:37.520Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-f7061u",
       "worker": "vibe2",
       "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1",
@@ -166,6 +148,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:bug-defense-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-sq9626",
+      "worker": "vibe2",
+      "taskId": "seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-casual-realm-weaver",
+      "files": [
+        "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+        "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
+        "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau"
+      ],
+      "baseSha": "6bec89582afa4db20dec68b3a52bbd0c63cfbd9b",
+      "acquiredAt": "2026-09-27T14:14:39.882Z",
+      "expiresAt": "2026-09-27T14:59:39.882Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
