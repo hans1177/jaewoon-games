@@ -282,6 +282,7 @@ test('post-runtime QA requires target-engine Studio material selection match bef
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/expectedStudioAssetBinding:item\.robloxStudioAssetBindingApplied===true\?item\.robloxStudioAssetBinding:null/);
  assert.match(workflow,/engineProbe\?\.studioAssetSelectionMatched===true/);
+ assert.match(workflow,/if\(exactStudioPlay\)item\.robloxNativeFailureClass=null/);
  assert.match(workflow,/targetEngineSelectionMatched:engineProbe\?\.studioAssetSelectionMatched===true/);
  assert.match(workflow,/expectedStudioAssetAtoms:engineProbe\?\.expectedStudioAssetAtoms\|\|\[\]/);
  assert.match(workflow,/observedStudioAssetAtoms:engineProbe\?\.observedStudioAssetAtoms\|\|\[\]/);
