@@ -3,42 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-bnfbhu",
-      "worker": "vibe2",
-      "taskId": "bug-defense-unity-web-base-implementation-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "unity-games/bug-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/bug-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T02:24:47.149Z",
-      "expiresAt": "2026-09-27T03:09:47.149Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-y6ex3q",
-      "worker": "vibe2",
-      "taskId": "seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "files": [
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T02:25:25.408Z",
-      "expiresAt": "2026-09-27T03:10:25.408Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-12yigzg",
       "worker": "vibe2",
       "taskId": "village-dungeons-unity-web-base-implementation-v1",
@@ -801,6 +765,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:cozy-island-existing-web-assessment-v1"
+      ]
+    },
+    {
+      "id": "wl-1hcmzpy",
+      "worker": "vibe2",
+      "taskId": "bug-defense-roblox-presentation-asset-adaptation-v1",
+      "gameId": "bug-defense",
+      "files": [
+        "roblox-games/bug-defense/client/Game.client.luau",
+        "roblox-games/bug-defense/server/Game.server.luau",
+        "roblox-games/bug-defense/shared/GameConfig.luau"
+      ],
+      "baseSha": "af46e74c9ade8f4af412a18f175596ab9d3ba7b8",
+      "acquiredAt": "2026-09-27T03:11:37.702Z",
+      "expiresAt": "2026-09-27T03:56:37.702Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:bug-defense-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
