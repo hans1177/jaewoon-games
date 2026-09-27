@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1u9teps",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/shared/QACamera.luau",
-        "roblox-games/horror-escape-room/shared/VisualStyle.luau"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T07:05:16.261Z",
-      "expiresAt": "2026-09-27T07:50:16.261Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-ga6mh8",
       "worker": "vibe2",
       "taskId": "fantasy-survival-studio-evolution-unity-web-usability-v1",
@@ -600,6 +582,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-28a2f2747401-v1"
+      ]
+    },
+    {
+      "id": "wl-4ltr8w",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-425305e25df9-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-system-steward.mjs",
+        "qa/vibe2-system-steward.test.mjs"
+      ],
+      "baseSha": "a04680f4a6e5ead3869094a55f6bec4284dca9d9",
+      "acquiredAt": "2026-09-27T07:50:28.566Z",
+      "expiresAt": "2026-09-27T08:35:28.566Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-425305e25df9-v1"
       ]
     }
   ]
