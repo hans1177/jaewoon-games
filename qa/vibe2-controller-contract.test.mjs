@@ -500,6 +500,19 @@ test('core QA preserves the active same-ref regression and coalesces only pendin
   assert.equal(regression.coreQaActiveCompletion.runner,'ubuntu-slim');
 });
 
+test('core QA isolates Chrome browser smoke from the slim regression runner',()=>{
+  const testAt=coreQaWorkflow.indexOf('\n  test:\n');
+  const browserAt=coreQaWorkflow.indexOf('\n  browser-smoke:\n');
+  assert.ok(testAt>=0&&browserAt>testAt);
+  const testJob=coreQaWorkflow.slice(testAt,browserAt);
+  const browserJob=coreQaWorkflow.slice(browserAt);
+  assert.match(testJob,/runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(testJob,/node qa\/vibe2-development-web-browser-smoke\.mjs/);
+  assert.match(browserJob,/needs:\s*test/);
+  assert.match(browserJob,/runs-on:\s*ubuntu-latest/);
+  assert.match(browserJob,/node qa\/vibe2-development-web-browser-smoke\.mjs/);
+});
+
 test('main push wake ignores QA-only and descriptive document churn while preserving executable game changes',()=>{
   const pushStart=workflow.indexOf('  push:');
   const permissionsAt=workflow.indexOf('\npermissions:',pushStart);
