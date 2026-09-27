@@ -74,8 +74,11 @@ jobs:
             if(requested&&item.gameId!==requested)continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const platform=String(item.selectedPlatform||item.targetPlatform||'').toUpperCase();
-            const secondaryOwnerFocus=platform!=='ROBLOX'&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
-            if(platform!=='ROBLOX'&&!secondaryOwnerFocus)continue;
+            const concurrentRoblox=String(item.platformExecutionMode||'').toUpperCase()==='ROBLOX_UNITY_CONCURRENT_SAME_GAME'
+              &&Array.isArray(item.concurrentTargetPlatforms)
+              &&item.concurrentTargetPlatforms.some(value=>String(value||'').toUpperCase()==='ROBLOX');
+            const secondaryOwnerFocus=platform!=='ROBLOX'&&!concurrentRoblox&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(platform!=='ROBLOX'&&!concurrentRoblox&&!secondaryOwnerFocus)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             const revision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
