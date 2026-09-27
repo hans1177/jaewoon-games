@@ -1748,3 +1748,49 @@ test('menu experience diversity stays inside existing Vibe presentation buildup'
   assert.match(vibeAutoPlanner,/UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE/);
   assert.match(vibeAutoPlanner,/Unity Web 전용 HTML\/CSS\/JS gameplay UI를 따로 만들어 대체하지 않는다/);
 });
+
+
+test('BUILD_UP grounding stays connected from source proof through exact target runtime identity',()=>{
+  const graphics=roadmap.assetProductionParallelContract.graphicsPassContract;
+  assert.equal(graphics.groundedEvidenceMustPersistThroughCandidateManifest,true);
+  assert.equal(graphics.incrementalQaMustRevalidateGroundedEvidenceAgainstCandidateSource,true);
+  assert.equal(graphics.fanInMustRequireGroundedGraphicsEvidence,true);
+  assert.equal(graphics.targetRuntimeEvidenceMustBindExactBuildUpSourceIdentity,true);
+
+  const closure=roadmap.assetProductionParallelContract.buildUpRuntimeClosure;
+  assert.equal(closure.status,'ACTIVE');
+  assert.deepEqual(closure.activePlatforms,['WEB','ROBLOX','UNITY']);
+  assert.deepEqual(closure.pausedPlatforms,['FORTNITE_UEFN']);
+  assert.equal(closure.sourceIdentity,'SOURCE_ROOT_TREE_SHA');
+  assert.deepEqual(closure.graphicsGroundingChain,[
+    'SOURCE_WORKER_GROUNDED_REPLACEMENT_VALIDATION',
+    'CANDIDATE_MANIFEST_PERSISTENCE',
+    'INCREMENTAL_QA_REVALIDATION',
+    'FAN_IN_GROUNDED_EVIDENCE_GATE',
+    'TARGET_RUNTIME_EXACT_SOURCE_BINDING'
+  ]);
+  assert.equal(closure.roblox.waitingTaskMustRecordPromotedSourceTreeSha,true);
+  assert.equal(closure.roblox.f9SettlementMustMatchWaitingSourceTreeSha,true);
+  assert.equal(closure.roblox.sameGameDifferentSourceMayNotSettle,true);
+  assert.equal(closure.roblox.runtimePassWithoutExactBuildUpSourceIdentityCannotSettleTask,true);
+  assert.equal(closure.newWorkflowOrShadowPipelineForbidden,true);
+
+  const completion=autonomousExpansionPolicy.presentationEvolution.completion;
+  assert.equal(completion.groundedEvidenceMustPersistThroughCandidateManifest,true);
+  assert.equal(completion.incrementalQaMustRevalidateGroundedEvidenceAgainstCandidateSource,true);
+  assert.equal(completion.fanInMustRequireGroundedGraphicsEvidence,true);
+  assert.equal(completion.targetRuntimeEvidenceMustBindExactBuildUpSourceIdentity,true);
+  assert.equal(completion.robloxF9SettlementRequiresExactPromotedSourceTree,true);
+
+  const projected=autonomousExpansionPolicy.buildUpRuntimeClosure;
+  assert.deepEqual(projected.activePlatforms,['WEB','ROBLOX','UNITY']);
+  assert.deepEqual(projected.pausedPlatforms,['FORTNITE_UEFN']);
+  assert.equal(projected.sourceIdentity,'SOURCE_ROOT_TREE_SHA');
+  assert.equal(projected.robloxSameGameDifferentSourceMayNotSettle,true);
+  assert.equal(projected.noNewWorkflowOrShadowPipeline,true);
+
+  const change=roadmap.changeRecord.buildUpEndToEndGrounding20260928;
+  assert.equal(change.sameGameStaleRuntimeProofMayNotPassNewerBuildUp,true);
+  assert.equal(change.noNewWorkflowOrStage,true);
+  assert.equal(change.gameplaySemanticsUnchanged,true);
+});
