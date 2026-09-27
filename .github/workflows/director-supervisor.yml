@@ -169,9 +169,40 @@ jobs:
           dedupeByTitle('.github/workflows/company-development-roblox-release-promotion.yml',false);
           dedupeByTitle('.github/workflows/unity-android-independent-qa.yml',false);
           dedupeByTitle('.github/workflows/unity-android-regression.yml',false);
+          // Scheduler runs carry no game-specific evidence. Preserve an active scheduler;
+          // otherwise keep only the newest queued duplicate for the same title.
+          dedupeByTitle('.github/workflows/vibe2-24h-runner.yml',true);
 
           const currentMain=String(process.env.CURRENT_MAIN_SHA||'').trim();
           if(currentMain){
+            const currentCentralReplacementActive=runs.some(r=>
+              r.path==='.github/workflows/company-development-confirmed-runtime.yml'
+              &&active.has(String(r.status||'').toLowerCase())
+              &&String(r.head_branch||'')==='main'
+              &&String(r.head_sha||'')===currentMain
+            );
+            if(currentCentralReplacementActive){
+              for(const stale of runs.filter(r=>
+                r.path==='.github/workflows/company-development-confirmed-runtime.yml'
+                &&String(r.event||'')==='push'
+                &&queued.has(String(r.status||'').toLowerCase())
+                &&String(r.head_branch||'')==='main'
+                &&String(r.head_sha||'')!==currentMain
+              ))add(stale,'CENTRAL_DEVELOPMENT_STALE_HEAD_REPLACED_BY_CURRENT_RUN');
+
+              for(const stale of runs.filter(r=>
+                [
+                  '.github/workflows/company-development-roblox-runtime.yml',
+                  '.github/workflows/company-development-unity-runtime.yml',
+                ].includes(String(r.path||''))
+                &&String(r.event||'')==='push'
+                &&queued.has(String(r.status||'').toLowerCase())
+                &&String(r.head_branch||'')==='main'
+                &&String(r.head_sha||'')!==currentMain
+                &&/ runtime · batch$/.test(String(r.display_title||''))
+              ))add(stale,'NATIVE_STALE_BATCH_PUSH_REPLACED_BY_CURRENT_CENTRAL');
+            }
+
             for(const stale of runs.filter(r=>
               r.path==='.github/workflows/vibe2-24h-runner.yml'
               &&queued.has(String(r.status||'').toLowerCase())
