@@ -23,7 +23,7 @@
   "hypothesisGenerationLimit": null,
   "falsificationGenerationLimit": null,
   "previousResultComparisonRequired": true,
-  "phase4GeneralizationDrills": 12,
+  "phase4GeneralizationDrills": 8,
   "drills": [
     {
       "id": "review-fail_wu3qnk",
@@ -171,7 +171,8 @@
         "ASSET_ADAPTATION",
         "VFX",
         "VISUAL_IDENTITY",
-        "CONCEPT_DIRECTION"
+        "CONCEPT_DIRECTION",
+        "UNITY_RUNTIME"
       ],
       "sourceFailure": "fail_c9xvk3"
     },
@@ -383,44 +384,6 @@
       "mayPromoteGeneralization": false
     },
     {
-      "id": "phase4-generalization-capability_ctrace_dd1edc1a11a1e7a360dfda28-control",
-      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAPABILITY_GENERALIZATION"
-      ],
-      "phase4Benchmark": true,
-      "phase4CapabilityId": "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_dd1edc1a11a1e7a360dfda28",
-      "phase4PairId": "phase4-pair-abfg1o",
-      "phase4Role": "CONTROL",
-      "holdoutGameId": "cozy-island",
-      "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-1manvmq",
-      "mayPromoteGeneralization": false
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_dd1edc1a11a1e7a360dfda28-challenger",
-      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAPABILITY_GENERALIZATION"
-      ],
-      "phase4Benchmark": true,
-      "phase4CapabilityId": "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_dd1edc1a11a1e7a360dfda28",
-      "phase4PairId": "phase4-pair-abfg1o",
-      "phase4Role": "CHALLENGER",
-      "holdoutGameId": "cozy-island",
-      "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-1manvmq",
-      "mayPromoteGeneralization": false
-    },
-    {
       "id": "phase4-generalization-capability_ctrace_f3072d255ad4f857aea1fc34-control",
       "kind": "CAPABILITY_GENERALIZATION_SCREEN",
       "priority": "low",
@@ -456,44 +419,6 @@
       "holdoutGameId": "amusement-tycoon",
       "targetEngine": "web",
       "unseenProblemFingerprint": "phase4-unseen-1b7ldsc",
-      "mayPromoteGeneralization": false
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_8d74f51489e0fcd3b8c02e18-control",
-      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAPABILITY_GENERALIZATION"
-      ],
-      "phase4Benchmark": true,
-      "phase4CapabilityId": "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_8d74f51489e0fcd3b8c02e18",
-      "phase4PairId": "phase4-pair-1ilhn23",
-      "phase4Role": "CONTROL",
-      "holdoutGameId": "amusement-tycoon",
-      "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-nn8x6d",
-      "mayPromoteGeneralization": false
-    },
-    {
-      "id": "phase4-generalization-capability_ctrace_8d74f51489e0fcd3b8c02e18-challenger",
-      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "CAPABILITY_GENERALIZATION"
-      ],
-      "phase4Benchmark": true,
-      "phase4CapabilityId": "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_8d74f51489e0fcd3b8c02e18",
-      "phase4PairId": "phase4-pair-1ilhn23",
-      "phase4Role": "CHALLENGER",
-      "holdoutGameId": "amusement-tycoon",
-      "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-nn8x6d",
       "mayPromoteGeneralization": false
     },
     {
@@ -1785,16 +1710,6 @@
       ]
     },
     {
-      "id": "gap-unity_runtime-l7",
-      "kind": "UNITY_NATIVE_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "UNITY_RUNTIME"
-      ]
-    },
-    {
       "id": "gap-vfx-l7",
       "kind": "VFX_READABILITY_DRILL",
       "priority": "low",
@@ -1825,23 +1740,13 @@
       ]
     },
     {
-      "id": "gap-asset_production-l9",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "id": "gap-unity_runtime-l8",
+      "kind": "UNITY_NATIVE_DRILL",
       "priority": "low",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
-        "ASSET_PRODUCTION"
-      ]
-    },
-    {
-      "id": "gap-roblox_studio-l9",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ROBLOX_STUDIO"
+        "UNITY_RUNTIME"
       ]
     },
     {
@@ -1852,6 +1757,26 @@
       "countsAsProductionPass": false,
       "domains": [
         "AI"
+      ]
+    },
+    {
+      "id": "gap-asset_production-l10",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ASSET_PRODUCTION"
+      ]
+    },
+    {
+      "id": "gap-roblox_studio-l10",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROBLOX_STUDIO"
       ]
     },
     {
@@ -1885,16 +1810,6 @@
       ]
     },
     {
-      "id": "gap-mobile_input-l12",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "MOBILE_INPUT"
-      ]
-    },
-    {
       "id": "gap-animation_feel-l13",
       "kind": "ANIMATION_FEEL_DRILL",
       "priority": "low",
@@ -1915,6 +1830,16 @@
       ]
     },
     {
+      "id": "gap-mobile_input-l13",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT"
+      ]
+    },
+    {
       "id": "gap-progression-l13",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1925,16 +1850,6 @@
       ]
     },
     {
-      "id": "gap-quest_design-l13",
-      "kind": "QUEST_CAUSALITY_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "QUEST_DESIGN"
-      ]
-    },
-    {
       "id": "gap-recovery-l13",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1942,6 +1857,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "RECOVERY"
+      ]
+    },
+    {
+      "id": "gap-quest_design-l14",
+      "kind": "QUEST_CAUSALITY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "QUEST_DESIGN"
       ]
     },
     {
