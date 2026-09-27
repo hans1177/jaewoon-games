@@ -1547,6 +1547,9 @@ jobs:
             runtimeVisualComparison,
             authorityExpanded:false
           }:null;
+          const graphicsReplacementReport=manifest?.graphicsReplacementReport&&typeof manifest.graphicsReplacementReport==='object'?manifest.graphicsReplacementReport:null;
+          const graphicsReplacementValidation=manifest?.graphicsReplacementValidation&&typeof manifest.graphicsReplacementValidation==='object'?manifest.graphicsReplacementValidation:null;
+          const graphicsReplacementQa=incrementalQaReport?.graphicsReplacementQa&&typeof incrementalQaReport.graphicsReplacementQa==='object'?incrementalQaReport.graphicsReplacementQa:{status:'NOT_REQUIRED',required:false,actualCount:0,groundedCount:0,checks:[],authorityExpanded:false};
           const roleResults={
             exploration:exploration?.reuseKey?'PASS':'FAIL',
             implementation:candidateOk?'PASS':'FAIL',
@@ -1585,6 +1588,8 @@ jobs:
             clean(process.env.IQA_ARCHITECTURE_DRIFT_SIGNALS)&&`architecture-drift-signals:${clean(process.env.IQA_ARCHITECTURE_DRIFT_SIGNALS)}`,
             clean(process.env.IQA_PRESENTATION_STATUS)&&`presentation-static-qa-status:${clean(process.env.IQA_PRESENTATION_STATUS)}`,
             clean(process.env.IQA_PRESENTATION_PASS)&&clean(process.env.IQA_PRESENTATION_PASS)!=='NONE'&&`presentation-pass-verified:${clean(process.env.IQA_PRESENTATION_PASS)}`,
+            graphicsReplacementQa?.required===true&&graphicsReplacementQa?.status==='GROUNDED_PASS'?`graphics-replacement-grounding:PASS:${Number(graphicsReplacementQa.groundedCount||0)}`:'',
+            graphicsReplacementValidation?.required===true&&graphicsReplacementValidation?.pass===true?'graphics-replacement-source-worker-validation:PASS':'',
             clean(process.env.IQA_PRESENTATION_RUNTIME_REQUIRED).toUpperCase()==='YES'?'presentation-runtime-qa-required:YES':'',
             ['MEDIUM','HIGH'].includes(clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK).toUpperCase())?'architecture-drift-focused-review-required:YES':'',
             ...Object.entries(roleResults).map(([role,status])=>`role-result:${role}:${status}`),
@@ -1752,7 +1757,7 @@ jobs:
             authorityExpanded:false
           }:null;
           const workLock={required:workLockRequired,acquired:process.env.WORK_LOCK_ACQUIRED==='true',id:clean(process.env.WORK_LOCK_ID)||null,reason:clean(process.env.WORK_LOCK_REASON)||null,worker:'vibe2',baseSha:clean(workOrder?.compiledWorkContract?.workLock?.baseSha)||clean(process.env.BASE_SHA)||null,files:Array.isArray(workOrder?.compiledWorkContract?.workLock?.files)?workOrder.compiledWorkContract.workLock.files:[],releaseRule:clean(workOrder?.compiledWorkContract?.workLock?.releaseRule)||null};
-          const result={version:16,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,gameRepairQa,specializedVerificationRequest,specializedVerificationQa,roleResults,practiceDistillation,practiceArtifact,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,workLock,metrics};
+          const result={version:17,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,graphicsReplacementReport,graphicsReplacementValidation,graphicsReplacementQa,gameRepairQa,specializedVerificationRequest,specializedVerificationQa,roleResults,practiceDistillation,practiceArtifact,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,workLock,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
