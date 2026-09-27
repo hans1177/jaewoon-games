@@ -29,6 +29,7 @@ import {
   codingStrategyGuidance,
   failureFingerprintForTask,
   retrieveUnifiedLearning,
+  learningGuidance,
   candidateTournamentPolicy,
   buildBenchmarkLadder,
   buildIdlePracticeQueue,
@@ -136,6 +137,36 @@ test('same-game verified experience outranks same-engine cross-game experience',
   const ctx=retrieveUnifiedLearning({task:{gameId:'g1',target:'web',goal:'combat save mobile'},experienceInput:experience});
   assert.equal(ctx.experience[0].id,'same');
   assert.ok(ctx.experience[0].reasons.includes('same-game'));
+});
+
+test('verified commercial playbook reuse is fully injected and traceable for game development',()=>{
+  const reuse=[
+    {id:'external-black-box-block-blast-run-30',project:'block-blast',sourceRevision:'sha256:a',score:0.4},
+    {id:'external-black-box-shattered-pixel-dungeon-run-4',project:'shattered-pixel-dungeon',sourceRevision:'sha256:b',score:0.3},
+    {id:'external-black-box-cavern-cravers-run-47',project:'cavern-cravers',sourceRevision:'sha256:c',score:0.2}
+  ];
+  const ctx=retrieveUnifiedLearning({
+    task:{gameId:'commercial-reuse-game',target:'web',taskType:'coding',goal:'build combat progression mobile game'},
+    experienceInput:{records:[]},codePatternsInput:{patterns:[]},
+    playbooksInput:{generatedFrom:'VERIFIED_MEMORY_ONLY',taskTypes:{coding:{authority:'verified-task-playbook',checklist:['rank-responsible-source-before-edit'],reuse}}},
+    practiceDistilledInput:{entries:[]},externalAiDistilledInput:{entries:[]},masteryInput:{}
+  });
+  assert.deepEqual(ctx.playbookReuse.map(row=>row.id),reuse.map(row=>row.id));
+  for(const row of reuse)assert.ok(ctx.exactKnowledgeIds.includes('PLAYBOOK_REUSE:'+row.id));
+  const guidance=learningGuidance(ctx);
+  for(const row of reuse)assert.ok(guidance.includes('verified-commercial-app-reuse='+row.id));
+  assert.ok(guidance.includes('apply=TRANSFORMATIVE_REUSE_NOT_RAW_COPY'));
+});
+
+test('unverified playbook authority cannot enter development knowledge',()=>{
+  const ctx=retrieveUnifiedLearning({
+    task:{gameId:'g',target:'unity',taskType:'coding',goal:'combat progression'},
+    experienceInput:{records:[]},codePatternsInput:{patterns:[]},
+    playbooksInput:{taskTypes:{coding:{authority:'unverified-playbook',reuse:[{id:'unsafe',project:'x'}]}}},
+    practiceDistilledInput:{entries:[]},externalAiDistilledInput:{entries:[]},masteryInput:{}
+  });
+  assert.equal(ctx.playbookReuse.length,0);
+  assert.equal(ctx.exactKnowledgeIds.includes('PLAYBOOK_REUSE:unsafe'),false);
 });
 
 test('unverified result never increases mastery',()=>{
