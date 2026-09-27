@@ -90,7 +90,21 @@ jobs:
             const buildPassedAt=Date.parse(String(secondaryOwnerFocus?item.ownerFocusRobloxBuildPassedAt:item.robloxBuildPassedAt||''));
             const preflightFailedValue=secondaryOwnerFocus?item.ownerFocusRobloxBuildPreflightFailedAt:item.robloxBuildPreflightFailedAt;
             const preflightFailedAt=Date.parse(String(preflightFailedValue||''));
-            const stalePreflightFailure=Boolean(preflightFailedValue)&&Number.isFinite(buildPassedAt)&&Number.isFinite(preflightFailedAt)&&preflightFailedAt<buildPassedAt;
+            const priorPreflightEvidence=secondaryOwnerFocus?item.ownerFocusRobloxBuildPreflightEvidence:item.robloxBuildPreflightEvidence;
+            const priorBlockers=[...new Set([
+              ...(Array.isArray(priorPreflightEvidence?.blockers)?priorPreflightEvidence.blockers:[]),
+              ...(Array.isArray(priorPreflightEvidence?.facts?.blockers)?priorPreflightEvidence.facts.blockers:[]),
+            ].map(value=>String(value||'').trim()).filter(Boolean))];
+            const supersededConcurrentPlatformBlocker=!secondaryOwnerFocus
+              &&concurrentRoblox
+              &&priorBlockers.length>0
+              &&priorBlockers.every(blocker=>blocker==='roblox-platform-required');
+            const stalePreflightFailure=Boolean(preflightFailedValue)
+              &&(
+                (Number.isFinite(buildPassedAt)&&Number.isFinite(preflightFailedAt)&&preflightFailedAt<buildPassedAt)
+                ||supersededConcurrentPlatformBlocker
+              );
+            if(supersededConcurrentPlatformBlocker)console.log('ROBLOX_PREFLIGHT_SUPERSEDED_PLATFORM_BLOCKER_RETRY='+item.gameId);
             if(preflightFailedValue&&!stalePreflightFailure)continue;
             rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,sourceRevision:revision,artifactIdentity,secondaryOwnerFocus});
           }
