@@ -69,7 +69,7 @@ const AUTONOMOUS_CONTENT_EXPANSION_DEFAULT=Object.freeze({
 });
 
 const TEXT_SOURCE_EXTENSIONS=new Set([
-  '.js','.mjs','.ts','.tsx','.html','.htm','.css','.cs','.lua','.luau','.json','.uxml','.uss',
+  '.js','.mjs','.ts','.tsx','.html','.htm','.css','.cs','.lua','.luau','.verse','.json','.uxml','.uss',
   '.unity','.prefab','.mat','.anim','.controller','.asset','.shader','.compute','.svg','.gltf','.obj','.rbxmx','.rbxlx'
 ]);
 const BINARY_GAME_ASSET_EXTENSIONS=new Set(['.png','.jpg','.jpeg','.webp','.gif','.ogg','.mp3','.wav','.fbx','.glb']);
@@ -113,6 +113,7 @@ function sourceAnchorCandidates(text='',file=''){
     ['CLASS',/^\s*(?:export\s+)?(?:(?:public|private|protected|internal|abstract|sealed|static|partial)\s+)*class\s+([A-Za-z_$][\w$]*)/],
     ['FUNCTION',/^\s*(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$.:]*)\s*\(/],
     ['FUNCTION',/^\s*(?:local\s+)?function\s+([A-Za-z_$][\w$.:]*)\s*\(/],
+    ['FUNCTION',/^\s*([A-Za-z_][\w]*)\s*(?:<[^>]+>)?\s*\([^)]*\)\s*(?:<[^>]+>)?\s*:[^=]+=/],
     ['FUNCTION',/^\s*(?:export\s+)?(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>/],
     ['METHOD',/^\s*(?:(?:public|private|protected|internal|static|async|virtual|override|sealed|partial)\s+)+(?:[A-Za-z_$][\w$<>,.?\[\]]*\s+)+([A-Za-z_$][\w$]*)\s*\(/],
     ['METHOD',/^\s*([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{/]
@@ -727,7 +728,7 @@ function buildAutonomousContentExpansion({
     const gapDomains=theme.domains.filter(domain=>stateByDomain.get(domain)==='GAP');
     const applicableDomains=theme.domains.filter(domain=>stateByDomain.get(domain)!=='NOT_APPLICABLE');
     let score=gapDomains.length*12+applicableDomains.length*2+(theme.focuses.includes(focus)?8:0);
-    if(previousTheme===theme.id)score+=continueSame?6:-18;
+    if(previousTheme===theme.id)score+=continueSame?6:-100;
     if(theme.id==='WORLD_ECOLOGY_STORY_CHAIN'){if(Number(source?.signals?.map||0)<8)score+=5;if(Number(source?.signals?.content||0)<8)score+=5;}
     if(theme.id==='ENEMY_BOSS_COMBAT_ECOLOGY'&&Number(source?.signals?.ai||0)<4)score+=6;
     if(theme.id==='QUEST_STORY_PROGRESSION_CHAIN'&&Number(source?.signals?.progression||0)<8)score+=6;
