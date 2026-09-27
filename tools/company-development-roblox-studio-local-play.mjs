@@ -1103,11 +1103,11 @@ export async function runOfficialStudioMcpPlay({
     const changed=beforeHashes.length>0&&afterHashes.length>0&&beforeHashes.join(',')!==afterHashes.join(',');
     checkpoint('viewport-changed-after-input',changed);
 
+    finalClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+    finalServerProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Server');
+    checkpoint('actual-play-final-client-probe',finalClientProbe!=null);
+    checkpoint('actual-play-final-server-probe',finalServerProbe!=null);
     if(actualPlayContract?.required===true){
-      finalClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
-      finalServerProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Server');
-      checkpoint('actual-play-final-client-probe',finalClientProbe!=null);
-      checkpoint('actual-play-final-server-probe',finalServerProbe!=null);
       const evaluated=evaluateStudioActualPlayContract({contract:actualPlayContract,initialClientProbe,preActionClientProbe,postActionClientProbe,clientProbe:finalClientProbe,serverProbe:finalServerProbe,actions,beforeImages,afterImages});
       scenarioCoverage=evaluated.scenarios;
       authoritativeStateChangeObserved=evaluated.authoritativeStateChangeObserved===true;
@@ -1184,7 +1184,7 @@ export async function runOfficialStudioMcpPlay({
         screenCapture:beforeImages.length>0&&afterImages.length>0,
         consoleCapture:consoleResult!=null,
         characterMotionRuntime:characterMotionRuntime?.required===true,
-        executeLuauRuntimeProbe:actualPlayContract?.required===true
+        executeLuauRuntimeProbe:true
       },
       scenarioContractRequired:actualPlayContract?.required===true,
       scenarioContractVersion:Number(actualPlayContract?.version||0),
@@ -1192,7 +1192,7 @@ export async function runOfficialStudioMcpPlay({
       scenarioCoverage,
       authoritativeStateChangeObserved,
       qualityFailureKinds,
-      runtimeProbes:actualPlayContract?.required===true?{initialClient:initialClientProbe,preActionClient:preActionClientProbe,postActionClient:postActionClientProbe,finalClient:finalClientProbe,finalServer:finalServerProbe}:null,
+      runtimeProbes:{initialClient:initialClientProbe,preActionClient:preActionClientProbe,postActionClient:postActionClientProbe,finalClient:finalClientProbe,finalServer:finalServerProbe},
       mcp:{
         protocolVersion:client.protocolVersion,
         serverName:clean(client.serverInfo?.name),
@@ -1468,6 +1468,17 @@ export function createLocalStudioPlayEvidence({
         primaryActionVelocity:Number(runtime?.metrics?.primaryActionVelocity||0),
         primaryActionFeedbackChanged:runtime?.metrics?.primaryActionFeedbackChanged===true
       },
+      runtimeProbeSummary:{
+        clientObserved:runtime?.runtimeProbes?.finalClient!=null,
+        serverObserved:runtime?.runtimeProbes?.finalServer!=null,
+        playerPresent:runtime?.runtimeProbes?.finalClient?.player?.present===true,
+        characterPresent:runtime?.runtimeProbes?.finalClient?.player?.characterPresent===true,
+        humanoidPresent:runtime?.runtimeProbes?.finalClient?.player?.humanoidPresent===true,
+        rootPresent:runtime?.runtimeProbes?.finalClient?.player?.rootPresent===true,
+        cameraPresent:runtime?.runtimeProbes?.finalClient?.camera?.present===true,
+        mapReady:runtime?.runtimeProbes?.finalClient?.workspace?.MapReady===true||runtime?.runtimeProbes?.finalServer?.workspace?.MapReady===true,
+        authoritativeStateChangeObserved:runtime?.authoritativeStateChangeObserved===true
+      },
       characterMotionRuntime:characterMotionRuntime?{
         required:characterMotionRequired,
         observed:characterMotionRuntime.observed===true,
@@ -1493,6 +1504,94 @@ export function createLocalStudioPlayEvidence({
       publicationAuthority:false,
       publicationTargetDiscovery:false
     }
+  };
+}
+
+export function deriveF1ToF8SingleSessionEvidence({item={},design={}}={}){
+  const play=item?.robloxInternalVibePlayEvidence||{};
+  const sourceRevision=clean(item?.robloxSourceCommit);
+  const artifactIdentity=clean(item?.robloxBuildArtifactIdentity);
+  const candidate=item?.robloxRuntimeCandidateEvidence||{};
+  const exact=Boolean(
+    play.pass===true
+    &&play.actualPlay===true
+    &&play.runtimeVerified===true
+    &&play.officialStudioMcp===true
+    &&play.localPlaceFile===true
+    &&play.onlinePlaceDirectOpen===false
+    &&play.robloxPlayerAutomation===false
+    &&clean(play.sourceRevision)===sourceRevision
+    &&clean(play.artifactIdentity)===artifactIdentity
+    &&clean(candidate.sourceRevision)===sourceRevision
+    &&clean(candidate.artifactIdentity)===artifactIdentity
+    &&Number(play.versionNumber||0)>0
+    &&Number(play.versionNumber)===Number(candidate.versionNumber||0)
+    &&Number(play.runtimeSummary?.consoleErrorCount||0)===0
+  );
+  const checkpoint=new Map((Array.isArray(play.checkpoints)?play.checkpoints:[]).map(row=>[clean(row?.id||row?.name),row?.pass===true]));
+  const scenario=new Map((Array.isArray(play.scenarioCoverage)?play.scenarioCoverage:[]).map(row=>[clean(row?.id||row?.name),row?.pass===true]));
+  const probe=play.runtimeProbeSummary||{};
+  const content=design?.content||{};
+  const profile=content?.platformProfiles?.ROBLOX||{};
+  const multiplayerMode=clean(content?.multiplayerMode).toUpperCase();
+  const multiplayerNotApplicable=/^(SINGLE|SINGLE_PLAYER|SINGLE-PLAYER|SOLO|OFFLINE_SINGLE_PLAYER|NONE|NOT_APPLICABLE)$/.test(multiplayerMode);
+  const saveText=clean(profile?.saveAndNetwork);
+  const saveNotApplicable=/^(NONE|NOT_APPLICABLE|NO_SAVE|NO SAVE|SESSION_ONLY|SESSION ONLY|없음|저장 없음)$/i.test(saveText);
+  const scenarioRequired=play.scenarioContractRequired===true;
+  const scenarioOk=id=>scenario.get(id)===true;
+  const basicRuntime=exact&&checkpoint.get('play-mode-started')===true&&checkpoint.get('no-release-blocking-runtime-errors')===true;
+  const clientServer=basicRuntime&&probe.clientObserved===true&&probe.serverObserved===true;
+  const f1=clientServer;
+  const f2=clientServer&&(
+    probe.mapReady===true
+    ||scenarioOk('map-ready')
+    ||scenarioOk('world-geometry-present')
+    ||(!scenarioRequired&&checkpoint.get('viewport-before-captured')===true)
+  );
+  const f3=clientServer&&probe.playerPresent===true&&probe.characterPresent===true&&probe.humanoidPresent===true&&probe.rootPresent===true&&probe.cameraPresent===true;
+  const f4=f3
+    &&checkpoint.get('mcp-input-dispatched')===true
+    &&checkpoint.get('viewport-changed-after-input')===true
+    &&play.runtimeSummary?.characterMotionRuntimePassed!==false;
+  const f5=clientServer
+    &&checkpoint.get('mcp-input-dispatched')===true
+    &&probe.cameraPresent===true
+    &&(!scenarioRequired||(scenarioOk('hud-visible')&&scenarioOk('action-ui-visible')&&scenarioOk('primary-action-input')));
+  const f6=clientServer&&(
+    saveNotApplicable
+    ||play.runtimeSummary?.consoleErrorCount===0
+  );
+  const f7=multiplayerNotApplicable?true:clientServer&&(
+    play.functionalChainEvidence?.runtimeVerified===true
+    &&(play.functionalChainEvidence?.authoritativeStateChangeObserved===true||!scenarioRequired||scenarioOk('design-runtime-binding'))
+  );
+  const f8=clientServer
+    &&play.functionalChainEvidence?.inputDispatched===true
+    &&play.functionalChainEvidence?.screenChanged===true
+    &&(!scenarioRequired||play.scenarioCoveragePass===true);
+  const floors={
+    F1:{pass:f1,mode:'STUDIO_SINGLE_SESSION_SERVER_START'},
+    F2:{pass:f2,mode:'STUDIO_SINGLE_SESSION_WORLD'},
+    F3:{pass:f3,mode:'STUDIO_SINGLE_SESSION_CHARACTER'},
+    F4:{pass:f4,mode:'STUDIO_SINGLE_SESSION_PHYSICS_MOVEMENT'},
+    F5:{pass:f5,mode:'STUDIO_SINGLE_SESSION_INPUT_CAMERA_UI'},
+    F6:{pass:f6,mode:saveNotApplicable?'STUDIO_SINGLE_SESSION_CORE_SERVICES_SAVE_NOT_APPLICABLE':'STUDIO_SINGLE_SESSION_CORE_SERVICES',saveNotApplicable},
+    F7:{pass:f7,mode:multiplayerNotApplicable?'NOT_APPLICABLE_VERIFIED_DESIGN_SINGLE_PLAYER':'STUDIO_SINGLE_SESSION_SERVER_CLIENT_CONTRACT',multiplayerNotApplicable,actualTwoClientObserved:false},
+    F8:{pass:f8,mode:'STUDIO_SINGLE_SESSION_GAMEPLAY_SYSTEMS'}
+  };
+  return{
+    version:1,
+    pass:Object.values(floors).every(row=>row.pass===true),
+    sourceRevision,
+    artifactIdentity,
+    candidateVersionNumber:Number(candidate.versionNumber||0),
+    studioWorkflowRunId:Number(play.workflowRunId||0),
+    oneStudioPlaySession:true,
+    externalServerBootRequired:false,
+    perFloorRuntimeRelaunch:false,
+    floors,
+    authority:'roblox-official-studio-mcp-f1-f8-single-session',
+    verifiedAt:play.testedAt||null
   };
 }
 
@@ -1562,9 +1661,7 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
     item.robloxNativeFailureClass=result.evidence.robloxFailureClass||null;
     item.routingBlockers=['roblox-studio-mcp-play-repair-required'];
   }
-  item.robloxPublicReleaseReady=false;
-  item.robloxPublicRelease=false;
-  item.robloxReleaseClaim=false;
+  // Internal Studio validation never mutates external publication state.
   item.updatedAt=result.evidence.testedAt;
   queue.updatedAt=result.evidence.testedAt;
   return{queue,item,result};
