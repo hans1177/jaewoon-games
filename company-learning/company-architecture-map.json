@@ -1,5 +1,5 @@
 {
-  "version": 278,
+  "version": 279,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6150,5 +6150,15 @@
     "studioDedupePrimaryActionEvidenceGate": "SCENARIO_PASS_PLUS_PERSISTED_FEEDBACK_OR_MOTION_PROOF",
     "unexplainedLegacyPrimaryActionPassReplay": true,
     "replayChangesGameSource": false
+  },
+  "robloxF9FaninRuntimePathRepair": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxF9FaninRuntimePathRepair20260927",
+    "workflow": ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+    "fanInWorkingDirectory": "GITHUB_WORKSPACE_ROOT",
+    "runtimeQueuePath": "runtime/development-queue.json",
+    "exactF9PromotionPrecedesFanIn": true,
+    "promotionStateMustSurviveFanInFailure": true,
+    "publicReleaseGateUnchanged": true
   }
 }
