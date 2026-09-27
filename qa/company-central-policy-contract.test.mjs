@@ -898,9 +898,12 @@ test('minimum necessary procedure policy keeps development throughput ahead of u
   assert.equal(p.qaAndReview.reviewMayNotBecomeRoutineSerializationPoint,true);
   assert.equal(p.execution.nonblockingChecksUseSpareOrSeparateCapacity,true);
   const robloxParallel=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution;
-  assert.equal(robloxParallel.workflowLevelGameWideSerializationForbidden,true);
-  assert.equal(robloxParallel.workflowLevelConcurrencyGroupByGameIdForbidden,true);
-  assert.equal(robloxParallel.sameGameConflictSerializationScope,'RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY');
+  assert.equal(robloxParallel.workflowLevelGameWideSerializationForbidden,false);
+  assert.equal(robloxParallel.workflowLevelConcurrencyGroupByGameIdForbidden,false);
+  assert.equal(robloxParallel.sameGameConflictSerializationScope,'EXACT_DUPLICATE_WORKFLOW_OR_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY');
+  assert.equal(robloxParallel.crossGameWorkflowSerializationForbidden,true);
+  assert.equal(robloxParallel.exactGameDuplicateWorkflowSerializationAllowed,true);
+  assert.equal(robloxParallel.internalSameWorkflowGameMatrixParallelismPreserved,true);
   const noGameWideLock=roadmap.changeRecord?.robloxGameWideWorkflowSerializationRemoval20260926;
   assert.equal(noGameWideLock.gameIdStillCanonicalTaskIdentity,true);
   assert.equal(noGameWideLock.internalArtificialParallelCapAdded,false);
@@ -1084,7 +1087,7 @@ test('core QA keeps one active regression alive during same-ref main churn',()=>
   assert.equal(policy?.pendingPolicy,'KEEP_ONLY_LATEST_PENDING_SAME_REF');
   assert.equal(policy?.exactShaReuseByGamePrimaryReservePreserved,true);
   assert.equal(policy?.qualityGateWeakened,false);
-  assert.match(coreQaWorkflow,/concurrency:\n\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}[\s\S]*?cancel-in-progress:\s*false/);
+  assert.match(coreQaWorkflow,/concurrency:\n(?:\s+#.*\n)*\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}[\s\S]*?cancel-in-progress:\s*false/);
   assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaRunner,'ubuntu-slim');
   assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaConcurrencyMode,'ACTIVE_ONE_PLUS_LATEST_PENDING');
 });
