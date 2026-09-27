@@ -3,133 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-rnuzt8",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-unity-web-base-implementation-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-      "acquiredAt": "2026-09-27T01:09:36.978Z",
-      "expiresAt": "2026-09-27T01:54:36.978Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1twl7c3",
-      "worker": "vibe2",
-      "taskId": "cozy-island-studio-evolution-presentation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/BattleVisual.luau",
-        "roblox-games/cozy-island/shared/QACamera.luau"
-      ],
-      "baseSha": "9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-      "acquiredAt": "2026-09-27T01:09:42.990Z",
-      "expiresAt": "2026-09-27T01:54:42.990Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-ca4rjg",
-      "worker": "vibe2",
-      "taskId": "line-defense-roblox-presentation-asset-adaptation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "roblox-games/line-defense/client/Game.client.luau",
-        "roblox-games/line-defense/server/Game.server.luau",
-        "roblox-games/line-defense/shared/GameConfig.luau"
-      ],
-      "baseSha": "9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-      "acquiredAt": "2026-09-27T01:10:03.675Z",
-      "expiresAt": "2026-09-27T01:55:03.675Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-my3qo6",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/shared/QACamera.luau",
-        "roblox-games/horror-escape-room/shared/VisualStyle.luau"
-      ],
-      "baseSha": "9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-      "acquiredAt": "2026-09-27T01:10:10.611Z",
-      "expiresAt": "2026-09-27T01:55:10.611Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-164gl5k",
-      "worker": "vibe2",
-      "taskId": "survival-unity-web-base-implementation-v1",
-      "gameId": "survival",
-      "files": [
-        "unity-games/survival/Assets/Scripts/GameCore.cs",
-        "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-      "acquiredAt": "2026-09-27T01:10:23.142Z",
-      "expiresAt": "2026-09-27T01:55:23.142Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1rjxcx0",
-      "worker": "vibe2",
-      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "files": [
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-      "acquiredAt": "2026-09-27T01:10:32.380Z",
-      "expiresAt": "2026-09-27T01:55:32.380Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-7ycw7p",
-      "worker": "vibe2",
-      "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-      "acquiredAt": "2026-09-27T01:10:33.438Z",
-      "expiresAt": "2026-09-27T01:55:33.438Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-httg6x",
       "worker": "vibe2",
       "taskId": "village-dungeons-roblox-presentation-asset-adaptation-v1",
@@ -641,6 +514,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-1c8ml21",
+      "worker": "vibe2",
+      "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "files": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+      ],
+      "baseSha": "50673ac9ac61015195ee2db525dc6e371c67d252",
+      "acquiredAt": "2026-09-27T01:55:47.222Z",
+      "expiresAt": "2026-09-27T02:40:47.222Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
