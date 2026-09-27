@@ -4168,33 +4168,36 @@
       "supersededSharedTargetLocalExactArtifactPlayAllowed": true,
       "supersededSharedTargetCannotClaimCurrentPublishedRuntime": true,
       "runtimeFoundationBoundary": {
-        "version": 1,
-        "exactEngineVersionWithoutRealServerBootState": "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
-        "exactEngineVersionWithoutRealServerBootBlocker": "roblox-runtime-foundation-awaiting-real-server-boot",
+        "version": 2,
+        "exactEngineVersionWithoutRealServerBootState": "OPTIONAL_DIAGNOSTIC_ONLY",
+        "exactEngineVersionWithoutRealServerBootBlocker": null,
         "exactEngineVersionDoesNotEqualRealGameServerBoot": true,
         "studioMcpActualPlayPassRemainsValidWhileRuntimeFoundationObservationPending": true,
         "runtimeFoundationPassMustNotBeFabricatedFromOpenCloudHeadlessExecution": true,
-        "runtimeFoundationEvidenceAuthority": ".github/workflows/company-development-roblox-post-runtime-qa.yml#runtime-foundation-qa",
-        "observationRetry": "UNLIMITED_OBSERVATION",
+        "runtimeFoundationEvidenceAuthority": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play",
+        "observationRetry": "MANUAL_OPTIONAL_DIAGNOSTIC_ONLY",
         "developmentBlocking": false,
         "internalQaBlocking": false,
         "internalRegressionBlocking": false,
         "internalReleaseBlocking": false,
-        "externalPublicReleaseBlocking": true,
+        "externalPublicReleaseBlocking": false,
         "sameGameIndependentDevelopmentContinuesWhilePending": true,
-        "internalReleaseExceptionRequiresExactEngineVersionAndOfficialStudioMcpPlay": true,
+        "internalReleaseExceptionRequiresExactEngineVersionAndOfficialStudioMcpPlay": false,
         "runtimeTruthFieldsMustRemainUnfabricated": true,
         "exactPrivateRuntimeFailuresBlockInternalFlow": false,
-        "exactPrivateRuntimeFailuresBlockExternalPublicRelease": true,
-        "internalContinuationUsesSeparateTruthPreservingFlags": true,
+        "exactPrivateRuntimeFailuresBlockExternalPublicRelease": false,
+        "internalContinuationUsesSeparateTruthPreservingFlags": false,
         "f9ReviewRunsInParallelWithInternalPlaytestWhenOnlyExternalPublicReleaseIsBlocked": true,
         "f9PendingMayNotPauseInternalDevelopmentOrInternalPlaytest": true,
-        "nextAction": "CONTINUE_INTERNAL_DEVELOPMENT_QA_REGRESSION_INTERNAL_RELEASE_AND_INTERNAL_PLAYTEST_IN_PARALLEL_WHILE_F9_AND_RUNTIME_REPAIR_CONTINUE; BLOCK_EXTERNAL_PUBLIC_RELEASE_ONLY",
+        "nextAction": "USE_F0_EXACT_LOCAL_BUILD -> ONE_OFFICIAL_STUDIO_MCP_F1_TO_F8_SESSION -> F9_FAN_IN; OPEN_CLOUD_SERVER_OBSERVATION_IS_OPTIONAL_DIAGNOSTIC_ONLY; PUBLICATION_REQUIRES_OWNER_APPROVAL",
         "robloxPlayerAutomationForbidden": true,
         "publishedPlaceDirectStudioAutomationForbidden": true,
-        "exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot": true,
-        "studioActualPlayEligibilityDoesNotSetRuntimeFoundationPass": true,
-        "studioActualPlayEligibilityDoesNotSetExternalPublicReleaseReady": true
+        "exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot": false,
+        "studioActualPlayEligibilityDoesNotSetRuntimeFoundationPass": false,
+        "studioActualPlayEligibilityDoesNotSetExternalPublicReleaseReady": true,
+        "f1ToF8InternalValidationAuthority": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD",
+        "externalServerBootRequiredForF0ToF9": false,
+        "externalServerBootRequiredForPublicReleaseApproval": false
       }
     },
     "deterministicGateAuthority": {
@@ -5297,9 +5300,9 @@
       "internalBuildupLoop": {
         "version": 2,
         "authority": "OWNER_DIRECTIVE_2026-09-25",
-        "status": "ACTIVE_EXECUTABLE_CONTRACT_WITH_ACTUAL_VIBE_PLAY_EXECUTOR_REQUIRED",
+        "status": "ACTIVE_EXECUTABLE_F0_F9_PERPETUAL_CONTRACT",
         "platform": "ROBLOX",
-        "startsAfter": "INTERNAL_PLATFORM_RELEASE",
+        "startsAfter": "FIRST_ACTIVE_NATIVE_SOURCE_CYCLE",
         "umbrellaState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
         "perpetual": true,
         "neverCompletes": true,
@@ -5332,22 +5335,23 @@
         "rebuildAfterEveryAcceptedModificationRequired": true,
         "modifiedSourceMayNotReusePriorBuildArtifact": true,
         "modifiedSourceInvalidatesAffectedPlayAndValidationEvidence": true,
-        "rebuildMustProduceNewExactCandidateBeforeRevalidation": true,
-        "revalidationMustBindToRebuiltCandidate": true,
-        "loopBackRequiresRebuiltCandidatePass": true,
+        "rebuildMustProduceNewExactCandidateBeforeRevalidation": false,
+        "revalidationMustBindToRebuiltCandidate": false,
+        "loopBackRequiresRebuiltCandidatePass": false,
         "rebuildSequence": [
           "ACCEPTED_MODIFICATION_WRITTEN",
           "PRIOR_AFFECTED_ARTIFACT_AND_PLAY_EVIDENCE_INVALIDATED",
           "ROBLOX_PLATFORM_REBUILD",
-          "INTERNAL_REDEPLOY_EXACT_CANDIDATE",
-          "EXACT_CANDIDATE_REVALIDATION",
-          "VIBE_INTERNAL_PLAY"
+          "F0_EXACT_LOCAL_ARTIFACT",
+          "ONE_F1_TO_F8_OFFICIAL_STUDIO_MCP_SESSION",
+          "F9_EVIDENCE_FAN_IN",
+          "VIBE_INTERNAL_PLAY_OR_NEXT_BUILDUP_CHANGE"
         ],
         "actualVibePlayExecutor": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play",
         "actualVibePlayExecution": "SELF_HOSTED_WINDOWS_ROBLOX_STUDIO_MCP_LOCAL_EXACT_ARTIFACT",
         "actualVibePlayPublishedPlaceDirectAutomation": false,
         "actualVibePlayLearningReuse": "STRUCTURED_VERIFIED_QA_FACTS_ONLY_NO_RAW_GAMEPLAY_TRAINING",
-        "publishedCandidateIdentityCrossCheck": "COMPANY_RUNTIME_EXACT_SOURCE_ARTIFACT_TARGET_VERSION",
+        "publishedCandidateIdentityCrossCheck": "OPTIONAL_DIAGNOSTIC_ONLY_NOT_INTERNAL_GATE",
         "rawStudioSourceDirectLearningForbidden": true,
         "rawGameplayValuesDirectLearningForbidden": true,
         "actualVibePlaySurface": "ROBLOX_STUDIO_MCP_PLAY_MODE",
@@ -5358,7 +5362,7 @@
           "EXACT_SOURCE_REVISION",
           "EXACT_ARTIFACT_IDENTITY",
           "EXACT_ARTIFACT_RUN_ID",
-          "HISTORICAL_OR_CURRENT_INTERNAL_PUBLICATION_BINDING",
+          "F0_EXACT_LOCAL_BUILD_BINDING",
           "OFFICIAL_STUDIO_MCP_PLAY_MODE",
           "MCP_INPUT_ACTION_OBSERVED",
           "VIEWPORT_OR_RUNTIME_STATE_CHANGE",
@@ -5377,16 +5381,20 @@
         "studioMcpUnconfirmedSettingIsInfrastructureNotGameFailure": true,
         "studioMcpUnconfirmedSettingMayNotConsumePlayRetry": true,
         "studioMcpAutomaticSettingMutationForbidden": true,
-        "actualVibePlayEligibility": "RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING",
+        "actualVibePlayEligibility": "F0_EXACT_LOCAL_BUILD_READY",
         "actualVibePlayEligibilityMustNotDependOnExclusiveCurrentStep": true,
         "foundationOrFinalRevalidationMayRunParallelWithActualVibePlayAfterInternalRelease": true,
         "currentStepMayRepresentParallelRuntimeRevalidationWithoutRevokingInternalReleasePlayEligibility": true,
         "explicitDisabledGameRemainsIneligible": true,
-        "actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease": true
+        "actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease": false,
+        "rebuildMustProduceNewExactLocalArtifactBeforeRevalidation": true,
+        "revalidationMustBindToRebuiltExactLocalArtifact": true,
+        "loopBackRequiresF9FanInPass": true,
+        "actualVibePlayMayStartAfterF0BeforeInternalRelease": true
       },
       "externalPublicReleaseHardGate": {
-        "version": 1,
-        "authority": "OWNER_DIRECTIVE_2026-09-25",
+        "version": 2,
+        "authority": "OWNER_DIRECTIVE_2026-09-28",
         "status": "FAIL_CLOSED",
         "platform": "ROBLOX",
         "objective": "PUBLIC_EXPOSURE_ONLY_AFTER_GAME_COMPLETION_ACTUAL_VIBE_PLAY_ROBLOX_ADAPTATION_STABILITY_SECURITY_AND_EXACT_CANDIDATE_EVIDENCE_ALL_PASS",
@@ -5411,7 +5419,7 @@
           "NO_CONFIRMED_SECURITY_RELEASE_BLOCKER",
           "ROBLOX_PLATFORM_REBUILD_COMPLETED",
           "ROBLOX_PLATFORM_ADAPTATION_RUNTIME_EVIDENCE_PASS",
-          "NATIVE_RUNTIME_PASS",
+          "F1_TO_F8_SINGLE_INTERNAL_SESSION_PASS",
           "REGRESSION_PASS",
           "SAVE_REJOIN_PASS_WHEN_APPLICABLE",
           "MULTIPLAYER_2PLUS_PASS_WHEN_REQUIRED",
@@ -5419,7 +5427,7 @@
           "MOBILE_INPUT_UI_AND_LOW_END_PERFORMANCE_PASS",
           "PRESENTATION_COMPLETION_EVIDENCE_PASS",
           "STABILITY_EVIDENCE_ACROSS_DISTINCT_BUILDUP_CYCLES_PASS",
-          "EXACT_PUBLIC_CANDIDATE_FINAL_REVALIDATION_PASS"
+          "F9_EXACT_LOCAL_ARTIFACT_FINAL_REVALIDATION_PASS"
         ],
         "vibeInternalPlay": {
           "mustBeActualPlay": true,
@@ -5462,10 +5470,12 @@
         "exactCandidate": {
           "sourceRevisionRequired": true,
           "artifactIdentityRequired": true,
-          "universeIdRequired": true,
-          "placeIdRequired": true,
-          "versionNumberRequired": true,
-          "allEvidenceMustReferenceSameCandidate": true,
+          "artifactRunIdRequired": true,
+          "universeIdRequiredBeforeOwnerApproval": false,
+          "placeIdRequiredBeforeOwnerApproval": false,
+          "versionNumberRequiredBeforeOwnerApproval": false,
+          "publicationTargetBindingOccursAfterOwnerApproval": true,
+          "allInternalEvidenceMustReferenceSameSourceArtifact": true,
           "changedRelevantSourceRequiresAffectedEvidenceRevalidation": true,
           "changedRelevantSourceRequiresNewBuildBeforeAffectedEvidenceRevalidation": true,
           "staleBuildEvidenceCannotSatisfyPublicGate": true
@@ -5473,7 +5483,11 @@
         "passState": "PUBLIC_RELEASE_READY",
         "publicationRequiresExplicitExternalPublicationEvidenceAfterPass": true,
         "publicationSuccessState": "PUBLIC_RELEASE",
-        "failAction": "KEEP_EXTERNAL_EXPOSURE_DISABLED_AND_CONTINUE_INTERNAL_BUILDUP_LOOP"
+        "failAction": "KEEP_EXTERNAL_EXPOSURE_DISABLED_AND_CONTINUE_INTERNAL_BUILDUP_LOOP",
+        "publicationRequiresExplicitOwnerApproval": true,
+        "publicationApprovalAuthority": "OWNER_EXPLICIT_DIRECTIVE_ONLY",
+        "externalServerBootRequired": false,
+        "validationPassCannotAutoPublish": true
       }
     },
     "autonomousBottleneckRecovery": {
@@ -6259,20 +6273,12 @@
         ],
         "headlessOnlyInternalReleaseForbidden": true,
         "runtimeFoundationRequiredForInternalRelease": false,
-        "runtimeFoundationInternalReleaseExceptionStates": [
-          "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
-          "EXACT_PRIVATE_RUNTIME_FINDING_EXTERNAL_RELEASE_ONLY"
-        ],
-        "runtimeFoundationInternalReleaseExceptionRequires": [
-          "EXACT_PRIVATE_OR_RESTRICTED_CANDIDATE",
-          "EXACT_OPEN_CLOUD_ENGINE_PLACE_VERSION",
-          "OFFICIAL_STUDIO_MCP_ACTUAL_PLAY_PASS",
-          "NO_RELEASE_BLOCKING_STUDIO_CONSOLE_ERROR"
-        ],
+        "runtimeFoundationInternalReleaseExceptionStates": [],
+        "runtimeFoundationInternalReleaseExceptionRequires": [],
         "runtimeFoundationExceptionMaySetRuntimePass": false,
         "runtimeFoundationExceptionMaySetExternalPublicReleaseReady": false,
-        "runtimeFoundationRequiredForPublicReleaseReady": true,
-        "internalPublishWithoutRuntimeFoundationAction": "ALLOW_ONLY_EXACT_AWAITING_REAL_SERVER_BOOT_EXCEPTION_OTHERWISE_REPAIR_REQUIRED",
+        "runtimeFoundationRequiredForPublicReleaseReady": false,
+        "internalPublishWithoutRuntimeFoundationAction": "ALLOW_INTERNAL_COMPLETION_ONLY_AFTER_EXACT_F0_PLUS_ONE_F1_TO_F8_INTERNAL_SESSION_PLUS_F9",
         "staleFoundationEvidenceMayNotPromote": true,
         "newCandidateInvalidation": {
           "clearPriorInternalReleaseReady": false,
@@ -6352,7 +6358,8 @@
         },
         "f9MayLaunchRuntime": false,
         "publicReleaseApprovalAuthority": "OWNER_EXPLICIT_DIRECTIVE_ONLY",
-        "publicReleaseStateDoesNotTerminateValidation": true
+        "publicReleaseStateDoesNotTerminateValidation": true,
+        "externalServerBootRequiredForPublicReleaseReady": false
       },
       "failureRouting": {
         "foundationFailureIsCompanyWideHighImpactBlocker": true,
@@ -6953,7 +6960,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-27",
+  "updatedAt": "2026-09-28",
   "priorityTiers": [
     {
       "tier": 1,
