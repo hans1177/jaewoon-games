@@ -41,6 +41,33 @@ export const VISUAL_DOMAINS=Object.freeze([
   'UI_HUD','AUDIO_VISUAL_SYNC','ENVIRONMENTAL_MOTION','SCENE_DENSITY','LANDMARK_READABILITY'
 ]);
 
+const AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH='company-learning/vibe-autonomous-content-expansion-policy.json';
+const AUTONOMOUS_CONTENT_EXPANSION_DEFAULT=Object.freeze({
+  status:'ACTIVE',
+  scope:Object.freeze({
+    lifecycle:'EXISTING_BUILD_UP_ONLY',
+    newWorkflowForbidden:true,
+    newStageForbidden:true,
+    newApprovalGateForbidden:true,
+    separateIdeaProposalStageForbidden:true,
+    platforms:Object.freeze(['WEB','ROBLOX','UNITY','FORTNITE_UEFN'])
+  }),
+  autonomy:Object.freeze({decisionOwner:'VIBE'}),
+  completenessEvolution:Object.freeze({
+    eachIterationMustCheckExistingContentToo:true,
+    quantityOnlyExpansionForbidden:true,
+    cosmeticRenameOnlyVariationForbidden:true,
+    statOnlyCloneVariationForbidden:true,
+    disconnectedContentDumpForbidden:true,
+    preserveCoherence:true,
+    preserveCausality:true,
+    preserveProgressionFlow:true,
+    preserveWorldLogic:true,
+    preserveEstablishedIdentity:true,
+    improveWeakExistingContentWhenHigherValueThanAddingNewContent:true
+  })
+});
+
 const TEXT_SOURCE_EXTENSIONS=new Set([
   '.js','.mjs','.ts','.tsx','.html','.htm','.css','.cs','.lua','.luau','.json','.uxml','.uss',
   '.unity','.prefab','.mat','.anim','.controller','.asset','.shader','.compute','.svg','.gltf','.obj','.rbxmx','.rbxlx'
