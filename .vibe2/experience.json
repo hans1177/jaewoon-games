@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -117895,39 +117893,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_5a12877abe490eb2860600d2",
-          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1",
-          "workKey": null,
-          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-          "engine": "unity",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_7a9cfb1614642a30dcb96814",
-            "capability_ctrace_815b63dd7df231ab1b2e3ccf",
-            "capability_ctrace_98ff2306686a32e38f808a33",
-            "capability_ctrace_a2b005913e4bbc43fa7d8870",
-            "capability_ctrace_4df55fa5262d4d2752236afe"
-          ],
-          "evidence": [
-            "base-main:e5ffeb1671b2e479bd1682d7798228302d49eeb4",
-            "actions-run:36234570113",
-            "reservation-id:36234570113:1",
-            "capability-application-sample:7576c71b601c6ea40173"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_41fdcdd5e3076ca49d1b6a89",
           "taskId": "survival-studio-evolution-unity-web-usability-v1",
           "workKey": null,
@@ -120008,6 +119973,39 @@
             "actions-run:36284366843",
             "reservation-id:36284366843:1",
             "capability-application-sample:8910986cc6c7076d5551"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c7bffafa0f17f71dab6f6b6e",
+          "taskId": "fantasy-survival-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_de31124d749f456035b606b6",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870"
+          ],
+          "evidence": [
+            "base-main:8f905b4dad72f58bc050888fdff6489a4197f796",
+            "actions-run:36286432047",
+            "reservation-id:36286432047:1",
+            "capability-application-sample:81ca4901dc4b81d0db9c"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -123755,39 +123753,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_2e5ec5ab9b9ed251bee0f9b4",
-          "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "unity",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_2b85332e992c8a45252a2ace",
-            "capability_ctrace_8aef9f9d73b93a89b8777139",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_98ff2306686a32e38f808a33",
-            "capability_ctrace_a2b005913e4bbc43fa7d8870"
-          ],
-          "evidence": [
-            "base-main:58a6c16427756883868a685290b14815e6dccb19",
-            "actions-run:36252291958",
-            "reservation-id:36252291958:1",
-            "capability-application-sample:d645dc8749a5777e9857"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_5ce673be3d4fe35a01ef5293",
           "taskId": "horror-escape-room-unity-web-base-implementation-v1",
           "workKey": null,
@@ -125880,6 +125845,39 @@
             "actions-run:36284366843",
             "reservation-id:36284366843:1",
             "capability-application-sample:8910986cc6c7076d5551"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e155b62197b696669a76afbc",
+          "taskId": "fantasy-survival-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_de31124d749f456035b606b6",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870"
+          ],
+          "evidence": [
+            "base-main:8f905b4dad72f58bc050888fdff6489a4197f796",
+            "actions-run:36286432047",
+            "reservation-id:36286432047:1",
+            "capability-application-sample:81ca4901dc4b81d0db9c"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -277436,7 +277434,11 @@
         "base-main:f576c728b1c7fe30c5bccfe0368033fcd500be67",
         "actions-run:36258948483",
         "reservation-id:36258948483:1",
-        "coding-trace:ctrace_e5610ed7e8e21d68e23d41ed"
+        "coding-trace:ctrace_e5610ed7e8e21d68e23d41ed",
+        "base-main:8f905b4dad72f58bc050888fdff6489a4197f796",
+        "actions-run:36286432047",
+        "reservation-id:36286432047:1",
+        "coding-trace:ctrace_84c491bdf9e8198304d6a67d"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -277445,8 +277447,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 5,
-      "confidence": 0.8333,
+      "confirmations": 6,
+      "confidence": 0.8571,
       "capabilityApplications": [
         {
           "version": 1,
@@ -278248,6 +278250,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4f94a02258ac350e3361538c",
+          "taskId": "fantasy-survival-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_de31124d749f456035b606b6",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870"
+          ],
+          "evidence": [
+            "base-main:8f905b4dad72f58bc050888fdff6489a4197f796",
+            "actions-run:36286432047",
+            "reservation-id:36286432047:1",
+            "capability-application-sample:81ca4901dc4b81d0db9c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -278266,7 +278301,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 24,
+        "applicationCount": 25,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -302259,6 +302294,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d79e64e10fff82e3d1939f8e",
+          "taskId": "fantasy-survival-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_de31124d749f456035b606b6",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870"
+          ],
+          "evidence": [
+            "base-main:8f905b4dad72f58bc050888fdff6489a4197f796",
+            "actions-run:36286432047",
+            "reservation-id:36286432047:1",
+            "capability-application-sample:81ca4901dc4b81d0db9c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -302277,7 +302345,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 24,
+        "applicationCount": 25,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
@@ -309198,6 +309266,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_fcb4081297f4c8724d7d5df8",
+          "taskId": "fantasy-survival-studio-evolution-unity-web-usability-v1",
+          "workKey": null,
+          "gameId": "fantasy-survival",
+          "engine": "unity",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
+            "capability_ctrace_363cfebe4daa49dc2935b54a",
+            "capability_ctrace_de31124d749f456035b606b6",
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870"
+          ],
+          "evidence": [
+            "base-main:8f905b4dad72f58bc050888fdff6489a4197f796",
+            "actions-run:36286432047",
+            "reservation-id:36286432047:1",
+            "capability-application-sample:81ca4901dc4b81d0db9c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -309216,7 +309317,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "APPLICATION_OBSERVED",
-        "applicationCount": 13,
+        "applicationCount": 14,
         "independentPassCount": 1,
         "crossGameVerifiedApplicationCount": 1,
         "directSupportCount": 0,
