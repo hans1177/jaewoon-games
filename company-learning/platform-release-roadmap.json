@@ -9858,6 +9858,15 @@
       "newWorkerAuthorityCreated": false,
       "gamePrimaryWorkerPolicyUnchanged": true,
       "qaSecurityReleaseGatesUnchanged": true
+    },
+    "gameSpecificMenuDiversity20260927": {
+      "authority": "OWNER_DIRECTIVE_2026-09-27",
+      "status": "ACTIVE",
+      "objective": "LET_VIBE_IMPLEMENT_GAME_SPECIFIC_MENU_STRUCTURES_WITHOUT_CREATING_A_NEW_UI_PIPELINE_OR_COPYING_ONE_MENU_SET_ACROSS_GAMES",
+      "implementation": "tools/company-build-up-directive.mjs::MENU_FLOW + tools/vibe2-asset-production-plan.mjs::assetProductionGuidance",
+      "existingPipelineOnly": true,
+      "newQueueOrWorkerOrScheduler": false,
+      "gameplayBalanceSaveAndNetworkSemanticsUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -25652,7 +25661,7 @@
       "platformLocalDirectiveGenerationForbidden": true,
       "missingDirectivePlatformBehavior": "BASELINE_OR_REPAIR_WORK_MAY_CONTINUE_BUT_BUILD_UP_COMPLETION_MUST_REMAIN_UNCLAIMED_UNTIL_VIBE_DIRECTIVE_EXISTS_AND_IS_IMPLEMENTED",
       "holisticGameEvolution": {
-        "version": 1,
+        "version": 2,
         "authority": "OWNER_DIRECTIVE_2026-09-26",
         "status": "ACTIVE_EXECUTABLE_CONTRACT",
         "objective": "FORCE_EVERY_VIBE_BUILD_UP_GENERATION_TO_ASSESS_AND_ADVANCE_THE_ACTUAL_GAME_BEYOND_VISUAL_POLISH_ACROSS_GAMEPLAY_WORLD_MAP_CONTENT_PROGRESSION_INVENTORY_EQUIPMENT_UI_UX_CONVENIENCE_SESSION_FLOW_SAVE_ACCESSIBILITY_AND_PERFORMANCE",
@@ -25745,7 +25754,46 @@
             "SETTINGS_ACCESSIBILITY"
           ],
           "convenienceMayReduceRepeatedInputButMayNotAutomateCorePlayerChoice": true,
-          "genericTemporaryUiCannotPassUiDesignSystem": true
+          "genericTemporaryUiCannotPassUiDesignSystem": true,
+          "menuDiversity": {
+            "gameSpecificMenuCompositionRequired": true,
+            "crossGameMenuSetCopyPasteForbidden": true,
+            "applicableOnly": true,
+            "examplesByGenre": {
+              "survival": [
+                "INVENTORY",
+                "CRAFTING",
+                "EQUIPMENT",
+                "MAP"
+              ],
+              "rpg": [
+                "QUEST",
+                "SKILL",
+                "EQUIPMENT",
+                "SHOP"
+              ],
+              "defense": [
+                "UNIT",
+                "PLACEMENT",
+                "WAVE",
+                "UPGRADE"
+              ],
+              "tycoon": [
+                "BUILD",
+                "STAFF",
+                "FINANCE",
+                "UPGRADE"
+              ]
+            },
+            "sharedSessionMenus": [
+              "MAIN",
+              "PAUSE",
+              "RESULT",
+              "SETTINGS"
+            ],
+            "roleSpecificVisualDifferentiationRequired": true,
+            "mobileNavigationAndStateRetentionRequired": true
+          }
         },
         "sessionAndDepth": {
           "firstTenMinutesMustReach": [
