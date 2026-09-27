@@ -3,61 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-hoz7h0",
-      "worker": "vibe2",
-      "taskId": "line-defense-roblox-presentation-asset-adaptation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "roblox-games/line-defense/client/Game.client.luau",
-        "roblox-games/line-defense/server/Game.server.luau",
-        "roblox-games/line-defense/shared/GameConfig.luau"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:09:00.893Z",
-      "expiresAt": "2026-09-27T04:54:00.893Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-gmdwty",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:09:09.537Z",
-      "expiresAt": "2026-09-27T04:54:09.537Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-d955db",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:09:14.157Z",
-      "expiresAt": "2026-09-27T04:54:14.157Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-icf8ee",
       "worker": "vibe2",
       "taskId": "seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1",
@@ -697,6 +642,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-ugz4i7",
+      "worker": "vibe2",
+      "taskId": "village-dungeons-unity-web-base-implementation-v1",
+      "gameId": "village-dungeons",
+      "files": [
+        "unity-games/village-dungeons/Assets/Scripts/GameCore.cs",
+        "unity-games/village-dungeons/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "030bba2df3bf52826ca4bcfa8d35e6c207a25ca8",
+      "acquiredAt": "2026-09-27T04:54:39.414Z",
+      "expiresAt": "2026-09-27T05:39:39.414Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:village-dungeons-unity-web-base-implementation-v1"
       ]
     }
   ]
