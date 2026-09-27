@@ -4177,7 +4177,7 @@
         "internalQaBlocking": false,
         "internalRegressionBlocking": false,
         "internalReleaseBlocking": false,
-        "externalPublicReleaseBlocking": true,
+        "externalPublicReleaseBlocking": false,
         "sameGameIndependentDevelopmentContinuesWhilePending": true,
         "internalReleaseExceptionRequiresExactEngineVersionAndOfficialStudioMcpPlay": true,
         "runtimeTruthFieldsMustRemainUnfabricated": true,
@@ -4191,7 +4191,11 @@
         "publishedPlaceDirectStudioAutomationForbidden": true,
         "exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot": true,
         "studioActualPlayEligibilityDoesNotSetRuntimeFoundationPass": true,
-        "studioActualPlayEligibilityDoesNotSetExternalPublicReleaseReady": true
+        "studioActualPlayEligibilityDoesNotSetExternalPublicReleaseReady": true,
+        "role": "OPTIONAL_EXTERNAL_RUNTIME_DIAGNOSTIC_ONLY",
+        "externalServerObservationPrerequisite": false,
+        "ownerApprovalIsExternalPublicationAuthority": true,
+        "exactPrivateCandidateMayEnterOfficialStudioMcpActualPlay": true
       }
     },
     "deterministicGateAuthority": {
