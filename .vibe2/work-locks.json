@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-v2jny3",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-studio-evolution-presentation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T13:16:08.730Z",
-      "expiresAt": "2026-09-27T14:01:08.730Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-studio-evolution-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-1xk66fe",
       "worker": "vibe2",
       "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
@@ -568,6 +550,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-yo70eo",
+      "worker": "vibe2",
+      "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "files": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+      ],
+      "baseSha": "0136064ac8c56e718a0700cf3c8d96e458f56be5",
+      "acquiredAt": "2026-09-27T14:02:02.808Z",
+      "expiresAt": "2026-09-27T14:47:02.808Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
