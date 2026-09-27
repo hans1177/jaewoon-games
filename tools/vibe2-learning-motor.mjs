@@ -1141,6 +1141,16 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
 
   const taskType=lower(task.taskType||task.type||'coding');
   const playbook=playbooksInput?.taskTypes?.[taskType]||playbooksInput?.taskTypes?.coding||null;
+  const playbookReuse=clean(playbook?.authority)==='verified-task-playbook'&&Array.isArray(playbook?.reuse)
+    ?playbook.reuse.map(row=>({
+      id:clean(row?.id),
+      project:clean(row?.project)||null,
+      sourceRevision:clean(row?.sourceRevision)||null,
+      score:Number(row?.score||0),
+      verified:true,
+      authority:'verified-task-playbook'
+    })).filter(row=>row.id)
+    :[];
   const domains=inferDomains(clean(task.goal),engine);
   const practiceDistilled=(practiceDistilledInput?.entries||[])
     .filter(row=>row?.verified===true&&row?.independentlyVerified===true&&row?.retrievalEligible===true&&clean(row.authority)==='VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE'&&knowledgeStateFor(mastery,'PRACTICE_DISTILLED',row?.id)!=='RETIRED'&&domains.includes(upper(row.domain)))
@@ -1168,12 +1178,14 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     codePatterns:patterns,
     practiceDistilled,
     externalAiDistilled,
+    playbookReuse,
     exactKnowledgeIds:uniq([
       ...ranked.map(x=>'EXPERIENCE:'+clean(x.record.id)),
       ...patterns.map(x=>'CODE_PATTERN:'+clean(x.id)),
       ...practiceDistilled.map(x=>'PRACTICE_DISTILLED:'+clean(x.id)),
-      ...externalAiDistilled.map(x=>'EXTERNAL_AI_DISTILLED:'+clean(x.id))
-    ]).filter(Boolean).slice(0,40),
+      ...externalAiDistilled.map(x=>'EXTERNAL_AI_DISTILLED:'+clean(x.id)),
+      ...playbookReuse.map(x=>'PLAYBOOK_REUSE:'+clean(x.id))
+    ]).filter(Boolean),
     playbook,
     mastery:domains.map(d=>({domain:d,...mastery.domains[d],productionConfidenceLevel:Number(mastery.productionConfidence?.domains?.[d]?.level||1)})),
     authorityExpanded:false
@@ -1190,6 +1202,7 @@ export function learningGuidance(context={}){
   for(const row of context.codePatterns||[]) lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
   for(const row of context.practiceDistilled||[]) lines.push(`- verified-practice-distilled=${row.domain}; confirmations=${row.confirmations}; evidence=${(row.verificationEvidence||[]).slice(0,3).join('|')}`);
   for(const row of context.externalAiDistilled||[]) lines.push(`- external-ai-distilled-advisory=${row.id}; provider=${row.provider||'unknown'}; relevance=${row.relevance}; patterns=${(row.patterns||[]).slice(0,4).join('|')}; cautions=${(row.cautions||[]).slice(0,3).join('|')}`);
+  for(const row of context.playbookReuse||[]) lines.push(`- verified-commercial-app-reuse=${row.id}; project=${row.project||'unknown'}; score=${row.score}; sourceRevision=${row.sourceRevision||'unknown'}; apply=TRANSFORMATIVE_REUSE_NOT_RAW_COPY`);
   if(context.mastery?.length) lines.push(`- production-confidence=${context.mastery.map(x=>x.domain+':PC'+Number(x.productionConfidenceLevel||1)).join(' | ')}`);
   if(context.playbook?.checklist?.length) lines.push(`- playbook=${context.playbook.checklist.join(' | ')}`);
   if(context.mastery?.length) lines.push(`- mastery=${context.mastery.map(x=>x.domain+':LV'+x.level).join(' | ')}`);
