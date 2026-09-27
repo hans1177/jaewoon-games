@@ -546,6 +546,9 @@ test('reusable asset coverage drives 300 verified motion slots and all studio fa
   const motionTarget=Object.values(DEFAULT_COVERAGE_BASELINES.MOTION).reduce((sum,count)=>sum+Number(count||0),0);
   assert.equal(motionTarget,300);
   for(const family of STUDIO_ASSET_FAMILIES)assert.ok(DEFAULT_COVERAGE_BASELINES[family],family);
+  for(const role of ['MAIN_MENU','INVENTORY','EQUIPMENT','SHOP','CRAFTING','QUEST','MAP','SETTINGS','RESULT','CONTEXT_MENU']){
+    assert.ok(DEFAULT_COVERAGE_BASELINES.UI[role]>0,role);
+  }
   for(const role of ['LOCOMOTION','TRAVERSAL','COMBAT','WEAPON_COMBAT','SURVIVAL_CRAFTING','INTERACTION_UTILITY','REACTION']){
     assert.ok(DEFAULT_COVERAGE_BASELINES.MOTION[role]>0,role);
   }
