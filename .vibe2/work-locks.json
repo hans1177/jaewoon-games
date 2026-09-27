@@ -3,133 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1886ju7",
-      "worker": "vibe2",
-      "taskId": "cozy-island-studio-evolution-presentation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/BattleVisual.luau",
-        "roblox-games/cozy-island/shared/QACamera.luau"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:24:47.146Z",
-      "expiresAt": "2026-09-27T06:09:47.146Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-d7l8ss",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-unity-web-base-implementation-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:24:53.344Z",
-      "expiresAt": "2026-09-27T06:09:53.344Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-q4lzen",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-studio-evolution-presentation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:24:59.575Z",
-      "expiresAt": "2026-09-27T06:09:59.575Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-1t1xmb8",
-      "worker": "vibe2",
-      "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "files": [
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-single-defense-strat-celestial-bastion/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:25:56.500Z",
-      "expiresAt": "2026-09-27T06:10:56.500Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-13gl508",
-      "worker": "vibe2",
-      "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-single-defense-strat-celestial-bastion",
-      "files": [
-        "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
-        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
-        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:26:33.074Z",
-      "expiresAt": "2026-09-27T06:11:33.074Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1vz1b9z",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/shared/QACamera.luau",
-        "roblox-games/horror-escape-room/shared/VisualStyle.luau"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:26:34.687Z",
-      "expiresAt": "2026-09-27T06:11:34.687Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-1wqw13t",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:27:11.299Z",
-      "expiresAt": "2026-09-27T06:12:11.299Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-1uyirbc",
       "worker": "vibe2",
       "taskId": "village-dungeons-studio-evolution-unity-web-usability-v1",
@@ -750,6 +623,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:village-dungeons-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-d1vt5i",
+      "worker": "vibe2",
+      "taskId": "survival-studio-evolution-unity-web-usability-v1",
+      "gameId": "survival",
+      "files": [
+        "unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "cf668563ea8447736844a806dd135432134f0534",
+      "acquiredAt": "2026-09-27T06:12:44.137Z",
+      "expiresAt": "2026-09-27T06:57:44.137Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:survival-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
