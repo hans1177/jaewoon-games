@@ -1,5 +1,5 @@
 {
-  "version": 464,
+  "version": 465,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9509,6 +9509,45 @@
         "coversExactFoundationEvidenceReuse": true,
         "stopCondition": "EXACT_CURRENT_STUDIO_MCP_EVIDENCE_ALREADY_OBSERVED"
       }
+    },
+    "robloxRuntimeThrottleStudioHandoff20260927": {
+      "id": "ROBLOX_RUNTIME_THROTTLE_STUDIO_HANDOFF_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "RECOVER_EXACT_ROBLOX_RUNTIME_OBSERVATION_FROM_OPEN_CLOUD_THROTTLING_AND_REMOVE_THE_EXACT_ENGINE_TO_STUDIO_ACTUAL_PLAY_CIRCULAR_DEPENDENCY_WITHOUT_FABRICATING_RUNTIME_PASS",
+      "observedEvidence": {
+        "gameId": "horror-escape-room",
+        "sourceRevision": "b74a4ac341b7dff0ecd9f2d6cf25375534a2d268",
+        "artifactIdentity": "sha256:4109e8ab3df1273f6fb877930c128b4e717c68cefcf6050269a11e1a59e846de",
+        "candidateVersionNumber": 24,
+        "observedSentinelVersionNumber": 23,
+        "runtimeFoundationRunId": 36294623143,
+        "openCloudCreateStatus": 429
+      },
+      "openCloudProbe": {
+        "transientHttpRetryStatuses": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "maxAttempts": 6,
+        "baseDelayMs": 1000,
+        "scanConcurrency": 2,
+        "exactGameConcurrency": 1,
+        "persistentApiFailureStillFails": true
+      },
+      "studioActualPlay": {
+        "exactEngineAwaitingRealServerBootEligible": true,
+        "exactSourceArtifactPlaceVersionBindingRequired": true,
+        "runtimeFoundationPassFabricationForbidden": true,
+        "runtimePassRemainsFalseUntilRealServerBootEvidence": true,
+        "plannerAuthority": "tools/company-development-roblox-studio-local-play.mjs#planLocalStudioCandidates"
+      },
+      "heavyGameParallelismReduced": false,
+      "qualitySecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
