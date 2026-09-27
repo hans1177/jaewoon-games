@@ -561,6 +561,7 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
 
 function transformativeTaskEligible(taskInput={}){
   const evidence=new Set((taskInput.evidence||[]).map(clean));
+  if(evidence.has('adaptive-graphics-replacement:v1'))return true;
   if(evidence.has('full-web-game-rebuild')||evidence.has('existing-web-continuation')||evidence.has('existing-web-assessment-required'))return true;
   return /FULL_WEB_GAME_REBUILD|EXISTING_WEB_DEVELOPMENT_CONTINUATION|REBUILD_EXISTING_GAME|NEW_GAME_IMPLEMENTATION/i.test(clean(taskInput.goal));
 }
@@ -595,7 +596,9 @@ function applyTransformativeRecombination(taskInput={},memory={}){
     `feature_blend=${features.join(',')}`,
     `transformation=${operator}`,
     'Use these as abstract design/implementation references only.',
-    'Create a new project-specific mechanic/constraint and new code/asset expression.',
+    taskInput?.graphicsReplacementContract
+      ?'For this graphics/presentation BUILD_UP, selectively blend compatible visual, motion, VFX, UI, material, environment, or interaction-presentation ideas into one concept-matched project-specific expression. Direct reuse is allowed only when already correct; otherwise adapt/re-style/re-target or recombine.'
+      :'Create a new project-specific mechanic/constraint and new code/asset expression.',
     'Do not emit raw source files, raw asset bytes, logos, source-specific identifiers, or verbatim implementation.',
     'Preserve the current game identity, approved design, gameplay authority, save meaning, and all existing QA/runtime/regression gates.'
   ].join('\n');
@@ -1179,6 +1182,24 @@ function presentationSourcesForProject(project,repoRoot){
       `${root}/Game.verse`,`${root}/Island.verse`,`${root}/Main.verse`,`${root}/Presentation.verse`,`${root}/UI.verse`,
       `${root}/Verse/Game.verse`,`${root}/Verse/Main.verse`,`${root}/Verse/Presentation.verse`,`${root}/Verse/UI.verse`
     ];
+    const dir=sourceFile(repoRoot,root),discovered=[];
+    if(fs.existsSync(dir)&&fs.statSync(dir).isDirectory()){
+      const stack=[dir];
+      while(stack.length&&discovered.length<12){
+        const current=stack.pop();
+        let entries=[];
+        try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+        for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
+          if(['Binaries','Intermediate','Saved','DerivedDataCache','.git'].includes(entry.name))continue;
+          const full=path.join(current,entry.name);
+          if(entry.isDirectory()){stack.push(full);continue;}
+          if(!/\.verse$/i.test(entry.name))continue;
+          discovered.push(posix(path.relative(repoRoot,full)));
+          if(discovered.length>=12)break;
+        }
+      }
+    }
+    candidates=[...candidates,...discovered];
   }
   return [...new Set(candidates)].filter(relative=>fs.existsSync(sourceFile(repoRoot,relative))).slice(0,6);
 }
