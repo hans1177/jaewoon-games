@@ -357,7 +357,6 @@ jobs:
           const studioFollowupIds=[];
           const stamp=new Date().toISOString();
           const queueStudioFollowupIfEligible=item=>{
-            if(item?.robloxRuntimeFoundationPassed!==true)return;
             const matrix=planLocalStudioCandidates({
               queue:{items:[item]},
               roadmap,
