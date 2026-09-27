@@ -6109,5 +6109,23 @@
     "qualitySecurityReleaseGatesUnchanged": true,
     "previousConcurrencyGroup": "company-development-queue-reconcile-runtime",
     "epochAdvancedToBypassLegacyPendingGroup": true
+  },
+  "directorPendingRecoveryAndSafeDrain": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.directorPendingRecoveryAndSafeDrain20260927",
+    "activeDevelopmentStatuses": [
+      "queued",
+      "pending",
+      "requested",
+      "waiting",
+      "in_progress"
+    ],
+    "recoveryDispatchRequiresNoActiveDevelopmentRun": true,
+    "controlPlaneDrain": "SUPERSEDED_UNSTARTED_ONLY",
+    "legacyRobloxDrain": "STALE_UNSTARTED_ONLY",
+    "inProgressGameCancellationForbidden": true,
+    "forceCancelInProgressGameForbidden": true,
+    "existingActiveGameRunsDrainNaturally": true,
+    "exactGameConcurrencyPreserved": true
   }
 }
