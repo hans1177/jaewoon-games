@@ -9497,7 +9497,15 @@
       "localStudioExecutionMoved": false,
       "heavyGameExecutionChanged": false,
       "exactSourceArtifactVersionGatePreserved": true,
-      "qualitySecurityReleaseGatesUnchanged": true
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "postFoundationStudioFollowup": {
+        "enabled": true,
+        "reason": "PARALLEL_STUDIO_PLAN_CAN_OBSERVE_PRE_FOUNDATION_STATE",
+        "trigger": "NEW_EXACT_RUNTIME_FOUNDATION_PASS_ONLY",
+        "dispatch": "EXACT_GAME_POST_RUNTIME_QA_REENTRY",
+        "requiredScenarioAndExactBindingGatesUnchanged": true,
+        "repeatExactFoundationRedispatch": false
+      }
     }
   },
   "vibeExecutionLaneContract": {
