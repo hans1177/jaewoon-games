@@ -2254,5 +2254,20 @@
       "fiveMinuteCronStillRuns": true,
       "verificationState": "PR_CI_REQUIRED"
     }
+  },
+  "directorHomepageWakeDecouplingEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "directorWorkflow": ".github/workflows/director-supervisor.yml",
+    "homepageWorkflow": ".github/workflows/homepage-manager.yml",
+    "removedWorkflowRunSource": "Homepage Manager",
+    "homepageInternalDirectorSupervisionExpected": true,
+    "runnerDrainCancellationPolicyChanged": false,
+    "gamePrimaryGateChanged": false,
+    "expectedMarkers": [
+      "HOMEPAGE_MANAGER",
+      "DIRECTOR"
+    ],
+    "expectedEffect": "FEWER_REDUNDANT_DIRECTOR_WORKFLOW_RUNS"
   }
 }
