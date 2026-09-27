@@ -61,6 +61,9 @@ function item(){
     canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
     robloxSourceCommit:source,
     robloxBuildOrPackagePassed:true,
+    robloxBuildPreflightPassed:true,
+    robloxFoundationF0Passed:true,
+    robloxFoundationF0Evidence:{pass:true,sourceRevision:source,artifactIdentity:artifact,artifactRunId:777},
     robloxBuildSourceRevision:source,
     robloxBuildArtifactIdentity:artifact,
     robloxSharedTargetCurrent:false,
@@ -138,6 +141,30 @@ test('Studio actual-play policy is official MCP only and forbids Player, GUI mac
   }
 });
 
+test('planner admits an exact F0 local build without any Open Cloud publication candidate',()=>{
+  const candidate=item();
+  candidate.robloxRuntimeCandidateEvidence={};
+  candidate.robloxInternalReleaseEvidence={};
+  candidate.robloxInternalReleasePublished=false;
+  const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
+  assert.equal(result.include.length,1);
+  assert.equal(result.include[0].actualPlayEligibility,'F0_EXACT_LOCAL_BUILD');
+  assert.equal(result.include[0].artifactRunId,777);
+  assert.equal(result.include[0].universeId,'');
+  assert.equal(result.include[0].versionNumber,0);
+
+  const localExpected={sourceRevision:source,artifactIdentity:artifact,artifactRunId:777,universeId:'',placeId:'',versionNumber:0};
+  const applied=applyLocalStudioPlayResult({
+    queue:{items:[candidate]},gameId:'g1',runtime:runtime(),expected:localExpected,
+    workflowRunId:120,studioStepSucceeded:true,testedAt:'2026-09-28T00:00:00.000Z'
+  });
+  assert.equal(applied.result.pass,true);
+  assert.equal(applied.item.robloxF1ToF8Passed,true);
+  assert.equal(applied.item.robloxF1ToF8Evidence.singleRuntimeSession,true);
+  assert.equal(applied.item.robloxF1ToF8Evidence.runtimeLaunchCount,1);
+  assert.equal(applied.item.currentStep,'ROBLOX_FINAL_REVIEW_REVALIDATION');
+});
+
 test('planner selects exact internally released artifact during parallel foundation revalidation even when shared target was later superseded',()=>{
   const candidate=item();
   candidate.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
@@ -147,7 +174,8 @@ test('planner selects exact internally released artifact during parallel foundat
   const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
   assert.equal(result.include.length,1);
   assert.equal(result.include[0].artifactRunId,777);
-  assert.equal(result.include[0].historicalExactPublishedArtifact,true);
+  assert.equal(result.include[0].historicalExactPublishedArtifact,false);
+  assert.equal(result.include[0].actualPlayEligibility,'F0_EXACT_LOCAL_BUILD');
 });
 
 test('planner selects exact runtime-foundation artifact before internal release',()=>{
@@ -164,7 +192,7 @@ test('planner selects exact runtime-foundation artifact before internal release'
   };
   const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
   assert.equal(result.include.length,1);
-  assert.equal(result.include[0].actualPlayEligibility,'RUNTIME_FOUNDATION_PASS');
+  assert.equal(result.include[0].actualPlayEligibility,'F0_EXACT_LOCAL_BUILD');
 });
 
 test('planner admits exact engine version while real server boot is pending without claiming runtime foundation pass',()=>{
@@ -184,7 +212,7 @@ test('planner admits exact engine version while real server boot is pending with
   };
   const result=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()});
   assert.equal(result.include.length,1);
-  assert.equal(result.include[0].actualPlayEligibility,'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT');
+  assert.equal(result.include[0].actualPlayEligibility,'F0_EXACT_LOCAL_BUILD');
   assert.equal(candidate.robloxRuntimeFoundationPassed,false);
   assert.equal(candidate.robloxInternalReleasePublished,false);
 });
@@ -212,7 +240,7 @@ test('exact engine preboot candidate persists Studio evidence without fabricatin
     testedAt:'2026-09-27T05:10:00.000Z'
   });
   assert.equal(applied.result.pass,true);
-  assert.equal(applied.result.evidence.actualPlayEligibility,'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT');
+  assert.equal(applied.result.evidence.actualPlayEligibility,'F0_EXACT_LOCAL_BUILD');
   assert.equal(applied.result.evidence.currentSourceArtifactBinding,true);
   assert.equal(applied.item.robloxRuntimeFoundationPassed,false);
   assert.equal(applied.item.robloxRuntimePassed,false);
@@ -248,24 +276,24 @@ test('planner excludes only explicit disabled games rather than using currentSte
   assert.deepEqual(result.include.map(row=>row.gameId).sort(),['g1','g2']);
 });
 
-test('central contract makes actual play evidence-gated and parallel to foundation revalidation after internal release',()=>{
+test('central contract uses one F1-F8 internal session and F9 fan-in without a runtime relaunch',()=>{
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
-  const loop=central.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.internalBuildupLoop||{};
-  assert.equal(loop.actualVibePlayEligibility,'RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING');
-  assert.equal(loop.actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease,true);
-  assert.equal(loop.actualVibePlayEligibilityMustNotDependOnExclusiveCurrentStep,true);
-  assert.equal(loop.foundationOrFinalRevalidationMayRunParallelWithActualVibePlayAfterInternalRelease,true);
-  assert.equal(loop.currentStepMayRepresentParallelRuntimeRevalidationWithoutRevokingInternalReleasePlayEligibility,true);
-  assert.equal(loop.explicitDisabledGameRemainsIneligible,true);
-  const arch=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup||{};
-  assert.equal(arch.actualPlayPlannerEligibility,'RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING');
-  assert.equal(arch.actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass,true);
-  assert.equal(arch.actualPlayPlannerExclusiveCurrentStepGate,false);
-  assert.equal(arch.parallelRuntimeFoundationAndFinalRevalidationAllowedAfterInternalRelease,true);
-  assert.equal(arch.explicitDisabledGameEligible,false);
+  const cycle=central.developmentLifecycleMachine?.perpetualF0ToF9Cycle||{};
+  assert.deepEqual(cycle.sequence,['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9']);
+  assert.equal(cycle.f10Exists,false);
+  assert.equal(cycle.executionPlan.F1ToF8.runtimeLaunches,1);
+  assert.equal(cycle.executionPlan.F9.runtimeLaunch,false);
+  assert.equal(cycle.executionPlan.F9.relaunchForF9Forbidden,true);
+  assert.deepEqual(cycle.platforms,['ROBLOX','UNITY']);
+  assert.deepEqual(cycle.excludedPlatforms,['FORTNITE_UEFN']);
+  assert.equal(cycle.releaseStateIndependent,true);
+  const arch=architecture.releaseExposureLifecycle?.perpetualF0ToF9Cycle||{};
+  assert.equal(arch.f10Exists,false);
+  assert.equal(arch.noPerFloorRuntimeRelaunch,true);
+  assert.equal(arch.noF9RuntimeRelaunch,true);
+  assert.equal(arch.robloxG1,'.github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play');
 });
-
 
 test('planner skips only an already verified exact Studio MCP play record',()=>{
   const candidate=item();
@@ -918,9 +946,9 @@ test('Studio MCP diagnostics expose installed version and available tool invento
 test('automatic Roblox Studio MCP scans collapse before heavy work while exact-game runs keep separate identities',()=>{
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
-  assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
+  assert.match(workflow,/run-name: Roblox internal F1-F8 · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
   assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}\n\s+cancel-in-progress: \$\{\{ inputs\.game_id == '' \}\}/);
-  assert.match(workflow,/title='Roblox runtime foundation QA · '\+\(game\|\|'scan'\)/);
+  assert.match(workflow,/title='Roblox internal F1-F8 · '\+\(game\|\|'scan'\)/);
   assert.match(workflow,/process\.stdout\.write\(String\(game\?ids\[0\]:ids\[ids\.length-1\]\)\)/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
