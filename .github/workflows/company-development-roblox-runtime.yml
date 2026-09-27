@@ -905,7 +905,12 @@ jobs:
               if(!['SOURCE_READY','BUILD_REPAIR_REQUIRED'].includes(lane))continue;
             }else{
               if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
-              if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
+              const canonicalState=String(item.canonicalState||'').toUpperCase();
+              const buildRevalidationPending=String(item.robloxFailureStage||'').toUpperCase()==='TARGET_PLATFORM_BUILD_OR_PACKAGE'
+                &&String(item.robloxFailureSignature||'').toUpperCase()==='ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING';
+              const technicalStateEligible=canonicalState==='TARGET_PLATFORM_REPAIR_REQUIRED'
+                ||(canonicalState==='WAITING_TARGET_PLATFORM_VALIDATION'&&buildRevalidationPending);
+              if(!technicalStateEligible)continue;
             }
             const sourcePath=String(secondaryOwnerFocus?item.ownerFocusRobloxSourcePath:(item.robloxProjectPath||item.targetSourcePath||item.sourcePath)||`roblox-games/${item.gameId}`).trim();
             const sourceRevision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();

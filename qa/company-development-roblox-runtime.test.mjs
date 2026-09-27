@@ -915,3 +915,13 @@ test('batch private-runtime recovery waits behind immediate F0 exact-game handof
   assert.match(workflow,/if\(!requested\)/);
   assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_DISPATCH_OWNER=EXACT_GAME_RUNTIME/);
 });
+
+
+test('build revalidation pending waiting state remains eligible for exact Roblox package work',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/buildRevalidationPending=String\(item\.robloxFailureStage\|\|''\)\.toUpperCase\(\)==='TARGET_PLATFORM_BUILD_OR_PACKAGE'/);
+  assert.match(workflow,/String\(item\.robloxFailureSignature\|\|''\)\.toUpperCase\(\)==='ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING'/);
+  assert.match(workflow,/canonicalState==='WAITING_TARGET_PLATFORM_VALIDATION'&&buildRevalidationPending/);
+  assert.match(workflow,/canonicalState==='TARGET_PLATFORM_REPAIR_REQUIRED'/);
+  assert.match(workflow,/if\(!technicalStateEligible\)continue;/);
+});
