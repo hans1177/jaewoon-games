@@ -3692,7 +3692,7 @@ test('focused replace Ollama requests keep canonical budget and enforce one-key 
 });
 
 
-test('graphics replacement report enforces actual 1-60 count surfaces reuse mode and before-after evidence',()=>{
+test('graphics replacement report grounds every actual replacement in changed source',()=>{
   const contract={
     required:true,
     adaptiveCount:{minimumActual:1,maximumActual:60},
@@ -3703,26 +3703,85 @@ test('graphics replacement report enforces actual 1-60 count surfaces reuse mode
       'TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES',
       'NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER'
     ],
-    beforeAfterEvidenceRequired:true
+    beforeAfterEvidenceRequired:true,
+    perReplacementSourceEvidenceRequired:true,
+    actualReplacementCountMustEqualGroundedEvidenceCount:true,
+    replacementEvidenceMustReferenceTouchedSourcePath:true,
+    replacementEvidenceSnippetMustExistInChangedSource:true,
+    duplicateReplacementEvidenceCannotInflateCount:true,
+    selfReportedCountWithoutGroundedSourceEvidenceCannotPass:true
   };
-  const valid=evaluateGraphicsReplacementReport({
-    candidate:{graphicsReplacementReport:{
-      actualCount:8,
+  const path='client/Game.client.luau';
+  const changed=[
+    'local impactVfx = createImpactVfx()',
+    'weapon.CFrame = weapon.CFrame * motionOffset',
+    'menuFrame.BackgroundColor3 = theme.PanelColor'
+  ].join('\n');
+  const validCandidate={
+    edits:[{path,find:'local oldVisual = true',replace:changed}],
+    graphicsReplacementReport:{
+      actualCount:3,
       changedSurfaces:['VFX','MOTION','MENU'],
       reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET','TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES'],
+      replacementEvidence:[
+        {surface:'VFX',path,bindingKey:'impactVfx',reuseMode:'ADAPT_RESTYLE_AND_RETARGET',sourceEvidence:'local impactVfx = createImpactVfx()'},
+        {surface:'MOTION',path,bindingKey:'weapon.CFrame',reuseMode:'TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES',sourceEvidence:'weapon.CFrame = weapon.CFrame * motionOffset'},
+        {surface:'MENU',path,bindingKey:'menuFrame.BackgroundColor3',reuseMode:'ADAPT_RESTYLE_AND_RETARGET',sourceEvidence:'menuFrame.BackgroundColor3 = theme.PanelColor'}
+      ],
       before:'공격 이펙트와 메뉴가 임시 표현이었다.',
       after:'공격 이펙트·모션·메뉴를 같은 컨셉 언어로 실제 교체했다.'
-    }},
-    contract
-  });
+    }
+  };
+  const valid=evaluateGraphicsReplacementReport({candidate:validCandidate,contract});
   assert.equal(valid.pass,true);
-  assert.equal(valid.report.actualCount,8);
+  assert.equal(valid.report.actualCount,3);
+  assert.equal(valid.groundedCount,3);
 
-  assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:0,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).pass,false);
-  assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:61,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).pass,false);
+  assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:0,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_COUNT_OUT_OF_RANGE');
+  assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:61,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_COUNT_OUT_OF_RANGE');
   assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:[],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'a',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_SURFACES_MISSING');
   assert.match(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:['VFX'],reuseModesUsed:['RAW_COPY'],before:'a',after:'b'}},contract}).reason,/GRAPHICS_REPLACEMENT_REUSE_MODE_INVALID/);
   assert.equal(evaluateGraphicsReplacementReport({candidate:{graphicsReplacementReport:{actualCount:3,changedSurfaces:['VFX'],reuseModesUsed:['ADAPT_RESTYLE_AND_RETARGET'],before:'',after:'b'}},contract}).reason,'GRAPHICS_REPLACEMENT_BEFORE_AFTER_MISSING');
+
+  const missingEvidence=structuredClone(validCandidate);
+  missingEvidence.graphicsReplacementReport.replacementEvidence=[];
+  assert.equal(evaluateGraphicsReplacementReport({candidate:missingEvidence,contract}).reason,'GRAPHICS_REPLACEMENT_EVIDENCE_MISSING');
+
+  const countMismatch=structuredClone(validCandidate);
+  countMismatch.graphicsReplacementReport.actualCount=2;
+  assert.equal(evaluateGraphicsReplacementReport({candidate:countMismatch,contract}).reason,'GRAPHICS_REPLACEMENT_COUNT_EVIDENCE_MISMATCH');
+
+  const untouched=structuredClone(validCandidate);
+  untouched.graphicsReplacementReport.actualCount=1;
+  untouched.graphicsReplacementReport.changedSurfaces=['VFX'];
+  untouched.graphicsReplacementReport.reuseModesUsed=['ADAPT_RESTYLE_AND_RETARGET'];
+  untouched.graphicsReplacementReport.replacementEvidence=[{surface:'VFX',path:'client/Other.client.luau',bindingKey:'impactVfx',reuseMode:'ADAPT_RESTYLE_AND_RETARGET',sourceEvidence:'local impactVfx = createImpactVfx()'}];
+  assert.match(evaluateGraphicsReplacementReport({candidate:untouched,contract}).reason,/PATH_NOT_TOUCHED/);
+
+  const inventedSnippet=structuredClone(validCandidate);
+  inventedSnippet.graphicsReplacementReport.actualCount=1;
+  inventedSnippet.graphicsReplacementReport.changedSurfaces=['VFX'];
+  inventedSnippet.graphicsReplacementReport.reuseModesUsed=['ADAPT_RESTYLE_AND_RETARGET'];
+  inventedSnippet.graphicsReplacementReport.replacementEvidence=[{surface:'VFX',path,bindingKey:'inventedVfx',reuseMode:'ADAPT_RESTYLE_AND_RETARGET',sourceEvidence:'local inventedVfx = createInventedVfx()'}];
+  assert.match(evaluateGraphicsReplacementReport({candidate:inventedSnippet,contract}).reason,/SOURCE_EVIDENCE_NOT_IN_CHANGED_SOURCE/);
+
+  const duplicate=structuredClone(validCandidate);
+  duplicate.graphicsReplacementReport.actualCount=2;
+  duplicate.graphicsReplacementReport.changedSurfaces=['VFX'];
+  duplicate.graphicsReplacementReport.reuseModesUsed=['ADAPT_RESTYLE_AND_RETARGET'];
+  duplicate.graphicsReplacementReport.replacementEvidence=[
+    {surface:'VFX',path,bindingKey:'impactVfx',reuseMode:'ADAPT_RESTYLE_AND_RETARGET',sourceEvidence:'local impactVfx = createImpactVfx()'},
+    {surface:'VFX',path,bindingKey:'impactVfx',reuseMode:'ADAPT_RESTYLE_AND_RETARGET',sourceEvidence:'local impactVfx = createImpactVfx()'}
+  ];
+  assert.equal(evaluateGraphicsReplacementReport({candidate:duplicate,contract}).reason,'GRAPHICS_REPLACEMENT_EVIDENCE_DUPLICATE');
+
+  const commentOnly=structuredClone(validCandidate);
+  commentOnly.edits[0].replace='-- impactVfx marker only';
+  commentOnly.graphicsReplacementReport.actualCount=1;
+  commentOnly.graphicsReplacementReport.changedSurfaces=['VFX'];
+  commentOnly.graphicsReplacementReport.reuseModesUsed=['ADAPT_RESTYLE_AND_RETARGET'];
+  commentOnly.graphicsReplacementReport.replacementEvidence=[{surface:'VFX',path,bindingKey:'impactVfx',reuseMode:'ADAPT_RESTYLE_AND_RETARGET',sourceEvidence:'-- impactVfx marker only'}];
+  assert.match(evaluateGraphicsReplacementReport({candidate:commentOnly,contract}).reason,/SOURCE_EVIDENCE_NOT_EXECUTABLE/);
 });
 
 test('adaptive graphics replacement report failure is retriable and classified separately',()=>{
