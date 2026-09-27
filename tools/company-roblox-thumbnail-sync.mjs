@@ -10,6 +10,8 @@ const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{re
 const sha256=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
 const validId=value=>/^[1-9][0-9]*$/.test(clean(value));
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const SVG_SOURCE_MAX_BYTES=12*1024;
+const RASTER_SOURCE_MAX_BYTES=160*1024;
 
 export function resolveRobloxThumbnailTarget({catalog={},queue={},gameId=''}) {
   const id=clean(gameId);
@@ -45,13 +47,15 @@ export function validateCanonicalThumbnail({root='.',target={}}={}) {
   if(!stat.isFile()||stat.size<512)throw new Error('ROBLOX_THUMBNAIL_SOURCE_FILE_INVALID:'+target.source);
   const ext=path.extname(sourcePath).toLowerCase();
   if(!['.svg','.png','.jpg','.jpeg'].includes(ext))throw new Error('ROBLOX_THUMBNAIL_SOURCE_FORMAT_UNSUPPORTED:'+ext);
+  const maxBytes=ext==='.svg'?SVG_SOURCE_MAX_BYTES:RASTER_SOURCE_MAX_BYTES;
+  if(stat.size>maxBytes)throw new Error('ROBLOX_THUMBNAIL_SOURCE_TOO_LARGE:'+stat.size+':'+maxBytes+':'+target.source);
   if(ext==='.svg'){
     const text=fs.readFileSync(sourcePath,'utf8');
     if(!/viewBox=["']0\s+0\s+1920\s+1080["']/i.test(text)&&!/width=["']1920["'][^>]+height=["']1080["']/i.test(text)){
       throw new Error('ROBLOX_THUMBNAIL_SOURCE_NOT_16_9_1920x1080:'+target.source);
     }
   }
-  return Object.freeze({sourcePath,ext,size:stat.size,sha256:sha256(sourcePath)});
+  return Object.freeze({sourcePath,ext,size:stat.size,maxBytes,sha256:sha256(sourcePath)});
 }
 
 export function renderThumbnailPng({sourcePath,outputPath,command='rsvg-convert'}={}) {
@@ -137,6 +141,8 @@ export async function syncRobloxHomepageThumbnail({
   const rendered=renderThumbnailPng({sourcePath:validated.sourcePath,outputPath:pngPath,command:renderCommand});
   console.log('ROBLOX_THUMBNAIL_SOURCE='+target.source);
   console.log('ROBLOX_THUMBNAIL_SOURCE_SHA256='+validated.sha256);
+  console.log('ROBLOX_THUMBNAIL_SOURCE_BYTES='+validated.size);
+  console.log('ROBLOX_THUMBNAIL_LOW_SIZE=PASS:max='+validated.maxBytes);
   console.log('ROBLOX_THUMBNAIL_RENDER=PASS:size='+rendered.size);
   const uploaded=await uploadRobloxHomepageThumbnail({
     universeId:target.universeId,pngPath,apiKey,fetchImpl,sleepImpl
@@ -148,6 +154,8 @@ export async function syncRobloxHomepageThumbnail({
     placeId:target.placeId,
     sourcePath:target.source,
     sourceSha256:validated.sha256,
+    sourceBytes:validated.size,
+    sourceMaxBytes:validated.maxBytes,
     renderedPngSha256:rendered.sha256,
     operationId:uploaded.operationId,
     homepageThumbnailId:uploaded.thumbnailId,
