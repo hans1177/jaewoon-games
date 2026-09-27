@@ -7247,7 +7247,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-27T09:31:45.681Z",
+      "updatedAt": "2026-09-27T09:34:48.450Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -7508,9 +7508,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_PERSISTENT_FAILURE",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_IDENTITY_MISMATCH",
       "routingBlockers": [
-        "roblox-source-promotion-pending"
+        "roblox-runtime-candidate-identity-mismatch"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -9349,7 +9349,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T09:32:16.325Z",
+  "updatedAt": "2026-09-27T09:34:48.450Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
