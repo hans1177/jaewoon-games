@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "find": "                var x = column * frameWidth;",
+      "replace": "var frameCount = manifest.frames;\nvar columns = manifest.columns;\nvar frameWidth = manifest.frameWidth;\nvar frameHeight = manifest.frameHeight;\nvar rows = ((long)frameCount + columns - 1L) / columns;\nvar requiredWidth = (long)Mathf.Min(frameCount, columns) * frameWidth;\nvar requiredHeight = rows * frameHeight;\nif (requiredWidth > texture.width || requiredHeight > texture.height)\n{\n    Destroy(texture);\n    try { File.Delete(manifestPath); } catch { }\n    try { File.Delete(spritePath); } catch { }\n    _loadError = \"asset bounds {actorId}/{action}\";\n    yield break;\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
