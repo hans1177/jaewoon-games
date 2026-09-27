@@ -3,79 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1in0b90",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:50:03.232Z",
-      "expiresAt": "2026-09-27T07:35:03.232Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-hmuk65",
-      "worker": "vibe2",
-      "taskId": "survival-unity-web-base-implementation-v1",
-      "gameId": "survival",
-      "files": [
-        "unity-games/survival/Assets/Scripts/GameCore.cs",
-        "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:50:15.537Z",
-      "expiresAt": "2026-09-27T07:35:15.537Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-13p8tb",
-      "worker": "vibe2",
-      "taskId": "cozy-island-unity-web-base-implementation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "unity-games/cozy-island/Assets/Scripts/GameCore.cs",
-        "unity-games/cozy-island/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:50:48.961Z",
-      "expiresAt": "2026-09-27T07:35:48.961Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-ip33yg",
-      "worker": "vibe2",
-      "taskId": "survival-roblox-presentation-asset-adaptation-v1",
-      "gameId": "survival",
-      "files": [
-        "roblox-games/survival/client/Game.client.luau",
-        "roblox-games/survival/server/Game.server.luau",
-        "roblox-games/survival/shared/GameConfig.luau"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:51:10.234Z",
-      "expiresAt": "2026-09-27T07:36:10.234Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-14jzqop",
       "worker": "vibe2",
       "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
@@ -750,6 +677,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:bug-defense-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-hpkmpn",
+      "worker": "vibe2",
+      "taskId": "survival-unity-web-base-implementation-v1",
+      "gameId": "survival",
+      "files": [
+        "unity-games/survival/Assets/Scripts/GameCore.cs",
+        "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "f930aa8ddc87534958c329af5fafc6a12209063e",
+      "acquiredAt": "2026-09-27T07:37:00.163Z",
+      "expiresAt": "2026-09-27T08:22:00.163Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:survival-unity-web-base-implementation-v1"
       ]
     }
   ]
