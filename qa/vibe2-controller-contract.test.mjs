@@ -492,7 +492,7 @@ test('controller runs content-hash incremental QA per worker and one parallel fu
 });
 
 test('core QA preserves the active same-ref regression and coalesces only pending duplicates',()=>{
-  assert.match(coreQaWorkflow,/concurrency:\n\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}[\s\S]*?cancel-in-progress: false/);
+  assert.match(coreQaWorkflow,/concurrency:\n(?:\s+#.*\n)*\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}\n\s+cancel-in-progress: false/);
   const regression=runtime.continuous.reserveContractRegressionPreflight;
   assert.equal(regression.coreQaActiveCompletion.concurrencyGroup,'vibe2-core-qa-${{ github.ref }}');
   assert.equal(regression.coreQaActiveCompletion.cancelInProgress,false);
@@ -536,7 +536,9 @@ test('neuron callbacks keep every ingress event and reconcile shared queue state
   assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
   assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
   assert(!workflow.includes("format('vibe2-fanin-refill-{0}', github.event.client_payload.execution_lane || 'game-primary')"));
-  assert(workflow.includes("startsWith(github.ref_name, 'vibe2/refill/fanin/') && format('vibe2-fanin-{0}', github.run_id)"));
+  assert(workflow.includes("format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary')"));
+  assert(workflow.includes("'vibe2-main-push-game-primary-wake'"));
+  assert(workflow.includes('cancel-in-progress: false'));
   assert(!workflow.includes('vibe2-fanin-refill-singleton'));
   assert(!workflow.includes("|| 'vibe2-control-state-vibe2-unreal-core'"));
   const start=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
@@ -1234,7 +1236,7 @@ test('continuous planners overlay company-runtime design evidence before autonom
 test('Vibe2 control-plane jobs use slim runners while heavy workers retain full runners',()=>{
   const coreWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   const runnerWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
-  assert.match(coreWorkflow,/\n  reserve:\n(?:\s+#.*\n)*\s+runs-on: ubuntu-slim/);
+  assert.match(coreWorkflow,/\n  reserve:\n(?:\s+#.*\n)*\s+runs-on: \$\{\{ github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-slim' \}\}/);
   assert.match(coreWorkflow,/\n  fan_in:[\s\S]*?runs-on: ubuntu-24\.04-arm/);
   assert.match(coreWorkflow,/\n  worker:[\s\S]*?runs-on: ubuntu-latest/);
   assert.match(runnerWorkflow,/\n  plan:[\s\S]{0,180}?runs-on: ubuntu-slim/);
