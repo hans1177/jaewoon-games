@@ -1,5 +1,5 @@
 {
-  "version": 297,
+  "version": 298,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3780,11 +3780,13 @@
     "publicRelease": {
       "platformIndependent": true,
       "onePlatformDoesNotWaitForOther": true,
-      "perpetualBuildupContinuesAfterPublicRelease": true
+      "perpetualBuildupContinuesAfterPublicRelease": true,
+      "ownerExplicitApprovalRequired": true,
+      "perpetualF0ToF9Continues": true
     },
     "robloxPerpetualInternalBuildup": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalBuildupLoop",
-      "startsAfter": "INTERNAL_PLATFORM_RELEASE",
+      "startsAfter": "FIRST_ELIGIBLE_NATIVE_SOURCE_CYCLE",
       "umbrellaState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "loop": [
         "VIBE_INTERNAL_PLAY",
@@ -3904,7 +3906,13 @@
         "externalPublicReleaseRemainsBlockedUntilRealServerBoot": true,
         "studioFollowupOwner": ".github/workflows/company-development-roblox-post-runtime-qa.yml"
       },
-      "actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass": true
+      "actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass": true,
+      "continuesBeforeInternalRelease": true,
+      "internalValidationAuthority": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD_PLUS_INTERNAL_QA_REGRESSION",
+      "internalServerBootRequired": false,
+      "f0ToF9ExecutionShape": "F0_ONCE__F1_TO_F8_ONE_STUDIO_SESSION__F9_FAN_IN_ONLY",
+      "perFloorStudioRelaunchForbidden": true,
+      "f10Exists": false
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
@@ -3925,6 +3933,71 @@
       "explicitExternalPublicationEvidenceRequiredForPublicRelease": true,
       "staleBuildEvidenceRejected": true,
       "changedSourceRequiresRebuildBeforeGateReevaluation": true
+    },
+    "perpetualF0ToF9Cycle": {
+      "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.perpetualF0ToF9Cycle",
+      "existingFloors": [
+        "F0",
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "f10Exists": false,
+      "platforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "excludedPlatforms": [
+        "FORTNITE_UEFN"
+      ],
+      "releaseStateIndependent": true,
+      "physicalExecution": [
+        {
+          "id": "F0_SOURCE_PREFLIGHT",
+          "floors": [
+            "F0"
+          ],
+          "runtimeLaunch": false
+        },
+        {
+          "id": "ONE_INTERNAL_RUNTIME_SESSION",
+          "floors": [
+            "F1",
+            "F2",
+            "F3",
+            "F4",
+            "F5",
+            "F6",
+            "F7",
+            "F8"
+          ],
+          "runtimeLaunchesPerExactCandidate": 1,
+          "roblox": ".github/workflows/company-development-roblox-post-runtime-qa.yml#studio-mcp-auto-play",
+          "unity": ".github/workflows/company-development-unity-runtime.yml",
+          "perFloorRelaunch": false
+        },
+        {
+          "id": "F9_FAN_IN",
+          "floors": [
+            "F9"
+          ],
+          "runtimeLaunch": false,
+          "roblox": ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+          "unity": ".github/workflows/company-development-unity-runtime.yml"
+        }
+      ],
+      "router": "tools/company-selected-platform-router.mjs",
+      "dispatcher": ".github/workflows/company-development-confirmed-runtime.yml",
+      "exactEvidenceReuseUntilRelevantDelta": true,
+      "unchangedSourceBusyLoop": false,
+      "nextSourceDeltaRestart": "F0",
+      "ownerPublicApprovalSeparate": true
     }
   },
   "autonomousBottleneckRecovery": {
