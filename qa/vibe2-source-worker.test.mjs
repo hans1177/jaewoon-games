@@ -3577,6 +3577,14 @@ test('game-specific BUILD_UP worker guidance carries source current-to-intended 
   assert.match(source,/expectedPlayerEffect=/);
   assert.match(source,/previousEffectiveness=/);
   assert.match(source,/nextVibeAction=/);
+  assert.match(source,/contentExpansionVersion=/);
+  assert.match(source,/contentTheme=/);
+  assert.match(source,/contentBreadth=/);
+  assert.match(source,/contentBundle=/);
+  assert.match(source,/antiClone=/);
+  assert.match(source,/continuity=/);
+  assert.match(source,/derivedRuleEvolution=/);
+  assert.match(source,/FORTNITE_UEFN/);
 });
 
 test('focused replace-only compacts build-up directive without losing exact goal evidence',()=>{
@@ -3589,6 +3597,14 @@ test('focused replace-only compacts build-up directive without losing exact goal
     'sourceAnchors=Assets/Scripts/Player.cs:12 SYMBOL Render CURRENT=weak INTENDED=clear ACCEPT=visible',
     'expectedPlayerEffect=공격 전조를 즉시 구분',
     'nextVibeAction=CONTINUE_BUILD_UP_CURRENT_SYSTEM',
+    'contentExpansionVersion=2 executionBoundary=EXISTING_BUILD_UP_ONLY decisionOwner=VIBE',
+    'contentTheme=WORLD_ECOLOGY_STORY_CHAIN themeDepth=1 mode=AUTONOMOUS_CONTENT_BUILD_UP',
+    'contentBreadth=covered:2/7 missing:ENEMY_BOSS_COMBAT_ECOLOGY,QUEST_STORY_PROGRESSION_CHAIN leastCovered:ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN',
+    'contentBundle=BACKGROUND_ENVIRONMENT_IDENTITY | REGION_NATIVE_ENCOUNTER | REGION_RESOURCE_OR_ITEM | QUEST_EVENT_REASON_TO_ENTER | STORY_AND_WORLD_CAUSALITY | REGION_RULE_OR_HAZARD',
+    'antiClone=NAME_COLOR_STAT_ONLY_CLONE_FORBIDDEN minimumDistinctAxes=2 axes=ROLE,BEHAVIOR,PLAYER_DECISION,WORLD_REASON,SYSTEM_CONNECTION',
+    'continuity=required:true preserveIdentity:true preserveProgression:true questions:WHY_DOES_THIS_EXIST_IN_THIS_GAME,WHAT_PLAYER_DECISION_DOES_IT_CHANGE',
+    'derivedRuleEvolution=MAY_ADD_DERIVED_GAMEPLAY_INTERACTION_RULES_WHEN_CONSISTENT',
+    'contentRule=Stay inside existing BUILD_UP and implement connected player-facing source changes.',
     noisyGameplay,
     'progressionWorld='+('world-detail '.repeat(220)),
     'visual=ANIMATION=anticipation impact recovery',
@@ -3615,6 +3631,14 @@ test('focused replace-only compacts build-up directive without losing exact goal
   assert.match(focused.prompt,/sourceAnchors=Assets\/Scripts\/Player\.cs/);
   assert.match(focused.prompt,/expectedPlayerEffect=공격 전조를 즉시 구분/);
   assert.match(focused.prompt,/ACTUAL_RENDERED_CHANGE_REQUIRED/);
+  assert.match(focused.prompt,/contentExpansionVersion=2/);
+  assert.match(focused.prompt,/contentTheme=WORLD_ECOLOGY_STORY_CHAIN/);
+  assert.match(focused.prompt,/contentBreadth=covered:2\/7/);
+  assert.match(focused.prompt,/REGION_RESOURCE_OR_ITEM/);
+  assert.match(focused.prompt,/NAME_COLOR_STAT_ONLY_CLONE_FORBIDDEN/);
+  assert.match(focused.prompt,/continuity=required:true/);
+  assert.match(focused.prompt,/derivedRuleEvolution=/);
+  assert.match(focused.prompt,/contentRule=Stay inside existing BUILD_UP/);
   assert.doesNotMatch(focused.prompt,/system-179=detail-179/);
   assert.doesNotMatch(focused.prompt,/world-detail world-detail world-detail/);
   assert.ok(Buffer.byteLength(focused.prompt,'utf8')<Buffer.byteLength(prompt,'utf8'));
