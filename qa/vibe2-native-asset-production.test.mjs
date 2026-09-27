@@ -40,6 +40,48 @@ function tempRoot(opts={}){
   return root;
 }
 
+test('verified commercial black-box distillation is mandatory input for internal asset evolution',()=>{
+  const verifiedLearning={
+    exactKnowledgeIds:['PLAYBOOK_REUSE:commercial-ui','PLAYBOOK_REUSE:commercial-motion'],
+    playbookReuse:[
+      {id:'commercial-ui',project:'commercial-app-a',sourceRevision:'sha256:a',score:0.7,verified:true,authority:'verified-task-playbook',sourcePlaybooks:['ui','graphics']},
+      {id:'commercial-motion',project:'commercial-app-b',sourceRevision:'sha256:b',score:0.6,verified:true,authority:'verified-task-playbook',sourcePlaybooks:['motion','graphics']}
+    ]
+  };
+  const plan=buildVibeAssetProductionPlan({
+    task:{gameId:'internal-asset-evolution',goal:'menu UI graphics motion internal asset development'},
+    target:'roblox',executionLane:'asset-development',verifiedLearning,
+    manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
+  });
+  assert.equal(plan.commercialDistillation.required,true);
+  assert.equal(plan.commercialDistillation.ready,true);
+  assert.equal(plan.commercialDistillation.verifiedReuseCount,2);
+  assert.equal(plan.commercialDistillation.mandatoryApplicationCoveragePct,100);
+  assert.equal(plan.commercialDistillation.applicationMode,'TRANSFORMATIVE_INTERNAL_ASSET_EVOLUTION');
+  assert.equal(plan.commercialDistillation.internalAssetEvolutionRequired,true);
+  assert.equal(plan.commercialDistillation.rawCommercialAssetCopyForbidden,true);
+  assert.equal(plan.commercialDistillation.rawCommercialCodeCopyForbidden,true);
+  assert.equal(plan.commercialDistillation.distinctiveMenuSceneOrAnimationCloneForbidden,true);
+  assert.ok(plan.commercialDistillation.applyAxes.includes('MENU_FLOW_AND_INFORMATION_ARCHITECTURE'));
+  assert.ok(plan.commercialDistillation.applyAxes.includes('GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION'));
+  assert.ok(plan.commercialDistillation.applyAxes.includes('MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION'));
+  assert.ok(plan.commercialDistillation.evolutionLoop.includes('REAUTHOR_OR_RECOMPOSE_INTERNAL_ASSET'));
+  assert.ok(plan.commercialDistillation.evolutionLoop.includes('RETURN_VERIFIED_OUTCOME_TO_LEARNING'));
+  const guidance=assetProductionGuidance(plan);
+  assert.match(guidance,/상업용 블랙박스 증류 적용=필수/);
+  assert.match(guidance,/내부 자산으로 재저작·재구성/);
+});
+
+test('internal asset development is not ready when verified commercial distillation is absent',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    task:{gameId:'internal-asset-missing-learning',goal:'graphics motion UI asset development'},
+    target:'unity',executionLane:'asset-development',verifiedLearning:{playbookReuse:[],exactKnowledgeIds:[]},
+    manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
+  });
+  assert.equal(plan.commercialDistillation.required,true);
+  assert.equal(plan.commercialDistillation.ready,false);
+  assert.equal(plan.commercialDistillation.verifiedReuseCount,0);
+});
 test('web-only assets are never reused directly by Unity or Roblox',()=>{
   const manifest={version:1,assets:[
     {id:'web-tree',path:'web-games/demo/assets/tree.png',types:['prop'],tags:['나무'],license:'CC0'},
