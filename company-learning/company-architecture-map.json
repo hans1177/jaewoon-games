@@ -1,5 +1,5 @@
 {
-  "version": 275,
+  "version": 276,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5569,7 +5569,10 @@
       "exactGameDispatch": true,
       "qualityGateOrderPreserved": true,
       "reusableFoundationRaceCovered": true,
-      "loopStopsWhenPlannerReportsAlreadyObserved": true
+      "loopStopsWhenPlannerReportsAlreadyObserved": true,
+      "prebootExactEngineCovered": true,
+      "prePlannerRuntimeFoundationPassGuard": false,
+      "observedMissedDispatchRunId": 36297021567
     }
   },
   "nativeChildDispatchDedupeTopology": {
@@ -6139,6 +6142,8 @@
     "exactEnginePrebootMayPromotePublicRelease": false,
     "studioAssetBindingVersionSource": "robloxStudioAssetBinding.bindingVersion",
     "primaryActionEffectAuthority": "SUCCESSFUL_PRIMARY_INPUT_PLUS_SERVER_FEEDBACK_TRANSITION_OR_OBSERVED_MOTION",
-    "gameplayRulesUnchanged": true
+    "gameplayRulesUnchanged": true,
+    "postFoundationStudioFollowupDelegatesToCanonicalPlanner": true,
+    "prePlannerRuntimeFoundationPassGuard": false
   }
 }
