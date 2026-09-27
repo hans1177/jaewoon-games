@@ -31,10 +31,6 @@ permissions:
   contents: read
   actions: read
 
-concurrency:
-  group: vibe2-unity-coding-distillation
-  cancel-in-progress: false
-
 env:
   LEARNING_FOCUS: UNITY_CODING_ONLY
   ONLINE_TEACHER_ROUTE: GPT_AUTHORED_CURRICULUM_ON_GITHUB_HOSTED_RUNNER
@@ -175,6 +171,9 @@ jobs:
   unity-practice-train:
     needs: online-teacher
     if: needs.online-teacher.outputs.practice_count != '0'
+    concurrency:
+      group: vibe2-unity-practice-local-training
+      cancel-in-progress: false
     runs-on: [self-hosted, Windows, X64, jaewoon-unity]
     timeout-minutes: 180
     defaults:
@@ -302,6 +301,9 @@ jobs:
   unity-train:
     needs: online-teacher
     if: needs.online-teacher.outputs.sample_count != '0'
+    concurrency:
+      group: vibe2-unity-verified-local-training
+      cancel-in-progress: false
     runs-on: [self-hosted, Windows, X64, jaewoon-unity]
     timeout-minutes: 180
     defaults:
