@@ -222,6 +222,7 @@ jobs:
                   versionNumber:Number(c.versionNumber),
                   available:false,
                   permissionDenied:false,
+                  persistentFailure:true,
                   status,
                   engineExecuted:false,
                   exactPlace:false,
@@ -321,6 +322,7 @@ jobs:
           }
           const probePath='/tmp/roblox-open-cloud-engine-probes.json';
           const probeRows=fs.existsSync(probePath)?JSON.parse(fs.readFileSync(probePath,'utf8')):[];
+          const persistentProbeFailures=(Array.isArray(probeRows)?probeRows:[]).filter(row=>row?.persistentFailure===true);
           const engineProbeByGame=new Map((Array.isArray(probeRows)?probeRows:[]).map(row=>[String(row?.gameId||''),row]));
           const candidates=(q.items||[]).filter(item=>{
             if(requested&&item.gameId!==requested)return false;
@@ -433,6 +435,43 @@ jobs:
             }
 
             const engineProbe=engineProbeByGame.get(item.gameId);
+            if(engineProbe?.persistentFailure===true){
+              const failureSignature='ROBLOX_OPEN_CLOUD_ENGINE_PROBE_PERSISTENT_FAILURE';
+              const sameProbeFailure=
+                item.robloxFailureSignature===failureSignature
+                &&item.robloxRuntimeFoundationEvidence?.authority==='roblox-open-cloud-engine-probe-failure'
+                &&Number(item.robloxRuntimeFoundationEvidence?.candidateVersionNumber||0)===Number(candidate.versionNumber)
+                &&Number(item.robloxRuntimeFoundationEvidence?.httpStatus||0)===Number(engineProbe.status||0)
+                &&String(item.robloxRuntimeFoundationEvidence?.error||'')===String(engineProbe.error||'');
+              item.robloxRuntimeFoundationPassed=false;
+              item.robloxRuntimePassed=false;
+              item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureSignature=failureSignature;
+              item.routingBlockers=['roblox-open-cloud-engine-probe-persistent-failure','roblox-runtime-foundation-awaiting-observation'];
+              if(!sameProbeFailure){
+                item.robloxRuntimeFoundationEvidence={
+                  version:1,
+                  gameId:item.gameId,
+                  sourceRevision,
+                  artifactIdentity,
+                  artifactRunId:Number(candidate.artifactRunId||0),
+                  universeId:String(candidate.universeId),
+                  placeId:String(candidate.placeId),
+                  candidateVersionNumber:Number(candidate.versionNumber),
+                  httpStatus:Number(engineProbe.status||0),
+                  failureStage:String(engineProbe.failureStage||'PROBE'),
+                  error:String(engineProbe.error||'').slice(0,500),
+                  observedAt:stamp,
+                  workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
+                  authority:'roblox-open-cloud-engine-probe-failure',
+                };
+                item.updatedAt=stamp;
+                changed=true;
+              }
+              console.log('ROBLOX_FOUNDATION_OPEN_CLOUD_PROBE_PERSISTENT_FAILURE='+item.gameId+':HTTP_'+Number(engineProbe.status||0));
+              pending++;
+              continue;
+            }
             if(engineProbe?.permissionDenied===true){
               const requiredScope=String(engineProbe.requiredScope||'universe.place.luau-execution-session:write');
               const failureSignature='ROBLOX_OPEN_CLOUD_LUAU_EXECUTION_PERMISSION_DENIED';
@@ -936,7 +975,9 @@ jobs:
           console.log(`ROBLOX_FOUNDATION_RUNTIME_PENDING=${pending}`);
           fs.writeFileSync('/tmp/roblox-f9-ids',f9Ids.join('\n')+(f9Ids.length?'\n':''));
           fs.writeFileSync('/tmp/roblox-studio-followup-ids',[...new Set(studioFollowupIds)].join('\n')+(studioFollowupIds.length?'\n':''));
+          fs.writeFileSync('/tmp/roblox-open-cloud-persistent-probe-failures',persistentProbeFailures.map(row=>String(row?.gameId||'')+':HTTP_'+Number(row?.status||0)).filter(Boolean).join('\n')+(persistentProbeFailures.length?'\n':''));
           console.log(`ROBLOX_STUDIO_MCP_POST_FOUNDATION_READY_COUNT=${new Set(studioFollowupIds).size}`);
+          console.log(`ROBLOX_OPEN_CLOUD_PERSISTENT_PROBE_FAILURE_COUNT=${persistentProbeFailures.length}`);
           console.log(`ROBLOX_FOUNDATION_RUNTIME_FAILURE=${failed}`);
           NODE
 
@@ -996,6 +1037,18 @@ jobs:
             echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH=$id"
           done < /tmp/roblox-studio-followup-ids
           echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH_COUNT=$dispatch_count"
+
+      - name: Enforce persistent Open Cloud probe failures after evidence persistence
+        shell: bash
+        run: |
+          set -euo pipefail
+          failure_file=/tmp/roblox-open-cloud-persistent-probe-failures
+          if [ -s "$failure_file" ]; then
+            cat "$failure_file"
+            echo 'ROBLOX_OPEN_CLOUD_PERSISTENT_PROBE_FAILURE=YES'
+            exit 1
+          fi
+          echo 'ROBLOX_OPEN_CLOUD_PERSISTENT_PROBE_FAILURE=NO'
 
   studio-local-plan:
     # Studio planning must not wait behind GitHub-hosted dedupe/runtime-foundation capacity.

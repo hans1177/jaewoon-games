@@ -1,5 +1,5 @@
 {
-  "version": 139,
+  "version": 140,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2415,7 +2415,7 @@
     "officialStudioMcpStillRequired": true
   },
   "robloxOpenCloudThrottleRecoveryEvidence": {
-    "version": 1,
+    "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxOpenCloudThrottleRecovery20260927",
     "observedRunId": 36294623143,
@@ -2428,24 +2428,30 @@
       "KEEP_EXACT_GAME_PROBE_CONCURRENCY_AT_ONE"
     ],
     "falsePassAllowed": false,
-    "persistentApiFailureStillFails": true
-  },
-  "robloxExactEvidenceRaceRepairEvidence": {
-    "version": 1,
-    "authority": "MACHINE_EXECUTION_LOG_MAP",
-    "workflowRunId": 36296050875,
-    "gameId": "horror-escape-room",
-    "sourceRevision": "b74a4ac341b7dff0ecd9f2d6cf25375534a2d268",
-    "artifactIdentity": "sha256:4109e8ab3df1273f6fb877930c128b4e717c68cefcf6050269a11e1a59e846de",
-    "candidateVersionNumber": 24,
-    "openCloudExactEngineObserved": true,
-    "openCloudStatus": 200,
-    "serverBootObserved": false,
-    "siblingPersistent429Observed": true,
-    "studioScenarioFailure": "primary-action-effect",
-    "studioConsoleErrorCount": 0,
-    "studioPersistFailure": "ROBLOX_STUDIO_MCP_CANDIDATE_STALE",
-    "studioAssetBindingObservedVersion": 2,
-    "falsePassAllowed": false
+    "persistentApiFailureStillFails": true,
+    "followupObservedRunId": 36296050875,
+    "followupObservedGameId": "horror-escape-room",
+    "followupObservedExactEngineStatus": 200,
+    "followupObservedExactEngineVersion": true,
+    "followupObservedRealServerBoot": false,
+    "peerPersistent429Observed": true,
+    "peerPersistent429ErasedSuccessfulProbeBeforeRepair": true,
+    "studioActualPlayObserved": {
+      "gameId": "horror-escape-room",
+      "consoleErrorCount": 0,
+      "primaryActionInput": "PASS",
+      "primaryActionEffect": "FAIL_BEFORE_AUTHORITATIVE_EFFECT_OBSERVATION",
+      "evidencePersistFailure": "ROBLOX_STUDIO_MCP_CANDIDATE_STALE",
+      "studioAssetBindingObservedVersion": 2
+    },
+    "repairContract": [
+      "PERSIST_SUCCESSFUL_AND_FAILED_PER_CANDIDATE_PROBES",
+      "PERSIST_COMPANY_RUNTIME_STATE_BEFORE_SURFACING_PERSISTENT_PEER_FAILURE",
+      "DISPATCH_EXACT_STUDIO_FOLLOWUP_BEFORE_SURFACING_PERSISTENT_PEER_FAILURE",
+      "MATCH_DECLARED_STUDIO_ASSET_BINDING_VERSION",
+      "ALLOW_EXACT_ENGINE_PREBOOT_STUDIO_EVIDENCE_WITHOUT_RUNTIME_OR_PUBLIC_RELEASE_PASS",
+      "REQUIRE_SUCCESSFUL_PRIMARY_INPUT_WITH_AUTHORITATIVE_FEEDBACK_TRANSITION_OR_OBSERVED_MOTION"
+    ],
+    "runtimeFoundationPassFabricationAllowed": false
   }
 }

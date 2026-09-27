@@ -1,5 +1,5 @@
 {
-  "version": 467,
+  "version": 468,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9533,7 +9533,7 @@
     "robloxOpenCloudThrottleRecovery20260927": {
       "id": "ROBLOX_OPEN_CLOUD_THROTTLE_RECOVERY_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
-      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "status": "LIVE_EXACT_PROBE_OBSERVED_FOLLOWUP_REPAIR_PENDING_QA",
       "objective": "PREVENT_TRANSIENT_OPEN_CLOUD_THROTTLING_FROM_BLOCKING_EXACT_RUNTIME_EVIDENCE_WHILE_AVOIDING_SCAN_BURSTS",
       "observedEvidence": {
         "gameId": "horror-escape-room",
@@ -9541,7 +9541,16 @@
         "sourceRevision": "b74a4ac341b7dff0ecd9f2d6cf25375534a2d268",
         "artifactIdentity": "sha256:4109e8ab3df1273f6fb877930c128b4e717c68cefcf6050269a11e1a59e846de",
         "candidateVersionNumber": 24,
-        "openCloudCreateStatus": 429
+        "openCloudCreateStatus": 429,
+        "followupRuntimeFoundationRunId": 36296050875,
+        "followupExactEngineHttpStatus": 200,
+        "followupExactEngineVersion": true,
+        "followupRealServerBootObserved": false,
+        "peerPersistentThrottleCausedBatchEvidenceLoss": true,
+        "studioActualPlayConsoleErrorCount": 0,
+        "studioActualPlayPrimaryActionEffectBeforeRepair": "FAIL",
+        "studioEvidencePersistFailureBeforeRepair": "ROBLOX_STUDIO_MCP_CANDIDATE_STALE",
+        "studioAssetBindingObservedVersion": 2
       },
       "transientHttpRetryStatuses": [
         408,
@@ -9558,29 +9567,20 @@
       "persistentApiFailureStillFails": true,
       "gameHeavyParallelismReduced": false,
       "runtimeTruthGateUnchanged": true,
-      "exactSourceArtifactVersionGateUnchanged": true
-    },
-    "robloxExactEvidenceRaceRepair20260927": {
-      "id": "ROBLOX_EXACT_EVIDENCE_RACE_REPAIR_2026-09-27",
-      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
-      "observedRunId": 36296050875,
-      "observedGameId": "horror-escape-room",
-      "candidateVersionNumber": 24,
-      "observedExactEngineHttpStatus": 200,
-      "observedExactEngineVersion": true,
-      "observedRealServerBoot": false,
-      "observedStudioPrimaryActionEffectFailure": true,
-      "observedStudioConsoleErrorCount": 0,
-      "observedStudioPersistFailure": "ROBLOX_STUDIO_MCP_CANDIDATE_STALE",
-      "observedStudioAssetBindingVersion": 2,
+      "exactSourceArtifactVersionGateUnchanged": true,
+      "perCandidateProbeFailureIsolation": true,
       "successfulProbeMustSurviveSiblingPersistentThrottle": true,
-      "persistentProbeFailureMustRemainCandidateFailClosed": true,
+      "successfulProbeEvidencePersistsAcrossPeerFailures": true,
+      "persistentProbeFailurePersistedBeforeWorkflowFailure": true,
       "exactEnginePrebootStudioEvidencePersistenceAllowed": true,
-      "exactEnginePrebootStudioEvidenceMaySetRuntimeFoundationPass": false,
-      "exactEnginePrebootStudioEvidenceMaySetPublicReleaseReady": false,
+      "exactEnginePrebootStudioEvidencePersistenceMaySetRuntimeFoundationPass": false,
+      "exactEnginePrebootStudioEvidencePersistenceMaySetPublicReleaseReady": false,
       "studioAssetBindingVersionMustMatchDeclaredBindingVersion": true,
       "primaryActionEffectMayUseAuthoritativeServerFeedbackTransition": true,
-      "sourceArtifactCandidateBindingMustRemainExact": true
+      "primaryActionFeedbackRequiresSuccessfulPrimaryInput": true,
+      "sourceArtifactCandidateBindingMustRemainExact": true,
+      "gameplayRulesChanged": false,
+      "qualityGateWeakening": false
     }
   },
   "vibeExecutionLaneContract": {
