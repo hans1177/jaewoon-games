@@ -206,6 +206,7 @@ test('Studio evidence persists for the same exact engine preboot candidate witho
   };
   const result=createLocalStudioPlayEvidence({item:candidate,runtime:runtime(),expected,workflowRunId:100,studioStepSucceeded:true});
   assert.equal(result.evidence.currentSourceArtifactBinding,true);
+  assert.equal(result.evidence.actualPlayEligibility,'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT');
   assert.equal(result.evidence.currentPublishedRuntimeClaim,false);
   assert.equal(candidate.robloxRuntimeFoundationPassed,false);
   assert.equal(candidate.robloxInternalReleasePublished,false);
@@ -1284,7 +1285,7 @@ test('planner reruns exact artifact when a declared Studio scenario contract is 
 
 test('Studio actual-play read-only probe captures the existing authoritative gameplay feedback attribute',()=>{
   assert.match(helper,/feedbackEvent=attr\(p,"FeedbackEvent"\)/);
-  assert.match(helper,/const authoritativeActionFeedback=Boolean\(feedbackAfter&&feedbackAfter!==feedbackBefore\)/);
+  assert.match(helper,/const authoritativeActionFeedback=Boolean\(actionOk\('ui-primary-action'\)&&feedbackAfter&&feedbackAfter!==feedbackBefore\)/);
 });
 
 test('declared Studio scenario probes the primary action before generic movement and keeps console errors separate from scenario failures',()=>{
