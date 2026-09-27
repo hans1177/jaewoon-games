@@ -1,5 +1,5 @@
 {
-  "version": 486,
+  "version": 487,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -10061,6 +10061,33 @@
       "robloxRuntimeDispatchFromWebReleaseForbidden": true,
       "noNewWorkflowOrStage": true,
       "gameplaySemanticsUnchanged": true
+    },
+    "assetDevelopmentArmModelCachePersistence20260928": {
+      "id": "ASSET_DEVELOPMENT_ARM_MODEL_CACHE_PERSISTENCE_2026-09-28",
+      "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism",
+      "status": "ACTIVE",
+      "observedRunId": 36351355901,
+      "observedExecutionLane": "asset-development",
+      "observedRunner": "ubuntu-24.04-arm",
+      "observedReservedTasks": 13,
+      "observedSpeculativeWorkers": 0,
+      "observedSpeculativeWorkersAvoided": 26,
+      "observedProblem": "SHARED_CACHE_KEY_HIT_BUT_QWEN3_MODEL_MISSING_CAUSED_PER_WORKER_1_4GB_REPULL",
+      "observedWorkerExamples": [
+        108711711603,
+        108711711650
+      ],
+      "fix": [
+        "BUMP_DEDICATED_VIBE_MODEL_CACHE_GENERATION_TO_V5",
+        "MODEL_CACHE_JOB_PERSISTS_CACHE_ON_MISS",
+        "WORKERS_RESTORE_SAME_ARCHITECTURE_AWARE_V5_CACHE"
+      ],
+      "existingCanonicalQueuePreserved": true,
+      "existingContinuousCorePreserved": true,
+      "newQueueOrPipelineCreated": false,
+      "speculativeVariantsPerAssetTask": 1,
+      "gamePrimaryWorkerPolicyUnchanged": true,
+      "qaSecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -15759,7 +15786,7 @@
       "assetDevelopmentSchedulerPlanRunner": "ubuntu-24.04-arm",
       "assetDevelopmentReserveRunner": "ubuntu-24.04-arm",
       "assetDevelopmentModelCacheRunner": "ubuntu-24.04-arm",
-      "assetDevelopmentOllamaCacheKey": "vibe2-ollama-v4-${runner.os}-${runner.arch}-qwen3-1.7b",
+      "assetDevelopmentOllamaCacheKey": "vibe2-ollama-v5-${runner.os}-${runner.arch}-qwen3-1.7b",
       "assetDevelopmentArchitectureAwareCache": true,
       "assetDevelopmentSpeculativeVariantsPerTask": 1,
       "assetDevelopmentSpeculativeVariantsSuppressed": true,
@@ -15774,7 +15801,10 @@
       "assetDevelopmentFanInReapplyLatestControlStateEveryRetry": true,
       "assetDevelopmentLiveSpeculativeWorkersAvoidedEvidence": 26,
       "assetDevelopmentLivePrimaryWorkerCountEvidence": 13,
-      "assetDevelopmentSourceWorkerBuildUpDirectiveSyntaxGuard": true
+      "assetDevelopmentSourceWorkerBuildUpDirectiveSyntaxGuard": true,
+      "assetDevelopmentModelCachePersistOnMiss": true,
+      "assetDevelopmentWorkerModelRepullAfterSharedCacheHitForbidden": true,
+      "assetDevelopmentCacheGeneration": 5
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",
