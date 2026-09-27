@@ -12,10 +12,27 @@ function openBlockingTickets(ticketQueue={},gameId='',platform=''){
 function internalReady(item={},platform=''){
   if(platform==='UNITY'){
     const e=item.executionEvidence||{};
-    return e.runtimePassed===true&&e.independentQaPassed===true&&e.regressionPassed===true&&e.exactRevision===true;
+    return item.unityInternalReleaseReady===true
+      ||(item.unityF1ToF8Passed===true&&e.independentQaPassed===true&&e.regressionPassed===true&&e.exactRevision===true);
   }
-  if(platform==='ROBLOX')return item.robloxInternalReleaseReady===true||(item.robloxRuntimePassed===true&&item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true);
+  if(platform==='ROBLOX')return item.robloxInternalReleaseReady===true
+    ||(item.robloxFoundationF0Passed===true&&item.robloxF1ToF8Passed===true&&item.robloxFinalReviewPassed===true&&item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true);
   return false;
+}
+function robloxOwnerApprovalExact(item={}){
+  const approval=item.robloxOwnerPublicReleaseApprovalEvidence||{};
+  const candidate=item.robloxRuntimeCandidateEvidence||item.robloxPublicReleaseEvidence||{};
+  return Boolean(
+    item.robloxOwnerPublicReleaseApproved===true
+    &&approval.approved===true
+    &&clean(approval.authority)==='OWNER_EXPLICIT_DIRECTIVE_ONLY'
+    &&clean(approval.sourceRevision)===clean(item.robloxSourceCommit)
+    &&clean(approval.artifactIdentity)===clean(item.robloxBuildArtifactIdentity)
+    &&Number(approval.versionNumber||0)>0
+    &&Number(approval.versionNumber)===Number(candidate.versionNumber||0)
+    &&String(approval.universeId||'')===String(candidate.universeId||'')
+    &&String(approval.placeId||'')===String(candidate.placeId||'')
+  );
 }
 function adaptationEvidence(item={},platform=''){
   if(platform==='UNITY')return item.unityPlatformAdaptationEvidence||item.platformAdaptationEvidence?.UNITY||{};
@@ -97,8 +114,7 @@ function robloxPublicHardGate(item={},tickets=[]){
   const scenarios=new Set((play.scenarioCoverage||[]).map(upper));
   const scenarioCoverage=play.scenarioCoveragePass===true&&mandatoryScenarios.every(x=>scenarios.has(x));
   const checks={
-    technical:item.robloxRuntimePassed===true&&item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true,
-    realServerBoot:item.robloxPublicReleaseRuntimeObservationPending!==true,
+    technical:item.robloxFoundationF0Passed===true&&item.robloxF1ToF8Passed===true&&item.robloxFinalReviewPassed===true&&item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true,
     exactRuntime:item.robloxExactRevisionPassed===true&&item.robloxF9ReleaseRegressionPassed===true&&item.robloxFinalReviewPassed===true,
     actualVibePlay:play.actualPlay===true&&exactRobloxEvidence(play,item),
     vibeScenarioCoverage:scenarioCoverage,
@@ -127,7 +143,9 @@ function platformState(item,tickets,platform,roadmap={}){
     ?item.robloxInternalReleasePublished===true||(item.robloxReleaseEvidence?.published===true&&item.robloxExternalPublicReleaseConfirmed!==true)
     :item.unityInternalReleasePublished===true||item.unityInternalTestBuildPublished===true;
   const playtestPassed=item[lower+'InternalPlaytestPassed']===true;
-  const explicitPublic=platform==='ROBLOX'?item.robloxExternalPublicReleaseConfirmed===true:item.unityExternalPublicReleaseConfirmed===true;
+  const externalConfirmed=platform==='ROBLOX'?item.robloxExternalPublicReleaseConfirmed===true:item.unityExternalPublicReleaseConfirmed===true;
+  const ownerApproved=platform==='ROBLOX'?robloxOwnerApprovalExact(item):item.unityOwnerPublicReleaseApproved===true;
+  const explicitPublic=ownerApproved&&externalConfirmed;
   const hardGate=platform==='ROBLOX'?robloxPublicHardGate(item,blocking):null;
   const publicReady=platform==='ROBLOX'
     ?technical&&internalPublished&&hardGate.pass===true
@@ -156,9 +174,9 @@ function platformState(item,tickets,platform,roadmap={}){
     publicHardGate:platform==='ROBLOX'?hardGate:null,
     perpetualBuildupActive:platform==='ROBLOX'&&internalPublished,
     testerTickets:{openBlocking:blocking.map(t=>t.id)},
-    publication:{explicitPublicEvidence:explicitPublic,publicReleased},
+    publication:{explicitPublicEvidence:externalConfirmed,ownerApproved,publicReleased},
     distribution:platform==='UNITY'
-      ?{intendedTrack:'INTERNAL_OR_CLOSED_APP_TEST',productionTrackAllowed:publicReady,credentialsRequiredForStoreUpload:true}
+      ?{intendedTrack:'INTERNAL_OR_CLOSED_APP_TEST',productionTrackAllowed:publicReleased,credentialsRequiredForStoreUpload:true}
       :{intendedVisibility:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',publicDiscoveryAllowed:publicReady},
     rebuildRequired:platform==='ROBLOX'?internalPublished&&!publicReady:false
   };
