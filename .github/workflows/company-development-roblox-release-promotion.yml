@@ -8,6 +8,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/company-development-roblox-release-promotion.yml'
+      - 'assets/roblox-thumbnails/**'
+      - 'game-catalog.json'
   workflow_dispatch:
     inputs:
       game_id:
@@ -1009,7 +1011,7 @@ jobs:
             console.log('game_ids='+requested);
           }else{
             const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-            const exposure=JSON.parse(fs.readFileSync('homepage-platform-exposure.json','utf8'));
+            const exposure=JSON.parse(fs.readFileSync('../runtime/homepage-platform-exposure.json','utf8'));
             const ids=[];
             for(const row of exposure.games||[]){
               const gameId=String(row?.gameId||'').trim();
