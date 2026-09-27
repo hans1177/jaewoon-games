@@ -94,11 +94,11 @@ test('stale published Roblox version preserves the exact failed stage and retrie
 });
 
 
-test('exact Roblox foundation QA isolates exact games while collapsing duplicate scan work without workflow-wide locking',()=>{
+test('exact Roblox foundation QA isolates exact games while collapsing duplicate scan work before runner allocation',()=>{
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
-  assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}\n\s+cancel-in-progress: \$\{\{ inputs\.game_id == '' \}\}/);
   assert.match(workflow,/inputs\.game_id/);
   assert.match(workflow,/title='Roblox runtime foundation QA · '\+\(game\|\|'scan'\)/);
   assert.match(workflow,/process\.stdout\.write\(String\(game\?ids\[0\]:ids\[ids\.length-1\]\)\)/);
@@ -134,11 +134,11 @@ test('foundation runtime write contention defers only the stale write and keeps 
 });
 
 
-test('post-runtime QA collapses duplicate scans before heavy work without workflow-wide concurrency',()=>{
+test('post-runtime QA collapses duplicate scans before heavy work with scan-scoped workflow concurrency',()=>{
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
-  assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}\n\s+cancel-in-progress: \$\{\{ inputs\.game_id == '' \}\}/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
