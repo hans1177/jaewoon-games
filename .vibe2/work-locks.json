@@ -3,61 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-170689d",
-      "worker": "vibe2",
-      "taskId": "village-dungeons-studio-evolution-unity-web-usability-v1",
-      "gameId": "village-dungeons",
-      "files": [
-        "unity-games/village-dungeons/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/village-dungeons/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-      "acquiredAt": "2026-09-27T01:06:54.789Z",
-      "expiresAt": "2026-09-27T01:51:54.789Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:village-dungeons-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-z66y7k",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-unity-web-base-implementation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "unity-games/monster-adventure/Assets/Scripts/GameCore.cs",
-        "unity-games/monster-adventure/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-      "acquiredAt": "2026-09-27T01:07:18.831Z",
-      "expiresAt": "2026-09-27T01:52:18.831Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-ivz8y3",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau"
-      ],
-      "baseSha": "9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-      "acquiredAt": "2026-09-27T01:07:49.184Z",
-      "expiresAt": "2026-09-27T01:52:49.184Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-f8s8m4",
       "worker": "vibe2",
       "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1",
@@ -643,6 +588,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:horror-escape-room-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-j0ggqb",
+      "worker": "vibe2",
+      "taskId": "cozy-island-unity-web-base-implementation-v1",
+      "gameId": "cozy-island",
+      "files": [
+        "unity-games/cozy-island/Assets/Scripts/GameCore.cs",
+        "unity-games/cozy-island/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "50673ac9ac61015195ee2db525dc6e371c67d252",
+      "acquiredAt": "2026-09-27T01:53:16.123Z",
+      "expiresAt": "2026-09-27T02:38:16.123Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-unity-web-base-implementation-v1"
       ]
     }
   ]
