@@ -1,5 +1,5 @@
 {
-  "version": 287,
+  "version": 288,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6288,5 +6288,33 @@
       "productQuality": "EXISTING_CAUSAL_REPAIR_PREEMPTS_UNRELATED_EXPANSION",
       "transientInfrastructure": "EXACT_INFRASTRUCTURE_OR_EVIDENCE_RETRY_NO_GAME_CONTENT_REWRITE"
     }
+  },
+  "menuDiversityImplementationTopology": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.gameDevelopmentAuthority.menuDiversityImplementation",
+    "designInput": "tools/vibe2-design-intelligence.mjs",
+    "developmentPlanner": "tools/vibe2-auto-planner.mjs",
+    "graphicsInput": "tools/vibe2-asset-production-plan.mjs",
+    "uiAssetCoverage": "assets/vibe-studio-asset-universe.js#DEFAULT_COVERAGE_BASELINES.UI",
+    "candidateMenuRoles": [
+      "MAIN_MENU",
+      "PAUSE",
+      "INVENTORY",
+      "EQUIPMENT",
+      "SHOP",
+      "CRAFTING",
+      "QUEST",
+      "SKILL",
+      "MAP",
+      "SETTINGS",
+      "RESULT",
+      "SOCIAL_MULTIPLAYER"
+    ],
+    "selectionRule": "ONLY_EXISTING_OR_APPROVED_GAME_SYSTEMS",
+    "runtimeBindingRequired": true,
+    "sameMenuSetAcrossAllGamesForbidden": true,
+    "newQueue": false,
+    "newPipeline": false,
+    "gameplayAuthorityExpanded": false
   }
 }
