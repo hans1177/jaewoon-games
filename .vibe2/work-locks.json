@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1tcbpc",
-      "worker": "vibe2",
-      "taskId": "village-dungeons-unity-web-base-implementation-v1",
-      "gameId": "village-dungeons",
-      "files": [
-        "unity-games/village-dungeons/Assets/Scripts/GameCore.cs",
-        "unity-games/village-dungeons/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "fdc04521e142456575a24c12d283b3c1a332c99f",
-      "acquiredAt": "2026-09-27T09:43:31.688Z",
-      "expiresAt": "2026-09-27T10:28:31.688Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:village-dungeons-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-1sjaxjn",
       "worker": "vibe2",
       "taskId": "survival-unity-web-base-implementation-v1",
@@ -328,25 +310,6 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:monster-adventure-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1dxgci1",
-      "worker": "vibe2",
-      "taskId": "amusement-tycoon-roblox-presentation-asset-adaptation-v1",
-      "gameId": "amusement-tycoon",
-      "files": [
-        "roblox-games/amusement-tycoon/client/Game.client.luau",
-        "roblox-games/amusement-tycoon/server/Game.server.luau",
-        "roblox-games/amusement-tycoon/shared/GameConfig.luau"
-      ],
-      "baseSha": "456c47c090c1c88523338e8483d28c591d4034ef",
-      "acquiredAt": "2026-09-27T09:58:02.813Z",
-      "expiresAt": "2026-09-27T10:43:02.813Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:amusement-tycoon-roblox-presentation-asset-adaptation-v1"
       ]
     },
     {
