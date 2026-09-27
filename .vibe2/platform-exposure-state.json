@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-09-27T06:48:54.808Z",
+  "updatedAt": "2026-09-27T06:55:56.540Z",
   "games": [
     {
       "gameId": "daechung-rpg",
@@ -1056,10 +1056,10 @@
       "platforms": [
         {
           "platform": "ROBLOX",
-          "technicalReady": false,
-          "internalReleaseState": "NATIVE_DEVELOPMENT",
-          "internalReleaseReady": false,
-          "internalReleasePublished": false,
+          "technicalReady": true,
+          "internalReleaseState": "INTERNAL_PLAYTEST_AND_DEBUG",
+          "internalReleaseReady": true,
+          "internalReleasePublished": true,
           "internalPlaytestPassed": true,
           "externalExposureAllowed": false,
           "externalExposureState": "INTERNAL_ONLY",
@@ -1101,7 +1101,7 @@
             ],
             "candidateVersionNumber": 24
           },
-          "perpetualBuildupActive": false,
+          "perpetualBuildupActive": true,
           "testerTickets": {
             "openBlocking": [
               "bug-7d114ff3812bf7516f00",
@@ -1119,7 +1119,7 @@
             "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
             "publicDiscoveryAllowed": false
           },
-          "rebuildRequired": false
+          "rebuildRequired": true
         },
         {
           "platform": "UNITY",
