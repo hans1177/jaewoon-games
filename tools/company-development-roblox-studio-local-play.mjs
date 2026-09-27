@@ -1309,7 +1309,6 @@ export function createLocalStudioPlayEvidence({
   const currentExactPublishedArtifact=Boolean(
     currentSourceArtifactBinding
     &&candidateMatchesExpected
-    &&(runtimeFoundationExact||exactEngineVersionAwaitingRealServerBoot||internalReleaseObserved(item,candidate))
   );
   const historicalExactPublishedArtifact=Boolean(
     !currentSourceArtifactBinding
@@ -1430,7 +1429,7 @@ export function createLocalStudioPlayEvidence({
       infrastructureFailure,
       failureClass,
       robloxFailureClass,
-      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineVersionAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
+      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineVersionAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':internalReleaseObserved(item,candidate)?'INTERNAL_RELEASE_EXACT':'PRIVATE_CANDIDATE_EXACT_F1_F8_SINGLE_SESSION',
       studioMcpServerEnablementRequired,
       operatorPrerequisite:studioMcpServerEnablementRequired?'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT':null,
       localPlaceFile:true,
