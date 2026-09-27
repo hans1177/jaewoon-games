@@ -161,9 +161,13 @@ function expectedPlayerEffect({focus='CORE_FUN',identity='',anchor='',secondary=
   return byFocus[focus]||byFocus.CORE_FUN;
 }
 
-function decideNextVibeAction({previousEffectiveness={},previousOutcome='',focus='CORE_FUN'}={}){
+function decideNextVibeAction({previousEffectiveness={},previousOutcome='',focus='CORE_FUN',runtimeEvidence={}}={}){
   const classification=clean(previousEffectiveness?.classification).toUpperCase();
   const failed=['failed','error','rejected','repair_required'].includes(clean(previousOutcome).toLowerCase());
+  const productQualityRepair=
+    runtimeEvidence?.qualityBuildUpRequired===true
+    &&clean(runtimeEvidence?.qualityFailureClass).toUpperCase()==='PRODUCT';
+  if(productQualityRepair)return Object.freeze({action:'CAUSAL_REPAIR',reason:'verified internal product-quality failure requires direct responsible game-source repair before external release observation'});
   if(failed||classification==='REGRESSION')return Object.freeze({action:'CAUSAL_REPAIR',reason:'verified failure/regression evidence has higher player value than unrelated build-up'});
   if(classification==='NO_MEANINGFUL_EFFECT')return Object.freeze({action:'CONTINUE_BUILD_UP_CURRENT_SYSTEM',reason:'previous verified status did not create a meaningful source/player-value delta; change strategy at the same depth'});
   if(classification==='UNKNOWN_RUNTIME_EFFECT')return Object.freeze({action:'REQUEST_REQUIRED_RUNTIME_OBSERVATION',reason:'effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed'});
@@ -718,7 +722,7 @@ export function buildGameSpecificBuildUpDirective({
     implementationRule:'read existing Roblox responsibilities first; modify the existing responsible function/module directly; do not translate Unity/Web code literally',
     actualPlayRule:'after the changed behavior becomes executable and the existing runtime-foundation gate passes, replay the exact changed scenario through official Studio MCP and feed the observed result back into causal repair'
   });
-  const nextActionDecision=decideNextVibeAction({previousEffectiveness,previousOutcome:previousDirectiveOutcome,focus});
+  const nextActionDecision=decideNextVibeAction({previousEffectiveness,previousOutcome:previousDirectiveOutcome,focus,runtimeEvidence});
   const systemNames=design.signatureSystems.map(x=>x.name).filter(Boolean);
   const gameplay=[
     `우선 책임 소스 앵커 ${exactAnchorLabel}에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.`,
