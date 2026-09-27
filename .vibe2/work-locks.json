@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-d3qzkb",
-      "worker": "vibe2",
-      "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "f28ef714241144db22fbbce362e20c6e0ba62060",
-      "acquiredAt": "2026-09-27T02:23:53.095Z",
-      "expiresAt": "2026-09-27T03:08:53.095Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-bnfbhu",
       "worker": "vibe2",
       "taskId": "bug-defense-unity-web-base-implementation-v1",
@@ -802,6 +784,23 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
+      ]
+    },
+    {
+      "id": "wl-1kghi25",
+      "worker": "vibe2",
+      "taskId": "cozy-island-existing-web-assessment-v1",
+      "gameId": "cozy-island",
+      "files": [
+        "web-games/cozy-island/index.html"
+      ],
+      "baseSha": "af46e74c9ade8f4af412a18f175596ab9d3ba7b8",
+      "acquiredAt": "2026-09-27T03:08:54.208Z",
+      "expiresAt": "2026-09-27T03:53:54.208Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-existing-web-assessment-v1"
       ]
     }
   ]
