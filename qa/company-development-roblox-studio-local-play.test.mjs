@@ -1433,3 +1433,50 @@ test('Studio infrastructure failure does not fabricate a product-quality buildup
   assert.equal(applied.item.robloxQualityFailureClass,'INFRASTRUCTURE_OR_EVIDENCE_ONLY');
   assert.equal(applied.item.canonicalState,'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
 });
+
+test('product-quality Studio failure automatically marks canonical buildup and suppresses same-source Studio replay',()=>{
+  const candidate=item();
+  candidate.robloxSharedTargetCurrent=true;
+  candidate.robloxRuntimeFoundationPassed=true;
+  candidate.robloxRuntimeFoundationEvidence={
+    sourceRevision:source,artifactIdentity:artifact,artifactRunId:777,placeId:'456',
+    candidateVersionNumber:9,runtimeFoundationPassed:true,actualRuntimeEvidence:true
+  };
+  const failed=runtime();
+  failed.checkpoints=failed.checkpoints.map(row=>row.id==='viewport-changed-after-input'?{...row,pass:false}:row);
+  failed.metrics={...failed.metrics,distinctFrameChange:false};
+  const queue={items:[candidate]};
+  const applied=applyLocalStudioPlayResult({
+    queue,gameId:'g1',runtime:failed,expected,workflowRunId:991,studioStepSucceeded:true,
+    testedAt:'2026-09-27T08:00:00.000Z'
+  });
+  assert.equal(applied.result.pass,false);
+  assert.equal(applied.item.robloxQualityBuildUpRequired,true);
+  assert.equal(applied.item.robloxQualityFailureClass,'PRODUCT');
+  assert.equal(applied.item.robloxQualityBuildUpSourceRevision,source);
+  assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
+  assert.equal(applied.item.currentStep,'REPAIR_REQUIRED');
+  assert.equal(applied.item.robloxQualityBuildUpEvidence?.authority,'roblox-official-studio-mcp-product-quality-failure');
+  assert.equal(planLocalStudioCandidates({queue,roadmap:roadmap()}).include.length,0);
+});
+
+test('Studio infrastructure failure does not fabricate a product-quality buildup request',()=>{
+  const candidate=item();
+  candidate.robloxSharedTargetCurrent=true;
+  candidate.robloxRuntimeFoundationPassed=true;
+  candidate.robloxRuntimeFoundationEvidence={
+    sourceRevision:source,artifactIdentity:artifact,artifactRunId:777,placeId:'456',
+    candidateVersionNumber:9,runtimeFoundationPassed:true,actualRuntimeEvidence:true
+  };
+  const infra=runtime();
+  infra.errors=[{type:'infrastructure',signature:'NO_STUDIO'}];
+  const queue={items:[candidate]};
+  const applied=applyLocalStudioPlayResult({
+    queue,gameId:'g1',runtime:infra,expected,workflowRunId:992,studioStepSucceeded:false,
+    testedAt:'2026-09-27T08:01:00.000Z'
+  });
+  assert.equal(applied.result.evidence.infrastructureFailure,true);
+  assert.notEqual(applied.item.robloxQualityBuildUpRequired,true);
+  assert.equal(applied.item.robloxQualityFailureClass,'INFRASTRUCTURE_OR_EVIDENCE_ONLY');
+  assert.equal(applied.item.canonicalState,'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+});
