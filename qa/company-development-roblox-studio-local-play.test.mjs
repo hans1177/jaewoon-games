@@ -764,6 +764,11 @@ test('Studio MCP opens the exact local Place as the single Studio before MCP and
   assert.match(bindBlock,/ROBLOX_STUDIO_MCP_EXACT_ASSISTANT_LOG_READY=UNKNOWN_CONTINUE_OFFICIAL_HANDSHAKE/);
   assert.match(bindBlock,/ROBLOX_STUDIO_MCP_ASSISTANT_LOG_GATE=ADVISORY_ONLY/);
   assert.match(bindBlock,/ROBLOX_STUDIO_MCP_SINGLE_EXACT_STUDIO=YES/);
+  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_PRE_MCP_RELAUNCH=YES/);
+  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_PRE_MCP_PROCESS_READY_COUNT=/);
+  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_PROCESS_HANDOFF_RECOVERED=/);
+  assert.match(bindBlock,/for \(\$processProbe = 1; \$processProbe -le 12; \$processProbe\+\+\)/);
+  assert.doesNotMatch(bindBlock,/Roblox Studio exited before exact local Place MCP probe/);
   assert.match(bindBlock,/AssistantVersion:\|Running plugin sabuiltin_Assistant\\\.rbxm/);
   assert.doesNotMatch(bindBlock,/Roblox Studio Assistant did not finish loading in exact local Place/);
   assert.match(bindBlock,/VIBE2_STUDIO_PROCESS_IDS=/);
@@ -774,6 +779,9 @@ test('Studio MCP opens the exact local Place as the single Studio before MCP and
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_EXACT_ASSISTANT_LOG_READY=UNKNOWN_CONTINUE_OFFICIAL_HANDSHAKE/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_ASSISTANT_LOG_GATE=ADVISORY_ONLY/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SINGLE_EXACT_STUDIO=YES/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_PROCESS_NOT_READY=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_PROCESS_HANDOFF_RECOVERED=/);
+  assert.doesNotMatch(studioMcpBlock,/Roblox Studio exited before MCP recovery Place probe/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_STALE_OFFICIAL_PROCESS_REAPED=/);
   assert.match(studioMcpBlock,/StartsWith\(\$officialVersionsRoot,\[System\.StringComparison\]::OrdinalIgnoreCase\)/);
   assert.match(studioMcpBlock,/foreach \(\$ownedId in \$ownedIds\)/);
