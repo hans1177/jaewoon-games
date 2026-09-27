@@ -653,8 +653,7 @@ function normalizeGraphicsReplacementReport(value){
   const reuseModesUsed=unique((Array.isArray(value.reuseModesUsed)?value.reuseModesUsed:[]).map(v=>clean(v).toUpperCase()).filter(Boolean)).slice(0,8);
   const replacementEvidence=(Array.isArray(value.replacementEvidence)?value.replacementEvidence:[])
     .map(normalizeGraphicsReplacementEvidence)
-    .filter(Boolean)
-    .slice(0,60);
+    .filter(Boolean);
   return{
     actualCount,
     changedSurfaces,
@@ -681,7 +680,7 @@ function graphicsEvidenceLooksLikeSource(value=''){
   const text=String(value??'').trim();
   if(text.length<6)return false;
   const meaningful=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).filter(line=>
-    !/^(?:\/\/|--|#|\/\*|\*|<!--)/.test(line)
+    !/^(?:\/\/|--|\/\*|\*|<!--)/.test(line)
   );
   return meaningful.length>0&&/[A-Za-z0-9_$.[\](){}:=<>-]/.test(meaningful.join(' '));
 }
