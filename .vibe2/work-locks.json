@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-8k6yz2",
-      "worker": "vibe2",
-      "taskId": "village-dungeons-roblox-presentation-asset-adaptation-v1",
-      "gameId": "village-dungeons",
-      "files": [
-        "roblox-games/village-dungeons/client/Game.client.luau",
-        "roblox-games/village-dungeons/server/Game.server.luau",
-        "roblox-games/village-dungeons/shared/GameConfig.luau"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:41:53.960Z",
-      "expiresAt": "2026-09-27T07:26:53.960Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:village-dungeons-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-6x0tdx",
       "worker": "vibe2",
       "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
@@ -805,6 +786,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:village-dungeons-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-1buxpaz",
+      "worker": "vibe2",
+      "taskId": "line-defense-unity-web-base-implementation-v1",
+      "gameId": "line-defense",
+      "files": [
+        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
+        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "f930aa8ddc87534958c329af5fafc6a12209063e",
+      "acquiredAt": "2026-09-27T07:27:13.828Z",
+      "expiresAt": "2026-09-27T08:12:13.828Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:line-defense-unity-web-base-implementation-v1"
       ]
     }
   ]
