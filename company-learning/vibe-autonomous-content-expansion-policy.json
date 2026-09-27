@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -14,10 +14,15 @@
     "platforms": [
       "WEB",
       "ROBLOX",
-      "UNITY",
+      "UNITY"
+    ],
+    "platformRule": "SAME_AUTONOMOUS_EXPANSION_CONTRACT_PLATFORM_NATIVE_IMPLEMENTATION_FOR_ACTIVE_PLATFORMS_ONLY",
+    "pausedPlatforms": [
       "FORTNITE_UEFN"
     ],
-    "platformRule": "SAME_AUTONOMOUS_EXPANSION_CONTRACT_PLATFORM_NATIVE_IMPLEMENTATION"
+    "pausedPlatformStatus": {
+      "FORTNITE_UEFN": "개발보류"
+    }
   },
   "autonomy": {
     "decisionOwner": "VIBE",
@@ -242,8 +247,7 @@
     "platforms": [
       "WEB",
       "ROBLOX",
-      "UNITY",
-      "FORTNITE_UEFN"
+      "UNITY"
     ],
     "decisionOwner": "VIBE",
     "adaptiveReplacementCount": {
@@ -337,8 +341,7 @@
       "runtimePlatforms": [
         "WEB",
         "ROBLOX",
-        "UNITY",
-        "FORTNITE_UEFN"
+        "UNITY"
       ],
       "surfaces": [
         "MAIN_MENU",
@@ -450,7 +453,17 @@
           "runtimeImplementation": "UEFN_NATIVE_UI_SYSTEM",
           "directUnityOrRobloxRuntimeCodeReuseForbidden": true
         }
+      },
+      "pausedPlatforms": [
+        "FORTNITE_UEFN"
+      ],
+      "pausedPlatformStatus": {
+        "FORTNITE_UEFN": "개발보류"
       }
-    }
+    },
+    "pausedPlatforms": [
+      "FORTNITE_UEFN"
+    ],
+    "pausedPlatformRule": "FORTNITE_UEFN_OWNER_HOLD_NO_AUTONOMOUS_BUILD_UP_UNTIL_EXPLICIT_RESUME"
   }
 }
