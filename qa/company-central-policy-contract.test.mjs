@@ -838,7 +838,9 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.equal(roadmap.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
   assert.equal(roadmap.fortniteUefn.developmentStatus,'DEVELOPMENT_PAUSED');
   assert.equal(roadmap.fortniteUefn.developmentStatusLabel,'개발보류');
-  assert.equal(roadmap.fortniteUefn.autonomousBuildUpAllowed,false);
+  assert.equal(roadmap.fortniteUefn.buildUpExecutionAllowed,false);
+  assert.equal(roadmap.fortniteUefn.graphicsBuildUpAllowed,false);
+  assert.equal(roadmap.fortniteUefn.menuBuildUpAllowed,false);
   assert.equal(roadmap.neuralDevelopmentBrain.currentExecutionMode,'ATOMIC_NEURON_DAG_WITH_GATED_NEURAL_CONTROL_AND_SHADOW_FALLBACK');
   assert.equal(roadmap.neuralDevelopmentBrain.phase2.mode,'GATED_EVENT_ROUTER_WITH_SHADOW_FALLBACK');
   assert.equal(roadmap.neuralDevelopmentBrain.phase2.shadowAuthorityScope,'OBSERVE_COMPARE_AUDIT_ONLY');
