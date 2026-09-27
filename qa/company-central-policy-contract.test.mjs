@@ -1090,6 +1090,12 @@ test('core QA keeps one active regression alive during same-ref main churn',()=>
   assert.match(coreQaWorkflow,/concurrency:\n(?:\s+#.*\n)*\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}[\s\S]*?cancel-in-progress:\s*false/);
   assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaRunner,'ubuntu-slim');
   assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaConcurrencyMode,'ACTIVE_ONE_PLUS_LATEST_PENDING');
+  assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaBrowserSmokeRunner,'ubuntu-latest');
+  assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaBrowserSmokeSeparateJob,true);
+  assert.equal(policy?.coreQaBrowserSmokeIsolation?.deterministicCoreRunner,'ubuntu-slim');
+  assert.equal(policy?.coreQaBrowserSmokeIsolation?.browserSmokeRunner,'ubuntu-latest');
+  assert.equal(policy?.coreQaBrowserSmokeIsolation?.browserValidationPreserved,true);
+  assert.equal(policy?.coreQaBrowserSmokeIsolation?.qualityGateWeakened,false);
 });
 
 test('focused retry history reuse stays evidence-gated without weakening QA',()=>{
