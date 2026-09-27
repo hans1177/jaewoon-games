@@ -1,5 +1,5 @@
-name: Company DEVELOPMENT_CONFIRMED Roblox Runtime Foundation QA
-run-name: Roblox runtime foundation QA · ${{ inputs.game_id || 'scan' }}
+name: Company Roblox F0-F9 Internal Validation
+run-name: Roblox internal F1-F8 · ${{ inputs.game_id || 'scan' }}
 
 on:
   push:
@@ -23,7 +23,7 @@ on:
         required: false
         type: string
       retry_open_cloud_only:
-        description: Retry only the exact transient Open Cloud runtime-foundation gate for game_id.
+        description: Optional manual Open Cloud server diagnostic for game_id. Never an F0-F9 internal validation gate.
         required: false
         default: false
         type: boolean
@@ -88,9 +88,9 @@ jobs:
 
   runtime-foundation-qa:
     needs: dedupe
-    if: needs.dedupe.outputs.run == 'true'
-    name: existing game tester and QA validate exact Roblox runtime candidate
-    # Remote Open Cloud probe + deterministic Node QA only. Studio execution remains on authenticated self-hosted Windows jobs.
+    if: needs.dedupe.outputs.run == 'true' && inputs.retry_open_cloud_only == true
+    name: optional Roblox Open Cloud server diagnostic
+    # Manual diagnostic only. The internal F0-F9 path is F0 -> one local Studio F1-F8 session -> F9.
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -1195,7 +1195,7 @@ jobs:
     if: ${{ inputs.retry_open_cloud_only != true }}
     # Studio planning must not wait behind GitHub-hosted dedupe/runtime-foundation capacity.
     # Coalesce only the same planner identity so duplicate push scans do not consume the authenticated runner.
-    name: plan exact local Studio MCP playtests for earliest eligible artifacts
+    name: plan exact F0 artifacts for one Studio F1-F8 session
     concurrency:
       group: roblox-studio-mcp-plan-${{ inputs.game_id || 'scan' }}
       cancel-in-progress: ${{ inputs.game_id == '' }}
@@ -1225,7 +1225,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Select exact runtime-foundation or internal-release artifacts needing official Studio MCP play
+      - name: Select exact F0 artifacts needing one official Studio MCP F1-F8 session
         id: plan
         working-directory: main
         env:
@@ -1949,7 +1949,7 @@ jobs:
             throw "ROBLOX_STUDIO_MCP_PLAY_FAILED:$env:GAME_ID"
           }
 
-      - name: Refill existing 24H development loop after verified play
+      - name: Dispatch F9 fan-in immediately after verified F1-F8 Studio session
         if: steps.studio_play.outcome == 'success' && steps.persist.outcome == 'success'
         shell: powershell
         env:
@@ -1957,23 +1957,9 @@ jobs:
           GAME_ID: ${{ matrix.gameId }}
         run: |
           $ErrorActionPreference = 'Stop'
-          $headers = @{
-            Accept = 'application/vnd.github+json'
-            Authorization = "Bearer $env:GH_TOKEN"
-            'X-GitHub-Api-Version' = '2022-11-28'
-          }
-          $body = @{
-            event_type = 'vibe2-fanin-refill'
-            client_payload = @{
-              source_run = "${{ github.run_id }}"
-              source_attempt = "${{ github.run_attempt }}"
-              source_task = "$env:GAME_ID"
-              source_outcome = 'VERIFIED'
-              reason = 'roblox-official-studio-mcp-actual-play'
-            }
-          } | ConvertTo-Json -Depth 5
-          Invoke-RestMethod -Method Post -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/dispatches" -Headers $headers -Body $body -ContentType 'application/json'
-          Write-Host "ROBLOX_STUDIO_MCP_VIBE_REFILL_DISPATCHED=$env:GAME_ID"
+          gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$env:GITHUB_REPOSITORY" --ref main -f game_id="$env:GAME_ID"
+          if ($LASTEXITCODE -ne 0) { throw 'Roblox F9 fan-in dispatch failed' }
+          Write-Host "ROBLOX_F9_DISPATCHED_AFTER_SINGLE_STUDIO_SESSION=$env:GAME_ID"
 
       - name: Cleanup owned Studio process
         if: always()
