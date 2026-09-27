@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1dnnxhq",
-      "worker": "vibe2",
-      "taskId": "cozy-island-roblox-second-gate-rebuild-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/shared/GameConfig.luau",
-        "roblox-games/cozy-island/server/Game.server.luau",
-        "roblox-games/cozy-island/client/Game.client.luau"
-      ],
-      "baseSha": "7e2983a1f9b7517c34e0c1bced7213be394eb942",
-      "acquiredAt": "2026-09-27T21:36:26.213Z",
-      "expiresAt": "2026-09-27T22:21:26.213Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-roblox-second-gate-rebuild-v1"
-      ]
-    },
-    {
       "id": "wl-12b7zsz",
       "worker": "vibe2",
       "taskId": "fantasy-survival-studio-evolution-unity-web-usability-v1",
@@ -730,6 +711,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:line-defense-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1mkjanw",
+      "worker": "vibe2",
+      "taskId": "line-defense-unity-web-base-implementation-v1",
+      "gameId": "line-defense",
+      "files": [
+        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
+        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+      "acquiredAt": "2026-09-27T22:21:53.302Z",
+      "expiresAt": "2026-09-27T23:06:53.302Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:line-defense-unity-web-base-implementation-v1"
       ]
     }
   ]
