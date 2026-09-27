@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-y6xnhb",
-      "worker": "vibe2",
-      "taskId": "village-dungeons-roblox-presentation-asset-adaptation-v1",
-      "gameId": "village-dungeons",
-      "files": [
-        "roblox-games/village-dungeons/client/Game.client.luau",
-        "roblox-games/village-dungeons/server/Game.server.luau",
-        "roblox-games/village-dungeons/shared/GameConfig.luau"
-      ],
-      "baseSha": "5dee3323be9f60175ab33053d7f249cb1c1db4f1",
-      "acquiredAt": "2026-09-27T11:11:53.313Z",
-      "expiresAt": "2026-09-27T11:56:53.313Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:village-dungeons-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-51jn94",
       "worker": "vibe2",
       "taskId": "SYS-ARCH-425305e25df9-v1",
@@ -37,25 +18,6 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
-      ]
-    },
-    {
-      "id": "wl-1qdga55",
-      "worker": "vibe2",
-      "taskId": "SYS-ARCH-28a2f2747401-v1",
-      "gameId": "__vibe_system__",
-      "files": [
-        "tools/vibe2-queue-control.mjs",
-        ".github/workflows/vibe2-continuous-core.yml",
-        "qa/vibe2-queue-control.test.mjs"
-      ],
-      "baseSha": "878275d555b2e039ab10c2789602179ab667b131",
-      "acquiredAt": "2026-09-27T11:48:44.548Z",
-      "expiresAt": "2026-09-27T12:33:44.548Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:SYS-ARCH-28a2f2747401-v1"
       ]
     },
     {
