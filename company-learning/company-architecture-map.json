@@ -5884,28 +5884,31 @@
     "qualityGateWeakening": false
   },
   "nativeExactGameWorkflowConcurrency": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
     "ROBLOX": {
       "workflow": ".github/workflows/company-development-roblox-runtime.yml",
-      "group": "roblox-native-exact-<gameId-or-push-batch-or-runId>",
+      "group": "roblox-native-exact-<gameId-or-batch>",
       "cancelInProgress": false
     },
     "UNITY": {
       "workflow": ".github/workflows/company-development-unity-runtime.yml",
-      "group": "unity-native-exact-<gameId-or-push-batch-or-runId>",
+      "group": "unity-native-exact-<gameId-or-batch>",
       "cancelInProgress": false
     },
     "exactGameScope": "INPUT_GAME_ID_ONLY",
-    "batchFallback": "PUSH_BATCH_ELSE_RUN_ID",
+    "batchFallback": "EMPTY_GAME_BATCH",
     "distinctGamesParallel": true,
-    "batchGlobalSerialization": false,
+    "batchGlobalSerialization": true,
     "centralActiveRunScanPreserved": true,
     "qualityGateWeakening": false,
-    "pushBatchFallback": "batch-push",
-    "nonPushEmptyBatchFallback": "RUN_ID",
+    "pushBatchFallback": "batch",
+    "nonPushEmptyBatchFallback": "batch",
     "pushBatchCoalesced": true,
-    "manualEmptyBatchRunScoped": true
+    "manualEmptyBatchRunScoped": false,
+    "batchPendingPolicy": "ACTIVE_ONE_PLUS_LATEST_PENDING",
+    "activeBatchCancellationForbidden": true,
+    "manualEmptyBatchCoalesced": true
   },
   "lightweightGameIngressRunnerRelief": {
     "version": 2,
@@ -6046,6 +6049,19 @@
     "technicalPlanRunnerUnchanged": "ubuntu-24.04-arm",
     "heavyGameRunnerUnchanged": "ubuntu-latest",
     "exactGameParallelismPreserved": true,
+    "qualitySecurityReleaseGatesUnchanged": true
+  },
+  "nativeBatchSweepCoalescing": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeBatchSweepCoalescing20260927",
+    "robloxBatchGroup": "roblox-native-exact-batch",
+    "unityBatchGroup": "unity-native-exact-batch",
+    "batchPolicy": "ACTIVE_ONE_PLUS_LATEST_PENDING",
+    "cancelInProgress": false,
+    "exactGameGroupUsesGameId": true,
+    "exactGameParallelismPreserved": true,
+    "independentGameCancellationForbidden": true,
+    "heavyGameExecutionUnchanged": true,
     "qualitySecurityReleaseGatesUnchanged": true
   }
 }
