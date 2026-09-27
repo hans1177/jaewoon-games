@@ -234,14 +234,14 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&item?.robloxRuntimeFoundationEvidence?.exactEngineVersion===true
       &&item?.robloxRuntimeFoundationEvidence?.serverBootObserved!==true
     );
-    const currentExact=Boolean(
+    const privateCandidateExact=Boolean(
       candidateExact
       &&item?.robloxBuildOrPackagePassed===true
       &&clean(item?.robloxBuildSourceRevision)===currentSourceRevision
       &&currentSourceRevision===candidateSourceRevision
       &&currentArtifactIdentity===candidateArtifactIdentity
-      &&(runtimeFoundationExact||internalReleaseObserved(item,candidate)||exactEngineAwaitingRealServerBoot)
     );
+    const currentExact=privateCandidateExact;
 
     const historicalInternalReleaseExact=Boolean(
       internal?.published===true
@@ -316,7 +316,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       sharedTargetCurrent:item?.robloxSharedTargetCurrent===true,
       historicalExactPublishedArtifact:infrastructurePrerequisiteReplay||item?.robloxSharedTargetCurrent!==true,
       infrastructurePrerequisiteReplay,
-      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
+      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':internalReleaseObserved(item,candidate)?'INTERNAL_RELEASE_EXACT':exactEngineAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':'PRIVATE_INTERNAL_CANDIDATE_EXACT',
       scenarioContractRequired:scenarioContract.required===true,
       scenarioContractVersion:Number(scenarioContract.version||0),
       scenarioContractFingerprint:scenarioContract.fingerprint
