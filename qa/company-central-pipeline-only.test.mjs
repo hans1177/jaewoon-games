@@ -170,6 +170,9 @@ test('director drains superseded runner backlog before noncritical supervision',
   assert.match(director,/JSON\.stringify\(j\)\+'\\\\n'/);
   assert.match(director,/director-run-drain\.ndjson/);
   assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-unity-runtime\.yml',true\)/);
+  assert.match(director,/dedupeByTitle\('\.github\/workflows\/vibe2-24h-runner\.yml',true\)/);
+  assert.match(director,/CENTRAL_DEVELOPMENT_STALE_HEAD_REPLACED_BY_CURRENT_RUN/);
+  assert.match(director,/NATIVE_STALE_BATCH_PUSH_REPLACED_BY_CURRENT_CENTRAL/);
 });
 
 test('homepage completion does not redundantly wake the full central Director',()=>{
@@ -293,6 +296,9 @@ test('director runner drain advances latest scheduler without cancelling running
   assert.match(director,/CURRENT_MAIN_SHA="\$current_main"[^\n]*node/);
   assert.match(director,/VIBE2_STALE_UNSTARTED_SCHEDULER/);
   assert.match(director,/VIBE2_STALE_UNSTARTED_FANIN_REFILL/);
+  assert.match(director,/CENTRAL_DEVELOPMENT_STALE_HEAD_REPLACED_BY_CURRENT_RUN/);
+  assert.match(director,/NATIVE_STALE_BATCH_PUSH_REPLACED_BY_CURRENT_CENTRAL/);
+  assert.match(director,/dedupeByTitle\('\.github\/workflows\/vibe2-24h-runner\.yml',true\)/);
   assert.match(director,/unity-android-independent-qa\.yml/);
   assert.match(director,/unity-android-regression\.yml/);
   assert.match(director,/const queued=new Set\(\['queued','pending','requested'\]\)/);
