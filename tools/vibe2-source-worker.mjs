@@ -2731,7 +2731,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     learningAuthorityExpanded:false
   };
   const manifest={
-    version:6,
+    version:7,
     taskId:order.taskId,
     gameId:order.gameId||null,
     target,
@@ -2765,6 +2765,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     assetProduction:order?.assetProduction&&typeof order.assetProduction==='object'?order.assetProduction:{required:false},
     presentationQuality:order?.presentationQuality&&typeof order.presentationQuality==='object'?order.presentationQuality:{required:false,pass:null,authorityExpanded:false},
     graphicsReplacementReport:candidate.graphicsReplacementReport||null,
+    graphicsReplacementValidation:semanticDiffEnforcement?.graphicsReplacementReport||{required:false,pass:true,reason:'NOT_REQUIRED',groundedCount:0},
     presentationCandidateDelta,
     studioQualityCandidateDelta,
     fullFileRewriteAllowed:allowFullRewrite,
