@@ -37,12 +37,14 @@ function parallelLimit(value){
 }
 function releaseState(value){const normalized=clean(value).toLowerCase();return Object.hasOwn(RELEASE_RANK,normalized)?normalized:'other';}
 function stateFromCatalog(game={}){const cls=clean(game.productionClass).toUpperCase();if(cls==='RELEASE_CONFIRMED')return'release-confirmed';if(cls==='DEVELOPMENT_CONFIRMED')return'development-confirmed';return releaseState(game.homepageCategory);}
-function engineFromProject(project={}){const projectPath=posix(project.robloxProjectPath||project.projectPath||project.source),target=clean(project.selectedPlatform||project.targetPlatform||project.target).toLowerCase();if(projectPath.startsWith('roblox-games/')||target.startsWith('roblox'))return'roblox';if(projectPath.startsWith('unity-games/')||target.startsWith('unity'))return'unity';if(projectPath.startsWith('web-games/')||target==='web')return'web';if(projectPath.startsWith('unreal-games/')||target.startsWith('unreal'))return'unreal';if(projectPath.startsWith('godot-games/')||target.startsWith('godot'))return'godot';return null;}
+function engineFromProject(project={}){const projectPath=posix(project.robloxProjectPath||project.unrealProjectPath||project.uefnProjectPath||project.projectPath||project.source),target=clean(project.selectedPlatform||project.targetPlatform||project.target).toLowerCase();if(projectPath.startsWith('roblox-games/')||target.startsWith('roblox'))return'roblox';if(projectPath.startsWith('unity-games/')||target.startsWith('unity'))return'unity';if(projectPath.startsWith('web-games/')||target==='web')return'web';if(projectPath.startsWith('unreal-games/')||target.startsWith('unreal')||target.startsWith('fortnite')||target.startsWith('uefn'))return'unreal';if(projectPath.startsWith('godot-games/')||target.startsWith('godot'))return'godot';return null;}
 function webRootFromCatalog(game={}){const webPath=posix(game.webPath).replace(/^\//,'');return /^web-games\/[a-zA-Z0-9._-]+$/.test(webPath)?webPath:null;}
 function robloxRootFromCatalog(game={}){const explicit=posix(game.robloxProjectPath||game.robloxPath||game?.canonical?.sources?.roblox?.projectPath||'');if(/^roblox-games\/[a-zA-Z0-9._-]+$/.test(explicit))return explicit;const id=clean(game.id);return id?`roblox-games/${id}`:null;}
 function unityRootFromCatalog(game={}){const explicit=posix(game.unityProjectPath||game.unityPath||game?.canonical?.sources?.unity?.projectPath||'');if(/^unity-games\/[a-zA-Z0-9._-]+$/.test(explicit))return explicit;const id=clean(game.id);return id?`unity-games/${id}`:null;}
-function studioQualityLane(project={}){const engine=clean(project.engine).toLowerCase();if(engine==='unity'&&project.firstStageUnityWeb===true)return'unity-web';if(engine==='unity')return'unity-native';if(engine==='roblox')return'roblox';if(engine==='web')return'web';return engine||'unknown';}
-function studioQualityTaskLane(item={}){const explicit=clean(item?.studioQualityEvolution?.platformLane).toLowerCase();if(explicit)return explicit;const evidence=new Set((item?.evidence||[]).map(value=>clean(value).toLowerCase()));const target=clean(item?.target).toLowerCase(),root=posix(item?.sourceRoot);if(evidence.has('unity-web-first-stage')||evidence.has('studio-quality-platform-lane:unity-web'))return'unity-web';if(target==='unity'||target.startsWith('unity-')||root.startsWith('unity-games/'))return'unity-native';if(target==='roblox'||root.startsWith('roblox-games/'))return'roblox';if(target==='web'||root.startsWith('web-games/'))return'web';return target||'unknown';}
+function unrealRootFromCatalog(game={}){const explicit=posix(game.unrealProjectPath||game.uefnProjectPath||game.fortniteUefnProjectPath||game?.canonical?.sources?.fortniteUefn?.projectPath||game?.canonical?.sources?.unreal?.projectPath||'');if(/^unreal-games\/[a-zA-Z0-9._-]+$/.test(explicit))return explicit;const id=clean(game.id);return id?`unreal-games/${id}`:null;}
+function studioQualityLane(project={}){const engine=clean(project.engine).toLowerCase(),target=clean(project.selectedPlatform||project.targetPlatform||project.target).toLowerCase();if(engine==='unity'&&project.firstStageUnityWeb===true)return'unity-web';if(engine==='unity')return'unity-native';if(engine==='roblox')return'roblox';if(engine==='web')return'web';if(engine==='unreal')return /fortnite|uefn/.test(target)?'fortnite-uefn':'unreal-native';return engine||'unknown';}
+function studioQualityTaskLane(item={}){const explicit=clean(item?.studioQualityEvolution?.platformLane).toLowerCase();if(explicit)return explicit;const evidence=new Set((item?.evidence||[]).map(value=>clean(value).toLowerCase()));const target=clean(item?.target).toLowerCase(),root=posix(item?.sourceRoot);if(evidence.has('unity-web-first-stage')||evidence.has('studio-quality-platform-lane:unity-web'))return'unity-web';if(target==='unity'||target.startsWith('unity-')||root.startsWith('unity-games/'))return'unity-native';if(target==='roblox'||root.startsWith('roblox-games/'))return'roblox';if(target==='web'||root.startsWith('web-games/'))return'web';if(target==='fortnite-uefn'||target==='uefn'||target==='unreal'||target.startsWith('fortnite')||root.startsWith('unreal-games/'))return target==='unreal'?'unreal-native':'fortnite-uefn';return target||'unknown';}
+function buildUpPlatformToken(project={},platformLane=studioQualityLane(project)){if(platformLane==='unity-web')return'WEB';if(platformLane==='unity-native')return'UNITY';if(platformLane==='roblox')return'ROBLOX';if(platformLane==='web')return'WEB';if(platformLane==='fortnite-uefn'||platformLane==='unreal-native'||clean(project.engine).toLowerCase()==='unreal')return'FORTNITE_UEFN';return clean(project.engine).toUpperCase()||'COMMON';}
 function sameStudioQualityLane(item={},project={}){return studioQualityTaskLane(item)===studioQualityLane(project);}
 function catalogById(catalog={}){return new Map((Array.isArray(catalog.games)?catalog.games:[]).map(game=>[clean(game.id),game]));}
 function permanentRemovalIds(catalog={}){return new Set((Array.isArray(catalog?.permanentRemovalPolicy?.ids)?catalog.permanentRemovalPolicy.ids:[]).map(clean).filter(Boolean));}
@@ -288,6 +290,30 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     else rows.push({gameId:id,name:clean(item?.gameName||game?.name||id),engine:'roblox',target:'roblox',projectPath:root,lifecycleState:gameLifecycleState(game),existing:fs.existsSync(path.join(repoRoot,root)),releaseState:'development-confirmed',progress:Number(item?.progress||0),source:'company-development-queue-roblox',developmentBaseline:null,...queuePatch});
     continue;
   }
+  const queueUnrealRoot=posix(
+    item?.unrealProjectPath||item?.uefnProjectPath||item?.fortniteUefnProjectPath||
+    item?.targetSourcePaths?.FORTNITE_UEFN||item?.targetSourcePaths?.UEFN||item?.targetSourcePaths?.UNREAL||
+    (['FORTNITE_UEFN','UEFN','UNREAL'].includes(queueTarget)?item?.targetSourcePath:'')
+  );
+  if(['FORTNITE_UEFN','UEFN','UNREAL'].includes(queueTarget)||/^unreal-games\//.test(queueUnrealRoot)){
+    const root=/^unreal-games\/[a-zA-Z0-9._-]+$/.test(queueUnrealRoot)?queueUnrealRoot:'unreal-games/'+id;
+    const existingUnreal=rows.find(r=>r.gameId===id&&r.engine==='unreal');
+    const queuePatch={
+      ...queueRuntimePatch,
+      queueCurrentStep:clean(item?.currentStep),
+      queueCanonicalState:clean(item?.canonicalState),
+      queueRoutingBlockers:(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,8),
+      companyDevelopmentQueueSource:true
+    };
+    if(existingUnreal)Object.assign(existingUnreal,queuePatch,{projectPath:root,target:'fortnite-uefn',releaseState:'development-confirmed'});
+    else rows.push({
+      gameId:id,name:clean(item?.gameName||game?.name||id),engine:'unreal',target:'fortnite-uefn',projectPath:root,
+      lifecycleState:gameLifecycleState(game),existing:fs.existsSync(path.join(repoRoot,root)),releaseState:'development-confirmed',
+      progress:Number(item?.progress||0),source:'company-development-queue-fortnite-uefn',developmentBaseline:null,
+      developmentValidation:latestDevelopmentValidationStatus(id,repoRoot),...queuePatch
+    });
+    continue;
+  }
   const existingWeb=rows.find(r=>r.gameId===id&&r.engine==='web');
   if(existingWeb){
     existingWeb.queueCurrentStep=clean(item?.currentStep);
@@ -365,6 +391,11 @@ for(const game of Array.isArray(catalog.games)?catalog.games:[]){
     });
   }
 
+  const unrealRoot=unrealRootFromCatalog(game);
+  if(id&&eligibleProduction&&unrealRoot&&fs.existsSync(path.join(repoRoot,unrealRoot))&&!rows.some(r=>r.gameId===id&&r.engine==='unreal')){
+    rows.push({gameId:id,name:clean(game.name),engine:'unreal',target:'fortnite-uefn',projectPath:unrealRoot,lifecycleState:gameLifecycleState(game),existing:true,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});
+  }
+
   const root=webRootFromCatalog(game),developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;
   if(!id||!root||game.hasWebArchive!==true||(!developmentWebEligible&&!publishedWebEligible))continue;
   if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;
@@ -416,6 +447,7 @@ function isAutonomousProductionTarget(project={},repoRoot=process.cwd()){
     if(project.releaseState==='development-confirmed')return project.source==='company-status'&&assetProductionEnabled(repoRoot);
     return project.releaseState==='release-confirmed'&&project.developmentBaseline?.ready===true;
   }
+  if(project.engine==='unreal')return['release-confirmed','development-confirmed'].includes(project.releaseState);
   if(project.releaseState==='development-confirmed')return project.engine==='web';
   return false;
 }
@@ -1487,7 +1519,7 @@ export function findWeatherPresentationTask(project,repoRoot,queue){
 
 function scanExplicitMarkerTask(project,repoRoot,queue){
   const root=sourceFile(repoRoot,project.projectPath);if(!fs.existsSync(root))return null;
-  const extensions=project.engine==='roblox'?new Set(['.luau','.lua','.json']):project.engine==='web'?new Set(['.html','.css','.js','.mjs','.json']):project.engine==='unity'?new Set(['.cs']):project.engine==='unreal'?new Set(['.cpp','.h','.hpp','.ini']):new Set(['.gd']);
+  const extensions=project.engine==='roblox'?new Set(['.luau','.lua','.json']):project.engine==='web'?new Set(['.html','.css','.js','.mjs','.json']):project.engine==='unity'?new Set(['.cs']):project.engine==='unreal'?new Set(['.verse','.cpp','.h','.hpp','.ini']):new Set(['.gd']);
   const stack=[root],rows=[];
   while(stack.length&&rows.length<3){
     const current=stack.pop();
@@ -1676,7 +1708,13 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
         'build-up-generation:'+directive.generation,
         'build-up-focus:'+directive.primaryFocus,
         'build-up-source-tree:'+directive.sourceTreeFingerprint,
-        'build-up-platform-common-goal:YES'
+        'build-up-platform-common-goal:YES',
+      'autonomous-content-expansion-build-up:v1',
+      'autonomous-content-expansion-existing-build-up-only:YES',
+      'autonomous-content-expansion-platforms:WEB,ROBLOX,UNITY,FORTNITE_UEFN',
+      'autonomous-content-expansion-theme:'+clean(directive.autonomousContentExpansion?.selectedTheme),
+      'autonomous-content-expansion-anti-clone:YES',
+      'autonomous-content-expansion-continuity:YES'
       ])]
     };
   }
@@ -1715,7 +1753,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const directive=buildGameSpecificBuildUpDirective({
     gameId:project.gameId,
     gameName:project.name||project.gameId,
-    platform:platformLane==='unity-web'?'UNITY_WEB':clean(project.engine).toUpperCase()||'COMMON',
+    platform:buildUpPlatformToken(project,platformLane),
     designRecord:designContext.record,
     sourceObservation,
     repoRoot,
@@ -1757,7 +1795,13 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       'build-up-source-tree:'+directive.sourceTreeFingerprint,
       'build-up-every-loop-regenerate:YES',
       'build-up-all-domain-coverage:YES',
-      'build-up-platform-common-goal:YES'
+      'build-up-platform-common-goal:YES',
+      'autonomous-content-expansion-build-up:v1',
+      'autonomous-content-expansion-existing-build-up-only:YES',
+      'autonomous-content-expansion-platforms:WEB,ROBLOX,UNITY,FORTNITE_UEFN',
+      'autonomous-content-expansion-theme:'+clean(directive.autonomousContentExpansion?.selectedTheme),
+      'autonomous-content-expansion-anti-clone:YES',
+      'autonomous-content-expansion-continuity:YES'
     ])]
   };
 }
@@ -1851,7 +1895,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   const extensions=project.engine==='roblox'?new Set(['.luau','.lua'])
     :project.engine==='unity'?new Set(['.cs','.uxml','.uss'])
     :project.engine==='web'?new Set(['.html','.htm','.js','.mjs','.css'])
-    :project.engine==='unreal'?new Set(['.cpp','.h','.hpp','.ini'])
+    :project.engine==='unreal'?new Set(['.verse','.cpp','.h','.hpp','.ini'])
     :new Set(['.gd','.tscn']);
   const candidates=[],stack=[sourceDir];
   while(stack.length){
@@ -2018,7 +2062,13 @@ function bindSharedBuildUpDirective(taskInput,directive){
       'build-up-generation:'+directive.generation,
       'build-up-focus:'+directive.primaryFocus,
       'build-up-source-tree:'+directive.sourceTreeFingerprint,
-      'build-up-platform-common-goal:YES'
+      'build-up-platform-common-goal:YES',
+      'autonomous-content-expansion-build-up:v1',
+      'autonomous-content-expansion-existing-build-up-only:YES',
+      'autonomous-content-expansion-platforms:WEB,ROBLOX,UNITY,FORTNITE_UEFN',
+      'autonomous-content-expansion-theme:'+clean(directive.autonomousContentExpansion?.selectedTheme),
+      'autonomous-content-expansion-anti-clone:YES',
+      'autonomous-content-expansion-continuity:YES'
     ])]
   };
 }
@@ -2032,7 +2082,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
   }
   const supportedTarget=item=>{
     const target=clean(item?.target).toLowerCase();
-    return target==='web'||target==='roblox'||target==='unity'||target.startsWith('unity-');
+    return target==='web'||target==='roblox'||target==='unity'||target.startsWith('unity-')||target==='fortnite-uefn'||target==='uefn'||target==='unreal'||target.startsWith('fortnite');
   };
   const terminalStatuses=new Set(['verified','done','completed','failed','error','rejected','cancelled','superseded']);
   const tasks=[...(queue?.tasks||[])];
