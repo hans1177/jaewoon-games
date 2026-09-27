@@ -3,79 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-h8478j",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-roblox-second-gate-rebuild-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/shared/GameConfig.luau",
-        "roblox-games/horror-escape-room/server/Game.server.luau",
-        "roblox-games/horror-escape-room/client/Game.client.luau"
-      ],
-      "baseSha": "c7bb6fa0e18deefbf3a38c374ff821f3bc96b8c6",
-      "acquiredAt": "2026-09-27T10:21:42.191Z",
-      "expiresAt": "2026-09-27T11:06:42.191Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-roblox-second-gate-rebuild-v1"
-      ]
-    },
-    {
-      "id": "wl-bhmp8n",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
-      ],
-      "baseSha": "c7bb6fa0e18deefbf3a38c374ff821f3bc96b8c6",
-      "acquiredAt": "2026-09-27T10:24:43.659Z",
-      "expiresAt": "2026-09-27T11:09:43.659Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1uumpib",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "c7bb6fa0e18deefbf3a38c374ff821f3bc96b8c6",
-      "acquiredAt": "2026-09-27T10:26:21.811Z",
-      "expiresAt": "2026-09-27T11:11:21.811Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-70g501",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-unity-web-base-implementation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "unity-games/horror-escape-room/Assets/Scripts/GameCore.cs",
-        "unity-games/horror-escape-room/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "c7bb6fa0e18deefbf3a38c374ff821f3bc96b8c6",
-      "acquiredAt": "2026-09-27T10:26:30.610Z",
-      "expiresAt": "2026-09-27T11:11:30.610Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-13wpxmw",
       "worker": "vibe2",
       "taskId": "seed-puzzle-chromatic-cascade-unity-web-base-implementation-v1",
@@ -787,6 +714,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-y6xnhb",
+      "worker": "vibe2",
+      "taskId": "village-dungeons-roblox-presentation-asset-adaptation-v1",
+      "gameId": "village-dungeons",
+      "files": [
+        "roblox-games/village-dungeons/client/Game.client.luau",
+        "roblox-games/village-dungeons/server/Game.server.luau",
+        "roblox-games/village-dungeons/shared/GameConfig.luau"
+      ],
+      "baseSha": "5dee3323be9f60175ab33053d7f249cb1c1db4f1",
+      "acquiredAt": "2026-09-27T11:11:53.313Z",
+      "expiresAt": "2026-09-27T11:56:53.313Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:village-dungeons-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
