@@ -1,4 +1,4 @@
-# source-plan exact revalidation contract resync: 2026-09-26 test-aligned epoch-v2
+# source-plan exact revalidation contract resync: 2026-09-27 wake-aligned epoch-v3
 # fast-mvp launch kick: preflight-direct 2026-09-22T02:47+09:00
 # fast-mvp release kick: primary-three runtime-contract-retry 2026-09-22
 name: Company DEVELOPMENT_CONFIRMED Roblox Runtime
@@ -14,6 +14,10 @@ on:
       - '.github/workflows/company-roblox-source-drift-sync.yml'
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/company-development-roblox-source-reconcile.mjs'
+      - 'tools/company-selected-platform-router.mjs'
+      - 'tools/company-upper-platform-admission.mjs'
+      - 'company-asset-library.json'
+      - 'company-learning/platform-release-roadmap.json'
       - 'tools/company-roblox-source-drift-sync.mjs'
       - 'qa/company-roblox-source-drift-sync.test.mjs'
       - 'tools/company-development-roblox-build-preflight.mjs'
@@ -55,7 +59,8 @@ env:
 jobs:
   source-plan:
     name: resolve Roblox source work
-    runs-on: ubuntu-slim
+    # Critical Roblox ingress must not wait behind the saturated administrative slim pool.
+    runs-on: ubuntu-24.04
     timeout-minutes: 8
     outputs:
       count: ${{ steps.targets.outputs.count || '0' }}

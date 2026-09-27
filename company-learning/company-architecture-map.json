@@ -1,5 +1,5 @@
 {
-  "version": 264,
+  "version": 265,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5564,7 +5564,7 @@
     "gameParallelismReduced": false
   },
   "gameControlRunnerPools": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.gameControlRunnerPoolSeparation20260926",
     "gameControl": "ubuntu-24.04-arm",
     "administrativeControl": "ubuntu-slim",
@@ -5583,7 +5583,10 @@
         "source-worker",
         "technical-worker",
         "private-runtime-publish"
-      ]
+      ],
+      "sourcePlanRunner": "ubuntu-24.04",
+      "sourcePlanPreviousRunner": "ubuntu-slim",
+      "sourcePlanCriticalIngressException": true
     },
     "unity": {
       "ingress": [
@@ -5905,7 +5908,7 @@
     "manualEmptyBatchRunScoped": true
   },
   "lightweightGameIngressRunnerRelief": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.lightweightGameIngressRunnerRelief20260927",
     "observedQueuePressure": {
       "queuedWorkflowRunsBeforeChange": 105,
@@ -5955,6 +5958,17 @@
       "humanVibeDocumentWake": false,
       "fiveMinuteSchedulePreserved": true,
       "productionQueueContinuityPreserved": true
+    },
+    "robloxSourcePlanCriticalIngressException": {
+      "previousRunner": "ubuntu-slim",
+      "runner": "ubuntu-24.04",
+      "administrativeSlimPoolStillUsedBy": [
+        "centralNativePlan",
+        "unityPrepare",
+        "vibe2Reserve"
+      ],
+      "technicalPlanRunner": "ubuntu-24.04-arm",
+      "heavyExecutionRunner": "ubuntu-latest"
     }
   },
   "learningPreparationRunnerIsolation": {
@@ -6011,5 +6025,27 @@
     "previousRunnerDrainConcurrencyGroup": "director-runner-drain-v1",
     "runnerDrainConcurrencyGroup": "director-runner-drain-v2",
     "epochAdvancedToBypassLegacyPendingGroup": true
+  },
+  "robloxSourcePlanWakeAndRunnerIsolation": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxSourcePlanWakeAndRunnerIsolation20260927",
+    "workflow": ".github/workflows/company-development-roblox-runtime.yml",
+    "sourcePlanRunner": "ubuntu-24.04",
+    "previousSourcePlanRunner": "ubuntu-slim",
+    "pushWakeMatchesContractPaths": true,
+    "sourcePlanContractPaths": [
+      ".github/workflows/company-development-roblox-runtime.yml",
+      "tools/company-development-roblox-bootstrap.mjs",
+      "tools/company-development-roblox-source-reconcile.mjs",
+      "tools/company-selected-platform-router.mjs",
+      "tools/company-upper-platform-admission.mjs",
+      "company-asset-library.json",
+      "company-learning/platform-release-roadmap.json"
+    ],
+    "freshnessGuardPreserved": true,
+    "technicalPlanRunnerUnchanged": "ubuntu-24.04-arm",
+    "heavyGameRunnerUnchanged": "ubuntu-latest",
+    "exactGameParallelismPreserved": true,
+    "qualitySecurityReleaseGatesUnchanged": true
   }
 }
