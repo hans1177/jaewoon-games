@@ -1,5 +1,5 @@
 {
-  "version": 477,
+  "version": 478,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -1259,7 +1259,9 @@
       "objective": "ADD_UEFN_RELEASE_EXPERIENCE_WITHOUT_REPLACING_OTHER_TRACKS",
       "status": "OWNER_HOLD",
       "ownerStartRequired": true,
-      "developmentExecutionAllowed": false
+      "developmentExecutionAllowed": false,
+      "developmentStatus": "DEVELOPMENT_PAUSED",
+      "developmentStatusLabel": "개발보류"
     }
   ],
   "roblox": {
@@ -1559,7 +1561,12 @@
     "learningAllowed": true,
     "designReferenceAllowed": true,
     "ownerStartRequired": true,
-    "holdReason": "OWNER_DEFERRED_FORTNITE_DEVELOPMENT"
+    "holdReason": "OWNER_DEFERRED_FORTNITE_DEVELOPMENT",
+    "developmentStatus": "DEVELOPMENT_PAUSED",
+    "developmentStatusLabel": "개발보류",
+    "buildUpExecutionAllowed": false,
+    "graphicsBuildUpAllowed": false,
+    "menuBuildUpAllowed": false
   },
   "canonicalLearningChain": [
     "VALIDATED_EVIDENCE",
@@ -2518,7 +2525,10 @@
         "learningAllowed": true,
         "verifiedLearningCollectionContinues": true,
         "ownerExplicitReleaseRequired": true,
-        "doesNotBlockRobloxOrUnity": true
+        "doesNotBlockRobloxOrUnity": true,
+        "developmentStatus": "DEVELOPMENT_PAUSED",
+        "developmentStatusLabel": "개발보류",
+        "autonomousBuildUpAllowed": false
       }
     },
     "machineWorkInstruction": {
@@ -6515,7 +6525,9 @@
       ]
     ],
     "equalTierSelection": "READINESS_THEN_ESTIMATED_EXECUTION_COST_THEN_ENQUEUED_AT",
-    "fortniteUefnState": "OWNER_HOLD"
+    "fortniteUefnState": "OWNER_HOLD",
+    "fortniteUefnDevelopmentStatus": "DEVELOPMENT_PAUSED",
+    "fortniteUefnStatusLabel": "개발보류"
   },
   "homepagePortfolioVisibility": {
     "version": 1,
@@ -9880,12 +9892,14 @@
       "runtimePlatforms": [
         "WEB",
         "ROBLOX",
-        "UNITY",
-        "FORTNITE_UEFN"
+        "UNITY"
       ],
       "genericOneTemplateForAllGamesForbidden": true,
       "newWorkflowOrStageCreated": false,
-      "gameplayEconomySaveQuestSemanticsPreserved": true
+      "gameplayEconomySaveQuestSemanticsPreserved": true,
+      "pausedPlatforms": [
+        "FORTNITE_UEFN"
+      ]
     },
     "unityWebMenuSourceIdentity20260927": {
       "id": "UNITY_WEB_MENU_SOURCE_IDENTITY_2026-09-27",
@@ -9901,6 +9915,31 @@
       "newWorkflowOrStageCreated": false,
       "gameplayEconomySaveQuestProgressionMeaningUnchanged": true,
       "securityAuthorityChanged": false
+    },
+    "fortniteUefnDevelopmentPause20260927": {
+      "id": "FORTNITE_UEFN_DEVELOPMENT_PAUSE_2026-09-27",
+      "authority": "OWNER_DIRECTIVE_2026-09-27",
+      "status": "ACTIVE",
+      "machineState": "OWNER_HOLD",
+      "displayStatus": "DEVELOPMENT_PAUSED",
+      "statusLabel": "개발보류",
+      "developmentExecutionAllowed": false,
+      "releaseExecutionAllowed": false,
+      "autonomousBuildUpAllowed": false,
+      "graphicsBuildUpAllowed": false,
+      "menuBuildUpAllowed": false,
+      "learningAllowed": true,
+      "designReferenceAllowed": true,
+      "ownerExplicitResumeRequired": true,
+      "activeBuildUpPlatforms": [
+        "WEB",
+        "ROBLOX",
+        "UNITY"
+      ],
+      "pausedPlatforms": [
+        "FORTNITE_UEFN"
+      ],
+      "reason": "OWNER_DEFERRED_FORTNITE_DEVELOPMENT"
     }
   },
   "vibeExecutionLaneContract": {
@@ -24372,7 +24411,9 @@
     },
     "uefn": {
       "automaticDevelopment": false,
-      "state": "OWNER_HOLD"
+      "state": "OWNER_HOLD",
+      "developmentStatus": "DEVELOPMENT_PAUSED",
+      "statusLabel": "개발보류"
     },
     "robloxValidationOverride": {
       "mode": "HEADLESS_FAST_MVP",
@@ -24610,7 +24651,9 @@
       "onlyAllowedSerialization": "ATOMIC_SHARED_STATE_WRITE_OR_EXACT_RESPONSIBLE_FILE_CONFLICT",
       "sharedStateWriteMustReleaseHeavyExecutionCapacity": true,
       "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true
-    }
+    },
+    "fortniteUefnDevelopmentStatus": "DEVELOPMENT_PAUSED",
+    "fortniteUefnStatusLabel": "개발보류"
   },
   "centralDocumentation": {
     "version": 3,
