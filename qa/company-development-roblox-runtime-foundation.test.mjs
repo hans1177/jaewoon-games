@@ -88,7 +88,7 @@ test('central policy matches shared two-client one-sync internal and public rele
  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
  const stack=roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack;
  const f7=stack.layers.find(layer=>layer.id==='F7');
- assert.equal(f7.releaseGateMode,'TWO_CLIENT_ONE_SYNC');
+ assert.equal(f7.releaseGateMode,'APPLICABLE_MULTIPLAYER_ONLY');
  assert.deepEqual(f7.checks,['MINIMUM_TWO_PARTICIPANTS_SAME_SERVER','ONE_AUTHORITATIVE_SHARED_STATE_BROADCAST','CLIENT_MULTIPLAYER_SYNC_HANDLER_CONTRACT']);
  const proof=stack.robloxContract.multiplayerReleaseProof;
  assert.equal(proof.minimumParticipants,2);
@@ -96,9 +96,10 @@ test('central policy matches shared two-client one-sync internal and public rele
  assert.equal(proof.actualRuntimeCheckpoint,'MULTIPLAYER_SYNC');
  assert.equal(proof.singleSyncObservationSufficient,true);
  assert.equal(proof.longCombatOrDungeonRunRequired,false);
- assert.deepEqual(proof.appliesTo,['INTERNAL_RELEASE','PUBLIC_RELEASE']);
+ assert.deepEqual(proof.appliesTo,['INTERNAL_VALIDATION_WHEN_MULTIPLAYER_APPLICABLE']);
  assert.equal(proof.sameProofReusedForInternalAndPublic,true);
  assert.equal(proof.duplicatePublicMultiplayerCheckRequired,false);
+ assert.equal(proof.realPublicServerRequired,false);
  assert.equal(proof.internalAndPublicVersionMustMatch,true);
  assert.equal(proof.republishForPublicPromotionForbidden,true);
  assert.equal(stack.releaseGate.f9Checkout.sameCheckoutContractForInternalAndPublic,true);
@@ -428,38 +429,31 @@ test('post-runtime Studio followup delegates exact-engine preboot eligibility to
  assert.match(workflow,/ROBLOX_FOUNDATION_AWAITING_REAL_SERVER_BOOT=[\s\S]*?queueStudioFollowupIfEligible\(item\);[\s\S]*?continue;/);
 });
 
-test('central policy and architecture preserve runtime truth while real server boot blocks external release only',()=>{
+test('central policy makes external server observation diagnostic-only and keeps owner approval separate',()=>{
  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
  const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
  const policy=roadmap.developmentLifecycleMachine?.robloxStudioUsage?.runtimeFoundationBoundary||{};
  const topology=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.runtimeFoundationObservation||{};
+ const cycle=roadmap.developmentLifecycleMachine?.perpetualF0ToF9Cycle||{};
  const stack=roadmap.developmentLifecycleMachine?.nativeGameFoundationValidationStack?.releaseGate||{};
- assert.equal(policy.exactEngineVersionWithoutRealServerBootState,'ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT');
- assert.equal(policy.exactEngineVersionDoesNotEqualRealGameServerBoot,true);
- assert.equal(policy.runtimeFoundationPassMustNotBeFabricatedFromOpenCloudHeadlessExecution,true);
+ assert.equal(policy.observationRetry,'MANUAL_OPTIONAL_DIAGNOSTIC_ONLY');
  assert.equal(policy.developmentBlocking,false);
  assert.equal(policy.internalQaBlocking,false);
  assert.equal(policy.internalRegressionBlocking,false);
  assert.equal(policy.internalReleaseBlocking,false);
- assert.equal(policy.externalPublicReleaseBlocking,true);
- assert.equal(policy.runtimeTruthFieldsMustRemainUnfabricated,true);
- assert.equal(policy.exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot,true);
- assert.equal(policy.studioActualPlayEligibilityDoesNotSetRuntimeFoundationPass,true);
- assert.equal(policy.studioActualPlayEligibilityDoesNotSetExternalPublicReleaseReady,true);
- assert.equal(topology.developmentBlocking,false);
- assert.equal(topology.internalQaBlocking,false);
- assert.equal(topology.internalRegressionBlocking,false);
- assert.equal(topology.internalReleaseBlocking,false);
- assert.equal(topology.externalPublicReleaseBlocking,true);
- assert.equal(topology.runtimePassTruthRemainsFalseUntilRealServerBootEvidence,true);
- assert.equal(topology.exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot,true);
- assert.equal(topology.studioPlannerEligibility,'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT');
- assert.equal(topology.studioActualPlayMayNotSetRuntimeFoundationPass,true);
- assert.equal(topology.externalPublicReleaseRemainsBlockedUntilRealServerBoot,true);
- assert.ok(Array.isArray(stack.runtimeFoundationInternalReleaseExceptionStates));
- assert.ok(stack.runtimeFoundationInternalReleaseExceptionStates.includes('ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT'));
- assert.equal(stack.runtimeFoundationExceptionMaySetRuntimePass,false);
- assert.equal(stack.runtimeFoundationExceptionMaySetExternalPublicReleaseReady,false);
+ assert.equal(policy.externalPublicReleaseBlocking,false);
+ assert.equal(policy.externalServerBootRequiredForF0ToF9,false);
+ assert.equal(topology.role,'OPTIONAL_DIAGNOSTIC_RUNTIME_TRUTH_ONLY');
+ assert.equal(topology.externalPublicReleaseBlocking,false);
+ assert.equal(topology.externalPublicReleaseRemainsBlockedUntilRealServerBoot,false);
+ assert.equal(topology.studioPlannerEligibility,'F0_EXACT_LOCAL_BUILD_READY');
+ assert.equal(cycle.executionPlan.F1ToF8.runtimeLaunches,1);
+ assert.equal(cycle.executionPlan.F9.runtimeLaunch,false);
+ assert.equal(cycle.publicReleaseApprovalAuthority,'OWNER_EXPLICIT_DIRECTIVE_ONLY');
+ assert.deepEqual(stack.runtimeFoundationInternalReleaseExceptionStates,[]);
+ assert.equal(stack.runtimeFoundationRequiredForPublicReleaseReady,false);
+ assert.equal(stack.externalServerBootRequiredForPublicReleaseReady,false);
+ assert.equal(stack.publicReleaseApprovalAuthority,'OWNER_EXPLICIT_DIRECTIVE_ONLY');
 });
 
 test('runtime QA passes internal QA and regression while exact real-server boot remains external-release-only',()=>{
@@ -565,21 +559,21 @@ test('post-runtime QA preserves independent and regression progress while shared
 });
 
 
-test('two-client sync pending stays before F9 and cannot promote either internal or public release',()=>{
- const runtime=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+test('F7 multiplayer proof stays inside the single F1-F8 session and F9 never relaunches runtime',()=>{
  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
- assert.match(runtime,/ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING/);
- assert.match(runtime,/item\.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE'/);
- assert.match(runtime,/roblox-two-client-one-sync-pending/);
- assert.doesNotMatch(runtime,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
- assert.match(finalReview,/const sharedReleaseRuntimeAcceptance=/);
- assert.match(finalReview,/runtime\.f7MultiplayerFoundationPassed===true/);
- assert.match(finalReview,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance/);
- assert.match(finalReview,/const publicRuntimeAcceptance=false;/);
- assert.doesNotMatch(finalReview,/SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS/);
- assert.match(finalReview,/item\.robloxPublicReleaseReady=false/);
- assert.match(finalReview,/roblox-perpetual-buildup-public-hard-gate-pending/);
- assert.match(finalReview,/item\.robloxPublicReleaseVersionNumber=Number\(candidate\.versionNumber\)/);
+ const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ const cycle=roadmap.developmentLifecycleMachine.perpetualF0ToF9Cycle;
+ const f7=roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack.layers.find(row=>row.id==='F7');
+ assert.equal(f7.executionGroup,'G1_SINGLE_INTERNAL_SESSION');
+ assert.equal(f7.additionalRuntimeLaunchForThisFloorForbidden,true);
+ assert.equal(f7.notApplicableAllowedForConditionalChecks,true);
+ assert.equal(cycle.executionPlan.F1ToF8.runtimeLaunches,1);
+ assert.equal(cycle.executionPlan.F9.runtimeLaunch,false);
+ assert.equal(cycle.parallelism.f1ToF8AcrossGamesParallel,true);
+ assert.match(finalReview,/const exactSingleSession=Boolean/);
+ assert.match(finalReview,/item\.robloxF1ToF8Passed===true/);
+ assert.match(finalReview,/runtimeLaunchesDuringF9:0/);
+ assert.match(finalReview,/f9RuntimeRelaunch:false/);
 });
 
 test('exact unchanged runtime candidate reuses verified server boot evidence',()=>{
