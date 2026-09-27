@@ -1,5 +1,5 @@
 {
-  "version": 272,
+  "version": 273,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5570,6 +5570,17 @@
       "qualityGateOrderPreserved": true,
       "reusableFoundationRaceCovered": true,
       "loopStopsWhenPlannerReportsAlreadyObserved": true
+    },
+    "openCloudTransientRetry": {
+      "version": 1,
+      "owner": "tools/company-development-roblox-runtime-foundation.mjs#fetchWithNetworkRetry",
+      "retryStatuses": [
+        429
+      ],
+      "networkRetryPreserved": true,
+      "exactVersionRequiredAfterRetry": true,
+      "staleSentinelRejected": true,
+      "permissionDenialNotRetried": true
     }
   },
   "nativeChildDispatchDedupeTopology": {
