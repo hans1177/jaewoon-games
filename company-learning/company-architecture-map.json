@@ -1,5 +1,5 @@
 {
-  "version": 266,
+  "version": 267,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6049,7 +6049,7 @@
     "qualitySecurityReleaseGatesUnchanged": true
   },
   "concurrentPlatformSharedProgressMonotonicity": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.concurrentPlatformSharedProgressMonotonicity20260927",
     "concurrentPlatforms": [
       "ROBLOX",
@@ -6067,6 +6067,8 @@
     "perPlatformEvidenceIndependent": true,
     "sharedProgressRegressionForbidden": true,
     "optimisticRuntimeWritePreserved": true,
-    "qualitySecurityReleaseGatesUnchanged": true
+    "qualitySecurityReleaseGatesUnchanged": true,
+    "privateRuntimeRecoveryUsesExactF0Evidence": true,
+    "privateRuntimeRecoverySharedCurrentStepDependencyForbidden": true
   }
 }
