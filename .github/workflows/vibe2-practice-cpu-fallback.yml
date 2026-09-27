@@ -31,7 +31,8 @@ env:
 
 jobs:
   prepare-practice:
-    runs-on: ubuntu-latest
+    # Sample preparation is control-plane work; keep game-primary ubuntu-latest capacity for heavy workers.
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
