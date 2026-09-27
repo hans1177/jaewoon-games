@@ -106,6 +106,10 @@ on:
       - 'qa/company-high-end-visual-contract.test.mjs'
       - 'qa/vibe-visual-runtime-quality.test.mjs'
       - 'qa/vibe2-native-asset-production.test.mjs'
+      - 'qa/company-roblox-thumbnail-sync.test.mjs'
+      - 'tools/company-roblox-thumbnail-sync.mjs'
+      - 'assets/roblox-thumbnails/**'
+      - '.github/workflows/company-development-roblox-release-promotion.yml'
       - '.github/workflows/company-central-policy-contract-qa.yml'
   push:
     branches: [main]
@@ -204,6 +208,10 @@ on:
       - 'qa/company-high-end-visual-contract.test.mjs'
       - 'qa/vibe-visual-runtime-quality.test.mjs'
       - 'qa/vibe2-native-asset-production.test.mjs'
+      - 'qa/company-roblox-thumbnail-sync.test.mjs'
+      - 'tools/company-roblox-thumbnail-sync.mjs'
+      - 'assets/roblox-thumbnails/**'
+      - '.github/workflows/company-development-roblox-release-promotion.yml'
       - '.github/workflows/company-central-policy-contract-qa.yml'
   workflow_dispatch:
 
@@ -280,6 +288,7 @@ jobs:
             qa/company-development-roblox-runtime.test.mjs \
             qa/company-development-roblox-runtime-continuation.test.mjs \
             qa/company-development-roblox-release-promotion.test.mjs \
+            qa/company-roblox-thumbnail-sync.test.mjs \
             qa/company-native-learning-real-evidence-contract.test.mjs \
             qa/company-native-score-not-web-score-contract.test.mjs \
             qa/company-platform-score-learning-contract.test.mjs \
