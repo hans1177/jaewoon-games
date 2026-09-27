@@ -7,6 +7,29 @@ const baseRequired=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READ
 const foundationCausalOrder=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT'];
 export const ROBLOX_LUAU_EXECUTION_WRITE_SCOPE='universe.place.luau-execution-session:write';
 
+const transientNetworkCodes=new Set(['EAI_AGAIN','ENOTFOUND','ECONNRESET','ETIMEDOUT','ECONNREFUSED','UND_ERR_CONNECT_TIMEOUT','UND_ERR_SOCKET']);
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,Math.max(0,Number(ms)||0)));
+function isTransientNetworkError(error){
+  const code=clean(error?.cause?.code||error?.code).toUpperCase();
+  return transientNetworkCodes.has(code);
+}
+async function fetchWithNetworkRetry(fetchImpl,url,init={},options={}){
+  const attempts=Math.max(1,Math.min(6,Number(options.attempts)||4));
+  const delayMs=Math.max(0,Number(options.delayMs)||0);
+  const label=clean(options.label)||'ROBLOX_OPEN_CLOUD';
+  let lastError=null;
+  for(let attempt=1;attempt<=attempts;attempt++){
+    try{return await fetchImpl(url,init);}
+    catch(error){
+      lastError=error;
+      if(!isTransientNetworkError(error)||attempt>=attempts)throw error;
+      console.warn(label+'_NETWORK_RETRY='+attempt+'/'+attempts+':'+clean(error?.cause?.code||error?.code||'TRANSIENT'));
+      if(delayMs>0)await sleep(delayMs*attempt);
+    }
+  }
+  throw lastError||new Error(label+'_NETWORK_RETRY_EXHAUSTED');
+}
+
 export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',placeId='',versionNumber=0}={}){
   const checkpoints=sentinel&&typeof sentinel.checkpoints==='object'&&sentinel.checkpoints?sentinel.checkpoints:{};
   const requirements=sentinel&&typeof sentinel.requirements==='object'&&sentinel.requirements?sentinel.requirements:{};
@@ -61,13 +84,19 @@ export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',p
     authority:'roblox-runtime-foundation-sentinel'
   });
 }
-export async function fetchRobloxRuntimeFoundationEvidence({universeId='',apiKey='',datastoreName='native-foundation-sentinel-v1',entryKey='latest'}={}){
+export async function fetchRobloxRuntimeFoundationEvidence({
+  universeId='',apiKey='',datastoreName='native-foundation-sentinel-v1',entryKey='latest',
+  fetchImpl=globalThis.fetch,networkRetryAttempts=4,networkRetryDelayMs=500,
+}={}){
   const universe=clean(universeId),key=clean(apiKey),store=clean(datastoreName),entry=clean(entryKey);
   if(!/^[1-9][0-9]*$/.test(universe))throw new Error('valid universeId required');
   if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required');
   if(!store||!entry)throw new Error('datastoreName and entryKey required');
+  if(typeof fetchImpl!=='function')throw new Error('fetch implementation required');
   const url=`https://apis.roblox.com/cloud/v2/universes/${encodeURIComponent(universe)}/data-stores/${encodeURIComponent(store)}/entries/${encodeURIComponent(entry)}`;
-  const response=await fetch(url,{headers:{'x-api-key':key}});
+  const response=await fetchWithNetworkRetry(fetchImpl,url,{headers:{'x-api-key':key}},{
+    attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_FOUNDATION_DATASTORE'
+  });
   const text=await response.text();
   if(response.status===401||response.status===403)throw new Error(`ROBLOX_FOUNDATION_DATASTORE_PERMISSION_DENIED:requires universe-datastores.objects:read:HTTP_${response.status}:${text.slice(0,220)}`);
   if(!response.ok)throw new Error(`ROBLOX_FOUNDATION_DATASTORE_HTTP_${response.status}:${text.slice(0,300)}`);
@@ -77,6 +106,7 @@ export async function fetchRobloxRuntimeFoundationEvidence({universeId='',apiKey
 
 export async function probeRobloxOpenCloudEngine({
   universeId='',placeId='',versionNumber=0,apiKey='',fetchImpl=globalThis.fetch,pollIntervalMs=1000,maxPolls=30,expectedStudioAssetBinding=null,
+  networkRetryAttempts=4,networkRetryDelayMs=500,
 }={}){
   const universe=clean(universeId),place=clean(placeId),version=Number(versionNumber),key=clean(apiKey);
   if(!/^[1-9][0-9]*$/.test(universe))throw new Error('valid universeId required');
@@ -115,11 +145,11 @@ export async function probeRobloxOpenCloudEngine({
     let body={};try{body=text?JSON.parse(text):{};}catch{throw new Error(`ROBLOX_OPEN_CLOUD_ENGINE_${label}_INVALID_JSON`);}
     return{body,text};
   };
-  const created=await fetchImpl(`${base}/luau-execution-session-tasks`,{
+  const created=await fetchWithNetworkRetry(fetchImpl,`${base}/luau-execution-session-tasks`,{
     method:'POST',
     headers:{'content-type':'application/json','x-api-key':key},
     body:JSON.stringify({script,timeout:'20s'}),
-  });
+  },{attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_ENGINE_CREATE'});
   const createdDecoded=await decode(created,'CREATE');
   const createdErrorMessage=clean(createdDecoded.body?.message);
   const createdRequiredScope=createdErrorMessage.match(/required scope <([^>]+)>/i)?.[1]||ROBLOX_LUAU_EXECUTION_WRITE_SCOPE;
@@ -133,7 +163,9 @@ export async function probeRobloxOpenCloudEngine({
   const delay=Math.max(0,Number(pollIntervalMs)||0);
   for(let i=0;i<polls&&!['COMPLETE','FAILED'].includes(clean(task?.state).toUpperCase());i++){
     if(delay>0)await new Promise(resolve=>setTimeout(resolve,delay));
-    const response=await fetchImpl(taskUrl,{headers:{'x-api-key':key}});
+    const response=await fetchWithNetworkRetry(fetchImpl,taskUrl,{headers:{'x-api-key':key}},{
+      attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_ENGINE_TASK'
+    });
     const decoded=await decode(response,'TASK');
     const taskErrorMessage=clean(decoded.body?.message);
     const taskRequiredScope=taskErrorMessage.match(/required scope <([^>]+)>/i)?.[1]||ROBLOX_LUAU_EXECUTION_WRITE_SCOPE;
@@ -143,7 +175,9 @@ export async function probeRobloxOpenCloudEngine({
   }
   const state=clean(task?.state).toUpperCase()||'UNKNOWN';
   if(state!=='COMPLETE')return Object.freeze({available:true,permissionDenied:false,status:200,engineExecuted:false,exactPlace:false,exactVersion:false,state,error:task?.error?.message||null,taskPath:rawPath});
-  const logsResponse=await fetchImpl(`${taskUrl}/logs?view=STRUCTURED&maxPageSize=100`,{headers:{'x-api-key':key}});
+  const logsResponse=await fetchWithNetworkRetry(fetchImpl,`${taskUrl}/logs?view=STRUCTURED&maxPageSize=100`,{headers:{'x-api-key':key}},{
+    attempts:networkRetryAttempts,delayMs:networkRetryDelayMs,label:'ROBLOX_OPEN_CLOUD_ENGINE_LOGS'
+  });
   const logsDecoded=await decode(logsResponse,'LOGS');
   const logsErrorMessage=clean(logsDecoded.body?.message);
   const logsRequiredScope=logsErrorMessage.match(/required scope <([^>]+)>/i)?.[1]||ROBLOX_LUAU_EXECUTION_WRITE_SCOPE;
