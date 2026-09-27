@@ -3,42 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-12b7zsz",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-unity-web-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "7e2983a1f9b7517c34e0c1bced7213be394eb942",
-      "acquiredAt": "2026-09-27T21:36:57.058Z",
-      "expiresAt": "2026-09-27T22:21:57.058Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-pd04bg",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "7e2983a1f9b7517c34e0c1bced7213be394eb942",
-      "acquiredAt": "2026-09-27T21:38:49.941Z",
-      "expiresAt": "2026-09-27T22:23:49.941Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-z6y57c",
       "worker": "vibe2",
       "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1",
@@ -729,6 +693,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:line-defense-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-ksqyme",
+      "worker": "vibe2",
+      "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "files": [
+        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "6daefd1bd1b55b9404e0493ebf44dc1008e5191c",
+      "acquiredAt": "2026-09-27T22:24:04.971Z",
+      "expiresAt": "2026-09-27T23:09:04.971Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
