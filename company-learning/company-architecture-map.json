@@ -1,5 +1,5 @@
 {
-  "version": 293,
+  "version": 294,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6398,5 +6398,42 @@
       "ROBLOX",
       "UNITY"
     ]
+  },
+  "buildUpRuntimeGroundingTopology": {
+    "version": 1,
+    "executionModel": "EXISTING_BUILD_UP_FLOW_NO_NEW_STAGE_OR_SHADOW_PIPELINE",
+    "activePlatforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "pausedPlatforms": [
+      "FORTNITE_UEFN"
+    ],
+    "sourceIdentity": "SOURCE_ROOT_TREE_SHA",
+    "graphicsEvidencePath": [
+      "VIBE2_SOURCE_WORKER_GROUNDED_VALIDATION",
+      "CANDIDATE_MANIFEST",
+      "VIBE2_INCREMENTAL_QA_REVALIDATION",
+      "VIBE2_CONTINUOUS_RESULT_PROPAGATION",
+      "VIBE2_FAN_IN_GROUNDED_GATE",
+      "TARGET_RUNTIME_EXACT_SOURCE_BINDING"
+    ],
+    "robloxRuntimePath": [
+      "CANDIDATE_RELEASE_REVIEWED_MAIN_PROMOTION",
+      "PROMOTED_SOURCE_ROOT_TREE_SHA_RECORDED",
+      "ROBLOX_SOURCE_BIND_PACKAGE_PREFLIGHT_F0",
+      "PRIVATE_RUNTIME_CANDIDATE",
+      "RUNTIME_FOUNDATION_ACCEPTANCE_INDEPENDENT_QA_REGRESSION",
+      "F9_EXACT_RUNTIME_REVIEW",
+      "VIBE2_WAITING_TASK_SETTLEMENT_ONLY_IF_SOURCE_TREE_MATCHES"
+    ],
+    "exactSourceRules": {
+      "sameGameIdAloneInsufficient": true,
+      "promotedSourceTreeMustMatchRuntimeSourceTree": true,
+      "staleOrDifferentBuildUpGenerationCannotSettle": true
+    },
+    "gameplaySemanticsPreservationRequired": true,
+    "fortniteUefnOwnerHoldRespected": true
   }
 }
