@@ -21,7 +21,8 @@ env:
 
 jobs:
   reset-to-design:
-    runs-on: ubuntu-latest
+    # Catalog/design-state coordination is control-plane work; keep ubuntu-latest for heavy game/model execution.
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
