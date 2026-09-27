@@ -4166,33 +4166,38 @@
       "supersededSharedTargetLocalExactArtifactPlayAllowed": true,
       "supersededSharedTargetCannotClaimCurrentPublishedRuntime": true,
       "runtimeFoundationBoundary": {
-        "version": 1,
+        "version": 2,
         "exactEngineVersionWithoutRealServerBootState": "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
         "exactEngineVersionWithoutRealServerBootBlocker": "roblox-runtime-foundation-awaiting-real-server-boot",
         "exactEngineVersionDoesNotEqualRealGameServerBoot": true,
         "studioMcpActualPlayPassRemainsValidWhileRuntimeFoundationObservationPending": true,
         "runtimeFoundationPassMustNotBeFabricatedFromOpenCloudHeadlessExecution": true,
         "runtimeFoundationEvidenceAuthority": ".github/workflows/company-development-roblox-post-runtime-qa.yml#runtime-foundation-qa",
-        "observationRetry": "UNLIMITED_OBSERVATION",
+        "observationRetry": "OPTIONAL_MANUAL_DIAGNOSTIC_ONLY",
         "developmentBlocking": false,
         "internalQaBlocking": false,
         "internalRegressionBlocking": false,
         "internalReleaseBlocking": false,
-        "externalPublicReleaseBlocking": true,
+        "externalPublicReleaseBlocking": false,
         "sameGameIndependentDevelopmentContinuesWhilePending": true,
-        "internalReleaseExceptionRequiresExactEngineVersionAndOfficialStudioMcpPlay": true,
+        "internalReleaseExceptionRequiresExactEngineVersionAndOfficialStudioMcpPlay": false,
         "runtimeTruthFieldsMustRemainUnfabricated": true,
         "exactPrivateRuntimeFailuresBlockInternalFlow": false,
-        "exactPrivateRuntimeFailuresBlockExternalPublicRelease": true,
+        "exactPrivateRuntimeFailuresBlockExternalPublicRelease": false,
         "internalContinuationUsesSeparateTruthPreservingFlags": true,
-        "f9ReviewRunsInParallelWithInternalPlaytestWhenOnlyExternalPublicReleaseIsBlocked": true,
+        "f9ReviewRunsInParallelWithInternalPlaytestWhenOnlyExternalPublicReleaseIsBlocked": false,
         "f9PendingMayNotPauseInternalDevelopmentOrInternalPlaytest": true,
-        "nextAction": "CONTINUE_INTERNAL_DEVELOPMENT_QA_REGRESSION_INTERNAL_RELEASE_AND_INTERNAL_PLAYTEST_IN_PARALLEL_WHILE_F9_AND_RUNTIME_REPAIR_CONTINUE; BLOCK_EXTERNAL_PUBLIC_RELEASE_ONLY",
+        "nextAction": "USE_EXACT_LOCAL_STUDIO_INTERNAL_VALIDATION; DO_NOT_WAIT_FOR_EXTERNAL_SERVER_OBSERVATION; RETURN_F9_RESULT_TO_EXISTING_BUILD_UP_LOOP",
         "robloxPlayerAutomationForbidden": true,
         "publishedPlaceDirectStudioAutomationForbidden": true,
         "exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot": true,
         "studioActualPlayEligibilityDoesNotSetRuntimeFoundationPass": true,
-        "studioActualPlayEligibilityDoesNotSetExternalPublicReleaseReady": true
+        "studioActualPlayEligibilityDoesNotSetExternalPublicReleaseReady": true,
+        "externalServerObservationRequiredForInternalDevelopment": false,
+        "externalServerObservationRequiredForPublicRelease": false,
+        "ownerApprovalIsExternalPublicationAuthority": true,
+        "exactPrivateCandidateMayEnterOfficialStudioMcpActualPlayBeforeAnyServerProbe": true,
+        "legacyRealServerObservationFieldsTruthOnly": true
       }
     },
     "deterministicGateAuthority": {
@@ -6225,20 +6230,12 @@
         ],
         "headlessOnlyInternalReleaseForbidden": true,
         "runtimeFoundationRequiredForInternalRelease": false,
-        "runtimeFoundationInternalReleaseExceptionStates": [
-          "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
-          "EXACT_PRIVATE_RUNTIME_FINDING_EXTERNAL_RELEASE_ONLY"
-        ],
-        "runtimeFoundationInternalReleaseExceptionRequires": [
-          "EXACT_PRIVATE_OR_RESTRICTED_CANDIDATE",
-          "EXACT_OPEN_CLOUD_ENGINE_PLACE_VERSION",
-          "OFFICIAL_STUDIO_MCP_ACTUAL_PLAY_PASS",
-          "NO_RELEASE_BLOCKING_STUDIO_CONSOLE_ERROR"
-        ],
+        "runtimeFoundationInternalReleaseExceptionStates": [],
+        "runtimeFoundationInternalReleaseExceptionRequires": [],
         "runtimeFoundationExceptionMaySetRuntimePass": false,
         "runtimeFoundationExceptionMaySetExternalPublicReleaseReady": false,
         "runtimeFoundationRequiredForPublicReleaseReady": false,
-        "internalPublishWithoutRuntimeFoundationAction": "ALLOW_ONLY_EXACT_AWAITING_REAL_SERVER_BOOT_EXCEPTION_OTHERWISE_REPAIR_REQUIRED",
+        "internalPublishWithoutRuntimeFoundationAction": "USE_EXACT_INTERNAL_PLATFORM_RUNTIME_VALIDATION",
         "staleFoundationEvidenceMayNotPromote": true,
         "newCandidateInvalidation": {
           "clearPriorInternalReleaseReady": true,
@@ -6314,7 +6311,8 @@
         "internalRuntimeValidationAuthority": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD_OR_EXISTING_UNITY_INTERNAL_RUNTIME",
         "externalServerBootRequiredForPublicReleaseReady": false,
         "publicationStillRequiresExplicitOwnerApproval": true,
-        "f9Mode": "EVIDENCE_FAN_IN_NO_DUPLICATE_RUNTIME_SESSION"
+        "f9Mode": "EVIDENCE_FAN_IN_NO_DUPLICATE_RUNTIME_SESSION",
+        "legacyExternalServerObservationNotAReleaseGate": true
       },
       "failureRouting": {
         "foundationFailureIsCompanyWideHighImpactBlocker": true,
