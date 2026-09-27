@@ -478,6 +478,27 @@ jobs:
           test "$pushed" = '1'
           echo 'ROBLOX_F9_RUNTIME_STATE_CHANGE=YES'
 
+      - name: Wake canonical Vibe buildup after F9 product-quality failure
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ids_file=/tmp/roblox-f9-quality-buildup-ids
+          if [ ! -s "$ids_file" ]; then
+            echo 'ROBLOX_F9_QUALITY_BUILDUP_REFILL=NO_PRODUCT_QUALITY_FAILURE'
+            exit 0
+          fi
+          game_ids="$(paste -sd, "$ids_file")"
+          jq -nc \
+            --arg run "${GITHUB_RUN_ID:-}" \
+            --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+            --arg games "$game_ids" \
+            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,execution_lane:"game-primary",source_task:$games,reason:"roblox-f9-product-quality-auto-buildup"}}' \
+            > /tmp/roblox-f9-quality-buildup-dispatch.json
+          gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" --input /tmp/roblox-f9-quality-buildup-dispatch.json
+          echo "ROBLOX_F9_QUALITY_BUILDUP_REFILL=DISPATCHED:$game_ids"
+
       - name: Fan verified F9 runtime proof into waiting Vibe Roblox tasks
         env:
           GH_TOKEN: ${{ github.token }}
