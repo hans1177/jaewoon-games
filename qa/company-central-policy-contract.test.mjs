@@ -1138,12 +1138,20 @@ test('Roblox remote runtime QA stays off game-primary ubuntu-latest capacity',()
   const studioStart=workflow.indexOf('\n  studio-local-plan:\n',qaStart);
   assert.ok(qaStart>=0&&studioStart>qaStart);
   const remoteQa=workflow.slice(qaStart,studioStart);
-  assert.match(remoteQa,/runs-on:\s*ubuntu-slim/);
+  assert.match(remoteQa,/runs-on:\s*ubuntu-24\.04/);
   assert.doesNotMatch(remoteQa,/runs-on:\s*ubuntu-latest/);
+  assert.match(workflow,/dedupe:[\s\S]*?runs-on:\s*ubuntu-24\.04/);
   const projection=architecture.robloxRuntimeFoundationRunnerIsolation;
-  assert.equal(projection?.runtimeFoundationQa,'ubuntu-slim');
+  assert.equal(projection?.runtimeFoundationQa,'ubuntu-24.04');
+  assert.equal(projection?.dedupeRunner,'ubuntu-24.04');
+  assert.equal(projection?.previousRunner,'ubuntu-slim');
   assert.equal(projection?.localStudioExecutionMoved,false);
   assert.equal(projection?.gamePrimaryUbuntuLatestCapacityProtected,true);
+  const isolation=roadmap.changeRecord?.robloxPostRuntimeQaRunnerIsolation20260927;
+  assert.equal(isolation?.dedupeRunner,'ubuntu-24.04');
+  assert.equal(isolation?.runtimeFoundationQaRunner,'ubuntu-24.04');
+  assert.equal(isolation?.localStudioExecutionMoved,false);
+  assert.equal(isolation?.exactSourceArtifactVersionGatePreserved,true);
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);
 });
 
