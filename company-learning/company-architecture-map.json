@@ -5440,7 +5440,7 @@
     ]
   },
   "runnerQueueDrainTopology": {
-    "version": 3,
+    "version": 4,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerQueueDrain20260926",
     "owner": ".github/workflows/director-supervisor.yml#runner-drain",
     "runner": "ubuntu-slim",
@@ -5481,7 +5481,9 @@
     "robloxExactGameNewestQueuedPreserved": true,
     "unityExactGameNewestQueuedPreserved": true,
     "activeSameGameCancellationForbidden": true,
-    "releaseAndQaFifoSemanticsUnchanged": true
+    "releaseAndQaFifoSemanticsUnchanged": true,
+    "homepageCompletionWakeRemoved": true,
+    "homepageInternalDirectorSupervisionPreserved": true
   },
   "controlPlaneOperationalRunnerIsolation": {
     "version": 1,
@@ -5972,5 +5974,21 @@
       "cancelInProgress": false
     },
     "localRunnerOfflineMayBlockOnlyLocalTraining": true
+  },
+  "directorHomepageWakeDecoupling": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.directorHomepageWakeDecoupling20260927",
+    "homepageInternalDirectorSupervision": true,
+    "centralDirectorWorkflowRunWakeFromHomepageManager": false,
+    "preservedCentralDirectorIngress": [
+      "workflow_dispatch",
+      "schedule",
+      "relevant_workflow_run",
+      "policy_or_pipeline_push"
+    ],
+    "runnerDrainSemanticsUnchanged": true,
+    "gamePrimaryGateSemanticsUnchanged": true,
+    "homepagePublicationSemanticsUnchanged": true,
+    "gamePrimaryCapacityProtected": true
   }
 }
