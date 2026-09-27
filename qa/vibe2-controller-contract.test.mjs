@@ -1334,7 +1334,7 @@ test('Vibe2 control-plane jobs use slim runners while heavy workers retain full 
   assert.match(coreWorkflow,/\n  reserve:\n(?:\s+#.*\n)*\s+runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| \(github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-slim'\) \}\}/);
   assert.match(coreWorkflow,/\n  fan_in:[\s\S]*?runs-on: ubuntu-24\.04-arm/);
   assert.match(coreWorkflow,/\n  worker:[\s\S]*?runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest' \}\}/);
-  assert.match(runnerWorkflow,/\n  plan:[\s\S]{0,180}?runs-on: ubuntu-slim/);
+  assert.match(runnerWorkflow,/\n  plan:[\s\S]{0,180}?runs-on: ubuntu-24\.04-arm/);
   assert.match(runnerWorkflow,/\n  refill:[\s\S]{0,220}?runs-on: ubuntu-slim/);
 });
 
