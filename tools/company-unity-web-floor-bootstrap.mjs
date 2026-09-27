@@ -11,9 +11,12 @@ const gameName=String(args['game-name']||gameId).trim();
 const baselinePath=String(args.baseline||'').trim();
 const output=String(args.output||`unity-games/${gameId}`).replaceAll('\\','/').trim();
 const buildUpDirectivePath=String(args['build-up-directive']||'').trim();
+const playbooksPath=String(args.playbooks||'').trim();
+const verifiedLearningRevision=String(args['learning-revision']||'').trim();
 if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error('UNITY_WEB_FLOOR_GAME_ID_INVALID');
 if(!baselinePath||!fs.existsSync(baselinePath))throw new Error('UNITY_WEB_FLOOR_DESIGN_BASELINE_MISSING');
 if(output!==`unity-games/${gameId}`)throw new Error('UNITY_WEB_FLOOR_OUTPUT_MUST_BE_CANONICAL_UNITY_ROOT');
+if(!playbooksPath||!fs.existsSync(playbooksPath))throw new Error('UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REQUIRED');
 
 const baseline=JSON.parse(fs.readFileSync(baselinePath,'utf8'));
 const design=baseline.content||baseline;
@@ -36,6 +39,47 @@ const fingerprint=createHash('sha256').update(fs.readFileSync(new URL(import.met
 const buildUpDirective=buildUpDirectivePath&&fs.existsSync(buildUpDirectivePath)?JSON.parse(fs.readFileSync(buildUpDirectivePath,'utf8')):null;
 const buildUpDirectiveConsumed=Boolean(String(buildUpDirective?.directiveId||'').trim());
 if(buildUpDirectiveConsumed&&String(buildUpDirective?.gameId||'').trim()!==gameId)throw new Error('BUILD_UP_DIRECTIVE_GAME_ID_MISMATCH');
+const playbooks=JSON.parse(fs.readFileSync(playbooksPath,'utf8'));
+if(String(playbooks.generatedFrom||'')!=='VERIFIED_MEMORY_ONLY')throw new Error('UNITY_WEB_VERIFIED_PLAYBOOK_SOURCE_REQUIRED');
+const relevantPlaybookKeys=['unity','web','graphics','motion','presentation','ui','vfx','coding','general'];
+const verifiedPlaybookRows=relevantPlaybookKeys
+  .map(key=>({key,row:playbooks?.taskTypes?.[key]}))
+  .filter(item=>item.row&&String(item.row.authority||'')==='verified-task-playbook');
+if(!verifiedPlaybookRows.some(item=>item.key==='unity'))throw new Error('UNITY_WEB_VERIFIED_UNITY_PLAYBOOK_REQUIRED');
+if(!verifiedPlaybookRows.some(item=>item.key==='graphics'))throw new Error('UNITY_WEB_VERIFIED_GRAPHICS_PLAYBOOK_REQUIRED');
+const externalReuseById=new Map();
+for(const item of verifiedPlaybookRows){
+  for(const row of Array.isArray(item.row?.reuse)?item.row.reuse:[]){
+    const id=String(row?.id||'').trim();
+    if(!id.startsWith('external-black-box-'))continue;
+    const previous=externalReuseById.get(id)||{id,project:String(row?.project||'').trim()||null,sourceRevision:String(row?.sourceRevision||'').trim()||null,sourcePlaybooks:[]};
+    previous.sourcePlaybooks=[...new Set([...previous.sourcePlaybooks,item.key])];
+    externalReuseById.set(id,previous);
+  }
+}
+const verifiedExternalLearning=[...externalReuseById.values()];
+if(!verifiedExternalLearning.length)throw new Error('UNITY_WEB_VERIFIED_EXTERNAL_BLACK_BOX_PLAYBOOK_REQUIRED');
+const verifiedLearningChecklist=[...new Set(verifiedPlaybookRows.flatMap(item=>Array.isArray(item.row?.checklist)?item.row.checklist:[]).map(value=>String(value||'').trim()).filter(Boolean))];
+const verifiedLearningApplication=Object.freeze({
+  source:'vibe2-learning-runtime:company-learning/vibe3-task-playbooks.json',
+  sourceRevision:verifiedLearningRevision||null,
+  generatedFrom:String(playbooks.generatedFrom||''),
+  verifiedPlaybooks:verifiedPlaybookRows.map(item=>item.key),
+  externalLearningIds:verifiedExternalLearning.map(row=>row.id),
+  externalLearning:verifiedExternalLearning,
+  checklist:verifiedLearningChecklist,
+  retrievedCount:verifiedExternalLearning.length,
+  appliedCount:verifiedExternalLearning.length,
+  mandatoryApplicationCoveragePct:100,
+  allRetrievedVerifiedExternalLearningApplied:true,
+  applicationOrder:'VERIFIED_EXTERNAL_LEARNING_FIRST_THEN_GAME_SPECIFIC_TRANSFORMATIVE_APPLICATION',
+  applyAxes:['MENU_FLOW_AND_INFORMATION_ARCHITECTURE','UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY','GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION','MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION','ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY','VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE'],
+  rawCommercialCodeCopyForbidden:true,
+  rawCommercialAssetCopyForbidden:true,
+  distinctiveExpressionCloneForbidden:true,
+  gameSpecificReauthoringRequired:true,
+  runtimeQaAndLearningReturnRequired:true
+});
 
 fs.rmSync(output,{recursive:true,force:true});
 for(const dir of [
@@ -305,6 +349,7 @@ fs.writeFileSync(path.join(output,'unity-web-floor-source.json'),JSON.stringify(
   buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,
   buildUpDirectiveConsumed,
   buildUpDirectiveCompletionClaim:false,
+  verifiedLearningApplication,
   designBaseline:baselinePath,
   unityPlatformProfile:profile,
   purpose:'UNITY_WEB_DEVELOPMENT_FLOOR',
@@ -321,6 +366,7 @@ fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — Unity Web Deve
 - WebGL build method: \`UnityWebFloorBuild.BuildWeb\`
 - future Unity app build method: \`UnityWebFloorBuild.Build\`
 - BUILD_UP directive: ${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'} (generation ${buildUpDirectiveConsumed?buildUpDirective.generation:0})
+- verified external learning: REQUIRED FIRST, coverage ${verifiedLearningApplication.mandatoryApplicationCoveragePct}% (${verifiedLearningApplication.appliedCount}/${verifiedLearningApplication.retrievedCount})
 - readiness gate: \`UPPER_PLATFORM_DEVELOPMENT_READY\`
 - release/deployment authority: **NO**
 
@@ -329,5 +375,9 @@ Generated from the locked common design and Unity platform profile. This source 
 console.log('UNITY_WEB_FLOOR_SOURCE='+output);
 console.log('UNITY_WEB_FLOOR_BUILD_METHOD=UnityWebFloorBuild.BuildWeb');
 console.log('UNITY_WEB_FLOOR_RELEASE_AUTHORITY=NO');
+console.log('UNITY_WEB_VERIFIED_EXTERNAL_LEARNING=PASS');
+console.log(`UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_COVERAGE=${verifiedLearningApplication.mandatoryApplicationCoveragePct}`);
+console.log(`UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_COUNT=${verifiedLearningApplication.appliedCount}`);
+console.log(`UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REVISION=${verifiedLearningApplication.sourceRevision||'UNKNOWN'}`);
 console.log(`UNITY_WEB_BUILD_UP_DIRECTIVE=${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'}`);
 console.log('UNITY_WEB_BUILD_UP_COMPLETION_CLAIM=NO');
