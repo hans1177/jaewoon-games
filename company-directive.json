@@ -554,7 +554,7 @@
     "robloxPreflightModel": "llama3.2:1b",
     "robloxValidationMode": "HEADLESS_FAST_MVP",
     "robloxStudioExecutionAllowed": true,
-    "robloxStudioEvidenceRequired": false,
+    "robloxStudioEvidenceRequired": true,
     "departmentResponsibilityMerge": {
       "balance": {
         "mergedInto": [
@@ -1043,17 +1043,17 @@
     }
   },
   "internalReleaseFastMvp": {
-    "version": 2,
-    "authority": "OWNER_DIRECTIVE_2026-09-24",
+    "version": 3,
+    "authority": "OWNER_DIRECTIVE_2026-09-28",
     "policyDocument": "company-learning/platform-release-roadmap.json",
     "appliesTo": "ROBLOX_PRIVATE_OR_RESTRICTED_INTERNAL_RELEASE",
-    "publicReleaseUnaffected": true,
+    "publicReleaseUnaffected": false,
     "gates": [
       "EXACT_SOURCE_ROJO_PACKAGE",
       "VIBE_PLUS_ONE_SHARED_MODEL_PREFLIGHT",
       "F0_SOURCE_INTEGRITY",
       "PRIVATE_RUNTIME_CANDIDATE",
-      "ACTUAL_RUNTIME_FOUNDATION_F1_THROUGH_F6_AND_F8",
+      "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD_INTERNAL_VALIDATION",
       "INDEPENDENT_QA",
       "REGRESSION",
       "F9_INTERNAL_REVIEW"
@@ -1080,10 +1080,14 @@
     "separateRegressionStageRequired": true,
     "separateFinalReviewRequired": true,
     "webRevalidationRequired": false,
-    "robloxStudioRequired": false,
+    "robloxStudioRequired": true,
     "departmentMultiModelRequired": false,
     "sharedModelReviewCount": 1,
-    "fakeEvidenceForbidden": true
+    "fakeEvidenceForbidden": true,
+    "realServerBootRequired": false,
+    "externalPublicReleaseRequiresExplicitOwnerApproval": true,
+    "ownerApprovalCannotBeInferred": true,
+    "robloxPlayerAutomationForbidden": true
   },
   "currentExecutionMode": "UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_ROBLOX_UNITY",
   "currentExecutionAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
