@@ -312,6 +312,7 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
       target: clean(taskInput.target) || 'auto',
       department: clean(taskInput.department) || 'development',
       type: clean(taskInput.type) || 'implementation',
+      assetProductionLane: taskInput.assetProductionLane === true || (taskInput.evidence||[]).map(clean).includes('asset-production-parallel:v1'),
       goal,
       responsibleFiles: Array.isArray(taskInput.responsibleFiles) ? taskInput.responsibleFiles : [],
       dependencies: Array.isArray(taskInput.dependencies) ? taskInput.dependencies : [],
