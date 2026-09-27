@@ -9,7 +9,13 @@ import {
   uploadRobloxHomepageThumbnail
 } from '../tools/company-roblox-thumbnail-sync.mjs';
 
-const ids=['cozy-island','daechung-rpg','horror-escape-room','village-dungeons'];
+const ids=[
+  'amusement-tycoon','bug-defense','cozy-island','daechung-rpg','fantasy-survival','horror-escape-room',
+  'line-defense','monster-adventure','seed-action-survival-rogu-echoes-of-the-lost-star',
+  'seed-casual-realm-weaver','seed-idle-growth-rpg-crystal-bloom','seed-puzzle-chromatic-cascade',
+  'seed-single-defense-strat-celestial-bastion','seed-story-complete-rpg-chronicles-of-eldoria',
+  'survival','village-dungeons'
+];
 
 test('current internal Roblox exposure games share one canonical thumbnail with homepage',()=>{
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
@@ -96,6 +102,9 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.match(workflow,/name: sync canonical Roblox and homepage thumbnails/);
   assert.match(workflow,/github\.event_name == 'push'/);
   assert.match(workflow,/name: Resolve thumbnail sync games/);
+  assert.match(workflow,/- 'assets\/roblox-thumbnails\/\*\*'/);
+  assert.match(workflow,/- 'game-catalog\.json'/);
+  assert.match(workflow,/\.\.\/runtime\/homepage-platform-exposure\.json/);
   assert.match(workflow,/internalReleaseReady===true/);
   assert.match(workflow,/assets\/roblox-thumbnails\//);
   assert.match(workflow,/ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS/);
@@ -113,6 +122,16 @@ test('central contract requires same thumbnail source for Roblox and homepage',(
   assert.equal(contract.canonicalImageAuthority.homepageUsesSameAsset,true);
   assert.equal(contract.canonicalImageAuthority.robloxUploadUsesSameAsset,true);
   assert.equal(contract.robloxOpenCloud.requiredScope,'universe.thumbnail:write');
+  assert.equal(contract.version,2);
+  assert.deepEqual(contract.scope.currentInternalRobloxExposureGames,ids);
+  assert.equal(contract.scope.currentInternalRobloxExposureGameCount,16);
+  assert.equal(contract.scope.selectionAuthority,'company-runtime/homepage-platform-exposure.json');
+  assert.equal(contract.scope.allInternalReleaseReadyRobloxGamesRequired,true);
+  assert.equal(contract.automation.placeRepublishRequired,false);
+  assert.equal(contract.automation.thumbnailOnlyUpload,true);
   assert.equal(architecture.robloxHomepageThumbnailSyncTopology.sameSourceAssetForHomepageAndRoblox,true);
+  assert.equal(architecture.robloxHomepageThumbnailSyncTopology.version,2);
+  assert.equal(architecture.robloxHomepageThumbnailSyncTopology.runtimeExposureSource,'company-runtime/homepage-platform-exposure.json');
+  assert.equal(architecture.robloxHomepageThumbnailSyncTopology.allInternalReleaseReadyGamesCovered,true);
   assert.equal(security.robloxThumbnailOpenCloudSecurity.verifiedUniverseTargetRequired,true);
 });
