@@ -2676,6 +2676,19 @@
       "observedResidualDnaLearningWake": true,
       "residualDnaLearningRepair": "NARROW_PUSH_PATHS_TO_ACTUAL_LEARNING_INPUTS"
     },
-    "dnaLearningEvidencePathsOnly": true
+    "dnaLearningEvidencePathsOnly": true,
+    "postDnaFixLiveVerification": {
+      "kind": "LOG_MAP_ONLY_MAIN_PUSH",
+      "expectedDirectPushWorkflows": [
+        "Company Central Policy Contract QA",
+        "Company Security Immune System"
+      ],
+      "expectedNoDirectPushWorkflows": [
+        "Company Seed DESIGN_ONLY Runtime",
+        "Homepage Manager",
+        "Company Status Sync",
+        "Company DNA Learning"
+      ]
+    }
   }
 }
