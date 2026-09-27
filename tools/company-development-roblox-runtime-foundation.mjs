@@ -17,8 +17,9 @@ function isTransientNetworkError(error){
 function transientHttpDelayMs(response,baseDelayMs,attempt){
   const retryAfter=clean(response?.headers?.get?.('retry-after'));
   const retryAfterSeconds=Number(retryAfter);
-  if(Number.isFinite(retryAfterSeconds)&&retryAfterSeconds>=0)return Math.max(baseDelayMs,retryAfterSeconds*1000);
-  return baseDelayMs*Math.max(1,attempt);
+  const exponentialDelay=Math.min(30000,baseDelayMs*Math.max(1,2**Math.max(0,attempt-1)));
+  if(Number.isFinite(retryAfterSeconds)&&retryAfterSeconds>=0)return Math.max(exponentialDelay,retryAfterSeconds*1000);
+  return exponentialDelay;
 }
 async function fetchWithNetworkRetry(fetchImpl,url,init={},options={}){
   const attempts=Math.max(1,Math.min(6,Number(options.attempts)||4));
