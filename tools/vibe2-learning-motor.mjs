@@ -1140,9 +1140,11 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     .slice(0,6);
 
   const taskType=lower(task.taskType||task.type||'coding');
+  const presentationLike=['graphics','motion','presentation','ui','vfx'].includes(taskType);
   const playbookKeys=uniq([
     taskType,
-    ['roblox','unity'].includes(engine)?engine:null,
+    ['roblox','unity','web'].includes(engine)?engine:null,
+    presentationLike?'graphics':null,
     taskType!=='coding'?'coding':null,
     'general'
   ]).filter(Boolean);
