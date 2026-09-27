@@ -1090,12 +1090,18 @@ test('core QA keeps one active regression alive during same-ref main churn',()=>
   assert.match(coreQaWorkflow,/concurrency:\n(?:\s+#.*\n)*\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}[\s\S]*?cancel-in-progress:\s*false/);
   assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaRunner,'ubuntu-slim');
   assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaConcurrencyMode,'ACTIVE_ONE_PLUS_LATEST_PENDING');
-  assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaBrowserSmokeRunner,'ubuntu-latest');
+  assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaBrowserSmokeRunner,'ubuntu-24.04');
   assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaBrowserSmokeSeparateJob,true);
-  assert.equal(policy?.coreQaBrowserSmokeIsolation?.deterministicCoreRunner,'ubuntu-slim');
-  assert.equal(policy?.coreQaBrowserSmokeIsolation?.browserSmokeRunner,'ubuntu-latest');
-  assert.equal(policy?.coreQaBrowserSmokeIsolation?.browserValidationPreserved,true);
-  assert.equal(policy?.coreQaBrowserSmokeIsolation?.qualityGateWeakened,false);
+  assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaBrowserSmokeParallel,true);
+  assert.equal(architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool?.coreQaBrowserSmokeRequiresRealBrowser,true);
+  assert.equal(policy?.browserSmoke?.runner,'ubuntu-24.04');
+  assert.equal(policy?.browserSmoke?.separateJob,true);
+  assert.equal(policy?.browserSmoke?.parallelWithCoreTests,true);
+  assert.equal(policy?.browserSmoke?.realBrowserRequired,true);
+  assert.equal(policy?.browserSmoke?.browserGatePreserved,true);
+  assert.equal(policy?.browserSmoke?.gamePrimaryUbuntuLatestLabelUsed,false);
+  assert.match(coreQaWorkflow,/\n  browser-smoke:\n\s+name: Development Web browser startup smoke\n\s+runs-on: ubuntu-24\.04/);
+  assert.doesNotMatch(coreQaWorkflow,/\n  browser-smoke:\n[\s\S]{0,120}?needs:\s*test/);
 });
 
 test('focused retry history reuse stays evidence-gated without weakening QA',()=>{
