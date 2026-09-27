@@ -60,7 +60,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-27T11:15:20.211Z",
+      "updatedAt": "2026-09-27T11:16:13.061Z",
       "robloxSourceCommit": "51337ae4111414d4c9b79a71dfcc98d53d5d0d76",
       "robloxSourceBootstrapPassedAt": "2026-09-27T09:51:36.652Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -271,14 +271,52 @@
         "authority": "roblox-open-cloud-private-runtime-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 2,
+        "gameId": "daechung-rpg",
+        "sourceRevision": "51337ae4111414d4c9b79a71dfcc98d53d5d0d76",
+        "artifactIdentity": "sha256:2e1a9c844bac457b2b6c01382e215e8bc5cdd3e3a68da23b8f206c4b73a311f4",
+        "artifactRunId": 36310706302,
+        "universeId": "10767445769",
+        "placeId": "126302702438348",
+        "candidateVersionNumber": 26,
+        "expectedVersionNumber": 26,
+        "observedVersionNumber": 25,
+        "exactGame": true,
+        "exactPlace": true,
+        "exactVersion": false,
+        "exactEngineVersion": true,
+        "engineExecuted": true,
+        "simulationRunning": false,
+        "serverBootObserved": false,
+        "blockers": [
+          "exactVersion",
+          "checkpointOrder",
+          "checkpoint:SERVER_BOOT",
+          "checkpoint:MODULE_GRAPH_READY",
+          "checkpoint:WORLD_READY",
+          "checkpoint:SPAWN_READY",
+          "checkpoint:CHARACTER_READY",
+          "checkpoint:GROUND_CONTACT",
+          "checkpoint:CAMERA_READY",
+          "checkpoint:INPUT_READY",
+          "checkpoint:MOVEMENT_CONFIRMED",
+          "checkpoint:REMOTE_ROUNDTRIP",
+          "checkpoint:CORE_LOOP_READY",
+          "checkpoint:SAVE_ROUNDTRIP",
+          "checkpoint:MULTIPLAYER_SYNC"
+        ],
+        "observedAt": "2026-09-27T11:16:13.061Z",
+        "workflowRunId": 36315141738,
+        "authority": "exact-engine-version-awaiting-real-server-boot"
+      },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "robloxRuntimePassedAt": null,
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
-      "robloxRuntimeRetryCount": 0,
+      "robloxRuntimeRetryCount": 1,
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
@@ -301,9 +339,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-runtime-foundation-awaiting-real-server-boot"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -404,7 +442,7 @@
         "newSourceRevision": "51eadc7b331419af8319c664c539023aed1e7403",
         "invalidatedAt": "2026-09-25T17:30:08.745Z"
       },
-      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T01:47:42.327Z",
+      "robloxRuntimeLastObservationAttemptAt": "2026-09-27T11:16:13.061Z",
       "robloxParallelMultiplayerValidationPending": false,
       "robloxPromotionBlockers": [
         "roblox-two-client-one-sync-pending",
@@ -9645,7 +9683,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T11:16:06.342Z",
+  "updatedAt": "2026-09-27T11:16:13.061Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
