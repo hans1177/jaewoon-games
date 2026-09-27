@@ -3,139 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1n9lxha",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
-        "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
-        "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T12:47:37.805Z",
-      "expiresAt": "2026-09-27T13:32:37.805Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1ga4fxq",
-      "worker": "vibe2",
-      "taskId": "bug-defense-roblox-presentation-asset-adaptation-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "roblox-games/bug-defense/client/Game.client.luau",
-        "roblox-games/bug-defense/server/Game.server.luau",
-        "roblox-games/bug-defense/shared/GameConfig.luau"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T12:49:24.074Z",
-      "expiresAt": "2026-09-27T13:34:24.074Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1kfws12",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T12:49:29.267Z",
-      "expiresAt": "2026-09-27T13:34:29.267Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-5m3snb",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/client/Game.client.luau",
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/server/Game.server.luau",
-        "roblox-games/seed-idle-growth-rpg-crystal-bloom/shared/GameConfig.luau"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T12:50:16.603Z",
-      "expiresAt": "2026-09-27T13:35:16.603Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1x4pqwy",
-      "worker": "vibe2",
-      "taskId": "survival-roblox-presentation-asset-adaptation-v1",
-      "gameId": "survival",
-      "files": [
-        "roblox-games/survival/client/Game.client.luau",
-        "roblox-games/survival/server/Game.server.luau",
-        "roblox-games/survival/shared/GameConfig.luau"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T12:50:29.259Z",
-      "expiresAt": "2026-09-27T13:35:29.259Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1msepe0",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
-        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T12:54:25.721Z",
-      "expiresAt": "2026-09-27T13:39:25.721Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-m4fg97",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "roblox-games/monster-adventure/client/Game.client.luau",
-        "roblox-games/monster-adventure/server/Game.server.luau",
-        "roblox-games/monster-adventure/shared/GameConfig.luau"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T12:55:39.847Z",
-      "expiresAt": "2026-09-27T13:40:39.847Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-176nud2",
       "worker": "vibe2",
       "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1",
@@ -913,6 +780,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:survival-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-1f1l07h",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
+      ],
+      "baseSha": "0136064ac8c56e718a0700cf3c8d96e458f56be5",
+      "acquiredAt": "2026-09-27T13:42:31.344Z",
+      "expiresAt": "2026-09-27T14:27:31.344Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
       ]
     }
   ]
