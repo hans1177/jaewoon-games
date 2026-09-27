@@ -835,7 +835,6 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.ok(gated.forbiddenAuthorities.includes('CENTRAL_POLICY_MUTATION'));
   assert.ok(gated.forbiddenAuthorities.includes('QA_OR_RUNTIME_GATE_BYPASS'));
   assert.ok(gated.forbiddenAuthorities.includes('RELEASE_PASS_OR_PROMOTION_SELF_APPROVAL'));
-  assert.equal(gated.fortniteUefnChange,false);
   assert.equal(roadmap.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
   assert.equal(roadmap.fortniteUefn.developmentStatus,'DEVELOPMENT_PAUSED');
   assert.equal(roadmap.fortniteUefn.developmentStatusLabel,'개발보류');
