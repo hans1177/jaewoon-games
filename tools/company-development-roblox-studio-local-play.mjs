@@ -1207,6 +1207,7 @@ export async function runOfficialStudioMcpPlay({
         scenarioFailureCount:qualityFailureKinds.length,
         primaryActionDisplacement:Number(scenarioMetrics.primaryActionDisplacement||0),
         primaryActionVelocity:Number(scenarioMetrics.primaryActionVelocity||0),
+        primaryActionFeedbackChanged:scenarioMetrics.primaryActionFeedbackChanged===true,
         captureQuality
       },
       characterMotionRuntime,

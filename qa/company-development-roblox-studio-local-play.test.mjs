@@ -1207,6 +1207,18 @@ test('primary action effect accepts an authoritative server feedback transition 
   assert.match(helper,/feedbackEvent=attr\(p,"FeedbackEvent"\)/);
 });
 
+test('official Studio result preserves primary action feedback evidence through persisted runtime summary',()=>{
+  assert.match(helper,/primaryActionFeedbackChanged:scenarioMetrics\.primaryActionFeedbackChanged===true/);
+  const observed=runtime();
+  observed.metrics.primaryActionFeedbackChanged=true;
+  const result=createLocalStudioPlayEvidence({
+    item:item(),runtime:observed,expected,workflowRunId:36298580885,studioStepSucceeded:true,
+    testedAt:'2026-09-27T05:57:45.929Z'
+  });
+  assert.equal(result.pass,true);
+  assert.equal(result.evidence.runtimeSummary.primaryActionFeedbackChanged,true);
+});
+
 test('movement alone cannot pass a declared Studio actual-play scenario contract',()=>{
   const contract=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8')).studioActualPlayContract;
   const result=evaluateStudioActualPlayContract({
