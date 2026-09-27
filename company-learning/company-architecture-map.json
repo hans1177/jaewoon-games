@@ -1,5 +1,5 @@
 {
-  "version": 294,
+  "version": 295,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6434,6 +6434,22 @@
       "staleOrDifferentBuildUpGenerationCannotSettle": true
     },
     "gameplaySemanticsPreservationRequired": true,
-    "fortniteUefnOwnerHoldRespected": true
+    "fortniteUefnOwnerHoldRespected": true,
+    "unityRuntimePath": [
+      "VIBE2_UNITY_CANDIDATE_APK_BUILD",
+      "REVIEWED_MAIN_PROMOTION",
+      "PROMOTED_SOURCE_ROOT_TREE_SHA_RECORDED",
+      "COMPANY_DEVELOPMENT_UNITY_RUNTIME",
+      "EXACT_APK_RUNTIME",
+      "INDEPENDENT_QA",
+      "REGRESSION",
+      "VIBE2_WAITING_TASK_SETTLEMENT_ONLY_IF_SOURCE_TREE_MATCHES"
+    ],
+    "unityExactSourceRules": {
+      "incrementalBuildAndPromotionAloneCannotPass": true,
+      "sameGameIdAloneInsufficient": true,
+      "promotedSourceTreeMustMatchRuntimeSourceTree": true,
+      "runtimeIndependentQaRegressionRequired": true
+    }
   }
 }
