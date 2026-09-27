@@ -1143,7 +1143,7 @@ jobs:
           done < /tmp/roblox-studio-followup-ids
           echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH_COUNT=$dispatch_count"
 
-      - name: Classify Open Cloud probe failures after evidence persistence
+      - name: Enforce persistent Open Cloud probe failures after evidence persistence
         shell: bash
         run: |
           set -euo pipefail
