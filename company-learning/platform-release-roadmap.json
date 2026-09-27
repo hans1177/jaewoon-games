@@ -1,5 +1,5 @@
 {
-  "version": 462,
+  "version": 463,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9473,6 +9473,31 @@
       "previousConcurrencyGroup": "company-development-queue-reconcile-runtime",
       "concurrencyGroup": "company-development-queue-reconcile-runtime-v2",
       "concurrencyEpochAdvancedToBypassLegacyPendingGroup": true
+    },
+    "robloxPostRuntimeQaRunnerIsolation20260927": {
+      "id": "ROBLOX_POST_RUNTIME_QA_RUNNER_ISOLATION_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "LET_EXACT_PRIVATE_RUNTIME_FOUNDATION_QA_START_WITHOUT_WAITING_BEHIND_SATURATED_UBUNTU_SLIM_CONTROL_CAPACITY",
+      "observedEvidence": {
+        "runId": 36293301968,
+        "gameId": "horror-escape-room",
+        "queuedJob": "collapse duplicate runtime foundation scans",
+        "queuedRunner": "ubuntu-slim",
+        "exactCandidateSourceRevision": "b74a4ac341b7dff0ecd9f2d6cf25375534a2d268",
+        "exactCandidateArtifactIdentity": "sha256:4109e8ab3df1273f6fb877930c128b4e717c68cefcf6050269a11e1a59e846de",
+        "candidateVersionNumber": 24
+      },
+      "workflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+      "dedupeRunner": "ubuntu-24.04",
+      "runtimeFoundationQaRunner": "ubuntu-24.04",
+      "previousRunner": "ubuntu-slim",
+      "studioLocalPlanRunner": "self-hosted,Windows,X64,roblox-studio-authenticated",
+      "studioMcpAutoPlayRunner": "self-hosted,Windows,X64,roblox-studio-authenticated",
+      "localStudioExecutionMoved": false,
+      "heavyGameExecutionChanged": false,
+      "exactSourceArtifactVersionGatePreserved": true,
+      "qualitySecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
