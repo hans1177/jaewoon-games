@@ -693,6 +693,21 @@ const AUTONOMOUS_EXPANSION_THEMES=Object.freeze([
     ])
   }),
   Object.freeze({
+    id:'MENU_UI_EXPERIENCE_SYSTEM',
+    domains:Object.freeze(['MENU_FLOW','UI_DESIGN_SYSTEM','UI_INFORMATION_PRIORITY','MOBILE_UX','SETTINGS_ACCESSIBILITY','INVENTORY_USABILITY','QUESTS','CRAFTING','ECONOMY','SESSION_FLOW','FEEDBACK_CLARITY']),
+    focuses:Object.freeze(['USABILITY','PRESENTATION','PROGRESSION']),
+    bundle:Object.freeze([
+      'MENU_ROLE_SELECTION: 게임에 실제 필요한 화면만 선택하고 메인·인벤토리·장비·상점·제작·퀘스트·지도·설정·결과 화면을 무조건 전부 복제하지 않는다.',
+      'DISTINCT_SCREEN_PURPOSE: 각 메뉴는 같은 패널의 제목만 바꾸지 말고 정보 우선순위·레이아웃·조작·행동 버튼·피드백이 화면 목적에 맞게 달라야 한다.',
+      'GENRE_AND_WORLD_IDENTITY: 메뉴 프레임·아이콘·타이포·전환·배경 표현을 게임 장르와 세계관에 맞추되 가독성과 상태 전달을 우선한다.',
+      'CONNECTED_GAME_STATE: 인벤토리·장비·상점·제작·퀘스트·지도·결과 화면은 실제 authoritative 게임 상태와 연결되고 변경 결과가 즉시 다른 관련 화면에도 반영되어야 한다.',
+      'MOBILE_TOUCH_FLOW: 주요 메뉴 열기·탭 전환·선택·구매·제작·장착·뒤로가기·닫기를 모바일 터치에서 겹침·오입력·화면 잘림 없이 수행하게 한다.',
+      'CONTEXTUAL_VARIATION: 전투 중·마을·제작대·상점·보스·세션 종료 등 상황에 따라 필요한 메뉴 밀도와 허용 행동을 다르게 구성한다.',
+      'NAVIGATION_AND_RECOVERY: 현재 위치·뒤로가기·취소·확인·오류·빈 상태·잠금 상태가 명확하고 메뉴를 닫아도 플레이 진행이 막히지 않게 한다.',
+      'MENU_PRESENTATION_FEEDBACK: 열기/닫기·선택·보상·구매·제작·장착·퀘스트 완료 같은 상태 변화에 짧은 모션·VFX·강조를 쓰되 입력 지연과 과한 연출을 피한다.'
+    ])
+  }),
+  Object.freeze({
     id:'PRESENTATION_WORLD_COHESION',
     domains:Object.freeze(['ENVIRONMENT','TERRAIN','LIGHTING','ANIMATION','VFX','CHARACTER_VISUALS','ENEMY_VISUALS','UI_HUD','AUDIO_VISUAL_TIMING','ENVIRONMENTAL_MOTION']),
     focuses:Object.freeze(['PRESENTATION','USABILITY']),
@@ -747,6 +762,7 @@ function buildAutonomousContentExpansion({
     if(theme.id==='ENEMY_BOSS_COMBAT_ECOLOGY'&&Number(source?.signals?.ai||0)<4)score+=6;
     if(theme.id==='QUEST_STORY_PROGRESSION_CHAIN'&&Number(source?.signals?.progression||0)<8)score+=6;
     if(theme.id==='ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN'&&Number(source?.signals?.connection||0)<3)score+=6;
+    if(theme.id==='MENU_UI_EXPERIENCE_SYSTEM'&&(Number(source?.signals?.uiFlow||0)<5||Number(source?.signals?.settings||0)<2))score+=7;
     if(theme.id==='PRESENTATION_WORLD_COHESION'&&(Number(source?.signals?.animation||0)<3||Number(source?.signals?.vfx||0)<3))score+=5;
     return{theme,index,score,gapDomains,applicableDomains};
   }).sort((a,b)=>b.score-a.score||a.index-b.index);
@@ -778,7 +794,7 @@ function buildAutonomousContentExpansion({
       dimensions:Object.freeze([
         'CORE_LOOP_COMPLETENESS','QUEST_AND_GOAL_FLOW','WORLD_AND_REGION_FLOW','MONSTER_ENEMY_ROLE_COVERAGE',
         'ITEM_EQUIPMENT_REWARD_PURPOSE','STORY_WORLD_CAUSALITY','GAMEPLAY_RULE_CONNECTIONS',
-        'PROGRESSION_PACING','MID_LATE_ENDGAME_DEPTH','MULTIPLAYER_WHEN_APPLICABLE','PRESENTATION_AND_FEEDBACK'
+        'PROGRESSION_PACING','MID_LATE_ENDGAME_DEPTH','MULTIPLAYER_WHEN_APPLICABLE','MENU_AND_SCREEN_FLOW','PRESENTATION_AND_FEEDBACK'
       ]),
       weakExistingContentMayPreemptNewContent:true
     }),
