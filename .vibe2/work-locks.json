@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-929xmf",
-      "worker": "vibe2",
-      "taskId": "line-defense-unity-web-base-implementation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "352cd25bf6280c47211a63bfc3e57519a984640e",
-      "acquiredAt": "2026-09-27T22:49:58.777Z",
-      "expiresAt": "2026-09-27T23:34:58.777Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-5pqc9s",
       "worker": "vibe2",
       "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
@@ -824,6 +806,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:amusement-tycoon-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-1sm601i",
+      "worker": "vibe2",
+      "taskId": "monster-adventure-unity-web-base-implementation-v1",
+      "gameId": "monster-adventure",
+      "files": [
+        "unity-games/monster-adventure/Assets/Scripts/GameCore.cs",
+        "unity-games/monster-adventure/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "4c21c3495a2225a6a0458511999afa03ace4f92d",
+      "acquiredAt": "2026-09-27T23:35:06.842Z",
+      "expiresAt": "2026-09-28T00:20:06.842Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:monster-adventure-unity-web-base-implementation-v1"
       ]
     }
   ]
