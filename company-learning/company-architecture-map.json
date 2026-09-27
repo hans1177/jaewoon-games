@@ -1,5 +1,5 @@
 {
-  "version": 272,
+  "version": 273,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6109,5 +6109,25 @@
     "qualitySecurityReleaseGatesUnchanged": true,
     "previousConcurrencyGroup": "company-development-queue-reconcile-runtime",
     "epochAdvancedToBypassLegacyPendingGroup": true
+  },
+  "robloxOpenCloudThrottleRecovery": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxOpenCloudThrottleRecovery20260927",
+    "module": "tools/company-development-roblox-runtime-foundation.mjs",
+    "workflow": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+    "transientHttpRetryStatuses": [
+      408,
+      429,
+      500,
+      502,
+      503,
+      504
+    ],
+    "scanProbeConcurrency": 2,
+    "exactGameProbeConcurrency": 1,
+    "persistentApiFailureStillFails": true,
+    "runtimeTruthGateUnchanged": true,
+    "studioMcpGateUnchanged": true,
+    "publicReleaseGateUnchanged": true
   }
 }
