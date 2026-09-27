@@ -455,7 +455,9 @@ export function buildVibeAssetProductionPlan({
   target='',
   repoRoot=process.cwd(),
   manifest=null,
-  presetCatalog=null
+  presetCatalog=null,
+  verifiedLearning=null,
+  executionLane=''
 }={}){
   const resolvedTarget=clean(target||task.target).toLowerCase()||'web';
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
@@ -466,6 +468,50 @@ export function buildVibeAssetProductionPlan({
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const request=clean(task.goal||task.request||task.gameId||'game asset production');
   const requestedConcept=inferRequestedConcept(task,request);
+  const assetLearningRequired=clean(executionLane).toLowerCase()==='asset-development'||['roblox','unity','web'].includes(resolvedTarget);
+  const verifiedCommercialReuse=freezeList((verifiedLearning?.playbookReuse||[])
+    .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook')
+    .map(row=>freeze({
+      id:clean(row.id),
+      project:clean(row.project)||null,
+      sourceRevision:clean(row.sourceRevision)||null,
+      score:Number(row.score||0),
+      sourcePlaybooks:freezeList(row.sourcePlaybooks||[])
+    }))
+    .filter(row=>row.id));
+  const commercialDistillation=freeze({
+    required:assetLearningRequired,
+    ready:!assetLearningRequired||verifiedCommercialReuse.length>0,
+    source:'vibe2-learning-runtime:company-learning/vibe3-task-playbooks.json',
+    verifiedReuseCount:verifiedCommercialReuse.length,
+    verifiedReuse:verifiedCommercialReuse,
+    exactKnowledgeIds:freezeList((verifiedLearning?.exactKnowledgeIds||[]).filter(id=>clean(id).startsWith('PLAYBOOK_REUSE:'))),
+    applicationMode:'TRANSFORMATIVE_INTERNAL_ASSET_EVOLUTION',
+    mandatoryApplicationCoveragePct:100,
+    internalAssetEvolutionRequired:true,
+    applyAxes:freezeList([
+      'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
+      'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
+      'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
+      'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
+      'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
+      'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE'
+    ]),
+    evolutionLoop:freezeList([
+      'OBSERVE_VERIFIED_BLACK_BOX_BEHAVIOR',
+      'DISTILL_REUSABLE_PRINCIPLES',
+      'REAUTHOR_OR_RECOMPOSE_INTERNAL_ASSET',
+      'BIND_TO_TARGET_GAME_AND_STYLE_LOCK',
+      'RUNTIME_AND_MOBILE_QA',
+      'PROMOTE_VERIFIED_COMPANY_REUSE_OR_REPAIR',
+      'RETURN_VERIFIED_OUTCOME_TO_LEARNING'
+    ]),
+    rawCommercialAssetCopyForbidden:true,
+    rawCommercialCodeCopyForbidden:true,
+    distinctiveMenuSceneOrAnimationCloneForbidden:true,
+    platformNativeReauthoringRequired:['roblox','unity'].includes(resolvedTarget),
+    authorityExpanded:false
+  });
   const referenceImages=Array.isArray(task.referenceImages)?task.referenceImages:Array.isArray(task.references?.images)?task.references.images:[];
   const referenceImageStudies=freezeList(referenceImages.map((row,index)=>{
     const request=createVibeReferenceImageStudyRequest({
@@ -608,6 +654,7 @@ export function buildVibeAssetProductionPlan({
     selectorVersion:Number(selector.version||0),
     presetId:clean(selector.prototypePreset?.id)||null,
     productionProfile:selector.production||null,
+    commercialDistillation,
     requestedTypes:freezeList(selector.requestedTypes||[]),
     missingTypes:freezeList(selector.missingTypes||[]),
     decisions,
@@ -986,6 +1033,8 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    plan.commercialDistillation?.required?('검증된 상업용 블랙박스 증류 적용=필수; reuse='+plan.commercialDistillation.verifiedReuseCount+'; mode='+plan.commercialDistillation.applicationMode+'; coverage='+plan.commercialDistillation.mandatoryApplicationCoveragePct+'%. 메뉴/UI·그래픽·모션·환경·VFX/카메라/피드백 원리를 내부 자산으로 재저작·재구성하고 실제 런타임 검증 결과로 계속 발전시킨다.'): '',
+    plan.commercialDistillation?.required?'상업용 원본 에셋·코드·고유 메뉴/장면/애니메이션의 직접 복제는 금지한다. 관찰·증류한 원리를 게임별 Style Lock과 플랫폼 네이티브 규칙에 맞춰 새로운 내부 자산으로 구현한다.':'',
     '이 계획은 독립 그래픽 작업이 아니다. 모든 에셋 결정은 단일 GRAPHICS_PRODUCTION 루트에 입력되고 같은 루트에서 캐릭터·환경·애니메이션·VFX·조명·UI와 함께 fan-in 된다.',
     'Vibe2/Vibe3가 게임 소스 구현 주체이며 현재 게임 정체성과 실제 화면 품질을 기준으로 필요한 에셋 방식을 선택한다.',
     '에셋 선택 전에 승인 설계·최신 아트북에서 게임별 Art Bible, Style Lock, Material/Environment/Animation/VFX/Lighting/UI 언어와 Visual Target Frame을 먼저 확정한다.',
