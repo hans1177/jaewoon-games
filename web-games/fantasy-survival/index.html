@@ -2273,7 +2273,7 @@ function hostApplyRemoteAttack(a){
   const dot=(dx*(a.faceX||1)+dy*(a.faceY||0))/(d||1);if(dot<-.18)continue;
   let dmg=Number(a.damage)||0;if(a.neutralDouble&&e.type.mood==='neutral')dmg*=2;
   if(e.type.burrower)e.provokedByPlayer=true;
-  dmg=enemyIncomingDamage(e,dmg,now);e.hp-=dmg;if(a.bleedChance&&Math.random()<a.bleedChance)e.hp-=Number(a.bleedDamage)||0;e.hitAt=now+110;if(e.type.mood==='neutral'){e.hostile=true;if(e.type.id==='giantbee')alertBeeKin(e)};
+  dmg=enemyIncomingDamage(e,dmg,now);e.hp-=dmg;if(a.bleedChance&&Math.random()<a.bleedChance)e.hp-=Number(a.bleedDamage)||0;e.hitAt=now+110;if(e.type.mood==='neutral'){markEnemyHitByPlayer(e);if(e.type.id==='giantbee')alertBeeKin(e)};
   if(a.bind&&Math.random()<a.bind)e.stunnedUntil=now+2000;if(a.slowChance&&Math.random()<a.slowChance)e.slowedUntil=Math.max(e.slowedUntil||0,now+(Number(a.slowDuration)||3000));
   if(e.hp<=0){
    queueDeathAnimation(e,now);
@@ -2348,6 +2348,24 @@ async function copyMultiplayerLink(){
 function petAlive(){return state.pet.hatched&&state.pet.alive&&state.pet.hp>0}
 function petTarget(){return state.enemies.find(e=>e.netId===state.pet.targetId&&e.hp>0&&e.area===state.area)||null}
 function engagePet(e){if(petAlive()&&e&&e.hp>0)state.pet.targetId=e.netId}
+function enemyDetectRange(e,fallback=430){const base=Math.max(1,Number(e?.type?.detect)||fallback);return base>=800?base:base*.5}
+function markEnemyHitByPet(e){if(!e)return;e.hostile=true;e.allyTarget='pet';e.allyTargetAt=performance.now()}
+function markEnemyHitByPlayer(e){
+ if(!e)return;e.hostile=true;
+ if(e.type?.mood==='neutral'&&!e.allyTarget){e.allyTarget=petAlive()&&!state.pet.mounted&&Math.random()<.70?'pet':'player';e.allyTargetAt=performance.now()}
+ else if(!e.allyTarget)e.allyTarget='player'
+}
+function localCombatTarget(e,baseTarget){
+ if(!e||!baseTarget||baseTarget.id!==multiplayer.playerId)return baseTarget;
+ const p=state.player,petUsable=petAlive()&&!state.pet.mounted&&state.area===e.area;
+ if(e.allyTarget==='pet'&&petUsable)return{id:'pet',player:state.pet,local:true,d:dist(e.x,e.y,state.pet.x,state.pet.y)};
+ if(e.allyTarget==='player'||!petUsable)return baseTarget;
+ if(e.hostile||e.raidId){
+  const pd=dist(e.x,e.y,p.x,p.y),wd=dist(e.x,e.y,state.pet.x,state.pet.y);
+  if(wd<pd)return{id:'pet',player:state.pet,local:true,d:wd}
+ }
+ return baseTarget
+}
 function hatchShadowWolf(){
  const pet=state.pet;pet.hatched=true;pet.alive=true;pet.hp=pet.maxHp=250;pet.x=state.player.x+55;pet.y=state.player.y+25;pet.respawnAt=0;pet.reviveClickUntil=0;pet.mounted=false;pet.targetId=null;
  state.incubation.eggPlaced=false;state.incubation.hatchAt=0;state.dirty=true;unlockAchievement('shadow-friend',true);showNotice('그림자 늑대가 부화했어');saveGame(false)
@@ -2390,13 +2408,13 @@ function finishPetEnemyKill(e,ownerId=multiplayer.playerId){
  state.pet.targetId=null;state.dirty=true
 }
 function hostApplyPetAttack(a){
- if(!multiIsHost()||!a)return;const e=state.enemies.find(x=>x.netId===a.targetId&&x.hp>0);if(!e)return;const dmg=enemyIncomingDamage(e,42,performance.now());e.hp-=dmg;e.hitAt=performance.now()+110;if(e.type.mood==='neutral')e.hostile=true;if(e.hp<=0)finishPetEnemyKill(e,a.ownerId)
+ if(!multiIsHost()||!a)return;const e=state.enemies.find(x=>x.netId===a.targetId&&x.hp>0);if(!e)return;const dmg=enemyIncomingDamage(e,42,performance.now());e.hp-=dmg;e.hitAt=performance.now()+110;markEnemyHitByPet(e);if(e.hp<=0)finishPetEnemyKill(e,a.ownerId)
 }
 function petStrike(e,manual=false){
  if(!petAlive()||!e||e.hp<=0)return false;const now=performance.now();if(now-state.pet.attackAt<750)return false;
  if(dist(state.pet.x,state.pet.y,e.x,e.y)>105+e.type.r)return false;state.pet.attackAt=now;
  if(multiplayer.connected&&!multiIsHost())multiSend('pet-attack',{ownerId:multiplayer.playerId,targetId:e.netId});
- else{const dmg=enemyIncomingDamage(e,42,now);e.hp-=dmg;e.hitAt=now+110;if(e.type.mood==='neutral')e.hostile=true;if(e.hp<=0)finishPetEnemyKill(e,multiplayer.playerId)}
+ else{const dmg=enemyIncomingDamage(e,42,now);e.hp-=dmg;e.hitAt=now+110;markEnemyHitByPet(e);if(e.hp<=0)finishPetEnemyKill(e,multiplayer.playerId)}
  if(manual)showNotice('그림자 늑대 공격 · 42');return true
 }
 function petMountedAttack(){
@@ -2455,7 +2473,7 @@ function attack(){
      dmg=(15+bonus)+(25+bonus)+(30+bonus);
      showNotice('곰 창 3연타 · 15 / 25 / 30')
    }
-   dmg=enemyIncomingDamage(e,dmg,now);e.hp-=dmg;if(w?.bleedChance&&Math.random()<w.bleedChance){e.hp-=Number(w.bleedDamage)||0;showNotice(e.type.name+' 출혈 · '+(Number(w.bleedDamage)||0)+' 추가 피해')}e.hitAt=now+110;hit=true;engagePet(e);if(e.type.mood==='neutral'){e.hostile=true;if(e.type.id==='giantbee')alertBeeKin(e)};
+   dmg=enemyIncomingDamage(e,dmg,now);e.hp-=dmg;if(w?.bleedChance&&Math.random()<w.bleedChance){e.hp-=Number(w.bleedDamage)||0;showNotice(e.type.name+' 출혈 · '+(Number(w.bleedDamage)||0)+' 추가 피해')}e.hitAt=now+110;hit=true;engagePet(e);if(e.type.mood==='neutral'){markEnemyHitByPlayer(e);if(e.type.id==='giantbee')alertBeeKin(e)};
    if(w?.bindChance&&Math.random()<w.bindChance){e.stunnedUntil=now+2000;showNotice(e.type.name+' 속박 · 2초')}if(w?.slowChance&&Math.random()<w.slowChance){e.slowedUntil=Math.max(e.slowedUntil||0,now+(w.slowDuration||3000));showNotice(e.type.name+' 이동속도 50% 감소')}
    if(e.hp<=0){
      queueDeathAnimation(e,now);
@@ -2477,6 +2495,7 @@ function completePlayerRespawn(message='쓰러져 숲 중앙에서 부활했어'
 function enemyDamageTarget(e,n,force=false){
  if(e?.raidId)n*=RAID_DIFFICULTY_SCALE;
  n=enemyDifficultyDamage(n);
+ if(e?.playerTargetId==='pet'&&petAlive()&&!state.pet.mounted){damagePet(n,e);return'pet'}
  const remoteId=multiplayer.connected&&multiIsHost()&&e?.playerTargetId&&e.playerTargetId!==multiplayer.playerId?e.playerTargetId:null;
  if(remoteId){multiSend('enemy-hit',{targetId:remoteId,damage:n,force:!!force,sourceId:e?.netId||null});return'remote'}
  if(e&&petAlive()&&!state.pet.mounted&&state.pet.targetId===e.netId&&dist(state.pet.x,state.pet.y,e.x,e.y)<150){
@@ -2962,7 +2981,7 @@ function updateCrocodileSpecial(e,targetP,now,playerD){
  if(!e.nextCrocCheck)e.nextCrocCheck=now+3000;
  if(now>=e.nextCrocCheck){
   e.nextCrocCheck=now+3000;
-  if(playerD<(e.type.detect||760)&&Math.random()<.30){
+  if(playerD<enemyDetectRange(e,760)&&Math.random()<.30){
    e.crocState={kind:'retreat',until:now+2500};
    showNotice('악어 · 끌고 뒤집기 준비');
    return{vx:0,vy:0,active:true}
@@ -2987,7 +3006,7 @@ function jungleMonsterTarget(e,mode){
   if(mode==='anaconda'&&other.type.id==='anaconda')continue;
   if(mode==='gorilla'&&other.type.id!=='anaconda')continue;
   const d=dist(e.x,e.y,other.x,other.y);
-  if(d<(e.type.detect||650)&&d<bestD){best=other;bestD=d}
+  if(d<enemyDetectRange(e,650)&&d<bestD){best=other;bestD=d}
  }
  return best?{target:best,d:bestD}:null
 }
@@ -3032,7 +3051,7 @@ function throwMudProjectile(e,p,now){
  showNotice('머드 워커 · 유도 진흙 포격')
 }
 function updateMudSpecial(e,targetP,now,playerD){
- if(!e.type.mudSpecial||!e.hostile||playerD>(e.type.detect||650))return false;
+ if(!e.type.mudSpecial||!e.hostile||playerD>enemyDetectRange(e,650))return false;
  if(!e.nextMudShotAt)e.nextMudShotAt=now+3000;
  if(now>=e.nextMudShotAt){
   e.nextMudShotAt=now+3000;
@@ -3091,7 +3110,7 @@ function updateSnowSpecial(e,targetP,now,playerD){
   if(!e.nextYetiSlamAt)e.nextYetiSlamAt=now+4000;
   if(now>=e.nextYetiSlamAt){e.nextYetiSlamAt=now+4000;if(Math.random()<.30){applyEnemyEffectTarget(e,targetP,'coldburst',5000);showNotice('예티 지면강타 · 5초간 추위 3배');return true}}
  }
- if(e.type.polarWolfSpecial&&!e.raidId&&e.hostile&&!e.howlSummoned&&(e.howlCount||0)<3&&playerD<(e.type.detect||560)){
+ if(e.type.polarWolfSpecial&&!e.raidId&&e.hostile&&!e.howlSummoned&&(e.howlCount||0)<3&&playerD<enemyDetectRange(e,560)){
   if(!e.nextHowlAt)e.nextHowlAt=now+8000;
   if(now>=e.nextHowlAt){
    e.nextHowlAt=now+8000;
@@ -3196,7 +3215,7 @@ function crocodileMonsterTarget(e){
  for(const other of state.enemies){
   if(!other||other===e||other.hp<=0||other.area!==e.area||other.type.id==='lakecroc')continue;
   const d=dist(e.x,e.y,other.x,other.y);
-  if(d<(e.type.detect||760)&&d<bestD){best=other;bestD=d}
+  if(d<enemyDetectRange(e,760)&&d<bestD){best=other;bestD=d}
  }
  return best?{target:best,d:bestD}:null
 }
@@ -3338,7 +3357,7 @@ function updateProjectiles(dt,now){
    if(multiplayer.connected&&!multiIsHost())continue;
    let hitEnemy=null;
    for(const e of state.enemies){if(e.hp<=0||e.area!==q.area||(e.type.mood==='harmless'&&!e.type.huntable)||(e.type.labBoss&&now<(e.submergedUntil||0)))continue;if(dist(q.x,q.y,e.x,e.y)>e.type.r+10)continue;hitEnemy=e;break}
-   if(hitEnemy){if(hitEnemy.type.burrower)hitEnemy.provokedByPlayer=true;const dmg=enemyIncomingDamage(hitEnemy,Number(q.damage)||0,now);hitEnemy.hp-=dmg;hitEnemy.hitAt=now+110;engagePet(hitEnemy);if(hitEnemy.type.mood==='neutral'){hitEnemy.hostile=true;if(hitEnemy.type.id==='giantbee')alertBeeKin(hitEnemy)};if(q.arrowId==='spider-arrow'){hitEnemy.slowedUntil=Math.max(hitEnemy.slowedUntil||0,now+3000);if((q.ownerId||q.sourceId)===multiplayer.playerId||!multiplayer.connected)showNotice(hitEnemy.type.name+' · 거미줄에 걸려 3초간 이동속도 50% 감소')}if(hitEnemy.hp<=0)finishPlayerArrowKill(hitEnemy,q.ownerId||q.sourceId||multiplayer.playerId,now);state.projectiles.splice(i,1);state.dirty=true;continue}
+   if(hitEnemy){if(hitEnemy.type.burrower)hitEnemy.provokedByPlayer=true;const dmg=enemyIncomingDamage(hitEnemy,Number(q.damage)||0,now);hitEnemy.hp-=dmg;hitEnemy.hitAt=now+110;engagePet(hitEnemy);if(hitEnemy.type.mood==='neutral'){markEnemyHitByPlayer(hitEnemy);if(hitEnemy.type.id==='giantbee')alertBeeKin(hitEnemy)};if(q.arrowId==='spider-arrow'){hitEnemy.slowedUntil=Math.max(hitEnemy.slowedUntil||0,now+3000);if((q.ownerId||q.sourceId)===multiplayer.playerId||!multiplayer.connected)showNotice(hitEnemy.type.name+' · 거미줄에 걸려 3초간 이동속도 50% 감소')}if(hitEnemy.hp<=0)finishPlayerArrowKill(hitEnemy,q.ownerId||q.sourceId||multiplayer.playerId,now);state.projectiles.splice(i,1);state.dirty=true;continue}
    continue
   }
   if(q.area===state.area&&dist(q.x,q.y,p.x,p.y)<25){
@@ -3498,7 +3517,7 @@ function update(dt,now){
   if(!multiplayer.connected||multiIsHost()||state.area==='storylab1'||state.area==='storylab2'){
     for(const e of state.enemies){
       if(e.hp<=0||e.area!==state.area)continue;
-      const playerTarget=e.raidId?raidEnemyPlayerTarget(e):multiEnemyPlayerTarget(e),targetP=playerTarget.player; e.playerTargetId=playerTarget.id; const playerD=dist(e.x,e.y,targetP.x,targetP.y);
+      const basePlayerTarget=e.raidId?raidEnemyPlayerTarget(e):multiEnemyPlayerTarget(e),playerTarget=localCombatTarget(e,basePlayerTarget),targetP=playerTarget.player; e.playerTargetId=playerTarget.id; const playerD=dist(e.x,e.y,targetP.x,targetP.y);
       let vx=0,vy=0,monsterFight=false;
       const housePart=raidHousePart(e,targetP);if(housePart){e.houseTarget=housePart;const hd=dist(e.x,e.y,housePart.x,housePart.y),melee=e.type.r+32;if(hd>melee){vx=(housePart.x-e.x)/(hd||1)*e.type.speed;vy=(housePart.y-e.y)/(hd||1)*e.type.speed}else{vx=0;vy=0;if(enemyAttackReady(e,now,900)){markEnemyAttack(e,now);housePart.hitAt=now+180;e.houseAttacked=true;e.houseTarget=null}}monsterFight=true}
       if(!monsterFight&&e.type.id==='lakecroc'&&!e.crocState){
@@ -3535,7 +3554,7 @@ function update(dt,now){
       if(!e.type.boss&&now<(e.stunnedUntil||0)){vx=0;vy=0;monsterFight=true}
       if(!monsterFight&&e.type.labBoss){const b=updateStoryLabBoss(e,targetP,now);vx=b.vx;vy=b.vy;monsterFight=true}
   
-      if(!monsterFight&&e.type.caveLeader&&playerD<(e.type.detect||760)){
+      if(!monsterFight&&e.type.caveLeader&&playerD<enemyDetectRange(e,760)){
         if(now>=(e.nextSpecialAt||0)){e.nextSpecialAt=now+1000;if(Math.random()<.25)summonLeaderWolves(e)}
       }
       if(!monsterFight&&e.type.vampireBat&&playerD<e.type.r+27&&now>=(e.nextSpecialAt||0)){
@@ -3582,14 +3601,14 @@ function update(dt,now){
   
       if(!monsterFight&&e.type.burrower&&targetP.armor==='sand-armor'&&!e.provokedByPlayer){e.emergeAt=0;vx=0;vy=0;monsterFight=true}
       if(!monsterFight&&e.type.burrower&&!e.emerged){
-        if(playerD<(e.type.detect||460)){if(!e.emergeAt)e.emergeAt=now+2000;if(now>=e.emergeAt){e.emerged=true;showNotice('모래 아래에서 거대한 벌레가 튀어나왔다')}}else e.emergeAt=0;
+        if(playerD<enemyDetectRange(e,460)){if(!e.emergeAt)e.emergeAt=now+2000;if(now>=e.emergeAt){e.emerged=true;showNotice('모래 아래에서 거대한 벌레가 튀어나왔다')}}else e.emergeAt=0;
         vx=0;vy=0;monsterFight=true
       }
       if(!monsterFight&&e.type.crystalSpecial){
         const sp=updateCrystalBoarSpecial(e,targetP,now);
         if(sp){vx=sp.vx;vy=sp.vy;monsterFight=true}
       }
-      if(!monsterFight&&e.type.crystalSpecial&&e.hostile&&playerD<(e.type.detect||560)&&playerD<e.type.r+28&&enemyAttackReady(e,now,1100)){
+      if(!monsterFight&&e.type.crystalSpecial&&e.hostile&&playerD<enemyDetectRange(e,560)&&playerD<e.type.r+28&&enemyAttackReady(e,now,1100)){
         markEnemyAttack(e,now);
         const roll=Math.random();
         if(roll<.30){e.special={kind:'charge',started:now,retreatUntil:now+700,chargeAt:now+2000,endAt:now+5000};showNotice('수정 멧돼지 · 기절 돌진 준비');monsterFight=true}
@@ -3601,7 +3620,7 @@ function update(dt,now){
         if(e.type.mood==='harmless'){
           if(now>e.wanderAt){e.wanderAt=now+rand(800,1800);e.wander+=rand(-1.6,1.6)}
           vx=Math.cos(e.wander)*e.type.speed*.35;vy=Math.sin(e.wander)*e.type.speed*.35
-        }else if(e.hostile&&!(e.type.burrower&&targetP.armor==='sand-armor'&&!e.provokedByPlayer)&&(e.raidChase||playerD<(e.type.detect||430))){
+        }else if(e.hostile&&!(e.type.burrower&&targetP.armor==='sand-armor'&&!e.provokedByPlayer)&&(e.raidChase||playerD<enemyDetectRange(e,430))){
           const meleeRange=e.type.r+25;
           if(playerD>meleeRange){vx=(targetP.x-e.x)/(playerD||1)*e.type.speed;vy=(targetP.y-e.y)/(playerD||1)*e.type.speed}
           else{vx=0;vy=0}
@@ -3628,7 +3647,7 @@ function update(dt,now){
       const visualSpeed=Math.hypot(vx,vy);e.moving=visualSpeed>.5;
       const liveEnemyTarget=e.enemyTarget&&e.enemyTarget.hp>0?e.enemyTarget:null;
       const alwaysFacesPlayer=!!((e.type.boss&&e.bossState?.mode!=='charge')||e.type.labBoss);
-      const playerAggro=alwaysFacesPlayer||(!liveEnemyTarget&&(e.raidChase||((e.hostile||e.type.guardian||e.type.vampireBat||e.type.caveLeader||e.type.crystalSpecial||e.provokedByPlayer)&&playerD<(e.type.detect||430))));
+      const playerAggro=alwaysFacesPlayer||(!liveEnemyTarget&&(e.raidChase||((e.hostile||e.type.guardian||e.type.vampireBat||e.type.caveLeader||e.type.crystalSpecial||e.provokedByPlayer)&&playerD<enemyDetectRange(e,430))));
       const lookTarget=(e.houseTarget&&!e.houseAttacked?e.houseTarget:null)||liveEnemyTarget||(playerAggro?targetP:null);
       if(lookTarget){
         const lookDx=lookTarget.x-e.x,lookDy=lookTarget.y-e.y,lookD=Math.hypot(lookDx,lookDy);
