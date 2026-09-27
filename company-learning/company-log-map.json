@@ -1,5 +1,5 @@
 {
-  "version": 136,
+  "version": 137,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2399,5 +2399,19 @@
       "exactGameWorkflowDispatch": true,
       "repeatAfterExactMcpObserved": false
     }
+  },
+  "robloxExactEngineStudioHandoffEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "observedGameId": "horror-escape-room",
+    "sourceRevision": "b74a4ac341b7dff0ecd9f2d6cf25375534a2d268",
+    "artifactIdentity": "sha256:4109e8ab3df1273f6fb877930c128b4e717c68cefcf6050269a11e1a59e846de",
+    "candidateVersionNumber": 24,
+    "observedSentinelVersionNumber": 23,
+    "exactEngineAwaitingRealServerBoot": true,
+    "plannerEligibility": "EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT",
+    "runtimeFoundationPassFabricated": false,
+    "externalPublicReleaseReadyFabricated": false,
+    "officialStudioMcpStillRequired": true
   }
 }
