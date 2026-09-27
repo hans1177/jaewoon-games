@@ -85,7 +85,8 @@ test('foundation QA emits machine-readable exact blocker evidence',()=>{
 
 
 test('stale published Roblox version preserves the exact failed stage and retries without a fixed cap',()=>{
-  assert.match(workflow,/result\.exactGame===true&&result\.exactPlace===true&&result\.exactVersion!==true/);
+  assert.match(workflow,/result\.exactGame===true[\s\S]*?&&result\.exactPlace===true[\s\S]*?result\.exactVersion!==true/);
+  assert.match(workflow,/result\.runtimeFoundationPassed!==true&&exactEngineVersionAwaitingRealServerBoot/);
   assert.match(workflow,/ROBLOX_FOUNDATION_STALE_RUNTIME=.*retry=UNLIMITED_CAUSAL_REPAIR/);
   assert.match(workflow,/stale-runtime-sentinel-observation/);
   assert.match(workflow,/roblox-runtime-foundation-stale-version/);
