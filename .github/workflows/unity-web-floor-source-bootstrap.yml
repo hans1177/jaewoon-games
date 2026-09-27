@@ -38,12 +38,18 @@ jobs:
           node --check tools/company-unity-web-floor-bootstrap.mjs
           node --test qa/company-unity-web-floor-bootstrap.test.mjs
 
-      - name: Fetch runtime design authority
+      - name: Fetch runtime design and verified learning authority
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin company-runtime
           git fetch --no-tags --depth=1 origin vibe2-unreal-core
+          git fetch --no-tags --depth=1 origin vibe2-learning-runtime
           git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
+          git show origin/vibe2-learning-runtime:company-learning/vibe3-task-playbooks.json > /tmp/vibe3-task-playbooks.json
+          test -s /tmp/vibe3-task-playbooks.json
+          learning_sha="$(git rev-parse origin/vibe2-learning-runtime)"
+          [[ "$learning_sha" =~ ^[0-9a-f]{40}$ ]] || { echo 'verified learning revision missing' >&2; exit 2; }
+          echo "UNITY_WEB_VERIFIED_LEARNING_REVISION=$learning_sha" >> "$GITHUB_ENV"
 
       - name: Generate canonical Unity Web floor sources
         id: generate
@@ -85,6 +91,8 @@ jobs:
             '--game-name='+String(item.gameName||gameId),
             '--baseline='+local,
             '--output=unity-games/'+gameId,
+            '--playbooks=/tmp/vibe3-task-playbooks.json',
+            '--learning-revision='+String(process.env.UNITY_WEB_VERIFIED_LEARNING_REVISION||''),
             ...directiveArg
           ],{stdio:'inherit'});
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'game_id='+gameId+'\n');
