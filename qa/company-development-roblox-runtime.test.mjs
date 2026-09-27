@@ -859,7 +859,7 @@ test('Roblox runtime collapses duplicate exact-game and batch planners with same
   assert.match(workflow,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_ACTIVE=/);
   assert.match(workflow,/ROBLOX_RUNTIME_BATCH_DEDUPED_NEWER_ACTIVE=/);
-  assert.match(workflow,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
+  assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
   assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n\s+cancel-in-progress: false/);
 });
 
@@ -924,4 +924,12 @@ test('build revalidation pending waiting state remains eligible for exact Roblox
   assert.match(workflow,/canonicalState==='WAITING_TARGET_PLATFORM_VALIDATION'&&buildRevalidationPending/);
   assert.match(workflow,/canonicalState==='TARGET_PLATFORM_REPAIR_REQUIRED'/);
   assert.match(workflow,/if\(!technicalStateEligible\)continue;/);
+});
+
+
+test('exact-game dedupe always prefers the newest active run so stale source runs cannot block fresh exact work',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/\.sort\(\(a,b\)=>a-b\)/);
+  assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
+  assert.doesNotMatch(workflow,/requested\?ids\[0\]:ids\[ids\.length-1\]/);
 });

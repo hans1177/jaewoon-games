@@ -95,7 +95,7 @@ jobs:
                 .filter(Number.isFinite)
                 .sort((a,b)=>a-b);
               if(!ids.length){process.stdout.write('');return;}
-              process.stdout.write(String(requested?ids[0]:ids[ids.length-1]));
+              process.stdout.write(String(ids[ids.length-1]));
             });
           ")"
           echo "ROBLOX_RUNTIME_ACTIVE_WINNER=${winner:-NONE}"
