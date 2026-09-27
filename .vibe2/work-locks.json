@@ -3,97 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-rgvw6q",
-      "worker": "vibe2",
-      "taskId": "village-dungeons-studio-evolution-unity-web-usability-v1",
-      "gameId": "village-dungeons",
-      "files": [
-        "unity-games/village-dungeons/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/village-dungeons/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:13:52.510Z",
-      "expiresAt": "2026-09-27T04:58:52.510Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:village-dungeons-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-gay9t0",
-      "worker": "vibe2",
-      "taskId": "bug-defense-roblox-presentation-asset-adaptation-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "roblox-games/bug-defense/client/Game.client.luau",
-        "roblox-games/bug-defense/server/Game.server.luau",
-        "roblox-games/bug-defense/shared/GameConfig.luau"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:14:37.877Z",
-      "expiresAt": "2026-09-27T04:59:37.877Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-2p2wyd",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:14:49.277Z",
-      "expiresAt": "2026-09-27T04:59:49.277Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-17pfwza",
-      "worker": "vibe2",
-      "taskId": "line-defense-unity-web-base-implementation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:15:32.228Z",
-      "expiresAt": "2026-09-27T05:00:32.228Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1xqblrk",
-      "worker": "vibe2",
-      "taskId": "bug-defense-unity-web-base-implementation-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "unity-games/bug-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/bug-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:15:34.338Z",
-      "expiresAt": "2026-09-27T05:00:34.338Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-1d5hyke",
       "worker": "vibe2",
       "taskId": "survival-roblox-presentation-asset-adaptation-v1",
@@ -697,6 +606,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
+      ]
+    },
+    {
+      "id": "wl-16ftels",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-28a2f2747401-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-queue-control.mjs",
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-queue-control.test.mjs"
+      ],
+      "baseSha": "63f4c4cfcedbb6ea75408f9bbc8351074056bca5",
+      "acquiredAt": "2026-09-27T05:01:51.793Z",
+      "expiresAt": "2026-09-27T05:46:51.793Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-28a2f2747401-v1"
       ]
     }
   ]
