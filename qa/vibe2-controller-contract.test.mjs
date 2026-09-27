@@ -1387,8 +1387,9 @@ test('candidate strategy rotation blocks task-local failed repair strategies whi
 });
 
 
-test('game workers bind verified learning-runtime playbooks and preserve complete knowledge attribution',()=>{
+test('game and asset-development workers bind verified learning-runtime playbooks and preserve complete knowledge attribution',()=>{
   assert.ok(workflow.includes('Checkout verified learning memory'));
+  assert.ok(workflow.includes("if: env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development'"));
   assert.ok(workflow.includes('ref: vibe2-learning-runtime'));
   assert.ok(workflow.includes('company-learning/vibe3-task-playbooks.json'));
   assert.ok(workflow.includes('VIBE2_VERIFIED_COMMERCIAL_PLAYBOOK=PASS'));
@@ -1404,4 +1405,6 @@ test('game workers bind verified learning-runtime playbooks and preserve complet
   assert.ok(workflow.includes('applicationCoveragePct:Number(workOrder.knowledgeApplicationContract.applicationCoveragePct||0)'));
   assert.ok(workflow.includes('allRetrievedKnowledgeApplied:workOrder.knowledgeApplicationContract.allRetrievedKnowledgeApplied===true'));
   assert.ok(workflow.includes('verifiedLearningMemorySha:'));
+  assert.ok(workflow.includes("Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs"));
+  assert.ok(workflow.includes("asset-development"));
 });
