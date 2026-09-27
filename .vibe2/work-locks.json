@@ -3,61 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-yerhi7",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:10:31.027Z",
-      "expiresAt": "2026-09-27T05:55:31.027Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1ih485r",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "unity-games/horror-escape-room/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:10:39.858Z",
-      "expiresAt": "2026-09-27T05:55:39.858Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-1bc41d9",
-      "worker": "vibe2",
-      "taskId": "bug-defense-roblox-presentation-asset-adaptation-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "roblox-games/bug-defense/client/Game.client.luau",
-        "roblox-games/bug-defense/server/Game.server.luau",
-        "roblox-games/bug-defense/shared/GameConfig.luau"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:10:42.319Z",
-      "expiresAt": "2026-09-27T05:55:42.319Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-1c5h6xw",
       "worker": "vibe2",
       "taskId": "bug-defense-studio-evolution-unity-web-usability-v1",
@@ -824,6 +769,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:amusement-tycoon-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-lhtvuj",
+      "worker": "vibe2",
+      "taskId": "bug-defense-roblox-presentation-asset-adaptation-v1",
+      "gameId": "bug-defense",
+      "files": [
+        "roblox-games/bug-defense/client/Game.client.luau",
+        "roblox-games/bug-defense/server/Game.server.luau",
+        "roblox-games/bug-defense/shared/GameConfig.luau"
+      ],
+      "baseSha": "cf668563ea8447736844a806dd135432134f0534",
+      "acquiredAt": "2026-09-27T05:56:02.441Z",
+      "expiresAt": "2026-09-27T06:41:02.441Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:bug-defense-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
