@@ -1305,13 +1305,34 @@ jobs:
           } catch {
             Write-Host 'ROBLOX_STUDIO_GUI_READY=UNAVAILABLE_CONTINUE_MCP_PROBE'
           }
-          Start-Sleep -Seconds 2
+          Start-Sleep -Seconds 1
 
-          $ownedStudioProcesses = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Sort-Object StartTime)
-          if (-not $ownedStudioProcesses.Count) { throw 'Roblox Studio exited before exact local Place MCP probe' }
+          $ownedStudioProcesses = @()
+          for ($processProbe = 1; $processProbe -le 12; $processProbe++) {
+            $ownedStudioProcesses = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Sort-Object StartTime)
+            if ($ownedStudioProcesses.Count) { break }
+            Start-Sleep -Seconds 1
+          }
+          if (-not $ownedStudioProcesses.Count) {
+            Write-Host 'ROBLOX_STUDIO_MCP_PRE_MCP_RELAUNCH=YES'
+            Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+            Start-Sleep -Seconds 1
+            $exactPlaceStarted = [DateTime]::UtcNow
+            $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($places[0].FullName) -PassThru
+            Write-Host "ROBLOX_STUDIO_MCP_PRE_MCP_RELAUNCH_PROCESS_ID=$($placeLaunchProcess.Id)"
+            try { $null = $placeLaunchProcess.WaitForInputIdle(30000) } catch {}
+            for ($processProbe = 1; $processProbe -le 12; $processProbe++) {
+              $ownedStudioProcesses = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Sort-Object StartTime)
+              if ($ownedStudioProcesses.Count) { break }
+              Start-Sleep -Seconds 1
+            }
+          }
+          if (-not $ownedStudioProcesses.Count) { throw 'Roblox Studio unavailable after bounded exact local Place relaunch' }
+          Write-Host "ROBLOX_STUDIO_MCP_PRE_MCP_PROCESS_READY_COUNT=$($ownedStudioProcesses.Count)"
           $studioProcess = $ownedStudioProcesses | Where-Object { $_.Id -eq $placeLaunchProcess.Id } | Select-Object -First 1
           if (-not $studioProcess) {
             $studioProcess = $ownedStudioProcesses | Sort-Object StartTime -Descending | Select-Object -First 1
+            Write-Host "ROBLOX_STUDIO_MCP_PROCESS_HANDOFF_RECOVERED=$($studioProcess.Id)"
           }
           $ownedStudioIds = @($ownedStudioProcesses | ForEach-Object { [string]$_.Id } | Select-Object -Unique)
           $env:VIBE2_STUDIO_PROCESS_ID = [string]$studioProcess.Id
@@ -1477,13 +1498,24 @@ jobs:
             } catch {
               Write-Host "ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=UNAVAILABLE_CONTINUE_MCP_PROBE:attempt=$attempt"
             }
-            Start-Sleep -Seconds 2
+            Start-Sleep -Seconds 1
 
-            $ownedStudioProcesses = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Sort-Object StartTime)
-            if (-not $ownedStudioProcesses.Count) { throw 'Roblox Studio exited before MCP recovery Place probe' }
+            $ownedStudioProcesses = @()
+            for ($processProbe = 1; $processProbe -le 12; $processProbe++) {
+              $ownedStudioProcesses = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Sort-Object StartTime)
+              if ($ownedStudioProcesses.Count) { break }
+              Start-Sleep -Seconds 1
+            }
+            if (-not $ownedStudioProcesses.Count) {
+              Write-Host "ROBLOX_STUDIO_MCP_RETRY_PROCESS_NOT_READY=attempt=$attempt"
+              $env:VIBE2_STUDIO_PROCESS_ID = ''
+              $env:VIBE2_STUDIO_PROCESS_IDS = ''
+              continue
+            }
             $studioProcess = $ownedStudioProcesses | Where-Object { $_.Id -eq $placeLaunchProcess.Id } | Select-Object -First 1
             if (-not $studioProcess) {
               $studioProcess = $ownedStudioProcesses | Sort-Object StartTime -Descending | Select-Object -First 1
+              Write-Host "ROBLOX_STUDIO_MCP_RETRY_PROCESS_HANDOFF_RECOVERED=$($studioProcess.Id):attempt=$attempt"
             }
             $ownedStudioIds = @($ownedStudioProcesses | ForEach-Object { [string]$_.Id } | Select-Object -Unique)
             $env:VIBE2_STUDIO_PROCESS_ID = [string]$studioProcess.Id
