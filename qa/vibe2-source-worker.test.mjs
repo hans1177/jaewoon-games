@@ -258,7 +258,8 @@ test('asset-development Roblox graphics starts with bounded focused local-model 
   try{
     const result=await runVibe2SourceWorker({cwd,responseFiles:[focused]});
     assert.equal(result.generation.attempts,1);
-    assert.equal(result.generation.attemptBudget,3);
+    assert.equal(result.generation.baseAttemptBudget,3);
+    assert.equal(result.generation.effectiveAttemptBudget,3);
     assert.equal(result.generation.focusedReplaceOnly,true);
     assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
     assert.equal(result.generation.maxPredict,768);
