@@ -1855,7 +1855,7 @@
       "designPromotionSync": "ubuntu-slim",
       "platformExposureSync": "ubuntu-slim",
       "recoveryFast": "ubuntu-slim",
-      "directorDrain": "ubuntu-slim",
+      "directorDrain": "ubuntu-24.04",
       "directorGate": "ubuntu-slim",
       "directorSupervise": "ubuntu-slim"
     },
@@ -1905,7 +1905,7 @@
       "centralNativePlan": "ubuntu-slim",
       "vibe2Reserve": "ubuntu-slim",
       "vibe2FanIn": "ubuntu-24.04-arm",
-      "directorDrain": "ubuntu-slim"
+      "directorDrain": "ubuntu-24.04"
     },
     "purpose": "START_LIGHTWEIGHT_DEVELOPMENT_INGRESS_WITHOUT_WAITING_BEHIND_ARM_OR_HEAVY_GAME_EXECUTION",
     "gateSemanticsUnchanged": true
@@ -2220,7 +2220,7 @@
       "robloxSourcePlan": "ubuntu-slim",
       "unityPrepare": "ubuntu-slim",
       "vibe2Reserve": "ubuntu-slim",
-      "directorRunnerDrain": "ubuntu-slim",
+      "directorRunnerDrain": "ubuntu-24.04",
       "vibe2FanIn": "ubuntu-24.04-arm",
       "heavyGameExecution": "ubuntu-latest"
     },
@@ -2269,5 +2269,21 @@
       "DIRECTOR"
     ],
     "expectedEffect": "FEWER_REDUNDANT_DIRECTOR_WORKFLOW_RUNS"
+  },
+  "directorDrainRunnerIsolationEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "workflow": ".github/workflows/director-supervisor.yml",
+    "job": "runner-drain",
+    "expectedRunnerLabel": "ubuntu-24.04",
+    "gamePrimaryGateRunnerLabel": "ubuntu-slim",
+    "superviseRunnerLabel": "ubuntu-slim",
+    "heavyGameRunnerLabel": "ubuntu-latest",
+    "expectedMarkers": [
+      "DIRECTOR_RUNNER_DRAIN_CANCELLED_COUNT",
+      "DIRECTOR_RUNNER_DRAIN_CANCEL_FAILED_COUNT",
+      "DIRECTOR_RUNNER_DRAIN_INDEPENDENT_GAME_CANCEL=FORBIDDEN"
+    ],
+    "cancellationSemanticsChanged": false
   }
 }
