@@ -5923,6 +5923,16 @@
       ],
       "preservesExactGameParallelism": true,
       "workflow": ".github/workflows/vibe2-continuous-core.yml"
+    },
+    "safetyNetPushTriggerFilter": {
+      "workflow": ".github/workflows/vibe2-24h-runner.yml",
+      "mainPushMode": "EXECUTABLE_RUNTIME_AUTHORITY_PATHS_ONLY",
+      "qaOnlyWake": false,
+      "descriptiveArchitectureMapWake": false,
+      "descriptiveLogMapWake": false,
+      "humanVibeDocumentWake": false,
+      "fiveMinuteSchedulePreserved": true,
+      "productionQueueContinuityPreserved": true
     }
   }
 }
