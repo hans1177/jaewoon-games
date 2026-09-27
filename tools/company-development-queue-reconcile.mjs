@@ -146,7 +146,10 @@ function recoverExactPrivateRuntimeCheckpoint(item,design){
     &&Number(internalEvidence.versionNumber)>0
   );
   if(exactInternalRelease){
-    return{currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'};
+    return{
+      currentStep:clean(item?.currentStep)||'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      canonicalState:clean(item?.canonicalState)||'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'
+    };
   }
   const candidate=item?.robloxRuntimeCandidateEvidence||{};
   const exactCandidate=candidate?.published===true
