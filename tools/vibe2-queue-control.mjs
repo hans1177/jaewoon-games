@@ -312,6 +312,7 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
       target: clean(taskInput.target) || 'auto',
       department: clean(taskInput.department) || 'development',
       type: clean(taskInput.type) || 'implementation',
+      assetProductionLane: taskInput.assetProductionLane === true || (taskInput.evidence||[]).map(clean).includes('asset-production-parallel:v1'),
       goal,
       responsibleFiles: Array.isArray(taskInput.responsibleFiles) ? taskInput.responsibleFiles : [],
       dependencies: Array.isArray(taskInput.dependencies) ? taskInput.dependencies : [],
@@ -363,8 +364,8 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
     if (/web[-_ ]?base[-_ ]?implementation|full[_ -]?web|full[_ -]?rebuild|full_web_game_rebuild/.test(text)) return 2;
     return task?.packageLongWorkProtected===true?2:1;
   };
-  const speculativeEligible = (laneMode==='game-primary'?tasks:[]).filter((task) =>
-    !['unity','roblox'].includes(clean(task.target).toLowerCase()) &&
+  const speculativeEligible = (['game-primary','asset-development'].includes(laneMode)?tasks:[]).filter((task) =>
+    (laneMode==='asset-development'||!['unity','roblox'].includes(clean(task.target).toLowerCase())) &&
     task.estimatedRisk === 'high' &&
     (task.speculativeEligible || task.priority === 'critical')
   ).map((task,index)=>({task,index,priority:speculativePriority(task)}))

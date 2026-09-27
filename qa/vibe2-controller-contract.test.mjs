@@ -756,7 +756,7 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes("new Set(['queued','pending','requested'])"));
   assert(safetyNetWorkflow.includes("VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'"));
   assert(safetyNetWorkflow.includes("VIBE2_LEARNING_ALWAYS_ON: 'true'"));
-  assert(safetyNetWorkflow.includes('needs: [plan, recovery_fast, continuous, learning_idle, game_study]'));
+  assert(safetyNetWorkflow.includes('needs: [plan, recovery_fast, continuous, asset_development, learning_idle, game_study]'));
   assert(safetyNetWorkflow.includes('if: ${{ always() }}'));
   assert(safetyNetWorkflow.includes('name: Dispatch next cycle unconditionally'));
   assert(safetyNetWorkflow.includes('VIBE2_24H_REFILL=DISPATCHED'));
@@ -772,7 +772,7 @@ test('free-slot refill keeps game-study idle-gated while learning-idle yields fi
   assert(safetyNetWorkflow.includes("const gameRefillReady=freeWorkerSlots>0?'YES':'NO'"));
   assert(safetyNetWorkflow.includes("needs.plan.outputs.learning_idle_queued != '0'"));
   assert.equal(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0'"),false);
-  assert(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued == '0'"));
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.asset_development_queued == '0' && needs.plan.outputs.asset_development_active == '0' && needs.plan.outputs.learning_idle_queued == '0'"));
 });
 
 test('24H cycle preserves continuity without multiplying independent scheduler chains',()=>{
@@ -791,7 +791,7 @@ test('24H cycle preserves continuity without multiplying independent scheduler c
   const gameStudyStart=safetyNetWorkflow.indexOf('  game_study:');
   const refillStart=safetyNetWorkflow.indexOf('  refill:');
   assert(gameStudyStart>=0 && refillStart>gameStudyStart);
-  assert(safetyNetWorkflow.slice(gameStudyStart,refillStart).includes('needs: [plan, continuous, learning_idle]'));
+  assert(safetyNetWorkflow.slice(gameStudyStart,refillStart).includes('needs: [plan, continuous, asset_development, learning_idle]'));
 });
 
 test('continuous core and 24H runner isolate game-primary and learning-idle execution lanes',()=>{

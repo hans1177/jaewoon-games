@@ -12,6 +12,7 @@ import {
   CLOTHING_LAYER_SLOTS,
   BIOME_FAMILIES,
   BUILDING_THEMES,
+  DEFAULT_COVERAGE_BASELINES,
   createAssetDNA,
   createConceptProfile,
   evaluateConceptCompatibility,
@@ -538,4 +539,34 @@ test('asset production planner consumes the studio universe contract',async()=>{
   assert.ok(requestedStyles.includes('DARK_FANTASY'));
   assert.ok(requestedStyles.includes('SPACE_OPERA'));
   assert.equal(plan.companyGraphicsLibrary.studioAssetUniverse.worldGenerationStudio.directLayoutCopyForbidden,true);
+});
+
+
+test('reusable asset coverage drives 300 verified motion slots and all studio families through existing gap fill',()=>{
+  const motionTarget=Object.values(DEFAULT_COVERAGE_BASELINES.MOTION).reduce((sum,count)=>sum+Number(count||0),0);
+  assert.equal(motionTarget,300);
+  for(const family of STUDIO_ASSET_FAMILIES)assert.ok(DEFAULT_COVERAGE_BASELINES[family],family);
+  for(const role of ['LOCOMOTION','TRAVERSAL','COMBAT','WEAPON_COMBAT','SURVIVAL_CRAFTING','INTERACTION_UTILITY','REACTION']){
+    assert.ok(DEFAULT_COVERAGE_BASELINES.MOTION[role]>0,role);
+  }
+  const registry=JSON.parse(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)),'..','company-asset-library.json'),'utf8'));
+  assert.equal(registry.motionCoverage.reusableVerifiedTarget,300);
+  assert.equal(registry.universalCoverage.reusableProductionTargets.motionVerifiedReusableTarget,300);
+  assert.equal(registry.universalCoverage.reusableProductionTargets.nativeRuntimePassRequiredForVerifiedCount,true);
+  assert.equal(registry.universalCoverage.productionVerifiedAssetCount,0);
+});
+
+test('asset production plan exposes dedicated asset lane and reusable cross-genre production target',async()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
+  const plan=buildVibeAssetProductionPlan({
+    task:{gameId:'reusable-asset-target-test',goal:'생존 RPG 액션용 캐릭터 모션 배경 무기 VFX UI 자산 제작'},
+    target:'roblox',
+    repoRoot:path.resolve(here,'..')
+  });
+  assert.equal(plan.companyGraphicsLibrary.executionLane,'ASSET_DEVELOPMENT');
+  assert.equal(plan.companyGraphicsLibrary.reusableProductionTarget.motion.verifiedReusableClipTarget,300);
+  assert.deepEqual(plan.companyGraphicsLibrary.reusableProductionTarget.motion.crossGenreReuse,['RPG','SURVIVAL','ACTION','ADVENTURE','TYCOON']);
+  assert.ok(plan.companyGraphicsLibrary.studioAssetUniverse.coverage.missingSlotCount>=300);
+  assert.equal(plan.companyGraphicsLibrary.studioAssetUniverse.preparedSemanticMayNotClaimVerified,true);
 });

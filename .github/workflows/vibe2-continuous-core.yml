@@ -19,6 +19,7 @@ on:
         default: game-primary
         options:
           - game-primary
+          - asset-development
           - learning-idle
           - control-fast
       lane_max:
@@ -452,7 +453,7 @@ jobs:
             --experience="$control_root/.vibe2/experience.json" \
             --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
             --output=/tmp/vibe2-handoff-before-reserve.json >/tmp/vibe2-handoff-before-reserve.log
-          active_worker_reservations="$(node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const requested=String(process.env.VIBE2_EXECUTION_LANE||'game-primary').toUpperCase().replaceAll('-','_');const lane=t=>{const status=String(t.status||'').toLowerCase(),blocker=String(t.blocker||''),dep=String(t.department||'').toLowerCase(),type=String(t.type||'implementation').toLowerCase(),ev=(t.evidence||[]).map(String);if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';if(t.systemSteward===true)return'RECOVERY_FAST';return'CONTROL_FAST';};const rows=(q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)===requested);process.stdout.write(String(rows.length))" "$control_root/.vibe2/queue.json")"
+          active_worker_reservations="$(node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const requested=String(process.env.VIBE2_EXECUTION_LANE||'game-primary').toUpperCase().replaceAll('-','_');const lane=t=>{const status=String(t.status||'').toLowerCase(),blocker=String(t.blocker||''),dep=String(t.department||'').toLowerCase(),type=String(t.type||'implementation').toLowerCase(),ev=(t.evidence||[]).map(String);if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';if(t.assetProductionLane===true||ev.includes('asset-production-parallel:v1'))return'ASSET_DEVELOPMENT';if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';if(t.systemSteward===true)return'RECOVERY_FAST';return'CONTROL_FAST';};const rows=(q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)===requested);process.stdout.write(String(rows.length))" "$control_root/.vibe2/queue.json")"
           echo "VIBE2_EXECUTION_LANE=$VIBE2_EXECUTION_LANE"
           echo "VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE=${active_worker_reservations:-0}"
           reservation_id="${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"

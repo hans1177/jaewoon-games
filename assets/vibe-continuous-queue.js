@@ -52,7 +52,7 @@ function retryLimitAllows(task={},nextRetries=0){
   return Number.isFinite(limit)&&nextRetries<=limit;
 }
 
-const VIBE_EXECUTION_LANES = Object.freeze(['GAME_PRIMARY','RECOVERY_FAST','CONTROL_FAST','LEARNING_IDLE','RELEASE_WAIT']);
+const VIBE_EXECUTION_LANES = Object.freeze(['GAME_PRIMARY','ASSET_DEVELOPMENT','RECOVERY_FAST','CONTROL_FAST','LEARNING_IDLE','RELEASE_WAIT']);
 function inferExecutionLane(input = {}) {
   const status=clean(input.status).toLowerCase();
   const blocker=clean(input.blocker);
@@ -61,6 +61,7 @@ function inferExecutionLane(input = {}) {
   const evidence=(input.evidence||[]).map(clean);
   if(status==='running'&&/candidate-awaiting-qa-and-deployment|candidate-awaiting-supervised-review|awaiting.*qa|qa.*awaiting|awaiting.*supervised-review|slot-released.*fan-in/i.test(blocker))return 'RELEASE_WAIT';
   if(evidence.includes('learning-practice-only')||department==='learning'||(department==='development'&&type==='research'))return 'LEARNING_IDLE';
+  if(input.assetProductionLane===true||evidence.includes('asset-production-parallel:v1'))return 'ASSET_DEVELOPMENT';
   if(department==='development'&&type==='implementation')return 'GAME_PRIMARY';
   if(input.systemSteward===true||clean(input.executionLane).toUpperCase()==='RECOVERY_FAST'||evidence.some(value=>/^recovery-fast:|^recovery:|^repair-retry:/.test(value)))return 'RECOVERY_FAST';
   if(department==='system-supervision'||department==='system-ai'||['inspect','research','qa'].includes(type))return 'CONTROL_FAST';
@@ -249,7 +250,8 @@ function normalizeTask(input = {}, index = 0) {
     target: clean(input.target) || 'auto',
     department: clean(input.department) || null,
     type: clean(input.type) || 'implementation',
-    executionLane: inferExecutionLane(input),
+    assetProductionLane: input.assetProductionLane===true || inputEvidence.includes('asset-production-parallel:v1'),
+    executionLane: inferExecutionLane({...input,evidence:inputEvidence}),
     goal: clean(input.goal),
     responsibleFiles: freezeList(input.responsibleFiles || []),
     dependencies: freezeList(input.dependencies || []),
@@ -470,7 +472,7 @@ function dynamicConcurrency(queue, requested = null) {
 
 function normalizedExecutionLane(value='all'){
   const lane=clean(value).toLowerCase().replaceAll('_','-');
-  return ['game-primary','recovery-fast','control-fast','learning-idle','release-wait'].includes(lane)?lane:'all';
+  return ['game-primary','asset-development','recovery-fast','control-fast','learning-idle','release-wait'].includes(lane)?lane:'all';
 }
 function taskMatchesExecutionLane(task={},lane='all'){
   const requested=normalizedExecutionLane(lane);

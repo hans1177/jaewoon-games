@@ -1,8 +1,8 @@
 {
-  "version": 18,
+  "version": 19,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-09-26",
+  "updatedAt": "2026-09-27",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -109,7 +109,30 @@
       "REPTILE_OR_SERPENT",
       "FLYING",
       "HEAVY_GOLEM_OR_BOSS"
-    ]
+    ],
+    "reusableVerifiedTarget": 300,
+    "crossGenreReuse": [
+      "RPG",
+      "SURVIVAL",
+      "ACTION",
+      "ADVENTURE",
+      "TYCOON"
+    ],
+    "reusableCategoryTargets": {
+      "LOCOMOTION": 32,
+      "TRAVERSAL": 20,
+      "COMBAT": 64,
+      "WEAPON_COMBAT": 44,
+      "SKILL": 24,
+      "DEFENSE": 20,
+      "REACTION": 24,
+      "SURVIVAL_CRAFTING": 24,
+      "INTERACTION_UTILITY": 20,
+      "PAIR": 8,
+      "ACTING": 12,
+      "DEATH": 8
+    },
+    "verificationRule": "PREPARED_SEMANTIC_OR_DERIVED_VARIANT_DOES_NOT_COUNT_UNTIL_NATIVE_RUNTIME_PASS"
   },
   "weaponPacks": [
     "UNARMED",
@@ -3164,7 +3187,41 @@
     "baselineSource": "assets/vibe-studio-asset-universe.js#DEFAULT_COVERAGE_BASELINES",
     "learningLaneConcurrentWithProduction": true,
     "actualNativeRuntimeConsumerRequiredForPromotion": true,
-    "directCrossPlatformBinaryReuseForbidden": true
+    "directCrossPlatformBinaryReuseForbidden": true,
+    "reusableProductionTargets": {
+      "qualityIntent": "HIGH_DENSITY_STYLIZED_FANTASY_RPG_VISUAL_BAR_WITH_CROSS_GENRE_REUSE",
+      "families": [
+        "CHARACTER",
+        "CREATURE",
+        "BUILDING",
+        "ENVIRONMENT",
+        "WEAPON",
+        "SKILL",
+        "MATERIAL",
+        "AUDIO",
+        "VFX",
+        "UI",
+        "MOTION",
+        "PROP"
+      ],
+      "motionVerifiedReusableTarget": 300,
+      "motionBaseAuthoringOrAcquisitionTarget": 90,
+      "motionSafeDerivedVariationTarget": 210,
+      "environment": {
+        "modularBiomeAndRegionKits": true,
+        "buildingInteriorAndPropKits": true,
+        "foregroundMidgroundBackgroundComposition": true,
+        "landmarkAndSetDressing": true,
+        "lightingAtmosphereAndMaterialLanguage": true
+      },
+      "characterCreature": {
+        "silhouetteIdentity": true,
+        "materialIdentity": true,
+        "weaponToolPresentation": true,
+        "combatVfxCameraUiFeedback": true
+      },
+      "nativeRuntimePassRequiredForVerifiedCount": true
+    }
   },
   "baseMaterialLibrary": {
     "version": 1,
