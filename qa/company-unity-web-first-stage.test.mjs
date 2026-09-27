@@ -117,3 +117,11 @@ test('Unity Web readiness failure enters reusable Vibe2 causal repair and still 
   assert.match(workflow,/exit 42/);
   assert.match(vibe,/workflow_call:/);
 });
+
+test('Unity Web push request resolver handles merge commits from homepage rebuild requests',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  assert.match(workflow,/git diff --name-only "\$\{GITHUB_SHA\}\^1" "\$GITHUB_SHA"/);
+  assert.match(workflow,/\.build-requests\/unity-web\/\[A-Za-z0-9\._-\]\+\\\.json/);
+  assert.match(workflow,/if \[\[ -z "\$request_file" \]\]; then[\s\S]*?git show --format= --name-only "\$GITHUB_SHA"/);
+});
+
