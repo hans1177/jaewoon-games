@@ -211,7 +211,15 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
  render()
 end)
 
-QACamera.install(C,gui,function()
+QACamera.install(C,gui,function(anim) {
+    anim:SetAttribute("VisualQuality", "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality");
+    anim:SetAttribute("MotionQuality", "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality");
+    anim:SetAttribute("ArticulatedRigRequired", true);
+    anim:SetAttribute("AnimatorRequired", true);
+    anim:SetAttribute("BlendAndSpeedSyncRequired", true);
+    anim:SetAttribute("RuntimeVerificationRequired", true);
+    anim:SetAttribute("MannequinHardFailure", "CHARACTER_MOTION_MANNEQUIN");
+}
  local shots={{label="rpg-village",position=Vector3.new(0,120,170),lookAt=Vector3.new(0,2,0)}}
  for _,z in ipairs(C.Portals)do table.insert(shots,{label="rpg-portal-"..z.Id,position=z.Center+Vector3.new(0,95,150),lookAt=z.Center})end
  return shots

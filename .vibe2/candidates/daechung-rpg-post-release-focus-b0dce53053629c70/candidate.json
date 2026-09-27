@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "QACamera.install(C,gui,function()",
+      "replace": "QACamera.install(C,gui,function(anim) {\n    anim:SetAttribute(\"VisualQuality\", \"company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality\");\n    anim:SetAttribute(\"MotionQuality\", \"company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality\");\n    anim:SetAttribute(\"ArticulatedRigRequired\", true);\n    anim:SetAttribute(\"AnimatorRequired\", true);\n    anim:SetAttribute(\"BlendAndSpeedSyncRequired\", true);\n    anim:SetAttribute(\"RuntimeVerificationRequired\", true);\n    anim:SetAttribute(\"MannequinHardFailure\", \"CHARACTER_MOTION_MANNEQUIN\");\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
