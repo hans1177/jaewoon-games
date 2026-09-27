@@ -286,6 +286,15 @@ test('public release rejects static-only multiplayer evidence and requires the s
   assert.ok(evidence.blockedReasons.includes('multiplayer-qa-not-passed'));
 });
 
+test('Roblox candidate persistence never overwrites Unity execution evidence on a concurrent game',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  const start=workflow.indexOf('      - name: Persist proven internal release state only');
+  const end=workflow.indexOf('      - name: Dispatch existing game tester runtime foundation QA',start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/item\.executionEvidence&&String\(item\.executionEvidence\.platform\|\|''\)\.toUpperCase\(\)==='ROBLOX'/);
+  assert.doesNotMatch(block,/if\(item\.executionEvidence\)\{/);
+});
+
 test('private runtime persistence retries from fresh company-runtime state instead of rebasing shared JSON',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   const start=workflow.indexOf('      - name: Persist proven internal release state only');
