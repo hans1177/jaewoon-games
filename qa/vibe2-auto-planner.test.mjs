@@ -3026,3 +3026,107 @@ test('stale quality failure from an older Roblox source does not block the new s
   const tasks=result.tasks.filter(row=>row.gameId===gameId);
   assert.ok(tasks.some(row=>(row.evidence||[]).includes('internal-playtest-co-development:yes')));
 });
+
+
+test('Roblox verified product-quality failure auto-routes to source buildup before another internal playtest task',()=>{
+  const root=tempRepo();
+  const gameId='quality-first-roblox';
+  const sourceRevision='1'.repeat(40);
+  const gameRoot=path.join(root,'roblox-games',gameId);
+  fs.mkdirSync(path.join(gameRoot,'server'),{recursive:true});
+  fs.mkdirSync(path.join(gameRoot,'client'),{recursive:true});
+  fs.mkdirSync(path.join(gameRoot,'shared'),{recursive:true});
+  fs.writeFileSync(path.join(gameRoot,'server','Game.server.luau'),'local function resolvePrimaryAction(player) return player ~= nil end\n','utf8');
+  fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'local function submitPrimaryAction() return true end\n','utf8');
+  fs.writeFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'return {RoundSeconds=120}\n','utf8');
+  writeStudioDesign(root,gameId,{coreFun:'추격 중 역할 선택과 주행 행동의 즉시 피드백으로 살아남는 재미'});
+
+  const developmentQueue={items:[{
+    gameId,
+    gameName:'Quality First Roblox',
+    status:'ACTIVE',
+    selectedPlatform:'ROBLOX',
+    targetPlatform:'ROBLOX',
+    robloxProjectPath:`roblox-games/${gameId}`,
+    currentStep:'REPAIR_REQUIRED',
+    canonicalState:'REPAIR_REQUIRED',
+    robloxSourceCommit:sourceRevision,
+    robloxBuildArtifactIdentity:'sha256:'+'2'.repeat(64),
+    robloxFailureStage:'VIBE_INTERNAL_PLAY',
+    robloxFailureSignature:'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED',
+    robloxQualityBuildUpRequired:true,
+    robloxQualityFailureClass:'PRODUCT',
+    robloxQualityBuildUpSourceRevision:sourceRevision,
+    robloxQualityBuildUpEvidence:{
+      sourceRevision,
+      failureStage:'VIBE_INTERNAL_PLAY',
+      failureSignature:'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED',
+      qualityFailureKinds:['primary-action-effect']
+    },
+    robloxInternalReleaseReady:true,
+    robloxInternalReleaseEvidence:{
+      sourceRevision,
+      artifactIdentity:'sha256:'+'2'.repeat(64),
+      versionNumber:24
+    },
+    routingBlockers:['roblox-studio-mcp-play-repair-required']
+  }]};
+  const catalog={games:[{
+    id:gameId,
+    name:'Quality First Roblox',
+    productionClass:'DEVELOPMENT_CONFIRMED',
+    lifecycleState:'ACTIVE',
+    robloxProjectPath:`roblox-games/${gameId}`
+  }]};
+
+  const projects=collectProjects({},catalog,root,developmentQueue);
+  const project=projects.find(row=>row.gameId===gameId&&row.engine==='roblox');
+  assert.ok(project);
+  assert.equal(project.queueRobloxQualityBuildUpRequired,true);
+  assert.deepEqual(project.queueRobloxQualityFailureKinds,['primary-action-effect']);
+
+  const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  assert.ok(task);
+  assert.equal(task.studioQualityEvolution?.phase,'REPAIR');
+  assert.equal(task.maxRetries,null);
+  assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog,
+    developmentQueue,
+    queue:{maxConcurrentTasks:20,tasks:[]},
+    repoRoot:root,
+    maxConcurrentTasks:20,
+    queueMaxConcurrentTasks:20,
+    planningBacklogTarget:5,
+    planningBacklogMinimum:0
+  });
+  assert.ok(result.tasks.some(row=>row.gameId===gameId&&row.studioQualityEvolution?.phase==='REPAIR'));
+  assert.equal(result.tasks.some(row=>row.gameId===gameId&&(row.evidence||[]).includes('internal-playtest-co-development:yes')),false);
+});
+
+test('stale quality-failure source does not force rebuilt source back through the old repair',()=>{
+  const root=tempRepo();
+  const gameId='quality-source-advanced';
+  const gameRoot=path.join(root,'roblox-games',gameId,'server');
+  fs.mkdirSync(gameRoot,{recursive:true});
+  fs.writeFileSync(path.join(gameRoot,'Game.server.luau'),'return true\n','utf8');
+  writeStudioDesign(root,gameId);
+  const currentSource='3'.repeat(40);
+  const failedSource='4'.repeat(40);
+  const projects=collectProjects({},{
+    games:[{id:gameId,name:'Quality Source Advanced',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]
+  },root,{items:[{
+    gameId,status:'ACTIVE',selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',
+    robloxProjectPath:`roblox-games/${gameId}`,
+    robloxSourceCommit:currentSource,
+    robloxQualityBuildUpRequired:true,
+    robloxQualityBuildUpSourceRevision:failedSource,
+    robloxQualityFailureClass:'PRODUCT',
+    robloxQualityBuildUpEvidence:{qualityFailureKinds:['primary-action-effect']}
+  }]});
+  const project=projects.find(row=>row.gameId===gameId&&row.engine==='roblox');
+  assert.ok(project);
+  assert.equal(project.queueRobloxQualityBuildUpRequired,false);
+});
