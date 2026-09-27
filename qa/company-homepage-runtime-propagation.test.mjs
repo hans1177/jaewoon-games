@@ -32,6 +32,16 @@ test('runtime catalog merge is a no-op without valid arrays',()=>{
   assert.deepEqual(mergeRuntimeCatalogMissingGames({catalog:{},runtimeCatalog:{},developmentQueue:{}}),[]);
 });
 
+test('company status sync keeps checkout bounded while preserving exact push diff recovery',()=>{
+  const status=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
+  const checkout=status.match(/- name: Checkout latest main[\s\S]*?(?=\n      - name:)/)?.[0]||'';
+  assert.match(checkout,/fetch-depth:\s*1/);
+  assert.match(checkout,/fetch-tags:\s*false/);
+  assert.doesNotMatch(checkout,/fetch-depth:\s*0/);
+  assert.match(status,/git fetch --no-tags --depth=1 origin "\$before"/);
+  assert.match(status,/git diff --name-only "\$before" "\$after" -- web-games\//);
+});
+
 test('dedicated Roblox publication is wired into status and homepage propagation',()=>{
   const status=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
   const homepage=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');

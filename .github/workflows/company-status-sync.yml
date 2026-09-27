@@ -60,16 +60,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
 
       - name: Prepare main engine without runtime history merge
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin main
+          git fetch --no-tags --depth=1 origin main
           git checkout -B company-status-engine origin/main
           if git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
-            git fetch origin "$COMPANY_RUNTIME_BRANCH"
+            git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
             echo "COMPANY_RUNTIME_HEAD=$(git rev-parse origin/$COMPANY_RUNTIME_BRANCH)"
           else
             echo 'COMPANY_RUNTIME_HEAD=NOT_CREATED'
@@ -109,6 +110,9 @@ jobs:
           : > "$out"
           before='${{ github.event.before }}'
           after='${{ github.sha }}'
+          if [[ -n "$before" && ! "$before" =~ ^0+$ ]] && ! git cat-file -e "$before^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "$before" >/dev/null 2>&1 || true
+          fi
           if [[ -n "$before" && ! "$before" =~ ^0+$ ]] && git cat-file -e "$before^{commit}" 2>/dev/null; then
             git diff --name-only "$before" "$after" -- web-games/ || true
           else
@@ -266,9 +270,9 @@ jobs:
           persisted=0
           changed=0
           for attempt in 1 2 3 4; do
-            git fetch origin main
+            git fetch --no-tags --depth=1 origin main
             if git ls-remote --exit-code --heads origin "$COMPANY_RUNTIME_BRANCH" >/dev/null 2>&1; then
-              git fetch origin "$COMPANY_RUNTIME_BRANCH"
+              git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
               git checkout -B company-status-persist "origin/$COMPANY_RUNTIME_BRANCH"
             else
               git checkout -B company-status-persist origin/main
