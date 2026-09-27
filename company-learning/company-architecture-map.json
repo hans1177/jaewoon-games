@@ -1,5 +1,5 @@
 {
-  "version": 271,
+  "version": 272,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3777,7 +3777,12 @@
         "internalPlaytestMayNotWaitForF9RunnerCapacity": true,
         "sameGameIndependentDevelopmentContinues": true,
         "playerAutomation": false,
-        "publishedPlaceDirectStudioAutomation": false
+        "publishedPlaceDirectStudioAutomation": false,
+        "exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot": true,
+        "studioPlannerEligibility": "EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT",
+        "studioActualPlayMayNotSetRuntimeFoundationPass": true,
+        "externalPublicReleaseRemainsBlockedUntilRealServerBoot": true,
+        "studioFollowupOwner": ".github/workflows/company-development-roblox-post-runtime-qa.yml"
       },
       "actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass": true
     },
