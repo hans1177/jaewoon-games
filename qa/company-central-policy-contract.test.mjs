@@ -133,7 +133,8 @@ test('GAME_SEED mirrors the current historical-bootstrap dynamic-portfolio and s
   assert.equal(directive.gameSeed.replenishment.oneForOneOnly,false);
   assert.equal(directive.gameSeed.replenishment.automaticGrowthBeyondVacanciesForbidden,false);
   assert.equal(directive.gameSeed.initialTargetPlatform,'ROBLOX');
-  assert.deepEqual(directive.gameSeed.allowedTargetPlatforms,['ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.deepEqual(directive.gameSeed.allowedTargetPlatforms,['ROBLOX','UNITY']);
+  assert.deepEqual(directive.gameSeed.pausedTargetPlatforms,['FORTNITE_UEFN']);
   assert.equal(directive.gameSeed.projectMaySelectAnyAllowedPlatform,true);
 });
 
@@ -431,13 +432,36 @@ test('Unity and Roblox share the active first development tier while Fortnite UE
   assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'ALWAYS_ALLOWED',FORTNITE_UEFN:'OWNER_HOLD'});
   assert.equal(strategy.UNITY.existingPathPreserved,true);
   assert.equal(strategy.UNITY.robloxDoesNotReplaceUnity,true);
-  assert.equal(strategy.FORTNITE_UEFN.role,'OWNER_HOLD_SUPPORTED_PLATFORM');
+  assert.equal(strategy.FORTNITE_UEFN.role,'DEVELOPMENT_PAUSED_SUPPORTED_PLATFORM');
+  assert.equal(strategy.FORTNITE_UEFN.developmentStatus,'DEVELOPMENT_PAUSED');
+  assert.equal(strategy.FORTNITE_UEFN.statusLabel,'개발보류');
+  assert.equal(strategy.FORTNITE_UEFN.autonomousBuildUpAllowed,false);
   assert.equal(strategy.FORTNITE_UEFN.developmentAlwaysAllowed,false);
   assert.equal(roadmap.platformPriorityInvariant.mode,'UNITY_ROBLOX_EQUAL_FIRST_TIER');
   assert.deepEqual(roadmap.platformPriorityInvariant.priorityTiers,[['UNITY','ROBLOX']]);
   assert.equal(roadmap.platformPriorityInvariant.robloxMustReceiveFirstEligibleDevelopmentSlot,false);
   assert.equal(roadmap.platformPriorityInvariant.fortniteUefnDevelopmentStillAllowed,false);
   assert.equal(roadmap.platformPriorityInvariant.fortniteUefnState,'OWNER_HOLD');
+  assert.equal(roadmap.platformPriorityInvariant.fortniteUefnDevelopmentStatus,'DEVELOPMENT_PAUSED');
+  assert.equal(roadmap.platformPriorityInvariant.fortniteUefnStatusLabel,'개발보류');
+});
+
+test('Fortnite UEFN development pause is explicit in central policy and build-up projections',()=>{
+  const pause=roadmap.changeRecord.fortniteUefnDevelopmentPause20260927;
+  assert.equal(pause.machineState,'OWNER_HOLD');
+  assert.equal(pause.displayStatus,'DEVELOPMENT_PAUSED');
+  assert.equal(pause.statusLabel,'개발보류');
+  assert.equal(pause.developmentExecutionAllowed,false);
+  assert.equal(pause.autonomousBuildUpAllowed,false);
+  assert.equal(pause.graphicsBuildUpAllowed,false);
+  assert.equal(pause.menuBuildUpAllowed,false);
+  assert.deepEqual(pause.activeBuildUpPlatforms,['WEB','ROBLOX','UNITY']);
+  assert.deepEqual(pause.pausedPlatforms,['FORTNITE_UEFN']);
+  assert.equal(architecture.fortniteUefnDevelopmentPauseTopology.developmentStatus,'DEVELOPMENT_PAUSED');
+  assert.equal(architecture.fortniteUefnDevelopmentPauseTopology.statusLabel,'개발보류');
+  assert.equal(architecture.fortniteUefnDevelopmentPauseTopology.autonomousBuildUpAllowed,false);
+  assert.deepEqual(autonomousExpansionPolicy.scope.platforms,['WEB','ROBLOX','UNITY']);
+  assert.deepEqual(autonomousExpansionPolicy.scope.pausedPlatforms,['FORTNITE_UEFN']);
 });
 
 test('owner permanent removal is machine-enforced and cannot auto-recover',()=>{
@@ -812,6 +836,9 @@ test('central policy authorizes only gated atomic neural execution and keeps UEF
   assert.ok(gated.forbiddenAuthorities.includes('RELEASE_PASS_OR_PROMOTION_SELF_APPROVAL'));
   assert.equal(gated.fortniteUefnChange,false);
   assert.equal(roadmap.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
+  assert.equal(roadmap.fortniteUefn.developmentStatus,'DEVELOPMENT_PAUSED');
+  assert.equal(roadmap.fortniteUefn.developmentStatusLabel,'개발보류');
+  assert.equal(roadmap.fortniteUefn.autonomousBuildUpAllowed,false);
   assert.equal(roadmap.neuralDevelopmentBrain.currentExecutionMode,'ATOMIC_NEURON_DAG_WITH_GATED_NEURAL_CONTROL_AND_SHADOW_FALLBACK');
   assert.equal(roadmap.neuralDevelopmentBrain.phase2.mode,'GATED_EVENT_ROUTER_WITH_SHADOW_FALLBACK');
   assert.equal(roadmap.neuralDevelopmentBrain.phase2.shadowAuthorityScope,'OBSERVE_COMPARE_AUDIT_ONLY');
@@ -1602,7 +1629,9 @@ test('menu experience diversity stays inside existing Vibe presentation buildup'
   const menu=autonomousExpansionPolicy.presentationEvolution.menuExperienceDiversity;
   assert.equal(menu.status,'ACTIVE');
   assert.equal(menu.executionBoundary,'EXISTING_MENU_AND_UI_BUILD_UP_ONLY');
-  assert.deepEqual(menu.runtimePlatforms,['WEB','ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.deepEqual(menu.runtimePlatforms,['WEB','ROBLOX','UNITY']);
+  assert.deepEqual(menu.pausedPlatforms,['FORTNITE_UEFN']);
+  assert.equal(menu.pausedPlatformStatus.FORTNITE_UEFN,'개발보류');
   assert.deepEqual(menu.surfaces,['MAIN_MENU','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI']);
   assert.equal(menu.genericOneTemplateForAllGamesForbidden,true);
   assert.equal(menu.colorOrBackgroundOnlyVariationDoesNotCount,true);
@@ -1627,6 +1656,9 @@ test('menu experience diversity stays inside existing Vibe presentation buildup'
   assert.ok(menu.patternFamilies.RESULT_UI.includes('NEXT_OBJECTIVE'));
   const topology=architecture.menuExperienceDiversityTopology;
   assert.equal(topology.executionModel,'RESPONSIBILITY_INSIDE_EXISTING_PRESENTATION_BUILD_UP_NOT_A_NEW_STAGE');
+  assert.deepEqual(topology.platforms,['WEB','ROBLOX','UNITY']);
+  assert.deepEqual(topology.pausedPlatforms,['FORTNITE_UEFN']);
+  assert.equal(topology.pausedPlatformStatus.FORTNITE_UEFN,'개발보류');
   assert.equal(topology.genericOneTemplateForAllGamesForbidden,true);
   assert.equal(topology.colorOrBackgroundOnlyVariationDoesNotCount,true);
   assert.equal(topology.unityWebIdentity,'UNITY_WEBGL_BUILD_OF_SAME_CANONICAL_UNITY_PROJECT');
