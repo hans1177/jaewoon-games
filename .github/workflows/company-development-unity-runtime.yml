@@ -796,9 +796,30 @@ jobs:
           const robloxInternal=item.robloxInternalReleaseReady===true
             ||item.robloxInternalReleasePublished===true
             ||item.robloxInternalReleaseEvidence?.published===true;
+          const robloxFailureStage=String(item.robloxFailureStage||'').toUpperCase();
+          const robloxFailureSignature=String(item.robloxFailureSignature||'').trim();
+          const robloxRoutingBlockers=Array.isArray(item.routingBlockers)?item.routingBlockers.map(value=>String(value||'')):[];
+          const robloxRepairWaitingEvidence=
+            robloxRoutingBlockers.some(value=>/^roblox-source-bootstrap:|roblox-build-package-pending|roblox-runtime-candidate-identity-mismatch|roblox-ground-contact-failure/.test(value))
+            ||robloxFailureSignature==='ROBLOX_RUNTIME_CANDIDATE_IDENTITY_MISMATCH'
+            ||item.robloxQualityBuildUpRequired===true;
           const robloxRepairRequired=
-            String(item.canonicalState||'').toUpperCase()==='TARGET_PLATFORM_REPAIR_REQUIRED'
-            &&Boolean(String(item.robloxFailureStage||'').trim());
+            Boolean(robloxFailureStage)
+            &&(
+              String(item.canonicalState||'').toUpperCase()==='TARGET_PLATFORM_REPAIR_REQUIRED'
+              ||(
+                String(item.canonicalState||'').toUpperCase()==='WAITING_TARGET_PLATFORM_VALIDATION'
+                &&robloxRepairWaitingEvidence
+              )
+            );
+          const robloxRepairResumeStep=
+            robloxRoutingBlockers.some(value=>value.startsWith('roblox-source-bootstrap:'))
+              ?'TARGET_PLATFORM_SOURCE_BIND'
+              :(!exactRobloxBuild
+                ?'TARGET_PLATFORM_BUILD_OR_PACKAGE'
+                :(robloxFailureSignature==='ROBLOX_RUNTIME_CANDIDATE_IDENTITY_MISMATCH'
+                  ?'PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
+                  :String(item.currentStep||'TARGET_PLATFORM_TECHNICAL_VALIDATION')));
           if(concurrent&&update.unityInternalReleaseReady!==true){
             if(robloxInternal){
               mergedUpdate.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
@@ -813,7 +834,7 @@ jobs:
               mergedUpdate.canonicalState='F0_SOURCE_PREFLIGHT_PASSED';
               console.log('UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX='+update.gameId+':PRIVATE_RUNTIME_CANDIDATE_DEPLOY');
             }else if(robloxRepairRequired){
-              mergedUpdate.currentStep=String(item.currentStep||'TARGET_PLATFORM_TECHNICAL_VALIDATION');
+              mergedUpdate.currentStep=robloxRepairResumeStep;
               mergedUpdate.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED';
               console.log('UNITY_SHARED_REPAIR_PRESERVED_FROM_ROBLOX='+update.gameId+':'+mergedUpdate.currentStep);
             }
