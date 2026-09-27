@@ -614,6 +614,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     applicationCoveragePct:100,
     allRetrievedKnowledgeApplied:true,
     verifiedPlaybookReuseCount:Number(unifiedLearning?.playbookReuse?.length||0),
+    verifiedLearningMemorySha:clean(process.env.VIBE2_VERIFIED_LEARNING_MEMORY_SHA)||null,
     freshIndependentQaRequired:true,
     infrastructureFailurePenalizesKnowledge:false,
     singleSuccessGeneralizationProof:false,
