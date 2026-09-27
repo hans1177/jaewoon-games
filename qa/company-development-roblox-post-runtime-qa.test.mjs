@@ -22,6 +22,10 @@ test('Roblox runtime foundation lane remains Open Cloud only while post-release 
   assert.doesNotMatch(workflow,/vibe2-roblox-studio-cli-runner|--task\s+RunScript|--runScriptFile/);
 });
 
+test('runtime QA rescans when the private candidate producer workflow changes',()=>{
+  assert.match(workflow,/\.github\/workflows\/company-development-roblox-release-promotion\.yml/);
+});
+
 test('Studio asset binding promotion waits for exact accepted Roblox runtime',()=>{
   assert.match(workflow,/const studioAssetBindingRequired=item\.robloxStudioAssetBindingApplied===true/);
   assert.match(workflow,/result\.runtimeAcceptancePassed===true/);
