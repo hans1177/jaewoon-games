@@ -1,5 +1,5 @@
 {
-  "version": 140,
+  "version": 141,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2450,8 +2450,23 @@
       "DISPATCH_EXACT_STUDIO_FOLLOWUP_BEFORE_SURFACING_PERSISTENT_PEER_FAILURE",
       "MATCH_DECLARED_STUDIO_ASSET_BINDING_VERSION",
       "ALLOW_EXACT_ENGINE_PREBOOT_STUDIO_EVIDENCE_WITHOUT_RUNTIME_OR_PUBLIC_RELEASE_PASS",
-      "REQUIRE_SUCCESSFUL_PRIMARY_INPUT_WITH_AUTHORITATIVE_FEEDBACK_TRANSITION_OR_OBSERVED_MOTION"
+      "REQUIRE_SUCCESSFUL_PRIMARY_INPUT_WITH_AUTHORITATIVE_FEEDBACK_TRANSITION_OR_OBSERVED_MOTION",
+      "DELEGATE_PREBOOT_STUDIO_FOLLOWUP_ELIGIBILITY_TO_CANONICAL_PLANNER"
     ],
-    "runtimeFoundationPassFabricationAllowed": false
+    "runtimeFoundationPassFabricationAllowed": false,
+    "liveRepairObservation": {
+      "workflowRunId": 36297021567,
+      "gameId": "horror-escape-room",
+      "candidateVersionNumber": 24,
+      "openCloudStatus": 200,
+      "exactEngineVersion": true,
+      "realServerBootObserved": false,
+      "studioAssetBindingVersion": 2,
+      "studioAssetSelectionMatched": true,
+      "peerPersistent429Count": 4,
+      "companyRuntimeStatePersisted": true,
+      "studioFollowupReadyCount": 0,
+      "missedDispatchCause": "PRE_PLANNER_RUNTIME_FOUNDATION_PASS_GUARD"
+    }
   }
 }
