@@ -1,5 +1,5 @@
 {
-  "version": 463,
+  "version": 464,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9501,10 +9501,13 @@
       "postFoundationStudioFollowup": {
         "enabled": true,
         "reason": "PARALLEL_STUDIO_PLAN_CAN_OBSERVE_PRE_FOUNDATION_STATE",
-        "trigger": "NEW_EXACT_RUNTIME_FOUNDATION_PASS_ONLY",
+        "trigger": "CANONICAL_STUDIO_PLANNER_REQUIRES_EXACT_PLAY",
         "dispatch": "EXACT_GAME_POST_RUNTIME_QA_REENTRY",
         "requiredScenarioAndExactBindingGatesUnchanged": true,
-        "repeatExactFoundationRedispatch": false
+        "repeatExactFoundationRedispatch": false,
+        "eligibilityAuthority": "tools/company-development-roblox-studio-local-play.mjs#planLocalStudioCandidates",
+        "coversExactFoundationEvidenceReuse": true,
+        "stopCondition": "EXACT_CURRENT_STUDIO_MCP_EVIDENCE_ALREADY_OBSERVED"
       }
     }
   },

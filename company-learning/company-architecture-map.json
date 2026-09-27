@@ -1,5 +1,5 @@
 {
-  "version": 270,
+  "version": 271,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5558,11 +5558,13 @@
     "fixedCapacityIsolation": true,
     "postFoundationStudioFollowup": {
       "enabled": true,
-      "trigger": "NEW_EXACT_RUNTIME_FOUNDATION_PASS_ONLY",
+      "trigger": "PLANNER_REPORTS_CURRENT_EXACT_STUDIO_PLAY_REQUIRED",
       "dispatchOwner": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+      "eligibilityAuthority": "tools/company-development-roblox-studio-local-play.mjs#planLocalStudioCandidates",
       "exactGameDispatch": true,
       "qualityGateOrderPreserved": true,
-      "duplicateLoopPreventedByTransitionOnly": true
+      "reusableFoundationRaceCovered": true,
+      "loopStopsWhenPlannerReportsAlreadyObserved": true
     }
   },
   "nativeChildDispatchDedupeTopology": {
