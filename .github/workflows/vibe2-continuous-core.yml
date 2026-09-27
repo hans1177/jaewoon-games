@@ -592,7 +592,7 @@ jobs:
             ~/.ollama/models
             ~/.cache/vibe2-ollama/bin/ollama
             ~/.cache/vibe2-ollama/lib/ollama
-          key: vibe2-ollama-v4-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
+          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
           lookup-only: true
 
       - name: Record reserve model cache decision
@@ -622,13 +622,14 @@ jobs:
             ~/.ollama/models
             ~/.cache/vibe2-ollama/bin/ollama
             ~/.cache/vibe2-ollama/lib/ollama
-          key: vibe2-ollama-v4-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
-          lookup-only: true
+          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
+          lookup-only: false
 
       - name: Record model cache probe
         shell: bash
         run: |
-          echo 'VIBE2_MODEL_CACHE_WARMUP_LOOKUP_ONLY=YES'
+          echo 'VIBE2_MODEL_CACHE_WARMUP_LOOKUP_ONLY=NO'
+          echo 'VIBE2_MODEL_CACHE_WARMUP_PERSIST_ON_MISS=YES'
           echo "VIBE2_MODEL_CACHE_WARMUP_HIT=${{ steps.ollama_cache.outputs.cache-hit }}"
           echo 'VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS'
 
@@ -818,7 +819,7 @@ jobs:
             ~/.ollama/models
             ~/.cache/vibe2-ollama/bin/ollama
             ~/.cache/vibe2-ollama/lib/ollama
-          key: vibe2-ollama-v4-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
+          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
 
       - name: Mark worker Ollama preparation start
         id: worker_ollama_prepare_start
