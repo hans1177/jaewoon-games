@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1989zfx",
-      "worker": "vibe2",
-      "taskId": "village-dungeons-roblox-presentation-asset-adaptation-v1",
-      "gameId": "village-dungeons",
-      "files": [
-        "roblox-games/village-dungeons/client/Game.client.luau",
-        "roblox-games/village-dungeons/server/Game.server.luau",
-        "roblox-games/village-dungeons/shared/GameConfig.luau"
-      ],
-      "baseSha": "456c47c090c1c88523338e8483d28c591d4034ef",
-      "acquiredAt": "2026-09-27T10:12:07.027Z",
-      "expiresAt": "2026-09-27T10:57:07.027Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:village-dungeons-roblox-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-lqr1a8",
       "worker": "vibe2",
       "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
@@ -731,6 +712,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:monster-adventure-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-1l7z6qn",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-28a2f2747401-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-queue-control.mjs",
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-queue-control.test.mjs"
+      ],
+      "baseSha": "5dee3323be9f60175ab33053d7f249cb1c1db4f1",
+      "acquiredAt": "2026-09-27T10:57:32.178Z",
+      "expiresAt": "2026-09-27T11:42:32.178Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-28a2f2747401-v1"
       ]
     }
   ]
