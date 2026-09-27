@@ -28,7 +28,7 @@ test('ordinary workflow references to main are not false positives',()=>{
 test('main ref expressions containing inputs are not mistaken for HTTP PUT writes',()=>{
   const line="group: ${{ github.ref == 'refs/heads/main' && inputs.execution_lane || 'game-primary' }}";
   assert.equal(scanTextForDirectMainWrite(line).length,0);
-  assert.equal(scanTextForDirectMainWrite('refs/heads/main PUT'),1);
+  assert.equal(scanTextForDirectMainWrite('refs/heads/main PUT').length,1);
 });
 
 test('main write guard workflow uses shallow partial checkout and exact base fetch',()=>{
