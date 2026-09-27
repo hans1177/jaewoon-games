@@ -1160,6 +1160,14 @@ test('reproduced DOM null event bind must repair the exact unsafe chain before i
   assert.equal(result.reason,null);
 });
 
+test('focused UI menu work keeps game-specific menu variety without inventing gameplay systems',()=>{
+  const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  assert.match(source,/const menuPresentationTask=\/\(\?:menu\|main menu/);
+  assert.match(source,/MENU VARIETY CONTRACT:/);
+  assert.match(source,/Do not invent unavailable gameplay systems just to add a menu/);
+  assert.match(source,/Mobile touch targets, back\/close flow, scroll reachability, safe areas and state restoration/);
+});
+
 test('missing diagnostic postcondition is a retryable generation failure',()=>{
   const error=new Error('DIAGNOSTIC_POSTCONDITION_MISSING:INTERVAL_CLEANUP_RISK:rpg.html:CLEAR_INTERVAL_LIFECYCLE_MISSING');
   assert.equal(generationFailureClass(error),'DIAGNOSTIC_POSTCONDITION');
