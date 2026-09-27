@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -339,7 +339,12 @@
       "replacementEvidenceMustReferenceTouchedSourcePath": true,
       "replacementEvidenceSnippetMustExistInChangedSource": true,
       "duplicateReplacementEvidenceCannotInflateCount": true,
-      "selfReportedCountWithoutGroundedSourceEvidenceCannotPass": true
+      "selfReportedCountWithoutGroundedSourceEvidenceCannotPass": true,
+      "groundedEvidenceMustPersistThroughCandidateManifest": true,
+      "incrementalQaMustRevalidateGroundedEvidenceAgainstCandidateSource": true,
+      "fanInMustRequireGroundedGraphicsEvidence": true,
+      "targetRuntimeEvidenceMustBindExactBuildUpSourceIdentity": true,
+      "robloxF9SettlementRequiresExactPromotedSourceTree": true
     },
     "menuExperienceDiversity": {
       "status": "ACTIVE",
@@ -476,5 +481,19 @@
       "FORTNITE_UEFN"
     ],
     "pausedPlatformRule": "FORTNITE_UEFN_OWNER_HOLD_NO_AUTONOMOUS_BUILD_UP_UNTIL_EXPLICIT_RESUME"
+  },
+  "buildUpRuntimeClosure": {
+    "version": 1,
+    "activePlatforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "pausedPlatforms": [
+      "FORTNITE_UEFN"
+    ],
+    "sourceIdentity": "SOURCE_ROOT_TREE_SHA",
+    "robloxSameGameDifferentSourceMayNotSettle": true,
+    "noNewWorkflowOrShadowPipeline": true
   }
 }
