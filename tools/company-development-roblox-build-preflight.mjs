@@ -23,6 +23,11 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
   const blockers=[];
   const {leads,distinct,pool,sharedModel,minDistinct}=configuredLeads(directive);
   const secondary=secondaryOwnerFocus===true;
+  const directRoblox=upper(item.selectedPlatform||item.targetPlatform)==='ROBLOX';
+  const concurrentRoblox=upper(item.platformExecutionMode)==='ROBLOX_UNITY_CONCURRENT_SAME_GAME'
+    &&Array.isArray(item.concurrentTargetPlatforms)
+    &&item.concurrentTargetPlatforms.some(platform=>upper(platform)==='ROBLOX');
+  const robloxLaneEligible=directRoblox||concurrentRoblox;
   const verifiedVibe2Handoff=!secondary&&hasVerifiedVibe2SourceHandoff(item);
   const nativeWebValidationPassed=Boolean(item.webValidationPassedAt);
   const nativeMusicValidationPassed=item.musicValidationPassed===true;
@@ -34,7 +39,7 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
   const buildSourceRevision=clean(secondary?item.ownerFocusRobloxBuildSourceRevision:item.robloxBuildSourceRevision);
   const artifactIdentity=clean(secondary?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity);
   if(upper(item.productionClass)!=='DEVELOPMENT_CONFIRMED')blockers.push('development-confirmed-required');
-  if(!secondary&&upper(item.selectedPlatform||item.targetPlatform)!=='ROBLOX')blockers.push('roblox-platform-required');
+  if(!secondary&&!robloxLaneEligible)blockers.push('roblox-platform-required');
   if(!buildOrPackagePassed)blockers.push('build-package-not-passed');
   if(!COMMIT.test(sourceRevision))blockers.push('source-revision-invalid');
   if(buildSourceRevision!==sourceRevision)blockers.push('source-revision-mismatch');
@@ -49,6 +54,9 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
     sharedModel,
     distinctLeadCount:distinct.length,
     secondaryOwnerFocus:secondary,
+    robloxLaneEligible,
+    directRoblox,
+    concurrentRoblox,
     build:Object.freeze({
       sourceRevision:sourceRevision||null,
       artifactIdentity:artifactIdentity||null,
