@@ -39,7 +39,7 @@ test('verified task completion is stored as checkpoint evidence rather than done
 });
 
 test('empty queue and failed subjobs still flow into unconditional next-cycle refill',()=>{
-  assert.match(runner,/refill:\s*\n\s*needs: \[plan, recovery_fast, continuous, learning_idle, game_study\]/);
+  assert.match(runner,/refill:\s*\n\s*needs: \[plan, recovery_fast, continuous, asset_development, learning_idle, game_study\]/);
   assert.match(runner,/if: \$\{\{ always\(\) \}\}/);
   assert.match(runner,/Dispatch next cycle unconditionally/);
   assert.match(runner,/actions\/workflows\/vibe2-24h-runner\.yml\/dispatches/);
