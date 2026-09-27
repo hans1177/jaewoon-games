@@ -177,8 +177,10 @@ export function expandPresentationResponsibleFiles({task={},target='',repoRoot=p
 function presentationTaskType(task = {}) {
   const pass=presentationPassFromTask(task);
   if(pass==='ASSET_ADAPTATION')return'graphics';
+  if(pass==='LIVING_MOTION'||pass==='ANIMATION_FEEL')return'motion';
   if(pass==='VFX')return'vfx';
   if(pass==='AUDIO_FEEL')return'audio';
+  if(pass==='POLISH_MOBILE')return'ui';
   if(pass)return'presentation';
   return clean(task?.type)||'coding';
 }
@@ -602,7 +604,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     ...(unifiedLearning?.exactKnowledgeIds||[]),
     ...(verifiedCapabilityMemory?.records||[]).map(record=>'VERIFIED_CAPABILITY:'+clean(record?.id))
   ]);
-  const mandatoryVerifiedKnowledgeApplication=['roblox','unity','web'].includes(plan.target);
+  const assetDevelopmentLearning=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
+  const mandatoryVerifiedKnowledgeApplication=['roblox','unity','web'].includes(plan.target)||assetDevelopmentLearning;
   const knowledgeApplicationContract=freeze({
     version:2,
     exactInjectedKnowledgeIds,
@@ -625,7 +628,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     '[LEARNING KNOWLEDGE APPLICATION TRACE]',
     'exactKnowledgeIds='+knowledgeApplicationContract.exactInjectedKnowledgeIds.join(','),
     'verifiedLearningApplicationCoverage=100%',
-    'For Roblox, Unity, and Web work, every knowledge item retrieved into this work order must be applied as a transformative implementation input. Do not silently ignore verified playbook reuse. Raw source/code/assets must not be copied unless separately authorized.',
+    'For Roblox, Unity, Web, and asset-development work, every knowledge item retrieved into this work order must be applied as a transformative implementation input. Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs; do not silently ignore verified playbook reuse or raw-copy commercial source assets.',
     'Only these injected knowledge items may receive credit or blame from this task. Infrastructure failures must not penalize knowledge. Fresh QA/regression/review is required before attribution.'
   ].join('\n'):'';
   const assetProduction = buildVibeAssetProductionPlan({ task, target:plan.target, repoRoot:process.cwd() });
