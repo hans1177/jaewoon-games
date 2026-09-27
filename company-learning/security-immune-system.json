@@ -1,5 +1,5 @@
 {
-  "version": 59,
+  "version": 60,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -466,7 +466,7 @@
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
   },
-  "updatedAt": "2026-09-26",
+  "updatedAt": "2026-09-28",
   "graphicsProductionUnificationSecurity": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -879,5 +879,33 @@
     "retryBudgetExpansion": false,
     "workerAuthorityExpansion": false,
     "sharedContextRevalidationRequiredOnFailurePath": true
+  },
+  "developmentValidationEfficiency": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-28",
+    "objective": "PRESERVE_CRITICAL_SECURITY_GUARDS_WITHOUT_REPEATING_FULL_SECURITY_VALIDATION_ON_UNRELATED_GAMEPLAY_EVOLUTION",
+    "routineMode": "CHANGE_IMPACT_SCOPED",
+    "criticalGuardsRemainMandatory": true,
+    "fullSecurityRescanTriggers": [
+      "REMOTE_OR_NETWORK_AUTHORITY_CHANGE",
+      "SAVE_SCHEMA_OR_SAVE_AUTHORITY_CHANGE",
+      "ECONOMY_REWARD_OR_PURCHASE_AUTHORITY_CHANGE",
+      "PRIVILEGE_PERMISSION_OR_SECRET_HANDLING_CHANGE",
+      "SECURITY_RELEVANT_DEPENDENCY_CHANGE",
+      "OPEN_CRITICAL_OR_HIGH_SECURITY_FINDING"
+    ],
+    "reusableWhenUnchanged": [
+      "REMOTE_VALIDATION_CONTRACT",
+      "SAVE_AUTHORITY_CONTRACT",
+      "ECONOMY_AUTHORITY_CONTRACT",
+      "CLIENT_SERVER_TRUST_BOUNDARY"
+    ],
+    "unrelatedGameplayPresentationOrContentDeltaAction": "REUSE_EXACT_UNCHANGED_SECURITY_EVIDENCE_AND_RUN_ONLY_RELEVANT_INCREMENTAL_CHECKS",
+    "fullRescanEveryF0ToF9Cycle": false,
+    "f9FullSecurityReplayRequired": false,
+    "f9Action": "CONSUME_CURRENT_SECURITY_EVIDENCE_AND_ONLY_BLOCK_ON_OPEN_CRITICAL_OR_HIGH_RELEVANT_FINDING",
+    "securityMayNotBecomeGenericDevelopmentBottleneck": true,
+    "exploitOrAuthorityRegressionStillBlocksAffectedPromotion": true,
+    "noSecurityGateFabrication": true
   }
 }
