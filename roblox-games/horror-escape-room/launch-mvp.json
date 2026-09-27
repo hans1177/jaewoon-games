@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "gameId": "horror-escape-room",
   "gameName": "심야 감염전 [4대4]",
   "releaseStrategy": "FAST_MVP",
@@ -99,5 +99,67 @@
     "runtimeWorldArtPass": "INFECTION_HORROR_V9",
     "runtimeCharacterArtDirection": "REALISTIC_HUMANS_ABERRANT_MONSTERS",
     "rule": "GAME_DESIGN_AND_DESIGN_REVISED_MUST_MATCH_IMPLEMENTED_ROBLOX_CODE"
+  },
+  "studioActualPlayContract": {
+    "version": 1,
+    "required": true,
+    "source": "APPROVED_LAUNCH_AND_DESIGN_RUNTIME_SEMANTICS",
+    "selectionButtonText": "인간 선호",
+    "primaryActionButtonText": "대시",
+    "afterSelectionWaitMs": 2200,
+    "postActionWaitMs": 1300,
+    "requiredScenarios": [
+      "character-camera-ready",
+      "role-selection-interaction",
+      "round-running",
+      "logical-population-eight",
+      "hud-visible",
+      "action-ui-visible",
+      "map-ready",
+      "design-runtime-binding",
+      "interaction-surface-present",
+      "world-geometry-present",
+      "primary-action-input",
+      "primary-action-effect",
+      "visual-capture-sane"
+    ],
+    "expectations": {
+      "acceptedRoundStates": [
+        "RUNNING"
+      ],
+      "acceptedRoles": [
+        "SURVIVOR"
+      ],
+      "logicalPopulation": 8,
+      "minimumHumans": 1,
+      "minimumMonsters": 1,
+      "screenGuiName": "MidnightTagHUD",
+      "requiredGuiObjects": [
+        "MidnightTopHUD",
+        "RoundActions"
+      ],
+      "minimumVisibleButtons": 1,
+      "minimumPromptCount": 4,
+      "minimumArenaParts": 30,
+      "minimumCaptureWidth": 320,
+      "minimumCaptureHeight": 180,
+      "minimumCaptureBytes": 2048,
+      "minimumLightingBrightness": 0.35,
+      "minimumPrimaryActionDisplacement": 0.25,
+      "workspaceAttributeEquals": {
+        "MapReady": true,
+        "CharacterArtDirection": "REALISTIC_HUMANS_ABERRANT_MONSTERS",
+        "DesignCodeSync": "PRIMARY_THREE_FINAL_4V4_INFECTION_V1"
+      },
+      "workspaceAttributePrefixes": {
+        "WorldArtPass": "MIDNIGHT_"
+      }
+    },
+    "failureAction": "REPAIR_REQUIRED",
+    "notes": [
+      "Official Studio MCP input must drive the existing UI/action path; direct gameplay mutation is not evidence.",
+      "Client and server execute_luau calls are read-only observation probes.",
+      "Console runtime errors remain release-blocking and are persisted separately from MCP infrastructure failures."
+    ]
   }
 }

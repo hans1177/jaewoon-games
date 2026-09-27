@@ -1429,7 +1429,8 @@ jobs:
               '--tool-attempts=5',
               '--tool-delay-ms=1000',
               "--setting-state=$env:VIBE2_ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_ENABLED",
-              "--setting-candidate-path-count=$env:VIBE2_ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_CANDIDATE_PATH_COUNT"
+              "--setting-candidate-path-count=$env:VIBE2_ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_CANDIDATE_PATH_COUNT",
+              "--actual-play-contract=main/roblox-games/${{ matrix.gameId }}/launch-mvp.json"
             )
             & node 'main/tools/company-development-roblox-studio-local-play.mjs' @runnerArgs
             if ($LASTEXITCODE -eq 0) {

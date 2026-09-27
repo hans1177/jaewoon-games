@@ -149,3 +149,8 @@ test('post-runtime QA collapses duplicate scans before heavy work without workfl
   assert.match(studioPlan,/concurrency:\n\s+group: roblox-studio-mcp-plan-/);
   assert.match(studioPlan,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
 });
+
+
+test('Studio MCP actual play passes each game launch contract into the official helper',()=>{
+  assert.match(workflow,/--actual-play-contract=main\/roblox-games\/\$\{\{ matrix\.gameId \}\}\/launch-mvp\.json/);
+});

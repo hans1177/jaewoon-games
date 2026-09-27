@@ -11,7 +11,8 @@ import {
   classifyStudioConsoleOutput,
   planLocalStudioCandidates,
   createLocalStudioPlayEvidence,
-  applyLocalStudioPlayResult
+  applyLocalStudioPlayResult,
+  evaluateStudioActualPlayContract
 } from '../tools/company-development-roblox-studio-local-play.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
@@ -1104,4 +1105,72 @@ test('Studio MCP setting diagnostic CLI is part of the helper contract',()=>{
   assert.match(helper,/collectMcpServerEnabledSignals/);
   assert.match(helper,/candidatePathCount/);
   assert.match(helper,/candidatePaths/);
+});
+
+
+test('declared Studio actual-play contract requires core progression UI action effect visual sanity and design binding',()=>{
+  const contract=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8')).studioActualPlayContract;
+  assert.equal(contract.required,true);
+  for(const id of ['role-selection-interaction','round-running','logical-population-eight','hud-visible','action-ui-visible','design-runtime-binding','interaction-surface-present','world-geometry-present','primary-action-input','primary-action-effect','visual-capture-sane'])assert.ok(contract.requiredScenarios.includes(id),id);
+  const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
+  const image={type:'image',mimeType:'image/png',data:png.toString('base64')};
+  const result=evaluateStudioActualPlayContract({
+    contract,
+    initialClientProbe:{player:{roundState:'INTERMISSION'},workspace:{ActivePopulation:0}},
+    preActionClientProbe:{player:{roundState:'RUNNING',role:'SURVIVOR',rootX:0,rootY:3,rootZ:0}},
+    clientProbe:{
+      player:{characterPresent:true,humanoidPresent:true,rootPresent:true,roundState:'RUNNING',role:'SURVIVOR',rootX:2,rootY:3,rootZ:0,velocityX:12,velocityY:0,velocityZ:0,humanCount:4,monsterCount:4},
+      camera:{present:true},
+      ui:{screenGuiPresent:true,visibleButtons:2,required:{MidnightTopHUD:{present:true,visible:true,offscreen:false},RoundActions:{present:true,visible:true,offscreen:false}}},
+      world:{arenaPresent:true,arenaPartCount:80,proximityPromptCount:5},
+      workspace:{MapReady:true,ActivePopulation:8,HumanCount:4,MonsterCount:4,WorldArtPass:'MIDNIGHT_SCHOOL_INFECTION_HORROR_V9',CharacterArtDirection:'REALISTIC_HUMANS_ABERRANT_MONSTERS',DesignCodeSync:'PRIMARY_THREE_FINAL_4V4_INFECTION_V1'},
+      lighting:{brightness:1.8}
+    },
+    serverProbe:{workspace:{MapReady:true,ActivePopulation:8,HumanCount:4,MonsterCount:4}},
+    actions:[{id:'ui-role-selection',type:'mcp-mouse-input',dispatched:true,ok:true},{id:'ui-primary-action',type:'mcp-mouse-input',dispatched:true,ok:true}],
+    beforeImages:[image],afterImages:[image]
+  });
+  assert.deepEqual(result.qualityFailureKinds,[]);
+  assert.equal(result.scenarios.every(row=>row.pass===true),true);
+  assert.equal(result.authoritativeStateChangeObserved,true);
+  assert.ok(result.metrics.primaryActionDisplacement>=2);
+});
+
+test('movement alone cannot pass a declared Studio actual-play scenario contract',()=>{
+  const contract=JSON.parse(fs.readFileSync('roblox-games/horror-escape-room/launch-mvp.json','utf8')).studioActualPlayContract;
+  const result=evaluateStudioActualPlayContract({
+    contract,
+    initialClientProbe:{player:{roundState:'INTERMISSION'},workspace:{ActivePopulation:0}},
+    preActionClientProbe:{player:{roundState:'INTERMISSION',rootX:0,rootY:3,rootZ:0}},
+    clientProbe:{
+      player:{characterPresent:true,humanoidPresent:true,rootPresent:true,roundState:'INTERMISSION',role:'WAITING',rootX:4,rootY:3,rootZ:0},
+      camera:{present:true},
+      ui:{screenGuiPresent:true,visibleButtons:2,required:{MidnightTopHUD:{present:true,visible:true,offscreen:false},RoundActions:{present:false,visible:false,offscreen:false}}},
+      world:{arenaPresent:true,arenaPartCount:80,proximityPromptCount:5},
+      workspace:{MapReady:true,ActivePopulation:0,HumanCount:0,MonsterCount:0,WorldArtPass:'MIDNIGHT_SCHOOL_INFECTION_HORROR_V9',CharacterArtDirection:'REALISTIC_HUMANS_ABERRANT_MONSTERS',DesignCodeSync:'PRIMARY_THREE_FINAL_4V4_INFECTION_V1'},
+      lighting:{brightness:1.8}
+    },
+    serverProbe:{workspace:{MapReady:true,ActivePopulation:0,HumanCount:0,MonsterCount:0}},
+    actions:[{id:'keyboard-w',type:'mcp-keyboard-input',dispatched:true,ok:true}],
+    beforeImages:[],afterImages:[]
+  });
+  assert.ok(result.qualityFailureKinds.includes('role-selection-interaction'));
+  assert.ok(result.qualityFailureKinds.includes('round-running'));
+  assert.ok(result.qualityFailureKinds.includes('logical-population-eight'));
+  assert.ok(result.qualityFailureKinds.includes('primary-action-input'));
+  assert.ok(result.qualityFailureKinds.includes('visual-capture-sane'));
+});
+
+test('declared scenario failure persists as repair-required not MCP infrastructure failure',()=>{
+  const candidate=item();
+  const broken=runtime();
+  broken.runtimeVerified=false;
+  broken.scenarioContractRequired=true;
+  broken.scenarioCoverage=[{id:'round-running',pass:false}];
+  broken.qualityFailureKinds=['round-running'];
+  broken.errors=[{type:'actual-play-quality-error',actionId:'round-running',signature:'ROBLOX_ACTUAL_PLAY_SCENARIO_FAILED:round-running'}];
+  const applied=applyLocalStudioPlayResult({queue:{items:[candidate]},gameId:'g1',runtime:broken,expected,workflowRunId:42,studioStepSucceeded:true,testedAt:'2026-09-27T02:00:00.000Z'});
+  assert.equal(applied.result.evidence.infrastructureFailure,false);
+  assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
+  assert.equal(applied.item.robloxFailureSignature,'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED');
 });

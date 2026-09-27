@@ -587,6 +587,204 @@ function keyboardArgs(schema,studioId,key){
   return fillRequired(args,schema);
 }
 
+
+function datamodelEnumValue(def={},desired='Client'){
+  const wanted=clean(desired).toLowerCase();
+  const values=Array.isArray(def.enum)?def.enum:[];
+  const exact=values.find(v=>clean(v).toLowerCase()===wanted);
+  if(exact!==undefined)return exact;
+  const partial=values.find(v=>clean(v).toLowerCase().includes(wanted));
+  return partial!==undefined?partial:desired;
+}
+function executeLuauArgs(schema,studioId,code,datamodelType='Client'){
+  const args={};setStudioId(args,schema,studioId);
+  const props=schemaProps(schema);
+  const codeKey=Object.keys(props).find(k=>/^(code|source|script|luau)$/i.test(k))||Object.keys(props).find(k=>/code|source|script|luau/i.test(k))||'code';
+  args[codeKey]=code;
+  const contextKey=Object.keys(props).find(k=>/data.?model|datamodel|execution.?context|run.?context/i.test(k));
+  if(contextKey){
+    const def=props[contextKey]||{};
+    args[contextKey]=Array.isArray(def.enum)?datamodelEnumValue(def,datamodelType):datamodelType;
+  }
+  return fillRequired(args,schema);
+}
+function mouseClickItem(schema,x,y){
+  const props=schemaProps(schema),item={};
+  for(const [name,def] of Object.entries(props)){
+    if(/^(x|screen.?x|position.?x)$/i.test(name)){item[name]=Math.round(Number(x)||0);continue;}
+    if(/^(y|screen.?y|position.?y)$/i.test(name)){item[name]=Math.round(Number(y)||0);continue;}
+    if(/position|coordinates|screen.?point/i.test(name)&&def.type==='object'){item[name]={x:Math.round(Number(x)||0),y:Math.round(Number(y)||0)};continue;}
+    if(/action|type|event|operation/i.test(name)){if(Array.isArray(def.enum))item[name]=enumValue(def,['click','mouse_click','press','tap']);else if(def.type==='string')item[name]='click';continue;}
+    if(/button/i.test(name)){if(Array.isArray(def.enum))item[name]=enumValue(def,['left','primary','mousebutton1']);else if(def.type==='string')item[name]='left';continue;}
+  }
+  return fillRequired(item,schema);
+}
+function mouseClickArgs(schema,studioId,x,y){
+  const args={};setStudioId(args,schema,studioId);
+  const props=schemaProps(schema);
+  const actionsKey=Object.keys(props).find(k=>/actions|events|inputs/i.test(k)&&props[k]?.type==='array');
+  if(actionsKey)args[actionsKey]=[mouseClickItem(props[actionsKey]?.items||{},x,y)];
+  else{const built=mouseClickItem(schema,x,y);for(const [k,v] of Object.entries(built))if(!/studio.*id/i.test(k))args[k]=v;}
+  return fillRequired(args,schema);
+}
+function pngDimensions(buffer){
+  if(!Buffer.isBuffer(buffer)||buffer.length<24)return null;
+  if(buffer.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')return null;
+  return{width:buffer.readUInt32BE(16),height:buffer.readUInt32BE(20)};
+}
+function captureSanity(images=[],minimumWidth=320,minimumHeight=180,minimumBytes=2048){
+  const rows=(images||[]).map(image=>{
+    const bytes=Buffer.from(String(image?.data||''),'base64');
+    const dims=pngDimensions(bytes);
+    const width=Number(dims?.width||0),height=Number(dims?.height||0);
+    return{bytes:bytes.length,width,height,pass:bytes.length>=minimumBytes&&(!dims||(width>=minimumWidth&&height>=minimumHeight))};
+  });
+  return{pass:rows.length>0&&rows.every(row=>row.pass),frames:rows};
+}
+function studioActualPlayProbeSource(contract={},context='Client'){
+  const exp=contract?.expectations||{};
+  const guiNames=[...new Set([clean(exp.screenGuiName),...(Array.isArray(exp.requiredGuiObjects)?exp.requiredGuiObjects.map(clean):[])].filter(Boolean))];
+  const buttonTexts=[...new Set([clean(contract?.selectionButtonText),clean(contract?.primaryActionButtonText)].filter(Boolean))];
+  const luaStrings=values=>'{'+values.map(v=>JSON.stringify(v)).join(',')+'}';
+  const lines=[
+    'local HttpService=game:GetService("HttpService")',
+    'local Players=game:GetService("Players")',
+    'local Lighting=game:GetService("Lighting")',
+    'local Workspace=game:GetService("Workspace")',
+    'local requiredGuiNames='+luaStrings(guiNames),
+    'local requiredButtonTexts='+luaStrings(buttonTexts),
+    'local p=Players.LocalPlayer or Players:GetPlayers()[1]',
+    'local camera=Workspace.CurrentCamera',
+    'local viewport=camera and camera.ViewportSize or Vector2.new(0,0)',
+    'local function visible(inst)',
+    ' if not inst then return false end',
+    ' local cur=inst',
+    ' while cur do',
+    '  if cur:IsA("GuiObject") and cur.Visible==false then return false end',
+    '  if cur:IsA("LayerCollector") and cur.Enabled==false then return false end',
+    '  cur=cur.Parent',
+    ' end',
+    ' return true',
+    'end',
+    'local function guiInfo(inst)',
+    ' if not inst or not inst:IsA("GuiObject") then return {present=inst~=nil,visible=false,offscreen=false} end',
+    ' local pos=inst.AbsolutePosition',
+    ' local size=inst.AbsoluteSize',
+    ' local off=viewport.X>0 and viewport.Y>0 and (pos.X+size.X<0 or pos.Y+size.Y<0 or pos.X>viewport.X or pos.Y>viewport.Y) or false',
+    ' return {present=true,visible=visible(inst),offscreen=off,x=pos.X,y=pos.Y,width=size.X,height=size.Y}',
+    'end',
+    'local gui={screenGuiPresent=false,visibleButtons=0,required={},buttons={}}',
+    'local pg=p and p:FindFirstChildOfClass("PlayerGui")',
+    'if pg then',
+    ' for _,d in ipairs(pg:GetDescendants()) do',
+    '  if d:IsA("TextButton") and visible(d) then',
+    '   gui.visibleButtons+=1',
+    '   for _,target in ipairs(requiredButtonTexts) do',
+    '    if tostring(d.Text)==target then',
+    '     local row=guiInfo(d);row.text=tostring(d.Text);row.name=d.Name;row.centerX=row.x+row.width/2;row.centerY=row.y+row.height/2;gui.buttons[target]=row',
+    '    end',
+    '   end',
+    '  end',
+    ' end',
+    ' for _,name in ipairs(requiredGuiNames) do',
+    '  local found=pg:FindFirstChild(name,true)',
+    '  if found and found:IsA("ScreenGui") then gui.required[name]={present=true,visible=found.Enabled==true,offscreen=false} else gui.required[name]=guiInfo(found) end',
+    ' end',
+    'end',
+    'local screenGuiName='+JSON.stringify(clean(exp.screenGuiName)),
+    'if pg and screenGuiName~="" then local sg=pg:FindFirstChild(screenGuiName,true);gui.screenGuiPresent=sg~=nil and (not sg:IsA("ScreenGui") or sg.Enabled==true) end',
+    'local prompts=0',
+    'local parts=0',
+    'local arena=Workspace:FindFirstChild("MidnightArena")',
+    'if arena then for _,d in ipairs(arena:GetDescendants()) do if d:IsA("ProximityPrompt") then prompts+=1 end;if d:IsA("BasePart") then parts+=1 end end end',
+    'local root=nil',
+    'local hum=nil',
+    'if p and p.Character then root=p.Character:FindFirstChild("HumanoidRootPart");hum=p.Character:FindFirstChildOfClass("Humanoid") end',
+    'local function attr(inst,name) if not inst then return nil end;local ok,value=pcall(function() return inst:GetAttribute(name) end);if ok then return value end;return nil end',
+    'local payload={',
+    ' context='+JSON.stringify(context)+',',
+    ' player={present=p~=nil,characterPresent=p~=nil and p.Character~=nil,humanoidPresent=hum~=nil,rootPresent=root~=nil,rootX=root and root.Position.X or nil,rootY=root and root.Position.Y or nil,rootZ=root and root.Position.Z or nil,velocityX=root and root.AssemblyLinearVelocity.X or nil,velocityY=root and root.AssemblyLinearVelocity.Y or nil,velocityZ=root and root.AssemblyLinearVelocity.Z or nil,health=hum and hum.Health or nil,roundState=attr(p,"RoundState"),role=attr(p,"Role"),currentMap=attr(p,"CurrentMap"),currentMapEvent=attr(p,"CurrentMapEvent"),humanCount=attr(p,"HumanCount"),monsterCount=attr(p,"MonsterCount"),objectivesDone=attr(p,"ObjectivesDone"),objectivesTotal=attr(p,"ObjectivesTotal")},',
+    ' camera={present=camera~=nil,viewportX=viewport.X,viewportY=viewport.Y,fieldOfView=camera and camera.FieldOfView or nil},',
+    ' ui=gui,',
+    ' world={arenaPresent=arena~=nil,arenaPartCount=parts,proximityPromptCount=prompts},',
+    ' workspace={MapReady=attr(Workspace,"MapReady"),ActivePopulation=attr(Workspace,"ActivePopulation"),AIBotCount=attr(Workspace,"AIBotCount"),HumanCount=attr(Workspace,"HumanCount"),MonsterCount=attr(Workspace,"MonsterCount"),CurrentMapId=attr(Workspace,"CurrentMapId"),CurrentMapName=attr(Workspace,"CurrentMapName"),CurrentMapEvent=attr(Workspace,"CurrentMapEvent"),WorldArtPass=attr(Workspace,"WorldArtPass"),CharacterArtDirection=attr(Workspace,"CharacterArtDirection"),DesignCodeSync=attr(Workspace,"DesignCodeSync")},',
+    ' lighting={brightness=Lighting.Brightness,clockTime=Lighting.ClockTime,ambientR=Lighting.Ambient.R,ambientG=Lighting.Ambient.G,ambientB=Lighting.Ambient.B}',
+    '}',
+    'return "ROBLOX_STUDIO_ACTUAL_PLAY_PROBE="..HttpService:JSONEncode(payload)'
+  ];
+  return lines.join('\n');
+}
+function parseStudioActualPlayProbe(result){
+  const marker='ROBLOX_STUDIO_ACTUAL_PLAY_PROBE=';
+  for(const text of flattenText(result,[])){
+    for(const line of String(text||'').split(/\r?\n/)){
+      const at=line.indexOf(marker);if(at<0)continue;
+      let candidate=clean(line.slice(at+marker.length));
+      const first=candidate.indexOf('{'),last=candidate.lastIndexOf('}');
+      if(first>=0&&last>=first)candidate=candidate.slice(first,last+1);
+      try{return JSON.parse(candidate);}catch{}
+    }
+  }
+  return null;
+}
+async function collectStudioActualPlayProbe(client,studioId,contract,context){
+  const tool=client.tool('execute_luau');
+  const result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},studioId,studioActualPlayProbeSource(contract,context),context));
+  return parseStudioActualPlayProbe(result);
+}
+function pointDistance(a={},b={}){
+  const values=[a?.rootX,a?.rootY,a?.rootZ,b?.rootX,b?.rootY,b?.rootZ].map(Number);
+  if(!values.every(Number.isFinite))return 0;
+  return Math.hypot(values[3]-values[0],values[4]-values[1],values[5]-values[2]);
+}
+export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[]}={}){
+  if(contract?.required!==true)return{required:false,scenarios:[],qualityFailureKinds:[],authoritativeStateChangeObserved:false,capture:{before:{pass:true,frames:[]},after:{pass:true,frames:[]}},metrics:{}};
+  const exp=contract?.expectations||{};
+  const requiredIds=new Set(Array.isArray(contract?.requiredScenarios)?contract.requiredScenarios.map(clean).filter(Boolean):[]);
+  const client=clientProbe||{},server=serverProbe||{},player=client?.player||{},ui=client?.ui||{};
+  const ws={...(client?.workspace||{}),...(server?.workspace||{})};
+  const world={...(client?.world||{}),...(server?.world||{})};
+  const before=captureSanity(beforeImages,Number(exp.minimumCaptureWidth||320),Number(exp.minimumCaptureHeight||180),Number(exp.minimumCaptureBytes||2048));
+  const after=captureSanity(afterImages,Number(exp.minimumCaptureWidth||320),Number(exp.minimumCaptureHeight||180),Number(exp.minimumCaptureBytes||2048));
+  const acceptedRoundStates=Array.isArray(exp.acceptedRoundStates)?exp.acceptedRoundStates.map(clean):[];
+  const acceptedRoles=Array.isArray(exp.acceptedRoles)?exp.acceptedRoles.map(clean):[];
+  const logicalPopulation=Number(exp.logicalPopulation||0);
+  const humanCount=Number(ws.HumanCount??player.humanCount??0);
+  const monsterCount=Number(ws.MonsterCount??player.monsterCount??0);
+  const requiredGui=Array.isArray(exp.requiredGuiObjects)?exp.requiredGuiObjects.map(clean).filter(Boolean):[];
+  const guiRows=requiredGui.map(name=>ui?.required?.[name]||{});
+  const equals=exp.workspaceAttributeEquals&&typeof exp.workspaceAttributeEquals==='object'?exp.workspaceAttributeEquals:{};
+  const prefixes=exp.workspaceAttributePrefixes&&typeof exp.workspaceAttributePrefixes==='object'?exp.workspaceAttributePrefixes:{};
+  const designEquals=Object.entries(equals).every(([key,value])=>ws[key]===value);
+  const designPrefixes=Object.entries(prefixes).every(([key,value])=>clean(ws[key]).startsWith(clean(value)));
+  const actionOk=id=>(actions||[]).some(row=>row?.id===id&&row?.dispatched===true&&row?.ok===true);
+  const displacement=pointDistance(preActionClientProbe?.player||{},player);
+  const velocity=Math.hypot(Number(player.velocityX||0),Number(player.velocityY||0),Number(player.velocityZ||0));
+  const lightingBrightness=Number(client?.lighting?.brightness??server?.lighting?.brightness??0);
+  const rows=[
+    {id:'character-camera-ready',pass:player.characterPresent===true&&player.humanoidPresent===true&&player.rootPresent===true&&client?.camera?.present===true},
+    {id:'role-selection-interaction',pass:!clean(contract.selectionButtonText)||(actionOk('ui-role-selection')&&acceptedRoles.includes(clean(player.role)))},
+    {id:'round-running',pass:acceptedRoundStates.length===0||acceptedRoundStates.includes(clean(player.roundState))},
+    {id:'logical-population-eight',pass:logicalPopulation<=0||(humanCount+monsterCount===logicalPopulation&&humanCount>=Number(exp.minimumHumans||0)&&monsterCount>=Number(exp.minimumMonsters||0))},
+    {id:'hud-visible',pass:!clean(exp.screenGuiName)||ui.screenGuiPresent===true},
+    {id:'action-ui-visible',pass:Number(ui.visibleButtons||0)>=Number(exp.minimumVisibleButtons||0)&&guiRows.every(row=>row.present===true&&row.visible===true&&!row.offscreen)},
+    {id:'map-ready',pass:ws.MapReady===true},
+    {id:'design-runtime-binding',pass:designEquals&&designPrefixes},
+    {id:'interaction-surface-present',pass:Number(world.proximityPromptCount||0)>=Number(exp.minimumPromptCount||0)},
+    {id:'world-geometry-present',pass:world.arenaPresent===true&&Number(world.arenaPartCount||0)>=Number(exp.minimumArenaParts||0)},
+    {id:'primary-action-input',pass:!clean(contract.primaryActionButtonText)||actionOk('ui-primary-action')},
+    {id:'primary-action-effect',pass:!clean(contract.primaryActionButtonText)||displacement>=Number(exp.minimumPrimaryActionDisplacement||0.25)||velocity>=1},
+    {id:'visual-capture-sane',pass:before.pass&&after.pass&&lightingBrightness>=Number(exp.minimumLightingBrightness||0)}
+  ];
+  const scenarios=rows.filter(row=>requiredIds.size===0||requiredIds.has(row.id)).map(row=>({...row,required:true}));
+  const qualityFailureKinds=scenarios.filter(row=>row.pass!==true).map(row=>row.id);
+  const initialState=clean(initialClientProbe?.player?.roundState);
+  const finalState=clean(player.roundState);
+  const initialPop=Number(initialClientProbe?.workspace?.ActivePopulation||0);
+  const finalPop=Number(ws.ActivePopulation||humanCount+monsterCount||0);
+  return{required:true,scenarios,qualityFailureKinds,authoritativeStateChangeObserved:Boolean((initialState&&finalState&&initialState!==finalState)||finalPop>initialPop),capture:{before,after},metrics:{primaryActionDisplacement:displacement,primaryActionVelocity:velocity}};
+}
+
 class McpStdioClient{
   constructor({command,args=[],env=process.env,timeoutMs=30000}={}){
     this.command=command;this.args=args;this.env=env;this.timeoutMs=timeoutMs;
@@ -725,16 +923,19 @@ function mcpCommandArgs(command=''){
 
 export async function runOfficialStudioMcpPlay({
   mcpCommand='',output='',expectedStudioName='',timeoutMs=45000,toolAttempts=5,toolDelayMs=1000,
-  settingState='',settingCandidatePathCount=-1
+  settingState='',settingCandidatePathCount=-1,actualPlayContractPath=''
 }={}){
+  const actualPlayContract=actualPlayContractPath&&fs.existsSync(actualPlayContractPath)?(readJson(actualPlayContractPath)?.studioActualPlayContract||{}):{};
   const launch=mcpCommandArgs(mcpCommand);
   const client=new McpStdioClient({...launch,timeoutMs});
   const actions=[],checkpoints=[],errors=[];
   const checkpoint=(id,pass)=>checkpoints.push({id,name:id,required:true,pass:pass===true});
   let studioId='',beforeImages=[],afterImages=[],consoleResult=null,characterMotionRuntime=null,started=false;
+  let initialClientProbe=null,preActionClientProbe=null,finalClientProbe=null,finalServerProbe=null,scenarioCoverage=[];
+  let authoritativeStateChangeObserved=false,qualityFailureKinds=[],captureQuality=null,scenarioMetrics={};
   try{
     await client.connect();
-    const requiredTools=['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input','user_mouse_input','character_navigation'];
+    const requiredTools=['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input','user_mouse_input','character_navigation','execute_luau'];
     await client.waitForTools(requiredTools,{
       attempts:Math.max(1,Number(toolAttempts)||5),
       delayMs:Math.max(100,Number(toolDelayMs)||1000)
@@ -785,13 +986,44 @@ export async function runOfficialStudioMcpPlay({
     beforeImages=collectImages(before,[]);
     checkpoint('viewport-before-captured',beforeImages.length>0);
 
+    if(actualPlayContract?.required===true){
+      initialClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+      checkpoint('actual-play-initial-client-probe',initialClientProbe!=null);
+      if(clean(actualPlayContract.selectionButtonText)){
+        const target=initialClientProbe?.ui?.buttons?.[clean(actualPlayContract.selectionButtonText)]||null;
+        let ok=false;
+        if(target?.visible===true&&Number.isFinite(Number(target.centerX))&&Number.isFinite(Number(target.centerY))){
+          try{const mouseTool=client.tool('user_mouse_input');const result=await client.call('user_mouse_input',mouseClickArgs(mouseTool.inputSchema||{},studioId,target.centerX,target.centerY));ok=result?.isError!==true;}catch{}
+        }
+        actions.push({id:'ui-role-selection',type:'mcp-mouse-input',dispatched:target!=null,ok});
+        checkpoint('role-selection-input-dispatched',ok);
+        await wait(Math.max(250,Number(actualPlayContract.afterSelectionWaitMs||1800)));
+      }
+    }
+
     const keyboardTool=client.tool('user_keyboard_input');
     for(const key of ['W','A','D','Space']){
       const result=await client.call('user_keyboard_input',keyboardArgs(keyboardTool.inputSchema||{},studioId,key));
       actions.push({id:'keyboard-'+key.toLowerCase(),type:'mcp-keyboard-input',dispatched:true,ok:result?.isError!==true});
       await wait(key==='Space'?500:900);
     }
-    checkpoint('mcp-input-dispatched',actions.length===4&&actions.every(x=>x.ok));
+    const keyboardActions=actions.filter(x=>x.type==='mcp-keyboard-input');
+    checkpoint('mcp-input-dispatched',keyboardActions.length===4&&keyboardActions.every(x=>x.ok));
+
+    if(actualPlayContract?.required===true){
+      preActionClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+      checkpoint('actual-play-pre-action-client-probe',preActionClientProbe!=null);
+      if(clean(actualPlayContract.primaryActionButtonText)){
+        const target=preActionClientProbe?.ui?.buttons?.[clean(actualPlayContract.primaryActionButtonText)]||null;
+        let ok=false;
+        if(target?.visible===true&&Number.isFinite(Number(target.centerX))&&Number.isFinite(Number(target.centerY))){
+          try{const mouseTool=client.tool('user_mouse_input');const result=await client.call('user_mouse_input',mouseClickArgs(mouseTool.inputSchema||{},studioId,target.centerX,target.centerY));ok=result?.isError!==true;}catch{}
+        }
+        actions.push({id:'ui-primary-action',type:'mcp-mouse-input',dispatched:target!=null,ok});
+        checkpoint('primary-action-input-dispatched',ok);
+        await wait(Math.max(250,Number(actualPlayContract.postActionWaitMs||1200)));
+      }
+    }
 
     const after=await client.call('screen_capture',captureArgs);
     afterImages=collectImages(after,[]);
@@ -799,6 +1031,23 @@ export async function runOfficialStudioMcpPlay({
     const afterHashes=afterImages.map(x=>hash(Buffer.from(x.data,'base64')));
     const changed=beforeHashes.length>0&&afterHashes.length>0&&beforeHashes.join(',')!==afterHashes.join(',');
     checkpoint('viewport-changed-after-input',changed);
+
+    if(actualPlayContract?.required===true){
+      finalClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+      finalServerProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Server');
+      checkpoint('actual-play-final-client-probe',finalClientProbe!=null);
+      checkpoint('actual-play-final-server-probe',finalServerProbe!=null);
+      const evaluated=evaluateStudioActualPlayContract({contract:actualPlayContract,initialClientProbe,preActionClientProbe,clientProbe:finalClientProbe,serverProbe:finalServerProbe,actions,beforeImages,afterImages});
+      scenarioCoverage=evaluated.scenarios;
+      authoritativeStateChangeObserved=evaluated.authoritativeStateChangeObserved===true;
+      qualityFailureKinds=evaluated.qualityFailureKinds;
+      captureQuality=evaluated.capture;
+      scenarioMetrics=evaluated.metrics||{};
+      for(const row of scenarioCoverage){
+        checkpoint('scenario-'+row.id,row.pass===true);
+        if(row.pass!==true)errors.push({type:'actual-play-quality-error',actionId:row.id,signature:'ROBLOX_ACTUAL_PLAY_SCENARIO_FAILED:'+row.id});
+      }
+    }
 
     const consoleTool=client.tool('get_console_output');
     const consoleArgs=fillRequired((()=>{const a={};setStudioId(a,consoleTool.inputSchema||{},studioId);return a;})(),consoleTool.inputSchema||{});
@@ -866,8 +1115,14 @@ export async function runOfficialStudioMcpPlay({
         mcpInput:true,
         screenCapture:beforeImages.length>0&&afterImages.length>0,
         consoleCapture:consoleResult!=null,
-        characterMotionRuntime:characterMotionRuntime?.required===true
+        characterMotionRuntime:characterMotionRuntime?.required===true,
+        executeLuauRuntimeProbe:actualPlayContract?.required===true
       },
+      scenarioContractRequired:actualPlayContract?.required===true,
+      scenarioCoverage,
+      authoritativeStateChangeObserved,
+      qualityFailureKinds,
+      runtimeProbes:actualPlayContract?.required===true?{initialClient:initialClientProbe,preActionClient:preActionClientProbe,finalClient:finalClientProbe,finalServer:finalServerProbe}:null,
       mcp:{
         protocolVersion:client.protocolVersion,
         serverName:clean(client.serverInfo?.name),
@@ -885,7 +1140,12 @@ export async function runOfficialStudioMcpPlay({
         consoleWarningCount:consoleClassification.warningCount,
         consoleStructuredEntryCount:consoleClassification.structuredEntryCount,
         characterMotionRuntimeRequired:characterMotionRuntime?.required===true,
-        characterMotionRuntimePassed:characterMotionRuntime?.pass===true
+        characterMotionRuntimePassed:characterMotionRuntime?.pass===true,
+        scenarioContractRequired:actualPlayContract?.required===true,
+        scenarioFailureCount:qualityFailureKinds.length,
+        primaryActionDisplacement:Number(scenarioMetrics.primaryActionDisplacement||0),
+        primaryActionVelocity:Number(scenarioMetrics.primaryActionVelocity||0),
+        captureQuality
       },
       characterMotionRuntime,
       rawSourceIncluded:false,
@@ -915,7 +1175,8 @@ export async function runOfficialStudioMcpPlay({
       version:1,
       authority:'roblox-official-studio-mcp-runtime',
       runtimeVerified:false,
-      capabilities:{officialStudioMcp:false,playMode:false,mcpInput:false,screenCapture:false,consoleCapture:false,characterMotionRuntime:false},
+      capabilities:{officialStudioMcp:false,playMode:false,mcpInput:false,screenCapture:false,consoleCapture:false,characterMotionRuntime:false,executeLuauRuntimeProbe:false},
+      scenarioContractRequired:actualPlayContract?.required===true,scenarioCoverage,authoritativeStateChangeObserved,qualityFailureKinds,
       actions,checkpoints,errors,
       metrics:{beforeFrameCount:beforeImages.length,afterFrameCount:afterImages.length,distinctFrameChange:false,consoleErrorCount:errors.length},
       rawSourceIncluded:false,rawGameplayValuesIncluded:false,rawViewportIncluded:false
@@ -1014,6 +1275,7 @@ export function createLocalStudioPlayEvidence({
     &&screenChanged
     &&requiredPass
     &&characterMotionPass
+    &&scenarioContractPass
     &&errors.length===0
   );
   const infrastructureFailure=errors.some(row=>/infrastructure|mcp.*missing|no_studio/i.test(row.type+' '+(row.signature||'')));
@@ -1045,11 +1307,11 @@ export function createLocalStudioPlayEvidence({
     :/replic|sync|multiplayer|join|rejoin|late.?join/i.test(nativeFailureText)?'ROBLOX_MULTIPLAYER_SYNC'
     :/server|client|authority/i.test(nativeFailureText)?'ROBLOX_SERVER_CLIENT_BOUNDARY'
     :'ROBLOX_STUDIO_RUNTIME';
-  const scenarioCoverage=(Array.isArray(runtime?.scenarioCoverage)?runtime.scenarioCoverage:[]).map(row=>({
-    id:clean(row?.id||row?.name),
-    pass:row?.pass===true
-  })).filter(row=>row.id);
+  const scenarioCoverage=(Array.isArray(runtime?.scenarioCoverage)?runtime.scenarioCoverage:[]).map(row=>({id:clean(row?.id||row?.name),pass:row?.pass===true})).filter(row=>row.id);
+  const scenarioContractRequired=runtime?.scenarioContractRequired===true;
   const scenarioCoveragePass=scenarioCoverage.length>0&&scenarioCoverage.every(row=>row.pass===true);
+  const scenarioContractPass=!scenarioContractRequired||scenarioCoveragePass;
+  const qualityFailureKinds=(Array.isArray(runtime?.qualityFailureKinds)?runtime.qualityFailureKinds:[]).map(clean).filter(Boolean).slice(0,24);
   const functionalChainEvidence={
     inputDispatched:dispatched,
     runtimeVerified:runtime?.runtimeVerified===true,
@@ -1106,9 +1368,14 @@ export function createLocalStudioPlayEvidence({
       errors,
       runtimeSummary:{
         consoleErrorCount:Number(runtime?.metrics?.consoleErrorCount||0),
+        consoleWarningCount:Number(runtime?.metrics?.consoleWarningCount||0),
         distinctFrameChange:screenChanged,
         characterMotionRuntimeRequired:characterMotionRequired,
-        characterMotionRuntimePassed:characterMotionPass
+        characterMotionRuntimePassed:characterMotionPass,
+        scenarioContractRequired,
+        scenarioFailureCount:qualityFailureKinds.length,
+        primaryActionDisplacement:Number(runtime?.metrics?.primaryActionDisplacement||0),
+        primaryActionVelocity:Number(runtime?.metrics?.primaryActionVelocity||0)
       },
       characterMotionRuntime:characterMotionRuntime?{
         required:characterMotionRequired,
@@ -1123,8 +1390,10 @@ export function createLocalStudioPlayEvidence({
       rawSourceIncluded:false,
       rawGameplayValuesIncluded:false,
       rawViewportIncluded:false,
+      scenarioContractRequired,
       scenarioCoverage,
       scenarioCoveragePass,
+      qualityFailureKinds,
       functionalChainEvidence,
       testedAt,
       workflowRunId:Number(workflowRunId||0),
@@ -1172,7 +1441,7 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
   }else{
     item.canonicalState='REPAIR_REQUIRED';
     item.robloxFailureStage='VIBE_INTERNAL_PLAY';
-    item.robloxFailureSignature=result.evidence.errors.length?'ROBLOX_STUDIO_MCP_RUNTIME_ERROR':'ROBLOX_STUDIO_MCP_PLAY_CHECKPOINT_FAILED';
+    item.robloxFailureSignature=result.evidence.qualityFailureKinds?.length?'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED':result.evidence.errors.length?'ROBLOX_STUDIO_MCP_RUNTIME_ERROR':'ROBLOX_STUDIO_MCP_PLAY_CHECKPOINT_FAILED';
     item.robloxNativeFailureClass=result.evidence.robloxFailureClass||null;
     item.routingBlockers=['roblox-studio-mcp-play-repair-required'];
   }
@@ -1227,7 +1496,8 @@ async function main(){
       toolAttempts:Number(a['tool-attempts']||5),
       toolDelayMs:Number(a['tool-delay-ms']||1000),
       settingState:clean(a['setting-state']),
-      settingCandidatePathCount:Number(a['setting-candidate-path-count']??-1)
+      settingCandidatePathCount:Number(a['setting-candidate-path-count']??-1),
+      actualPlayContractPath:clean(a['actual-play-contract'])
     });
     const checkpointSummary=(Array.isArray(result?.checkpoints)?result.checkpoints:[])
       .map(row=>clean(row?.id)+':'+(row?.pass===true?'PASS':'FAIL'))
@@ -1247,6 +1517,9 @@ async function main(){
     console.log('ROBLOX_STUDIO_MCP_VIEWPORT_AFTER_FRAMES='+Number(result?.metrics?.afterFrameCount||0));
     console.log('ROBLOX_STUDIO_MCP_VIEWPORT_CHANGED='+(result?.metrics?.distinctFrameChange===true?'YES':'NO'));
     console.log('ROBLOX_STUDIO_MCP_CONSOLE_ERROR_COUNT='+Number(result?.metrics?.consoleErrorCount||0));
+    console.log('ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT='+(result?.scenarioContractRequired===true?'REQUIRED':'NOT_DECLARED'));
+    console.log('ROBLOX_STUDIO_MCP_SCENARIOS='+(Array.isArray(result?.scenarioCoverage)?result.scenarioCoverage.map(row=>clean(row?.id)+':'+(row?.pass===true?'PASS':'FAIL')).join(','):'NONE'));
+    console.log('ROBLOX_STUDIO_MCP_QUALITY_FAILURES='+(Array.isArray(result?.qualityFailureKinds)&&result.qualityFailureKinds.length?result.qualityFailureKinds.join(','):'NONE'));
     console.log('ROBLOX_CHARACTER_MOTION_RUNTIME_REQUIRED='+(result?.characterMotionRuntime?.required===true?'YES':'NO'));
     console.log('ROBLOX_CHARACTER_MOTION_RUNTIME_RESULT='+(result?.characterMotionRuntime?.required===true?(result?.characterMotionRuntime?.pass===true?'PASS':'FAIL'):'NOT_APPLICABLE'));
     const runtimeErrorCount=Number(Array.isArray(result?.errors)?result.errors.length:0);

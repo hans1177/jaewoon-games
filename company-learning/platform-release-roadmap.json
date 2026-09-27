@@ -1,8 +1,8 @@
 {
-  "version": 455,
+  "version": 456,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-26",
+  "recordedAt": "2026-09-27",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -1390,7 +1390,8 @@
         "screen_capture",
         "user_keyboard_input",
         "user_mouse_input",
-        "character_navigation"
+        "character_navigation",
+        "execute_luau"
       ],
       "externalGuiAutomationForbidden": true,
       "undocumentedStudioCliAutomationForbidden": true,
@@ -1461,7 +1462,34 @@
         "completedSessionExitContract": "MCP_RUN_EXITS_SUCCESS_AFTER_REQUIRED_TOOLS_AND_STUDIO_SESSION_COMPLETE_EVEN_WHEN_RUNTIME_QA_FAILS"
       },
       "runtimeFoundationPassedArtifactAllowedForLocalActualPlay": true,
-      "earliestBehaviorFeedbackCheckpoint": "AFTER_RUNTIME_FOUNDATION_PASS_AND_EXACT_SOURCE_ARTIFACT_BINDING"
+      "earliestBehaviorFeedbackCheckpoint": "AFTER_RUNTIME_FOUNDATION_PASS_AND_EXACT_SOURCE_ARTIFACT_BINDING",
+      "actualPlayQualityContract": {
+        "version": 1,
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "authority": "OWNER_DIRECTIVE_2026-09-27",
+        "objective": "REQUIRE_GAME_DECLARED_PROGRESS_INTERACTION_CLIENT_SERVER_DEBUG_UI_VISUAL_SANITY_AND_DESIGN_BINDING_EVIDENCE_SO_MOVEMENT_ONLY_CANNOT_COMPLETE_ACTUAL_PLAY",
+        "gameContractSource": "roblox-games/<gameId>/launch-mvp.json#studioActualPlayContract",
+        "movementOnlyCannotPassDeclaredContract": true,
+        "officialMcpUserInputRequiredWhenDeclaredByGame": true,
+        "executeLuauReadOnlyRuntimeProbeAllowed": true,
+        "executeLuauGameplayMutationForbidden": true,
+        "clientAndServerDatamodelObservationAllowed": true,
+        "deterministicScenarioCheckpointsRequired": true,
+        "rawViewportTrainingForbidden": true,
+        "rawGameplayValuesDirectLearningForbidden": true,
+        "failedRequiredScenarioAction": "REPAIR_REQUIRED_WITH_EXACT_FAILED_SCENARIOS",
+        "infrastructureFailureRemainsSeparateFromGameFailure": true,
+        "unchangedGamesWithoutDeclaredContractPreserveExistingVerifiedBehavior": true,
+        "requiredAxes": [
+          "CORE_RUNTIME_PROGRESSION",
+          "OFFICIAL_MCP_USER_INPUT",
+          "CLIENT_SERVER_RUNTIME_STATE",
+          "CONSOLE_DEBUGGING",
+          "UI_RUNTIME_LAYOUT",
+          "VISUAL_CAPTURE_SANITY",
+          "APPROVED_DESIGN_RUNTIME_BINDING"
+        ]
+      }
     },
     "headlessValidation": {
       "version": 2,
@@ -9219,6 +9247,22 @@
       "nonPushEmptyBatchIdentity": "github.run_id",
       "pushBatchRunsCoalesced": true,
       "manualEmptyBatchRunsRunScoped": true
+    },
+    "robloxStudioActualPlayDepth20260927": {
+      "id": "ROBLOX_STUDIO_ACTUAL_PLAY_DEPTH_2026-09-27",
+      "documentedAt": "2026-09-27",
+      "documentationFirst": true,
+      "summary": "Extends official Studio MCP actual play from movement/frame-change evidence to game-declared progression, interaction, client/server state, runtime debugging, UI, visual sanity and design-binding checkpoints.",
+      "movementOnlyNoLongerSufficientWhenGameContractExists": true,
+      "exactArtifactBindingPreserved": true,
+      "mcpInfrastructureFailureSeparationPreserved": true,
+      "noGameplayBalanceOrDesignRuleChange": true,
+      "codeBindings": [
+        "tools/company-development-roblox-studio-local-play.mjs",
+        ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+        "roblox-games/horror-escape-room/launch-mvp.json",
+        "qa/company-development-roblox-studio-local-play.test.mjs"
+      ]
     }
   },
   "vibeExecutionLaneContract": {
