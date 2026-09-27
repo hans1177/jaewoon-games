@@ -657,7 +657,7 @@ test('Studio MCP client negotiates Roblox protocol and waits for the official to
   assert.match(helper,/protocolVersion:'2024-11-05'/);
   assert.match(helper,/async waitForTools\(requiredNames=\[\],\{attempts=24,delayMs=1500\}=\{\}\)/);
   assert.match(helper,/await client\.waitForTools\(requiredTools,\{/);
-  assert.match(helper,/const requiredTools=\['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input','user_mouse_input','character_navigation'\];/);
+  assert.match(helper,/const requiredTools=\['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input','user_mouse_input','character_navigation','execute_luau'\];/);
   assert.match(helper,/attempts:Math\.max\(1,Number\(toolAttempts\)\|\|5\)/);
   assert.match(helper,/delayMs:Math\.max\(100,Number\(toolDelayMs\)\|\|1000\)/);
   assert.match(helper,/ROBLOX_STUDIO_MCP_TOOLS_WAIT=/);
@@ -1173,4 +1173,37 @@ test('declared scenario failure persists as repair-required not MCP infrastructu
   assert.equal(applied.result.evidence.infrastructureFailure,false);
   assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
   assert.equal(applied.item.robloxFailureSignature,'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED');
+});
+
+
+test('planner reruns exact artifact when a declared Studio scenario contract is new or changed',()=>{
+  const candidate=item();
+  candidate.robloxInternalVibePlayEvidence={
+    pass:true,actualPlay:true,officialStudioMcp:true,localPlaceFile:true,onlinePlaceDirectOpen:false,robloxPlayerAutomation:false,
+    sourceRevision:source,artifactIdentity:artifact,artifactRunId:777,universeId:'123',placeId:'456',versionNumber:9,
+    testedAt:'2026-09-27T00:00:00.000Z'
+  };
+  assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()}).include.length,0);
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-studio-contract-'));
+  try{
+    const gameRoot=path.join(root,'roblox-games','g1');
+    fs.mkdirSync(gameRoot,{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'launch-mvp.json'),JSON.stringify({studioActualPlayContract:{version:1,required:true,requiredScenarios:['round-running']}}));
+    const first=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root});
+    assert.equal(first.include.length,1);
+    assert.equal(first.include[0].scenarioContractRequired,true);
+    assert.equal(first.include[0].scenarioContractVersion,1);
+    assert.match(first.include[0].scenarioContractFingerprint,/^sha256:[0-9a-f]{64}$/);
+    candidate.robloxInternalVibePlayEvidence={
+      ...candidate.robloxInternalVibePlayEvidence,
+      scenarioContractRequired:true,
+      scenarioContractVersion:first.include[0].scenarioContractVersion,
+      scenarioContractFingerprint:first.include[0].scenarioContractFingerprint
+    };
+    assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root}).include.length,0);
+    fs.writeFileSync(path.join(gameRoot,'launch-mvp.json'),JSON.stringify({studioActualPlayContract:{version:2,required:true,requiredScenarios:['round-running','hud-visible']}}));
+    assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root}).include.length,1);
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
 });

@@ -997,6 +997,7 @@ jobs:
             '--mode=plan',
             '--queue=../runtime/development-queue.json',
             '--roadmap=company-learning/platform-release-roadmap.json',
+            '--repo-root=.',
             "--game-id=$requested",
             "--output=$planOutput"
           )

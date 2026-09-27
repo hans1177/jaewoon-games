@@ -153,7 +153,21 @@ function internalReleaseObserved(item={},candidate={}){
   );
 }
 
-export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId=''}={}){
+function localStudioActualPlayContractMetadata(repoRoot='',gameId=''){
+  const root=clean(repoRoot);
+  const id=clean(gameId);
+  if(!root||!id)return{required:false,version:0,fingerprint:null};
+  const file=path.join(root,'roblox-games',id,'launch-mvp.json');
+  if(!fs.existsSync(file))return{required:false,version:0,fingerprint:null};
+  let launch={};
+  try{launch=readJson(file);}catch{return{required:false,version:0,fingerprint:null};}
+  const contract=launch?.studioActualPlayContract||{};
+  if(contract?.required!==true)return{required:false,version:Number(contract?.version||0),fingerprint:null};
+  return{required:true,version:Number(contract?.version||0),fingerprint:'sha256:'+hash(contract)};
+}
+
+export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='',repoRoot=''}={}){
+
   validateLocalStudioPolicy(roadmap);
   const requested=clean(requestedGameId);
   const studioPolicy=roadmap?.roblox?.studioExecution||{};
@@ -169,6 +183,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
     const candidate=item?.robloxRuntimeCandidateEvidence||{};
     const internal=item?.robloxInternalReleaseEvidence||{};
     const prior=item?.robloxInternalVibePlayEvidence||{};
+    const scenarioContract=localStudioActualPlayContractMetadata(repoRoot,clean(item?.gameId));
     const currentSourceRevision=clean(item?.robloxSourceCommit);
     const currentArtifactIdentity=clean(item?.robloxBuildArtifactIdentity);
     const candidateSourceRevision=clean(candidate?.sourceRevision);
@@ -254,6 +269,14 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&String(prior?.placeId||'')===String(candidate?.placeId||'')
       &&Number(prior?.versionNumber||0)===Number(candidate?.versionNumber||0)
       &&Boolean(clean(prior?.testedAt))
+      &&(
+        scenarioContract.required!==true
+        ||(
+          prior?.scenarioContractRequired===true
+          &&Number(prior?.scenarioContractVersion||0)===Number(scenarioContract.version||0)
+          &&clean(prior?.scenarioContractFingerprint)===clean(scenarioContract.fingerprint)
+        )
+      )
     );
     if(alreadyObserved)continue;
 
@@ -268,7 +291,10 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       sharedTargetCurrent:item?.robloxSharedTargetCurrent===true,
       historicalExactPublishedArtifact:infrastructurePrerequisiteReplay||item?.robloxSharedTargetCurrent!==true,
       infrastructurePrerequisiteReplay,
-      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY'
+      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
+      scenarioContractRequired:scenarioContract.required===true,
+      scenarioContractVersion:Number(scenarioContract.version||0),
+      scenarioContractFingerprint:scenarioContract.fingerprint
     });
   }
 
@@ -1119,6 +1145,8 @@ export async function runOfficialStudioMcpPlay({
         executeLuauRuntimeProbe:actualPlayContract?.required===true
       },
       scenarioContractRequired:actualPlayContract?.required===true,
+      scenarioContractVersion:Number(actualPlayContract?.version||0),
+      scenarioContractFingerprint:actualPlayContract?.required===true?'sha256:'+hash(actualPlayContract):null,
       scenarioCoverage,
       authoritativeStateChangeObserved,
       qualityFailureKinds,
@@ -1176,7 +1204,10 @@ export async function runOfficialStudioMcpPlay({
       authority:'roblox-official-studio-mcp-runtime',
       runtimeVerified:false,
       capabilities:{officialStudioMcp:false,playMode:false,mcpInput:false,screenCapture:false,consoleCapture:false,characterMotionRuntime:false,executeLuauRuntimeProbe:false},
-      scenarioContractRequired:actualPlayContract?.required===true,scenarioCoverage,authoritativeStateChangeObserved,qualityFailureKinds,
+      scenarioContractRequired:actualPlayContract?.required===true,
+      scenarioContractVersion:Number(actualPlayContract?.version||0),
+      scenarioContractFingerprint:actualPlayContract?.required===true?'sha256:'+hash(actualPlayContract):null,
+      scenarioCoverage,authoritativeStateChangeObserved,qualityFailureKinds,
       actions,checkpoints,errors,
       metrics:{beforeFrameCount:beforeImages.length,afterFrameCount:afterImages.length,distinctFrameChange:false,consoleErrorCount:errors.length},
       rawSourceIncluded:false,rawGameplayValuesIncluded:false,rawViewportIncluded:false
@@ -1267,7 +1298,7 @@ export function createLocalStudioPlayEvidence({
   const characterMotionPass=!characterMotionRequired||characterMotionRuntime?.pass===true;
   const actualPlay=officialMcp&&playMode&&mcpInput&&screenCapture&&consoleCapture;
   const requiredPass=required.length>0&&required.every(row=>row.pass===true);
-  const pass=Boolean(
+  const basePass=Boolean(
     studioStepSucceeded===true
     &&actualPlay
     &&runtime?.runtimeVerified===true
@@ -1275,9 +1306,16 @@ export function createLocalStudioPlayEvidence({
     &&screenChanged
     &&requiredPass
     &&characterMotionPass
-    &&scenarioContractPass
     &&errors.length===0
   );
+  const scenarioCoverage=(Array.isArray(runtime?.scenarioCoverage)?runtime.scenarioCoverage:[]).map(row=>({id:clean(row?.id||row?.name),pass:row?.pass===true})).filter(row=>row.id);
+  const scenarioContractRequired=runtime?.scenarioContractRequired===true;
+  const scenarioCoveragePass=scenarioCoverage.length>0&&scenarioCoverage.every(row=>row.pass===true);
+  const scenarioContractPass=!scenarioContractRequired||scenarioCoveragePass;
+  const scenarioContractVersion=Number(runtime?.scenarioContractVersion||0);
+  const scenarioContractFingerprint=clean(runtime?.scenarioContractFingerprint)||null;
+  const qualityFailureKinds=(Array.isArray(runtime?.qualityFailureKinds)?runtime.qualityFailureKinds:[]).map(clean).filter(Boolean).slice(0,24);
+  const pass=basePass&&scenarioContractPass;
   const infrastructureFailure=errors.some(row=>/infrastructure|mcp.*missing|no_studio/i.test(row.type+' '+(row.signature||'')));
   const studioMcpServerEnablementRequired=errors.some(row=>{
     const signature=clean(row.signature||'');
@@ -1307,11 +1345,6 @@ export function createLocalStudioPlayEvidence({
     :/replic|sync|multiplayer|join|rejoin|late.?join/i.test(nativeFailureText)?'ROBLOX_MULTIPLAYER_SYNC'
     :/server|client|authority/i.test(nativeFailureText)?'ROBLOX_SERVER_CLIENT_BOUNDARY'
     :'ROBLOX_STUDIO_RUNTIME';
-  const scenarioCoverage=(Array.isArray(runtime?.scenarioCoverage)?runtime.scenarioCoverage:[]).map(row=>({id:clean(row?.id||row?.name),pass:row?.pass===true})).filter(row=>row.id);
-  const scenarioContractRequired=runtime?.scenarioContractRequired===true;
-  const scenarioCoveragePass=scenarioCoverage.length>0&&scenarioCoverage.every(row=>row.pass===true);
-  const scenarioContractPass=!scenarioContractRequired||scenarioCoveragePass;
-  const qualityFailureKinds=(Array.isArray(runtime?.qualityFailureKinds)?runtime.qualityFailureKinds:[]).map(clean).filter(Boolean).slice(0,24);
   const functionalChainEvidence={
     inputDispatched:dispatched,
     runtimeVerified:runtime?.runtimeVerified===true,
@@ -1391,6 +1424,8 @@ export function createLocalStudioPlayEvidence({
       rawGameplayValuesIncluded:false,
       rawViewportIncluded:false,
       scenarioContractRequired,
+      scenarioContractVersion,
+      scenarioContractFingerprint,
       scenarioCoverage,
       scenarioCoveragePass,
       qualityFailureKinds,
@@ -1481,7 +1516,8 @@ async function main(){
     const matrix=planLocalStudioCandidates({
       queue:readJson(a.queue),
       roadmap:readJson(a.roadmap),
-      requestedGameId:clean(a['game-id'])
+      requestedGameId:clean(a['game-id']),
+      repoRoot:clean(a['repo-root'])
     });
     writeJson(a.output,matrix);
     console.log('ROBLOX_STUDIO_MCP_PLAN_COUNT='+matrix.include.length);
