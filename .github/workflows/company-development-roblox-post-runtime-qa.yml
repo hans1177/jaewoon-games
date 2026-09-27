@@ -204,6 +204,7 @@ jobs:
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const transientRetryPath='/tmp/roblox-open-cloud-transient-retry-ids';
           const transientRetryIds=new Set(fs.existsSync(transientRetryPath)?fs.readFileSync(transientRetryPath,'utf8').split(/\r?\n/).map(v=>v.trim()).filter(Boolean):[]);
+          const transientRetryStatuses=new Set([408,429,500,502,503,504]);
           const sharedTarget=roadmap?.roblox?.deploymentControl?.ownerPinnedPublicationTarget||{};
           const sharedUniverse=String(sharedTarget.universeId||'').trim();
           const sharedPlace=String(sharedTarget.placeId||'').trim();
@@ -227,6 +228,7 @@ jobs:
                 c.sourceRevision===sourceRevision
                 &&c.artifactIdentity===artifactIdentity
                 &&transientEvidence.authority==='roblox-open-cloud-engine-probe-failure'
+                &&transientRetryStatuses.has(Number(transientEvidence.httpStatus||0))
                 &&transientEvidence.sourceRevision===sourceRevision
                 &&transientEvidence.artifactIdentity===artifactIdentity
                 &&Number(transientEvidence.candidateVersionNumber||0)===Number(c.versionNumber||0);
