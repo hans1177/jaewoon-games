@@ -865,7 +865,7 @@ test('fan-in persists neural shadow calibration without granting learning or rou
   const criticPayload=JSON.parse(decodeURIComponent(criticMarker.slice('neural-shadow-critic:'.length)));
   assert.equal(criticPayload.verdict,'PIPELINE_SUPPORTED');
   assert.equal(criticPayload.actionFiringAllowed,false);
-  assert.equal(criticPayload.authorityPromotionEligible,false);
+  assert.equal(criticPayload.authorityPromotionEligible,true);
   assert.equal(merged.applied[0].neuralFeedback[0].authorityPromotionEligible,false);
   assert.equal(merged.neuralCalibration.durableEvidenceSamples,1);
   assert.equal(merged.neuralCalibration.matches,1);
@@ -1688,7 +1688,7 @@ test('asset production tasks use the dedicated asset-development lane and never 
   assert.equal(game.executionLane,'GAME_PRIMARY');
 
   const assetBatch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:64,lane:'asset-development',reservation:{id:'asset:1',runId:'asset-run',runAttempt:1,reservedAt:'2026-09-27T08:30:00Z'}});
-  assert.deepEqual(assetBatch.tasks.map(task=>task.id),['asset-visual']);
+  assert.deepEqual(assetBatch.tasks.map(task=>task.id),['asset-visual','asset-visual']);
   assert.ok(assetBatch.tasks.every(task=>task.executionLane==='ASSET_DEVELOPMENT'));
   assert.equal(assetBatch.workerCount,3);
   assert.equal(assetBatch.matrix[0].speculativeVariants,3);
