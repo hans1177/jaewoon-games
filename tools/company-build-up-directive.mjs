@@ -760,7 +760,7 @@ function buildAutonomousContentExpansion({
   const leastCoveredThemes=themeIds.filter(id=>Number(nextCounts[id]||0)===minCoverageCount);
   const repairFirst=clean(nextActionDecision?.action).toUpperCase()==='CAUSAL_REPAIR';
   return Object.freeze({
-    version:1,
+    version:2,
     policySource:AUTONOMOUS_CONTENT_EXPANSION_POLICY_PATH,
     policyStatus:clean(policy?.status)||'ACTIVE',
     executionBoundary:'EXISTING_BUILD_UP_ONLY',
