@@ -585,22 +585,8 @@ function ensureWeatherAudio(){
  source.connect(filter);filter.connect(gain);gain.connect(music.ctx.destination);source.start();
  weatherAudio.source=source;weatherAudio.filter=filter;weatherAudio.gain=gain;return true
 }
-function updateWeatherAudio(kind){
- if(!music.started||!music.ctx||!ensureWeatherAudio())return;
- const now=music.ctx.currentTime,resolved=validWeatherKind(kind),target=resolved==='RAIN'?.018:resolved==='STORM'?.026:resolved==='FOG'?.006:resolved==='SNOW'?.004:.001;
- weatherAudio.filter.frequency.setTargetAtTime(resolved==='STORM'?720:resolved==='RAIN'?1450:resolved==='FOG'?420:900,now,.35);
- weatherAudio.gain.gain.setTargetAtTime(target,now,.4);weatherAudio.kind=resolved
-}
-function playWeatherThunder(){
- if(!music.started||!music.ctx||state.area!=='surface'||validWeatherKind(state.weather?.kind)!=='STORM')return;
- const now=music.ctx.currentTime;
- if(now<(weatherAudio.thunderAt||0))return;
- weatherAudio.thunderAt=now+2.5;
- const osc=music.ctx.createOscillator(),gain=music.ctx.createGain(),filter=music.ctx.createBiquadFilter();
- osc.type='sawtooth';osc.frequency.setValueAtTime(72,now);osc.frequency.exponentialRampToValueAtTime(34,now+.75);
- filter.type='lowpass';filter.frequency.value=240;gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.035,now+.025);gain.gain.exponentialRampToValueAtTime(.0001,now+1.05);
- osc.connect(filter);filter.connect(gain);gain.connect(music.ctx.destination);osc.start(now);osc.stop(now+1.1)
-}
+function updateWeatherAudio(kind){return;}
+function playWeatherThunder(){return;}
 function drawWeatherOverlay(now){
  if(state.area!=='surface')return;
  const kind=validWeatherKind(state.weather?.kind),budget=weatherParticleBudget(),w=innerWidth,h=innerHeight,t=now*.001,seed=Number(state.weather?.seed)||1;
@@ -698,18 +684,8 @@ const REAL_AMBIENT={
  jungle:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Birds_forest.ogg',
  snow:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Howling_wind.ogg'
 };
-function playRecordedSfx(kind,volume=.42,rate=1){
- const url=REAL_SFX[kind];if(!url||!music.enabled)return false;
- try{const a=new Audio();a.preload='none';a.src=url;a.volume=Math.max(0,Math.min(1,volume));a.playbackRate=Math.max(.5,Math.min(1.6,rate));a.play().catch(()=>{});return true}catch{return false}
-}
-function syncRecordedAmbience(){if(sfxState.ambientAudio){sfxState.ambientAudio.pause();sfxState.ambientAudio=null;sfxState.ambientKey=null}return;
- if(!music.enabled){if(sfxState.ambientAudio){sfxState.ambientAudio.pause()}return}
- const key=ambientRegionKey(),url=REAL_AMBIENT[key]||null;
- if(!url){if(sfxState.ambientAudio){sfxState.ambientAudio.pause();sfxState.ambientAudio=null;sfxState.ambientKey=null}return}
- if(sfxState.ambientKey===key&&sfxState.ambientAudio)return;
- if(sfxState.ambientAudio)sfxState.ambientAudio.pause();
- try{const a=new Audio();a.preload='none';a.src=url;a.loop=true;a.volume=key==='snow'?.16:.13;a.play().catch(()=>{});sfxState.ambientAudio=a;sfxState.ambientKey=key}catch{}
-}
+function playRecordedSfx(kind,volume=.42,rate=1){return false;}
+function syncRecordedAmbience(){if(sfxState.ambientAudio){sfxState.ambientAudio.pause();sfxState.ambientAudio=null;sfxState.ambientKey=null}return;}
 function sfxTone(freq,dur=.12,gain=.02,wave='sine',endFreq=null){
  if(!music.enabled||!music.started||!music.ctx||!music.master)return;
  const at=music.ctx.currentTime,o=music.ctx.createOscillator(),g=music.ctx.createGain();
@@ -718,79 +694,17 @@ function sfxTone(freq,dur=.12,gain=.02,wave='sine',endFreq=null){
  o.connect(g);g.connect(music.master);o.start(at);o.stop(at+dur+.02)
 }
 function monsterSfxFamily(source){const id=source?.id||'';if(['shadowwolf','thornhound','ironhidehound','firewolf','polarwolf'].includes(id))return'canine';if(['worldtreebear','crystalbear','polarbear','gorilla','yetileader','yeticub'].includes(id))return'heavy';if(['giantbee','thornmantis','giantspider','giantspiderling','giantburrower'].includes(id))return'insect';if(['lakecroc','anaconda','firesnake','crystalfiresnake','shark','giantleech'].includes(id))return'reptile';if(['golem','ironspirit','crystalironspirit','crystalguardian','firegolemneutral','firegolemaggressive','icegolem'].includes(id))return'construct';return'beast'}
-function playGameSfx(kind,source=null){return;
- const heavy=Math.max(.7,Math.min(1.6,Number(source?.r||20)/22)),family=monsterSfxFamily(source);
- if(kind==='step'){if(playRecordedSfx('step',.18,1.05))return}
- else if(kind==='playerAttack'){if(playRecordedSfx('playerAttack',.24,1.3))return}
- else if(kind==='playerHurt'){if(playRecordedSfx('playerHurt',.38,1))return}
- else if(kind==='playerDeath'){if(playRecordedSfx('playerDeath',.42,.78))return}
- else if(kind==='monsterAttack'){if(playRecordedSfx('monsterAttack',.28,1.05/heavy))return}
- else if(kind==='monsterHurt'){if(playRecordedSfx('monsterHurt',.24,1.08/heavy))return}
- else if(kind==='monsterDeath'){if(playRecordedSfx('monsterDeath',.34,.72/heavy))return}
- else if(kind==='monsterVoice'){if(playRecordedSfx('monsterVoice',.27,(family==='insect'?1.35:family==='heavy'?.68:family==='canine'?.92:1)/heavy))return}
- else if(kind==='petAttack'){if(playRecordedSfx('petAttack',.38,1.05))return}
- else if(kind==='petHurt'){if(playRecordedSfx('petHurt',.30,1.15))return}
- else if(kind==='petDeath'){if(playRecordedSfx('petDeath',.34,.86))return}
- else if(kind==='petHatch'){if(playRecordedSfx('petHatch',.30,1.08))return}
- if(!music.started||!music.ctx)return;
- if(kind==='step'){noiseBrush(music.ctx.currentTime,.045,.006,700);sfxTone(105,.055,.006,'sine',72)}
- else if(kind==='playerAttack'){noiseBrush(music.ctx.currentTime,.065,.010,2400);sfxTone(260,.07,.009,'triangle',155)}
- else if(kind==='playerHurt'){lowDrum(music.ctx.currentTime,78,.038,.14);noiseBrush(music.ctx.currentTime,.09,.013,950)}
- else if(kind==='playerDeath'){lowDrum(music.ctx.currentTime,64,.065,.45);sfxTone(180,.5,.025,'sawtooth',42)}
- else if(kind==='monsterAttack'){sfxTone(150/heavy,.13,.012,'sawtooth',82/heavy)}
- else if(kind==='monsterHurt'){sfxTone(210/heavy,.10,.010,'square',125/heavy)}
- else if(kind==='monsterDeath'){sfxTone(150/heavy,.32,.020,'sawtooth',38)}
- else if(kind==='monsterVoice'){sfxTone(120/heavy,.35,.014,'sawtooth',75/heavy)}
- else if(kind==='petAttack'){sfxTone(155,.16,.018,'sawtooth',95)}
- else if(kind==='petHurt'){sfxTone(235,.14,.014,'triangle',135)}
- else if(kind==='petDeath'){sfxTone(170,.34,.020,'sawtooth',72)}
- else if(kind==='petHatch'){sfxTone(330,.18,.016,'sine',495)}
-}
+function playGameSfx(kind,source=null){return;}
 function ambientRegionKey(){
  if(state.area==='underwater')return pointInRect(state.player.x,state.player.y,DEEP_CORAL_FOREST)?'deepcoral':'underwater';
  if(state.area==='underground'||state.area==='questcave'||state.area==='storylab1'||state.area==='storylab2'||String(state.area).startsWith('jungletemple'))return'cave';
  return regionAt(state.player.x,state.player.y)
 }
-function playRegionAmbience(now){return;
- if(now<(sfxState.ambientAt||0)||!music.enabled||!music.started||!music.ctx)return;
- const key=ambientRegionKey();sfxState.ambientAt=now+rand(2600,5200);
- if(key==='jungle'){sfxTone(rand(1300,2100),.08,.006,'sine',rand(1700,2600));setTimeout(()=>sfxTone(rand(1450,2300),.07,.005,'sine',rand(1800,2800)),110);if(Math.random()<.45)setTimeout(()=>sfxTone(rand(2200,3100),.05,.004,'sine',rand(2600,3600)),210)}
- else if(key==='snow'){noiseBrush(music.ctx.currentTime,.9,.011,420);sfxTone(72,.55,.003,'sine',58)}
- else if(key==='giantlake'||key==='underwater'||key==='deepcoral'){noiseBrush(music.ctx.currentTime,.45,.007,key==='deepcoral'?420:760);if(key!=='deepcoral')sfxTone(160,.28,.004,'sine',125)}
- else if(key==='volcano'){lowDrum(music.ctx.currentTime,48,.018,.38);noiseBrush(music.ctx.currentTime,.22,.006,430)}
- else if(key==='crystal'){glassVoice(rand(620,880),music.ctx.currentTime,.65,.006)}
- else if(key==='cave'){noiseBrush(music.ctx.currentTime,.55,.005,360);sfxTone(82,.4,.004,'sine',62)}
- else if(key==='flowerfield'||key==='giantgarden'){sfxTone(rand(900,1450),.10,.005,'sine',rand(1300,1800))}
- else if(key==='worldtree'){noiseBrush(music.ctx.currentTime,.28,.004,900);sfxTone(280,.22,.004,'sine',360)}
- else if(key==='canyon'){noiseBrush(music.ctx.currentTime,.34,.006,620)}
- else {noiseBrush(music.ctx.currentTime,.25,.004,1500);sfxTone(rand(900,1500),.07,.004,'sine',rand(1150,1850))}
-}
-function maybeMonsterVoice(now){return}
-function updateFootstepSfx(now,moving){
- if(!moving||now<(sfxState.stepAt||0)||state.player.downedUntil)return;
- sfxState.stepAt=now+(state.pet.mounted?270:360);playGameSfx('step')
-}
-function playCombatAudio(kind,weight=.5){
- if(!music.enabled||!music.started||!music.ctx||!music.master)return;
- const at=music.ctx.currentTime,w=Math.max(0,Math.min(1,Number(weight)||0));
- if(kind==='swing'){
-  noiseBrush(at,.075,.006+w*.007,2600-w*700);
-  smoothVoice(330-w*95,at,.085,.006+w*.006,'triangle',2200,.004)
- }else if(kind==='hit'){
-  lowDrum(at,108-w*42,.028+w*.025,.10+w*.055);
-  noiseBrush(at,.07,.010+w*.011,1650-w*350)
- }else if(kind==='hurt'){
-  lowDrum(at,76,.044,.16);
-  noiseBrush(at,.09,.016,1050)
- }
-}
-function playRewardAudio(kind='normal'){
- if(!music.enabled||!music.started||!music.ctx||!music.master)return;
- const at=music.ctx.currentTime,boss=kind==='boss';
- smoothVoice(boss?220:330,at,.16,boss ? .022 : .014,'sine',2600,.008);
- smoothVoice(boss?330:495,at+.045,.22,boss ? .020 : .012,'triangle',3000,.012);
- if(boss)lowDrum(at,64,.04,.22)
-}
+function playRegionAmbience(now){return;}
+function maybeMonsterVoice(now){return;}
+function updateFootstepSfx(now,moving){return;}
+function playCombatAudio(kind,weight=.5){return;}
+function playRewardAudio(kind='normal'){return;}
 function pickBattleTheme(){const r=Math.random();return r<.30?'battle1':r<.70?'battle2':'battle3'}
 function playerCombatActive(){
  const p=state.player;
