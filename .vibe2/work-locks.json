@@ -3,59 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-133trt1",
-      "worker": "vibe2",
-      "taskId": "village-dungeons-unity-web-base-implementation-v1",
-      "gameId": "village-dungeons",
-      "files": [
-        "unity-games/village-dungeons/Assets/Scripts/GameCore.cs",
-        "unity-games/village-dungeons/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:36:30.068Z",
-      "expiresAt": "2026-09-27T07:21:30.068Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:village-dungeons-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-gvm874",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:37:03.095Z",
-      "expiresAt": "2026-09-27T07:22:03.095Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-la42xz",
-      "worker": "vibe2",
-      "taskId": "cozy-island-existing-web-assessment-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "web-games/cozy-island/index.html"
-      ],
-      "baseSha": "70ef9eca23ce99e5cd0f16463efeac8ef57222e7",
-      "acquiredAt": "2026-09-27T06:37:24.417Z",
-      "expiresAt": "2026-09-27T07:22:24.417Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-existing-web-assessment-v1"
-      ]
-    },
-    {
       "id": "wl-zbq555",
       "worker": "vibe2",
       "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1",
@@ -710,6 +657,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
+      ]
+    },
+    {
+      "id": "wl-x4ac8m",
+      "worker": "vibe2",
+      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
+      "gameId": "cozy-island",
+      "files": [
+        "roblox-games/cozy-island/server/Game.server.luau",
+        "roblox-games/cozy-island/client/Game.client.luau",
+        "roblox-games/cozy-island/shared/GameConfig.luau"
+      ],
+      "baseSha": "f930aa8ddc87534958c329af5fafc6a12209063e",
+      "acquiredAt": "2026-09-27T07:22:41.690Z",
+      "expiresAt": "2026-09-27T08:07:41.690Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-post-release-focus-12c1a7e2ae6288fd"
       ]
     }
   ]
