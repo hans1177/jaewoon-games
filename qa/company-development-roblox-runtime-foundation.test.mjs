@@ -610,7 +610,9 @@ test('central policy requires Roblox checkout through final promotion to stay ga
   assert.deepEqual(parallel.serverBootEvidenceReuse.requiredExactBindings,['SOURCE_REVISION','BUILD_ARTIFACT_IDENTITY','PLACE_ID','CANDIDATE_VERSION_NUMBER']);
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.doesNotMatch(workflow,/candidates\.slice\(0,4\)/);
-  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:2,candidates\.length\|\|1\)\)/);
+  assert.match(workflow,/const throttlePressure=candidates\.some\(item=>/);
+  assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:\(throttlePressure\?1:2\),candidates\.length\|\|1\)\)/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_THROTTLE_PRESSURE=/);
   assert.match(workflow,/await Promise\.all\(Array\.from\(\{length:probeConcurrency\},\(\)=>runProbeWorker\(\)\)\)/);
   assert.doesNotMatch(workflow,/Promise\.all\(candidates\.map\(async item=>/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_PARALLEL_COUNT=/);
@@ -630,13 +632,16 @@ test('shared FAST_MVP runtime QA keeps only newest shared candidate current and 
 });
 
 
-test('Roblox post-runtime QA and F9 do not serialize whole workflows by game id',()=>{
+test('Roblox post-runtime QA keeps distinct games parallel while collapsing duplicate scans',()=>{
   const post=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   const f9=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   const postJobs=post.indexOf('\njobs:\n');
   const f9Jobs=f9.indexOf('\njobs:\n');
   assert.ok(postJobs>0&&f9Jobs>0);
-  assert.doesNotMatch(post.slice(0,postJobs),/\nconcurrency:/);
+  const postHeader=post.slice(0,postJobs);
+  assert.match(postHeader,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
+  assert.match(postHeader,/cancel-in-progress: \$\{\{ inputs\.game_id == '' \}\}/);
+  assert.doesNotMatch(postHeader,/group: roblox-runtime-foundation-scan\s*$/m);
   assert.doesNotMatch(f9.slice(0,f9Jobs),/\nconcurrency:/);
 });
 
