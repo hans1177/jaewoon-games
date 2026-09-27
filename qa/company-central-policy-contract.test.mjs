@@ -1529,5 +1529,7 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.match(vibe24hRunner,/asset_development:[\s\S]*execution_lane: asset-development[\s\S]*lane_max: '64'/);
   assert.match(vibe24hRunner,/VIBE2_ASSET_DEVELOPMENT_QUEUED=/);
   assert.match(vibe24hRunner,/VIBE2_ASSET_DEVELOPMENT_ACTIVE=/);
+  assert.match(vibe24hRunner,/game_study:[\s\S]*needs: \[plan, continuous, asset_development, learning_idle\]/);
+  assert.match(vibe24hRunner,/asset_development_queued == '0'[\s\S]*asset_development_active == '0'/);
   assert.match(vibeContinuousCore,/\n          - asset-development/);
 });
