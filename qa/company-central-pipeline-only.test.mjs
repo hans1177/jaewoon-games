@@ -172,6 +172,26 @@ test('director drains superseded runner backlog before noncritical supervision',
   assert.match(director,/dedupeByTitle\('\.github\/workflows\/company-development-unity-runtime\.yml',true\)/);
 });
 
+test('homepage completion does not redundantly wake the full central Director',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  const homepage=read('.github/workflows/homepage-manager.yml');
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
+  const workflowRunBlock=director.slice(director.indexOf('  workflow_run:'),director.indexOf('  push:',director.indexOf('  workflow_run:')));
+
+  assert.doesNotMatch(workflowRunBlock,/Homepage Manager/);
+  assert.match(homepage,/\n  director-supervision:\n/);
+  assert.equal(roadmap.changeRecord?.directorHomepageWakeDecoupling20260927?.homepagePipelineOwnsDirectorSupervision,true);
+  assert.equal(roadmap.changeRecord?.directorHomepageWakeDecoupling20260927?.homepageManagerWorkflowRunWakeRemovedFromCentralDirector,true);
+  assert.equal(roadmap.changeRecord?.directorHomepageWakeDecoupling20260927?.centralDirectorManualSchedulePushAndRelevantWorkflowRunWakesPreserved,true);
+  assert.equal(architecture.directorHomepageWakeDecoupling?.homepageInternalDirectorSupervision,true);
+  assert.equal(architecture.directorHomepageWakeDecoupling?.centralDirectorWorkflowRunWakeFromHomepageManager,false);
+  assert.equal(architecture.runnerQueueDrainTopology?.homepageCompletionWakeRemoved,true);
+  assert.equal(logMap.directorHomepageWakeDecouplingEvidence?.removedWorkflowRunSource,'Homepage Manager');
+  assert.equal(logMap.directorHomepageWakeDecouplingEvidence?.homepageInternalDirectorSupervisionExpected,true);
+});
+
 test('runner drain keeps active same-game work but prefers the newest queued native runtime',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
