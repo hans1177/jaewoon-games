@@ -845,3 +845,18 @@ function applyWorldSnapshot(w){if(w.weather)setWeather(w.weather.kind)}
     assert.equal(result.weatherPresentationQa.runtimeStillRequired,true);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('asset guidance prepares diverse menu roles but applies only game-relevant menus',()=>{
+  const plan=buildVibeAssetProductionPlan({
+    task:{gameId:'demo',goal:'생존 게임 인벤토리 제작 상점 UI 개선'},
+    target:'roblox',
+    manifest:{version:1,assets:[]},
+    presetCatalog:{version:1,presets:[]}
+  });
+  const guidance=assetProductionGuidance(plan);
+  assert.match(guidance,/MAIN_MENU\/PAUSE\/INVENTORY\/EQUIPMENT\/SHOP\/CRAFTING\/QUEST\/SKILL\/MAP\/SETTINGS\/RESULT\/SOCIAL_MULTIPLAYER/);
+  assert.match(guidance,/실제 게임에는 존재하는 시스템에 필요한 역할만 선택/);
+  assert.match(guidance,/동일 메뉴 레이아웃을 복사하지 않는다/);
+  assert.match(guidance,/실제 상태·데이터와 연결/);
+});
+
