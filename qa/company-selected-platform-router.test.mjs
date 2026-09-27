@@ -70,7 +70,38 @@ test('secondary concurrent platform stays eligible while the primary platform ow
   assert.equal(platformDevelopmentEligible(item,'ROBLOX'),false);
   assert.equal(platformDevelopmentEligible(item,'UNITY'),true);
   assert.equal(selectTargetPlatformDevelopmentWindow([item]).length,1);
-  assert.equal(platformDevelopmentEligible({...item,unityInternalReleaseReady:true},'UNITY'),false);
+  assert.equal(platformDevelopmentEligible({...item,unityInternalReleaseReady:true},'UNITY'),true);
+});
+
+test('released Roblox and Unity stay eligible only when the exact F0-F9 source cycle is not already complete',()=>{
+  const released={
+    ...nativeItem('released','ROBLOX'),
+    productionClass:'RELEASE_CONFIRMED',
+    currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+    canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+    robloxSourceCommit:'a'.repeat(40),
+    robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+    robloxInternalReleaseReady:true,
+    unitySourceCommit:'c'.repeat(40),
+    executionEvidence:{artifactIdentity:'unity-artifact-1'},
+    unityInternalReleaseReady:true
+  };
+  assert.equal(platformDevelopmentEligible(released,'ROBLOX'),true);
+  assert.equal(platformDevelopmentEligible(released,'UNITY'),true);
+  assert.equal(platformDevelopmentEligible(released,'FORTNITE_UEFN'),false);
+
+  const complete={
+    ...released,
+    robloxF9ValidationSourceRevision:released.robloxSourceCommit,
+    robloxF9ValidationArtifactIdentity:released.robloxBuildArtifactIdentity,
+    unityF9ValidationSourceRevision:released.unitySourceCommit,
+    unityF9ValidationArtifactIdentity:released.executionEvidence.artifactIdentity
+  };
+  assert.equal(platformDevelopmentEligible(complete,'ROBLOX'),false);
+  assert.equal(platformDevelopmentEligible(complete,'UNITY'),false);
+
+  assert.equal(platformDevelopmentEligible({...complete,robloxSourceCommit:'d'.repeat(40)},'ROBLOX'),true);
+  assert.equal(platformDevelopmentEligible({...complete,unitySourceCommit:'e'.repeat(40)},'UNITY'),true);
 });
 
 test('owner direct development starts from an owner basic baseline without waiting for design admission',()=>{
