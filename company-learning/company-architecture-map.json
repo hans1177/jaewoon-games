@@ -5241,7 +5241,7 @@
     }
   },
   "robloxHomepageThumbnailSyncTopology": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#robloxHomepageThumbnailSyncContract",
     "flow": [
       "canonical-marketing-thumbnail-asset",
@@ -5256,7 +5256,12 @@
     "noNewQueue": true,
     "releasePromotionWorkflowExtendedOnly": true,
     "verifiedUniverseIdRequired": true,
-    "gameCatalogBackwardCompatibilityPreserved": true
+    "gameCatalogBackwardCompatibilityPreserved": true,
+    "runtimeExposureSource": "company-runtime/homepage-platform-exposure.json",
+    "allInternalReleaseReadyGamesCovered": true,
+    "currentInternalRobloxExposureGameCount": 16,
+    "assetOrCatalogChangeAutoSync": true,
+    "placeRepublishForThumbnailSync": false
   },
   "universalAssetFirstUpgradeTopology": {
     "version": 1,
