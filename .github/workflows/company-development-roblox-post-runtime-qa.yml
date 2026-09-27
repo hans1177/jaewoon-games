@@ -196,6 +196,7 @@ jobs:
             return c.published===true&&Number(c.versionNumber)>0&&c.universeId&&c.placeId;
           });
           const probes=new Array(candidates.length);
+          const probeFailures=[];
           const probeConcurrency=Math.max(1,Math.min(requested?1:2,candidates.length||1));
           let probeCursor=0;
           const runProbeWorker=async()=>{
@@ -204,21 +205,41 @@ jobs:
               if(index>=candidates.length)return;
               const item=candidates[index];
               const c=item.robloxRuntimeCandidateEvidence;
-              const result=await probeRobloxOpenCloudEngine({
-                universeId:String(c.universeId),placeId:String(c.placeId),versionNumber:Number(c.versionNumber),
-                apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,pollIntervalMs:1000,maxPolls:45,
-                networkRetryAttempts:6,networkRetryDelayMs:1000,
-                expectedStudioAssetBinding:item.robloxStudioAssetBindingApplied===true?item.robloxStudioAssetBinding:null,
-              });
-              const probe={gameId:item.gameId,versionNumber:Number(c.versionNumber),...result};
-              console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE='+JSON.stringify(probe));
-              probes[index]=probe;
+              try{
+                const result=await probeRobloxOpenCloudEngine({
+                  universeId:String(c.universeId),placeId:String(c.placeId),versionNumber:Number(c.versionNumber),
+                  apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,pollIntervalMs:1000,maxPolls:45,
+                  networkRetryAttempts:6,networkRetryDelayMs:1000,
+                  expectedStudioAssetBinding:item.robloxStudioAssetBindingApplied===true?item.robloxStudioAssetBinding:null,
+                });
+                const probe={gameId:item.gameId,versionNumber:Number(c.versionNumber),...result};
+                console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE='+JSON.stringify(probe));
+                probes[index]=probe;
+              }catch(error){
+                const probe={
+                  gameId:item.gameId,
+                  versionNumber:Number(c.versionNumber),
+                  available:false,
+                  engineExecuted:false,
+                  exactPlace:false,
+                  exactVersion:false,
+                  state:'PROBE_ERROR',
+                  failureStage:'OPEN_CLOUD_PROBE',
+                  errorMessage:String(error?.message||error).slice(0,500),
+                };
+                probes[index]=probe;
+                probeFailures.push(probe);
+                console.error('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_FAILED='+JSON.stringify(probe));
+              }
             }
           };
           await Promise.all(Array.from({length:probeConcurrency},()=>runProbeWorker()));
+          const persistedProbes=probes.filter(Boolean);
           console.log('ROBLOX_RUNTIME_FOUNDATION_QA_PARALLEL_COUNT='+probeConcurrency);
-          console.log('ROBLOX_RUNTIME_FOUNDATION_QA_PROBE_COUNT='+probes.length);
-          fs.writeFileSync('/tmp/roblox-open-cloud-engine-probes.json',JSON.stringify(probes,null,2)+'\n');
+          console.log('ROBLOX_RUNTIME_FOUNDATION_QA_PROBE_COUNT='+persistedProbes.length);
+          console.log('ROBLOX_RUNTIME_FOUNDATION_QA_PROBE_FAILURE_COUNT='+probeFailures.length);
+          fs.writeFileSync('/tmp/roblox-open-cloud-engine-probes.json',JSON.stringify(persistedProbes,null,2)+'\n');
+          if(probeFailures.length)throw new Error('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_BATCH_FAILURES:'+probeFailures.length);
           NODE
 
       - name: Read exact runtime sentinel and persist tester QA evidence
