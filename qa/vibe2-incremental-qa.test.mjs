@@ -681,6 +681,7 @@ test('grounded graphics replacement survives candidate source and incremental QA
   const source=[
     '#menuGlow { background-image:url("hero.png"); box-shadow:0 0 8px #fff; }',
     '.weapon-visual { background-image:url("sword.png"); }',
+    '.sprite-atlas { background-image:url("atlas.png"); }',
     '.forest-environment { background:linear-gradient(#123,#234); }',
     '/* style lock palette player weapon background forest */'
   ].join('\n')+'\n';
@@ -730,6 +731,7 @@ test('incremental QA rejects graphics count inflation after source-worker valida
   fs.writeFileSync(path.join(sourceRoot,'style.css'),[
     '#menuGlow { background-image:url("hero.png"); box-shadow:0 0 8px #fff; }',
     '.weapon-visual { background-image:url("sword.png"); }',
+    '.sprite-atlas { background-image:url("atlas.png"); }',
     '.forest-environment { background:linear-gradient(#123,#234); }',
     '/* style lock palette player weapon background forest */'
   ].join('\n')+'\n','utf8');
