@@ -166,6 +166,42 @@ test('Open Cloud runtime reads retry transient DNS failures without weakening AP
  assert.equal(result.exactVersion,true);
 });
 
+test('Open Cloud engine probe retries transient HTTP throttling without weakening persistent API failures',async()=>{
+ let calls=0;
+ const successResponses=[
+  {ok:false,status:429,body:{errors:[{code:0,message:'rate limited'}]}},
+  {ok:true,status:200,body:{path:'universes/1/places/2/versions/20/luau-execution-sessions/s/tasks/t',state:'PROCESSING'}},
+  {ok:true,status:200,body:{state:'COMPLETE'}},
+  {ok:true,status:200,body:{luauExecutionSessionTaskLogs:[{structuredMessages:[
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_PLACE=2'},
+   {message:'JAEWOON_OPEN_CLOUD_ENGINE_VERSION=20'},
+  ]}]}}
+ ];
+ const result=await probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',pollIntervalMs:0,maxPolls:2,
+  networkRetryAttempts:4,networkRetryDelayMs:0,
+  fetchImpl:async()=>{
+   calls++;
+   const row=successResponses.shift();
+   return {ok:row.ok,status:row.status,text:async()=>JSON.stringify(row.body)};
+  },
+ });
+ assert.equal(calls,4);
+ assert.equal(result.engineExecuted,true);
+ assert.equal(result.exactVersion,true);
+
+ let persistentCalls=0;
+ await assert.rejects(()=>probeRobloxOpenCloudEngine({
+  universeId:'1',placeId:'2',versionNumber:20,apiKey:'k',pollIntervalMs:0,maxPolls:1,
+  networkRetryAttempts:3,networkRetryDelayMs:0,
+  fetchImpl:async()=>{
+   persistentCalls++;
+   return {ok:false,status:429,text:async()=>JSON.stringify({errors:[{code:0,message:'rate limited'}]})};
+  },
+ }),/ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429/);
+ assert.equal(persistentCalls,3);
+});
+
 test('Open Cloud engine probe binds exact place version without granting runtime acceptance',async()=>{
  const calls=[];
  const responses=[
@@ -330,6 +366,14 @@ test('F9 returns exact Roblox runtime and Studio asset proof to waiting Vibe tas
  assert.match(workflow,/event_type:"vibe2-fanin-refill"/);
  assert.match(workflow,/reason:"roblox-f9-verified"/);
  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=\$settled_count/);
+});
+
+test('post-runtime Open Cloud engine probes use bounded external API concurrency and retry throttling',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/const probeConcurrency=Math\.max\(1,Math\.min\(requested\?1:2,candidates\.length\|\|1\)\)/);
+ assert.match(workflow,/networkRetryAttempts:6,networkRetryDelayMs:1000/);
+ assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_PROBE_COUNT=/);
+ assert.doesNotMatch(workflow,/Promise\.all\(candidates\.map/);
 });
 
 test('central policy and architecture preserve runtime truth while real server boot blocks external release only',()=>{
