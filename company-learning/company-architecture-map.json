@@ -1,5 +1,5 @@
 {
-  "version": 290,
+  "version": 291,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3727,7 +3727,10 @@
       ],
       "sharedStateCriticalSectionMayNotEncloseHeavyExecution": true,
       "externalProviderCapacityOnlyHeavyExecutionBoundary": true
-    }
+    },
+    "uefnDevelopmentStatus": "DEVELOPMENT_PAUSED",
+    "uefnStatusLabel": "개발보류",
+    "uefnAutonomousBuildUpAllowed": false
   },
   "releaseExposureLifecycle": {
     "version": 3,
@@ -6273,8 +6276,7 @@
     "platforms": [
       "WEB",
       "ROBLOX",
-      "UNITY",
-      "FORTNITE_UEFN"
+      "UNITY"
     ],
     "autonomousDecisionOwner": "VIBE",
     "manualAssistantIdeaDependencyForbidden": true,
@@ -6307,6 +6309,12 @@
       "verifiedFailure": "KEEP_SAME_CAUSAL_THEME_WHEN_NEEDED_FOR_REPAIR",
       "majorExpansion": "MINIMUM_THREE_CONNECTED_PLAYER_FACING_IMPROVEMENTS_WHEN_APPLICABLE",
       "topologyChange": "NONE"
+    },
+    "pausedPlatforms": [
+      "FORTNITE_UEFN"
+    ],
+    "pausedPlatformStatus": {
+      "FORTNITE_UEFN": "개발보류"
     }
   },
   "menuExperienceDiversityTopology": {
@@ -6317,8 +6325,7 @@
     "platforms": [
       "WEB",
       "ROBLOX",
-      "UNITY",
-      "FORTNITE_UEFN"
+      "UNITY"
     ],
     "surfaces": [
       "MAIN_MENU",
@@ -6349,6 +6356,29 @@
       "FORTNITE_UEFN": "SEPARATE_UEFN_NATIVE_UI_RUNTIME"
     },
     "unityWebSeparateHtmlCssJsGameplayUiForbidden": true,
-    "unityWebCanonicalSourceRoot": "unity-games/<gameId>/"
+    "unityWebCanonicalSourceRoot": "unity-games/<gameId>/",
+    "pausedPlatforms": [
+      "FORTNITE_UEFN"
+    ],
+    "pausedPlatformStatus": {
+      "FORTNITE_UEFN": "개발보류"
+    }
+  },
+  "fortniteUefnDevelopmentPauseTopology": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.fortniteUefnDevelopmentPause20260927",
+    "machineState": "OWNER_HOLD",
+    "developmentStatus": "DEVELOPMENT_PAUSED",
+    "statusLabel": "개발보류",
+    "developmentExecutionAllowed": false,
+    "autonomousBuildUpAllowed": false,
+    "graphicsBuildUpAllowed": false,
+    "menuBuildUpAllowed": false,
+    "ownerExplicitResumeRequired": true,
+    "activeBuildUpPlatforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY"
+    ]
   }
 }
