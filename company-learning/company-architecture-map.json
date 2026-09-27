@@ -1,5 +1,5 @@
 {
-  "version": 295,
+  "version": 296,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6450,6 +6450,13 @@
       "sameGameIdAloneInsufficient": true,
       "promotedSourceTreeMustMatchRuntimeSourceTree": true,
       "runtimeIndependentQaRegressionRequired": true
+    },
+    "nativeCallbackMonotonicity": {
+      "protectedStates": [
+        "TARGET_RUNTIME_WAIT",
+        "VERIFIED"
+      ],
+      "callbackBehaviorAfterAdvance": "MERGE_EVIDENCE_ONLY_NO_STAGE_REWIND"
     }
   }
 }
