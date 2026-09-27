@@ -1,5 +1,5 @@
 {
-  "version": 489,
+  "version": 490,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -6630,11 +6630,20 @@
           "singleInternalRuntimeSession": true,
           "perFloorRuntimeRelaunchForbidden": true,
           "robloxExecutor": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD",
-          "unityExecutor": "EXISTING_UNITY_RUNTIME_VALIDATION_SINGLE_SESSION",
+          "unityExecutor": "GENYMOTION_IF_AVAILABLE_ELSE_REDROID_SINGLE_SESSION",
           "externalRobloxServerBootRequired": false,
           "robloxPlayerAutomationForbidden": true,
           "collectAllApplicableFloorEvidenceInSameSession": true,
-          "notApplicableRule": "ONLY_WHEN_VERIFIED_DESIGN_AND_CURRENT_SOURCE_PROVE_THE_SUBSYSTEM_ABSENT"
+          "notApplicableRule": "ONLY_WHEN_VERIFIED_DESIGN_AND_CURRENT_SOURCE_PROVE_THE_SUBSYSTEM_ABSENT",
+          "unityRuntimeExecutorSelection": {
+            "order": [
+              "GENYMOTION_SINGLE_SESSION",
+              "REDROID_SINGLE_SESSION"
+            ],
+            "exactlyOneRuntimeSessionPerExactCandidate": true,
+            "duplicateExecutorRunForbidden": true,
+            "credentialAvailabilityMaySelectGenymotion": true
+          }
         },
         "f9": {
           "floors": [
@@ -10370,7 +10379,9 @@
       "sameExactSourceArtifactEvidenceReuseAllowed": true,
       "unchangedSourceBusyLoopForbidden": true,
       "nextVerifiedSourceDeltaRestartsAt": "F0",
-      "ownerExternalPublicationApprovalSeparate": true
+      "ownerExternalPublicationApprovalSeparate": true,
+      "unityRuntimeExecutorSelection": "GENYMOTION_IF_AVAILABLE_ELSE_REDROID",
+      "unityDuplicateRuntimeExecutorForbidden": true
     }
   },
   "vibeExecutionLaneContract": {
