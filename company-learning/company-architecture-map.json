@@ -3868,7 +3868,7 @@
         "completedMcpSessionRuntimeFailureAction": "PERSIST_GAME_RUNTIME_EVIDENCE_WITHOUT_MCP_SESSION_RESTART",
         "runtimeFailureMustNotConsumeMcpRecoveryAttempts": true
       },
-      "actualPlayPlannerEligibility": "RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING",
+      "actualPlayPlannerEligibility": "EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_F0_EXACT_SOURCE_ARTIFACT_BINDING",
       "actualPlayPlannerExclusiveCurrentStepGate": false,
       "parallelRuntimeFoundationAndFinalRevalidationAllowedAfterInternalRelease": true,
       "explicitDisabledGameEligible": false,
@@ -3904,7 +3904,12 @@
         "externalPublicReleaseRemainsBlockedUntilRealServerBoot": true,
         "studioFollowupOwner": ".github/workflows/company-development-roblox-post-runtime-qa.yml"
       },
-      "actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass": true
+      "actualPlayMayStartBeforeInternalReleaseAfterRuntimeFoundationPass": true,
+      "actualPlayMayStartBeforeRuntimeFoundationPassAfterExactPrivateCandidate": true,
+      "internalServerBootRequired": false,
+      "exactCandidateValidationDeduplication": "F0_ONCE_F1_TO_F8_ONE_STUDIO_SESSION_F9_AGGREGATION",
+      "externalServerObservationPrerequisite": false,
+      "multiplayerRoutineValidation": "F0_STATIC_SYNC_CONTRACT_PLUS_EXACT_STUDIO_PLAY_OR_NOT_APPLICABLE"
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
