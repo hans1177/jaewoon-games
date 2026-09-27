@@ -132,6 +132,7 @@ export async function probeRobloxOpenCloudEngine({
   if(typeof fetchImpl!=='function')throw new Error('fetch implementation required');
   const expectedStudioAssetAtoms=[...new Set(Object.values(expectedStudioAssetBinding?.families||{}).flat().map(clean).filter(Boolean))].sort();
   const studioAssetBindingRequired=expectedStudioAssetBinding?.applied===true;
+  const expectedStudioAssetBindingVersion=Math.max(1,Number(expectedStudioAssetBinding?.bindingVersion||1));
   const expectedStudioAssetAtomCsv=expectedStudioAssetAtoms.join(',');
   const script=[
     'local Players=game:GetService("Players")',
@@ -215,11 +216,11 @@ export async function probeRobloxOpenCloudEngine({
   const observedStudioAssetAtomCsv=clean(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_STUDIO_ASSET_ATOMS=([^\n]*)/)?.[1]||'');
   const observedStudioAssetAtoms=[...new Set(observedStudioAssetAtomCsv.split(',').map(clean).filter(Boolean))].sort();
   const observedAtomSet=new Set(observedStudioAssetAtoms);
-  const studioAssetSelectionMatched=!studioAssetBindingRequired||(expectedStudioAssetAtoms.length>0&&studioAssetApplied&&studioAssetBindingVersion===1&&expectedStudioAssetAtoms.every(atom=>observedAtomSet.has(atom)));
+  const studioAssetSelectionMatched=!studioAssetBindingRequired||(expectedStudioAssetAtoms.length>0&&studioAssetApplied&&studioAssetBindingVersion===expectedStudioAssetBindingVersion&&expectedStudioAssetAtoms.every(atom=>observedAtomSet.has(atom)));
   return Object.freeze({
     available:true,permissionDenied:false,status:200,engineExecuted:true,exactPlace,exactVersion,simulationRunning,serverBootObserved,
     playerCount:Number(joined.match(/JAEWOON_OPEN_CLOUD_ENGINE_PLAYERS=(\d+)/)?.[1]||0),
-    studioAssetBindingRequired,studioAssetApplied,studioAssetBindingVersion,
+    studioAssetBindingRequired,studioAssetApplied,studioAssetBindingVersion,expectedStudioAssetBindingVersion,
     expectedStudioAssetAtoms:Object.freeze(expectedStudioAssetAtoms),observedStudioAssetAtoms:Object.freeze(observedStudioAssetAtoms),
     expectedStudioAssetAtomCsv,observedStudioAssetAtomCsv,studioAssetSelectionMatched,
     state,taskPath:rawPath,messages:Object.freeze(messages.slice(0,50)),
