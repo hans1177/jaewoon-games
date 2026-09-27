@@ -190,6 +190,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
     const candidateSourceRevision=clean(candidate?.sourceRevision);
     const candidateArtifactIdentity=clean(candidate?.artifactIdentity);
     const candidateArtifactRunId=Number(candidate?.artifactRunId||0);
+    const localArtifactRunId=artifactRunIdFor(item,candidate);
     const activeQualityBuildUp=Boolean(
       item?.robloxQualityBuildUpRequired===true
       &&clean(item?.robloxQualityBuildUpSourceRevision)===currentSourceRevision
@@ -235,12 +236,13 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&item?.robloxRuntimeFoundationEvidence?.serverBootObserved!==true
     );
     const currentExact=Boolean(
-      candidateExact
-      &&item?.robloxBuildOrPackagePassed===true
+      item?.robloxBuildOrPackagePassed===true
+      &&item?.robloxBuildPreflightPassed===true
+      &&item?.robloxFoundationF0Passed===true
       &&clean(item?.robloxBuildSourceRevision)===currentSourceRevision
-      &&currentSourceRevision===candidateSourceRevision
-      &&currentArtifactIdentity===candidateArtifactIdentity
-      &&(runtimeFoundationExact||internalReleaseObserved(item,candidate)||exactEngineAwaitingRealServerBoot)
+      &&/^[0-9a-f]{40}$/i.test(currentSourceRevision)
+      &&/^sha256:[0-9a-f]{64}$/i.test(currentArtifactIdentity)
+      &&localArtifactRunId>0
     );
 
     const historicalInternalReleaseExact=Boolean(
@@ -261,9 +263,14 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&clean(prior?.sourceRevision)===candidateSourceRevision
       &&clean(prior?.artifactIdentity)===candidateArtifactIdentity
       &&Number(prior?.artifactRunId||0)===candidateArtifactRunId
-      &&String(prior?.universeId||'')===String(candidate?.universeId||'')
-      &&String(prior?.placeId||'')===String(candidate?.placeId||'')
-      &&Number(prior?.versionNumber||0)===Number(candidate?.versionNumber||0)
+      &&(
+        !publicationBindingRequired
+        ||(
+          String(prior?.universeId||'')===String(candidate?.universeId||'')
+          &&String(prior?.placeId||'')===String(candidate?.placeId||'')
+          &&Number(prior?.versionNumber||0)===Number(candidate?.versionNumber||0)
+        )
+      )
     );
 
     const infrastructurePrerequisiteReplay=Boolean(
@@ -278,7 +285,8 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
 
     const sourceRevision=currentExact?currentSourceRevision:candidateSourceRevision;
     const artifactIdentity=currentExact?currentArtifactIdentity:candidateArtifactIdentity;
-    const artifactRunId=candidateArtifactRunId;
+    const artifactRunId=currentExact?localArtifactRunId:candidateArtifactRunId;
+    const publicationBindingRequired=!currentExact&&candidateExact;
 
     const alreadyObserved=Boolean(
       prior?.pass===true
@@ -310,13 +318,13 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       sourceRevision,
       artifactIdentity,
       artifactRunId,
-      universeId:String(candidate.universeId),
-      placeId:String(candidate.placeId),
-      versionNumber:Number(candidate.versionNumber),
+      universeId:candidateExact?String(candidate.universeId):'',
+      placeId:candidateExact?String(candidate.placeId):'',
+      versionNumber:candidateExact?Number(candidate.versionNumber):0,
       sharedTargetCurrent:item?.robloxSharedTargetCurrent===true,
-      historicalExactPublishedArtifact:infrastructurePrerequisiteReplay||item?.robloxSharedTargetCurrent!==true,
+      historicalExactPublishedArtifact:infrastructurePrerequisiteReplay,
       infrastructurePrerequisiteReplay,
-      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
+      actualPlayEligibility:currentExact?'F0_EXACT_LOCAL_BUILD':runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':'HISTORICAL_REPLAY',
       scenarioContractRequired:scenarioContract.required===true,
       scenarioContractVersion:Number(scenarioContract.version||0),
       scenarioContractFingerprint:scenarioContract.fingerprint
@@ -1306,8 +1314,17 @@ export function createLocalStudioPlayEvidence({
     &&runtimeFoundationEvidence?.exactEngineVersion===true
     &&runtimeFoundationEvidence?.serverBootObserved!==true
   );
-  const currentExactPublishedArtifact=Boolean(
+  const currentExactLocalBuild=Boolean(
     currentSourceArtifactBinding
+    &&item?.robloxBuildOrPackagePassed===true
+    &&item?.robloxBuildPreflightPassed===true
+    &&item?.robloxFoundationF0Passed===true
+    &&clean(item?.robloxBuildSourceRevision)===sourceRevision
+    &&artifactRunId>0
+    &&artifactRunId===artifactRunIdFor(item,candidate)
+  );
+  const currentExactPublishedArtifact=Boolean(
+    currentExactLocalBuild
     &&candidateMatchesExpected
     &&(runtimeFoundationExact||exactEngineVersionAwaitingRealServerBoot||internalReleaseObserved(item,candidate))
   );
@@ -1322,7 +1339,7 @@ export function createLocalStudioPlayEvidence({
     &&String(internalRelease?.placeId||'')===placeId
     &&Number(internalRelease?.versionNumber||0)===versionNumber
   );
-  if(!currentExactPublishedArtifact&&!historicalExactPublishedArtifact)throw new Error('ROBLOX_STUDIO_MCP_CANDIDATE_STALE');
+  if(!currentExactLocalBuild&&!historicalExactPublishedArtifact)throw new Error('ROBLOX_STUDIO_MCP_EXACT_BUILD_STALE');
   if(clean(runtime?.authority)!=='roblox-official-studio-mcp-runtime')throw new Error('ROBLOX_STUDIO_MCP_RUNTIME_AUTHORITY_INVALID');
 
   const actions=(Array.isArray(runtime?.actions)?runtime.actions:[]).map(row=>({
@@ -1430,7 +1447,7 @@ export function createLocalStudioPlayEvidence({
       infrastructureFailure,
       failureClass,
       robloxFailureClass,
-      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineVersionAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
+      actualPlayEligibility:currentExactLocalBuild?'F0_EXACT_LOCAL_BUILD':runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineVersionAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':'HISTORICAL_REPLAY',
       studioMcpServerEnablementRequired,
       operatorPrerequisite:studioMcpServerEnablementRequired?'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT':null,
       localPlaceFile:true,
@@ -1446,12 +1463,13 @@ export function createLocalStudioPlayEvidence({
       universeId,
       placeId,
       versionNumber,
-      historicalSharedTargetExactArtifact:item?.robloxSharedTargetCurrent!==true,
+      historicalSharedTargetExactArtifact:historicalExactPublishedArtifact,
       historicalExactBuildReplay:historicalExactPublishedArtifact,
       currentSourceArtifactBinding,
+      currentExactLocalBuild,
       currentPublishedRuntimeClaim:false,
-      publishedCandidateCrossCheckPassed:true,
-      publishedCandidateCrossCheckAuthority:'COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE',
+      publishedCandidateCrossCheckPassed:candidateMatchesExpected,
+      publishedCandidateCrossCheckAuthority:candidateMatchesExpected?'COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE':'NOT_REQUIRED_FOR_INTERNAL_LOCAL_VALIDATION',
       capabilities:{officialStudioMcp:officialMcp,playMode,mcpInput,screenCapture,consoleCapture},
       actions,
       checkpoints,
@@ -1523,14 +1541,43 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
     item.robloxQualityBuildUpSourceRevision=null;
     item.robloxQualityBuildUpEvidence=null;
     item.robloxQualityBuildUpLastPassedAt=result.evidence.testedAt;
-    item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
-    item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
-    item.robloxLastSuccessfulStage='VIBE_INTERNAL_PLAY';
-    item.robloxFailureStage=null;
-    item.robloxFailureSignature=null;
+    item.robloxF1ToF8Passed=true;
+    item.robloxF1ToF8PassedAt=result.evidence.testedAt;
+    item.robloxF1ToF8Evidence={
+      version:1,
+      gameId:clean(item.gameId),
+      sourceRevision:clean(result.evidence.sourceRevision),
+      artifactIdentity:clean(result.evidence.artifactIdentity),
+      artifactRunId:Number(result.evidence.artifactRunId||0),
+      executionGroup:'G1_SINGLE_INTERNAL_SESSION',
+      floors:['F1','F2','F3','F4','F5','F6','F7','F8'],
+      singleRuntimeSession:true,
+      runtimeLaunchCount:1,
+      officialStudioMcp:true,
+      localExactBuild:true,
+      externalServerBootRequired:false,
+      conditionalNotApplicableHandledInline:true,
+      runtimeVerified:result.evidence.runtimeVerified===true,
+      scenarioContractRequired:result.evidence.scenarioContractRequired===true,
+      scenarioCoveragePass:result.evidence.scenarioCoveragePass===true,
+      consoleErrorCount:Number(result.evidence.runtimeSummary?.consoleErrorCount||0),
+      checkpoints:result.evidence.checkpoints,
+      scenarios:result.evidence.scenarioCoverage,
+      authority:'roblox-f1-f8-single-official-studio-mcp-session',
+      verifiedAt:result.evidence.testedAt
+    };
+    item.robloxF9PendingInParallel=true;
+    item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
+    item.canonicalState='ROBLOX_F1_TO_F8_INTERNAL_SESSION_PASSED';
+    item.robloxLastSuccessfulStage='F1_TO_F8_SINGLE_INTERNAL_SESSION';
+    item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+    item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
     item.robloxNativeFailureClass=null;
-    item.routingBlockers=[];
+    item.routingBlockers=['roblox-final-review-pending'];
   }else if(result.evidence.infrastructureFailure){
+    item.robloxF1ToF8Passed=false;
+    item.robloxF1ToF8PassedAt=null;
+    item.robloxF1ToF8Evidence=null;
     if(item.robloxQualityBuildUpRequired!==true)item.robloxQualityFailureClass='INFRASTRUCTURE_OR_EVIDENCE_ONLY';
     item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
     item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
@@ -1538,6 +1585,9 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
     item.robloxFailureSignature='ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING';
     item.routingBlockers=['roblox-studio-mcp-infrastructure-pending'];
   }else{
+    item.robloxF1ToF8Passed=false;
+    item.robloxF1ToF8PassedAt=null;
+    item.robloxF1ToF8Evidence=null;
     const qualityFailureSignature=result.evidence.qualityFailureKinds?.length?'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED':result.evidence.errors.length?'ROBLOX_STUDIO_MCP_RUNTIME_ERROR':'ROBLOX_STUDIO_MCP_PLAY_CHECKPOINT_FAILED';
     item.robloxQualityBuildUpRequired=true;
     item.robloxQualityFailureClass='PRODUCT';
@@ -1562,9 +1612,8 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
     item.robloxNativeFailureClass=result.evidence.robloxFailureClass||null;
     item.routingBlockers=['roblox-studio-mcp-play-repair-required'];
   }
-  item.robloxPublicReleaseReady=false;
-  item.robloxPublicRelease=false;
-  item.robloxReleaseClaim=false;
+  // Existing internal/public release state is preserved while a new validation cycle runs.
+  // Publication is controlled separately by explicit owner approval.
   item.updatedAt=result.evidence.testedAt;
   queue.updatedAt=result.evidence.testedAt;
   return{queue,item,result};
