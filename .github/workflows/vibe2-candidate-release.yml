@@ -319,6 +319,22 @@ jobs:
           git fetch origin main --quiet
           if [ "$ALREADY_PROMOTED" = 'true' ]; then
             git diff --quiet "$CANDIDATE_SHA" origin/main -- "$SOURCE_ROOT" || { echo 'already-promoted source no longer matches candidate' >&2; exit 1; }
+            promotion_sha="$(git rev-parse origin/main)"
+            source_tree_sha="$(git rev-parse "origin/main:$SOURCE_ROOT")"
+            [[ "$source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+            for attempt in $(seq 1 60); do
+              pages_state="$(gh api -H 'Accept: application/vnd.github+json'                 "repos/$GITHUB_REPOSITORY/commits/$promotion_sha/check-runs?per_page=100"                 --jq '[.check_runs[] | select(.name=="Cloudflare Pages")] | sort_by(.started_at) | last | if . == null then "missing:" else (.status + ":" + (.conclusion // "")) end')"
+              echo "VIBE2_WEB_CURRENT_DEPLOYMENT_CHECK=$pages_state"
+              case "$pages_state" in
+                completed:success) break ;;
+                completed:*) echo "Cloudflare Pages current deployment check failed: $pages_state" >&2; exit 1 ;;
+              esac
+              if [ "$attempt" -ge 60 ]; then echo "Cloudflare Pages current deployment check did not complete successfully" >&2; exit 1; fi
+              sleep 10
+            done
+            echo "promotion_sha=$promotion_sha" >> "$GITHUB_OUTPUT"
+            echo "source_tree_sha=$source_tree_sha" >> "$GITHUB_OUTPUT"
+            echo "VIBE2_WEB_MAIN_PROMOTION_SOURCE_TREE_SHA=$source_tree_sha"
             echo 'VIBE2_WEB_ALREADY_PROMOTED=YES'
             exit 0
           fi
@@ -366,7 +382,13 @@ jobs:
           gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
           git fetch origin main --quiet
           git diff --quiet "$release_commit" origin/main -- "$SOURCE_ROOT"
-          echo "VIBE2_MAIN_PROMOTION_SHA=$(git rev-parse origin/main)"
+          promotion_sha="$(git rev-parse origin/main)"
+          source_tree_sha="$(git rev-parse "origin/main:$SOURCE_ROOT")"
+          [[ "$source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "promotion_sha=$promotion_sha" >> "$GITHUB_OUTPUT"
+          echo "source_tree_sha=$source_tree_sha" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_MAIN_PROMOTION_SHA=$promotion_sha"
+          echo "VIBE2_WEB_MAIN_PROMOTION_SOURCE_TREE_SHA=$source_tree_sha"
           echo "VIBE2_RELEASE_PR=$pr_url"
           echo 'DIRECT_MAIN_WRITE=NO'
 
@@ -378,11 +400,17 @@ jobs:
           GAME_ID: ${{ needs.inspect.outputs.game_id }}
           QA_OUTCOME: ${{ steps.webqa.outcome }}
           PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
+          PROMOTED_MAIN_SHA: ${{ steps.promote.outputs.promotion_sha }}
+          PROMOTED_SOURCE_TREE_SHA: ${{ steps.promote.outputs.source_tree_sha }}
           CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
         shell: bash
         run: |
           set -euo pipefail
           if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
+          if [ "$result" = PASS ] && [[ ! "$PROMOTED_SOURCE_TREE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo 'WEB_PROMOTED_SOURCE_TREE_IDENTITY=INVALID' >&2
+            result=FAIL
+          fi
           if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
             if [ "$result" = PASS ]; then
               gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main -f released_game_id="$GAME_ID" -f release_task_id="$TASK_ID" -f release_origin="$CANDIDATE_ORIGIN"
@@ -397,7 +425,7 @@ jobs:
             exit
           fi
           rm -rf /tmp/vibe2-control
-          git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch >/dev/null 2>&1
           git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
           git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
@@ -409,7 +437,7 @@ jobs:
             git fetch origin vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
             if [ "$result" = PASS ]; then
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-static-qa-pass,main-pr-merged,actions-run-${GITHUB_RUN_ID}"
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-static-qa-pass,web-cloudflare-deployment-pass,main-pr-merged,web-runtime-source-tree:${PROMOTED_SOURCE_TREE_SHA},web-main-sha:${PROMOTED_MAIN_SHA},actions-run-${GITHUB_RUN_ID}"
             else
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=web-qa-or-promotion-failed --evidence="web-qa-${QA_OUTCOME},promotion-${PROMOTE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             fi
@@ -426,15 +454,11 @@ jobs:
             sleep $((attempt * 2))
           done
           test "$settled" = 1
-          if [ "$result" = PASS ]; then
-            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
-            echo "VIBE2_ROBLOX_RUNTIME_QA_DISPATCHED=${GAME_ID}"
-          fi
           payload="$(jq -nc \
             --arg run "${GITHUB_RUN_ID:-}" \
             --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
             --arg task "${TASK_ID:-}" \
-            --arg outcome "$([ "$result" = PASS ] && printf 'RUNTIME_QA_PENDING' || printf '%s' "${result:-QUEUE_UPDATED}")" \
+            --arg outcome "${result:-QUEUE_UPDATED}" \
             '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"dependency-or-retry-ready"}}')"
           curl --fail-with-body --silent --show-error \
             --request POST \
@@ -445,6 +469,7 @@ jobs:
             --data "$payload"
           echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:${result:-QUEUE_UPDATED}"
           echo "VIBE2_WEB_AUTO_DEPLOY=$result"
+          if [ "$result" = PASS ]; then echo "VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT:${PROMOTED_SOURCE_TREE_SHA}"; fi
           [ "$result" = PASS ]
 
   unity-build:
@@ -486,7 +511,7 @@ jobs:
             exit 1
           fi
           rm -rf /tmp/vibe2-control
-          git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch >/dev/null 2>&1
           git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
           git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
@@ -669,7 +694,7 @@ jobs:
             exit
           fi
           rm -rf /tmp/vibe2-control
-          git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch >/dev/null 2>&1
           git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
           git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
@@ -748,7 +773,7 @@ jobs:
             exit 1
           fi
           rm -rf /tmp/vibe2-control
-          git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-control >/dev/null 2>&1
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch >/dev/null 2>&1
           git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
           git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
