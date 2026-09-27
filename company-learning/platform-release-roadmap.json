@@ -25654,18 +25654,33 @@
     }
   },
   "robloxHomepageThumbnailSyncContract": {
-    "version": 1,
+    "version": 2,
     "status": "ACTIVE_EXECUTABLE_CONTRACT",
     "authority": "OWNER_DIRECTIVE_2026-09-26",
     "objective": "USE_ONE_GAME_MARKETING_IMAGE_AUTHORITY_FOR_ROBLOX_HOMEPAGE_THUMBNAIL_AND_COMPANY_HOMEPAGE_GAME_CARD",
     "scope": {
       "currentInternalRobloxExposureGames": [
+        "amusement-tycoon",
+        "bug-defense",
         "cozy-island",
         "daechung-rpg",
+        "fantasy-survival",
         "horror-escape-room",
+        "line-defense",
+        "monster-adventure",
+        "seed-action-survival-rogu-echoes-of-the-lost-star",
+        "seed-casual-realm-weaver",
+        "seed-idle-growth-rpg-crystal-bloom",
+        "seed-puzzle-chromatic-cascade",
+        "seed-single-defense-strat-celestial-bastion",
+        "seed-story-complete-rpg-chronicles-of-eldoria",
+        "survival",
         "village-dungeons"
       ],
-      "futureEligibleGames": "ANY_ROBLOX_GAME_WITH_VERIFIED_UNIVERSE_ID_AND_CANONICAL_MARKETING_IMAGE"
+      "futureEligibleGames": "ANY_ROBLOX_GAME_WITH_VERIFIED_UNIVERSE_ID_AND_CANONICAL_MARKETING_IMAGE",
+      "currentInternalRobloxExposureGameCount": 16,
+      "selectionAuthority": "company-runtime/homepage-platform-exposure.json",
+      "allInternalReleaseReadyRobloxGamesRequired": true
     },
     "canonicalImageAuthority": {
       "field": "canonical.marketing.thumbnail",
@@ -25728,6 +25743,17 @@
       ".github/workflows/company-development-roblox-release-promotion.yml",
       "qa/company-roblox-thumbnail-sync.test.mjs",
       "qa/company-homepage-runtime-propagation.test.mjs"
-    ]
+    ],
+    "automation": {
+      "triggerFiles": [
+        "assets/roblox-thumbnails/**",
+        "game-catalog.json",
+        ".github/workflows/company-development-roblox-release-promotion.yml"
+      ],
+      "batchSource": "company-runtime/homepage-platform-exposure.json",
+      "batchEligibility": "ROBLOX.internalReleaseReady=true AND valid placeId AND canonical.marketing.thumbnail under assets/roblox-thumbnails/",
+      "placeRepublishRequired": false,
+      "thumbnailOnlyUpload": true
+    }
   }
 }
