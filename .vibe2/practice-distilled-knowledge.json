@@ -43,9 +43,8 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false,
-      "confirmations": 164,
+      "confirmations": 165,
       "practiceTaskIds": [
-        "LEARNING-PRACTICE-gap-unity_runtime-l1-g1",
         "LEARNING-PRACTICE-gap-unity_runtime-l4-g1",
         "LEARNING-PRACTICE-gap-visual_identity-l7-g1",
         "LEARNING-PRACTICE-gap-world_narrative-l1-g1",
@@ -64,10 +63,10 @@
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_333cb035bd13d117708a9b9d-control-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f-challen-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_e24add62615bf96a065576ab-control-g1",
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_74d39d52bb47e6444412ec04-challen-g1"
+        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_74d39d52bb47e6444412ec04-challen-g1",
+        "LEARNING-PRACTICE-gap-uefn_replication-l1-g2"
       ],
       "rawModelOutputSha256s": [
-        "7b8441135efc16d293ee0b05b91bbe3074c3c06c2a3977d99c2a2adbc0eb3287",
         "1e5bc3a4e247b436d1c067f5cd7c78f6595446e0268316d46d99ba10f9df78e4",
         "97a8b6465a46304dd8941d7fa294d918580e0f72082a266a363a9912c3492693",
         "e43d46c96359ca36838e378feb6473887b944061eb9a1519325c14eec0cfadb3",
@@ -86,10 +85,11 @@
         "e7c0f925564658f35d317f0173df61f86e32b535bad11078dda421c84e1826c1",
         "619937bc391493d28172e5a5053a67acdda35251fbb250009a8fee6e4dd96f74",
         "ca7100cb8a142ce89baa793cc18d146a717e75000d1b5f7e25686f19aae56b4f",
-        "e6bfa33074775a9f2c3ae7e92408c51809c3cf3171d74c519540202e08df604c"
+        "e6bfa33074775a9f2c3ae7e92408c51809c3cf3171d74c519540202e08df604c",
+        "64afd92d0d1c47d3533fe179665169b6c47b9b5617aef51d12dd59e85fc7b6fd"
       ],
       "createdAt": "2026-09-18T16:48:29.148Z",
-      "updatedAt": "2026-09-27T15:50:51.738Z",
+      "updatedAt": "2026-09-27T16:55:46.728Z",
       "lifecycle": "ACTIVE",
       "techniqueFingerprints": [],
       "knowledgeAtoms": [
@@ -453,12 +453,8 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false,
-      "confirmations": 202,
+      "confirmations": 206,
       "practiceTaskIds": [
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_2c0a700824026293385a417b-challen-g1",
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_8d74f51489e0fcd3b8c02e18-challen-g1",
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_d2ee6e412a4de5a362ff451b-challen-g2",
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_e24add62615bf96a065576ab-challen-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_f3072d255ad4f857aea1fc34-control-g2",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_2c0a700824026293385a417b-control-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_333cb035bd13d117708a9b9d-control-g1",
@@ -474,13 +470,13 @@
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_74d39d52bb47e6444412ec04-challen-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f-control-g2",
         "LEARNING-PRACTICE-gap-relationship_memory-l1-g2",
-        "LEARNING-PRACTICE-gap-roblox_character_state-l1-g2"
+        "LEARNING-PRACTICE-gap-roblox_character_state-l1-g2",
+        "LEARNING-PRACTICE-gap-roblox_touch_input-l1-g2",
+        "LEARNING-PRACTICE-gap-streaming-l1-g2",
+        "LEARNING-PRACTICE-gap-uefn_replication-l1-g2",
+        "LEARNING-PRACTICE-gap-uefn_runtime-l1-g2"
       ],
       "rawModelOutputSha256s": [
-        "8cd0892f04d4b81ef827882ab4e67148f2affa155b7763be1c6d3d438d4b4400",
-        "37a34efb212c936380ef4da37b667f636caa15164ead14f516f669669b7c4d6f",
-        "c3ca75e250e62439044297c81fec1f569a060b9abdcabde216020ff5db9a3cae",
-        "fc21f83837ed9d06eef20eff8a1d7587ed637e51c4565e013f4ab9dd07640b5a",
         "d173de20261bb5b3fdb75cd0488d5b8c1a709a855b977c6f16c10eca334a5c62",
         "56185a3a0346152354f88295af2559af8a98af2cdddb2a07cf371c32a27265e1",
         "e7c0f925564658f35d317f0173df61f86e32b535bad11078dda421c84e1826c1",
@@ -496,10 +492,14 @@
         "e6bfa33074775a9f2c3ae7e92408c51809c3cf3171d74c519540202e08df604c",
         "6174900b458b1e0be807d3834a75a5a66d5b752229a895d578104deaea27b5c7",
         "f7dff43c68a66a7cb67aa57e3c94f4b1e97be8be995506ff8ac8a47c209c4962",
-        "4262ee96b8eb3fa84be28fd3c3c3f9883ff37fc6a28c9cb0db0933798601289f"
+        "4262ee96b8eb3fa84be28fd3c3c3f9883ff37fc6a28c9cb0db0933798601289f",
+        "3961fe066c487f19f3cb8369152b43a39c0d416b8f640f0e0a3257831ceb1d84",
+        "530210c2f861bc40e04d1dcac40fa091b23051310399ec70557fd99a4f44a77a",
+        "64afd92d0d1c47d3533fe179665169b6c47b9b5617aef51d12dd59e85fc7b6fd",
+        "1470742ae74b3fb64bf289f87f55064290b8ba3ed6e929df3c037c27dabd69c8"
       ],
       "createdAt": "2026-09-24T02:22:36.706Z",
-      "updatedAt": "2026-09-27T16:50:23.926Z"
+      "updatedAt": "2026-09-27T16:55:46.728Z"
     },
     {
       "id": "practice-distilled:361061b79d4bcd2d2050",
@@ -534,12 +534,8 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false,
-      "confirmations": 225,
+      "confirmations": 229,
       "practiceTaskIds": [
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_f3072d255ad4f857aea1fc34-control-g2",
-        "LEARNING-PRACTICE-gap-state_machine-l23-g1",
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_2c0a700824026293385a417b-control-g1",
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_333cb035bd13d117708a9b9d-control-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f-challen-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_85db81b69282663e194c1627-control-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_dd1edc1a11a1e7a360dfda28-control-g2",
@@ -555,13 +551,13 @@
         "LEARNING-PRACTICE-company-graphics-roblox-world-generation-g2",
         "LEARNING-PRACTICE-gap-character_relationship_memory-l1-g2",
         "LEARNING-PRACTICE-gap-relationship_memory-l1-g2",
-        "LEARNING-PRACTICE-gap-roblox_character_state-l1-g2"
+        "LEARNING-PRACTICE-gap-roblox_character_state-l1-g2",
+        "LEARNING-PRACTICE-gap-roblox_touch_input-l1-g2",
+        "LEARNING-PRACTICE-gap-streaming-l1-g2",
+        "LEARNING-PRACTICE-gap-uefn_replication-l1-g2",
+        "LEARNING-PRACTICE-gap-uefn_runtime-l1-g2"
       ],
       "rawModelOutputSha256s": [
-        "d173de20261bb5b3fdb75cd0488d5b8c1a709a855b977c6f16c10eca334a5c62",
-        "be9c245eab06da6c6d60e15754af9a9437a0f68b928a27bc1e286db53edd8c49",
-        "56185a3a0346152354f88295af2559af8a98af2cdddb2a07cf371c32a27265e1",
-        "e7c0f925564658f35d317f0173df61f86e32b535bad11078dda421c84e1826c1",
         "619937bc391493d28172e5a5053a67acdda35251fbb250009a8fee6e4dd96f74",
         "ae2ecb5c7c5e5fc432521b937bf72fcfaae47cbeece13e3ce3e42b7771f4bbd7",
         "03830057648858660702f26eda7f8755dfd15bb8cdcc1e59d8e2e321c8b63419",
@@ -577,10 +573,14 @@
         "5dade9c3567d3d9de76b4027ac30d00c71278cd76ca43d63e6752d1e8f29cfd0",
         "bd9c44ccfcb497248acb5da22531af94c8a59fbd26cf8294305c779cf88b8711",
         "f7dff43c68a66a7cb67aa57e3c94f4b1e97be8be995506ff8ac8a47c209c4962",
-        "4262ee96b8eb3fa84be28fd3c3c3f9883ff37fc6a28c9cb0db0933798601289f"
+        "4262ee96b8eb3fa84be28fd3c3c3f9883ff37fc6a28c9cb0db0933798601289f",
+        "3961fe066c487f19f3cb8369152b43a39c0d416b8f640f0e0a3257831ceb1d84",
+        "530210c2f861bc40e04d1dcac40fa091b23051310399ec70557fd99a4f44a77a",
+        "64afd92d0d1c47d3533fe179665169b6c47b9b5617aef51d12dd59e85fc7b6fd",
+        "1470742ae74b3fb64bf289f87f55064290b8ba3ed6e929df3c037c27dabd69c8"
       ],
       "createdAt": "2026-09-24T02:22:36.707Z",
-      "updatedAt": "2026-09-27T16:50:23.926Z"
+      "updatedAt": "2026-09-27T16:55:46.728Z"
     },
     {
       "id": "practice-distilled:f472b70e86846f6460f2",
@@ -696,12 +696,8 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false,
-      "confirmations": 257,
+      "confirmations": 261,
       "practiceTaskIds": [
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_f3072d255ad4f857aea1fc34-control-g2",
-        "LEARNING-PRACTICE-gap-debugging-l23-g1",
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_2c0a700824026293385a417b-control-g1",
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_333cb035bd13d117708a9b9d-control-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f-challen-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_85db81b69282663e194c1627-control-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_dd1edc1a11a1e7a360dfda28-control-g2",
@@ -717,13 +713,13 @@
         "LEARNING-PRACTICE-company-graphics-roblox-world-generation-g2",
         "LEARNING-PRACTICE-gap-character_relationship_memory-l1-g2",
         "LEARNING-PRACTICE-gap-relationship_memory-l1-g2",
-        "LEARNING-PRACTICE-gap-roblox_character_state-l1-g2"
+        "LEARNING-PRACTICE-gap-roblox_character_state-l1-g2",
+        "LEARNING-PRACTICE-gap-roblox_touch_input-l1-g2",
+        "LEARNING-PRACTICE-gap-streaming-l1-g2",
+        "LEARNING-PRACTICE-gap-uefn_replication-l1-g2",
+        "LEARNING-PRACTICE-gap-uefn_runtime-l1-g2"
       ],
       "rawModelOutputSha256s": [
-        "d173de20261bb5b3fdb75cd0488d5b8c1a709a855b977c6f16c10eca334a5c62",
-        "66f403c4be279e478fa95472f9c710750a4498c6e85ca0bea41bdc2c327213d6",
-        "56185a3a0346152354f88295af2559af8a98af2cdddb2a07cf371c32a27265e1",
-        "e7c0f925564658f35d317f0173df61f86e32b535bad11078dda421c84e1826c1",
         "619937bc391493d28172e5a5053a67acdda35251fbb250009a8fee6e4dd96f74",
         "ae2ecb5c7c5e5fc432521b937bf72fcfaae47cbeece13e3ce3e42b7771f4bbd7",
         "03830057648858660702f26eda7f8755dfd15bb8cdcc1e59d8e2e321c8b63419",
@@ -739,10 +735,14 @@
         "5dade9c3567d3d9de76b4027ac30d00c71278cd76ca43d63e6752d1e8f29cfd0",
         "bd9c44ccfcb497248acb5da22531af94c8a59fbd26cf8294305c779cf88b8711",
         "f7dff43c68a66a7cb67aa57e3c94f4b1e97be8be995506ff8ac8a47c209c4962",
-        "4262ee96b8eb3fa84be28fd3c3c3f9883ff37fc6a28c9cb0db0933798601289f"
+        "4262ee96b8eb3fa84be28fd3c3c3f9883ff37fc6a28c9cb0db0933798601289f",
+        "3961fe066c487f19f3cb8369152b43a39c0d416b8f640f0e0a3257831ceb1d84",
+        "530210c2f861bc40e04d1dcac40fa091b23051310399ec70557fd99a4f44a77a",
+        "64afd92d0d1c47d3533fe179665169b6c47b9b5617aef51d12dd59e85fc7b6fd",
+        "1470742ae74b3fb64bf289f87f55064290b8ba3ed6e929df3c037c27dabd69c8"
       ],
       "createdAt": "2026-09-24T02:22:36.707Z",
-      "updatedAt": "2026-09-27T16:50:23.926Z"
+      "updatedAt": "2026-09-27T16:55:46.728Z"
     },
     {
       "id": "practice-distilled:0de29fd765422439deeb",
@@ -777,12 +777,8 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false,
-      "confirmations": 171,
+      "confirmations": 175,
       "practiceTaskIds": [
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_8d74f51489e0fcd3b8c02e18-challen-g1",
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_d2ee6e412a4de5a362ff451b-challen-g2",
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_e24add62615bf96a065576ab-challen-g1",
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_f3072d255ad4f857aea1fc34-control-g2",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_2c0a700824026293385a417b-control-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_333cb035bd13d117708a9b9d-control-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f-challen-g1",
@@ -798,13 +794,13 @@
         "LEARNING-PRACTICE-company-graphics-roblox-world-generation-g2",
         "LEARNING-PRACTICE-gap-character_relationship_memory-l1-g2",
         "LEARNING-PRACTICE-gap-relationship_memory-l1-g2",
-        "LEARNING-PRACTICE-gap-roblox_character_state-l1-g2"
+        "LEARNING-PRACTICE-gap-roblox_character_state-l1-g2",
+        "LEARNING-PRACTICE-gap-roblox_touch_input-l1-g2",
+        "LEARNING-PRACTICE-gap-streaming-l1-g2",
+        "LEARNING-PRACTICE-gap-uefn_replication-l1-g2",
+        "LEARNING-PRACTICE-gap-uefn_runtime-l1-g2"
       ],
       "rawModelOutputSha256s": [
-        "37a34efb212c936380ef4da37b667f636caa15164ead14f516f669669b7c4d6f",
-        "c3ca75e250e62439044297c81fec1f569a060b9abdcabde216020ff5db9a3cae",
-        "fc21f83837ed9d06eef20eff8a1d7587ed637e51c4565e013f4ab9dd07640b5a",
-        "d173de20261bb5b3fdb75cd0488d5b8c1a709a855b977c6f16c10eca334a5c62",
         "56185a3a0346152354f88295af2559af8a98af2cdddb2a07cf371c32a27265e1",
         "e7c0f925564658f35d317f0173df61f86e32b535bad11078dda421c84e1826c1",
         "619937bc391493d28172e5a5053a67acdda35251fbb250009a8fee6e4dd96f74",
@@ -820,10 +816,14 @@
         "5dade9c3567d3d9de76b4027ac30d00c71278cd76ca43d63e6752d1e8f29cfd0",
         "bd9c44ccfcb497248acb5da22531af94c8a59fbd26cf8294305c779cf88b8711",
         "f7dff43c68a66a7cb67aa57e3c94f4b1e97be8be995506ff8ac8a47c209c4962",
-        "4262ee96b8eb3fa84be28fd3c3c3f9883ff37fc6a28c9cb0db0933798601289f"
+        "4262ee96b8eb3fa84be28fd3c3c3f9883ff37fc6a28c9cb0db0933798601289f",
+        "3961fe066c487f19f3cb8369152b43a39c0d416b8f640f0e0a3257831ceb1d84",
+        "530210c2f861bc40e04d1dcac40fa091b23051310399ec70557fd99a4f44a77a",
+        "64afd92d0d1c47d3533fe179665169b6c47b9b5617aef51d12dd59e85fc7b6fd",
+        "1470742ae74b3fb64bf289f87f55064290b8ba3ed6e929df3c037c27dabd69c8"
       ],
       "createdAt": "2026-09-24T02:22:36.707Z",
-      "updatedAt": "2026-09-27T16:50:23.926Z"
+      "updatedAt": "2026-09-27T16:55:46.728Z"
     },
     {
       "id": "practice-distilled:92fb83ea92ed0720b0e4",
@@ -858,9 +858,8 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false,
-      "confirmations": 30,
+      "confirmations": 31,
       "practiceTaskIds": [
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_333cb035bd13d117708a9b9d-challen-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_107b55ca6e8e05ede28f9b9f-challen-g2",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_333cb035bd13d117708a9b9d-control-g2",
         "LEARNING-PRACTICE-gap-dialogue-l1-g2",
@@ -879,10 +878,10 @@
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_f3072d255ad4f857aea1fc34-control-g2",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f-challen-g1",
         "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_e24add62615bf96a065576ab-control-g1",
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f-control-g2"
+        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f-control-g2",
+        "LEARNING-PRACTICE-gap-uefn_replication-l1-g2"
       ],
       "rawModelOutputSha256s": [
-        "ffd381c6655d341edd8c62488108618ec79e042acd01b4afa9f67b3fe17f34d4",
         "abc0be3b00628ddc225a4015aa283ee972e38abd11d6aba26058fcf640a06c65",
         "06ad22e2366fcec751240ac3006dc2ecdb1ea9f6e12efc683d0c62f16e4536df",
         "81c39e19acbe83fe8e628c680fac261023692a61749eaf6c77d051dc28017557",
@@ -901,10 +900,11 @@
         "d173de20261bb5b3fdb75cd0488d5b8c1a709a855b977c6f16c10eca334a5c62",
         "619937bc391493d28172e5a5053a67acdda35251fbb250009a8fee6e4dd96f74",
         "ca7100cb8a142ce89baa793cc18d146a717e75000d1b5f7e25686f19aae56b4f",
-        "6174900b458b1e0be807d3834a75a5a66d5b752229a895d578104deaea27b5c7"
+        "6174900b458b1e0be807d3834a75a5a66d5b752229a895d578104deaea27b5c7",
+        "64afd92d0d1c47d3533fe179665169b6c47b9b5617aef51d12dd59e85fc7b6fd"
       ],
       "createdAt": "2026-09-24T03:45:40.623Z",
-      "updatedAt": "2026-09-27T16:24:16.514Z"
+      "updatedAt": "2026-09-27T16:55:46.728Z"
     },
     {
       "id": "practice-distilled:09a44488217c1cb39ff9",
@@ -1020,7 +1020,7 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false,
-      "confirmations": 9,
+      "confirmations": 10,
       "practiceTaskIds": [
         "LEARNING-PRACTICE-gap-quest_design-l11-g1",
         "LEARNING-PRACTICE-gap-character_persona-l1-g1",
@@ -1030,7 +1030,8 @@
         "LEARNING-PRACTICE-gap-quest_graph-l1-g1",
         "LEARNING-PRACTICE-gap-uefn_verse-l1-g1",
         "LEARNING-PRACTICE-gap-unity_runtime-l1-g1",
-        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f-challen-g1"
+        "LEARNING-PRACTICE-phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f-challen-g1",
+        "LEARNING-PRACTICE-gap-uefn_replication-l1-g2"
       ],
       "rawModelOutputSha256s": [
         "2d34b883101daf0a3322ae78e54b0765acfcf3418fc4bd11a87a02732e07e0ef",
@@ -1041,10 +1042,11 @@
         "ae8dff553d2d40191bdae917fc2bafb4a3b0355c8fde0591b8633b132f1b462d",
         "48ec8f43720b2bb40877007df9b0a205dfe021b68c963987b8bfb153fb5639ed",
         "081a075b62c60456fa58a5a5eb704ecd8e9ebe77c4471c4b1e653d4b06be39b0",
-        "619937bc391493d28172e5a5053a67acdda35251fbb250009a8fee6e4dd96f74"
+        "619937bc391493d28172e5a5053a67acdda35251fbb250009a8fee6e4dd96f74",
+        "64afd92d0d1c47d3533fe179665169b6c47b9b5617aef51d12dd59e85fc7b6fd"
       ],
       "createdAt": "2026-09-24T16:44:00.635Z",
-      "updatedAt": "2026-09-27T14:48:47.412Z"
+      "updatedAt": "2026-09-27T16:55:46.728Z"
     },
     {
       "id": "practice-distilled:acd1776045f32733bda4",
