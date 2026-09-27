@@ -3647,7 +3647,7 @@
           "workerControlCheckoutGamePrimaryBoundary": 256,
           "workerControlCheckoutAdaptiveBehaviorUnchanged": true,
           "reserveConcurrencyRelief": "LIVE_VERIFIED",
-          "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v3",
+          "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v4",
           "learningIdleRunnerPressureDeferral": "LIVE_VERIFIED",
           "gamePrimaryExternalBoundary": 256,
           "lastLanePressureLiveVerificationRun": 36204978877,
@@ -3657,8 +3657,8 @@
           "modelCacheWarmupRunnerRelief": "LIVE_VERIFIED_SKIP_MODEL_CACHE_JOB_ON_RESERVE_CACHE_HIT",
           "modelCacheHitRestoreLiveRun": 36208311596,
           "workerConditionalModelRestore": "IMPLEMENTED_PENDING_QA_AND_LIVE",
-          "schedulerEpochStaleRelease": "IMPLEMENTED_PENDING_CI_AND_LIVE",
-          "schedulerEpochStaleReleaseReason": "PRE_PATCH_V2_RUN_4554_HELD_WORKFLOW_LEVEL_SINGLETON_WHILE_NEW_TIMEOUT_RECOVERY_WAVES_REMAINED_JOBLESS_PENDING"
+          "schedulerEpochStaleRelease": "IMPLEMENTED_PENDING_CI_AND_ARM_LIVE",
+          "schedulerEpochStaleReleaseReason": "PRE_ARM_V3_RUN_36308954595_HELD_CURRENT_ARM_ASSET_VERIFICATION_BEHIND_WORKFLOW_SINGLETON"
         },
         "incidentHistory": [
           {
@@ -9714,6 +9714,37 @@
       "completedWorkReplayOnReconnect": false,
       "approvedScopeResponsibleFilesQualitySecurityAndReleaseGatesPreserved": true,
       "newQueueOrPipelineCreated": false
+    },
+    "assetArmSchedulerEpochRelease20260927": {
+      "authority": "OWNER_DIRECTIVE_2026-09-27",
+      "reason": "RELEASE_STALE_PRE_ARM_V3_SCHEDULER_CHAIN_SO_CURRENT_ASSET_DEVELOPMENT_CAN_USE_THE_SEPARATE_UBUNTU_24_04_ARM_POOL",
+      "observed": {
+        "holdingRunId": 36308954595,
+        "holdingHead": "df004bd40b823015bc7a223c8f437f7d9fa1c539",
+        "holdingExecutionLane": "ASSET_DEVELOPMENT",
+        "holdingRunnerImage": "ubuntu-24.04",
+        "holdingWorkflowRef": "df004bd40b823015bc7a223c8f437f7d9fa1c539",
+        "currentPendingRunId": 36311910419,
+        "currentPendingHead": "d9f237a2c9ac34dc564dea3af2f5328696a5a377"
+      },
+      "previousEpoch": "vibe2-24h-cycle-singleton-v3",
+      "currentEpoch": "vibe2-24h-cycle-singleton-v4",
+      "invariant": "ONE_CONTINUOUS_SCHEDULER_CHAIN_PER_CURRENT_EPOCH",
+      "stalePreviousEpochAction": "ALLOW_EXISTING_V3_RUN_TO_DRAIN_WITHOUT_NEW_V3_WAKE_SIGNALS",
+      "newWakeSignalAction": "COLLAPSE_TO_SINGLE_V4_PENDING_OR_RUNNING_CHAIN",
+      "expectedAssetRunner": "ubuntu-24.04-arm",
+      "preserves": [
+        "CANCEL_IN_PROGRESS_FALSE",
+        "EXISTING_CANONICAL_QUEUE",
+        "LANE_RESERVATION_CONTRACT",
+        "OPTIMISTIC_STATE_WRITES",
+        "QA_AND_RELEASE_GATES",
+        "GAME_PRIMARY_UBUNTU_LATEST"
+      ],
+      "newQueueOrPipelineCreated": false,
+      "authorityChange": "NONE",
+      "qualityGateWeakening": false,
+      "securityBoundaryChange": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -9823,7 +9854,7 @@
       "runnerPressureSource": "GITHUB_ACTIONS_RECENT_RUN_STATUS_QUEUED_PENDING_REQUESTED",
       "pressureObservationFailureAction": "DEFER_LEARNING_ONLY",
       "productionMayNotWaitForLearningReserve": true,
-      "schedulerEpoch": "vibe2-24h-cycle-singleton-v3"
+      "schedulerEpoch": "vibe2-24h-cycle-singleton-v4"
     },
     "releaseWait": {
       "taskClass": "RELEASE_WAIT",
