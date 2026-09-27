@@ -152,6 +152,7 @@ export function invalidateRobloxDownstreamEvidence(item,{sourceRevision,stamp}){
     robloxHeadlessFinalReviewPassed:false,
     robloxHeadlessPassedAt:null,
     robloxInternalReleaseReady:false,
+    robloxInternalReleasePublished:false,
     robloxPublicReleaseReady:false,
     robloxPublicRelease:false,
     robloxReleaseClaim:false,
