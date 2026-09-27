@@ -1306,7 +1306,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-27T06:55:49.497Z",
+      "updatedAt": "2026-09-27T07:05:49.666Z",
       "robloxSourceCommit": "b74a4ac341b7dff0ecd9f2d6cf25375534a2d268",
       "robloxSourceBootstrapPassedAt": "2026-09-27T02:19:51.568Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1548,7 +1548,7 @@
       "robloxIndependentQaPassedAt": "2026-09-27T06:52:04.685Z",
       "robloxRegressionPassed": true,
       "robloxRegressionPassedAt": "2026-09-27T06:52:04.685Z",
-      "robloxFinalReviewPassed": true,
+      "robloxFinalReviewPassed": false,
       "robloxFinalReviewPassedAt": "2026-09-27T06:20:31.299Z",
       "robloxF9ReleaseRegressionPassed": true,
       "robloxF9ReleaseRegressionEvidence": {
@@ -1730,12 +1730,9 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "INTERNAL_PLATFORM_RELEASE",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_PERSISTENT_FAILURE",
-      "routingBlockers": [
-        "roblox-open-cloud-engine-probe-persistent-failure",
-        "roblox-runtime-foundation-awaiting-observation"
-      ],
+      "robloxFailureStage": "PUBLIC_RELEASE_RUNTIME_FINDING",
+      "robloxFailureSignature": "ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT",
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -2452,8 +2449,10 @@
         "roblox-public-release-awaiting-real-server-boot",
         "roblox-perpetual-buildup-public-hard-gate-pending"
       ],
-      "robloxF9FailureSignature": null,
-      "robloxF9Blockers": [],
+      "robloxF9FailureSignature": "ROBLOX_F9_EXACT_EVIDENCE_MISMATCH",
+      "robloxF9Blockers": [
+        "roblox-f9-exact-evidence-mismatch"
+      ],
       "robloxRuntimeFoundationInternalReleaseException": true,
       "robloxPublicReleaseVersionNumber": 24,
       "robloxPublicReleaseEvidence": {
@@ -10692,7 +10691,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T07:05:33.537Z",
+  "updatedAt": "2026-09-27T07:05:49.666Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
