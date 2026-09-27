@@ -224,6 +224,12 @@ test('Unity checkpoint persistence preserves farther exact Roblox shared progres
   assert.match(workflowSource,/const exactRobloxBuild=item\.robloxBuildOrPackagePassed===true/);
   assert.match(workflowSource,/const exactRobloxCandidate=exactCandidate\.published===true/);
   assert.match(workflowSource,/const robloxInternal=item\.robloxInternalReleaseReady===true/);
+  assert.match(workflowSource,/const robloxRepairRequired=/);
+  assert.match(workflowSource,/item\.canonicalState\|\|''\)\.toUpperCase\(\)==='TARGET_PLATFORM_REPAIR_REQUIRED'/);
+  assert.match(workflowSource,/Boolean\(String\(item\.robloxFailureStage\|\|''\)\.trim\(\)\)/);
+  assert.match(workflowSource,/mergedUpdate\.currentStep=String\(item\.currentStep\|\|'TARGET_PLATFORM_TECHNICAL_VALIDATION'\)/);
+  assert.match(workflowSource,/mergedUpdate\.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED'/);
+  assert.match(workflowSource,/UNITY_SHARED_REPAIR_PRESERVED_FROM_ROBLOX=/);
   assert.match(workflowSource,/mergedUpdate\.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
   assert.match(workflowSource,/mergedUpdate\.canonicalState='F0_SOURCE_PREFLIGHT_PASSED'/);
   assert.match(workflowSource,/mergedUpdate\.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION'/);
