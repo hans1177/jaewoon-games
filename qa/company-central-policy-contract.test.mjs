@@ -1217,6 +1217,38 @@ test('duplicate administrative QA keeps only the latest same-ref validation',()=
 });
 
 
+test('native empty-game batch sweeps coalesce without serializing exact-game development',()=>{
+  const policy=roadmap.changeRecord?.nativeBatchSweepCoalescing20260927;
+  assert.equal(policy?.batchPolicy,'KEEP_ACTIVE_ONE_PLUS_LATEST_PENDING');
+  assert.equal(policy?.cancelInProgress,false);
+  assert.equal(policy?.activeBatchCancellationForbidden,true);
+  assert.equal(policy?.exactGameGroupUsesGameId,true);
+  assert.equal(policy?.exactGameDispatchParallelismPreserved,true);
+  assert.equal(policy?.independentGameCancellationForbidden,true);
+  assert.equal(policy?.noArtificialGlobalGameCountCap,true);
+  assert.equal(policy?.heavyGameExecutionChanged,false);
+  assert.equal(policy?.qualitySecurityReleaseGatesUnchanged,true);
+  const roblox=readText('.github/workflows/company-development-roblox-runtime.yml');
+  const unity=readText('.github/workflows/company-development-unity-runtime.yml');
+  const robloxHeader=roblox.slice(0,roblox.indexOf('\njobs:\n'));
+  const unityHeader=unity.slice(0,unity.indexOf('\njobs:\n'));
+  assert.match(robloxHeader,/group:\s*roblox-native-exact-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(unityHeader,/group:\s*unity-native-exact-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(robloxHeader,/cancel-in-progress:\s*false/);
+  assert.match(unityHeader,/cancel-in-progress:\s*false/);
+  assert.doesNotMatch(robloxHeader,/github\.run_id/);
+  assert.doesNotMatch(unityHeader,/github\.run_id/);
+  const topology=architecture.nativeBatchSweepCoalescing;
+  assert.equal(topology?.robloxBatchGroup,'roblox-native-exact-batch');
+  assert.equal(topology?.unityBatchGroup,'unity-native-exact-batch');
+  assert.equal(topology?.batchPolicy,'ACTIVE_ONE_PLUS_LATEST_PENDING');
+  assert.equal(topology?.cancelInProgress,false);
+  assert.equal(topology?.exactGameGroupUsesGameId,true);
+  assert.equal(topology?.exactGameParallelismPreserved,true);
+  assert.equal(topology?.independentGameCancellationForbidden,true);
+  assert.equal(topology?.heavyGameExecutionUnchanged,true);
+});
+
 test('Director runner drain uses separate fixed 24.04 capacity while gate and supervision remain slim',()=>{
   const policy=roadmap.changeRecord?.directorDrainRunnerIsolation20260927;
   const topology=architecture.directorDrainRunnerIsolation;
