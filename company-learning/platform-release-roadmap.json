@@ -8551,7 +8551,14 @@
       "supervisionRunner": "ubuntu-slim",
       "staleUnstartedSchedulerMayCancel": true,
       "staleUnstartedFanInRefillMayCancel": true,
-      "exactUnityChildQaDuplicateMayCancel": true
+      "exactUnityChildQaDuplicateMayCancel": true,
+      "sameTitleRuntimeQueuedWinner": "LATEST_WHEN_NO_IN_PROGRESS",
+      "sameTitleRuntimeInProgressWinner": "ACTIVE_RUN_PRESERVED",
+      "staleQueuedSameTitleReason": "DUPLICATE_TITLE_STALE_QUEUED",
+      "robloxExactGameNewestQueuedPreserved": true,
+      "unityExactGameNewestQueuedPreserved": true,
+      "activeSameGameCancellationForbidden": true,
+      "releaseAndQaFifoSemanticsUnchanged": true
     },
     "vibe2CoreQaActiveCompletion20260927": {
       "id": "VIBE2_CORE_QA_ACTIVE_COMPLETION_2026-09-27",
