@@ -2187,27 +2187,30 @@
     "regressionStillRequired": true
   },
   "nativeExactGameWorkflowConcurrencyEvidence": {
-    "version": 1,
+    "version": 2,
     "authority": "MACHINE_EXECUTION_LOG_MAP",
     "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeExactGameWorkflowConcurrency20260927",
     "concurrencyGroups": [
-      "roblox-native-exact-<gameId-or-push-batch-or-runId>",
-      "unity-native-exact-<gameId-or-push-batch-or-runId>"
+      "roblox-native-exact-<gameId-or-batch>",
+      "unity-native-exact-<gameId-or-batch>"
     ],
     "cancelInProgress": false,
     "exactGameOverlapForbidden": true,
     "distinctGameParallelismRequired": true,
-    "batchRunIdentity": "PUSH=batch-push;NON_PUSH=github.run_id",
-    "batchGlobalSerialization": false,
+    "batchRunIdentity": "EMPTY_GAME=batch",
+    "batchGlobalSerialization": true,
     "centralActiveRunScanMarkers": [
       "ROBLOX_NATIVE_DISPATCH_DEDUPED_ACTIVE",
       "UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE"
     ],
     "qualitySecurityReleaseEvidenceUnchanged": true,
-    "pushBatchRunIdentity": "batch-push",
-    "nonPushEmptyBatchRunIdentity": "github.run_id",
+    "pushBatchRunIdentity": "batch",
+    "nonPushEmptyBatchRunIdentity": "batch",
     "pushBatchCoalesced": true,
-    "manualEmptyBatchRunScoped": true
+    "manualEmptyBatchRunScoped": false,
+    "batchPendingPolicy": "ACTIVE_ONE_PLUS_LATEST_PENDING",
+    "activeBatchCancellationForbidden": true,
+    "manualEmptyBatchCoalesced": true
   },
   "lightweightGameIngressRunnerReliefEvidence": {
     "version": 2,
@@ -2324,5 +2327,23 @@
     "technicalPlanRunnerUnchanged": "ubuntu-24.04-arm",
     "heavyWorkerRunnerUnchanged": "ubuntu-latest",
     "exactSourceAndArtifactBindingUnchanged": true
+  },
+  "nativeBatchSweepCoalescingEvidence": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_LOG_MAP",
+    "source": "company-learning/platform-release-roadmap.json#changeRecord.nativeBatchSweepCoalescing20260927",
+    "workflows": [
+      ".github/workflows/company-development-roblox-runtime.yml",
+      ".github/workflows/company-development-unity-runtime.yml"
+    ],
+    "expectedBatchGroups": [
+      "roblox-native-exact-batch",
+      "unity-native-exact-batch"
+    ],
+    "expectedPolicy": "ACTIVE_ONE_PLUS_LATEST_PENDING",
+    "cancelInProgress": false,
+    "exactGameParallelismPreserved": true,
+    "independentGameCancellationForbidden": true,
+    "qualitySecurityReleaseGatesUnchanged": true
   }
 }
