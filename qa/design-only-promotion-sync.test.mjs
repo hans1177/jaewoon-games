@@ -21,13 +21,17 @@ function centralPolicy(root){
       minimumDesignRequired:true,
       strictDesignScoreRequiredForDevelopmentAdmission:false,
       legacyWebFirstFallbackForbidden:true,
-      webDevelopmentStageRemoved:true,
+      webDevelopmentStageRemoved:false,
       unityWebEnabled:true,
-      unityWebRequired:false,
-      unityWebGateRequired:false,
-      unityWebMode:'VALIDATION_SURFACE_ONLY',
+      unityWebRequired:true,
+      unityWebGateRequired:true,
+      unityWebMode:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
       supportedDevelopmentPlatforms:['ROBLOX','UNITY'],
-      unityWebValidationSurface:{requiredForDevelopmentAdmission:false}
+      automaticPairing:{
+        ROBLOX:['UNITY_WEB_FLOOR','ROBLOX','UNITY'],
+        UNITY:['UNITY_WEB_FLOOR','UNITY','ROBLOX']
+      },
+      unityWebValidationSurface:{requiredForDevelopmentAdmission:true}
     }
   });
 }
@@ -104,6 +108,8 @@ test('minimum dual-platform design promotes immediately while strict review stay
 
   const item=read(root,'development-queue.json').items[0];
   assert.deepEqual(item.concurrentTargetPlatforms,['ROBLOX','UNITY']);
+  assert.equal(item.platformExecutionMode,'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT');
+  assert.equal(item.requestEitherStartsBoth,false);
   assert.equal(item.currentStep,'TARGET_PLATFORM_SOURCE_BIND');
   assert.equal(item.canonicalState,'PENDING_DUAL_NATIVE_SOURCE_BIND');
   assert.equal(item.minimumDesignContract.pass,true);
