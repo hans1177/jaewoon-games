@@ -64,6 +64,15 @@ test('continuation planner recognizes canonical concurrent Roblox lane before ow
   assert.match(workflow,/if\(platform!=='ROBLOX'&&!concurrentRoblox&&!secondaryOwnerFocus\)continue/);
 });
 
+test('continuation retries the superseded Roblox-only platform blocker for canonical concurrent games',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime-continuation.yml','utf8');
+  assert.match(workflow,/const priorPreflightEvidence=secondaryOwnerFocus\?item\.ownerFocusRobloxBuildPreflightEvidence:item\.robloxBuildPreflightEvidence/);
+  assert.match(workflow,/priorBlockers\.every\(blocker=>blocker==='roblox-platform-required'\)/);
+  assert.match(workflow,/&&concurrentRoblox/);
+  assert.match(workflow,/ROBLOX_PREFLIGHT_SUPERSEDED_PLATFORM_BLOCKER_RETRY=/);
+  assert.match(workflow,/\|\|supersededConcurrentPlatformBlocker/);
+});
+
 test('preflight persistence promotes only exact source and artifact',()=>{
   assert.ok(preflight.includes('result?.sourceRevision===sourceRevision'));
   assert.ok(preflight.includes('result?.artifactIdentity===artifactIdentity'));
