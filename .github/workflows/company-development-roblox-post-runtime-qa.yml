@@ -1160,9 +1160,11 @@ jobs:
           fi
           if [ -s "$blocking_file" ]; then
             cat "$blocking_file"
+            echo 'ROBLOX_OPEN_CLOUD_PERSISTENT_PROBE_FAILURE=YES'
             echo 'ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE=YES'
             exit 1
           fi
+          echo 'ROBLOX_OPEN_CLOUD_PERSISTENT_PROBE_FAILURE=NO'
           echo 'ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE=NO'
 
   studio-local-plan:
