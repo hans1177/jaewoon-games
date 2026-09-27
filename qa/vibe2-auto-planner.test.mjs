@@ -3140,3 +3140,47 @@ test('Roblox product-quality failure is projected into canonical planner buildup
   assert.match(planner,/const phase=qualityBuildUpRequired\|\|latestFailed\?'REPAIR'/);
   assert.match(planner,/if\(project\.queueRobloxQualityBuildUpRequired===true\)return uniqueTaskCandidates/);
 });
+
+
+test('collectProjects keeps Fortnite UEFN inside the existing planner instead of falling back to Web',()=>{
+  const root=tempRepo();
+  fs.mkdirSync(path.join(root,'unreal-games','uefn-demo'),{recursive:true});
+  fs.writeFileSync(path.join(root,'unreal-games','uefn-demo','Game.verse'),'OnBegin<override>()<suspends>:void=\n    return\n','utf8');
+  const localCatalog={games:[{id:'uefn-demo',name:'UEFN Demo',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]};
+  const rows=collectProjects(
+    {projects:[]},
+    localCatalog,
+    root,
+    {items:[{
+      gameId:'uefn-demo',
+      gameName:'UEFN Demo',
+      status:'ACTIVE',
+      selectedPlatform:'FORTNITE_UEFN',
+      targetSourcePath:'unreal-games/uefn-demo',
+      currentStep:'BUILD_UP',
+      canonicalState:'DEVELOPMENT_CONFIRMED'
+    }]}
+  );
+  const project=rows.find(row=>row.gameId==='uefn-demo');
+  assert.ok(project);
+  assert.equal(project.engine,'unreal');
+  assert.equal(project.target,'fortnite-uefn');
+  assert.equal(project.projectPath,'unreal-games/uefn-demo');
+  assert.notEqual(project.engine,'web');
+});
+
+test('collectProjects recognizes status-side Fortnite UEFN projects as the Unreal native implementation lane',()=>{
+  const root=tempRepo();
+  fs.mkdirSync(path.join(root,'unreal-games','status-uefn'),{recursive:true});
+  fs.writeFileSync(path.join(root,'unreal-games','status-uefn','Island.verse'),'OnBegin<override>()<suspends>:void=\n    return\n','utf8');
+  const rows=collectProjects(
+    {projects:[{gameId:'status-uefn',ownerDecision:'PASS',target:'FORTNITE_UEFN',projectPath:'unreal-games/status-uefn',progress:10}]},
+    {games:[{id:'status-uefn',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    root,
+    {}
+  );
+  const project=rows.find(row=>row.gameId==='status-uefn');
+  assert.ok(project);
+  assert.equal(project.engine,'unreal');
+  assert.equal(project.projectPath,'unreal-games/status-uefn');
+});
