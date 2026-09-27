@@ -1484,10 +1484,12 @@
     "gamePrimaryBoundaryMustRemain": 256
   },
   "robloxHomepageThumbnailSyncEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#robloxHomepageThumbnailSyncContract",
     "requiredMarkers": [
       "ROBLOX_THUMBNAIL_SOURCE=",
+      "ROBLOX_THUMBNAIL_SOURCE_BYTES=",
+      "ROBLOX_THUMBNAIL_LOW_SIZE=PASS",
       "ROBLOX_THUMBNAIL_RENDER=PASS",
       "ROBLOX_THUMBNAIL_UPLOAD=",
       "ROBLOX_THUMBNAIL_VERIFY=",
@@ -1503,7 +1505,11 @@
     "secretRedactionRequired": true,
     "rawApiKeyForbidden": true,
     "uploadPassRequiresHttpSuccessAndOperationEvidence": true,
-    "verifyPassRequiresProcessingOrListedThumbnailEvidence": true
+    "verifyPassRequiresProcessingOrListedThumbnailEvidence": true,
+    "canonicalSvgMaxBytes": 12288,
+    "englishTitleDominant": true,
+    "koreanSubtitleSecondary": true,
+    "lowSizeEvidenceRequired": true
   },
   "vibeWorkerConditionalModelRestore": {
     "version": 1,
