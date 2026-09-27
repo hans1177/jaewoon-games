@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -242,8 +242,7 @@
     "platforms": [
       "WEB",
       "ROBLOX",
-      "UNITY",
-      "FORTNITE_UEFN"
+      "UNITY"
     ],
     "decisionOwner": "VIBE",
     "adaptiveReplacementCount": {
@@ -327,6 +326,10 @@
       "reuseModesUsedMustBeRecorded": true,
       "zeroActualReplacementCannotPass": true,
       "beforeAfterEvidenceRequired": true
+    },
+    "platformHold": {
+      "FORTNITE_UEFN": "HOLD_OWNER_DIRECTIVE_2026-09-27",
+      "note": "Do not schedule adaptive graphics replacement or presentation refresh for Fortnite UEFN until the owner resumes it."
     }
   }
 }
