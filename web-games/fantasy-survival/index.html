@@ -2349,7 +2349,7 @@ function petAlive(){return state.pet.hatched&&state.pet.alive&&state.pet.hp>0}
 function petTarget(){return state.enemies.find(e=>e.netId===state.pet.targetId&&e.hp>0&&e.area===state.area)||null}
 function engagePet(e){if(petAlive()&&e&&e.hp>0)state.pet.targetId=e.netId}
 function enemyDetectRange(e,fallback=430){const base=Math.max(1,Number(e?.type?.detect)||fallback);return base>=800?base:base*.5}
-function markEnemyHitByPet(e){if(!e)return;e.hostile=true;e.allyTarget='pet';e.allyTargetAt=performance.now()}
+function markEnemyHitByPet(e){if(!e)return;e.hostile=true;e.allyTarget='pet';e.allyTargetAt=performance.now();if(e.type?.mood==='neutral')e.playerTargetId='pet'}
 function markEnemyHitByPlayer(e){
  if(!e)return;e.hostile=true;
  if(e.type?.mood==='neutral'&&!e.allyTarget){e.allyTarget=petAlive()&&!state.pet.mounted&&Math.random()<.70?'pet':'player';e.allyTargetAt=performance.now()}
@@ -2359,6 +2359,7 @@ function localCombatTarget(e,baseTarget){
  if(!e||!baseTarget||baseTarget.id!==multiplayer.playerId)return baseTarget;
  const p=state.player,petUsable=petAlive()&&!state.pet.mounted&&state.area===e.area;
  if(e.allyTarget==='pet'&&petUsable)return{id:'pet',player:state.pet,local:true,d:dist(e.x,e.y,state.pet.x,state.pet.y)};
+ if(e.allyTarget==='pet'&&!petUsable){e.allyTarget='player';e.playerTargetId=multiplayer.playerId}
  if(e.allyTarget==='player'||!petUsable)return baseTarget;
  if(e.hostile||e.raidId){
   const pd=dist(e.x,e.y,p.x,p.y),wd=dist(e.x,e.y,state.pet.x,state.pet.y);
