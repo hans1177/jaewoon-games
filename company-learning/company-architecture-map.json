@@ -1,5 +1,5 @@
 {
-  "version": 296,
+  "version": 297,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3082,7 +3082,7 @@
       "schedulerPlanRunner": "ubuntu-24.04-arm",
       "reserveRunner": "ubuntu-24.04-arm",
       "modelCacheRunner": "ubuntu-24.04-arm",
-      "cacheKey": "vibe2-ollama-v4-${runner.os}-${runner.arch}-qwen3-1.7b",
+      "cacheKey": "vibe2-ollama-v5-${runner.os}-${runner.arch}-qwen3-1.7b",
       "architectureAwareCache": true,
       "speculativeVariantsPerTask": 1,
       "speculativeVariantsSuppressed": true,
@@ -3097,7 +3097,10 @@
       "fanInReapplyLatestControlStateEveryRetry": true,
       "liveVerifiedPrimaryWorkers": 13,
       "liveVerifiedSpeculativeWorkersAvoided": 26,
-      "sourceWorkerBuildUpDirectiveSyntaxGuard": true
+      "sourceWorkerBuildUpDirectiveSyntaxGuard": true,
+      "cacheGeneration": 5,
+      "modelCachePersistOnMiss": true,
+      "workerModelRepullAfterSharedCacheHitForbidden": true
     }
   },
   "platformPresentationSeparation": {
