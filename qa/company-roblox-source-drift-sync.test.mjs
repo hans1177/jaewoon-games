@@ -269,3 +269,14 @@ test('source drift writer generation invalidates stale queued writers before run
   assert.match(source,/ROBLOX_SOURCE_DRIFT_SYNC_GENERATION_STALE/);
   assert.match(source,/generation!==['"]v2['"]/);
 });
+
+
+test('source drift persist refuses to write an older game-source tree after main advances',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(workflow,/ROBLOX_SOURCE_SYNC_STALE_GAME_SOURCE=/);
+  assert.match(workflow,/ROBLOX_SOURCE_SYNC_SOURCE_FRESH=/);
+  assert.match(workflow,/git -C "\$GITHUB_WORKSPACE" fetch --no-tags --depth=1 origin main/);
+  assert.match(workflow,/git -C "\$GITHUB_WORKSPACE" diff --quiet "\$SOURCE_REVISION" "\$live_main"/);
+  assert.match(workflow,/roblox-games\/\$game_id\/server/);
+  assert.match(workflow,/roblox-games\/\$game_id\/client/);
+});

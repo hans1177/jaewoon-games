@@ -906,7 +906,11 @@ local function survivorDash(p)
  -- First use must not inherit server uptime as cooldown; only an actual prior dash starts it. Studio actual-play validates the resulting movement.
  local lastDash=dashCooldown[p]
  if lastDash and now-lastDash<cd then return end;dashCooldown[p]=now
- local r=root(p);if r then movementGraceUntil[p]=now+.7;r.AssemblyLinearVelocity=r.CFrame.LookVector*(52+(hf.DashPowerBonus or 0))+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)end
+ local r=root(p);if r then
+  movementGraceUntil[p]=now+.7
+  r.AssemblyLinearVelocity=r.CFrame.LookVector*(52+(hf.DashPowerBonus or 0))+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)
+  p:SetAttribute("FeedbackEvent","DASH:"..tostring(math.floor(now*1000)))
+ end
 end
 local function ability(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="MONSTER"then return end
