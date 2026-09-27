@@ -97,8 +97,7 @@ function robloxPublicHardGate(item={},tickets=[]){
   const scenarios=new Set((play.scenarioCoverage||[]).map(upper));
   const scenarioCoverage=play.scenarioCoveragePass===true&&mandatoryScenarios.every(x=>scenarios.has(x));
   const checks={
-    technical:item.robloxRuntimePassed===true&&item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true,
-    realServerBoot:item.robloxPublicReleaseRuntimeObservationPending!==true,
+    technical:internalReady(item,'ROBLOX')&&item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true,
     exactRuntime:item.robloxExactRevisionPassed===true&&item.robloxF9ReleaseRegressionPassed===true&&item.robloxFinalReviewPassed===true,
     actualVibePlay:play.actualPlay===true&&exactRobloxEvidence(play,item),
     vibeScenarioCoverage:scenarioCoverage,
@@ -128,12 +127,13 @@ function platformState(item,tickets,platform,roadmap={}){
     :item.unityInternalReleasePublished===true||item.unityInternalTestBuildPublished===true;
   const playtestPassed=item[lower+'InternalPlaytestPassed']===true;
   const explicitPublic=platform==='ROBLOX'?item.robloxExternalPublicReleaseConfirmed===true:item.unityExternalPublicReleaseConfirmed===true;
+  const ownerApproved=platform==='ROBLOX'?item.robloxOwnerPublicReleaseApproved===true:item.unityOwnerPublicReleaseApproved===true;
   const hardGate=platform==='ROBLOX'?robloxPublicHardGate(item,blocking):null;
   const publicReady=platform==='ROBLOX'
     ?technical&&internalPublished&&hardGate.pass===true
     :technical&&internalPublished&&playtestPassed&&blocking.length===0;
   const legacyPublic=platform==='ROBLOX'&&item.preexistingPublicReleaseBeforeExposureGate===true&&explicitPublic;
-  const publicReleased=explicitPublic&&(publicReady||legacyPublic);
+  const publicReleased=legacyPublic||(explicitPublic&&ownerApproved&&publicReady);
   const state=publicReleased
     ?'PUBLIC_RELEASE'
     :publicReady
@@ -156,10 +156,16 @@ function platformState(item,tickets,platform,roadmap={}){
     publicHardGate:platform==='ROBLOX'?hardGate:null,
     perpetualBuildupActive:platform==='ROBLOX'&&internalPublished,
     testerTickets:{openBlocking:blocking.map(t=>t.id)},
-    publication:{explicitPublicEvidence:explicitPublic,publicReleased},
+    publication:{
+      explicitPublicEvidence:explicitPublic,
+      ownerApprovalRequired:true,
+      ownerApproved,
+      ownerApprovalAuthority:'OWNER_EXPLICIT_DIRECTIVE_ONLY',
+      publicReleased
+    },
     distribution:platform==='UNITY'
-      ?{intendedTrack:'INTERNAL_OR_CLOSED_APP_TEST',productionTrackAllowed:publicReady,credentialsRequiredForStoreUpload:true}
-      :{intendedVisibility:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',publicDiscoveryAllowed:publicReady},
+      ?{intendedTrack:'INTERNAL_OR_CLOSED_APP_TEST',productionTrackAllowed:publicReleased,credentialsRequiredForStoreUpload:true}
+      :{intendedVisibility:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',publicDiscoveryAllowed:publicReleased},
     rebuildRequired:platform==='ROBLOX'?internalPublished&&!publicReady:false
   };
 }
@@ -189,7 +195,7 @@ export function controlPlatformExposure({developmentQueue={},ticketQueue={},suit
     });
   }
   return{
-    state:{version:3,kind:'platform-exposure-state',authority:'OWNER_DIRECTIVE_2026-09-25',policy:'PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE',updatedAt:new Date().toISOString(),games},
+    state:{version:4,kind:'platform-exposure-state',authority:'OWNER_DIRECTIVE_2026-09-28',policy:'STUDIO_INTERNAL_VALIDATION_WITH_OWNER_ONLY_EXTERNAL_PUBLICATION',updatedAt:new Date().toISOString(),games},
     queue
   };
 }
