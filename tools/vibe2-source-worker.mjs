@@ -796,6 +796,8 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
   const sourceAnchors=(d?.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`${clean(row?.file)}:${Number(row?.line||0)||'?'} ${clean(row?.kind)||'SYMBOL'} ${clean(row?.symbol)||'UNKNOWN'} CURRENT=${clean(row?.currentBehavior||row?.context)||'UNKNOWN'} INTENDED=${clean(row?.intendedBehavior)||'FOLLOW_PRIMARY_GOAL'} ACCEPT=${clean(row?.observableAcceptance)||'REAL_SOURCE_AND_EFFECT_DELTA'}`).filter(Boolean);
   const expansion=d?.autonomousContentExpansion||{};
   const breadth=expansion?.themeCoverageLedger||{};
+  const completeness=expansion?.existingCompletenessReview||{};
+  const completionAcceptance=(expansion?.completionAcceptance||[]).map(clean).filter(Boolean);
   const contentBundle=(expansion?.coherentContentBundle||[]).map(clean).filter(Boolean).slice(0,10);
   const antiCloneAxes=(expansion?.antiCloneContract?.distinctionAxes||[]).map(clean).filter(Boolean);
   const continuityQuestions=(expansion?.continuityAndCausality?.questions||[]).map(clean).filter(Boolean);
@@ -812,11 +814,13 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     `contentExpansionVersion=${Number(expansion?.version||0)} executionBoundary=${clean(expansion?.executionBoundary)||'EXISTING_BUILD_UP_ONLY'} decisionOwner=${clean(expansion?.autonomousDecisionOwner)||'VIBE'}`,
     `contentTheme=${clean(expansion?.selectedTheme)||'AUTO'} themeDepth=${Number(expansion?.themeDepth||1)} mode=${clean(expansion?.executionMode)||'AUTONOMOUS_CONTENT_BUILD_UP'}`,
     `contentBreadth=covered:${Number(breadth?.distinctCovered||0)}/${Number(breadth?.totalThemes||0)} missing:${(breadth?.missingThemes||[]).map(clean).filter(Boolean).join(',')||'NONE'} leastCovered:${(breadth?.leastCoveredThemes||[]).map(clean).filter(Boolean).join(',')||'NONE'}`,
+    `existingCompletenessReview=requiredEveryBuildUp:${completeness?.requiredEveryBuildUp===true} weakExistingMayPreempt:${completeness?.weakExistingContentMayPreemptNewContent===true} mode:${clean(completeness?.mode)||'CHECK_EXISTING_AND_EXPAND_OR_IMPROVE'} dimensions:${(completeness?.dimensions||[]).map(clean).filter(Boolean).join(',')}`,
     `contentBundle=${contentBundle.join(' | ')}`,
     `antiClone=${expansion?.antiCloneContract?.nameColorOrStatOnlyCloneForbidden===true?'NAME_COLOR_STAT_ONLY_CLONE_FORBIDDEN':'DISTINCT_CONTENT_REQUIRED'} minimumDistinctAxes=${Number(expansion?.antiCloneContract?.minimumMeaningfulDistinctAxes||2)} axes=${antiCloneAxes.join(',')}`,
     `continuity=required:${expansion?.continuityAndCausality?.required===true} preserveIdentity:${expansion?.continuityAndCausality?.preserveApprovedIdentity===true} preserveProgression:${expansion?.continuityAndCausality?.preserveProgressionFlow===true} questions:${continuityQuestions.join(',')}`,
     `derivedRuleEvolution=${clean(expansion?.derivedRuleEvolution?.rule)||'PRESERVE_CANONICAL_RULES'}`,
-    'contentRule=Stay inside the existing BUILD_UP responsibility. Implement the selected coherent content theme as connected player-facing source changes; do not satisfy it with count-only clones, labels, comments, or presentation-only changes when the selected bundle requires gameplay/world/progression connections.',
+    `contentCompletionAcceptance=${completionAcceptance.join(' | ')}`,
+    'contentRule=Stay inside the existing BUILD_UP responsibility. Before adding net-new content, recheck existing completeness and repair a weaker existing connection when that has higher player value. Implement the selected coherent content theme as connected player-facing source changes; do not satisfy it with count-only clones, labels, comments, or presentation-only changes when the selected bundle requires gameplay/world/progression connections.'
     `gameplay=${(d.gameplayImplementationDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
     `priorityDomains=${priorityDomains.join(' | ')}`,
     `progressionWorld=${(d.progressionContentWorldDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
@@ -844,8 +848,8 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false}={}){
   if(!compact)return block;
   const keepPrefixes=[
     'directiveId=','gameIdentity=','primaryGoal=','sourceAnchors=','expectedPlayerEffect=',
-    'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','contentBundle=',
-    'antiClone=','continuity=','derivedRuleEvolution=','contentRule=',
+    'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
+    'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     'visual=','platform=','preserve=','acceptance='
   ];
   return block.split('\n').filter(line=>
