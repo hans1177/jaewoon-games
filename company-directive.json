@@ -577,7 +577,30 @@
     "robloxStudioUndocumentedCliAutomationAllowed": false,
     "robloxPlayerAutomationAllowed": false,
     "robloxPublishedPlayerBotAllowed": false,
-    "robloxStudioRawGameplayTrainingAllowed": false
+    "robloxStudioRawGameplayTrainingAllowed": false,
+    "perpetualNativeValidationFloors": [
+      "F0",
+      "F1",
+      "F2",
+      "F3",
+      "F4",
+      "F5",
+      "F6",
+      "F7",
+      "F8",
+      "F9"
+    ],
+    "f10Exists": false,
+    "nativeValidationReleaseStateIndependent": true,
+    "nativeValidationPlatforms": [
+      "ROBLOX",
+      "UNITY"
+    ],
+    "nativeValidationExcludedPlatforms": [
+      "FORTNITE_UEFN"
+    ],
+    "internalOrExternalReleaseMayStopNativeValidation": false,
+    "ownerExternalPublicationApprovalRemainsSeparate": true
   },
   "classes": {
     "DESIGN_ONLY": {
@@ -985,7 +1008,10 @@
     "staleQueueBranchReferenceForbidden": true,
     "reconcileCancelInProgress": false,
     "reconcileStateWritesSerialized": true,
-    "reconcileTriggerBurstQueuesInsteadOfCancels": true
+    "reconcileTriggerBurstQueuesInsteadOfCancels": true,
+    "releaseStateDoesNotRemoveGameFromNativeDevelopment": true,
+    "f9ReturnsToContinuousBuildUp": true,
+    "nextVerifiedSourceCycleRestartsAt": "F0"
   },
   "stageGateScoringV2": {
     "version": 2,
