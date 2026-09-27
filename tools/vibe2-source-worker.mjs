@@ -1278,7 +1278,7 @@ export function generationFailureClass(error){
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
-function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX'].includes(generationFailureClass(error));}
+function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX'].includes(generationFailureClass(error));}
 function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
@@ -2696,6 +2696,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     specializedVerificationRequest:buildSpecializedVerificationRequest(order),
     assetProduction:order?.assetProduction&&typeof order.assetProduction==='object'?order.assetProduction:{required:false},
     presentationQuality:order?.presentationQuality&&typeof order.presentationQuality==='object'?order.presentationQuality:{required:false,pass:null,authorityExpanded:false},
+    graphicsReplacementReport:candidate.graphicsReplacementReport||null,
     presentationCandidateDelta,
     studioQualityCandidateDelta,
     fullFileRewriteAllowed:allowFullRewrite,
