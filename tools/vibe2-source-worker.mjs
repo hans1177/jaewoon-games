@@ -102,7 +102,7 @@ const TARGET_EXTENSIONS=Object.freeze({
   roblox:new Set(['.luau','.lua','.json']),
   web:new Set(['.html','.htm','.css','.js','.mjs','.cjs','.json','.svg']),
   unity:new Set(['.cs','.asmdef','.json','.uxml','.uss','.unity','.prefab','.asset']),
-  unreal:new Set(['.h','.hpp','.cpp','.cc','.cxx','.cs','.ini','.uproject','.uplugin','.json']),
+  unreal:new Set(['.verse','.h','.hpp','.cpp','.cc','.cxx','.cs','.ini','.uproject','.uplugin','.json']),
   godot:new Set(['.gd','.tscn','.tres','.godot','.cfg','.json']),
   system:new Set(['.js','.mjs','.cjs','.json','.yml','.yaml','.md'])
 });
@@ -113,8 +113,9 @@ function readJson(file,fallback=null){if(!file||!fs.existsSync(file))return fall
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,`${JSON.stringify(value,null,2)}\n`,'utf8');}
 function parseArgs(argv=process.argv.slice(2)){const args={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)args[body]=true;else args[body.slice(0,at)]=body.slice(at+1);}return args;}
 function targetExtensions(target){const x=TARGET_EXTENSIONS[clean(target).toLowerCase()];if(!x)throw new Error(`지원하지 않는 Vibe2 source target: ${target}`);return x;}
-function sourcePrefix(target){if(target==='roblox')return'roblox-games/';if(target==='web')return'web-games/';if(target==='unity')return'unity-games/';if(target==='unreal')return'unreal-games/';if(target==='godot')return'godot-games/';return'';}
-function assertSourceRoot(root,target){const normalized=posix(root);if(target==='system'){if(normalized!=='.')throw new Error(`system source root must be repo root: ${root}`);return normalized;}const prefix=sourcePrefix(target);if(!prefix||!normalized.startsWith(prefix)||normalized.includes('..'))throw new Error(`허용되지 않은 source root: ${root}`);if(target==='web'&&normalized.split('/').length!==2)throw new Error(`기존 웹게임 루트만 허용: ${root}`);return normalized;}
+function sourcePrefixes(target){if(target==='roblox')return['roblox-games/'];if(target==='web')return['web-games/'];if(target==='unity')return['unity-games/'];if(target==='unreal')return['uefn-games/','unreal-games/'];if(target==='godot')return['godot-games/'];return[];}
+function sourcePrefix(target){return sourcePrefixes(target)[0]||'';}
+function assertSourceRoot(root,target){const normalized=posix(root);if(target==='system'){if(normalized!=='.')throw new Error(`system source root must be repo root: ${root}`);return normalized;}const prefixes=sourcePrefixes(target);if(!prefixes.length||!prefixes.some(prefix=>normalized.startsWith(prefix))||normalized.includes('..'))throw new Error(`허용되지 않은 source root: ${root}`);if(target==='web'&&normalized.split('/').length!==2)throw new Error(`기존 웹게임 루트만 허용: ${root}`);return normalized;}
 function assertRelativeSourcePath(relative,target){const normalized=posix(relative);if(!normalized||normalized.startsWith('/')||normalized.split('/').includes('..'))throw new Error(`잘못된 상대 경로: ${relative}`);if(target==='system'&&!isAllowedSystemArchitecturePath(normalized))throw new Error(`system architecture 허용 경로 아님: ${relative}`);const ext=path.extname(normalized).toLowerCase();if(BINARY_EXTENSIONS.has(ext))throw new Error(`엔진 에디터 필요 바이너리 파일: ${relative}`);if(!targetExtensions(target).has(ext))throw new Error(`텍스트 worker 허용 확장자 아님: ${relative}`);return normalized;}
 function normalizeResponsibleFiles(order,root,target){return(order?.source?.responsibleFiles||[]).map(value=>{const normalized=posix(value);const relative=normalized.startsWith(`${root}/`)?normalized.slice(root.length+1):normalized;return assertRelativeSourcePath(relative,target);}).filter(Boolean);}
 function sourceRootBootstrapAllowed(order,target,root,responsibleFiles){
@@ -677,6 +678,31 @@ export function evaluatePresentationCandidateDelta({candidate={},sourceRoot='',c
   };
 }
 
+export function evaluateAdaptiveGraphicsReplacementResult({candidate={},contract={}}={}){
+  const replacement=contract?.graphicsReplacement||{};
+  if(replacement?.required!==true)return{required:false,pass:true,count:null,surfaces:[],modes:[],reason:'NOT_REQUIRED'};
+  const text=[clean(candidate?.summary),clean(candidate?.expectedEffect),...(candidate?.tests||[]).map(clean)].filter(Boolean).join('\n');
+  const countMatch=/GRAPHICS_REPLACEMENT_COUNT\s*=\s*(\d+)/i.exec(text);
+  const surfacesMatch=/GRAPHICS_REPLACEMENT_SURFACES\s*=\s*([^\n;]+)/i.exec(text);
+  const modesMatch=/GRAPHICS_REPLACEMENT_MODES\s*=\s*([^\n;]+)/i.exec(text);
+  const count=countMatch?Number(countMatch[1]):null;
+  const splitList=value=>unique(String(value||'').split(/[,|]/).map(row=>clean(row).toUpperCase()).filter(Boolean));
+  const surfaces=splitList(surfacesMatch?.[1]);
+  const modes=splitList(modesMatch?.[1]);
+  const min=Math.max(1,Number(replacement?.adaptiveCount?.minimumActual||1));
+  const max=Math.min(60,Math.max(min,Number(replacement?.adaptiveCount?.maximumActual||60)));
+  const allowedSurfaces=new Set((replacement?.surfaces||[]).map(value=>clean(value).toUpperCase()).filter(Boolean));
+  const allowedModes=new Set((replacement?.reuseModes||[]).map(value=>clean(value).toUpperCase()).filter(Boolean));
+  const countPass=Number.isInteger(count)&&count>=min&&count<=max;
+  const surfacePass=surfaces.length>0&&surfaces.every(value=>allowedSurfaces.size===0||allowedSurfaces.has(value));
+  const modePass=modes.length>0&&modes.every(value=>allowedModes.size===0||allowedModes.has(value));
+  const pass=countPass&&surfacePass&&modePass;
+  return{
+    required:true,pass,count,surfaces,modes,min,max,
+    reason:!countMatch?'GRAPHICS_REPLACEMENT_COUNT_MISSING':!countPass?'GRAPHICS_REPLACEMENT_COUNT_OUT_OF_RANGE':!surfacesMatch||!surfacePass?'GRAPHICS_REPLACEMENT_SURFACES_INVALID_OR_MISSING':!modesMatch||!modePass?'GRAPHICS_REPLACEMENT_MODES_INVALID_OR_MISSING':'GRAPHICS_REPLACEMENT_RESULT_RECORDED'
+  };
+}
+
 export function evaluateStudioQualityCandidateDelta({candidate={},sourceRoot='',contract={}}={}){
   if(!contract||typeof contract!=='object')return{required:false,pass:true,phase:null,focusPillar:null,requiredSourceDeltaUnits:0,sourceDeltaUnits:0,requiredVisualUnits:0,visualUnits:0,reason:'NOT_REQUIRED'};
   const phase=clean(contract.phase).toUpperCase()||'BUILD_UP';
@@ -734,6 +760,11 @@ function presentationWorkerGuidance(order = {}) {
     `preserve=${(contract.preserve||[]).map(clean).filter(Boolean).join(',')}`,
     `required-static-checks=${(contract.staticChecks||[]).map(clean).filter(Boolean).join(',')}`,
     `required-runtime-checks=${(contract.runtimeChecks||[]).map(clean).filter(Boolean).join(',')}`,
+    ...(contract.graphicsReplacement?.required?[
+      '그래픽 교체 작업 결과 JSON의 summary 또는 expectedEffect에 다음 3개 마커를 반드시 기록한다: GRAPHICS_REPLACEMENT_COUNT=N; GRAPHICS_REPLACEMENT_SURFACES=...; GRAPHICS_REPLACEMENT_MODES=....',
+      'GRAPHICS_REPLACEMENT_COUNT는 실제로 교체/응용/재조합되어 플레이 화면 또는 표현 binding에 반영된 항목 수이며 1~60이어야 한다. 0이나 61 이상은 실패다.',
+      'GRAPHICS_REPLACEMENT_SURFACES는 계약에 허용된 실제 변경 계열만 기록하고, GRAPHICS_REPLACEMENT_MODES는 DIRECT_REUSE_WHEN_ALREADY_CONCEPT_MATCHED / ADAPT_RESTYLE_AND_RETARGET / TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES / NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER 중 실제 사용한 방식만 기록한다.'
+    ]:[]),
     '기존 게임 로직을 재설계하지 말고 현재 렌더/애니메이션/오디오/카메라 책임 함수 안에서 직접 수정한다.',
     '표현 계층은 save key, 진행도, 데미지, 쿨다운, 이동 속도, 보상, 드랍률, authoritative hit timing을 임의 변경하지 않는다.',
     '새 wrapper/override/shadow pipeline으로 덮지 말고 기존 책임 시스템을 직접 정리한다.',
@@ -2470,6 +2501,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(!diagnosticPostcondition.pass)throw new Error('DIAGNOSTIC_POSTCONDITION_MISSING:'+diagnosticPostcondition.type+':'+diagnosticPostcondition.file+':'+diagnosticPostcondition.reason);
     const presentationDelta=evaluatePresentationCandidateDelta({candidate,sourceRoot,contract:order?.presentationQuality||{}});
     if(presentationDelta.required&&!presentationDelta.pass)throw new Error('PRESENTATION_PATCH_DELTA_REQUIRED:'+presentationDelta.presentationPass);
+    const graphicsReplacementResult=evaluateAdaptiveGraphicsReplacementResult({candidate,contract:order?.presentationQuality||{}});
+    if(graphicsReplacementResult.required&&!graphicsReplacementResult.pass)throw new Error('GRAPHICS_REPLACEMENT_RESULT_REQUIRED:'+graphicsReplacementResult.reason);
     const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
     if(target==='roblox'&&presentationPass==='ASSET_ADAPTATION'){
       const changedPresentationText=[
@@ -2495,7 +2528,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
       throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:${studioQualityDelta.reason}`);
     }
-    return{...result,diagnosticPostcondition,presentationDelta,studioQualityDelta};
+    return{...result,diagnosticPostcondition,presentationDelta,graphicsReplacementResult,studioQualityDelta};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   const deterministicDiagnostic=!allowFullRewrite?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles}):null;
@@ -2515,6 +2548,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const candidate=generated.candidate;
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
   const presentationCandidateDelta=semanticDiffEnforcement?.presentationDelta||evaluatePresentationCandidateDelta({candidate,sourceRoot,contract:order?.presentationQuality||{}});
+  const graphicsReplacementResult=semanticDiffEnforcement?.graphicsReplacementResult||evaluateAdaptiveGraphicsReplacementResult({candidate,contract:order?.presentationQuality||{}});
   const studioQualityCandidateDelta=semanticDiffEnforcement?.studioQualityDelta||evaluateStudioQualityCandidateDelta({candidate,sourceRoot,contract:order?.selectedTask?.studioQualityEvolution||order?.workPackage?.sharedContext?.studioQualityEvolution||null});
   const robloxNativeSourceInspection=buildRobloxNativeSourceInspection({order,context,responsibleFiles});
   const robloxNativeCandidateQuality=target==='roblox'?inspectRobloxNativeCandidateQuality({candidate,sourceRoot}):{required:false,findingCount:0,findings:[],securityRelevantFindings:[],automaticGameWideBlock:false};
@@ -2654,6 +2688,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     assetProduction:order?.assetProduction&&typeof order.assetProduction==='object'?order.assetProduction:{required:false},
     presentationQuality:order?.presentationQuality&&typeof order.presentationQuality==='object'?order.presentationQuality:{required:false,pass:null,authorityExpanded:false},
     presentationCandidateDelta,
+    graphicsReplacementResult,
     studioQualityCandidateDelta,
     fullFileRewriteAllowed:allowFullRewrite,
     protectedGameplayMutationAutomatic:false,
