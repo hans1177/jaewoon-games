@@ -1667,6 +1667,7 @@
     "source": "company-learning/platform-release-roadmap.json#changeRecord.vibeSourceGenerationFocusedTimeoutSync20260926",
     "requiredRuntimeMarkers": [
       "VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY=",
+      "VIBE2_FOCUSED_REPLACE_SCHEMA=ONE_KEY_REPLACE",
       "WORKER_CONTEXT_SYNC=PASS",
       "shared-context-sync:PASS"
     ],
@@ -1679,6 +1680,9 @@
       "timeoutMs": 90000,
       "maxPredict": 384,
       "contextWindow": 8192,
+      "temperature": 0.08,
+      "structuredOutputMode": "OLLAMA_JSON_SCHEMA_ONE_KEY_REPLACE",
+      "additionalProperties": false,
       "workerPinnedReplaceOnly": true
     },
     "liveBaseline": {
