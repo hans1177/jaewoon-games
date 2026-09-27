@@ -5555,7 +5555,15 @@
     "observedBlockingRunId": 36293301968,
     "observedBlockingJob": "collapse duplicate runtime foundation scans",
     "observedExactGame": "horror-escape-room",
-    "fixedCapacityIsolation": true
+    "fixedCapacityIsolation": true,
+    "postFoundationStudioFollowup": {
+      "enabled": true,
+      "trigger": "NEW_EXACT_RUNTIME_FOUNDATION_PASS_ONLY",
+      "dispatchOwner": ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+      "exactGameDispatch": true,
+      "qualityGateOrderPreserved": true,
+      "duplicateLoopPreventedByTransitionOnly": true
+    }
   },
   "nativeChildDispatchDedupeTopology": {
     "version": 1,
