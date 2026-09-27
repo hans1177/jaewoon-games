@@ -63,6 +63,10 @@ test('foundation workflow edits self-trigger exact current game revalidation',()
   assert.match(workflow,/push:\s*\n\s*branches: \[main\][\s\S]*company-development-roblox-post-runtime-qa\.yml/);
   assert.match(workflow,/paths:[\s\S]*company-development-roblox-post-runtime-qa\.yml[\s\S]*roblox-games\/\.company-runtime-trigger/);
   assert.match(workflow,/EVENT_NAME: \$\{\{ github\.event_name \}\}/);
+  assert.ok((workflow.match(/TRIGGER_CHANGED:/g)||[]).length>=3);
+  assert.ok(workflow.includes("TRIGGER_CHANGED: ${{ github.event_name == 'push' && contains(toJSON(github.event.commits), 'roblox-games/.company-runtime-trigger') }}"));
+  assert.match(workflow,/process\.env\.EVENT_NAME==='push'&&String\(process\.env\.TRIGGER_CHANGED\|\|''\)\.toLowerCase\(\)==='true'/);
+  assert.match(workflow,/\$env:EVENT_NAME -eq 'push' -and \$env:TRIGGER_CHANGED -eq 'true'/);
   assert.match(workflow,/roblox-games\/\.company-runtime-trigger/);
   assert.match(workflow,/ROBLOX_FOUNDATION_REQUESTED_GAME_ID=/);
   assert.match(workflow,/ROBLOX_FOUNDATION_REQUESTED_GAME_ID_INVALID/);
@@ -137,5 +141,11 @@ test('post-runtime QA collapses duplicate scans before heavy work without workfl
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
   assert.match(workflow,/runtime-foundation-qa:\n\s+needs: dedupe\n\s+if: needs\.dedupe\.outputs\.run == 'true'/);
-  assert.match(workflow,/studio-local-plan:\n\s+needs: dedupe\n\s+if: needs\.dedupe\.outputs\.run == 'true'/);
+  const studioPlanAt=workflow.indexOf('\n  studio-local-plan:');
+  const studioAutoPlayAt=workflow.indexOf('\n  studio-mcp-auto-play:',studioPlanAt);
+  assert.ok(studioPlanAt>0&&studioAutoPlayAt>studioPlanAt);
+  const studioPlan=workflow.slice(studioPlanAt,studioAutoPlayAt);
+  assert.doesNotMatch(studioPlan,/\n\s+needs:\s+dedupe(?:\s|$)/);
+  assert.match(studioPlan,/concurrency:\n\s+group: roblox-studio-mcp-plan-/);
+  assert.match(studioPlan,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
 });
