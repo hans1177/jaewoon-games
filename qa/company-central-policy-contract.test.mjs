@@ -993,6 +993,11 @@ test('game-specific BUILD_UP directive is one autonomous common goal with exhaus
   assert.equal(c.verification.foundationOnlyRepairDoesNotCountAsBuildUpUnlessPrimaryGoalIsVerifiedFoundationDefect,true);
   assert.equal(c.platformHandoff.platformMayNotInventDifferentCoreGameMeaning,true);
   assert.equal(c.platformHandoff.missingDirectiveMayNotInventPlatformSpecificGoal,true);
+  assert.equal(c.holisticGameEvolution.uiUxConvenience.menuDiversity.gameSpecificMenuCompositionRequired,true);
+  assert.equal(c.holisticGameEvolution.uiUxConvenience.menuDiversity.crossGameMenuSetCopyPasteForbidden,true);
+  assert.equal(c.holisticGameEvolution.uiUxConvenience.menuDiversity.applicableOnly,true);
+  assert.deepEqual(c.holisticGameEvolution.uiUxConvenience.menuDiversity.examplesByGenre.survival,['INVENTORY','CRAFTING','EQUIPMENT','MAP']);
+  assert.deepEqual(c.holisticGameEvolution.uiUxConvenience.menuDiversity.examplesByGenre.rpg,['QUEST','SKILL','EQUIPMENT','SHOP']);
   const arch=architecture.continuousGameplaySystemEvolutionTopology?.gameSpecificBuildUpDirective;
   assert.equal(arch.generator,'tools/company-build-up-directive.mjs');
   assert.equal(arch.runtimeBranch,'vibe2-unreal-core');
@@ -1011,6 +1016,8 @@ test('game-specific BUILD_UP directive is one autonomous common goal with exhaus
   assert.equal(arch.anyFailedSiblingKeepsCurrentDepth,true);
   assert.equal(arch.sharedSiblingDirectiveObjectExact,true);
   assert.equal(arch.genericCrossGameDirectiveForbidden,true);
+  assert.equal(arch.holisticGameEvolution.menuDiversity.sameMenuSetAcrossGamesForbidden,true);
+  assert.equal(arch.holisticGameEvolution.menuDiversity.selectsOnlyApplicableMenus,true);
   assert.equal(arch.shadowPipelineCreated,false);
 
   const robloxBootstrap=readText('tools/company-development-roblox-bootstrap.mjs');

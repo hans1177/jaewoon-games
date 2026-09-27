@@ -213,6 +213,20 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
   const joined=rows.map(row=>row.text).join('\n');
   const fingerprint=crypto.createHash('sha256');
   for(const row of rows){fingerprint.update(row.file);fingerprint.update('\0');fingerprint.update(row.buffer);fingerprint.update('\0');}
+  const menuSurfaceKinds=[
+    /main.?menu|title.?screen|start.?menu|lobby.?menu/i,
+    /inventory|backpack|itemslot/i,
+    /equipment|loadout|equip.?menu|weapon.?select/i,
+    /craft|recipe/i,
+    /shop|store|merchant|buy|sell/i,
+    /quest|mission|objective.?panel/i,
+    /world.?map|map.?menu|minimap/i,
+    /skill.?tree|ability.?menu|perk/i,
+    /settings|options|accessibility/i,
+    /result|gameover|victory|defeat|summary.?screen/i,
+    /build.?menu|construction|placement.?menu/i,
+    /upgrade.?menu|research.?menu|tech.?tree/i
+  ].filter(re=>re.test(joined)).length;
   const signals={
     combat:tokenCount(joined,/attack|damage|combat|hitbox|weapon|enemy|health|hp\b/gi),
     progression:tokenCount(joined,/progress|level|xp|reward|unlock|quest|wave|economy|gold|inventory|craft/gi),
@@ -224,6 +238,7 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
     camera:tokenCount(joined,/camera|fieldofview|fov|cinemachine/gi),
     ui:tokenCount(joined,/screenui|screengui|canvas|button|hud|label|uitoolkit|ongui/gi),
     uiFlow:tokenCount(joined,/menu|panel|modal|popup|tab|scroll|backbutton|closebutton|navigation|screen.?stack|page.?stack/gi),
+    menuSurfaceKinds,
     input:tokenCount(joined,/userinputservice|contextactionservice|touch|mousebutton|keycode|inputaction|onclick|activated/gi),
     map:tokenCount(joined,/world|map|region|biome|zone|terrain|dungeon|village|town|island|forest|jungle|snow|desert|lake|room|floor|portal/gi),
     landmark:tokenCount(joined,/landmark|checkpoint|spawnpoint|waypoint|signpost|tower|temple|castle|school|shop|hospital|station/gi),
@@ -266,6 +281,7 @@ export function inspectGameSource({repoRoot=process.cwd(),sourceRoot=''}={}){
       signals.map<3?'WORLD_MAP_IMPLEMENTATION_SPARSE':null,
       signals.inventory>0&&signals.equipment<2?'INVENTORY_EQUIPMENT_FLOW_SPARSE':null,
       signals.ui>0&&signals.uiFlow<2?'UI_MENU_FLOW_SPARSE':null,
+      signals.ui>0&&signals.menuSurfaceKinds<2?'UI_MENU_VARIETY_SPARSE':null,
       signals.interaction<2?'INTERACTION_DISCOVERABILITY_SPARSE':null,
       signals.session<2?'SESSION_FLOW_SPARSE':null,
       signals.settings<1?'SETTINGS_ACCESSIBILITY_SPARSE':null,
@@ -406,7 +422,7 @@ function domainState(domain,{design={},source={}}={}){
     INPUT:Number(s.input||0)<3,
     MOBILE_UX:Number(s.input||0)<3||Number(s.ui||0)<3,
     SETTINGS_ACCESSIBILITY:Number(s.settings||0)<2,
-    MENU_FLOW:Number(s.ui||0)>0&&Number(s.uiFlow||0)<3,
+    MENU_FLOW:Number(s.ui||0)>0&&(Number(s.uiFlow||0)<3||Number(s.menuSurfaceKinds||0)<2),
     CONVENIENCE:(Number(s.ui||0)+Number(s.interaction||0)+Number(s.progression||0))>0&&Number(s.uiFlow||0)<3,
     UI_DESIGN_SYSTEM:Number(s.ui||0)<4,
     UI_INFORMATION_PRIORITY:Number(s.ui||0)<4||Number(s.feedback||0)<2,
@@ -518,7 +534,7 @@ function buildAllDomainDirectives({states=[],design={},focus='CORE_FUN',depthInf
     SAVE_COMPLETENESS:`현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.`,
     RECONNECT_RECOVERY:`재접속/late join/일시 네트워크 실패 시 권위 상태를 다시 동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 안전한 복구 경로를 제공한다.`,
     SETTINGS_ACCESSIBILITY:`음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.`,
-    MENU_FLOW:`인벤토리·장비·제작·상점·퀘스트·설정 등 존재하는 메뉴 사이 전환, 뒤로가기, 닫기, 팝업 중첩, 스크롤, 선택 유지가 모바일에서 예측 가능하게 동작하게 한다.`,
+    MENU_FLOW:`현재 게임에 실제로 필요한 메뉴를 장르와 시스템 역할에 맞춰 서로 다르게 구성하고 모든 게임에 같은 메뉴 세트/같은 패널 복붙을 금지한다. 생존은 인벤토리·제작·장비·지도, RPG는 퀘스트·스킬·장비·상점, 디펜스는 유닛·배치·웨이브·업그레이드, 타이쿤은 건설·직원·재정·업그레이드처럼 현재 게임의 핵심 선택과 연결한다. 메인/일시정지/결과/설정과 존재하는 기능 메뉴 사이 전환, 뒤로가기, 닫기, 팝업 중첩, 스크롤, 선택 유지가 모바일에서 예측 가능하게 동작해야 하며 적용되지 않는 메뉴를 억지로 추가하지 않는다.`,
     CONVENIENCE:`반복 조작을 줄일 수 있는 빠른 사용/장착, 제작 가능 표시, 부족 재료 표시, 목표 추적, 비교 정보 등 현재 게임에 맞는 편의 기능을 추가하되 플레이 선택 자체를 자동화하지 않는다.`,
     UI_DESIGN_SYSTEM:`HUD와 메뉴가 공통 타이포·패널·아이콘·간격·상태 색/형태 규칙을 공유하고 게임 세계의 아트 언어와 연결되며 기능마다 제각각인 임시 UI를 줄인다.`,
     UI_INFORMATION_PRIORITY:`현재 목표, 생존/위험, 핵심 자원, 장비/쿨다운, 다음 행동 순으로 실제 플레이 중요도에 맞게 정보 위계를 정하고 작은 화면에서 비핵심 정보가 핵심 HUD를 밀어내지 않게 한다.`,
@@ -988,7 +1004,7 @@ export function buildGameSpecificBuildUpDirective({
     '핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다.',
     '터치 입력은 실제 게임 상태 변화에 연결하고 키보드/검증용 우회 입력이 모바일 PASS를 대신하지 못하게 한다.',
     '실패/재시도/복귀 시 플레이어가 무엇이 유지되고 무엇이 초기화되는지 즉시 알 수 있게 한다.',
-    'HUD·메뉴·인벤토리·장비·설정은 같은 UI 디자인 언어와 정보 우선순위를 사용하고 뒤로가기/닫기/스크롤/팝업 중첩을 모바일에서 검증한다.',
+    'HUD·메뉴·인벤토리·장비·설정은 같은 UI 디자인 언어와 정보 우선순위를 사용하되 메뉴 구성은 장르와 현재 시스템에 맞게 다양화하고 모든 게임에 동일한 메뉴 세트를 복붙하지 않는다. 뒤로가기/닫기/스크롤/팝업 중첩을 모바일에서 검증한다.',
     '반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다.'
   ];
   const acceptance=[
@@ -1003,6 +1019,7 @@ export function buildGameSpecificBuildUpDirective({
     'EXISTING_APPLICABLE_GAP_CANNOT_BE_SILENTLY_SKIPPED',
     'FIRST_10_MINUTES_AND_SESSION_FLOW_REVIEWED',
     'MAP_INVENTORY_UI_CONVENIENCE_AND_SYSTEM_CONNECTION_REVIEWED_WHEN_APPLICABLE',
+    'MENU_STRUCTURE_IS_GAME_SPECIFIC_AND_NOT_CROSS_GAME_COPY_PASTE',
     'AUTONOMOUS_CONTENT_EXPANSION_STAYS_INSIDE_EXISTING_BUILD_UP',
     'CONTENT_EXPANSION_MUST_BE_COHERENT_CONNECTED_AND_NON_CLONE',
     'EXISTING_COMPLETENESS_RECHECK_REQUIRED_EVERY_BUILD_UP',
