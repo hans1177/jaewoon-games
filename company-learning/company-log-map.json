@@ -2240,6 +2240,16 @@
       "runtimeOrExecutableContractCommitCreatesContinuousCore": true,
       "verificationState": "PR_CI_REQUIRED",
       "verificationMethod": "QA_ONLY_OR_DESCRIPTIVE_MAP_COMMIT_MUST_NOT_CREATE_VIBE2_CONTINUOUS_CORE; EXECUTABLE_CONTRACT_CHANGE_MUST"
+    },
+    "expectedSafetyNetPushFilter": {
+      "workflow": ".github/workflows/vibe2-24h-runner.yml",
+      "qaOnlyCommitCreates24hRunner": false,
+      "descriptiveArchitectureMapCommitCreates24hRunner": false,
+      "descriptiveLogMapCommitCreates24hRunner": false,
+      "humanVibeDocumentCommitCreates24hRunner": false,
+      "executableRuntimeOrGameSourceCommitCreates24hRunner": true,
+      "fiveMinuteCronStillRuns": true,
+      "verificationState": "PR_CI_REQUIRED"
     }
   }
 }
