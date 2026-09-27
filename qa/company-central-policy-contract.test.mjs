@@ -1789,6 +1789,16 @@ test('BUILD_UP grounding stays connected from source proof through exact target 
   assert.equal(projected.robloxSameGameDifferentSourceMayNotSettle,true);
   assert.equal(projected.noNewWorkflowOrShadowPipeline,true);
 
+  const topology=architecture.buildUpRuntimeGroundingTopology;
+  assert.equal(topology.executionModel,'EXISTING_BUILD_UP_FLOW_NO_NEW_STAGE_OR_SHADOW_PIPELINE');
+  assert.deepEqual(topology.activePlatforms,['WEB','ROBLOX','UNITY']);
+  assert.deepEqual(topology.pausedPlatforms,['FORTNITE_UEFN']);
+  assert.equal(topology.sourceIdentity,'SOURCE_ROOT_TREE_SHA');
+  assert.equal(topology.exactSourceRules.sameGameIdAloneInsufficient,true);
+  assert.equal(topology.exactSourceRules.promotedSourceTreeMustMatchRuntimeSourceTree,true);
+  assert.equal(topology.exactSourceRules.staleOrDifferentBuildUpGenerationCannotSettle,true);
+  assert.equal(topology.fortniteUefnOwnerHoldRespected,true);
+
   const change=roadmap.changeRecord.buildUpEndToEndGrounding20260928;
   assert.equal(change.sameGameStaleRuntimeProofMayNotPassNewerBuildUp,true);
   assert.equal(change.noNewWorkflowOrStage,true);
