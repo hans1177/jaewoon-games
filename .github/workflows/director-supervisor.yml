@@ -38,7 +38,8 @@ jobs:
     name: drain superseded queued work
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion != 'cancelled'
     concurrency:
-      group: director-runner-drain-v1
+      # Advance the epoch so legacy pending v1 drains cannot serialize this isolated runner.
+      group: director-runner-drain-v2
       cancel-in-progress: false
     # Queue eviction must not wait behind the saturated slim control pool.
     # Keep game-heavy ubuntu-latest untouched and use the already-allowed fixed 24.04 pool.
