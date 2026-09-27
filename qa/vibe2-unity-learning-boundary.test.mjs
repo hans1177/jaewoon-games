@@ -20,8 +20,12 @@ test('teacher 단계는 GitHub-hosted 온라인에서 실행되고 local Ollama�
   assert.equal(contract.teacherRoute, 'GPT_AUTHORED_CURRICULUM_ON_GITHUB_HOSTED_RUNNER');
   assert.equal(contract.localOllamaTeacherRequired, false);
   assert.equal(contract.paidApiRequired, false);
-  assert.match(workflow, /online-teacher:/);
-  assert.match(workflow, /runs-on: ubuntu-latest/);
+  const onlineTeacherStart = workflow.indexOf('\n  online-teacher:\n');
+  const practiceTrainStart = workflow.indexOf('\n  unity-practice-train:\n', onlineTeacherStart);
+  assert.ok(onlineTeacherStart >= 0 && practiceTrainStart > onlineTeacherStart);
+  const onlineTeacher = workflow.slice(onlineTeacherStart, practiceTrainStart);
+  assert.match(onlineTeacher, /runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(onlineTeacher, /runs-on:\s*ubuntu-latest/);
   assert.match(workflow, /LOCAL_OLLAMA_TEACHER=NO/);
   assert.doesNotMatch(workflow, /ollama show|ollama pull|api\/generate/);
 });
