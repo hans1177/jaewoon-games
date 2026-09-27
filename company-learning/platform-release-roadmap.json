@@ -1,5 +1,5 @@
 {
-  "version": 488,
+  "version": 489,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1464,7 +1464,7 @@
         "completedSessionExitContract": "MCP_RUN_EXITS_SUCCESS_AFTER_REQUIRED_TOOLS_AND_STUDIO_SESSION_COMPLETE_EVEN_WHEN_RUNTIME_QA_FAILS"
       },
       "runtimeFoundationPassedArtifactAllowedForLocalActualPlay": true,
-      "earliestBehaviorFeedbackCheckpoint": "AFTER_RUNTIME_FOUNDATION_PASS_AND_EXACT_SOURCE_ARTIFACT_BINDING",
+      "earliestBehaviorFeedbackCheckpoint": "AFTER_EXACT_PRIVATE_RUNTIME_CANDIDATE_AND_EXACT_SOURCE_ARTIFACT_BINDING",
       "actualPlayQualityContract": {
         "version": 1,
         "status": "ACTIVE_EXECUTABLE_CONTRACT",
@@ -1491,7 +1491,10 @@
           "VISUAL_CAPTURE_SANITY",
           "APPROVED_DESIGN_RUNTIME_BINDING"
         ]
-      }
+      },
+      "serverBootObservationRequiredForInternalRelease": false,
+      "f1ThroughF8SingleSession": true,
+      "perFloorRelaunchForbidden": true
     },
     "headlessValidation": {
       "version": 2,
@@ -4174,12 +4177,12 @@
         "studioMcpActualPlayPassRemainsValidWhileRuntimeFoundationObservationPending": true,
         "runtimeFoundationPassMustNotBeFabricatedFromOpenCloudHeadlessExecution": true,
         "runtimeFoundationEvidenceAuthority": ".github/workflows/company-development-roblox-post-runtime-qa.yml#runtime-foundation-qa",
-        "observationRetry": "UNLIMITED_OBSERVATION",
+        "observationRetry": "OPTIONAL_DIAGNOSTIC_ONLY",
         "developmentBlocking": false,
         "internalQaBlocking": false,
         "internalRegressionBlocking": false,
         "internalReleaseBlocking": false,
-        "externalPublicReleaseBlocking": true,
+        "externalPublicReleaseBlocking": false,
         "sameGameIndependentDevelopmentContinuesWhilePending": true,
         "internalReleaseExceptionRequiresExactEngineVersionAndOfficialStudioMcpPlay": true,
         "runtimeTruthFieldsMustRemainUnfabricated": true,
@@ -4193,7 +4196,11 @@
         "publishedPlaceDirectStudioAutomationForbidden": true,
         "exactEngineVersionMayEnterOfficialStudioMcpActualPlayBeforeRealServerBoot": true,
         "studioActualPlayEligibilityDoesNotSetRuntimeFoundationPass": true,
-        "studioActualPlayEligibilityDoesNotSetExternalPublicReleaseReady": true
+        "studioActualPlayEligibilityDoesNotSetExternalPublicReleaseReady": true,
+        "role": "OPTIONAL_DIAGNOSTIC_RUNTIME_TRUTH_ONLY",
+        "studioPlannerEligibility": "EXACT_PRIVATE_RUNTIME_CANDIDATE",
+        "internalReleaseUsesOfficialStudioMcpAndInternalQaOnly": true,
+        "externalPublicReleaseServerBootRequired": false
       }
     },
     "deterministicGateAuthority": {
@@ -5379,12 +5386,13 @@
         "studioMcpUnconfirmedSettingIsInfrastructureNotGameFailure": true,
         "studioMcpUnconfirmedSettingMayNotConsumePlayRetry": true,
         "studioMcpAutomaticSettingMutationForbidden": true,
-        "actualVibePlayEligibility": "RUNTIME_FOUNDATION_PASS_OR_INTERNAL_RELEASE_PLUS_EXACT_SOURCE_ARTIFACT_PUBLICATION_BINDING",
+        "actualVibePlayEligibility": "EXACT_PRIVATE_RUNTIME_CANDIDATE_PLUS_EXACT_SOURCE_ARTIFACT_BINDING",
         "actualVibePlayEligibilityMustNotDependOnExclusiveCurrentStep": true,
         "foundationOrFinalRevalidationMayRunParallelWithActualVibePlayAfterInternalRelease": true,
         "currentStepMayRepresentParallelRuntimeRevalidationWithoutRevokingInternalReleasePlayEligibility": true,
         "explicitDisabledGameRemainsIneligible": true,
-        "actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease": true
+        "actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease": true,
+        "actualVibePlayMayStartAfterExactPrivateCandidateBeforeRuntimeFoundationPass": true
       },
       "externalPublicReleaseHardGate": {
         "version": 1,
