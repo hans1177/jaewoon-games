@@ -1,5 +1,5 @@
 {
-  "version": 59,
+  "version": 60,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -466,7 +466,7 @@
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
   },
-  "updatedAt": "2026-09-26",
+  "updatedAt": "2026-09-28",
   "graphicsProductionUnificationSecurity": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -761,7 +761,7 @@
     "failureAction": "REGENERATE_OR_REPAIR_AFFECTED_DIRECTIVE_SCOPE_WITHOUT_STOPPING_UNRELATED_GAME_DEVELOPMENT"
   },
   "minimumNecessaryDevelopmentSecurity": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.developmentLoopOptimization",
     "defaultMode": "SCOPED_AUTOMATED_SECURITY_NONBLOCKING_WHEN_NO_RELEVANT_BOUNDARY_CHANGED",
     "protections": {
@@ -770,8 +770,28 @@
       "relevantPrivilegeRemoteSaveEconomySecretExternalTrustChangeStillRequiresExistingSecurityGate": true,
       "confirmedHighRiskFindingStillFailClosed": true,
       "publicReleaseAndExternalPromotionSecurityEvidencePreserved": true,
-      "procedureMinimizationCannotDisableSecurityFindings": true
-    }
+      "procedureMinimizationCannotDisableSecurityFindings": true,
+      "sameExactRevisionSecurityRescanWithoutRelevantBoundaryDeltaForbidden": true,
+      "gameEvolutionAndF0ThroughF9StructureMayNotBeReducedForSecurityProcedureConvenience": true,
+      "multiplayerProofIsNotSecurityRescanTriggerByItself": true,
+      "ownerApprovedPublicPublicationMayReuseValidExactInternalSecurityEvidence": true,
+      "externalServerObservationIsNotSecurityAuthority": true
+    },
+    "rescanTriggers": [
+      "SECURITY_RELEVANT_AUTHORITY_OR_PRIVILEGE_DELTA",
+      "REMOTE_INPUT_OR_SERVER_AUTHORITY_DELTA",
+      "SAVE_OR_ECONOMY_INTEGRITY_DELTA",
+      "SECRET_OR_EXTERNAL_TRUST_DELTA",
+      "NEW_CONFIRMED_SECURITY_FINDING",
+      "EXACT_EVIDENCE_INVALIDATED"
+    ],
+    "noRescanTriggers": [
+      "UNCHANGED_EXACT_SOURCE_AND_SECURITY_BOUNDARY",
+      "F9_EVIDENCE_FAN_IN_ONLY",
+      "OWNER_PUBLICATION_APPROVAL_ONLY",
+      "EXTERNAL_SERVER_DIAGNOSTIC_ONLY",
+      "REUSED_MULTIPLAYER_PROOF_ONLY"
+    ]
   },
   "robloxNativeCodingQualitySecurity": {
     "version": 2,
