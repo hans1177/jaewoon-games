@@ -133,6 +133,10 @@ test('lightweight reserve uses slim while fan-in stays on ARM and heavy executio
   assert.match(core,/\n  model_cache:[\s\S]{0,180}?\n    runs-on: ubuntu-latest/);
   assert.match(core,/\n  worker:[\s\S]{0,260}?\n    runs-on: \$\{\{ \(inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) == 'asset-development' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-latest' \}\}/);
   assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentRunnerLabel,'ubuntu-24.04-arm');
+  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentSchedulerPlanRunner,'ubuntu-24.04-arm');
+  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentReserveRunner,'ubuntu-24.04-arm');
+  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentModelCacheRunner,'ubuntu-24.04-arm');
+  assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentArchitectureAwareCache,true);
   assert.equal(roadmap.assetProductionParallelContract?.parallelism?.gamePrimaryRunnerLabel,'ubuntu-latest');
 });
 
@@ -208,10 +212,10 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(reserve.reserveJobsParallel,true);
   assert.equal(reserve.serializationScope,'ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY');
   assert.equal(reserve.conflictResolution,'FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5_ON_ACTUAL_WRITE_CONFLICT');
-  assert.equal(reserve.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v5');
+  assert.equal(reserve.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v6');
   assert.equal(reserve.gamePrimaryExternalBoundary,256);
 
-  assert.equal(runtime.continuous.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v5');
+  assert.equal(runtime.continuous.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v6');
   assert.equal(runtime.continuous.reserveConcurrency.mode,'PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE');
   assert.equal(runtime.continuous.reserveConcurrency.crossLaneGlobalReserveLock,false);
   assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
@@ -240,7 +244,7 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.doesNotMatch(core,/vibe2-fanin-refill-singleton/);
   assert.doesNotMatch(core,/format\('vibe2-fanin-refill-\{0\}'/);
   assert.doesNotMatch(core,/\|\| 'vibe2-control-state-vibe2-unreal-core'/);
-  assert.match(runner,/group: vibe2-24h-cycle-singleton-v5/);
+  assert.match(runner,/group: vibe2-24h-cycle-singleton-v6/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=PASS/);
   assert.match(runner,/VIBE2_24H_RUNNER_PRESSURE_OBSERVATION=FAIL_DEFER_LEARNING/);
   assert.match(runner,/needs\.plan\.outputs\.learning_idle_queued != '0' && needs\.plan\.outputs\.runner_pressure != 'YES'/);

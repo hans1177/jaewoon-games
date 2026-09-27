@@ -91,16 +91,16 @@ env:
   VIBE2_LEARNING_LANE_MAX: '4'
   VIBE2_ASSET_DEVELOPMENT_MAX: '64'
 
-# Keep one continuous scheduler chain. v5 releases the stale v4 pre-lane-concurrency-fix epoch
-# while still collapsing wake signals into one pending cycle per current scheduler epoch.
+# Keep one continuous scheduler chain. v6 releases the stale v5 slim-planner epoch
+# while keeping the canonical scheduler and moving only its lightweight plan onto the ARM control pool.
 concurrency:
-  group: vibe2-24h-cycle-singleton-v5
+  group: vibe2-24h-cycle-singleton-v6
   cancel-in-progress: false
 
 jobs:
   plan:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 8
     outputs:
       continue_required: ${{ steps.queue_state.outputs.continue_required }}

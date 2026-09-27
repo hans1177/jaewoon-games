@@ -3647,7 +3647,7 @@
           "workerControlCheckoutGamePrimaryBoundary": 256,
           "workerControlCheckoutAdaptiveBehaviorUnchanged": true,
           "reserveConcurrencyRelief": "LIVE_VERIFIED",
-          "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v5",
+          "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v6",
           "learningIdleRunnerPressureDeferral": "LIVE_VERIFIED",
           "gamePrimaryExternalBoundary": 256,
           "lastLanePressureLiveVerificationRun": 36204978877,
@@ -3658,7 +3658,7 @@
           "modelCacheHitRestoreLiveRun": 36208311596,
           "workerConditionalModelRestore": "IMPLEMENTED_PENDING_QA_AND_LIVE",
           "schedulerEpochStaleRelease": "IMPLEMENTED_PENDING_CI_AND_ASSET_ARM_LIVE",
-          "schedulerEpochStaleReleaseReason": "PRE_CONCURRENCY_FIX_V4_CHAIN_HELD_POST_FIX_ASSET_LANE_BEHIND_WORKFLOW_SINGLETON"
+          "schedulerEpochStaleReleaseReason": "V5_24H_PLAN_QUEUED_ON_SLIM_CONTROL_POOL_WHILE_ASSET_QUEUE_WAITED"
         },
         "incidentHistory": [
           {
@@ -9816,6 +9816,48 @@
       "authorityChange": "NONE",
       "qualityGateWeakening": false,
       "securityBoundaryChange": false
+    },
+    "assetArmControlPlaneIsolation20260927": {
+      "id": "ASSET_ARM_CONTROL_PLANE_ISOLATION_2026-09-27",
+      "authority": "OWNER_DIRECTIVE_2026-09-27",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "MOVE_ASSET_SCHEDULER_PLAN_RESERVE_MODEL_CACHE_AND_WORKERS_OFF_SATURATED_SLIM_X64_PATH_WHILE_KEEPING_GAME_PRIMARY_WORKERS_UNCHANGED",
+      "observed": {
+        "v5RunId": 36312963067,
+        "v5PlanJobId": 108602283016,
+        "v5PlanRunner": "ubuntu-slim",
+        "v5PlanState": "QUEUED",
+        "assetQueued": 13,
+        "assetWorkerLiveEvidence": "NOT_YET_REACHED",
+        "previousConcurrencyFixPr": 3775
+      },
+      "runnerRouting": {
+        "schedulerPlan": "ubuntu-24.04-arm",
+        "assetReserve": "ubuntu-24.04-arm",
+        "assetModelCache": "ubuntu-24.04-arm",
+        "assetWorker": "ubuntu-24.04-arm",
+        "assetFanIn": "ubuntu-24.04-arm",
+        "gamePrimaryReserveDefault": "ubuntu-slim",
+        "gamePrimaryModelCache": "ubuntu-latest",
+        "gamePrimaryWorker": "ubuntu-latest"
+      },
+      "ollamaCache": {
+        "previousKey": "vibe2-ollama-v3-Linux-qwen3-1.7b",
+        "currentKey": "vibe2-ollama-v4-${runner.os}-${runner.arch}-qwen3-1.7b",
+        "architectureAware": true,
+        "x64ArmRuntimeMixForbidden": true,
+        "modelFilesRemainPerArchitectureCache": true
+      },
+      "previousEpoch": "vibe2-24h-cycle-singleton-v5",
+      "currentEpoch": "vibe2-24h-cycle-singleton-v6",
+      "stalePreviousEpochAction": "ALLOW_EXISTING_V5_RUN_TO_DRAIN_WITHOUT_NEW_V5_WAKE_SIGNALS",
+      "existingCanonicalQueuePreserved": true,
+      "existingContinuousCorePreserved": true,
+      "newQueueCreated": false,
+      "newPipelineCreated": false,
+      "newWorkerAuthorityCreated": false,
+      "gamePrimaryWorkerPolicyUnchanged": true,
+      "qaSecurityReleaseGatesUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -9925,7 +9967,7 @@
       "runnerPressureSource": "GITHUB_ACTIONS_RECENT_RUN_STATUS_QUEUED_PENDING_REQUESTED",
       "pressureObservationFailureAction": "DEFER_LEARNING_ONLY",
       "productionMayNotWaitForLearningReserve": true,
-      "schedulerEpoch": "vibe2-24h-cycle-singleton-v5"
+      "schedulerEpoch": "vibe2-24h-cycle-singleton-v6"
     },
     "releaseWait": {
       "taskClass": "RELEASE_WAIT",
@@ -15495,7 +15537,12 @@
         "focusedContextWindow": 8192,
         "fullGraphicsLongRetryAfterFocusedFailure": false,
         "gamePrimaryGenerationPolicyUnchanged": true
-      }
+      },
+      "assetDevelopmentSchedulerPlanRunner": "ubuntu-24.04-arm",
+      "assetDevelopmentReserveRunner": "ubuntu-24.04-arm",
+      "assetDevelopmentModelCacheRunner": "ubuntu-24.04-arm",
+      "assetDevelopmentOllamaCacheKey": "vibe2-ollama-v4-${runner.os}-${runner.arch}-qwen3-1.7b",
+      "assetDevelopmentArchitectureAwareCache": true
     },
     "failureHandling": {
       "state": "ASSET_REPAIR_REQUIRED",
