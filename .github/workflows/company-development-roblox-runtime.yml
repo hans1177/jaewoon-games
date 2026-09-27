@@ -40,7 +40,8 @@ permissions:
   actions: write
 
 concurrency:
-  group: roblox-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
+  # Exact-game runs remain independent; all empty-game batch sweeps coalesce to active one + latest pending.
+  group: roblox-native-exact-${{ inputs.game_id || 'batch' }}
   cancel-in-progress: false
 
 env:
