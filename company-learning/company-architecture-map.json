@@ -5440,7 +5440,7 @@
     ]
   },
   "runnerQueueDrainTopology": {
-    "version": 2,
+    "version": 3,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.runnerQueueDrain20260926",
     "owner": ".github/workflows/director-supervisor.yml#runner-drain",
     "runner": "ubuntu-slim",
@@ -5475,7 +5475,13 @@
     "superviseJobConcurrencyGroup": "director-central-company-supervise-v3",
     "gamePrimaryGateConcurrencyGroup": "director-game-primary-gate-v1",
     "jobLocalConcurrencyOnly": true,
-    "runnerDrainActiveCancellation": false
+    "runnerDrainActiveCancellation": false,
+    "sameTitleRuntimeQueuedWinner": "LATEST_WHEN_NO_IN_PROGRESS",
+    "sameTitleRuntimeInProgressWinner": "ACTIVE_RUN_PRESERVED",
+    "robloxExactGameNewestQueuedPreserved": true,
+    "unityExactGameNewestQueuedPreserved": true,
+    "activeSameGameCancellationForbidden": true,
+    "releaseAndQaFifoSemanticsUnchanged": true
   },
   "controlPlaneOperationalRunnerIsolation": {
     "version": 1,
