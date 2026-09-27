@@ -2126,7 +2126,10 @@ ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designIns
     protectedRegressionForbidden:true,
     nextCycleRequired:true
   };
-  return attachGameSpecificBuildUpDirective(out,project,repoRoot,queue,designContext);
+  const presentationBound=focusPillar==='PRESENTATION'
+    ?applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION')
+    :out;
+  return attachGameSpecificBuildUpDirective(presentationBound,project,repoRoot,queue,designContext);
 }
 function bindSharedBuildUpDirective(taskInput,directive){
   if(!taskInput||!directive?.directiveId)return taskInput;
