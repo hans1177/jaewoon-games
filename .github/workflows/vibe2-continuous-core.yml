@@ -696,7 +696,7 @@ jobs:
           fetch-depth: 1
 
       - name: Checkout verified learning memory
-        if: env.VIBE2_EXECUTION_LANE == 'game-primary'
+        if: env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development' || env.VIBE2_EXECUTION_LANE == 'asset-development'
         uses: actions/checkout@v4
         with:
           ref: vibe2-learning-runtime
