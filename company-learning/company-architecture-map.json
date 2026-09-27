@@ -1,5 +1,5 @@
 {
-  "version": 268,
+  "version": 269,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -5180,7 +5180,7 @@
     "staleBranchReferenceForbidden": true,
     "noGamePrimarySlotConsumption": true,
     "reconcileConcurrency": {
-      "group": "company-development-queue-reconcile-runtime",
+      "group": "company-development-queue-reconcile-runtime-v2",
       "cancelInProgress": false,
       "stateWritesSerialized": true,
       "triggerBurstBehavior": "RUNNING_WRITE_PRESERVED_WITH_CHANGE_DRIVEN_STATUS_FEEDBACK",
@@ -5188,7 +5188,8 @@
       "unconditionalQueueCompletionStatusSyncTrigger": false,
       "queueMutationDispatchesStatusSync": true,
       "statusSyncCompletionMayTriggerReconcile": true,
-      "stabilizationRule": "QUEUE_CHANGE_DISPATCH_STATUS_SYNC; STATUS_SYNC_MAY_RECONCILE; NO_QUEUE_CHANGE_STOPS_FEEDBACK"
+      "stabilizationRule": "QUEUE_CHANGE_DISPATCH_STATUS_SYNC; STATUS_SYNC_MAY_RECONCILE; NO_QUEUE_CHANGE_STOPS_FEEDBACK",
+      "previousGroup": "company-development-queue-reconcile-runtime"
     }
   },
   "robloxNativeCodingQualityTopology": {
@@ -6072,18 +6073,20 @@
     "privateRuntimeRecoverySharedCurrentStepDependencyForbidden": true
   },
   "developmentQueueReconcileRunnerIsolation": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.developmentQueueReconcileRunnerIsolation20260927",
     "workflow": ".github/workflows/company-development-queue-reconcile.yml",
     "gamePrimaryGateRunner": "ubuntu-24.04",
     "reconcileRunner": "ubuntu-24.04",
     "previousRunner": "ubuntu-slim",
-    "concurrencyGroup": "company-development-queue-reconcile-runtime",
+    "concurrencyGroup": "company-development-queue-reconcile-runtime-v2",
     "cancelInProgress": false,
     "serializedStateWritePreserved": true,
     "observationalVibeTelemetryPreserved": true,
     "heavyGameExecutionUnchanged": true,
     "stateMutationLogicChanged": false,
-    "qualitySecurityReleaseGatesUnchanged": true
+    "qualitySecurityReleaseGatesUnchanged": true,
+    "previousConcurrencyGroup": "company-development-queue-reconcile-runtime",
+    "epochAdvancedToBypassLegacyPendingGroup": true
   }
 }

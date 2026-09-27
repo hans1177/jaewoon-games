@@ -1,5 +1,5 @@
 {
-  "version": 461,
+  "version": 462,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -9455,7 +9455,9 @@
         "queuedRunner": "ubuntu-slim",
         "horrorGameId": "horror-escape-room",
         "exactRobloxF0AlreadyPassed": true,
-        "canonicalRecoveryWaitingOnReconcile": true
+        "canonicalRecoveryWaitingOnReconcile": true,
+        "legacyPendingRunId": 36292590267,
+        "fixedRunnerNewRunBlockedBehindLegacyGroup": true
       },
       "workflow": ".github/workflows/company-development-queue-reconcile.yml",
       "gamePrimaryGateRunner": "ubuntu-24.04",
@@ -9466,7 +9468,11 @@
       "gamePrimaryTelemetryRemainsObservational": true,
       "stateMutationLogicChanged": false,
       "heavyGameExecutionChanged": false,
-      "qualitySecurityReleaseGatesUnchanged": true
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "version": 2,
+      "previousConcurrencyGroup": "company-development-queue-reconcile-runtime",
+      "concurrencyGroup": "company-development-queue-reconcile-runtime-v2",
+      "concurrencyEpochAdvancedToBypassLegacyPendingGroup": true
     }
   },
   "vibeExecutionLaneContract": {

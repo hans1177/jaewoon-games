@@ -244,8 +244,8 @@ test('queue reconcile treats Vibe queue telemetry as observational and never def
 test('reconcile trigger bursts serialize and status feedback is change-driven',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-queue-reconcile.yml','utf8');
   const statusWorkflow=fs.readFileSync('.github/workflows/company-status-sync.yml','utf8');
-  assert.match(workflow,/group: company-development-queue-reconcile-runtime\s+cancel-in-progress: false/);
-  assert.doesNotMatch(workflow,/group: company-development-queue-reconcile-runtime\s+cancel-in-progress: true/);
+  assert.match(workflow,/group: company-development-queue-reconcile-runtime-v2\s+cancel-in-progress: false/);
+  assert.doesNotMatch(workflow,/group: company-development-queue-reconcile-runtime-v2\s+cancel-in-progress: true/);
   assert.match(statusWorkflow,/group: company-status-sync-runtime\s+cancel-in-progress: false/);
   assert.doesNotMatch(statusWorkflow,/group: company-status-sync-runtime\s+cancel-in-progress: true/);
   assert.match(workflow,/steps\.queue_state\.outputs\.changed == '1'/);
@@ -600,11 +600,14 @@ test('queue reconcile uses fixed 24.04 control capacity without changing seriali
   const reconcile=workflow.slice(reconcileStart);
   assert.match(gate,/runs-on:\s*ubuntu-24\.04/);
   assert.match(reconcile,/runs-on:\s*ubuntu-24\.04/);
-  assert.match(workflow,/group:\s*company-development-queue-reconcile-runtime\s+cancel-in-progress:\s*false/);
+  assert.match(workflow,/group:\s*company-development-queue-reconcile-runtime-v2\s+cancel-in-progress:\s*false/);
   const policy=roadmap.changeRecord?.developmentQueueReconcileRunnerIsolation20260927||{};
   assert.equal(policy.gamePrimaryGateRunner,'ubuntu-24.04');
   assert.equal(policy.reconcileRunner,'ubuntu-24.04');
   assert.equal(policy.previousRunner,'ubuntu-slim');
+  assert.equal(policy.previousConcurrencyGroup,'company-development-queue-reconcile-runtime');
+  assert.equal(policy.concurrencyGroup,'company-development-queue-reconcile-runtime-v2');
+  assert.equal(policy.concurrencyEpochAdvancedToBypassLegacyPendingGroup,true);
   assert.equal(policy.serializeStateWrites,true);
   assert.equal(policy.stateMutationLogicChanged,false);
   assert.equal(architecture.developmentQueueReconcileRunnerIsolation?.gamePrimaryGateRunner,'ubuntu-24.04');
