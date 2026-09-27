@@ -1625,6 +1625,36 @@ test('external AI loss never stops independent Vibe development and resumes from
   assert.equal(architecture.externalAiRules.externalAiReconnectReplaysCompletedVibeWork,false);
 });
 
+test('adaptive graphics replacement count is grounded in touched source evidence',()=>{
+  const pass=roadmap.assetProductionParallelContract.graphicsPassContract;
+  assert.equal(pass.adaptiveReplacementCountMustBeGroundedPerSourceBinding,true);
+  assert.equal(pass.perReplacementSourceEvidenceRequired,true);
+  assert.equal(pass.actualReplacementCountMustEqualGroundedEvidenceCount,true);
+  assert.equal(pass.replacementEvidenceMustReferenceTouchedSourcePath,true);
+  assert.equal(pass.replacementEvidenceSnippetMustExistInChangedSource,true);
+  assert.equal(pass.duplicateReplacementEvidenceCannotInflateCount,true);
+  assert.equal(pass.selfReportedCountWithoutGroundedSourceEvidenceCannotPass,true);
+
+  const completion=autonomousExpansionPolicy.presentationEvolution.completion;
+  assert.equal(completion.perReplacementSourceEvidenceRequired,true);
+  assert.equal(completion.actualReplacementCountMustEqualGroundedEvidenceCount,true);
+  assert.equal(completion.replacementEvidenceMustReferenceTouchedSourcePath,true);
+  assert.equal(completion.replacementEvidenceSnippetMustExistInChangedSource,true);
+  assert.equal(completion.duplicateReplacementEvidenceCannotInflateCount,true);
+  assert.equal(completion.selfReportedCountWithoutGroundedSourceEvidenceCannotPass,true);
+
+  const change=roadmap.changeRecord.graphicsReplacementSourceGrounding20260927;
+  assert.deepEqual(change.activePlatforms,['WEB','ROBLOX','UNITY']);
+  assert.deepEqual(change.pausedPlatforms,['FORTNITE_UEFN']);
+  assert.deepEqual(change.adaptiveReplacementRange,[1,60]);
+  assert.equal(change.actualReplacementCountMustEqualGroundedEvidenceCount,true);
+  assert.equal(change.eachReplacementEvidenceMustReferenceTouchedSourcePath,true);
+  assert.equal(change.eachReplacementEvidenceSnippetMustExistInChangedSource,true);
+  assert.equal(change.duplicateEvidenceCannotInflateCount,true);
+  assert.equal(change.selectionMarkerOrSelfReportedCountOnlyCannotPass,true);
+  assert.equal(change.newWorkflowOrStageCreated,false);
+});
+
 test('menu experience diversity stays inside existing Vibe presentation buildup',()=>{
   const menu=autonomousExpansionPolicy.presentationEvolution.menuExperienceDiversity;
   assert.equal(menu.status,'ACTIVE');
