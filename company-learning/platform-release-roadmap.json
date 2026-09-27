@@ -1,5 +1,5 @@
 {
-  "version": 481,
+  "version": 482,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-27",
@@ -10011,6 +10011,23 @@
       "newQueueOrPipelineCreated": false,
       "gamePrimaryWorkerPolicyUnchanged": true,
       "qaSecurityReleaseGatesUnchanged": true
+    },
+    "buildUpEndToEndGrounding20260928": {
+      "status": "ACTIVE",
+      "scope": "EXISTING_BUILD_UP_FLOW_ONLY",
+      "activePlatforms": [
+        "WEB",
+        "ROBLOX",
+        "UNITY"
+      ],
+      "pausedPlatforms": [
+        "FORTNITE_UEFN"
+      ],
+      "graphicsEvidence": "GROUNDING_MUST_SURVIVE_SOURCE_WORKER_TO_INCREMENTAL_QA_TO_FAN_IN",
+      "robloxRuntimeSettlement": "F9_MUST_MATCH_EXACT_PROMOTED_SOURCE_ROOT_TREE_SHA",
+      "sameGameStaleRuntimeProofMayNotPassNewerBuildUp": true,
+      "noNewWorkflowOrStage": true,
+      "gameplaySemanticsUnchanged": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -15655,7 +15672,11 @@
       "replacementEvidenceMustReferenceTouchedSourcePath": true,
       "replacementEvidenceSnippetMustExistInChangedSource": true,
       "duplicateReplacementEvidenceCannotInflateCount": true,
-      "selfReportedCountWithoutGroundedSourceEvidenceCannotPass": true
+      "selfReportedCountWithoutGroundedSourceEvidenceCannotPass": true,
+      "groundedEvidenceMustPersistThroughCandidateManifest": true,
+      "incrementalQaMustRevalidateGroundedEvidenceAgainstCandidateSource": true,
+      "fanInMustRequireGroundedGraphicsEvidence": true,
+      "targetRuntimeEvidenceMustBindExactBuildUpSourceIdentity": true
     },
     "parallelism": {
       "gameplayCodeAndAssetProductionConcurrent": true,
@@ -20229,6 +20250,35 @@
         "qualityIntent": "HIGH_DENSITY_STYLIZED_FANTASY_RPG_VISUAL_BAR_WITH_CROSS_GENRE_REUSE"
       },
       "runnerLabel": "ubuntu-24.04-arm"
+    },
+    "buildUpRuntimeClosure": {
+      "version": 1,
+      "status": "ACTIVE",
+      "activePlatforms": [
+        "WEB",
+        "ROBLOX",
+        "UNITY"
+      ],
+      "pausedPlatforms": [
+        "FORTNITE_UEFN"
+      ],
+      "sourceIdentity": "SOURCE_ROOT_TREE_SHA",
+      "graphicsGroundingChain": [
+        "SOURCE_WORKER_GROUNDED_REPLACEMENT_VALIDATION",
+        "CANDIDATE_MANIFEST_PERSISTENCE",
+        "INCREMENTAL_QA_REVALIDATION",
+        "FAN_IN_GROUNDED_EVIDENCE_GATE",
+        "TARGET_RUNTIME_EXACT_SOURCE_BINDING"
+      ],
+      "roblox": {
+        "finalRuntimeAuthority": "ROBLOX_F9_EXACT_RUNTIME_REVIEW",
+        "waitingTaskMustRecordPromotedSourceTreeSha": true,
+        "f9SettlementMustMatchWaitingSourceTreeSha": true,
+        "sameGameDifferentSourceMayNotSettle": true,
+        "runtimePassWithoutExactBuildUpSourceIdentityCannotSettleTask": true
+      },
+      "gameplaySemanticsPreservationRequired": true,
+      "newWorkflowOrShadowPipelineForbidden": true
     }
   },
   "weatherPresentationContract": {
