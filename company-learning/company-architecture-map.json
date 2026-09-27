@@ -1,5 +1,5 @@
 {
-  "version": 280,
+  "version": 281,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2583,7 +2583,7 @@
     "ownerControlledFinancialActions": true
   },
   "assetProductionParallelism": {
-    "version": 5,
+    "version": 6,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract",
     "executionAuthority": "EXISTING_DAG_SCHEDULER_WITH_ATOMIC_COMPLETION_CALLBACK",
     "codeAndAssetWorkMayRunConcurrently": true,
@@ -3030,7 +3030,16 @@
         "MOTION",
         "PROP"
       ],
-      "reusableMotionVerifiedTarget": 200
+      "reusableMotionVerifiedTarget": 300,
+      "reusableMotionBaseAuthoringOrAcquisitionTarget": 90,
+      "reusableMotionDerivedVariationTarget": 210,
+      "crossGenreReuse": [
+        "RPG",
+        "SURVIVAL",
+        "ACTION",
+        "ADVENTURE",
+        "TYCOON"
+      ]
     },
     "dedicatedExecution": {
       "lane": "ASSET_DEVELOPMENT",
