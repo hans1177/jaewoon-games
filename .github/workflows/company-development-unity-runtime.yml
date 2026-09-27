@@ -559,38 +559,1068 @@ jobs:
           runtime_run="${RUNTIME_RUN_NEW:-$RUNTIME_RUN_OLD}"
           api="repos/$GITHUB_REPOSITORY/actions/workflows/unity-android-runtime-smoke.yml"
           title="Unity Android Runtime Smoke $BUILD_RUN"
-          if [[ ! "$runtime_run" =~ ^[0-9]+$ ]]; then
-            for _ in $(seq 1 60); do
-              runtime_run="$(gh api "$api/runs?per_page=100" | jq -r --arg title "$title" '[.workflow_runs[]|select(.display_title==$title)|.id]|max//empty')"
-              [[ "$runtime_run" =~ ^[0-9]+$ ]] && break
-              sleep 2
-            done
-          fi
-          if [[ ! "$runtime_run" =~ ^[0-9]+$ ]]; then
-            baseline="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" --jq '[.workflow_runs[].id] | max // 0')"
-            jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$api/dispatches" --input -
-            for _ in $(seq 1 60); do
-              runtime_run="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" | jq -r --argjson b "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$b and .display_title==$title)|.id]|max//empty')"
-              [[ "$runtime_run" =~ ^[0-9]+$ ]] && break
-              sleep 4
-            done
-          fi
-          [[ "$runtime_run" =~ ^[0-9]+$ ]] || { echo 'UNITY_ONE_SESSION_RUNTIME_RUN_MISSING' >&2; exit 8; }
-
-          for _ in $(seq 1 540); do
-            row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$runtime_run" --jq '[.status,.conclusion]|@tsv')"
-            status="${row%%$'\t'*}"; conclusion="${row#*$'\t'}"
-            if [[ "$status" == completed ]]; then
-              [[ "$conclusion" == success ]] || { echo "UNITY_ONE_SESSION_RUNTIME_FAILED=$runtime_run:$conclusion" >&2; exit 9; }
-              break
-            fi
-            sleep 5
-          done
-
           rm -rf /tmp/unity-runtime-single-session /tmp/unity-independent-single-session
           mkdir -p /tmp/unity-runtime-single-session /tmp/unity-independent-single-session
-          gh run download "$runtime_run" -D /tmp/unity-runtime-single-session
+
+          # Prefer the already completed Genymotion single-session evidence from the build run.
+          if [[ "${{ steps.buildstate.outputs.runtime_passed }}" == 'true' ]]; then
+            runtime_run="$BUILD_RUN"
+            gh run download "$BUILD_RUN" -D /tmp/unity-runtime-single-session
+            runtime_json="$(find /tmp/unity-runtime-single-session -type f -path '*android16-install-gate*' -name evidence.json -size +0c | head -n1)"
+            if [[ -n "$runtime_json" ]]; then
+              echo "UNITY_F1_F8_SINGLE_SESSION_SOURCE=GENYMOTION"
+            fi
+          fi
+
+          # Fall back to exactly one Redroid runtime session only when Genymotion evidence was not available.
+          if [[ -z "${runtime_json:-}" ]]; then
+            if [[ ! "$runtime_run" =~ ^[0-9]+$ || "$runtime_run" == "$BUILD_RUN" ]]; then
+              runtime_run=''
+              for _ in $(seq 1 60); do
+                runtime_run="$(gh api "$api/runs?per_page=100" | jq -r --arg title "$title" '[.workflow_runs[]|select(.display_title==$title)|.id]|max//empty')"
+                [[ "$runtime_run" =~ ^[0-9]+$ ]] && break
+                sleep 2
+              done
+            fi
+            if [[ ! "$runtime_run" =~ ^[0-9]+$ ]]; then
+              baseline="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" --jq '[.workflow_runs[].id] | max // 0')"
+              jq -n --arg ref main --arg run "$BUILD_RUN" '{ref:$ref,inputs:{run_id:$run}}' | gh api --method POST "$api/dispatches" --input -
+              for _ in $(seq 1 60); do
+                runtime_run="$(gh api "$api/runs?branch=main&event=workflow_dispatch&per_page=100" | jq -r --argjson b "$baseline" --arg title "$title" '[.workflow_runs[]|select(.id>$b and .display_title==$title)|.id]|max//empty')"
+                [[ "$runtime_run" =~ ^[0-9]+$ ]] && break
+                sleep 4
+              done
+            fi
+            [[ "$runtime_run" =~ ^[0-9]+$ ]] || { echo 'UNITY_ONE_SESSION_RUNTIME_RUN_MISSING' >&2; exit 8; }
+            for _ in $(seq 1 540); do
+              row="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$runtime_run" --jq '[.status,.conclusion]|@tsv')"
+              status="${row%%
+          build_info="$(find /tmp/unity-build -type f -name build-info.json -size +0c | head -n1)"
+          test -n "$runtime_json" -a -n "$build_info"
+          RUNTIME_JSON="$runtime_json" BUILD_INFO="$build_info" SOURCE_REVISION="$SOURCE_REVISION" node <<'NODE'
+          const fs=require('fs');
+          const runtime=JSON.parse(fs.readFileSync(process.env.RUNTIME_JSON,'utf8'));
+          const build=JSON.parse(fs.readFileSync(process.env.BUILD_INFO,'utf8').replace(/^\uFEFF/,''));
+          const sha=String(build.sha256||'').toLowerCase();
+          const source=String(build.sourceCommit||'').toLowerCase();
+          const exact=String(runtime.apkSha256||runtime.buildId||'').toLowerCase()===sha
+            &&String(runtime.buildSourceCommit||'').toLowerCase()===source
+            &&source===String(process.env.SOURCE_REVISION||'').toLowerCase();
+          const checks={
+            architectureCompatibleRuntime:runtime.runtimeAbiCompatible===true,
+            freshInstall:runtime.freshInstallPassed===true,
+            processLaunch:runtime.launcherCommandPassed===true&&runtime.processObservedAfterLaunch===true,
+            rapidInputStress:runtime.rapidInputStressPassed===true,
+            backgroundResume:runtime.backgroundResumePassed===true,
+            processAliveAfterStress:runtime.processAliveAfterStress===true,
+            fatalCrashScan:runtime.fatalRuntimeErrorDetected===false,
+            screenshotCaptured:runtime.postResumeScreenshotPassed===true
+          };
+          const pass=runtime.qaPassEligibleRuntimeEvidence===true
+            &&runtime.oneRuntimeSessionF1ThroughF8===true
+            &&Number(runtime.runtimeLaunchCount)===1
+            &&runtime.perFloorRuntimeRelaunch===false
+            &&runtime.independentQaEmbedded===true
+            &&exact
+            &&Object.values(checks).every(Boolean);
+          const evidence={
+            version:3,
+            state:pass?'PASS':'FAIL',
+            independentQa:pass?'PASS':'FAIL',
+            independent:pass,
+            singleRuntimeSession:true,
+            runtimeRelaunch:false,
+            f1ThroughF8SingleSession:pass,
+            upstreamBuildRunId:Number(runtime.upstreamBuildRunId||0),
+            buildId:sha,
+            apkSha256:sha,
+            buildSourceCommit:source,
+            sourceTreeSha:runtime.sourceTreeSha||build.sourceTreeSha||null,
+            runtimeEvidenceSource:'UNITY_ANDROID_RUNTIME_SMOKE_SINGLE_SESSION',
+            checks:Object.fromEntries(Object.entries(checks).map(([k,v])=>[k,v?'PASS':'FAIL']))
+          };
+          fs.writeFileSync('/tmp/unity-independent-single-session/evidence.json',JSON.stringify(evidence,null,2)+'\n');
+          if(!pass)process.exit(2);
+          NODE
+          echo "run_id=$runtime_run" >> "$GITHUB_OUTPUT"
+          echo "UNITY_INDEPENDENT_QA=SAME_RUNTIME_SESSION_PASS"
+          echo "UNITY_F1_F8_RUNTIME_LAUNCH_COUNT=1"
+
+      - name: Resolve independent QA checkpoint result
+        id: independentstate
+        env:
+          OUTCOME: ${{ steps.independent.outcome }}
+        run: |
+          if [[ "$OUTCOME" == success ]]; then pass=true; else pass=false; fi
+          echo "passed=$pass" >> "$GITHUB_OUTPUT"
+          echo "INDEPENDENT_QA=$pass"
+
+      - name: Aggregate F9 regression without another Unity runtime launch
+        id: regression
+        if: steps.independentstate.outputs.passed == 'true'
+        continue-on-error: true
+        env:
+          BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
+          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
+          RUNTIME_RUN: ${{ steps.independent.outputs.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test qa/unity-package-fatal-logcat.test.mjs
+          mkdir -p /tmp/unity-regression-fanin
           runtime_json="$(find /tmp/unity-runtime-single-session -type f -name evidence.json -size +0c | head -n1)"
+          independent_json="/tmp/unity-independent-single-session/evidence.json"
+          build_info="$(find /tmp/unity-build -type f -name build-info.json -size +0c | head -n1)"
+          test -n "$runtime_json" -a -s "$independent_json" -a -n "$build_info"
+          RUNTIME_JSON="$runtime_json" INDEPENDENT_JSON="$independent_json" BUILD_INFO="$build_info" SOURCE_REVISION="$SOURCE_REVISION" BUILD_RUN="$BUILD_RUN" node <<'NODE'
+          const fs=require('fs');
+          const runtime=JSON.parse(fs.readFileSync(process.env.RUNTIME_JSON,'utf8'));
+          const independent=JSON.parse(fs.readFileSync(process.env.INDEPENDENT_JSON,'utf8'));
+          const build=JSON.parse(fs.readFileSync(process.env.BUILD_INFO,'utf8').replace(/^\uFEFF/,''));
+          const sha=String(build.sha256||'').toLowerCase();
+          const source=String(build.sourceCommit||'').toLowerCase();
+          const exact=String(runtime.apkSha256||runtime.buildId||'').toLowerCase()===sha
+            &&String(runtime.buildSourceCommit||'').toLowerCase()===source
+            &&String(independent.apkSha256||'').toLowerCase()===sha
+            &&String(independent.buildSourceCommit||'').toLowerCase()===source
+            &&source===String(process.env.SOURCE_REVISION||'').toLowerCase();
+          const pass=exact
+            &&runtime.qaPassEligibleRuntimeEvidence===true
+            &&runtime.oneRuntimeSessionF1ThroughF8===true
+            &&Number(runtime.runtimeLaunchCount)===1
+            &&runtime.perFloorRuntimeRelaunch===false
+            &&independent.independent===true
+            &&independent.singleRuntimeSession===true;
+          const evidence={
+            version:3,
+            state:pass?'PASS':'FAIL',
+            regression:pass?'PASS':'FAIL',
+            regressionPassed:pass,
+            exactArtifactRegression:pass,
+            f9AggregationOnly:true,
+            runtimeRelaunch:false,
+            runtimeLaunchCount:1,
+            upstreamBuildRunId:Number(process.env.BUILD_RUN||0),
+            buildId:sha,
+            apkSha256:sha,
+            buildSourceCommit:source,
+            sourceTreeSha:runtime.sourceTreeSha||build.sourceTreeSha||null,
+            authority:'unity-f9-one-runtime-session-fan-in'
+          };
+          fs.writeFileSync('/tmp/unity-regression-fanin/evidence.json',JSON.stringify(evidence,null,2)+'\n');
+          if(!pass)process.exit(2);
+          NODE
+          echo "run_id=$RUNTIME_RUN" >> "$GITHUB_OUTPUT"
+          echo "UNITY_REGRESSION=F9_FAN_IN_PASS"
+          echo "UNITY_REGRESSION_RUNTIME_RELAUNCH=NO"
+
+      - name: Resolve regression checkpoint result
+        id: regressionstate
+        env:
+          OUTCOME: ${{ steps.regression.outcome }}
+        run: |
+          if [[ "$OUTCOME" == success ]]; then pass=true; else pass=false; fi
+          echo "passed=$pass" >> "$GITHUB_OUTPUT"
+          echo "REGRESSION=$pass"
+
+      - name: Bind passed stages into canonical DEVELOPMENT evidence
+        id: canonical
+        if: steps.regressionstate.outputs.passed == 'true'
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+          BASE: ${{ steps.context.outputs.base }}
+          PROJECT: ${{ steps.context.outputs.project }}
+          BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
+          RUNTIME_RUN: ${{ steps.independent.outputs.run_id }}
+          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          runtime_run="$RUNTIME_RUN"
+          test -d /tmp/unity-runtime-single-session
+          build_info="$(find /tmp/unity-build -type f -name build-info.json | head -n1)"
+          runtime_json="$(find /tmp/unity-runtime-single-session -type f -name evidence.json | head -n1)"
+          independent_json="/tmp/unity-independent-single-session/evidence.json"
+          regression_json="/tmp/unity-regression-fanin/evidence.json"
+          runtime_log="$(find /tmp/unity-runtime-single-session -type f -name logcat.txt | head -n1 || true)"
+          test -n "$build_info" -a -n "$runtime_json" -a -s "$independent_json" -a -s "$regression_json"
+          node tools/company-development-unity-evidence.mjs --game-id="$GAME_ID" --build-info="$build_info" --runtime="$runtime_json" --independent="$independent_json" --runtime-log="$runtime_log" --independent-log="$runtime_log" --project="$PROJECT" --output="$BASE/unity-technical-validation.json"
+          cp "$regression_json" "$BASE/unity-regression-validation.json"
+          echo "runtime_run=$runtime_run" >> "$GITHUB_OUTPUT"
+          echo "qa_run=$runtime_run" >> "$GITHUB_OUTPUT"
+          echo "regression_run=$runtime_run" >> "$GITHUB_OUTPUT"
+          echo "UNITY_F0_F9_PHYSICAL_EXECUTION=F0_ONCE_F1_F8_ONE_RUNTIME_F9_FAN_IN"
+
+      - name: Prepare free models only after technical stages pass
+        if: steps.regressionstate.outputs.passed == 'true'
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: 'llama3.2:1b'
+          version: '0.33.3'
+          pull-model: 'true'
+          department-role: development
+          cache-model: 'true'
+
+      - name: Ensure configured department models only for evidence meeting
+        if: steps.regressionstate.outputs.passed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t models < <(node -e "const d=require('./company-directive.json');for(const m of [...new Set(d.ai?.modelPool||[])])console.log(m)")
+          have="$(ollama list | awk 'NR>1{print $1}')"; for model in "${models[@]}";do grep -Fxq "$model"<<<"$have"||ollama pull "$model";done
+
+      - name: Revalidate shared worker context before Unity checkpoint
+        run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-unity-before-checkpoint.json
+
+      - name: Persist exact checkpoint package even when a later stage fails
+        id: checkpoint
+        if: always()
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+          BASE: ${{ steps.context.outputs.base }}
+          PROJECT: ${{ steps.context.outputs.project }}
+          BRANCH: ${{ steps.source.outputs.branch }}
+          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
+          SOURCE_FINGERPRINT: ${{ steps.plan.outputs.fingerprint }}
+          BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
+          ARTIFACT_ID: ${{ steps.artifact.outputs.identity }}
+          BUILD_PASS: ${{ steps.buildstate.outputs.build_passed }}
+          RUNTIME_PASS: ${{ steps.runtimestate.outputs.passed }}
+          QA_PASS: ${{ steps.independentstate.outputs.passed }}
+          REGRESSION_PASS: ${{ steps.regressionstate.outputs.passed }}
+          RUNTIME_RUN_CANONICAL: ${{ steps.canonical.outputs.runtime_run }}
+          RUNTIME_RUN_NEW: ${{ steps.runtime.outputs.run_id }}
+          RUNTIME_RUN_OLD: ${{ matrix.item.unityRuntimeSmokeRunId }}
+          QA_RUN_CANONICAL: ${{ steps.canonical.outputs.qa_run }}
+          QA_RUN_NEW: ${{ steps.independent.outputs.run_id }}
+          QA_RUN_OLD: ${{ matrix.item.unityIndependentQaRunId }}
+          REGRESSION_RUN_CANONICAL: ${{ steps.canonical.outputs.regression_run }}
+          REGRESSION_RUN_NEW: ${{ steps.regression.outputs.run_id }}
+          REGRESSION_RUN_OLD: ${{ matrix.item.unityRegressionRunId }}
+          IS_CANARY: ${{ needs.prepare.outputs.canary }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p runtime-persist/"$(dirname "$BASE")" runtime-persist/queue
+          [[ -d "$BASE" ]] && cp -R "$BASE" runtime-persist/"$(dirname "$BASE")"/
+          source_tree_sha="$(git rev-parse "$SOURCE_REVISION:$PROJECT")"
+          [[ "$source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+          export SOURCE_TREE_SHA="$source_tree_sha"
+          echo "UNITY_CHECKPOINT_SOURCE_TREE_SHA=$source_tree_sha"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {failureSignature} from './tools/company-selected-platform-router.mjs';
+          const yes=v=>String(v).toLowerCase()==='true';
+          const build=yes(process.env.BUILD_PASS),runtime=yes(process.env.RUNTIME_PASS),qa=yes(process.env.QA_PASS),regression=yes(process.env.REGRESSION_PASS);
+          let last='CHEAP_PRECHECK',failure=null;
+          if(build)last='SINGLE_BUILD_OR_PACKAGE';else failure='SINGLE_BUILD_OR_PACKAGE';
+          if(build&&process.env.ARTIFACT_ID)last='IMMUTABLE_ARTIFACT_BIND';
+          if(build&&!runtime)failure='TARGET_PLATFORM_RUNTIME';else if(runtime)last='TARGET_PLATFORM_RUNTIME';
+          if(runtime&&!qa)failure='INDEPENDENT_QA';else if(qa)last='INDEPENDENT_QA';
+          if(qa&&!regression)failure='REGRESSION';else if(regression)last='REGRESSION';
+          const canonical=process.env.MEETING_STATE||'WAITING_TARGET_PLATFORM_VALIDATION';
+          const runtimeRun=Number(process.env.RUNTIME_RUN_CANONICAL||process.env.RUNTIME_RUN_NEW||process.env.RUNTIME_RUN_OLD||process.env.QA_RUN_NEW||0)||null;
+          const qaRun=Number(process.env.QA_RUN_CANONICAL||process.env.QA_RUN_NEW||process.env.QA_RUN_OLD||runtimeRun||0)||null;
+          const regressionRun=Number(process.env.REGRESSION_RUN_CANONICAL||process.env.REGRESSION_RUN_NEW||process.env.REGRESSION_RUN_OLD||runtimeRun||0)||null;
+          const buildRun=Number(process.env.BUILD_RUN||0)||null;
+          const artifactIdentity=process.env.ARTIFACT_ID||null;
+          const stamp=new Date().toISOString();
+          const evidence={version:3,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION||null,sourceRootTreeSha:process.env.SOURCE_TREE_SHA||null,sourceFingerprint:process.env.SOURCE_FINGERPRINT||null,buildOrPackagePassed:build,artifactIdentity,runtimePassed:runtime,independentQaPassed:qa,regressionPassed:regression,exactRevision:Boolean(artifactIdentity&&process.env.SOURCE_REVISION&&process.env.SOURCE_TREE_SHA),f1ThroughF8SingleSession:runtime&&qa,runtimeLaunchCount:runtime?1:null,perFloorRuntimeRelaunch:false,f9AggregationOnly:regression,lastSuccessfulStage:last,failureStage:failure,failureSignature:failure?failureSignature({stage:failure,code:'STAGE_NOT_PASSED',message:`${process.env.GAME_ID}:${failure}`}):null};
+          const internalReady=build&&runtime&&qa&&regression&&Boolean(artifactIdentity)&&Boolean(process.env.SOURCE_REVISION);
+          const row={
+            gameId:process.env.GAME_ID,status:'ACTIVE',selectedPlatform:'UNITY',targetPlatform:'UNITY',
+            currentStep:internalReady?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'TARGET_PLATFORM_TECHNICAL_VALIDATION',
+            canonicalState:internalReady?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':canonical,
+            platformAdapter:'tools/company-development-unity-platform.mjs',
+            unityProjectPath:process.env.PROJECT,unityCandidateBranch:process.env.BRANCH||null,unitySourceCommit:process.env.SOURCE_REVISION||null,
+            unityBuildRunId:buildRun,unityRuntimeSmokeRunId:runtimeRun,unityIndependentQaRunId:qaRun,unityRegressionRunId:regressionRun,
+            unityInternalReleaseReady:internalReady,
+            unityInternalReleaseAt:internalReady?stamp:null,
+            unityInternalReleaseEvidence:internalReady?{
+              version:3,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION,sourceRootTreeSha:process.env.SOURCE_TREE_SHA,artifactIdentity,
+              buildRunId:buildRun,runtimeRunId:runtimeRun,independentQaRunId:qaRun,regressionRunId:regressionRun,
+              f1ThroughF8SingleSession:true,runtimeLaunchCount:1,perFloorRuntimeRelaunch:false,f9AggregationOnly:true,
+              distribution:'INTERNAL_OR_CLOSED_APP_TEST_BUILD',artifactInternalTestingAllowed:true,externalPublicationAuthority:false,
+              authority:'unity-f0-f9-one-runtime-session'
+            }:null,
+            executionEvidence:evidence,resumeStage:failure||(internalReady?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'IMMEDIATE_NEXT_STAGE_DISPATCH'),
+            failureCount:failure?1:0,contractCanaryPassed:String(process.env.IS_CANARY).toLowerCase()==='true'&&regression,updatedAt:stamp
+          };
+          fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.json`,JSON.stringify(row,null,2)+'\n');
+          fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.evidence.json`,JSON.stringify(evidence,null,2)+'\n');
+          console.log(`CHECKPOINT_LAST_SUCCESS=${last}`);console.log(`CHECKPOINT_FAILURE_STAGE=${failure||'NONE'}`);console.log(`UNITY_INTERNAL_RELEASE_READY=${internalReady?'YES':'NO'}`);console.log('UNITY_PUBLIC_RELEASE_STATE_MUTATION=NO');
+          NODE
+
+      - name: Upload checkpoint for company-runtime persistence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-unity-runtime-${{ matrix.item.gameId }}-${{ github.run_id }}
+          path: runtime-persist/
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Persist this game's checkpoint immediately
+        id: persist_game
+        if: always() && steps.checkpoint.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.item.gameId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          row="runtime-persist/queue/$GAME_ID.json"
+          test -s "$row"
+          passed="$(node -e "const r=require('./'+process.argv[1]);process.stdout.write(String(!r.executionEvidence?.failureStage))" "$row")"
+          state_dir="/tmp/company-runtime-$GAME_ID"
+          git config user.name 'jaewoon-development-unity-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            echo "UNITY_RUNTIME_GAME_PERSIST_OPTIMISTIC_ATTEMPT=$GAME_ID:$attempt/5"
+            git worktree remove "$state_dir" --force >/dev/null 2>&1 || true
+            git worktree prune
+            git fetch --no-tags --depth=1 origin company-runtime main
+            git worktree add --force --detach "$state_dir" origin/company-runtime >/dev/null
+            mkdir -p "$state_dir/design"
+            if [[ -d runtime-persist/design ]]; then cp -R runtime-persist/design/. "$state_dir/design/"; fi
+            STATE_DIR="$state_dir" ROW_PATH="$PWD/$row" node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const root=process.env.STATE_DIR;
+          const queuePath=path.join(root,'development-queue.json');
+          const queue=JSON.parse(fs.readFileSync(queuePath,'utf8'));
+          const update=JSON.parse(fs.readFileSync(process.env.ROW_PATH,'utf8'));
+          const item=(queue.items||[]).find(x=>x.gameId===update.gameId);
+          if(!item)throw new Error('queue item missing: '+update.gameId);
+          const mergedUpdate={...update};
+          const concurrent=Array.isArray(item.concurrentTargetPlatforms)
+            &&item.concurrentTargetPlatforms.includes('ROBLOX')
+            &&item.concurrentTargetPlatforms.includes('UNITY');
+          const exactRobloxBuild=item.robloxBuildOrPackagePassed===true
+            &&item.robloxBuildPreflightPassed===true
+            &&item.robloxFoundationF0Passed===true
+            &&String(item.robloxBuildSourceRevision||'')===String(item.robloxSourceCommit||'')
+            &&/^sha256:[a-f0-9]{64}$/i.test(String(item.robloxBuildArtifactIdentity||''));
+          const exactCandidate=item.robloxRuntimeCandidateEvidence||{};
+          const exactRobloxCandidate=exactCandidate.published===true
+            &&String(exactCandidate.sourceRevision||'')===String(item.robloxSourceCommit||'')
+            &&String(exactCandidate.artifactIdentity||'')===String(item.robloxBuildArtifactIdentity||'')
+            &&Number(exactCandidate.versionNumber)>0;
+          const robloxInternal=item.robloxInternalReleaseReady===true
+            ||item.robloxInternalReleasePublished===true
+            ||item.robloxInternalReleaseEvidence?.published===true;
+          const robloxRepairRequired=
+            String(item.canonicalState||'').toUpperCase()==='TARGET_PLATFORM_REPAIR_REQUIRED'
+            &&Boolean(String(item.robloxFailureStage||'').trim());
+          if(concurrent&&update.unityInternalReleaseReady!==true){
+            if(robloxInternal){
+              mergedUpdate.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+              mergedUpdate.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+              console.log('UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX='+update.gameId+':INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+            }else if(exactRobloxCandidate){
+              mergedUpdate.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              mergedUpdate.canonicalState='PRIVATE_RUNTIME_CANDIDATE_DEPLOYED';
+              console.log('UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX='+update.gameId+':TARGET_PLATFORM_RUNTIME_FOUNDATION');
+            }else if(exactRobloxBuild){
+              mergedUpdate.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+              mergedUpdate.canonicalState='F0_SOURCE_PREFLIGHT_PASSED';
+              console.log('UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX='+update.gameId+':PRIVATE_RUNTIME_CANDIDATE_DEPLOY');
+            }else if(robloxRepairRequired){
+              mergedUpdate.currentStep=String(item.currentStep||'TARGET_PLATFORM_TECHNICAL_VALIDATION');
+              mergedUpdate.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED';
+              console.log('UNITY_SHARED_REPAIR_PRESERVED_FROM_ROBLOX='+update.gameId+':'+mergedUpdate.currentStep);
+            }
+          }
+          Object.assign(item,mergedUpdate);
+          if(update.contractCanaryPassed)queue.executionContractVersion=1;
+          queue.executionContract='CHANGE_DETECTION>CHEAP_PRECHECK>REPRESENTATIVE_CANARY>SINGLE_BUILD_OR_PACKAGE>IMMUTABLE_ARTIFACT_BIND>TARGET_PLATFORM_RUNTIME>INDEPENDENT_QA>REGRESSION>IMMEDIATE_NEXT_STAGE_DISPATCH>RESUME_EXACT_FAILURE_POINT';
+          queue.developmentGameWipMax=null;
+          queue.updatedAt=new Date().toISOString();
+          fs.writeFileSync(queuePath,JSON.stringify(queue,null,2)+'\n');
+          console.log('DEVELOPMENT_UNITY_GAME_PERSIST='+update.gameId);
+          NODE
+            git -C "$state_dir" checkout origin/main -- tools/company-homepage-platform-exposure-sync.mjs
+            (
+              cd "$state_dir"
+              node tools/company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
+              git reset -- tools/company-homepage-platform-exposure-sync.mjs >/dev/null 2>&1 || true
+              git add design development-queue.json homepage-platform-exposure.json
+              git diff --cached --check
+              if git diff --cached --quiet; then
+                echo "UNITY_RUNTIME_GAME_PERSIST_WRITE=NO_CHANGE:$GAME_ID"
+                exit 10
+              fi
+              git commit -m "runtime: persist Unity checkpoint $GAME_ID [skip ci]"
+            ) && commit_state=0 || commit_state=$?
+            if [[ "$commit_state" == 10 ]]; then
+              persisted=1
+              git worktree remove "$state_dir" --force >/dev/null 2>&1 || true
+              break
+            fi
+            if [[ "$commit_state" != 0 ]]; then
+              git worktree remove "$state_dir" --force >/dev/null 2>&1 || true
+              exit "$commit_state"
+            fi
+            if git -C "$state_dir" push origin HEAD:company-runtime; then
+              persisted=1
+              echo "UNITY_RUNTIME_GAME_PERSIST_WRITE=PUSHED:$GAME_ID"
+              git worktree remove "$state_dir" --force >/dev/null 2>&1 || true
+              break
+            fi
+            echo "UNITY_RUNTIME_GAME_PERSIST_CONFLICT_RETRY=$GAME_ID:$attempt"
+            git worktree remove "$state_dir" --force >/dev/null 2>&1 || true
+            sleep $((attempt*2))
+          done
+          test "$persisted" = '1'
+          echo "passed=$passed" >> "$GITHUB_OUTPUT"
+          echo "COMPANY_RUNTIME_UNITY_GAME_PERSIST=PASS:$GAME_ID"
+
+      - name: Immediately continue this successful Unity game
+        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.item.gameId }}
+        run: |
+          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
+          echo "IMMEDIATE_NEXT_STAGE_DISPATCH=YES:$GAME_ID"
+
+      - name: Settle exact Vibe Unity BUILD_UP task after runtime QA and regression
+        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.item.gameId }}
+          PROJECT: ${{ steps.context.outputs.project }}
+          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
+          ARTIFACT_ID: ${{ steps.artifact.outputs.identity }}
+          BUILD_RUN_ID: ${{ steps.buildref.outputs.run_id }}
+          RUNTIME_RUN_ID: ${{ steps.runtime.outputs.run_id || matrix.item.unityRuntimeSmokeRunId }}
+          QA_RUN_ID: ${{ steps.independent.outputs.run_id || matrix.item.unityIndependentQaRunId }}
+          REGRESSION_RUN_ID: ${{ steps.regression.outputs.run_id || matrix.item.unityRegressionRunId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "${SOURCE_REVISION}^{commit}" 2>/dev/null || git fetch --no-tags origin "$SOURCE_REVISION"
+          runtime_source_tree_sha="$(git rev-parse "$SOURCE_REVISION:$PROJECT")"
+          [[ "$runtime_source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "UNITY_BUILD_UP_RUNTIME_SOURCE_TREE_SHA=$GAME_ID:$runtime_source_tree_sha"
+          rm -rf /tmp/vibe2-unity-runtime-control
+          git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-unity-runtime-control >/dev/null 2>&1
+          git -C /tmp/vibe2-unity-runtime-control config user.name 'jaewoon-unity-runtime-fanin'
+          git -C /tmp/vibe2-unity-runtime-control config user.email 'actions@users.noreply.github.com'
+          pushed=0
+          settled_count=0
+          for attempt in 1 2 3; do
+            attempt_settled=0
+            git -C /tmp/vibe2-unity-runtime-control fetch origin vibe2-unreal-core --quiet
+            git -C /tmp/vibe2-unity-runtime-control reset --hard origin/vibe2-unreal-core >/dev/null
+            mapfile -t task_ids < <(GAME_ID="$GAME_ID" RUNTIME_SOURCE_TREE_SHA="$runtime_source_tree_sha" node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            const q=JSON.parse(fs.readFileSync('/tmp/vibe2-unity-runtime-control/.vibe2/queue.json','utf8'));
+            const game=String(process.env.GAME_ID||'').trim();
+            const sourceTree=String(process.env.RUNTIME_SOURCE_TREE_SHA||'').trim();
+            const exactTreeMarker='unity-runtime-await-source-tree:'+sourceTree;
+            for(const task of q.tasks||[]){
+              const evidence=(task.evidence||[]).map(String);
+              if(task.gameId!==game)continue;
+              if(String(task.target||'').toLowerCase()!=='unity')continue;
+              if(String(task.status||'').toLowerCase()!=='blocked'&&String(task.status||'').toLowerCase()!=='running')continue;
+              if(String(task.blocker||'')!=='candidate-awaiting-unity-runtime-qa')continue;
+              if(!evidence.includes('unity-runtime-await-game:'+game))continue;
+              if(!evidence.includes(exactTreeMarker))continue;
+              process.stdout.write(String(task.id)+'\n');
+            }
+            NODE
+            )
+            for task_id in "${task_ids[@]}"; do
+              (
+                cd /tmp/vibe2-unity-runtime-control
+                node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" pass --id="$task_id" --evidence="unity-runtime-pass,unity-independent-qa-pass,unity-regression-pass,unity-runtime-source-revision:${SOURCE_REVISION},unity-runtime-source-tree:${runtime_source_tree_sha},unity-artifact:${ARTIFACT_ID},unity-build-run:${BUILD_RUN_ID},unity-runtime-run:${RUNTIME_RUN_ID},unity-independent-qa-run:${QA_RUN_ID},unity-regression-run:${REGRESSION_RUN_ID},verification-conclusion:success,actions-run:${GITHUB_RUN_ID}"
+              )
+              echo "UNITY_BUILD_UP_VIBE_TASK_PASS=${GAME_ID}:${task_id}:source_tree=${runtime_source_tree_sha}"
+              attempt_settled=$((attempt_settled+1))
+            done
+            git -C /tmp/vibe2-unity-runtime-control add .vibe2/queue.json
+            if git -C /tmp/vibe2-unity-runtime-control diff --cached --quiet; then
+              pushed=1
+              settled_count=$attempt_settled
+              break
+            fi
+            git -C /tmp/vibe2-unity-runtime-control commit -m "vibe2: settle Unity tasks after exact runtime QA [skip ci]"
+            if git -C /tmp/vibe2-unity-runtime-control push origin HEAD:vibe2-unreal-core; then
+              pushed=1
+              settled_count=$attempt_settled
+              break
+            fi
+            sleep $((attempt*2))
+          done
+          test "$pushed" = 1
+          echo "UNITY_BUILD_UP_VIBE_SETTLED_COUNT=$settled_count"
+          if [ "$settled_count" -gt 0 ]; then
+            payload="$(jq -nc --arg run "${GITHUB_RUN_ID:-}" --arg attempt "${GITHUB_RUN_ATTEMPT:-}" --arg game "${GAME_ID:-}" '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$game,source_outcome:"VERIFIED",reason:"unity-runtime-verified"}}')"
+            curl --fail-with-body --silent --show-error --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" --data "$payload"
+            echo "UNITY_BUILD_UP_VIBE_REFILL_DISPATCHED=$settled_count"
+          else
+            echo 'UNITY_BUILD_UP_VIBE_REFILL_DISPATCHED=0'
+          fi
+      - name: Unity runtime summary
+        if: always()
+        run: |
+          echo 'DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'
+          echo 'DEVELOPMENT_GAME_ELIGIBILITY_SCOPE=UNBOUNDED_CAPACITY_BATCHED'
+          echo 'UNITY_WEB_PREDEVELOPMENT_FLOOR=UPPER_PLATFORM_DEVELOPMENT_READY_REQUIRED_FOR_NEW_NATIVE_ENTRY'
+          echo 'UNITY_WEB_FLOOR_OWNER=unity-web-first-stage-build.yml'
+          echo 'UNITY_WEB_CANONICAL_SOURCE=SAME_UNITY_PROJECT'
+          echo 'CHANGE_DETECTION=ENABLED'
+          echo 'CHEAP_PRECHECK=ENABLED'
+          echo 'REPRESENTATIVE_CANARY=ENABLED'
+          echo 'BUILD_ONCE_PER_SOURCE_FINGERPRINT=ENABLED'
+          echo 'IMMUTABLE_ARTIFACT_REUSE=ENABLED'
+          echo 'F0_ONCE_F1_F8_ONE_RUNTIME_F9_FAN_IN=ENABLED'
+          echo 'PER_GAME_CHECKPOINT_PERSIST=IMMEDIATE_OPTIMISTIC_RETRY'
+          echo 'COHORT_PERSIST_FAN_IN=DISABLED'
+          echo 'RESUME_EXACT_FAILURE_POINT=ENABLED'
+          echo 'QUALITY_GATE_WEAKENING=NO'
+          echo 'PUBLIC_MAIN_SOURCE_WRITE=NO'
+
+      - name: Enforce stage result after checkpoint is safely captured
+        if: always()
+        env:
+          BUILD_PASS: ${{ steps.buildstate.outputs.build_passed }}
+          RUNTIME_PASS: ${{ steps.runtimestate.outputs.passed }}
+          QA_PASS: ${{ steps.independentstate.outputs.passed }}
+          REGRESSION_PASS: ${{ steps.regressionstate.outputs.passed }}
+        run: |
+          [[ "$BUILD_PASS" == true ]] || { echo 'FAILED_STAGE=SINGLE_BUILD_OR_PACKAGE' >&2; exit 21; }
+          [[ "$RUNTIME_PASS" == true ]] || { echo 'FAILED_STAGE=TARGET_PLATFORM_RUNTIME' >&2; exit 22; }
+          [[ "$QA_PASS" == true ]] || { echo 'FAILED_STAGE=INDEPENDENT_QA' >&2; exit 23; }
+          [[ "$REGRESSION_PASS" == true ]] || { echo 'FAILED_STAGE=REGRESSION' >&2; exit 24; }
+          echo 'UNITY_SPEED_SEQUENCE=PASS'
+
+\t'*}"; conclusion="${row#*
+          build_info="$(find /tmp/unity-build -type f -name build-info.json -size +0c | head -n1)"
+          test -n "$runtime_json" -a -n "$build_info"
+          RUNTIME_JSON="$runtime_json" BUILD_INFO="$build_info" SOURCE_REVISION="$SOURCE_REVISION" node <<'NODE'
+          const fs=require('fs');
+          const runtime=JSON.parse(fs.readFileSync(process.env.RUNTIME_JSON,'utf8'));
+          const build=JSON.parse(fs.readFileSync(process.env.BUILD_INFO,'utf8').replace(/^\uFEFF/,''));
+          const sha=String(build.sha256||'').toLowerCase();
+          const source=String(build.sourceCommit||'').toLowerCase();
+          const exact=String(runtime.apkSha256||runtime.buildId||'').toLowerCase()===sha
+            &&String(runtime.buildSourceCommit||'').toLowerCase()===source
+            &&source===String(process.env.SOURCE_REVISION||'').toLowerCase();
+          const checks={
+            architectureCompatibleRuntime:runtime.runtimeAbiCompatible===true,
+            freshInstall:runtime.freshInstallPassed===true,
+            processLaunch:runtime.launcherCommandPassed===true&&runtime.processObservedAfterLaunch===true,
+            rapidInputStress:runtime.rapidInputStressPassed===true,
+            backgroundResume:runtime.backgroundResumePassed===true,
+            processAliveAfterStress:runtime.processAliveAfterStress===true,
+            fatalCrashScan:runtime.fatalRuntimeErrorDetected===false,
+            screenshotCaptured:runtime.postResumeScreenshotPassed===true
+          };
+          const pass=runtime.qaPassEligibleRuntimeEvidence===true
+            &&runtime.oneRuntimeSessionF1ThroughF8===true
+            &&Number(runtime.runtimeLaunchCount)===1
+            &&runtime.perFloorRuntimeRelaunch===false
+            &&runtime.independentQaEmbedded===true
+            &&exact
+            &&Object.values(checks).every(Boolean);
+          const evidence={
+            version:3,
+            state:pass?'PASS':'FAIL',
+            independentQa:pass?'PASS':'FAIL',
+            independent:pass,
+            singleRuntimeSession:true,
+            runtimeRelaunch:false,
+            f1ThroughF8SingleSession:pass,
+            upstreamBuildRunId:Number(runtime.upstreamBuildRunId||0),
+            buildId:sha,
+            apkSha256:sha,
+            buildSourceCommit:source,
+            sourceTreeSha:runtime.sourceTreeSha||build.sourceTreeSha||null,
+            runtimeEvidenceSource:'UNITY_ANDROID_RUNTIME_SMOKE_SINGLE_SESSION',
+            checks:Object.fromEntries(Object.entries(checks).map(([k,v])=>[k,v?'PASS':'FAIL']))
+          };
+          fs.writeFileSync('/tmp/unity-independent-single-session/evidence.json',JSON.stringify(evidence,null,2)+'\n');
+          if(!pass)process.exit(2);
+          NODE
+          echo "run_id=$runtime_run" >> "$GITHUB_OUTPUT"
+          echo "UNITY_INDEPENDENT_QA=SAME_RUNTIME_SESSION_PASS"
+          echo "UNITY_F1_F8_RUNTIME_LAUNCH_COUNT=1"
+
+      - name: Resolve independent QA checkpoint result
+        id: independentstate
+        env:
+          OUTCOME: ${{ steps.independent.outcome }}
+        run: |
+          if [[ "$OUTCOME" == success ]]; then pass=true; else pass=false; fi
+          echo "passed=$pass" >> "$GITHUB_OUTPUT"
+          echo "INDEPENDENT_QA=$pass"
+
+      - name: Aggregate F9 regression without another Unity runtime launch
+        id: regression
+        if: steps.independentstate.outputs.passed == 'true'
+        continue-on-error: true
+        env:
+          BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
+          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
+          RUNTIME_RUN: ${{ steps.independent.outputs.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test qa/unity-package-fatal-logcat.test.mjs
+          mkdir -p /tmp/unity-regression-fanin
+          runtime_json="$(find /tmp/unity-runtime-single-session -type f -name evidence.json -size +0c | head -n1)"
+          independent_json="/tmp/unity-independent-single-session/evidence.json"
+          build_info="$(find /tmp/unity-build -type f -name build-info.json -size +0c | head -n1)"
+          test -n "$runtime_json" -a -s "$independent_json" -a -n "$build_info"
+          RUNTIME_JSON="$runtime_json" INDEPENDENT_JSON="$independent_json" BUILD_INFO="$build_info" SOURCE_REVISION="$SOURCE_REVISION" BUILD_RUN="$BUILD_RUN" node <<'NODE'
+          const fs=require('fs');
+          const runtime=JSON.parse(fs.readFileSync(process.env.RUNTIME_JSON,'utf8'));
+          const independent=JSON.parse(fs.readFileSync(process.env.INDEPENDENT_JSON,'utf8'));
+          const build=JSON.parse(fs.readFileSync(process.env.BUILD_INFO,'utf8').replace(/^\uFEFF/,''));
+          const sha=String(build.sha256||'').toLowerCase();
+          const source=String(build.sourceCommit||'').toLowerCase();
+          const exact=String(runtime.apkSha256||runtime.buildId||'').toLowerCase()===sha
+            &&String(runtime.buildSourceCommit||'').toLowerCase()===source
+            &&String(independent.apkSha256||'').toLowerCase()===sha
+            &&String(independent.buildSourceCommit||'').toLowerCase()===source
+            &&source===String(process.env.SOURCE_REVISION||'').toLowerCase();
+          const pass=exact
+            &&runtime.qaPassEligibleRuntimeEvidence===true
+            &&runtime.oneRuntimeSessionF1ThroughF8===true
+            &&Number(runtime.runtimeLaunchCount)===1
+            &&runtime.perFloorRuntimeRelaunch===false
+            &&independent.independent===true
+            &&independent.singleRuntimeSession===true;
+          const evidence={
+            version:3,
+            state:pass?'PASS':'FAIL',
+            regression:pass?'PASS':'FAIL',
+            regressionPassed:pass,
+            exactArtifactRegression:pass,
+            f9AggregationOnly:true,
+            runtimeRelaunch:false,
+            runtimeLaunchCount:1,
+            upstreamBuildRunId:Number(process.env.BUILD_RUN||0),
+            buildId:sha,
+            apkSha256:sha,
+            buildSourceCommit:source,
+            sourceTreeSha:runtime.sourceTreeSha||build.sourceTreeSha||null,
+            authority:'unity-f9-one-runtime-session-fan-in'
+          };
+          fs.writeFileSync('/tmp/unity-regression-fanin/evidence.json',JSON.stringify(evidence,null,2)+'\n');
+          if(!pass)process.exit(2);
+          NODE
+          echo "run_id=$RUNTIME_RUN" >> "$GITHUB_OUTPUT"
+          echo "UNITY_REGRESSION=F9_FAN_IN_PASS"
+          echo "UNITY_REGRESSION_RUNTIME_RELAUNCH=NO"
+
+      - name: Resolve regression checkpoint result
+        id: regressionstate
+        env:
+          OUTCOME: ${{ steps.regression.outcome }}
+        run: |
+          if [[ "$OUTCOME" == success ]]; then pass=true; else pass=false; fi
+          echo "passed=$pass" >> "$GITHUB_OUTPUT"
+          echo "REGRESSION=$pass"
+
+      - name: Bind passed stages into canonical DEVELOPMENT evidence
+        id: canonical
+        if: steps.regressionstate.outputs.passed == 'true'
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+          BASE: ${{ steps.context.outputs.base }}
+          PROJECT: ${{ steps.context.outputs.project }}
+          BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
+          RUNTIME_RUN: ${{ steps.independent.outputs.run_id }}
+          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          runtime_run="$RUNTIME_RUN"
+          test -d /tmp/unity-runtime-single-session
+          build_info="$(find /tmp/unity-build -type f -name build-info.json | head -n1)"
+          runtime_json="$(find /tmp/unity-runtime-single-session -type f -name evidence.json | head -n1)"
+          independent_json="/tmp/unity-independent-single-session/evidence.json"
+          regression_json="/tmp/unity-regression-fanin/evidence.json"
+          runtime_log="$(find /tmp/unity-runtime-single-session -type f -name logcat.txt | head -n1 || true)"
+          test -n "$build_info" -a -n "$runtime_json" -a -s "$independent_json" -a -s "$regression_json"
+          node tools/company-development-unity-evidence.mjs --game-id="$GAME_ID" --build-info="$build_info" --runtime="$runtime_json" --independent="$independent_json" --runtime-log="$runtime_log" --independent-log="$runtime_log" --project="$PROJECT" --output="$BASE/unity-technical-validation.json"
+          cp "$regression_json" "$BASE/unity-regression-validation.json"
+          echo "runtime_run=$runtime_run" >> "$GITHUB_OUTPUT"
+          echo "qa_run=$runtime_run" >> "$GITHUB_OUTPUT"
+          echo "regression_run=$runtime_run" >> "$GITHUB_OUTPUT"
+          echo "UNITY_F0_F9_PHYSICAL_EXECUTION=F0_ONCE_F1_F8_ONE_RUNTIME_F9_FAN_IN"
+
+      - name: Prepare free models only after technical stages pass
+        if: steps.regressionstate.outputs.passed == 'true'
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: 'llama3.2:1b'
+          version: '0.33.3'
+          pull-model: 'true'
+          department-role: development
+          cache-model: 'true'
+
+      - name: Ensure configured department models only for evidence meeting
+        if: steps.regressionstate.outputs.passed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t models < <(node -e "const d=require('./company-directive.json');for(const m of [...new Set(d.ai?.modelPool||[])])console.log(m)")
+          have="$(ollama list | awk 'NR>1{print $1}')"; for model in "${models[@]}";do grep -Fxq "$model"<<<"$have"||ollama pull "$model";done
+
+      - name: Revalidate shared worker context before Unity checkpoint
+        run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-unity-before-checkpoint.json
+
+      - name: Persist exact checkpoint package even when a later stage fails
+        id: checkpoint
+        if: always()
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+          BASE: ${{ steps.context.outputs.base }}
+          PROJECT: ${{ steps.context.outputs.project }}
+          BRANCH: ${{ steps.source.outputs.branch }}
+          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
+          SOURCE_FINGERPRINT: ${{ steps.plan.outputs.fingerprint }}
+          BUILD_RUN: ${{ steps.buildref.outputs.run_id }}
+          ARTIFACT_ID: ${{ steps.artifact.outputs.identity }}
+          BUILD_PASS: ${{ steps.buildstate.outputs.build_passed }}
+          RUNTIME_PASS: ${{ steps.runtimestate.outputs.passed }}
+          QA_PASS: ${{ steps.independentstate.outputs.passed }}
+          REGRESSION_PASS: ${{ steps.regressionstate.outputs.passed }}
+          RUNTIME_RUN_CANONICAL: ${{ steps.canonical.outputs.runtime_run }}
+          RUNTIME_RUN_NEW: ${{ steps.runtime.outputs.run_id }}
+          RUNTIME_RUN_OLD: ${{ matrix.item.unityRuntimeSmokeRunId }}
+          QA_RUN_CANONICAL: ${{ steps.canonical.outputs.qa_run }}
+          QA_RUN_NEW: ${{ steps.independent.outputs.run_id }}
+          QA_RUN_OLD: ${{ matrix.item.unityIndependentQaRunId }}
+          REGRESSION_RUN_CANONICAL: ${{ steps.canonical.outputs.regression_run }}
+          REGRESSION_RUN_NEW: ${{ steps.regression.outputs.run_id }}
+          REGRESSION_RUN_OLD: ${{ matrix.item.unityRegressionRunId }}
+          IS_CANARY: ${{ needs.prepare.outputs.canary }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p runtime-persist/"$(dirname "$BASE")" runtime-persist/queue
+          [[ -d "$BASE" ]] && cp -R "$BASE" runtime-persist/"$(dirname "$BASE")"/
+          source_tree_sha="$(git rev-parse "$SOURCE_REVISION:$PROJECT")"
+          [[ "$source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+          export SOURCE_TREE_SHA="$source_tree_sha"
+          echo "UNITY_CHECKPOINT_SOURCE_TREE_SHA=$source_tree_sha"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {failureSignature} from './tools/company-selected-platform-router.mjs';
+          const yes=v=>String(v).toLowerCase()==='true';
+          const build=yes(process.env.BUILD_PASS),runtime=yes(process.env.RUNTIME_PASS),qa=yes(process.env.QA_PASS),regression=yes(process.env.REGRESSION_PASS);
+          let last='CHEAP_PRECHECK',failure=null;
+          if(build)last='SINGLE_BUILD_OR_PACKAGE';else failure='SINGLE_BUILD_OR_PACKAGE';
+          if(build&&process.env.ARTIFACT_ID)last='IMMUTABLE_ARTIFACT_BIND';
+          if(build&&!runtime)failure='TARGET_PLATFORM_RUNTIME';else if(runtime)last='TARGET_PLATFORM_RUNTIME';
+          if(runtime&&!qa)failure='INDEPENDENT_QA';else if(qa)last='INDEPENDENT_QA';
+          if(qa&&!regression)failure='REGRESSION';else if(regression)last='REGRESSION';
+          const canonical=process.env.MEETING_STATE||'WAITING_TARGET_PLATFORM_VALIDATION';
+          const runtimeRun=Number(process.env.RUNTIME_RUN_CANONICAL||process.env.RUNTIME_RUN_NEW||process.env.RUNTIME_RUN_OLD||process.env.QA_RUN_NEW||0)||null;
+          const qaRun=Number(process.env.QA_RUN_CANONICAL||process.env.QA_RUN_NEW||process.env.QA_RUN_OLD||runtimeRun||0)||null;
+          const regressionRun=Number(process.env.REGRESSION_RUN_CANONICAL||process.env.REGRESSION_RUN_NEW||process.env.REGRESSION_RUN_OLD||runtimeRun||0)||null;
+          const buildRun=Number(process.env.BUILD_RUN||0)||null;
+          const artifactIdentity=process.env.ARTIFACT_ID||null;
+          const stamp=new Date().toISOString();
+          const evidence={version:3,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION||null,sourceRootTreeSha:process.env.SOURCE_TREE_SHA||null,sourceFingerprint:process.env.SOURCE_FINGERPRINT||null,buildOrPackagePassed:build,artifactIdentity,runtimePassed:runtime,independentQaPassed:qa,regressionPassed:regression,exactRevision:Boolean(artifactIdentity&&process.env.SOURCE_REVISION&&process.env.SOURCE_TREE_SHA),f1ThroughF8SingleSession:runtime&&qa,runtimeLaunchCount:runtime?1:null,perFloorRuntimeRelaunch:false,f9AggregationOnly:regression,lastSuccessfulStage:last,failureStage:failure,failureSignature:failure?failureSignature({stage:failure,code:'STAGE_NOT_PASSED',message:`${process.env.GAME_ID}:${failure}`}):null};
+          const internalReady=build&&runtime&&qa&&regression&&Boolean(artifactIdentity)&&Boolean(process.env.SOURCE_REVISION);
+          const row={
+            gameId:process.env.GAME_ID,status:'ACTIVE',selectedPlatform:'UNITY',targetPlatform:'UNITY',
+            currentStep:internalReady?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'TARGET_PLATFORM_TECHNICAL_VALIDATION',
+            canonicalState:internalReady?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':canonical,
+            platformAdapter:'tools/company-development-unity-platform.mjs',
+            unityProjectPath:process.env.PROJECT,unityCandidateBranch:process.env.BRANCH||null,unitySourceCommit:process.env.SOURCE_REVISION||null,
+            unityBuildRunId:buildRun,unityRuntimeSmokeRunId:runtimeRun,unityIndependentQaRunId:qaRun,unityRegressionRunId:regressionRun,
+            unityInternalReleaseReady:internalReady,
+            unityInternalReleaseAt:internalReady?stamp:null,
+            unityInternalReleaseEvidence:internalReady?{
+              version:3,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION,sourceRootTreeSha:process.env.SOURCE_TREE_SHA,artifactIdentity,
+              buildRunId:buildRun,runtimeRunId:runtimeRun,independentQaRunId:qaRun,regressionRunId:regressionRun,
+              f1ThroughF8SingleSession:true,runtimeLaunchCount:1,perFloorRuntimeRelaunch:false,f9AggregationOnly:true,
+              distribution:'INTERNAL_OR_CLOSED_APP_TEST_BUILD',artifactInternalTestingAllowed:true,externalPublicationAuthority:false,
+              authority:'unity-f0-f9-one-runtime-session'
+            }:null,
+            executionEvidence:evidence,resumeStage:failure||(internalReady?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'IMMEDIATE_NEXT_STAGE_DISPATCH'),
+            failureCount:failure?1:0,contractCanaryPassed:String(process.env.IS_CANARY).toLowerCase()==='true'&&regression,updatedAt:stamp
+          };
+          fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.json`,JSON.stringify(row,null,2)+'\n');
+          fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.evidence.json`,JSON.stringify(evidence,null,2)+'\n');
+          console.log(`CHECKPOINT_LAST_SUCCESS=${last}`);console.log(`CHECKPOINT_FAILURE_STAGE=${failure||'NONE'}`);console.log(`UNITY_INTERNAL_RELEASE_READY=${internalReady?'YES':'NO'}`);console.log('UNITY_PUBLIC_RELEASE_STATE_MUTATION=NO');
+          NODE
+
+      - name: Upload checkpoint for company-runtime persistence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-unity-runtime-${{ matrix.item.gameId }}-${{ github.run_id }}
+          path: runtime-persist/
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Persist this game's checkpoint immediately
+        id: persist_game
+        if: always() && steps.checkpoint.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.item.gameId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          row="runtime-persist/queue/$GAME_ID.json"
+          test -s "$row"
+          passed="$(node -e "const r=require('./'+process.argv[1]);process.stdout.write(String(!r.executionEvidence?.failureStage))" "$row")"
+          state_dir="/tmp/company-runtime-$GAME_ID"
+          git config user.name 'jaewoon-development-unity-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            echo "UNITY_RUNTIME_GAME_PERSIST_OPTIMISTIC_ATTEMPT=$GAME_ID:$attempt/5"
+            git worktree remove "$state_dir" --force >/dev/null 2>&1 || true
+            git worktree prune
+            git fetch --no-tags --depth=1 origin company-runtime main
+            git worktree add --force --detach "$state_dir" origin/company-runtime >/dev/null
+            mkdir -p "$state_dir/design"
+            if [[ -d runtime-persist/design ]]; then cp -R runtime-persist/design/. "$state_dir/design/"; fi
+            STATE_DIR="$state_dir" ROW_PATH="$PWD/$row" node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const root=process.env.STATE_DIR;
+          const queuePath=path.join(root,'development-queue.json');
+          const queue=JSON.parse(fs.readFileSync(queuePath,'utf8'));
+          const update=JSON.parse(fs.readFileSync(process.env.ROW_PATH,'utf8'));
+          const item=(queue.items||[]).find(x=>x.gameId===update.gameId);
+          if(!item)throw new Error('queue item missing: '+update.gameId);
+          const mergedUpdate={...update};
+          const concurrent=Array.isArray(item.concurrentTargetPlatforms)
+            &&item.concurrentTargetPlatforms.includes('ROBLOX')
+            &&item.concurrentTargetPlatforms.includes('UNITY');
+          const exactRobloxBuild=item.robloxBuildOrPackagePassed===true
+            &&item.robloxBuildPreflightPassed===true
+            &&item.robloxFoundationF0Passed===true
+            &&String(item.robloxBuildSourceRevision||'')===String(item.robloxSourceCommit||'')
+            &&/^sha256:[a-f0-9]{64}$/i.test(String(item.robloxBuildArtifactIdentity||''));
+          const exactCandidate=item.robloxRuntimeCandidateEvidence||{};
+          const exactRobloxCandidate=exactCandidate.published===true
+            &&String(exactCandidate.sourceRevision||'')===String(item.robloxSourceCommit||'')
+            &&String(exactCandidate.artifactIdentity||'')===String(item.robloxBuildArtifactIdentity||'')
+            &&Number(exactCandidate.versionNumber)>0;
+          const robloxInternal=item.robloxInternalReleaseReady===true
+            ||item.robloxInternalReleasePublished===true
+            ||item.robloxInternalReleaseEvidence?.published===true;
+          const robloxRepairRequired=
+            String(item.canonicalState||'').toUpperCase()==='TARGET_PLATFORM_REPAIR_REQUIRED'
+            &&Boolean(String(item.robloxFailureStage||'').trim());
+          if(concurrent&&update.unityInternalReleaseReady!==true){
+            if(robloxInternal){
+              mergedUpdate.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+              mergedUpdate.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+              console.log('UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX='+update.gameId+':INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+            }else if(exactRobloxCandidate){
+              mergedUpdate.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              mergedUpdate.canonicalState='PRIVATE_RUNTIME_CANDIDATE_DEPLOYED';
+              console.log('UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX='+update.gameId+':TARGET_PLATFORM_RUNTIME_FOUNDATION');
+            }else if(exactRobloxBuild){
+              mergedUpdate.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+              mergedUpdate.canonicalState='F0_SOURCE_PREFLIGHT_PASSED';
+              console.log('UNITY_SHARED_PROGRESS_PRESERVED_FROM_ROBLOX='+update.gameId+':PRIVATE_RUNTIME_CANDIDATE_DEPLOY');
+            }else if(robloxRepairRequired){
+              mergedUpdate.currentStep=String(item.currentStep||'TARGET_PLATFORM_TECHNICAL_VALIDATION');
+              mergedUpdate.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED';
+              console.log('UNITY_SHARED_REPAIR_PRESERVED_FROM_ROBLOX='+update.gameId+':'+mergedUpdate.currentStep);
+            }
+          }
+          Object.assign(item,mergedUpdate);
+          if(update.contractCanaryPassed)queue.executionContractVersion=1;
+          queue.executionContract='CHANGE_DETECTION>CHEAP_PRECHECK>REPRESENTATIVE_CANARY>SINGLE_BUILD_OR_PACKAGE>IMMUTABLE_ARTIFACT_BIND>TARGET_PLATFORM_RUNTIME>INDEPENDENT_QA>REGRESSION>IMMEDIATE_NEXT_STAGE_DISPATCH>RESUME_EXACT_FAILURE_POINT';
+          queue.developmentGameWipMax=null;
+          queue.updatedAt=new Date().toISOString();
+          fs.writeFileSync(queuePath,JSON.stringify(queue,null,2)+'\n');
+          console.log('DEVELOPMENT_UNITY_GAME_PERSIST='+update.gameId);
+          NODE
+            git -C "$state_dir" checkout origin/main -- tools/company-homepage-platform-exposure-sync.mjs
+            (
+              cd "$state_dir"
+              node tools/company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
+              git reset -- tools/company-homepage-platform-exposure-sync.mjs >/dev/null 2>&1 || true
+              git add design development-queue.json homepage-platform-exposure.json
+              git diff --cached --check
+              if git diff --cached --quiet; then
+                echo "UNITY_RUNTIME_GAME_PERSIST_WRITE=NO_CHANGE:$GAME_ID"
+                exit 10
+              fi
+              git commit -m "runtime: persist Unity checkpoint $GAME_ID [skip ci]"
+            ) && commit_state=0 || commit_state=$?
+            if [[ "$commit_state" == 10 ]]; then
+              persisted=1
+              git worktree remove "$state_dir" --force >/dev/null 2>&1 || true
+              break
+            fi
+            if [[ "$commit_state" != 0 ]]; then
+              git worktree remove "$state_dir" --force >/dev/null 2>&1 || true
+              exit "$commit_state"
+            fi
+            if git -C "$state_dir" push origin HEAD:company-runtime; then
+              persisted=1
+              echo "UNITY_RUNTIME_GAME_PERSIST_WRITE=PUSHED:$GAME_ID"
+              git worktree remove "$state_dir" --force >/dev/null 2>&1 || true
+              break
+            fi
+            echo "UNITY_RUNTIME_GAME_PERSIST_CONFLICT_RETRY=$GAME_ID:$attempt"
+            git worktree remove "$state_dir" --force >/dev/null 2>&1 || true
+            sleep $((attempt*2))
+          done
+          test "$persisted" = '1'
+          echo "passed=$passed" >> "$GITHUB_OUTPUT"
+          echo "COMPANY_RUNTIME_UNITY_GAME_PERSIST=PASS:$GAME_ID"
+
+      - name: Immediately continue this successful Unity game
+        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.item.gameId }}
+        run: |
+          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
+          echo "IMMEDIATE_NEXT_STAGE_DISPATCH=YES:$GAME_ID"
+
+      - name: Settle exact Vibe Unity BUILD_UP task after runtime QA and regression
+        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.item.gameId }}
+          PROJECT: ${{ steps.context.outputs.project }}
+          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
+          ARTIFACT_ID: ${{ steps.artifact.outputs.identity }}
+          BUILD_RUN_ID: ${{ steps.buildref.outputs.run_id }}
+          RUNTIME_RUN_ID: ${{ steps.runtime.outputs.run_id || matrix.item.unityRuntimeSmokeRunId }}
+          QA_RUN_ID: ${{ steps.independent.outputs.run_id || matrix.item.unityIndependentQaRunId }}
+          REGRESSION_RUN_ID: ${{ steps.regression.outputs.run_id || matrix.item.unityRegressionRunId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "${SOURCE_REVISION}^{commit}" 2>/dev/null || git fetch --no-tags origin "$SOURCE_REVISION"
+          runtime_source_tree_sha="$(git rev-parse "$SOURCE_REVISION:$PROJECT")"
+          [[ "$runtime_source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "UNITY_BUILD_UP_RUNTIME_SOURCE_TREE_SHA=$GAME_ID:$runtime_source_tree_sha"
+          rm -rf /tmp/vibe2-unity-runtime-control
+          git clone --branch vibe2-unreal-core --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/vibe2-unity-runtime-control >/dev/null 2>&1
+          git -C /tmp/vibe2-unity-runtime-control config user.name 'jaewoon-unity-runtime-fanin'
+          git -C /tmp/vibe2-unity-runtime-control config user.email 'actions@users.noreply.github.com'
+          pushed=0
+          settled_count=0
+          for attempt in 1 2 3; do
+            attempt_settled=0
+            git -C /tmp/vibe2-unity-runtime-control fetch origin vibe2-unreal-core --quiet
+            git -C /tmp/vibe2-unity-runtime-control reset --hard origin/vibe2-unreal-core >/dev/null
+            mapfile -t task_ids < <(GAME_ID="$GAME_ID" RUNTIME_SOURCE_TREE_SHA="$runtime_source_tree_sha" node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            const q=JSON.parse(fs.readFileSync('/tmp/vibe2-unity-runtime-control/.vibe2/queue.json','utf8'));
+            const game=String(process.env.GAME_ID||'').trim();
+            const sourceTree=String(process.env.RUNTIME_SOURCE_TREE_SHA||'').trim();
+            const exactTreeMarker='unity-runtime-await-source-tree:'+sourceTree;
+            for(const task of q.tasks||[]){
+              const evidence=(task.evidence||[]).map(String);
+              if(task.gameId!==game)continue;
+              if(String(task.target||'').toLowerCase()!=='unity')continue;
+              if(String(task.status||'').toLowerCase()!=='blocked'&&String(task.status||'').toLowerCase()!=='running')continue;
+              if(String(task.blocker||'')!=='candidate-awaiting-unity-runtime-qa')continue;
+              if(!evidence.includes('unity-runtime-await-game:'+game))continue;
+              if(!evidence.includes(exactTreeMarker))continue;
+              process.stdout.write(String(task.id)+'\n');
+            }
+            NODE
+            )
+            for task_id in "${task_ids[@]}"; do
+              (
+                cd /tmp/vibe2-unity-runtime-control
+                node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" pass --id="$task_id" --evidence="unity-runtime-pass,unity-independent-qa-pass,unity-regression-pass,unity-runtime-source-revision:${SOURCE_REVISION},unity-runtime-source-tree:${runtime_source_tree_sha},unity-artifact:${ARTIFACT_ID},unity-build-run:${BUILD_RUN_ID},unity-runtime-run:${RUNTIME_RUN_ID},unity-independent-qa-run:${QA_RUN_ID},unity-regression-run:${REGRESSION_RUN_ID},verification-conclusion:success,actions-run:${GITHUB_RUN_ID}"
+              )
+              echo "UNITY_BUILD_UP_VIBE_TASK_PASS=${GAME_ID}:${task_id}:source_tree=${runtime_source_tree_sha}"
+              attempt_settled=$((attempt_settled+1))
+            done
+            git -C /tmp/vibe2-unity-runtime-control add .vibe2/queue.json
+            if git -C /tmp/vibe2-unity-runtime-control diff --cached --quiet; then
+              pushed=1
+              settled_count=$attempt_settled
+              break
+            fi
+            git -C /tmp/vibe2-unity-runtime-control commit -m "vibe2: settle Unity tasks after exact runtime QA [skip ci]"
+            if git -C /tmp/vibe2-unity-runtime-control push origin HEAD:vibe2-unreal-core; then
+              pushed=1
+              settled_count=$attempt_settled
+              break
+            fi
+            sleep $((attempt*2))
+          done
+          test "$pushed" = 1
+          echo "UNITY_BUILD_UP_VIBE_SETTLED_COUNT=$settled_count"
+          if [ "$settled_count" -gt 0 ]; then
+            payload="$(jq -nc --arg run "${GITHUB_RUN_ID:-}" --arg attempt "${GITHUB_RUN_ATTEMPT:-}" --arg game "${GAME_ID:-}" '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$game,source_outcome:"VERIFIED",reason:"unity-runtime-verified"}}')"
+            curl --fail-with-body --silent --show-error --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" --data "$payload"
+            echo "UNITY_BUILD_UP_VIBE_REFILL_DISPATCHED=$settled_count"
+          else
+            echo 'UNITY_BUILD_UP_VIBE_REFILL_DISPATCHED=0'
+          fi
+      - name: Unity runtime summary
+        if: always()
+        run: |
+          echo 'DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'
+          echo 'DEVELOPMENT_GAME_ELIGIBILITY_SCOPE=UNBOUNDED_CAPACITY_BATCHED'
+          echo 'UNITY_WEB_PREDEVELOPMENT_FLOOR=UPPER_PLATFORM_DEVELOPMENT_READY_REQUIRED_FOR_NEW_NATIVE_ENTRY'
+          echo 'UNITY_WEB_FLOOR_OWNER=unity-web-first-stage-build.yml'
+          echo 'UNITY_WEB_CANONICAL_SOURCE=SAME_UNITY_PROJECT'
+          echo 'CHANGE_DETECTION=ENABLED'
+          echo 'CHEAP_PRECHECK=ENABLED'
+          echo 'REPRESENTATIVE_CANARY=ENABLED'
+          echo 'BUILD_ONCE_PER_SOURCE_FINGERPRINT=ENABLED'
+          echo 'IMMUTABLE_ARTIFACT_REUSE=ENABLED'
+          echo 'F0_ONCE_F1_F8_ONE_RUNTIME_F9_FAN_IN=ENABLED'
+          echo 'PER_GAME_CHECKPOINT_PERSIST=IMMEDIATE_OPTIMISTIC_RETRY'
+          echo 'COHORT_PERSIST_FAN_IN=DISABLED'
+          echo 'RESUME_EXACT_FAILURE_POINT=ENABLED'
+          echo 'QUALITY_GATE_WEAKENING=NO'
+          echo 'PUBLIC_MAIN_SOURCE_WRITE=NO'
+
+      - name: Enforce stage result after checkpoint is safely captured
+        if: always()
+        env:
+          BUILD_PASS: ${{ steps.buildstate.outputs.build_passed }}
+          RUNTIME_PASS: ${{ steps.runtimestate.outputs.passed }}
+          QA_PASS: ${{ steps.independentstate.outputs.passed }}
+          REGRESSION_PASS: ${{ steps.regressionstate.outputs.passed }}
+        run: |
+          [[ "$BUILD_PASS" == true ]] || { echo 'FAILED_STAGE=SINGLE_BUILD_OR_PACKAGE' >&2; exit 21; }
+          [[ "$RUNTIME_PASS" == true ]] || { echo 'FAILED_STAGE=TARGET_PLATFORM_RUNTIME' >&2; exit 22; }
+          [[ "$QA_PASS" == true ]] || { echo 'FAILED_STAGE=INDEPENDENT_QA' >&2; exit 23; }
+          [[ "$REGRESSION_PASS" == true ]] || { echo 'FAILED_STAGE=REGRESSION' >&2; exit 24; }
+          echo 'UNITY_SPEED_SEQUENCE=PASS'
+
+\t'}"
+              if [[ "$status" == completed ]]; then
+                [[ "$conclusion" == success ]] || { echo "UNITY_ONE_SESSION_RUNTIME_FAILED=$runtime_run:$conclusion" >&2; exit 9; }
+                break
+              fi
+              sleep 5
+            done
+            rm -rf /tmp/unity-runtime-single-session
+            mkdir -p /tmp/unity-runtime-single-session
+            gh run download "$runtime_run" -D /tmp/unity-runtime-single-session
+            runtime_json="$(find /tmp/unity-runtime-single-session -type f -name evidence.json -size +0c | head -n1)"
+            echo "UNITY_F1_F8_SINGLE_SESSION_SOURCE=REDROID"
+          fi
           build_info="$(find /tmp/unity-build -type f -name build-info.json -size +0c | head -n1)"
           test -n "$runtime_json" -a -n "$build_info"
           RUNTIME_JSON="$runtime_json" BUILD_INFO="$build_info" SOURCE_REVISION="$SOURCE_REVISION" node <<'NODE'
