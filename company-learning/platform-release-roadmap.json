@@ -9283,6 +9283,29 @@
         "roblox-games/horror-escape-room/launch-mvp.json",
         "qa/company-development-roblox-studio-local-play.test.mjs"
       ]
+    },
+    "learningPreparationRunnerIsolation20260927": {
+      "id": "LEARNING_PREPARATION_RUNNER_ISOLATION_2026-09-27",
+      "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
+      "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
+      "objective": "KEEP_LIGHTWEIGHT_UNITY_LEARNING_PREPARATION_OFF_GAME_PRIMARY_UBUNTU_LATEST_WITHOUT_MOVING_LOCAL_TRAINING_OR_WEAKENING_LEARNING_GATES",
+      "workflows": {
+        "practiceCpuFallback": {
+          "preparePracticeRunner": "ubuntu-slim",
+          "trainingRunner": "self-hosted,Windows,X64,jaewoon-unity"
+        },
+        "structuralDistillation": {
+          "staticGateRunner": "ubuntu-slim",
+          "onlineTeacherRunner": "ubuntu-slim",
+          "trainingRunner": "self-hosted,Windows,X64,jaewoon-unity"
+        }
+      },
+      "setupPythonOnSlim": true,
+      "selfHostedTrainingMoved": false,
+      "heavyGameExecutionChanged": false,
+      "learningAuthorityChanged": false,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "gamePrimaryUbuntuLatestCapacityProtected": true
     }
   },
   "vibeExecutionLaneContract": {
