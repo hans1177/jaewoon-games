@@ -10,6 +10,7 @@ const bool=v=>String(v??'').toLowerCase()==='true';
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const stableSha256=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
 
 export function validateLocalStudioPolicy(roadmap={}){
   const studio=roadmap?.roblox?.studioExecution||{};
@@ -163,7 +164,7 @@ function localStudioActualPlayContractMetadata(repoRoot='',gameId=''){
   try{launch=readJson(file);}catch{return{required:false,version:0,fingerprint:null};}
   const contract=launch?.studioActualPlayContract||{};
   if(contract?.required!==true)return{required:false,version:Number(contract?.version||0),fingerprint:null};
-  return{required:true,version:Number(contract?.version||0),fingerprint:'sha256:'+hash(contract)};
+  return{required:true,version:Number(contract?.version||0),fingerprint:'sha256:'+stableSha256(contract)};
 }
 
 export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='',repoRoot=''}={}){
@@ -1146,7 +1147,7 @@ export async function runOfficialStudioMcpPlay({
       },
       scenarioContractRequired:actualPlayContract?.required===true,
       scenarioContractVersion:Number(actualPlayContract?.version||0),
-      scenarioContractFingerprint:actualPlayContract?.required===true?'sha256:'+hash(actualPlayContract):null,
+      scenarioContractFingerprint:actualPlayContract?.required===true?'sha256:'+stableSha256(actualPlayContract):null,
       scenarioCoverage,
       authoritativeStateChangeObserved,
       qualityFailureKinds,
@@ -1206,7 +1207,7 @@ export async function runOfficialStudioMcpPlay({
       capabilities:{officialStudioMcp:false,playMode:false,mcpInput:false,screenCapture:false,consoleCapture:false,characterMotionRuntime:false,executeLuauRuntimeProbe:false},
       scenarioContractRequired:actualPlayContract?.required===true,
       scenarioContractVersion:Number(actualPlayContract?.version||0),
-      scenarioContractFingerprint:actualPlayContract?.required===true?'sha256:'+hash(actualPlayContract):null,
+      scenarioContractFingerprint:actualPlayContract?.required===true?'sha256:'+stableSha256(actualPlayContract):null,
       scenarioCoverage,authoritativeStateChangeObserved,qualityFailureKinds,
       actions,checkpoints,errors,
       metrics:{beforeFrameCount:beforeImages.length,afterFrameCount:afterImages.length,distinctFrameChange:false,consoleErrorCount:errors.length},
