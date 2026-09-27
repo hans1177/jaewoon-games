@@ -239,3 +239,17 @@ test('exact transient Open Cloud retry does not consume the Studio MCP lane',()=
   const studioPlan=workflow.slice(studioPlanAt,studioAutoPlayAt);
   assert.match(studioPlan,/if: \$\{\{ inputs\.retry_open_cloud_only != true \}\}/);
 });
+
+
+test('exact transient Open Cloud retry is cancelled when source or artifact changed after dispatch',()=>{
+  assert.match(workflow,/RETRY_OPEN_CLOUD_ONLY: \$\{\{ inputs\.retry_open_cloud_only \|\| false \}\}/);
+  assert.match(workflow,/const retryOpenCloudOnly=String\(process\.env\.RETRY_OPEN_CLOUD_ONLY\|\|''\)\.toLowerCase\(\)==='true'/);
+  assert.match(workflow,/retryOpenCloudOnly&&requested/);
+  assert.match(workflow,/c\.sourceRevision===sourceRevision/);
+  assert.match(workflow,/c\.artifactIdentity===artifactIdentity/);
+  assert.match(workflow,/transientEvidence\.authority==='roblox-open-cloud-engine-probe-failure'/);
+  assert.match(workflow,/transientEvidence\.sourceRevision===sourceRevision/);
+  assert.match(workflow,/transientEvidence\.artifactIdentity===artifactIdentity/);
+  assert.match(workflow,/Number\(transientEvidence\.candidateVersionNumber\|\|0\)===Number\(c\.versionNumber\|\|0\)/);
+  assert.match(workflow,/ROBLOX_OPEN_CLOUD_EXACT_GATE_RETRY_SUPERSEDED_BY_CURRENT_SOURCE=/);
+});
