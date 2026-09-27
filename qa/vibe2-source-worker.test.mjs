@@ -3608,7 +3608,7 @@ test('focused replace-only compacts build-up directive without losing exact goal
     'continuity=required:true preserveIdentity:true preserveProgression:true questions:WHY_DOES_THIS_EXIST_IN_THIS_GAME,WHAT_PLAYER_DECISION_DOES_IT_CHANGE',
     'derivedRuleEvolution=MAY_ADD_DERIVED_GAMEPLAY_INTERACTION_RULES_WHEN_CONSISTENT',
     'contentCompletionAcceptance=REAL_GAME_SOURCE_DELTA_REQUIRED | PLAYER_FACING_OR_GAMEPLAY_SYSTEM_EFFECT_REQUIRED | DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS | CONNECTED_TO_EXISTING_GAME_FLOW | CONTINUITY_AND_CAUSALITY_PRESERVED',
-    'contentRule=Stay inside existing BUILD_UP and implement connected player-facing source changes.'
+    'contentRule=Stay inside existing BUILD_UP and implement connected player-facing source changes.',
     noisyGameplay,
     'progressionWorld='+('world-detail '.repeat(220)),
     'visual=ANIMATION=anticipation impact recovery',
