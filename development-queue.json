@@ -6369,7 +6369,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-27T11:42:51.014Z",
+      "updatedAt": "2026-09-27T11:52:35.642Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -6585,7 +6585,23 @@
         "authority": "roblox-open-cloud-private-runtime-candidate"
       },
       "robloxRuntimeFoundationPassed": false,
-      "robloxRuntimeFoundationEvidence": null,
+      "robloxRuntimeFoundationEvidence": {
+        "version": 1,
+        "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+        "sourceRevision": "7bbae1f7f5c446f08d1ee9e337605dce92dd7277",
+        "artifactIdentity": "sha256:fb6d82c57ccbb7a289de9a968d5bfbbcc53653b9af8ef5295209333a8938fe0c",
+        "artifactRunId": 36314170713,
+        "universeId": "10768075882",
+        "placeId": "134878355589659",
+        "candidateVersionNumber": 4,
+        "httpStatus": 429,
+        "failureStage": "PROBE",
+        "failureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
+        "error": "ROBLOX_OPEN_CLOUD_ENGINE_CREATE_HTTP_429:{\"errors\":[{\"code\":0,\"message\":\"\"}]}\n",
+        "observedAt": "2026-09-27T11:52:35.642Z",
+        "workflowRunId": 36315743183,
+        "authority": "roblox-open-cloud-engine-probe-failure"
+      },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
@@ -6615,9 +6631,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE",
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-open-cloud-engine-probe-transient-retry"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -10046,7 +10062,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-27T11:52:20.795Z",
+  "updatedAt": "2026-09-27T11:52:35.642Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
