@@ -1205,6 +1205,7 @@ test('primary action effect accepts an authoritative server feedback transition 
   assert.equal(result.metrics.primaryActionFeedbackChanged,true);
   assert.equal(result.authoritativeStateChangeObserved,true);
   assert.match(helper,/feedbackEvent=attr\(p,"FeedbackEvent"\)/);
+  assert.match(helper,/primaryActionFeedbackChanged:scenarioMetrics\.primaryActionFeedbackChanged===true/);
 });
 
 test('movement alone cannot pass a declared Studio actual-play scenario contract',()=>{
