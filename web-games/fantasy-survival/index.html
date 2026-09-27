@@ -1084,7 +1084,7 @@ function placeStructure(id,pos=findStructurePlacement()){
  return pos
 }
 function structureExists(id){return id==='bench'?!!state.bench:id==='furnace'?!!state.furnace:id==='iron-bench'?!!state.ironBench:id==='gold-bench'?!!state.goldBench:id==='jungle-bench'?!!state.jungleBench:id==='blacksmith-anvil'?!!state.blacksmithAnvil:id==='cooking-station'?!!state.cookingStation:id==='shadow-wolf-incubator'?!!state.incubator:false}
-const BLUEPRINT_BUILD_IDS=new Set(['storage-chest','wood-wall','wood-door','defense-tower','bed','garden-plot']);
+const BLUEPRINT_BUILD_IDS=new Set(['bench','furnace','iron-bench','gold-bench','jungle-bench','blacksmith-anvil','cooking-station','shadow-wolf-incubator','flag','storage-chest','wood-wall','wood-door','defense-tower','bed','garden-plot']);
 function blueprintBuildType(id){return id==='storage-chest'?'chest':id==='wood-wall'?'wall':id==='wood-door'?'door':id==='defense-tower'?'tower':id==='bed'?'bed':id==='garden-plot'?'garden':null}
 function startBlueprint(r){
  const p=state.player,fx=Number(p.faceX)||1,fy=Number(p.faceY)||0,d=Math.hypot(fx,fy)||1;
@@ -1125,15 +1125,16 @@ function placeBlueprintAt(x,y){
 function craftItem(id){
  const r=item(id);if(!r)return
  if(state.area==='underwater'&&r.kind==='structure'){showNotice('물속에서는 건축할 수 없어');return}
- if(r.kind==='structure'&&BLUEPRINT_BUILD_IDS.has(r.id)){
-  if(state.area!=='surface'){showNotice('이 건축물은 지상에서만 배치할 수 있어');return}
-  if(!canPay(r.cost)){showNotice('재료가 부족해');return}
-  startBlueprint(r);return
- }
  if(r.where==='bench'&&!nearBench()){showNotice('제작대 가까이 가야 해');return}
  if(r.where==='ironbench'&&!nearIronBench()){showNotice('철 제작대 가까이 가야 해');return}
  if(r.where==='goldbench'&&!nearGoldBench()){showNotice('금 제작대 가까이 가야 해');return}
  if(r.where==='junglebench'&&!nearJungleBench()){showNotice('독점석 제작대 가까이 가야 해');return}
+ if(r.kind==='structure'&&BLUEPRINT_BUILD_IDS.has(r.id)){
+  if(state.area!=='surface'){showNotice('이 건축물은 지상에서만 배치할 수 있어');return}
+  if(r.id!=='flag'&&structureExists(r.id)){showNotice(r.name+'는 이미 설치했어');return}
+  if(!canPay(r.cost)){showNotice('재료가 부족해');return}
+  startBlueprint(r);return
+ }
  if(r.kind==='structure'&&structureExists(r.id)){showNotice(r.name+'는 이미 설치했어');return}
  const pos=r.kind==='structure'?findStructurePlacement():null;if(r.kind==='structure'&&!pos){showNotice('건축물이 겹치지 않는 설치 공간이 필요해');return}
  if(!canPay(r.cost)){showNotice('재료가 부족해');return}
@@ -2064,12 +2065,12 @@ function sharedStructureSnapshot(){
   blacksmithAnvil:state.blacksmithAnvil?{...state.blacksmithAnvil}:null,
   cookingStation:state.cookingStation?{...state.cookingStation}:null,
   incubator:state.incubator?{...state.incubator}:null,
-  flags:state.flags.map(x=>({...x})),chests:state.chests.map(x=>({...x,storage:{...(x.storage||{})}})),walls:state.walls.map(x=>({...x})),doors:state.doors.map(x=>({...x})),towers:state.towers.map(x=>({...x,ammo:{...(x.ammo||{})}})),beds:state.beds.map(x=>({...x}))
+  flags:state.flags.map(x=>({...x})),chests:state.chests.map(x=>({...x,storage:{...(x.storage||{})}})),walls:state.walls.map(x=>({...x})),doors:state.doors.map(x=>({...x})),towers:state.towers.map(x=>({...x,ammo:{...(x.ammo||{})}})),beds:state.beds.map(x=>({...x})),gardens:state.gardens.map(x=>({...x}))
  }
 }
 function hostApplyStructurePlace(payload){
  if(!multiIsHost()||!payload)return;
- const allowed=new Set(['bench','furnace','iron-bench','gold-bench','jungle-bench','blacksmith-anvil','cooking-station','shadow-wolf-incubator','flag','storage-chest','wood-wall','wood-door','defense-tower','bed']);
+ const allowed=new Set(['bench','furnace','iron-bench','gold-bench','jungle-bench','blacksmith-anvil','cooking-station','shadow-wolf-incubator','flag','storage-chest','wood-wall','wood-door','defense-tower','bed','garden-plot']);
  const id=String(payload.id||'');if(!allowed.has(id))return;
  const pos=sharedStructurePos(payload.pos);if(!pos)return;const raw=payload.pos&&typeof payload.pos==='object'?payload.pos:{};pos.vertical=!!raw.vertical;if(id==='wood-wall'){pos.material=['wood','iron','gold'].includes(raw.material)?raw.material:'wood';pos.refund=raw.refund&&typeof raw.refund==='object'?{...raw.refund}:{wood:5}}if(id==='defense-tower')pos.ammo=raw.ammo&&typeof raw.ammo==='object'?{...raw.ammo}:{}
  if(id!=='flag'&&structureExists(id))return;
