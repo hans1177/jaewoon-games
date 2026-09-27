@@ -1250,10 +1250,11 @@ function tabState(){
 function renderCraft(){
  tabState();const mode=state.craftMode;
  if(!craftStationBuilt(mode)){state.craftMode='hand';tabState();ui.sheetBody.innerHTML='<div class="info"><b>제작대가 아직 없어</b><br>먼저 해당 제작대를 만들어 설치해야 제작 목록이 열려.</div>';return}
- const list=recipes.filter(r=>r.where===mode);
+ const list=recipes.filter(r=>r.where===mode).sort((a,b)=>Number(b.kind==='ammo')-Number(a.kind==='ammo'));
  const stationId=mode==='ironbench'?'iron-bench':mode==='goldbench'?'gold-bench':mode==='junglebench'?'jungle-bench':mode==='bench'?'bench':null,station=stationId?item(stationId):null,stationLabel=station?station.name:'';
  let head=mode==='hand'?'맨손 제작 · 어디서든 제작 가능':mode==='bench'?(nearBench()?'제작대 사용 가능':'제작대 가까이에서만 제작 가능'):mode==='ironbench'?(nearIronBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):mode==='goldbench'?(nearGoldBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능'):(nearJungleBench()?stationLabel+' 사용 가능':stationLabel+' 가까이에서만 제작 가능');
- let html='<div class="info"><b>'+head+'</b><br>모든 제작법과 필요 재료가 처음부터 공개돼.</div><div class="grid">';
+ const arrowRecipes=list.filter(r=>r.kind==='ammo');
+ let html='<div class="info"><b>'+head+'</b><br>모든 제작법과 필요 재료가 처음부터 공개돼.</div>'+(arrowRecipes.length?'<div class="info"><b>화살 제작법</b><br>'+arrowRecipes.map(r=>r.name+' · '+costText(r.cost)).join('<br>')+'</div>':'')+'<div class="grid">';
  for(const r of list){
    const blocked=(r.where==='bench'&&!nearBench())||(r.where==='ironbench'&&!nearIronBench())||(r.where==='goldbench'&&!nearGoldBench())||(r.where==='junglebench'&&!nearJungleBench())||(r.kind==='structure'&&structureExists(r.id)),disabled=!canPay(r.cost)||blocked;
    html+='<button class="recipe" data-id="'+r.id+'" '+(disabled?'disabled':'')+'><b>'+r.name+'<span class="tierBadge">'+itemTier(r.id)+'티어</span></b><small>'+r.desc+'</small><small class="cost">'+costText(r.cost)+'</small></button>';
