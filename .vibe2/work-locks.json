@@ -3,42 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1h58ix4",
-      "worker": "vibe2",
-      "taskId": "survival-unity-web-base-implementation-v1",
-      "gameId": "survival",
-      "files": [
-        "unity-games/survival/Assets/Scripts/GameCore.cs",
-        "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:41:10.716Z",
-      "expiresAt": "2026-09-27T06:26:10.716Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1po4j5r",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
-      "acquiredAt": "2026-09-27T05:41:15.137Z",
-      "expiresAt": "2026-09-27T06:26:15.137Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-a6w5tb",
       "worker": "vibe2",
       "taskId": "seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1",
@@ -454,6 +418,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:line-defense-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-1w8qook",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-425305e25df9-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-system-steward.mjs",
+        "qa/vibe2-system-steward.test.mjs"
+      ],
+      "baseSha": "536621dcc473b1dad1183c33a391a9ee5e720063",
+      "acquiredAt": "2026-09-27T06:27:11.078Z",
+      "expiresAt": "2026-09-27T07:12:11.078Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-425305e25df9-v1"
       ]
     }
   ]
