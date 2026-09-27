@@ -3,42 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1ho8u4z",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T13:10:15.276Z",
-      "expiresAt": "2026-09-27T13:55:15.276Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1yoeo9y",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-unity-web-base-implementation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "unity-games/monster-adventure/Assets/Scripts/GameCore.cs",
-        "unity-games/monster-adventure/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "e69a01daeb773806a8b5e1925f9c6852783ad281",
-      "acquiredAt": "2026-09-27T13:10:31.893Z",
-      "expiresAt": "2026-09-27T13:55:31.893Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-gwlpzl",
       "worker": "vibe2",
       "taskId": "ant-simulator-existing-web-assessment-v1",
@@ -599,6 +563,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-16dowr8",
+      "worker": "vibe2",
+      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+      "files": [
+        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/client/Game.client.luau",
+        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/server/Game.server.luau",
+        "roblox-games/seed-action-survival-rogu-echoes-of-the-lost-star/shared/GameConfig.luau"
+      ],
+      "baseSha": "0136064ac8c56e718a0700cf3c8d96e458f56be5",
+      "acquiredAt": "2026-09-27T13:55:34.831Z",
+      "expiresAt": "2026-09-27T14:40:34.831Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
