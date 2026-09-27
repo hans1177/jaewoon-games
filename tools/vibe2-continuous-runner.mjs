@@ -889,6 +889,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_EXECUTION_ROUTE=${order.executionRoute}`);
     console.log(`VIBE2_SOURCE_ROOT=${order.source.root}`);
     console.log(`VIBE2_KNOWLEDGE_APPLICATION_IDS=${order.knowledgeApplicationContract?.exactInjectedKnowledgeIds?.length||0}`);
+    console.log(`VIBE2_COMMERCIAL_BLACK_BOX_INTERNAL_ASSET_DISTILLATION=${order.assetProduction?.commercialDistillation?.required?(order.assetProduction.commercialDistillation.ready?'PASS':'FAIL'):'NOT_REQUIRED'}`);
+    console.log(`VIBE2_COMMERCIAL_BLACK_BOX_REUSE_COUNT=${order.assetProduction?.commercialDistillation?.verifiedReuseCount||0}`);
+    console.log(`VIBE2_INTERNAL_ASSET_EVOLUTION_MODE=${order.assetProduction?.commercialDistillation?.applicationMode||'NONE'}`);
     console.log(`VIBE2_EXTERNAL_AI_DISTILLED_INJECTED=${order.unifiedLearning?.externalAiDistilled?.length||0}`);
     console.log(`VIBE2_INCREMENTAL_QA=YES`);
     console.log(`VIBE2_SPECULATIVE_VARIANTS=${order.incrementalQa.speculativeVariants}`);
