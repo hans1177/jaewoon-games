@@ -3,42 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1qb1yrp",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-unity-web-base-implementation-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:20:27.510Z",
-      "expiresAt": "2026-09-27T05:05:27.510Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-8sb8s1",
-      "worker": "vibe2",
-      "taskId": "seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1",
-      "gameId": "seed-idle-growth-rpg-crystal-bloom",
-      "files": [
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "b5ad1e31259851dd2351617016f300241853b259",
-      "acquiredAt": "2026-09-27T04:20:29.250Z",
-      "expiresAt": "2026-09-27T05:05:29.250Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-179okmt",
       "worker": "vibe2",
       "taskId": "bug-defense-studio-evolution-unity-web-usability-v1",
@@ -551,6 +515,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-28a2f2747401-v1"
+      ]
+    },
+    {
+      "id": "wl-5smgsn",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-425305e25df9-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-system-steward.mjs",
+        "qa/vibe2-system-steward.test.mjs"
+      ],
+      "baseSha": "ae953edfcca528ba4b77fd5883b8407507220b50",
+      "acquiredAt": "2026-09-27T05:06:49.397Z",
+      "expiresAt": "2026-09-27T05:51:49.397Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-425305e25df9-v1"
       ]
     }
   ]
