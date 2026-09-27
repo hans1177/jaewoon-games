@@ -919,7 +919,7 @@ test('automatic Roblox Studio MCP scans collapse before heavy work while exact-g
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
-  assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}\n\s+cancel-in-progress: \$\{\{ inputs\.game_id == '' \}\}/);
   assert.match(workflow,/title='Roblox runtime foundation QA · '\+\(game\|\|'scan'\)/);
   assert.match(workflow,/process\.stdout\.write\(String\(game\?ids\[0\]:ids\[ids\.length-1\]\)\)/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
