@@ -43,7 +43,8 @@ env:
 jobs:
   static-gate:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-latest
+    # Contract validation is control-plane work and must not consume game-primary ubuntu-latest slots.
+    runs-on: ubuntu-slim
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -53,6 +54,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Validate Unity coding learning contract
         run: |
           set -euo pipefail
@@ -88,7 +92,8 @@ jobs:
 
   online-teacher:
     needs: static-gate
-    runs-on: ubuntu-latest
+    # Teacher sample generation is lightweight control-plane work.
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     outputs:
       sample_count: ${{ steps.teach.outputs.sample_count }}

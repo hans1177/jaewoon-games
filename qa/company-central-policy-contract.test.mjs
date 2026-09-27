@@ -1031,6 +1031,48 @@ test('seed design runtime keeps owner reset priority without starving missing-de
   assert.match(workflow,/OWNER_RESET_SCHEDULING=PRIORITY_NOT_EXCLUSIVE/);
 });
 
+test('Unity learning preparation stays off game-primary ubuntu-latest capacity',()=>{
+  const policy=roadmap.changeRecord?.learningPreparationRunnerIsolation20260927;
+  assert.equal(policy?.workflows?.practiceCpuFallback?.preparePracticeRunner,'ubuntu-slim');
+  assert.equal(policy?.workflows?.structuralDistillation?.staticGateRunner,'ubuntu-slim');
+  assert.equal(policy?.workflows?.structuralDistillation?.onlineTeacherRunner,'ubuntu-slim');
+  assert.equal(policy?.selfHostedTrainingMoved,false);
+  assert.equal(policy?.heavyGameExecutionChanged,false);
+  assert.equal(policy?.learningAuthorityChanged,false);
+  assert.equal(policy?.qualitySecurityReleaseGatesUnchanged,true);
+  assert.equal(policy?.gamePrimaryUbuntuLatestCapacityProtected,true);
+
+  const practice=readText('.github/workflows/vibe2-practice-cpu-fallback.yml');
+  const prepareStart=practice.indexOf('\n  prepare-practice:\n');
+  const trainStart=practice.indexOf('\n  cpu-practice-train:\n',prepareStart);
+  assert.ok(prepareStart>=0&&trainStart>prepareStart);
+  const prepare=practice.slice(prepareStart,trainStart);
+  assert.match(prepare,/runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(prepare,/runs-on:\s*ubuntu-latest/);
+  assert.match(practice.slice(trainStart),/runs-on:\s*\[self-hosted, Windows, X64, jaewoon-unity\]/);
+
+  const structural=readText('.github/workflows/vibe2-structural-repair-distillation.yml');
+  const staticStart=structural.indexOf('\n  static-gate:\n');
+  const teacherStart=structural.indexOf('\n  online-teacher:\n',staticStart);
+  const practiceTrainStart=structural.indexOf('\n  unity-practice-train:\n',teacherStart);
+  assert.ok(staticStart>=0&&teacherStart>staticStart&&practiceTrainStart>teacherStart);
+  const staticGate=structural.slice(staticStart,teacherStart);
+  const teacher=structural.slice(teacherStart,practiceTrainStart);
+  assert.match(staticGate,/runs-on:\s*ubuntu-slim/);
+  assert.match(staticGate,/actions\/setup-python@v5/);
+  assert.doesNotMatch(staticGate,/runs-on:\s*ubuntu-latest/);
+  assert.match(teacher,/runs-on:\s*ubuntu-slim/);
+  assert.doesNotMatch(teacher,/runs-on:\s*ubuntu-latest/);
+  assert.match(structural.slice(practiceTrainStart),/runs-on:\s*\[self-hosted, Windows, X64, jaewoon-unity\]/);
+
+  const projection=architecture.learningPreparationRunnerIsolation;
+  assert.equal(projection?.practiceCpuFallback?.preparePracticeRunner,'ubuntu-slim');
+  assert.equal(projection?.structuralDistillation?.staticGateRunner,'ubuntu-slim');
+  assert.equal(projection?.structuralDistillation?.onlineTeacherRunner,'ubuntu-slim');
+  assert.equal(projection?.selfHostedTrainingMoved,false);
+  assert.equal(projection?.gamePrimaryUbuntuLatestCapacityProtected,true);
+});
+
 test('administrative control-plane QA stays off game-primary ubuntu-latest capacity',()=>{
   const roadmap=JSON.parse(readText('company-learning/platform-release-roadmap.json'));
   assert.equal(roadmap.minimumNecessaryProcedurePolicy.principles.administrativeChecksMayNotConsumeGamePrimaryWorkerSlots,true);

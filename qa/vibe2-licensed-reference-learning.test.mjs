@@ -80,7 +80,8 @@ test('CPU practice speedup removes duplicate eval without reducing train or eval
   assert.match(trainer, /eval_strategy="no" if args\.final_eval_only else "epoch"/);
   assert.match(trainer, /save_strategy="no" if args\.final_eval_only else "epoch"/);
   assert.match(trainer, /eval_result = trainer\.evaluate\(\)/);
-  assert.match(trainer, /supervised_tokens == 0/);
+  assert.match(trainer, /sum\(1 for label in labels if label != -100\) == 0/);
+  assert.match(trainer, /answer tokens truncated completely before training/);
   assert.match(workflow, /'--epochs', '0\.25'/);
   assert.match(workflow, /'--max-length', '256'/);
   assert.match(workflow, /'--final-eval-only'/);
