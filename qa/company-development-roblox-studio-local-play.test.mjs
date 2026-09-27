@@ -1118,15 +1118,16 @@ test('declared Studio actual-play contract requires core progression UI action e
     contract,
     initialClientProbe:{player:{roundState:'INTERMISSION'},workspace:{ActivePopulation:0}},
     preActionClientProbe:{player:{roundState:'RUNNING',role:'SURVIVOR',rootX:0,rootY:3,rootZ:0}},
+    postActionClientProbe:{player:{roundState:'RUNNING',role:'SURVIVOR',rootX:2,rootY:3,rootZ:0,velocityX:12,velocityY:0,velocityZ:0}},
     clientProbe:{
-      player:{characterPresent:true,humanoidPresent:true,rootPresent:true,roundState:'RUNNING',role:'SURVIVOR',rootX:2,rootY:3,rootZ:0,velocityX:12,velocityY:0,velocityZ:0,humanCount:4,monsterCount:4},
+      player:{characterPresent:true,humanoidPresent:true,rootPresent:true,roundState:'RUNNING',role:'MONSTER',rootX:7,rootY:3,rootZ:0,velocityX:0,velocityY:0,velocityZ:0,humanCount:3,monsterCount:5},
       camera:{present:true},
       ui:{screenGuiPresent:true,visibleButtons:2,required:{MidnightTopHUD:{present:true,visible:true,offscreen:false},RoundActions:{present:true,visible:true,offscreen:false}}},
       world:{arenaPresent:true,arenaPartCount:80,proximityPromptCount:5},
-      workspace:{MapReady:true,ActivePopulation:8,HumanCount:4,MonsterCount:4,WorldArtPass:'MIDNIGHT_SCHOOL_INFECTION_HORROR_V9',CharacterArtDirection:'REALISTIC_HUMANS_ABERRANT_MONSTERS',DesignCodeSync:'PRIMARY_THREE_FINAL_4V4_INFECTION_V1'},
+      workspace:{MapReady:true,ActivePopulation:8,HumanCount:3,MonsterCount:5,WorldArtPass:'MIDNIGHT_SCHOOL_INFECTION_HORROR_V9',CharacterArtDirection:'REALISTIC_HUMANS_ABERRANT_MONSTERS',DesignCodeSync:'PRIMARY_THREE_FINAL_4V4_INFECTION_V1'},
       lighting:{brightness:1.8}
     },
-    serverProbe:{workspace:{MapReady:true,ActivePopulation:8,HumanCount:4,MonsterCount:4}},
+    serverProbe:{workspace:{MapReady:true,ActivePopulation:8,HumanCount:3,MonsterCount:5}},
     actions:[{id:'ui-role-selection',type:'mcp-mouse-input',dispatched:true,ok:true},{id:'ui-primary-action',type:'mcp-mouse-input',dispatched:true,ok:true}],
     beforeImages:[image],afterImages:[image]
   });
@@ -1168,7 +1169,7 @@ test('declared scenario failure persists as repair-required not MCP infrastructu
   broken.scenarioContractRequired=true;
   broken.scenarioCoverage=[{id:'round-running',pass:false}];
   broken.qualityFailureKinds=['round-running'];
-  broken.errors=[{type:'actual-play-quality-error',actionId:'round-running',signature:'ROBLOX_ACTUAL_PLAY_SCENARIO_FAILED:round-running'}];
+  broken.errors=[];
   const applied=applyLocalStudioPlayResult({queue:{items:[candidate]},gameId:'g1',runtime:broken,expected,workflowRunId:42,studioStepSucceeded:true,testedAt:'2026-09-27T02:00:00.000Z'});
   assert.equal(applied.result.evidence.infrastructureFailure,false);
   assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
@@ -1206,4 +1207,16 @@ test('planner reruns exact artifact when a declared Studio scenario contract is 
   }finally{
     fs.rmSync(root,{recursive:true,force:true});
   }
+});
+
+
+test('declared Studio scenario probes the primary action before generic movement and keeps console errors separate from scenario failures',()=>{
+  const preActionAt=helper.indexOf("preActionClientProbe=await collectStudioActualPlayProbe");
+  const primaryAt=helper.indexOf("actions.push({id:'ui-primary-action'");
+  const postActionAt=helper.indexOf("postActionClientProbe=await collectStudioActualPlayProbe");
+  const keyboardAt=helper.indexOf("for(const key of ['W','A','D','Space'])");
+  assert.ok(preActionAt>0&&primaryAt>preActionAt&&postActionAt>primaryAt&&keyboardAt>postActionAt);
+  assert.match(helper,/consoleErrorCount:consoleClassification\.errors\.length/);
+  assert.doesNotMatch(helper,/if\(row\.pass!==true\)errors\.push\(\{type:'actual-play-quality-error'/);
+  assert.match(helper,/acceptedRoles\.includes\(clean\(selectionPlayer\.role\)\)/);
 });

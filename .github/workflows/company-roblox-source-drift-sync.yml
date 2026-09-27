@@ -73,9 +73,6 @@ jobs:
           elif [[ "$EVENT_NAME" == "pull_request" && "$PR_NUMBER" =~ ^[0-9]+$ ]]; then
             gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files?per_page=100" --jq '.[].filename' > /tmp/roblox-merged-pr-files.txt
             changed="$(node tools/company-roblox-source-drift-sync.mjs --resolve-files=/tmp/roblox-merged-pr-files.txt)"
-            if [[ -z "$changed" ]] && grep -Fxq 'roblox-games/.company-runtime-trigger' /tmp/roblox-merged-pr-files.txt; then
-              changed="$(sed -n 's/^gameId:[[:space:]]*//p' roblox-games/.company-runtime-trigger | head -n1 | tr -d '[:space:]')"
-            fi
             echo "ROBLOX_MERGED_PR_SOURCE_FILES=$(paste -sd, /tmp/roblox-merged-pr-files.txt)"
           elif [[ "$EVENT_NAME" == "push" && "$BEFORE_SHA" =~ ^[0-9a-f]{40}$ && "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
             if ! git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null; then
@@ -86,9 +83,6 @@ jobs:
             fi
             git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA" -- roblox-games/ > /tmp/roblox-push-files.txt
             changed="$(node tools/company-roblox-source-drift-sync.mjs --resolve-files=/tmp/roblox-push-files.txt)"
-            if [[ -z "$changed" ]] && grep -Fxq 'roblox-games/.company-runtime-trigger' /tmp/roblox-push-files.txt; then
-              changed="$(sed -n 's/^gameId:[[:space:]]*//p' roblox-games/.company-runtime-trigger | head -n1 | tr -d '[:space:]')"
-            fi
           fi
           if [[ -n "$changed" ]] && ! [[ "$changed" =~ ^[a-z0-9][a-z0-9-]{1,48}(,[a-z0-9][a-z0-9-]{1,48})*$ ]]; then
             echo "invalid Roblox changed game ids: $changed" >&2

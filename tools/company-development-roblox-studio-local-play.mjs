@@ -764,7 +764,7 @@ function pointDistance(a={},b={}){
   if(!values.every(Number.isFinite))return 0;
   return Math.hypot(values[3]-values[0],values[4]-values[1],values[5]-values[2]);
 }
-export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[]}={}){
+export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[]}={}){
   if(contract?.required!==true)return{required:false,scenarios:[],qualityFailureKinds:[],authoritativeStateChangeObserved:false,capture:{before:{pass:true,frames:[]},after:{pass:true,frames:[]}},metrics:{}};
   const exp=contract?.expectations||{};
   const requiredIds=new Set(Array.isArray(contract?.requiredScenarios)?contract.requiredScenarios.map(clean).filter(Boolean):[]);
@@ -785,13 +785,15 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const designEquals=Object.entries(equals).every(([key,value])=>ws[key]===value);
   const designPrefixes=Object.entries(prefixes).every(([key,value])=>clean(ws[key]).startsWith(clean(value)));
   const actionOk=id=>(actions||[]).some(row=>row?.id===id&&row?.dispatched===true&&row?.ok===true);
-  const displacement=pointDistance(preActionClientProbe?.player||{},player);
-  const velocity=Math.hypot(Number(player.velocityX||0),Number(player.velocityY||0),Number(player.velocityZ||0));
+  const selectionPlayer=preActionClientProbe?.player||player;
+  const actionPlayer=postActionClientProbe?.player||player;
+  const displacement=pointDistance(preActionClientProbe?.player||{},actionPlayer);
+  const velocity=Math.hypot(Number(actionPlayer.velocityX||0),Number(actionPlayer.velocityY||0),Number(actionPlayer.velocityZ||0));
   const lightingBrightness=Number(client?.lighting?.brightness??server?.lighting?.brightness??0);
   const rows=[
     {id:'character-camera-ready',pass:player.characterPresent===true&&player.humanoidPresent===true&&player.rootPresent===true&&client?.camera?.present===true},
-    {id:'role-selection-interaction',pass:!clean(contract.selectionButtonText)||(actionOk('ui-role-selection')&&acceptedRoles.includes(clean(player.role)))},
-    {id:'round-running',pass:acceptedRoundStates.length===0||acceptedRoundStates.includes(clean(player.roundState))},
+    {id:'role-selection-interaction',pass:!clean(contract.selectionButtonText)||(actionOk('ui-role-selection')&&acceptedRoles.includes(clean(selectionPlayer.role)))},
+    {id:'round-running',pass:acceptedRoundStates.length===0||acceptedRoundStates.includes(clean(selectionPlayer.roundState||player.roundState))},
     {id:'logical-population-eight',pass:logicalPopulation<=0||(humanCount+monsterCount===logicalPopulation&&humanCount>=Number(exp.minimumHumans||0)&&monsterCount>=Number(exp.minimumMonsters||0))},
     {id:'hud-visible',pass:!clean(exp.screenGuiName)||ui.screenGuiPresent===true},
     {id:'action-ui-visible',pass:Number(ui.visibleButtons||0)>=Number(exp.minimumVisibleButtons||0)&&guiRows.every(row=>row.present===true&&row.visible===true&&!row.offscreen)},
@@ -958,7 +960,7 @@ export async function runOfficialStudioMcpPlay({
   const actions=[],checkpoints=[],errors=[];
   const checkpoint=(id,pass)=>checkpoints.push({id,name:id,required:true,pass:pass===true});
   let studioId='',beforeImages=[],afterImages=[],consoleResult=null,characterMotionRuntime=null,started=false;
-  let initialClientProbe=null,preActionClientProbe=null,finalClientProbe=null,finalServerProbe=null,scenarioCoverage=[];
+  let initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,finalClientProbe=null,finalServerProbe=null,scenarioCoverage=[];
   let authoritativeStateChangeObserved=false,qualityFailureKinds=[],captureQuality=null,scenarioMetrics={};
   try{
     await client.connect();
@@ -1028,15 +1030,6 @@ export async function runOfficialStudioMcpPlay({
       }
     }
 
-    const keyboardTool=client.tool('user_keyboard_input');
-    for(const key of ['W','A','D','Space']){
-      const result=await client.call('user_keyboard_input',keyboardArgs(keyboardTool.inputSchema||{},studioId,key));
-      actions.push({id:'keyboard-'+key.toLowerCase(),type:'mcp-keyboard-input',dispatched:true,ok:result?.isError!==true});
-      await wait(key==='Space'?500:900);
-    }
-    const keyboardActions=actions.filter(x=>x.type==='mcp-keyboard-input');
-    checkpoint('mcp-input-dispatched',keyboardActions.length===4&&keyboardActions.every(x=>x.ok));
-
     if(actualPlayContract?.required===true){
       preActionClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
       checkpoint('actual-play-pre-action-client-probe',preActionClientProbe!=null);
@@ -1049,8 +1042,19 @@ export async function runOfficialStudioMcpPlay({
         actions.push({id:'ui-primary-action',type:'mcp-mouse-input',dispatched:target!=null,ok});
         checkpoint('primary-action-input-dispatched',ok);
         await wait(Math.max(250,Number(actualPlayContract.postActionWaitMs||1200)));
+        postActionClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+        checkpoint('actual-play-post-action-client-probe',postActionClientProbe!=null);
       }
     }
+
+    const keyboardTool=client.tool('user_keyboard_input');
+    for(const key of ['W','A','D','Space']){
+      const result=await client.call('user_keyboard_input',keyboardArgs(keyboardTool.inputSchema||{},studioId,key));
+      actions.push({id:'keyboard-'+key.toLowerCase(),type:'mcp-keyboard-input',dispatched:true,ok:result?.isError!==true});
+      await wait(key==='Space'?500:900);
+    }
+    const keyboardActions=actions.filter(x=>x.type==='mcp-keyboard-input');
+    checkpoint('mcp-input-dispatched',keyboardActions.length===4&&keyboardActions.every(x=>x.ok));
 
     const after=await client.call('screen_capture',captureArgs);
     afterImages=collectImages(after,[]);
@@ -1064,16 +1068,13 @@ export async function runOfficialStudioMcpPlay({
       finalServerProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Server');
       checkpoint('actual-play-final-client-probe',finalClientProbe!=null);
       checkpoint('actual-play-final-server-probe',finalServerProbe!=null);
-      const evaluated=evaluateStudioActualPlayContract({contract:actualPlayContract,initialClientProbe,preActionClientProbe,clientProbe:finalClientProbe,serverProbe:finalServerProbe,actions,beforeImages,afterImages});
+      const evaluated=evaluateStudioActualPlayContract({contract:actualPlayContract,initialClientProbe,preActionClientProbe,postActionClientProbe,clientProbe:finalClientProbe,serverProbe:finalServerProbe,actions,beforeImages,afterImages});
       scenarioCoverage=evaluated.scenarios;
       authoritativeStateChangeObserved=evaluated.authoritativeStateChangeObserved===true;
       qualityFailureKinds=evaluated.qualityFailureKinds;
       captureQuality=evaluated.capture;
       scenarioMetrics=evaluated.metrics||{};
-      for(const row of scenarioCoverage){
-        checkpoint('scenario-'+row.id,row.pass===true);
-        if(row.pass!==true)errors.push({type:'actual-play-quality-error',actionId:row.id,signature:'ROBLOX_ACTUAL_PLAY_SCENARIO_FAILED:'+row.id});
-      }
+      for(const row of scenarioCoverage)checkpoint('scenario-'+row.id,row.pass===true);
     }
 
     const consoleTool=client.tool('get_console_output');
@@ -1151,7 +1152,7 @@ export async function runOfficialStudioMcpPlay({
       scenarioCoverage,
       authoritativeStateChangeObserved,
       qualityFailureKinds,
-      runtimeProbes:actualPlayContract?.required===true?{initialClient:initialClientProbe,preActionClient:preActionClientProbe,finalClient:finalClientProbe,finalServer:finalServerProbe}:null,
+      runtimeProbes:actualPlayContract?.required===true?{initialClient:initialClientProbe,preActionClient:preActionClientProbe,postActionClient:postActionClientProbe,finalClient:finalClientProbe,finalServer:finalServerProbe}:null,
       mcp:{
         protocolVersion:client.protocolVersion,
         serverName:clean(client.serverInfo?.name),
@@ -1165,7 +1166,7 @@ export async function runOfficialStudioMcpPlay({
         beforeFrameCount:beforeImages.length,
         afterFrameCount:afterImages.length,
         distinctFrameChange:checkpoints.find(x=>x.id==='viewport-changed-after-input')?.pass===true,
-        consoleErrorCount:errors.length,
+        consoleErrorCount:consoleClassification.errors.length,
         consoleWarningCount:consoleClassification.warningCount,
         consoleStructuredEntryCount:consoleClassification.structuredEntryCount,
         characterMotionRuntimeRequired:characterMotionRuntime?.required===true,

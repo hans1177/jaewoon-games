@@ -234,3 +234,11 @@ test('source drift workflow resolves changed games only from canonical Rojo buil
   assert.match(workflow,/--resolve-files=\/tmp\/roblox-push-files\.txt/);
   assert.doesNotMatch(workflow,/awk -F\/ '\$1=="roblox-games" && NF>=3 \{print \$2\}'/);
 });
+
+
+test('runtime trigger wakes Studio QA without rebinding Roblox build source identity',()=>{
+  assert.deepEqual(changedRobloxBuildGameIds(['roblox-games/.company-runtime-trigger']),[]);
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.doesNotMatch(workflow,/sed -n 's\/\^gameId:/);
+  assert.doesNotMatch(workflow,/grep -Fxq 'roblox-games\/\.company-runtime-trigger'/);
+});
