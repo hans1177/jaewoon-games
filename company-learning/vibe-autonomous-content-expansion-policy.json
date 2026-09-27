@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
   "status": "ACTIVE",
   "authority": "OWNER_DIRECTIVE_2026-09-27",
@@ -76,6 +76,7 @@
     "MULTIPLAYER_COOP_OR_COMPETITIVE_INTERACTIONS",
     "AUDIO_VISUAL_PRESENTATION",
     "UI_FEEDBACK_AND_DISCOVERABILITY",
+    "MENUS_SCREEN_FLOWS_AND_CONTEXTUAL_UI",
     "MID_LATE_GAME_AND_ENDGAME_DEPTH",
     "REPLAYABILITY_AND_VARIATION"
   ],
@@ -132,7 +133,15 @@
       "ARENA_OR_WORLD_CONTEXT",
       "REWARD_OR_UNLOCK_PURPOSE"
     ],
-    "duplicateNamesWithChangedNumbersDoNotCountAsExpansion": true
+    "duplicateNamesWithChangedNumbersDoNotCountAsExpansion": true,
+    "newMenuOrScreenShouldDifferentiateBy": [
+      "PLAYER_TASK",
+      "INFORMATION_HIERARCHY",
+      "PRIMARY_ACTIONS",
+      "NAVIGATION_FLOW",
+      "CONTEXT",
+      "VISUAL_IDENTITY"
+    ]
   },
   "continuityAndCausality": {
     "required": true,
@@ -219,6 +228,7 @@
       "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
       "RULES_EVENTS_REPLAYABILITY_SYSTEM",
       "MID_LATE_ENDGAME_COMPLETION",
+      "MENU_UI_EXPERIENCE_SYSTEM",
       "PRESENTATION_WORLD_COHESION"
     ],
     "successfulGenerationRule": "PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEME_BEFORE_REPEATING_A_THEME",
@@ -231,9 +241,47 @@
         "QUEST_OR_STORY_PLUS_WORLD_STATE_CHANGE_PLUS_UNLOCK_OR_RULE",
         "ENEMY_OR_BOSS_PLUS_COUNTERPLAY_PLUS_REGION_OR_REWARD_CONNECTION",
         "ITEM_OR_EQUIPMENT_PLUS_SOURCE_PLUS_SYNERGY_OR_PROGRESSION_PURPOSE",
-        "GAMEPLAY_RULE_PLUS_TRIGGER_PLUS_PLAYER_DECISION_PLUS_SYSTEM_CONSEQUENCE"
+        "GAMEPLAY_RULE_PLUS_TRIGGER_PLUS_PLAYER_DECISION_PLUS_SYSTEM_CONSEQUENCE",
+        "MENU_OR_SCREEN_FLOW_PLUS_REAL_GAME_STATE_PLUS_CONTEXTUAL_ACTION_AND_FEEDBACK"
       ]
     },
-    "completionMeaning": "A breadth cycle means the game has received meaningful connected improvements across world/background, enemies/bosses, quests/story, items/equipment, gameplay rules/events, mid-late/endgame depth, and presentation. It does not mean cloning one feature into seven names."
+    "completionMeaning": "A breadth cycle means the game has received meaningful connected improvements across world/background, enemies/bosses, quests/story, items/equipment, gameplay rules/events, mid-late/endgame depth, menu/UI experience, and presentation. It does not mean cloning one feature or one menu layout into different names."
+  },
+  "menuExperienceDiversity": {
+    "enabled": true,
+    "implementationBoundary": "EXISTING_BUILD_UP_ONLY",
+    "autonomousSelection": true,
+    "fixedOneLayoutForAllGamesForbidden": true,
+    "titleSwapOnlyScreenClonesForbidden": true,
+    "chooseOnlyApplicableMenus": true,
+    "candidateMenuRoles": [
+      "MAIN_MENU",
+      "PAUSE_OR_SESSION_MENU",
+      "INVENTORY",
+      "EQUIPMENT_LOADOUT",
+      "SHOP",
+      "CRAFTING",
+      "QUEST_JOURNAL",
+      "MAP_OR_REGION_NAVIGATION",
+      "SETTINGS_ACCESSIBILITY",
+      "RESULT_REWARD_SUMMARY",
+      "CONTEXT_INTERACTION_MENU",
+      "MULTIPLAYER_PARTY_OR_LOBBY_WHEN_APPLICABLE"
+    ],
+    "diversityAxes": [
+      "SCREEN_PURPOSE",
+      "INFORMATION_PRIORITY",
+      "LAYOUT",
+      "PRIMARY_ACTIONS",
+      "NAVIGATION_PATTERN",
+      "WORLD_AND_GENRE_IDENTITY",
+      "CONTEXT_AVAILABILITY",
+      "MOBILE_TOUCH_FLOW",
+      "STATE_FEEDBACK"
+    ],
+    "connectedStateRequired": true,
+    "mobileTouchFirst": true,
+    "preserveExistingRulesAndSaveState": true,
+    "menuPresentationMayUseMotionVfxAndAudioWithoutChangingGameplayAuthority": true
   }
 }
