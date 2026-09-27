@@ -1511,16 +1511,6 @@
       ]
     },
     {
-      "id": "gap-roblox_ui_state-l1",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ROBLOX_UI_STATE"
-      ]
-    },
-    {
       "id": "gap-streaming-l1",
       "kind": "STREAMING_OPTIMIZATION_DRILL",
       "priority": "low",
@@ -1641,6 +1631,16 @@
       ]
     },
     {
+      "id": "gap-roblox_ui_state-l2",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROBLOX_UI_STATE"
+      ]
+    },
+    {
       "id": "gap-route_design-l2",
       "kind": "ROUTE_DESIGN_DRILL",
       "priority": "low",
@@ -1741,7 +1741,7 @@
       ]
     },
     {
-      "id": "gap-unity_runtime-l8",
+      "id": "gap-unity_runtime-l9",
       "kind": "UNITY_NATIVE_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -1781,16 +1781,6 @@
       ]
     },
     {
-      "id": "gap-ui_state-l11",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "UI_STATE"
-      ]
-    },
-    {
       "id": "gap-core_loop-l12",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1808,6 +1798,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "ECONOMY"
+      ]
+    },
+    {
+      "id": "gap-ui_state-l12",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "UI_STATE"
       ]
     },
     {
@@ -1871,7 +1871,7 @@
       ]
     },
     {
-      "id": "gap-web_runtime-l18",
+      "id": "gap-web_runtime-l19",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -1881,7 +1881,7 @@
       ]
     },
     {
-      "id": "gap-debugging-l21",
+      "id": "gap-debugging-l22",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -1891,7 +1891,7 @@
       ]
     },
     {
-      "id": "gap-state_machine-l21",
+      "id": "gap-state_machine-l22",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
