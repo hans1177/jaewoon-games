@@ -2690,5 +2690,52 @@
         "Company DNA Learning"
       ]
     }
+  },
+  "verifiedExternalLearningFirstApplicationEvidenceContract": {
+    "version": 1,
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.machineOnlyProjectContinuation.verifiedLearningMaxUse.externalVerifiedBlackBoxFirstApplication",
+    "recordKind": "verified-external-learning-application-evidence",
+    "requiredFields": [
+      "GAME_ID",
+      "TARGET_PLATFORM_OR_ASSET_LANE",
+      "VERIFIED_LEARNING_SOURCE",
+      "VERIFIED_LEARNING_SOURCE_REVISION",
+      "RETRIEVED_VERIFIED_EXTERNAL_IDS",
+      "RETRIEVED_COUNT",
+      "APPLIED_COUNT",
+      "APPLICATION_COVERAGE_PCT",
+      "APPLICATION_ORDER",
+      "APPLY_AXES",
+      "GAME_STYLE_LOCK_OR_PLATFORM_ADAPTATION_REFERENCE",
+      "FRESH_QA_RESULT",
+      "VERIFIED_LEARNING_RETURN_REFERENCE"
+    ],
+    "requiredValues": {
+      "sourceAuthority": "VERIFIED_MEMORY_ONLY",
+      "applicationCoveragePct": 100,
+      "allRetrievedTaskRelevantVerifiedExternalItemsApplied": true,
+      "rawCommercialCodeCopy": false,
+      "rawCommercialAssetCopy": false,
+      "distinctiveExpressionClone": false
+    },
+    "requiredMarkers": [
+      "ROBLOX_VERIFIED_EXTERNAL_LEARNING_FIRST=",
+      "ROBLOX_VERIFIED_EXTERNAL_LEARNING_COVERAGE=",
+      "ROBLOX_VERIFIED_EXTERNAL_LEARNING_COUNT=",
+      "UNITY_WEB_VERIFIED_EXTERNAL_LEARNING=PASS",
+      "UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_COVERAGE=100",
+      "UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_COUNT=",
+      "UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REVISION="
+    ],
+    "failureStates": [
+      "VERIFIED_EXTERNAL_LEARNING_MISSING",
+      "VERIFIED_EXTERNAL_LEARNING_PARTIAL_APPLICATION",
+      "VERIFIED_EXTERNAL_LEARNING_TRUNCATED",
+      "VERIFIED_EXTERNAL_LEARNING_SILENTLY_IGNORED",
+      "RAW_COMMERCIAL_EXPRESSION_COPY_DETECTED"
+    ],
+    "failureAction": "REPAIR_REQUIRED_AT_RESPONSIBLE_DEVELOPMENT_OR_ASSET_STAGE",
+    "nativeRuntimeOrReleasePassNotImplied": true,
+    "verifiedOutcomeMustReturnToExistingLearningMotor": true
   }
 }
