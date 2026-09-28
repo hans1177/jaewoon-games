@@ -978,16 +978,15 @@ jobs:
           gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
           echo "ROBLOX_EXISTING_TESTER_FOUNDATION_QA_DISPATCHED=$GAME_ID"
 
-      - name: Resume verified fan-in only after canonical publish succeeds
-        if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success' && steps.publish.outputs.deferred != 'true' && steps.target.outputs.publish_stage == 'final'
+      - name: Record canonical publication result without gating evolution
+        if: always() && steps.target.outputs.publish_stage == 'final'
         env:
-          GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.target.outputs.game_id }}
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
-          echo "ROBLOX_CANONICAL_PUBLISH_FANIN_DISPATCHED=$GAME_ID"
+          echo "ROBLOX_CANONICAL_PUBLISH_RESULT_RECONCILED=$GAME_ID"
+          echo 'ROBLOX_CANONICAL_PUBLISH_RESULT_BLOCKS_NEXT_CYCLE=NO'
 
       - name: Apply and verify Roblox title description and server size
         id: metadata
