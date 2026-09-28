@@ -158,6 +158,49 @@ test('verified commercial playbook reuse is fully injected and traceable for gam
   assert.ok(guidance.includes('apply=TRANSFORMATIVE_REUSE_NOT_RAW_COPY'));
 });
 
+test('verified external application outcome returns to future learning guidance',()=>{
+  const externalApplication={
+    sourceAuthority:'VERIFIED_MEMORY_ONLY',
+    verifiedExternalLearningFirst:true,
+    verifiedExternalLearningIds:['external-black-box-block-blast-run-30'],
+    verifiedExternalLearningRetrievedCount:1,
+    verifiedExternalLearningAppliedCount:1,
+    verifiedExternalLearningCoveragePct:100,
+    verifiedExternalLearningApplyAxes:["MENU_FLOW_AND_INFORMATION_ARCHITECTURE","UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY","GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION","MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION","ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY","VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE","GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"],
+    retrievedVerifiedExternalLearningTruncationForbidden:true,
+    verifiedLearningMemorySha:'verified-memory-sha'
+  };
+  const ctx=retrieveUnifiedLearning({
+    task:{gameId:'feedback-game',target:'web',taskType:'coding',goal:'menu motion graphics combat'},
+    experienceInput:{records:[{
+      id:'external-feedback-exp',
+      gameId:'feedback-game',
+      engine:'web',
+      departments:['development','qa'],
+      taskType:'coding',
+      problem:'menu motion graphics combat',
+      goal:'menu motion graphics combat',
+      change:'applied verified commercial black-box patterns transformatively',
+      outcome:'PASS',
+      evidence:['actions-run:777','fan-in-review:PASS'],
+      reusablePatterns:['verified-external-pattern-application'],
+      verifiedExternalLearningApplication:externalApplication,
+      verified:true
+    }]},
+    codePatternsInput:{patterns:[]},
+    playbooksInput:{taskTypes:{}},
+    practiceDistilledInput:{entries:[]},
+    externalAiDistilledInput:{entries:[]},
+    masteryInput:{}
+  });
+  assert.equal(ctx.experience[0].verifiedExternalLearningApplication.fullCoverageVerified,true);
+  const guidance=learningGuidance(ctx);
+  assert.ok(guidance.includes('external-application=VERIFIED_100'));
+  assert.ok(guidance.includes('external-black-box-block-blast-run-30'));
+  assert.ok(guidance.includes('MENU_FLOW_AND_INFORMATION_ARCHITECTURE'));
+  assert.ok(guidance.includes('MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION'));
+});
+
 test('unverified playbook authority cannot enter development knowledge',()=>{
   const ctx=retrieveUnifiedLearning({
     task:{gameId:'g',target:'unity',taskType:'coding',goal:'combat progression'},
