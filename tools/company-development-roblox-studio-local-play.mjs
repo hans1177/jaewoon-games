@@ -1727,37 +1727,41 @@ export async function runOfficialStudioMcpPlay({
         actions.push({id:'map-route-'+target.id,type:'mcp-map-route-audit',dispatched:true,ok:safe,moved,fall,floorBelow:probe?.world?.floorBelowPlayer===true});
         if(probe)previousRouteProbe=probe;
       }
-      const semanticWeight=row=>{
+      const semanticOf=row=>{
         const text=(clean(row?.actionText)+' '+clean(row?.objectText)+' '+clean(row?.name)).toLowerCase();
-        const priorities=[
-          /quest|퀘스트|mission|임무/,/reward|보상|claim|수령/,/shop|상점|merchant|구매|판매/,
-          /craft|제작|forge|대장간/,/equip|장비|weapon|무기|armor|방어구/,/portal|포탈|입장|enter|door|문/,
-          /heal|회복|healer|치유/,/upgrade|강화|전직|advance|train/,/collect|채집|줍기|pickup|loot|전리품/
-        ];
-        const hit=priorities.findIndex(re=>re.test(text));
-        return hit<0?100:hit;
+        return /quest|퀘스트|mission|임무/.test(text)?'QUEST'
+          :/reward|보상|claim|수령/.test(text)?'REWARD'
+          :/shop|상점|merchant|구매|판매/.test(text)?'SHOP'
+          :/craft|제작|forge|대장간/.test(text)?'CRAFT'
+          :/equip|장비|weapon|무기|armor|방어구/.test(text)?'EQUIP'
+          :/portal|포탈|enter|입장|door|문/.test(text)?'TRAVEL'
+          :/heal|회복|healer|치유/.test(text)?'HEAL'
+          :/upgrade|강화|전직|advance|train/.test(text)?'UPGRADE'
+          :/collect|채집|줍기|pickup|loot|전리품/.test(text)?'COLLECT':'GENERAL';
       };
+      const semanticRank={QUEST:0,REWARD:1,SHOP:2,CRAFT:3,EQUIP:4,TRAVEL:5,HEAL:6,UPGRADE:7,COLLECT:8,GENERAL:99};
       promptRows.sort((a,b)=>{
-        const aw=semanticWeight(a),bw=semanticWeight(b);
+        const aw=semanticRank[semanticOf(a)]??99,bw=semanticRank[semanticOf(b)]??99;
         if(aw!==bw)return aw-bw;
         const da=Math.hypot(Number(a?.x||0)-Number(rootPos?.rootX||0),Number(a?.y||0)-Number(rootPos?.rootY||0),Number(a?.z||0)-Number(rootPos?.rootZ||0));
         const db=Math.hypot(Number(b?.x||0)-Number(rootPos?.rootX||0),Number(b?.y||0)-Number(rootPos?.rootY||0),Number(b?.z||0)-Number(rootPos?.rootZ||0));
         return da-db;
       });
-      const exploreLimit=auditMode==='F9_SOAK'?3:1;
-      for(const prompt of promptRows.slice(0,exploreLimit)){
+      const exploreLimit=auditMode==='F9_SOAK'?8:3;
+      const selectedPrompts=[],seenSemantic=new Set();
+      for(const row of promptRows){
+        const semantic=semanticOf(row);
+        if(semantic!=='GENERAL'&&!seenSemantic.has(semantic)){selectedPrompts.push(row);seenSemantic.add(semantic)}
+        if(selectedPrompts.length>=exploreLimit)break;
+      }
+      for(const row of promptRows){
+        if(selectedPrompts.length>=exploreLimit)break;
+        if(!selectedPrompts.includes(row))selectedPrompts.push(row);
+      }
+      for(const prompt of selectedPrompts){
         let navOk=false,inputOk=false;
         const beforeProbe=timelineProbes.at(-1)||initialClientProbe;
-        const semanticText=(clean(prompt?.actionText)+' '+clean(prompt?.objectText)+' '+clean(prompt?.name)).toLowerCase();
-        const semantic=/quest|퀘스트|mission|임무/.test(semanticText)?'QUEST'
-          :/reward|보상|claim|수령/.test(semanticText)?'REWARD'
-          :/shop|상점|merchant|구매|판매/.test(semanticText)?'SHOP'
-          :/craft|제작|forge|대장간/.test(semanticText)?'CRAFT'
-          :/equip|장비|weapon|무기|armor|방어구/.test(semanticText)?'EQUIP'
-          :/portal|포탈|enter|입장|door|문/.test(semanticText)?'TRAVEL'
-          :/heal|회복|healer|치유/.test(semanticText)?'HEAL'
-          :/upgrade|강화|전직|advance|train/.test(semanticText)?'UPGRADE'
-          :/collect|채집|줍기|pickup|loot|전리품/.test(semanticText)?'COLLECT':'GENERAL';
+        const semantic=semanticOf(prompt);
         try{
           const target={x:Number(prompt?.x||0),y:Number(prompt?.y||0),z:Number(prompt?.z||0)};
           const navResult=await client.call('character_navigation',characterNavigationArgs(navigationTool.inputSchema||{},studioId,target));
@@ -1784,8 +1788,21 @@ export async function runOfficialStudioMcpPlay({
       const uiCandidates=entityRows((timelineProbes.at(-1)||initialClientProbe)?.ui?.interactive)
         .filter(row=>!destructiveUi.test(clean(row?.text)+' '+clean(row?.name)))
         .sort((a,b)=>(usefulUi.test(clean(b?.text)+' '+clean(b?.name))?1:0)-(usefulUi.test(clean(a?.text)+' '+clean(a?.name))?1:0));
-      const uiExploreLimit=auditMode==='F9_SOAK'?3:1;
-      for(const target of uiCandidates.slice(0,uiExploreLimit)){
+      const uiExploreLimit=auditMode==='F9_SOAK'?6:2;
+      const selectedUi=[],uiBuckets=new Set();
+      const uiSemantic=row=>{
+        const t=(clean(row?.text)+' '+clean(row?.name)).toLowerCase();
+        return /attack|공격|skill|스킬|ability|능력/.test(t)?'COMBAT'
+          :/quest|퀘스트|mission|임무/.test(t)?'QUEST'
+          :/reward|보상|claim|수령/.test(t)?'REWARD'
+          :/shop|상점/.test(t)?'SHOP'
+          :/craft|제작/.test(t)?'CRAFT'
+          :/equip|장비|inventory|인벤/.test(t)?'EQUIP'
+          :/retry|재도전|restart|재시작|respawn|부활/.test(t)?'RETRY':'GENERAL';
+      };
+      for(const row of uiCandidates){const bucket=uiSemantic(row);if(bucket!=='GENERAL'&&!uiBuckets.has(bucket)){selectedUi.push(row);uiBuckets.add(bucket)}if(selectedUi.length>=uiExploreLimit)break}
+      for(const row of uiCandidates){if(selectedUi.length>=uiExploreLimit)break;if(!selectedUi.includes(row))selectedUi.push(row)}
+      for(const target of selectedUi){
         if(!Number.isFinite(Number(target?.centerX))||!Number.isFinite(Number(target?.centerY)))continue;
         const beforeProbe=timelineProbes.at(-1)||initialClientProbe;
         let ok=false,afterProbe=null;
@@ -1798,11 +1815,7 @@ export async function runOfficialStudioMcpPlay({
           if(afterProbe)timelineProbes.push(afterProbe);
         }catch{}
         const effect=probeEffectSummary(beforeProbe||{},afterProbe||{});
-        const uiText=(clean(target?.text)+' '+clean(target?.name)).toLowerCase();
-        const semantic=/attack|공격|skill|스킬|ability|능력/.test(uiText)?'COMBAT'
-          :/quest|퀘스트|mission|임무/.test(uiText)?'QUEST'
-          :/reward|보상|claim|수령/.test(uiText)?'REWARD'
-          :/shop|상점|craft|제작|equip|장비/.test(uiText)?'SYSTEM':'GENERAL';
+        const semantic=uiSemantic(target);
         actions.push({id:'ui-discovered-'+clean(target?.name||target?.text||'button'),type:'mcp-ui-exploration',semantic,dispatched:true,ok,effectObserved:effect.effectObserved,effect});
       }
 
