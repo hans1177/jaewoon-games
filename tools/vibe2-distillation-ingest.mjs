@@ -329,10 +329,13 @@ export function buildExternalBlackBoxLearningPrinciples(record = {}) {
     .map(serialize).filter(Boolean);
   const allowed = (Array.isArray(record?.learningUse?.allowed) ? record.learningUse.allowed : [])
     .map(clean).filter(Boolean);
+  const forbidden = (Array.isArray(record?.learningUse?.stillForbidden) ? record.learningUse.stillForbidden : [])
+    .map(clean).filter(Boolean);
   return Object.freeze({
     application:Object.freeze([...new Set(application)]),
     avoidance:Object.freeze([...new Set(avoidance)]),
     allowed:Object.freeze([...new Set(allowed)]),
+    forbidden:Object.freeze([...new Set(forbidden)]),
   });
 }
 
@@ -387,6 +390,7 @@ function externalBlackBoxRecord(mainRef, distillationPath) {
     ...distilledLearning.application.map(value=>`- APPLY: ${value}`),
     ...(distilledLearning.avoidance.length?['검증된 게임별 회피 원리:',...distilledLearning.avoidance.map(value=>`- AVOID: ${value}`)]:[]),
     ...(distilledLearning.allowed.length?['검증된 학습 활용 범위:',...distilledLearning.allowed.map(value=>`- ALLOWED: ${value}`)]:[]),
+    ...(distilledLearning.forbidden.length?['검증된 학습 금지 범위:',...distilledLearning.forbidden.map(value=>`- FORBIDDEN: ${value}`)]:[]),
   ].join('\n');
   const sample = {
     version: TRAINING_SAMPLE_VERSION,
@@ -396,6 +400,7 @@ function externalBlackBoxRecord(mainRef, distillationPath) {
     distilledApplicationPrinciples:[...distilledLearning.application],
     distilledAvoidancePrinciples:[...distilledLearning.avoidance],
     distilledLearningUseAllowed:[...distilledLearning.allowed],
+    distilledLearningUseForbidden:[...distilledLearning.forbidden],
     taskType: 'qa',
     difficulty: 'regression',
     lifecycle: 'active',
@@ -453,6 +458,7 @@ export function ingestVerifiedExternalBlackBox({ mainRef = 'origin/main', outDir
       && JSON.stringify(existing.distilledApplicationPrinciples||[]) === JSON.stringify(external.sample.distilledApplicationPrinciples||[])
       && JSON.stringify(existing.distilledAvoidancePrinciples||[]) === JSON.stringify(external.sample.distilledAvoidancePrinciples||[])
       && JSON.stringify(existing.distilledLearningUseAllowed||[]) === JSON.stringify(external.sample.distilledLearningUseAllowed||[])
+      && JSON.stringify(existing.distilledLearningUseForbidden||[]) === JSON.stringify(external.sample.distilledLearningUseForbidden||[])
       && qaEvidencePasses({ taskType: existing.taskType, independentQa: existing.independentQa, browserQa: existing.browserQa, runtime: existing.verification?.runtime });
     if (currentEnough) { result.skipped.push({ distillationPath, gameId: external.gameId, reason: 'ALREADY_CURRENT' }); continue; }
     fs.writeFileSync(outFile, `${JSON.stringify(external.sample, null, 2)}\n`);
