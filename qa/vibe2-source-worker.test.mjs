@@ -2233,12 +2233,12 @@ test('Roblox source worker retries when a function-header anchor prematurely clo
   write(bad,JSON.stringify({edits:[{
     path:relative,
     find:'local function render()',
-    replace:'local function render()\\n  status.TextWrapped = true\\nend'
+    replace:['local function render()','  status.TextWrapped = true','end'].join('\n')
   }]}));
   write(good,JSON.stringify({edits:[{
     path:relative,
     find:'local function render()',
-    replace:'local function render()\\n  status.TextWrapped = true'
+    replace:['local function render()','  status.TextWrapped = true'].join('\n')
   }]}));
   const result=await runVibe2SourceWorker({cwd,responseFiles:[bad,good]});
   assert.equal(result.generation.attempts,2);
