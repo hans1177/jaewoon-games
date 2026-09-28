@@ -56,7 +56,8 @@
         "UNITY_RUNTIME",
         "AI",
         "STORYTELLING",
-        "RELATIONSHIP_MEMORY"
+        "RELATIONSHIP_MEMORY",
+        "ROBLOX_MULTIPLAYER"
       ],
       "sourceFailure": "fail_wu3qnk"
     },
@@ -209,7 +210,8 @@
         "UNITY_RUNTIME",
         "AI",
         "STORYTELLING",
-        "RELATIONSHIP_MEMORY"
+        "RELATIONSHIP_MEMORY",
+        "ROBLOX_MULTIPLAYER"
       ],
       "sourceFailure": "fail_wu3qnk"
     },
@@ -1653,7 +1655,7 @@
       ]
     },
     {
-      "id": "gap-storytelling-l2",
+      "id": "gap-storytelling-l3",
       "kind": "NARRATIVE_STRUCTURE_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -1753,26 +1755,6 @@
       ]
     },
     {
-      "id": "gap-asset_production-l11",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ASSET_PRODUCTION"
-      ]
-    },
-    {
-      "id": "gap-roblox_studio-l11",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "ROBLOX_STUDIO"
-      ]
-    },
-    {
       "id": "gap-unity_runtime-l11",
       "kind": "UNITY_NATIVE_DRILL",
       "priority": "low",
@@ -1780,6 +1762,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "UNITY_RUNTIME"
+      ]
+    },
+    {
+      "id": "gap-asset_production-l12",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ASSET_PRODUCTION"
       ]
     },
     {
@@ -1800,6 +1792,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "ECONOMY"
+      ]
+    },
+    {
+      "id": "gap-roblox_studio-l12",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROBLOX_STUDIO"
       ]
     },
     {
@@ -1883,7 +1885,7 @@
       ]
     },
     {
-      "id": "gap-debugging-l24",
+      "id": "gap-debugging-l25",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -1893,7 +1895,7 @@
       ]
     },
     {
-      "id": "gap-state_machine-l24",
+      "id": "gap-state_machine-l25",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
