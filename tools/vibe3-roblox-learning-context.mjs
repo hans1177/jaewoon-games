@@ -96,6 +96,15 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
   const sourceProjects=unique(selected?.sourceProjects||[]).slice(0,6);
   const distilled=selectDistilled(distillation?.records||[],{gameId,terms,profileText});
   const verifiedExternalLearningIds=unique([...verifiedExternalPlaybookIds,...(distilled.externalIds||[])]);
+  const verifiedExternalLearningApplyAxes=Object.freeze([
+    'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
+    'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
+    'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
+    'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
+    'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
+    'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
+    'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
+  ]);
   const applied=checklist.length>0&&verifiedExternalLearningIds.length>0&&(Boolean(selected)||distilled.patterns.length>0||distilled.principles.length>0||verifiedExternalPlaybookIds.length>0);
 
   return Object.freeze({
@@ -115,6 +124,7 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     verifiedExternalLearningRetrievedCount:verifiedExternalLearningIds.length,
     verifiedExternalLearningAppliedCount:verifiedExternalLearningIds.length,
     verifiedExternalLearningCoveragePct:verifiedExternalLearningIds.length>0?100:0,
+    verifiedExternalLearningApplyAxes,
     verifiedExternalLearningFirst:true,
     verifiedExternalLearningTruncationForbidden:true,
     externalBlackBoxAdvisoryUsed:distilled.externalAdvisoryUsed,
