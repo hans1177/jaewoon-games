@@ -57,15 +57,9 @@ export function classifyVerifiedExternalBlackBoxPrinciples(rows=[],{gameId='',ta
       if(EXTERNAL_VALIDATION_PRINCIPLE_IDS.has(id)){
         disposition='VALIDATION_ONLY';reason='ANDROID_OR_QA_RUNTIME_EVIDENCE';
       }else if(EXTERNAL_GAME_PRINCIPLE_DOMAINS[id]){
-        const rpgOnly=/^(persistent-primary-rpg-navigation|danger-and-level-gating-visible-before-commitment)$/.test(id);
-        const puzzleSpatial=id==='touch-look-produces-immediate-spatial-feedback'&&/puzzle|cascade/.test(game);
-        if((rpgOnly&&!/rpg|dungeon|fantasy|adventure|survival|growth/.test(game))||puzzleSpatial){
-          disposition='NOT_APPLICABLE';reason='GAME_SEMANTIC_MISMATCH';
-        }else{
-          disposition='APPLIED_GAME_SOURCE';
-          domains=EXTERNAL_GAME_PRINCIPLE_DOMAINS[id];
-          reason='GAME_SPECIFIC_SOURCE_APPLICATION';
-        }
+        disposition='APPLIED_GAME_SOURCE';
+        domains=EXTERNAL_GAME_PRINCIPLE_DOMAINS[id];
+        reason=game?'GAME_SPECIFIC_SEMANTIC_ADAPTATION':'GAME_SOURCE_SEMANTIC_ADAPTATION';
       }
       dispositionRows.push(freeze({id,sourceLearningId:clean(row?.id),raw:value,disposition,domains:freezeList(domains),reason,gameId:clean(gameId),target:platform}));
     }
