@@ -39,7 +39,18 @@ test('verified supervised PASS and REVISE decisions become reusable positive and
   const task={id:'web-supervised-1',gameId:'demo-web',target:'web',goal:'기존 게임을 보존하며 모바일 핵심 루프를 완성한다'};
   const candidateResult={
     outcome:'PASS',candidateBranch:'vibe2/candidate/web-supervised-1/primary',baseMainSha:'abc123',
-    candidateIdentity:{manifestPath:'.vibe2/candidates/web-supervised-1/manifest.json'}
+    candidateIdentity:{manifestPath:'.vibe2/candidates/web-supervised-1/manifest.json'},
+    knowledgeApplication:{
+      mandatoryForGameTarget:true,
+      verifiedExternalLearningFirst:true,
+      verifiedExternalLearningIds:['external-black-box-block-blast-run-30'],
+      verifiedExternalLearningRetrievedCount:1,
+      verifiedExternalLearningAppliedCount:1,
+      verifiedExternalLearningCoveragePct:100,
+      verifiedExternalLearningApplyAxes:["MENU_FLOW_AND_INFORMATION_ARCHITECTURE","UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY","GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION","MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION","ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY","VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE","GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"],
+      retrievedVerifiedExternalLearningTruncationForbidden:true,
+      verifiedLearningMemorySha:'verified-memory-sha'
+    }
   };
   const positive=buildSupervisedWebExperienceReview({
     task,candidateResult,
@@ -48,6 +59,8 @@ test('verified supervised PASS and REVISE decisions become reusable positive and
   const positiveGate=validateVibeExperiencePromotion(positive);
   assert.equal(positiveGate.valid,true);
   assert.equal(positive.outcome,'PASS');
+  assert.equal(positive.verifiedExternalLearningApplication.verifiedExternalLearningCoveragePct,100);
+  assert.deepEqual(positive.verifiedExternalLearningApplication.verifiedExternalLearningApplyAxes,["MENU_FLOW_AND_INFORMATION_ARCHITECTURE","UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY","GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION","MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION","ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY","VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE","GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"]);
   assert.ok(positive.reusablePatterns.includes('보존 불변조건을 먼저 고정하고 책임 함수만 수정'));
 
   const negative=buildSupervisedWebExperienceReview({
@@ -73,6 +86,34 @@ test('supervised review batch writes both verified success and verified failure 
   assert.equal(writes.length,1);
   assert.equal(writes[0].records.length,2);
   assert.ok(writes[0].records.some(record=>record.outcome==='FAIL'&&record.avoidPatterns.includes('placeholder source')));
+});
+
+test('verified external learning application survives reviewed experience promotion',()=>{
+  const review=successfulReview({
+    id:'external-application-feedback',
+    verifiedExternalLearningApplication:{
+      sourceAuthority:'VERIFIED_MEMORY_ONLY',
+      verifiedExternalLearningFirst:true,
+      verifiedExternalLearningIds:['external-black-box-block-blast-run-30','external-black-box-unciv-run-4'],
+      verifiedExternalLearningRetrievedCount:2,
+      verifiedExternalLearningAppliedCount:2,
+      verifiedExternalLearningCoveragePct:100,
+      verifiedExternalLearningApplyAxes:["MENU_FLOW_AND_INFORMATION_ARCHITECTURE","UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY","GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION","MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION","ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY","VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE","GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"],
+      retrievedVerifiedExternalLearningTruncationForbidden:true,
+      verifiedLearningMemorySha:'verified-memory-sha',
+      rawCommercialCodeCopy:false,
+      rawCommercialAssetCopy:false,
+      distinctiveExpressionClone:false
+    }
+  });
+  const promoted=promoteVibeReviewedExperience(createVibeExperienceMemory(),review);
+  assert.equal(promoted.promoted,true);
+  assert.equal(promoted.record.verifiedExternalLearningApplication.fullCoverageVerified,true);
+  assert.equal(promoted.record.verifiedExternalLearningApplication.verifiedExternalLearningCoveragePct,100);
+  assert.deepEqual(promoted.record.verifiedExternalLearningApplication.verifiedExternalLearningIds,[
+    'external-black-box-block-blast-run-30','external-black-box-unciv-run-4'
+  ]);
+  assert.deepEqual(promoted.record.verifiedExternalLearningApplication.verifiedExternalLearningApplyAxes,["MENU_FLOW_AND_INFORMATION_ARCHITECTURE","UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY","GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION","MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION","ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY","VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE","GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"]);
 });
 
 test('batch promotion persists phase 3 capability application evidence without double counting the same application',()=>{
