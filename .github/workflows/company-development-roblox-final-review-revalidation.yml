@@ -583,9 +583,13 @@ jobs:
             [ -n "$row" ] || continue
             id="${row%%$'\t'*}"
             cycle_id="${row#*$'\t'}"
-            gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" -f publish_stage=final -f publish_cycle_id="$cycle_id"
-            count=$((count+1))
-            echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=$id:$cycle_id"
+            if gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" -f publish_stage=final -f publish_cycle_id="$cycle_id"; then
+              count=$((count+1))
+              echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=$id:$cycle_id"
+            else
+              echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCH_RETRY_REQUIRED=$id:$cycle_id" >&2
+              echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCH_BLOCKS_NEXT_CYCLE=NO"
+            fi
           done
           echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCH_COUNT=$count"
 
@@ -717,3 +721,4 @@ jobs:
             echo 'ROBLOX_F9_VIBE_REFILL_DISPATCHED=0'
           fi
           echo 'ROBLOX_F9_VIBE_FANIN=PASS'
+          echo 'ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO'
