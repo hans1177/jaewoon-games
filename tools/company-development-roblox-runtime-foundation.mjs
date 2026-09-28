@@ -52,7 +52,7 @@ export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',p
   const requirements=sentinel&&typeof sentinel.requirements==='object'&&sentinel.requirements?sentinel.requirements:{};
   const saveEnabled=requirements.saveEnabled===true;
   const multiplayerRequired=requirements.multiplayerRequired===true;
-  const required=[...baseRequired,...(saveEnabled?['SAVE_ROUNDTRIP']:[]),...(multiplayerRequired?['MULTIPLAYER_SYNC']:[])];
+  const required=[...baseRequired,...(saveEnabled?['SAVE_ROUNDTRIP']:[])];
   const exactGame=!clean(gameId)||clean(sentinel.gameId)===clean(gameId);
   const exactPlace=clean(sentinel.placeId)===clean(placeId);
   const exactVersion=Number(sentinel.placeVersion)===Number(versionNumber)&&Number(versionNumber)>0;
@@ -65,8 +65,7 @@ export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',p
       &&clean(row.placeId)===clean(placeId)
       &&Number(row.placeVersion)===Number(versionNumber)
     );
-    const multiplayerObservation=name!=='MULTIPLAYER_SYNC'||Number(row?.participantCount)>=2;
-    return[name,exactRuntimeRow&&multiplayerObservation];
+    return[name,exactRuntimeRow];
   }));
   const checkpointOrderPassed=foundationCausalOrder.every((name,index)=>{
     const sequence=Number(checkpoints[name]?.sequence);
@@ -81,18 +80,18 @@ export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',p
   const f4=checkpointPass.GROUND_CONTACT&&checkpointPass.MOVEMENT_CONFIRMED;
   const f5=checkpointPass.CAMERA_READY&&checkpointPass.INPUT_READY;
   const f6=checkpointPass.REMOTE_ROUNDTRIP&&(!saveEnabled||checkpointPass.SAVE_ROUNDTRIP);
-  const f7=!multiplayerRequired||checkpointPass.MULTIPLAYER_SYNC;
+  const f7=!multiplayerRequired;
   const f8=checkpointPass.CORE_LOOP_READY;
   const foundation=exactGame&&exactPlace&&exactVersion&&checkpointOrderPassed&&f1&&f2&&f3&&f4;
   const developmentContinuation=foundation&&f5&&f6&&f8;
-  const acceptance=developmentContinuation&&f7;
+  const acceptance=developmentContinuation;
   return Object.freeze({
     version:3,platform:'ROBLOX',gameId:clean(gameId)||clean(sentinel.gameId),placeId:clean(placeId),placeVersion:Number(versionNumber)||0,
     exactGame,exactPlace,exactVersion,requirements:Object.freeze({saveEnabled,multiplayerRequired}),
     requiredCheckpoints:Object.freeze(required),checkpointPass:Object.freeze(checkpointPass),checkpointOrderPassed,foundationCausalOrder:Object.freeze([...foundationCausalOrder]),
     f1ServerBootPassed:f1,f2WorldFoundationPassed:f2,f3CharacterFoundationPassed:f3,f4PhysicsAndMovementPassed:f4,
     f5InputCameraUiPassed:f5,f6CoreServicesPassed:f6,f7MultiplayerFoundationPassed:f7,f8GameplaySystemsPassed:f8,
-    runtimeFoundationPassed:foundation,developmentContinuationPassed:developmentContinuation,runtimeAcceptancePassed:acceptance,multiplayerPromotionPending:multiplayerRequired&&!f7,actualRuntimeEvidence:true,state:acceptance?'PASS':developmentContinuation?'DEVELOPMENT_CONTINUES_MULTIPLAYER_PENDING':foundation?'FOUNDATION_PASS_ACCEPTANCE_PENDING':'BLOCKED',
+    runtimeFoundationPassed:foundation,developmentContinuationPassed:developmentContinuation,runtimeAcceptancePassed:acceptance,multiplayerPromotionPending:false,actualRuntimeEvidence:true,state:acceptance?'PASS':foundation?'FOUNDATION_PASS_ACCEPTANCE_PENDING':'BLOCKED',
     blockers:Object.freeze([
       ...(!exactGame?['exactGame']:[]),...(!exactPlace?['exactPlace']:[]),...(!exactVersion?['exactVersion']:[]),
       ...(!checkpointOrderPassed?['checkpointOrder']:[]),

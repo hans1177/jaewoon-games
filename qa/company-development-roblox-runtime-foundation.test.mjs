@@ -66,22 +66,27 @@ test('foundation sentinel blocks floating character evidence without ground cont
  assert.equal(r.runtimeFoundationPassed,false);assert.equal(r.runtimeAcceptancePassed,false);assert.ok(r.blockers.includes('checkpoint:GROUND_CONTACT'));
 });
 
-test('runtime acceptance stays pending until actual multiplayer synchronization for multiplayer-required game',()=>{
+
+test('runtime foundation does not wait for live multiplayer synchronization',()=>{
  const broken=structuredClone(good);delete broken.checkpoints.MULTIPLAYER_SYNC;
  const r=validateRobloxRuntimeFoundationEvidence({sentinel:broken,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
- assert.equal(r.runtimeFoundationPassed,true);assert.equal(r.runtimeAcceptancePassed,false);assert.equal(r.f7MultiplayerFoundationPassed,false);
+ assert.equal(r.runtimeFoundationPassed,true);
+ assert.equal(r.runtimeAcceptancePassed,true);
+ assert.equal(r.f7MultiplayerFoundationPassed,false);
+ assert.equal(r.multiplayerPromotionPending,false);
+ assert.equal(r.requiredCheckpoints.includes('MULTIPLAYER_SYNC'),false);
 });
 
 
-test('multiplayer foundation only needs one exact two-player shared sync observation',()=>{
+test('runtime foundation ignores multiplayer participant count because F7 is source-contract only',()=>{
  const onePlayer=structuredClone(good);onePlayer.checkpoints.MULTIPLAYER_SYNC.participantCount=1;
- const blocked=validateRobloxRuntimeFoundationEvidence({sentinel:onePlayer,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
- assert.equal(blocked.f7MultiplayerFoundationPassed,false);
- assert.equal(blocked.runtimeAcceptancePassed,false);
+ const one=validateRobloxRuntimeFoundationEvidence({sentinel:onePlayer,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
  const twoPlayers=structuredClone(good);twoPlayers.checkpoints.MULTIPLAYER_SYNC.participantCount=2;
- const passed=validateRobloxRuntimeFoundationEvidence({sentinel:twoPlayers,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
- assert.equal(passed.f7MultiplayerFoundationPassed,true);
- assert.equal(passed.runtimeAcceptancePassed,true);
+ const two=validateRobloxRuntimeFoundationEvidence({sentinel:twoPlayers,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
+ assert.equal(one.runtimeAcceptancePassed,true);
+ assert.equal(two.runtimeAcceptancePassed,true);
+ assert.equal(one.f7MultiplayerFoundationPassed,false);
+ assert.equal(two.f7MultiplayerFoundationPassed,false);
 });
 
 test('multiplayer F7 passes from exact source code contract without launching two clients',()=>{
