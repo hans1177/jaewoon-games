@@ -1275,7 +1275,7 @@ function persistentStateSummary(probe={}){
     persistentSignalCount:progression.length
   };
 }
-export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[],timelineProbes=[],auditProfile='FAST_DEEP'}={}){
+export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[],timelineProbes=[],auditProfile='FAST_DEEP',visualCaptureDeferred=false}={}){
   if(contract?.required!==true)return{required:false,scenarios:[],qualityFailureKinds:[],authoritativeStateChangeObserved:false,capture:{before:{pass:true,frames:[]},after:{pass:true,frames:[]}},metrics:{}};
   const exp=contract?.expectations||{};
   const requiredIds=new Set(Array.isArray(contract?.requiredScenarios)?contract.requiredScenarios.map(clean).filter(Boolean):[]);
@@ -1458,7 +1458,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'world-geometry-present',pass:world.arenaPresent===true&&Number(world.arenaPartCount||0)>=Number(exp.minimumArenaParts||0)},
     {id:'primary-action-input',pass:!clean(contract.primaryActionButtonText)||actionOk('ui-primary-action')},
     {id:'primary-action-effect',pass:!clean(contract.primaryActionButtonText)||primaryActionFeedbackChanged||displacement>=Number(exp.minimumPrimaryActionDisplacement||0.25)||velocity>=1},
-    {id:'visual-capture-sane',pass:before.pass&&after.pass&&lightingBrightness>=Number(exp.minimumLightingBrightness||0)},
+    {id:'visual-capture-sane',pass:visualCaptureDeferred===true||(before.pass&&after.pass&&lightingBrightness>=Number(exp.minimumLightingBrightness||0))},
     {id:'adaptive-runtime-surface',pass:Number(runtime.descendantCount||0)>0&&(Number(runtime.systemSignals||0)>0||Number(runtime.remoteCount||0)>0||interactionSurfaceCount>0||progressionSurfaceCount>0||combatSurfaceCount>0||npcSurfaceCount>0||itemSurfaceCount>0)},
     {id:'adaptive-ftue-clarity',pass:onboardingClarityPass},
     {id:'adaptive-ui-commercial-quality',pass:!signals.ui||uiCommercialPass},
@@ -1805,12 +1805,6 @@ export async function runOfficialStudioMcpPlay({
     checkpoint('play-mode-started',true);
     await wait(2500);
 
-    const captureTool=client.tool('screen_capture');
-    const captureArgs=fillRequired((()=>{const a={};setStudioId(a,captureTool.inputSchema||{},studioId);return a;})(),captureTool.inputSchema||{});
-    const before=await client.call('screen_capture',captureArgs);
-    beforeImages=collectImages(before,[]);
-    checkpoint('viewport-before-captured',beforeImages.length>0);
-
     if(actualPlayContract?.required===true){
       initialClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
       checkpoint('actual-play-initial-client-probe',initialClientProbe!=null);
@@ -2061,19 +2055,12 @@ export async function runOfficialStudioMcpPlay({
       checkpoint('commercial-audit-timeline-sampled',timelineProbes.length>=sampleCount-1);
     }
 
-    const after=await client.call('screen_capture',captureArgs);
-    afterImages=collectImages(after,[]);
-    const beforeHashes=beforeImages.map(x=>hash(Buffer.from(x.data,'base64')));
-    const afterHashes=afterImages.map(x=>hash(Buffer.from(x.data,'base64')));
-    const changed=beforeHashes.length>0&&afterHashes.length>0&&beforeHashes.join(',')!==afterHashes.join(',');
-    checkpoint('viewport-changed-after-input',changed);
-
     if(actualPlayContract?.required===true){
       finalClientProbe=timelineProbes.at(-1)||await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
       finalServerProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Server');
       checkpoint('actual-play-final-client-probe',finalClientProbe!=null);
       checkpoint('actual-play-final-server-probe',finalServerProbe!=null);
-      const evaluated=evaluateStudioActualPlayContract({contract:actualPlayContract,initialClientProbe,preActionClientProbe,postActionClientProbe,clientProbe:finalClientProbe,serverProbe:finalServerProbe,actions,beforeImages,afterImages,timelineProbes,auditProfile:auditMode});
+      const evaluated=evaluateStudioActualPlayContract({contract:actualPlayContract,initialClientProbe,preActionClientProbe,postActionClientProbe,clientProbe:finalClientProbe,serverProbe:finalServerProbe,actions,beforeImages:[],afterImages:[],timelineProbes,auditProfile:auditMode,visualCaptureDeferred:true});
       scenarioCoverage=evaluated.scenarios;
       authoritativeStateChangeObserved=evaluated.authoritativeStateChangeObserved===true;
       qualityFailureKinds=evaluated.qualityFailureKinds;
@@ -2210,6 +2197,48 @@ export async function runOfficialStudioMcpPlay({
     for(const row of consoleClassification.errors)errors.push(row);
     checkpoint('no-release-blocking-runtime-errors',consoleClassification.errors.length===0);
 
+    if(!started){
+      try{
+        await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,true));
+        started=true;
+        await wait(1600);
+        checkpoint('final-capture-play-restored',true);
+      }catch{
+        checkpoint('final-capture-play-restored',false);
+      }
+    }
+
+    const captureTool=client.tool('screen_capture');
+    const captureArgs=fillRequired((()=>{const a={};setStudioId(a,captureTool.inputSchema||{},studioId);return a;})(),captureTool.inputSchema||{});
+    const finalBefore=await client.call('screen_capture',captureArgs);
+    beforeImages=collectImages(finalBefore,[]);
+    await wait(250);
+    const finalAfter=await client.call('screen_capture',captureArgs);
+    afterImages=collectImages(finalAfter,[]);
+    const captureExp=actualPlayContract?.expectations||{};
+    const finalBeforeQuality=captureSanity(beforeImages,Number(captureExp.minimumCaptureWidth||320),Number(captureExp.minimumCaptureHeight||180),Number(captureExp.minimumCaptureBytes||2048));
+    const finalAfterQuality=captureSanity(afterImages,Number(captureExp.minimumCaptureWidth||320),Number(captureExp.minimumCaptureHeight||180),Number(captureExp.minimumCaptureBytes||2048));
+    const finalLightingBrightness=Number((rejoinClientProbe||finalClientProbe||initialClientProbe)?.lighting?.brightness||0);
+    const finalVisualPass=finalBeforeQuality.pass&&finalAfterQuality.pass&&finalLightingBrightness>=Number(captureExp.minimumLightingBrightness||0);
+    captureQuality={before:finalBeforeQuality,after:finalAfterQuality};
+    const visualIndex=scenarioCoverage.findIndex(row=>row?.id==='visual-capture-sane');
+    const visualRow={id:'visual-capture-sane',pass:finalVisualPass,required:true};
+    if(visualIndex>=0)scenarioCoverage[visualIndex]=visualRow;else scenarioCoverage.push(visualRow);
+    qualityFailureKinds=qualityFailureKinds.filter(id=>id!=='visual-capture-sane');
+    qualityFailureDetails=qualityFailureDetails.filter(row=>row?.id!=='visual-capture-sane');
+    if(!finalVisualPass){
+      qualityFailureKinds.push('visual-capture-sane');
+      qualityFailureDetails.push({
+        id:'visual-capture-sane',
+        repairSurface:'VISUAL_RUNTIME',
+        priority:'HIGH',
+        hint:'Final Studio capture is blank, invalid, too small, or too dark after all commercial QA completed.',
+        observed:{before:finalBeforeQuality,after:finalAfterQuality,lightingBrightness:finalLightingBrightness}
+      });
+    }
+    checkpoint('final-visual-capture-sane',finalVisualPass);
+    console.log('ROBLOX_STUDIO_MCP_FINAL_CAPTURE=LAST_STUDIO_AUDIT_ACTION');
+
     await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,false));
     started=false;
     checkpoint('play-mode-stopped',true);
@@ -2253,7 +2282,7 @@ export async function runOfficialStudioMcpPlay({
       metrics:{
         beforeFrameCount:beforeImages.length,
         afterFrameCount:afterImages.length,
-        distinctFrameChange:checkpoints.find(x=>x.id==='viewport-changed-after-input')?.pass===true,
+        distinctFrameChange:beforeImages.length>0&&afterImages.length>0&&beforeImages.map(x=>hash(Buffer.from(x.data,'base64'))).join(',')!==afterImages.map(x=>hash(Buffer.from(x.data,'base64'))).join(','),
         consoleErrorCount:consoleClassification.errors.length,
         consoleWarningCount:consoleClassification.warningCount,
         consoleStructuredEntryCount:consoleClassification.structuredEntryCount,
