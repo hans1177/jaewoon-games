@@ -98,7 +98,7 @@ local verifiedLearningPlayer = verifiedLearningPlayers.LocalPlayer
 local verifiedLearningContext = C.VerifiedExternalLearning or C.LearningContext or {}
 local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
-local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 5
+local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
 local verifiedLearningRoot = feedbackFlash
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
@@ -277,6 +277,7 @@ end)
 
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
 feedbackFlash:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternalLearningContext.CoveragePct or 0)
+feedbackFlash:SetAttribute("VerifiedExternalLearningContentComplete", verifiedExternalLearningContext.ContentComplete == true)
 feedbackFlash:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
 feedbackFlash:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
 feedbackFlash:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
