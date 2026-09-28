@@ -564,3 +564,21 @@ test('verified APK principles drive the full Roblox native stack for new and exi
   assert.match(source,/GameDevelopmentPrinciples = \{/);
   assert.doesNotMatch(source,/ROBLOX_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED/);
 });
+
+
+test('verified APK learning is unconditional across Roblox native gameplay axes',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(source,/function requireRobloxVerifiedExternalLearning/);
+  assert.doesNotMatch(source,/const nativeLearningRuntime=learning\.applied\?/);
+  assert.doesNotMatch(source,/const learnedInput=learning\.applied\?/);
+  assert.doesNotMatch(source,/generationMode:learning\.applied\?/);
+  assert.match(source,/VerifiedLearningColorGrade/);
+  assert.match(source,/VerifiedLearningBloom/);
+  assert.match(source,/syncVerifiedLearningCharacterMotion/);
+  assert.match(source,/VerifiedLearningSkillImpact/);
+  assert.match(source,/VerifiedLearningSkillSparkles/);
+  assert.match(source,/VerifiedLearningTouchTarget/);
+  assert.match(source,/VerifiedLearningProgressionRiskCue/);
+  assert.match(source,/VerifiedExternalLearningServerConfirmedAt/);
+  assert.match(source,/playVerifiedLearningActionFeedback\(verifiedLearningLastControl\)/);
+});
