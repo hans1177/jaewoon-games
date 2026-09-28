@@ -3,61 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-16hhz8a",
-      "worker": "vibe2",
-      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/Game.server.luau",
-        "roblox-games/cozy-island/client/Game.client.luau",
-        "roblox-games/cozy-island/shared/GameConfig.luau"
-      ],
-      "baseSha": "7f9333f29c1843b81279bcc82436a572921b2985",
-      "acquiredAt": "2026-09-28T13:27:34.215Z",
-      "expiresAt": "2026-09-28T14:12:34.215Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-post-release-focus-12c1a7e2ae6288fd"
-      ]
-    },
-    {
-      "id": "wl-1ocgtxh",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-unity-web-base-implementation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "unity-games/horror-escape-room/Assets/Scripts/GameCore.cs",
-        "unity-games/horror-escape-room/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "7f9333f29c1843b81279bcc82436a572921b2985",
-      "acquiredAt": "2026-09-28T13:27:40.898Z",
-      "expiresAt": "2026-09-28T14:12:40.898Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-zag9yc",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-unity-web-base-implementation-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "7f9333f29c1843b81279bcc82436a572921b2985",
-      "acquiredAt": "2026-09-28T13:27:57.425Z",
-      "expiresAt": "2026-09-28T14:12:57.425Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-1cega54",
       "worker": "vibe2",
       "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1",
@@ -603,6 +548,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-13868by",
+      "worker": "vibe2",
+      "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
+      "gameId": "monster-adventure",
+      "files": [
+        "roblox-games/monster-adventure/client/Game.client.luau",
+        "roblox-games/monster-adventure/server/Game.server.luau",
+        "roblox-games/monster-adventure/shared/GameConfig.luau"
+      ],
+      "baseSha": "ad6605fcd583d3bf490a5fd5720c40b62852a48c",
+      "acquiredAt": "2026-09-28T14:13:04.262Z",
+      "expiresAt": "2026-09-28T14:58:04.262Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:monster-adventure-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
