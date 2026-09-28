@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import {createRobloxVibe3LearningContext} from './vibe3-roblox-learning-context.mjs';
+import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile} from './vibe3-roblox-learning-context.mjs';
 import {applyVerifiedExternalLearningToExistingRobloxSource} from './company-development-roblox-bootstrap.mjs';
 
 const args=Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')).map(x=>{
@@ -26,7 +26,8 @@ const gameIds=fs.readdirSync(root,{withFileTypes:true})
 const results=[];
 for(const gameId of gameIds){
   const gameRoot=path.join(root,gameId);
-  const learning=createRobloxVibe3LearningContext({gameId,profile:{platform:'ROBLOX'},artbook:{},playbooks,recombination});
+  const learningProfile=existingRobloxGameLearningProfile(gameId);
+  const learning=createRobloxVibe3LearningContext({gameId,profile:learningProfile,artbook:{},playbooks,recombination});
   if(learning.applied!==true)throw new Error('ROBLOX_SWEEP_LEARNING_NOT_APPLIED:'+gameId);
   const applied=applyVerifiedExternalLearningToExistingRobloxSource({root:gameRoot,learning});
   const evidenceFile=path.join(gameRoot,'roblox-source-bootstrap.json');
@@ -43,6 +44,14 @@ for(const gameId of gameIds){
     verifiedExternalLearningApplyAxes:[...(learning.verifiedExternalLearningApplyAxes||[])],
     verifiedExternalLearningRetrievedCount:Number(learning.verifiedExternalLearningRetrievedCount||0),
     verifiedExternalLearningAppliedCount:Number(learning.verifiedExternalLearningAppliedCount||0),
+    semanticMappingVersion:Number(learning.semanticMappingVersion||0),
+    semanticMappingFingerprint:learning.semanticMappingFingerprint||null,
+    semanticVariant:learning.semanticVariant||null,
+    coreKind:learning.coreKind||null,
+    gameSpecificSemanticMappings:[...(learning.gameSpecificSemanticMappings||[])],
+    verifiedExternalLearningDispositions:[...(learning.verifiedExternalLearningDispositions||[])],
+    verifiedExternalValidationOnlyPrincipleCount:Number(learning.verifiedExternalValidationOnlyPrincipleCount||0),
+    verifiedExternalLearningGameDevelopmentAppliedCount:Number(learning.verifiedExternalLearningGameDevelopmentAppliedCount||0),
     serverTouchedByVerifiedExternalLearningSweep:false,
     verifiedExternalLearningSweepAt:new Date().toISOString()
   };
@@ -55,11 +64,18 @@ for(const gameId of gameIds){
     changedFiles:[...applied.changedFiles.map(file=>path.relative(process.cwd(),file).replaceAll('\\','/')),path.relative(process.cwd(),evidenceFile).replaceAll('\\','/')],
     serverTouched:false,
     verifiedExternalLearningFingerprint:learning.verifiedExternalLearningFingerprint||null,
-    applyAxes:[...(learning.verifiedExternalLearningApplyAxes||[])]
+    applyAxes:[...(learning.verifiedExternalLearningApplyAxes||[])],
+    semanticMappingVersion:Number(learning.semanticMappingVersion||0),
+    semanticVariant:learning.semanticVariant||null,
+    coreKind:learning.coreKind||null,
+    gameSpecificMappingCount:Number(learning.verifiedExternalLearningGameDevelopmentAppliedCount||0),
+    validationOnlyPrincipleCount:Number(learning.verifiedExternalValidationOnlyPrincipleCount||0),
+    serverInspection:applied.serverInspection||'AFFECTED_SCOPE_ONLY_PRESENTATION_BINDING'
   });
 }
 const report={
-  version:1,
+  version:2,
+  semanticMappingVersion:1,
   scannedGameCount:results.length,
   changedGameCount:results.filter(row=>row.changed).length,
   serverTouched:false,

@@ -587,13 +587,11 @@ test('Roblox APK learning gate ignores server instrumentation and requires nativ
   const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.doesNotMatch(bootstrap,/SERVER_VIBE3_LEARNING_INSTRUMENTATION_REQUIRED/);
-  assert.match(bootstrap,/ROBLOX_ENVIRONMENT_BACKGROUND_AND_LIGHTING/);
-  assert.match(bootstrap,/ROBLOX_CHARACTER_ANIMATION_AND_MOTION/);
-  assert.match(bootstrap,/ROBLOX_SKILL_VFX_AND_IMPACT_FEEDBACK/);
-  assert.match(bootstrap,/ROBLOX_CAMERA_AND_VISUAL_FEEDBACK/);
-  assert.match(bootstrap,/ROBLOX_UI_UX_TOUCH_AND_CONTROLS/);
-  assert.match(bootstrap,/ROBLOX_GAMEPLAY_STATE_AND_PROGRESSION/);
-  assert.match(bootstrap,/ColorCorrectionEffect/);
+  assert.match(bootstrap,/ROBLOX_SEMANTIC_MAPPING_VERSION_REQUIRED/);
+  assert.match(bootstrap,/GameSpecificSemanticMappings/);
+  assert.match(bootstrap,/LearningDispositions/);
+  assert.match(bootstrap,/QA_INFRASTRUCTURE_PRINCIPLE_IN_GAME_SOURCE/);
+  assert.match(bootstrap,/SemanticMappingVersion/);
   assert.match(bootstrap,/BloomEffect/);
   assert.match(bootstrap,/AdjustSpeed/);
   assert.match(bootstrap,/VerifiedLearningSkillImpact/);
@@ -654,16 +652,15 @@ test('verified APK native binding covers Roblox background motion and skill effe
 });
 
 
-test('Roblox native binding v6 requires expanded environment and skill VFX signals',()=>{
+test('Roblox native binding v6 requires semantic mapping and affected-scope signals',()=>{
   const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
   const reconcile=fs.readFileSync(new URL('../tools/company-development-roblox-source-reconcile.mjs',import.meta.url),'utf8');
   assert.match(bootstrap,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=6/);
-  for(const signal of ['VerifiedLearningAtmosphere','VerifiedLearningDepthOfField','VerifiedLearningSkillParticles','VerifiedLearningSkillLight']){
+  for(const signal of ['SemanticMappingVersion','GameSpecificSemanticMappings','LearningDispositions','VerifiedLearningSemanticVariant','VerifiedLearningTouchTarget']){
     assert.match(bootstrap,new RegExp(signal));
     assert.match(reconcile,new RegExp(signal));
   }
 });
-
 
 test('existing Roblox Studio binding requires verified APK learning unconditionally',()=>{
   const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
@@ -675,6 +672,14 @@ test('existing Roblox Studio binding requires verified APK learning unconditiona
   assert.match(fn,/verifiedExternalLearningApplied:true/);
 });
 
+
+test('Roblox semantic mapping keeps QA-only learning out of game-source application',()=>{
+  assert.equal(verifiedLearning.allRetrievedPrinciplesHaveExplicitDisposition,true);
+  assert.ok(verifiedLearning.gameSpecificSemanticMappings.length>0);
+  assert.ok(verifiedLearning.verifiedExternalValidationOnlyPrincipleCount>=0);
+  assert.ok(verifiedLearning.verifiedExternalLearningDispositions.every(row=>row.disposition!=='FAIL_CLOSED'));
+  assert.doesNotMatch(JSON.stringify(verifiedLearning.verifiedExternalLearningPrinciples),/android|apk|hosted-emulator|qa-evidence/i);
+});
 test('stale Roblox technical workers drop before Rojo model and F0 without poisoning runtime state',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/Drop superseded Roblox technical work before heavy execution/);

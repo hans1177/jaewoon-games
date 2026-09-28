@@ -7,7 +7,7 @@ import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION} from './company-development-roblox-bootstrap.mjs';
 import {platformDevelopmentEligible} from './company-selected-platform-router.mjs';
-import {verifiedExternalBlackBoxPlaybookContract} from './vibe3-roblox-learning-context.mjs';
+import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile,verifiedExternalBlackBoxPlaybookContract,ROBLOX_SEMANTIC_MAPPING_VERSION} from './vibe3-roblox-learning-context.mjs';
 
 const clean=value=>String(value??'').trim();
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
@@ -40,13 +40,14 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
   return {required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,bindingVersion,clientBindingVersion,expectedBindingVersion,applied,clientConfigBound,clientVisibleBound,reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null};
 }
 
-function verifiedExternalLearningRefreshState({root='',playbooks={}}={}){
-  const expected=verifiedExternalBlackBoxPlaybookContract(playbooks);
-  if(!expected.ids.length)return {required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
+function verifiedExternalLearningRefreshState({root='',playbooks={},gameId=''}={}){
+  const expectedContract=verifiedExternalBlackBoxPlaybookContract(playbooks);
+  const expectedLearning=createRobloxVibe3LearningContext({gameId,profile:existingRobloxGameLearningProfile(gameId),playbooks});
+  if(!expectedContract.ids.length)return {required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
   const configFile=path.join(root,'shared','GameConfig.luau');
   const clientFile=path.join(root,'client','Game.client.luau');
   if(!fs.existsSync(configFile)||!fs.existsSync(clientFile)){
-    return {required:true,refreshRequired:true,expectedIds:[...expected.ids],fingerprint:expected.fingerprint,reason:'CONFIG_OR_CLIENT_MISSING'};
+    return {required:true,refreshRequired:true,expectedIds:[...expectedContract.ids],fingerprint:expectedContract.fingerprint,semanticMappingVersion:ROBLOX_SEMANTIC_MAPPING_VERSION,semanticMappingFingerprint:expectedLearning.semanticMappingFingerprint,reason:'CONFIG_OR_CLIENT_MISSING'};
   }
   const config=fs.readFileSync(configFile,'utf8');
   const client=fs.readFileSync(clientFile,'utf8');
@@ -54,29 +55,26 @@ function verifiedExternalLearningRefreshState({root='',playbooks={}}={}){
   const full=config.match(/LearningContext\s*=\s*\{([\s\S]*?)\n\s*\},\n\s*InitialState\s*=/);
   const block=managed?.[1]||full?.[1]||'';
   const ids=[...new Set([...block.matchAll(/["'](external-black-box-[^"']+)["']/g)].map(match=>match[1]))].sort();
-  const expectedIds=[...expected.ids].sort();
+  const expectedIds=[...expectedContract.ids].sort();
   const coverage=Number(block.match(/CoveragePct\s*=\s*(\d+)/)?.[1]||0);
   const retrieved=Number(block.match(/RetrievedCount\s*=\s*(\d+)/)?.[1]||0);
   const applied=Number(block.match(/AppliedCount\s*=\s*(\d+)/)?.[1]||0);
   const nativeBindingVersion=Number(block.match(/NativeBindingVersion\s*=\s*(\d+)/)?.[1]||0);
   const clientNativeBindingVersion=Number(client.match(/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*(\d+)/)?.[1]||0);
+  const semanticMappingVersion=Number(block.match(/SemanticMappingVersion\s*=\s*(\d+)/)?.[1]||0);
+  const semanticMappingFingerprint=clean(block.match(/SemanticMappingFingerprint\s*=\s*["']([^"']+)["']/)?.[1]);
+  const semanticVariant=clean(block.match(/SemanticVariant\s*=\s*["']([^"']+)["']/)?.[1]);
+  const mappingCount=Number(block.match(/AppliedGameDevelopmentPrincipleCount\s*=\s*(\d+)/)?.[1]||0);
   const truncation=/TruncationForbidden\s*=\s*true/.test(block);
   const fingerprint=clean(block.match(/MemoryFingerprint\s*=\s*["']([^"']+)["']/)?.[1]);
   const exactIds=ids.length===expectedIds.length&&expectedIds.every(id=>ids.includes(id));
   const fullNativeClient=
     /VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(client)
-    &&/VerifiedLearningColorGrade/.test(client)
-    &&/VerifiedLearningBloom/.test(client)
-    &&/VerifiedLearningAtmosphere/.test(client)
-    &&/VerifiedLearningDepthOfField/.test(client)
-    &&/syncVerifiedLearningCharacterMotion/.test(client)
-    &&/VerifiedLearningSkillImpact/.test(client)
-    &&/VerifiedLearningSkillSparkles/.test(client)
-    &&/VerifiedLearningSkillParticles/.test(client)
-    &&/VerifiedLearningSkillLight/.test(client)
-    &&/FieldOfView/.test(client)
+    &&/VerifiedExternalLearningSemanticMappingVersion/.test(client)
+    &&/VerifiedExternalLearningSemanticMappingFingerprint/.test(client)
+    &&/VerifiedLearningSemanticVariant/.test(client)
+    &&/VerifiedLearningSemanticMappingFingerprint/.test(client)
     &&/VerifiedLearningTouchTarget/.test(client)
-    &&/VerifiedLearningProgressionRiskCue/.test(client)
     &&/VerifiedExternalLearningGameplayState/.test(client);
   const refreshRequired=
     !block
@@ -85,17 +83,27 @@ function verifiedExternalLearningRefreshState({root='',playbooks={}}={}){
     ||applied!==expectedIds.length
     ||!truncation
     ||!exactIds
-    ||fingerprint!==clean(expected.fingerprint)
+    ||fingerprint!==clean(expectedContract.fingerprint)
     ||nativeBindingVersion!==ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION
     ||clientNativeBindingVersion!==ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION
+    ||semanticMappingVersion!==ROBLOX_SEMANTIC_MAPPING_VERSION
+    ||semanticMappingFingerprint!==clean(expectedLearning.semanticMappingFingerprint)
+    ||!semanticVariant
+    ||mappingCount<=0
     ||!fullNativeClient;
   return {
     required:true,
     refreshRequired,
     expectedIds,
     currentIds:ids,
-    fingerprint:expected.fingerprint,
+    fingerprint:expectedContract.fingerprint,
     currentFingerprint:fingerprint,
+    semanticMappingVersion:ROBLOX_SEMANTIC_MAPPING_VERSION,
+    currentSemanticMappingVersion:semanticMappingVersion,
+    semanticMappingFingerprint:expectedLearning.semanticMappingFingerprint,
+    currentSemanticMappingFingerprint:semanticMappingFingerprint,
+    semanticVariant,
+    mappingCount,
     coverage,
     retrieved,
     applied,
@@ -103,7 +111,7 @@ function verifiedExternalLearningRefreshState({root='',playbooks={}}={}){
     nativeBindingVersion,
     clientNativeBindingVersion,
     fullNativeClient,
-    reason:refreshRequired?'STALE_OR_MISSING_VERIFIED_EXTERNAL_LEARNING':null
+    reason:refreshRequired?'STALE_OR_MISSING_VERIFIED_EXTERNAL_LEARNING':'NOT_REQUIRED'
   };
 }
 
@@ -181,7 +189,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     const currentRevision=clean(sourceRevision);
     const sourceTreeSha=fs.existsSync(root)?currentSourceTreeSha({repoRoot,sourcePath}):'';
     const studioState=fs.existsSync(root)?studioAssetRefreshState({root,assetLibrary}):{required:false,refreshRequired:false,libraryVersion:Number(assetLibrary?.version||0)};
-    const learningState=fs.existsSync(root)?verifiedExternalLearningRefreshState({root,playbooks}):{required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
+    const learningState=fs.existsSync(root)?verifiedExternalLearningRefreshState({root,playbooks,gameId:item.gameId}):{required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
     if(learningState.refreshRequired===true){
       results.push({gameId:item.gameId,pass:false,sourcePath,sourceRevision:currentRevision,sourceTreeSha,sourceDrift:!sourceBind,saveRequired:false,blockers:['ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED'],failure:'existing-source-verified-external-learning-required',verifiedExternalLearningRefreshRequired:true,verifiedExternalLearningExpectedIds:learningState.expectedIds,verifiedExternalLearningCurrentIds:learningState.currentIds||[],verifiedExternalLearningFingerprint:learningState.fingerprint,verifiedExternalLearningCurrentFingerprint:learningState.currentFingerprint||null});
       continue;
