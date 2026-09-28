@@ -151,11 +151,16 @@ jobs:
             const post=item.robloxPostRuntimeQaEvidence||{};
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const exactScopedMultiplayerAcceptance=
+              post.multiplayerValidationPassed===true
+              &&post.sourceRevision===sourceRevision
+              &&post.artifactIdentity===artifactIdentity
+              &&Number(post.candidateVersionNumber)===Number(candidate.versionNumber);
             const sharedReleaseRuntimeAcceptance=
               item.robloxRuntimePassed===true
               &&runtime.runtimeAcceptancePassed===true
               &&runtime.f7MultiplayerFoundationPassed===true
-              &&item.robloxMultiplayerQaPassed===true;
+              &&(item.robloxMultiplayerQaPassed===true||exactScopedMultiplayerAcceptance);
             const studioPlay=item.robloxInternalVibePlayEvidence||{};
             const internalRuntimeObservationDeferred=
               item.robloxRuntimeFoundationInternalReleaseException===true
@@ -345,6 +350,8 @@ jobs:
               actualRuntimeFoundationPassed:item.robloxRuntimeFoundationPassed===true,
               runtimeAcceptancePassed:sharedReleaseRuntimeAcceptance,
               internalStudioValidationOnly:internalStudioValidationAccepted,
+              multiplayerScopedInternalEvidenceAccepted:exactScopedMultiplayerAcceptance||post.multiplayerValidationPassed===true,
+              fullTwoClientValidationDeferred:post.fullTwoClientValidationDeferred===true,
               f9RuntimeReplay:false,
               externalServerBootRequired:false,
               internalRuntimeObservationDeferred,
