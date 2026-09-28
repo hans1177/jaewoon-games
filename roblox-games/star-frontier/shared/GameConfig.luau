@@ -93,6 +93,7 @@ local Config = {
     GameId = "star-frontier",
     CoreKind = "OBJECTIVE",
     SemanticVariant = "OBJECTIVE_GOAL",
+    SemanticMood = "READABLE_EXPLORATION",
     SemanticMappingVersion = 1,
     SemanticMappingFingerprint = "w709ch",
     MemoryFingerprint = "hfed4s",
