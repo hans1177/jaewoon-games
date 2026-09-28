@@ -384,24 +384,27 @@ test('F9 final review requires exact Studio asset runtime proof when a binding w
  assert.match(workflow,/&&studioAssetRuntimeBindingExact===true/);
 });
 
-test('F9 fans verified proof only after canonical publish completes and then reopens the Vibe loop',()=>{
+test('F9 dispatches the exact canonical publish then immediately reopens the Vibe loop without waiting for outcome',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
- assert.match(workflow,/Fan verified F9 runtime proof into waiting Vibe Roblox tasks/);
- assert.match(workflow,/node --input-type=module - "runtime\/development-queue\.json" "\$REQUESTED_GAME_ID"/);
- assert.match(workflow,/item\.robloxFinalReviewPassed!==true\|\|item\.robloxInternalReleaseReady!==true/);
- assert.match(workflow,/const release=item\.robloxInternalReleaseEvidence\|\|\{\}/);
- assert.match(workflow,/release\.f9ReleaseRegressionPassed===true/);
- assert.match(workflow,/release\.sourceRevision===source/);
- assert.match(workflow,/item\.robloxCanonicalReleaseEvidence\?\.versionNumber\|\|item\.robloxReleaseVersionNumber/);
+ const dispatchAt=workflow.indexOf('Dispatch exact F9-verified artifact to canonical Roblox game target');
+ const fanInAt=workflow.indexOf('Fan verified F9 runtime proof into waiting Vibe Roblox tasks');
+ assert.ok(dispatchAt>=0&&fanInAt>dispatchAt,'canonical publish dispatch must precede Vibe refill');
+ assert.match(workflow,/robloxF9VerifiedPrepublishEvidence/);
+ assert.match(workflow,/robloxCanonicalPublishQueue/);
+ assert.match(workflow,/status:'PENDING'/);
+ assert.match(workflow,/item\.robloxInternalReleaseReady=false/);
+ assert.match(workflow,/item\.currentStep='POST_F9_CONTINUOUS_EVOLUTION'/);
+ assert.match(workflow,/ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=/);
+ assert.match(workflow,/\['PENDING','RETRY_REQUIRED'\]/);
  assert.match(workflow,/candidate-awaiting-roblox-runtime-qa/);
  assert.match(workflow,/roblox-runtime-await-game:/);
  assert.match(workflow,/studioRequired&&item\.robloxStudioAssetRuntimeBindingPassed!==true/);
- assert.match(workflow,/ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS/);
  assert.match(workflow,/verification-conclusion:success/);
  assert.match(workflow,/target-engine-qa-ref:roblox-f9-/);
  assert.match(workflow,/vibe2-queue-control\.mjs" pass/);
  assert.match(workflow,/event_type:"vibe2-fanin-refill"/);
  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=\$settled_count/);
+ assert.doesNotMatch(workflow.slice(fanInAt),/robloxInternalReleaseReady!==true/);
 });
 
 test('post-runtime Open Cloud engine probes use bounded external API concurrency and stronger throttling retry',()=>{
@@ -601,7 +604,7 @@ test('exact unchanged runtime candidate reuses verified server boot evidence',()
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_EXACT_EVIDENCE_REUSE/);
   assert.match(workflow,/ROBLOX_RUNTIME_EVIDENCE_REUSED=/);
-  assert.match(workflow,/reusedServerBootEvidence:true/);
+  assert.match(workflow,/reusedServerBootEvidence:exactExternalRuntimeEvidenceReusable/);
   assert.match(workflow,/EXACT_SOURCE_ARTIFACT_PLACE_VERSION_ALREADY_VERIFIED/);
   assert.match(workflow,/priorRuntime\.sourceRevision===sourceRevision/);
   assert.match(workflow,/priorRuntime\.artifactIdentity===artifactIdentity/);

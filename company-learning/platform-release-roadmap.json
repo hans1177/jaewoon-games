@@ -1365,6 +1365,9 @@
         "publicationOutcomeBlocksNextCycle": false,
         "internalOrExternalExposureStateBlocksNextCycle": false,
         "publishFailureRetriesInParallelWithNextCycle": true,
+        "publicationFailureMustRemainRetryTracked": true,
+        "publicationRetryMode": "AUTOMATIC_UNBOUNDED_CAUSAL_REDISPATCH",
+        "publicationRetryMustPreserveExactFailedCycleIdentity": true,
         "nextCycleStartsAfterPublishDispatch": true,
         "publicationOutcomeBlocksEvolution": false
       }
@@ -6917,6 +6920,10 @@
       "internalOrExternalVisibilityIrrelevantToEvolutionLoop": true,
       "nextCycleTrigger": "F9_VERIFIED_AND_PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED",
       "publishFailureAction": "KEEP_EVOLUTION_RUNNING_AND_ROUTE_PUBLICATION_FAILURE_TO_EXISTING_CAUSAL_REPAIR_RETRY",
+      "publicationFailureMustRemainRetryTracked": true,
+      "publicationRetryMode": "AUTOMATIC_UNBOUNDED_CAUSAL_REDISPATCH",
+      "publicationRetryMayNotGateNextEvolution": true,
+      "publicationRetryMustPreserveExactFailedCycleIdentity": true,
       "exactVerifiedVersionRequiredForPublishAttempt": true,
       "terminalDoneStateForbidden": true,
       "repeat": "UNBOUNDED_UNTIL_OWNER_HOLD_OR_PROJECT_REMOVAL",

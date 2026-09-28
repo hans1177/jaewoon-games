@@ -709,13 +709,70 @@ jobs:
             fi
             if [ "$SECONDS" -ge "$deadline" ]; then
               printf 'deferred=true\n' >> "$GITHUB_OUTPUT"
-              echo 'ROBLOX_RUNTIME_CANDIDATE_OPEN_CLOUD_PUBLISH=BUSY_MANUAL_RETRY_REQUIRED'
-              echo 'ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=NO'
+              echo 'ROBLOX_RUNTIME_CANDIDATE_OPEN_CLOUD_PUBLISH=REPAIR_REQUIRED'
+              echo 'ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=PENDING_EXISTING_RUNTIME_REPAIR'
               exit 75
             fi
             echo "ROBLOX_PUBLISH_SERVER_BUSY_ATTEMPT=$attempt;RETRY_IN_SECONDS=$retry_seconds"
             sleep "$retry_seconds"
           done
+
+      - name: Persist publication retry requirement and kick existing runtime repair
+        if: always() && steps.target.outputs.skip != 'true' && steps.publish.outcome != 'success'
+        working-directory: runtime
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ steps.target.outputs.game_id }}
+          PUBLISH_STAGE: ${{ steps.target.outputs.publish_stage }}
+          PUBLISH_CYCLE_ID: ${{ steps.target.outputs.publish_cycle_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-roblox-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            GAME_ID="$GAME_ID" PUBLISH_STAGE="$PUBLISH_STAGE" PUBLISH_CYCLE_ID="$PUBLISH_CYCLE_ID" node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const item=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID);
+          if(!item)throw new Error('retry queue item missing: '+process.env.GAME_ID);
+          const stamp=new Date().toISOString();
+          const stage=String(process.env.PUBLISH_STAGE||'validation').trim().toLowerCase();
+          if(stage==='final'){
+            const cycle=String(process.env.PUBLISH_CYCLE_ID||'').trim();
+            const queue=Array.isArray(item.robloxCanonicalPublishQueue)?item.robloxCanonicalPublishQueue:[];
+            const entry=queue.find(row=>String(row?.cycleId||'')===cycle);
+            if(!cycle||!entry)throw new Error('exact final publish retry cycle missing: '+cycle);
+            if(entry.finalReviewPassed!==true||entry.f9ReleaseRegressionPassed!==true)throw new Error('retry cannot weaken F9 gate');
+            entry.status='RETRY_REQUIRED';
+            entry.attempts=Number(entry.attempts||0)+1;
+            entry.lastAttemptAt=stamp;
+            entry.lastFailureSignature='ROBLOX_CANONICAL_PUBLISH_REPAIR_REQUIRED';
+            item.robloxCanonicalPublishQueue=queue;
+            item.robloxCanonicalPublishPending=true;
+            item.robloxCanonicalPublishRepairRequired=true;
+            item.robloxCanonicalPublishRepairCycleId=cycle;
+          }else{
+            item.robloxValidationPublishRepairRequired=true;
+            item.robloxValidationPublishRepairAt=stamp;
+          }
+          item.updatedAt=stamp;
+          q.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+            git add development-queue.json
+            if git diff --cached --quiet; then persisted=1; break; fi
+            git commit -m "runtime: mark Roblox publication retry $GAME_ID [skip ci]"
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then persisted=1; break; fi
+            sleep $((attempt*2))
+          done
+          test "$persisted" = 1
+          gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID" || true
+          echo "ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=YES_EXISTING_F9_REPAIR:$GAME_ID:${PUBLISH_CYCLE_ID:-VALIDATION}"
+          echo "ROBLOX_PUBLICATION_RETRY_BLOCKS_NEXT_EVOLUTION=NO"
 
       - name: Persist proven internal release state only
         if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success' && steps.publish.outputs.deferred != 'true'
@@ -1070,8 +1127,9 @@ jobs:
             exit 0
           fi
           if [ "$RETRY_DEFERRED" = 'true' ]; then
-            echo 'ROBLOX_INTERNAL_RELEASE_PROMOTION=MANUAL_RETRY_REQUIRED:ROBLOX_409_SERVER_BUSY'
+            echo 'ROBLOX_INTERNAL_RELEASE_PROMOTION=REPAIR_REQUIRED:ROBLOX_409_SERVER_BUSY'
             echo 'ROBLOX_RELEASE_RETRY_INTERVAL_SECONDS=60'
+            echo 'ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=YES_EXISTING_F9_REPAIR'
             echo 'ROBLOX_RUNTIME_FOUNDATION_RERUN=REQUIRED'
             echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
             echo 'ROBLOX_REGRESSION_RERUN=NO'

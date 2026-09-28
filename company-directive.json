@@ -1593,6 +1593,9 @@
     "publishBeforeF9Forbidden": true,
     "publicationOutcomeBlocksEvolution": false,
     "publicationVisibilityBlocksEvolution": false,
-    "nextCycleStartsAfterPublishOrDeployDispatch": true
+    "nextCycleStartsAfterPublishOrDeployDispatch": true,
+    "publicationFailureMustRemainRetryTracked": true,
+    "automaticPublicationRetryRequired": true,
+    "publicationRetryPreservesExactFailedCycleIdentity": true
   }
 }

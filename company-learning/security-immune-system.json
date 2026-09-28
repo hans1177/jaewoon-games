@@ -1017,6 +1017,10 @@
     "publicationSuccessMayNotGateEvolution": true,
     "visibilityStateMayNotGateEvolution": true,
     "publicationFailureRoutesToExistingRepairWithoutStoppingNextDevelopmentCycle": true,
+    "publicationFailureMustRemainRetryTracked": true,
+    "automaticPublicationRetryRequired": true,
+    "publicationRetryMayNotMutateFailedCycleIdentity": true,
+    "publicationRetryMayNotGateNextEvolution": true,
     "f10Forbidden": true,
     "terminalEvolutionStateForbidden": true
   }

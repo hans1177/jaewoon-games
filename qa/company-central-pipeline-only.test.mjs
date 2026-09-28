@@ -751,8 +751,10 @@ test('verified external black-box learning is applied first at full retrieved co
 
   const policy=roadmap.developmentLifecycleMachine?.machineOnlyProjectContinuation?.verifiedLearningMaxUse?.externalVerifiedBlackBoxFirstApplication||{};
   assert.equal(policy.required,true);
-  assert.equal(policy.mandatoryApplicationCoveragePct,100);
-  assert.equal(policy.allRetrievedTaskRelevantVerifiedExternalItemsMustBeApplied,true);
+  assert.equal(policy.mandatoryApplicationCoveragePct,null);
+  assert.equal(policy.allRetrievedTaskRelevantVerifiedExternalItemsMustBeApplied,false);
+  assert.equal(policy.coveragePercentageIsCompletionEvidence,false);
+  assert.equal(policy.allRetrievedPrinciplesMustHaveExplicitDisposition,true);
   assert.equal(policy.retrievedVerifiedExternalLearningTruncationForbidden,true);
   assert.equal(policy.applicationBeforeInternalAuthoringRequired,true);
   assert.equal(policy.applicationBeforeGameSourceGenerationRequired,true);
@@ -768,7 +770,9 @@ test('verified external black-box learning is applied first at full retrieved co
   assert.equal(policy.freshVerificationRequired,true);
 
   const topology=architecture.verifiedExternalLearningFirstApplicationTopology||{};
-  assert.equal(topology.mandatoryApplicationCoveragePct,100);
+  assert.equal(topology.mandatoryApplicationCoveragePct,null);
+  assert.equal(topology.semanticApplicationContract?.coveragePercentageIsCompletionEvidence,false);
+  assert.equal(topology.semanticApplicationContract?.gameSpecificSemanticMappingRequired,true);
   assert.equal(topology.retrievedSetTruncationAllowed,false);
   assert.equal(topology.silentIgnoreAllowed,false);
   assert.equal(topology.consumers?.robloxSourceBootstrap,'tools/company-development-roblox-bootstrap.mjs');
@@ -783,8 +787,9 @@ test('verified external black-box learning is applied first at full retrieved co
   assert.equal(topology.consumers?.assetProduction,'tools/vibe2-asset-production-plan.mjs');
 
   const evidence=logMap.verifiedExternalLearningFirstApplicationEvidenceContract||{};
-  assert.equal(evidence.requiredValues?.applicationCoveragePct,100);
-  assert.equal(evidence.requiredValues?.allRetrievedTaskRelevantVerifiedExternalItemsApplied,true);
+  assert.equal(evidence.requiredValues?.applicationCoveragePct,null);
+  assert.equal(evidence.requiredValues?.allRetrievedTaskRelevantVerifiedExternalItemsApplied,false);
+  assert.equal(evidence.requiredValues?.allRetrievedPrinciplesHaveExplicitDisposition,true);
   assert.equal(evidence.requiredValues?.nativeSourceReuseInvalidatesWhenVerifiedLearningChanges,true);
   assert.equal(evidence.requiredValues?.existingSourceMaintenanceRebindsWhenLearningChanges,true);
   assert.equal(evidence.requiredValues?.exactAppliedIdsAndFingerprintEvidence,true);
@@ -804,11 +809,13 @@ test('verified external black-box learning is applied first at full retrieved co
   assert.match(robloxLearning,/verifiedExternalBlackBoxTruncationForbidden/);
   assert.match(robloxLearning,/const verifiedExternalLearningCoveragePct=verifiedExternalContract\.coveragePct/);
   assert.match(robloxLearning,/verifiedExternalLearningFingerprint:verifiedExternalContract\.fingerprint/);
-  assert.match(robloxLearning,/const applied=checklist\.length>0[\s\S]*&&verifiedExternalLearningIds\.length>0[\s\S]*&&verifiedExternalDistilledContentComplete/);
+  assert.match(robloxLearning,/const applied=verifiedExternalLearningIds\.length>0[\s\S]*&&verifiedExternalContentIds\.length===verifiedExternalLearningIds\.length[\s\S]*&&semantic\.mappings\.length>0[\s\S]*&&semantic\.failClosed\.length===0/);
   assert.match(robloxBootstrap,/VerifiedExternalLearningFirst = \$\{learning\.verifiedExternalLearningFirst\?'true':'false'\}/);
   assert.match(robloxBootstrap,/MemoryFingerprint = \$\{luauString\(learning\.verifiedExternalLearningFingerprint\|\|' '\.trim\(\)\)\}|MemoryFingerprint = \$\{luauString\(learning\.verifiedExternalLearningFingerprint\|\|''\)\}/);
   assert.match(robloxBootstrap,/CoveragePct = \$\{Number\(learning\.verifiedExternalLearningCoveragePct\|\|0\)\}/);
-  assert.match(robloxBootstrap,/ROBLOX_EXISTING_SOURCE_VERIFIED_EXTERNAL_LEARNING_REQUIRED/);
+  assert.match(robloxBootstrap,/requireRobloxVerifiedExternalLearning/);
+  assert.match(robloxBootstrap,/GameSpecificSemanticMappings/);
+  assert.match(robloxBootstrap,/LearningDispositions/);
   assert.match(robloxReconcile,/existing-source-verified-external-learning-required/);
   assert.match(robloxNativeWorkflow,/ROBLOX_RECONCILE_VERIFIED_EXTERNAL_LEARNING=READY/);
   assert.match(unityNativeBootstrap,/verifiedExternalLearningFromPlaybooks/);
