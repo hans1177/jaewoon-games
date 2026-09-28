@@ -1973,3 +1973,25 @@ test('Studio evidence push conflicts reapply onto latest company-runtime instead
   assert.match(block,/Studio MCP evidence reapply on latest runtime failed/);
   assert.doesNotMatch(block,/git -C runtime rebase origin\/company-runtime/);
 });
+
+
+test('Studio capture audit releases the owned Studio process before evidence persistence',()=>{
+  const closeAt=workflow.indexOf('- name: Close owned Studio immediately after capture and actual-play audit');
+  const persistAt=workflow.indexOf('- name: Persist exact Studio MCP play evidence');
+  assert.ok(closeAt>=0);
+  assert.ok(persistAt>closeAt);
+  const block=workflow.slice(closeAt,persistAt);
+  assert.match(block,/ROBLOX_STUDIO_MCP_POST_CAPTURE_PROCESS_REAPED/);
+  assert.match(block,/ROBLOX_STUDIO_MCP_POST_CAPTURE_MCP_REAPED/);
+  assert.match(block,/ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES/);
+});
+
+test('stale Roblox foundation scans include in-progress Studio work so broken sessions are cancelled on next main push',()=>{
+  assert.match(workflow,/const states=new Set\(\['queued','pending','requested','in_progress'\]\)/);
+});
+
+test('floating character without a walkable world aborts the Studio session immediately',()=>{
+  assert.match(helper,/ROBLOX_STUDIO_FLOATING_CHARACTER_ABORT:NO_WALKABLE_WORLD/);
+  assert.match(helper,/floating-character-map-readiness/);
+  assert.match(helper,/start_stop_play/);
+});
