@@ -513,11 +513,9 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   candidates.sort((a, b) => b.score - a.score || a.task.id.localeCompare(b.task.id));
   const priorityLane=['game-primary','asset-development'].includes(laneMode);
   const platform=(task)=>clean(task.target).toLowerCase();
-  // Reserve scarce slots by observed service, then give remaining capacity to Roblox.
-  // Running and verified tasks provide rotation across cohorts when capacity is small.
-  const weights={roblox:6,unity:2,web:1};
+  // Roblox:Unity:Web 6:2:1은 현재 실행량을 시작점으로 같은 배치 안에서 계속 재계산한다.
   // 완료된 과거 작업은 다음 배치의 플랫폼 몫을 잠식하지 않는다.
-  // 현재 실행 중 서비스량만 시작점으로 사용하고, 이번 배치에서 하나를 고를 때마다 가상 서비스량을 즉시 갱신한다.
+  const weights={roblox:6,unity:2,web:1};
   const service=Object.fromEntries(Object.keys(weights).map((name)=>[
     name,queue.tasks.filter((task)=>platform(task)===name&&task.status==='running'&&taskMatchesExecutionLane(task,laneMode)).length
   ]));
