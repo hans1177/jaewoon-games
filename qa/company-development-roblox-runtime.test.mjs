@@ -288,9 +288,11 @@ test('Roblox package completion follows F0 validation target then F9 canonical p
   assert.ok(runtimeQa.includes("item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'"));
   assert.ok(f9.includes('Roblox F9 Final Review'));
   assert.ok(f9.includes('item.robloxCanonicalPublishPending=true'));
+  assert.ok(f9.includes("item.currentStep='POST_F9_CONTINUOUS_EVOLUTION'"));
   assert.ok(f9.includes('publish_stage=final'));
   assert.ok(candidate.includes('ROBLOX_CANONICAL_FINAL_PUBLISH=PASS'));
-  assert.ok(candidate.includes('ROBLOX_CANONICAL_PUBLISH_FANIN_DISPATCHED='));
+  assert.ok(f9.includes('ROBLOX_F9_VIBE_REFILL_DISPATCHED='));
+  assert.ok(f9.includes('ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO'));
   assert.ok(!f0.includes('ROBLOX_FAKE_RUNTIME_PASS=ALLOWED'));
 });
 
