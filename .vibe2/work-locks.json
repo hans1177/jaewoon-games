@@ -3,60 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1bra51j",
-      "worker": "vibe2",
-      "taskId": "line-defense-unity-web-base-implementation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "289b5b7b5ef74c05205958c1b108812436b72f7f",
-      "acquiredAt": "2026-09-28T08:09:10.225Z",
-      "expiresAt": "2026-09-28T08:54:10.225Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-o1h202",
-      "worker": "vibe2",
-      "taskId": "cozy-island-studio-evolution-presentation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/BattleVisual.luau",
-        "roblox-games/cozy-island/shared/QACamera.luau"
-      ],
-      "baseSha": "289b5b7b5ef74c05205958c1b108812436b72f7f",
-      "acquiredAt": "2026-09-28T08:09:36.152Z",
-      "expiresAt": "2026-09-28T08:54:36.152Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-1orjn06",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-unity-web-base-implementation-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "289b5b7b5ef74c05205958c1b108812436b72f7f",
-      "acquiredAt": "2026-09-28T08:10:13.631Z",
-      "expiresAt": "2026-09-28T08:55:13.631Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-zx8w2r",
       "worker": "vibe2",
       "taskId": "cozy-island-existing-web-assessment-v1",
@@ -842,6 +788,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:daechung-rpg-unity-web-repair-v1"
+      ]
+    },
+    {
+      "id": "wl-pojp1l",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-unity-web-base-implementation-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "unity-games/amusement-tycoon/Assets/Scripts/GameCore.cs",
+        "unity-games/amusement-tycoon/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "2c5a3d82a21f44eb54c8257f93ee4892580ed884",
+      "acquiredAt": "2026-09-28T08:56:18.820Z",
+      "expiresAt": "2026-09-28T09:41:18.820Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-unity-web-base-implementation-v1"
       ]
     }
   ]
