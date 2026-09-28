@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-11o0okk",
-      "worker": "vibe2",
-      "taskId": "village-dungeons-unity-web-base-implementation-v1",
-      "gameId": "village-dungeons",
-      "files": [
-        "unity-games/village-dungeons/Assets/Scripts/GameCore.cs",
-        "unity-games/village-dungeons/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "cd17aee877597ab529177f723af0570d48f27ae1",
-      "acquiredAt": "2026-09-28T00:26:07.684Z",
-      "expiresAt": "2026-09-28T01:11:07.684Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:village-dungeons-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-b0v9a9",
       "worker": "vibe2",
       "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1",
@@ -343,6 +325,23 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:amusement-tycoon-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-1jmxoz2",
+      "worker": "vibe2",
+      "taskId": "ant-simulator-existing-web-assessment-v1",
+      "gameId": "ant-simulator",
+      "files": [
+        "web-games/ant-simulator/index.html"
+      ],
+      "baseSha": "04cebe2a71a9a2002e28ba640d3ba562ef9fa496",
+      "acquiredAt": "2026-09-28T01:11:07.920Z",
+      "expiresAt": "2026-09-28T01:56:07.920Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:ant-simulator-existing-web-assessment-v1"
       ]
     }
   ]
