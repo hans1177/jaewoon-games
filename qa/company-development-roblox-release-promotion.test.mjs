@@ -82,29 +82,19 @@ test('headless source preflight can never satisfy Roblox final release evidence'
   assert.ok(evidence.blockedReasons.includes('headless-source-preflight-cannot-satisfy-runtime-release'));
 });
 
-test('candidate deployment workflow stops at private runtime candidate and never claims internal release',()=>{
+test('pre-F9 publish is isolated to validation target and canonical publish requires exact F9',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
-  assert.match(candidate,/Private Runtime Candidate Deployment/);
-  assert.match(candidate,/robloxFoundationF0Passed===true/);
-  assert.match(candidate,/createRobloxRuntimeCandidatePublishPlan/);
-  assert.match(candidate,/ROBLOX_F0_FALSE_RUNTIME_CLAIM/);
-  assert.match(candidate,/item\.robloxRuntimeCandidateEvidence=\{/);
-  assert.match(candidate,/releaseClaim:false/);
-  assert.match(candidate,/item\.robloxInternalReleaseReady=false/);
-  assert.match(candidate,/item\.robloxRuntimePassed=false/);
-  assert.match(candidate,/item\.robloxRuntimeFoundationPassed=false/);
-  assert.match(candidate,/item\.robloxInternalReleaseEvidence=null/);
-  assert.match(candidate,/item\.robloxReleaseEvidence=null/);
-  assert.match(candidate,/item\.robloxFinalReviewPassed=false/);
-  assert.match(candidate,/item\.robloxPostRuntimeQaEvidence=null/);
-  assert.match(candidate,/item\.robloxRuntimeFoundationEvidence=null/);
-  assert.match(candidate,/item\.robloxIndependentQaPassed=false/);
-  assert.match(candidate,/item\.robloxRegressionPassed=false/);
-  assert.match(candidate,/item\.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION'/);
-  assert.match(candidate,/item\.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING'/);
-  assert.doesNotMatch(candidate,/const legacyCanonical=/);
-  assert.doesNotMatch(candidate,/assemble-development-release-evidence/);
-  assert.doesNotMatch(candidate,/item\.robloxInternalReleaseReady=true/);
+  assert.match(candidate,/publish_stage:/);
+  assert.match(candidate,/robloxValidationTarget/);
+  assert.match(candidate,/canonicalGameTarget:false/);
+  assert.match(candidate,/validationOnly:true/);
+  assert.match(candidate,/publishStage==='final'/);
+  assert.match(candidate,/item\.robloxFinalReviewPassed===true/);
+  assert.match(candidate,/item\.robloxF9ReleaseRegressionPassed===true/);
+  assert.match(candidate,/item\.robloxCanonicalPublishPending===true/);
+  assert.match(candidate,/ROBLOX_CANONICAL_FINAL_PUBLISH=PASS/);
+  assert.match(candidate,/ROBLOX_CANONICAL_FINAL_SOURCE_ARTIFACT_MATCH=YES/);
+  assert.match(candidate,/ROBLOX_CANONICAL_GAME_TARGET_MUTATED=NO/);
 });
 
 test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the exact candidate',()=>{
@@ -122,25 +112,17 @@ test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the ex
   assert.doesNotMatch(runtime,/Studio QA \(Disabled\)/);
 });
 
-test('F9 fans in exact Studio and applicable multiplayer evidence without replaying runtime',()=>{
+test('F9 is nonterminal and dispatches exact verified artifact to final canonical publish',()=>{
   const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   assert.match(finalReview,/Roblox F9 Final Review/);
-  assert.match(finalReview,/const sharedReleaseRuntimeAcceptance=/);
-  assert.match(finalReview,/const internalStudioValidationAccepted=/);
-  assert.match(finalReview,/post\.internalStudioValidationOnly===true/);
-  assert.match(finalReview,/post\.externalServerBootRequired===false/);
-  assert.match(finalReview,/post\.multiplayerValidationPassed===true/);
-  assert.match(finalReview,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred\|\|internalStudioValidationAccepted/);
-  assert.match(finalReview,/const publicRuntimeAcceptance=false;/);
-  assert.match(finalReview,/f9RuntimeReplay:false/);
-  assert.match(finalReview,/item\.robloxIndependentQaPassed===true/);
-  assert.match(finalReview,/item\.robloxRegressionPassed===true/);
-  assert.match(finalReview,/item\.robloxInternalReleaseReady=true/);
-  assert.match(finalReview,/item\.robloxPublicReleaseReady=false/);
-  assert.match(finalReview,/promotedWithoutRepublish:true/);
-  assert.match(finalReview,/publicRelease:false/);
-  assert.doesNotMatch(finalReview,/publishRobloxPlace/);
-  assert.doesNotMatch(finalReview,/versions\?versionType=Published/);
+  assert.match(finalReview,/item\.robloxFinalReviewPassed=true/);
+  assert.match(finalReview,/item\.robloxF9ReleaseRegressionPassed=true/);
+  assert.match(finalReview,/item\.robloxInternalReleaseReady=false/);
+  assert.match(finalReview,/item\.robloxCanonicalPublishPending=true/);
+  assert.match(finalReview,/item\.currentStep='CANONICAL_ROBLOX_PUBLISH_PENDING'/);
+  assert.match(finalReview,/ROBLOX_CANONICAL_FINAL_PUBLISH_PENDING/);
+  assert.match(finalReview,/publish_stage=final/);
+  assert.match(finalReview,/ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=/);
 });
 
 test('cozy island foundation ordering and successful core-loop proof stay fail-closed',()=>{
@@ -299,33 +281,30 @@ test('private runtime persistence retries from fresh company-runtime state inste
   assert.doesNotMatch(block,/git cherry-pick /);
 });
 
-test('private runtime candidate deployment dedupes same-game work without workflow-level pending cancellation',()=>{
+test('validation and final publish dedupe same-game stage without workflow-level pending cancellation',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
-  assert.match(workflow,/run-name: Roblox private runtime · \$\{\{ inputs\.game_id \|\| 'push' \}\}/);
+  assert.match(workflow,/run-name: Roblox publish · \$\{\{ inputs\.game_id \|\| 'push' \}\} · \$\{\{ inputs\.publish_stage \|\| 'validation' \}\}/);
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
   assert.match(workflow,/release-dedupe:/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_DEDUPE_WINNER=/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_DUPLICATE_SKIPPED=/);
-  assert.match(workflow,/needs: release-dedupe/);
-  assert.match(workflow,/needs\.release-dedupe\.outputs\.run == 'true'/);
+  assert.match(workflow,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'validation' \}\}/);
+  assert.match(workflow,/const title='Roblox publish · '/);
 });
 
 
-test('private runtime candidate mode comes from central policy plus exact F0 evidence',()=>{
+test('central policy requires perpetual F0-F9 cycles and canonical publish only after F9',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.equal(roadmap.roblox.validationMode,'HEADLESS_FAST_MVP');
-  assert.equal(roadmap.directNativeDualPlatformDevelopment.robloxValidationOverride.mode,'HEADLESS_FAST_MVP');
-  assert.equal(roadmap.roblox.headlessValidation.fakeRuntimePassForbidden,true);
-  assert.ok(roadmap.roblox.headlessValidation.requiredStages.includes('OPEN_CLOUD_PRIVATE_OR_RESTRICTED_PUBLISH'));
-  assert.match(candidate,/canonicalRobloxValidationMode=String\(roadmap\?\.roblox\?\.validationMode\|\|''\)/);
-  assert.match(candidate,/f0EvidenceMode=String\(item\.robloxFoundationF0Evidence\?\.validationMode\|\|item\.robloxHeadlessFastMvpEvidence\?\.validationMode\|\|''\)/);
-  assert.match(candidate,/canonicalRobloxValidationMode==='HEADLESS_FAST_MVP'&&f0EvidenceMode==='HEADLESS_SOURCE_PREFLIGHT_F0'/);
-  assert.doesNotMatch(candidate,/const headlessMode=item\.robloxValidationMode==='HEADLESS_FAST_MVP'/);
-  assert.match(candidate,/ROBLOX_RELEASE_CANONICAL_VALIDATION_MODE=/);
-  assert.match(candidate,/ROBLOX_RELEASE_F0_EVIDENCE_MODE=/);
+  const cycle=roadmap.roblox.deploymentControl.verifiedCyclePublication;
+  assert.equal(cycle.f9Terminal,false);
+  assert.equal(cycle.perpetualRepeat,true);
+  assert.equal(cycle.canonicalGameTargetPublishBeforeF9Forbidden,true);
+  assert.equal(cycle.preF9ValidationMustUseSeparateTarget,true);
+  assert.equal(cycle.nextCycleMayStartOnlyAfterCanonicalPublishSuccess,true);
+  assert.match(candidate,/const publicationTarget=publishStage==='final'\?\(item\.robloxPublicationTarget\|\|\{\}\):\(item\.robloxValidationTarget\|\|\{\}\)/);
+  assert.match(candidate,/ROBLOX_VALIDATION_TARGET_PUBLISH=PASS/);
+  assert.match(candidate,/ROBLOX_CANONICAL_FINAL_PUBLISH=PASS/);
 });
 
 test('every rebuilt Roblox candidate invalidates prior Vibe play and external-public evidence before revalidation',()=>{
@@ -343,74 +322,52 @@ test('every rebuilt Roblox candidate invalidates prior Vibe play and external-pu
 });
 
 
-test('shared FAST_MVP target selects the newest current runtime candidate and preserves completed evidence on rotation',()=>{
+test('pre-F9 validation target cannot fall back to the canonical game target',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
-  assert.match(candidate,/robloxRuntimeCandidateEvidence\?\.published===true/);
-  assert.match(candidate,/robloxSharedTargetCurrent===false/);
-  assert.match(candidate,/\.sort\(\(a,b\)=>Number\(b\.robloxRuntimeCandidateEvidence\?\.versionNumber/);
-  assert.match(candidate,/ROBLOX_RELEASE_SHARED_FALLBACK_CAPACITY_BUSY/);
-  assert.match(candidate,/sharedRotation=headlessCanonical===true/);
-  const start=candidate.indexOf('if(sharedRotation){');
-  const end=candidate.indexOf('item.robloxSharedTargetCurrent=true;',start);
-  assert.ok(start>0&&end>start);
-  const rotation=candidate.slice(start,end);
-  assert.match(rotation,/other\.robloxSharedTargetCurrent=false/);
-  assert.match(rotation,/other\.robloxFastMvpSupersededBy=item\.gameId/);
-  assert.doesNotMatch(rotation,/other\.robloxRuntimePassed=false/);
-  assert.doesNotMatch(rotation,/other\.robloxRuntimeFoundationEvidence=null/);
-  assert.doesNotMatch(rotation,/other\.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+  assert.match(candidate,/ROBLOX_VALIDATION_TARGET_MISSING_OR_INVALID/);
+  assert.match(candidate,/ROBLOX_CANONICAL_PUBLICATION_TARGET_MISSING_OR_INVALID/);
+  assert.match(candidate,/const selectedUsesSharedFallback=false/);
+  assert.match(candidate,/company-runtime-pre-f9-validation-target/);
+  assert.match(candidate,/company-runtime-canonical-publication-target/);
 });
 
 
-test('shared runtime target rotation waits for exact Vibe play on the occupied candidate',()=>{
+test('validation and canonical targets are separate persisted fields',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
-  assert.match(candidate,/const occupiedPlay=occupied\?\.robloxInternalVibePlayEvidence\|\|\{\}/);
-  assert.match(candidate,/occupiedPlay\.pass===true/);
-  assert.match(candidate,/occupiedPlay\.actualPlay===true/);
-  assert.match(candidate,/occupiedPlay\.sourceRevision/);
-  assert.match(candidate,/occupiedPlay\.artifactIdentity/);
-  assert.match(candidate,/occupiedPlay\.universeId/);
-  assert.match(candidate,/occupiedPlay\.placeId/);
-  assert.match(candidate,/occupiedPlay\.versionNumber/);
-  assert.match(candidate,/if\(occupied&&!occupiedVibePlayComplete\)/);
+  assert.match(candidate,/item\.robloxValidationTarget=\{/);
+  assert.match(candidate,/item\.robloxPublicationTarget=\{\.\.\.existingTarget/);
+  assert.match(candidate,/authority:'roblox-pre-f9-validation-target'/);
+  assert.match(candidate,/authority:'roblox-canonical-publication-target'/);
 });
 
 
-test('canonical Roblox rebuild flow provisions and reuses a dedicated private target before runtime candidate publish',()=>{
+test('canonical Roblox rebuild provisions a dedicated validation target before F9',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
-  assert.match(candidate,/name: Ensure game-specific private Roblox target/);
+  assert.match(candidate,/name: Ensure game-specific private Roblox validation target/);
   assert.match(candidate,/createRobloxDedicatedExperience/);
   assert.match(candidate,/configureRobloxExperience/);
   assert.match(candidate,/ensureRobloxExperiencePrivate/);
-  assert.match(candidate,/source:'canonical-dedicated-open-cloud-bootstrap'/);
+  assert.match(candidate,/item\.robloxValidationTarget=\{/);
   assert.match(candidate,/bootstrapState:'CREATED_PRIVATE_UNPUBLISHED'/);
-  assert.match(candidate,/persistedTarget\.dedicated===true/);
-  assert.match(candidate,/bootstrapState\|\|''\)\.toUpperCase\(\)==='CREATED_PRIVATE_UNPUBLISHED'/);
-  assert.match(candidate,/dedicated:dedicatedTarget/);
-  assert.match(candidate,/shared:dedicatedTarget\?false/);
 });
 
-test('an old shared candidate cannot suppress redeploy to a newly reserved dedicated target',()=>{
+test('publish stage selects validation target before F9 and canonical target after F9',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
-  assert.match(candidate,/const publicationTarget=item\.robloxPublicationTarget\|\|\{\}/);
-  assert.match(candidate,/String\(item\.robloxRuntimeCandidateEvidence\?\.universeId\|\|''\)===String\(publicationTarget\.universeId\|\|''\)/);
-  assert.match(candidate,/String\(item\.robloxRuntimeCandidateEvidence\?\.placeId\|\|''\)===String\(publicationTarget\.placeId\|\|''\)/);
+  assert.match(candidate,/const publicationTarget=publishStage==='final'\?\(item\.robloxPublicationTarget\|\|\{\}\):\(item\.robloxValidationTarget\|\|\{\}\)/);
+  assert.match(candidate,/const currentValidationCandidate=publishStage==='validation'/);
+  assert.match(candidate,/const currentFinalPublish=publishStage==='final'/);
 });
 
-test('internal Roblox modification loop keeps the canonical modify check rebuild redeploy revalidate order',()=>{
+test('internal Roblox modification loop is F0-F9 then canonical publish then repeat',()=>{
   const drift=fs.readFileSync('tools/company-roblox-source-drift-sync.mjs','utf8');
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
-  const qa=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   assert.match(drift,/validateExistingRobloxSourceTree/);
-  assert.match(drift,/robloxBuildOrPackagePassed:false/);
-  assert.match(drift,/robloxRuntimePassed:false/);
-  assert.match(drift,/robloxInternalReleaseReady:false/);
-  assert.match(drift,/ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING/);
-  assert.match(runtime,/company-development-roblox-headless-fast-mvp\.yml/);
-  assert.match(candidate,/Publish exact F0-passed package as private runtime candidate/);
-  assert.match(qa,/validateRobloxRuntimeFoundationEvidence/);
-  assert.match(candidate,/item\.robloxInternalVibePlayEvidence=null/);
+  assert.match(runtime,/publish_stage=validation/);
+  assert.match(candidate,/Publish exact package to validation target or F9-verified canonical target/);
+  assert.match(finalReview,/publish_stage=final/);
+  assert.match(candidate,/ROBLOX_CANONICAL_PUBLISH_FANIN_DISPATCHED=/);
 });
 
 
