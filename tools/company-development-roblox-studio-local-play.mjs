@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import readline from 'node:readline';
-import {spawn} from 'node:child_process';
+import {spawn,spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 
 const clean=v=>String(v??'').trim();
@@ -11,6 +11,21 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const stableSha256=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
+
+export function assertCurrentStudioWorkflowHead({
+  workflowSha=clean(process.env.GITHUB_SHA),
+  checkoutDir=path.resolve('main')
+}={}){
+  const expected=clean(workflowSha);
+  if(!expected)return{pass:true,workflowSha:'',checkoutSha:''};
+  const probe=spawnSync('git',['-C',checkoutDir,'rev-parse','HEAD'],{encoding:'utf8'});
+  const checkoutSha=clean(probe.stdout);
+  if(probe.status!==0||!checkoutSha)throw new Error('ROBLOX_STUDIO_CURRENT_MAIN_HEAD_UNAVAILABLE');
+  if(checkoutSha!==expected){
+    throw new Error('ROBLOX_STUDIO_STALE_WORKFLOW_RUN_ABORT:workflow='+expected+':checkout='+checkoutSha);
+  }
+  return{pass:true,workflowSha:expected,checkoutSha};
+}
 
 export function validateLocalStudioPolicy(roadmap={}){
   const studio=roadmap?.roblox?.studioExecution||{};
@@ -2985,6 +3000,8 @@ async function main(){
     return;
   }
   if(mode==='mcp-run'){
+    const headGuard=assertCurrentStudioWorkflowHead();
+    console.log('ROBLOX_STUDIO_WORKFLOW_HEAD_FRESH=YES:'+headGuard.checkoutSha);
     const result=await runOfficialStudioMcpPlay({
       mcpCommand:clean(a['mcp-command']),
       output:clean(a.output),
