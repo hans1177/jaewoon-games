@@ -512,9 +512,22 @@ jobs:
 
             const priorRuntime=item.robloxRuntimeFoundationEvidence||{};
             const priorPost=item.robloxPostRuntimeQaEvidence||{};
+            const studioPlay=item.robloxInternalVibePlayEvidence||{};
             const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
             const priorStudio=item.robloxStudioAssetRuntimeBindingEvidence||{};
-            const exactRuntimeEvidenceReusable=
+            const exactStudioInternalValidation=
+              studioPlay.pass===true
+              &&studioPlay.actualPlay===true
+              &&studioPlay.runtimeVerified===true
+              &&studioPlay.officialStudioMcp===true
+              &&studioPlay.localPlaceFile===true
+              &&studioPlay.onlinePlaceDirectOpen===false
+              &&studioPlay.robloxPlayerAutomation===false
+              &&studioPlay.sourceRevision===sourceRevision
+              &&studioPlay.artifactIdentity===artifactIdentity
+              &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
+              &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0;
+            const exactExternalRuntimeEvidenceReusable=
               item.robloxRuntimeFoundationPassed===true
               &&item.robloxRuntimePassed===true
               &&item.robloxIndependentQaPassed===true
@@ -534,6 +547,19 @@ jobs:
                 &&priorStudio.artifactIdentity===artifactIdentity
                 &&Number(priorStudio.candidateVersionNumber)===Number(candidate.versionNumber)
               ));
+            const exactStudioRuntimeEvidenceReusable=
+              exactStudioInternalValidation
+              &&item.robloxIndependentQaPassed===true
+              &&item.robloxRegressionPassed===true
+              &&priorPost.internalStudioValidationOnly===true
+              &&priorPost.externalServerBootRequired===false
+              &&priorPost.independentQaPassed===true
+              &&priorPost.regressionPassed===true
+              &&priorPost.multiplayerValidationPassed===true
+              &&priorPost.sourceRevision===sourceRevision
+              &&priorPost.artifactIdentity===artifactIdentity
+              &&Number(priorPost.candidateVersionNumber)===Number(candidate.versionNumber);
+            const exactRuntimeEvidenceReusable=exactExternalRuntimeEvidenceReusable||exactStudioRuntimeEvidenceReusable;
             if(exactRuntimeEvidenceReusable){
               item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
               item.canonicalState='ROBLOX_RUNTIME_ACCEPTANCE_PASSED';
@@ -545,8 +571,11 @@ jobs:
                 artifactIdentity,
                 candidateVersionNumber:Number(candidate.versionNumber),
                 reusedAt:stamp,
-                reusedServerBootEvidence:true,
-                reason:'EXACT_SOURCE_ARTIFACT_PLACE_VERSION_ALREADY_VERIFIED',
+                reusedServerBootEvidence:exactExternalRuntimeEvidenceReusable,
+                reusedStudioInternalEvidence:exactStudioRuntimeEvidenceReusable,
+                reason:exactStudioRuntimeEvidenceReusable
+                  ?'EXACT_SOURCE_ARTIFACT_VERSION_STUDIO_INTERNAL_EVIDENCE_ALREADY_VERIFIED'
+                  :'EXACT_SOURCE_ARTIFACT_PLACE_VERSION_ALREADY_VERIFIED',
               };
               item.updatedAt=stamp;
               changed=true;
@@ -557,19 +586,6 @@ jobs:
               continue;
             }
 
-            const studioPlay=item.robloxInternalVibePlayEvidence||{};
-            const exactStudioInternalValidation=
-              studioPlay.pass===true
-              &&studioPlay.actualPlay===true
-              &&studioPlay.runtimeVerified===true
-              &&studioPlay.officialStudioMcp===true
-              &&studioPlay.localPlaceFile===true
-              &&studioPlay.onlinePlaceDirectOpen===false
-              &&studioPlay.robloxPlayerAutomation===false
-              &&studioPlay.sourceRevision===sourceRevision
-              &&studioPlay.artifactIdentity===artifactIdentity
-              &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
-              &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0;
             if(!serverDiagnosticEnabled){
               if(!exactStudioInternalValidation){
                 queueStudioFollowupIfEligible(item);
