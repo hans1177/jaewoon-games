@@ -1676,3 +1676,81 @@ test('commercial Studio evaluator records progression and AI movement deltas',()
   assert.equal(result.metrics.companionMotion.dynamic,true);
   assert.equal(result.authoritativeStateChangeObserved,true);
 });
+
+
+test('commercial Studio baseline turns disappearing verified gameplay surfaces into repair-required regression',()=>{
+  const candidate=item();
+  candidate.robloxInternalVibePlayEvidence={
+    pass:true,
+    runtimeSummary:{
+      commercialAudit:{
+        uiCommercial:{offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0},
+        surfaces:{
+          interactionSurfaceCount:3,
+          progressionSurfaceCount:4,
+          combatSurfaceCount:2,
+          npcSurfaceCount:2,
+          companionSurfaceCount:1,
+          itemSurfaceCount:3,
+          remoteCount:1,
+          soundCount:2,
+          effectCount:2,
+          promptCount:2
+        }
+      }
+    }
+  };
+  const observed=runtime();
+  observed.metrics={
+    ...observed.metrics,
+    auditProfile:'FAST_DEEP',
+    uiCommercial:{offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0},
+    surfaces:{
+      interactionSurfaceCount:3,
+      progressionSurfaceCount:4,
+      combatSurfaceCount:2,
+      npcSurfaceCount:0,
+      companionSurfaceCount:0,
+      itemSurfaceCount:3,
+      remoteCount:1,
+      soundCount:2,
+      effectCount:2,
+      promptCount:2
+    },
+    performance:{memoryMb:200,descendantCount:500}
+  };
+  const applied=applyLocalStudioPlayResult({
+    queue:{items:[candidate]},gameId:'g1',runtime:observed,expected,workflowRunId:1200,studioStepSucceeded:true,
+    testedAt:'2026-09-29T04:00:00.000Z'
+  });
+  assert.equal(applied.result.pass,false);
+  assert.equal(applied.result.evidence.commercialRegressionDetected,true);
+  assert.ok(applied.result.evidence.qualityFailureKinds.includes('commercial-regression-npcSurfaceCount'));
+  assert.ok(applied.result.evidence.qualityFailureKinds.includes('commercial-regression-companionSurfaceCount'));
+  assert.equal(applied.item.robloxQualityBuildUpRequired,true);
+  assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
+  assert.ok(applied.item.robloxQualityBuildUpEvidence.repairSurfaces.includes('NPC'));
+  assert.ok(applied.item.robloxQualityBuildUpEvidence.repairSurfaces.includes('COMPANION_AI'));
+});
+
+test('runtime-discovered systems activate adaptive gates even when launch text did not declare them',()=>{
+  const contract=deriveStudioActualPlayContract({launchCore:['simple exploration'],releaseGates:[]});
+  const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
+  const image={type:'image',mimeType:'image/png',data:png.toString('base64')};
+  const probe={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:4,rootZ:0,animatorPresent:true,motorCount:6},
+    camera:{present:true,subjectPresent:true,fieldOfView:70},
+    ui:{visibleButtons:1,visibleObjects:2,offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:20,floorBelowPlayer:true,proximityPromptCount:1,clickDetectorCount:0,mobs:[],npcs:[{name:'Merchant'}],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{remoteCount:1,progression:[],inventory:[],inventoryCount:0,systemSignals:1,descendantCount:100,memoryMb:100,soundCount:0,categories:{npc:1}},
+    workspace:{},
+    lighting:{brightness:1.2}
+  };
+  const result=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:probe,preActionClientProbe:probe,postActionClientProbe:{...probe,player:{...probe.player,rootX:1}},
+    clientProbe:probe,serverProbe:{runtime:probe.runtime,world:probe.world,workspace:{}},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}],beforeImages:[image],afterImages:[image]
+  });
+  assert.equal(result.scenarios.find(row=>row.id==='adaptive-npc-surface')?.pass,true);
+  assert.equal(result.scenarios.find(row=>row.id==='adaptive-remote-surface')?.pass,true);
+});
