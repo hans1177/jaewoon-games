@@ -396,8 +396,8 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
     if (/web[-_ ]?base[-_ ]?implementation|full[_ -]?web|full[_ -]?rebuild|full_web_game_rebuild/.test(text)) return 2;
     return task?.packageLongWorkProtected===true?2:1;
   };
-  const speculativeEligible = (['game-primary','asset-development'].includes(laneMode)?tasks:[]).filter((task) =>
-    (laneMode==='asset-development'||!['unity','roblox'].includes(clean(task.target).toLowerCase())) &&
+  const speculativeEligible = (laneMode==='game-primary'?tasks:[]).filter((task) =>
+    !['unity','roblox'].includes(clean(task.target).toLowerCase()) &&
     task.estimatedRisk === 'high' &&
     (task.speculativeEligible || task.priority === 'critical')
   ).map((task,index)=>({task,index,priority:speculativePriority(task)}))
