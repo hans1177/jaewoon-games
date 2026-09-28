@@ -1898,3 +1898,52 @@ test('commercial F9 multiplayer requires actual two-player synchronized Studio e
   assert.equal(multiResult.metrics.surfaces.maxActualPlayerCount,2);
   assert.equal(multiResult.metrics.surfaces.multiplayerActualSessionPass,true);
 });
+
+
+test('commercial Studio FTUE gate requires actionable readable onboarding when declared',()=>{
+  const contract=deriveStudioActualPlayContract({launchCore:['mobile loading screen and tutorial objective'],releaseGates:[]});
+  const base={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6},
+    camera:{present:true,subjectPresent:true,fieldOfView:70,occluded:false},
+    ui:{visibleButtons:1,visibleObjects:2,visibleTexts:[{name:'Title',text:'포근섬'}],offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:40,floorBelowPlayer:true,floorSampleCount:9,floorHitCount:9,routeSampleCount:0,routeSuccessCount:0,minSpawnThreatDistance:-1,proximityPromptCount:0,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{remoteCount:1,progression:[],inventory:[],inventoryCount:0,systemSignals:1,descendantCount:100,memoryMb:100,soundCount:0,categories:{}},
+    workspace:{},lighting:{brightness:1.2}
+  };
+  const fail=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:base,preActionClientProbe:base,
+    postActionClientProbe:{...base,player:{...base.player,rootX:1}},
+    clientProbe:base,serverProbe:{runtime:base.runtime,world:base.world,workspace:{}},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}]
+  });
+  assert.equal(fail.scenarios.find(row=>row.id==='adaptive-ftue-clarity')?.pass,false);
+  const ready=structuredClone(base);
+  ready.ui.visibleTexts=[{name:'Title',text:'포근섬'},{name:'Guide',text:'게임 시작 후 목표를 확인하고 이동해.'}];
+  const pass=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:ready,preActionClientProbe:ready,
+    postActionClientProbe:{...ready,player:{...ready.player,rootX:1}},
+    clientProbe:ready,serverProbe:{runtime:ready.runtime,world:ready.world,workspace:{}},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}]
+  });
+  assert.equal(pass.scenarios.find(row=>row.id==='adaptive-ftue-clarity')?.pass,true);
+});
+
+test('commercial system transaction gate fails when a discovered shop action has no effect',()=>{
+  const contract=deriveStudioActualPlayContract({launchCore:['shop inventory equip UI'],releaseGates:[]});
+  const probe={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6},
+    camera:{present:true,subjectPresent:true,fieldOfView:70,occluded:false},
+    ui:{visibleButtons:1,visibleObjects:1,visibleTexts:[{name:'Shop',text:'상점'}],offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:40,floorBelowPlayer:true,floorSampleCount:9,floorHitCount:9,routeSampleCount:0,routeSuccessCount:0,minSpawnThreatDistance:-1,proximityPromptCount:1,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{remoteCount:1,progression:[],inventory:[],inventoryCount:0,systemSignals:2,descendantCount:100,memoryMb:100,soundCount:0,categories:{economy:1,inventory:1}},
+    workspace:{},lighting:{brightness:1.2}
+  };
+  const result=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:probe,preActionClientProbe:probe,
+    postActionClientProbe:{...probe,player:{...probe.player,rootX:1}},
+    clientProbe:probe,serverProbe:{runtime:probe.runtime,world:probe.world,workspace:{}},
+    actions:[{id:'shop-buy',type:'mcp-world-interaction',semantic:'SHOP',dispatched:true,ok:true,effectObserved:false,effect:{}}]
+  });
+  assert.equal(result.scenarios.find(row=>row.id==='adaptive-system-transaction-effect')?.pass,false);
+  assert.ok(result.qualityFailureKinds.includes('adaptive-system-transaction-effect'));
+});
