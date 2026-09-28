@@ -9955,7 +9955,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T23:09:47.575Z",
+      "updatedAt": "2026-09-28T23:44:04.498Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -10368,31 +10368,13 @@
             "id": "commercial-combat-action",
             "type": "mcp-combat-action",
             "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "map-route-nw",
-            "type": "mcp-map-route-audit",
-            "dispatched": true,
             "ok": false
           },
           {
-            "id": "map-route-ne",
+            "id": "map-route-prompt:작물",
             "type": "mcp-map-route-audit",
             "dispatched": true,
             "ok": false
-          },
-          {
-            "id": "map-route-sw",
-            "type": "mcp-map-route-audit",
-            "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "map-route-se",
-            "type": "mcp-map-route-audit",
-            "dispatched": true,
-            "ok": true
           },
           {
             "id": "prompt-ProximityPrompt",
@@ -10468,6 +10450,12 @@
           },
           {
             "id": "ui-discovered-InternalQACameraButton",
+            "type": "mcp-ui-exploration",
+            "dispatched": true,
+            "ok": true
+          },
+          {
+            "id": "ui-discovered-TextButton",
             "type": "mcp-ui-exploration",
             "dispatched": true,
             "ok": true
@@ -10652,7 +10640,7 @@
             "id": "scenario-adaptive-map-route-coverage",
             "name": "scenario-adaptive-map-route-coverage",
             "required": true,
-            "pass": true
+            "pass": false
           },
           {
             "id": "scenario-adaptive-spawn-safety",
@@ -10676,7 +10664,7 @@
             "id": "scenario-adaptive-system-transaction-effect",
             "name": "scenario-adaptive-system-transaction-effect",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-adaptive-travel-effect",
@@ -10826,7 +10814,7 @@
             "id": "scenario-adaptive-camera-quality",
             "name": "scenario-adaptive-camera-quality",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-adaptive-performance-budget",
@@ -10855,7 +10843,7 @@
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 8,
+          "scenarioFailureCount": 7,
           "primaryActionDisplacement": 0,
           "primaryActionVelocity": 0,
           "primaryActionFeedbackChanged": false,
@@ -10877,8 +10865,6 @@
         "learningSignals": [
           "roblox official studio mcp local runtime",
           "mcp-keyboard-input",
-          "mcp-combat-action",
-          "mcp-map-route-audit",
           "mcp-world-interaction",
           "mcp-ui-exploration",
           "official-studio-mcp-connected",
@@ -10896,6 +10882,8 @@
           "scenario-character-camera-ready",
           "scenario-visual-capture-sane",
           "scenario-adaptive-runtime-surface",
+          "scenario-adaptive-ftue-clarity",
+          "scenario-adaptive-spawn-safety",
           "ROBLOX_DATASTORE_SAVE_LOAD"
         ],
         "rawSourceIncluded": false,
@@ -10931,7 +10919,7 @@
           },
           {
             "id": "adaptive-map-route-coverage",
-            "pass": true
+            "pass": false
           },
           {
             "id": "adaptive-spawn-safety",
@@ -10947,7 +10935,7 @@
           },
           {
             "id": "adaptive-system-transaction-effect",
-            "pass": false
+            "pass": true
           },
           {
             "id": "adaptive-travel-effect",
@@ -11047,7 +11035,7 @@
           },
           {
             "id": "adaptive-camera-quality",
-            "pass": false
+            "pass": true
           },
           {
             "id": "adaptive-performance-budget",
@@ -11058,12 +11046,11 @@
         "qualityFailureKinds": [
           "adaptive-ui-commercial-quality",
           "adaptive-world-safety",
-          "adaptive-system-transaction-effect",
+          "adaptive-map-route-coverage",
           "adaptive-companion-ai-surface",
           "adaptive-save-surface",
           "adaptive-retry-loop-surface",
-          "adaptive-multiplayer-sync-surface",
-          "adaptive-camera-quality"
+          "adaptive-multiplayer-sync-surface"
         ],
         "qualityFailureDetails": [
           {
@@ -11086,7 +11073,7 @@
             "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
             "observed": {
               "boundsFinite": true,
-              "collidablePartCount": 250,
+              "collidablePartCount": 238,
               "floorBelowPlayer": true,
               "floorSamples": 9,
               "floorHits": 1,
@@ -11094,34 +11081,26 @@
               "routeSamples": 16,
               "routeSuccess": 2,
               "routeCoveragePass": false,
-              "spawnThreatDistance": 63.49458747359045,
+              "spawnThreatDistance": 63.55893252814582,
               "spawnOverlapSafe": true
             }
           },
           {
-            "id": "adaptive-system-transaction-effect",
-            "repairSurface": "SYSTEM_TRANSACTION",
+            "id": "adaptive-map-route-coverage",
+            "repairSurface": "MAP_ROUTEABILITY",
             "priority": "CRITICAL",
-            "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
+            "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
             "observed": {
-              "systemActionCount": 1,
-              "systemEffectCount": 0,
-              "actions": [
+              "routeAttemptCount": 1,
+              "routePassCount": 0,
+              "routeRequired": 1,
+              "routes": [
                 {
-                  "id": "prompt-ProximityPrompt",
-                  "semantic": "UPGRADE",
-                  "effectObserved": false,
-                  "effect": {
-                    "moved": 12.138526645135377,
-                    "progress": false,
-                    "inventory": false,
-                    "feedback": false,
-                    "health": true,
-                    "ui": false,
-                    "round": false,
-                    "map": false,
-                    "effectObserved": true
-                  }
+                  "id": "map-route-prompt:작물",
+                  "ok": false,
+                  "moved": 0,
+                  "fall": 0,
+                  "floorBelow": true
                 }
               ]
             }
@@ -11207,29 +11186,6 @@
               "multiplayerStateTransition": false,
               "remoteCount": 17
             }
-          },
-          {
-            "id": "adaptive-camera-quality",
-            "repairSurface": "CAMERA",
-            "priority": "HIGH",
-            "hint": "Repair camera subject/FOV/occlusion behavior and keep gameplay readable during movement/combat.",
-            "observed": {
-              "interactionSurfaceCount": 40,
-              "progressionSurfaceCount": 10,
-              "combatSurfaceCount": 25,
-              "npcSurfaceCount": 16,
-              "companionSurfaceCount": 0,
-              "itemSurfaceCount": 1,
-              "remoteCount": 17,
-              "soundCount": 0,
-              "effectCount": 0,
-              "promptCount": 36,
-              "inventoryCount": 0,
-              "currentActualPlayerCount": 1,
-              "maxActualPlayerCount": 1,
-              "multiplayerStateTransition": false,
-              "multiplayerActualSessionPass": false
-            }
           }
         ],
         "functionalChainEvidence": {
@@ -11239,8 +11195,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-28T23:09:47.575Z",
-        "workflowRunId": 36481567173,
+        "testedAt": "2026-09-28T23:44:04.498Z",
+        "workflowRunId": 36481661807,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -27260,7 +27216,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T23:37:10.044Z",
+  "updatedAt": "2026-09-28T23:44:04.498Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
