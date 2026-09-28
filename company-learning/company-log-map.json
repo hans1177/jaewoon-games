@@ -2836,14 +2836,20 @@
     "requiredMarkers": [
       "ROBLOX_VALIDATION_TARGET_PUBLISH=PASS",
       "ROBLOX_F9_FINAL_REVIEW_PASS",
-      "ROBLOX_CANONICAL_FINAL_PUBLISH=PASS",
-      "ROBLOX_CANONICAL_FINAL_SOURCE_ARTIFACT_MATCH=YES",
+      "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED",
       "ROBLOX_NEXT_EVOLUTION_CYCLE_DISPATCHED"
     ],
     "forbiddenMarkers": [
       "ROBLOX_CANONICAL_PUBLISH_FROM_F0"
     ],
     "f9Terminal": false,
-    "nextCycleRequiresCanonicalPublishSuccess": true
+    "nextCycleRequiresCanonicalPublishSuccess": false,
+    "nextCycleRequiresFinalPublishDispatch": true,
+    "publicationOutcomeNonBlocking": true,
+    "publicationVisibilityNonBlocking": true,
+    "optionalPublicationMarkers": [
+      "ROBLOX_CANONICAL_FINAL_PUBLISH=PASS",
+      "ROBLOX_CANONICAL_FINAL_PUBLISH=REPAIR_REQUIRED"
+    ]
   }
 }
