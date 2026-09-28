@@ -74,6 +74,7 @@ const JSON_FINAL_RETRY_TIMEOUT_MS=150000;
 const JSON_FINAL_RETRY_MAX_PREDICT=768;
 const JSON_FOCUSED_REPLACE_MAX_PREDICT=384;
 const JSON_FOCUSED_REPLACE_TIMEOUT_MS=Math.max(120000,DEFAULT_TIMEOUT_MS);
+const UNITY_STUDIO_FOCUSED_TIMEOUT_MS=120000;
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT=768;
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS=120000;
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=8192;
@@ -2264,12 +2265,19 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       &&!zeroOutputTimeoutRecovery
       &&!robloxZeroOutputTimeoutFocusedRecoveryActive;
     const timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT';
+    const unityStudioTimeoutFocusedRecovery=!allowFullRewrite
+      &&target==='unity'
+      &&studioExpansion
+      &&!multiFilePairRequired
+      &&attempt>=2
+      &&priorFailureClass==='TIMEOUT';
+    if(unityStudioTimeoutFocusedRecovery)console.log(`VIBE2_UNITY_STUDIO_TIMEOUT_FOCUSED_RECOVERY=${attempt}:${candidateVariant}`);
     const editMatchFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='EDIT_MATCH';
     const malformedFastEscalation=focusedWebRepair&&!allowFullRewrite&&attempt>=2&&priorFailureClass==='MALFORMED_OUTPUT';
     const systemCausalPairRecovery=priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'||priorFailureClass==='SYSTEM_CANDIDATE_SYNTAX';
     const presentationPatchDeltaRecovery=!allowFullRewrite&&priorFailureClass==='PRESENTATION_PATCH_DELTA';
     const assetDevelopmentFocusedGraphics=assetDevelopmentLane&&robloxAssetAdaptationTask;
-    const focusedFinal=!allowFullRewrite&&!multiFilePairRequired&&(!studioExpansion||zeroOutputTimeoutRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||assetDevelopmentFocusedGraphics)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(assetDevelopmentFocusedGraphics||attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||(speculativeVariant&&attempt>=2));
+    const focusedFinal=!allowFullRewrite&&!multiFilePairRequired&&(!studioExpansion||zeroOutputTimeoutRecovery||unityStudioTimeoutFocusedRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||assetDevelopmentFocusedGraphics)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(assetDevelopmentFocusedGraphics||attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const diagnosticFocusedReplaceOnly=!allowFullRewrite&&!studioExpansion&&!robloxFullGraphicsPackageRecovery&&!assetDevelopmentFocusedGraphics
       ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})
@@ -2297,7 +2305,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       ?FULL_WEB_EXPANSION_TIMEOUT_MS
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
-        :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS)):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))));
+        :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(unityStudioTimeoutFocusedRecovery?UNITY_STUDIO_FOCUSED_TIMEOUT_MS:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS))):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))));
     const contextWindow=expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW)):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
