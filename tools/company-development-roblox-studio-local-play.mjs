@@ -196,7 +196,7 @@ export function deriveStudioActualPlayContract(launch={}){
   const signals=adaptiveCoverageSignals(launch);
   const adaptiveScenarios=[
     'character-camera-ready','visual-capture-sane','adaptive-runtime-surface',
-    'adaptive-ui-commercial-quality','adaptive-world-safety','adaptive-map-route-coverage','adaptive-spawn-safety','adaptive-interaction-surface',
+    'adaptive-ui-commercial-quality','adaptive-world-safety','adaptive-map-route-coverage','adaptive-spawn-safety','adaptive-interaction-surface','adaptive-semantic-interaction-effect',
     'adaptive-progression-surface','adaptive-remote-surface','adaptive-combat-surface','adaptive-mob-animation-ai',
     'adaptive-motion-surface','adaptive-audio-surface','adaptive-npc-surface',
     'adaptive-companion-ai-surface','adaptive-item-surface','adaptive-environment-surface',
@@ -752,7 +752,7 @@ function startStopArgs(schema,studioId,start){
   }
   return fillRequired(args,schema);
 }
-function keyboardItem(schema,key){
+function keyboardItem(schema,key,durationMs=120){
   const props=schemaProps(schema),item={};
   for(const [name,def] of Object.entries(props)){
     if(/key.?code|^key$|keyboard.?key/i.test(name)){item[name]=key;continue;}
@@ -762,20 +762,20 @@ function keyboardItem(schema,key){
       }else if(def.type==='string')item[name]='press';
       continue;
     }
-    if(/duration.*ms|milliseconds|delay.*ms|wait.*ms/i.test(name))item[name]=120;
-    else if(/duration|delay|wait/i.test(name)&&['number','integer'].includes(def.type))item[name]=0.12;
+    if(/duration.*ms|milliseconds|delay.*ms|wait.*ms/i.test(name))item[name]=Math.max(50,Number(durationMs)||120);
+    else if(/duration|delay|wait/i.test(name)&&['number','integer'].includes(def.type))item[name]=Math.max(0.05,(Number(durationMs)||120)/1000);
   }
   return fillRequired(item,schema);
 }
-function keyboardArgs(schema,studioId,key){
+function keyboardArgs(schema,studioId,key,durationMs=120){
   const args={};setStudioId(args,schema,studioId);
   const props=schemaProps(schema);
   const actionsKey=Object.keys(props).find(k=>/actions|events|inputs/i.test(k)&&props[k]?.type==='array');
   if(actionsKey){
     const itemSchema=props[actionsKey]?.items||{};
-    args[actionsKey]=[keyboardItem(itemSchema,key)];
+    args[actionsKey]=[keyboardItem(itemSchema,key,durationMs)];
   }else{
-    const built=keyboardItem(schema,key);
+    const built=keyboardItem(schema,key,durationMs);
     for(const [k,v] of Object.entries(built))if(!/studio.*id/i.test(k))args[k]=v;
   }
   return fillRequired(args,schema);
@@ -1090,6 +1090,18 @@ function inventoryChanged(beforeRows=[],afterRows=[]){
   const key=rows=>entityRows(rows).map(row=>clean(row?.scope)+'|'+clean(row?.name)+'|'+clean(row?.className)).sort().join('\n');
   return key(beforeRows)!==key(afterRows);
 }
+function probeEffectSummary(before={},after={}){
+  const moved=pointDistance(before?.player||{},after?.player||{});
+  const progress=progressionChanged(before?.runtime?.progression,after?.runtime?.progression);
+  const inventory=inventoryChanged(before?.runtime?.inventory,after?.runtime?.inventory);
+  const feedback=clean(before?.player?.feedbackEvent)!==clean(after?.player?.feedbackEvent);
+  const healthBefore=Number(before?.player?.health),healthAfter=Number(after?.player?.health);
+  const health=Number.isFinite(healthBefore)&&Number.isFinite(healthAfter)&&healthBefore!==healthAfter;
+  const uiBefore=Number(before?.ui?.visibleObjects||0),uiAfter=Number(after?.ui?.visibleObjects||0);
+  const ui=uiBefore!==uiAfter;
+  const round=clean(before?.player?.roundState)!==clean(after?.player?.roundState);
+  return{moved,progress,inventory,feedback,health,ui,round,effectObserved:moved>=0.5||progress||inventory||feedback||health||ui||round};
+}
 export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[],timelineProbes=[],auditProfile='FAST_DEEP'}={}){
   if(contract?.required!==true)return{required:false,scenarios:[],qualityFailureKinds:[],authoritativeStateChangeObserved:false,capture:{before:{pass:true,frames:[]},after:{pass:true,frames:[]}},metrics:{}};
   const exp=contract?.expectations||{};
@@ -1171,6 +1183,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const modelMobs=entityRows(world.mobs).filter(row=>clean(row?.kind)==='HumanoidModel');
   const animatedMobCount=modelMobs.filter(row=>row?.animatorPresent===true&&Number(row?.motorCount||0)>0).length;
   const spawnThreatDistance=Number(world.minSpawnThreatDistance??-1);
+  const semanticActions=(actions||[]).filter(row=>['mcp-world-interaction','mcp-ui-exploration'].includes(row?.type)&&row?.dispatched===true&&row?.ok===true);
+  const semanticEffects=semanticActions.filter(row=>row?.effectObserved===true).length;
   const visibleButtons=Number(ui.visibleButtons||0);
   const uiCommercialPass=
     Number(ui.offscreenButtons||0)===0
@@ -1214,12 +1228,13 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'primary-action-input',pass:!clean(contract.primaryActionButtonText)||actionOk('ui-primary-action')},
     {id:'primary-action-effect',pass:!clean(contract.primaryActionButtonText)||primaryActionFeedbackChanged||displacement>=Number(exp.minimumPrimaryActionDisplacement||0.25)||velocity>=1},
     {id:'visual-capture-sane',pass:before.pass&&after.pass&&lightingBrightness>=Number(exp.minimumLightingBrightness||0)},
-    {id:'adaptive-runtime-surface',pass:Number(runtime.descendantCount||0)>0&&Number(runtime.systemSignals||0)>0},
+    {id:'adaptive-runtime-surface',pass:Number(runtime.descendantCount||0)>0&&(Number(runtime.systemSignals||0)>0||Number(runtime.remoteCount||0)>0||interactionSurfaceCount>0||progressionSurfaceCount>0||combatSurfaceCount>0||npcSurfaceCount>0||itemSurfaceCount>0)},
     {id:'adaptive-ui-commercial-quality',pass:!signals.ui||uiCommercialPass},
     {id:'adaptive-world-safety',pass:!signals.map||worldSafetyPass},
     {id:'adaptive-map-route-coverage',pass:!signals.map||routeActions.length===0||routePassCount>=routeRequired},
     {id:'adaptive-spawn-safety',pass:!signals.combat||spawnThreatDistance<0||spawnThreatDistance>=10},
     {id:'adaptive-interaction-surface',pass:!signals.interactions||interactionSurfaceCount>0},
+    {id:'adaptive-semantic-interaction-effect',pass:!signals.interactions||semanticActions.length===0||semanticEffects>0},
     {id:'adaptive-progression-surface',pass:!signals.progression||progressionSurfaceCount>0},
     {id:'adaptive-remote-surface',pass:!signals.serverBoundary||Number(runtime.remoteCount||0)>0},
     {id:'adaptive-combat-surface',pass:!signals.combat||(combatSurfaceCount>0&&mobRigAnimationPass&&(!soak||mobRows.length===0||timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged))},
@@ -1236,7 +1251,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-economy-surface',pass:!signals.economy||Number(categories.economy||0)>0},
     {id:'adaptive-save-surface',pass:!signals.save||Number(categories.save||0)>0},
     {id:'adaptive-retry-loop-surface',pass:!signals.retry||Number(categories.retry||0)>0},
-    {id:'adaptive-camera-quality',pass:!signals.camera||(client?.camera?.present===true&&client?.camera?.subjectPresent===true&&Number(client?.camera?.fieldOfView||0)>0)},
+    {id:'adaptive-camera-quality',pass:!signals.camera||(client?.camera?.present===true&&client?.camera?.subjectPresent===true&&Number(client?.camera?.fieldOfView||0)>0&&client?.camera?.occluded!==true)},
     {id:'adaptive-performance-budget',pass:Number(runtime.memoryMb||0)>=0&&Number(runtime.descendantCount||0)<120000}
   ];
   const scenarios=rows.filter(row=>requiredIds.size===0||requiredIds.has(row.id)).map(row=>({...row,required:true}));
@@ -1272,6 +1287,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     'adaptive-spawn-safety':['SPAWN_FAIRNESS','HIGH','Move hostile spawns away from player spawn or add safe startup protection/telegraphing.'],
     'adaptive-mob-animation-ai':['MONSTER_MOTION_AI','CRITICAL','Repair monster Humanoid rig, Animator/Motor6D motion, target/aggro transitions, attack movement, and runtime liveness.'],
     'adaptive-interaction-surface':['INTERACTION_CHAIN','HIGH','Restore usable prompts/buttons/click surfaces and verify input leads to a visible or authoritative result.'],
+    'adaptive-semantic-interaction-effect':['INTERACTION_CHAIN','CRITICAL','A discovered quest/shop/craft/equip/travel/heal/upgrade/collect/UI interaction accepted input but produced no observable gameplay/UI/progression/inventory result.'],
     'adaptive-progression-surface':['PROGRESSION','CRITICAL','Restore observable progression state for levels, quests, waves, zones, unlocks, or rewards.'],
     'adaptive-remote-surface':['SERVER_CLIENT_BOUNDARY','CRITICAL','Restore server-authoritative RemoteEvent/RemoteFunction surface and validation path.'],
     'adaptive-combat-surface':['COMBAT_AI','CRITICAL','Repair combat targets, damage/state transitions, enemy liveness, attack feedback, and F9 AI movement.'],
@@ -1305,6 +1321,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     if(id==='adaptive-item-surface')return{itemSurfaceCount,inventoryCount:Number(runtime.inventoryCount||0),inventoryChanged:inventoryDelta};
     if(id==='adaptive-performance-budget')return metrics.performance;
     if(id==='adaptive-interaction-surface')return{interactionSurfaceCount,promptCount:Number(world.proximityPromptCount||0),clickDetectorCount:Number(world.clickDetectorCount||0),visibleButtons};
+    if(id==='adaptive-semantic-interaction-effect')return{semanticActionCount:semanticActions.length,semanticEffectCount:semanticEffects,actions:semanticActions.slice(0,10).map(row=>({id:row.id,type:row.type,semantic:row.semantic||null,effectObserved:row.effectObserved===true,effect:row.effect||null}))};
     return metrics.surfaces;
   };
   const qualityFailureDetails=qualityFailureKinds.map(id=>{
@@ -1639,23 +1656,58 @@ export async function runOfficialStudioMcpPlay({
       const exploreLimit=auditMode==='F9_SOAK'?3:1;
       for(const prompt of promptRows.slice(0,exploreLimit)){
         let navOk=false,inputOk=false;
+        const beforeProbe=timelineProbes.at(-1)||initialClientProbe;
+        const semanticText=(clean(prompt?.actionText)+' '+clean(prompt?.objectText)+' '+clean(prompt?.name)).toLowerCase();
+        const semantic=/quest|퀘스트|mission|임무/.test(semanticText)?'QUEST'
+          :/reward|보상|claim|수령/.test(semanticText)?'REWARD'
+          :/shop|상점|merchant|구매|판매/.test(semanticText)?'SHOP'
+          :/craft|제작|forge|대장간/.test(semanticText)?'CRAFT'
+          :/equip|장비|weapon|무기|armor|방어구/.test(semanticText)?'EQUIP'
+          :/portal|포탈|enter|입장|door|문/.test(semanticText)?'TRAVEL'
+          :/heal|회복|healer|치유/.test(semanticText)?'HEAL'
+          :/upgrade|강화|전직|advance|train/.test(semanticText)?'UPGRADE'
+          :/collect|채집|줍기|pickup|loot|전리품/.test(semanticText)?'COLLECT':'GENERAL';
         try{
           const target={x:Number(prompt?.x||0),y:Number(prompt?.y||0),z:Number(prompt?.z||0)};
           const navResult=await client.call('character_navigation',characterNavigationArgs(navigationTool.inputSchema||{},studioId,target));
           navOk=navResult?.isError!==true;
           await wait(450);
           const key=promptKeyboardKey(prompt?.key);
-          const inputResult=await client.call('user_keyboard_input',keyboardArgs(keyboardTool.inputSchema||{},studioId,key));
+          const holdMs=Math.max(120,Math.min(2200,Number(prompt?.holdDuration||0)*1000+160));
+          const inputResult=await client.call('user_keyboard_input',keyboardArgs(keyboardTool.inputSchema||{},studioId,key,holdMs));
           inputOk=inputResult?.isError!==true;
-          await wait(Math.max(350,Math.min(1800,Number(prompt?.holdDuration||0)*1000+350)));
+          await wait(Math.max(350,Math.min(2200,holdMs+250)));
           const interactionProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+          const effect=probeEffectSummary(beforeProbe||{},interactionProbe||{});
           if(interactionProbe)timelineProbes.push(interactionProbe);
-          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',dispatched:true,ok:navOk&&inputOk});
+          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',semantic,dispatched:true,ok:navOk&&inputOk,effectObserved:effect.effectObserved,effect});
         }catch{
-          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',dispatched:true,ok:false});
+          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',semantic,dispatched:true,ok:false,effectObserved:false});
         }
       }
       if(promptRows.length>0)checkpoint('commercial-prompt-exploration',actions.some(row=>row.type==='mcp-world-interaction'&&row.ok===true));
+
+      const destructiveUi=/delete|삭제|wipe|초기화|reset data|데이터 초기화|robux|로벅스|purchase premium|quit|leave game|게임 종료/i;
+      const usefulUi=/start|시작|attack|공격|skill|스킬|quest|퀘스트|shop|상점|craft|제작|equip|장비|heal|회복|upgrade|강화|retry|재도전|claim|보상|inventory|인벤/i;
+      const uiCandidates=entityRows((timelineProbes.at(-1)||initialClientProbe)?.ui?.interactive)
+        .filter(row=>!destructiveUi.test(clean(row?.text)+' '+clean(row?.name)))
+        .sort((a,b)=>(usefulUi.test(clean(b?.text)+' '+clean(b?.name))?1:0)-(usefulUi.test(clean(a?.text)+' '+clean(a?.name))?1:0));
+      const uiExploreLimit=auditMode==='F9_SOAK'?3:1;
+      for(const target of uiCandidates.slice(0,uiExploreLimit)){
+        if(!Number.isFinite(Number(target?.centerX))||!Number.isFinite(Number(target?.centerY)))continue;
+        const beforeProbe=timelineProbes.at(-1)||initialClientProbe;
+        let ok=false,afterProbe=null;
+        try{
+          const mouseTool=client.tool('user_mouse_input');
+          const result=await client.call('user_mouse_input',mouseClickArgs(mouseTool.inputSchema||{},studioId,target.centerX,target.centerY));
+          ok=result?.isError!==true;
+          await wait(450);
+          afterProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+          if(afterProbe)timelineProbes.push(afterProbe);
+        }catch{}
+        const effect=probeEffectSummary(beforeProbe||{},afterProbe||{});
+        actions.push({id:'ui-discovered-'+clean(target?.name||target?.text||'button'),type:'mcp-ui-exploration',dispatched:true,ok,effectObserved:effect.effectObserved,effect});
+      }
 
       const sampleCount=auditMode==='F9_SOAK'?6:3;
       const sampleDelay=auditMode==='F9_SOAK'?900:450;
