@@ -1501,10 +1501,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T10:31:48.143Z",
+      "updatedAt": "2026-09-28T11:39:00.693Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -1700,7 +1700,27 @@
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
-      "robloxRuntimeCandidateEvidence": null,
+      "robloxRuntimeCandidateEvidence": {
+        "version": 1,
+        "gameId": "village-dungeons",
+        "platform": "ROBLOX",
+        "sourceRevision": "d16adbfc1286b57e20c4166ec870dc48a95adb1a",
+        "artifactIdentity": "sha256:979513fcc1e8220add6098a6dfaf682d401fcad9a0e2214d03283a44772f3d31",
+        "artifactRunId": 36407298943,
+        "universeId": "10768436241",
+        "placeId": "140002077665500",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": false,
+        "canonicalGameTarget": false,
+        "validationOnly": true,
+        "exposure": "PRIVATE_PRE_F9_VALIDATION_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 2,
+        "workflowRunId": 36416214569,
+        "publishedAt": "2026-09-28T11:39:00.693Z",
+        "authority": "roblox-open-cloud-pre-f9-validation-candidate"
+      },
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -1730,11 +1750,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -1902,9 +1922,9 @@
         "publicDiscoveryAllowed": false,
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
-      "robloxSharedTargetCurrent": false,
+      "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
-      "robloxReleaseVersionNumber": 8,
+      "robloxReleaseVersionNumber": 2,
       "robloxPublicRelease": false,
       "robloxInternalVibePlayEvidence": null,
       "robloxGameCompletionEvidence": null,
@@ -1992,13 +2012,13 @@
       },
       "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
       "robloxValidationTarget": {
-        "version": 1,
+        "version": 3,
         "gameId": "village-dungeons",
         "universeId": "10768436241",
         "placeId": "140002077665500",
-        "verified": false,
-        "verifiedAt": null,
-        "lastVerifiedAt": null,
+        "verified": true,
+        "verifiedAt": "2026-09-28T11:39:00.693Z",
+        "lastVerifiedAt": "2026-09-28T11:39:00.693Z",
         "source": "canonical-dedicated-open-cloud-bootstrap",
         "authority": "roblox-pre-f9-validation-target",
         "dedicated": true,
@@ -2006,9 +2026,9 @@
         "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
         "internalOnly": true,
         "publicDiscoveryAllowed": false,
-        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
-        "reservedAt": "2026-09-28T10:31:48.143Z"
-      }
+        "bootstrapState": "PUBLISHED_PRIVATE"
+      },
+      "robloxCanonicalPublishPending": false
     },
     {
       "gameId": "amusement-tycoon",
@@ -9430,7 +9450,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T11:35:42.922Z",
+  "updatedAt": "2026-09-28T11:39:00.693Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
