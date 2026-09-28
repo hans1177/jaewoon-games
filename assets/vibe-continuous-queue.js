@@ -406,12 +406,20 @@ function lockConflict(a, b) {
   for (const file of aFiles) if (bFiles.has(file)) return 'responsible-file-conflict';
   return null;
 }
-function conflictsWith(task, active) {
+function conflictDetails(task, active) {
   for (const other of active) {
     const reason = lockConflict(task, other);
-    if (reason) return reason;
+    if (reason) return {
+      reason,
+      taskId: clean(other?.id) || null,
+      executionLane: clean(other?.executionLane) || null,
+      blocker: clean(other?.blocker) || null
+    };
   }
   return null;
+}
+function conflictsWith(task, active) {
+  return conflictDetails(task, active)?.reason || null;
 }
 function isAwaitingQaTask(task) {
   return task?.status === 'running' && /awaiting.*qa|qa.*awaiting|candidate-awaiting-supervised-review|awaiting.*supervised-review/i.test(clean(task?.blocker));
@@ -532,9 +540,9 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   if (freeSlots > 0) {
     for (const focusedRow of focusedCandidates) {
       if(selected.length>=freeSlots||!focusedSlotAvailable(focusedRow.task))continue;
-      const conflict = conflictsWith(focusedRow.task, active);
+      const conflict = conflictDetails(focusedRow.task, active);
       if (conflict) {
-        if (!deferredConflicts.some((item) => item.task.id === focusedRow.task.id)) deferredConflicts.push(freeze({ task: focusedRow.task, reason: conflict }));
+        if (!deferredConflicts.some((item) => item.task.id === focusedRow.task.id)) deferredConflicts.push(freeze({ task: focusedRow.task, reason: conflict.reason, conflictTaskId: conflict.taskId, conflictExecutionLane: conflict.executionLane, conflictBlocker: conflict.blocker }));
         continue;
       }
       selected.push(focusedRow.task);
@@ -552,9 +560,9 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   if (freeSlots > 0 && !capacityRunning.some(isProtectedLongOwner)) {
     for (const protectedRow of schedulingCandidates.filter((row) => isProtectedLongOwner(row.task))) {
       if(isPostReleaseFocused(protectedRow.task)&&!focusedSlotAvailable(protectedRow.task))continue;
-      const conflict = conflictsWith(protectedRow.task, active);
+      const conflict = conflictDetails(protectedRow.task, active);
       if (conflict) {
-        if (!deferredConflicts.some((item) => item.task.id === protectedRow.task.id)) deferredConflicts.push(freeze({ task: protectedRow.task, reason: conflict }));
+        if (!deferredConflicts.some((item) => item.task.id === protectedRow.task.id)) deferredConflicts.push(freeze({ task: protectedRow.task, reason: conflict.reason, conflictTaskId: conflict.taskId, conflictExecutionLane: conflict.executionLane, conflictBlocker: conflict.blocker }));
         continue;
       }
       selected.push(protectedRow.task);
@@ -573,16 +581,16 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     if(isPostReleaseFocused(row.task)&&!focusedSlotAvailable(row.task))continue;
     const baseSlots = BASE_SHARD_SLOTS[row.task.shard] || 1;
     if ((shardUse[row.task.shard] || 0) >= baseSlots) continue;
-    const conflict = conflictsWith(row.task, active);
-    if (conflict) { if (!deferredConflicts.some((item) => item.task.id === row.task.id)) deferredConflicts.push(freeze({ task: row.task, reason: conflict })); continue; }
+    const conflict = conflictDetails(row.task, active);
+    if (conflict) { if (!deferredConflicts.some((item) => item.task.id === row.task.id)) deferredConflicts.push(freeze({ task: row.task, reason: conflict.reason, conflictTaskId: conflict.taskId, conflictExecutionLane: conflict.executionLane, conflictBlocker: conflict.blocker })); continue; }
     selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1; noteFocusedSelection(row.task);
   }
   for (const row of schedulingCandidates) {
     if (selected.length >= freeSlots) break;
     if (selected.some((task) => task.id === row.task.id)) continue;
     if(isPostReleaseFocused(row.task)&&!focusedSlotAvailable(row.task))continue;
-    const conflict = conflictsWith(row.task, active);
-    if (conflict) { if (!deferredConflicts.some((item) => item.task.id === row.task.id)) deferredConflicts.push(freeze({ task: row.task, reason: conflict })); continue; }
+    const conflict = conflictDetails(row.task, active);
+    if (conflict) { if (!deferredConflicts.some((item) => item.task.id === row.task.id)) deferredConflicts.push(freeze({ task: row.task, reason: conflict.reason, conflictTaskId: conflict.taskId, conflictExecutionLane: conflict.executionLane, conflictBlocker: conflict.blocker })); continue; }
     selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1; noteFocusedSelection(row.task);
   }
 
