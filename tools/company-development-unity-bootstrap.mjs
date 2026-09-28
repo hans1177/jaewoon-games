@@ -21,6 +21,24 @@ const UNITY_EDITOR_VERSION='6000.6.0f1';
 const UNITY_EDITOR_REVISION='f7f8ed4d1e24';
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const unique=values=>[...new Set((values||[]).map(value=>String(value??'').trim()).filter(Boolean))];
+function gameDevelopmentPrinciple(value=''){
+  const text=String(value??'').trim().toLowerCase();
+  const scope=String(text.match(/scope=([^;]+)/)?.[1]||'').trim().toLowerCase();
+  if(!text)return false;
+  if(/qa-evidence|automation|runtime-compatibility|runtime-evidence|android|abi|install|artifact|infrastructure|hosted-emulator|experiment-strategy/.test(scope))return false;
+  return /onboarding|interaction|ui|ux|controls|feedback|navigation|progression|rpg|sandbox|gameplay|mobile-3d|mobile-feedback|input-feedback/.test(scope)
+    ||/immediate visible|persistent primary|contextual control|touch interaction|movement feedback|spatially anchored/.test(text);
+}
+function unityGameDevelopmentProfile(principles=[]){
+  const relevant=unique((principles||[]).filter(gameDevelopmentPrinciple));
+  const text=relevant.join(' ').toLowerCase();
+  return Object.freeze({
+    principles:Object.freeze(relevant),
+    immediateVisibleFeedback:/immediate visible|visible state|state feedback|movement feedback|spatially anchored|prompt, legible|prompt and unambiguous/.test(text),
+    contextualOnboarding:/onboarding|touch interaction instruction|first playable|first live|game entry/.test(text),
+    persistentActions:/persistent primary|context-relevant actions|high-frequency progression|action controls visible/.test(text)
+  });
+}
 function verifiedExternalLearningFromPlaybooks(playbooks={}){
   const policy=playbooks?.policy||{};
   if(policy.verifiedExternalBlackBoxAllTaskTypesRequired!==true||policy.verifiedExternalBlackBoxTruncationForbidden!==true){
@@ -60,6 +78,8 @@ function verifiedExternalLearningFromPlaybooks(playbooks={}){
     'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
   ];
   const fingerprint=createHash('sha256').update(JSON.stringify(rows)).digest('hex');
+  const gameDevelopmentProfile=unityGameDevelopmentProfile(unique(rows.flatMap(row=>row.distilledApplicationPrinciples)));
+  if(!gameDevelopmentProfile.principles.length)throw new Error('UNITY_VERIFIED_EXTERNAL_GAME_DEVELOPMENT_PRINCIPLES_REQUIRED');
   return Object.freeze({
     rows:Object.freeze(rows.map(row=>Object.freeze({...row}))),
     ids:Object.freeze(rows.map(row=>row.id)),
@@ -73,7 +93,8 @@ function verifiedExternalLearningFromPlaybooks(playbooks={}){
     coveragePct:100,
     distilledContentComplete:true,
     truncationForbidden:true,
-    fingerprint
+    fingerprint,
+    gameDevelopmentProfile
   });
 }
 const baseline=readJson(baselinePath);
@@ -103,6 +124,7 @@ const csharp=v=>String(v).replaceAll('\\','\\\\').replaceAll('"','\\"').replace(
 const prefix=gameId.replace(/[^a-zA-Z0-9]/g,'_');
 const generatorFingerprint=createHash('sha256').update(fs.readFileSync(new URL(import.meta.url))).update('\n').update(verifiedExternalLearning.fingerprint).digest('hex');
 const csharpArray=values=>(values||[]).map(value=>`        "${csharp(value)}",`).join('\n');
+const developmentLearning=verifiedExternalLearning.gameDevelopmentProfile;
 
 fs.rmSync(output,{recursive:true,force:true});
 for(const dir of ['Assets/Scripts','Assets/Editor','Packages','ProjectSettings'])fs.mkdirSync(path.join(output,dir),{recursive:true});
@@ -143,6 +165,13 @@ ${csharpArray(verifiedExternalLearning.allowed)}
     {
 ${csharpArray(verifiedExternalLearning.forbidden)}
     };
+    private static readonly string[] VerifiedGameDevelopmentPrinciples = new string[]
+    {
+${csharpArray(developmentLearning.principles)}
+    };
+    private const bool UseImmediateVisibleFeedback = ${developmentLearning.immediateVisibleFeedback?'true':'false'};
+    private const bool UseContextualOnboarding = ${developmentLearning.contextualOnboarding?'true':'false'};
+    private const bool UsePersistentActionControls = ${developmentLearning.persistentActions?'true':'false'};
 
     private int actionCount;
     private int progress;
@@ -153,7 +182,8 @@ ${csharpArray(verifiedExternalLearning.forbidden)}
     private float metricTimer;
     private float fpsTime;
     private int fpsFrames;
-    private int verifiedLearningSignal;
+    private int lastProgressBeforeAction;
+    private float feedbackUntil;
     private string lastAction = "READY";
     private string lastVerifiedLearningPattern = "READY";
 
@@ -162,19 +192,11 @@ ${csharpArray(verifiedExternalLearning.forbidden)}
         Application.targetFrameRate = 60;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         LoadState();
-        unchecked
-        {
-            verifiedLearningSignal = 17;
-            foreach (string value in VerifiedExternalLearningIds) verifiedLearningSignal = verifiedLearningSignal * 31 + value.GetHashCode();
-            foreach (string value in VerifiedExternalLearningPrinciples) verifiedLearningSignal = verifiedLearningSignal * 31 + value.GetHashCode();
-            foreach (string value in VerifiedExternalLearningAvoidance) verifiedLearningSignal = verifiedLearningSignal * 31 + value.GetHashCode();
-            foreach (string value in VerifiedExternalLearningAllowed) verifiedLearningSignal = verifiedLearningSignal * 31 + value.GetHashCode();
-            foreach (string value in VerifiedExternalLearningForbidden) verifiedLearningSignal = verifiedLearningSignal * 31 + value.GetHashCode();
-        }
-        Debug.Log("JAEWOON_VERIFIED_EXTERNAL_LEARNING coverage=" + VerifiedExternalLearningCoveragePct +
-                  " ids=" + VerifiedExternalLearningIds.Length +
-                  " principles=" + VerifiedExternalLearningPrinciples.Length +
-                  " signal=" + verifiedLearningSignal);
+        Debug.Log("JAEWOON_VERIFIED_EXTERNAL_LEARNING ids=" + VerifiedExternalLearningIds.Length +
+                  " developmentPrinciples=" + VerifiedGameDevelopmentPrinciples.Length +
+                  " immediateFeedback=" + UseImmediateVisibleFeedback +
+                  " contextualOnboarding=" + UseContextualOnboarding +
+                  " persistentActions=" + UsePersistentActionControls);
         Debug.Log("JAEWOON_TECH_BOOT game=" + GameId + " mode=" + Mode + " restoredActions=" + actionCount);
     }
 
@@ -210,8 +232,7 @@ ${csharpArray(verifiedExternalLearning.forbidden)}
     {
         int w = Screen.width;
         int h = Screen.height;
-        float learningPulse = 1f + 0.02f * Mathf.Sin(Time.unscaledTime * 2f + (verifiedLearningSignal & 15) * 0.07f);
-        float scale = Mathf.Max(1f, w / 390f) * learningPulse;
+        float scale = Mathf.Max(1f, w / 390f);
         GUI.skin.label.fontSize = Mathf.RoundToInt(17f * scale);
         GUI.skin.button.fontSize = Mathf.RoundToInt(20f * scale);
         GUI.skin.box.fontSize = Mathf.RoundToInt(16f * scale);
@@ -222,18 +243,25 @@ ${csharpArray(verifiedExternalLearning.forbidden)}
         GUI.Label(new Rect(w * 0.08f, h * 0.25f, w * 0.84f, h * 0.10f), "핵심 루프: " + CoreLoop);
         GUI.Label(new Rect(w * 0.08f, h * 0.36f, w * 0.84f, h * 0.08f),
             "MODE " + Mode + "   행동 " + actionCount + "   진행 " + progress + "   자원 " + resource + "   Lv." + level);
-        GUI.Label(new Rect(w * 0.08f, h * 0.45f, w * 0.84f, h * 0.06f), "최근 입력: " + lastAction);
+        string feedback = UseImmediateVisibleFeedback && Time.unscaledTime < feedbackUntil
+            ? " · 입력 반영 " + lastProgressBeforeAction + "→" + progress
+            : "";
+        string actionLine = UseContextualOnboarding && actionCount == 0
+            ? "핵심 조작을 눌러 바로 플레이"
+            : "최근 입력: " + lastAction + feedback;
+        GUI.Label(new Rect(w * 0.08f, h * 0.45f, w * 0.84f, h * 0.06f), actionLine);
 
         for (int i = 0; i < 7; i++)
         {
             float x = w * (0.10f + i * 0.12f);
-            float y = h * (0.53f + 0.018f * learningPulse * Mathf.Sin(Time.unscaledTime * (1.2f + i * 0.08f) + i + (verifiedLearningSignal & 7) * 0.11f));
+            float y = h * (0.53f + 0.018f * Mathf.Sin(Time.unscaledTime * (1.2f + i * 0.08f) + i));
             GUI.Box(new Rect(x, y, w * 0.075f, w * 0.075f), ((progress + i) % 9).ToString());
         }
 
-        if (GUI.Button(new Rect(w * 0.10f, h * 0.62f, w * 0.80f, h * 0.12f), PrimaryLabel()))
+        float actionHeight = UsePersistentActionControls ? 0.13f : 0.12f;
+        if (GUI.Button(new Rect(w * 0.10f, h * 0.62f, w * 0.80f, h * actionHeight), PrimaryLabel()))
             PrimaryAction();
-        if (GUI.Button(new Rect(w * 0.10f, h * 0.78f, w * 0.80f, h * 0.12f), SecondaryLabel()))
+        if (GUI.Button(new Rect(w * 0.10f, h * 0.78f, w * 0.80f, h * actionHeight), SecondaryLabel()))
             SecondaryAction();
     }
 
@@ -267,6 +295,7 @@ ${csharpArray(verifiedExternalLearning.forbidden)}
 
     private void PrimaryAction()
     {
+        int beforeProgress = progress;
         actionCount++;
         switch (Mode)
         {
@@ -278,13 +307,14 @@ ${csharpArray(verifiedExternalLearning.forbidden)}
             case "STORY_RPG": progress += level + 1; resource += 1; lastAction = "BATTLE_CHOICE"; break;
             default: progress++; lastAction = "CORE_ACTION"; break;
         }
-        ApplyVerifiedExternalLearningFeedback();
+        ApplyVerifiedExternalLearningFeedback(beforeProgress);
         SaveState();
         Debug.Log("JAEWOON_TECH_ACTION game=" + GameId + " type=PRIMARY count=" + actionCount + " progress=" + progress);
     }
 
     private void SecondaryAction()
     {
+        int beforeProgress = progress;
         actionCount++;
         switch (Mode)
         {
@@ -296,19 +326,21 @@ ${csharpArray(verifiedExternalLearning.forbidden)}
             case "STORY_RPG": level += progress > level * 3 ? 1 : 0; resource += 2; lastAction = "STORY_CHOICE"; break;
             default: resource++; lastAction = "CHOICE"; break;
         }
-        ApplyVerifiedExternalLearningFeedback();
+        ApplyVerifiedExternalLearningFeedback(beforeProgress);
         SaveState();
         Debug.Log("JAEWOON_TECH_ACTION game=" + GameId + " type=SECONDARY count=" + actionCount + " progress=" + progress);
     }
 
-    private void ApplyVerifiedExternalLearningFeedback()
+    private void ApplyVerifiedExternalLearningFeedback(int beforeProgress)
     {
-        if (VerifiedExternalLearningPrinciples.Length == 0) return;
-        int index = Math.Abs(actionCount + verifiedLearningSignal) % VerifiedExternalLearningPrinciples.Length;
-        lastVerifiedLearningPattern = VerifiedExternalLearningPrinciples[index];
+        lastProgressBeforeAction = beforeProgress;
+        if (UseImmediateVisibleFeedback) feedbackUntil = Time.unscaledTime + 0.55f;
+        if (VerifiedGameDevelopmentPrinciples.Length == 0) return;
+        int index = Math.Abs(actionCount) % VerifiedGameDevelopmentPrinciples.Length;
+        lastVerifiedLearningPattern = VerifiedGameDevelopmentPrinciples[index];
         Debug.Log("JAEWOON_VERIFIED_EXTERNAL_LEARNING_APPLIED game=" + GameId +
                   " action=" + actionCount +
-                  " ids=" + VerifiedExternalLearningIds.Length +
+                  " developmentPrinciples=" + VerifiedGameDevelopmentPrinciples.Length +
                   " patternIndex=" + index +
                   " pattern=" + lastVerifiedLearningPattern);
     }
@@ -454,6 +486,8 @@ fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
   verifiedExternalLearningTruncationForbidden:verifiedExternalLearning.truncationForbidden,
   verifiedExternalLearningFingerprint:verifiedExternalLearning.fingerprint,
   verifiedExternalLearningRows:verifiedExternalLearning.rows,
+  verifiedExternalGameDevelopmentPrinciples:developmentLearning.principles,
+  verifiedExternalGameDevelopmentProfile:developmentLearning,
   platformDesignProfile:unityPlatformProfile,
   androidGraphicsCompatibilityProfile:'OPEN_GLES3_ES30_MINIMUM',
   designBaseline:baselinePath,productionClass:'DEVELOPMENT_CONFIRMED',
