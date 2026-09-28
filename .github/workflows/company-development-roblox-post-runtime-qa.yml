@@ -1555,7 +1555,7 @@ jobs:
           echo 'ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE=NO'
 
   studio-local-plan:
-    if: ${{ false }} # TEMP: stop opening Studio until floating-character map readiness is repaired
+    if: ${{ inputs.retry_open_cloud_only != true }}
     # Planning is read-only Node work and must not occupy the authenticated Studio runner.
     # Only actual Studio MCP play keeps the self-hosted Windows requirement.
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
