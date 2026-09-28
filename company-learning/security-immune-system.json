@@ -1,5 +1,5 @@
 {
-  "version": 59,
+  "version": 60,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -466,7 +466,7 @@
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
   },
-  "updatedAt": "2026-09-26",
+  "updatedAt": "2026-09-28",
   "graphicsProductionUnificationSecurity": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -761,8 +761,8 @@
     "failureAction": "REGENERATE_OR_REPAIR_AFFECTED_DIRECTIVE_SCOPE_WITHOUT_STOPPING_UNRELATED_GAME_DEVELOPMENT"
   },
   "minimumNecessaryDevelopmentSecurity": {
-    "version": 1,
-    "centralContract": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.developmentLoopOptimization",
+    "version": 2,
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization.security",
     "defaultMode": "SCOPED_AUTOMATED_SECURITY_NONBLOCKING_WHEN_NO_RELEVANT_BOUNDARY_CHANGED",
     "protections": {
       "unrelatedSecurityProcedureMayNotSerializeGameBuildUp": true,
@@ -770,8 +770,18 @@
       "relevantPrivilegeRemoteSaveEconomySecretExternalTrustChangeStillRequiresExistingSecurityGate": true,
       "confirmedHighRiskFindingStillFailClosed": true,
       "publicReleaseAndExternalPromotionSecurityEvidencePreserved": true,
-      "procedureMinimizationCannotDisableSecurityFindings": true
-    }
+      "procedureMinimizationCannotDisableSecurityFindings": true,
+      "unrelatedGameplayPresentationOrContentDeltaDoesNotRequireFullSecurityRescan": true,
+      "f9MayNotTriggerFullSecurityRescanWithoutRelevantDeltaOrPriorFailure": true
+    },
+    "fullRescanTriggers": [
+      "REMOTE_OR_NETWORK_AUTHORITY_CHANGED",
+      "SAVE_OR_ECONOMY_AUTHORITY_CHANGED",
+      "PRIVILEGE_SECRET_EXTERNAL_TRUST_BOUNDARY_CHANGED",
+      "SECURITY_RELEVANT_DEPENDENCY_CHANGED",
+      "PRIOR_SECURITY_EVIDENCE_FAILED_OR_STALE",
+      "CONFIRMED_SECURITY_FINDING_REQUIRES_REVALIDATION"
+    ]
   },
   "robloxNativeCodingQualitySecurity": {
     "version": 2,
