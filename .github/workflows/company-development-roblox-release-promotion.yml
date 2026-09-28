@@ -770,8 +770,8 @@ jobs:
             sleep $((attempt*2))
           done
           test "$persisted" = 1
-          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID" || true
-          echo "ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=YES_EXISTING_RUNTIME_REPAIR:$GAME_ID:${PUBLISH_CYCLE_ID:-VALIDATION}"
+          gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID" || true
+          echo "ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=YES_EXISTING_F9_REPAIR:$GAME_ID:${PUBLISH_CYCLE_ID:-VALIDATION}"
           echo "ROBLOX_PUBLICATION_RETRY_BLOCKS_NEXT_EVOLUTION=NO"
 
       - name: Persist proven internal release state only
@@ -1129,7 +1129,7 @@ jobs:
           if [ "$RETRY_DEFERRED" = 'true' ]; then
             echo 'ROBLOX_INTERNAL_RELEASE_PROMOTION=REPAIR_REQUIRED:ROBLOX_409_SERVER_BUSY'
             echo 'ROBLOX_RELEASE_RETRY_INTERVAL_SECONDS=60'
-            echo 'ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=YES_EXISTING_RUNTIME_REPAIR'
+            echo 'ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=YES_EXISTING_F9_REPAIR'
             echo 'ROBLOX_RUNTIME_FOUNDATION_RERUN=REQUIRED'
             echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
             echo 'ROBLOX_REGRESSION_RERUN=NO'
