@@ -10,7 +10,7 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { buildVibeDesignIntelligence } from './vibe2-design-intelligence.mjs';
-import { retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candidateTournamentPolicy, preferredCodingStrategyForTask, codingStrategyGuidance, responsibilityCalibrationForTask, regressionHotspotRiskForTask, codingRiskGuidance, architectureDriftRiskForTask, architectureDriftGuidance, codingConstitutionRuleForTask, codingConstitutionGuidance } from './vibe2-learning-motor.mjs';
+import { classifyVerifiedExternalBlackBoxPrinciples, retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candidateTournamentPolicy, preferredCodingStrategyForTask, codingStrategyGuidance, responsibilityCalibrationForTask, regressionHotspotRiskForTask, codingRiskGuidance, architectureDriftRiskForTask, architectureDriftGuidance, codingConstitutionRuleForTask, codingConstitutionGuidance } from './vibe2-learning-motor.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
 import { loadCentralPolicySnapshot, compileVibeCentralWorkContract, compiledWorkContractGuidance } from './vibe2-central-work-contract.mjs';
 import { buildNeuralDiagnosis, neuralDiagnosisGuidance } from './vibe2-neural-diagnosis.mjs';
@@ -617,6 +617,9 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const verifiedExternalLearningCoveragePct=verifiedExternalPlaybookReuse.length>0
     ?Math.floor((verifiedExternalDistilledContentIds.length/verifiedExternalPlaybookReuse.length)*100)
     :0;
+  const externalDisposition=classifyVerifiedExternalBlackBoxPrinciples(verifiedExternalPlaybookRows,{gameId:task.gameId,target:plan.target});
+  const externalDispositionRows=freezeList(externalDisposition.rows);
+  const externalGameSourceRows=freezeList(externalDisposition.sourceRows);
   const verifiedExternalLearningApplyAxes=freezeList([
     'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
     'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
@@ -635,7 +638,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     retrievedKnowledgeCount:exactInjectedKnowledgeIds.length,
     appliedKnowledgeCount:exactInjectedKnowledgeIds.length,
     applicationCoveragePct:100,
-    allRetrievedKnowledgeApplied:!mandatoryVerifiedKnowledgeApplication||verifiedExternalDistilledContentComplete,
+    allRetrievedKnowledgeApplied:!mandatoryVerifiedKnowledgeApplication||externalDisposition.allDisposed,
     verifiedPlaybookReuseCount:Number(unifiedLearning?.playbookReuse?.length||0),
     verifiedExternalLearningFirst:true,
     verifiedExternalLearningIds:verifiedExternalPlaybookReuse,
@@ -646,6 +649,10 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     verifiedExternalDistilledContentCount:verifiedExternalDistilledContentIds.length,
     verifiedExternalDistilledContentComplete,
     verifiedExternalLearningApplyAxes,
+    verifiedExternalLearningDispositions:externalDispositionRows,
+    verifiedExternalGameSourcePrincipleCount:externalGameSourceRows.length,
+    verifiedExternalValidationOnlyPrincipleCount:externalDisposition.validationRows.length,
+    allRetrievedPrinciplesHaveExplicitDisposition:externalDisposition.allDisposed,
     retrievedVerifiedExternalLearningTruncationForbidden:true,
     verifiedLearningMemorySha:clean(process.env.VIBE2_VERIFIED_LEARNING_MEMORY_SHA)||null,
     freshIndependentQaRequired:true,
@@ -661,11 +668,14 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     'verifiedExternalLearningFirst=true',
     'verifiedExternalLearningIds='+knowledgeApplicationContract.verifiedExternalLearningIds.join(','),
     'verifiedExternalLearningApplyAxes='+knowledgeApplicationContract.verifiedExternalLearningApplyAxes.join(','),
-    'Before any game source or internal asset authoring starts, apply every task-relevant verified external black-box learning item retrieved into this work order. Truncating or silently ignoring any retrieved verified external item is forbidden.',
+    'Before authoring, assign every verified external black-box principle an explicit game-source, validation-only, or not-applicable disposition. Apply game-source principles to the actual affected gameplay or presentation code; keep Android/QA infrastructure principles in validation.',
     'Apply verified external learning across menu flow/information architecture, UI/UX feedback and touch readability, graphics/art/material/light/composition, motion/animation/transitions/impact/secondary motion, environment density/landmark/readability, VFX/camera/audio-visual feedback, and gameplay-system implementation when causally relevant.',
-    'For Roblox, Unity, Web, and asset-development work, every knowledge item retrieved into this work order must be applied as a transformative implementation input. Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs; do not silently ignore verified playbook reuse or raw-copy commercial source assets.',
+    'For Roblox, Unity, Web, and asset-development work, transform causally relevant gameplay and presentation principles into the affected game source. Preserve the full disposition trace and never copy commercial source assets.',
     'Only these injected knowledge items may receive credit or blame from this task. Infrastructure failures must not penalize knowledge. Fresh QA/regression/review is required before attribution.'
   ].join('\n'):'';
+  if(mandatoryVerifiedKnowledgeApplication&&!externalDisposition.allDisposed){
+    return freeze({...base,reason:'VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED',selectedTask:task,unifiedLearning,knowledgeApplicationContract});
+  }
   if(mandatoryVerifiedKnowledgeApplication&&verifiedExternalPlaybookReuse.length===0){
     return freeze({
       ...base,
