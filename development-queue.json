@@ -2536,7 +2536,7 @@
       "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T10:10:16.740Z",
+      "updatedAt": "2026-09-28T10:17:26.499Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2917,7 +2917,7 @@
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
       },
-      "robloxSharedTargetCurrent": true,
+      "robloxSharedTargetCurrent": false,
       "robloxFastMvpSupersededBy": null,
       "robloxPublicationTarget": {
         "version": 3,
@@ -3035,7 +3035,25 @@
         "workflowRunId": 36360535644,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
-      "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD"
+      "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
+      "robloxValidationTarget": {
+        "version": 1,
+        "gameId": "bug-defense",
+        "universeId": "10768435276",
+        "placeId": "134321496687957",
+        "verified": false,
+        "verifiedAt": null,
+        "lastVerifiedAt": null,
+        "source": "canonical-dedicated-open-cloud-bootstrap",
+        "authority": "roblox-pre-f9-validation-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
+        "reservedAt": "2026-09-28T10:17:26.499Z"
+      }
     },
     {
       "gameId": "line-defense",
@@ -9005,7 +9023,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-28T10:15:31.232Z",
+  "updatedAt": "2026-09-28T10:17:26.499Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
