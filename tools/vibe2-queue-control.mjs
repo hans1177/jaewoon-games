@@ -805,7 +805,7 @@ export function applyVibeFanInResults(queueInput, results = []) {
   return { queue, applied, summary: summarizeVibeContinuousQueue(queue), neuralCalibration, neuralEventTelemetry };
 }
 
-export function recordVibeNeuronResult(queueInput, rowInput = {}, { expectedVariants = 1 } = {}) {
+export function recordVibeNeuronResult(queueInput, rowInput = {}, { expectedVariants = 1, collapseExpectedVariants = false } = {}) {
   let queue = createVibeContinuousQueue(queueInput);
   const taskId = clean(rowInput?.taskId);
   const variant = clean(rowInput?.variant) || 'primary';
@@ -823,11 +823,12 @@ export function recordVibeNeuronResult(queueInput, rowInput = {}, { expectedVari
     return { updated:false, ready:false, slotReleased:true, stale:false, reason:'TASK_ALREADY_MICRO_FANIN_COMPLETE', taskId, variant, expectedVariants:expected, resultCount:0, queue };
   }
   const currentResults = Array.isArray(task.neuronResults) ? task.neuronResults : [];
+  const storedExpected = Math.max(0, Number(task.neuronExpectedVariants || 0));
+  const joinedExpected = collapseExpectedVariants===true ? expected : Math.max(expected, storedExpected);
   const duplicate = currentResults.some((row) => (clean(row?.variant) || 'primary') === variant && resultReservationId(row) === rowReservationId);
   if (duplicate) {
-    return { updated:false, ready:currentResults.length >= Math.max(expected, Number(task.neuronExpectedVariants || 0)), slotReleased:false, stale:false, reason:'DUPLICATE_VARIANT', taskId, variant, expectedVariants:Math.max(expected, Number(task.neuronExpectedVariants || 0)), resultCount:currentResults.length, queue };
+    return { updated:false, ready:currentResults.length >= joinedExpected, slotReleased:false, stale:false, reason:'DUPLICATE_VARIANT', taskId, variant, expectedVariants:joinedExpected, resultCount:currentResults.length, queue };
   }
-  const joinedExpected = Math.max(expected, Number(task.neuronExpectedVariants || 0));
   const nextResults = [...currentResults, rowInput];
   queue = createVibeContinuousQueue({
     maxConcurrentTasks: queue.maxConcurrentTasks,
@@ -994,7 +995,12 @@ export function runQueueCommand(args = {}) {
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? DEFAULT_ADAPTIVE_MIN;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
     const reservationMaxConcurrentTasks=configuredMaxConcurrentTasks;
-    const neuron = recordVibeNeuronResult(queue, row, { expectedVariants: optionalMaxConcurrent(args['expected-variants']) ?? 1 });
+    const assetNeuronCollapse=executionLane==='asset-development';
+    const neuronExpectedVariants=assetNeuronCollapse?1:(optionalMaxConcurrent(args['expected-variants']) ?? 1);
+    const neuron = recordVibeNeuronResult(queue, row, {
+      expectedVariants:neuronExpectedVariants,
+      collapseExpectedVariants:assetNeuronCollapse
+    });
     queue = neuron.queue;
     if (neuron.updated || transientLockRecovery.recovered) writeJson(file, queue);
     result = {
@@ -1098,6 +1104,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_NEURON_TASK_READY=${result.ready===true?'YES':'NO'}`);
     console.log(`VIBE2_NEURON_SLOT_RELEASED=${result.slotReleased===true?'YES':'NO'}`);
     console.log(`VIBE2_NEURON_VARIANTS=${result.resultCount || 0}/${result.expectedVariants || 1}`);
+    if(result.executionLane==='asset-development')console.log('VIBE2_ASSET_NEURON_EXPECTED_VARIANTS=1');
   }
   console.log(`VIBE2_QUEUE_RECOVERED=${result.recovered ?? 0}`);
   console.log(`VIBE2_QUEUE_NEXT=${result.summary?.nextTaskId || 'NONE'}`);
