@@ -1406,7 +1406,7 @@
         "sharedQueue": "vibe2-unreal-core:.vibe2/queue.json",
         "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5_ON_ACTUAL_WRITE_CONFLICT",
         "workerDirectControlWrite": false,
-        "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v6",
+        "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v7",
         "gamePrimaryExternalBoundary": 256,
         "liveVerification": {
           "previousRunId": 36204978877,
@@ -5506,7 +5506,7 @@
     "source": "company-learning/platform-release-roadmap.json#changeRecord.assetArmControlPlaneIsolation20260927",
     "workflow": ".github/workflows/vibe2-24h-runner.yml",
     "concurrency": {
-      "currentGroup": "vibe2-24h-cycle-singleton-v6",
+      "currentGroup": "vibe2-24h-cycle-singleton-v7",
       "cancelInProgress": false,
       "maxCurrentEpochChains": 1,
       "wakeSignalsCollapse": true

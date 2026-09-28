@@ -1773,3 +1773,26 @@ test('asset production tasks use the dedicated asset-development lane and never 
   assert.deepEqual(gameBatch.tasks.map(task=>task.id),['game-logic']);
   assert.ok(gameBatch.tasks.every(task=>task.executionLane==='GAME_PRIMARY'));
 });
+
+
+test('asset-development reserves Roblox before Unity when both are ready',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:64,tasks:[
+    {
+      id:'unity-asset',gameId:'unity-asset',target:'unity',department:'development',type:'implementation',
+      sourceRoot:'unity-games/unity-asset',goal:'presentation asset adaptation',status:'queued',
+      assetProductionLane:true,estimatedRisk:'high',speculativeEligible:true,
+      evidence:['asset-production-parallel:v1']
+    },
+    {
+      id:'roblox-asset',gameId:'roblox-asset',target:'roblox',department:'development',type:'implementation',
+      sourceRoot:'roblox-games/roblox-asset',goal:'presentation asset adaptation',status:'queued',
+      assetProductionLane:true,estimatedRisk:'high',speculativeEligible:true,
+      evidence:['asset-production-parallel:v1']
+    }
+  ]});
+  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:1,lane:'asset-development',reservation:{id:'asset-priority:1',runId:'asset-priority',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
+  assert.equal(batch.tasks.length,1);
+  assert.equal(batch.tasks[0].id,'roblox-asset');
+  assert.equal(batch.matrix[0].taskId,'roblox-asset');
+  assert.equal(batch.matrix[0].speculativeVariants,1);
+});

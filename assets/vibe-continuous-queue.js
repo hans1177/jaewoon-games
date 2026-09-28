@@ -498,7 +498,14 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     if (reasons.length) blocked.push(freeze({ task, reasons }));
     else candidates.push(freeze({ task, score: scoreTask(task, index) }));
   });
-  candidates.sort((a, b) => b.score - a.score || a.task.id.localeCompare(b.task.id));
+  candidates.sort((a, b) => {
+    if(laneMode==='asset-development'){
+      const aRoblox=clean(a.task?.target).toLowerCase()==='roblox'?1:0;
+      const bRoblox=clean(b.task?.target).toLowerCase()==='roblox'?1:0;
+      if(aRoblox!==bRoblox)return bRoblox-aRoblox;
+    }
+    return b.score - a.score || a.task.id.localeCompare(b.task.id);
+  });
 
   const selected = [];
   const deferredConflicts = [];
