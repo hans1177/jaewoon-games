@@ -171,7 +171,12 @@ function adaptiveCoverageSignals(launch={}){
     serverBoundary:/remote|server|authority|authoritative|spam|abuse|validation|datastore|save|rejoin/.test(text),
     combat:/combat|attack|skill|ability|damage|boss|enemy|monster|mob|zombie|wolf|spider|raider|defense|battle/.test(text),
     motion:/dash|dodge|parry|block|movement|move|chase|charge|jump|attack|skill|ability/.test(text),
-    audio:/audio|bgm|music|sound|sfx|footstep/.test(text)
+    audio:/audio|bgm|music|sound|sfx|footstep/.test(text),
+    npc:/npc|merchant|chief|healer|resident|worker|villager|quest giver|trainer|master|shopkeeper/.test(text),
+    companion:/companion|follower|pet|summon|party member|ai party|boss companion|worker automation/.test(text),
+    items:/item|loot|drop|weapon|armor|relic|inventory|resource|material|chest|food|potion/.test(text),
+    environment:/environment|decoration|asset|visual|art|biome|terrain|lighting|forest|village|house|building|theme/.test(text),
+    effects:/vfx|effect|feedback|telegraph|trail|flash|particle|beam|highlight|sound|sfx/.test(text)
   });
 }
 
@@ -191,6 +196,11 @@ export function deriveStudioActualPlayContract(launch={}){
   if(signals.combat)adaptiveScenarios.push('adaptive-combat-surface');
   if(signals.motion)adaptiveScenarios.push('adaptive-motion-surface');
   if(signals.audio||evidencePolicy.audioFeedbackPassRequired===true)adaptiveScenarios.push('adaptive-audio-surface');
+  if(signals.npc)adaptiveScenarios.push('adaptive-npc-surface');
+  if(signals.companion)adaptiveScenarios.push('adaptive-companion-ai-surface');
+  if(signals.items)adaptiveScenarios.push('adaptive-item-surface');
+  if(signals.environment)adaptiveScenarios.push('adaptive-environment-surface');
+  if(signals.effects)adaptiveScenarios.push('adaptive-effects-surface');
   const explicitScenarios=launchStringList(explicit?.requiredScenarios);
   return Object.freeze({
     ...explicit,
@@ -883,6 +893,11 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     'local maxX,maxY,maxZ=-math.huge,-math.huge,-math.huge',
     'local promptRows={}',
     'local mobRows={}',
+    'local npcRows={}',
+    'local companionRows={}',
+    'local itemRows={}',
+    'local effectCount=0',
+    'local environmentModels=0',
     'local soundCount=0;local playingSoundCount=0',
     'for _,d in ipairs(Workspace:GetDescendants()) do',
     ' if d:IsA("BasePart") then',
@@ -893,8 +908,17 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     '  if (#mobRows<80) and ((typeof(hp)=="number" and typeof(maxHp)=="number") or string.find(lname,"enemy") or string.find(lname,"monster") or string.find(lname,"mob") or string.find(lname,"zombie") or string.find(lname,"boss") or string.find(lname,"raider")) then table.insert(mobRows,{name=d.Name,x=d.Position.X,y=d.Position.Y,z=d.Position.Z,hp=hp,maxHp=maxHp,target=tostring(d:GetAttribute("Target") or ""),state=tostring(d:GetAttribute("State") or d:GetAttribute("AIState") or ""),dormant=d:GetAttribute("Dormant")}) end',
     ' elseif d:IsA("ProximityPrompt") then',
     '  prompts+=1;local parent=d.Parent;local pos=parent and parent:IsA("BasePart") and parent.Position or Vector3.new();if #promptRows<60 then table.insert(promptRows,{name=d.Name,actionText=tostring(d.ActionText),objectText=tostring(d.ObjectText),x=pos.X,y=pos.Y,z=pos.Z,maxDistance=d.MaxActivationDistance}) end',
-    ' elseif d:IsA("ClickDetector") then clickDetectors+=1 end',
-    ' elseif d:IsA("Sound") then soundCount+=1;if d.IsPlaying then playingSoundCount+=1 end',
+    ' elseif d:IsA("ClickDetector") then clickDetectors+=1',
+    ' elseif d:IsA("Sound") then soundCount+=1;if d.IsPlaying then playingSoundCount+=1',
+    ' elseif d:IsA("ParticleEmitter") or d:IsA("Trail") or d:IsA("Beam") or d:IsA("Highlight") then effectCount+=1',
+    ' elseif d:IsA("Model") then',
+    '  local lname=string.lower(d.Name);local pivot=d:GetPivot();local dh=d:FindFirstChildOfClass("Humanoid");local companion=string.find(lname,"companion") or string.find(lname,"follower") or string.find(lname,"pet") or string.find(lname,"summon")',
+    '  local npc=dh and not Players:GetPlayerFromCharacter(d) and (string.find(lname,"npc") or string.find(lname,"merchant") or string.find(lname,"chief") or string.find(lname,"healer") or string.find(lname,"resident") or string.find(lname,"worker") or string.find(lname,"villager") or string.find(lname,"master") or string.find(lname,"trainer"))',
+    '  if companion and #companionRows<50 then table.insert(companionRows,{name=d.Name,x=pivot.Position.X,y=pivot.Position.Y,z=pivot.Position.Z,health=dh and dh.Health or nil,state=tostring(d:GetAttribute("State") or d:GetAttribute("AIState") or ""),target=tostring(d:GetAttribute("Target") or ""),owner=tostring(d:GetAttribute("OwnerUserId") or "")}) end',
+    '  if npc and #npcRows<60 then table.insert(npcRows,{name=d.Name,x=pivot.Position.X,y=pivot.Position.Y,z=pivot.Position.Z,health=dh and dh.Health or nil,hasPrompt=d:FindFirstChildWhichIsA("ProximityPrompt",true)~=nil}) end',
+    '  if string.find(lname,"environment") or string.find(lname,"decor") or string.find(lname,"building") or string.find(lname,"house") or string.find(lname,"terrain") or string.find(lname,"village") then environmentModels+=1 end',
+    ' elseif d:IsA("Tool") or d:IsA("Accessory") then',
+    '  if #itemRows<60 then table.insert(itemRows,{name=d.Name,className=d.ClassName,parent=d.Parent and d.Parent.Name or ""}) end',
     ' end',
     'end',
     'for _,d in ipairs(SoundService:GetDescendants()) do if d:IsA("Sound") then soundCount+=1;if d.IsPlaying then playingSoundCount+=1 end end end',
@@ -925,8 +949,8 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     ' player={present=p~=nil,characterPresent=p~=nil and p.Character~=nil,humanoidPresent=hum~=nil,rootPresent=root~=nil,rootX=root and root.Position.X or nil,rootY=root and root.Position.Y or nil,rootZ=root and root.Position.Z or nil,velocityX=root and root.AssemblyLinearVelocity.X or nil,velocityY=root and root.AssemblyLinearVelocity.Y or nil,velocityZ=root and root.AssemblyLinearVelocity.Z or nil,health=hum and hum.Health or nil,maxHealth=hum and hum.MaxHealth or nil,floorMaterial=hum and tostring(hum.FloorMaterial) or nil,humanoidState=hum and tostring(hum:GetState()) or nil,animatorPresent=animator~=nil,animationTrackCount=animationTrackCount,motorCount=motorCount,roundState=attr(p,"RoundState"),role=attr(p,"Role"),monsterPreference=attr(p,"MonsterPreference"),soloRole=attr(p,"SoloRole"),feedbackEvent=attr(p,"FeedbackEvent"),currentMap=attr(p,"CurrentMap"),currentMapEvent=attr(p,"CurrentMapEvent"),humanCount=attr(p,"HumanCount"),monsterCount=attr(p,"MonsterCount"),objectivesDone=attr(p,"ObjectivesDone"),objectivesTotal=attr(p,"ObjectivesTotal")},',
     ' camera={present=camera~=nil,viewportX=viewport.X,viewportY=viewport.Y,fieldOfView=camera and camera.FieldOfView or nil,subjectPresent=camera and camera.CameraSubject~=nil or false},',
     ' ui=gui,',
-    ' world={arenaPresent=arena~=nil,arenaPartCount=parts,proximityPromptCount=prompts,clickDetectorCount=clickDetectors,collidablePartCount=collidableParts,spawnLocationCount=spawnLocations,boundsFinite=boundsFinite,minX=boundsFinite and minX or nil,minY=boundsFinite and minY or nil,minZ=boundsFinite and minZ or nil,maxX=boundsFinite and maxX or nil,maxY=boundsFinite and maxY or nil,maxZ=boundsFinite and maxZ or nil,floorBelowPlayer=floorBelow,prompts=promptRows,mobs=mobRows},',
-    ' runtime={remoteCount=remoteCount,remotes=remoteRows,progression=progressionRows,systemSignals=systemSignals,descendantCount=descendantCount,memoryMb=memoryMb,soundCount=soundCount,playingSoundCount=playingSoundCount},',
+    ' world={arenaPresent=arena~=nil,arenaPartCount=parts,proximityPromptCount=prompts,clickDetectorCount=clickDetectors,collidablePartCount=collidableParts,spawnLocationCount=spawnLocations,boundsFinite=boundsFinite,minX=boundsFinite and minX or nil,minY=boundsFinite and minY or nil,minZ=boundsFinite and minZ or nil,maxX=boundsFinite and maxX or nil,maxY=boundsFinite and maxY or nil,maxZ=boundsFinite and maxZ or nil,floorBelowPlayer=floorBelow,prompts=promptRows,mobs=mobRows,npcs=npcRows,companions=companionRows,items=itemRows,environmentModels=environmentModels,effectCount=effectCount},',
+    ' runtime={remoteCount=remoteCount,remotes=remoteRows,progression=progressionRows,systemSignals=systemSignals,descendantCount=descendantCount,memoryMb=memoryMb,soundCount=soundCount,playingSoundCount=playingSoundCount},'
     ' workspace={MapReady=attr(Workspace,"MapReady"),ActivePopulation=attr(Workspace,"ActivePopulation"),AIBotCount=attr(Workspace,"AIBotCount"),HumanCount=attr(Workspace,"HumanCount"),MonsterCount=attr(Workspace,"MonsterCount"),CurrentMapId=attr(Workspace,"CurrentMapId"),CurrentMapName=attr(Workspace,"CurrentMapName"),CurrentMapEvent=attr(Workspace,"CurrentMapEvent"),WorldArtPass=attr(Workspace,"WorldArtPass"),CharacterArtDirection=attr(Workspace,"CharacterArtDirection"),DesignCodeSync=attr(Workspace,"DesignCodeSync")},',
     ' lighting={brightness=Lighting.Brightness,clockTime=Lighting.ClockTime,ambientR=Lighting.Ambient.R,ambientG=Lighting.Ambient.G,ambientB=Lighting.Ambient.B}',
     '}',
