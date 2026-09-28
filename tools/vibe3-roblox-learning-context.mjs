@@ -69,7 +69,8 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
       id,
       distilledApplicationPrinciples:[],
       distilledAvoidancePrinciples:[],
-      distilledLearningUseAllowed:[]
+      distilledLearningUseAllowed:[],
+      distilledLearningUseForbidden:[]
     };
     previous.distilledApplicationPrinciples=unique([
       ...previous.distilledApplicationPrinciples,
@@ -82,6 +83,10 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     previous.distilledLearningUseAllowed=unique([
       ...previous.distilledLearningUseAllowed,
       ...(Array.isArray(row?.distilledLearningUseAllowed)?row.distilledLearningUseAllowed:[])
+    ]);
+    previous.distilledLearningUseForbidden=unique([
+      ...previous.distilledLearningUseForbidden,
+      ...(Array.isArray(row?.distilledLearningUseForbidden)?row.distilledLearningUseForbidden:[])
     ]);
     verifiedExternalById.set(id,previous);
   }
@@ -98,6 +103,7 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
   const verifiedExternalLearningPrinciples=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledApplicationPrinciples||[]));
   const verifiedExternalAvoidancePrinciples=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledAvoidancePrinciples||[]));
   const verifiedExternalLearningUseAllowed=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledLearningUseAllowed||[]));
+  const verifiedExternalLearningUseForbidden=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledLearningUseForbidden||[]));
   const recipes=(Array.isArray(recombination?.recipes)?recombination.recipes:[])
     .filter(recipe=>Array.isArray(recipe?.sourceProjects)&&new Set(recipe.sourceProjects.map(clean).filter(Boolean)).size>=2)
     .filter(recipe=>!(recipe.sourceProjects||[]).map(clean).includes(clean(gameId)));
@@ -170,6 +176,7 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     verifiedExternalLearningPrinciples:Object.freeze(verifiedExternalLearningPrinciples),
     verifiedExternalAvoidancePrinciples:Object.freeze(verifiedExternalAvoidancePrinciples),
     verifiedExternalLearningUseAllowed:Object.freeze(verifiedExternalLearningUseAllowed),
+    verifiedExternalLearningUseForbidden:Object.freeze(verifiedExternalLearningUseForbidden),
     verifiedExternalLearningFirst:true,
     verifiedExternalLearningTruncationForbidden:true,
     externalBlackBoxAdvisoryIds:Object.freeze(externalBlackBoxAdvisoryIds),
