@@ -89,9 +89,9 @@ test('pre-F9 publish is isolated to validation target and canonical publish requ
   assert.match(candidate,/canonicalGameTarget:false/);
   assert.match(candidate,/validationOnly:true/);
   assert.match(candidate,/publishStage==='final'/);
-  assert.match(candidate,/item\.robloxFinalReviewPassed===true/);
-  assert.match(candidate,/item\.robloxF9ReleaseRegressionPassed===true/);
-  assert.match(candidate,/item\.robloxCanonicalPublishPending===true/);
+  assert.match(candidate,/finalEntry\?\.finalReviewPassed===true/);
+  assert.match(candidate,/finalEntry\?\.f9ReleaseRegressionPassed===true/);
+  assert.match(candidate,/publishCycleId/);
   assert.match(candidate,/ROBLOX_CANONICAL_FINAL_PUBLISH=PASS/);
   assert.match(candidate,/ROBLOX_CANONICAL_FINAL_SOURCE_ARTIFACT_MATCH=YES/);
   assert.match(candidate,/ROBLOX_CANONICAL_GAME_TARGET_MUTATED=NO/);
@@ -119,8 +119,9 @@ test('F9 is nonterminal and dispatches exact verified artifact to final canonica
   assert.match(finalReview,/item\.robloxF9ReleaseRegressionPassed=true/);
   assert.match(finalReview,/item\.robloxInternalReleaseReady=false/);
   assert.match(finalReview,/item\.robloxCanonicalPublishPending=true/);
-  assert.match(finalReview,/item\.currentStep='CANONICAL_ROBLOX_PUBLISH_PENDING'/);
-  assert.match(finalReview,/ROBLOX_CANONICAL_FINAL_PUBLISH_PENDING/);
+  assert.match(finalReview,/item\.currentStep='POST_F9_CONTINUOUS_EVOLUTION'/);
+  assert.match(finalReview,/item\.canonicalState='F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION'/);
+  assert.match(finalReview,/robloxCanonicalPublishQueue/);
   assert.match(finalReview,/publish_stage=final/);
   assert.match(finalReview,/ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=/);
 });
@@ -301,7 +302,9 @@ test('central policy requires perpetual F0-F9 cycles and canonical publish only 
   assert.equal(cycle.perpetualRepeat,true);
   assert.equal(cycle.canonicalGameTargetPublishBeforeF9Forbidden,true);
   assert.equal(cycle.preF9ValidationMustUseSeparateTarget,true);
-  assert.equal(cycle.nextCycleMayStartOnlyAfterCanonicalPublishSuccess,true);
+  assert.equal(cycle.nextCycleMayStartOnlyAfterCanonicalPublishSuccess,false);
+  assert.equal(cycle.nextCycleStartsAfterPublishDispatch,true);
+  assert.equal(cycle.publicationOutcomeBlocksEvolution,false);
   assert.match(candidate,/const publicationTarget=publishStage==='final'\?\(item\.robloxPublicationTarget\|\|\{\}\):\(item\.robloxValidationTarget\|\|\{\}\)/);
   assert.match(candidate,/ROBLOX_VALIDATION_TARGET_PUBLISH=PASS/);
   assert.match(candidate,/ROBLOX_CANONICAL_FINAL_PUBLISH=PASS/);
@@ -379,7 +382,8 @@ test('internal Roblox modification loop is F0-F9 then canonical publish then rep
   assert.match(runtime,/publish_stage=validation/);
   assert.match(candidate,/Publish exact package to validation target or F9-verified canonical target/);
   assert.match(finalReview,/publish_stage=final/);
-  assert.match(candidate,/ROBLOX_CANONICAL_PUBLISH_FANIN_DISPATCHED=/);
+  assert.match(finalReview,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=/);
+  assert.match(finalReview,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
 });
 
 
