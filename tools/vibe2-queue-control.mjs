@@ -1126,7 +1126,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if(Array.isArray(result.selection?.deferredConflicts)){
     const conflicts=result.selection.deferredConflicts.slice(0,20);
     console.log(`VIBE2_QUEUE_DEFERRED_CONFLICT_COUNT=${result.selection.deferredConflicts.length}`);
-    console.log(`VIBE2_QUEUE_DEFERRED_CONFLICTS=${conflicts.map(row=>`${row?.task?.id||'UNKNOWN'}=>${row?.reason||'UNKNOWN'}`).join('|')||'NONE'}`);
+    console.log(`VIBE2_QUEUE_DEFERRED_CONFLICTS=${conflicts.map(row=>`${row?.task?.id||'UNKNOWN'}=>${row?.reason||'UNKNOWN'}@${row?.conflictTaskId||'UNKNOWN'}[${row?.conflictExecutionLane||'UNKNOWN'}:${row?.conflictBlocker||'ACTIVE'}]`).join('|')||'NONE'}`);
   }
   if (result.command === 'release-slot') console.log(`VIBE2_SLOT_RELEASED=${result.released ? 'YES' : 'NO'}`);
   if (result.adaptiveControl) {
