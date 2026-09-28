@@ -1,5 +1,5 @@
 {
-  "version": 489,
+  "version": 490,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -6629,7 +6629,7 @@
     },
     "qualityFailureRecoveryPolicySource": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit",
     "validationEfficiencyOptimization": {
-      "version": 2,
+      "version": 3,
       "authority": "OWNER_DIRECTIVE_2026-09-28",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "objective": "PRESERVE_EXISTING_AUTONOMOUS_GAME_EVOLUTION_WHILE REMOVING_DUPLICATE_OR_UNRELATED_VALIDATION WORK",
@@ -6686,7 +6686,8 @@
         "unrelatedChange": "REUSE_EXACT_VERIFIED_MULTIPLAYER_EVIDENCE",
         "singleExactProofPerSourceCycle": true,
         "duplicateF9Check": false,
-        "duplicatePublicReadinessCheck": false
+        "duplicatePublicReadinessCheck": false,
+        "idleScheduleRecheck": false
       },
       "f9": {
         "mode": "EVIDENCE_FAN_IN_AND_IMPACT_SCOPED_REGRESSION_REVIEW",
@@ -6700,7 +6701,8 @@
         "nextAction": "RETURN_RESULT_TO_EXISTING_GAME_EVOLUTION_LOOP",
         "startsExternalServerObservation": false,
         "startsFullSecurityRescan": false,
-        "startsDuplicateMultiplayerSession": false
+        "startsDuplicateMultiplayerSession": false,
+        "idleScheduleReplay": false
       },
       "security": {
         "defaultDevelopmentMode": "REUSE_VERIFIED_EXACT_OR_UNCHANGED_SECURITY_EVIDENCE",
@@ -6716,7 +6718,8 @@
         "cheapStaticBoundaryCheckAllowed": true,
         "exactUnchangedEvidenceReusable": true,
         "highRiskFindingStillFailClosed": true,
-        "publicReleaseRelevantSecurityEvidenceStillRequired": true
+        "publicReleaseRelevantSecurityEvidenceStillRequired": true,
+        "fullRescanMayNotRunFromIdleSchedule": true
       },
       "externalServer": {
         "automaticProbe": false,
@@ -6725,6 +6728,21 @@
         "publicReleaseRequirement": false,
         "role": "OPTIONAL_MANUAL_DIAGNOSTIC_ONLY",
         "mayNotBlockGameEvolution": true
+      },
+      "scheduledRecoveryScan": {
+        "enabled": true,
+        "cadencePreserved": true,
+        "purpose": "RECOVER_PENDING_EXACT_INTERNAL_VALIDATION_WITHOUT_REPEATING_HEAVY_QA_WHEN_IDLE",
+        "idleScanMode": "STATE_DISCOVERY_ONLY",
+        "heavyContractQaOnIdleSchedule": false,
+        "heavyContractQaRunsWhen": [
+          "EXACT_PENDING_INTERNAL_RUNTIME_OR_F9_WORK_EXISTS",
+          "RELEVANT_VALIDATION_CODE_OR_POLICY_CHANGED",
+          "EXPLICIT_WORKFLOW_DISPATCH"
+        ],
+        "noPendingWorkAction": "EXIT_WITHOUT_RUNTIME_SECURITY_OR_MULTIPLAYER_REVALIDATION",
+        "externalServerProbe": "MANUAL_ONLY",
+        "mayNotConsumeGameEvolutionCapacityWhenIdle": true
       }
     }
   },
@@ -10432,6 +10450,14 @@
       ],
       "developmentPriority": "GAME_EVOLUTION_FIRST_VALIDATION_AS_SUPPORTING_EVIDENCE",
       "noGateWeakeningForRelevantHighRiskChange": true
+    },
+    "validationIdleScanOptimization20260928": {
+      "id": "VALIDATION_IDLE_SCAN_OPTIMIZATION_2026-09-28",
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
+      "summary": "Preserve autonomous evolution and F0-F9 while making scheduled recovery scans state-only when no exact pending work exists; no duplicate security, multiplayer, external-server, or full deterministic QA on idle scans.",
+      "existingEvolutionLoopChanged": false,
+      "floorsChanged": false,
+      "f10Created": false
     }
   },
   "vibeExecutionLaneContract": {
