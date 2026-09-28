@@ -194,7 +194,7 @@ test('deterministic Roblox compiler binds approved genre and play mode to genera
     }};
     const inventory=deriveApprovedScopeInventory(locked);
     const compiled=compileRobloxSource({gameId,gameName:'Compiler Test',baseline:locked,artbook:{},playbooks:verifiedRobloxPlaybooks()});
-    assert.equal(compiled.generationMode,'DETERMINISTIC_PROFILE_BOUND_FULL_SCOPE_IMPLEMENTATION');
+    assert.equal(compiled.generationMode,'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT');
     assert.equal(compiled.modelUsed,false);
     assert.equal(compiled.validation.pass,true,compiled.validation.blockers.join(','));
     assert.equal(compiled.profile.genre,genre);
@@ -428,7 +428,9 @@ test('Roblox bootstrap consumes Vibe3 playbook and transformative learning conte
   assert.ok(learned.result.sharedConfig.includes('VerifiedExternalLearningFirst = true'));
   assert.ok(learned.result.sharedConfig.includes('CoveragePct = 100'));
   assert.ok(learned.result.sharedConfig.includes('ApplyAxes = {'));
-  assert.ok(learned.result.sharedConfig.includes('GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'));
+  assert.ok(learned.result.sharedConfig.includes('GameSpecificSemanticMappings = {'));
+    assert.ok(learned.result.sharedConfig.includes('SemanticMappingVersion = 1'));
+    assert.ok(learned.result.sharedConfig.includes('LearningDispositions = {'));
   assert.ok(learned.result.serverCode.includes('ActionSequence'));
   assert.ok(learned.result.serverCode.includes('LastLearningPattern'));
   assert.ok(learned.result.clientCode.includes('ContextActionService'));
