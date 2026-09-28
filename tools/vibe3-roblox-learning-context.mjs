@@ -224,7 +224,7 @@ function parsePrinciple(raw='',sourceLearningId=''){
 
 function validationOnlyPrinciple(principle){
   const text=[principle.id,principle.scope,principle.lesson,principle.apply].join(' ').toLowerCase();
-  return /android|apk|abi|artifact|hosted|emulator|ci[- ]?qa|qa[- ]?evidence|runtime[- ]?survival|automation|install|load window|before-after|separate from (the )?game entry|gameplay state distinct from selection|semantic-gameplay-input-plus-survival/.test(text);
+  return /android|apk|abi|artifact|hosted|emulator|ci[- ]?qa|qa[- ]?evidence|runtime[- ]?evidence|runtime[- ]?survival|\\bqa\\b|automation|install|load window|before-after|separate(?:d)?[- ]?from[- ]?(?:the[- ]?)?game[- ]?entry|gameplay[- ]?state(?:[- ]?must[- ]?be)?[- ]?visually?[- ]?distinct[- ]?from[- ]?selection[- ]?state|semantic-gameplay-input-plus-survival/.test(text);
 }
 
 function ruleForPrinciple(principle){
