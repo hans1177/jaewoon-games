@@ -1989,7 +1989,19 @@ export function createLocalStudioPlayEvidence({
         scenarioFailureCount:qualityFailureKinds.length,
         primaryActionDisplacement:Number(runtime?.metrics?.primaryActionDisplacement||0),
         primaryActionVelocity:Number(runtime?.metrics?.primaryActionVelocity||0),
-        primaryActionFeedbackChanged:runtime?.metrics?.primaryActionFeedbackChanged===true
+        primaryActionFeedbackChanged:runtime?.metrics?.primaryActionFeedbackChanged===true,
+        commercialAudit:{
+          auditProfile:clean(runtime?.metrics?.auditProfile||runtime?.auditProfile||'FAST_DEEP'),
+          timelineProbeCount:Number(runtime?.metrics?.timelineProbeCount||runtime?.timelineProbeCount||0),
+          progressChanged:runtime?.metrics?.progressChanged===true,
+          inventoryChanged:runtime?.metrics?.inventoryChanged===true,
+          timelineProgressChanged:runtime?.metrics?.timelineProgressChanged===true,
+          timelineMobDynamic:runtime?.metrics?.timelineMobDynamic===true,
+          timelineCompanionDynamic:runtime?.metrics?.timelineCompanionDynamic===true,
+          uiCommercial:runtime?.metrics?.uiCommercial&&typeof runtime.metrics.uiCommercial==='object'?runtime.metrics.uiCommercial:{},
+          surfaces:runtime?.metrics?.surfaces&&typeof runtime.metrics.surfaces==='object'?runtime.metrics.surfaces:{},
+          performance:runtime?.metrics?.performance&&typeof runtime.metrics.performance==='object'?runtime.metrics.performance:{}
+        }
       },
       characterMotionRuntime:characterMotionRuntime?{
         required:characterMotionRequired,
@@ -2020,11 +2032,80 @@ export function createLocalStudioPlayEvidence({
   };
 }
 
+function commercialBaselineRegressions(priorEvidence={},nextEvidence={}){
+  if(priorEvidence?.pass!==true)return[];
+  const prior=priorEvidence?.runtimeSummary?.commercialAudit||{};
+  const next=nextEvidence?.runtimeSummary?.commercialAudit||{};
+  const before=prior?.surfaces&&typeof prior.surfaces==='object'?prior.surfaces:{};
+  const after=next?.surfaces&&typeof next.surfaces==='object'?next.surfaces:{};
+  const protectedSurfaces=[
+    ['interactionSurfaceCount','INTERACTION_CHAIN'],
+    ['progressionSurfaceCount','PROGRESSION'],
+    ['combatSurfaceCount','COMBAT_AI'],
+    ['npcSurfaceCount','NPC'],
+    ['companionSurfaceCount','COMPANION_AI'],
+    ['itemSurfaceCount','ITEM_INVENTORY'],
+    ['remoteCount','SERVER_CLIENT_BOUNDARY'],
+    ['soundCount','AUDIO'],
+    ['effectCount','VFX_FEEDBACK'],
+    ['promptCount','INTERACTION_CHAIN']
+  ];
+  const regressions=[];
+  for(const [key,repairSurface] of protectedSurfaces){
+    const oldValue=Number(before?.[key]||0),newValue=Number(after?.[key]||0);
+    if(oldValue>0&&newValue===0){
+      regressions.push({
+        id:'commercial-regression-'+key,
+        repairSurface,
+        priority:'CRITICAL',
+        hint:'Previously verified Studio capability disappeared from the new source. Restore it or update the explicit product contract if removal was intentional.',
+        observed:{previous:oldValue,current:newValue}
+      });
+    }
+  }
+  const priorUi=prior?.uiCommercial||{},nextUi=next?.uiCommercial||{};
+  for(const key of ['offscreenButtons','undersizedTouchButtons','textOverflowButtons']){
+    const oldValue=Number(priorUi?.[key]||0),newValue=Number(nextUi?.[key]||0);
+    if(newValue>oldValue&&newValue>0){
+      regressions.push({
+        id:'commercial-regression-ui-'+key,
+        repairSurface:'MOBILE_UI',
+        priority:'HIGH',
+        hint:'Mobile UI regression increased compared with the last verified Studio baseline.',
+        observed:{previous:oldValue,current:newValue}
+      });
+    }
+  }
+  return regressions.slice(0,24);
+}
+
 export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expected={},workflowRunId=0,studioStepSucceeded=true,testedAt}={}){
   const item=(queue?.items||[]).find(row=>clean(row?.gameId)===clean(gameId));
   if(!item)throw new Error('ROBLOX_STUDIO_MCP_QUEUE_ITEM_MISSING:'+clean(gameId));
+  const priorStudioEvidence=item?.robloxInternalVibePlayEvidence&&typeof item.robloxInternalVibePlayEvidence==='object'
+    ?structuredClone(item.robloxInternalVibePlayEvidence):{};
   const result=createLocalStudioPlayEvidence({item,runtime,expected,workflowRunId,studioStepSucceeded,testedAt});
   const currentSourceArtifactBinding=result.evidence.currentSourceArtifactBinding===true;
+  const commercialRegressions=currentSourceArtifactBinding?commercialBaselineRegressions(priorStudioEvidence,result.evidence):[];
+  if(commercialRegressions.length&&!result.evidence.infrastructureFailure){
+    result.pass=false;
+    result.evidence.pass=false;
+    result.evidence.failureClass='STUDIO_COMMERCIAL_REGRESSION';
+    result.evidence.robloxFailureClass='ROBLOX_COMMERCIAL_REGRESSION';
+    result.evidence.scenarioCoveragePass=false;
+    result.evidence.qualityFailureKinds=[
+      ...new Set([...(result.evidence.qualityFailureKinds||[]),...commercialRegressions.map(row=>row.id)])
+    ].slice(0,48);
+    result.evidence.qualityFailureDetails=[
+      ...(result.evidence.qualityFailureDetails||[]),
+      ...commercialRegressions
+    ].slice(0,48);
+    result.evidence.commercialRegressionDetected=true;
+    result.evidence.commercialRegressionDetails=commercialRegressions;
+  }else{
+    result.evidence.commercialRegressionDetected=false;
+    result.evidence.commercialRegressionDetails=[];
+  }
 
   item.robloxInternalVibePlayEvidence=result.evidence;
 
