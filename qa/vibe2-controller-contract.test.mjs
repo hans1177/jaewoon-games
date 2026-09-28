@@ -1085,7 +1085,9 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   const start=workflow.indexOf('- name: Build immutable worker result');
   const end=workflow.indexOf('- name: Upload worker result for fan-in');
   const resultStep=workflow.slice(start,end);
-  assert(resultStep.includes('candidateIdentity=candidateOk?'));
+  assert(resultStep.includes('candidateIdentity=effectiveCandidateOk?'));
+  assert(resultStep.includes('const effectiveCandidateOk=candidateOk&&sourcePromptLearningOk'));
+  assert(resultStep.includes("blocker='verified-external-learning-source-prompt-unproven'"));
   assert(resultStep.includes('taskId:clean(manifest.taskId)'));
   assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
   assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
@@ -1178,8 +1180,9 @@ test('candidate failure telemetry survives a failed source worker step',()=>{
   assert(resultStep.includes('coding-verified-failure-memory-count:${Number(baseCodingMethod.verifiedFailureLocalMemoryCount)}'));
   assert(resultStep.includes('coding-timeout-partial-recovery:YES'));
   assert(resultStep.includes("const sourceGenerationAttempted=process.env.ORDER_RUN==='true' && route==='text-source-worker'"));
-  assert(resultStep.includes("candidateFailure=sourceGenerationAttempted&&!candidateOk?"));
-  assert(resultStep.includes("candidateFailureClass=sourceGenerationAttempted&&!candidateOk?"));
+  assert(resultStep.includes("candidateFailure=sourceGenerationAttempted&&!effectiveCandidateOk?"));
+  assert(resultStep.includes("candidateFailureClass=sourceGenerationAttempted&&!effectiveCandidateOk"));
+  assert(resultStep.includes("'VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT'"));
   assert(resultStep.includes("manifest.exploration||(explorationFile&&fs.existsSync(explorationFile)"));
   assert(resultStep.includes("const baseCodingMethod=manifest?.codingMethod||fallbackCodingMethod"));
   assert(resultStep.includes("strategy:clean(workOrder.candidateStrategyRole.strategy)"));
