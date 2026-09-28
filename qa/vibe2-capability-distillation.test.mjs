@@ -68,6 +68,18 @@ const passResult={
     causalReplayExecuted:true
   },
   roleResults:{exploration:'PASS',implementation:'PASS',test:'PASS',performance:'PASS',regression:'WAITING_FAN_IN',review:'WAITING_FAN_IN'},
+  knowledgeApplication:{
+    version:3,
+    mandatoryForGameTarget:true,
+    verifiedExternalLearningFirst:true,
+    verifiedExternalLearningIds:['external-black-box-block-blast-run-30'],
+    verifiedExternalLearningRetrievedCount:1,
+    verifiedExternalLearningAppliedCount:1,
+    verifiedExternalLearningCoveragePct:100,
+    verifiedExternalLearningApplyAxes:["MENU_FLOW_AND_INFORMATION_ARCHITECTURE","UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY","GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION","MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION","ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY","VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE","GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"],
+    retrievedVerifiedExternalLearningTruncationForbidden:true,
+    verifiedLearningMemorySha:'verified-memory-sha'
+  },
   metrics:{changedFileCount:1,addedLineCount:8,deletedLineCount:3,workerTotalMs:1500,candidateMs:900,qaMs:400}
 };
 
@@ -102,6 +114,10 @@ test('verified selected fan-in winner becomes reusable capability experience',()
   assert.ok(review.evidence.includes('fan-in-review:PASS'));
   assert.ok(review.reusablePatterns.includes('CAPABILITY:CODING_STRATEGY:RESPONSIBILITY_FIRST'));
   assert.ok(review.reusablePatterns.includes('CAPABILITY_DOMAIN:REGRESSION_REASONING'));
+  assert.equal(review.verifiedExternalLearningApplication.verifiedExternalLearningCoveragePct,100);
+  assert.equal(review.verifiedExternalLearningApplication.verifiedExternalLearningAppliedCount,1);
+  assert.deepEqual(review.verifiedExternalLearningApplication.verifiedExternalLearningApplyAxes,["MENU_FLOW_AND_INFORMATION_ARCHITECTURE","UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY","GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION","MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION","ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY","VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE","GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"]);
+  assert.ok(review.evidence.includes('verified-external-learning-coverage:100'));
   assert.deepEqual(review.avoidPatterns,[]);
 });
 
@@ -390,6 +406,13 @@ test('continuous runner injects verified capability memory once and partitions i
   const fanIn=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
   assert.match(fanIn,/buildCapabilityApplicationReviews/);
   assert.match(fanIn,/capabilityApplicationReviews/);
+  assert.match(fanIn,/verifiedExternalLearningApplicationFailures/);
+  assert.match(fanIn,/VERIFIED_EXTERNAL_LEARNING_MISSING/);
+  assert.match(fanIn,/VERIFIED_EXTERNAL_LEARNING_PARTIAL_APPLICATION/);
+  assert.match(fanIn,/VERIFIED_EXTERNAL_LEARNING_TRUNCATED/);
+  assert.match(fanIn,/VERIFIED_EXTERNAL_LEARNING_AXIS_MISSING/);
+  assert.match(fanIn,/missing\.push\(\.\.\.verifiedExternalLearningApplicationFailures\(selectedResult\)\)/);
+  assert.match(fanIn,/verified-external-learning-application:PASS/);
 });
 
 
