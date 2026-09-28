@@ -1469,13 +1469,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     &&startGateEffectObserved;
   const blockingOverlayPass=
     Number(ui.largeBlockingOverlayCount||0)===0
-    &&(
-      Number(ui.largeOverlayCount||0)===0
-      ||activeLoopObserved
-      ||displacement>=0.1
-      ||semanticEffects>0
-      ||timelineProgressChanged
-    );
+    &&Number(ui.largeOverlayCount||0)===0
+    &&Number(ui.largestOverlayCoverage||0)<0.55;
   const floorSamples=Number(world.floorSampleCount||0),floorHits=Number(world.floorHitCount||0);
   const routeSamples=Number(world.routeSampleCount||0),routeSuccess=Number(world.routeSuccessCount||0);
   const floorCoveragePass=floorSamples===0||floorHits>=Math.max(1,Math.ceil(floorSamples*0.44));
