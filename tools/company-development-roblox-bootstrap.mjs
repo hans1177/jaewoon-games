@@ -218,26 +218,157 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
 }
 
 function verifiedExternalGameDevelopmentProfile(learning={}){
-  const principles=[...(learning?.verifiedExternalGameDevelopmentPrinciples||[])];
-  const mappings=principles.map(principle=>{
-    const text=clean(principle).toLowerCase();
-    const behaviors=[];
-    if(/immediate visible|visible state|state feedback|movement feedback|spatially anchored|prompt, legible|prompt and unambiguous/.test(text))behaviors.push('IMMEDIATE_VISIBLE_FEEDBACK');
-    if(/onboarding|touch interaction instruction|first playable|first live|game entry|setup milestone|narrative onboarding/.test(text))behaviors.push('CONTEXTUAL_ONBOARDING');
-    if(/persistent primary|persistent core state|context-relevant actions|high-frequency progression|action controls visible|action controls/.test(text))behaviors.push('PERSISTENT_ACTION_CONTROLS');
-    if(/level requirement|level requirements|danger guidance|risk cue|risk cues|before players commit|before commitment/.test(text))behaviors.push('VISIBLE_PROGRESSION_RISK_CUE');
-    if(!behaviors.length)throw new Error('ROBLOX_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED:'+principle);
-    return Object.freeze({principle,behaviors:Object.freeze(behaviors)});
-  });
-  const uses=behavior=>mappings.some(row=>row.behaviors.includes(behavior));
+  const principles=[...(learning?.verifiedExternalLearningPrinciples||[])];
+  if(!principles.length)throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_PRINCIPLES_REQUIRED');
   return Object.freeze({
     principles:Object.freeze(principles),
-    mappings:Object.freeze(mappings),
-    immediateVisibleFeedback:uses('IMMEDIATE_VISIBLE_FEEDBACK'),
-    contextualOnboarding:uses('CONTEXTUAL_ONBOARDING'),
-    persistentActions:uses('PERSISTENT_ACTION_CONTROLS'),
-    visibleProgressionRiskCue:uses('VISIBLE_PROGRESSION_RISK_CUE')
+    environmentBackground:true,
+    characterAnimationMotion:true,
+    skillVfxImpact:true,
+    cameraVisualFeedback:true,
+    uiUxTouchControls:true,
+    gameplayStateProgression:true,
+    runtimeQaReliability:true
   });
+}
+
+function robloxNativeLearningRuntimeBlock({frameVar='root',configVar='Config',learning={}}={}){
+  verifiedExternalGameDevelopmentProfile(learning);
+  return `-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
+local verifiedLearningPlayers = game:GetService("Players")
+local verifiedLearningTweenService = game:GetService("TweenService")
+local verifiedLearningLighting = game:GetService("Lighting")
+local verifiedLearningPlayer = verifiedLearningPlayers.LocalPlayer
+local verifiedLearningContext = ${configVar}.VerifiedExternalLearning or ${configVar}.LearningContext or {}
+local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
+local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
+local verifiedLearningRoot = ${frameVar}
+verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
+verifiedLearningRoot:SetAttribute("VerifiedExternalLearningAxisCount", #verifiedLearningAxes)
+verifiedLearningRoot:SetAttribute("VerifiedExternalLearningFingerprint", verifiedLearningContext.MemoryFingerprint or "")
+
+-- Roblox environment / background adaptation.
+local verifiedLearningColorGrade = verifiedLearningLighting:FindFirstChild("VerifiedLearningColorGrade")
+if not verifiedLearningColorGrade then
+  verifiedLearningColorGrade = Instance.new("ColorCorrectionEffect")
+  verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
+  verifiedLearningColorGrade.Parent = verifiedLearningLighting
+end
+verifiedLearningColorGrade.Saturation = 0.06
+verifiedLearningColorGrade.Contrast = 0.04
+verifiedLearningColorGrade.Brightness = 0.01
+local verifiedLearningBloom = verifiedLearningLighting:FindFirstChild("VerifiedLearningBloom")
+if not verifiedLearningBloom then
+  verifiedLearningBloom = Instance.new("BloomEffect")
+  verifiedLearningBloom.Name = "VerifiedLearningBloom"
+  verifiedLearningBloom.Parent = verifiedLearningLighting
+end
+verifiedLearningBloom.Intensity = 0.22
+verifiedLearningBloom.Size = 18
+verifiedLearningBloom.Threshold = 1.1
+
+-- Roblox character animation / motion adaptation.
+local function syncVerifiedLearningCharacterMotion(character)
+  local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid", 5)
+  if not humanoid then return end
+  local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 5)
+  if not animator then return end
+  humanoid.Running:Connect(function(speed)
+    local ratio = speed > 0.1 and math.clamp(speed / math.max(humanoid.WalkSpeed, 1), 0.82, 1.25) or 1
+    for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+      if track.Priority == Enum.AnimationPriority.Movement or track.Priority == Enum.AnimationPriority.Core then
+        track:AdjustSpeed(ratio)
+      end
+    end
+  end)
+end
+if verifiedLearningPlayer.Character then task.defer(syncVerifiedLearningCharacterMotion, verifiedLearningPlayer.Character) end
+verifiedLearningPlayer.CharacterAdded:Connect(syncVerifiedLearningCharacterMotion)
+
+-- Roblox UI / touch / progression guidance.
+local verifiedLearningGuidance = Instance.new("TextLabel")
+verifiedLearningGuidance.Name = "VerifiedLearningGuidance"
+verifiedLearningGuidance.Size = UDim2.new(1, -20, 0, 30)
+verifiedLearningGuidance.Position = UDim2.fromOffset(10, 8)
+verifiedLearningGuidance.BackgroundTransparency = 1
+verifiedLearningGuidance.TextWrapped = true
+verifiedLearningGuidance.TextScaled = true
+verifiedLearningGuidance.Text = "핵심 조작을 눌러 바로 플레이"
+verifiedLearningGuidance.Parent = verifiedLearningRoot
+local verifiedLearningRiskCue = Instance.new("TextLabel")
+verifiedLearningRiskCue.Name = "VerifiedLearningProgressionRiskCue"
+verifiedLearningRiskCue.Size = UDim2.new(1, -20, 0, 26)
+verifiedLearningRiskCue.Position = UDim2.fromOffset(10, 40)
+verifiedLearningRiskCue.BackgroundTransparency = 1
+verifiedLearningRiskCue.TextWrapped = true
+verifiedLearningRiskCue.TextScaled = true
+verifiedLearningRiskCue.Text = "도전 전 레벨·상태·위험 조건 확인"
+verifiedLearningRiskCue.Parent = verifiedLearningRoot
+
+-- Roblox skill VFX / camera / motion feedback.
+local function playVerifiedLearningActionFeedback(control)
+  verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control.Name)
+  verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputRespondedAt", os.clock())
+  verifiedLearningGuidance.Visible = false
+
+  local scale = control:FindFirstChild("VerifiedLearningMotionScale")
+  if not scale then
+    scale = Instance.new("UIScale")
+    scale.Name = "VerifiedLearningMotionScale"
+    scale.Parent = control
+  end
+  scale.Scale = 0.94
+  verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+
+  local camera = workspace.CurrentCamera
+  if camera then
+    local baseFov = camera.FieldOfView
+    verifiedLearningTweenService:Create(camera, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {FieldOfView = math.clamp(baseFov + 3, 40, 100)}):Play()
+    task.delay(0.09, function()
+      if camera then verifiedLearningTweenService:Create(camera, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {FieldOfView = baseFov}):Play() end
+    end)
+  end
+
+  local character = verifiedLearningPlayer.Character
+  local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+  if character and rootPart then
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "VerifiedLearningSkillImpact"
+    highlight.FillTransparency = 0.35
+    highlight.OutlineTransparency = 0.12
+    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    highlight.Parent = character
+    verifiedLearningTweenService:Create(highlight, TweenInfo.new(0.20), {FillTransparency = 1, OutlineTransparency = 1}):Play()
+    local sparkles = Instance.new("Sparkles")
+    sparkles.Name = "VerifiedLearningSkillSparkles"
+    sparkles.SparkleColor = Color3.fromRGB(170, 220, 255)
+    sparkles.Parent = rootPart
+    task.delay(0.22, function()
+      if sparkles then sparkles:Destroy() end
+      if highlight then highlight:Destroy() end
+    end)
+  end
+end
+
+local function bindVerifiedLearningControl(control)
+  if not control:IsA("GuiButton") then return end
+  if not control:FindFirstChild("VerifiedLearningTouchTarget") then
+    local size = Instance.new("UISizeConstraint")
+    size.Name = "VerifiedLearningTouchTarget"
+    size.MinSize = Vector2.new(0, 52)
+    size.Parent = control
+  end
+  control.Activated:Connect(function()
+    playVerifiedLearningActionFeedback(control)
+  end)
+end
+for _, descendant in ipairs(verifiedLearningRoot:GetDescendants()) do bindVerifiedLearningControl(descendant) end
+verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
+verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
+  verifiedLearningRoot:SetAttribute("VerifiedExternalLearningGameplayState", verifiedLearningPlayer:GetAttribute("LastApprovedScope") or "")
+end)
+-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
+`;
 }
 
 function verifiedExternalLearningConfigBlock(learning={}){
@@ -321,70 +452,13 @@ ${frameVar}:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verif
     if(output[at]===';')at++;
     output=output.slice(0,at)+'\n'+runtimeBlock+output.slice(at);
   }
-  const profile=verifiedExternalGameDevelopmentProfile(learning);
-  if(profile.immediateVisibleFeedback||profile.contextualOnboarding||profile.persistentActions||profile.visibleProgressionRiskCue){
-    const behavior=`-- VERIFIED_EXTERNAL_LEARNING_CLIENT_BEHAVIOR_BEGIN
-local verifiedLearningRoot = ${frameVar}
-local verifiedLearningImmediateFeedback = ${profile.immediateVisibleFeedback?'true':'false'}
-local verifiedLearningContextualOnboarding = ${profile.contextualOnboarding?'true':'false'}
-local verifiedLearningPersistentActions = ${profile.persistentActions?'true':'false'}
-local verifiedLearningProgressionRiskCue = ${profile.visibleProgressionRiskCue?'true':'false'}
-local verifiedLearningGuidance = nil
-local verifiedLearningRiskCue = nil
-if verifiedLearningContextualOnboarding then
-  verifiedLearningGuidance = Instance.new("TextLabel")
-  verifiedLearningGuidance.Name = "VerifiedLearningGuidance"
-  verifiedLearningGuidance.Size = UDim2.new(1, -20, 0, 32)
-  verifiedLearningGuidance.Position = UDim2.fromOffset(10, 8)
-  verifiedLearningGuidance.BackgroundTransparency = 1
-  verifiedLearningGuidance.TextWrapped = true
-  verifiedLearningGuidance.TextScaled = true
-  verifiedLearningGuidance.Text = "핵심 조작을 눌러 바로 플레이"
-  verifiedLearningGuidance.Parent = verifiedLearningRoot
-end
-if verifiedLearningProgressionRiskCue then
-  verifiedLearningRiskCue = Instance.new("TextLabel")
-  verifiedLearningRiskCue.Name = "VerifiedLearningProgressionRiskCue"
-  verifiedLearningRiskCue.Size = UDim2.new(1, -20, 0, 28)
-  verifiedLearningRiskCue.Position = UDim2.fromOffset(10, 42)
-  verifiedLearningRiskCue.BackgroundTransparency = 1
-  verifiedLearningRiskCue.TextWrapped = true
-  verifiedLearningRiskCue.TextScaled = true
-  verifiedLearningRiskCue.Text = "도전 전 레벨·위험 조건 확인"
-  verifiedLearningRiskCue.Parent = verifiedLearningRoot
-end
-local function bindVerifiedLearningControl(control)
-  if not control:IsA("GuiButton") then return end
-  if verifiedLearningPersistentActions then
-    local size = Instance.new("UISizeConstraint")
-    size.Name = "VerifiedLearningTouchTarget"
-    size.MinSize = Vector2.new(0, 52)
-    size.Parent = control
-  end
-  control.Activated:Connect(function()
-    verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control.Name)
-    verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputRespondedAt", os.clock())
-    if verifiedLearningGuidance then verifiedLearningGuidance.Visible = false end
-    if verifiedLearningImmediateFeedback then
-      local oldTransparency = control.BackgroundTransparency
-      control.BackgroundTransparency = math.clamp(oldTransparency + 0.18, 0, 1)
-      task.delay(0.12, function()
-        if control and control.Parent then control.BackgroundTransparency = oldTransparency end
-      end)
-    end
-  end)
-end
-for _, descendant in ipairs(verifiedLearningRoot:GetDescendants()) do bindVerifiedLearningControl(descendant) end
-verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
--- VERIFIED_EXTERNAL_LEARNING_CLIENT_BEHAVIOR_END
-`;
-    const behaviorRe=/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_BEHAVIOR_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_BEHAVIOR_END\n/;
-    if(behaviorRe.test(output))output=output.replace(behaviorRe,behavior);
-    else{
-      let at=(frameMatch.index||0)+frameMatch[0].length;
-      if(output[at]===';')at++;
-      output=output.slice(0,at)+'\n'+behavior+output.slice(at);
-    }
+  const behavior=robloxNativeLearningRuntimeBlock({frameVar,configVar,learning});
+  const behaviorRe=/-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END\n/;
+  if(behaviorRe.test(output))output=output.replace(behaviorRe,behavior);
+  else{
+    let at=(frameMatch.index||0)+frameMatch[0].length;
+    if(output[at]===';')at++;
+    output=output.slice(0,at)+'\n'+behavior+output.slice(at);
   }
   return output;
 }
@@ -574,7 +648,7 @@ task.defer(reportNativeFoundationReady)
   if(!studioClientConfigBound||!studioClientVisibleBound)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
   if(learning?.applied===true){
     if(!/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/.test(afterConfig)||!/CoveragePct\s*=\s*100/.test(afterConfig)||!afterConfig.includes(`MemoryFingerprint = ${luauString(learning.verifiedExternalLearningFingerprint||'')}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CONFIG_VERIFY_FAILED');
-    if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)||!/VerifiedExternalLearningCoveragePct/.test(afterClient)||!/VerifiedExternalLearningPrincipleCount/.test(afterClient)||!/VERIFIED_EXTERNAL_LEARNING_CLIENT_BEHAVIOR_BEGIN/.test(afterClient))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
+    if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)||!/VerifiedExternalLearningCoveragePct/.test(afterClient)||!/VerifiedExternalLearningPrincipleCount/.test(afterClient)||!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(afterClient)||!/VerifiedLearningColorGrade/.test(afterClient)||!/syncVerifiedLearningCharacterMotion/.test(afterClient)||!/VerifiedLearningSkillImpact/.test(afterClient)||!/FieldOfView/.test(afterClient))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
   }
   if(foundationRepair===true){
     const combined=afterServer+'\n'+afterClient;
@@ -730,8 +804,12 @@ function sharedConfigSource({gameId,gameName,saveRequired,actions,profile,platfo
   const sourceRows=(learning.sourceProjects||[]).map(value=>`    ${luauString(value)},`).join('\n');
   const verifiedExternalLearningRows=(learning.verifiedExternalLearningIds||[]).map(value=>`    ${luauString(value)},`).join('\n');
   const verifiedExternalLearningAxisRows=(learning.verifiedExternalLearningApplyAxes||[]).map(value=>`    ${luauString(value)},`).join('\n');
+  const verifiedExternalLearningPrincipleRows=(learning.verifiedExternalLearningPrinciples||[]).map(value=>`      ${luauString(value)},`).join('\n');
+  const verifiedExternalAvoidanceRows=(learning.verifiedExternalAvoidancePrinciples||[]).map(value=>`      ${luauString(value)},`).join('\n');
+  const verifiedExternalAllowedRows=(learning.verifiedExternalLearningUseAllowed||[]).map(value=>`      ${luauString(value)},`).join('\n');
+  const verifiedExternalForbiddenRows=(learning.verifiedExternalLearningUseForbidden||[]).map(value=>`      ${luauString(value)},`).join('\n');
   const studioFamilyRows=Object.entries(studioAssets?.families||{}).map(([family,atoms])=>`    ${family} = { ${(atoms||[]).map(value=>luauString(value)).join(', ')} },`).join('\n');
-  return `local Config = {\n  PolicySource = "company-learning/platform-release-roadmap.json",\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  Genre = ${luauString(profile.genre)},\n  Subgenre = ${luauString(profile.subgenre||'')},\n  PlayMode = ${luauString(profile.playMode)},\n  MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'},\n  CoopRequired = ${profile.coopImplementationRequired?'true':'false'},\n  CompetitiveRequired = ${profile.competitiveImplementationRequired?'true':'false'},\n  MinimumParticipants = ${profile.minimumParticipantsForRequiredQa},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  DesignBaseline = {\n    Required = true,\n    AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY",\n    StrictScoreRequiredForAdmission = false,\n  },\n  PlatformProfile = {\n    Platform = "ROBLOX",\n    InputModel = ${luauString(platformProfile.inputModel)},\n    SessionModel = ${luauString(platformProfile.sessionModel)},\n    MultiplayerRuntime = ${luauString(platformProfile.multiplayerRuntime)},\n    PerformanceBudget = ${luauString(platformProfile.performanceBudget)},\n    UiUx = ${luauString(platformProfile.uiUx)},\n    SaveAndNetwork = ${luauString(platformProfile.saveAndNetwork)},\n    ContentAdaptation = ${luauString(platformProfile.platformContentAdaptation)},\n    InternalReleaseTarget = ${luauString(platformProfile.internalReleaseTarget)},\n    ValidationEvidence = ${luauString(platformProfile.validationEvidence)},\n  },\n  -- STUDIO_ASSET_BINDING_BEGIN\n  StudioAssets = {\n    Applied = ${studioAssets.applied?'true':'false'},\n    BindingVersion = 2,\n    LibraryVersion = ${Number(studioAssets.libraryVersion||0)},\n    Source = ${luauString(studioAssets.source||'company-asset-library.json#baseMaterialLibrary')},\n    AtomState = ${luauString(studioAssets.atomState||'')},\n    RecipeId = ${luauString(studioAssets.recipeId||'NORMAL_VARIANT')},\n    ProductionVerified = false,\n    RuntimeVerificationRequired = true,\n    Families = {\n${studioFamilyRows}\n    },\n    MotionQuality = {\n      Contract = "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",\n      LibraryFirst = true,\n      ArticulatedRigRequired = true,\n      AnimatorRequired = true,\n      BlendAndSpeedSyncRequired = true,\n      RuntimeVerificationRequired = true,\n      MannequinHardFailure = "CHARACTER_MOTION_MANNEQUIN",\n    },\n  },\n  -- STUDIO_ASSET_BINDING_END\n  LearningContext = {\n    Applied = ${learning.applied?'true':'false'},\n    Authority = ${luauString(learning.authority||'roblox-baseline-only')},\n    RecipeId = ${luauString(learning.recipeId||'')},\n    Operator = ${luauString(learning.transformationOperator||'')},\n    OriginalModifierRequired = ${learning.originalModifierRequired?'true':'false'},\n    PlaybookChecklist = {\n${checklistRows}\n    },\n    FeatureBlend = {\n${featureRows}\n    },\n    SourceProjects = {\n${sourceRows}\n    },\n    VerifiedExternalLearningFirst = ${learning.verifiedExternalLearningFirst?'true':'false'},\n    MemoryFingerprint = ${luauString(learning.verifiedExternalLearningFingerprint||'')},\n    CoveragePct = ${Number(learning.verifiedExternalLearningCoveragePct||0)},\n    RetrievedCount = ${Number(learning.verifiedExternalLearningRetrievedCount||0)},\n    AppliedCount = ${Number(learning.verifiedExternalLearningAppliedCount||0)},\n    TruncationForbidden = ${learning.verifiedExternalLearningTruncationForbidden?'true':'false'},\n    ApplyAxes = {\n${verifiedExternalLearningAxisRows}\n    },\n    VerifiedExternalLearningIds = {\n${verifiedExternalLearningRows}\n    },\n  },\n  InitialState = {\n    Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,\n    Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,\n    PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,\n    SharedObjective = 0, RoundScore = 0,\n  },\n  Actions = {\n${actionRows}\n  },\n}\n\nreturn table.freeze(Config)\n`;
+  return `local Config = {\n  PolicySource = "company-learning/platform-release-roadmap.json",\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  Genre = ${luauString(profile.genre)},\n  Subgenre = ${luauString(profile.subgenre||'')},\n  PlayMode = ${luauString(profile.playMode)},\n  MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'},\n  CoopRequired = ${profile.coopImplementationRequired?'true':'false'},\n  CompetitiveRequired = ${profile.competitiveImplementationRequired?'true':'false'},\n  MinimumParticipants = ${profile.minimumParticipantsForRequiredQa},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  DesignBaseline = {\n    Required = true,\n    AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY",\n    StrictScoreRequiredForAdmission = false,\n  },\n  PlatformProfile = {\n    Platform = "ROBLOX",\n    InputModel = ${luauString(platformProfile.inputModel)},\n    SessionModel = ${luauString(platformProfile.sessionModel)},\n    MultiplayerRuntime = ${luauString(platformProfile.multiplayerRuntime)},\n    PerformanceBudget = ${luauString(platformProfile.performanceBudget)},\n    UiUx = ${luauString(platformProfile.uiUx)},\n    SaveAndNetwork = ${luauString(platformProfile.saveAndNetwork)},\n    ContentAdaptation = ${luauString(platformProfile.platformContentAdaptation)},\n    InternalReleaseTarget = ${luauString(platformProfile.internalReleaseTarget)},\n    ValidationEvidence = ${luauString(platformProfile.validationEvidence)},\n  },\n  -- STUDIO_ASSET_BINDING_BEGIN\n  StudioAssets = {\n    Applied = ${studioAssets.applied?'true':'false'},\n    BindingVersion = 2,\n    LibraryVersion = ${Number(studioAssets.libraryVersion||0)},\n    Source = ${luauString(studioAssets.source||'company-asset-library.json#baseMaterialLibrary')},\n    AtomState = ${luauString(studioAssets.atomState||'')},\n    RecipeId = ${luauString(studioAssets.recipeId||'NORMAL_VARIANT')},\n    ProductionVerified = false,\n    RuntimeVerificationRequired = true,\n    Families = {\n${studioFamilyRows}\n    },\n    MotionQuality = {\n      Contract = "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",\n      LibraryFirst = true,\n      ArticulatedRigRequired = true,\n      AnimatorRequired = true,\n      BlendAndSpeedSyncRequired = true,\n      RuntimeVerificationRequired = true,\n      MannequinHardFailure = "CHARACTER_MOTION_MANNEQUIN",\n    },\n  },\n  -- STUDIO_ASSET_BINDING_END\n  LearningContext = {\n    Applied = ${learning.applied?'true':'false'},\n    Authority = ${luauString(learning.authority||'roblox-baseline-only')},\n    RecipeId = ${luauString(learning.recipeId||'')},\n    Operator = ${luauString(learning.transformationOperator||'')},\n    OriginalModifierRequired = ${learning.originalModifierRequired?'true':'false'},\n    PlaybookChecklist = {\n${checklistRows}\n    },\n    FeatureBlend = {\n${featureRows}\n    },\n    SourceProjects = {\n${sourceRows}\n    },\n    VerifiedExternalLearningFirst = ${learning.verifiedExternalLearningFirst?'true':'false'},\n    MemoryFingerprint = ${luauString(learning.verifiedExternalLearningFingerprint||'')},\n    CoveragePct = ${Number(learning.verifiedExternalLearningCoveragePct||0)},\n    RetrievedCount = ${Number(learning.verifiedExternalLearningRetrievedCount||0)},\n    AppliedCount = ${Number(learning.verifiedExternalLearningAppliedCount||0)},\n    TruncationForbidden = ${learning.verifiedExternalLearningTruncationForbidden?'true':'false'},\n    ApplyAxes = {\n${verifiedExternalLearningAxisRows}\n    },\n    VerifiedExternalLearningIds = {\n${verifiedExternalLearningRows}\n    },\n    ApplicationPrinciples = {\n${verifiedExternalLearningPrincipleRows}\n    },\n    GameDevelopmentPrinciples = {\n${verifiedExternalLearningPrincipleRows}\n    },\n    AvoidancePrinciples = {\n${verifiedExternalAvoidanceRows}\n    },\n    LearningUseAllowed = {\n${verifiedExternalAllowedRows}\n    },\n    LearningUseForbidden = {\n${verifiedExternalForbiddenRows}\n    },\n  },\n  InitialState = {\n    Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,\n    Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,\n    PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,\n    SharedObjective = 0, RoundScore = 0,\n  },\n  Actions = {\n${actionRows}\n  },\n}\n\nreturn table.freeze(Config)\n`;
 }
 
 function serverHandlerBody(kind,index){
@@ -762,10 +840,11 @@ function serverSource({gameId,saveRequired,actions,profile,learning={}}){
 }
 
 function clientSource({profile,learning={},studioAssets={}}){
+  const nativeLearningRuntime=learning.applied?robloxNativeLearningRuntimeBlock({frameVar:'root',configVar:'Config',learning}):'';
   const learnedInput=learning.applied?`local ContextActionService = game:GetService("ContextActionService")\n`:``;
   const learnedBinding=learning.applied?`\nif #Config.Actions > 0 then\n  ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)\n    if inputState == Enum.UserInputState.Begin then remote:FireServer(Config.Actions[1].Id) end\n    return Enum.ContextActionResult.Sink\n  end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)\nend\n`:``;
   const multiplayerClient=profile.multiplayerRequired?`\nlocal multiplayerStatus = Instance.new("TextLabel")\nmultiplayerStatus.Name = "MultiplayerStatus"\nmultiplayerStatus.Size = UDim2.new(1, -20, 0, 36)\nmultiplayerStatus.Position = UDim2.fromOffset(10, 104)\nmultiplayerStatus.BackgroundTransparency = 1\nmultiplayerStatus.TextColor3 = Color3.fromRGB(180, 230, 255)\nmultiplayerStatus.TextScaled = true\nmultiplayerStatus.Text = "Multiplayer sync ready"\nmultiplayerStatus.Parent = root\nremote.OnClientEvent:Connect(function(kind, payload)\n  if kind ~= "MULTIPLAYER_SYNC" or typeof(payload) ~= "table" then return end\n  multiplayerStatus.Text = string.format("Players %d · Shared %d · Round %d", payload.ParticipantCount or 0, payload.SharedObjective or 0, payload.RoundScore or 0)\nend)\n`:``;
-  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal UserInputService = game:GetService("UserInputService")\n${learnedInput}local STUDIO_ASSET_BINDING_VERSION = 2\nlocal player = Players.LocalPlayer\nlocal Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\nlocal remote = ReplicatedStorage:WaitForChild(Config.RemoteName)\nlocal foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")\nlocal nativeTouchEnabled = UserInputService.TouchEnabled\nlocal nativeFoundationCamera = workspace.CurrentCamera\nlocal function reportNativeFoundationReady()\n  local character = player.Character or player.CharacterAdded:Wait()\n  local humanoid = character:WaitForChild("Humanoid")\n  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then\n    foundationRemote:FireServer("CAMERA_READY")\n  end\n  foundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")\nend\ntask.defer(reportNativeFoundationReady)\n\nlocal gui = Instance.new("ScreenGui")\ngui.Name = "ApprovedScopeHud"\ngui.ResetOnSpawn = false\ngui.Parent = player:WaitForChild("PlayerGui")\nlocal root = Instance.new("Frame")\nroot.Name = "Root"\nroot.AnchorPoint = Vector2.new(0.5, 1)\nroot.Position = UDim2.fromScale(0.5, 0.98)\nroot.Size = UDim2.new(1, -24, 0, 360)\nroot.BackgroundTransparency = 0.15\nlocal studioUi = Config.StudioAssets and Config.StudioAssets.Families and Config.StudioAssets.Families.UI or {}\nlocal function hasStudioAtom(atom)\n  return table.find(studioUi, atom) ~= nil\nend\nroot.BackgroundColor3 = hasStudioAtom("FRAME_PANEL") and Color3.fromRGB(22, 34, 58) or Color3.fromRGB(18, 28, 48)\nroot:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)\nroot:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))\nroot.Parent = gui\nlocal title = Instance.new("TextLabel")\ntitle.Name = "Title"\ntitle.Size = UDim2.new(1, -20, 0, 44)\ntitle.Position = UDim2.fromOffset(10, 8)\ntitle.BackgroundTransparency = 1\ntitle.TextColor3 = Color3.fromRGB(245, 248, 255)\ntitle.TextScaled = true\ntitle.Text = string.format("%s · %s · %s", Config.GameName, Config.Genre, Config.PlayMode)\ntitle.Parent = root\nlocal status = Instance.new("TextLabel")\nstatus.Name = "Status"\nstatus.Size = UDim2.new(1, -20, 0, 48)\nstatus.Position = UDim2.fromOffset(10, 54)\nstatus.BackgroundColor3 = Color3.fromRGB(10, 17, 30)\nstatus.TextColor3 = Color3.fromRGB(220, 232, 250)\nstatus.TextScaled = true\nstatus.Parent = root\n${multiplayerClient}\nlocal list = Instance.new("ScrollingFrame")\nlist.Name = "ApprovedActions"\nlist.Size = UDim2.new(1, -20, 1, -${profile.multiplayerRequired?150:112})\nlist.Position = UDim2.fromOffset(10, ${profile.multiplayerRequired?142:106})\nlist.BackgroundTransparency = 1\nlist.BorderSizePixel = 0\nlist.AutomaticCanvasSize = Enum.AutomaticSize.Y\nlist.CanvasSize = UDim2.new()\nlist.ScrollBarThickness = 6\nlist.Parent = root\nlocal layout = Instance.new("UIListLayout")\nlayout.Padding = UDim.new(0, 8)\nlayout.SortOrder = Enum.SortOrder.LayoutOrder\nlayout.Parent = list\nfor index, action in ipairs(Config.Actions) do\n  local button = Instance.new("TextButton")\n  button.Name = "ScopeAction" .. index\n  button.LayoutOrder = index\n  button.Size = UDim2.new(1, -4, 0, 56)\n  button.BackgroundColor3 = hasStudioAtom("BUTTON_PRIMARY") and Color3.fromRGB(224, 236, 255) or Color3.fromRGB(235, 242, 255)\n  button.TextColor3 = Color3.fromRGB(16, 24, 40)\n  button.TextWrapped = true\n  button.TextScaled = true\n  button.Text = string.format("%d. %s [%s]", index, action.Label, action.Kind)\n  button.Parent = list\n  button.Activated:Connect(function() remote:FireServer(action.Id) end)\nend\nlocal healthTrack = Instance.new("Frame")\nhealthTrack.Name = "StudioHealthTrack"\nhealthTrack.Size = UDim2.new(1, -20, 0, 10)\nhealthTrack.Position = UDim2.fromOffset(10, 98)\nhealthTrack.BackgroundColor3 = Color3.fromRGB(70, 78, 92)\nhealthTrack.BorderSizePixel = 0\nhealthTrack.Visible = hasStudioAtom("BAR_HEALTH")\nhealthTrack.Parent = root\nlocal healthFill = Instance.new("Frame")\nhealthFill.Name = "StudioHealthFill"\nhealthFill.Size = UDim2.fromScale(1, 1)\nhealthFill.BackgroundColor3 = Color3.fromRGB(92, 205, 118)\nhealthFill.BorderSizePixel = 0\nhealthFill.Parent = healthTrack\nlocal watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}\nlocal function render()\n  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)\n  healthFill.Size = UDim2.fromScale(math.clamp((player:GetAttribute("Health") or 100) / 100, 0, 1), 1)\nend\nfor _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end\nrender()\n${learnedBinding}`;
+  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal UserInputService = game:GetService("UserInputService")\n${learnedInput}local STUDIO_ASSET_BINDING_VERSION = 2\nlocal player = Players.LocalPlayer\nlocal Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\nlocal remote = ReplicatedStorage:WaitForChild(Config.RemoteName)\nlocal foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")\nlocal nativeTouchEnabled = UserInputService.TouchEnabled\nlocal nativeFoundationCamera = workspace.CurrentCamera\nlocal function reportNativeFoundationReady()\n  local character = player.Character or player.CharacterAdded:Wait()\n  local humanoid = character:WaitForChild("Humanoid")\n  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then\n    foundationRemote:FireServer("CAMERA_READY")\n  end\n  foundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")\nend\ntask.defer(reportNativeFoundationReady)\n\nlocal gui = Instance.new("ScreenGui")\ngui.Name = "ApprovedScopeHud"\ngui.ResetOnSpawn = false\ngui.Parent = player:WaitForChild("PlayerGui")\nlocal root = Instance.new("Frame")\nroot.Name = "Root"\nroot.AnchorPoint = Vector2.new(0.5, 1)\nroot.Position = UDim2.fromScale(0.5, 0.98)\nroot.Size = UDim2.new(1, -24, 0, 360)\nroot.BackgroundTransparency = 0.15\nlocal studioUi = Config.StudioAssets and Config.StudioAssets.Families and Config.StudioAssets.Families.UI or {}\nlocal function hasStudioAtom(atom)\n  return table.find(studioUi, atom) ~= nil\nend\nroot.BackgroundColor3 = hasStudioAtom("FRAME_PANEL") and Color3.fromRGB(22, 34, 58) or Color3.fromRGB(18, 28, 48)\nroot:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)\nroot:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))\nroot.Parent = gui\nlocal title = Instance.new("TextLabel")\ntitle.Name = "Title"\ntitle.Size = UDim2.new(1, -20, 0, 44)\ntitle.Position = UDim2.fromOffset(10, 8)\ntitle.BackgroundTransparency = 1\ntitle.TextColor3 = Color3.fromRGB(245, 248, 255)\ntitle.TextScaled = true\ntitle.Text = string.format("%s · %s · %s", Config.GameName, Config.Genre, Config.PlayMode)\ntitle.Parent = root\nlocal status = Instance.new("TextLabel")\nstatus.Name = "Status"\nstatus.Size = UDim2.new(1, -20, 0, 48)\nstatus.Position = UDim2.fromOffset(10, 54)\nstatus.BackgroundColor3 = Color3.fromRGB(10, 17, 30)\nstatus.TextColor3 = Color3.fromRGB(220, 232, 250)\nstatus.TextScaled = true\nstatus.Parent = root\n${multiplayerClient}\nlocal list = Instance.new("ScrollingFrame")\nlist.Name = "ApprovedActions"\nlist.Size = UDim2.new(1, -20, 1, -${profile.multiplayerRequired?150:112})\nlist.Position = UDim2.fromOffset(10, ${profile.multiplayerRequired?142:106})\nlist.BackgroundTransparency = 1\nlist.BorderSizePixel = 0\nlist.AutomaticCanvasSize = Enum.AutomaticSize.Y\nlist.CanvasSize = UDim2.new()\nlist.ScrollBarThickness = 6\nlist.Parent = root\nlocal layout = Instance.new("UIListLayout")\nlayout.Padding = UDim.new(0, 8)\nlayout.SortOrder = Enum.SortOrder.LayoutOrder\nlayout.Parent = list\nfor index, action in ipairs(Config.Actions) do\n  local button = Instance.new("TextButton")\n  button.Name = "ScopeAction" .. index\n  button.LayoutOrder = index\n  button.Size = UDim2.new(1, -4, 0, 56)\n  button.BackgroundColor3 = hasStudioAtom("BUTTON_PRIMARY") and Color3.fromRGB(224, 236, 255) or Color3.fromRGB(235, 242, 255)\n  button.TextColor3 = Color3.fromRGB(16, 24, 40)\n  button.TextWrapped = true\n  button.TextScaled = true\n  button.Text = string.format("%d. %s [%s]", index, action.Label, action.Kind)\n  button.Parent = list\n  button.Activated:Connect(function() remote:FireServer(action.Id) end)\nend\nlocal healthTrack = Instance.new("Frame")\nhealthTrack.Name = "StudioHealthTrack"\nhealthTrack.Size = UDim2.new(1, -20, 0, 10)\nhealthTrack.Position = UDim2.fromOffset(10, 98)\nhealthTrack.BackgroundColor3 = Color3.fromRGB(70, 78, 92)\nhealthTrack.BorderSizePixel = 0\nhealthTrack.Visible = hasStudioAtom("BAR_HEALTH")\nhealthTrack.Parent = root\nlocal healthFill = Instance.new("Frame")\nhealthFill.Name = "StudioHealthFill"\nhealthFill.Size = UDim2.fromScale(1, 1)\nhealthFill.BackgroundColor3 = Color3.fromRGB(92, 205, 118)\nhealthFill.BorderSizePixel = 0\nhealthFill.Parent = healthTrack\nlocal watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}\nlocal function render()\n  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)\n  healthFill.Size = UDim2.fromScale(math.clamp((player:GetAttribute("Health") or 100) / 100, 0, 1), 1)\nend\nfor _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end\nrender()\n${nativeLearningRuntime}\n${learnedBinding}`;
 }
 
 export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={},playbooks={},recombination={},webHandoff={},roadmap={},assetLibrary={},buildUpDirective={}}={}){
@@ -797,6 +876,7 @@ export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={
       'mobile-first ScreenGui exposes approved gameplay actions',
       studioAssets.applied?`Studio base material binding applied: ${studioAssets.selectedAtomCount} semantic atoms; runtime verification still required`:'Studio base material binding unavailable',
       learning.applied?`Vibe3 Roblox playbook applied: ${learning.checklist.join(', ')}`:'Vibe3 learning context not supplied',
+      learning.applied?'verified APK principles are adapted into Roblox environment/background, character animation/motion, skill VFX, camera feedback, UI/touch controls, gameplay state, and runtime QA':'',
       learning.applied?`transformative recipe=${learning.recipeId}; operator=${learning.transformationOperator}; features=${learning.featureBlend.join(', ')}`:null,
       saveRequired?'persistent player state uses DataStoreService with safe fallback':'no DataStore added because locked baseline does not require persistence',
       clean(buildUpDirective?.thisLoopPrimaryGoal)?`shared BUILD_UP directive pending implementation: ${clean(buildUpDirective.thisLoopPrimaryGoal)}`:null,
