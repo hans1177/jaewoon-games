@@ -2016,6 +2016,8 @@ jobs:
           $enablementRequired = $false
           $toolProviderTimeoutObserved = $false
           $studioAttachmentFailureObserved = $false
+          $productFailureObserved = $false
+          $productFailureSignature = ''
 
           for ($attempt = 1; $attempt -le $maxSessionAttempts; $attempt++) {
             if (Test-Path $result) { Remove-Item $result -Force -ErrorAction SilentlyContinue }
@@ -2053,6 +2055,14 @@ jobs:
               Write-Host "ROBLOX_STUDIO_MCP_FAILURE_EVIDENCE_PRESERVED=$result"
               $failureSignature = (& node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8').replace(/^\\uFEFF/,''));process.stdout.write(String(r?.errors?.[0]?.signature||''))" $result).Trim()
               if ($LASTEXITCODE -ne 0) { throw 'Studio MCP failure evidence parse failed' }
+              $productFailureState = (& node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8').replace(/^\\uFEFF/,''));const q=Array.isArray(r?.qualityFailureKinds)?r.qualityFailureKinds.filter(Boolean):[];const e=Array.isArray(r?.errors)?r.errors:[];process.stdout.write(q.length>0||e.some(x=>/^studio-product-/i.test(String(x?.type||'')))?'PRODUCT':'NO')" $result).Trim()
+              if ($LASTEXITCODE -ne 0) { throw 'Studio MCP product failure evidence parse failed' }
+              if ($productFailureState -eq 'PRODUCT') {
+                $productFailureObserved = $true
+                $productFailureSignature = $failureSignature
+                Write-Host "ROBLOX_STUDIO_MCP_PRODUCT_FAILURE_PRESERVED=YES:attempt=$attempt:signature=$productFailureSignature"
+                break
+              }
               $requiredToolsEmpty = ($failureSignature -match 'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY') -and ($failureSignature -match 'available=:')
               $mcpServerNotEnabled = $failureSignature -match 'stderrHint=MCP_SERVER_NOT_ENABLED'
               $emptyAssistantSettingsAfterReady = $failureSignature -match 'settingHint=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY'
@@ -2189,6 +2199,9 @@ jobs:
               } else {
                 Write-Host 'ROBLOX_STUDIO_MCP_STUDIO_LOG=NOT_FOUND'
               }
+            }
+            if ($productFailureObserved) {
+              throw "official Roblox Studio product failure preserved for repair: $productFailureSignature"
             }
             if ($enablementRequired) {
               throw 'official Roblox Studio MCP tools unavailable; enable Studio as MCP server in Assistant'
