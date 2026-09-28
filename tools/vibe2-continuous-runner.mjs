@@ -606,8 +606,11 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   ]);
   const assetDevelopmentLearning=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
   const mandatoryVerifiedKnowledgeApplication=['roblox','unity','web'].includes(plan.target)||assetDevelopmentLearning;
+  const verifiedExternalPlaybookReuse=freezeList((unifiedLearning?.playbookReuse||[])
+    .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook'&&clean(row?.id).startsWith('external-black-box-'))
+    .map(row=>row.id));
   const knowledgeApplicationContract=freeze({
-    version:2,
+    version:3,
     exactInjectedKnowledgeIds,
     primaryDomains:freezeList(unifiedLearning?.domainClassification?.primary||[]),
     secondaryDomains:freezeList(unifiedLearning?.domainClassification?.secondary||[]),
@@ -617,6 +620,12 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     applicationCoveragePct:100,
     allRetrievedKnowledgeApplied:true,
     verifiedPlaybookReuseCount:Number(unifiedLearning?.playbookReuse?.length||0),
+    verifiedExternalLearningFirst:true,
+    verifiedExternalLearningIds:verifiedExternalPlaybookReuse,
+    verifiedExternalLearningRetrievedCount:verifiedExternalPlaybookReuse.length,
+    verifiedExternalLearningAppliedCount:verifiedExternalPlaybookReuse.length,
+    verifiedExternalLearningCoveragePct:verifiedExternalPlaybookReuse.length>0?100:0,
+    retrievedVerifiedExternalLearningTruncationForbidden:true,
     verifiedLearningMemorySha:clean(process.env.VIBE2_VERIFIED_LEARNING_MEMORY_SHA)||null,
     freshIndependentQaRequired:true,
     infrastructureFailurePenalizesKnowledge:false,
@@ -628,9 +637,21 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     '[LEARNING KNOWLEDGE APPLICATION TRACE]',
     'exactKnowledgeIds='+knowledgeApplicationContract.exactInjectedKnowledgeIds.join(','),
     'verifiedLearningApplicationCoverage=100%',
+    'verifiedExternalLearningFirst=true',
+    'verifiedExternalLearningIds='+knowledgeApplicationContract.verifiedExternalLearningIds.join(','),
+    'Before any game source or internal asset authoring starts, apply every task-relevant verified external black-box learning item retrieved into this work order. Truncating or silently ignoring any retrieved verified external item is forbidden.',
     'For Roblox, Unity, Web, and asset-development work, every knowledge item retrieved into this work order must be applied as a transformative implementation input. Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs; do not silently ignore verified playbook reuse or raw-copy commercial source assets.',
     'Only these injected knowledge items may receive credit or blame from this task. Infrastructure failures must not penalize knowledge. Fresh QA/regression/review is required before attribution.'
   ].join('\n'):'';
+  if(mandatoryVerifiedKnowledgeApplication&&verifiedExternalPlaybookReuse.length===0){
+    return freeze({
+      ...base,
+      reason:'VERIFIED_EXTERNAL_BLACK_BOX_LEARNING_REQUIRED_BEFORE_GAME_OR_ASSET_WORK',
+      selectedTask:task,
+      unifiedLearning,
+      knowledgeApplicationContract
+    });
+  }
   const assetProduction = buildVibeAssetProductionPlan({
     task,
     target:plan.target,
