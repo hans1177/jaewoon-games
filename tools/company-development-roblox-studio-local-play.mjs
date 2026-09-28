@@ -154,6 +154,77 @@ function internalReleaseObserved(item={},candidate={}){
   );
 }
 
+function launchStringList(value){
+  return Array.isArray(value)?value.map(clean).filter(Boolean):[];
+}
+
+function adaptiveCoverageSignals(launch={}){
+  const launchCore=launchStringList(launch?.launchCore);
+  const releaseGates=launchStringList(launch?.releaseGates);
+  const text=[...launchCore,...releaseGates].join(' ').toLowerCase();
+  return Object.freeze({
+    ui:/ui|hud|mobile|button|menu|inventory|shop|equip|craft|control|dock|screen|lobby|loading|모바일|버튼|메뉴|인벤|상점|장비|제작|조작|화면|로비|로딩/.test(text),
+    onboarding:/tutorial|guide|onboarding|ftue|start screen|loading|lobby|objective|hint|튜토리얼|가이드|초보|시작 화면|로딩|로비|목표|안내/.test(text),
+    map:/map|zone|portal|dungeon|room|island|arena|world|base|village|ground|route|school|hospital|park|forest|cave|field|맵|지역|포탈|던전|방|섬|아레나|마을|사냥터|학교|병원|공원|숲|동굴/.test(text),
+    interactions:/quest|shop|inventory|equip|craft|prompt|interact|hire|recruit|build|upgrade|attack|skill|ability|button|door|portal|collect|gather|heal|trade|퀘스트|상점|인벤|장비|제작|상호작용|고용|모집|건설|강화|공격|스킬|문|포탈|채집|회복|거래/.test(text),
+    progression:/level|xp|gold|quest|wave|round|stage|boss|base|zone|portal|unlock|progress|mastery|advancement|tier|reward|레벨|경험치|골드|퀘스트|웨이브|라운드|스테이지|보스|해금|진행|숙련|전직|티어|보상/.test(text),
+    multiplayer:/multiplayer|multi-player|party|team|co-op|coop|cooperative|sync|late.?join|rejoin|2\+ players|멀티|파티|팀|협동|동기화|재접속/.test(text),
+    serverBoundary:/remote|server|authority|authoritative|spam|abuse|validation|datastore|save|rejoin/.test(text),
+    combat:/combat|attack|skill|ability|damage|boss|enemy|monster|mob|zombie|wolf|spider|raider|defense|battle|전투|공격|스킬|데미지|보스|적|몬스터|좀비|늑대|거미|방어/.test(text),
+    motion:/dash|dodge|parry|block|movement|move|chase|charge|jump|attack|skill|ability/.test(text),
+    audio:/audio|bgm|music|sound|sfx|footstep/.test(text),
+    npc:/npc|merchant|chief|healer|resident|worker|villager|quest giver|trainer|master|shopkeeper|상인|이장|치유사|주민|일꾼|마을사람|교관|전직|상점주인/.test(text),
+    companion:/companion|follower|pet|summon|party member|ai party|boss companion|worker automation|동료|펫|소환|파티원|동료 ai|자동 일꾼/.test(text),
+    items:/item|loot|drop|weapon|armor|relic|inventory|resource|material|chest|food|potion/.test(text),
+    environment:/environment|decoration|asset|visual|art|biome|terrain|lighting|forest|village|house|building|theme/.test(text),
+    effects:/vfx|effect|feedback|telegraph|trail|flash|particle|beam|highlight|sound|sfx/.test(text),
+    quests:/quest|mission|objective|task|contract|hunt|delivery|trial|퀘스트|임무|목표|과제|의뢰|사냥|배달|시험/.test(text),
+    rewards:/reward|gold|coin|xp|loot|drop|chest|prize|currency|income|보상|골드|코인|경험치|전리품|드롭|상자|재화|수입/.test(text),
+    economy:/gold|coin|currency|shop|merchant|price|cost|upgrade|purchase|sell/.test(text),
+    save:/save|load|rejoin|datastore|persist|progression persists|unlock persists/.test(text),
+    retry:/retry|restart|respawn|round restart|new run|reroll|reset|rejoin/.test(text),
+    camera:/camera|chase screen|field of view|fov|spectat/.test(text),
+    performance:/performance|optimization|streaming|large map|expanded map|population|many|roster/.test(text)
+  });
+}
+
+export function deriveStudioActualPlayContract(launch={}){
+  const explicit=launch?.studioActualPlayContract&&typeof launch.studioActualPlayContract==='object'
+    ?launch.studioActualPlayContract:{};
+  const launchCore=launchStringList(launch?.launchCore);
+  const releaseGates=launchStringList(launch?.releaseGates);
+  const evidencePolicy=launch?.evidencePolicy&&typeof launch.evidencePolicy==='object'?launch.evidencePolicy:{};
+  const signals=adaptiveCoverageSignals(launch);
+  const adaptiveScenarios=[
+    'character-camera-ready','visual-capture-sane','adaptive-runtime-surface','adaptive-ftue-clarity',
+    'adaptive-ui-commercial-quality','adaptive-world-safety','adaptive-map-route-coverage','adaptive-spawn-safety','adaptive-interaction-surface','adaptive-semantic-interaction-effect','adaptive-system-transaction-effect','adaptive-travel-effect',
+    'adaptive-gameplay-loop-cadence','adaptive-quest-state-transition','adaptive-reward-effect','adaptive-progression-surface','adaptive-remote-surface','adaptive-combat-surface','adaptive-mob-animation-ai',
+    'adaptive-motion-surface','adaptive-audio-surface','adaptive-npc-surface',
+    'adaptive-companion-ai-surface','adaptive-item-surface','adaptive-environment-surface',
+    'adaptive-effects-surface','adaptive-quest-loop-surface','adaptive-reward-loop-surface',
+    'adaptive-economy-surface','adaptive-save-surface','adaptive-save-rejoin-persistence','adaptive-retry-loop-surface','adaptive-retry-action-effect','adaptive-death-respawn-recovery',
+    'adaptive-multiplayer-sync-surface','adaptive-camera-quality','adaptive-performance-budget'
+  ];
+  const explicitScenarios=launchStringList(explicit?.requiredScenarios);
+  return Object.freeze({
+    ...explicit,
+    version:Number(explicit?.version||3),
+    required:true,
+    source:clean(explicit?.source)||'COMMERCIAL_ADAPTIVE_STUDIO_AUDIT',
+    requiredScenarios:[...new Set([...explicitScenarios,...adaptiveScenarios])],
+    expectations:{...(explicit?.expectations||{})},
+    adaptiveCoverage:Object.freeze({
+      version:1,
+      launchCore,
+      releaseGates,
+      evidencePolicy,
+      signals,
+      featureCount:launchCore.length+releaseGates.length,
+      contractHash:'sha256:'+stableSha256({launchCore,releaseGates,evidencePolicy,signals})
+    })
+  });
+}
+
 function localStudioActualPlayContractMetadata(repoRoot='',gameId=''){
   const root=clean(repoRoot);
   const id=clean(gameId);
@@ -162,9 +233,14 @@ function localStudioActualPlayContractMetadata(repoRoot='',gameId=''){
   if(!fs.existsSync(file))return{required:false,version:0,fingerprint:null};
   let launch={};
   try{launch=readJson(file);}catch{return{required:false,version:0,fingerprint:null};}
-  const contract=launch?.studioActualPlayContract||{};
-  if(contract?.required!==true)return{required:false,version:Number(contract?.version||0),fingerprint:null};
-  return{required:true,version:Number(contract?.version||0),fingerprint:'sha256:'+stableSha256(contract)};
+  const contract=deriveStudioActualPlayContract(launch);
+  return{
+    required:true,
+    version:Number(contract.version||0),
+    fingerprint:'sha256:'+stableSha256(contract),
+    adaptiveCoverage:true,
+    featureCount:Number(contract?.adaptiveCoverage?.featureCount||0)
+  };
 }
 
 export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='',repoRoot=''}={}){
@@ -310,6 +386,12 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
     const artifactIdentity=currentExact?currentArtifactIdentity:candidateArtifactIdentity;
     const artifactRunId=candidateArtifactRunId;
 
+    const requiredAuditProfile=(
+      item?.robloxF9ReleaseRegressionPassed===true
+      ||/FINAL_REVIEW|RELEASE|F9/i.test(clean(item?.currentStep))
+    )?'F9_SOAK':'FAST_DEEP';
+    const priorAuditProfile=clean(prior?.runtimeSummary?.commercialAudit?.auditProfile||prior?.auditProfile||'FAST_DEEP').toUpperCase();
+    const auditProfileEvidenceExact=priorAuditProfile===requiredAuditProfile;
     const scenarioEvidenceExact=Boolean(
       scenarioContract.required!==true
       ||(
@@ -333,6 +415,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&Number(prior?.versionNumber||0)===Number(candidate?.versionNumber||0)
       &&Boolean(clean(prior?.testedAt))
       &&scenarioEvidenceExact
+      &&auditProfileEvidenceExact
     );
     const alreadyObservedExactLocalArtifact=Boolean(
       localF0CandidateExact
@@ -347,6 +430,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&Number(prior?.runtimeSummary?.consoleErrorCount||0)===0
       &&Boolean(clean(prior?.testedAt))
       &&scenarioEvidenceExact
+      &&auditProfileEvidenceExact
     );
     if(alreadyObservedExactCandidate||alreadyObservedExactLocalArtifact)continue;
 
@@ -364,7 +448,8 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       actualPlayEligibility:localF0CandidateExact?'LOCAL_F0_ARTIFACT_EXACT':runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':internalReleaseObserved(item,candidate)?'INTERNAL_RELEASE_EXACT':'PRIVATE_INTERNAL_CANDIDATE_EXACT',
       scenarioContractRequired:scenarioContract.required===true,
       scenarioContractVersion:Number(scenarioContract.version||0),
-      scenarioContractFingerprint:scenarioContract.fingerprint
+      scenarioContractFingerprint:scenarioContract.fingerprint,
+      auditProfile:requiredAuditProfile
     });
   }
 
@@ -668,7 +753,7 @@ function startStopArgs(schema,studioId,start){
   }
   return fillRequired(args,schema);
 }
-function keyboardItem(schema,key){
+function keyboardItem(schema,key,durationMs=120){
   const props=schemaProps(schema),item={};
   for(const [name,def] of Object.entries(props)){
     if(/key.?code|^key$|keyboard.?key/i.test(name)){item[name]=key;continue;}
@@ -678,23 +763,49 @@ function keyboardItem(schema,key){
       }else if(def.type==='string')item[name]='press';
       continue;
     }
-    if(/duration.*ms|milliseconds|delay.*ms|wait.*ms/i.test(name))item[name]=120;
-    else if(/duration|delay|wait/i.test(name)&&['number','integer'].includes(def.type))item[name]=0.12;
+    if(/duration.*ms|milliseconds|delay.*ms|wait.*ms/i.test(name))item[name]=Math.max(50,Number(durationMs)||120);
+    else if(/duration|delay|wait/i.test(name)&&['number','integer'].includes(def.type))item[name]=Math.max(0.05,(Number(durationMs)||120)/1000);
   }
   return fillRequired(item,schema);
 }
-function keyboardArgs(schema,studioId,key){
+function keyboardArgs(schema,studioId,key,durationMs=120){
   const args={};setStudioId(args,schema,studioId);
   const props=schemaProps(schema);
   const actionsKey=Object.keys(props).find(k=>/actions|events|inputs/i.test(k)&&props[k]?.type==='array');
   if(actionsKey){
     const itemSchema=props[actionsKey]?.items||{};
-    args[actionsKey]=[keyboardItem(itemSchema,key)];
+    args[actionsKey]=[keyboardItem(itemSchema,key,durationMs)];
   }else{
-    const built=keyboardItem(schema,key);
+    const built=keyboardItem(schema,key,durationMs);
     for(const [k,v] of Object.entries(built))if(!/studio.*id/i.test(k))args[k]=v;
   }
   return fillRequired(args,schema);
+}
+function characterNavigationArgs(schema,studioId,target={}){
+  const args={};setStudioId(args,schema,studioId);
+  const props=schemaProps(schema);
+  const x=Number(target?.x||0),y=Number(target?.y||0),z=Number(target?.z||0);
+  for(const [key,def] of Object.entries(props)){
+    if(/studio.*id/i.test(key))continue;
+    if(/^(x|world.?x|target.?x|destination.?x)$/i.test(key)){args[key]=x;continue;}
+    if(/^(y|world.?y|target.?y|destination.?y)$/i.test(key)){args[key]=y;continue;}
+    if(/^(z|world.?z|target.?z|destination.?z)$/i.test(key)){args[key]=z;continue;}
+    if(/position|destination|target|goal|point/i.test(key)&&def.type==='object'){
+      args[key]={x,y,z};continue;
+    }
+    if(/action|mode|operation/i.test(key)){
+      if(Array.isArray(def.enum))args[key]=enumValue(def,['navigate','move_to','moveto','walk','goto','go_to']);
+      else if(def.type==='string')args[key]='navigate';
+      continue;
+    }
+    if(/speed/i.test(key)&&['number','integer'].includes(def.type))args[key]=16;
+    if(/timeout/i.test(key)&&['number','integer'].includes(def.type))args[key]=8;
+  }
+  return fillRequired(args,schema);
+}
+function promptKeyboardKey(value=''){
+  const raw=clean(value).split('.').at(-1)||'E';
+  return /^[A-Za-z0-9]+$/.test(raw)?raw:'E';
 }
 
 
@@ -761,9 +872,17 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     'local Players=game:GetService("Players")',
     'local Lighting=game:GetService("Lighting")',
     'local Workspace=game:GetService("Workspace")',
+    'local ReplicatedStorage=game:GetService("ReplicatedStorage")',
+    'local SoundService=game:GetService("SoundService")',
+    'local Stats=game:GetService("Stats")',
+    'local PathfindingService=game:GetService("PathfindingService")',
     'local requiredGuiNames='+luaStrings(guiNames),
     'local requiredButtonTexts='+luaStrings(buttonTexts),
-    'local p=Players.LocalPlayer or Players:GetPlayers()[1]',
+    'local playerList=Players:GetPlayers()',
+    'local p=Players.LocalPlayer or playerList[1]',
+    'local actualPlayerCount=#playerList',
+    'local playerRows={}',
+    'for _,plr in ipairs(playerList) do if #playerRows<12 then table.insert(playerRows,{userId=plr.UserId,name=plr.Name,roundState=tostring(plr:GetAttribute("RoundState") or ""),role=tostring(plr:GetAttribute("Role") or ""),team=plr.Team and plr.Team.Name or "",currentMap=tostring(plr:GetAttribute("CurrentMap") or ""),humanCount=plr:GetAttribute("HumanCount"),monsterCount=plr:GetAttribute("MonsterCount")}) end end',
     'local camera=Workspace.CurrentCamera',
     'local viewport=camera and camera.ViewportSize or Vector2.new(0,0)',
     'local function visible(inst)',
@@ -783,19 +902,24 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     ' local off=viewport.X>0 and viewport.Y>0 and (pos.X+size.X<0 or pos.Y+size.Y<0 or pos.X>viewport.X or pos.Y>viewport.Y) or false',
     ' return {present=true,visible=visible(inst),offscreen=off,x=pos.X,y=pos.Y,width=size.X,height=size.Y}',
     'end',
-    'local gui={screenGuiPresent=false,visibleButtons=0,required={},buttons={}}',
+    'local gui={screenGuiPresent=false,visibleButtons=0,visibleObjects=0,visibleTextCount=0,visibleTexts={},required={},buttons={},interactive={},offscreenButtons=0,undersizedTouchButtons=0,suboptimalTouchButtons=0,textOverflowButtons=0,overlapPairs=0}',
     'local pg=p and p:FindFirstChildOfClass("PlayerGui")',
     'if pg then',
     ' for _,d in ipairs(pg:GetDescendants()) do',
-    '  if d:IsA("TextButton") and visible(d) then',
+    '  if d:IsA("GuiObject") and visible(d) then gui.visibleObjects+=1 end',
+    '  if (d:IsA("TextLabel") or d:IsA("TextButton")) and visible(d) and tostring(d.Text)~="" then gui.visibleTextCount+=1;if #gui.visibleTexts<80 then table.insert(gui.visibleTexts,{name=d.Name,text=tostring(d.Text)}) end end',
+    '  if (d:IsA("TextButton") or d:IsA("ImageButton")) and visible(d) then',
     '   gui.visibleButtons+=1',
-    '   for _,target in ipairs(requiredButtonTexts) do',
-    '    if tostring(d.Text)==target then',
-    '     local row=guiInfo(d);row.text=tostring(d.Text);row.name=d.Name;row.centerX=row.x+row.width/2;row.centerY=row.y+row.height/2;gui.buttons[target]=row',
-    '    end',
-    '   end',
+    '   local row=guiInfo(d);row.name=d.Name;row.className=d.ClassName;row.centerX=row.x+row.width/2;row.centerY=row.y+row.height/2',
+    '   if d:IsA("TextButton") then row.text=tostring(d.Text) else row.text="" end',
+    '   if row.offscreen then gui.offscreenButtons+=1 end',
+    '   if math.min(row.width,row.height)<36 then gui.undersizedTouchButtons+=1 elseif math.min(row.width,row.height)<44 then gui.suboptimalTouchButtons+=1 end',
+    '   if d:IsA("TextButton") and not d.TextScaled and d.TextBounds.X>row.width+3 then gui.textOverflowButtons+=1 end',
+    '   if #gui.interactive<80 then table.insert(gui.interactive,row) end',
+    '   for _,target in ipairs(requiredButtonTexts) do if d:IsA("TextButton") and tostring(d.Text)==target then gui.buttons[target]=row end end',
     '  end',
     ' end',
+    ' for i=1,#gui.interactive do local a=gui.interactive[i];for j=i+1,#gui.interactive do local b=gui.interactive[j];local x=math.max(0,math.min(a.x+a.width,b.x+b.width)-math.max(a.x,b.x));local y=math.max(0,math.min(a.y+a.height,b.y+b.height)-math.max(a.y,b.y));if x*y>math.min(a.width*a.height,b.width*b.height)*0.35 then gui.overlapPairs+=1 end end end',
     ' for _,name in ipairs(requiredGuiNames) do',
     '  local found=pg:FindFirstChild(name,true)',
     '  if found and found:IsA("ScreenGui") then gui.required[name]={present=true,visible=found.Enabled==true,offscreen=false} else gui.required[name]=guiInfo(found) end',
@@ -804,19 +928,106 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     'local screenGuiName='+JSON.stringify(clean(exp.screenGuiName)),
     'if pg and screenGuiName~="" then local sg=pg:FindFirstChild(screenGuiName,true);gui.screenGuiPresent=sg~=nil and (not sg:IsA("ScreenGui") or sg.Enabled==true) end',
     'local prompts=0',
+    'local clickDetectors=0',
     'local parts=0',
+    'local collidableParts=0',
+    'local spawnLocations=0',
+    'local spawnRows={}',
     'local arena=Workspace:FindFirstChild("MidnightArena")',
-    'if arena then for _,d in ipairs(arena:GetDescendants()) do if d:IsA("ProximityPrompt") then prompts+=1 end;if d:IsA("BasePart") then parts+=1 end end end',
+    'if arena then for _,d in ipairs(arena:GetDescendants()) do if d:IsA("BasePart") then parts+=1 end end end',
+    'local minX,minY,minZ=math.huge,math.huge,math.huge',
+    'local maxX,maxY,maxZ=-math.huge,-math.huge,-math.huge',
+    'local promptRows={}',
+    'local mobRows={}',
+    'local npcRows={}',
+    'local companionRows={}',
+    'local itemRows={}',
+    'local effectCount=0',
+    'local environmentModels=0',
+    'local soundCount=0;local playingSoundCount=0',
+    'for _,d in ipairs(Workspace:GetDescendants()) do',
+    ' if d:IsA("BasePart") then',
+    '  if d.CanCollide then collidableParts+=1;local p0=d.Position;local h=d.Size*0.5;minX=math.min(minX,p0.X-h.X);minY=math.min(minY,p0.Y-h.Y);minZ=math.min(minZ,p0.Z-h.Z);maxX=math.max(maxX,p0.X+h.X);maxY=math.max(maxY,p0.Y+h.Y);maxZ=math.max(maxZ,p0.Z+h.Z) end',
+    '  if d:IsA("SpawnLocation") then spawnLocations+=1;if #spawnRows<24 then table.insert(spawnRows,{name=d.Name,x=d.Position.X,y=d.Position.Y,z=d.Position.Z}) end end',
+    '  local hp=attr and attr(d,"HP") or d:GetAttribute("HP");local maxHp=attr and attr(d,"MaxHP") or d:GetAttribute("MaxHP")',
+    '  local lname=string.lower(d.Name)',
+    '  if (#mobRows<80) and ((typeof(hp)=="number" and typeof(maxHp)=="number") or string.find(lname,"enemy") or string.find(lname,"monster") or string.find(lname,"mob") or string.find(lname,"zombie") or string.find(lname,"boss") or string.find(lname,"raider")) then table.insert(mobRows,{name=d.Name,x=d.Position.X,y=d.Position.Y,z=d.Position.Z,hp=hp,maxHp=maxHp,target=tostring(d:GetAttribute("Target") or ""),state=tostring(d:GetAttribute("State") or d:GetAttribute("AIState") or ""),dormant=d:GetAttribute("Dormant")}) end',
+    ' elseif d:IsA("ProximityPrompt") then',
+    '  prompts+=1;local parent=d.Parent;local pos=parent and parent:IsA("BasePart") and parent.Position or Vector3.new();if #promptRows<60 then table.insert(promptRows,{name=d.Name,actionText=tostring(d.ActionText),objectText=tostring(d.ObjectText),x=pos.X,y=pos.Y,z=pos.Z,maxDistance=d.MaxActivationDistance,key=tostring(d.KeyboardKeyCode),holdDuration=d.HoldDuration,enabled=d.Enabled}) end',
+    ' elseif d:IsA("ClickDetector") then clickDetectors+=1',
+    ' elseif d:IsA("Sound") then soundCount+=1;if d.IsPlaying then playingSoundCount+=1',
+    ' elseif d:IsA("ParticleEmitter") or d:IsA("Trail") or d:IsA("Beam") or d:IsA("Highlight") then effectCount+=1',
+    ' elseif d:IsA("Model") then',
+    '  local lname=string.lower(d.Name);local pivot=d:GetPivot();local dh=d:FindFirstChildOfClass("Humanoid");local isPlayer=Players:GetPlayerFromCharacter(d)~=nil',
+    '  local companion=dh and not isPlayer and (string.find(lname,"companion") or string.find(lname,"follower") or string.find(lname,"pet") or string.find(lname,"summon") or d:GetAttribute("Companion")==true or d:GetAttribute("IsCompanion")==true)',
+    '  local npc=dh and not isPlayer and not companion and (string.find(lname,"npc") or string.find(lname,"merchant") or string.find(lname,"chief") or string.find(lname,"healer") or string.find(lname,"resident") or string.find(lname,"worker") or string.find(lname,"villager") or string.find(lname,"master") or string.find(lname,"trainer") or d:GetAttribute("NPC")==true or d:GetAttribute("IsNPC")==true)',
+    '  local mob=dh and not isPlayer and not companion and not npc and (string.find(lname,"enemy") or string.find(lname,"monster") or string.find(lname,"mob") or string.find(lname,"zombie") or string.find(lname,"boss") or string.find(lname,"raider") or d:GetAttribute("Enemy")==true or d:GetAttribute("IsEnemy")==true or d:GetAttribute("EnemyType")~=nil or d:GetAttribute("MobType")~=nil)',
+    '  local animator=dh and dh:FindFirstChildOfClass("Animator");local trackCount=0;if animator then local ok,tracks=pcall(function() return animator:GetPlayingAnimationTracks() end);if ok then trackCount=#tracks end end',
+    '  local motors=0;for _,joint in ipairs(d:GetDescendants()) do if joint:IsA("Motor6D") then motors+=1 end end',
+    '  if mob and #mobRows<80 then table.insert(mobRows,{name=d.Name,kind="HumanoidModel",x=pivot.Position.X,y=pivot.Position.Y,z=pivot.Position.Z,hp=dh.Health,maxHp=dh.MaxHealth,target=tostring(d:GetAttribute("Target") or d:GetAttribute("TargetUserId") or ""),state=tostring(d:GetAttribute("State") or d:GetAttribute("AIState") or ""),aggro=tostring(d:GetAttribute("Aggro") or d:GetAttribute("AggroState") or ""),animatorPresent=animator~=nil,animationTrackCount=trackCount,motorCount=motors,dormant=d:GetAttribute("Dormant")}) end',
+    '  if companion and #companionRows<50 then table.insert(companionRows,{name=d.Name,x=pivot.Position.X,y=pivot.Position.Y,z=pivot.Position.Z,health=dh.Health,maxHealth=dh.MaxHealth,state=tostring(d:GetAttribute("State") or d:GetAttribute("AIState") or ""),target=tostring(d:GetAttribute("Target") or ""),owner=tostring(d:GetAttribute("OwnerUserId") or ""),animatorPresent=animator~=nil,animationTrackCount=trackCount,motorCount=motors}) end',
+    '  if npc and #npcRows<60 then table.insert(npcRows,{name=d.Name,x=pivot.Position.X,y=pivot.Position.Y,z=pivot.Position.Z,health=dh.Health,maxHealth=dh.MaxHealth,hasPrompt=d:FindFirstChildWhichIsA("ProximityPrompt",true)~=nil,animatorPresent=animator~=nil,animationTrackCount=trackCount,motorCount=motors,state=tostring(d:GetAttribute("State") or d:GetAttribute("AIState") or "")}) end',
+    '  if string.find(lname,"environment") or string.find(lname,"decor") or string.find(lname,"building") or string.find(lname,"house") or string.find(lname,"terrain") or string.find(lname,"village") then environmentModels+=1 end',
+    ' elseif d:IsA("Tool") or d:IsA("Accessory") then',
+    '  if #itemRows<60 then table.insert(itemRows,{name=d.Name,className=d.ClassName,parent=d.Parent and d.Parent.Name or ""}) end',
+    ' end',
+    'end',
+    'for _,d in ipairs(SoundService:GetDescendants()) do if d:IsA("Sound") then soundCount+=1;if d.IsPlaying then playingSoundCount+=1 end end end',
+    'local remoteRows={};local remoteCount=0',
+    'for _,d in ipairs(ReplicatedStorage:GetDescendants()) do if d:IsA("RemoteEvent") or d:IsA("RemoteFunction") then remoteCount+=1;if #remoteRows<80 then table.insert(remoteRows,{name=d.Name,className=d.ClassName}) end end end',
     'local root=nil',
     'local hum=nil',
-    'if p and p.Character then root=p.Character:FindFirstChild("HumanoidRootPart");hum=p.Character:FindFirstChildOfClass("Humanoid") end',
+    'local animator=nil',
+    'local animationTrackCount=0',
+    'local motorCount=0',
+    'if p and p.Character then root=p.Character:FindFirstChild("HumanoidRootPart");hum=p.Character:FindFirstChildOfClass("Humanoid");if hum then animator=hum:FindFirstChildOfClass("Animator");if animator then local ok,tracks=pcall(function() return animator:GetPlayingAnimationTracks() end);if ok then animationTrackCount=#tracks end end end;for _,d in ipairs(p.Character:GetDescendants()) do if d:IsA("Motor6D") then motorCount+=1 end end end',
     'local function attr(inst,name) if not inst then return nil end;local ok,value=pcall(function() return inst:GetAttribute(name) end);if ok then return value end;return nil end',
+    'local progressionRows={}',
+    'local function collectProgress(inst,scope)',
+    ' if not inst then return end',
+    ' for name,value in pairs(inst:GetAttributes()) do local lower=string.lower(name);if string.find(lower,"level") or string.find(lower,"xp") or string.find(lower,"gold") or string.find(lower,"quest") or string.find(lower,"wave") or string.find(lower,"round") or string.find(lower,"stage") or string.find(lower,"zone") or string.find(lower,"portal") or string.find(lower,"base") or string.find(lower,"unlock") or string.find(lower,"progress") or string.find(lower,"mastery") or string.find(lower,"tier") or string.find(lower,"kill") or string.find(lower,"reward") then if #progressionRows<80 then table.insert(progressionRows,{scope=scope,name=name,valueType=typeof(value),value=tostring(value)}) end end end',
+    'end',
+    'collectProgress(p,"player");collectProgress(Workspace,"workspace")',
+    'local inventoryRows={};local inventoryCount=0',
+    'if p then local backpack=p:FindFirstChildOfClass("Backpack");if backpack then for _,d in ipairs(backpack:GetChildren()) do if d:IsA("Tool") then inventoryCount+=1;if #inventoryRows<60 then table.insert(inventoryRows,{name=d.Name,className=d.ClassName,scope="Backpack"}) end end end end;if p.Character then for _,d in ipairs(p.Character:GetChildren()) do if d:IsA("Tool") then inventoryCount+=1;if #inventoryRows<60 then table.insert(inventoryRows,{name=d.Name,className=d.ClassName,scope="Character"}) end end end end end',
+    'local leaderstats=p and p:FindFirstChild("leaderstats")',
+    'if leaderstats then for _,d in ipairs(leaderstats:GetChildren()) do if d:IsA("IntValue") or d:IsA("NumberValue") or d:IsA("StringValue") then if #progressionRows<80 then table.insert(progressionRows,{scope="leaderstats",name=d.Name,valueType=d.ClassName,value=tostring(d.Value)}) end end end end',
+    'local systemSignals=0',
+    'local category={quest=0,reward=0,economy=0,inventory=0,combat=0,progression=0,save=0,retry=0,npc=0,companion=0,item=0,environment=0,effects=effectCount}',
+    'for _,rootInst in ipairs({ReplicatedStorage,Workspace,pg}) do if rootInst then for _,d in ipairs(rootInst:GetDescendants()) do local n=string.lower(d.Name);local matched=false',
+    ' if string.find(n,"quest") or string.find(n,"mission") or string.find(n,"objective") or string.find(n,"trial") then category.quest+=1;matched=true end',
+    ' if string.find(n,"reward") or string.find(n,"gold") or string.find(n,"coin") or string.find(n,"xp") or string.find(n,"loot") or string.find(n,"drop") or string.find(n,"chest") then category.reward+=1;matched=true end',
+    ' if string.find(n,"shop") or string.find(n,"merchant") or string.find(n,"price") or string.find(n,"cost") or string.find(n,"upgrade") or string.find(n,"purchase") or string.find(n,"sell") then category.economy+=1;matched=true end',
+    ' if string.find(n,"inventory") or string.find(n,"equip") or string.find(n,"weapon") or string.find(n,"armor") or string.find(n,"relic") or string.find(n,"item") then category.inventory+=1;matched=true end',
+    ' if string.find(n,"attack") or string.find(n,"skill") or string.find(n,"combat") or string.find(n,"damage") or string.find(n,"enemy") or string.find(n,"monster") or string.find(n,"boss") or string.find(n,"mob") then category.combat+=1;matched=true end',
+    ' if string.find(n,"level") or string.find(n,"wave") or string.find(n,"round") or string.find(n,"portal") or string.find(n,"progress") or string.find(n,"unlock") or string.find(n,"mastery") or string.find(n,"stage") then category.progression+=1;matched=true end',
+    ' if string.find(n,"save") or string.find(n,"load") or string.find(n,"datastore") or string.find(n,"persist") then category.save+=1;matched=true end',
+    ' if string.find(n,"retry") or string.find(n,"restart") or string.find(n,"respawn") or string.find(n,"reset") or string.find(n,"newrun") then category.retry+=1;matched=true end',
+    ' if string.find(n,"npc") or string.find(n,"merchant") or string.find(n,"chief") or string.find(n,"healer") or string.find(n,"resident") or string.find(n,"worker") or string.find(n,"villager") or string.find(n,"trainer") or string.find(n,"master") then category.npc+=1;matched=true end',
+    ' if string.find(n,"companion") or string.find(n,"follower") or string.find(n,"pet") or string.find(n,"summon") then category.companion+=1;matched=true end',
+    ' if string.find(n,"item") or string.find(n,"loot") or string.find(n,"drop") or string.find(n,"weapon") or string.find(n,"armor") or string.find(n,"relic") or string.find(n,"resource") or string.find(n,"material") then category.item+=1;matched=true end',
+    ' if string.find(n,"environment") or string.find(n,"decor") or string.find(n,"building") or string.find(n,"house") or string.find(n,"terrain") or string.find(n,"biome") then category.environment+=1;matched=true end',
+    ' if matched then systemSignals+=1 end',
+    'end end end',
+    'local floorBelow=false',
+    'local cameraOccluded=false;local cameraDistance=0',
+    'if root then local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances=p and p.Character and {p.Character} or {};local hit=Workspace:Raycast(root.Position+Vector3.new(0,4,0),Vector3.new(0,-128,0),params);floorBelow=hit~=nil;if camera then cameraDistance=(camera.CFrame.Position-root.Position).Magnitude;local direction=root.Position-camera.CFrame.Position;local camHit=Workspace:Raycast(camera.CFrame.Position,direction,params);cameraOccluded=camHit~=nil and camHit.Instance~=nil and not camHit.Instance:IsDescendantOf(p.Character) end end',
+    'local minSpawnThreatDistance=math.huge',
+    'for _,spawnRow in ipairs(spawnRows) do for _,mobRow in ipairs(mobRows) do local dist=math.sqrt((spawnRow.x-mobRow.x)^2+(spawnRow.y-mobRow.y)^2+(spawnRow.z-mobRow.z)^2);minSpawnThreatDistance=math.min(minSpawnThreatDistance,dist) end end',
+    'if minSpawnThreatDistance==math.huge then minSpawnThreatDistance=-1 end',
+    'local boundsFinite=minX<math.huge and maxX>-math.huge and minY<math.huge and maxY>-math.huge and minZ<math.huge and maxZ>-math.huge',
+    'local floorSampleCount=0;local floorHitCount=0;local routeSampleCount=0;local routeSuccessCount=0;local routeRows={}',
+    'if boundsFinite then local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances=p and p.Character and {p.Character} or {};local cx=(minX+maxX)/2;local cz=(minZ+maxZ)/2;local sx=math.max(8,(maxX-minX)*0.35);local sz=math.max(8,(maxZ-minZ)*0.35);local topY=maxY+32;for _,o in ipairs({Vector2.new(0,0),Vector2.new(-sx,0),Vector2.new(sx,0),Vector2.new(0,-sz),Vector2.new(0,sz),Vector2.new(-sx,-sz),Vector2.new(sx,-sz),Vector2.new(-sx,sz),Vector2.new(sx,sz)}) do floorSampleCount+=1;local hit=Workspace:Raycast(Vector3.new(cx+o.X,topY,cz+o.Y),Vector3.new(0,-math.max(256,(maxY-minY)+96),0),params);if hit then floorHitCount+=1 end end end',
+    'if root then local anchors={};local function addAnchor(kind,name,x,y,z) if #anchors<16 and tonumber(x) and tonumber(y) and tonumber(z) then table.insert(anchors,{kind=kind,name=tostring(name or kind),x=tonumber(x),y=tonumber(y),z=tonumber(z)}) end end;for _,row in ipairs(spawnRows) do addAnchor("spawn",row.name,row.x,row.y,row.z) end;for _,row in ipairs(promptRows) do addAnchor("prompt",row.objectText~="" and row.objectText or row.name,row.x,row.y,row.z) end;for _,row in ipairs(npcRows) do addAnchor("npc",row.name,row.x,row.y,row.z) end;for _,row in ipairs(mobRows) do addAnchor("mob",row.name,row.x,row.y,row.z) end;for _,row in ipairs(anchors) do routeSampleCount+=1;local ok,pathObj=pcall(function() local path=PathfindingService:CreatePath({AgentRadius=2,AgentHeight=5,AgentCanJump=true});path:ComputeAsync(root.Position,Vector3.new(row.x,row.y,row.z));return path end);local pass=ok and pathObj and pathObj.Status==Enum.PathStatus.Success;if pass then routeSuccessCount+=1 end;if #routeRows<16 then table.insert(routeRows,{kind=row.kind,name=row.name,pass=pass}) end end end',
+    'local descendantCount=#Workspace:GetDescendants()',
+    'local memoryMb=0;pcall(function() memoryMb=Stats:GetTotalMemoryUsageMb() end)',
     'local payload={',
     ' context='+JSON.stringify(context)+',',
-    ' player={present=p~=nil,characterPresent=p~=nil and p.Character~=nil,humanoidPresent=hum~=nil,rootPresent=root~=nil,rootX=root and root.Position.X or nil,rootY=root and root.Position.Y or nil,rootZ=root and root.Position.Z or nil,velocityX=root and root.AssemblyLinearVelocity.X or nil,velocityY=root and root.AssemblyLinearVelocity.Y or nil,velocityZ=root and root.AssemblyLinearVelocity.Z or nil,health=hum and hum.Health or nil,roundState=attr(p,"RoundState"),role=attr(p,"Role"),monsterPreference=attr(p,"MonsterPreference"),soloRole=attr(p,"SoloRole"),feedbackEvent=attr(p,"FeedbackEvent"),currentMap=attr(p,"CurrentMap"),currentMapEvent=attr(p,"CurrentMapEvent"),humanCount=attr(p,"HumanCount"),monsterCount=attr(p,"MonsterCount"),objectivesDone=attr(p,"ObjectivesDone"),objectivesTotal=attr(p,"ObjectivesTotal")},',
-    ' camera={present=camera~=nil,viewportX=viewport.X,viewportY=viewport.Y,fieldOfView=camera and camera.FieldOfView or nil},',
+    ' player={present=p~=nil,characterPresent=p~=nil and p.Character~=nil,humanoidPresent=hum~=nil,rootPresent=root~=nil,rootX=root and root.Position.X or nil,rootY=root and root.Position.Y or nil,rootZ=root and root.Position.Z or nil,velocityX=root and root.AssemblyLinearVelocity.X or nil,velocityY=root and root.AssemblyLinearVelocity.Y or nil,velocityZ=root and root.AssemblyLinearVelocity.Z or nil,health=hum and hum.Health or nil,maxHealth=hum and hum.MaxHealth or nil,floorMaterial=hum and tostring(hum.FloorMaterial) or nil,humanoidState=hum and tostring(hum:GetState()) or nil,animatorPresent=animator~=nil,animationTrackCount=animationTrackCount,motorCount=motorCount,roundState=attr(p,"RoundState"),role=attr(p,"Role"),monsterPreference=attr(p,"MonsterPreference"),soloRole=attr(p,"SoloRole"),feedbackEvent=attr(p,"FeedbackEvent"),currentMap=attr(p,"CurrentMap"),currentMapEvent=attr(p,"CurrentMapEvent"),humanCount=attr(p,"HumanCount"),monsterCount=attr(p,"MonsterCount"),objectivesDone=attr(p,"ObjectivesDone"),objectivesTotal=attr(p,"ObjectivesTotal")},',
+    ' camera={present=camera~=nil,viewportX=viewport.X,viewportY=viewport.Y,fieldOfView=camera and camera.FieldOfView or nil,subjectPresent=camera and camera.CameraSubject~=nil or false,distance=cameraDistance,occluded=cameraOccluded},',
     ' ui=gui,',
-    ' world={arenaPresent=arena~=nil,arenaPartCount=parts,proximityPromptCount=prompts},',
+    ' world={arenaPresent=arena~=nil,arenaPartCount=parts,proximityPromptCount=prompts,clickDetectorCount=clickDetectors,collidablePartCount=collidableParts,spawnLocationCount=spawnLocations,spawns=spawnRows,minSpawnThreatDistance=minSpawnThreatDistance,boundsFinite=boundsFinite,minX=boundsFinite and minX or nil,minY=boundsFinite and minY or nil,minZ=boundsFinite and minZ or nil,maxX=boundsFinite and maxX or nil,maxY=boundsFinite and maxY or nil,maxZ=boundsFinite and maxZ or nil,floorBelowPlayer=floorBelow,floorSampleCount=floorSampleCount,floorHitCount=floorHitCount,routeSampleCount=routeSampleCount,routeSuccessCount=routeSuccessCount,routes=routeRows,prompts=promptRows,mobs=mobRows,npcs=npcRows,companions=companionRows,items=itemRows,environmentModels=environmentModels,effectCount=effectCount},',
+    ' runtime={actualPlayerCount=actualPlayerCount,players=playerRows,remoteCount=remoteCount,remotes=remoteRows,progression=progressionRows,inventory=inventoryRows,inventoryCount=inventoryCount,systemSignals=systemSignals,categories=category,descendantCount=descendantCount,memoryMb=memoryMb,soundCount=soundCount,playingSoundCount=playingSoundCount},',
     ' workspace={MapReady=attr(Workspace,"MapReady"),ActivePopulation=attr(Workspace,"ActivePopulation"),AIBotCount=attr(Workspace,"AIBotCount"),HumanCount=attr(Workspace,"HumanCount"),MonsterCount=attr(Workspace,"MonsterCount"),CurrentMapId=attr(Workspace,"CurrentMapId"),CurrentMapName=attr(Workspace,"CurrentMapName"),CurrentMapEvent=attr(Workspace,"CurrentMapEvent"),WorldArtPass=attr(Workspace,"WorldArtPass"),CharacterArtDirection=attr(Workspace,"CharacterArtDirection"),DesignCodeSync=attr(Workspace,"DesignCodeSync")},',
     ' lighting={brightness=Lighting.Brightness,clockTime=Lighting.ClockTime,ambientR=Lighting.Ambient.R,ambientG=Lighting.Ambient.G,ambientB=Lighting.Ambient.B}',
     '}',
@@ -842,12 +1053,185 @@ async function collectStudioActualPlayProbe(client,studioId,contract,context){
   const result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},studioId,studioActualPlayProbeSource(contract,context),context));
   return parseStudioActualPlayProbe(result);
 }
+async function executeStudioLuauText(client,studioId,code,context='Edit'){
+  const tool=client.tool('execute_luau');
+  const result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},studioId,code,context));
+  return flattenText(result,[]).join(' | ');
+}
+function multiplayerPlayerIds(probe={}){
+  return entityRows(probe?.runtime?.players).map(row=>String(row?.userId??'')).filter(Boolean).sort();
+}
+function sameStringSet(a=[],b=[]){
+  return a.length===b.length&&a.every((value,index)=>value===b[index]);
+}
+async function runStudioMultiplayerAudit(client,studioId,contract){
+  const evidence={
+    attempted:true,launched:false,pass:false,infrastructureFailure:false,error:null,
+    initialServerCount:0,initialClientCount:0,lateServerCount:0,lateClientCount:0,afterLeaveServerCount:0,
+    initialIdSync:false,lateJoinIdSync:false,lateJoinPass:false,leavePass:false,remoteSurface:false
+  };
+  let launched=false;
+  try{
+    const launchCode=[
+      'local StudioTestService=game:GetService("StudioTestService")',
+      'if StudioTestService.EditModeActive~=true then return "ROBLOX_STUDIO_MULTIPLAYER_EDIT_NOT_IDLE" end',
+      'task.spawn(function()',
+      ' local ok,result=pcall(function() return StudioTestService:ExecuteMultiplayerTestAsync(2,"COMMERCIAL_F9_MULTIPLAYER_AUDIT") end)',
+      ' if ok then print("ROBLOX_STUDIO_MULTIPLAYER_SESSION_DONE="..tostring(result)) else warn("ROBLOX_STUDIO_MULTIPLAYER_SESSION_ERROR="..tostring(result)) end',
+      'end)',
+      'return "ROBLOX_STUDIO_MULTIPLAYER_SESSION_STARTED"'
+    ].join('\n');
+    const launchText=await executeStudioLuauText(client,studioId,launchCode,'Edit');
+    if(!/ROBLOX_STUDIO_MULTIPLAYER_SESSION_STARTED/.test(launchText))throw new Error('ROBLOX_STUDIO_MULTIPLAYER_START_NOT_CONFIRMED:'+clean(launchText).slice(0,300));
+    launched=true;evidence.launched=true;
+    await wait(3500);
+
+    const initialServer=await collectStudioActualPlayProbe(client,studioId,contract,'Server');
+    const initialClient=await collectStudioActualPlayProbe(client,studioId,contract,'Client');
+    evidence.initialServerCount=Number(initialServer?.runtime?.actualPlayerCount||0);
+    evidence.initialClientCount=Number(initialClient?.runtime?.actualPlayerCount||0);
+    const initialServerIds=multiplayerPlayerIds(initialServer),initialClientIds=multiplayerPlayerIds(initialClient);
+    evidence.initialIdSync=evidence.initialServerCount>=2&&evidence.initialClientCount>=2&&sameStringSet(initialServerIds,initialClientIds);
+    evidence.remoteSurface=Number(initialServer?.runtime?.remoteCount||0)>0;
+
+    const addText=await executeStudioLuauText(client,studioId,[
+      'local StudioTestService=game:GetService("StudioTestService")',
+      'local ok,err=pcall(function() StudioTestService:AddPlayers(1) end)',
+      'return ok and "ROBLOX_STUDIO_MULTIPLAYER_ADD_PLAYER=PASS" or ("ROBLOX_STUDIO_MULTIPLAYER_ADD_PLAYER=FAIL:"..tostring(err))'
+    ].join('\n'),'Server');
+    if(!/ADD_PLAYER=PASS/.test(addText))throw new Error('ROBLOX_STUDIO_MULTIPLAYER_ADD_PLAYER_FAILED:'+clean(addText).slice(0,300));
+    await wait(2200);
+
+    const lateServer=await collectStudioActualPlayProbe(client,studioId,contract,'Server');
+    const lateClient=await collectStudioActualPlayProbe(client,studioId,contract,'Client');
+    evidence.lateServerCount=Number(lateServer?.runtime?.actualPlayerCount||0);
+    evidence.lateClientCount=Number(lateClient?.runtime?.actualPlayerCount||0);
+    const lateServerIds=multiplayerPlayerIds(lateServer),lateClientIds=multiplayerPlayerIds(lateClient);
+    evidence.lateJoinIdSync=evidence.lateServerCount>=3&&evidence.lateClientCount>=3&&sameStringSet(lateServerIds,lateClientIds);
+    evidence.lateJoinPass=evidence.lateJoinIdSync;
+
+    const leaveText=await executeStudioLuauText(client,studioId,[
+      'local StudioTestService=game:GetService("StudioTestService")',
+      'local can=StudioTestService:CanLeaveTest()',
+      'if can then StudioTestService:LeaveTest();return "ROBLOX_STUDIO_MULTIPLAYER_LEAVE=PASS" end',
+      'return "ROBLOX_STUDIO_MULTIPLAYER_LEAVE=BLOCKED"'
+    ].join('\n'),'Client');
+    if(!/LEAVE=PASS/.test(leaveText))throw new Error('ROBLOX_STUDIO_MULTIPLAYER_LEAVE_FAILED:'+clean(leaveText).slice(0,300));
+    await wait(1800);
+    const afterLeaveServer=await collectStudioActualPlayProbe(client,studioId,contract,'Server');
+    evidence.afterLeaveServerCount=Number(afterLeaveServer?.runtime?.actualPlayerCount||0);
+    evidence.leavePass=evidence.afterLeaveServerCount>=2&&evidence.afterLeaveServerCount<evidence.lateServerCount;
+
+    evidence.pass=Boolean(
+      evidence.initialIdSync
+      &&evidence.remoteSurface
+      &&evidence.lateJoinPass
+      &&evidence.leavePass
+    );
+    return evidence;
+  }catch(error){
+    evidence.error=clean(error?.message||error).slice(0,500);
+    evidence.infrastructureFailure=!launched||/plugin|security|permission|edit|datamodel|tool|studio.*test.*service|mcp/i.test(evidence.error);
+    return evidence;
+  }finally{
+    if(launched){
+      try{
+        await executeStudioLuauText(client,studioId,[
+          'local StudioTestService=game:GetService("StudioTestService")',
+          'local ok,err=pcall(function() StudioTestService:EndTest("COMMERCIAL_F9_MULTIPLAYER_AUDIT_DONE") end)',
+          'return ok and "ROBLOX_STUDIO_MULTIPLAYER_END=PASS" or ("ROBLOX_STUDIO_MULTIPLAYER_END=FAIL:"..tostring(err))'
+        ].join('\n'),'Server');
+      }catch{}
+      await wait(900);
+    }
+  }
+}
 function pointDistance(a={},b={}){
   const values=[a?.rootX,a?.rootY,a?.rootZ,b?.rootX,b?.rootY,b?.rootZ].map(Number);
   if(!values.every(Number.isFinite))return 0;
   return Math.hypot(values[3]-values[0],values[4]-values[1],values[5]-values[2]);
 }
-export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[]}={}){
+function entityRows(value){
+  return Array.isArray(value)?value.filter(row=>row&&typeof row==='object'):[];
+}
+function entityMotionSummary(beforeRows=[],afterRows=[]){
+  const before=entityRows(beforeRows),after=entityRows(afterRows);
+  const byName=new Map();
+  for(const row of before){
+    const key=clean(row?.name);
+    if(!key)continue;
+    if(!byName.has(key))byName.set(key,[]);
+    byName.get(key).push(row);
+  }
+  let matched=0,moved=0,stateChanged=0,healthChanged=0,targetChanged=0;
+  for(const row of after){
+    const key=clean(row?.name);
+    const candidates=byName.get(key)||[];
+    if(!key||!candidates.length)continue;
+    const prior=candidates.shift();matched++;
+    const values=[prior?.x,prior?.y,prior?.z,row?.x,row?.y,row?.z].map(Number);
+    if(values.every(Number.isFinite)&&Math.hypot(values[3]-values[0],values[4]-values[1],values[5]-values[2])>=0.2)moved++;
+    if(clean(prior?.state)!==clean(row?.state))stateChanged++;
+    if(Number.isFinite(Number(prior?.hp))&&Number.isFinite(Number(row?.hp))&&Number(prior.hp)!==Number(row.hp))healthChanged++;
+    if(clean(prior?.target)!==clean(row?.target))targetChanged++;
+  }
+  return{matched,moved,stateChanged,healthChanged,targetChanged,dynamic:moved+stateChanged+healthChanged+targetChanged>0};
+}
+function progressionChanged(beforeRows=[],afterRows=[]){
+  const before=new Map(entityRows(beforeRows).map(row=>[clean(row?.scope)+'|'+clean(row?.name),clean(row?.value)]));
+  for(const row of entityRows(afterRows)){
+    const key=clean(row?.scope)+'|'+clean(row?.name);
+    if(before.has(key)&&before.get(key)!==clean(row?.value))return true;
+  }
+  return false;
+}
+function inventoryChanged(beforeRows=[],afterRows=[]){
+  const key=rows=>entityRows(rows).map(row=>clean(row?.scope)+'|'+clean(row?.name)+'|'+clean(row?.className)).sort().join('\n');
+  return key(beforeRows)!==key(afterRows);
+}
+function probeEffectSummary(before={},after={}){
+  const moved=pointDistance(before?.player||{},after?.player||{});
+  const progress=progressionChanged(before?.runtime?.progression,after?.runtime?.progression);
+  const inventory=inventoryChanged(before?.runtime?.inventory,after?.runtime?.inventory);
+  const feedback=clean(before?.player?.feedbackEvent)!==clean(after?.player?.feedbackEvent);
+  const healthBefore=Number(before?.player?.health),healthAfter=Number(after?.player?.health);
+  const health=Number.isFinite(healthBefore)&&Number.isFinite(healthAfter)&&healthBefore!==healthAfter;
+  const uiBefore=Number(before?.ui?.visibleObjects||0),uiAfter=Number(after?.ui?.visibleObjects||0);
+  const ui=uiBefore!==uiAfter;
+  const round=clean(before?.player?.roundState)!==clean(after?.player?.roundState);
+  const map=clean(before?.player?.currentMap)!==clean(after?.player?.currentMap)
+    ||clean(before?.workspace?.CurrentMapId)!==clean(after?.workspace?.CurrentMapId)
+    ||clean(before?.workspace?.CurrentMapName)!==clean(after?.workspace?.CurrentMapName);
+  return{moved,progress,inventory,feedback,health,ui,round,map,effectObserved:moved>=0.5||progress||inventory||feedback||health||ui||round||map};
+}
+function semanticEffectPass(semantic='',effect={}){
+  const kind=clean(semantic).toUpperCase();
+  if(kind==='QUEST')return effect.progress||effect.ui||effect.feedback||effect.round;
+  if(kind==='REWARD'||kind==='COLLECT')return effect.inventory||effect.progress||effect.feedback||effect.ui;
+  if(kind==='SHOP'||kind==='CRAFT'||kind==='EQUIP'||kind==='UPGRADE')return effect.inventory||effect.progress||effect.ui||effect.feedback;
+  if(kind==='TRAVEL')return Number(effect.moved||0)>=3||effect.map||effect.round||effect.feedback;
+  if(kind==='HEAL')return effect.health||effect.feedback||effect.ui;
+  if(kind==='RETRY')return effect.round||effect.ui||effect.feedback||Number(effect.moved||0)>=1||effect.health;
+  return effect.effectObserved===true;
+}
+function persistentStateSummary(probe={}){
+  const stablePattern=/level|xp|gold|coin|currency|unlock|mastery|tier|rank|레벨|경험치|골드|코인|재화|해금|숙련|티어|랭크/i;
+  const progression=entityRows(probe?.runtime?.progression)
+    .filter(row=>stablePattern.test(clean(row?.name)))
+    .map(row=>({scope:clean(row?.scope),name:clean(row?.name),value:clean(row?.value)}))
+    .sort((a,b)=>(a.scope+'|'+a.name).localeCompare(b.scope+'|'+b.name));
+  const inventory=entityRows(probe?.runtime?.inventory)
+    .map(row=>({scope:clean(row?.scope),name:clean(row?.name),className:clean(row?.className)}))
+    .sort((a,b)=>(a.scope+'|'+a.name+'|'+a.className).localeCompare(b.scope+'|'+b.name+'|'+b.className));
+  return{
+    progression,
+    inventory,
+    progressionFingerprint:stableSha256(progression),
+    inventoryFingerprint:stableSha256(inventory),
+    persistentSignalCount:progression.length
+  };
+}
+export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[],timelineProbes=[],auditProfile='FAST_DEEP'}={}){
   if(contract?.required!==true)return{required:false,scenarios:[],qualityFailureKinds:[],authoritativeStateChangeObserved:false,capture:{before:{pass:true,frames:[]},after:{pass:true,frames:[]}},metrics:{}};
   const exp=contract?.expectations||{};
   const requiredIds=new Set(Array.isArray(contract?.requiredScenarios)?contract.requiredScenarios.map(clean).filter(Boolean):[]);
@@ -877,6 +1261,146 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const postActionFeedback=clean(actionPlayer?.feedbackEvent);
   const primaryActionFeedbackChanged=Boolean(actionOk('ui-primary-action')&&postActionFeedback&&postActionFeedback!==preActionFeedback);
   const lightingBrightness=Number(client?.lighting?.brightness??server?.lighting?.brightness??0);
+  const adaptive=contract?.adaptiveCoverage&&typeof contract.adaptiveCoverage==='object'?contract.adaptiveCoverage:{};
+  const declaredSignals=adaptive?.signals&&typeof adaptive.signals==='object'?adaptive.signals:{};
+  const runtime={...(client?.runtime||{}),...(server?.runtime||{})};
+  const categories=runtime?.categories&&typeof runtime.categories==='object'?runtime.categories:{};
+  const observedWorld=client?.world||server?.world||{};
+  const signals={
+    ...declaredSignals,
+    ui:declaredSignals.ui===true||Number(client?.ui?.visibleObjects||0)>0,
+    onboarding:declaredSignals.onboarding===true,
+    map:declaredSignals.map===true||Number(observedWorld?.collidablePartCount||0)>0,
+    interactions:declaredSignals.interactions===true||Number(observedWorld?.proximityPromptCount||0)>0||Number(observedWorld?.clickDetectorCount||0)>0,
+    progression:declaredSignals.progression===true||Number(categories.progression||0)>0||entityRows(runtime.progression).length>0,
+    serverBoundary:declaredSignals.serverBoundary===true||Number(runtime.remoteCount||0)>0,
+    combat:declaredSignals.combat===true||Number(categories.combat||0)>0||entityRows(observedWorld?.mobs).length>0,
+    motion:declaredSignals.motion===true||Number(client?.player?.motorCount||0)>0,
+    audio:declaredSignals.audio===true||Number(runtime.soundCount||0)>0,
+    npc:declaredSignals.npc===true||Number(categories.npc||0)>0||entityRows(observedWorld?.npcs).length>0,
+    companion:declaredSignals.companion===true||Number(categories.companion||0)>0||entityRows(observedWorld?.companions).length>0,
+    items:declaredSignals.items===true||Number(categories.item||0)>0||Number(categories.inventory||0)>0||entityRows(observedWorld?.items).length>0||Number(runtime.inventoryCount||0)>0,
+    environment:declaredSignals.environment===true||Number(observedWorld?.environmentModels||0)>0,
+    effects:declaredSignals.effects===true||Number(observedWorld?.effectCount||0)>0,
+    quests:declaredSignals.quests===true||Number(categories.quest||0)>0,
+    rewards:declaredSignals.rewards===true||Number(categories.reward||0)>0,
+    economy:declaredSignals.economy===true||Number(categories.economy||0)>0,
+    save:declaredSignals.save===true||Number(categories.save||0)>0,
+    retry:declaredSignals.retry===true||Number(categories.retry||0)>0,
+    multiplayer:declaredSignals.multiplayer===true,
+    camera:declaredSignals.camera===true||client?.camera?.present===true,
+    performance:true
+  };
+  const initialWorld=initialClientProbe?.world||{};
+  const mobMotion=entityMotionSummary(initialWorld?.mobs,world?.mobs);
+  const companionMotion=entityMotionSummary(initialWorld?.companions,world?.companions);
+  const npcMotion=entityMotionSummary(initialWorld?.npcs,world?.npcs);
+  const progressChanged=progressionChanged(initialClientProbe?.runtime?.progression,runtime?.progression);
+  const inventoryDelta=inventoryChanged(initialClientProbe?.runtime?.inventory,runtime?.inventory);
+  const timeline=Array.isArray(timelineProbes)?timelineProbes.filter(Boolean):[];
+  let timelineMobDynamic=false,timelineCompanionDynamic=false,timelineProgressChanged=false;
+  let activeTimelineTransitions=0,idleTimelineTransitions=0;
+  let deathObserved=false,respawnObserved=false,sawDead=false;
+  let memoryMin=Number(initialClientProbe?.runtime?.memoryMb),memoryMax=memoryMin;
+  let descendantsMin=Number(initialClientProbe?.runtime?.descendantCount),descendantsMax=descendantsMin;
+  let previous=initialClientProbe;
+  for(const probe of timeline){
+    if(!previous){previous=probe;continue;}
+    const mobDelta=entityMotionSummary(previous?.world?.mobs,probe?.world?.mobs).dynamic;
+    const companionDelta=entityMotionSummary(previous?.world?.companions,probe?.world?.companions).dynamic;
+    const progressDelta=progressionChanged(previous?.runtime?.progression,probe?.runtime?.progression);
+    const genericDelta=probeEffectSummary(previous,probe).effectObserved;
+    timelineMobDynamic=timelineMobDynamic||mobDelta;
+    timelineCompanionDynamic=timelineCompanionDynamic||companionDelta;
+    timelineProgressChanged=timelineProgressChanged||progressDelta;
+    if(mobDelta||companionDelta||progressDelta||genericDelta)activeTimelineTransitions++;else idleTimelineTransitions++;
+    const prevHealth=Number(previous?.player?.health),nextHealth=Number(probe?.player?.health);
+    const nowDead=probe?.player?.characterPresent===false||(Number.isFinite(nextHealth)&&nextHealth<=0);
+    if((Number.isFinite(prevHealth)&&prevHealth>0&&nowDead)||(!previous?.player?.characterPresent&&nowDead)){deathObserved=true;sawDead=true}
+    if(sawDead&&probe?.player?.characterPresent===true&&Number.isFinite(nextHealth)&&nextHealth>0)respawnObserved=true;
+    const mem=Number(probe?.runtime?.memoryMb);if(Number.isFinite(mem)){if(!Number.isFinite(memoryMin))memoryMin=mem;if(!Number.isFinite(memoryMax))memoryMax=mem;memoryMin=Math.min(memoryMin,mem);memoryMax=Math.max(memoryMax,mem)}
+    const desc=Number(probe?.runtime?.descendantCount);if(Number.isFinite(desc)){if(!Number.isFinite(descendantsMin))descendantsMin=desc;if(!Number.isFinite(descendantsMax))descendantsMax=desc;descendantsMin=Math.min(descendantsMin,desc);descendantsMax=Math.max(descendantsMax,desc)}
+    previous=probe;
+  }
+  const memoryGrowthMb=Number.isFinite(memoryMin)&&Number.isFinite(memoryMax)?Math.max(0,memoryMax-memoryMin):0;
+  const descendantGrowth=Number.isFinite(descendantsMin)&&Number.isFinite(descendantsMax)?Math.max(0,descendantsMax-descendantsMin):0;
+  const soak=clean(auditProfile).toUpperCase()==='F9_SOAK';
+  const routeActions=(actions||[]).filter(row=>row?.type==='mcp-map-route-audit'&&row?.dispatched===true);
+  const routePassCount=routeActions.filter(row=>row?.ok===true).length;
+  const routeRequired=soak?Math.min(2,routeActions.length):Math.min(1,routeActions.length);
+  const modelMobs=entityRows(world.mobs).filter(row=>clean(row?.kind)==='HumanoidModel');
+  const animatedMobCount=modelMobs.filter(row=>row?.animatorPresent===true&&Number(row?.motorCount||0)>0).length;
+  const spawnThreatDistance=Number(world.minSpawnThreatDistance??-1);
+  const semanticActions=(actions||[]).filter(row=>['mcp-world-interaction','mcp-ui-exploration'].includes(row?.type)&&row?.dispatched===true&&row?.ok===true);
+  const semanticEffects=semanticActions.filter(row=>row?.effectObserved===true).length;
+  const questActions=semanticActions.filter(row=>row?.semantic==='QUEST');
+  const rewardActions=semanticActions.filter(row=>['REWARD','COLLECT'].includes(row?.semantic));
+  const systemActions=semanticActions.filter(row=>['SHOP','CRAFT','EQUIP','UPGRADE'].includes(row?.semantic));
+  const travelActions=semanticActions.filter(row=>row?.semantic==='TRAVEL');
+  const questEffects=questActions.filter(row=>row?.effectObserved===true).length;
+  const rewardEffects=rewardActions.filter(row=>row?.effectObserved===true).length;
+  const systemEffects=systemActions.filter(row=>row?.effectObserved===true).length;
+  const travelEffects=travelActions.filter(row=>row?.effectObserved===true).length;
+  const combatActions=(actions||[]).filter(row=>(row?.type==='mcp-combat-action'||row?.semantic==='COMBAT')&&row?.dispatched===true&&row?.ok===true);
+  const combatEffects=combatActions.filter(row=>row?.effectObserved===true).length;
+  const retryActions=semanticActions.filter(row=>row?.semantic==='RETRY');
+  const retryEffects=retryActions.filter(row=>row?.effectObserved===true).length;
+  const multiplayerSignals=Number(player.humanCount||0)+Number(player.monsterCount||0)+Number(ws.HumanCount||0)+Number(ws.MonsterCount||0);
+  const currentActualPlayerCount=Number(runtime.actualPlayerCount||0);
+  const timelinePlayerCounts=[Number(initialClientProbe?.runtime?.actualPlayerCount||0),...timeline.map(probe=>Number(probe?.runtime?.actualPlayerCount||0)),currentActualPlayerCount].filter(Number.isFinite);
+  const maxActualPlayerCount=Math.max(0,...timelinePlayerCounts);
+  let multiplayerStateTransition=false;
+  let priorMultiplayer=initialClientProbe;
+  for(const probe of timeline){
+    if(priorMultiplayer){
+      const beforePlayers=entityRows(priorMultiplayer?.runtime?.players);
+      const afterPlayers=entityRows(probe?.runtime?.players);
+      const beforeKey=beforePlayers.map(row=>[row.userId,row.roundState,row.role,row.team,row.currentMap,row.humanCount,row.monsterCount].join('|')).sort().join('\n');
+      const afterKey=afterPlayers.map(row=>[row.userId,row.roundState,row.role,row.team,row.currentMap,row.humanCount,row.monsterCount].join('|')).sort().join('\n');
+      if(beforeKey!==afterKey)multiplayerStateTransition=true;
+    }
+    priorMultiplayer=probe;
+  }
+  const multiplayerRuntimeSurface=Number(runtime.remoteCount||0)>0&&(multiplayerSignals>0||entityRows(runtime.progression).some(row=>/party|team|human|playercount|sync|join|멀티|파티|팀|동기화/i.test(clean(row?.name))));
+  const multiplayerActualSessionPass=maxActualPlayerCount>=2&&multiplayerRuntimeSurface&&(multiplayerStateTransition||timelineProgressChanged||clean(initialClientProbe?.player?.roundState)!==clean(player.roundState));
+  const activeLoopExpected=signals.combat||signals.quests||signals.rewards||signals.progression||signals.interactions;
+  const activeLoopObserved=semanticEffects>0||timelineProgressChanged||timelineMobDynamic||timelineCompanionDynamic||primaryActionFeedbackChanged||progressChanged||inventoryDelta;
+  const performanceTrendPass=!soak||(memoryGrowthMb<=300&&descendantGrowth<=6000);
+  const visibleButtons=Number(ui.visibleButtons||0);
+  const visibleTexts=entityRows(ui.visibleTexts).map(row=>clean(row?.text)).filter(Boolean);
+  const onboardingText=visibleTexts.join(' ').toLowerCase();
+  const onboardingClarityPass=!signals.onboarding||(
+    visibleButtons>0
+    &&visibleTexts.length>0
+    &&/start|play|begin|objective|goal|quest|guide|tutorial|loading|ready|시작|플레이|목표|퀘스트|가이드|튜토리얼|준비|로딩/.test(onboardingText)
+  );
+  const uiCommercialPass=
+    Number(ui.offscreenButtons||0)===0
+    &&Number(ui.undersizedTouchButtons||0)===0
+    &&Number(ui.textOverflowButtons||0)===0
+    &&Number(ui.overlapPairs||0)<=1
+    &&visibleButtons>=0;
+  const floorSamples=Number(world.floorSampleCount||0),floorHits=Number(world.floorHitCount||0);
+  const routeSamples=Number(world.routeSampleCount||0),routeSuccess=Number(world.routeSuccessCount||0);
+  const floorCoveragePass=floorSamples===0||floorHits>=Math.max(1,Math.ceil(floorSamples*0.44));
+  const routeCoveragePass=routeSamples===0||routeSuccess>=Math.max(1,Math.ceil(routeSamples*0.5));
+  const spawnOverlapSafe=spawnThreatDistance<0||spawnThreatDistance>=2.5;
+  const worldSafetyPass=
+    world.boundsFinite===true
+    &&Number(world.collidablePartCount||0)>0
+    &&world.floorBelowPlayer===true
+    &&floorCoveragePass
+    &&routeCoveragePass
+    &&spawnOverlapSafe;
+  const interactionSurfaceCount=Number(world.proximityPromptCount||0)+Number(world.clickDetectorCount||0)+visibleButtons;
+  const progressionSurfaceCount=entityRows(runtime.progression).length+Number(categories.progression||0);
+  const mobRows=entityRows(world.mobs);
+  const humanoidMobRows=mobRows.filter(row=>clean(row?.kind)==='HumanoidModel');
+  const mobRigAnimationPass=humanoidMobRows.length===0||humanoidMobRows.every(row=>row?.animatorPresent===true&&Number(row?.motorCount||0)>0);
+  const combatSurfaceCount=mobRows.length+Number(categories.combat||0);
+  const npcSurfaceCount=entityRows(world.npcs).length+Number(categories.npc||0);
+  const companionSurfaceCount=entityRows(world.companions).length+Number(categories.companion||0);
+  const itemSurfaceCount=entityRows(world.items).length+Number(categories.item||0)+Number(categories.inventory||0);
   const rows=[
     {id:'character-camera-ready',pass:player.characterPresent===true&&player.humanoidPresent===true&&player.rootPresent===true&&client?.camera?.present===true},
     {id:'role-selection-interaction',pass:!clean(contract.selectionButtonText)||(actionOk('ui-role-selection')&&(selectionIntent==='SURVIVOR'||acceptedRoles.includes(clean(selectionPlayer.role))))},
@@ -890,7 +1414,43 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'world-geometry-present',pass:world.arenaPresent===true&&Number(world.arenaPartCount||0)>=Number(exp.minimumArenaParts||0)},
     {id:'primary-action-input',pass:!clean(contract.primaryActionButtonText)||actionOk('ui-primary-action')},
     {id:'primary-action-effect',pass:!clean(contract.primaryActionButtonText)||primaryActionFeedbackChanged||displacement>=Number(exp.minimumPrimaryActionDisplacement||0.25)||velocity>=1},
-    {id:'visual-capture-sane',pass:before.pass&&after.pass&&lightingBrightness>=Number(exp.minimumLightingBrightness||0)}
+    {id:'visual-capture-sane',pass:before.pass&&after.pass&&lightingBrightness>=Number(exp.minimumLightingBrightness||0)},
+    {id:'adaptive-runtime-surface',pass:Number(runtime.descendantCount||0)>0&&(Number(runtime.systemSignals||0)>0||Number(runtime.remoteCount||0)>0||interactionSurfaceCount>0||progressionSurfaceCount>0||combatSurfaceCount>0||npcSurfaceCount>0||itemSurfaceCount>0)},
+    {id:'adaptive-ftue-clarity',pass:onboardingClarityPass},
+    {id:'adaptive-ui-commercial-quality',pass:!signals.ui||uiCommercialPass},
+    {id:'adaptive-world-safety',pass:!signals.map||worldSafetyPass},
+    {id:'adaptive-map-route-coverage',pass:!signals.map||routeActions.length===0||routePassCount>=routeRequired},
+    {id:'adaptive-spawn-safety',pass:!signals.combat||spawnThreatDistance<0||spawnThreatDistance>=10},
+    {id:'adaptive-interaction-surface',pass:!signals.interactions||interactionSurfaceCount>0},
+    {id:'adaptive-semantic-interaction-effect',pass:!signals.interactions||semanticActions.length===0||semanticEffects>0},
+    {id:'adaptive-system-transaction-effect',pass:systemActions.length===0||systemEffects===systemActions.length},
+    {id:'adaptive-travel-effect',pass:travelActions.length===0||travelEffects===travelActions.length},
+    {id:'adaptive-gameplay-loop-cadence',pass:!activeLoopExpected||activeLoopObserved},
+    {id:'adaptive-quest-state-transition',pass:!signals.quests||questActions.length===0||questEffects>0||timelineProgressChanged},
+    {id:'adaptive-reward-effect',pass:!signals.rewards||rewardActions.length===0||rewardEffects>0||progressChanged||inventoryDelta},
+    {id:'adaptive-progression-surface',pass:!signals.progression||progressionSurfaceCount>0},
+    {id:'adaptive-remote-surface',pass:!signals.serverBoundary||Number(runtime.remoteCount||0)>0},
+    {id:'adaptive-combat-surface',pass:!signals.combat||(combatSurfaceCount>0&&mobRigAnimationPass&&(!soak||(mobRows.length>0&&(timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged||combatEffects>0))))},
+    {id:'adaptive-combat-action-effect',pass:!signals.combat||combatActions.length===0||combatEffects>0},
+    {id:'adaptive-mob-animation-ai',pass:!signals.combat||modelMobs.length===0||(animatedMobCount===modelMobs.length&&(!soak||timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged))},
+    {id:'adaptive-motion-surface',pass:!signals.motion||(player.animatorPresent===true&&Number(player.motorCount||0)>0&&displacement>=0.1)},
+    {id:'adaptive-audio-surface',pass:!signals.audio||Number(runtime.soundCount||0)>0},
+    {id:'adaptive-npc-surface',pass:!signals.npc||npcSurfaceCount>0},
+    {id:'adaptive-companion-ai-surface',pass:!signals.companion||(companionSurfaceCount>0&&(!soak||timelineCompanionDynamic||companionMotion.dynamic))},
+    {id:'adaptive-item-surface',pass:!signals.items||itemSurfaceCount>0},
+    {id:'adaptive-environment-surface',pass:!signals.environment||(Number(world.environmentModels||0)>0||Number(world.collidablePartCount||0)>=20)},
+    {id:'adaptive-effects-surface',pass:!signals.effects||(Number(world.effectCount||0)>0||primaryActionFeedbackChanged)},
+    {id:'adaptive-quest-loop-surface',pass:!signals.quests||(Number(categories.quest||0)>0||entityRows(runtime.progression).some(row=>/quest|mission|objective|trial/i.test(clean(row?.name))))},
+    {id:'adaptive-reward-loop-surface',pass:!signals.rewards||(Number(categories.reward||0)>0||entityRows(runtime.progression).some(row=>/gold|coin|xp|reward|loot|drop/i.test(clean(row?.name))))},
+    {id:'adaptive-economy-surface',pass:!signals.economy||Number(categories.economy||0)>0},
+    {id:'adaptive-save-surface',pass:!signals.save||Number(categories.save||0)>0},
+    {id:'adaptive-save-rejoin-persistence',pass:true},
+    {id:'adaptive-retry-loop-surface',pass:!signals.retry||Number(categories.retry||0)>0},
+    {id:'adaptive-retry-action-effect',pass:!signals.retry||retryActions.length===0||retryEffects>0},
+    {id:'adaptive-death-respawn-recovery',pass:!deathObserved||respawnObserved},
+    {id:'adaptive-multiplayer-sync-surface',pass:!signals.multiplayer||(soak?multiplayerActualSessionPass:multiplayerRuntimeSurface)},
+    {id:'adaptive-camera-quality',pass:!signals.camera||(client?.camera?.present===true&&client?.camera?.subjectPresent===true&&Number(client?.camera?.fieldOfView||0)>0&&client?.camera?.occluded!==true)},
+    {id:'adaptive-performance-budget',pass:Number(runtime.memoryMb||0)>=0&&Number(runtime.descendantCount||0)<120000&&performanceTrendPass}
   ];
   const scenarios=rows.filter(row=>requiredIds.size===0||requiredIds.has(row.id)).map(row=>({...row,required:true}));
   const qualityFailureKinds=scenarios.filter(row=>row.pass!==true).map(row=>row.id);
@@ -898,7 +1458,109 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const finalState=clean(player.roundState);
   const initialPop=Number(initialClientProbe?.workspace?.ActivePopulation||0);
   const finalPop=Number(ws.ActivePopulation||humanCount+monsterCount||0);
-  return{required:true,scenarios,qualityFailureKinds,authoritativeStateChangeObserved:Boolean(primaryActionFeedbackChanged||(initialState&&finalState&&initialState!==finalState)||finalPop>initialPop),capture:{before,after},metrics:{primaryActionDisplacement:displacement,primaryActionVelocity:velocity,primaryActionFeedbackChanged}};
+  const metrics={
+    primaryActionDisplacement:displacement,
+    primaryActionVelocity:velocity,
+    primaryActionFeedbackChanged,
+    progressChanged,
+    inventoryChanged:inventoryDelta,
+    timelineProgressChanged,
+    timelineMobDynamic,
+    timelineCompanionDynamic,
+    auditProfile:soak?'F9_SOAK':'FAST_DEEP',
+    timelineProbeCount:timeline.length,
+    systemActionCount:systemActions.length,
+    systemEffectCount:systemEffects,
+    travelActionCount:travelActions.length,
+    travelEffectCount:travelEffects,
+    mobMotion,
+    companionMotion,
+    npcMotion,
+    ftue:{declared:signals.onboarding===true,pass:onboardingClarityPass,visibleTextCount:visibleTexts.length,visibleButtonCount:visibleButtons},
+    uiCommercial:{offscreenButtons:Number(ui.offscreenButtons||0),undersizedTouchButtons:Number(ui.undersizedTouchButtons||0),suboptimalTouchButtons:Number(ui.suboptimalTouchButtons||0),textOverflowButtons:Number(ui.textOverflowButtons||0),overlapPairs:Number(ui.overlapPairs||0)},
+    surfaces:{interactionSurfaceCount,progressionSurfaceCount,combatSurfaceCount,npcSurfaceCount,companionSurfaceCount,itemSurfaceCount,remoteCount:Number(runtime.remoteCount||0),soundCount:Number(runtime.soundCount||0),effectCount:Number(world.effectCount||0),promptCount:Number(world.proximityPromptCount||0),inventoryCount:Number(runtime.inventoryCount||0),currentActualPlayerCount,maxActualPlayerCount,multiplayerStateTransition,multiplayerActualSessionPass},
+    performance:{memoryMb:Number(runtime.memoryMb||0),descendantCount:Number(runtime.descendantCount||0)},
+    worldAudit:{floorSamples,floorHits,floorCoveragePass,routeSamples,routeSuccess,routeCoveragePass,spawnThreatDistance,spawnOverlapSafe},
+    characterAndAi:{mobRigAnimationPass,humanoidMobCount:humanoidMobRows.length,cameraOccluded:client?.camera?.occluded===true,cameraDistance:Number(client?.camera?.distance||0)}
+  };
+  const repairMap={
+    'adaptive-ftue-clarity':['FTUE_ONBOARDING','HIGH','Restore a clear start/loading/tutorial/objective presentation with an actionable control and readable guidance before normal play.'],
+    'adaptive-ui-commercial-quality':['MOBILE_UI','HIGH','Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.'],
+    'adaptive-world-safety':['WORLD_GEOMETRY','CRITICAL','Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.'],
+    'adaptive-map-route-coverage':['MAP_ROUTEABILITY','CRITICAL','Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.'],
+    'adaptive-spawn-safety':['SPAWN_FAIRNESS','HIGH','Move hostile spawns away from player spawn or add safe startup protection/telegraphing.'],
+    'adaptive-mob-animation-ai':['MONSTER_MOTION_AI','CRITICAL','Repair monster Humanoid rig, Animator/Motor6D motion, target/aggro transitions, attack movement, and runtime liveness.'],
+    'adaptive-interaction-surface':['INTERACTION_CHAIN','HIGH','Restore usable prompts/buttons/click surfaces and verify input leads to a visible or authoritative result.'],
+    'adaptive-semantic-interaction-effect':['INTERACTION_CHAIN','CRITICAL','A discovered quest/shop/craft/equip/travel/heal/upgrade/collect/UI interaction accepted input but produced no observable gameplay/UI/progression/inventory result.'],
+    'adaptive-system-transaction-effect':['SYSTEM_TRANSACTION','CRITICAL','One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.'],
+    'adaptive-travel-effect':['WORLD_TRAVEL','CRITICAL','A discovered portal/door/travel action accepted input but did not move the player, change map/round state, or provide authoritative feedback.'],
+    'adaptive-gameplay-loop-cadence':['CORE_GAMEPLAY_LOOP','CRITICAL','Actual-play samples show no meaningful action-feedback-progression/AI change across an active gameplay loop. Reduce dead time or restore the broken loop transition.'],
+    'adaptive-quest-state-transition':['QUEST_LOOP','CRITICAL','Quest interaction did not advance quest/UI/progression state. Repair accept-progress-complete transitions and softlock handling.'],
+    'adaptive-reward-effect':['REWARD_LOOP','CRITICAL','Reward/collect interaction did not change reward, inventory, progression, or visible state. Repair delivery and duplicate-safe claim handling.'],
+    'adaptive-progression-surface':['PROGRESSION','CRITICAL','Restore observable progression state for levels, quests, waves, zones, unlocks, or rewards.'],
+    'adaptive-remote-surface':['SERVER_CLIENT_BOUNDARY','CRITICAL','Restore server-authoritative RemoteEvent/RemoteFunction surface and validation path.'],
+    'adaptive-combat-surface':['COMBAT_AI','CRITICAL','Repair combat targets, damage/state transitions, enemy liveness, attack feedback, and F9 AI movement.'],
+    'adaptive-combat-action-effect':['ACTION_IMPLEMENTATION','CRITICAL','Studio reached a live combat target and dispatched attack input, but no damage/AI/target/player/UI feedback change was observed. Repair hit detection, attack binding, server authority, and feedback timing.'],
+    'adaptive-motion-surface':['CHARACTER_MOTION','HIGH','Repair Animator/Motor6D rig behavior and verify movement/action animation response.'],
+    'adaptive-audio-surface':['AUDIO','MEDIUM','Restore required gameplay/BGM/SFX surface and ensure runtime audio feedback exists.'],
+    'adaptive-npc-surface':['NPC','HIGH','Restore required NPC actors, interaction affordances, dialogue/shop/quest links, and runtime state.'],
+    'adaptive-companion-ai-surface':['COMPANION_AI','CRITICAL','Repair companion spawn/follow/target/attack/recovery behavior and F9 liveness.'],
+    'adaptive-item-surface':['ITEM_INVENTORY','HIGH','Restore item/tool/inventory/equipment surface and verify acquisition/equip state.'],
+    'adaptive-environment-surface':['ENVIRONMENT_ART','MEDIUM','Restore environment/world dressing while preserving collision and gameplay readability.'],
+    'adaptive-effects-surface':['VFX_FEEDBACK','MEDIUM','Restore readable telegraphs, hit feedback, particles/trails/highlights without blocking play.'],
+    'adaptive-quest-loop-surface':['QUEST_LOOP','CRITICAL','Repair quest accept-progress-complete-reward state chain and prevent stuck quest states.'],
+    'adaptive-reward-loop-surface':['REWARD_LOOP','HIGH','Repair reward delivery and progression feedback; prevent missing or duplicated rewards.'],
+    'adaptive-economy-surface':['ECONOMY','HIGH','Repair shop/cost/currency/upgrade transaction surface and progression affordability flow.'],
+    'adaptive-save-surface':['SAVE_REJOIN','CRITICAL','Repair save/load/rejoin persistence and idempotency without duplicating rewards.'],
+    'adaptive-save-rejoin-persistence':['SAVE_REJOIN','CRITICAL','Repair save timing/load ordering/schema migration so stable progression survives an actual F9 Studio stop/start cycle without reset or duplication.'],
+    'adaptive-retry-loop-surface':['FAILURE_RECOVERY','HIGH','Repair death/failure/restart/respawn flow and remove softlocks after retry.'],
+    'adaptive-retry-action-effect':['FAILURE_RECOVERY','CRITICAL','Retry/restart input was accepted but did not restore or transition gameplay/UI/round state.'],
+    'adaptive-death-respawn-recovery':['CHARACTER_RESPAWN','CRITICAL','A real death was observed during Studio play but the character did not return to a healthy playable state.'],
+    'adaptive-multiplayer-sync-surface':['MULTIPLAYER_SYNC','CRITICAL','The game declares multiplayer/co-op behavior but Studio found no credible replicated player/team state plus server Remote surface. Restore actual 2+ player synchronization evidence before release.'],
+    'adaptive-camera-quality':['CAMERA','HIGH','Repair camera subject/FOV/occlusion behavior and keep gameplay readable during movement/combat.'],
+    'adaptive-performance-budget':['PERFORMANCE','HIGH','Reduce runaway instance count/memory pressure and keep long-session runtime stable.'],
+    'primary-action-effect':['ACTION_IMPLEMENTATION','CRITICAL','Ensure primary action produces authoritative gameplay feedback, movement, damage, or state transition.'],
+    'visual-capture-sane':['VISUAL_RUNTIME','HIGH','Repair blank/invalid/too-small viewport or unreadable lighting during actual play.'],
+    'character-camera-ready':['CHARACTER_BOOT','CRITICAL','Repair character spawn, Humanoid/root, and camera binding before gameplay starts.']
+  };
+  const observedFor=id=>{
+    if(id==='adaptive-ftue-clarity')return{declared:signals.onboarding===true,visibleButtonCount:visibleButtons,visibleTextCount:visibleTexts.length,visibleTexts:visibleTexts.slice(0,12),pass:onboardingClarityPass};
+    if(id==='adaptive-ui-commercial-quality')return metrics.uiCommercial;
+    if(id==='adaptive-world-safety')return{boundsFinite:world.boundsFinite===true,collidablePartCount:Number(world.collidablePartCount||0),floorBelowPlayer:world.floorBelowPlayer===true,floorSamples,floorHits,floorCoveragePass,routeSamples,routeSuccess,routeCoveragePass,spawnThreatDistance,spawnOverlapSafe};
+    if(id==='adaptive-map-route-coverage')return{routeAttemptCount:routeActions.length,routePassCount,routeRequired,routes:routeActions.slice(0,8).map(row=>({id:row.id,ok:row.ok===true,moved:Number(row.moved||0),fall:Number(row.fall||0),floorBelow:row.floorBelow===true}))};
+    if(id==='adaptive-spawn-safety')return{spawnLocationCount:Number(world.spawnLocationCount||0),minSpawnThreatDistance:spawnThreatDistance};
+    if(id==='adaptive-mob-animation-ai')return{modelMobCount:modelMobs.length,animatedMobCount,mobMotion:metrics.mobMotion,timelineMobDynamic};
+    if(id==='adaptive-combat-surface')return{combatSurfaceCount,mobCount:mobRows.length,humanoidMobCount:humanoidMobRows.length,mobRigAnimationPass,mobMotion:metrics.mobMotion,timelineMobDynamic,combatActionCount:combatActions.length,combatEffectCount:combatEffects};
+    if(id==='adaptive-combat-action-effect')return{combatActionCount:combatActions.length,combatEffectCount:combatEffects,actions:combatActions.slice(0,8).map(row=>({id:row.id,type:row.type,effectObserved:row.effectObserved===true,effect:row.effect||null}))};
+    if(id==='adaptive-companion-ai-surface')return{companionSurfaceCount,companionCount:entityRows(world.companions).length,companionMotion:metrics.companionMotion,timelineCompanionDynamic};
+    if(id==='adaptive-progression-surface'||id==='adaptive-quest-loop-surface'||id==='adaptive-reward-loop-surface')return{progressionSurfaceCount,progressChanged,timelineProgressChanged};
+    if(id==='adaptive-item-surface')return{itemSurfaceCount,inventoryCount:Number(runtime.inventoryCount||0),inventoryChanged:inventoryDelta};
+    if(id==='adaptive-performance-budget')return metrics.performance;
+    if(id==='adaptive-interaction-surface')return{interactionSurfaceCount,promptCount:Number(world.proximityPromptCount||0),clickDetectorCount:Number(world.clickDetectorCount||0),visibleButtons};
+    if(id==='adaptive-semantic-interaction-effect')return{semanticActionCount:semanticActions.length,semanticEffectCount:semanticEffects,actions:semanticActions.slice(0,10).map(row=>({id:row.id,type:row.type,semantic:row.semantic||null,effectObserved:row.effectObserved===true,effect:row.effect||null}))};
+    if(id==='adaptive-system-transaction-effect')return{systemActionCount:systemActions.length,systemEffectCount:systemEffects,actions:systemActions.slice(0,12).map(row=>({id:row.id,semantic:row.semantic,effectObserved:row.effectObserved===true,effect:row.effect||null}))};
+    if(id==='adaptive-travel-effect')return{travelActionCount:travelActions.length,travelEffectCount:travelEffects,actions:travelActions.slice(0,8).map(row=>({id:row.id,effectObserved:row.effectObserved===true,effect:row.effect||null}))};
+    if(id==='adaptive-gameplay-loop-cadence')return{activeLoopExpected,activeLoopObserved,activeTimelineTransitions,idleTimelineTransitions,semanticEffectCount:semanticEffects,timelineProgressChanged,timelineMobDynamic,timelineCompanionDynamic};
+    if(id==='adaptive-quest-state-transition')return{questActionCount:questActions.length,questEffectCount:questEffects,timelineProgressChanged};
+    if(id==='adaptive-reward-effect')return{rewardActionCount:rewardActions.length,rewardEffectCount:rewardEffects,progressChanged,inventoryChanged:inventoryDelta};
+    if(id==='adaptive-retry-action-effect')return{retryActionCount:retryActions.length,retryEffectCount:retryEffects};
+    if(id==='adaptive-death-respawn-recovery')return{deathObserved,respawnObserved};
+    if(id==='adaptive-multiplayer-sync-surface')return{declaredMultiplayer:signals.multiplayer===true,auditProfile:soak?'F9_SOAK':'FAST_DEEP',multiplayerRuntimeSurface,multiplayerActualSessionPass,multiplayerSignals,currentActualPlayerCount,maxActualPlayerCount,multiplayerStateTransition,remoteCount:Number(runtime.remoteCount||0)};
+    return metrics.surfaces;
+  };
+  const qualityFailureDetails=qualityFailureKinds.map(id=>{
+    const [repairSurface,priority,hint]=repairMap[id]||['ROBLOX_PRODUCT_QUALITY','HIGH','Repair the failing Studio actual-play scenario and re-run the exact artifact.'];
+    return{id,repairSurface,priority,hint,observed:observedFor(id)};
+  });
+  return{
+    required:true,
+    scenarios,
+    qualityFailureKinds,
+    qualityFailureDetails,
+    authoritativeStateChangeObserved:Boolean(primaryActionFeedbackChanged||progressChanged||mobMotion.healthChanged>0||mobMotion.stateChanged>0||(initialState&&finalState&&initialState!==finalState)||finalPop>initialPop),
+    capture:{before,after},
+    metrics
+  };
 }
 
 class McpStdioClient{
@@ -1039,16 +1701,19 @@ function mcpCommandArgs(command=''){
 
 export async function runOfficialStudioMcpPlay({
   mcpCommand='',output='',expectedStudioName='',timeoutMs=45000,toolAttempts=5,toolDelayMs=1000,
-  settingState='',settingCandidatePathCount=-1,actualPlayContractPath=''
+  settingState='',settingCandidatePathCount=-1,actualPlayContractPath='',auditProfile='FAST_DEEP'
 }={}){
-  const actualPlayContract=actualPlayContractPath&&fs.existsSync(actualPlayContractPath)?(readJson(actualPlayContractPath)?.studioActualPlayContract||{}):{};
+  const actualPlayLaunch=actualPlayContractPath&&fs.existsSync(actualPlayContractPath)?readJson(actualPlayContractPath):{};
+  const actualPlayContract=deriveStudioActualPlayContract(actualPlayLaunch);
   const launch=mcpCommandArgs(mcpCommand);
   const client=new McpStdioClient({...launch,timeoutMs});
   const actions=[],checkpoints=[],errors=[];
   const checkpoint=(id,pass)=>checkpoints.push({id,name:id,required:true,pass:pass===true});
   let studioId='',beforeImages=[],afterImages=[],consoleResult=null,characterMotionRuntime=null,started=false;
-  let initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,finalClientProbe=null,finalServerProbe=null,scenarioCoverage=[];
-  let authoritativeStateChangeObserved=false,qualityFailureKinds=[],captureQuality=null,scenarioMetrics={};
+  let initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,finalClientProbe=null,finalServerProbe=null,rejoinClientProbe=null,scenarioCoverage=[];
+  let authoritativeStateChangeObserved=false,qualityFailureKinds=[],qualityFailureDetails=[],captureQuality=null,scenarioMetrics={},saveRejoinSummary=null,multiplayerAuditSummary=null;
+  const auditMode=clean(auditProfile).toUpperCase()==='F9_SOAK'?'F9_SOAK':'FAST_DEEP';
+  const timelineProbes=[];
   try{
     await client.connect();
     const requiredTools=['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input','user_mouse_input','character_navigation','execute_luau'];
@@ -1155,6 +1820,182 @@ export async function runOfficialStudioMcpPlay({
     const keyboardActions=actions.filter(x=>x.type==='mcp-keyboard-input');
     checkpoint('mcp-input-dispatched',keyboardActions.length===4&&keyboardActions.every(x=>x.ok));
 
+    if(actualPlayContract?.required===true){
+      const promptRows=entityRows(initialClientProbe?.world?.prompts).filter(row=>row?.enabled!==false);
+      const rootPos=initialClientProbe?.player||{};
+      const initialWorld=initialClientProbe?.world||{};
+      const navigationTool=client.tool('character_navigation');
+      const contractSignals=actualPlayContract?.adaptiveCoverage?.signals||{};
+      const initialMobs=entityRows(initialWorld?.mobs);
+      if((contractSignals.combat===true||initialMobs.length>0)&&initialMobs.length>0){
+        const rootX0=Number(rootPos?.rootX||0),rootY0=Number(rootPos?.rootY||0),rootZ0=Number(rootPos?.rootZ||0);
+        const nearest=[...initialMobs].sort((a,b)=>Math.hypot(Number(a?.x||0)-rootX0,Number(a?.z||0)-rootZ0)-Math.hypot(Number(b?.x||0)-rootX0,Number(b?.z||0)-rootZ0))[0];
+        const dx=Number(nearest?.x||0)-rootX0,dz=Number(nearest?.z||0)-rootZ0,dist=Math.hypot(dx,dz)||1;
+        const target={x:Number(nearest?.x||0)-dx/dist*5,y:rootY0,z:Number(nearest?.z||0)-dz/dist*5};
+        let navOk=false,attackOk=false,combatProbe=null;
+        try{
+          const navResult=await client.call('character_navigation',characterNavigationArgs(navigationTool.inputSchema||{},studioId,target));
+          navOk=navResult?.isError!==true;
+          await wait(500);
+          if(Number(initialClientProbe?.runtime?.inventoryCount||0)>0){
+            await client.call('user_keyboard_input',keyboardArgs(keyboardTool.inputSchema||{},studioId,'1'));
+            await wait(180);
+          }
+          const mouseTool=client.tool('user_mouse_input');
+          const vx=Number(initialClientProbe?.camera?.viewportX||0),vy=Number(initialClientProbe?.camera?.viewportY||0);
+          const attackResult=await client.call('user_mouse_input',mouseClickArgs(mouseTool.inputSchema||{},studioId,Math.max(1,vx/2),Math.max(1,vy/2)));
+          attackOk=attackResult?.isError!==true;
+          await wait(700);
+          combatProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+          if(combatProbe)timelineProbes.push(combatProbe);
+        }catch{}
+        const mobDelta=entityMotionSummary(initialClientProbe?.world?.mobs,combatProbe?.world?.mobs);
+        const generic=probeEffectSummary(initialClientProbe||{},combatProbe||{});
+        actions.push({id:'commercial-combat-action',type:'mcp-combat-action',dispatched:true,ok:navOk&&attackOk,effectObserved:generic.effectObserved||mobDelta.healthChanged>0||mobDelta.stateChanged>0||mobDelta.targetChanged>0,effect:{...generic,mobDelta}});
+      }
+      const routeTargets=[];
+      const minX=Number(initialWorld?.minX),maxX=Number(initialWorld?.maxX),minZ=Number(initialWorld?.minZ),maxZ=Number(initialWorld?.maxZ);
+      const rootX=Number(rootPos?.rootX||0),rootY=Number(rootPos?.rootY||0),rootZ=Number(rootPos?.rootZ||0);
+      if([minX,maxX,minZ,maxZ].every(Number.isFinite)&&maxX-minX>12&&maxZ-minZ>12){
+        const raw=[
+          {id:'nw',x:minX+(maxX-minX)*0.2,z:minZ+(maxZ-minZ)*0.2},
+          {id:'ne',x:minX+(maxX-minX)*0.8,z:minZ+(maxZ-minZ)*0.2},
+          {id:'sw',x:minX+(maxX-minX)*0.2,z:minZ+(maxZ-minZ)*0.8},
+          {id:'se',x:minX+(maxX-minX)*0.8,z:minZ+(maxZ-minZ)*0.8}
+        ];
+        const maxDistance=auditMode==='F9_SOAK'?120:70;
+        for(const row of raw){
+          const dx=row.x-rootX,dz=row.z-rootZ,dist=Math.hypot(dx,dz)||1;
+          const scale=Math.min(1,maxDistance/dist);
+          routeTargets.push({id:row.id,x:rootX+dx*scale,y:rootY,z:rootZ+dz*scale});
+        }
+      }
+      const routeLimit=auditMode==='F9_SOAK'?4:2;
+      let previousRouteProbe=initialClientProbe;
+      for(const target of routeTargets.slice(0,routeLimit)){
+        let navOk=false,probe=null;
+        try{
+          const navResult=await client.call('character_navigation',characterNavigationArgs(navigationTool.inputSchema||{},studioId,target));
+          navOk=navResult?.isError!==true;
+          await wait(auditMode==='F9_SOAK'?850:550);
+          probe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+          if(probe)timelineProbes.push(probe);
+        }catch{}
+        const moved=pointDistance(previousRouteProbe?.player||{},probe?.player||{});
+        const y0=Number(previousRouteProbe?.player?.rootY),y1=Number(probe?.player?.rootY);
+        const fall=Number.isFinite(y0)&&Number.isFinite(y1)?Math.max(0,y0-y1):0;
+        const safe=Boolean(navOk&&probe?.world?.floorBelowPlayer===true&&fall<35&&moved>=1);
+        actions.push({id:'map-route-'+target.id,type:'mcp-map-route-audit',dispatched:true,ok:safe,moved,fall,floorBelow:probe?.world?.floorBelowPlayer===true});
+        if(probe)previousRouteProbe=probe;
+      }
+      const semanticOf=row=>{
+        const text=(clean(row?.actionText)+' '+clean(row?.objectText)+' '+clean(row?.name)).toLowerCase();
+        return /quest|퀘스트|mission|임무/.test(text)?'QUEST'
+          :/reward|보상|claim|수령/.test(text)?'REWARD'
+          :/shop|상점|merchant|구매|판매/.test(text)?'SHOP'
+          :/craft|제작|forge|대장간/.test(text)?'CRAFT'
+          :/equip|장비|weapon|무기|armor|방어구/.test(text)?'EQUIP'
+          :/portal|포탈|enter|입장|door|문/.test(text)?'TRAVEL'
+          :/heal|회복|healer|치유/.test(text)?'HEAL'
+          :/upgrade|강화|전직|advance|train/.test(text)?'UPGRADE'
+          :/retry|재도전|restart|재시작|respawn|리스폰|revive|부활/.test(text)?'RETRY'
+          :/collect|채집|줍기|pickup|loot|전리품/.test(text)?'COLLECT':'GENERAL';
+      };
+      const semanticRank={QUEST:0,REWARD:1,SHOP:2,CRAFT:3,EQUIP:4,TRAVEL:5,HEAL:6,UPGRADE:7,COLLECT:8,GENERAL:99};
+      promptRows.sort((a,b)=>{
+        const aw=semanticRank[semanticOf(a)]??99,bw=semanticRank[semanticOf(b)]??99;
+        if(aw!==bw)return aw-bw;
+        const da=Math.hypot(Number(a?.x||0)-Number(rootPos?.rootX||0),Number(a?.y||0)-Number(rootPos?.rootY||0),Number(a?.z||0)-Number(rootPos?.rootZ||0));
+        const db=Math.hypot(Number(b?.x||0)-Number(rootPos?.rootX||0),Number(b?.y||0)-Number(rootPos?.rootY||0),Number(b?.z||0)-Number(rootPos?.rootZ||0));
+        return da-db;
+      });
+      const exploreLimit=auditMode==='F9_SOAK'?8:3;
+      const selectedPrompts=[],seenSemantic=new Set();
+      for(const row of promptRows){
+        const semantic=semanticOf(row);
+        if(semantic!=='GENERAL'&&!seenSemantic.has(semantic)){selectedPrompts.push(row);seenSemantic.add(semantic)}
+        if(selectedPrompts.length>=exploreLimit)break;
+      }
+      for(const row of promptRows){
+        if(selectedPrompts.length>=exploreLimit)break;
+        if(!selectedPrompts.includes(row))selectedPrompts.push(row);
+      }
+      for(const prompt of selectedPrompts){
+        let navOk=false,inputOk=false;
+        const beforeProbe=timelineProbes.at(-1)||initialClientProbe;
+        const semantic=semanticOf(prompt);
+        try{
+          const target={x:Number(prompt?.x||0),y:Number(prompt?.y||0),z:Number(prompt?.z||0)};
+          const navResult=await client.call('character_navigation',characterNavigationArgs(navigationTool.inputSchema||{},studioId,target));
+          navOk=navResult?.isError!==true;
+          await wait(450);
+          const key=promptKeyboardKey(prompt?.key);
+          const holdMs=Math.max(120,Math.min(2200,Number(prompt?.holdDuration||0)*1000+160));
+          const inputResult=await client.call('user_keyboard_input',keyboardArgs(keyboardTool.inputSchema||{},studioId,key,holdMs));
+          inputOk=inputResult?.isError!==true;
+          await wait(Math.max(350,Math.min(2200,holdMs+250)));
+          const interactionProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+          const effect=probeEffectSummary(beforeProbe||{},interactionProbe||{});
+          const semanticPass=semanticEffectPass(semantic,effect);
+          if(interactionProbe)timelineProbes.push(interactionProbe);
+          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',semantic,dispatched:true,ok:navOk&&inputOk,effectObserved:semanticPass,effect});
+        }catch{
+          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',semantic,dispatched:true,ok:false,effectObserved:false});
+        }
+      }
+      if(promptRows.length>0)checkpoint('commercial-prompt-exploration',actions.some(row=>row.type==='mcp-world-interaction'&&row.ok===true));
+
+      const destructiveUi=/delete|삭제|wipe|초기화|reset data|데이터 초기화|robux|로벅스|purchase premium|quit|leave game|게임 종료/i;
+      const usefulUi=/start|시작|attack|공격|skill|스킬|quest|퀘스트|shop|상점|craft|제작|equip|장비|heal|회복|upgrade|강화|retry|재도전|claim|보상|inventory|인벤/i;
+      const uiCandidates=entityRows((timelineProbes.at(-1)||initialClientProbe)?.ui?.interactive)
+        .filter(row=>!destructiveUi.test(clean(row?.text)+' '+clean(row?.name)))
+        .sort((a,b)=>(usefulUi.test(clean(b?.text)+' '+clean(b?.name))?1:0)-(usefulUi.test(clean(a?.text)+' '+clean(a?.name))?1:0));
+      const uiExploreLimit=auditMode==='F9_SOAK'?6:2;
+      const selectedUi=[],uiBuckets=new Set();
+      const uiSemantic=row=>{
+        const t=(clean(row?.text)+' '+clean(row?.name)).toLowerCase();
+        return /attack|공격|skill|스킬|ability|능력/.test(t)?'COMBAT'
+          :/quest|퀘스트|mission|임무/.test(t)?'QUEST'
+          :/reward|보상|claim|수령/.test(t)?'REWARD'
+          :/shop|상점/.test(t)?'SHOP'
+          :/craft|제작/.test(t)?'CRAFT'
+          :/equip|장비|inventory|인벤/.test(t)?'EQUIP'
+          :/retry|재도전|restart|재시작|respawn|부활/.test(t)?'RETRY':'GENERAL';
+      };
+      for(const row of uiCandidates){const bucket=uiSemantic(row);if(bucket!=='GENERAL'&&!uiBuckets.has(bucket)){selectedUi.push(row);uiBuckets.add(bucket)}if(selectedUi.length>=uiExploreLimit)break}
+      for(const row of uiCandidates){if(selectedUi.length>=uiExploreLimit)break;if(!selectedUi.includes(row))selectedUi.push(row)}
+      for(const target of selectedUi){
+        if(!Number.isFinite(Number(target?.centerX))||!Number.isFinite(Number(target?.centerY)))continue;
+        const beforeProbe=timelineProbes.at(-1)||initialClientProbe;
+        let ok=false,afterProbe=null;
+        try{
+          const mouseTool=client.tool('user_mouse_input');
+          const result=await client.call('user_mouse_input',mouseClickArgs(mouseTool.inputSchema||{},studioId,target.centerX,target.centerY));
+          ok=result?.isError!==true;
+          await wait(450);
+          afterProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+          if(afterProbe)timelineProbes.push(afterProbe);
+        }catch{}
+        const effect=probeEffectSummary(beforeProbe||{},afterProbe||{});
+        const semantic=uiSemantic(target);
+        actions.push({id:'ui-discovered-'+clean(target?.name||target?.text||'button'),type:'mcp-ui-exploration',semantic,dispatched:true,ok,effectObserved:effect.effectObserved,effect});
+      }
+
+      const sampleCount=auditMode==='F9_SOAK'?12:4;
+      const sampleDelay=auditMode==='F9_SOAK'?1200:500;
+      for(let sample=0;sample<sampleCount;sample++){
+        await wait(sampleDelay);
+        const probe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+        if(probe)timelineProbes.push(probe);
+        if(sample<sampleCount-1){
+          const key=sample%2===0?'W':'D';
+          const result=await client.call('user_keyboard_input',keyboardArgs(keyboardTool.inputSchema||{},studioId,key));
+          actions.push({id:'explore-'+sample+'-'+key.toLowerCase(),type:'mcp-keyboard-input',dispatched:true,ok:result?.isError!==true});
+        }
+      }
+      checkpoint('commercial-audit-timeline-sampled',timelineProbes.length>=sampleCount-1);
+    }
+
     const after=await client.call('screen_capture',captureArgs);
     afterImages=collectImages(after,[]);
     const beforeHashes=beforeImages.map(x=>hash(Buffer.from(x.data,'base64')));
@@ -1163,17 +2004,94 @@ export async function runOfficialStudioMcpPlay({
     checkpoint('viewport-changed-after-input',changed);
 
     if(actualPlayContract?.required===true){
-      finalClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+      finalClientProbe=timelineProbes.at(-1)||await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
       finalServerProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Server');
       checkpoint('actual-play-final-client-probe',finalClientProbe!=null);
       checkpoint('actual-play-final-server-probe',finalServerProbe!=null);
-      const evaluated=evaluateStudioActualPlayContract({contract:actualPlayContract,initialClientProbe,preActionClientProbe,postActionClientProbe,clientProbe:finalClientProbe,serverProbe:finalServerProbe,actions,beforeImages,afterImages});
+      const evaluated=evaluateStudioActualPlayContract({contract:actualPlayContract,initialClientProbe,preActionClientProbe,postActionClientProbe,clientProbe:finalClientProbe,serverProbe:finalServerProbe,actions,beforeImages,afterImages,timelineProbes,auditProfile:auditMode});
       scenarioCoverage=evaluated.scenarios;
       authoritativeStateChangeObserved=evaluated.authoritativeStateChangeObserved===true;
       qualityFailureKinds=evaluated.qualityFailureKinds;
+      qualityFailureDetails=Array.isArray(evaluated.qualityFailureDetails)?evaluated.qualityFailureDetails:[];
       captureQuality=evaluated.capture;
       scenarioMetrics=evaluated.metrics||{};
       for(const row of scenarioCoverage)checkpoint('scenario-'+row.id,row.pass===true);
+
+      const saveDeclared=actualPlayContract?.adaptiveCoverage?.signals?.save===true
+        ||actualPlayContract?.adaptiveCoverage?.evidencePolicy?.saveRejoinPassRequired===true;
+      if(auditMode==='F9_SOAK'&&saveDeclared){
+        const beforePersist=persistentStateSummary(finalClientProbe||{});
+        let restartOk=false;
+        try{
+          const restartTool=client.tool('start_stop_play');
+          await client.call('start_stop_play',startStopArgs(restartTool.inputSchema||{},studioId,false));
+          started=false;
+          await wait(900);
+          await client.call('start_stop_play',startStopArgs(restartTool.inputSchema||{},studioId,true));
+          started=true;
+          await wait(2800);
+          rejoinClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+          restartOk=rejoinClientProbe!=null;
+        }catch{}
+        const afterPersist=persistentStateSummary(rejoinClientProbe||{});
+        const progressionObserved=beforePersist.persistentSignalCount>0&&afterPersist.persistentSignalCount>0;
+        const progressionPreserved=progressionObserved&&beforePersist.progressionFingerprint===afterPersist.progressionFingerprint;
+        const inventoryComparable=beforePersist.inventory.length>0||afterPersist.inventory.length>0;
+        const inventoryPreserved=!inventoryComparable||beforePersist.inventoryFingerprint===afterPersist.inventoryFingerprint;
+        const pass=restartOk&&progressionPreserved&&inventoryPreserved;
+        saveRejoinSummary={restartOk,progressionObserved,progressionPreserved,inventoryComparable,inventoryPreserved,before:beforePersist,after:afterPersist};
+        const existingIndex=scenarioCoverage.findIndex(row=>row?.id==='adaptive-save-rejoin-persistence');
+        const row={id:'adaptive-save-rejoin-persistence',pass,required:true};
+        if(existingIndex>=0)scenarioCoverage[existingIndex]=row;else scenarioCoverage.push(row);
+        checkpoint('scenario-adaptive-save-rejoin-persistence',pass);
+        if(!pass){
+          if(!qualityFailureKinds.includes('adaptive-save-rejoin-persistence'))qualityFailureKinds.push('adaptive-save-rejoin-persistence');
+          qualityFailureDetails.push({
+            id:'adaptive-save-rejoin-persistence',
+            repairSurface:'SAVE_REJOIN',
+            priority:'CRITICAL',
+            hint:'F9 Studio restart did not preserve stable progression/inventory state. Repair save timing, load ordering, schema migration, or reset/duplication behavior.',
+            observed:{restartOk,progressionObserved,progressionPreserved,inventoryComparable,inventoryPreserved}
+          });
+        }
+      }
+      const multiplayerDeclared=actualPlayContract?.adaptiveCoverage?.signals?.multiplayer===true;
+      if(auditMode==='F9_SOAK'&&multiplayerDeclared){
+        if(started){
+          try{
+            const stopTool=client.tool('start_stop_play');
+            await client.call('start_stop_play',startStopArgs(stopTool.inputSchema||{},studioId,false));
+            started=false;
+            await wait(900);
+          }catch{}
+        }
+        multiplayerAuditSummary=await runStudioMultiplayerAudit(client,studioId,actualPlayContract);
+        const pass=multiplayerAuditSummary?.pass===true;
+        const index=scenarioCoverage.findIndex(row=>row?.id==='adaptive-multiplayer-sync-surface');
+        const row={id:'adaptive-multiplayer-sync-surface',pass,required:true};
+        if(index>=0)scenarioCoverage[index]=row;else scenarioCoverage.push(row);
+        checkpoint('scenario-adaptive-multiplayer-sync-surface-f9',pass);
+        if(pass){
+          qualityFailureKinds=qualityFailureKinds.filter(id=>id!=='adaptive-multiplayer-sync-surface');
+          qualityFailureDetails=qualityFailureDetails.filter(row=>row?.id!=='adaptive-multiplayer-sync-surface');
+        }else if(multiplayerAuditSummary?.infrastructureFailure===true){
+          errors.push({
+            type:'studio-multiplayer-harness-infrastructure',
+            actionId:'studio-test-service-multiplayer',
+            signature:'ROBLOX_STUDIO_MULTIPLAYER_HARNESS_PENDING:'+(multiplayerAuditSummary?.error||'UNKNOWN')
+          });
+        }else{
+          if(!qualityFailureKinds.includes('adaptive-multiplayer-sync-surface'))qualityFailureKinds.push('adaptive-multiplayer-sync-surface');
+          qualityFailureDetails=qualityFailureDetails.filter(row=>row?.id!=='adaptive-multiplayer-sync-surface');
+          qualityFailureDetails.push({
+            id:'adaptive-multiplayer-sync-surface',
+            repairSurface:'MULTIPLAYER_SYNC',
+            priority:'CRITICAL',
+            hint:'F9 StudioTestService did not prove 2-client synchronization, late join, and leave recovery. Repair replicated state, player lifecycle, lobby/team sync, or server authority.',
+            observed:multiplayerAuditSummary
+          });
+        }
+      }
     }
 
     const consoleTool=client.tool('get_console_output');
@@ -1246,13 +2164,18 @@ export async function runOfficialStudioMcpPlay({
         characterMotionRuntime:characterMotionRuntime?.required===true,
         executeLuauRuntimeProbe:actualPlayContract?.required===true
       },
+      auditProfile:auditMode,
+      timelineProbeCount:timelineProbes.length,
       scenarioContractRequired:actualPlayContract?.required===true,
       scenarioContractVersion:Number(actualPlayContract?.version||0),
       scenarioContractFingerprint:actualPlayContract?.required===true?'sha256:'+stableSha256(actualPlayContract):null,
       scenarioCoverage,
       authoritativeStateChangeObserved,
       qualityFailureKinds,
-      runtimeProbes:actualPlayContract?.required===true?{initialClient:initialClientProbe,preActionClient:preActionClientProbe,postActionClient:postActionClientProbe,finalClient:finalClientProbe,finalServer:finalServerProbe}:null,
+      qualityFailureDetails,
+      runtimeProbes:actualPlayContract?.required===true?{initialClient:initialClientProbe,preActionClient:preActionClientProbe,postActionClient:postActionClientProbe,finalClient:finalClientProbe,finalServer:finalServerProbe,rejoinClient:rejoinClientProbe}:null,
+      saveRejoinSummary,
+      multiplayerAuditSummary,
       mcp:{
         protocolVersion:client.protocolVersion,
         serverName:clean(client.serverInfo?.name),
@@ -1276,6 +2199,13 @@ export async function runOfficialStudioMcpPlay({
         primaryActionDisplacement:Number(scenarioMetrics.primaryActionDisplacement||0),
         primaryActionVelocity:Number(scenarioMetrics.primaryActionVelocity||0),
         primaryActionFeedbackChanged:scenarioMetrics.primaryActionFeedbackChanged===true,
+        saveRejoinRestartOk:saveRejoinSummary?.restartOk===true,
+        saveRejoinProgressionPreserved:saveRejoinSummary?.progressionPreserved===true,
+        saveRejoinInventoryPreserved:saveRejoinSummary?.inventoryPreserved===true,
+        multiplayerAuditPass:multiplayerAuditSummary?.pass===true,
+        multiplayerInitialServerCount:Number(multiplayerAuditSummary?.initialServerCount||0),
+        multiplayerLateServerCount:Number(multiplayerAuditSummary?.lateServerCount||0),
+        multiplayerLeavePass:multiplayerAuditSummary?.leavePass===true,
         captureQuality
       },
       characterMotionRuntime,
@@ -1310,7 +2240,7 @@ export async function runOfficialStudioMcpPlay({
       scenarioContractRequired:actualPlayContract?.required===true,
       scenarioContractVersion:Number(actualPlayContract?.version||0),
       scenarioContractFingerprint:actualPlayContract?.required===true?'sha256:'+stableSha256(actualPlayContract):null,
-      scenarioCoverage,authoritativeStateChangeObserved,qualityFailureKinds,
+      scenarioCoverage,authoritativeStateChangeObserved,qualityFailureKinds,qualityFailureDetails,
       actions,checkpoints,errors,
       metrics:{beforeFrameCount:beforeImages.length,afterFrameCount:afterImages.length,distinctFrameChange:false,consoleErrorCount:errors.length},
       rawSourceIncluded:false,rawGameplayValuesIncluded:false,rawViewportIncluded:false
@@ -1450,7 +2380,14 @@ export function createLocalStudioPlayEvidence({
   const scenarioContractPass=!scenarioContractRequired||scenarioCoveragePass;
   const scenarioContractVersion=Number(runtime?.scenarioContractVersion||0);
   const scenarioContractFingerprint=clean(runtime?.scenarioContractFingerprint)||null;
-  const qualityFailureKinds=(Array.isArray(runtime?.qualityFailureKinds)?runtime.qualityFailureKinds:[]).map(clean).filter(Boolean).slice(0,24);
+  const qualityFailureKinds=(Array.isArray(runtime?.qualityFailureKinds)?runtime.qualityFailureKinds:[]).map(clean).filter(Boolean).slice(0,48);
+  const qualityFailureDetails=(Array.isArray(runtime?.qualityFailureDetails)?runtime.qualityFailureDetails:[]).map(row=>({
+    id:clean(row?.id),
+    repairSurface:clean(row?.repairSurface)||'ROBLOX_PRODUCT_QUALITY',
+    priority:clean(row?.priority)||'HIGH',
+    hint:clean(row?.hint).slice(0,320),
+    observed:row?.observed&&typeof row.observed==='object'?row.observed:{}
+  })).filter(row=>row.id).slice(0,48);
   const pass=basePass&&scenarioContractPass;
   const infrastructureFailure=errors.some(row=>/infrastructure|mcp.*missing|no_studio/i.test(row.type+' '+(row.signature||'')));
   const studioMcpServerEnablementRequired=errors.some(row=>{
@@ -1545,7 +2482,26 @@ export function createLocalStudioPlayEvidence({
         scenarioFailureCount:qualityFailureKinds.length,
         primaryActionDisplacement:Number(runtime?.metrics?.primaryActionDisplacement||0),
         primaryActionVelocity:Number(runtime?.metrics?.primaryActionVelocity||0),
-        primaryActionFeedbackChanged:runtime?.metrics?.primaryActionFeedbackChanged===true
+        primaryActionFeedbackChanged:runtime?.metrics?.primaryActionFeedbackChanged===true,
+        commercialAudit:{
+          auditProfile:clean(runtime?.metrics?.auditProfile||runtime?.auditProfile||'FAST_DEEP'),
+          timelineProbeCount:Number(runtime?.metrics?.timelineProbeCount||runtime?.timelineProbeCount||0),
+          progressChanged:runtime?.metrics?.progressChanged===true,
+          inventoryChanged:runtime?.metrics?.inventoryChanged===true,
+          timelineProgressChanged:runtime?.metrics?.timelineProgressChanged===true,
+          timelineMobDynamic:runtime?.metrics?.timelineMobDynamic===true,
+          timelineCompanionDynamic:runtime?.metrics?.timelineCompanionDynamic===true,
+          uiCommercial:runtime?.metrics?.uiCommercial&&typeof runtime.metrics.uiCommercial==='object'?runtime.metrics.uiCommercial:{},
+          surfaces:runtime?.metrics?.surfaces&&typeof runtime.metrics.surfaces==='object'?runtime.metrics.surfaces:{},
+          performance:runtime?.metrics?.performance&&typeof runtime.metrics.performance==='object'?runtime.metrics.performance:{},
+          saveRejoin:runtime?.saveRejoinSummary&&typeof runtime.saveRejoinSummary==='object'?{
+            restartOk:runtime.saveRejoinSummary.restartOk===true,
+            progressionObserved:runtime.saveRejoinSummary.progressionObserved===true,
+            progressionPreserved:runtime.saveRejoinSummary.progressionPreserved===true,
+            inventoryComparable:runtime.saveRejoinSummary.inventoryComparable===true,
+            inventoryPreserved:runtime.saveRejoinSummary.inventoryPreserved===true
+          }:null
+        }
       },
       characterMotionRuntime:characterMotionRuntime?{
         required:characterMotionRequired,
@@ -1566,6 +2522,7 @@ export function createLocalStudioPlayEvidence({
       scenarioCoverage,
       scenarioCoveragePass,
       qualityFailureKinds,
+      qualityFailureDetails,
       functionalChainEvidence,
       testedAt,
       workflowRunId:Number(workflowRunId||0),
@@ -1575,11 +2532,80 @@ export function createLocalStudioPlayEvidence({
   };
 }
 
+function commercialBaselineRegressions(priorEvidence={},nextEvidence={}){
+  if(priorEvidence?.pass!==true)return[];
+  const prior=priorEvidence?.runtimeSummary?.commercialAudit||{};
+  const next=nextEvidence?.runtimeSummary?.commercialAudit||{};
+  const before=prior?.surfaces&&typeof prior.surfaces==='object'?prior.surfaces:{};
+  const after=next?.surfaces&&typeof next.surfaces==='object'?next.surfaces:{};
+  const protectedSurfaces=[
+    ['interactionSurfaceCount','INTERACTION_CHAIN'],
+    ['progressionSurfaceCount','PROGRESSION'],
+    ['combatSurfaceCount','COMBAT_AI'],
+    ['npcSurfaceCount','NPC'],
+    ['companionSurfaceCount','COMPANION_AI'],
+    ['itemSurfaceCount','ITEM_INVENTORY'],
+    ['remoteCount','SERVER_CLIENT_BOUNDARY'],
+    ['soundCount','AUDIO'],
+    ['effectCount','VFX_FEEDBACK'],
+    ['promptCount','INTERACTION_CHAIN']
+  ];
+  const regressions=[];
+  for(const [key,repairSurface] of protectedSurfaces){
+    const oldValue=Number(before?.[key]||0),newValue=Number(after?.[key]||0);
+    if(oldValue>0&&newValue===0){
+      regressions.push({
+        id:'commercial-regression-'+key,
+        repairSurface,
+        priority:'CRITICAL',
+        hint:'Previously verified Studio capability disappeared from the new source. Restore it or update the explicit product contract if removal was intentional.',
+        observed:{previous:oldValue,current:newValue}
+      });
+    }
+  }
+  const priorUi=prior?.uiCommercial||{},nextUi=next?.uiCommercial||{};
+  for(const key of ['offscreenButtons','undersizedTouchButtons','textOverflowButtons']){
+    const oldValue=Number(priorUi?.[key]||0),newValue=Number(nextUi?.[key]||0);
+    if(newValue>oldValue&&newValue>0){
+      regressions.push({
+        id:'commercial-regression-ui-'+key,
+        repairSurface:'MOBILE_UI',
+        priority:'HIGH',
+        hint:'Mobile UI regression increased compared with the last verified Studio baseline.',
+        observed:{previous:oldValue,current:newValue}
+      });
+    }
+  }
+  return regressions.slice(0,24);
+}
+
 export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expected={},workflowRunId=0,studioStepSucceeded=true,testedAt}={}){
   const item=(queue?.items||[]).find(row=>clean(row?.gameId)===clean(gameId));
   if(!item)throw new Error('ROBLOX_STUDIO_MCP_QUEUE_ITEM_MISSING:'+clean(gameId));
+  const priorStudioEvidence=item?.robloxInternalVibePlayEvidence&&typeof item.robloxInternalVibePlayEvidence==='object'
+    ?structuredClone(item.robloxInternalVibePlayEvidence):{};
   const result=createLocalStudioPlayEvidence({item,runtime,expected,workflowRunId,studioStepSucceeded,testedAt});
   const currentSourceArtifactBinding=result.evidence.currentSourceArtifactBinding===true;
+  const commercialRegressions=currentSourceArtifactBinding?commercialBaselineRegressions(priorStudioEvidence,result.evidence):[];
+  if(commercialRegressions.length&&!result.evidence.infrastructureFailure){
+    result.pass=false;
+    result.evidence.pass=false;
+    result.evidence.failureClass='STUDIO_COMMERCIAL_REGRESSION';
+    result.evidence.robloxFailureClass='ROBLOX_COMMERCIAL_REGRESSION';
+    result.evidence.scenarioCoveragePass=false;
+    result.evidence.qualityFailureKinds=[
+      ...new Set([...(result.evidence.qualityFailureKinds||[]),...commercialRegressions.map(row=>row.id)])
+    ].slice(0,48);
+    result.evidence.qualityFailureDetails=[
+      ...(result.evidence.qualityFailureDetails||[]),
+      ...commercialRegressions
+    ].slice(0,48);
+    result.evidence.commercialRegressionDetected=true;
+    result.evidence.commercialRegressionDetails=commercialRegressions;
+  }else{
+    result.evidence.commercialRegressionDetected=false;
+    result.evidence.commercialRegressionDetails=[];
+  }
 
   item.robloxInternalVibePlayEvidence=result.evidence;
 
@@ -1628,7 +2654,9 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
       versionNumber:Number(result.evidence.versionNumber||0),
       failureStage:'VIBE_INTERNAL_PLAY',
       failureSignature:qualityFailureSignature,
-      qualityFailureKinds:Array.isArray(result.evidence.qualityFailureKinds)?result.evidence.qualityFailureKinds.slice(0,24):[],
+      qualityFailureKinds:Array.isArray(result.evidence.qualityFailureKinds)?result.evidence.qualityFailureKinds.slice(0,48):[],
+      qualityFailureDetails:Array.isArray(result.evidence.qualityFailureDetails)?result.evidence.qualityFailureDetails.slice(0,48):[],
+      repairSurfaces:[...new Set((result.evidence.qualityFailureDetails||[]).map(row=>clean(row?.repairSurface)).filter(Boolean))].slice(0,24),
       robloxFailureClass:result.evidence.robloxFailureClass||null,
       testedAt:result.evidence.testedAt,
       workflowRunId:Number(result.evidence.workflowRunId||0),
@@ -1694,7 +2722,8 @@ async function main(){
       toolDelayMs:Number(a['tool-delay-ms']||1000),
       settingState:clean(a['setting-state']),
       settingCandidatePathCount:Number(a['setting-candidate-path-count']??-1),
-      actualPlayContractPath:clean(a['actual-play-contract'])
+      actualPlayContractPath:clean(a['actual-play-contract']),
+      auditProfile:clean(a['audit-profile']||'FAST_DEEP')
     });
     const checkpointSummary=(Array.isArray(result?.checkpoints)?result.checkpoints:[])
       .map(row=>clean(row?.id)+':'+(row?.pass===true?'PASS':'FAIL'))

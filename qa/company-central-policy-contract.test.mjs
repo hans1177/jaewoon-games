@@ -1584,7 +1584,7 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(parallel.assetDevelopmentDedicatedRunner,true);
   assert.equal(parallel.assetDevelopmentRunnerLabel,'ubuntu-24.04-arm');
   assert.equal(parallel.assetDevelopmentSchedulerPlanRunner,'ubuntu-24.04-arm');
-  assert.equal(parallel.assetDevelopmentReserveRunner,'ubuntu-24.04-arm');
+  assert.equal(parallel.assetDevelopmentReserveRunner,'ubuntu-slim');
   assert.equal(parallel.assetDevelopmentModelCacheRunner,'ubuntu-24.04-arm');
   assert.equal(parallel.assetDevelopmentArchitectureAwareCache,true);
   assert.equal(parallel.assetDevelopmentOllamaCacheKey,'vibe2-ollama-v5-${runner.os}-${runner.arch}-qwen3-1.7b');
@@ -1781,7 +1781,9 @@ test('menu experience diversity stays inside existing Vibe presentation buildup'
   assert.equal(topology.newStage,false);
   assert.match(vibeAutoPlanner,/MENU_EXPERIENCE_SURFACES/);
   assert.match(vibeAutoPlanner,/menu-experience-diversity:v1/);
-  assert.match(vibeAutoPlanner,/메인메뉴·인벤토리·상점·제작·퀘스트·설정·결과창/);
+  assert.match(vibeAutoPlanner,/LOBBY_OR_HUB/);
+  assert.match(vibeAutoPlanner,/LOADING_TRANSITION/);
+  assert.match(vibeAutoPlanner,/FIRST_PLAY_GUIDANCE/);
   assert.match(vibeAutoPlanner,/SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE/);
   assert.match(vibeAutoPlanner,/menuPlatformBindingProfile/);
   assert.match(vibeAutoPlanner,/UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE/);
@@ -1934,4 +1936,33 @@ test('development-focused F0-F9 validation dedupe preserves perpetual game evolu
   ]);
   assert.equal(securityPolicy.evidenceReuse.fullRescanEveryFloor,false);
   assert.equal(securityPolicy.evidenceReuse.newSecurityPipelineForbidden,true);
+});
+
+
+test('commercial Studio deep audit execution rules stay locked',()=>{
+  const contract=roadmap.roblox?.studioExecution?.actualPlayQualityContract||{};
+  assert.ok(Number(contract.version)>=4);
+  assert.equal(contract.commercialAuditRequired,true);
+  assert.equal(contract.adaptiveRuntimeDiscoveryRequired,true);
+  assert.equal(contract.semanticCoverageDiversityRequired,true);
+  assert.equal(contract.worldFloorGridSamplingRequired,true);
+  assert.equal(contract.pathfindingRouteCoverageRequired,true);
+  assert.equal(contract.liveCombatTargetActionEffectRequired,true);
+  assert.equal(contract.realDeathRespawnRecoveryRequiredWhenObserved,true);
+  assert.equal(contract.f9SaveRejoinRestartRequiredWhenSaveDeclared,true);
+  assert.equal(contract.f9SoakPerformanceTrendRequired,true);
+  assert.equal(contract.f9MultiplayerActualTwoPlayerRequired,true);
+  assert.equal(contract.f9MultiplayerRemoteOnlyCannotPass,true);
+  assert.equal(contract.f9MultiplayerSynchronizedStateTransitionRequired,true);
+  assert.ok(contract.requiredAxes.includes('F9_ACTUAL_TWO_PLAYER_SYNCHRONIZED_RUNTIME'));
+  assert.ok(Number(contract.fastDeepMinimumTimelineSamples)>=4);
+  assert.ok(Number(contract.f9SoakMinimumTimelineSamples)>=12);
+  for(const axis of [
+    'MAP_FLOOR_GRID_AND_PATHFINDING_COVERAGE',
+    'LIVE_COMBAT_TARGET_ACTION_EFFECT',
+    'F9_SAVE_REJOIN_RESTART_PERSISTENCE',
+    'REAL_DEATH_RESPAWN_RECOVERY',
+    'SEMANTIC_CATEGORY_DIVERSITY',
+    'F9_SOAK_MEMORY_AND_INSTANCE_TREND'
+  ])assert.ok(contract.requiredAxes.includes(axis),axis);
 });

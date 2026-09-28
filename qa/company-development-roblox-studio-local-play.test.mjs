@@ -12,7 +12,8 @@ import {
   planLocalStudioCandidates,
   createLocalStudioPlayEvidence,
   applyLocalStudioPlayResult,
-  evaluateStudioActualPlayContract
+  evaluateStudioActualPlayContract,
+  deriveStudioActualPlayContract
 } from '../tools/company-development-roblox-studio-local-play.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
@@ -1145,7 +1146,8 @@ test('central Studio MCP recovery policy stays restart-only and fail-closed on i
 
 test('Studio MCP strategy matrix receives include rows only and never planner metadata axes',()=>{
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
-  const jsIncludeOnly=/JSON\.stringify\(\{include:Array\.isArray\(x\.include\)\?x\.include:\[\]\}\)/.test(studioPlanBlock);
+  const jsIncludeOnly=/const include=Array\.isArray\(plan\.include\)\?plan\.include:\[\];[\s\S]*JSON\.stringify\(\{include\}\)/.test(studioPlanBlock)
+    ||/JSON\.stringify\(\{include:Array\.isArray\(x\.include\)\?x\.include:\[\]\}\)/.test(studioPlanBlock);
   const powershellIncludeOnly=/\$include = @\(\$plan\.include\)[\s\S]*\$matrix = @\{ include = \$include \} \| ConvertTo-Json -Compress -Depth 12/.test(studioPlanBlock);
   assert.equal(jsIncludeOnly||powershellIncludeOnly,true);
   assert.doesNotMatch(studioPlanBlock,/JSON\.stringify\(x\)\)"/);
@@ -1563,4 +1565,385 @@ test('Studio infrastructure failure does not fabricate a product-quality buildup
   assert.notEqual(applied.item.robloxQualityBuildUpRequired,true);
   assert.equal(applied.item.robloxQualityFailureClass,'INFRASTRUCTURE_OR_EVIDENCE_ONLY');
   assert.equal(applied.item.canonicalState,'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+});
+
+
+test('commercial adaptive Studio contract expands automatically from launch core and release gates',()=>{
+  const contract=deriveStudioActualPlayContract({
+    launchCore:[
+      'quest NPC merchant with rewards and inventory',
+      'combat with monsters companion AI and boss',
+      'large village map with mobile HUD and camera feedback'
+    ],
+    releaseGates:[
+      'save/rejoin',
+      'round restart regression',
+      'server authoritative remotes',
+      'BGM and VFX'
+    ],
+    evidencePolicy:{saveRejoinPassRequired:true,audioFeedbackPassRequired:true}
+  });
+  assert.equal(contract.required,true);
+  assert.ok(contract.version>=3);
+  for(const id of [
+    'adaptive-ui-commercial-quality',
+    'adaptive-world-safety',
+    'adaptive-interaction-surface',
+    'adaptive-progression-surface',
+    'adaptive-remote-surface',
+    'adaptive-combat-surface',
+    'adaptive-motion-surface',
+    'adaptive-audio-surface',
+    'adaptive-npc-surface',
+    'adaptive-companion-ai-surface',
+    'adaptive-item-surface',
+    'adaptive-environment-surface',
+    'adaptive-effects-surface',
+    'adaptive-quest-loop-surface',
+    'adaptive-reward-loop-surface',
+    'adaptive-economy-surface',
+    'adaptive-save-surface',
+    'adaptive-retry-loop-surface',
+    'adaptive-camera-quality',
+    'adaptive-performance-budget'
+  ])assert.ok(contract.requiredScenarios.includes(id),id);
+  assert.match(contract.adaptiveCoverage.contractHash,/^sha256:[0-9a-f]{64}$/);
+});
+
+test('commercial Studio evaluator rejects clipped tiny UI and unsafe world even when basic play input works',()=>{
+  const contract=deriveStudioActualPlayContract({
+    launchCore:['mobile HUD','large village map','quest progression'],
+    releaseGates:['mobile controls']
+  });
+  const probe={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6},
+    camera:{present:true,subjectPresent:true,fieldOfView:70},
+    ui:{visibleButtons:2,offscreenButtons:1,undersizedTouchButtons:1,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:100,floorBelowPlayer:false,proximityPromptCount:1,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:2,effectCount:0},
+    runtime:{remoteCount:1,progression:[{scope:'player',name:'QuestProgress',value:'0'}],systemSignals:4,descendantCount:400,memoryMb:220,categories:{quest:1,progression:1}},
+    workspace:{},
+    lighting:{brightness:1.5}
+  };
+  const result=evaluateStudioActualPlayContract({
+    contract,
+    initialClientProbe:probe,
+    preActionClientProbe:probe,
+    postActionClientProbe:{...probe,player:{...probe.player,rootX:2}},
+    clientProbe:probe,
+    serverProbe:{runtime:probe.runtime,world:probe.world,workspace:{}},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}],
+    beforeImages:[],
+    afterImages:[]
+  });
+  assert.ok(result.qualityFailureKinds.includes('adaptive-ui-commercial-quality'));
+  assert.ok(result.qualityFailureKinds.includes('adaptive-world-safety'));
+});
+
+test('commercial Studio evaluator records progression and AI movement deltas',()=>{
+  const contract=deriveStudioActualPlayContract({
+    launchCore:['monster combat','companion AI','quest reward progression','mobile UI'],
+    releaseGates:[]
+  });
+  const base={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6},
+    camera:{present:true,subjectPresent:true,fieldOfView:70},
+    ui:{visibleButtons:2,offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:100,floorBelowPlayer:true,proximityPromptCount:1,clickDetectorCount:0,
+      mobs:[{name:'EnemyA',x:0,y:3,z:10,hp:100,state:'CHASE',target:'P1'}],
+      companions:[{name:'CompanionA',x:0,y:3,z:1,hp:100,state:'FOLLOW',target:'EnemyA'}],
+      npcs:[],items:[],environmentModels:1,effectCount:1},
+    runtime:{remoteCount:1,progression:[{scope:'player',name:'QuestProgress',value:'0'},{scope:'player',name:'Gold',value:'10'}],systemSignals:8,descendantCount:600,memoryMb:240,soundCount:1,categories:{quest:1,reward:1,progression:1,combat:1,companion:1}},
+    workspace:{},
+    lighting:{brightness:1.5}
+  };
+  const final=structuredClone(base);
+  final.world.mobs[0].x=4;final.world.mobs[0].hp=80;final.world.companions[0].x=3;
+  final.runtime.progression[0].value='1';final.runtime.progression[1].value='25';
+  const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
+  const image={type:'image',mimeType:'image/png',data:png.toString('base64')};
+  const result=evaluateStudioActualPlayContract({
+    contract,
+    initialClientProbe:base,
+    preActionClientProbe:base,
+    postActionClientProbe:{...final,player:{...final.player,rootX:2}},
+    clientProbe:final,
+    serverProbe:{runtime:final.runtime,world:final.world,workspace:{}},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}],
+    beforeImages:[image],
+    afterImages:[image]
+  });
+  assert.equal(result.metrics.progressChanged,true);
+  assert.equal(result.metrics.mobMotion.dynamic,true);
+  assert.equal(result.metrics.companionMotion.dynamic,true);
+  assert.equal(result.authoritativeStateChangeObserved,true);
+});
+
+
+test('commercial Studio baseline turns disappearing verified gameplay surfaces into repair-required regression',()=>{
+  const candidate=item();
+  candidate.robloxInternalVibePlayEvidence={
+    pass:true,
+    runtimeSummary:{
+      commercialAudit:{
+        uiCommercial:{offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0},
+        surfaces:{
+          interactionSurfaceCount:3,
+          progressionSurfaceCount:4,
+          combatSurfaceCount:2,
+          npcSurfaceCount:2,
+          companionSurfaceCount:1,
+          itemSurfaceCount:3,
+          remoteCount:1,
+          soundCount:2,
+          effectCount:2,
+          promptCount:2
+        }
+      }
+    }
+  };
+  const observed=runtime();
+  observed.metrics={
+    ...observed.metrics,
+    auditProfile:'FAST_DEEP',
+    uiCommercial:{offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0},
+    surfaces:{
+      interactionSurfaceCount:3,
+      progressionSurfaceCount:4,
+      combatSurfaceCount:2,
+      npcSurfaceCount:0,
+      companionSurfaceCount:0,
+      itemSurfaceCount:3,
+      remoteCount:1,
+      soundCount:2,
+      effectCount:2,
+      promptCount:2
+    },
+    performance:{memoryMb:200,descendantCount:500}
+  };
+  const applied=applyLocalStudioPlayResult({
+    queue:{items:[candidate]},gameId:'g1',runtime:observed,expected,workflowRunId:1200,studioStepSucceeded:true,
+    testedAt:'2026-09-29T04:00:00.000Z'
+  });
+  assert.equal(applied.result.pass,false);
+  assert.equal(applied.result.evidence.commercialRegressionDetected,true);
+  assert.ok(applied.result.evidence.qualityFailureKinds.includes('commercial-regression-npcSurfaceCount'));
+  assert.ok(applied.result.evidence.qualityFailureKinds.includes('commercial-regression-companionSurfaceCount'));
+  assert.equal(applied.item.robloxQualityBuildUpRequired,true);
+  assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
+  assert.ok(applied.item.robloxQualityBuildUpEvidence.repairSurfaces.includes('NPC'));
+  assert.ok(applied.item.robloxQualityBuildUpEvidence.repairSurfaces.includes('COMPANION_AI'));
+});
+
+test('runtime-discovered systems activate adaptive gates even when launch text did not declare them',()=>{
+  const contract=deriveStudioActualPlayContract({launchCore:['simple exploration'],releaseGates:[]});
+  const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
+  const image={type:'image',mimeType:'image/png',data:png.toString('base64')};
+  const probe={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:4,rootZ:0,animatorPresent:true,motorCount:6},
+    camera:{present:true,subjectPresent:true,fieldOfView:70},
+    ui:{visibleButtons:1,visibleObjects:2,offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:20,floorBelowPlayer:true,proximityPromptCount:1,clickDetectorCount:0,mobs:[],npcs:[{name:'Merchant'}],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{remoteCount:1,progression:[],inventory:[],inventoryCount:0,systemSignals:1,descendantCount:100,memoryMb:100,soundCount:0,categories:{npc:1}},
+    workspace:{},
+    lighting:{brightness:1.2}
+  };
+  const result=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:probe,preActionClientProbe:probe,postActionClientProbe:{...probe,player:{...probe.player,rootX:1}},
+    clientProbe:probe,serverProbe:{runtime:probe.runtime,world:probe.world,workspace:{}},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}],beforeImages:[image],afterImages:[image]
+  });
+  assert.equal(result.scenarios.find(row=>row.id==='adaptive-npc-surface')?.pass,true);
+  assert.equal(result.scenarios.find(row=>row.id==='adaptive-remote-surface')?.pass,true);
+});
+
+
+test('F9 planner upgrades a prior FAST_DEEP Studio pass to required F9_SOAK on the same exact artifact',()=>{
+  const candidate=item();
+  candidate.currentStep='FINAL_REVIEW';
+  candidate.robloxInternalVibePlayEvidence={
+    pass:true,actualPlay:true,runtimeVerified:true,officialStudioMcp:true,localPlaceFile:true,
+    onlinePlaceDirectOpen:false,robloxPlayerAutomation:false,
+    sourceRevision:source,artifactIdentity:artifact,artifactRunId:777,universeId:'123',placeId:'456',versionNumber:9,
+    runtimeSummary:{consoleErrorCount:0,commercialAudit:{auditProfile:'FAST_DEEP'}},
+    testedAt:'2026-09-29T00:00:00.000Z'
+  };
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-studio-f9-soak-'));
+  try{
+    const gameRoot=path.join(root,'roblox-games','g1');
+    fs.mkdirSync(gameRoot,{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'launch-mvp.json'),JSON.stringify({launchCore:['combat','quest'],releaseGates:['F9 regression']}));
+    const planned=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root});
+    assert.equal(planned.include.length,1);
+    assert.equal(planned.include[0].auditProfile,'F9_SOAK');
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('commercial world audit rejects broad floor gaps and unreachable semantic gameplay anchors',()=>{
+  const contract=deriveStudioActualPlayContract({launchCore:['large map','NPC quest interaction'],releaseGates:[]});
+  const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
+  const image={type:'image',mimeType:'image/png',data:png.toString('base64')};
+  const probe={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6},
+    camera:{present:true,subjectPresent:true,fieldOfView:70},
+    ui:{visibleButtons:1,visibleObjects:2,offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{
+      boundsFinite:true,collidablePartCount:100,floorBelowPlayer:true,
+      floorSampleCount:9,floorHitCount:2,routeSampleCount:6,routeSuccessCount:1,
+      minSpawnThreatDistance:-1,proximityPromptCount:1,clickDetectorCount:0,
+      mobs:[],npcs:[{name:'QuestNPC'}],companions:[],items:[],environmentModels:2,effectCount:0
+    },
+    runtime:{remoteCount:1,progression:[{scope:'player',name:'QuestProgress',value:'0'}],systemSignals:4,descendantCount:300,memoryMb:180,categories:{quest:1,progression:1,npc:1}},
+    workspace:{},
+    lighting:{brightness:1.2}
+  };
+  const result=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:probe,preActionClientProbe:probe,
+    postActionClientProbe:{...probe,player:{...probe.player,rootX:1}},
+    clientProbe:probe,serverProbe:{runtime:probe.runtime,world:probe.world,workspace:{}},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}],beforeImages:[image],afterImages:[image]
+  });
+  assert.ok(result.qualityFailureKinds.includes('adaptive-world-safety'));
+  assert.equal(result.metrics.worldAudit.floorCoveragePass,false);
+  assert.equal(result.metrics.worldAudit.routeCoveragePass,false);
+});
+
+
+test('commercial Studio multiplayer gate requires declared multiplayer plus replicated state surface',()=>{
+  const contract=deriveStudioActualPlayContract({
+    launchCore:['4-player co-op dungeon party sync'],
+    releaseGates:['late join and rejoin sync']
+  });
+  const base={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6,humanCount:0,monsterCount:0},
+    camera:{present:true,subjectPresent:true,fieldOfView:70,occluded:false},
+    ui:{visibleButtons:1,visibleObjects:1,offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:40,floorBelowPlayer:true,floorSampleCount:9,floorHitCount:9,routeSampleCount:0,routeSuccessCount:0,minSpawnThreatDistance:-1,proximityPromptCount:0,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{remoteCount:1,progression:[],inventory:[],inventoryCount:0,systemSignals:1,descendantCount:100,memoryMb:100,soundCount:0,categories:{}},
+    workspace:{HumanCount:0,MonsterCount:0},
+    lighting:{brightness:1.2}
+  };
+  const fail=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:base,preActionClientProbe:base,
+    postActionClientProbe:{...base,player:{...base.player,rootX:1}},
+    clientProbe:base,serverProbe:{runtime:base.runtime,world:base.world,workspace:base.workspace},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}]
+  });
+  assert.equal(fail.scenarios.find(row=>row.id==='adaptive-multiplayer-sync-surface')?.pass,false);
+
+  const synced=structuredClone(base);
+  synced.player.humanCount=4;
+  synced.workspace.HumanCount=4;
+  synced.runtime.progression=[{scope:'workspace',name:'PlayerCount',value:'4'}];
+  const pass=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:synced,preActionClientProbe:synced,
+    postActionClientProbe:{...synced,player:{...synced.player,rootX:1}},
+    clientProbe:synced,serverProbe:{runtime:synced.runtime,world:synced.world,workspace:synced.workspace},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}]
+  });
+  assert.equal(pass.scenarios.find(row=>row.id==='adaptive-multiplayer-sync-surface')?.pass,true);
+});
+
+test('commercial contract does not infer multiplayer from generic player or monster words alone',()=>{
+  const contract=deriveStudioActualPlayContract({
+    launchCore:['single player fights one monster'],
+    releaseGates:[]
+  });
+  assert.equal(contract.adaptiveCoverage.signals.multiplayer,false);
+});
+
+
+test('commercial F9 multiplayer requires actual two-player synchronized Studio evidence',()=>{
+  const contract=deriveStudioActualPlayContract({
+    launchCore:['multiplayer team sync','mobile HUD'],
+    releaseGates:['2+ players actual sync']
+  });
+  const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
+  const image={type:'image',mimeType:'image/png',data:png.toString('base64')};
+  const makeProbe=(count,roundState='LOBBY')=>({
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6,roundState,humanCount:count,monsterCount:0},
+    camera:{present:true,subjectPresent:true,fieldOfView:70,occluded:false},
+    ui:{visibleButtons:1,visibleObjects:2,offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:50,floorBelowPlayer:true,proximityPromptCount:0,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{
+      actualPlayerCount:count,
+      players:Array.from({length:count},(_,i)=>({userId:i+1,name:'P'+(i+1),roundState,role:'PLAYER',team:'Blue',currentMap:'Arena',humanCount:count,monsterCount:0})),
+      remoteCount:2,progression:[{scope:'workspace',name:'PlayerCount',value:String(count)}],inventory:[],inventoryCount:0,
+      systemSignals:2,descendantCount:300,memoryMb:160,soundCount:0,categories:{progression:1}
+    },
+    workspace:{HumanCount:count,MonsterCount:0},
+    lighting:{brightness:1.5}
+  });
+  const single=makeProbe(1,'LOBBY');
+  const singleResult=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:single,preActionClientProbe:single,
+    postActionClientProbe:{...single,player:{...single.player,rootX:1}},
+    clientProbe:single,serverProbe:{runtime:single.runtime,world:single.world,workspace:single.workspace},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}],beforeImages:[image],afterImages:[image],
+    timelineProbes:[single],auditProfile:'F9_SOAK'
+  });
+  assert.equal(singleResult.scenarios.find(row=>row.id==='adaptive-multiplayer-sync-surface')?.pass,false);
+
+  const twoLobby=makeProbe(2,'LOBBY');
+  const twoRunning=makeProbe(2,'RUNNING');
+  const multiResult=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:twoLobby,preActionClientProbe:twoLobby,
+    postActionClientProbe:{...twoRunning,player:{...twoRunning.player,rootX:1}},
+    clientProbe:twoRunning,serverProbe:{runtime:twoRunning.runtime,world:twoRunning.world,workspace:twoRunning.workspace},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}],beforeImages:[image],afterImages:[image],
+    timelineProbes:[twoRunning],auditProfile:'F9_SOAK'
+  });
+  assert.equal(multiResult.scenarios.find(row=>row.id==='adaptive-multiplayer-sync-surface')?.pass,true);
+  assert.equal(multiResult.metrics.surfaces.maxActualPlayerCount,2);
+  assert.equal(multiResult.metrics.surfaces.multiplayerActualSessionPass,true);
+});
+
+
+test('commercial Studio FTUE gate requires actionable readable onboarding when declared',()=>{
+  const contract=deriveStudioActualPlayContract({launchCore:['mobile loading screen and tutorial objective'],releaseGates:[]});
+  const base={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6},
+    camera:{present:true,subjectPresent:true,fieldOfView:70,occluded:false},
+    ui:{visibleButtons:1,visibleObjects:2,visibleTexts:[{name:'Title',text:'포근섬'}],offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:40,floorBelowPlayer:true,floorSampleCount:9,floorHitCount:9,routeSampleCount:0,routeSuccessCount:0,minSpawnThreatDistance:-1,proximityPromptCount:0,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{remoteCount:1,progression:[],inventory:[],inventoryCount:0,systemSignals:1,descendantCount:100,memoryMb:100,soundCount:0,categories:{}},
+    workspace:{},lighting:{brightness:1.2}
+  };
+  const fail=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:base,preActionClientProbe:base,
+    postActionClientProbe:{...base,player:{...base.player,rootX:1}},
+    clientProbe:base,serverProbe:{runtime:base.runtime,world:base.world,workspace:{}},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}]
+  });
+  assert.equal(fail.scenarios.find(row=>row.id==='adaptive-ftue-clarity')?.pass,false);
+  const ready=structuredClone(base);
+  ready.ui.visibleTexts=[{name:'Title',text:'포근섬'},{name:'Guide',text:'게임 시작 후 목표를 확인하고 이동해.'}];
+  const pass=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:ready,preActionClientProbe:ready,
+    postActionClientProbe:{...ready,player:{...ready.player,rootX:1}},
+    clientProbe:ready,serverProbe:{runtime:ready.runtime,world:ready.world,workspace:{}},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}]
+  });
+  assert.equal(pass.scenarios.find(row=>row.id==='adaptive-ftue-clarity')?.pass,true);
+});
+
+test('commercial system transaction gate fails when a discovered shop action has no effect',()=>{
+  const contract=deriveStudioActualPlayContract({launchCore:['shop inventory equip UI'],releaseGates:[]});
+  const probe={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6},
+    camera:{present:true,subjectPresent:true,fieldOfView:70,occluded:false},
+    ui:{visibleButtons:1,visibleObjects:1,visibleTexts:[{name:'Shop',text:'상점'}],offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:40,floorBelowPlayer:true,floorSampleCount:9,floorHitCount:9,routeSampleCount:0,routeSuccessCount:0,minSpawnThreatDistance:-1,proximityPromptCount:1,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{remoteCount:1,progression:[],inventory:[],inventoryCount:0,systemSignals:2,descendantCount:100,memoryMb:100,soundCount:0,categories:{economy:1,inventory:1}},
+    workspace:{},lighting:{brightness:1.2}
+  };
+  const result=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:probe,preActionClientProbe:probe,
+    postActionClientProbe:{...probe,player:{...probe.player,rootX:1}},
+    clientProbe:probe,serverProbe:{runtime:probe.runtime,world:probe.world,workspace:{}},
+    actions:[{id:'shop-buy',type:'mcp-world-interaction',semantic:'SHOP',dispatched:true,ok:true,effectObserved:false,effect:{}}]
+  });
+  assert.equal(result.scenarios.find(row=>row.id==='adaptive-system-transaction-effect')?.pass,false);
+  assert.ok(result.qualityFailureKinds.includes('adaptive-system-transaction-effect'));
 });
