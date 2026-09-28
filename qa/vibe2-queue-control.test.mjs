@@ -1819,3 +1819,10 @@ test('game-primary does not reserve Unity or Web while Roblox game work is ready
   assert.equal(batch.selection.robloxFirstMode,true);
   assert.deepEqual(batch.selection.robloxFirstDeferred.map(task=>task.id).sort(),['unity-game','web-game']);
 });
+
+
+test('queue CLI exposes deferred conflict task and reason telemetry',()=>{
+  const source=fs.readFileSync('tools/vibe2-queue-control.mjs','utf8');
+  assert.match(source,/VIBE2_QUEUE_DEFERRED_CONFLICT_COUNT=/);
+  assert.match(source,/VIBE2_QUEUE_DEFERRED_CONFLICTS=/);
+});
