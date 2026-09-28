@@ -10,8 +10,16 @@ const tool=new URL('../tools/company-unity-web-floor-bootstrap.mjs',import.meta.
 function writeVerifiedPlaybooks(root){
   const file=path.join(root,'vibe3-task-playbooks.json');
   const reuse=[
-    {id:'external-black-box-alpha',project:'alpha',sourceRevision:'sha256:'+ 'a'.repeat(64)},
-    {id:'external-black-box-beta',project:'beta',sourceRevision:'sha256:'+ 'b'.repeat(64)}
+    {
+      id:'external-black-box-alpha',project:'alpha',sourceRevision:'sha256:'+ 'a'.repeat(64),
+      distilledApplicationPrinciples:['id=menu-flow; scope=menu; lesson=make gameplay entry distinct; apply=clear menu-to-play transition'],
+      distilledAvoidancePrinciples:['id=avoid-copy; scope=visual; lesson=do not clone distinctive expression; apply=reauthor with game identity'],
+      distilledLearningUseAllowed:['menu flow timing','spatial feedback']
+    },
+    {
+      id:'external-black-box-beta',project:'beta',sourceRevision:'sha256:'+ 'b'.repeat(64),
+      distilledApplicationPrinciples:['id=motion-feedback; scope=motion; lesson=respond immediately after input; apply=visible local motion feedback']
+    }
   ];
   fs.writeFileSync(file,JSON.stringify({version:1,generatedFrom:'VERIFIED_MEMORY_ONLY',taskTypes:{
     unity:{authority:'verified-task-playbook',checklist:['unity-runtime-check'],reuse},
@@ -55,6 +63,7 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
       '--learning-revision='+ 'c'.repeat(40)
     ],{stdio:'pipe'});
     const source=JSON.parse(fs.readFileSync('unity-games/test-survival/unity-web-floor-source.json','utf8'));
+    const verifiedLearning=JSON.parse(fs.readFileSync('unity-games/test-survival/Assets/verified-external-learning.json','utf8'));
     const runtime=fs.readFileSync('unity-games/test-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
     const build=fs.readFileSync('unity-games/test-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
     assert.equal(source.purpose,'UNITY_WEB_DEVELOPMENT_FLOOR');
@@ -70,6 +79,18 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.equal(source.verifiedLearningApplication.retrievedCount,2);
     assert.equal(source.verifiedLearningApplication.appliedCount,2);
     assert.deepEqual(source.verifiedLearningApplication.externalLearningIds,['external-black-box-alpha','external-black-box-beta']);
+    assert.deepEqual(source.verifiedLearningApplication.externalApplicationPrinciples,[
+      'id=menu-flow; scope=menu; lesson=make gameplay entry distinct; apply=clear menu-to-play transition',
+      'id=motion-feedback; scope=motion; lesson=respond immediately after input; apply=visible local motion feedback'
+    ]);
+    assert.deepEqual(source.verifiedLearningApplication.externalAvoidancePrinciples,[
+      'id=avoid-copy; scope=visual; lesson=do not clone distinctive expression; apply=reauthor with game identity'
+    ]);
+    assert.deepEqual(source.verifiedLearningApplication.externalLearningUseAllowed,['menu flow timing','spatial feedback']);
+    assert.equal(verifiedLearning.coveragePct,100);
+    assert.deepEqual(verifiedLearning.externalApplicationPrinciples,source.verifiedLearningApplication.externalApplicationPrinciples);
+    assert.deepEqual(verifiedLearning.externalAvoidancePrinciples,source.verifiedLearningApplication.externalAvoidancePrinciples);
+    assert.deepEqual(verifiedLearning.externalLearningUseAllowed,source.verifiedLearningApplication.externalLearningUseAllowed);
     assert.deepEqual(source.verifiedLearningApplication.applyAxes,[
       'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
       'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
