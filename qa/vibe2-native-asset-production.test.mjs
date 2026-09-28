@@ -42,10 +42,10 @@ function tempRoot(opts={}){
 
 test('verified commercial black-box distillation is mandatory input for internal asset evolution',()=>{
   const verifiedLearning={
-    exactKnowledgeIds:['PLAYBOOK_REUSE:commercial-ui','PLAYBOOK_REUSE:commercial-motion'],
+    exactKnowledgeIds:['PLAYBOOK_REUSE:external-black-box-commercial-ui','PLAYBOOK_REUSE:external-black-box-commercial-motion'],
     playbookReuse:[
-      {id:'commercial-ui',project:'commercial-app-a',sourceRevision:'sha256:a',score:0.7,verified:true,authority:'verified-task-playbook',sourcePlaybooks:['ui','graphics']},
-      {id:'commercial-motion',project:'commercial-app-b',sourceRevision:'sha256:b',score:0.6,verified:true,authority:'verified-task-playbook',sourcePlaybooks:['motion','graphics']}
+      {id:'external-black-box-commercial-ui',project:'commercial-app-a',sourceRevision:'sha256:a',score:0.7,verified:true,authority:'verified-task-playbook',sourcePlaybooks:['ui','graphics']},
+      {id:'external-black-box-commercial-motion',project:'commercial-app-b',sourceRevision:'sha256:b',score:0.6,verified:true,authority:'verified-task-playbook',sourcePlaybooks:['motion','graphics']}
     ]
   };
   const plan=buildVibeAssetProductionPlan({
@@ -65,6 +65,7 @@ test('verified commercial black-box distillation is mandatory input for internal
   assert.ok(plan.commercialDistillation.applyAxes.includes('MENU_FLOW_AND_INFORMATION_ARCHITECTURE'));
   assert.ok(plan.commercialDistillation.applyAxes.includes('GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION'));
   assert.ok(plan.commercialDistillation.applyAxes.includes('MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION'));
+  assert.ok(plan.commercialDistillation.applyAxes.includes('GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'));
   assert.ok(plan.commercialDistillation.evolutionLoop.includes('REAUTHOR_OR_RECOMPOSE_INTERNAL_ASSET'));
   assert.ok(plan.commercialDistillation.evolutionLoop.includes('RETURN_VERIFIED_OUTCOME_TO_LEARNING'));
   const guidance=assetProductionGuidance(plan);
