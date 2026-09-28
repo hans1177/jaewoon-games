@@ -101,6 +101,26 @@ export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',p
     authority:'roblox-runtime-foundation-sentinel'
   });
 }
+export function validateRobloxMultiplayerSourceContract({serverSource='',clientSource=''}={}){
+  const server=String(serverSource||'');
+  const client=String(clientSource||'');
+  const checks=Object.freeze({
+    playerRoster:/Players\s*:\s*GetPlayers\s*\(\s*\)/.test(server),
+    minimumTwoGuard:/#\s*[A-Za-z_][A-Za-z0-9_]*\s*(?:>=\s*2|<\s*2)/.test(server),
+    authoritativeBroadcast:/FireAllClients\s*\(\s*["']MULTIPLAYER_SYNC["']/.test(server),
+    participantCount:/ParticipantCount\s*=/.test(server),
+    clientReceive:/OnClientEvent\s*:\s*Connect/.test(client)&&/MULTIPLAYER_SYNC/.test(client),
+  });
+  const passed=Object.values(checks).every(Boolean);
+  return Object.freeze({
+    version:1,
+    passed,
+    checks,
+    authority:'roblox-static-two-client-source-contract',
+    runtimeTwoClientExecutionRequired:false,
+  });
+}
+
 export async function fetchRobloxRuntimeFoundationEvidence({
   universeId='',apiKey='',datastoreName='native-foundation-sentinel-v1',entryKey='latest',
   fetchImpl=globalThis.fetch,networkRetryAttempts=4,networkRetryDelayMs=500,

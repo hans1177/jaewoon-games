@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {fetchRobloxRuntimeFoundationEvidence,probeRobloxOpenCloudEngine,validateRobloxRuntimeFoundationEvidence} from '../tools/company-development-roblox-runtime-foundation.mjs';
+import {fetchRobloxRuntimeFoundationEvidence,probeRobloxOpenCloudEngine,validateRobloxRuntimeFoundationEvidence,validateRobloxMultiplayerSourceContract} from '../tools/company-development-roblox-runtime-foundation.mjs';
 
 const checkpoint=(name,sequence)=>({name,at:1,sequence,userId:1,gameId:'cozy-island',placeId:116850096561713,placeVersion:21,...(name==='MULTIPLAYER_SYNC'?{participantCount:2}:{})});
 const names=['SERVER_BOOT','MODULE_GRAPH_READY','WORLD_READY','SPAWN_READY','CHARACTER_READY','GROUND_CONTACT','CAMERA_READY','INPUT_READY','MOVEMENT_CONFIRMED','REMOTE_ROUNDTRIP','SAVE_ROUNDTRIP','MULTIPLAYER_SYNC','CORE_LOOP_READY'];
@@ -85,12 +85,17 @@ test('multiplayer foundation only needs one exact two-player shared sync observa
  assert.equal(passed.runtimeAcceptancePassed,true);
 });
 
-test('multiplayer source preflight proves one authoritative shared snapshot broadcast contract',()=>{
- const tool=fs.readFileSync('tools/company-development-roblox-headless-fast-mvp.mjs','utf8');
- assert.match(tool,/FireAllClients/);
- assert.match(tool,/MULTIPLAYER_SYNC/);
- assert.match(tool,/ParticipantCount/);
- assert.match(tool,/OnClientEvent:Connect/);
+test('multiplayer F7 passes from exact source code contract without launching two clients',()=>{
+ const server=[
+  'local participants=Players:GetPlayers()',
+  'if #participants>=2 then shared=1 end',
+  'remote:FireAllClients("MULTIPLAYER_SYNC",{ParticipantCount=#participants})',
+ ].join('\n');
+ const client='remote.OnClientEvent:Connect(function(kind,payload) if kind~="MULTIPLAYER_SYNC" then return end local n=payload.ParticipantCount end)';
+ const r=validateRobloxMultiplayerSourceContract({serverSource:server,clientSource:client});
+ assert.equal(r.passed,true);
+ assert.equal(r.runtimeTwoClientExecutionRequired,false);
+ assert.equal(r.authority,'roblox-static-two-client-source-contract');
 });
 
 test('F9 final review uses shallow checkout instead of full git history',()=>{
@@ -100,26 +105,22 @@ test('F9 final review uses shallow checkout instead of full git history',()=>{
  assert.match(workflow,/Checkout canonical runtime state[\s\S]*?fetch-depth:\s*1/);
 });
 
-test('central policy matches shared two-client one-sync internal and public release proof',()=>{
+test('central policy makes multiplayer F7 an exact-source code contract with no two-client runtime launch',()=>{
  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
  const stack=roadmap.developmentLifecycleMachine.nativeGameFoundationValidationStack;
  const f7=stack.layers.find(layer=>layer.id==='F7');
- assert.equal(f7.releaseGateMode,'TWO_CLIENT_ONE_SYNC');
- assert.deepEqual(f7.checks,['MINIMUM_TWO_PARTICIPANTS_SAME_SERVER','ONE_AUTHORITATIVE_SHARED_STATE_BROADCAST','CLIENT_MULTIPLAYER_SYNC_HANDLER_CONTRACT']);
+ assert.equal(f7.releaseGateMode,'STATIC_CODE_CONTRACT');
+ assert.deepEqual(f7.checks,['MINIMUM_TWO_PARTICIPANT_CODE_PATH','ONE_AUTHORITATIVE_SHARED_STATE_BROADCAST_CODE','CLIENT_MULTIPLAYER_SYNC_HANDLER_CONTRACT']);
  const proof=stack.robloxContract.multiplayerReleaseProof;
+ assert.equal(proof.mode,'STATIC_CODE_CONTRACT');
  assert.equal(proof.minimumParticipants,2);
- assert.equal(proof.sameServerRequired,true);
- assert.equal(proof.actualRuntimeCheckpoint,'MULTIPLAYER_SYNC');
- assert.equal(proof.singleSyncObservationSufficient,true);
- assert.equal(proof.longCombatOrDungeonRunRequired,false);
- assert.deepEqual(proof.appliesTo,['INTERNAL_RELEASE','PUBLIC_RELEASE']);
+ assert.equal(proof.runtimeExecutionRequired,false);
+ assert.equal(proof.actualRuntimeCheckpointRequired,false);
+ assert.equal(proof.sourceContractRequired,true);
  assert.equal(proof.sameProofReusedForInternalAndPublic,true);
  assert.equal(proof.duplicatePublicMultiplayerCheckRequired,false);
- assert.equal(proof.internalAndPublicVersionMustMatch,true);
- assert.equal(proof.republishForPublicPromotionForbidden,true);
  assert.equal(stack.releaseGate.f9Checkout.sameCheckoutContractForInternalAndPublic,true);
 });
-
 test('runtime acceptance stays pending until actual gameplay core-loop action occurs',()=>{
  const broken=structuredClone(good);delete broken.checkpoints.CORE_LOOP_READY;
  const r=validateRobloxRuntimeFoundationEvidence({sentinel:broken,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
@@ -544,16 +545,15 @@ test('runtime QA preserves exact permission evidence instead of misclassifying s
 });
 
 
-test('multiplayer evidence stays release-blocking but does not block continued development',()=>{
- const broken=structuredClone(good);delete broken.checkpoints.MULTIPLAYER_SYNC;
- const r=validateRobloxRuntimeFoundationEvidence({sentinel:broken,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
- assert.equal(r.runtimeFoundationPassed,true);
- assert.equal(r.developmentContinuationPassed,true);
- assert.equal(r.runtimeAcceptancePassed,false);
- assert.equal(r.multiplayerPromotionPending,true);
- assert.equal(r.f7MultiplayerFoundationPassed,false);
+test('post-runtime F7 accepts multiplayer code contract and does not create two-client wait state',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/validateRobloxMultiplayerSourceContract/);
+ assert.match(workflow,/ROBLOX_F7_MULTIPLAYER_CODE_CONTRACT_PASS=/);
+ assert.match(workflow,/runtimeTwoClientExecutionRequired:false/);
+ assert.match(workflow,/authority:'roblox-static-two-client-source-contract'/);
+ assert.match(workflow,/multiplayerReleasePassed=/);
+ assert.match(workflow,/runtimeAcceptanceForRelease=/);
 });
-
 test('post-runtime QA keeps exact Studio MCP-passed candidates eligible after Studio clears the runtime failure stage',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/const exactStudioPlayPendingRuntime=/);
@@ -569,48 +569,26 @@ test('post-runtime QA keeps exact Studio MCP-passed candidates eligible after St
  assert.match(workflow,/&&\(explicitRuntimeStage\|\|exactStudioPlayPendingRuntime\|\|externalRuntimeObservationPending\)/);
 });
 
-test('post-runtime QA preserves independent and regression progress while shared two-client sync is pending',()=>{
+test('post-runtime QA does not wait for live two-client sync when exact source contract passes',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- assert.match(workflow,/multiplayerOnlyPending=result\.developmentContinuationPassed===true&&result\.multiplayerPromotionPending===true/);
- assert.match(workflow,/robloxIndependentQaPassed=true/);
- assert.match(workflow,/robloxRegressionPassed=true/);
- assert.match(workflow,/robloxParallelMultiplayerValidationPending=true/);
- assert.match(workflow,/item\.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE'/);
- assert.match(workflow,/item\.robloxFailureSignature='ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING'/);
- assert.match(workflow,/robloxPromotionBlockers=\['roblox-two-client-one-sync-pending'\]/);
- assert.match(workflow,/routingBlockers=\['roblox-two-client-one-sync-pending'\]/);
- const pendingBlock=workflow.match(/if\(multiplayerOnlyPending\)\{[\s\S]*?console\.log\('ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING='\+item\.gameId\);\s*pending\+\+;/)?.[0]||'';
- assert.ok(pendingBlock,'two-client pending branch must exist');
- assert.doesNotMatch(pendingBlock,/f9Ids\.push\(item\.gameId\)/);
- assert.doesNotMatch(workflow,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
+ assert.match(workflow,/staticMultiplayerCodePass/);
+ assert.match(workflow,/PASS_CODE_CONTRACT/);
+ assert.match(workflow,/PENDING_CODE_CONTRACT/);
+ assert.match(workflow,/multiplayerOnlyPending=result\.developmentContinuationPassed===true&&result\.multiplayerPromotionPending===true&&!multiplayerReleasePassed/);
 });
-
-
-test('F7 multiplayer runs only when applicable and reuses exact game-code artifact proof across candidate republishes',()=>{
+test('F7 multiplayer code proof is exact-source static evidence and remains reusable by artifact identity',()=>{
  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- assert.match(runtime,/robloxMultiplayerQaEvidence/);
- assert.match(runtime,/exactMultiplayerValidationReusable/);
- assert.match(runtime,/ROBLOX_F7_MULTIPLAYER_EVIDENCE_REUSED=/);
- assert.match(runtime,/ROBLOX_F7_MULTIPLAYER_EVIDENCE_PERSISTED=/);
- const priorAt=runtime.indexOf('const exactPriorMultiplayerValidation=Boolean(');
- const runtimeAt=runtime.indexOf('const exactRuntimeMultiplayerValidation=Boolean(',priorAt);
- assert.ok(priorAt>0&&runtimeAt>priorAt);
- const priorBlock=runtime.slice(priorAt,runtimeAt);
- assert.match(priorBlock,/priorMultiplayer\.artifactIdentity===artifactIdentity/);
- assert.doesNotMatch(priorBlock,/sourceRevision|placeId|candidateVersionNumber/);
  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
- assert.match(runtime,/const multiplayerRequirementFor=item=>/);
- assert.match(runtime,/multiplayerRequired:multiplayer\.required/);
- assert.match(runtime,/f7Status:multiplayer\.known!==true\?'APPLICABILITY_UNKNOWN':multiplayer\.required===true\?\(multiplayerValidationPassed\?'PASS_REUSED':'PENDING_SINGLE_REQUIRED_CHECK'\):'NOT_APPLICABLE'/);
- assert.match(runtime,/ROBLOX_INTERNAL_STUDIO_PASS_F7_PENDING=/);
- assert.match(finalReview,/const internalStudioValidationAccepted=/);
+ assert.match(runtime,/const multiplayerSourceContractFor=item=>/);
+ assert.match(runtime,/validateRobloxMultiplayerSourceContract/);
+ assert.match(runtime,/staticMultiplayerCodePass/);
+ assert.match(runtime,/ROBLOX_F7_MULTIPLAYER_CODE_CONTRACT_PASS=/);
+ assert.match(runtime,/authority:'roblox-static-two-client-source-contract'/);
+ assert.match(runtime,/runtimeTwoClientExecutionRequired:false/);
+ assert.match(runtime,/priorMultiplayer\.artifactIdentity===artifactIdentity/);
  assert.match(finalReview,/post\.multiplayerValidationPassed===true/);
- assert.match(finalReview,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred\|\|internalStudioValidationAccepted/);
- assert.match(finalReview,/f9RuntimeReplay:false/);
- assert.match(finalReview,/item\.robloxPublicReleaseReady=false/);
  assert.doesNotMatch(finalReview,/publishRobloxPlace/);
 });
-
 test('exact unchanged runtime candidate reuses verified server boot evidence',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_EXACT_EVIDENCE_REUSE/);
