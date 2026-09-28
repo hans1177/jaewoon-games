@@ -1906,6 +1906,8 @@ jobs:
           }
           $exactPlaceStarted = [DateTime]::UtcNow
           $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($places[0].FullName) -PassThru
+          "VIBE2_STUDIO_PROCESS_ID=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_STUDIO_PROCESS_IDS=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "ROBLOX_STUDIO_MCP_EXACT_PLACE_PROCESS_ID=$($placeLaunchProcess.Id)"
           try {
             if ($placeLaunchProcess.WaitForInputIdle(30000)) {
@@ -1929,6 +1931,8 @@ jobs:
             Start-Sleep -Seconds 1
             $exactPlaceStarted = [DateTime]::UtcNow
             $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($places[0].FullName) -PassThru
+            "VIBE2_STUDIO_PROCESS_ID=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "VIBE2_STUDIO_PROCESS_IDS=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
             Write-Host "ROBLOX_STUDIO_MCP_PRE_MCP_RELAUNCH_PROCESS_ID=$($placeLaunchProcess.Id)"
             try { $null = $placeLaunchProcess.WaitForInputIdle(30000) } catch {}
             for ($processProbe = 1; $processProbe -le 12; $processProbe++) {
@@ -2088,6 +2092,8 @@ jobs:
 
             $retryExactStarted = [DateTime]::UtcNow
             $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($env:VIBE2_LOCAL_PLACE_FILE) -PassThru
+            "VIBE2_STUDIO_PROCESS_ID=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "VIBE2_STUDIO_PROCESS_IDS=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
             Write-Host "ROBLOX_STUDIO_MCP_RETRY_EXACT_PLACE_PROCESS_ID=$($placeLaunchProcess.Id):attempt=$attempt"
             try {
               if ($placeLaunchProcess.WaitForInputIdle(30000)) {
