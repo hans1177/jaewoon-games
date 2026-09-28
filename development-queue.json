@@ -24807,10 +24807,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T21:45:58.478Z",
+      "updatedAt": "2026-09-28T22:37:59.187Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -25351,7 +25351,7 @@
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
         "infrastructureFailure": false,
         "failureClass": "STUDIO_MCP_REQUIRED_CHECKPOINT_FAILURE",
-        "robloxFailureClass": "ROBLOX_UI_STATE",
+        "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
         "actualPlayEligibility": "INTERNAL_RELEASE_OR_HISTORICAL_REPLAY",
         "studioMcpServerEnablementRequired": false,
         "operatorPrerequisite": null,
@@ -25604,7 +25604,7 @@
             "id": "scenario-character-camera-ready",
             "name": "scenario-character-camera-ready",
             "required": true,
-            "pass": true
+            "pass": false
           },
           {
             "id": "scenario-visual-capture-sane",
@@ -25851,13 +25851,13 @@
         "runtimeSummary": {
           "consoleErrorCount": 0,
           "consoleWarningCount": 0,
-          "distinctFrameChange": true,
+          "distinctFrameChange": false,
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 3,
+          "scenarioFailureCount": 4,
           "primaryActionDisplacement": 0,
-          "primaryActionVelocity": 38.12339782714847,
+          "primaryActionVelocity": 0,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
@@ -25897,14 +25897,14 @@
           "commercial-audit-timeline-sampled",
           "actual-play-final-client-probe",
           "actual-play-final-server-probe",
-          "scenario-character-camera-ready",
           "scenario-visual-capture-sane",
           "scenario-adaptive-runtime-surface",
           "scenario-adaptive-ftue-clarity",
           "scenario-adaptive-spawn-safety",
           "scenario-adaptive-interaction-surface",
           "scenario-adaptive-semantic-interaction-effect",
-          "ROBLOX_UI_STATE"
+          "scenario-adaptive-system-transaction-effect",
+          "ROBLOX_CHARACTER_RESPAWN_STATE"
         ],
         "rawSourceIncluded": false,
         "rawGameplayValuesIncluded": false,
@@ -25915,7 +25915,7 @@
         "scenarioCoverage": [
           {
             "id": "character-camera-ready",
-            "pass": true
+            "pass": false
           },
           {
             "id": "visual-capture-sane",
@@ -26068,11 +26068,35 @@
         ],
         "scenarioCoveragePass": false,
         "qualityFailureKinds": [
+          "character-camera-ready",
           "adaptive-ui-commercial-quality",
           "adaptive-world-safety",
           "adaptive-map-route-coverage"
         ],
         "qualityFailureDetails": [
+          {
+            "id": "character-camera-ready",
+            "repairSurface": "CHARACTER_BOOT",
+            "priority": "CRITICAL",
+            "hint": "Repair character spawn, Humanoid/root, and camera binding before gameplay starts.",
+            "observed": {
+              "interactionSurfaceCount": 7,
+              "progressionSurfaceCount": 7,
+              "combatSurfaceCount": 0,
+              "npcSurfaceCount": 0,
+              "companionSurfaceCount": 0,
+              "itemSurfaceCount": 0,
+              "remoteCount": 16,
+              "soundCount": 0,
+              "effectCount": 0,
+              "promptCount": 0,
+              "inventoryCount": 0,
+              "currentActualPlayerCount": 1,
+              "maxActualPlayerCount": 1,
+              "multiplayerStateTransition": false,
+              "multiplayerActualSessionPass": false
+            }
+          },
           {
             "id": "adaptive-ui-commercial-quality",
             "repairSurface": "MOBILE_UI",
@@ -26093,7 +26117,7 @@
             "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
             "observed": {
               "boundsFinite": true,
-              "collidablePartCount": 4,
+              "collidablePartCount": 1,
               "floorBelowPlayer": false,
               "floorSamples": 9,
               "floorHits": 0,
@@ -26150,12 +26174,12 @@
         "functionalChainEvidence": {
           "inputDispatched": true,
           "runtimeVerified": false,
-          "screenChanged": true,
+          "screenChanged": false,
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-28T21:25:57.387Z",
-        "workflowRunId": 36479878848,
+        "testedAt": "2026-09-28T22:37:59.187Z",
+        "workflowRunId": 36481419448,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -26213,11 +26237,35 @@
         "failureStage": "VIBE_INTERNAL_PLAY",
         "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
         "qualityFailureKinds": [
+          "character-camera-ready",
           "adaptive-ui-commercial-quality",
           "adaptive-world-safety",
           "adaptive-map-route-coverage"
         ],
         "qualityFailureDetails": [
+          {
+            "id": "character-camera-ready",
+            "repairSurface": "CHARACTER_BOOT",
+            "priority": "CRITICAL",
+            "hint": "Repair character spawn, Humanoid/root, and camera binding before gameplay starts.",
+            "observed": {
+              "interactionSurfaceCount": 7,
+              "progressionSurfaceCount": 7,
+              "combatSurfaceCount": 0,
+              "npcSurfaceCount": 0,
+              "companionSurfaceCount": 0,
+              "itemSurfaceCount": 0,
+              "remoteCount": 16,
+              "soundCount": 0,
+              "effectCount": 0,
+              "promptCount": 0,
+              "inventoryCount": 0,
+              "currentActualPlayerCount": 1,
+              "maxActualPlayerCount": 1,
+              "multiplayerStateTransition": false,
+              "multiplayerActualSessionPass": false
+            }
+          },
           {
             "id": "adaptive-ui-commercial-quality",
             "repairSurface": "MOBILE_UI",
@@ -26238,7 +26286,7 @@
             "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
             "observed": {
               "boundsFinite": true,
-              "collidablePartCount": 4,
+              "collidablePartCount": 1,
               "floorBelowPlayer": false,
               "floorSamples": 9,
               "floorHits": 0,
@@ -26293,16 +26341,17 @@
           }
         ],
         "repairSurfaces": [
+          "CHARACTER_BOOT",
           "MOBILE_UI",
           "WORLD_GEOMETRY",
           "MAP_ROUTEABILITY"
         ],
-        "robloxFailureClass": "ROBLOX_UI_STATE",
-        "testedAt": "2026-09-28T21:25:57.387Z",
-        "workflowRunId": 36479878848,
+        "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
+        "testedAt": "2026-09-28T22:37:59.187Z",
+        "workflowRunId": 36481419448,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
-      "robloxNativeFailureClass": "ROBLOX_UI_STATE",
+      "robloxNativeFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
       "robloxValidationTarget": {
         "version": 3,
         "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -28260,7 +28309,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T22:33:19.835Z",
+  "updatedAt": "2026-09-28T22:37:59.187Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
