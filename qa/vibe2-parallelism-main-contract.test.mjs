@@ -307,3 +307,11 @@ test('stale main push wake exits before expensive reserve work without cancellin
   assert.match(core,/vibe2-main-push-game-primary-wake/);
   assert.match(core,/cancel-in-progress: false/);
 });
+
+
+test('24h runner wakes asset lane when active reservations need recovery even with no queued asset task',()=>{
+  assert.match(runner,/asset_development_active/);
+  assert.match(runner,/asset_development_queued/);
+  assert.match(runner,/asset_development_refill_ready/);
+  assert.match(runner,/needs\.plan\.outputs\.asset_development_refill_ready == 'YES' && \(needs\.plan\.outputs\.asset_development_queued != '0' \|\| needs\.plan\.outputs\.asset_development_active != '0'\)/);
+});
