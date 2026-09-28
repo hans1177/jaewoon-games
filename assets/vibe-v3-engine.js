@@ -80,13 +80,31 @@ function isVerifiedMemoryPositive(record={}){
   return qa.independentQa==='PASS'&&qa.browserQa==='PASS';
 }
 function fullTrajectoryPass(record={}){const e=record.finalEvidence||{};return upper(record.outcome)==='VERIFIED_WINNER'&&e.runtimePass===true&&e.qaPassed===true&&e.regressionPassed===true&&e.exactRevision===true&&e.protectedStatePreserved!==false;}
-function memoryCorpus(entry={}){return [entry.taskType,entry.project,entry.request,entry.instruction,entry.input,entry.output,...(entry.sourcePaths||[]),...(entry.tags||[])].join(' ');}
+function memoryCorpus(entry={}){return [
+  entry.taskType,entry.project,entry.request,entry.instruction,entry.input,entry.output,
+  ...(entry.distilledApplicationPrinciples||[]),
+  ...(entry.distilledAvoidancePrinciples||[]),
+  ...(entry.distilledLearningUseAllowed||[]),
+  ...(entry.sourcePaths||[]),...(entry.tags||[])
+].join(' ');}
 function normalizeMemoryEntry(record={},kind='sample',index=0){
   const taskType=lower(record.taskType||record.metadata?.taskType||'general'),project=clean(record.project||record.gameId||record.metadata?.project||'shared');
   const request=clean(record.request||record.instruction||record.goal),sourcePaths=unique([record.sourcePath,...(record.sourcePaths||[]),...(record.metadata?.sourcePaths||[])]);
   const revision=clean(record.provenance?.sourceRevision??record.sourceRevision??record.sourceCommit??record.finalEvidence?.sourceRevision);
   const id=clean(record.sampleId||record.trajectoryId||record.candidateId)||`${kind}_${stableHash(`${kind}|${index}|${revision}|${request}`)}`;
-  return Object.freeze({id,kind,taskType,project,request,instruction:clean(record.instruction),input:clean(record.input),output:clean(record.output),sourcePaths:Object.freeze(sourcePaths),sourceRevision:revision||null,tags:Object.freeze(unique(record.tags||[])),authority:'verified-memory-entry'});
+  return Object.freeze({
+    id,kind,taskType,project,request,
+    instruction:clean(record.instruction),
+    input:clean(record.input),
+    output:clean(record.output),
+    distilledApplicationPrinciples:Object.freeze(unique(record.distilledApplicationPrinciples||[])),
+    distilledAvoidancePrinciples:Object.freeze(unique(record.distilledAvoidancePrinciples||[])),
+    distilledLearningUseAllowed:Object.freeze(unique(record.distilledLearningUseAllowed||[])),
+    sourcePaths:Object.freeze(sourcePaths),
+    sourceRevision:revision||null,
+    tags:Object.freeze(unique(record.tags||[])),
+    authority:'verified-memory-entry'
+  });
 }
 function normalizeFailureEntry(record={},index=0){
   const failure=clean(record.failure||record.error||record.reason||record.message||record.state||'unknown-failure');
@@ -133,7 +151,23 @@ const PLAYBOOK_BASE=Object.freeze({
 
 export function createVibeTaskPlaybook({taskType='general',retrieval=null,sourceRanking=null}={}){
   const type=Object.prototype.hasOwnProperty.call(PLAYBOOK_BASE,lower(taskType))?lower(taskType):'general';
-  return Object.freeze({version:1,taskType:type,checklist:PLAYBOOK_BASE[type],reuse:Object.freeze((retrieval?.successes||[]).map(item=>({id:item.entry.id,score:item.score,project:item.entry.project,sourceRevision:item.entry.sourceRevision}))),avoid:Object.freeze((retrieval?.failureWarnings||[]).map(item=>({id:item.entry.id,score:item.score,failureClass:item.entry.failureClass,failure:item.entry.failure}))),responsibleSources:Object.freeze((sourceRanking?.candidates||[]).map(item=>({path:item.path,score:item.score}))),authority:'verified-task-playbook'});
+  return Object.freeze({
+    version:1,
+    taskType:type,
+    checklist:PLAYBOOK_BASE[type],
+    reuse:Object.freeze((retrieval?.successes||[]).map(item=>Object.freeze({
+      id:item.entry.id,
+      score:item.score,
+      project:item.entry.project,
+      sourceRevision:item.entry.sourceRevision,
+      distilledApplicationPrinciples:Object.freeze([...(item.entry.distilledApplicationPrinciples||[])]),
+      distilledAvoidancePrinciples:Object.freeze([...(item.entry.distilledAvoidancePrinciples||[])]),
+      distilledLearningUseAllowed:Object.freeze([...(item.entry.distilledLearningUseAllowed||[])])
+    }))),
+    avoid:Object.freeze((retrieval?.failureWarnings||[]).map(item=>({id:item.entry.id,score:item.score,failureClass:item.entry.failureClass,failure:item.entry.failure}))),
+    responsibleSources:Object.freeze((sourceRanking?.candidates||[]).map(item=>({path:item.path,score:item.score}))),
+    authority:'verified-task-playbook'
+  });
 }
 
 function evidenceOf(candidate={}){const e=candidate.evidence||{};return Object.freeze({syntaxPass:e.syntaxPass===true,testsPass:e.testsPass===true,runtimePass:e.runtimePass===true,regressionPass:e.regressionPass===true,protectedStatePreserved:e.protectedStatePreserved===true,exactRevision:e.exactRevision===true,responsibleSource:e.responsibleSource===true,checkpoint:e.checkpoint===true,rollbackReady:e.rollbackReady===true,performanceScore:unit(e.performanceScore??0.5),qualityScore:unit(e.qualityScore??0.5)});}
