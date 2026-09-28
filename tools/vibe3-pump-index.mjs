@@ -61,12 +61,35 @@ export function buildPumpArtifacts({trainingSamples=[],trajectories=[],maxBenchm
   }
   const index=buildVibeVerifiedMemoryIndex({trainingSamples,trajectories,failures});
   const causalLessons=buildCausalCodingLessons(index);
-  const playbooks={version:1,generation:'V3-PUMP',generatedFrom:'VERIFIED_MEMORY_ONLY',taskTypes:{},policy:{localWeightTrainingRequired:false,paidApiRequired:false,benchmarkCountsAsTrainingSample:false,portableWebContextForRoblox:true,platformEvidenceTransferAllowed:false}};
+  const verifiedExternalBlackBoxReuse=Object.freeze((index.positive||[])
+    .filter(item=>clean(item?.id).startsWith('external-black-box-')
+      &&Array.isArray(item?.distilledApplicationPrinciples)
+      &&item.distilledApplicationPrinciples.map(clean).filter(Boolean).length>0)
+    .map(item=>Object.freeze({
+      id:item.id,
+      score:1,
+      project:item.project,
+      sourceRevision:item.sourceRevision,
+      distilledApplicationPrinciples:Object.freeze([...(item.distilledApplicationPrinciples||[])]),
+      distilledAvoidancePrinciples:Object.freeze([...(item.distilledAvoidancePrinciples||[])]),
+      distilledLearningUseAllowed:Object.freeze([...(item.distilledLearningUseAllowed||[])]),
+      distilledLearningUseForbidden:Object.freeze([...(item.distilledLearningUseForbidden||[])])
+    })));
+  const playbooks={version:1,generation:'V3-PUMP',generatedFrom:'VERIFIED_MEMORY_ONLY',taskTypes:{},policy:{localWeightTrainingRequired:false,paidApiRequired:false,benchmarkCountsAsTrainingSample:false,portableWebContextForRoblox:true,platformEvidenceTransferAllowed:false,verifiedExternalBlackBoxAllTaskTypesRequired:true,verifiedExternalBlackBoxTruncationForbidden:true}};
   for(const taskType of TASK_TYPES){
     const query=`${taskType} verified implementation repair QA patterns${taskType==='roblox'?` ${PORTABLE_WEB_QUERY}`:''}`;
     const retrieval=retrieveVibeVerifiedPatterns({index,request:query,taskType,topKSuccess:8,topKFailure:6});
     const base=createVibeTaskPlaybook({taskType,retrieval});
-    playbooks.taskTypes[taskType]=Object.freeze({...base,causalLessons:Object.freeze(causalLessons.filter(item=>item.taskType===taskType).slice(0,8))});
+    const reuseById=new Map();
+    for(const item of verifiedExternalBlackBoxReuse)reuseById.set(item.id,item);
+    for(const item of base.reuse||[])reuseById.set(item.id,item);
+    playbooks.taskTypes[taskType]=Object.freeze({
+      ...base,
+      reuse:Object.freeze([...reuseById.values()]),
+      verifiedExternalBlackBoxReuseCount:verifiedExternalBlackBoxReuse.length,
+      verifiedExternalBlackBoxCoveragePct:verifiedExternalBlackBoxReuse.length?100:0,
+      causalLessons:Object.freeze(causalLessons.filter(item=>item.taskType===taskType).slice(0,8))
+    });
   }
   const benchmarkSeeds=[];
   for(const warning of index.failureWarnings){

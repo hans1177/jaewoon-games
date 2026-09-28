@@ -91,6 +91,25 @@ assert(artifacts.recombination.recipes.every(x=>x.codeStrategy.newImplementation
 assert.equal(artifacts.playbooks.transformativeRecombination.enabled,true);
 assert.equal(artifacts.playbooks.transformativeRecombination.rawSourceOutputAllowed,false);
 
+const externalScaleSamples=Array.from({length:12},(_,index)=>({
+  ...external,
+  sampleId:`external-black-box-scale-run-${index+1}`,
+  project:`blackbox-scale-${index+1}`,
+  sourceRevision:`sha256:scale-${index+1}`,
+  provenance:{...external.provenance,sourceRevision:`sha256:scale-${index+1}`}
+}));
+const externalScaleArtifacts=buildPumpArtifacts({trainingSamples:[ordinary,...externalScaleSamples]});
+const expectedExternalScaleIds=externalScaleSamples.map(row=>row.sampleId).sort();
+for(const taskType of ['coding','bugfix','qa','unity','roblox','graphics','planning','general']){
+  const row=externalScaleArtifacts.playbooks.taskTypes[taskType];
+  const actualIds=(row.reuse||[]).map(item=>item.id).filter(id=>id.startsWith('external-black-box-')).sort();
+  assert.deepEqual(actualIds,expectedExternalScaleIds,`${taskType} must keep every verified external black-box item without topK truncation`);
+  assert.equal(row.verifiedExternalBlackBoxReuseCount,externalScaleSamples.length);
+  assert.equal(row.verifiedExternalBlackBoxCoveragePct,100);
+}
+assert.equal(externalScaleArtifacts.playbooks.policy.verifiedExternalBlackBoxAllTaskTypesRequired,true);
+assert.equal(externalScaleArtifacts.playbooks.policy.verifiedExternalBlackBoxTruncationForbidden,true);
+
 const ingestWorkflow=fs.readFileSync('.github/workflows/vibe2-distillation-ingest.yml','utf8');
 const localTrainingWorkflow=fs.readFileSync('.github/workflows/vibe2-local-distillation-train.yml','utf8');
 assert.match(ingestWorkflow,/VIBE2_LEARNING_RUNTIME_BRANCH:\s*vibe2-learning-runtime/);
