@@ -111,13 +111,13 @@ jobs:
           set -euo pipefail
           node --test qa/company-development-roblox-release-promotion.test.mjs qa/vibe3-roblox-platform.test.mjs
 
-      - name: Ensure game-specific private Roblox validation target
+      - name: Ensure game-specific private Roblox target for current publish stage
         id: dedicated_target
-        if: ${{ (inputs.publish_stage || 'validation') != 'final' }}
         continue-on-error: true
         working-directory: main
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
           ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
@@ -137,6 +137,8 @@ jobs:
 
           const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const publishStage=String(process.env.PUBLISH_STAGE||'validation').trim().toLowerCase();
+          if(!['validation','final'].includes(publishStage))throw new Error('ROBLOX_PUBLISH_STAGE_INVALID:'+publishStage);
           const pending=(q.items||[]).find(row=>
             row.robloxFoundationF0Passed===true
             &&row.robloxFailureStage==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
@@ -149,7 +151,7 @@ jobs:
             process.exit(0);
           }
           const valid=v=>/^[1-9][0-9]*$/.test(String(v||'').trim());
-          const current=item.robloxValidationTarget||{};
+          const current=publishStage==='final'?(item.robloxPublicationTarget||{}):(item.robloxValidationTarget||{});
           const dedicated=current.dedicated===true
             &&current.shared!==true
             &&valid(current.universeId)
@@ -166,7 +168,9 @@ jobs:
           await configureRobloxExperience({
             universeId:created.universeId,
             name:String(item.gameName||gameId),
-            description:'Private pre-F9 validation build for '+String(item.gameName||gameId)+'. Never used as the canonical game server target.',
+            description:publishStage==='final'
+              ?'Canonical private game build for '+String(item.gameName||gameId)+'. Content may be replaced only by exact F9-verified artifacts.'
+              :'Private pre-F9 validation build for '+String(item.gameName||gameId)+'. Never used as the canonical game server target.',
             apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
             cookie,
           });
@@ -178,6 +182,7 @@ jobs:
           const result={
             version:1,
             gameId,
+            publishStage,
             universeId:String(created.universeId),
             placeId:String(created.placeId),
             dedicated:true,
@@ -190,7 +195,7 @@ jobs:
           console.log('ROBLOX_DEDICATED_TARGET_CREATED='+gameId+':'+result.universeId+'/'+result.placeId);
           NODE
 
-      - name: Persist dedicated private validation target reservation
+      - name: Persist dedicated private target reservation for current publish stage
         if: steps.dedicated_target.outcome == 'success'
         working-directory: runtime
         shell: bash
@@ -206,8 +211,10 @@ jobs:
           const item=(q.items||[]).find(row=>row.gameId===r.gameId);
           if(!item)throw new Error('dedicated target queue item missing: '+r.gameId);
           const stamp=new Date().toISOString();
-          item.robloxValidationTarget={
-            version:1,
+          const targetField=r.publishStage==='final'?'robloxPublicationTarget':'robloxValidationTarget';
+          const authority=r.publishStage==='final'?'roblox-canonical-publication-target':'roblox-pre-f9-validation-target';
+          item[targetField]={
+            version:r.publishStage==='final'?3:1,
             gameId:r.gameId,
             universeId:String(r.universeId),
             placeId:String(r.placeId),
@@ -215,7 +222,7 @@ jobs:
             verifiedAt:null,
             lastVerifiedAt:null,
             source:'canonical-dedicated-open-cloud-bootstrap',
-            authority:'roblox-pre-f9-validation-target',
+            authority,
             dedicated:true,
             shared:false,
             visibilityIntent:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',
@@ -244,7 +251,7 @@ jobs:
             sleep $((attempt*2))
           done
           test "$pushed" = '1'
-          echo 'ROBLOX_VALIDATION_TARGET_RESERVATION=PERSISTED'
+          echo 'ROBLOX_PUBLISH_STAGE_TARGET_RESERVATION=PERSISTED'
 
       - name: Resolve exact canonical release target
         id: target
