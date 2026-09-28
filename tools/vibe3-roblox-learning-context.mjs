@@ -4,14 +4,6 @@
 
 const clean=value=>String(value??'').trim();
 const unique=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
-function gameDevelopmentPrinciple(value=''){
-  const text=clean(value).toLowerCase();
-  const scope=clean(text.match(/scope=([^;]+)/)?.[1]).toLowerCase();
-  if(!text)return false;
-  if(/qa-evidence|automation|runtime-compatibility|runtime-evidence|android|abi|install|artifact|infrastructure|hosted-emulator|experiment-strategy/.test(scope))return false;
-  return /onboarding|interaction|ui|ux|controls|feedback|navigation|progression|rpg|sandbox|gameplay|mobile-3d|mobile-feedback|input-feedback/.test(scope)
-    ||/immediate visible|persistent primary|contextual control|touch interaction|movement feedback|spatially anchored/.test(text);
-}
 const stableHash=value=>{let h=2166136261;for(const ch of String(value??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return(h>>>0).toString(36);};
 
 function coreKind(profile={}){
