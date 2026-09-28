@@ -540,10 +540,14 @@ test('Unity runs exact F0-F9, deploys the F9 artifact, and starts the next cycle
   for(const floor of ['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9']) assert.match(workflow,new RegExp(floor+'\\s*:\\s*\\{'));
   assert.match(workflow,/unityF0ThroughF9Evidence:f0ToF9/);
   assert.match(workflow,/unityF9ReleaseRegressionPassed:internalReady/);
-  assert.match(workflow,/Publish exact F9 Unity APK as canonical server artifact/);
+  assert.match(workflow,/Publish exact F9 Unity APK to canonical internal release target/);
+  assert.match(workflow,/gh release create "\$tag"[\s\S]*--target "\$SOURCE_REVISION"[\s\S]*--prerelease/);
+  assert.match(workflow,/UNITY_F9_CANONICAL_SOURCE_ARTIFACT_MATCH=YES/);
   assert.match(workflow,/UNITY_F9_VERIFIED=/);
   assert.match(workflow,/PLATFORM_F9_VERIFIED=UNITY:/);
   assert.match(workflow,/PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED=UNITY:/);
+  assert.match(workflow,/UNITY_F9_DEPLOYED_INTERNAL_OR_CLOSED_BUILD=/);
+  assert.match(workflow,/UNITY_F9_PUBLICATION_REPAIR_REQUIRED=/);
   assert.match(workflow,/UNITY_F9_CANONICAL_PUBLISH_BLOCKS_NEXT_CYCLE=NO/);
   assert.match(workflow,/UNITY_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=NO/);
   assert.match(workflow,/UNITY_NEXT_EVOLUTION_CYCLE_DISPATCHED=/);
