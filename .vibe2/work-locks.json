@@ -3,59 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1nz5l0q",
-      "worker": "vibe2",
-      "taskId": "bug-defense-studio-evolution-unity-web-usability-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "unity-games/bug-defense/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/bug-defense/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "7f9333f29c1843b81279bcc82436a572921b2985",
-      "acquiredAt": "2026-09-28T13:24:35.906Z",
-      "expiresAt": "2026-09-28T14:09:35.906Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-omrt3j",
-      "worker": "vibe2",
-      "taskId": "cozy-island-existing-web-assessment-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "web-games/cozy-island/index.html"
-      ],
-      "baseSha": "7f9333f29c1843b81279bcc82436a572921b2985",
-      "acquiredAt": "2026-09-28T13:25:05.583Z",
-      "expiresAt": "2026-09-28T14:10:05.583Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-existing-web-assessment-v1"
-      ]
-    },
-    {
-      "id": "wl-1syrtew",
-      "worker": "vibe2",
-      "taskId": "survival-studio-evolution-unity-web-usability-v1",
-      "gameId": "survival",
-      "files": [
-        "unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "7f9333f29c1843b81279bcc82436a572921b2985",
-      "acquiredAt": "2026-09-28T13:26:15.688Z",
-      "expiresAt": "2026-09-28T14:11:15.688Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-miy2ez",
       "worker": "vibe2",
       "taskId": "village-dungeons-unity-web-base-implementation-v1",
@@ -637,6 +584,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:village-dungeons-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1ysk409",
+      "worker": "vibe2",
+      "taskId": "survival-roblox-presentation-asset-adaptation-v1",
+      "gameId": "survival",
+      "files": [
+        "roblox-games/survival/client/Game.client.luau",
+        "roblox-games/survival/server/Game.server.luau",
+        "roblox-games/survival/shared/GameConfig.luau"
+      ],
+      "baseSha": "ad6605fcd583d3bf490a5fd5720c40b62852a48c",
+      "acquiredAt": "2026-09-28T14:12:11.246Z",
+      "expiresAt": "2026-09-28T14:57:11.246Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:survival-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
