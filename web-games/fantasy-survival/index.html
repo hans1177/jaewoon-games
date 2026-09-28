@@ -3109,21 +3109,98 @@ function spawnToxicShieldOrbs(e,now){
  showNotice('맹독 균사체 · 포자 구슬 4개 · 전부 파괴해야 본체 공격 가능')
 }
 function updateSwampSpecial(e,targetP,now,playerD){
- if(e.type.toxicMycelium&&e.hostile){
-  if(!e.nextToxicThrow)e.nextToxicThrow=now+2500;if(now>=e.nextToxicThrow){e.nextToxicThrow=now+2500;if(Math.random()<.48){if(Math.random()<.5){enemyDamageTarget(e,70,true);showNotice('맹독 균사체 · 독 투척 70 피해')}else{spawnToxicPools(e,targetP,now);showNotice('맹독 균사체 · 독 장판 5개')}}}
-  if(!e.nextShieldRoll)e.nextShieldRoll=now+3000;if(now>=e.nextShieldRoll){e.nextShieldRoll=now+3000;if(Math.random()<.40)spawnToxicShieldOrbs(e,now)}
-  if(now<(e.toxicGasUntil||0)){if(!item(state.player.armor)?.gasImmune&&playerD<155&&now>=(e.toxicGasTick||0)){e.toxicGasTick=now+500;enemyDamageTarget(e,22,true)}
-   const c=e.toxicCharge;if(c&&c.left>0){if(now>=c.endAt){c.left--;if(c.left<=0){e.toxicCharge=null;return null}const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;c.dirX=dx/d;c.dirY=dy/d;c.endAt=now+850;c.hit=false}
-    if(!c.hit&&playerD<e.type.r+28){c.hit=true;enemyDamageTarget(e,60,true);applyEnemyEffectTarget(e,targetP,'stun',3000);showNotice('가스 돌진 적중 · 60 피해 · 3초 기절')}
-    const sp=(Number(targetP.speed)||185)*3;return{vx:c.dirX*sp,vy:c.dirY*sp}
-   }}
-  if(!e.nextGasRush)e.nextGasRush=now+2000;if(now>=e.nextGasRush){e.nextGasRush=now+2000;if(Math.random()<.30){const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;e.toxicGasUntil=now+10000;e.toxicGasTick=now;e.toxicCharge={left:3,dirX:dx/d,dirY:dy/d,endAt:now+850,hit:false};showNotice('맹독 균사체 · 가스 돌진 3회');return{vx:dx/d*(targetP.speed||185)*3,vy:dy/d*(targetP.speed||185)*3}}}
+ if(e.type.toxicMycelium){
+  const engaged=e.hostile&&playerD<enemyDetectRange(e,900);
+  if(!engaged){
+   e.toxicGasUntil=0;
+   e.toxicGasTick=0;
+   e.toxicCharge=null;
+   return null
+  }
+  if(!e.nextToxicThrow)e.nextToxicThrow=now+2500;
+  if(now>=e.nextToxicThrow){
+   e.nextToxicThrow=now+2500;
+   if(Math.random()<.48){
+    if(Math.random()<.5){
+     enemyDamageTarget(e,70,true);
+     showNotice('맹독 균사체 · 독 투척 70 피해')
+    }else{
+     spawnToxicPools(e,targetP,now);
+     showNotice('맹독 균사체 · 독 장판 5개')
+    }
+   }
+  }
+  if(!e.nextShieldRoll)e.nextShieldRoll=now+3000;
+  if(now>=e.nextShieldRoll){
+   e.nextShieldRoll=now+3000;
+   if(Math.random()<.40)spawnToxicShieldOrbs(e,now)
+  }
+  if(now<(e.toxicGasUntil||0)){
+   if(!item(state.player.armor)?.gasImmune&&playerD<155&&now>=(e.toxicGasTick||0)){
+    e.toxicGasTick=now+500;
+    enemyDamageTarget(e,22,true)
+   }
+   const c=e.toxicCharge;
+   if(c&&c.left>0){
+    if(now>=c.endAt){
+     c.left--;
+     if(c.left<=0){
+      e.toxicCharge=null;
+      return null
+     }
+     const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;
+     c.dirX=dx/d;
+     c.dirY=dy/d;
+     c.endAt=now+850;
+     c.hit=false
+    }
+    if(!c.hit&&playerD<e.type.r+28){
+     c.hit=true;
+     enemyDamageTarget(e,60,true);
+     applyEnemyEffectTarget(e,targetP,'stun',3000);
+     showNotice('가스 돌진 적중 · 60 피해 · 3초 기절')
+    }
+    const sp=(Number(targetP.speed)||185)*3;
+    return{vx:c.dirX*sp,vy:c.dirY*sp}
+   }
+  }
+  if(!e.nextGasRush)e.nextGasRush=now+2000;
+  if(now>=e.nextGasRush){
+   e.nextGasRush=now+2000;
+   if(Math.random()<.30){
+    const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;
+    e.toxicGasUntil=now+10000;
+    e.toxicGasTick=now;
+    e.toxicCharge={left:3,dirX:dx/d,dirY:dy/d,endAt:now+850,hit:false};
+    showNotice('맹독 균사체 · 가스 돌진 3회');
+    return{vx:dx/d*(targetP.speed||185)*3,vy:dy/d*(targetP.speed||185)*3}
+   }
+  }
  }
  if(e.type.swampHarden){
-  if(!e.nextHardenRoll)e.nextHardenRoll=now+3000;if(now>=e.nextHardenRoll){e.nextHardenRoll=now+3000;if(Math.random()<.30){e.hardenedUntil=now+20000;showNotice('늪 골렘 · 굳음 20초 · 받는 피해 50% 감소')}}
+  const engaged=e.hostile&&playerD<enemyDetectRange(e,620);
+  if(!engaged)return null;
+  if(!e.nextHardenRoll)e.nextHardenRoll=now+3000;
+  if(now>=e.nextHardenRoll){
+   e.nextHardenRoll=now+3000;
+   if(Math.random()<.30){
+    e.hardenedUntil=now+20000;
+    showNotice('늪 골렘 · 굳음 20초 · 받는 피해 50% 감소')
+   }
+  }
  }
- if(e.type.fearSpecial&&e.hostile){
-  if(!e.nextFearRoll)e.nextFearRoll=now+3000;if(now>=e.nextFearRoll){e.nextFearRoll=now+3000;if(Math.random()<.50){targetP.attackBlockedUntil=Math.max(targetP.attackBlockedUntil||0,now+5000);e.hp=Math.min(e.maxHp,e.hp+200);showNotice('공포 곰 · 공포 5초 · 공격 불가 · 곰 체력 200 회복')}}
+ if(e.type.fearSpecial){
+  const engaged=e.hostile&&playerD<enemyDetectRange(e,700);
+  if(!engaged)return null;
+  if(!e.nextFearRoll)e.nextFearRoll=now+3000;
+  if(now>=e.nextFearRoll){
+   e.nextFearRoll=now+3000;
+   if(Math.random()<.50){
+    targetP.attackBlockedUntil=Math.max(targetP.attackBlockedUntil||0,now+5000);
+    e.hp=Math.min(e.maxHp,e.hp+200);
+    showNotice('공포 곰 · 공포 5초 · 공격 불가 · 곰 체력 200 회복')
+   }
+  }
  }
  return null
 }
