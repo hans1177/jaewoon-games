@@ -91,6 +91,72 @@ local function makeButton(parent,text,color)
  return b
 end
 
+-- 로딩 진입 화면: 월드/카메라 준비 전 조작 차단
+local startupOverlay=Instance.new("Frame")
+startupOverlay.Name="StartupLoading"
+startupOverlay.Size=UDim2.fromScale(1,1)
+startupOverlay.BackgroundColor3=Color3.fromRGB(20,36,33)
+startupOverlay.BackgroundTransparency=.04
+startupOverlay.BorderSizePixel=0
+startupOverlay.Active=true
+startupOverlay.ZIndex=100
+startupOverlay.Parent=gui
+
+local startupTitle=Instance.new("TextLabel")
+startupTitle.AnchorPoint=Vector2.new(.5,.5)
+startupTitle.Position=UDim2.fromScale(.5,.44)
+startupTitle.Size=UDim2.new(.8,0,0,54)
+startupTitle.BackgroundTransparency=1
+startupTitle.Text="포근섬"
+startupTitle.TextColor3=Color3.fromRGB(255,244,208)
+startupTitle.TextScaled=true
+startupTitle.Font=Enum.Font.GothamBold
+startupTitle.ZIndex=101
+startupTitle.Parent=startupOverlay
+
+local startupStatus=Instance.new("TextLabel")
+startupStatus.AnchorPoint=Vector2.new(.5,.5)
+startupStatus.Position=UDim2.fromScale(.5,.53)
+startupStatus.Size=UDim2.new(.82,0,0,34)
+startupStatus.BackgroundTransparency=1
+startupStatus.Text="월드와 조작을 준비하는 중..."
+startupStatus.TextColor3=Color3.fromRGB(211,239,213)
+startupStatus.TextScaled=true
+startupStatus.Font=Enum.Font.Gotham
+startupStatus.ZIndex=101
+startupStatus.Parent=startupOverlay
+
+local startupHint=Instance.new("TextLabel")
+startupHint.AnchorPoint=Vector2.new(.5,.5)
+startupHint.Position=UDim2.fromScale(.5,.59)
+startupHint.Size=UDim2.new(.82,0,0,28)
+startupHint.BackgroundTransparency=1
+startupHint.Text=touchEnabled and "준비되면 화면을 터치해서 이동해." or "준비되면 이동해서 자원을 채집해."
+startupHint.TextColor3=Color3.fromRGB(170,201,186)
+startupHint.TextScaled=true
+startupHint.Font=Enum.Font.Gotham
+startupHint.ZIndex=101
+startupHint.Parent=startupOverlay
+
+task.spawn(function()
+ local deadline=os.clock()+5
+ repeat
+  local camera=workspace.CurrentCamera
+  local character=p.Character
+  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  local stateReady=p:GetAttribute("LastActivity")~=nil
+  local cameraReady=camera and humanoid and camera.CameraSubject==humanoid
+  if stateReady and cameraReady then break end
+  task.wait(.1)
+ until os.clock()>=deadline
+
+ if startupOverlay.Parent then
+  startupStatus.Text="준비 완료"
+  task.wait(.2)
+  startupOverlay:Destroy()
+ end
+end)
+
 local feedbackFlash=Instance.new("Frame")
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
 local verifiedLearningPlayers = game:GetService("Players")
