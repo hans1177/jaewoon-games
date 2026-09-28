@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-flqjol",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
-      ],
-      "baseSha": "289b5b7b5ef74c05205958c1b108812436b72f7f",
-      "acquiredAt": "2026-09-28T08:27:30.230Z",
-      "expiresAt": "2026-09-28T09:12:30.230Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-1250uhr",
       "worker": "vibe2",
       "taskId": "village-dungeons-unity-web-base-implementation-v1",
@@ -561,6 +543,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
+      ]
+    },
+    {
+      "id": "wl-1ra7wrs",
+      "worker": "vibe2",
+      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "files": [
+        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/client/Game.client.luau",
+        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/server/Game.server.luau",
+        "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria/shared/GameConfig.luau"
+      ],
+      "baseSha": "cfc11b905e17ab35b2a1b0f95704cfb926602550",
+      "acquiredAt": "2026-09-28T09:12:36.974Z",
+      "expiresAt": "2026-09-28T09:57:36.974Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
