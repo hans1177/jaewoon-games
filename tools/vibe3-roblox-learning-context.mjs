@@ -95,7 +95,10 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
   const featureBlend=unique(selected?.featureBlend||[]).slice(0,12);
   const sourceProjects=unique(selected?.sourceProjects||[]).slice(0,6);
   const distilled=selectDistilled(distillation?.records||[],{gameId,terms,profileText});
-  const verifiedExternalLearningIds=unique([...verifiedExternalPlaybookIds,...(distilled.externalIds||[])]);
+  // PRACTICE_ONLY black-box observations remain advisory. Only verified task-playbook
+  // memory may count toward the mandatory 100% verified external learning coverage.
+  const verifiedExternalLearningIds=unique(verifiedExternalPlaybookIds);
+  const externalBlackBoxAdvisoryIds=unique(distilled.externalIds||[]);
   const verifiedExternalLearningApplyAxes=Object.freeze([
     'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
     'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
@@ -127,6 +130,7 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     verifiedExternalLearningApplyAxes,
     verifiedExternalLearningFirst:true,
     verifiedExternalLearningTruncationForbidden:true,
+    externalBlackBoxAdvisoryIds:Object.freeze(externalBlackBoxAdvisoryIds),
     externalBlackBoxAdvisoryUsed:distilled.externalAdvisoryUsed,
     crossGameDistillationUsed:distilled.crossGameUsed,
     freshQaRequiredForDistilledTransfer:distilled.freshQaRequired,
