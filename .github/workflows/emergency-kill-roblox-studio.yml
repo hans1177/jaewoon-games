@@ -1,9 +1,6 @@
-name: Emergency Kill Roblox Studio
+name: Emergency Cancel Roblox Studio QA
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/emergency-kill-roblox-studio.yml'
+  workflow_dispatch:
 
 permissions:
   actions: write
@@ -14,7 +11,7 @@ jobs:
     runs-on: ubuntu-slim
     timeout-minutes: 3
     steps:
-      - name: Cancel every active Roblox runtime foundation run
+      - name: Cancel every active Roblox runtime foundation run without closing user Studio
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -36,16 +33,3 @@ jobs:
             echo "EMERGENCY_ROBLOX_STUDIO_RUN_CANCELLED=$run_id"
           done < /tmp/cancel-ids
 
-  cleanup-studio:
-    needs: cancel
-    if: always()
-    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
-    timeout-minutes: 3
-    steps:
-      - name: Force close Roblox Studio and Studio MCP
-        shell: powershell
-        run: |
-          $ErrorActionPreference = 'Continue'
-          Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-          Get-Process StudioMCP -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-          Write-Host 'EMERGENCY_ROBLOX_STUDIO_PROCESSES_CLOSED=YES'
