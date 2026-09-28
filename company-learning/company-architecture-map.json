@@ -1,5 +1,5 @@
 {
-  "version": 299,
+  "version": 300,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3968,7 +3968,22 @@
         "duplicateSessionForbidden": true,
         "nonMultiplayer": "NOT_APPLICABLE"
       },
-      "next": "RETURN_F9_RESULT_TO_EXISTING_BUILD_UP_LOOP"
+      "next": "RETURN_F9_RESULT_TO_EXISTING_BUILD_UP_LOOP",
+      "scheduledRecoveryScan": {
+        "cadencePreserved": true,
+        "idleMode": "STATE_DISCOVERY_ONLY",
+        "heavyQaWhenIdle": false,
+        "runHeavyQaWhen": [
+          "EXACT_PENDING_INTERNAL_WORK",
+          "RELEVANT_POLICY_OR_VALIDATION_CODE_CHANGE",
+          "EXPLICIT_DISPATCH"
+        ],
+        "noPendingWork": "EXIT_NO_DUPLICATE_VALIDATION",
+        "externalServerDiagnostic": "MANUAL_ONLY",
+        "securityRecheck": "IMPACT_ONLY",
+        "multiplayerRecheck": "APPLICABILITY_AND_IMPACT_ONLY"
+      },
+      "validationMayNotConsumeNextBuildUpGenerationWhenIdle": true
     }
   },
   "autonomousBottleneckRecovery": {
