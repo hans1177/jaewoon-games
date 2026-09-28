@@ -109,6 +109,7 @@ jobs:
       effective_max: ${{ steps.batch.outputs.effective_max }}
       contract_sha: ${{ steps.contract.outputs.sha }}
       model_cache_hit: ${{ steps.ollama_cache_probe.outputs.cache-hit }}
+      model_required: ${{ steps.batch.outputs.model_required }}
     steps:
       - name: Checkout Vibe2 control line
         uses: actions/checkout@v4
@@ -606,6 +607,8 @@ jobs:
           const fs=require('fs');
           const out=process.env.GITHUB_OUTPUT;
           const batch=JSON.parse(fs.readFileSync('/tmp/vibe2-batch.json','utf8'));
+          const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          const taskById=new Map((queue.tasks||[]).map(task=>[String(task.id||''),task]));
           const workers=[];
           const safe=value=>String(value||'task').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'task';
           const pressureRefillEligible=String(process.env.VIBE2_EXECUTION_LANE||'').toLowerCase()==='game-primary';
@@ -628,6 +631,17 @@ jobs:
           fs.appendFileSync(out,`task_count=${(batch.matrix||[]).length}\n`);
           fs.appendFileSync(out,`reserved_at=${batch.createdAt||''}\n`);
           fs.appendFileSync(out,`effective_max=${Number(batch.scheduler?.effectiveMaxConcurrentTasks||256)}\n`);
+          const deterministicRobloxAssetBatch=assetLane
+            &&(batch.matrix||[]).length>0
+            &&(batch.matrix||[]).every(row=>{
+              const task=taskById.get(String(row.taskId||''))||{};
+              return String(task.target||'').toLowerCase()==='roblox'
+                &&/-roblox-presentation-asset-adaptation-v1$/.test(String(task.id||''));
+            });
+          const modelRequired=(batch.matrix||[]).length>0&&!deterministicRobloxAssetBatch;
+          fs.appendFileSync(out,`model_required=${modelRequired?'true':'false'}\n`);
+          console.log(`VIBE2_RESERVE_MODEL_REQUIRED=${modelRequired?'YES':'NO'}`);
+          console.log(`VIBE2_DETERMINISTIC_ROBLOX_ASSET_BATCH=${deterministicRobloxAssetBatch?'YES':'NO'}`);
           console.log(`VIBE2_HIERARCHICAL_FAN_OUT=${workers.length}`);
           console.log(`VIBE2_RESERVED_TASK_COUNT=${(batch.matrix||[]).length}`);
           console.log(`VIBE2_PRIMARY_TASK_COUNT=${Number(batch.scheduler?.primaryTaskCount||(batch.matrix||[]).length)}`);
@@ -641,7 +655,7 @@ jobs:
 
       - name: Probe shared Ollama cache from reserve runner
         id: ollama_cache_probe
-        if: steps.batch.outputs.worker_count != '0'
+        if: steps.batch.outputs.worker_count != '0' && steps.batch.outputs.model_required == 'true'
         uses: actions/cache/restore@v4
         with:
           path: |
@@ -655,17 +669,23 @@ jobs:
         if: steps.batch.outputs.worker_count != '0'
         shell: bash
         run: |
-          echo 'VIBE2_MODEL_CACHE_RESERVE_PROBE_LOOKUP_ONLY=YES'
-          echo "VIBE2_MODEL_CACHE_RESERVE_PROBE_HIT=${{ steps.ollama_cache_probe.outputs.cache-hit }}"
-          if [ "${{ steps.ollama_cache_probe.outputs.cache-hit }}" = 'true' ]; then
-            echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_CACHE_HIT'
+          if [ "${{ steps.batch.outputs.model_required }}" != 'true' ]; then
+            echo 'VIBE2_MODEL_CACHE_RESERVE_PROBE_LOOKUP_ONLY=SKIPPED'
+            echo 'VIBE2_MODEL_CACHE_RESERVE_PROBE_HIT=NOT_REQUIRED'
+            echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_DETERMINISTIC_ROBLOX_ASSET'
           else
-            echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=RUN_CACHE_MISS'
+            echo 'VIBE2_MODEL_CACHE_RESERVE_PROBE_LOOKUP_ONLY=YES'
+            echo "VIBE2_MODEL_CACHE_RESERVE_PROBE_HIT=${{ steps.ollama_cache_probe.outputs.cache-hit }}"
+            if [ "${{ steps.ollama_cache_probe.outputs.cache-hit }}" = 'true' ]; then
+              echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_CACHE_HIT'
+            else
+              echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=RUN_CACHE_MISS'
+            fi
           fi
 
   model_cache:
     needs: reserve
-    if: needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_cache_hit != 'true'
+    if: needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_required == 'true' && needs.reserve.outputs.model_cache_hit != 'true'
     runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     timeout-minutes: 12
     continue-on-error: true
