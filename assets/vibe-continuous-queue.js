@@ -498,14 +498,15 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     if (reasons.length) blocked.push(freeze({ task, reasons }));
     else candidates.push(freeze({ task, score: scoreTask(task, index) }));
   });
-  candidates.sort((a, b) => {
-    if(laneMode==='asset-development'){
-      const aRoblox=clean(a.task?.target).toLowerCase()==='roblox'?1:0;
-      const bRoblox=clean(b.task?.target).toLowerCase()==='roblox'?1:0;
-      if(aRoblox!==bRoblox)return bRoblox-aRoblox;
-    }
-    return b.score - a.score || a.task.id.localeCompare(b.task.id);
-  });
+  candidates.sort((a, b) => b.score - a.score || a.task.id.localeCompare(b.task.id));
+  const robloxFirstLane=['game-primary','asset-development'].includes(laneMode);
+  const robloxCandidateAvailable=robloxFirstLane&&candidates.some((row)=>clean(row.task?.target).toLowerCase()==='roblox');
+  const schedulingCandidates=robloxCandidateAvailable
+    ?candidates.filter((row)=>clean(row.task?.target).toLowerCase()==='roblox')
+    :candidates;
+  const robloxFirstDeferred=robloxCandidateAvailable
+    ?candidates.filter((row)=>clean(row.task?.target).toLowerCase()!=='roblox').map((row)=>row.task)
+    :[];
 
   const selected = [];
   const deferredConflicts = [];
@@ -515,7 +516,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
 
   const focusedGameId=(task)=>clean(task?.gameId)||clean(task?.sourceRoot)||clean(task?.id);
   const focusedRunning=capacityRunning.filter(isPostReleaseFocused);
-  const focusedCandidates=candidates.filter((row)=>isPostReleaseFocused(row.task));
+  const focusedCandidates=schedulingCandidates.filter((row)=>isPostReleaseFocused(row.task));
   const focusedGameIds=new Set(focusedRunning.map(focusedGameId).filter(Boolean));
   const eligibleFocusedGameIds=new Set([...focusedGameIds,...focusedCandidates.map((row)=>focusedGameId(row.task)).filter(Boolean)]);
   const postReleaseFocusedSlotLimit=effectiveMax;
@@ -549,7 +550,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   let longWorkProtectedSlotUsed = false;
   let longWorkOwnerTaskId = null;
   if (freeSlots > 0 && !capacityRunning.some(isProtectedLongOwner)) {
-    for (const protectedRow of candidates.filter((row) => isProtectedLongOwner(row.task))) {
+    for (const protectedRow of schedulingCandidates.filter((row) => isProtectedLongOwner(row.task))) {
       if(isPostReleaseFocused(protectedRow.task)&&!focusedSlotAvailable(protectedRow.task))continue;
       const conflict = conflictsWith(protectedRow.task, active);
       if (conflict) {
@@ -566,7 +567,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     }
   }
 
-  for (const row of candidates) {
+  for (const row of schedulingCandidates) {
     if (selected.length >= freeSlots) break;
     if (selected.some((task) => task.id === row.task.id)) continue;
     if(isPostReleaseFocused(row.task)&&!focusedSlotAvailable(row.task))continue;
@@ -576,7 +577,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     if (conflict) { if (!deferredConflicts.some((item) => item.task.id === row.task.id)) deferredConflicts.push(freeze({ task: row.task, reason: conflict })); continue; }
     selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1; noteFocusedSelection(row.task);
   }
-  for (const row of candidates) {
+  for (const row of schedulingCandidates) {
     if (selected.length >= freeSlots) break;
     if (selected.some((task) => task.id === row.task.id)) continue;
     if(isPostReleaseFocused(row.task)&&!focusedSlotAvailable(row.task))continue;
@@ -585,11 +586,13 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1; noteFocusedSelection(row.task);
   }
 
-  const queuedEligible = candidates.length;
+  const queuedEligible = schedulingCandidates.length;
   return freeze({
     selected: freeze(selected),
     lane: laneMode,
-    laneDeferred: freeze(laneDeferred),
+    laneDeferred: freeze([...laneDeferred,...robloxFirstDeferred]),
+    robloxFirstMode: robloxCandidateAvailable,
+    robloxFirstDeferred: freeze(robloxFirstDeferred),
     running: freeze(running),
     capacityRunning: freeze(capacityRunning),
     awaitingQa: freeze(running.filter(isAwaitingQaTask)),

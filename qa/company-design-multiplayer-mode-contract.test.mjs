@@ -35,14 +35,16 @@ test('design baseline fails closed when multiplayer mode is absent or invalid',(
   assert.match(gate,/designMultiplayer:\{required:/);
 });
 
-test('Roblox multiplayer design semantics are preflighted statically but accepted only by actual runtime tester evidence',()=>{
+test('Roblox multiplayer design semantics pass through the static source contract while runtime foundation stays separately verified',()=>{
   assert.match(headlessQa,/function multiplayerRequired\(config\)/);
   assert.match(headlessQa,/checks\.multiplayerSync=!multi\|\|\(\/Players:GetPlayers\\s\*\\\(\\\)\/\.test\(server\)&&\/FireAllClients/);
   assert.match(headlessQa,/multiplayerApplicable:multi/);
   assert.match(headlessQa,/actualRuntimeEvidence:false/);
   assert.match(headlessQa,/runtimeFoundationPassed:false/);
   assert.match(robloxQa,/validateRobloxRuntimeFoundationEvidence/);
-  assert.match(robloxQa,/item\.robloxMultiplayerQaPassed=result\.f7MultiplayerFoundationPassed===true/);
-  assert.match(robloxQa,/runtimeAcceptancePassed===true/);
+  assert.match(robloxQa,/const staticMultiplayerCodePass=multiplayer\.required===true&&multiplayerSourceContract\.passed===true/);
+  assert.match(robloxQa,/item\.robloxMultiplayerQaPassed=true/);
+  assert.match(robloxQa,/authority:'roblox-static-two-client-source-contract'/);
+  assert.match(robloxQa,/runtimeTwoClientExecutionRequired:false/);
   assert.match(robloxQa,/actualPlatformRuntime:true/);
 });

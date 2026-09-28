@@ -434,6 +434,7 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
     workerCount:[...speculativeVariants.values()].reduce((sum,count)=>sum+Number(count||0),0),
     matrix: tasks.map((task) => ({
       taskId: task.id,
+      target: clean(task.target).toLowerCase() || 'unknown',
       shard: task.shard,
       packageId: task.packageId || null,
       packageRole: task.packageRole || null,
