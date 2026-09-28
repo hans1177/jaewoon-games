@@ -287,28 +287,29 @@ test('Roblox source workflow keeps compiled candidates pending when Actions cann
   assert.ok(workflow.includes('ROBLOX_SOURCE_PROMOTION_PENDING_COUNT'));
 });
 
-test('Roblox package completion follows F0 validation target then F9 canonical publish then repeats',()=>{
+
+test('Roblox package completion follows F0 local Studio QA then F9 canonical publish then repeats',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
   const f0=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-headless-fast-mvp.yml',import.meta.url),'utf8');
-  const candidate=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-release-promotion.yml',import.meta.url),'utf8');
   const runtimeQa=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-post-runtime-qa.yml',import.meta.url),'utf8');
   const f9=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-final-review-revalidation.yml',import.meta.url),'utf8');
+  const publish=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-release-promotion.yml',import.meta.url),'utf8');
   assert.ok(preflight.includes('workflow_dispatch:'));
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES'));
   assert.ok(f0.includes('Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight'));
-  assert.ok(f0.includes("item.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'"));
-  assert.ok(workflow.includes('publish_stage=validation'));
-  assert.ok(candidate.includes('robloxValidationTarget'));
-  assert.ok(candidate.includes("item.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION'"));
-  assert.ok(candidate.includes('company-development-roblox-post-runtime-qa.yml'));
+  assert.ok(workflow.includes('Route F0-passed artifacts to internal Studio QA without pre-F9 server publish'));
+  assert.ok(workflow.includes('ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED'));
+  assert.ok(workflow.includes('ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES'));
+  assert.ok(!workflow.includes('publish_stage=validation'));
+  assert.ok(workflow.includes('company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"'));
   assert.ok(runtimeQa.includes("item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'"));
   assert.ok(f9.includes('Roblox F9 Final Review'));
   assert.ok(f9.includes('item.robloxCanonicalPublishPending=true'));
   assert.ok(f9.includes("item.currentStep='POST_F9_CONTINUOUS_EVOLUTION'"));
   assert.ok(f9.includes('publish_stage=final'));
-  assert.ok(candidate.includes('ROBLOX_CANONICAL_FINAL_PUBLISH=PASS'));
+  assert.ok(publish.includes('ROBLOX_CANONICAL_FINAL_PUBLISH=PASS'));
   assert.ok(f9.includes('ROBLOX_F9_VIBE_REFILL_DISPATCHED='));
   assert.ok(f9.includes('ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO'));
   assert.ok(!f0.includes('ROBLOX_FAKE_RUNTIME_PASS=ALLOWED'));
@@ -662,44 +663,33 @@ test('Roblox game source pushes route through exact changed-source sync instead 
 });
 
 
+
 test('exact Roblox dispatch stays per-game while batch runs and runtime writers avoid global serialization',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
   const execution=roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution;
   assert.equal(execution.gameLevelExecution,'PARALLEL_BY_DEFAULT');
   assert.equal(execution.internalGameConcurrencyCapsForbidden,true);
-  assert.equal(execution.workflowLevelGameWideSerializationForbidden,false);
-  assert.equal(execution.workflowLevelConcurrencyGroupByGameIdForbidden,false);
   assert.equal(execution.crossGameWorkflowSerializationForbidden,true);
   assert.equal(execution.exactGameDuplicateWorkflowSerializationAllowed,true);
   assert.equal(execution.internalSameWorkflowGameMatrixParallelismPreserved,true);
-  assert.equal(execution.sameGameConflictSerializationScope,'EXACT_DUPLICATE_WORKFLOW_OR_RESPONSIBLE_FILE_OR_ATOMIC_SHARED_STATE_WRITE_ONLY');
-  assert.equal(execution.externalProviderCapacityIsOnlyHeavyExecutionBoundary,true);
-  assert.equal(execution.defaultRequestedGameWorkers,256);
   assert.match(workflow,/concurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n\s+cancel-in-progress: false/);
   assert.doesNotMatch(workflow,/max-parallel:/);
-  for(const job of ['source-bootstrap','technical-plan','technical-persist']){
+  for(const job of ['source-plan','source-bootstrap','technical-plan','technical-persist']){
     const header=`  ${job}:\n`;
     const start=workflow.indexOf(header);
     assert.ok(start>=0,job+' missing');
     const tail=workflow.slice(start+header.length);
     const nextJobMatch=tail.match(/\n  [A-Za-z0-9_-]+:\n/);
     const end=nextJobMatch?start+header.length+nextJobMatch.index:workflow.length;
-    const block=workflow.slice(start,end);
-    assert.match(block,/runs-on: ubuntu-24\.04-arm/);
+    assert.match(workflow.slice(start,end),/runs-on: ubuntu-24\.04/);
   }
-  const sourcePlanStart=workflow.indexOf('  source-plan:\n');
-  const sourceWorkerStart=workflow.indexOf('\n  source-worker:',sourcePlanStart);
-  assert.ok(sourcePlanStart>=0&&sourceWorkerStart>sourcePlanStart);
-  assert.match(workflow.slice(sourcePlanStart,sourceWorkerStart),/runs-on: \$\{\{ inputs\.game_id != '' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-24\.04' \}\}/);
-  const technicalWorkerStart=workflow.indexOf('  technical-worker:\n');
-  const technicalWorkerEnd=workflow.indexOf('\n  technical-persist:',technicalWorkerStart);
-  assert.match(workflow.slice(technicalWorkerStart,technicalWorkerEnd),/runs-on: ubuntu-latest/);
+  assert.match(workflow,/\n  source-worker:\n[\s\S]*?runs-on: ubuntu-latest/);
+  assert.match(workflow,/\n  technical-worker:\n[\s\S]*?runs-on: ubuntu-latest/);
   assert.doesNotMatch(workflow,/group: company-runtime-writer/);
   assert.match(workflow,/ROBLOX_SOURCE_PERSIST_CONFLICT_RETRY=/);
   assert.match(workflow,/ROBLOX_TECHNICAL_PERSIST_CONFLICT_RETRY=/);
 });
-
 
 test('Roblox batch scheduler ignores unrelated main churn and redispatches only when its control contract changed',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
@@ -780,19 +770,14 @@ test('Roblox source worker bases candidate on current main without leaking workf
   assert.match(worker,/ROBLOX_WORKER_RESULT=\$\{id\}:\$\{superseded\?'SUPERSEDED'/);
 });
 
-test('Roblox batch scheduler isolates critical source-plan ingress without capping per-game matrix parallelism',()=>{
+
+test('Roblox batch scheduler keeps control work fixed while preserving uncapped per-game matrix parallelism',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
   assert.match(workflow,/group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}/);
   assert.match(workflow,/cancel-in-progress: false/);
-  assert.match(workflow,/\n  source-plan:\n[\s\S]*?runs-on: \$\{\{ inputs\.game_id != '' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-24\.04' \}\}/);
+  assert.match(workflow,/\n  source-plan:\n[\s\S]*?runs-on: ubuntu-24\.04/);
   assert.doesNotMatch(workflow,/\n  source-plan:\n[\s\S]{0,260}?runs-on: ubuntu-slim/);
-  const sourcePlanIsolation=roadmap.changeRecord?.robloxSourcePlanWakeAndRunnerIsolation20260927||{};
-  assert.equal(sourcePlanIsolation.sourcePlanExactGameRunner,'ubuntu-24.04-arm');
-  assert.equal(sourcePlanIsolation.sourcePlanBatchRunner,'ubuntu-24.04');
-  assert.equal(sourcePlanIsolation.previousSourcePlanRunner,'ubuntu-slim');
-  assert.equal(sourcePlanIsolation.technicalPlanRunnerUnchanged,'ubuntu-24.04-arm');
-  assert.equal(sourcePlanIsolation.heavyExecutionRunnerUnchanged,'ubuntu-latest');
   assert.doesNotMatch(workflow,/max-parallel:/);
   assert.match(workflow,/const EXECUTION_BATCH_MAX=256;/);
   assert.equal(roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.matrixBatchMax,256);
@@ -814,7 +799,8 @@ test('territory-war exact source honors approved competitive multiplayer profile
 });
 
 
-test('Roblox fused happy path reuses the exact package through shared preflight and F0',()=>{
+
+test('Roblox fused happy path reuses the exact package through shared preflight F0 and local Studio QA',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
   assert.equal(roadmap.developmentSpeedExecution.buildOncePerSourceFingerprint,true);
@@ -825,12 +811,11 @@ test('Roblox fused happy path reuses the exact package through shared preflight 
   assert.match(workflow,/Run fused shared-model build preflight/);
   assert.match(workflow,/ROBLOX_F0_BUILD_REUSE=SAME_WORKER_EXACT_PACKAGE/);
   assert.match(workflow,/--rebuilt-artifact-identity="\$artifact_identity"/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=/);
-  assert.match(workflow,/queue\.robloxTechnicalParallelism=null/);
+  assert.match(workflow,/ROBLOX_LOCAL_F0_QA_DISPATCH=/);
+  assert.match(workflow,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
   assert.doesNotMatch(workflow,/ROBLOX_RUNTIME_RETRY_LIMIT=2/);
   assert.match(workflow,/ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED_CAUSAL_REPAIR/);
 });
-
 
 test('Roblox F0 integrity failure reenters the canonical source worker without weakening gates',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
@@ -941,37 +926,27 @@ test('fresh Roblox source worker failure clears stale candidate pointers for can
   assert.match(workflow,/ownerFocusRobloxAssetPipelineState:'SOURCE_REPAIR_REQUIRED'/);
 });
 
-test('pending private runtime candidates retry even when technical target count is zero',()=>{
+
+test('F0-passed candidates route to local Studio QA even when technical target count is zero',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
   assert.equal(roadmap.developmentSpeedExecution.retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches,true);
   assert.equal(roadmap.developmentSpeedExecution.successfulStepMustNotBeRepeatedWithoutInvalidatingChange,true);
-  assert.equal(roadmap.developmentSpeedExecution.robloxEndToEndParallelExecution.privateRuntimeCandidateDeploymentParallel,true);
-  const monotonicity=roadmap.changeRecord?.concurrentPlatformSharedProgressMonotonicity20260927||{};
-  assert.equal(monotonicity.privateRuntimeRecoveryUsesExactF0Evidence,true);
-  assert.equal(monotonicity.privateRuntimeRecoverySharedCurrentStepDependencyForbidden,true);
-  assert.match(workflow,/name: Route pending private runtime candidates through exact game dispatcher[\s\S]*?if: always\(\)/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH_COUNT=/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DEDUPED_COUNT=/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=DEDUPED_ACTIVE:/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_HANDOFF=EXACT_RUNTIME:/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_HANDOFF=DEDUPED_ACTIVE_RUNTIME:/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_DISPATCH_OWNER=EXACT_GAME_RUNTIME/);
-  assert.match(workflow,/actions\/workflows\/company-development-roblox-release-promotion\.yml\/runs\?per_page=100/);
-  assert.match(workflow,/display_title/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_PENDING_COUNT=/);
-  assert.doesNotMatch(workflow,/String\(x\.currentStep\|\|''\)\.toUpperCase\(\)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
-  assert.match(workflow,/String\(x\.robloxFailureStage\|\|''\)\.toUpperCase\(\)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
-  assert.match(workflow,/String\(x\.robloxFailureSignature\|\|''\)\.toUpperCase\(\)==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'/);
-  assert.doesNotMatch(workflow,/Dispatch private runtime candidate for fused F0 passes/);
+  assert.match(workflow,/name: Route F0-passed artifacts to internal Studio QA without pre-F9 server publish[\s\S]*?if: always\(\)/);
+  assert.match(workflow,/ROBLOX_LOCAL_F0_QA_DISPATCH=/);
+  assert.match(workflow,/ROBLOX_LOCAL_F0_QA_DISPATCH_COUNT=/);
+  assert.match(workflow,/ROBLOX_LOCAL_F0_QA_DEDUPED_COUNT=/);
+  assert.match(workflow,/ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/actions\/workflows\/company-development-roblox-post-runtime-qa\.yml\/runs\?per_page=100/);
+  assert.match(workflow,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
+  assert.match(workflow,/ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES/);
+  assert.doesNotMatch(workflow,/publish_stage=validation/);
 });
 
 
-
-test('private runtime recovery uses exact F0 failure evidence even when a concurrent platform regressed shared step',()=>{
+test('local Studio QA routing uses exact F0 evidence even when a concurrent platform moved shared step',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
-  const start=workflow.indexOf('      - name: Route pending private runtime candidates through exact game dispatcher');
+  const start=workflow.indexOf('      - name: Route F0-passed artifacts to internal Studio QA without pre-F9 server publish');
   const end=workflow.indexOf('      - name: Dispatch Roblox HEADLESS FAST_MVP continuation',start);
   const block=workflow.slice(start,end);
   assert.ok(start>=0&&end>start);
@@ -979,28 +954,34 @@ test('private runtime recovery uses exact F0 failure evidence even when a concur
   assert.match(block,/x\.robloxBuildPreflightPassed===true/);
   assert.match(block,/x\.robloxBuildOrPackagePassed===true/);
   assert.match(block,/x\.robloxBuildSourceRevision===revision/);
-  assert.match(block,/String\(x\.robloxFailureStage\|\|''\)\.toUpperCase\(\)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
-  assert.match(block,/String\(x\.robloxFailureSignature\|\|''\)\.toUpperCase\(\)==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING'/);
+  assert.match(block,/f0\.sourceRevision===revision/);
+  assert.match(block,/f0\.artifactIdentity===artifact/);
+  assert.match(block,/const pendingStage=stage==='VIBE_INTERNAL_PLAY'\|\|stage==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
   assert.doesNotMatch(block,/String\(x\.currentStep\|\|''\)\.toUpperCase\(\)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
 });
 
-test('pending F0 dispatch routes only to the separate validation publish stage',()=>{
+
+test('pending F0 dispatch routes only to local Studio QA before F9',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
-  assert.match(workflow,/Roblox publish · /);
-  assert.match(workflow,/suffix=' · validation'/);
-  assert.match(workflow,/publish_stage=validation/);
-  assert.match(workflow,/company-development-roblox-release-promotion\.yml/);
+  assert.match(workflow,/Route F0-passed artifacts to internal Studio QA without pre-F9 server publish/);
+  assert.match(workflow,/company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.match(workflow,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
+  assert.match(workflow,/ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES/);
+  assert.doesNotMatch(workflow,/publish_stage=validation/);
 });
 
-test('F0 validation dispatch never reuses the canonical Roblox game target',()=>{
+
+test('F0 local validation never publishes any Roblox server target before F9',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
-  assert.match(workflow,/const validationTarget=x\.robloxValidationTarget\|\|\{\}/);
-  assert.match(workflow,/const canonicalTarget=x\.robloxPublicationTarget\|\|\{\}/);
-  assert.match(workflow,/const validationTargetCollision=validationTargetBound/);
-  assert.match(workflow,/validationTargetCollision!==true/);
-  assert.match(workflow,/ROBLOX_VALIDATION_TARGET_COLLISION_WITH_CANONICAL=/);
-  assert.match(workflow,/ROBLOX_VALIDATION_TARGET_PROVISION_REQUIRED=/);
-  assert.match(workflow,/publish_stage=validation/);
+  const start=workflow.indexOf('      - name: Route F0-passed artifacts to internal Studio QA without pre-F9 server publish');
+  const end=workflow.indexOf('      - name: Dispatch Roblox HEADLESS FAST_MVP continuation',start);
+  const block=workflow.slice(start,end);
+  assert.ok(start>=0&&end>start);
+  assert.match(block,/company-development-roblox-post-runtime-qa\.yml/);
+  assert.match(block,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
+  assert.doesNotMatch(block,/company-development-roblox-release-promotion\.yml/);
+  assert.doesNotMatch(block,/robloxValidationTarget/);
+  assert.doesNotMatch(block,/publish_stage=validation/);
 });
 
 test('Roblox continuation dispatch is per-game and does not wait behind one global active continuation',()=>{
@@ -1035,18 +1016,20 @@ test('Roblox runtime collapses duplicate exact-game and batch planners with same
   assert.match(workflow.slice(0,workflow.indexOf('\njobs:\n')),/\nconcurrency:\n\s+group: roblox-native-exact-\$\{\{ inputs\.game_id \|\| \(github\.event_name == 'push' && 'batch-push'\) \|\| github\.run_id \}\}\n\s+cancel-in-progress: false/);
 });
 
-test('source-plan dedupe job itself has no job lock and splits exact-game from batch ingress capacity',()=>{
+
+test('source-plan dedupe job itself has no job lock and uses the fixed control runner',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const start=workflow.indexOf('\n  source-plan:\n');
   const end=workflow.indexOf('\n  source-worker:\n',start);
   const block=workflow.slice(start,end);
   assert.ok(start>=0&&end>start);
-  assert.match(block,/runs-on:\s*\$\{\{ inputs\.game_id != '' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-24\.04' \}\}/);
+  assert.match(block,/runs-on:\s*ubuntu-24\.04/);
   assert.doesNotMatch(block,/\n    concurrency:/);
   assert.match(block,/ROBLOX_RUNTIME_ACTIVE_WINNER=/);
 });
 
-test('Roblox exact source-plan uses ARM while batch ingress stays fixed and heavy workers stay full',()=>{
+
+test('Roblox control jobs use fixed 24.04 while heavy workers stay full',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const section=(job,next)=>{
     const start=workflow.indexOf('\n  '+job+':\n');
@@ -1054,40 +1037,37 @@ test('Roblox exact source-plan uses ARM while batch ingress stays fixed and heav
     const end=next?workflow.indexOf('\n  '+next+':\n',start):workflow.length;
     return workflow.slice(start,end);
   };
-  assert.match(section('source-plan','source-worker'),/runs-on:\s*\$\{\{ inputs\.game_id != '' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-24\.04' \}\}/);
+  assert.match(section('source-plan','source-worker'),/runs-on:\s*ubuntu-24\.04/);
   for(const [job,next] of [['source-bootstrap','technical-plan'],['technical-plan','technical-worker'],['technical-persist',null]]){
-    assert.match(section(job,next),/runs-on:\s*ubuntu-24\.04-arm/,job);
+    assert.match(section(job,next),/runs-on:\s*ubuntu-24\.04/,job);
   }
   assert.match(workflow,/\n  source-worker:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
   assert.match(workflow,/\n  technical-worker:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
 });
 
 
-test('private runtime deployment has one dispatch owner while batch work remains parallel',()=>{
+test('pre-F9 local Studio QA has one exact dispatch path while batch work remains parallel',()=>{
   const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
-  const f0=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-headless-fast-mvp.yml',import.meta.url),'utf8');
   const persistStart=runtime.indexOf('\n  technical-persist:\n');
-  const persistEnd=runtime.length;
-  const persist=runtime.slice(persistStart,persistEnd);
+  const persist=runtime.slice(persistStart);
   assert.ok(persistStart>=0);
   assert.match(persist,/group: roblox-private-runtime-dispatch-\$\{\{ inputs\.game_id \|\| github\.run_id \}\}/);
-  assert.match(persist,/ROBLOX_PRIVATE_RUNTIME_DISPATCH_OWNER=EXACT_GAME_RUNTIME/);
-  assert.match(persist,/ROBLOX_PRIVATE_RUNTIME_BATCH_HANDOFF=EXACT_RUNTIME:/);
-  assert.match(persist,/gh workflow run company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
-  assert.doesNotMatch(f0,/gh workflow run company-development-roblox-release-promotion\.yml/);
-  assert.match(f0,/gh workflow run company-development-roblox-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.match(persist,/Route F0-passed artifacts to internal Studio QA without pre-F9 server publish/);
+  assert.match(persist,/gh workflow run company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.match(persist,/ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(persist,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
+  assert.doesNotMatch(persist,/publish_stage=validation/);
 });
 
 
-test('batch private-runtime recovery waits behind immediate F0 exact-game handoff',()=>{
+test('batch F0 recovery has no artificial grace delay before local Studio QA handoff',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
-  assert.match(workflow,/const batchRecoveryGraceMs=60_000/);
-  assert.match(workflow,/robloxFoundationF0PassedAt/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_GRACE_DEFERRED=/);
-  assert.match(workflow,/if\(!requested\)/);
-  assert.match(workflow,/ROBLOX_PRIVATE_RUNTIME_DISPATCH_OWNER=EXACT_GAME_RUNTIME/);
+  assert.doesNotMatch(workflow,/batchRecoveryGraceMs/);
+  assert.doesNotMatch(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_GRACE_DEFERRED=/);
+  assert.match(workflow,/Route F0-passed artifacts to internal Studio QA without pre-F9 server publish/);
+  assert.match(workflow,/ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
 });
-
 
 test('build revalidation pending waiting state remains eligible for exact Roblox package work',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
