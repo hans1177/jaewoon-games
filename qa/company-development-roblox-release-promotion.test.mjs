@@ -107,7 +107,7 @@ test('candidate deployment workflow stops at private runtime candidate and never
   assert.doesNotMatch(candidate,/item\.robloxInternalReleaseReady=true/);
 });
 
-test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the exact candidate',()=>{
+test('post-runtime QA keeps external sentinel as optional diagnostic and accepts exact internal Studio evidence',()=>{
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   assert.match(runtime,/Roblox Runtime Foundation QA/);
   assert.match(runtime,/fetchRobloxRuntimeFoundationEvidence/);
@@ -120,6 +120,10 @@ test('existing post-runtime QA requires actual F1-F8 sentinel evidence on the ex
   assert.match(runtime,/item\.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'/);
   assert.match(runtime,/actualRuntimeEvidence:true/);
   assert.doesNotMatch(runtime,/Studio QA \(Disabled\)/);
+  assert.match(runtime,/retry_open_cloud_only/);
+  assert.match(runtime,/internalStudioValidationOnly:true/);
+  assert.match(runtime,/externalServerBootRequired:false/);
+  assert.match(runtime,/PASS_EXACT_F0_SYNC_PLUS_STUDIO_RUNTIME/);
 });
 
 test('F9 fans in exact Studio and applicable multiplayer evidence without replaying runtime',()=>{
@@ -131,7 +135,7 @@ test('F9 fans in exact Studio and applicable multiplayer evidence without replay
   assert.match(finalReview,/post\.externalServerBootRequired===false/);
   assert.match(finalReview,/post\.multiplayerValidationPassed===true/);
   assert.match(finalReview,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred\|\|internalStudioValidationAccepted/);
-  assert.match(finalReview,/const publicRuntimeAcceptance=false;/);
+  assert.match(finalReview,/const publicRuntimeAcceptance=internalRuntimeAcceptance;/);
   assert.match(finalReview,/f9RuntimeReplay:false/);
   assert.match(finalReview,/item\.robloxIndependentQaPassed===true/);
   assert.match(finalReview,/item\.robloxRegressionPassed===true/);
@@ -263,16 +267,49 @@ test('private runtime candidate uses the same shallow checkout contract while pr
 });
 
 
-test('public release rejects static-only multiplayer evidence and requires the same actual two-client sync proof',()=>{
+test('exact internal Studio plus F0 multiplayer contract satisfies routine release evidence without duplicate two-client QA',()=>{
   const item=canonicalItem();
+  const sourceRevision=item.robloxSourceCommit;
+  const artifactIdentity=item.robloxBuildArtifactIdentity;
+  item.robloxValidationMode='HEADLESS_FAST_MVP';
+  item.robloxRuntimeCandidateEvidence={published:true,sourceRevision,artifactIdentity,universeId:'123',placeId:'456',versionNumber:7};
+  item.robloxRuntimePassed=false;
+  item.robloxRuntimeEvidence={};
+  item.robloxRuntimeFoundationPassed=false;
+  item.robloxRuntimeFoundationEvidence={};
   item.robloxMultiplayerQaPassed=false;
-  item.robloxMultiplayerQaEvidence={...item.robloxMultiplayerQaEvidence,multiplayerQaPassed:false,peerVisibilityPassed:false};
-  item.robloxInternalMultiplayerSimplifiedPassed=true;
-  item.robloxInternalReleaseReady=true;
-  item.robloxInternalReleaseEvidence={multiplayerVerificationMode:'TWO_CLIENT_ONE_SYNC',twoClientOneSyncPassed:false,publicRelease:false};
+  item.robloxMultiplayerQaEvidence={};
+  item.robloxServerClientBoundaryPassed=false;
+  item.robloxMobileControlUiPassed=false;
+  item.robloxFoundationF0Passed=true;
+  item.robloxFoundationF0Evidence={
+    sourceRevision,artifactIdentity,artifactRunId:12345,sourcePreflightPassed:true,
+    saveExists:false,multiplayerApplicable:true,serverClientBoundaryPreflightPassed:true,
+    mobileControlUiPreflightPassed:true,multiplayerSyncContractPassed:true
+  };
+  item.robloxPostRuntimeQaEvidence={
+    sourceRevision,artifactIdentity,artifactRunId:12345,candidateVersionNumber:7,exactRevision:true,
+    internalStudioValidationOnly:true,externalServerBootRequired:false,officialStudioMcpActualPlayPassed:true,
+    localStudioRuntimeEvidence:true,independentQaPassed:true,regressionPassed:true,
+    multiplayerApplicabilityKnown:true,multiplayerRequired:true,multiplayerMode:'COMPETITIVE',
+    multiplayerValidationPassed:true,multiplayerEvidenceAuthority:'roblox-exact-f0-sync-contract-plus-studio-runtime',
+    authority:'roblox-internal-studio-single-session-qa'
+  };
+  item.robloxInternalVibePlayEvidence={
+    pass:true,actualPlay:true,runtimeVerified:true,officialStudioMcp:true,localPlaceFile:true,
+    sourceRevision,artifactIdentity,versionNumber:7
+  };
+  item.robloxInternalMultiplayerValidationEvidence={
+    pass:true,sourceRevision,artifactIdentity,candidateVersionNumber:7,
+    authority:'roblox-exact-f0-sync-contract-plus-studio-runtime'
+  };
   const evidence=assembleRobloxDevelopmentReleaseEvidence(item);
-  assert.equal(evidence.pass,false);
-  assert.ok(evidence.blockedReasons.includes('multiplayer-qa-not-passed'));
+  assert.equal(evidence.pass,true);
+  assert.equal(evidence.internalStudioValidationPassed,true);
+  assert.equal(evidence.multiplayerQaPassed,true);
+  assert.equal(evidence.fullMultiplayerQaPassed,false);
+  assert.equal(evidence.internalMultiplayerValidationPassed,true);
+  assert.equal(evidence.multiplayerValidationMode,'INTERNAL_SYNC_CONTRACT_PLUS_EXACT_STUDIO_RUNTIME');
 });
 
 test('Roblox candidate persistence never overwrites Unity execution evidence on a concurrent game',()=>{
