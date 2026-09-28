@@ -1852,3 +1852,49 @@ test('commercial contract does not infer multiplayer from generic player or mons
   });
   assert.equal(contract.adaptiveCoverage.signals.multiplayer,false);
 });
+
+
+test('commercial F9 multiplayer requires actual two-player synchronized Studio evidence',()=>{
+  const contract=deriveStudioActualPlayContract({
+    launchCore:['multiplayer team sync','mobile HUD'],
+    releaseGates:['2+ players actual sync']
+  });
+  const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
+  const image={type:'image',mimeType:'image/png',data:png.toString('base64')};
+  const makeProbe=(count,roundState='LOBBY')=>({
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6,roundState,humanCount:count,monsterCount:0},
+    camera:{present:true,subjectPresent:true,fieldOfView:70,occluded:false},
+    ui:{visibleButtons:1,visibleObjects:2,offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:50,floorBelowPlayer:true,proximityPromptCount:0,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{
+      actualPlayerCount:count,
+      players:Array.from({length:count},(_,i)=>({userId:i+1,name:'P'+(i+1),roundState,role:'PLAYER',team:'Blue',currentMap:'Arena',humanCount:count,monsterCount:0})),
+      remoteCount:2,progression:[{scope:'workspace',name:'PlayerCount',value:String(count)}],inventory:[],inventoryCount:0,
+      systemSignals:2,descendantCount:300,memoryMb:160,soundCount:0,categories:{progression:1}
+    },
+    workspace:{HumanCount:count,MonsterCount:0},
+    lighting:{brightness:1.5}
+  });
+  const single=makeProbe(1,'LOBBY');
+  const singleResult=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:single,preActionClientProbe:single,
+    postActionClientProbe:{...single,player:{...single.player,rootX:1}},
+    clientProbe:single,serverProbe:{runtime:single.runtime,world:single.world,workspace:single.workspace},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}],beforeImages:[image],afterImages:[image],
+    timelineProbes:[single],auditProfile:'F9_SOAK'
+  });
+  assert.equal(singleResult.scenarios.find(row=>row.id==='adaptive-multiplayer-sync-surface')?.pass,false);
+
+  const twoLobby=makeProbe(2,'LOBBY');
+  const twoRunning=makeProbe(2,'RUNNING');
+  const multiResult=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:twoLobby,preActionClientProbe:twoLobby,
+    postActionClientProbe:{...twoRunning,player:{...twoRunning.player,rootX:1}},
+    clientProbe:twoRunning,serverProbe:{runtime:twoRunning.runtime,world:twoRunning.world,workspace:twoRunning.workspace},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}],beforeImages:[image],afterImages:[image],
+    timelineProbes:[twoRunning],auditProfile:'F9_SOAK'
+  });
+  assert.equal(multiResult.scenarios.find(row=>row.id==='adaptive-multiplayer-sync-surface')?.pass,true);
+  assert.equal(multiResult.metrics.surfaces.maxActualPlayerCount,2);
+  assert.equal(multiResult.metrics.surfaces.multiplayerActualSessionPass,true);
+});
