@@ -177,6 +177,7 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   const batchFile = path.join(tempRoot, 'batch.json');
   const resultFile = path.join(tempRoot, 'results.json');
   const orderFile = path.join(tempRoot, 'work-order.json');
+  const playbooksFile = path.join(tempRoot, 'playbooks.json');
   const tasks = Array.from({ length: 31 }, (_, index) => {
     const n = String(index + 1).padStart(2, '0');
     const gameId = index === 0 ? 'daechung-rpg' : `e2e-${n}`;
@@ -187,6 +188,14 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   fs.writeFileSync(queueFile, JSON.stringify({ version:5, mode:'hierarchical-dag-sharded-work-stealing-queue', maxConcurrentTasks:256, tasks }, null, 2));
   fs.writeFileSync(controlFile, JSON.stringify({ version:4, currentMax:32, healthyStreak:0, pressureStreak:0, lastDecision:'INIT', lastReason:'CANONICAL_STEP_32', lastRunId:null, lastUpdatedAt:null, lastTelemetry:null }, null, 2));
   fs.writeFileSync(experienceFile, JSON.stringify({ version:3, records:[] }, null, 2));
+  fs.writeFileSync(playbooksFile, JSON.stringify({
+    generatedFrom:'VERIFIED_MEMORY_ONLY',
+    taskTypes:{
+      web:{authority:'verified-task-playbook',checklist:['apply-verified-external-learning'],reuse:[{id:'external-black-box-e2e-web',project:'e2e-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1}]},
+      coding:{authority:'verified-task-playbook',checklist:['preserve-responsible-source'],reuse:[{id:'external-black-box-e2e-web',project:'e2e-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1}]},
+      general:{authority:'verified-task-playbook',checklist:['fresh-qa-required'],reuse:[{id:'external-black-box-e2e-web',project:'e2e-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1}]}
+    }
+  }, null, 2));
 
   const before = generateVibe2Handoff({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile });
   assert.equal(before.consistency.ok, true);
@@ -197,7 +206,7 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   assert.equal(reserved.tasks.some(task=>task.id==='e2e-01'),false);
   assert.equal(reserved.selection?.lane,'game-primary');
   assert.ok(reserved.selection?.laneDeferred?.some(task=>task.id==='e2e-01'));
-  const order = runVibeContinuousRunner({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile, outputFile:orderFile, taskId:'e2e-02' });
+  const order = runVibeContinuousRunner({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile, outputFile:orderFile, taskId:'e2e-02', playbooksFile });
   assert.equal(order.run, true);
   assert.equal(order.executionRoute, 'text-source-worker');
   assert.equal(order.machineHandoff.used, true);
