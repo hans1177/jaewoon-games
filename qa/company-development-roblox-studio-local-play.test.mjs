@@ -2056,7 +2056,7 @@ test('Studio evidence push conflicts reapply onto latest company-runtime instead
 
 
 test('Studio retry preserves a verified product failure instead of letting later MCP infrastructure noise overwrite repair routing',()=>{
-  const block=workflow.slice(workflow.indexOf('- name: Run actual local play through official Studio MCP'),workflow.indexOf('- name: Release Studio controls for manual save after final capture'));
+  const block=workflow.slice(workflow.indexOf('- name: Run actual local play through official Studio MCP'),workflow.indexOf('- name: Finalize Studio session after final capture'));
   assert.match(block,/\$productFailureObserved = \$false/);
   assert.match(block,/ROBLOX_STUDIO_MCP_PRODUCT_FAILURE_PRESERVED=YES/);
   assert.match(block,/\^studio-product-/);
@@ -2067,18 +2067,6 @@ test('Studio retry preserves a verified product failure instead of letting later
   const restartAt=block.indexOf('ROBLOX_STUDIO_MCP_SESSION_RESTART=$attempt',preservedAt);
   assert.ok(preservedAt>=0);
   assert.ok(restartAt<0||block.lastIndexOf('break',restartAt)>preservedAt);
-});
-
-test('Studio launches opt out of runner orphan cleanup so manual save remains possible after final capture',()=>{
-  const studioLaunches=[...workflow.matchAll(/Start-Process -FilePath \\$env:VIBE2_ROBLOX_STUDIO_PATH/g)];
-  assert.equal(studioLaunches.length,3);
-  for(const launch of studioLaunches){
-    const before=workflow.slice(Math.max(0,launch.index-500),launch.index);
-    assert.match(before,/\\$env:RUNNER_TRACKING_ID = ''/);
-  }
-  assert.match(workflow,/ROBLOX_STUDIO_MANUAL_SAVE_RUNNER_CLEANUP_BYPASS=YES/);
-  assert.match(workflow,/ROBLOX_STUDIO_MCP_MANUAL_SAVE_WINDOW_PRESERVED_AFTER_JOB=YES/);
-  assert.doesNotMatch(workflow,/name: Cleanup owned Studio process/);
 });
 
 test('Studio screenshots are captured only as the final Studio audit action',()=>{
@@ -2104,15 +2092,21 @@ test('complex Studio routes follow path waypoints and verify actual arrival',()=
   assert.match(helper,/navOk&&reached&&Number\.isFinite\(arrivalDistance\)&&arrivalDistance<=6/);
   assert.match(helper,/for\(let segment=0;segment<4&&navOk&&!reached;segment\+\+\)/);
 });
-test('final Studio capture stops play and keeps the owned Studio available for manual save',()=>{
-  const releaseAt=workflow.indexOf('- name: Release Studio controls for manual save after final capture');
+test('final Studio capture requires no user save and closes only after evidence persistence',()=>{
+  const finalizeAt=workflow.indexOf('- name: Finalize Studio session after final capture');
   const persistAt=workflow.indexOf('- name: Persist exact Studio MCP play evidence');
-  assert.ok(releaseAt>=0&&persistAt>releaseAt);
-  const block=workflow.slice(releaseAt,persistAt);
-  assert.match(block,/ROBLOX_STUDIO_MCP_MANUAL_SAVE_READY=YES/);
-  assert.doesNotMatch(block,/Stop-Process/);
+  const closeAt=workflow.indexOf('- name: Close owned Studio after evidence persistence');
+  const refillAt=workflow.indexOf('- name: Refill existing 24H development loop after verified play');
+  assert.ok(finalizeAt>=0&&persistAt>finalizeAt&&closeAt>persistAt&&refillAt>closeAt);
+  const finalizeBlock=workflow.slice(finalizeAt,persistAt);
+  assert.match(finalizeBlock,/ROBLOX_STUDIO_MANUAL_SAVE_REQUIRED=NO/);
+  assert.match(finalizeBlock,/ROBLOX_STUDIO_PLAYTEST_SOURCE_MUTATION_PERSIST=NO/);
+  assert.doesNotMatch(finalizeBlock,/Stop-Process/);
+  const closeBlock=workflow.slice(closeAt,refillAt);
+  assert.match(closeBlock,/Stop-Process -Id \(\[int\]\$ownedId\)/);
+  assert.match(closeBlock,/ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES/);
   assert.match(helper,/finally\{\s*client\.close\(\)/);
-  assert.match(block,/ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES/);
+  assert.match(finalizeBlock,/ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES/);
 });
 
 test('Studio QA keeps user windows and releases only its exact owned process',()=>{
