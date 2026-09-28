@@ -28,6 +28,7 @@ const cases=[
 function fixtures(root, pass=true){
   const baseline=path.join(root,'baseline.json');
   const web=path.join(root,'web.json');
+  const playbooks=path.join(root,'playbooks.json');
   fs.writeFileSync(baseline,JSON.stringify({content:{identity:'Distinct test identity',coreLoop:['act','feedback','choice','reward'],platformProfiles:{UNITY:{
     platform:'UNITY',
     inputModel:'Unity Input System touch-first controls with gamepad and keyboard fallback',
@@ -41,20 +42,42 @@ function fixtures(root, pass=true){
     validationEvidence:'Exact APK install launch runtime independent QA and regression evidence'
   }}}}));
   fs.writeFileSync(web,JSON.stringify({gameId:'fixture',pass,validated:pass,state:pass?'PASS':'FAIL',realEvidenceExists:pass}));
-  return {baseline,web};
+  const external={
+    id:'external-black-box-fixture-run-1',
+    project:'fixture-black-box',
+    sourceRevision:'sha256:fixture',
+    distilledApplicationPrinciples:['id=fixture-feedback; scope=mobile-feedback; lesson=visible feedback follows input; apply=keep immediate visible feedback'],
+    distilledAvoidancePrinciples:['id=fixture-avoid; scope=copying; lesson=do not copy proprietary expression; apply=preserve original expression'],
+    distilledLearningUseAllowed:['interaction feedback'],
+    distilledLearningUseForbidden:['proprietary source or asset copying']
+  };
+  const task=()=>({authority:'verified-task-playbook',verifiedExternalBlackBoxReuseCount:1,verifiedExternalBlackBoxCoveragePct:100,reuse:[external]});
+  fs.writeFileSync(playbooks,JSON.stringify({policy:{verifiedExternalBlackBoxAllTaskTypesRequired:true,verifiedExternalBlackBoxTruncationForbidden:true},taskTypes:{unity:task(),coding:task(),graphics:task(),general:task(),roblox:task(),qa:task(),bugfix:task(),planning:task()}}));
+  return {baseline,web,playbooks};
 }
 
 test('creates Unity target-platform prototypes after admission without embedding WebGL into the native generator',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-bootstrap-'));
-  const {baseline}=fixtures(root,true);
+  const {baseline,playbooks}=fixtures(root,true);
   for(const [id,name,mode] of cases){
     const sandbox=path.join(root,'sandbox-'+mode);
     fs.mkdirSync(path.join(sandbox,'tools'),{recursive:true});
     fs.copyFileSync(generatorSource,path.join(sandbox,'tools/company-development-unity-bootstrap.mjs'));
-    const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs',`--game-id=${id}`,`--game-name=${name}`,`--baseline=${baseline}`,`--output=unity-games/${id}`],{cwd:sandbox,encoding:'utf8'});
+    const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs',`--game-id=${id}`,`--game-name=${name}`,`--baseline=${baseline}`,`--playbooks=${playbooks}`,`--output=unity-games/${id}`],{cwd:sandbox,encoding:'utf8'});
     assert.equal(run.status,0,run.stderr||run.stdout);
     const project=path.join(sandbox,'unity-games',id);
     const meta=JSON.parse(fs.readFileSync(path.join(project,'prototype-source.json'),'utf8'));
+    assert.equal(meta.verifiedExternalLearningCoveragePct,100);
+    assert.equal(meta.verifiedExternalLearningRetrievedCount,1);
+    assert.equal(meta.verifiedExternalLearningAppliedCount,1);
+    assert.deepEqual(meta.verifiedExternalLearningIds,['external-black-box-fixture-run-1']);
+    assert.equal(meta.verifiedExternalDistilledContentComplete,true);
+    assert.equal(meta.verifiedExternalLearningTruncationForbidden,true);
+    const runtimeSource=fs.readFileSync(path.join(project,'Assets/Scripts/SeedTechnicalPrototype.cs'),'utf8');
+    assert.match(runtimeSource,/VerifiedExternalLearningIds/);
+    assert.match(runtimeSource,/VerifiedExternalLearningPrinciples/);
+    assert.match(runtimeSource,/ApplyVerifiedExternalLearningFeedback/);
+    assert.match(runtimeSource,/JAEWOON_VERIFIED_EXTERNAL_LEARNING_APPLIED/);
     const manifest=JSON.parse(fs.readFileSync(path.join(project,'Packages','manifest.json'),'utf8'));
     const projectVersion=fs.readFileSync(path.join(project,'ProjectSettings','ProjectVersion.txt'),'utf8');
     const buildScript=fs.readFileSync(path.join(project,'Assets','Editor','SeedAndroidBuild.cs'),'utf8');
@@ -101,8 +124,8 @@ test('Unity native generator ignores legacy Web evidence and emits no WebGL path
   const sandbox=path.join(root,'sandbox');
   fs.mkdirSync(path.join(sandbox,'tools'),{recursive:true});
   fs.copyFileSync(generatorSource,path.join(sandbox,'tools/company-development-unity-bootstrap.mjs'));
-  const {baseline}=fixtures(root,false);
-  const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs','--game-id=seed-puzzle-chromatic-cascade','--game-name=Chromatic Cascade',`--baseline=${baseline}`],{cwd:sandbox,encoding:'utf8'});
+  const {baseline,playbooks}=fixtures(root,false);
+  const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs','--game-id=seed-puzzle-chromatic-cascade','--game-name=Chromatic Cascade',`--baseline=${baseline}`,`--playbooks=${playbooks}`],{cwd:sandbox,encoding:'utf8'});
   assert.equal(run.status,0,run.stderr);
   const project=path.join(sandbox,'unity-games','seed-puzzle-chromatic-cascade');
   const build=fs.readFileSync(path.join(project,'Assets/Editor/SeedAndroidBuild.cs'),'utf8');
@@ -469,4 +492,19 @@ test('Unity exact-candidate validation never demotes an existing external public
   assert.doesNotMatch(checkpoint,/unityPublicRelease:false/);
   assert.match(checkpoint,/UNITY_PUBLIC_RELEASE_MUTATION=NO/);
   assert.match(workflowSource,/Object\.assign\(item,mergedUpdate\)/);
+});
+
+
+test('Unity actual native source generation consumes 100% verified APK black-box learning',()=>{
+  assert.match(workflowSource,/VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime/);
+  assert.match(workflowSource,/vibe3-task-playbooks\.json/);
+  assert.match(workflowSource,/UNITY_VERIFIED_EXTERNAL_LEARNING_MEMORY=READY/);
+  assert.match(workflowSource,/--playbooks=\/tmp\/vibe3-task-playbooks\.json/);
+  assert.match(workflowSource,/UNITY_CURRENT_MAIN_SOURCE_REUSE_INVALIDATED=VERIFIED_EXTERNAL_LEARNING_OR_GENERATOR_STALE/);
+  const source=fs.readFileSync(generatorSource,'utf8');
+  assert.match(source,/verifiedExternalLearningFromPlaybooks/);
+  assert.match(source,/UNITY_VERIFIED_EXTERNAL_LEARNING_TASK_COVERAGE_INVALID/);
+  assert.match(source,/VerifiedExternalLearningPrinciples/);
+  assert.match(source,/ApplyVerifiedExternalLearningFeedback/);
+  assert.match(source,/verifiedExternalLearningCoveragePct:verifiedExternalLearning\.coveragePct/);
 });

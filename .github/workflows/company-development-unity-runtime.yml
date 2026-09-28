@@ -31,6 +31,9 @@ permissions:
   contents: write
   actions: write
 
+env:
+  VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime
+
 concurrency:
   group: unity-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
   cancel-in-progress: false
@@ -189,10 +192,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Fetch current company runtime and Vibe build-up state
+      - name: Fetch current company runtime, verified Vibe learning, and build-up state
         run: |
+          set -euo pipefail
           git fetch --no-tags --depth=1 origin company-runtime
+          git fetch --no-tags --depth=1 origin "+refs/heads/$VIBE2_LEARNING_RUNTIME_BRANCH:refs/remotes/origin/$VIBE2_LEARNING_RUNTIME_BRANCH"
           git fetch --no-tags --depth=1 origin "+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core"
+          git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-task-playbooks.json" > /tmp/vibe3-task-playbooks.json
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('/tmp/vibe3-task-playbooks.json'));const u=p.taskTypes?.unity||{};const rows=(u.reuse||[]).filter(x=>String(x.id||'').startsWith('external-black-box-'));if(p.policy?.verifiedExternalBlackBoxTruncationForbidden!==true||u.authority!=='verified-task-playbook'||Number(u.verifiedExternalBlackBoxCoveragePct||0)!==100||!rows.length)process.exit(2);console.log('UNITY_VERIFIED_EXTERNAL_LEARNING_MEMORY=READY:'+rows.length)"
 
       - name: Materialize locked design and runtime catalog
         id: context
@@ -246,9 +253,17 @@ jobs:
           }
 
           direct_request=".build-requests/unity/${GAME_ID}.json"
+          current_generator="$({ cat tools/company-development-unity-bootstrap.mjs; printf '\n'; node -e "const fs=require('fs'),crypto=require('crypto');const p=JSON.parse(fs.readFileSync('/tmp/vibe3-task-playbooks.json','utf8'));const rows=[];for(const task of Object.values(p.taskTypes||{}))for(const row of task.reuse||[])if(String(row.id||'').startsWith('external-black-box-'))rows.push(row);const by=new Map();for(const row of rows){const id=String(row.id);const prev=by.get(id)||{id,project:String(row.project||''),sourceRevision:String(row.sourceRevision||''),distilledApplicationPrinciples:[],distilledAvoidancePrinciples:[],distilledLearningUseAllowed:[],distilledLearningUseForbidden:[]};for(const k of ['distilledApplicationPrinciples','distilledAvoidancePrinciples','distilledLearningUseAllowed','distilledLearningUseForbidden'])prev[k]=[...new Set([...prev[k],...(row[k]||[]).map(String)])];by.set(id,prev);}const stable=[...by.values()].sort((a,b)=>a.id.localeCompare(b.id));process.stdout.write(crypto.createHash('sha256').update(JSON.stringify(stable)).digest('hex'))"; } | sha256sum | awk '{print $1}')"
           if [[ -f "$PROJECT/ProjectSettings/ProjectVersion.txt" ]]; then
-            [[ -f "$direct_request" ]] || { echo "UNITY_EXISTING_SOURCE_BUILD_REQUEST_MISSING=$GAME_ID" >&2; exit 12; }
-            branch="development/unity-tech-${GAME_ID}-${GITHUB_RUN_ID}"
+            source_generator=''
+            source_learning_coverage=''
+            if [[ -f "$PROJECT/prototype-source.json" ]]; then
+              source_generator="$(node -e 'const fs=require("fs");try{const p=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.stdout.write(String(p.generatorFingerprint||""));}catch{}' "$PROJECT/prototype-source.json")"
+              source_learning_coverage="$(node -e 'const fs=require("fs");try{const p=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.stdout.write(String(p.verifiedExternalLearningCoveragePct||""));}catch{}' "$PROJECT/prototype-source.json")"
+            fi
+            if [[ "$source_generator" == "$current_generator" && "$source_learning_coverage" == "100" ]]; then
+              [[ -f "$direct_request" ]] || { echo "UNITY_EXISTING_SOURCE_BUILD_REQUEST_MISSING=$GAME_ID" >&2; exit 12; }
+              branch="development/unity-tech-${GAME_ID}-${GITHUB_RUN_ID}"
             git config user.name 'jaewoon-development-unity-runtime'
             git config user.email 'actions@users.noreply.github.com'
             git checkout -b "$branch"
@@ -287,8 +302,10 @@ jobs:
             echo "source_revision=$request_commit" >> "$GITHUB_OUTPUT"
             echo "branch=$branch" >> "$GITHUB_OUTPUT"
             echo 'source_reused=true' >> "$GITHUB_OUTPUT"
-            echo 'CHANGE_DETECTION=CURRENT_MAIN_SOURCE_REUSED'
-            exit 0
+              echo 'CHANGE_DETECTION=CURRENT_MAIN_SOURCE_REUSED'
+              exit 0
+            fi
+            echo "UNITY_CURRENT_MAIN_SOURCE_REUSE_INVALIDATED=VERIFIED_EXTERNAL_LEARNING_OR_GENERATOR_STALE old=${source_generator:-MISSING} current=$current_generator coverage=${source_learning_coverage:-MISSING}"
           fi
 
           reuse_branch=''
@@ -315,7 +332,6 @@ jobs:
 
           if [[ "$reuse_source" =~ ^[0-9a-f]{40}$ ]]; then
             git checkout "$reuse_source" -- "$PROJECT" "$REQUEST" 2>/dev/null || true
-            current_generator="$(sha256sum tools/company-development-unity-bootstrap.mjs | awk '{print $1}')"
             source_generator=''
             if [[ -f "$PROJECT/prototype-source.json" ]]; then
               source_generator="$(node -e 'const fs=require("fs");try{const p=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.stdout.write(String(p.generatorFingerprint||""));}catch{}' "$PROJECT/prototype-source.json")"
@@ -337,6 +353,7 @@ jobs:
             --game-id="$GAME_ID" \
             --game-name="$GAME_NAME" \
             --baseline="$DESIGN_SOURCE" \
+            --playbooks=/tmp/vibe3-task-playbooks.json \
             --output="$PROJECT" \
             "${directive_args[@]}"
           bind_catalog

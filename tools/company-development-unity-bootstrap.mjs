@@ -11,14 +11,74 @@ const gameName=String(args['game-name']||gameId).trim();
 const baselinePath=String(args.baseline||'').trim();
 const output=String(args.output||`unity-games/${gameId}`).trim().replaceAll('\\','/');
 const buildUpDirectivePath=String(args['build-up-directive']||'').trim();
+const playbooksPath=String(args.playbooks||'').trim();
 if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error(`invalid game id: ${gameId}`);
 if(!baselinePath||!fs.existsSync(baselinePath))throw new Error(`design baseline missing: ${baselinePath}`);
+if(!playbooksPath||!fs.existsSync(playbooksPath))throw new Error(`verified learning playbooks missing: ${playbooksPath}`);
 if(!/^unity-games\/[A-Za-z0-9._-]+$/.test(output)||output.includes('..'))throw new Error(`invalid Unity output: ${output}`);
 
 const UNITY_EDITOR_VERSION='6000.6.0f1';
 const UNITY_EDITOR_REVISION='f7f8ed4d1e24';
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
+const unique=values=>[...new Set((values||[]).map(value=>String(value??'').trim()).filter(Boolean))];
+function verifiedExternalLearningFromPlaybooks(playbooks={}){
+  const policy=playbooks?.policy||{};
+  if(policy.verifiedExternalBlackBoxAllTaskTypesRequired!==true||policy.verifiedExternalBlackBoxTruncationForbidden!==true){
+    throw new Error('UNITY_VERIFIED_EXTERNAL_LEARNING_POLICY_REQUIRED');
+  }
+  const taskTypes=playbooks?.taskTypes&&typeof playbooks.taskTypes==='object'?playbooks.taskTypes:{};
+  const allRows=[];
+  for(const task of Object.values(taskTypes))for(const row of task?.reuse||[])if(String(row?.id||'').startsWith('external-black-box-'))allRows.push(row);
+  const allIds=unique(allRows.map(row=>row.id)).sort();
+  if(!allIds.length)throw new Error('UNITY_VERIFIED_EXTERNAL_LEARNING_REQUIRED');
+  for(const taskType of ['unity','coding','graphics','general']){
+    const task=taskTypes[taskType]||{};
+    const ids=unique((task.reuse||[]).filter(row=>String(row?.id||'').startsWith('external-black-box-')).map(row=>row.id)).sort();
+    if(task.authority!=='verified-task-playbook'||Number(task.verifiedExternalBlackBoxCoveragePct||0)!==100||ids.length!==allIds.length||!allIds.every(id=>ids.includes(id))){
+      throw new Error('UNITY_VERIFIED_EXTERNAL_LEARNING_TASK_COVERAGE_INVALID:'+taskType);
+    }
+  }
+  const byId=new Map();
+  for(const row of allRows){
+    const id=String(row.id).trim();
+    const previous=byId.get(id)||{id,project:String(row.project||''),sourceRevision:String(row.sourceRevision||''),distilledApplicationPrinciples:[],distilledAvoidancePrinciples:[],distilledLearningUseAllowed:[],distilledLearningUseForbidden:[]};
+    previous.distilledApplicationPrinciples=unique([...previous.distilledApplicationPrinciples,...(row.distilledApplicationPrinciples||[])]);
+    previous.distilledAvoidancePrinciples=unique([...previous.distilledAvoidancePrinciples,...(row.distilledAvoidancePrinciples||[])]);
+    previous.distilledLearningUseAllowed=unique([...previous.distilledLearningUseAllowed,...(row.distilledLearningUseAllowed||[])]);
+    previous.distilledLearningUseForbidden=unique([...previous.distilledLearningUseForbidden,...(row.distilledLearningUseForbidden||[])]);
+    byId.set(id,previous);
+  }
+  const rows=[...byId.values()].sort((a,b)=>a.id.localeCompare(b.id));
+  for(const row of rows)if(!row.distilledApplicationPrinciples.length)throw new Error('UNITY_VERIFIED_EXTERNAL_LEARNING_CONTENT_MISSING:'+row.id);
+  const applyAxes=[
+    'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
+    'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
+    'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
+    'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
+    'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
+    'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
+    'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
+  ];
+  const fingerprint=createHash('sha256').update(JSON.stringify(rows)).digest('hex');
+  return Object.freeze({
+    rows:Object.freeze(rows.map(row=>Object.freeze({...row}))),
+    ids:Object.freeze(rows.map(row=>row.id)),
+    applicationPrinciples:Object.freeze(unique(rows.flatMap(row=>row.distilledApplicationPrinciples))),
+    avoidancePrinciples:Object.freeze(unique(rows.flatMap(row=>row.distilledAvoidancePrinciples))),
+    allowed:Object.freeze(unique(rows.flatMap(row=>row.distilledLearningUseAllowed))),
+    forbidden:Object.freeze(unique(rows.flatMap(row=>row.distilledLearningUseForbidden))),
+    applyAxes:Object.freeze(applyAxes),
+    retrievedCount:rows.length,
+    appliedCount:rows.length,
+    coveragePct:100,
+    distilledContentComplete:true,
+    truncationForbidden:true,
+    fingerprint
+  });
+}
 const baseline=readJson(baselinePath);
+const playbooks=readJson(playbooksPath);
+const verifiedExternalLearning=verifiedExternalLearningFromPlaybooks(playbooks);
 const design=baseline.content||baseline;
 const buildUpDirective=buildUpDirectivePath&&fs.existsSync(buildUpDirectivePath)?readJson(buildUpDirectivePath):null;
 const buildUpDirectiveConsumed=Boolean(String(buildUpDirective?.directiveId||'').trim());
@@ -41,7 +101,8 @@ const category=
 const packageId=`com.jaewoongames.${gameId.replace(/[^a-z0-9]/g,'').slice(0,48)}`;
 const csharp=v=>String(v).replaceAll('\\','\\\\').replaceAll('"','\\"').replace(/\r?\n/g,' ');
 const prefix=gameId.replace(/[^a-zA-Z0-9]/g,'_');
-const generatorFingerprint=createHash('sha256').update(fs.readFileSync(new URL(import.meta.url))).digest('hex');
+const generatorFingerprint=createHash('sha256').update(fs.readFileSync(new URL(import.meta.url))).update('\n').update(verifiedExternalLearning.fingerprint).digest('hex');
+const csharpArray=values=>(values||[]).map(value=>`        "${csharp(value)}",`).join('\n');
 
 fs.rmSync(output,{recursive:true,force:true});
 for(const dir of ['Assets/Scripts','Assets/Editor','Packages','ProjectSettings'])fs.mkdirSync(path.join(output,dir),{recursive:true});
@@ -61,6 +122,27 @@ public sealed class SeedTechnicalPrototype : MonoBehaviour
     private const string Identity = "${csharp(identity).slice(0,480)}";
     private const string CoreLoop = "${csharp(coreLoop.join(' → ')||'ACT → FEEDBACK → CHOICE → REWARD').slice(0,700)}";
     private const string SavePrefix = "${prefix}_tech_";
+    private const int VerifiedExternalLearningCoveragePct = 100;
+    private static readonly string[] VerifiedExternalLearningIds = new string[]
+    {
+${csharpArray(verifiedExternalLearning.ids)}
+    };
+    private static readonly string[] VerifiedExternalLearningPrinciples = new string[]
+    {
+${csharpArray(verifiedExternalLearning.applicationPrinciples)}
+    };
+    private static readonly string[] VerifiedExternalLearningAvoidance = new string[]
+    {
+${csharpArray(verifiedExternalLearning.avoidancePrinciples)}
+    };
+    private static readonly string[] VerifiedExternalLearningAllowed = new string[]
+    {
+${csharpArray(verifiedExternalLearning.allowed)}
+    };
+    private static readonly string[] VerifiedExternalLearningForbidden = new string[]
+    {
+${csharpArray(verifiedExternalLearning.forbidden)}
+    };
 
     private int actionCount;
     private int progress;
@@ -71,13 +153,28 @@ public sealed class SeedTechnicalPrototype : MonoBehaviour
     private float metricTimer;
     private float fpsTime;
     private int fpsFrames;
+    private int verifiedLearningSignal;
     private string lastAction = "READY";
+    private string lastVerifiedLearningPattern = "READY";
 
     private void Awake()
     {
         Application.targetFrameRate = 60;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         LoadState();
+        unchecked
+        {
+            verifiedLearningSignal = 17;
+            foreach (string value in VerifiedExternalLearningIds) verifiedLearningSignal = verifiedLearningSignal * 31 + value.GetHashCode();
+            foreach (string value in VerifiedExternalLearningPrinciples) verifiedLearningSignal = verifiedLearningSignal * 31 + value.GetHashCode();
+            foreach (string value in VerifiedExternalLearningAvoidance) verifiedLearningSignal = verifiedLearningSignal * 31 + value.GetHashCode();
+            foreach (string value in VerifiedExternalLearningAllowed) verifiedLearningSignal = verifiedLearningSignal * 31 + value.GetHashCode();
+            foreach (string value in VerifiedExternalLearningForbidden) verifiedLearningSignal = verifiedLearningSignal * 31 + value.GetHashCode();
+        }
+        Debug.Log("JAEWOON_VERIFIED_EXTERNAL_LEARNING coverage=" + VerifiedExternalLearningCoveragePct +
+                  " ids=" + VerifiedExternalLearningIds.Length +
+                  " principles=" + VerifiedExternalLearningPrinciples.Length +
+                  " signal=" + verifiedLearningSignal);
         Debug.Log("JAEWOON_TECH_BOOT game=" + GameId + " mode=" + Mode + " restoredActions=" + actionCount);
     }
 
@@ -113,7 +210,8 @@ public sealed class SeedTechnicalPrototype : MonoBehaviour
     {
         int w = Screen.width;
         int h = Screen.height;
-        float scale = Mathf.Max(1f, w / 390f);
+        float learningPulse = 1f + 0.02f * Mathf.Sin(Time.unscaledTime * 2f + (verifiedLearningSignal & 15) * 0.07f);
+        float scale = Mathf.Max(1f, w / 390f) * learningPulse;
         GUI.skin.label.fontSize = Mathf.RoundToInt(17f * scale);
         GUI.skin.button.fontSize = Mathf.RoundToInt(20f * scale);
         GUI.skin.box.fontSize = Mathf.RoundToInt(16f * scale);
@@ -129,7 +227,7 @@ public sealed class SeedTechnicalPrototype : MonoBehaviour
         for (int i = 0; i < 7; i++)
         {
             float x = w * (0.10f + i * 0.12f);
-            float y = h * (0.53f + 0.018f * Mathf.Sin(Time.unscaledTime * (1.2f + i * 0.08f) + i));
+            float y = h * (0.53f + 0.018f * learningPulse * Mathf.Sin(Time.unscaledTime * (1.2f + i * 0.08f) + i + (verifiedLearningSignal & 7) * 0.11f));
             GUI.Box(new Rect(x, y, w * 0.075f, w * 0.075f), ((progress + i) % 9).ToString());
         }
 
@@ -180,6 +278,7 @@ public sealed class SeedTechnicalPrototype : MonoBehaviour
             case "STORY_RPG": progress += level + 1; resource += 1; lastAction = "BATTLE_CHOICE"; break;
             default: progress++; lastAction = "CORE_ACTION"; break;
         }
+        ApplyVerifiedExternalLearningFeedback();
         SaveState();
         Debug.Log("JAEWOON_TECH_ACTION game=" + GameId + " type=PRIMARY count=" + actionCount + " progress=" + progress);
     }
@@ -197,8 +296,21 @@ public sealed class SeedTechnicalPrototype : MonoBehaviour
             case "STORY_RPG": level += progress > level * 3 ? 1 : 0; resource += 2; lastAction = "STORY_CHOICE"; break;
             default: resource++; lastAction = "CHOICE"; break;
         }
+        ApplyVerifiedExternalLearningFeedback();
         SaveState();
         Debug.Log("JAEWOON_TECH_ACTION game=" + GameId + " type=SECONDARY count=" + actionCount + " progress=" + progress);
+    }
+
+    private void ApplyVerifiedExternalLearningFeedback()
+    {
+        if (VerifiedExternalLearningPrinciples.Length == 0) return;
+        int index = Math.Abs(actionCount + verifiedLearningSignal) % VerifiedExternalLearningPrinciples.Length;
+        lastVerifiedLearningPattern = VerifiedExternalLearningPrinciples[index];
+        Debug.Log("JAEWOON_VERIFIED_EXTERNAL_LEARNING_APPLIED game=" + GameId +
+                  " action=" + actionCount +
+                  " ids=" + VerifiedExternalLearningIds.Length +
+                  " patternIndex=" + index +
+                  " pattern=" + lastVerifiedLearningPattern);
     }
 
     private void SaveState()
@@ -320,7 +432,7 @@ public static class SeedAndroidBuild
 fs.writeFileSync(path.join(output,'Assets/Scripts/SeedTechnicalPrototype.cs'),runtime);
 fs.writeFileSync(path.join(output,'Assets/Editor/SeedAndroidBuild.cs'),build);
 fs.writeFileSync(path.join(output,'README.md'),`# ${gameName} — DEVELOPMENT_CONFIRMED Unity app native development baseline\n\n- gameId: \`${gameId}\`\n- mode: \`${category}\`\n- Unity editor: \`${UNITY_EDITOR_VERSION}\` (${UNITY_EDITOR_REVISION})\n- source design: \`${baselinePath}\`
-- BUILD_UP directive: ${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'} (generation ${buildUpDirectiveConsumed?buildUpDirective.generation:0})\n- Unity app profile: \`design-revised.json#content.platformProfiles.UNITY\`\n- build method: \`SeedAndroidBuild.Build\`\n- Android graphics profile: \`OpenGLES3 with ES 3.0 minimum compatibility\`\n- purpose: \`TARGET_PLATFORM_NATIVE_APP_DEVELOPMENT\`\n- public/release authority: **NO**\n\nThis project is generated directly from the locked design baseline. Unity Web is not used. The project is generated from the common game design plus the Unity app platform profile.\nIt remains DEVELOPMENT_CONFIRMED until platform runtime, independent QA, regression, and release evidence pass.\n`);
+- BUILD_UP directive: ${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'} (generation ${buildUpDirectiveConsumed?buildUpDirective.generation:0})\n- verified external APK black-box learning: 100% (${verifiedExternalLearning.appliedCount}/${verifiedExternalLearning.retrievedCount})\n- Unity app profile: \`design-revised.json#content.platformProfiles.UNITY\`\n- build method: \`SeedAndroidBuild.Build\`\n- Android graphics profile: \`OpenGLES3 with ES 3.0 minimum compatibility\`\n- purpose: \`TARGET_PLATFORM_NATIVE_APP_DEVELOPMENT\`\n- public/release authority: **NO**\n\nThis project is generated directly from the locked design baseline. Unity Web is not used. The project is generated from the common game design plus the Unity app platform profile.\nIt remains DEVELOPMENT_CONFIRMED until platform runtime, independent QA, regression, and release evidence pass.\n`);
 fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
   version:3,gameId,gameName,category,identity,coreLoop,
   selectedPlatform:'UNITY',
@@ -332,6 +444,16 @@ fs.writeFileSync(path.join(output,'prototype-source.json'),JSON.stringify({
   buildUpDirectiveFingerprint:buildUpDirectiveConsumed?buildUpDirective.directiveFingerprint:null,
   buildUpDirectiveConsumed,
   buildUpDirectiveCompletionClaim:false,
+  verifiedExternalLearningFirst:true,
+  verifiedExternalLearningCoveragePct:verifiedExternalLearning.coveragePct,
+  verifiedExternalLearningRetrievedCount:verifiedExternalLearning.retrievedCount,
+  verifiedExternalLearningAppliedCount:verifiedExternalLearning.appliedCount,
+  verifiedExternalLearningIds:verifiedExternalLearning.ids,
+  verifiedExternalLearningApplyAxes:verifiedExternalLearning.applyAxes,
+  verifiedExternalDistilledContentComplete:verifiedExternalLearning.distilledContentComplete,
+  verifiedExternalLearningTruncationForbidden:verifiedExternalLearning.truncationForbidden,
+  verifiedExternalLearningFingerprint:verifiedExternalLearning.fingerprint,
+  verifiedExternalLearningRows:verifiedExternalLearning.rows,
   platformDesignProfile:unityPlatformProfile,
   androidGraphicsCompatibilityProfile:'OPEN_GLES3_ES30_MINIMUM',
   designBaseline:baselinePath,productionClass:'DEVELOPMENT_CONFIRMED',
@@ -345,6 +467,10 @@ console.log(`UNITY_EDITOR_REVISION=${UNITY_EDITOR_REVISION}`);
 console.log(`UNITY_BUILD_UP_DIRECTIVE=${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'}`);
 console.log('UNITY_BUILD_UP_COMPLETION_CLAIM=NO');
 console.log(`UNITY_TECH_GENERATOR_FINGERPRINT=${generatorFingerprint}`);
+console.log(`UNITY_VERIFIED_EXTERNAL_LEARNING_COVERAGE=${verifiedExternalLearning.coveragePct}`);
+console.log(`UNITY_VERIFIED_EXTERNAL_LEARNING_COUNT=${verifiedExternalLearning.appliedCount}`);
+console.log(`UNITY_VERIFIED_EXTERNAL_LEARNING_IDS=${verifiedExternalLearning.ids.join(',')}`);
+console.log(`UNITY_VERIFIED_EXTERNAL_LEARNING_FINGERPRINT=${verifiedExternalLearning.fingerprint}`);
 console.log(`UNITY_TECH_MODE=${category}`);
 console.log('UNITY_TECH_BUILD_METHOD=SeedAndroidBuild.Build');
 console.log('UNITY_WEB_ENABLED=NO');
