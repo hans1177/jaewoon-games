@@ -6761,9 +6761,9 @@
       "F7",
       "F8",
       "F9",
-      "CANONICAL_ROBLOX_SERVER_PUBLISH",
-      "VERIFIED_FAN_IN",
-      "NEXT_EVOLUTION_CYCLE"
+      "CANONICAL_ROBLOX_SERVER_PUBLISH_DISPATCH",
+      "NEXT_EVOLUTION_CYCLE",
+      "PUBLICATION_REPAIR_OR_RETRY_IN_PARALLEL"
     ],
     "f9Terminal": false,
     "repeat": "UNBOUNDED_UNTIL_OWNER_HOLD_OR_PROJECT_REMOVAL",
@@ -6771,6 +6771,9 @@
     "canonicalTarget": "robloxPublicationTarget",
     "validationTarget": "robloxValidationTarget",
     "canonicalPublishGate": "EXACT_F9_PASS_AND_EXACT_SOURCE_ARTIFACT_IDENTITY",
-    "nextCycleGate": "CANONICAL_PUBLISH_SUCCESS"
+    "nextCycleGate": "F9_FINAL_PUBLISH_DISPATCHED",
+    "canonicalPublishSuccessRequiredForNextCycle": false,
+    "publicationOutcomeBlocksEvolution": false,
+    "publicationVisibilityBlocksEvolution": false
   }
 }
