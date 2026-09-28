@@ -72,6 +72,30 @@ function defaultDelay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function completedVibeRunLockIds(ctx, conflicts = [], fetchImpl) {
+  const completedByRun = new Map();
+  const ids = new Set();
+  for (const conflict of conflicts) {
+    const lock = conflict?.lock || {};
+    if (clean(lock.worker).toLowerCase() !== 'vibe2') continue;
+    const runId = clean(lock.runId);
+    if (!runId) continue;
+    let completed = completedByRun.get(runId);
+    if (completed === undefined) {
+      const url = `https://api.github.com/repos/${ctx.owner}/${ctx.repo}/actions/runs/${encodeURIComponent(runId)}`;
+      const response = await fetchImpl(url, { headers: headers(ctx.token) });
+      if (response.status === 404) completed = true;
+      else if (response.ok) {
+        const body = await response.json();
+        completed = clean(body?.status).toLowerCase() === 'completed';
+      } else completed = false;
+      completedByRun.set(runId, completed);
+    }
+    if (completed && lock.id) ids.add(String(lock.id));
+  }
+  return ids;
+}
+
 export function remoteWorkLockRetryDelayMs(identity, attempt) {
   const key = `${clean(identity) || 'work-lock'}:${Math.max(1, Number(attempt) || 1)}`;
   let hash = 2166136261;
@@ -100,17 +124,30 @@ export async function acquireRemoteVibeWorkLock(args = {}, options = {}) {
     gameId: clean(args.game) || null,
     files: list(args.files),
     baseSha: clean(args['base-sha']),
+    runId: clean(args['run-id']),
+    runAttempt: clean(args['run-attempt']),
     leaseMinutes: Number(args['lease-minutes'] || 45),
     evidence: list(args.evidence)
   };
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     const remote = await readRemoteState(ctx, fetchImpl);
-    const result = acquireVibeWorkLock(remote.state, request, new Date());
-    if (!result.acquired) return { ...result, attempt, remoteUpdated: false };
-    if (result.reused) return { ...result, attempt, remoteUpdated: false };
+    let result = acquireVibeWorkLock(remote.state, request, new Date());
+    let reclaimedLockIds = [];
+    if (!result.acquired && result.reason === 'file-lock-conflict') {
+      const completedIds = await completedVibeRunLockIds(ctx, result.conflicts, fetchImpl);
+      if (completedIds.size) {
+        reclaimedLockIds = [...completedIds];
+        const cleanedState = createVibeWorkLockState({
+          locks: remote.state.locks.filter((lock) => !completedIds.has(String(lock.id)))
+        });
+        result = acquireVibeWorkLock(cleanedState, request, new Date());
+      }
+    }
+    if (!result.acquired) return { ...result, reclaimedLockIds, attempt, remoteUpdated: false };
+    if (result.reused) return { ...result, reclaimedLockIds, attempt, remoteUpdated: false };
     const write = await writeRemoteState(ctx, remote.sha, result.state, `vibe2-lock: acquire ${request.worker} ${request.taskId}`, fetchImpl);
-    if (write.updated) return { ...result, attempt, remoteUpdated: true, commitSha: write.commitSha };
+    if (write.updated) return { ...result, reclaimedLockIds, attempt, remoteUpdated: true, commitSha: write.commitSha };
     if (!write.retryable) throw new Error(`work-lock acquire state update failed after ${attempt} attempts`);
     if (attempt === maxAttempts) {
       return {
@@ -167,6 +204,7 @@ function print(result, command) {
   if ('acquired' in result) console.log(`VIBE_REMOTE_WORK_LOCK_ACQUIRED=${result.acquired ? 'YES' : 'NO'}`);
   if (result.reason) console.log(`VIBE_REMOTE_WORK_LOCK_REASON=${result.reason}`);
   if (result.lock?.id) console.log(`VIBE_REMOTE_WORK_LOCK_ID=${result.lock.id}`);
+  if (Array.isArray(result.reclaimedLockIds) && result.reclaimedLockIds.length) console.log(`VIBE_REMOTE_WORK_LOCK_RECLAIMED=${result.reclaimedLockIds.join(',')}`);
   if ('released' in result) console.log(`VIBE_REMOTE_WORK_LOCK_RELEASED=${result.released ? 'YES' : 'NO'}`);
 }
 
