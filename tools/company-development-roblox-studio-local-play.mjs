@@ -201,7 +201,7 @@ export function deriveStudioActualPlayContract(launch={}){
     'adaptive-motion-surface','adaptive-audio-surface','adaptive-npc-surface',
     'adaptive-companion-ai-surface','adaptive-item-surface','adaptive-environment-surface',
     'adaptive-effects-surface','adaptive-quest-loop-surface','adaptive-reward-loop-surface',
-    'adaptive-economy-surface','adaptive-save-surface','adaptive-save-rejoin-persistence','adaptive-retry-loop-surface',
+    'adaptive-economy-surface','adaptive-save-surface','adaptive-save-rejoin-persistence','adaptive-retry-loop-surface','adaptive-retry-action-effect','adaptive-death-respawn-recovery',
     'adaptive-camera-quality','adaptive-performance-budget'
   ];
   const explicitScenarios=launchStringList(explicit?.requiredScenarios);
@@ -1112,6 +1112,7 @@ function semanticEffectPass(semantic='',effect={}){
   if(kind==='SHOP'||kind==='CRAFT'||kind==='EQUIP'||kind==='UPGRADE')return effect.inventory||effect.progress||effect.ui||effect.feedback;
   if(kind==='TRAVEL')return Number(effect.moved||0)>=3||effect.map||effect.round||effect.feedback;
   if(kind==='HEAL')return effect.health||effect.feedback||effect.ui;
+  if(kind==='RETRY')return effect.round||effect.ui||effect.feedback||Number(effect.moved||0)>=1||effect.health;
   return effect.effectObserved===true;
 }
 function persistentStateSummary(probe={}){
@@ -1198,6 +1199,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const timeline=Array.isArray(timelineProbes)?timelineProbes.filter(Boolean):[];
   let timelineMobDynamic=false,timelineCompanionDynamic=false,timelineProgressChanged=false;
   let activeTimelineTransitions=0,idleTimelineTransitions=0;
+  let deathObserved=false,respawnObserved=false,sawDead=false;
   let memoryMin=Number(initialClientProbe?.runtime?.memoryMb),memoryMax=memoryMin;
   let descendantsMin=Number(initialClientProbe?.runtime?.descendantCount),descendantsMax=descendantsMin;
   let previous=initialClientProbe;
@@ -1211,6 +1213,10 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     timelineCompanionDynamic=timelineCompanionDynamic||companionDelta;
     timelineProgressChanged=timelineProgressChanged||progressDelta;
     if(mobDelta||companionDelta||progressDelta||genericDelta)activeTimelineTransitions++;else idleTimelineTransitions++;
+    const prevHealth=Number(previous?.player?.health),nextHealth=Number(probe?.player?.health);
+    const nowDead=probe?.player?.characterPresent===false||(Number.isFinite(nextHealth)&&nextHealth<=0);
+    if((Number.isFinite(prevHealth)&&prevHealth>0&&nowDead)||(!previous?.player?.characterPresent&&nowDead)){deathObserved=true;sawDead=true}
+    if(sawDead&&probe?.player?.characterPresent===true&&Number.isFinite(nextHealth)&&nextHealth>0)respawnObserved=true;
     const mem=Number(probe?.runtime?.memoryMb);if(Number.isFinite(mem)){if(!Number.isFinite(memoryMin))memoryMin=mem;if(!Number.isFinite(memoryMax))memoryMax=mem;memoryMin=Math.min(memoryMin,mem);memoryMax=Math.max(memoryMax,mem)}
     const desc=Number(probe?.runtime?.descendantCount);if(Number.isFinite(desc)){if(!Number.isFinite(descendantsMin))descendantsMin=desc;if(!Number.isFinite(descendantsMax))descendantsMax=desc;descendantsMin=Math.min(descendantsMin,desc);descendantsMax=Math.max(descendantsMax,desc)}
     previous=probe;
@@ -1232,6 +1238,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const rewardEffects=rewardActions.filter(row=>row?.effectObserved===true).length;
   const combatActions=(actions||[]).filter(row=>(row?.type==='mcp-combat-action'||row?.semantic==='COMBAT')&&row?.dispatched===true&&row?.ok===true);
   const combatEffects=combatActions.filter(row=>row?.effectObserved===true).length;
+  const retryActions=semanticActions.filter(row=>row?.semantic==='RETRY');
+  const retryEffects=retryActions.filter(row=>row?.effectObserved===true).length;
   const activeLoopExpected=signals.combat||signals.quests||signals.rewards||signals.progression||signals.interactions;
   const activeLoopObserved=semanticEffects>0||timelineProgressChanged||timelineMobDynamic||timelineCompanionDynamic||primaryActionFeedbackChanged||progressChanged||inventoryDelta;
   const performanceTrendPass=!soak||(memoryGrowthMb<=300&&descendantGrowth<=6000);
@@ -1305,6 +1313,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-save-surface',pass:!signals.save||Number(categories.save||0)>0},
     {id:'adaptive-save-rejoin-persistence',pass:true},
     {id:'adaptive-retry-loop-surface',pass:!signals.retry||Number(categories.retry||0)>0},
+    {id:'adaptive-retry-action-effect',pass:!signals.retry||retryActions.length===0||retryEffects>0},
+    {id:'adaptive-death-respawn-recovery',pass:!deathObserved||respawnObserved},
     {id:'adaptive-camera-quality',pass:!signals.camera||(client?.camera?.present===true&&client?.camera?.subjectPresent===true&&Number(client?.camera?.fieldOfView||0)>0&&client?.camera?.occluded!==true)},
     {id:'adaptive-performance-budget',pass:Number(runtime.memoryMb||0)>=0&&Number(runtime.descendantCount||0)<120000&&performanceTrendPass}
   ];
@@ -1362,6 +1372,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     'adaptive-save-surface':['SAVE_REJOIN','CRITICAL','Repair save/load/rejoin persistence and idempotency without duplicating rewards.'],
     'adaptive-save-rejoin-persistence':['SAVE_REJOIN','CRITICAL','Repair save timing/load ordering/schema migration so stable progression survives an actual F9 Studio stop/start cycle without reset or duplication.'],
     'adaptive-retry-loop-surface':['FAILURE_RECOVERY','HIGH','Repair death/failure/restart/respawn flow and remove softlocks after retry.'],
+    'adaptive-retry-action-effect':['FAILURE_RECOVERY','CRITICAL','Retry/restart input was accepted but did not restore or transition gameplay/UI/round state.'],
+    'adaptive-death-respawn-recovery':['CHARACTER_RESPAWN','CRITICAL','A real death was observed during Studio play but the character did not return to a healthy playable state.'],
     'adaptive-camera-quality':['CAMERA','HIGH','Repair camera subject/FOV/occlusion behavior and keep gameplay readable during movement/combat.'],
     'adaptive-performance-budget':['PERFORMANCE','HIGH','Reduce runaway instance count/memory pressure and keep long-session runtime stable.'],
     'primary-action-effect':['ACTION_IMPLEMENTATION','CRITICAL','Ensure primary action produces authoritative gameplay feedback, movement, damage, or state transition.'],
@@ -1385,6 +1397,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     if(id==='adaptive-gameplay-loop-cadence')return{activeLoopExpected,activeLoopObserved,activeTimelineTransitions,idleTimelineTransitions,semanticEffectCount:semanticEffects,timelineProgressChanged,timelineMobDynamic,timelineCompanionDynamic};
     if(id==='adaptive-quest-state-transition')return{questActionCount:questActions.length,questEffectCount:questEffects,timelineProgressChanged};
     if(id==='adaptive-reward-effect')return{rewardActionCount:rewardActions.length,rewardEffectCount:rewardEffects,progressChanged,inventoryChanged:inventoryDelta};
+    if(id==='adaptive-retry-action-effect')return{retryActionCount:retryActions.length,retryEffectCount:retryEffects};
+    if(id==='adaptive-death-respawn-recovery')return{deathObserved,respawnObserved};
     return metrics.surfaces;
   };
   const qualityFailureDetails=qualityFailureKinds.map(id=>{
