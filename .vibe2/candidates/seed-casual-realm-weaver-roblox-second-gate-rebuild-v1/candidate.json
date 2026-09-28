@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local function render()",
+      "replace": "local function render(player) \\n    local function handleRender() \\n        local function updateState() \\n            -- 상태 변화 로직 \\n        end \\n        local function provideFeedback() \\n            -- 피드백 연결 로직 \\n        end \\n        local function handlePlayerInput() \\n            -- 입력/조건 연결 로직 \\n        end \\n    end \\n    handleRender() \\nend"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
