@@ -6613,7 +6613,7 @@
       "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T10:10:16.740Z",
+      "updatedAt": "2026-09-28T10:35:23.182Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -7011,7 +7011,7 @@
         "publicDiscoveryAllowed": false,
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
-      "robloxSharedTargetCurrent": true,
+      "robloxSharedTargetCurrent": false,
       "robloxFastMvpSupersededBy": null,
       "robloxReleaseVersionNumber": 6,
       "robloxPublicRelease": false,
@@ -7073,7 +7073,25 @@
         "workflowRunId": 36359901547,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
-      "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD"
+      "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
+      "robloxValidationTarget": {
+        "version": 1,
+        "gameId": "seed-idle-growth-rpg-crystal-bloom",
+        "universeId": "10768436520",
+        "placeId": "73798505574628",
+        "verified": false,
+        "verifiedAt": null,
+        "lastVerifiedAt": null,
+        "source": "canonical-dedicated-open-cloud-bootstrap",
+        "authority": "roblox-pre-f9-validation-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
+        "reservedAt": "2026-09-28T10:35:23.182Z"
+      }
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -9221,7 +9239,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-28T10:34:59.222Z",
+  "updatedAt": "2026-09-28T10:35:23.182Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
