@@ -725,7 +725,14 @@ jobs:
             if(String(row?.authority||'')!=='verified-task-playbook')throw new Error('VERIFIED_PLAYBOOK_AUTHORITY_REQUIRED:'+kind);
             if(!Array.isArray(row?.reuse))throw new Error('VERIFIED_PLAYBOOK_REUSE_ARRAY_REQUIRED:'+kind);
             for(const item of row.reuse){
-              if(!String(item?.id||'').trim())throw new Error('VERIFIED_PLAYBOOK_REUSE_ID_REQUIRED:'+kind);
+              const id=String(item?.id||'').trim();
+              if(!id)throw new Error('VERIFIED_PLAYBOOK_REUSE_ID_REQUIRED:'+kind);
+              if(id.startsWith('external-black-box-')){
+                const principles=Array.isArray(item?.distilledApplicationPrinciples)
+                  ?item.distilledApplicationPrinciples.map(value=>String(value||'').trim()).filter(Boolean)
+                  :[];
+                if(!principles.length)throw new Error('VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED:'+kind+':'+id);
+              }
             }
           }
           console.log('VIBE2_VERIFIED_COMMERCIAL_PLAYBOOK=PASS');
