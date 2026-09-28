@@ -12,6 +12,7 @@ import { applyExactEdits, boundedLargeExcerpt } from './autonomous-safe-edit.mjs
 import { exploreVibe2WorkOrder, explorationGuidance } from './vibe2-exploration-worker.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { assertCompiledWorkContractFresh } from './vibe2-central-work-contract.mjs';
+import { classifyVerifiedExternalBlackBoxPrinciples } from './vibe2-learning-motor.mjs';
 import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath, systemArchitectureGuidance } from './vibe2-system-architecture-contract.mjs';
 
 const clean=value=>String(value??'').trim();
@@ -1175,40 +1176,40 @@ export function buildVerifiedExternalLearningPromptContract(order={}){
   if(contract.retrievedVerifiedExternalLearningTruncationForbidden!==true)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_REQUIRED:TRUNCATION_POLICY_MISSING');
   const retrievedCount=Number(contract.verifiedExternalLearningRetrievedCount||0);
   if(retrievedCount!==ids.length)throw new Error(`VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_COUNT_MISMATCH:ids=${ids.length}:retrieved=${retrievedCount}`);
-  if(Number(contract.verifiedExternalLearningCoveragePct||0)!==100||Number(contract.verifiedExternalLearningAppliedCount||0)!==ids.length||contract.verifiedExternalDistilledContentComplete!==true){
-    throw new Error(`VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_COVERAGE_INVALID:ids=${ids.length}:applied=${Number(contract.verifiedExternalLearningAppliedCount||0)}:coverage=${Number(contract.verifiedExternalLearningCoveragePct||0)}`);
-  }
   const rows=(order?.unifiedLearning?.playbookReuse||[])
     .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook'&&ids.includes(clean(row?.id)));
   const byId=new Map(rows.map(row=>[clean(row.id),row]));
+  for(const id of ids)if(!byId.has(id))throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_ROW_MISSING:'+id);
+  const gameId=clean(order?.selectedTask?.gameId||order?.gameId);
+  const target=clean(order?.target||order?.selectedTask?.target);
+  const semantic=classifyVerifiedExternalBlackBoxPrinciples(ids.map(id=>byId.get(id)),{gameId,target});
+  if(!semantic.allDisposed)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_MAPPING_REQUIRED:'+semantic.failClosed.map(row=>row.id).join(','));
+  if(contract.allRetrievedPrinciplesHaveExplicitDisposition!==true)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_DISPOSITIONS_MISSING');
+  const declared=contract.verifiedExternalLearningDispositions||[];
+  if(declared.length!==semantic.rows.length||semantic.rows.some((row,index)=>row.id!==declared[index]?.id||row.disposition!==declared[index]?.disposition)){
+    throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_DISPOSITION_DRIFT');
+  }
   const blocks=[];
   for(const id of ids){
-    const row=byId.get(id);
-    if(!row)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_ROW_MISSING:'+id);
-    const application=(row.distilledApplicationPrinciples||[]).map(clean).filter(Boolean);
-    const avoidance=(row.distilledAvoidancePrinciples||[]).map(clean).filter(Boolean);
-    const allowed=(row.distilledLearningUseAllowed||[]).map(clean).filter(Boolean);
-    const forbidden=(row.distilledLearningUseForbidden||[]).map(clean).filter(Boolean);
-    if(!application.length)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_APPLICATION_MISSING:'+id);
-    blocks.push(
-      `[EXTERNAL_LEARNING ${id}]`,
-      ...application.map(value=>`APPLY=${value}`),
-      ...avoidance.map(value=>`AVOID=${value}`),
-      ...allowed.map(value=>`ALLOWED=${value}`),
-      ...forbidden.map(value=>`FORBIDDEN=${value}`),
-      `[END_EXTERNAL_LEARNING ${id}]`
-    );
+    const row=byId.get(id),principles=semantic.rows.filter(item=>item.sourceLearningId===id);
+    blocks.push(`[EXTERNAL_LEARNING ${id}]`);
+    for(const item of principles){
+      blocks.push(`DISPOSITION=${item.id}:${item.disposition};GAME=${gameId};TARGET=${target};DOMAINS=${item.domains.join('|')||'NONE'}`);
+      if(item.disposition==='APPLIED_GAME_SOURCE')blocks.push(`APPLY=${item.raw}`);
+    }
+    for(const value of row.distilledAvoidancePrinciples||[])blocks.push(`AVOID=${clean(value)}`);
+    for(const value of row.distilledLearningUseAllowed||[])blocks.push(`ALLOWED=${clean(value)}`);
+    for(const value of row.distilledLearningUseForbidden||[])blocks.push(`FORBIDDEN=${clean(value)}`);
+    blocks.push(`[END_EXTERNAL_LEARNING ${id}]`);
   }
-  const axes=(contract.verifiedExternalLearningApplyAxes||[]).map(clean).filter(Boolean);
   const block=[
     VERIFIED_EXTERNAL_LEARNING_BEGIN,
-    `coverage=${ids.length}/${ids.length}; coveragePct=100; truncation=FORBIDDEN`,
-    axes.length?`applyAxes=${axes.join('|')}`:'',
-    'HARD SOURCE-WORKER RULE: every verified external black-box item below is actual implementation context for this candidate. Do not silently omit any item during initial generation, retry, focused repair, or full-Web expansion. Apply only where causally relevant and preserve proprietary boundaries.',
+    `dispositions=${semantic.rows.length}/${semantic.rows.length}; sourcePrinciples=${semantic.sourceRows.length}; validationOnly=${semantic.validationRows.length}; truncation=FORBIDDEN`,
+    'HARD SOURCE-WORKER RULE: implement APPLIED_GAME_SOURCE principles in the affected game-specific executable source. VALIDATION_ONLY belongs to QA/Android runtime checks; NOT_APPLICABLE does not mutate this game. Do not copy external assets or proprietary expression.',
     ...blocks,
     VERIFIED_EXTERNAL_LEARNING_END
-  ].filter(Boolean).join('\n');
-  return Object.freeze({required,pass:true,ids:Object.freeze([...ids]),count:ids.length,coveragePct:100,block});
+  ].join('\n');
+  return Object.freeze({required,pass:true,ids:Object.freeze([...ids]),count:ids.length,coveragePct:100,dispositions:Object.freeze([...semantic.rows]),sourcePrincipleCount:semantic.sourceRows.length,block});
 }
 export function verifiedExternalLearningBlockFromPrompt(prompt=''){
   const raw=String(prompt??'');
@@ -1224,12 +1225,9 @@ export function assertVerifiedExternalLearningPromptCoverage(prompt='',contract=
   if(!required&&!expectedIds.length)return Object.freeze({required:false,pass:true,count:0,ids:Object.freeze([])});
   const block=verifiedExternalLearningBlockFromPrompt(prompt);
   if(!block)throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_BLOCK_MISSING');
-  const header=block.match(/coverage=(\d+)\/(\d+);\s*coveragePct=(\d+);\s*truncation=FORBIDDEN/);
-  if(!header)throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_HEADER_INVALID');
+  const header=block.match(/dispositions=(\d+)\/(\d+); sourcePrinciples=(\d+); validationOnly=(\d+); truncation=FORBIDDEN/);
+  if(!header||Number(header[1])!==Number(header[2]))throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_HEADER_INVALID');
   const actualIds=unique([...block.matchAll(/\[EXTERNAL_LEARNING\s+([^\]]+)\]/g)].map(match=>clean(match[1])).filter(Boolean));
-  if(Number(header[1])!==expectedIds.length||Number(header[2])!==expectedIds.length||Number(header[3])!==100){
-    throw new Error(`VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_COVERAGE_INVALID:expected=${expectedIds.length}:header=${header.slice(1).join('/')}`);
-  }
   if(actualIds.length!==expectedIds.length||!expectedIds.every(id=>actualIds.includes(id))){
     throw new Error(`VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_IDS_MISMATCH:expected=${expectedIds.join(',')}:actual=${actualIds.join(',')}`);
   }
@@ -1238,12 +1236,12 @@ export function assertVerifiedExternalLearningPromptCoverage(prompt='',contract=
     const end=block.indexOf(`[END_EXTERNAL_LEARNING ${id}]`,start);
     if(start<0||end<0)throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_ITEM_TRUNCATED:'+id);
     const item=block.slice(start,end);
-    if(!/\nAPPLY=/.test(item))throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_APPLY_MISSING:'+id);
+    if(!/\nDISPOSITION=/.test(item))throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_DISPOSITION_MISSING:'+id);
+    if(/DISPOSITION=[^\n]+:APPLIED_GAME_SOURCE/.test(item)&&!/\nAPPLY=/.test(item))throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_APPLY_MISSING:'+id);
+    if(/DISPOSITION=[^\n]+:VALIDATION_ONLY/.test(item)&&/\nAPPLY=/.test(item))throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_QA_SOURCE_FORBIDDEN:'+id);
   }
   return Object.freeze({required:true,pass:true,count:actualIds.length,ids:Object.freeze([...actualIds])});
 }
-
-function fullWebGenerationTarget(order={}){const requirements=[...clean(order?.goal).matchAll(/REAL_GAME_FOOTPRINT_TOO_SMALL:\\d+:(\\d+)/gi)].map(match=>Number(match[1])).filter(Number.isFinite);const minBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MIN_BYTES,...requirements));const maxBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minBytes*2));return{minBytes,maxBytes};}
 export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);return[
 allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON. Do not use markdown fences.':'You are the Vibe2 game source worker. Return JSON only.',
 `Engine: ${order.target}`,
