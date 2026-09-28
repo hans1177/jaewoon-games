@@ -470,7 +470,7 @@ export function buildVibeAssetProductionPlan({
   const requestedConcept=inferRequestedConcept(task,request);
   const assetLearningRequired=clean(executionLane).toLowerCase()==='asset-development'||['roblox','unity','web'].includes(resolvedTarget);
   const verifiedCommercialReuse=freezeList((verifiedLearning?.playbookReuse||[])
-    .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook')
+    .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook'&&clean(row?.id).startsWith('external-black-box-'))
     .map(row=>freeze({
       id:clean(row.id),
       project:clean(row.project)||null,
@@ -482,6 +482,10 @@ export function buildVibeAssetProductionPlan({
   const commercialDistillation=freeze({
     required:assetLearningRequired,
     ready:!assetLearningRequired||verifiedCommercialReuse.length>0,
+    verifiedExternalBlackBoxRequired:assetLearningRequired,
+    allRetrievedVerifiedExternalApplied:!assetLearningRequired||verifiedCommercialReuse.length>0,
+    retrievedVerifiedExternalTruncationForbidden:true,
+    applicationOrder:'VERIFIED_EXTERNAL_LEARNING_FIRST_THEN_TRANSFORMATIVE_INTERNAL_ASSET_EVOLUTION',
     source:'vibe2-learning-runtime:company-learning/vibe3-task-playbooks.json',
     verifiedReuseCount:verifiedCommercialReuse.length,
     verifiedReuse:verifiedCommercialReuse,
