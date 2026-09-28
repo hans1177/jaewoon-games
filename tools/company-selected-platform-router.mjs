@@ -106,12 +106,33 @@ export function platformDevelopmentEligible(item={},platform=''){
   const targets=concurrentTargetPlatforms(item);
   if(!targets.includes(requested))return false;
   const selected=resolveSelectedPlatform(item);
-  const completed=requested==='ROBLOX'
+  const production=upper(item.productionClass);
+  const released=requested==='ROBLOX'
     ?item.robloxInternalReleaseReady===true||item.robloxPublicRelease===true
     :item.unityInternalReleaseReady===true||item.unityPublicRelease===true;
-  if(completed)return false;
+  const releaseEvidence=requested==='ROBLOX'
+    ?(item.robloxInternalReleaseEvidence||item.robloxReleaseEvidence||{})
+    :(item.unityInternalReleaseEvidence||{});
+  const currentSource=clean(requested==='ROBLOX'?item.robloxSourceCommit:item.unitySourceCommit);
+  const releasedSource=clean(releaseEvidence.sourceRevision);
+  const sourceDelta=Boolean(released&&currentSource&&releasedSource&&currentSource!==releasedSource);
+  const repairRequired=Boolean(
+    upper(item.currentStep)==='TARGET_PLATFORM_REPAIR_REQUIRED'
+    ||upper(item.canonicalState)==='TARGET_PLATFORM_REPAIR_REQUIRED'
+    ||upper(item.canonicalState)==='REPAIR_REQUIRED'
+  );
+  const buildUpWork=Boolean(
+    item.nextEscalationRequired===true
+    &&(
+      clean(item.buildUpDirectiveId)
+      ||clean(item.buildUpGoal)
+      ||clean(item.buildUpNextAction)
+    )
+  );
+  const relevantCycleWork=sourceDelta||repairRequired||buildUpWork;
+  if((released||production==='RELEASE_CONFIRMED')&&!relevantCycleWork)return false;
   const projected={...item,selectedPlatform:requested,targetPlatform:requested};
-  if(selected!==requested&&targets.length>1)projected.currentStep='TARGET_PLATFORM_TECHNICAL_VALIDATION';
+  if((selected!==requested&&targets.length>1)||relevantCycleWork)projected.currentStep='TARGET_PLATFORM_TECHNICAL_VALIDATION';
   return targetPlatformDevelopmentEligible(projected);
 }
 
@@ -146,7 +167,7 @@ export function firstWebGatePlatformDevelopmentEligible(item={}){
 }
 
 export function targetPlatformDevelopmentEligible(item={}){
-  if(upper(item.productionClass)!=='DEVELOPMENT_CONFIRMED')return false;
+  if(!['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(upper(item.productionClass)))return false;
   const status=upper(item.status);
   if(status!=='ACTIVE'&&status!=='PENDING')return false;
   const state=upper(item.canonicalState);
