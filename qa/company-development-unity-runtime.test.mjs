@@ -272,6 +272,16 @@ test('Unity executor accepts exact game dispatch from the shared native orchestr
   assert.match(workflowSource,/UNITY_REQUESTED_GAME_IDS=/);
 });
 
+test('Unity publication retry lane preserves the exact failed F9 identity and skips a new F0-F9 pass',()=>{
+  assert.match(workflowSource,/publication-repair:/);
+  assert.match(workflowSource,/if: \$\{\{ inputs\.publication_retry_only == true \}\}/);
+  assert.match(workflowSource,/prepare:[\s\S]*if: \$\{\{ inputs\.publication_retry_only != true \}\}/);
+  assert.match(workflowSource,/String\(ev\.sourceRevision\|\|''\)===process\.env\.SOURCE_REVISION/);
+  assert.match(workflowSource,/String\(ev\.artifactIdentity\|\|''\)===process\.env\.ARTIFACT_ID/);
+  assert.match(workflowSource,/String\(ev\.buildRunId\|\|''\)===process\.env\.BUILD_RUN_ID/);
+  assert.match(workflowSource,/gh workflow run company-development-unity-runtime\.yml[\s\S]*-f publication_retry_only=true/);
+});
+
 test('Unity platform executor remains event-driven with no periodic schedule of its own',()=>{
   assert.doesNotMatch(workflowSource,/^\s*schedule:/m);
   assert.doesNotMatch(workflowSource,/cron:/);
@@ -548,6 +558,13 @@ test('Unity runs exact F0-F9, deploys the F9 artifact, and starts the next cycle
   assert.match(workflow,/PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED=UNITY:/);
   assert.match(workflow,/UNITY_F9_DEPLOYED_INTERNAL_OR_CLOSED_BUILD=/);
   assert.match(workflow,/UNITY_F9_PUBLICATION_REPAIR_REQUIRED=/);
+  assert.match(workflow,/publication-repair:/);
+  assert.match(workflow,/publication_retry_only/);
+  assert.match(workflow,/UNITY_F9_PUBLICATION_RETRY_IDENTITY=PASS/);
+  assert.match(workflow,/unityCanonicalPublishRetry/);
+  assert.match(workflow,/UNITY_F9_PUBLICATION_STATE_PERSISTED=/);
+  assert.match(workflow,/UNITY_F9_PUBLICATION_AUTOMATIC_REDISPATCH=YES/);
+  assert.match(workflow,/UNITY_PUBLICATION_RETRY_BLOCKS_NEXT_EVOLUTION=NO/);
   assert.match(workflow,/UNITY_F9_CANONICAL_PUBLISH_BLOCKS_NEXT_CYCLE=NO/);
   assert.match(workflow,/UNITY_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=NO/);
   assert.match(workflow,/UNITY_NEXT_EVOLUTION_CYCLE_DISPATCHED=/);
