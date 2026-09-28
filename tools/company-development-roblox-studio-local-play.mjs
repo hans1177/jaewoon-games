@@ -877,7 +877,11 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     'local PathfindingService=game:GetService("PathfindingService")',
     'local requiredGuiNames='+luaStrings(guiNames),
     'local requiredButtonTexts='+luaStrings(buttonTexts),
-    'local p=Players.LocalPlayer or Players:GetPlayers()[1]',
+    'local playerList=Players:GetPlayers()',
+    'local p=Players.LocalPlayer or playerList[1]',
+    'local actualPlayerCount=#playerList',
+    'local playerRows={}',
+    'for _,plr in ipairs(playerList) do if #playerRows<12 then table.insert(playerRows,{userId=plr.UserId,name=plr.Name,roundState=tostring(plr:GetAttribute("RoundState") or ""),role=tostring(plr:GetAttribute("Role") or ""),team=plr.Team and plr.Team.Name or "",currentMap=tostring(plr:GetAttribute("CurrentMap") or ""),humanCount=plr:GetAttribute("HumanCount"),monsterCount=plr:GetAttribute("MonsterCount")}) end end',
     'local camera=Workspace.CurrentCamera',
     'local viewport=camera and camera.ViewportSize or Vector2.new(0,0)',
     'local function visible(inst)',
@@ -1021,7 +1025,7 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     ' camera={present=camera~=nil,viewportX=viewport.X,viewportY=viewport.Y,fieldOfView=camera and camera.FieldOfView or nil,subjectPresent=camera and camera.CameraSubject~=nil or false,distance=cameraDistance,occluded=cameraOccluded},',
     ' ui=gui,',
     ' world={arenaPresent=arena~=nil,arenaPartCount=parts,proximityPromptCount=prompts,clickDetectorCount=clickDetectors,collidablePartCount=collidableParts,spawnLocationCount=spawnLocations,spawns=spawnRows,minSpawnThreatDistance=minSpawnThreatDistance,boundsFinite=boundsFinite,minX=boundsFinite and minX or nil,minY=boundsFinite and minY or nil,minZ=boundsFinite and minZ or nil,maxX=boundsFinite and maxX or nil,maxY=boundsFinite and maxY or nil,maxZ=boundsFinite and maxZ or nil,floorBelowPlayer=floorBelow,floorSampleCount=floorSampleCount,floorHitCount=floorHitCount,routeSampleCount=routeSampleCount,routeSuccessCount=routeSuccessCount,routes=routeRows,prompts=promptRows,mobs=mobRows,npcs=npcRows,companions=companionRows,items=itemRows,environmentModels=environmentModels,effectCount=effectCount},',
-    ' runtime={remoteCount=remoteCount,remotes=remoteRows,progression=progressionRows,inventory=inventoryRows,inventoryCount=inventoryCount,systemSignals=systemSignals,categories=category,descendantCount=descendantCount,memoryMb=memoryMb,soundCount=soundCount,playingSoundCount=playingSoundCount},',
+    ' runtime={actualPlayerCount=actualPlayerCount,players=playerRows,remoteCount=remoteCount,remotes=remoteRows,progression=progressionRows,inventory=inventoryRows,inventoryCount=inventoryCount,systemSignals=systemSignals,categories=category,descendantCount=descendantCount,memoryMb=memoryMb,soundCount=soundCount,playingSoundCount=playingSoundCount},',
     ' workspace={MapReady=attr(Workspace,"MapReady"),ActivePopulation=attr(Workspace,"ActivePopulation"),AIBotCount=attr(Workspace,"AIBotCount"),HumanCount=attr(Workspace,"HumanCount"),MonsterCount=attr(Workspace,"MonsterCount"),CurrentMapId=attr(Workspace,"CurrentMapId"),CurrentMapName=attr(Workspace,"CurrentMapName"),CurrentMapEvent=attr(Workspace,"CurrentMapEvent"),WorldArtPass=attr(Workspace,"WorldArtPass"),CharacterArtDirection=attr(Workspace,"CharacterArtDirection"),DesignCodeSync=attr(Workspace,"DesignCodeSync")},',
     ' lighting={brightness=Lighting.Brightness,clockTime=Lighting.ClockTime,ambientR=Lighting.Ambient.R,ambientG=Lighting.Ambient.G,ambientB=Lighting.Ambient.B}',
     '}',
@@ -1246,7 +1250,23 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const retryActions=semanticActions.filter(row=>row?.semantic==='RETRY');
   const retryEffects=retryActions.filter(row=>row?.effectObserved===true).length;
   const multiplayerSignals=Number(player.humanCount||0)+Number(player.monsterCount||0)+Number(ws.HumanCount||0)+Number(ws.MonsterCount||0);
+  const currentActualPlayerCount=Number(runtime.actualPlayerCount||0);
+  const timelinePlayerCounts=[Number(initialClientProbe?.runtime?.actualPlayerCount||0),...timeline.map(probe=>Number(probe?.runtime?.actualPlayerCount||0)),currentActualPlayerCount].filter(Number.isFinite);
+  const maxActualPlayerCount=Math.max(0,...timelinePlayerCounts);
+  let multiplayerStateTransition=false;
+  let priorMultiplayer=initialClientProbe;
+  for(const probe of timeline){
+    if(priorMultiplayer){
+      const beforePlayers=entityRows(priorMultiplayer?.runtime?.players);
+      const afterPlayers=entityRows(probe?.runtime?.players);
+      const beforeKey=beforePlayers.map(row=>[row.userId,row.roundState,row.role,row.team,row.currentMap,row.humanCount,row.monsterCount].join('|')).sort().join('\n');
+      const afterKey=afterPlayers.map(row=>[row.userId,row.roundState,row.role,row.team,row.currentMap,row.humanCount,row.monsterCount].join('|')).sort().join('\n');
+      if(beforeKey!==afterKey)multiplayerStateTransition=true;
+    }
+    priorMultiplayer=probe;
+  }
   const multiplayerRuntimeSurface=Number(runtime.remoteCount||0)>0&&(multiplayerSignals>0||entityRows(runtime.progression).some(row=>/party|team|human|playercount|sync|join|멀티|파티|팀|동기화/i.test(clean(row?.name))));
+  const multiplayerActualSessionPass=maxActualPlayerCount>=2&&multiplayerRuntimeSurface&&(multiplayerStateTransition||timelineProgressChanged||clean(initialClientProbe?.player?.roundState)!==clean(player.roundState));
   const activeLoopExpected=signals.combat||signals.quests||signals.rewards||signals.progression||signals.interactions;
   const activeLoopObserved=semanticEffects>0||timelineProgressChanged||timelineMobDynamic||timelineCompanionDynamic||primaryActionFeedbackChanged||progressChanged||inventoryDelta;
   const performanceTrendPass=!soak||(memoryGrowthMb<=300&&descendantGrowth<=6000);
@@ -1324,7 +1344,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-retry-loop-surface',pass:!signals.retry||Number(categories.retry||0)>0},
     {id:'adaptive-retry-action-effect',pass:!signals.retry||retryActions.length===0||retryEffects>0},
     {id:'adaptive-death-respawn-recovery',pass:!deathObserved||respawnObserved},
-    {id:'adaptive-multiplayer-sync-surface',pass:!signals.multiplayer||multiplayerRuntimeSurface},
+    {id:'adaptive-multiplayer-sync-surface',pass:!signals.multiplayer||(soak?multiplayerActualSessionPass:multiplayerRuntimeSurface)},
     {id:'adaptive-camera-quality',pass:!signals.camera||(client?.camera?.present===true&&client?.camera?.subjectPresent===true&&Number(client?.camera?.fieldOfView||0)>0&&client?.camera?.occluded!==true)},
     {id:'adaptive-performance-budget',pass:Number(runtime.memoryMb||0)>=0&&Number(runtime.descendantCount||0)<120000&&performanceTrendPass}
   ];
@@ -1353,7 +1373,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     companionMotion,
     npcMotion,
     uiCommercial:{offscreenButtons:Number(ui.offscreenButtons||0),undersizedTouchButtons:Number(ui.undersizedTouchButtons||0),suboptimalTouchButtons:Number(ui.suboptimalTouchButtons||0),textOverflowButtons:Number(ui.textOverflowButtons||0),overlapPairs:Number(ui.overlapPairs||0)},
-    surfaces:{interactionSurfaceCount,progressionSurfaceCount,combatSurfaceCount,npcSurfaceCount,companionSurfaceCount,itemSurfaceCount,remoteCount:Number(runtime.remoteCount||0),soundCount:Number(runtime.soundCount||0),effectCount:Number(world.effectCount||0),promptCount:Number(world.proximityPromptCount||0),inventoryCount:Number(runtime.inventoryCount||0)},
+    surfaces:{interactionSurfaceCount,progressionSurfaceCount,combatSurfaceCount,npcSurfaceCount,companionSurfaceCount,itemSurfaceCount,remoteCount:Number(runtime.remoteCount||0),soundCount:Number(runtime.soundCount||0),effectCount:Number(world.effectCount||0),promptCount:Number(world.proximityPromptCount||0),inventoryCount:Number(runtime.inventoryCount||0),currentActualPlayerCount,maxActualPlayerCount,multiplayerStateTransition,multiplayerActualSessionPass},
     performance:{memoryMb:Number(runtime.memoryMb||0),descendantCount:Number(runtime.descendantCount||0)},
     worldAudit:{floorSamples,floorHits,floorCoveragePass,routeSamples,routeSuccess,routeCoveragePass,spawnThreatDistance,spawnOverlapSafe},
     characterAndAi:{mobRigAnimationPass,humanoidMobCount:humanoidMobRows.length,cameraOccluded:client?.camera?.occluded===true,cameraDistance:Number(client?.camera?.distance||0)}
@@ -1418,7 +1438,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     if(id==='adaptive-reward-effect')return{rewardActionCount:rewardActions.length,rewardEffectCount:rewardEffects,progressChanged,inventoryChanged:inventoryDelta};
     if(id==='adaptive-retry-action-effect')return{retryActionCount:retryActions.length,retryEffectCount:retryEffects};
     if(id==='adaptive-death-respawn-recovery')return{deathObserved,respawnObserved};
-    if(id==='adaptive-multiplayer-sync-surface')return{declaredMultiplayer:signals.multiplayer===true,multiplayerRuntimeSurface,multiplayerSignals,remoteCount:Number(runtime.remoteCount||0)};
+    if(id==='adaptive-multiplayer-sync-surface')return{declaredMultiplayer:signals.multiplayer===true,auditProfile:soak?'F9_SOAK':'FAST_DEEP',multiplayerRuntimeSurface,multiplayerActualSessionPass,multiplayerSignals,currentActualPlayerCount,maxActualPlayerCount,multiplayerStateTransition,remoteCount:Number(runtime.remoteCount||0)};
     return metrics.surfaces;
   };
   const qualityFailureDetails=qualityFailureKinds.map(id=>{
