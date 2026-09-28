@@ -70,6 +70,12 @@ for(const item of verifiedPlaybookRows){
 }
 const verifiedExternalLearning=[...externalReuseById.values()];
 if(!verifiedExternalLearning.length)throw new Error('UNITY_WEB_VERIFIED_EXTERNAL_BLACK_BOX_PLAYBOOK_REQUIRED');
+const verifiedExternalAppliedLearning=verifiedExternalLearning.filter(row=>row.distilledApplicationPrinciples.length>0);
+const verifiedExternalMissingContentIds=verifiedExternalLearning.filter(row=>row.distilledApplicationPrinciples.length===0).map(row=>row.id);
+const verifiedExternalApplicationCoveragePct=verifiedExternalLearning.length>0
+  ?Math.floor((verifiedExternalAppliedLearning.length/verifiedExternalLearning.length)*100)
+  :0;
+if(verifiedExternalMissingContentIds.length)throw new Error('UNITY_WEB_VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED:'+verifiedExternalMissingContentIds.join(','));
 const verifiedLearningChecklist=[...new Set(verifiedPlaybookRows.flatMap(item=>Array.isArray(item.row?.checklist)?item.row.checklist:[]).map(value=>String(value||'').trim()).filter(Boolean))];
 const verifiedLearningApplication=Object.freeze({
   source:'vibe2-learning-runtime:company-learning/vibe3-task-playbooks.json',
@@ -83,9 +89,10 @@ const verifiedLearningApplication=Object.freeze({
   externalLearningUseAllowed:[...new Set(verifiedExternalLearning.flatMap(row=>row.distilledLearningUseAllowed||[]))],
   checklist:verifiedLearningChecklist,
   retrievedCount:verifiedExternalLearning.length,
-  appliedCount:verifiedExternalLearning.length,
+  appliedCount:verifiedExternalAppliedLearning.length,
+  applicationCoveragePct:verifiedExternalApplicationCoveragePct,
   mandatoryApplicationCoveragePct:100,
-  allRetrievedVerifiedExternalLearningApplied:true,
+  allRetrievedVerifiedExternalLearningApplied:verifiedExternalAppliedLearning.length===verifiedExternalLearning.length,
   applicationOrder:'VERIFIED_EXTERNAL_LEARNING_FIRST_THEN_GAME_SPECIFIC_TRANSFORMATIVE_APPLICATION',
   applyAxes:['MENU_FLOW_AND_INFORMATION_ARCHITECTURE','UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY','GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION','MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION','ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY','VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE','GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'],
   rawCommercialCodeCopyForbidden:true,
@@ -107,7 +114,7 @@ fs.writeFileSync(path.join(output,'Assets/verified-external-learning.json'),JSON
   version:1,
   gameId,
   sourceRevision:verifiedLearningApplication.sourceRevision,
-  coveragePct:verifiedLearningApplication.mandatoryApplicationCoveragePct,
+  coveragePct:verifiedLearningApplication.applicationCoveragePct,
   applyAxes:verifiedLearningApplication.applyAxes,
   externalLearning:verifiedLearningApplication.externalLearning,
   externalApplicationPrinciples:verifiedLearningApplication.externalApplicationPrinciples,
