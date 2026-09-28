@@ -31,12 +31,24 @@ function gameDevelopmentPrinciple(value=''){
 }
 function unityGameDevelopmentProfile(principles=[]){
   const relevant=unique((principles||[]).filter(gameDevelopmentPrinciple));
-  const text=relevant.join(' ').toLowerCase();
+  const mappings=relevant.map(principle=>{
+    const text=principle.toLowerCase();
+    const behaviors=[];
+    if(/immediate visible|visible state|state feedback|movement feedback|spatially anchored|prompt, legible|prompt and unambiguous/.test(text))behaviors.push('IMMEDIATE_VISIBLE_FEEDBACK');
+    if(/onboarding|touch interaction instruction|first playable|first live|game entry|setup milestone|narrative onboarding/.test(text))behaviors.push('CONTEXTUAL_ONBOARDING');
+    if(/persistent primary|persistent core state|context-relevant actions|high-frequency progression|action controls visible|action controls/.test(text))behaviors.push('PERSISTENT_ACTION_CONTROLS');
+    if(/level requirement|level requirements|danger guidance|risk cue|risk cues|before players commit|before commitment/.test(text))behaviors.push('VISIBLE_PROGRESSION_RISK_CUE');
+    if(!behaviors.length)throw new Error('UNITY_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED:'+principle);
+    return Object.freeze({principle,behaviors:Object.freeze(behaviors)});
+  });
+  const uses=behavior=>mappings.some(row=>row.behaviors.includes(behavior));
   return Object.freeze({
     principles:Object.freeze(relevant),
-    immediateVisibleFeedback:/immediate visible|visible state|state feedback|movement feedback|spatially anchored|prompt, legible|prompt and unambiguous/.test(text),
-    contextualOnboarding:/onboarding|touch interaction instruction|first playable|first live|game entry/.test(text),
-    persistentActions:/persistent primary|context-relevant actions|high-frequency progression|action controls visible/.test(text)
+    mappings:Object.freeze(mappings),
+    immediateVisibleFeedback:uses('IMMEDIATE_VISIBLE_FEEDBACK'),
+    contextualOnboarding:uses('CONTEXTUAL_ONBOARDING'),
+    persistentActions:uses('PERSISTENT_ACTION_CONTROLS'),
+    visibleProgressionRiskCue:uses('VISIBLE_PROGRESSION_RISK_CUE')
   });
 }
 function verifiedExternalLearningFromPlaybooks(playbooks={}){
@@ -172,6 +184,7 @@ ${csharpArray(developmentLearning.principles)}
     private const bool UseImmediateVisibleFeedback = ${developmentLearning.immediateVisibleFeedback?'true':'false'};
     private const bool UseContextualOnboarding = ${developmentLearning.contextualOnboarding?'true':'false'};
     private const bool UsePersistentActionControls = ${developmentLearning.persistentActions?'true':'false'};
+    private const bool UseVisibleProgressionRiskCue = ${developmentLearning.visibleProgressionRiskCue?'true':'false'};
 
     private int actionCount;
     private int progress;
@@ -196,7 +209,8 @@ ${csharpArray(developmentLearning.principles)}
                   " developmentPrinciples=" + VerifiedGameDevelopmentPrinciples.Length +
                   " immediateFeedback=" + UseImmediateVisibleFeedback +
                   " contextualOnboarding=" + UseContextualOnboarding +
-                  " persistentActions=" + UsePersistentActionControls);
+                  " persistentActions=" + UsePersistentActionControls +
+                  " progressionRiskCue=" + UseVisibleProgressionRiskCue);
         Debug.Log("JAEWOON_TECH_BOOT game=" + GameId + " mode=" + Mode + " restoredActions=" + actionCount);
     }
 
@@ -250,6 +264,9 @@ ${csharpArray(developmentLearning.principles)}
             ? "핵심 조작을 눌러 바로 플레이"
             : "최근 입력: " + lastAction + feedback;
         GUI.Label(new Rect(w * 0.08f, h * 0.45f, w * 0.84f, h * 0.06f), actionLine);
+        if (UseVisibleProgressionRiskCue && (Mode == "IDLE_RPG" || Mode == "STORY_RPG"))
+            GUI.Label(new Rect(w * 0.08f, h * 0.50f, w * 0.84f, h * 0.05f),
+                "도전 전 상태 확인 · Lv." + level + " · 진행 " + progress + " · 자원 " + resource);
 
         for (int i = 0; i < 7; i++)
         {
