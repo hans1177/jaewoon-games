@@ -4052,13 +4052,34 @@ test('deterministic Roblox build-up creates real style and motion edits without 
   const workOrder={
     target:'roblox',
     gameId:'demo',
-    presentationQuality:{required:true,pass:'ASSET_ADAPTATION'}
+    presentationQuality:{
+      required:true,
+      pass:'ASSET_ADAPTATION',
+      graphicsReplacement:{
+        required:true,
+        adaptiveCount:{minimumActual:1,maximumActual:60},
+        surfaces:['HUD','MENU'],
+        reuseModes:['ADAPT_RESTYLE_AND_RETARGET'],
+        beforeAfterEvidenceRequired:true,
+        perReplacementSourceEvidenceRequired:true,
+        actualReplacementCountMustEqualGroundedEvidenceCount:true,
+        selfReportedCountWithoutGroundedSourceEvidenceCannotPass:true
+      }
+    }
+  };
+  const verifiedExternalLearningContract={
+    required:true,
+    ids:['external-black-box-demo'],
+    count:1,
+    coveragePct:100,
+    block:'[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]\ndispositions=1/1; sourcePrinciples=1; validationOnly=0; truncation=FORBIDDEN\n[EXTERNAL_LEARNING external-black-box-demo]\nDISPOSITION=p1:APPLIED_GAME_SOURCE;GAME=demo;TARGET=roblox;DOMAINS=UI;GENRE_MOOD=DEMO\nAPPLY=use clear native UI motion and contrast\n[END_EXTERNAL_LEARNING external-black-box-demo]\n[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
   };
   const first=deterministicRobloxBuildUpCandidate({
     order:workOrder,
     sourceRoot,
     sourceRootRelative:'roblox-games/demo',
-    responsibleFiles:[relative]
+    responsibleFiles:[relative],
+    verifiedExternalLearningContract
   });
   assert.ok(first);
   assert.equal(first.generation.mode,'DETERMINISTIC_ROBLOX_BUILDUP');
@@ -4069,18 +4090,30 @@ test('deterministic Roblox build-up creates real style and motion edits without 
   assert.match(changed,/Position = deterministicGameplayHudEntryPosition/);
   assert.match(changed,/UIGradient/);
   assert.match(changed,/Color3\.fromRGB/);
+  assert.equal(first.generation.deterministicVerifiedExternalLearningApplied,true);
+  assert.deepEqual(first.generation.deterministicVerifiedExternalLearningIds,['external-black-box-demo']);
+  assert.equal(first.generation.deterministicVerifiedExternalLearningCoveragePct,100);
+  assert.equal(first.generation.deterministicVerifiedExternalLearningContractConsumed,true);
   assert.equal(evaluatePresentationCandidateDelta({
     candidate:first.candidate,
     sourceRoot,
     contract:workOrder.presentationQuality
   }).pass,true);
+  const graphics=evaluateGraphicsReplacementReport({
+    candidate:first.candidate,
+    contract:workOrder.presentationQuality.graphicsReplacement
+  });
+  assert.equal(graphics.pass,true);
+  assert.equal(graphics.report.actualCount,3);
+  assert.equal(graphics.groundedCount,3);
 
   applyExactEdits(sourceRoot,first.candidate.edits);
   const second=deterministicRobloxBuildUpCandidate({
     order:workOrder,
     sourceRoot,
     sourceRootRelative:'roblox-games/demo',
-    responsibleFiles:[relative]
+    responsibleFiles:[relative],
+    verifiedExternalLearningContract
   });
   assert.ok(second);
   assert.equal(second.generation.deterministicRobloxBuildStage,2);
@@ -4094,4 +4127,6 @@ test('continuous workflow marks Roblox text source as model-independent',()=>{
   assert.match(workflow,/reason='ROBLOX_DETERMINISTIC_SOURCE'/);
   assert.match(workflow,/VIBE2_ROBLOX_SOURCE_MODE=DETERMINISTIC_LOCAL/);
   assert.match(workflow,/VIBE2_LOCAL_MODEL_REQUIRED=NO/);
+  assert.match(workflow,/verifiedExternalLearningDeterministicContractConsumed/);
+  assert.match(workflow,/deterministicLearningProof/);
 });
