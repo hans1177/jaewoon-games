@@ -701,3 +701,17 @@ test('F9 dedupe job itself has no same-game concurrency lock',()=>{
   assert.doesNotMatch(block,/concurrency:/);
   assert.match(block,/ROBLOX_F9_ACTIVE_WINNER=/);
 });
+
+test('F9 persistence accepts the exact locally validated F0 artifact and rejects changed identity',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+ const persist=workflow.slice(workflow.indexOf('      - name: Persist F9 internal release state'));
+ assert.match(workflow,/candidateOrigin:localF0Candidate\?'LOCAL_F0':'PERSISTED_RUNTIME'/);
+ assert.match(persist,/delta\.candidateOrigin==='LOCAL_F0'/);
+ assert.match(persist,/item\.robloxBuildSourceRevision\|\|''\)===String\(delta\.sourceRevision/);
+ assert.match(persist,/f0\.sourceRevision\|\|''\)===String\(delta\.sourceRevision/);
+ assert.match(persist,/f0\.artifactIdentity\|\|''\)===String\(delta\.artifactIdentity/);
+ assert.match(persist,/f0\.artifactRunId\|\|item\.robloxHeadlessFastMvpEvidence\?\.artifactRunId/);
+ assert.match(persist,/candidate\.published!==true/);
+ assert.match(persist,/localF0Identity\|\|persistedRuntimeIdentity/);
+ assert.match(persist,/EXACT_CANDIDATE_IDENTITY/);
+});
