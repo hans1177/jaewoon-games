@@ -686,7 +686,7 @@ test('stale Roblox technical workers drop before Rojo model and F0 without poiso
   assert.match(workflow,/ROBLOX_TECHNICAL_SUPERSEDED=/);
   assert.match(workflow,/SOURCE_REVISION_MOVED/);
   assert.match(workflow,/VERIFIED_LEARNING_BINDING_STALE/);
-  assert.match(workflow,/if: steps\.freshness\.outputs\.superseded != 'true'[\s\S]{0,220}Install pinned Rojo package tool/);
+  assert.match(workflow,/Install pinned Rojo package tool[\s\S]{0,120}if: steps\.freshness\.outputs\.superseded != 'true'/);
   assert.match(workflow,/superseded,\n\s+supersedeReason:/);
   assert.match(workflow,/ROBLOX_PACKAGE_SUPERSEDED_RESULT_IGNORED/);
   assert.match(workflow,/ROBLOX_TECHNICAL_WORK=SUPERSEDED/);
