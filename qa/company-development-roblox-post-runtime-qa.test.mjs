@@ -333,3 +333,17 @@ test('runtime foundation workflow retriggers when its deterministic QA contract 
     'qa/company-tester-debug-intake.test.mjs',
   ]) assert.ok(head.includes(path),path);
 });
+
+
+test('runtime-state persistence defines its local F0 candidate resolver in the same Node scope',()=>{
+  const start=workflow.indexOf('      - name: Read exact runtime sentinel and persist tester QA evidence');
+  const end=workflow.indexOf('\n      - name:',start+20);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  const helperAt=block.indexOf('const candidateForItem=item=>');
+  const useAt=block.indexOf('const candidate=candidateForItem(item)');
+  assert.ok(helperAt>0&&useAt>helperAt);
+  assert.match(block,/authority:'roblox-local-f0-pre-f9-artifact'/);
+  assert.match(block,/f0\.artifactIdentity===artifactIdentity/);
+  assert.match(block,/versionNumber:artifactRunId/);
+});

@@ -431,6 +431,33 @@ jobs:
           const isSharedCandidate=(candidate={})=>sharedRotationEnabled
             &&String(candidate.universeId||'').trim()===sharedUniverse
             &&String(candidate.placeId||'').trim()===sharedPlace;
+          const candidateForItem=item=>{
+            const persisted=item.robloxRuntimeCandidateEvidence||{};
+            if(persisted.published===true)return persisted;
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const f0=item.robloxFoundationF0Evidence||{};
+            const artifactRunId=Number(f0.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||0);
+            const localExact=
+              item.robloxFoundationF0Passed===true
+              &&item.robloxBuildPreflightPassed===true
+              &&item.robloxBuildOrPackagePassed===true
+              &&item.robloxBuildSourceRevision===sourceRevision
+              &&f0.sourceRevision===sourceRevision
+              &&f0.artifactIdentity===artifactIdentity
+              &&artifactRunId>0;
+            return localExact?{
+              published:false,
+              releaseClaim:false,
+              authority:'roblox-local-f0-pre-f9-artifact',
+              sourceRevision,
+              artifactIdentity,
+              artifactRunId,
+              universeId:'',
+              placeId:'',
+              versionNumber:artifactRunId,
+            }:persisted;
+          };
           let changed=false,passed=0,pending=0,failed=0;
           if(sharedRotationEnabled){
             const sharedCurrent=(q.items||[])
