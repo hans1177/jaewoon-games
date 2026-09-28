@@ -454,6 +454,52 @@ jobs:
             --experience="$control_root/.vibe2/experience.json" \
             --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
             --output=/tmp/vibe2-handoff-before-reserve.json >/tmp/vibe2-handoff-before-reserve.log
+          completed_reservation_runs=''
+          candidate_reservation_runs="$(node - "$control_root/.vibe2/queue.json" <<'NODE'
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const ids=[...new Set((queue.tasks||[])
+            .filter(task=>
+              String(task.status||'').toLowerCase()==='running'
+              &&String(task.department||'').toLowerCase()==='development'
+              &&String(task.type||'implementation').toLowerCase()==='implementation'
+              &&!String(task.blocker||'').trim()
+              &&/^[0-9]+$/.test(String(task.reservationRunId||'').trim())
+            )
+            .map(task=>String(task.reservationRunId).trim()))].slice(0,64);
+          process.stdout.write(ids.join(','));
+          NODE
+          )"
+          completed_probe_failures=0
+          if [ -n "$candidate_reservation_runs" ]; then
+            IFS=',' read -r -a reservation_run_ids <<< "$candidate_reservation_runs"
+            completed_ids=()
+            for reservation_run_id in "${reservation_run_ids[@]}"; do
+              [ -n "$reservation_run_id" ] || continue
+              reservation_run_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}" --jq '.status' 2>/dev/null || true)"
+              if [ "$reservation_run_status" = 'completed' ]; then
+                completed_ids+=("$reservation_run_id")
+              elif [ -z "$reservation_run_status" ]; then
+                completed_probe_failures=$((completed_probe_failures+1))
+              fi
+            done
+            if [ "${#completed_ids[@]}" -gt 0 ]; then
+              completed_reservation_runs="$(IFS=,; echo "${completed_ids[*]}")"
+            fi
+          fi
+          if [ "$completed_probe_failures" -eq 0 ]; then
+            echo 'VIBE2_COMPLETED_RESERVATION_RUN_OBSERVATION=PASS'
+          else
+            echo "VIBE2_COMPLETED_RESERVATION_RUN_OBSERVATION=PARTIAL_FAIL_OPEN:${completed_probe_failures}"
+          fi
+          echo "VIBE2_COMPLETED_RESERVATION_RUN_CANDIDATES=${candidate_reservation_runs:-NONE}"
+          echo "VIBE2_COMPLETED_RESERVATION_RUN_MATCHES=${completed_reservation_runs:-NONE}"
+          if [ -n "$completed_reservation_runs" ]; then
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs recover-completed-reservations \
+              --queue="$control_root/.vibe2/queue.json" \
+              --completed-runs="$completed_reservation_runs" | tee /tmp/vibe2-completed-reservation-recovery.log
+          fi
+
           active_worker_reservations="$(node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const requested=String(process.env.VIBE2_EXECUTION_LANE||'game-primary').toUpperCase().replaceAll('-','_');const lane=t=>{const status=String(t.status||'').toLowerCase(),blocker=String(t.blocker||''),dep=String(t.department||'').toLowerCase(),type=String(t.type||'implementation').toLowerCase(),ev=(t.evidence||[]).map(String);if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';if(t.assetProductionLane===true||ev.includes('asset-production-parallel:v1'))return'ASSET_DEVELOPMENT';if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';if(t.systemSteward===true)return'RECOVERY_FAST';return'CONTROL_FAST';};const rows=(q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)===requested);process.stdout.write(String(rows.length))" "$control_root/.vibe2/queue.json")"
           echo "VIBE2_EXECUTION_LANE=$VIBE2_EXECUTION_LANE"
           echo "VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE=${active_worker_reservations:-0}"

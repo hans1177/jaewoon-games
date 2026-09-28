@@ -19,6 +19,7 @@ import {
   recoverFixedFullWebTransportFailures,
   recoverFixedSourceCandidateGenerationFailures,
   recoverStaleRunningReservations,
+  recoverCompletedRunningReservations,
   recoverTransientWorkLockBlocks,
   recoverFanInRegressionFailure,
   verifyVibeWorkerSynchronization,
@@ -994,6 +995,57 @@ test('retryable failure clears blocker and remains selectable until retry limit'
   reserved=reserveNextVibeTask(failed.queue);
   failed=settleVibeTask(reserved.queue,{taskId:'retry',outcome:'FAIL',evidence:['fail-2'],blocker:'source-candidate-generation-failed'});
   assert.equal(failed.queue.tasks[0].status,'failed');
+});
+
+test('completed workflow reservation is requeued immediately without waiting for stale TTL', () => {
+  const queue=createVibeContinuousQueue({tasks:[
+    {
+      id:'completed-run-task',gameId:'a',target:'roblox',department:'development',type:'implementation',
+      sourceRoot:'roblox-games/a',goal:'asset adaptation',status:'running',retries:1,maxRetries:2,
+      reservationId:'36449822049:1',reservationRunId:'36449822049',reservationRunAttempt:1,reservedAt:'2026-09-28T16:00:00Z',
+      neuronExpectedVariants:1,neuronResults:[{variant:'primary'}]
+    },
+    {
+      id:'live-run-task',gameId:'b',target:'roblox',department:'development',type:'implementation',
+      sourceRoot:'roblox-games/b',goal:'asset adaptation',status:'running',
+      reservationId:'999:1',reservationRunId:'999',reservationRunAttempt:1,reservedAt:'2026-09-28T16:00:00Z'
+    }
+  ]});
+  const recovered=recoverCompletedRunningReservations(queue,{completedRunIds:['36449822049']});
+  assert.equal(recovered.recovered,1);
+  assert.deepEqual(recovered.recoveredRunIds,['36449822049']);
+  const task=recovered.queue.tasks.find(row=>row.id==='completed-run-task');
+  assert.equal(task.status,'queued');
+  assert.equal(task.retries,1);
+  assert.equal(task.reservationId,null);
+  assert.equal(task.reservationRunId,null);
+  assert.equal(task.reservationRunAttempt,0);
+  assert.equal(task.reservedAt,null);
+  assert.equal(task.neuronExpectedVariants,0);
+  assert.deepEqual(task.neuronResults,[]);
+  assert.equal(task.lastOutcome,'COMPLETED_RESERVATION_RUN_RECOVERED');
+  assert.ok(task.evidence.includes('recovery:completed-reservation-run-v1'));
+  assert.ok(task.evidence.includes('completed-reservation-run:36449822049'));
+  assert.equal(recovered.queue.tasks.find(row=>row.id==='live-run-task').status,'running');
+});
+
+test('completed workflow recovery preserves intentional awaiting QA reservations and non-development work', () => {
+  const queue=createVibeContinuousQueue({tasks:[
+    {
+      id:'awaiting',gameId:'a',target:'roblox',department:'development',type:'implementation',
+      sourceRoot:'roblox-games/a',goal:'awaiting',status:'running',blocker:'candidate-awaiting-qa-and-deployment',
+      reservationId:'100:1',reservationRunId:'100',reservationRunAttempt:1,reservedAt:'2026-09-28T16:00:00Z'
+    },
+    {
+      id:'system',gameId:'system',target:'system',department:'system-architecture',type:'implementation',
+      sourceRoot:'.',goal:'system work',status:'running',
+      reservationId:'100:1',reservationRunId:'100',reservationRunAttempt:1,reservedAt:'2026-09-28T16:00:00Z'
+    }
+  ]});
+  const recovered=recoverCompletedRunningReservations(queue,{completedRunIds:['100']});
+  assert.equal(recovered.recovered,0);
+  assert.equal(recovered.queue.tasks.find(row=>row.id==='awaiting').status,'running');
+  assert.equal(recovered.queue.tasks.find(row=>row.id==='system').status,'running');
 });
 
 test('stale running development reservation is requeued without consuming retry', () => {
