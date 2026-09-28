@@ -6,6 +6,52 @@ const queuePath = process.env.ROBLOX_FINAL_REVIEW_QUEUE || 'development-queue.js
 const designRoot = process.env.ROBLOX_FINAL_REVIEW_DESIGN_ROOT || 'design';
 const allowedModes = new Set(['SINGLE', 'COOP', 'COMPETITIVE', 'HYBRID']);
 
+function exactInternalStudioValidation(item) {
+  const sourceRevision=String(item.robloxSourceCommit||'').trim();
+  const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+  const candidate=item.robloxRuntimeCandidateEvidence||{};
+  const post=item.robloxPostRuntimeQaEvidence||{};
+  const studio=item.robloxInternalVibePlayEvidence||{};
+  return Boolean(
+    post.internalStudioValidationOnly===true
+    &&post.externalServerBootRequired===false
+    &&post.officialStudioMcpActualPlayPassed===true
+    &&post.independentQaPassed===true
+    &&post.regressionPassed===true
+    &&post.sourceRevision===sourceRevision
+    &&post.artifactIdentity===artifactIdentity
+    &&Number(post.candidateVersionNumber||0)>0
+    &&Number(post.candidateVersionNumber)===Number(candidate.versionNumber||0)
+    &&studio.pass===true
+    &&studio.actualPlay===true
+    &&studio.runtimeVerified===true
+    &&studio.officialStudioMcp===true
+    &&studio.localPlaceFile===true
+    &&studio.sourceRevision===sourceRevision
+    &&studio.artifactIdentity===artifactIdentity
+    &&Number(studio.versionNumber||0)===Number(candidate.versionNumber||0)
+  );
+}
+
+function exactInternalMultiplayerValidation(item, studioAccepted) {
+  const f0=item.robloxFoundationF0Evidence||{};
+  const post=item.robloxPostRuntimeQaEvidence||{};
+  const sourceRevision=String(item.robloxSourceCommit||'').trim();
+  const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+  return Boolean(
+    studioAccepted
+    &&post.multiplayerApplicabilityKnown===true
+    &&post.multiplayerRequired===true
+    &&post.multiplayerValidationPassed===true
+    &&post.sourceRevision===sourceRevision
+    &&post.artifactIdentity===artifactIdentity
+    &&f0.sourceRevision===sourceRevision
+    &&f0.artifactIdentity===artifactIdentity
+    &&f0.multiplayerSyncContractPassed===true
+    &&f0.serverClientBoundaryPreflightPassed===true
+  );
+}
+
 function findLatestDesign(gameId) {
   const root = path.join(designRoot, gameId);
   if (!fs.existsSync(root)) return null;
@@ -49,7 +95,8 @@ for (const item of queue.items || []) {
   if (String(item.productionClass || '').toUpperCase() !== 'DEVELOPMENT_CONFIRMED') continue;
   const pairedTargets = Array.isArray(item.concurrentTargetPlatforms) ? item.concurrentTargetPlatforms.map(value => String(value || '').toUpperCase()) : [];
   if (!pairedTargets.includes('ROBLOX') && !item.platformDesignProfiles?.ROBLOX && !item.targetSourcePaths?.ROBLOX) continue;
-  if (item.robloxRuntimePassed !== true || item.robloxIndependentQaPassed !== true || item.robloxRegressionPassed !== true) continue;
+  const studioAccepted = exactInternalStudioValidation(item);
+  if ((item.robloxRuntimePassed !== true && !studioAccepted) || item.robloxIndependentQaPassed !== true || item.robloxRegressionPassed !== true) continue;
 
   let designRecord = findLatestDesign(item.gameId);
   let design = designRecord?.design || null;
@@ -67,15 +114,20 @@ for (const item of queue.items || []) {
       console.log(`ROBLOX_FINAL_REVIEW_LEGACY_DESIGN_REPAIR=${item.gameId}:${repair.repairs.map(row=>`${row.field}:${row.source}`).join('|')}`);
     }
   }
-  const saveRequired = item.robloxRuntimeEvidence?.saveExists === true;
+  const f0=item.robloxFoundationF0Evidence||{};
+  const saveRequired = f0.saveExists === true || item.robloxRuntimeEvidence?.saveExists === true;
   const saveGate = !saveRequired || item.robloxDatastoreRejoinPassed === true;
   const modeDefined = allowedModes.has(mode);
   const multiplayerApplicable = modeDefined && mode !== 'SINGLE';
-  const multiplayerGate = modeDefined && (mode === 'SINGLE' || item.robloxMultiplayerQaPassed === true);
+  const internalMultiplayerAccepted=multiplayerApplicable&&exactInternalMultiplayerValidation(item,studioAccepted);
+  const multiplayerGate = modeDefined && (mode === 'SINGLE' || internalMultiplayerAccepted || item.robloxMultiplayerQaPassed === true);
   const exact = item.robloxExactRevisionPassed === true;
-  const core = item.robloxRuntimePassed === true
-    && item.robloxServerClientBoundaryPassed === true
-    && item.robloxMobileControlUiPassed === true
+  const runtimeGate=item.robloxRuntimePassed === true || studioAccepted;
+  const serverClientGate=item.robloxServerClientBoundaryPassed === true || (studioAccepted&&f0.serverClientBoundaryPreflightPassed===true);
+  const mobileGate=item.robloxMobileControlUiPassed === true || (studioAccepted&&f0.mobileControlUiPreflightPassed===true);
+  const core = runtimeGate
+    && serverClientGate
+    && mobileGate
     && item.robloxIndependentQaPassed === true
     && item.robloxRegressionPassed === true
     && exact
@@ -116,11 +168,11 @@ for (const item of queue.items || []) {
     item.robloxFailureSignature = 'ROBLOX_MULTIPLAYER_DESIGN_DECISION_MISSING';
     item.routingBlockers = ['roblox-multiplayer-design-decision-missing'];
     blocked++;
-  } else if (multiplayerApplicable && item.robloxMultiplayerQaPassed !== true) {
+  } else if (multiplayerApplicable && !multiplayerGate) {
     item.robloxReleaseClaim = false;
     item.robloxFailureStage = 'FINAL_REVIEW';
-    item.robloxFailureSignature = 'ROBLOX_MULTIPLAYER_QA_REQUIRED';
-    item.routingBlockers = ['roblox-multiplayer-qa-required'];
+    item.robloxFailureSignature = 'ROBLOX_F7_INTERNAL_MULTIPLAYER_CONTRACT_REQUIRED';
+    item.routingBlockers = ['roblox-f7-internal-multiplayer-contract-required'];
     multiplayerPendingIds.push(item.gameId);
     blocked++;
   } else {
@@ -144,8 +196,8 @@ fs.writeFileSync(queuePath, `${JSON.stringify(queue, null, 2)}\n`);
 
 console.log(`ROBLOX_FINAL_REVIEW_READY_COUNT=${ready}`);
 console.log(`ROBLOX_FINAL_REVIEW_BLOCKED_COUNT=${blocked}`);
-console.log(`ROBLOX_MULTIPLAYER_QA_PENDING_COUNT=${multiplayerPendingIds.length}`);
-console.log(`ROBLOX_MULTIPLAYER_QA_PENDING_IDS=${multiplayerPendingIds.join(',') || 'NONE'}`);
+console.log(`ROBLOX_F7_INTERNAL_MULTIPLAYER_PENDING_COUNT=${multiplayerPendingIds.length}`);
+console.log(`ROBLOX_F7_INTERNAL_MULTIPLAYER_PENDING_IDS=${multiplayerPendingIds.join(',') || 'NONE'}`);
 console.log(`ROBLOX_INTERNAL_RELEASE_PENDING_COUNT=${releasePendingIds.length}`);
 console.log(`ROBLOX_INTERNAL_RELEASE_PENDING_IDS=${releasePendingIds.join(',') || 'NONE'}`);
 console.log('ROBLOX_FINAL_REVIEW_RELEASE_STATE_FORCING=NO');
