@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-zpfb5l",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-studio-evolution-presentation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "roblox-games/daechung-rpg/shared/QACamera.luau",
-        "roblox-games/daechung-rpg/shared/VisualStyle.luau"
-      ],
-      "baseSha": "289b5b7b5ef74c05205958c1b108812436b72f7f",
-      "acquiredAt": "2026-09-28T08:20:45.425Z",
-      "expiresAt": "2026-09-28T09:05:45.425Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-studio-evolution-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-1dr3dhg",
       "worker": "vibe2",
       "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-unity-web-usability-v1",
@@ -451,6 +433,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:village-dungeons-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-q7f9v8",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-studio-evolution-unity-web-usability-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "unity-games/amusement-tycoon/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/amusement-tycoon/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "2c5a3d82a21f44eb54c8257f93ee4892580ed884",
+      "acquiredAt": "2026-09-28T09:05:58.153Z",
+      "expiresAt": "2026-09-28T09:50:58.153Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
