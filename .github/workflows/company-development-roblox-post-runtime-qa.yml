@@ -111,6 +111,62 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Classify pending internal validation work
+        if: ${{ inputs.retry_open_cloud_only != true }}
+        id: internal_work
+        working-directory: main
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const rows=(q.items||[]).filter(item=>{
+            if(requested&&item.gameId!==requested)return false;
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const exactCandidate=
+              candidate.published===true
+              &&candidate.sourceRevision===sourceRevision
+              &&candidate.artifactIdentity===artifactIdentity
+              &&Number(candidate.versionNumber)>0;
+            if(!exactCandidate||item.robloxFoundationF0Passed!==true||item.robloxPublicRelease===true)return false;
+            if(item.robloxQualityBuildUpRequired===true
+              &&String(item.robloxQualityBuildUpSourceRevision||'').trim()===sourceRevision)return false;
+            const studio=item.robloxInternalVibePlayEvidence||{};
+            const post=item.robloxPostRuntimeQaEvidence||{};
+            const exactStudio=
+              studio.pass===true
+              &&studio.actualPlay===true
+              &&studio.officialStudioMcp===true
+              &&studio.localPlaceFile===true
+              &&studio.sourceRevision===sourceRevision
+              &&studio.artifactIdentity===artifactIdentity
+              &&Number(studio.versionNumber)===Number(candidate.versionNumber);
+            const exactPost=
+              post.internalStudioValidationOnly===true
+              &&post.externalServerBootRequired===false
+              &&post.sourceRevision===sourceRevision
+              &&post.artifactIdentity===artifactIdentity
+              &&Number(post.candidateVersionNumber)===Number(candidate.versionNumber);
+            const explicitRuntimeStage=['TARGET_PLATFORM_RUNTIME_FOUNDATION','TARGET_PLATFORM_RUNTIME_ACCEPTANCE'].includes(String(item.robloxFailureStage||''));
+            const f9Pending=item.robloxF9PendingInParallel===true
+              ||String(item.currentStep||'')==='ROBLOX_FINAL_REVIEW_REVALIDATION';
+            return f9Pending
+              ||item.robloxInternalReleaseReady!==true
+              &&(explicitRuntimeStage||!exactStudio||!exactPost);
+          });
+          const ids=[...new Set(rows.map(item=>String(item.gameId||'').trim()).filter(Boolean))];
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'count='+ids.length+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'ids='+ids.join(',')+'\n');
+          console.log('ROBLOX_INTERNAL_VALIDATION_PENDING='+(ids.join(',')||'NONE'));
+          console.log('ROBLOX_IDLE_SCAN='+(ids.length?'NO':'YES'));
+          NODE
+
       - name: Classify transient Open Cloud retry scope
         if: ${{ inputs.retry_open_cloud_only == true }}
         id: transient_retry
@@ -144,6 +200,7 @@ jobs:
           NODE
 
       - name: Synchronize worker with constitution central policy and compiled architecture
+        if: ${{ inputs.retry_open_cloud_only == true || github.event_name != 'schedule' || steps.internal_work.outputs.count != '0' }}
         working-directory: main
         shell: bash
         run: |
@@ -161,7 +218,7 @@ jobs:
           cat /tmp/roblox-open-cloud-transient-retry-ids
 
       - name: Run deterministic foundation protocol QA
-        if: ${{ inputs.retry_open_cloud_only != true }}
+        if: ${{ inputs.retry_open_cloud_only != true && (github.event_name != 'schedule' || steps.internal_work.outputs.count != '0') }}
         working-directory: main
         shell: bash
         run: |
@@ -331,6 +388,7 @@ jobs:
           NODE
 
       - name: Read exact runtime sentinel and persist tester QA evidence
+        if: ${{ inputs.retry_open_cloud_only == true || github.event_name != 'schedule' || steps.internal_work.outputs.count != '0' }}
         working-directory: main
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
@@ -458,12 +516,11 @@ jobs:
                 ||item.robloxIndependentQaPassed!==true
                 ||item.robloxRegressionPassed!==true
               );
-            const externalRuntimeObservationPending=item.robloxPublicReleaseRuntimeObservationPending===true;
             return candidate.published===true
               &&item.robloxFoundationF0Passed===true
               &&item.robloxPublicRelease!==true
-              &&(item.robloxInternalReleaseReady!==true||externalRuntimeObservationPending)
-              &&(explicitRuntimeStage||exactStudioPlayPendingRuntime||externalRuntimeObservationPending);
+              &&item.robloxInternalReleaseReady!==true
+              &&(explicitRuntimeStage||exactStudioPlayPendingRuntime);
           });
           const f9Ids=[];
           const studioFollowupIds=[];
@@ -1304,6 +1361,7 @@ jobs:
           NODE
 
       - name: Persist runtime tester and QA evidence
+        if: ${{ inputs.retry_open_cloud_only == true || github.event_name != 'schedule' || steps.internal_work.outputs.count != '0' }}
         working-directory: runtime
         shell: bash
         run: |
@@ -1332,6 +1390,7 @@ jobs:
           echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES'
 
       - name: Dispatch F9 review for runtime-accepted candidates
+        if: ${{ inputs.retry_open_cloud_only != true && (github.event_name != 'schedule' || steps.internal_work.outputs.count != '0') }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -1345,6 +1404,7 @@ jobs:
           done < /tmp/roblox-f9-ids
 
       - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
+        if: ${{ inputs.retry_open_cloud_only != true && (github.event_name != 'schedule' || steps.internal_work.outputs.count != '0') }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -1361,6 +1421,7 @@ jobs:
           echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH_COUNT=$dispatch_count"
 
       - name: Enforce persistent Open Cloud probe failures after evidence persistence
+        if: ${{ inputs.retry_open_cloud_only == true }}
         shell: bash
         run: |
           set -euo pipefail
