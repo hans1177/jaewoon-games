@@ -3885,3 +3885,11 @@ test('mandatory verified APK learning disables deterministic diagnostic source b
   assert.match(source,/assertVerifiedExternalLearningPromptCoverage\(attemptPrompt,verifiedExternalLearningContract\|\|\{\}\)/);
   assert.match(source,/verifiedExternalLearningRuntimePromptAllAttempts/);
 });
+
+
+test('source worker emits auditable APK learning prompt telemetry before generation',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/VIBE2_VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT=PASS/);
+  assert.match(workerSource,/VIBE2_VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_COUNT=/);
+  assert.match(workerSource,/VIBE2_VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_IDS=/);
+});

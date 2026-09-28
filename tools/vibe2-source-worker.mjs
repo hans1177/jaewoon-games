@@ -2619,6 +2619,11 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   if(!context.files.length)throw new Error('worker context 파일 없음');
   const fullWebTarget=allowFullRewrite?fullWebGenerationTarget(order):null;
   const verifiedExternalLearningContract=buildVerifiedExternalLearningPromptContract(order);
+  if(verifiedExternalLearningContract.required===true){
+    console.log('VIBE2_VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT=PASS');
+    console.log('VIBE2_VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_COUNT='+verifiedExternalLearningContract.count);
+    console.log('VIBE2_VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_IDS='+verifiedExternalLearningContract.ids.join(','));
+  }
   const prompt=buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,sourceRootBootstrap:bootstrap,focusedWebRepair,verifiedExternalLearningContract});
   const editContract=exploration?.editContract||{};
   const systemRegressionFiles=target==='system'?responsibleFiles.filter(file=>/^qa\/.+\.test\.(?:mjs|js|cjs)$/i.test(file)):[];
