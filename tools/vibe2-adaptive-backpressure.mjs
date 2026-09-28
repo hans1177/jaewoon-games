@@ -152,6 +152,12 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     healthyStreak = 0;
     pressureStreak = 0;
     reason = 'RUN_LOCAL_BACKPRESSURE_ACTIVE';
+  } else if (strongPressure && loaded) {
+    next = stepDown(current);
+    healthyStreak = 0;
+    pressureStreak = 0;
+    decision = next < current ? 'DOWN' : 'HOLD';
+    reason = reasons.length ? reasons.join('+') : level;
   } else if (observedExternalCapacityBound) {
     next = Math.max(configuredFloor, stepAtOrAbove(actualPeakConcurrency));
     healthyStreak = 0;

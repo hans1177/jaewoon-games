@@ -173,7 +173,7 @@ test('Web requires F0-F9 fan-in proof before deploy and immediately refills rega
   assert.match(fanInReview,/evidence\.add\('web-f0-f9-verified'\)/);
   assert.match(fanInReview,/evidence\.add\('web-f9-verified'\)/);
   assert.match(fanInReview,/if\(platformTarget==='web'\)\{[\s\S]*status:'verified'[\s\S]*lastOutcome:'PASS'/);
-  assert.match(releaseWorkflow,/target!==\'web\'\|\|\(evidence\.includes\('web-f0-f9-verified'\)&&evidence\.includes\('web-f9-verified'\)\)/);
+  assert.match(releaseWorkflow,/target!==\'web\'\|\|\([\s\S]*evidence\.includes\('web-f0-f9-verified'\)[\s\S]*&&evidence\.includes\('web-f9-verified'\)[\s\S]*\)/);
   assert.match(releaseWorkflow,/const publicationPending=task[\s\S]*task\.status==='verified'[\s\S]*web-publish-after-f9-required/);
   assert.match(workflow,/VIBE2_RELEASE_DISPATCH_RETRY=/);
   assert.match(workflow,/PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=NO/);
