@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
-import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap} from './company-development-roblox-bootstrap.mjs';
+import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap,ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION} from './company-development-roblox-bootstrap.mjs';
 import {platformDevelopmentEligible} from './company-selected-platform-router.mjs';
 import {verifiedExternalBlackBoxPlaybookContract} from './vibe3-roblox-learning-context.mjs';
 
@@ -44,8 +44,12 @@ function verifiedExternalLearningRefreshState({root='',playbooks={}}={}){
   const expected=verifiedExternalBlackBoxPlaybookContract(playbooks);
   if(!expected.ids.length)return {required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
   const configFile=path.join(root,'shared','GameConfig.luau');
-  if(!fs.existsSync(configFile))return {required:true,refreshRequired:true,expectedIds:[...expected.ids],fingerprint:expected.fingerprint,reason:'CONFIG_MISSING'};
+  const clientFile=path.join(root,'client','Game.client.luau');
+  if(!fs.existsSync(configFile)||!fs.existsSync(clientFile)){
+    return {required:true,refreshRequired:true,expectedIds:[...expected.ids],fingerprint:expected.fingerprint,reason:'CONFIG_OR_CLIENT_MISSING'};
+  }
   const config=fs.readFileSync(configFile,'utf8');
+  const client=fs.readFileSync(clientFile,'utf8');
   const managed=config.match(/-- VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN\n([\s\S]*?)-- VERIFIED_EXTERNAL_LEARNING_BINDING_END/);
   const full=config.match(/LearningContext\s*=\s*\{([\s\S]*?)\n\s*\},\n\s*InitialState\s*=/);
   const block=managed?.[1]||full?.[1]||'';
@@ -54,11 +58,49 @@ function verifiedExternalLearningRefreshState({root='',playbooks={}}={}){
   const coverage=Number(block.match(/CoveragePct\s*=\s*(\d+)/)?.[1]||0);
   const retrieved=Number(block.match(/RetrievedCount\s*=\s*(\d+)/)?.[1]||0);
   const applied=Number(block.match(/AppliedCount\s*=\s*(\d+)/)?.[1]||0);
+  const nativeBindingVersion=Number(block.match(/NativeBindingVersion\s*=\s*(\d+)/)?.[1]||0);
+  const clientNativeBindingVersion=Number(client.match(/VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION\s*=\s*(\d+)/)?.[1]||0);
   const truncation=/TruncationForbidden\s*=\s*true/.test(block);
   const fingerprint=clean(block.match(/MemoryFingerprint\s*=\s*["']([^"']+)["']/)?.[1]);
   const exactIds=ids.length===expectedIds.length&&expectedIds.every(id=>ids.includes(id));
-  const refreshRequired=!block||coverage!==100||retrieved!==expectedIds.length||applied!==expectedIds.length||!truncation||!exactIds||fingerprint!==clean(expected.fingerprint);
-  return {required:true,refreshRequired,expectedIds,currentIds:ids,fingerprint:expected.fingerprint,currentFingerprint:fingerprint,coverage,retrieved,applied,reason:refreshRequired?'STALE_OR_MISSING_VERIFIED_EXTERNAL_LEARNING':null};
+  const fullNativeClient=
+    /VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(client)
+    &&/VerifiedLearningColorGrade/.test(client)
+    &&/VerifiedLearningBloom/.test(client)
+    &&/syncVerifiedLearningCharacterMotion/.test(client)
+    &&/VerifiedLearningSkillImpact/.test(client)
+    &&/VerifiedLearningSkillSparkles/.test(client)
+    &&/FieldOfView/.test(client)
+    &&/VerifiedLearningTouchTarget/.test(client)
+    &&/VerifiedLearningProgressionRiskCue/.test(client)
+    &&/VerifiedExternalLearningGameplayState/.test(client);
+  const refreshRequired=
+    !block
+    ||coverage!==100
+    ||retrieved!==expectedIds.length
+    ||applied!==expectedIds.length
+    ||!truncation
+    ||!exactIds
+    ||fingerprint!==clean(expected.fingerprint)
+    ||nativeBindingVersion!==ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION
+    ||clientNativeBindingVersion!==ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION
+    ||!fullNativeClient;
+  return {
+    required:true,
+    refreshRequired,
+    expectedIds,
+    currentIds:ids,
+    fingerprint:expected.fingerprint,
+    currentFingerprint:fingerprint,
+    coverage,
+    retrieved,
+    applied,
+    expectedNativeBindingVersion:ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION,
+    nativeBindingVersion,
+    clientNativeBindingVersion,
+    fullNativeClient,
+    reason:refreshRequired?'STALE_OR_MISSING_VERIFIED_EXTERNAL_LEARNING':null
+  };
 }
 
 export function hasVerifiedVibe2SourceHandoff(item={}){
