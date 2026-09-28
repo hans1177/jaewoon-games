@@ -185,8 +185,30 @@ export function buildObservableCodingTrace({task={},result={}}={}){
   return Object.freeze(trace);
 }
 
+function verifiedExternalLearningApplicationFromResult(result={}){
+  const application=result?.knowledgeApplication&&typeof result.knowledgeApplication==='object'?result.knowledgeApplication:null;
+  if(!application||application.verifiedExternalLearningFirst!==true)return null;
+  return Object.freeze({
+    version:1,
+    sourceAuthority:'VERIFIED_MEMORY_ONLY',
+    verifiedExternalLearningFirst:true,
+    verifiedExternalLearningIds:Object.freeze(unique(safeArray(application.verifiedExternalLearningIds,256))),
+    verifiedExternalLearningRetrievedCount:Math.max(0,Number(application.verifiedExternalLearningRetrievedCount||0)),
+    verifiedExternalLearningAppliedCount:Math.max(0,Number(application.verifiedExternalLearningAppliedCount||0)),
+    verifiedExternalLearningCoveragePct:Math.max(0,Math.min(100,Number(application.verifiedExternalLearningCoveragePct||0))),
+    verifiedExternalLearningApplyAxes:Object.freeze(unique(safeArray(application.verifiedExternalLearningApplyAxes,32))),
+    retrievedVerifiedExternalLearningTruncationForbidden:application.retrievedVerifiedExternalLearningTruncationForbidden===true,
+    verifiedLearningMemorySha:clean(application.verifiedLearningMemorySha)||null,
+    rawCommercialCodeCopy:false,
+    rawCommercialAssetCopy:false,
+    distinctiveExpressionClone:false,
+    authorityExpanded:false
+  });
+}
+
 export function buildVerifiedCapabilityExperienceReview({task={},result={},finalReviewPass=false,selected=false}={}){
   const trace=buildObservableCodingTrace({task,result});
+  const verifiedExternalLearningApplication=verifiedExternalLearningApplicationFromResult(result);
   const workerOutcome=upper(result.outcome);
   const failureClass=upper(result.candidateFailure?.class||trace.verification?.candidateFailureClass);
   const success=selected===true&&finalReviewPass===true&&workerOutcome==='PASS';
@@ -197,7 +219,10 @@ export function buildVerifiedCapabilityExperienceReview({task={},result={},final
     ...(result.evidence||[]).map(clean).filter(value=>/^(actions-run:|reservation-id:|candidate-sha:|base-main:|incremental-qa-hash:|incremental-qa-failure-signature:|source-generation-failure:|causal-replay-status:|architecture-drift-status:)/.test(value)),
     `coding-trace:${trace.traceId}`,
     success?'fan-in-review:PASS':'',
-    verifiedFailure?`verified-coding-failure:${failureClass}`:''
+    verifiedFailure?`verified-coding-failure:${failureClass}`:'',
+    verifiedExternalLearningApplication?.verifiedExternalLearningFirst===true?'verified-external-learning-first:PASS':'',
+    verifiedExternalLearningApplication?.verifiedExternalLearningCoveragePct===100?'verified-external-learning-coverage:100':'',
+    ...(verifiedExternalLearningApplication?.verifiedExternalLearningApplyAxes||[]).map(axis=>`verified-external-learning-axis:${axis}`)
   ]).filter(Boolean);
   const strategy=clean(trace.decision.strategy)||'UNCLASSIFIED';
   const change=[
@@ -243,6 +268,7 @@ export function buildVerifiedCapabilityExperienceReview({task={},result={},final
     reviewDecision:'PASS',
     designIntelligenceRequired:false,
     authorityExpanded:false,
+    verifiedExternalLearningApplication,
     capabilityDomains:Object.freeze(trace.capabilityDomains),
     codingTraceId:trace.traceId
   });
