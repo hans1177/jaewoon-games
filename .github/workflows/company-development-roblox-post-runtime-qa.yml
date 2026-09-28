@@ -471,14 +471,23 @@ jobs:
           const multiplayerRequirementFor=item=>{
             const rel=String(item.designBaselineSource||'').trim();
             const file=rel?'../runtime/'+rel:'';
-            if(!file||!fs.existsSync(file))return{known:false,required:null,mode:'UNKNOWN'};
+            if(!file||!fs.existsSync(file))return{known:false,required:null,mode:'UNKNOWN',authority:'MISSING_DESIGN'};
             try{
               const design=JSON.parse(fs.readFileSync(file,'utf8'));
-              const mode=String(design?.content?.multiplayerMode||design?.content?.platformProfiles?.ROBLOX?.multiplayerRuntime||'').trim().toUpperCase();
-              if(!mode)return{known:false,required:null,mode:'UNKNOWN'};
-              const solo=/^(SINGLE|SINGLE_PLAYER|SINGLEPLAYER|SOLO|NONE|NOT_APPLICABLE|N\/A)$/.test(mode);
-              return{known:true,required:!solo,mode};
-            }catch{return{known:false,required:null,mode:'UNKNOWN'};}
+              const content=design?.content||{};
+              const profile=content?.robloxBuildProfile||{};
+              if(typeof profile.multiplayerRequired==='boolean'){
+                const mode=String(profile.playMode||content.multiplayerMode||(profile.multiplayerRequired?'MULTIPLAYER':'SINGLE')).trim().toUpperCase();
+                return{known:true,required:profile.multiplayerRequired===true,mode:mode||'UNKNOWN',authority:'ROBLOX_BUILD_PROFILE'};
+              }
+              const playMode=String(profile.playMode||content.multiplayerMode||'').trim().toUpperCase();
+              if(playMode){
+                const solo=/^(SINGLE|SINGLE_PLAYER|SINGLEPLAYER|SOLO|NONE|NOT_APPLICABLE|N\/A)$/.test(playMode);
+                const multi=/^(MULTI|MULTIPLAYER|COOP|CO_OP|CO-OP|COMPETITIVE|PVP|PVE_COOP|HYBRID)$/.test(playMode);
+                if(solo||multi)return{known:true,required:multi,mode:playMode,authority:'EXPLICIT_PLAY_MODE'};
+              }
+              return{known:false,required:null,mode:'UNKNOWN',authority:'NO_EXPLICIT_MULTIPLAYER_CONTRACT'};
+            }catch{return{known:false,required:null,mode:'UNKNOWN',authority:'DESIGN_PARSE_FAILED'};}
           };
           const queueStudioFollowupIfEligible=item=>{
             const matrix=planLocalStudioCandidates({
@@ -586,8 +595,21 @@ jobs:
               }
 
               const multiplayer=multiplayerRequirementFor(item);
+              const priorF7Exact=
+                priorPost.sourceRevision===sourceRevision
+                &&priorPost.artifactIdentity===artifactIdentity
+                &&Number(priorPost.candidateVersionNumber)===Number(candidate.versionNumber)
+                &&priorPost.multiplayerApplicabilityKnown===true
+                &&(
+                  priorPost.f7Status==='NOT_APPLICABLE'
+                  ||priorPost.multiplayerValidationPassed===true
+                );
               const multiplayerValidationPassed=multiplayer.known===true
-                &&(multiplayer.required!==true||item.robloxMultiplayerQaPassed===true);
+                &&(
+                  multiplayer.required!==true
+                  ||item.robloxMultiplayerQaPassed===true
+                  ||priorF7Exact
+                );
               const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
               const studioAssetRuntimeBindingPassed=!studioAssetBindingRequired||exactStudioInternalValidation;
               item.robloxStudioAssetRuntimeBindingPassed=studioAssetRuntimeBindingPassed;
@@ -627,8 +649,10 @@ jobs:
                 multiplayerMode:multiplayer.mode,
                 multiplayerRequired:multiplayer.required,
                 multiplayerApplicabilityKnown:multiplayer.known,
+                multiplayerApplicabilityAuthority:multiplayer.authority,
                 multiplayerValidationPassed,
-                f7Status:multiplayer.known!==true?'APPLICABILITY_UNKNOWN':multiplayer.required===true?(multiplayerValidationPassed?'PASS_REUSED':'PENDING_SINGLE_REQUIRED_CHECK'):'NOT_APPLICABLE',
+                multiplayerEvidenceReused:priorF7Exact,
+                f7Status:multiplayer.known!==true?'APPLICABILITY_UNKNOWN':multiplayer.required===true?(multiplayerValidationPassed?(priorF7Exact?'PASS_REUSED_EXACT':'PASS_SINGLE_REQUIRED_CHECK'):'PENDING_SINGLE_REQUIRED_CHECK'):'NOT_APPLICABLE',
                 studioAssetBindingRequired,
                 studioAssetRuntimeBindingPassed,
                 studioAssetRuntimeBindingEvidence:item.robloxStudioAssetRuntimeBindingEvidence,
