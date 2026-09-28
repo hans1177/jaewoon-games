@@ -1756,7 +1756,7 @@ test('asset production tasks use the dedicated asset-development lane and never 
       sourceRoot:'roblox-games/logic-game',responsibleFiles:['server/Game.server.luau']
     }
   ]});
-  const asset=queue.tasks.find(task=>task.id==='asset-visual');
+
   const game=queue.tasks.find(task=>task.id==='game-logic');
   assert.equal(asset.assetProductionLane,true);
   assert.equal(asset.executionLane,'ASSET_DEVELOPMENT');
