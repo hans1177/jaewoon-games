@@ -13,7 +13,8 @@ import {
   createLocalStudioPlayEvidence,
   applyLocalStudioPlayResult,
   evaluateStudioActualPlayContract,
-  deriveStudioActualPlayContract
+  deriveStudioActualPlayContract,
+  assertCurrentStudioWorkflowHead
 } from '../tools/company-development-roblox-studio-local-play.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
@@ -2067,6 +2068,32 @@ test('Studio retry preserves a verified product failure instead of letting later
   const restartAt=block.indexOf('ROBLOX_STUDIO_MCP_SESSION_RESTART=$attempt',preservedAt);
   assert.ok(preservedAt>=0);
   assert.ok(restartAt<0||block.lastIndexOf('break',restartAt)>preservedAt);
+});
+
+test('stale Studio workflow runs abort before opening Studio',()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'studio-head-'));
+  const repoDir=path.join(cwd,'repo');
+  fs.mkdirSync(repoDir,{recursive:true});
+  assert.equal(spawnSync('git',['init'],{cwd:repoDir,encoding:'utf8'}).status,0);
+  assert.equal(spawnSync('git',['config','user.email','qa@example.com'],{cwd:repoDir,encoding:'utf8'}).status,0);
+  assert.equal(spawnSync('git',['config','user.name','qa'],{cwd:repoDir,encoding:'utf8'}).status,0);
+  fs.writeFileSync(path.join(repoDir,'a.txt'),'x');
+  assert.equal(spawnSync('git',['add','.'],{cwd:repoDir,encoding:'utf8'}).status,0);
+  assert.equal(spawnSync('git',['commit','-m','init'],{cwd:repoDir,encoding:'utf8'}).status,0);
+  const head=spawnSync('git',['rev-parse','HEAD'],{cwd:repoDir,encoding:'utf8'}).stdout.trim();
+  assert.deepEqual(assertCurrentStudioWorkflowHead({workflowSha:head,checkoutDir:repoDir}),{pass:true,workflowSha:head,checkoutSha:head});
+  assert.throws(
+    ()=>assertCurrentStudioWorkflowHead({workflowSha:'0'.repeat(40),checkoutDir:repoDir}),
+    /ROBLOX_STUDIO_STALE_WORKFLOW_RUN_ABORT/
+  );
+});
+
+test('mcp-run checks current main head before any Studio MCP play call',()=>{
+  const mainAt=helper.indexOf("if(mode==='mcp-run')");
+  const guardAt=helper.indexOf('assertCurrentStudioWorkflowHead()',mainAt);
+  const playAt=helper.indexOf('runOfficialStudioMcpPlay({',mainAt);
+  assert.ok(mainAt>=0&&guardAt>mainAt&&playAt>guardAt);
+  assert.match(helper,/ROBLOX_STUDIO_WORKFLOW_HEAD_FRESH=YES/);
 });
 
 test('Studio screenshots are captured only as the final Studio audit action',()=>{
