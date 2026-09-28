@@ -3,97 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1xu8oit",
-      "worker": "vibe2",
-      "taskId": "survival-unity-web-base-implementation-v1",
-      "gameId": "survival",
-      "files": [
-        "unity-games/survival/Assets/Scripts/GameCore.cs",
-        "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "d50d20f3e4c8066f74f183fe4d344ad1f6dc7dd1",
-      "acquiredAt": "2026-09-28T01:46:15.108Z",
-      "expiresAt": "2026-09-28T02:31:15.108Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1rfi9vr",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "unity-games/seed-casual-realm-weaver/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-casual-realm-weaver/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "d50d20f3e4c8066f74f183fe4d344ad1f6dc7dd1",
-      "acquiredAt": "2026-09-28T01:46:25.427Z",
-      "expiresAt": "2026-09-28T02:31:25.427Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-l9amc",
-      "worker": "vibe2",
-      "taskId": "cozy-island-studio-evolution-presentation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/BattleVisual.luau",
-        "roblox-games/cozy-island/shared/QACamera.luau"
-      ],
-      "baseSha": "d50d20f3e4c8066f74f183fe4d344ad1f6dc7dd1",
-      "acquiredAt": "2026-09-28T01:46:28.098Z",
-      "expiresAt": "2026-09-28T02:31:28.098Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-mk46h6",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/shared/QACamera.luau",
-        "roblox-games/horror-escape-room/shared/VisualStyle.luau"
-      ],
-      "baseSha": "d50d20f3e4c8066f74f183fe4d344ad1f6dc7dd1",
-      "acquiredAt": "2026-09-28T01:46:35.256Z",
-      "expiresAt": "2026-09-28T02:31:35.256Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-1u0qtmx",
-      "worker": "vibe2",
-      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/Game.server.luau",
-        "roblox-games/cozy-island/client/Game.client.luau",
-        "roblox-games/cozy-island/shared/GameConfig.luau"
-      ],
-      "baseSha": "d50d20f3e4c8066f74f183fe4d344ad1f6dc7dd1",
-      "acquiredAt": "2026-09-28T01:46:41.207Z",
-      "expiresAt": "2026-09-28T02:31:41.207Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-post-release-focus-12c1a7e2ae6288fd"
-      ]
-    },
-    {
       "id": "wl-1vnbppk",
       "worker": "vibe2",
       "taskId": "seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1",
@@ -895,6 +804,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:monster-adventure-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1cros4r",
+      "worker": "vibe2",
+      "taskId": "village-dungeons-roblox-presentation-asset-adaptation-v1",
+      "gameId": "village-dungeons",
+      "files": [
+        "roblox-games/village-dungeons/client/Game.client.luau",
+        "roblox-games/village-dungeons/server/Game.server.luau",
+        "roblox-games/village-dungeons/shared/GameConfig.luau"
+      ],
+      "baseSha": "a748f8b78e6eea8c24c54c297b2fd8f17a74df79",
+      "acquiredAt": "2026-09-28T02:32:16.428Z",
+      "expiresAt": "2026-09-28T03:17:16.428Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:village-dungeons-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
