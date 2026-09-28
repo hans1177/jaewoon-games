@@ -1,5 +1,5 @@
 {
-  "version": 59,
+  "version": 60,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -237,6 +237,29 @@
       "rawExploitPayloadStored": false,
       "rawSecretStored": false,
       "newTrainerForbidden": true
+    },
+    "developmentScanPolicy": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
+      "objective": "PRESERVE_REQUIRED_SECURITY_BOUNDARIES_WITHOUT_REPEATEDLY_TAXING_UNRELATED_GAMEPLAY_EVOLUTION",
+      "fullSecurityScanEveryDevelopmentCycle": false,
+      "exactPassingEvidenceReusableUntilRelevantSecurityDelta": true,
+      "relevantDeltaIncludes": [
+        "SERVER_AUTHORITY",
+        "REMOTE_INPUT_VALIDATION",
+        "RATE_LIMIT",
+        "SAVE_INTEGRITY",
+        "ECONOMY_REWARD_DAMAGE_AUTHORITY",
+        "SECRET_CREDENTIAL_OR_EXTERNAL_TRUST",
+        "SECURITY_POLICY_OR_SECURITY_TEST"
+      ],
+      "confirmedFindingAlwaysRevalidates": true,
+      "unrelatedGameplayPresentationContentDelta": "NO_FULL_SECURITY_RESCAN",
+      "unrelatedSecurityAudit": "NONBLOCKING_AND_MAY_NOT_CONSUME_PRIMARY_GAME_IMPLEMENTATION_SLOT",
+      "publicReleaseFullReviewActivation": "EXPLICIT_OWNER_PUBLIC_RELEASE_VALIDATION_REQUEST",
+      "publicReleaseReviewMayNotRunProactivelyAsContinuousDevelopmentTax": true,
+      "securityThresholdWeakening": false,
+      "confirmedHighRiskFindingStillFailClosed": true
     }
   },
   "systemAiEvolutionGuardrails": {
@@ -466,7 +489,7 @@
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
   },
-  "updatedAt": "2026-09-26",
+  "updatedAt": "2026-09-28",
   "graphicsProductionUnificationSecurity": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
