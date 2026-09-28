@@ -1237,8 +1237,9 @@ export function assertVerifiedExternalLearningPromptCoverage(prompt='',contract=
     if(start<0||end<0)throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_ITEM_TRUNCATED:'+id);
     const item=block.slice(start,end);
     if(!/\nDISPOSITION=/.test(item))throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_DISPOSITION_MISSING:'+id);
-    if(/DISPOSITION=[^\n]+:APPLIED_GAME_SOURCE/.test(item)&&!/\nAPPLY=/.test(item))throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_APPLY_MISSING:'+id);
-    if(/DISPOSITION=[^\n]+:VALIDATION_ONLY/.test(item)&&/\nAPPLY=/.test(item))throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_QA_SOURCE_FORBIDDEN:'+id);
+    const sourceCount=[...item.matchAll(/\nDISPOSITION=[^\n]+:APPLIED_GAME_SOURCE;/g)].length;
+    const applyCount=[...item.matchAll(/\nAPPLY=/g)].length;
+    if(sourceCount!==applyCount)throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_APPLY_MISMATCH:'+id);
   }
   return Object.freeze({required:true,pass:true,count:actualIds.length,ids:Object.freeze([...actualIds])});
 }
