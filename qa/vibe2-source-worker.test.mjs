@@ -195,6 +195,8 @@ test('Roblox full graphics first attempt uses the compact connected package prom
   assert.match(initial,/ROBLOX FULL GRAPHICS RECOVERY PACKAGE/i);
   assert.match(initial,/connected edits\[\] package/i);
   assert.match(initial,/additional visual domains.*no upper limit/i);
+  assert.match(initial,/game-relevant visual domain/i);
+  assert.doesNotMatch(initial,/must cover every required core visual domain/i);
   assert.ok(Buffer.byteLength(initial,'utf8')<Buffer.byteLength(prompt,'utf8'));
   assert.doesNotMatch(initial,/exactly one edit/i);
 });
