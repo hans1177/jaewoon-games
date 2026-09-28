@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 import {
   validateLocalStudioPolicy,
   detectStudioMcpAssistantSetting,
@@ -13,7 +14,8 @@ import {
   createLocalStudioPlayEvidence,
   applyLocalStudioPlayResult,
   evaluateStudioActualPlayContract,
-  deriveStudioActualPlayContract
+  deriveStudioActualPlayContract,
+  assertCurrentStudioWorkflowHead
 } from '../tools/company-development-roblox-studio-local-play.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
@@ -1702,10 +1704,21 @@ test('Studio startup probe explicitly checks dead spawn, start buttons, and bloc
   assert.match(helper,/initial-character-playable/);
   assert.match(helper,/ui-start-gate/);
   assert.match(helper,/start\|play\|begin\|continue\|ready\|시작\|플레이\|계속\|준비/);
+  assert.match(helper,/startGateProbe=await collectStudioActualPlayProbe/);
+  assert.match(helper,/clean\(row\?\.text\)!==primaryTextBeforeStart/);
   assert.match(helper,/largeOverlayCount/);
   assert.match(helper,/largeBlockingOverlayCount/);
   assert.match(helper,/largestOverlayCoverage/);
   assert.match(helper,/adaptive-ui-blocking-overlay/);
+});
+
+test('large overlay detection uses actual panel or image opacity and does not treat transparent full-screen text alone as an occluder',()=>{
+  const start=helper.indexOf('local gui={screenGuiPresent=false');
+  const end=helper.indexOf('local root=nil',start);
+  const block=helper.slice(start,end);
+  assert.match(block,/BackgroundTransparency<0\.85/);
+  assert.match(block,/ImageTransparency<0\.85/);
+  assert.doesNotMatch(block,/TextTransparency<0\.85/);
 });
 
 test('commercial Studio evaluator records progression and AI movement deltas',()=>{
@@ -2045,7 +2058,7 @@ test('Studio evidence push conflicts reapply onto latest company-runtime instead
 
 
 test('Studio retry preserves a verified product failure instead of letting later MCP infrastructure noise overwrite repair routing',()=>{
-  const block=workflow.slice(workflow.indexOf('- name: Run actual local play through official Studio MCP'),workflow.indexOf('- name: Release Studio controls for manual save after final capture'));
+  const block=workflow.slice(workflow.indexOf('- name: Run actual local play through official Studio MCP'),workflow.indexOf('- name: Finalize Studio session after final capture'));
   assert.match(block,/\$productFailureObserved = \$false/);
   assert.match(block,/ROBLOX_STUDIO_MCP_PRODUCT_FAILURE_PRESERVED=YES/);
   assert.match(block,/\^studio-product-/);
@@ -2056,6 +2069,32 @@ test('Studio retry preserves a verified product failure instead of letting later
   const restartAt=block.indexOf('ROBLOX_STUDIO_MCP_SESSION_RESTART=$attempt',preservedAt);
   assert.ok(preservedAt>=0);
   assert.ok(restartAt<0||block.lastIndexOf('break',restartAt)>preservedAt);
+});
+
+test('stale Studio workflow runs abort before opening Studio',()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'studio-head-'));
+  const repoDir=path.join(cwd,'repo');
+  fs.mkdirSync(repoDir,{recursive:true});
+  assert.equal(spawnSync('git',['init'],{cwd:repoDir,encoding:'utf8'}).status,0);
+  assert.equal(spawnSync('git',['config','user.email','qa@example.com'],{cwd:repoDir,encoding:'utf8'}).status,0);
+  assert.equal(spawnSync('git',['config','user.name','qa'],{cwd:repoDir,encoding:'utf8'}).status,0);
+  fs.writeFileSync(path.join(repoDir,'a.txt'),'x');
+  assert.equal(spawnSync('git',['add','.'],{cwd:repoDir,encoding:'utf8'}).status,0);
+  assert.equal(spawnSync('git',['commit','-m','init'],{cwd:repoDir,encoding:'utf8'}).status,0);
+  const head=spawnSync('git',['rev-parse','HEAD'],{cwd:repoDir,encoding:'utf8'}).stdout.trim();
+  assert.deepEqual(assertCurrentStudioWorkflowHead({workflowSha:head,checkoutDir:repoDir}),{pass:true,workflowSha:head,checkoutSha:head});
+  assert.throws(
+    ()=>assertCurrentStudioWorkflowHead({workflowSha:'0'.repeat(40),checkoutDir:repoDir}),
+    /ROBLOX_STUDIO_STALE_WORKFLOW_RUN_ABORT/
+  );
+});
+
+test('mcp-run checks current main head before any Studio MCP play call',()=>{
+  const mainAt=helper.indexOf("if(mode==='mcp-run')");
+  const guardAt=helper.indexOf('assertCurrentStudioWorkflowHead()',mainAt);
+  const playAt=helper.indexOf('runOfficialStudioMcpPlay({',mainAt);
+  assert.ok(mainAt>=0&&guardAt>mainAt&&playAt>guardAt);
+  assert.match(helper,/ROBLOX_STUDIO_WORKFLOW_HEAD_FRESH=YES/);
 });
 
 test('Studio screenshots are captured only as the final Studio audit action',()=>{
@@ -2081,15 +2120,21 @@ test('complex Studio routes follow path waypoints and verify actual arrival',()=
   assert.match(helper,/navOk&&reached&&Number\.isFinite\(arrivalDistance\)&&arrivalDistance<=6/);
   assert.match(helper,/for\(let segment=0;segment<4&&navOk&&!reached;segment\+\+\)/);
 });
-test('final Studio capture stops play and keeps the owned Studio available for manual save',()=>{
-  const releaseAt=workflow.indexOf('- name: Release Studio controls for manual save after final capture');
+test('final Studio capture requires no user save and closes only after evidence persistence',()=>{
+  const finalizeAt=workflow.indexOf('- name: Finalize Studio session after final capture');
   const persistAt=workflow.indexOf('- name: Persist exact Studio MCP play evidence');
-  assert.ok(releaseAt>=0&&persistAt>releaseAt);
-  const block=workflow.slice(releaseAt,persistAt);
-  assert.match(block,/ROBLOX_STUDIO_MCP_MANUAL_SAVE_READY=YES/);
-  assert.doesNotMatch(block,/Stop-Process/);
+  const closeAt=workflow.indexOf('- name: Close owned Studio after evidence persistence');
+  const refillAt=workflow.indexOf('- name: Refill existing 24H development loop after verified play');
+  assert.ok(finalizeAt>=0&&persistAt>finalizeAt&&closeAt>persistAt&&refillAt>closeAt);
+  const finalizeBlock=workflow.slice(finalizeAt,persistAt);
+  assert.match(finalizeBlock,/ROBLOX_STUDIO_MANUAL_SAVE_REQUIRED=NO/);
+  assert.match(finalizeBlock,/ROBLOX_STUDIO_PLAYTEST_SOURCE_MUTATION_PERSIST=NO/);
+  assert.doesNotMatch(finalizeBlock,/Stop-Process/);
+  const closeBlock=workflow.slice(closeAt,refillAt);
+  assert.match(closeBlock,/Stop-Process -Id \(\[int\]\$ownedId\)/);
+  assert.match(closeBlock,/ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES/);
   assert.match(helper,/finally\{\s*client\.close\(\)/);
-  assert.match(block,/ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES/);
+  assert.match(finalizeBlock,/ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES/);
 });
 
 test('Studio QA keeps user windows and releases only its exact owned process',()=>{

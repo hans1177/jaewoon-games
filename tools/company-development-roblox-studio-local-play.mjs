@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import readline from 'node:readline';
-import {spawn} from 'node:child_process';
+import {spawn,spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 
 const clean=v=>String(v??'').trim();
@@ -11,6 +11,21 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(path.resolve(file)),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const stableSha256=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
+
+export function assertCurrentStudioWorkflowHead({
+  workflowSha=clean(process.env.GITHUB_SHA),
+  checkoutDir=path.resolve('main')
+}={}){
+  const expected=clean(workflowSha);
+  if(!expected)return{pass:true,workflowSha:'',checkoutSha:''};
+  const probe=spawnSync('git',['-C',checkoutDir,'rev-parse','HEAD'],{encoding:'utf8'});
+  const checkoutSha=clean(probe.stdout);
+  if(probe.status!==0||!checkoutSha)throw new Error('ROBLOX_STUDIO_CURRENT_MAIN_HEAD_UNAVAILABLE');
+  if(checkoutSha!==expected){
+    throw new Error('ROBLOX_STUDIO_STALE_WORKFLOW_RUN_ABORT:workflow='+expected+':checkout='+checkoutSha);
+  }
+  return{pass:true,workflowSha:expected,checkoutSha};
+}
 
 export function validateLocalStudioPolicy(roadmap={}){
   const studio=roadmap?.roblox?.studioExecution||{};
@@ -916,7 +931,6 @@ function studioActualPlayCoreProbeSource(contract={},context='Client'){
     '    local coverage=math.max(0,x2-x1)*math.max(0,y2-y1)/math.max(1,viewport.X*viewport.Y)',
     '    local opaque=d.BackgroundTransparency<0.85',
     '    if d:IsA("ImageLabel") or d:IsA("ImageButton") then opaque=opaque or d.ImageTransparency<0.85 end',
-    '    if d:IsA("TextLabel") or d:IsA("TextButton") then opaque=opaque or d.TextTransparency<0.85 end',
     '    if coverage>=0.55 and opaque then',
     '     gui.largeOverlayCount=gui.largeOverlayCount+1;gui.largestOverlayCoverage=math.max(gui.largestOverlayCoverage,coverage)',
     '     local actionable=d:IsA("GuiButton") and d.Active~=false',
@@ -1436,7 +1450,9 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const initialDead=initialClientProbe?.player?.characterPresent===true&&((Number.isFinite(initialHealth)&&initialHealth<=0)||/Dead/i.test(clean(initialClientProbe?.player?.humanoidState)));
   const finalDead=player.characterPresent===true&&((Number.isFinite(finalHealth)&&finalHealth<=0)||/Dead/i.test(clean(player.humanoidState)));
   const startGateAction=(actions||[]).find(row=>row?.id==='ui-start-gate')||null;
-  const initialStartLikeButton=entityRows(initialClientProbe?.ui?.interactive).find(row=>row?.visible!==false&&row?.active!==false&&/^(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text)))||null;
+  const initialStartLikeButton=startGateAction
+    ?{text:clean(startGateAction.text)}
+    :(entityRows(initialClientProbe?.ui?.interactive).find(row=>row?.visible!==false&&row?.active!==false&&/^(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text)))||null);
   const onboardingText=visibleTexts.join(' ').toLowerCase();
   const onboardingClarityPass=!signals.onboarding||(
     visibleButtons>0
@@ -1909,6 +1925,7 @@ export async function runOfficialStudioMcpPlay({
         }
       }
       checkpoint('floating-character-map-readiness',true);
+      let startGateProbe=initialClientProbe;
       if(clean(actualPlayContract.selectionButtonText)){
         const target=initialClientProbe?.ui?.buttons?.[clean(actualPlayContract.selectionButtonText)]||null;
         let ok=false;
@@ -1918,25 +1935,27 @@ export async function runOfficialStudioMcpPlay({
         actions.push({id:'ui-role-selection',type:'mcp-mouse-input',dispatched:target!=null,ok});
         checkpoint('role-selection-input-dispatched',ok);
         await wait(Math.max(250,Number(actualPlayContract.afterSelectionWaitMs||1800)));
-      }else if(!clean(actualPlayContract.primaryActionButtonText)){
-        const startTarget=entityRows(initialClientProbe?.ui?.interactive).find(row=>
-          row?.visible!==false
-          &&row?.active!==false
-          &&/^(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text))
-        )||null;
-        if(startTarget){
-          let ok=false;
-          if(Number.isFinite(Number(startTarget.centerX))&&Number.isFinite(Number(startTarget.centerY))){
-            try{
-              const mouseTool=client.tool('user_mouse_input');
-              const result=await client.call('user_mouse_input',mouseClickArgs(mouseTool.inputSchema||{},studioId,startTarget.centerX,startTarget.centerY));
-              ok=result?.isError!==true;
-            }catch{}
-          }
-          actions.push({id:'ui-start-gate',type:'mcp-mouse-input',dispatched:true,ok,text:clean(startTarget.text)});
-          checkpoint('adaptive-start-gate-input-dispatched',ok);
-          await wait(1200);
+        startGateProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client')||initialClientProbe;
+      }
+      const primaryTextBeforeStart=clean(actualPlayContract.primaryActionButtonText);
+      const startTarget=entityRows(startGateProbe?.ui?.interactive).find(row=>
+        row?.visible!==false
+        &&row?.active!==false
+        &&clean(row?.text)!==primaryTextBeforeStart
+        &&/^(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text))
+      )||null;
+      if(startTarget){
+        let ok=false;
+        if(Number.isFinite(Number(startTarget.centerX))&&Number.isFinite(Number(startTarget.centerY))){
+          try{
+            const mouseTool=client.tool('user_mouse_input');
+            const result=await client.call('user_mouse_input',mouseClickArgs(mouseTool.inputSchema||{},studioId,startTarget.centerX,startTarget.centerY));
+            ok=result?.isError!==true;
+          }catch{}
         }
+        actions.push({id:'ui-start-gate',type:'mcp-mouse-input',dispatched:true,ok,text:clean(startTarget.text)});
+        checkpoint('adaptive-start-gate-input-dispatched',ok);
+        await wait(1200);
       }
     }
 
@@ -2981,6 +3000,8 @@ async function main(){
     return;
   }
   if(mode==='mcp-run'){
+    const headGuard=assertCurrentStudioWorkflowHead();
+    console.log('ROBLOX_STUDIO_WORKFLOW_HEAD_FRESH=YES:'+headGuard.checkoutSha);
     const result=await runOfficialStudioMcpPlay({
       mcpCommand:clean(a['mcp-command']),
       output:clean(a.output),
