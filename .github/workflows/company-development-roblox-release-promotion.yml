@@ -359,59 +359,28 @@ jobs:
 
           const validIds=(target)=>/^[1-9][0-9]*$/.test(String(target?.universeId||'').trim())&&/^[1-9][0-9]*$/.test(String(target?.placeId||'').trim());
           const persistedTarget=publishStage==='final'?(item.robloxPublicationTarget||{}):(item.robloxValidationTarget||{});
-          const priorPublishedTarget=item.robloxInternalReleaseEvidence?.published===true?item.robloxInternalReleaseEvidence:(item.robloxReleaseEvidence?.published===true?item.robloxReleaseEvidence:{});
-          const knownGood=JSON.parse(fs.readFileSync('roblox-games/known-good-runtime-evidence.json','utf8'));
-          const targetEvidence=(knownGood.records||[]).find(row=>
-            row.gameId===gameId
-            &&row.sourceRevision===revision
-            &&row.artifactIdentity===artifact
-            &&Number(row.artifactRunId)===artifactRunId
-          );
-          const evidenceTarget=targetEvidence?.publicationTarget||{};
-          const ownerPinned=roadmap?.roblox?.deploymentControl?.ownerPinnedPublicationTarget||{};
-          const exactCandidates=[
-            {
-              source:'company-runtime-publication-target',
-              target:persistedTarget,
-              valid:validIds(persistedTarget)&&(
-                persistedTarget.verified===true
-                ||(persistedTarget.dedicated===true
-                  &&persistedTarget.shared!==true
-                  &&persistedTarget.internalOnly===true
-                  &&String(persistedTarget.bootstrapState||'').toUpperCase()==='CREATED_PRIVATE_UNPUBLISHED')
-              )
-            },
-            {source:'company-runtime-prior-release',target:priorPublishedTarget,valid:validIds(priorPublishedTarget)},
-            {source:'known-good-runtime-evidence',target:evidenceTarget,valid:validIds(evidenceTarget)},
-          ].filter(row=>row.valid);
-          const pinnedValid=ownerPinned.enabled===true
-            &&ownerPinned.fallbackOnlyWhenNoGameSpecificVerifiedTarget===true
-            &&validIds(ownerPinned);
-          if(exactCandidates.length===0&&pinnedValid){
-            const secretUniverse=String(process.env.OWNER_SECRET_UNIVERSE_ID||'').trim();
-            const secretPlace=String(process.env.OWNER_SECRET_PLACE_ID||'').trim();
-            if(ownerPinned.requireGitHubSecretIdMatch===true
-              &&(secretUniverse!==String(ownerPinned.universeId).trim()||secretPlace!==String(ownerPinned.placeId).trim())){
-              throw new Error(`ROBLOX_RELEASE_OWNER_PINNED_SECRET_ID_MISMATCH:${gameId}`);
-            }
+          const persistedValid=validIds(persistedTarget)
+            &&persistedTarget.dedicated===true
+            &&persistedTarget.shared!==true
+            &&(
+              persistedTarget.verified===true
+              ||String(persistedTarget.bootstrapState||'').toUpperCase()==='CREATED_PRIVATE_UNPUBLISHED'
+            );
+          if(!persistedValid){
+            throw new Error((publishStage==='final'
+              ?'ROBLOX_CANONICAL_PUBLICATION_TARGET_MISSING_OR_INVALID:'
+              :'ROBLOX_VALIDATION_TARGET_MISSING_OR_INVALID:')+gameId);
           }
-          const candidates=exactCandidates.length?exactCandidates:[
-            {source:'owner-pinned-open-cloud-target',target:ownerPinned,valid:pinnedValid},
-          ].filter(row=>row.valid);
-          if(candidates.length===0)throw new Error(`ROBLOX_RELEASE_PUBLICATION_TARGET_MISSING_OR_MISMATCH:${gameId}`);
+          const candidates=[{
+            source:publishStage==='final'?'company-runtime-canonical-publication-target':'company-runtime-pre-f9-validation-target',
+            target:persistedTarget,
+          }];
           const selected=candidates[0];
           const universeId=String(selected.target.universeId).trim();
           const placeId=String(selected.target.placeId).trim();
           const ownerPinnedUniverse=String(ownerPinned.universeId||'').trim();
           const ownerPinnedPlace=String(ownerPinned.placeId||'').trim();
-          const selectedUsesSharedFallback=ownerPinned.enabled===true
-            &&ownerPinned.sharedFastMvpRotationAllowed===true
-            &&universeId===ownerPinnedUniverse
-            &&placeId===ownerPinnedPlace
-            &&(
-              selected.source==='owner-pinned-open-cloud-target'
-              ||String(persistedTarget.source||'').trim()==='owner-pinned-open-cloud-target'
-            );
+          const selectedUsesSharedFallback=false;
           let sharedRotation=false;
           if(selectedUsesSharedFallback){
             const occupied=(q.items||[])
@@ -426,7 +395,7 @@ jobs:
               })
               .sort((a,b)=>Number(b.robloxRuntimeCandidateEvidence?.versionNumber||b.robloxInternalReleaseEvidence?.versionNumber||0)
                 -Number(a.robloxRuntimeCandidateEvidence?.versionNumber||a.robloxInternalReleaseEvidence?.versionNumber||0))[0];
-            sharedRotation=headlessCanonical===true;
+            sharedRotation=publishStage==='validation'&&headlessCanonical===true;
             const occupiedCandidate=occupied?.robloxRuntimeCandidateEvidence||occupied?.robloxInternalReleaseEvidence||occupied?.robloxReleaseEvidence||{};
             const occupiedPlay=occupied?.robloxInternalVibePlayEvidence||{};
             const occupiedVibePlayComplete=occupiedPlay.pass===true
@@ -460,8 +429,9 @@ jobs:
           put('place_id',placeId);
           put('publication_target_source',selected.source);
           put('shared_rotation',sharedRotation?'true':'false');
-          put('visibility_intent','PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE');
-          console.log(`ROBLOX_RELEASE_CANONICAL_TARGET=${gameId}`);
+          put('visibility_intent',String(persistedTarget.visibilityIntent||'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE'));
+          put('publish_stage',publishStage);
+          console.log((publishStage==='final'?'ROBLOX_CANONICAL_FINAL_TARGET=':'ROBLOX_VALIDATION_TARGET=')+gameId);
           console.log(`ROBLOX_RELEASE_SOURCE_REVISION=${revision}`);
           console.log(`ROBLOX_RELEASE_ARTIFACT_IDENTITY=${artifact}`);
           console.log(`ROBLOX_RELEASE_ARTIFACT_RUN_ID=${artifactRunId}`);
