@@ -673,6 +673,51 @@ test('existing Roblox Studio binding requires verified APK learning unconditiona
 });
 
 
+test('Roblox semantic mapping routes game-entry QA evidence to validation-only without blocking source application',()=>{
+  const qaBoundaryRow={
+    id:'external-black-box-qa-boundary-fixture',
+    project:'fixture-black-box',
+    sourceRevision:'sha256:qa-boundary',
+    distilledApplicationPrinciples:[
+      'id=tutorial-separated-from-game-entry; scope=mobile-rpg-onboarding; lesson=Tutorial is a distinct pre-game state.; apply=For RPG QA, preserve tutorial and live gameplay entry as separate milestones.',
+      'id=first-run-friction-separated-from-game-entry; scope=mobile-rpg-onboarding; lesson=First-run setup is not gameplay.; apply=For Roblox/mobile QA, preserve onboarding and first live gameplay as separate milestones.',
+      'id=world-entry-needs-load-window-before-input-proof; scope=mobile-runtime-evidence; lesson=World launch needs a load window before input proof.; apply=Bind input evidence to the post-load playable frame.',
+      'id=narrative-onboarding-is-not-game-entry; scope=rpg-onboarding-qa; lesson=Narrative onboarding is a pre-game state.; apply=For Roblox RPG QA, separate narrative onboarding from controllable world entry.',
+      'id=gameplay-state-must-be-visually-distinct-from-selection-state; scope=mobile-runtime-evidence; lesson=Selection state is not gameplay entry.; apply=Define GAME_ENTRY using visible gameplay-specific state.',
+      'id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=Compact tactical actions need immediate feedback.; apply=Keep bounded tactical actions visibly responsive.'
+    ],
+    distilledAvoidancePrinciples:[],
+    distilledLearningUseAllowed:['interaction feedback'],
+    distilledLearningUseForbidden:['source-code or asset copying']
+  };
+  const qaBoundaryTask=()=>({authority:'verified-task-playbook',checklist:[],reuse:[qaBoundaryRow]});
+  const qaBoundaryPlaybooks={
+    policy:{verifiedExternalBlackBoxAllTaskTypesRequired:true,verifiedExternalBlackBoxTruncationForbidden:true},
+    taskTypes:{roblox:qaBoundaryTask(),coding:qaBoundaryTask()}
+  };
+  const learning=createRobloxVibe3LearningContext({
+    gameId,
+    profile:{genre:'Simulation',subgenre:'Tycoon',playMode:'SINGLE'},
+    playbooks:qaBoundaryPlaybooks
+  });
+  const validationIds=new Set(
+    learning.verifiedExternalLearningDispositions
+      .filter(row=>row.disposition==='VALIDATION_ONLY')
+      .map(row=>row.principleId)
+  );
+  for(const id of [
+    'tutorial-separated-from-game-entry',
+    'first-run-friction-separated-from-game-entry',
+    'world-entry-needs-load-window-before-input-proof',
+    'narrative-onboarding-is-not-game-entry',
+    'gameplay-state-must-be-visually-distinct-from-selection-state'
+  ])assert.ok(validationIds.has(id),id);
+  assert.equal(learning.applied,true);
+  assert.equal(learning.allRetrievedPrinciplesHaveExplicitDisposition,true);
+  assert.ok(learning.verifiedExternalLearningDispositions.every(row=>row.disposition!=='FAIL_CLOSED'));
+  assert.ok(learning.gameSpecificSemanticMappings.some(row=>row.principleId==='compact-tactical-state-with-immediate-feedback'));
+});
+
 test('Roblox semantic mapping keeps QA-only learning out of game-source application',()=>{
   assert.equal(verifiedLearning.allRetrievedPrinciplesHaveExplicitDisposition,true);
   assert.ok(verifiedLearning.gameSpecificSemanticMappings.length>0);
