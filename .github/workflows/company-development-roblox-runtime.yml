@@ -1601,24 +1601,28 @@ jobs:
           const valid=t=>/^[1-9][0-9]*$/.test(String(t?.universeId||''))&&/^[1-9][0-9]*$/.test(String(t?.placeId||''));
           const batchRecoveryGraceMs=60_000;
           const recoveryWaitArray=new Int32Array(new SharedArrayBuffer(4));
-          let sharedFallbackUsed=false;
           let pendingCount=0;
           for(const x of q.items||[]){
             if(requested&&x.gameId!==requested)continue;
             const revision=String(x.robloxSourceCommit||'').trim();
             const artifact=String(x.robloxBuildArtifactIdentity||'').trim();
             const candidate=x.robloxRuntimeCandidateEvidence||{};
-            const publicationTarget=x.robloxPublicationTarget||{};
-            const publicationTargetBound=/^[1-9][0-9]*$/.test(String(publicationTarget.universeId||''))
-              &&/^[1-9][0-9]*$/.test(String(publicationTarget.placeId||''));
+            const validationTarget=x.robloxValidationTarget||{};
+            const canonicalTarget=x.robloxPublicationTarget||{};
+            const validationTargetBound=valid(validationTarget);
+            const canonicalTargetBound=valid(canonicalTarget);
+            const validationTargetCollision=validationTargetBound
+              &&canonicalTargetBound
+              &&String(validationTarget.universeId||'')===String(canonicalTarget.universeId||'')
+              &&String(validationTarget.placeId||'')===String(canonicalTarget.placeId||'');
             const exactCurrentCandidate=candidate.published===true
               &&candidate.sourceRevision===revision
               &&candidate.artifactIdentity===artifact
               &&Number(candidate.versionNumber)>0
-              &&(!publicationTargetBound||(
-                String(candidate.universeId||'')===String(publicationTarget.universeId||'')
-                &&String(candidate.placeId||'')===String(publicationTarget.placeId||'')
-              ));
+              &&validationTargetBound
+              &&validationTargetCollision!==true
+              &&String(candidate.universeId||'')===String(validationTarget.universeId||'')
+              &&String(candidate.placeId||'')===String(validationTarget.placeId||'');
             const pending=String(x.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
               &&x.robloxFoundationF0Passed===true
               &&x.robloxBuildPreflightPassed===true
@@ -1641,16 +1645,17 @@ jobs:
                 console.error('ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_RESUMED='+x.gameId);
               }
             }
-            const exactTarget=((x.robloxPublicationTarget?.verified===true
-                ||(x.robloxPublicationTarget?.dedicated===true
-                  &&x.robloxPublicationTarget?.shared!==true
-                  &&String(x.robloxPublicationTarget?.bootstrapState||'').toUpperCase()==='CREATED_PRIVATE_UNPUBLISHED'))
-                &&valid(x.robloxPublicationTarget))
-              ||(x.robloxInternalReleaseEvidence?.published===true&&valid(x.robloxInternalReleaseEvidence))
-              ||(x.robloxReleaseEvidence?.published===true&&valid(x.robloxReleaseEvidence));
-            if(exactTarget){console.log(x.gameId);continue;}
-            if(!sharedFallbackUsed){sharedFallbackUsed=true;console.log(x.gameId);continue;}
-            console.error('ROBLOX_PRIVATE_RUNTIME_SHARED_FALLBACK_DEFERRED='+x.gameId);
+            const exactTarget=(x.robloxValidationTarget?.verified===true
+                ||(x.robloxValidationTarget?.dedicated===true
+                  &&x.robloxValidationTarget?.shared!==true
+                  &&String(x.robloxValidationTarget?.bootstrapState||'').toUpperCase()==='CREATED_PRIVATE_UNPUBLISHED'))
+              &&valid(x.robloxValidationTarget)
+              &&validationTargetCollision!==true;
+            if(!exactTarget){
+              if(validationTargetCollision)console.error('ROBLOX_VALIDATION_TARGET_COLLISION_WITH_CANONICAL='+x.gameId);
+              console.error('ROBLOX_VALIDATION_TARGET_PROVISION_REQUIRED='+x.gameId);
+            }
+            console.log(x.gameId);
           }
           console.error('ROBLOX_PRIVATE_RUNTIME_PENDING_COUNT='+pendingCount);
           NODE
