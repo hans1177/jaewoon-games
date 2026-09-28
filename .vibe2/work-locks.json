@@ -3,60 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-q8yezf",
-      "worker": "vibe2",
-      "taskId": "bug-defense-unity-web-base-implementation-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "unity-games/bug-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/bug-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "7f9333f29c1843b81279bcc82436a572921b2985",
-      "acquiredAt": "2026-09-28T13:21:44.273Z",
-      "expiresAt": "2026-09-28T14:06:44.273Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1h8k9ck",
-      "worker": "vibe2",
-      "taskId": "cozy-island-studio-evolution-presentation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "roblox-games/cozy-island/server/BattleVisual.luau",
-        "roblox-games/cozy-island/shared/QACamera.luau"
-      ],
-      "baseSha": "7f9333f29c1843b81279bcc82436a572921b2985",
-      "acquiredAt": "2026-09-28T13:22:32.670Z",
-      "expiresAt": "2026-09-28T14:07:32.670Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-studio-evolution-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-3hsww0",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "7f9333f29c1843b81279bcc82436a572921b2985",
-      "acquiredAt": "2026-09-28T13:23:09.881Z",
-      "expiresAt": "2026-09-28T14:08:09.881Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-1nz5l0q",
       "worker": "vibe2",
       "taskId": "bug-defense-studio-evolution-unity-web-usability-v1",
@@ -654,6 +600,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1hw1ggg",
+      "worker": "vibe2",
+      "taskId": "monster-adventure-unity-web-base-implementation-v1",
+      "gameId": "monster-adventure",
+      "files": [
+        "unity-games/monster-adventure/Assets/Scripts/GameCore.cs",
+        "unity-games/monster-adventure/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "a651564022b08efd1273f08381f4b31d3885c670",
+      "acquiredAt": "2026-09-28T14:08:23.136Z",
+      "expiresAt": "2026-09-28T14:53:23.136Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:monster-adventure-unity-web-base-implementation-v1"
       ]
     }
   ]
