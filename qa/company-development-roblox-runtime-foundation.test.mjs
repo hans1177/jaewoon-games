@@ -34,7 +34,8 @@ test('actual Roblox sentinel passes F1 through F8 only for the exact deployed pl
  const r=validateRobloxRuntimeFoundationEvidence({sentinel:good,gameId:'cozy-island',placeId:'116850096561713',versionNumber:21});
  assert.equal(r.runtimeFoundationPassed,true);
  assert.equal(r.runtimeAcceptancePassed,true);
- for(const field of ['f1ServerBootPassed','f2WorldFoundationPassed','f3CharacterFoundationPassed','f4PhysicsAndMovementPassed','f5InputCameraUiPassed','f6CoreServicesPassed','f7MultiplayerFoundationPassed','f8GameplaySystemsPassed'])assert.equal(r[field],true,field);
+ for(const field of ['f1ServerBootPassed','f2WorldFoundationPassed','f3CharacterFoundationPassed','f4PhysicsAndMovementPassed','f5InputCameraUiPassed','f6CoreServicesPassed','f8GameplaySystemsPassed'])assert.equal(r[field],true,field);
+ assert.equal(r.f7MultiplayerFoundationPassed,false,'multiplayer F7 is verified by the exact-source code contract separately');
 });
 
 
