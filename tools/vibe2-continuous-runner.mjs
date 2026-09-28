@@ -606,9 +606,17 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   ]);
   const assetDevelopmentLearning=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
   const mandatoryVerifiedKnowledgeApplication=['roblox','unity','web'].includes(plan.target)||assetDevelopmentLearning;
-  const verifiedExternalPlaybookReuse=freezeList((unifiedLearning?.playbookReuse||[])
-    .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook'&&clean(row?.id).startsWith('external-black-box-'))
+  const verifiedExternalPlaybookRows=freezeList((unifiedLearning?.playbookReuse||[])
+    .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook'&&clean(row?.id).startsWith('external-black-box-')));
+  const verifiedExternalPlaybookReuse=freezeList(verifiedExternalPlaybookRows.map(row=>row.id));
+  const verifiedExternalDistilledContentIds=freezeList(verifiedExternalPlaybookRows
+    .filter(row=>Array.isArray(row?.distilledApplicationPrinciples)&&row.distilledApplicationPrinciples.map(clean).filter(Boolean).length>0)
     .map(row=>row.id));
+  const verifiedExternalDistilledContentComplete=verifiedExternalPlaybookReuse.length>0
+    &&verifiedExternalDistilledContentIds.length===verifiedExternalPlaybookReuse.length;
+  const verifiedExternalLearningCoveragePct=verifiedExternalPlaybookReuse.length>0
+    ?Math.floor((verifiedExternalDistilledContentIds.length/verifiedExternalPlaybookReuse.length)*100)
+    :0;
   const verifiedExternalLearningApplyAxes=freezeList([
     'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
     'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
@@ -627,13 +635,16 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     retrievedKnowledgeCount:exactInjectedKnowledgeIds.length,
     appliedKnowledgeCount:exactInjectedKnowledgeIds.length,
     applicationCoveragePct:100,
-    allRetrievedKnowledgeApplied:true,
+    allRetrievedKnowledgeApplied:!mandatoryVerifiedKnowledgeApplication||verifiedExternalDistilledContentComplete,
     verifiedPlaybookReuseCount:Number(unifiedLearning?.playbookReuse?.length||0),
     verifiedExternalLearningFirst:true,
     verifiedExternalLearningIds:verifiedExternalPlaybookReuse,
     verifiedExternalLearningRetrievedCount:verifiedExternalPlaybookReuse.length,
-    verifiedExternalLearningAppliedCount:verifiedExternalPlaybookReuse.length,
-    verifiedExternalLearningCoveragePct:verifiedExternalPlaybookReuse.length>0?100:0,
+    verifiedExternalLearningAppliedCount:verifiedExternalDistilledContentIds.length,
+    verifiedExternalLearningCoveragePct,
+    verifiedExternalDistilledContentIds,
+    verifiedExternalDistilledContentCount:verifiedExternalDistilledContentIds.length,
+    verifiedExternalDistilledContentComplete,
     verifiedExternalLearningApplyAxes,
     retrievedVerifiedExternalLearningTruncationForbidden:true,
     verifiedLearningMemorySha:clean(process.env.VIBE2_VERIFIED_LEARNING_MEMORY_SHA)||null,
@@ -659,6 +670,15 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     return freeze({
       ...base,
       reason:'VERIFIED_EXTERNAL_BLACK_BOX_LEARNING_REQUIRED_BEFORE_GAME_OR_ASSET_WORK',
+      selectedTask:task,
+      unifiedLearning,
+      knowledgeApplicationContract
+    });
+  }
+  if(mandatoryVerifiedKnowledgeApplication&&!verifiedExternalDistilledContentComplete){
+    return freeze({
+      ...base,
+      reason:'VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED_BEFORE_GAME_OR_ASSET_WORK',
       selectedTask:task,
       unifiedLearning,
       knowledgeApplicationContract
