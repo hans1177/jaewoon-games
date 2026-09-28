@@ -11874,9 +11874,9 @@
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
       "currentStep": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-      "canonicalState": "ROBLOX_INTERNAL_STUDIO_VALIDATION_PASSED",
+      "canonicalState": "ROBLOX_RUNTIME_ACCEPTANCE_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T14:58:09.244Z",
+      "updatedAt": "2026-09-28T15:01:43.956Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -12580,7 +12580,16 @@
       },
       "robloxCanonicalPublishPending": false,
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T14:00:25.404Z",
-      "robloxF9PendingInParallel": true
+      "robloxF9PendingInParallel": true,
+      "robloxRuntimeEvidenceReuse": {
+        "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
+        "artifactIdentity": "sha256:2f1da667fcdc53f82f72d79ae1ca49e9783f743b4f7da4af3d5dc02b1779fc02",
+        "candidateVersionNumber": 36432015025,
+        "reusedAt": "2026-09-28T15:01:43.956Z",
+        "reusedServerBootEvidence": false,
+        "reusedStudioInternalEvidence": true,
+        "reason": "EXACT_SOURCE_ARTIFACT_VERSION_STUDIO_INTERNAL_EVIDENCE_ALREADY_VERIFIED"
+      }
     },
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -14158,7 +14167,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T15:00:41.615Z",
+  "updatedAt": "2026-09-28T15:01:43.956Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
