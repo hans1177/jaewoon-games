@@ -1973,3 +1973,26 @@ test('Studio evidence push conflicts reapply onto latest company-runtime instead
   assert.match(block,/Studio MCP evidence reapply on latest runtime failed/);
   assert.doesNotMatch(block,/git -C runtime rebase origin\/company-runtime/);
 });
+
+
+test('Studio screenshots are captured only as the final Studio audit action',()=>{
+  assert.doesNotMatch(helper,/viewport-before-captured/);
+  assert.doesNotMatch(helper,/checkpoint\('viewport-changed-after-input'/);
+  assert.match(helper,/visualCaptureDeferred:true/);
+  const consoleAt=helper.indexOf("checkpoint('no-release-blocking-runtime-errors'");
+  const finalCaptureAt=helper.indexOf('ROBLOX_STUDIO_MCP_FINAL_CAPTURE=LAST_STUDIO_AUDIT_ACTION');
+  assert.ok(consoleAt>=0&&finalCaptureAt>consoleAt);
+  const tail=helper.slice(finalCaptureAt,finalCaptureAt+1100);
+  assert.match(tail,/start_stop_play/);
+  assert.match(tail,/play-mode-stopped/);
+});
+
+test('final Studio capture releases the owned Studio before evidence persistence',()=>{
+  const closeAt=workflow.indexOf('- name: Close owned Studio immediately after final capture');
+  const persistAt=workflow.indexOf('- name: Persist exact Studio MCP play evidence');
+  assert.ok(closeAt>=0&&persistAt>closeAt);
+  const block=workflow.slice(closeAt,persistAt);
+  assert.match(block,/ROBLOX_STUDIO_MCP_POST_CAPTURE_PROCESS_REAPED/);
+  assert.match(block,/ROBLOX_STUDIO_MCP_POST_CAPTURE_MCP_REAPED/);
+  assert.match(block,/ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES/);
+});
