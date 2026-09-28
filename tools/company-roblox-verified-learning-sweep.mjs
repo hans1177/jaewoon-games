@@ -29,6 +29,7 @@ for(const gameId of gameIds){
   const learningProfile=existingRobloxGameLearningProfile(gameId);
   const learning=createRobloxVibe3LearningContext({gameId,profile:learningProfile,artbook:{},playbooks,recombination});
   if(learning.applied!==true)throw new Error('ROBLOX_SWEEP_LEARNING_NOT_APPLIED:'+gameId);
+  if(learning.allRetrievedPrinciplesHaveExplicitDisposition!==true||Number(learning.semanticMappingVersion||0)!==1)throw new Error('ROBLOX_SWEEP_SEMANTIC_MAPPING_NOT_FAIL_CLOSED:'+gameId);
   const applied=applyVerifiedExternalLearningToExistingRobloxSource({root:gameRoot,learning});
   const evidenceFile=path.join(gameRoot,'roblox-source-bootstrap.json');
   let evidence={version:1,gameId,platform:'ROBLOX',sourcePath:path.relative(process.cwd(),gameRoot).replaceAll('\\','/')};
