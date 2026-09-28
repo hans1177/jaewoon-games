@@ -119,6 +119,9 @@ jobs:
           fi
           git fetch --no-tags --depth=1 origin main
           current_main="$(git rev-parse origin/main)"
+          if [ -n "$REQUESTED_GAME_ID" ]; then
+            echo "ROBLOX_BATCH_FRESHNESS=EXACT_GAME:$REQUESTED_GAME_ID:$current_main"
+          fi
           read -r -a contract_paths <<< "$ROBLOX_SOURCE_PLAN_CONTRACT_PATHS"
           if git diff --quiet "$GITHUB_SHA" "$current_main" -- "${contract_paths[@]}"; then
             echo 'run=true' >> "$GITHUB_OUTPUT"
