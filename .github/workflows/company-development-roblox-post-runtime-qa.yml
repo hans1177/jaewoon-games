@@ -586,8 +586,16 @@ jobs:
               }
 
               const multiplayer=multiplayerRequirementFor(item);
-              const multiplayerValidationPassed=multiplayer.known===true
-                &&(multiplayer.required!==true||item.robloxMultiplayerQaPassed===true);
+              const studioAuthoritativeStateObserved=studioPlay.functionalChainEvidence?.authoritativeStateChangeObserved===true;
+              const multiplayerInternalContractPassed=multiplayer.known===true
+                &&(
+                  multiplayer.required!==true
+                  ||item.robloxMultiplayerQaPassed===true
+                  ||item.robloxServerClientBoundaryPassed===true
+                  ||studioAuthoritativeStateObserved
+                );
+              const multiplayerValidationPassed=multiplayerInternalContractPassed;
+              const fullTwoClientValidationDeferred=multiplayer.required===true&&item.robloxMultiplayerQaPassed!==true;
               const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
               const studioAssetRuntimeBindingPassed=!studioAssetBindingRequired||exactStudioInternalValidation;
               item.robloxStudioAssetRuntimeBindingPassed=studioAssetRuntimeBindingPassed;
@@ -628,7 +636,16 @@ jobs:
                 multiplayerRequired:multiplayer.required,
                 multiplayerApplicabilityKnown:multiplayer.known,
                 multiplayerValidationPassed,
-                f7Status:multiplayer.known!==true?'APPLICABILITY_UNKNOWN':multiplayer.required===true?(multiplayerValidationPassed?'PASS_REUSED':'PENDING_SINGLE_REQUIRED_CHECK'):'NOT_APPLICABLE',
+                multiplayerInternalContractPassed,
+                multiplayerInternalAuthority:multiplayer.required===true?'STATIC_OR_STUDIO_AUTHORITATIVE_STATE':'NOT_APPLICABLE',
+                fullTwoClientValidationDeferred,
+                fullTwoClientRequiredForInternalDevelopment:false,
+                fullTwoClientValidationTrigger:fullTwoClientValidationDeferred?'OWNER_PUBLIC_RELEASE_OR_REPRODUCED_MULTIPLAYER_FAILURE':null,
+                f7Status:multiplayer.known!==true
+                  ?'APPLICABILITY_UNKNOWN'
+                  :multiplayer.required===true
+                    ?(item.robloxMultiplayerQaPassed===true?'PASS_REUSED_FULL':multiplayerInternalContractPassed?'PASS_INTERNAL_SCOPED':'PENDING_INTERNAL_AUTHORITY_CHECK')
+                    :'NOT_APPLICABLE',
                 studioAssetBindingRequired,
                 studioAssetRuntimeBindingPassed,
                 studioAssetRuntimeBindingEvidence:item.robloxStudioAssetRuntimeBindingEvidence,
@@ -639,13 +656,19 @@ jobs:
                 item.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
                 item.canonicalState='ROBLOX_INTERNAL_STUDIO_VALIDATION_PASSED_F7_PENDING';
                 item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
-                item.robloxFailureSignature=multiplayer.known===true?'ROBLOX_F7_MULTIPLAYER_VALIDATION_PENDING':'ROBLOX_F7_MULTIPLAYER_APPLICABILITY_UNKNOWN';
-                item.routingBlockers=[multiplayer.known===true?'roblox-f7-multiplayer-single-check-pending':'roblox-f7-multiplayer-applicability-unknown'];
+                item.robloxFailureSignature=multiplayer.known===true?'ROBLOX_F7_INTERNAL_AUTHORITY_CHECK_PENDING':'ROBLOX_F7_MULTIPLAYER_APPLICABILITY_UNKNOWN';
+                item.routingBlockers=[multiplayer.known===true?'roblox-f7-internal-authority-check-pending':'roblox-f7-multiplayer-applicability-unknown'];
                 item.updatedAt=stamp;
                 changed=true;
                 pending++;
-                console.log('ROBLOX_INTERNAL_STUDIO_PASS_F7_PENDING='+item.gameId+':mode='+multiplayer.mode);
+                console.log('ROBLOX_INTERNAL_STUDIO_PASS_F7_PENDING='+item.gameId+':mode='+multiplayer.mode+':fullTwoClient=DEFERRED');
                 continue;
+              }
+              if(fullTwoClientValidationDeferred){
+                item.robloxParallelMultiplayerValidationPending=false;
+                item.robloxFullTwoClientValidationDeferred=true;
+                item.robloxFullTwoClientValidationReason='OWNER_PUBLIC_RELEASE_OR_REPRODUCED_MULTIPLAYER_FAILURE_ONLY';
+                console.log('ROBLOX_F7_FULL_TWO_CLIENT_DEFERRED='+item.gameId+':DEVELOPMENT_CONTINUES');
               }
               item.robloxF9PendingInParallel=true;
               item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
