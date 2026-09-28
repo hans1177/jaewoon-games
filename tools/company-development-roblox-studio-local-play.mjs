@@ -196,7 +196,7 @@ export function deriveStudioActualPlayContract(launch={}){
   const signals=adaptiveCoverageSignals(launch);
   const adaptiveScenarios=[
     'character-camera-ready','visual-capture-sane','adaptive-runtime-surface',
-    'adaptive-ui-commercial-quality','adaptive-world-safety','adaptive-map-route-coverage','adaptive-spawn-safety','adaptive-interaction-surface','adaptive-semantic-interaction-effect',
+    'adaptive-ui-commercial-quality','adaptive-world-safety','adaptive-map-route-coverage','adaptive-spawn-safety','adaptive-interaction-surface','adaptive-semantic-interaction-effect','adaptive-system-transaction-effect','adaptive-travel-effect',
     'adaptive-gameplay-loop-cadence','adaptive-quest-state-transition','adaptive-reward-effect','adaptive-progression-surface','adaptive-remote-surface','adaptive-combat-surface','adaptive-mob-animation-ai',
     'adaptive-motion-surface','adaptive-audio-surface','adaptive-npc-surface',
     'adaptive-companion-ai-surface','adaptive-item-surface','adaptive-environment-surface',
@@ -1235,8 +1235,12 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const semanticEffects=semanticActions.filter(row=>row?.effectObserved===true).length;
   const questActions=semanticActions.filter(row=>row?.semantic==='QUEST');
   const rewardActions=semanticActions.filter(row=>['REWARD','COLLECT'].includes(row?.semantic));
+  const systemActions=semanticActions.filter(row=>['SHOP','CRAFT','EQUIP','UPGRADE'].includes(row?.semantic));
+  const travelActions=semanticActions.filter(row=>row?.semantic==='TRAVEL');
   const questEffects=questActions.filter(row=>row?.effectObserved===true).length;
   const rewardEffects=rewardActions.filter(row=>row?.effectObserved===true).length;
+  const systemEffects=systemActions.filter(row=>row?.effectObserved===true).length;
+  const travelEffects=travelActions.filter(row=>row?.effectObserved===true).length;
   const combatActions=(actions||[]).filter(row=>(row?.type==='mcp-combat-action'||row?.semantic==='COMBAT')&&row?.dispatched===true&&row?.ok===true);
   const combatEffects=combatActions.filter(row=>row?.effectObserved===true).length;
   const retryActions=semanticActions.filter(row=>row?.semantic==='RETRY');
@@ -1295,6 +1299,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-spawn-safety',pass:!signals.combat||spawnThreatDistance<0||spawnThreatDistance>=10},
     {id:'adaptive-interaction-surface',pass:!signals.interactions||interactionSurfaceCount>0},
     {id:'adaptive-semantic-interaction-effect',pass:!signals.interactions||semanticActions.length===0||semanticEffects>0},
+    {id:'adaptive-system-transaction-effect',pass:systemActions.length===0||systemEffects===systemActions.length},
+    {id:'adaptive-travel-effect',pass:travelActions.length===0||travelEffects===travelActions.length},
     {id:'adaptive-gameplay-loop-cadence',pass:!activeLoopExpected||activeLoopObserved},
     {id:'adaptive-quest-state-transition',pass:!signals.quests||questActions.length===0||questEffects>0||timelineProgressChanged},
     {id:'adaptive-reward-effect',pass:!signals.rewards||rewardActions.length===0||rewardEffects>0||progressChanged||inventoryDelta},
@@ -1339,6 +1345,10 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     timelineCompanionDynamic,
     auditProfile:soak?'F9_SOAK':'FAST_DEEP',
     timelineProbeCount:timeline.length,
+    systemActionCount:systemActions.length,
+    systemEffectCount:systemEffects,
+    travelActionCount:travelActions.length,
+    travelEffectCount:travelEffects,
     mobMotion,
     companionMotion,
     npcMotion,
@@ -1356,6 +1366,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     'adaptive-mob-animation-ai':['MONSTER_MOTION_AI','CRITICAL','Repair monster Humanoid rig, Animator/Motor6D motion, target/aggro transitions, attack movement, and runtime liveness.'],
     'adaptive-interaction-surface':['INTERACTION_CHAIN','HIGH','Restore usable prompts/buttons/click surfaces and verify input leads to a visible or authoritative result.'],
     'adaptive-semantic-interaction-effect':['INTERACTION_CHAIN','CRITICAL','A discovered quest/shop/craft/equip/travel/heal/upgrade/collect/UI interaction accepted input but produced no observable gameplay/UI/progression/inventory result.'],
+    'adaptive-system-transaction-effect':['SYSTEM_TRANSACTION','CRITICAL','One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.'],
+    'adaptive-travel-effect':['WORLD_TRAVEL','CRITICAL','A discovered portal/door/travel action accepted input but did not move the player, change map/round state, or provide authoritative feedback.'],
     'adaptive-gameplay-loop-cadence':['CORE_GAMEPLAY_LOOP','CRITICAL','Actual-play samples show no meaningful action-feedback-progression/AI change across an active gameplay loop. Reduce dead time or restore the broken loop transition.'],
     'adaptive-quest-state-transition':['QUEST_LOOP','CRITICAL','Quest interaction did not advance quest/UI/progression state. Repair accept-progress-complete transitions and softlock handling.'],
     'adaptive-reward-effect':['REWARD_LOOP','CRITICAL','Reward/collect interaction did not change reward, inventory, progression, or visible state. Repair delivery and duplicate-safe claim handling.'],
@@ -1399,6 +1411,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     if(id==='adaptive-performance-budget')return metrics.performance;
     if(id==='adaptive-interaction-surface')return{interactionSurfaceCount,promptCount:Number(world.proximityPromptCount||0),clickDetectorCount:Number(world.clickDetectorCount||0),visibleButtons};
     if(id==='adaptive-semantic-interaction-effect')return{semanticActionCount:semanticActions.length,semanticEffectCount:semanticEffects,actions:semanticActions.slice(0,10).map(row=>({id:row.id,type:row.type,semantic:row.semantic||null,effectObserved:row.effectObserved===true,effect:row.effect||null}))};
+    if(id==='adaptive-system-transaction-effect')return{systemActionCount:systemActions.length,systemEffectCount:systemEffects,actions:systemActions.slice(0,12).map(row=>({id:row.id,semantic:row.semantic,effectObserved:row.effectObserved===true,effect:row.effect||null}))};
+    if(id==='adaptive-travel-effect')return{travelActionCount:travelActions.length,travelEffectCount:travelEffects,actions:travelActions.slice(0,8).map(row=>({id:row.id,effectObserved:row.effectObserved===true,effect:row.effect||null}))};
     if(id==='adaptive-gameplay-loop-cadence')return{activeLoopExpected,activeLoopObserved,activeTimelineTransitions,idleTimelineTransitions,semanticEffectCount:semanticEffects,timelineProgressChanged,timelineMobDynamic,timelineCompanionDynamic};
     if(id==='adaptive-quest-state-transition')return{questActionCount:questActions.length,questEffectCount:questEffects,timelineProgressChanged};
     if(id==='adaptive-reward-effect')return{rewardActionCount:rewardActions.length,rewardEffectCount:rewardEffects,progressChanged,inventoryChanged:inventoryDelta};
