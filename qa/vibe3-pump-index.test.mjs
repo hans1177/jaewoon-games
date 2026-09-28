@@ -8,7 +8,17 @@ const ordinary={sampleId:'s-code',instruction:'fix inventory save bug',output:'v
 const unity={sampleId:'s-unity',instruction:'fix Android build',output:'verified unity patch',taskType:'unity',lifecycle:'active',project:'game-b',sourceRevision:'def5678',provenance:{sourceKind:'vibe2',sourceRevision:'def5678'},qa:{independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS'}};
 const roblox={sampleId:'s-roblox',instruction:'fix Roblox save and rejoin',output:'verified roblox patch',taskType:'roblox',lifecycle:'active',project:'game-r',sourceRevision:'abc9876',provenance:{sourceKind:'vibe2',sourceRevision:'abc9876'},qa:{independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS'}};
 const webPortable={sampleId:'s-web-portable',instruction:'verified webgame touch input mobile ui save load resume performance responsive regression core loop',output:'verified web companion patch',taskType:'qa',lifecycle:'active',project:'web-game',sourceRevision:'fedcba9',sourcePaths:['web-games/web-game/index.html'],tags:['webgame','touch-input','mobile-ui','save-load','performance','responsive','regression','core-loop'],provenance:{sourceKind:'vibe3-trajectory',sourceRevision:'fedcba9',portableContextMayCrossPlatforms:true,platformPassEvidenceTransferAllowed:false},qa:{independentQa:'PASS',browserQa:'PASS',runtime:'PASS'}};
-const external={sampleId:'s-blackbox',instruction:'verify black box input',output:'bounded observation',taskType:'qa',lifecycle:'active',project:'block-blast',sourceRevision:'sha256:abc',provenance:{sourceKind:'external-black-box',sourceRevision:'sha256:abc'},qa:{independentQa:'BLACK_BOX_EVIDENCE_PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS'}};
+const external={
+  sampleId:'s-blackbox',
+  instruction:'verify black box input menu motion feedback',
+  output:'bounded observation with concrete reusable principles',
+  distilledApplicationPrinciples:['id=menu-flow; scope=menu; lesson=keep gameplay entry distinct; apply=reduce unnecessary navigation','id=spatial-feedback; scope=feedback; lesson=anchor feedback near changed object; apply=show immediate local response'],
+  distilledAvoidancePrinciples:['id=avoid-clone; scope=presentation; lesson=do not clone distinctive expression; apply=reauthor with project identity'],
+  distilledLearningUseAllowed:['menu flow timing','spatial feedback','motion response'],
+  taskType:'qa',lifecycle:'active',project:'block-blast',sourceRevision:'sha256:abc',
+  provenance:{sourceKind:'external-black-box',sourceRevision:'sha256:abc'},
+  qa:{independentQa:'BLACK_BOX_EVIDENCE_PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS'}
+};
 const authorized={sampleId:'s-authorized',candidateId:'s-authorized',instruction:'authorized source study',input:JSON.stringify({learningDomains:['board-grid-placement','input-drag-touch'],counts:{sourceDocuments:10,assets:5}}),output:'- AUTHORIZED_SOURCE:board-grid-placement\n- AUTHORIZED_SOURCE:input-drag-touch',taskType:'coding',lifecycle:'active',project:'authorized-game',gameId:'authorized-game',sourceRevision:'sha256:auth',sourceKind:'authorized-source',provenance:{sourceKind:'authorized-source',sourceRevision:'sha256:auth',authority:'OWNER_ASSERTED_REUSE_REINTERPRETATION'},verification:{independentQa:'AUTHORIZED_SOURCE_EVIDENCE_PASS',browserQa:'NOT_APPLICABLE',runtime:'STATIC_VERIFIED',authorizedSourceEvidence:'PASS',runtimePassClaimed:false}};
 const commercial={sampleId:'s-commercial',instruction:'commercial runtime reference',output:'runtime architecture lesson',taskType:'unity',lifecycle:'active',project:'commercial-game',gameId:'commercial-game',sourceRevision:'commercial-run-1',sourceKind:'commercial-runtime-reference',practiceOnly:true,runtimePromotionAllowed:false,topic:'commercial-puzzle-runtime-architecture',provenance:{sourceKind:'commercial-runtime-reference',sourceRevision:'commercial-run-1',observationKind:'BLACK_BOX_RUNTIME_ONLY',codeExtracted:false,binaryRedistributed:false},qa:{runtime:'PASS',independentQa:'NOT_APPLICABLE',browserQa:'NOT_APPLICABLE'}};
 const unverified={sampleId:'bad',instruction:'guess',output:'bad',taskType:'coding',lifecycle:'active',project:'x',sourceRevision:'z',provenance:{sourceKind:'vibe2',sourceRevision:'z'},qa:{independentQa:'PASS',browserQa:'FAIL',runtime:'PASS'}};
@@ -21,6 +31,17 @@ assert(index.positive.some(x=>x.id==='s-roblox'));
 assert(index.positive.some(x=>x.id==='s-web-portable'&&x.taskType==='qa'));
 assert(index.failureWarnings.some(x=>x.id==='c1'));
 assert(index.failureWarnings.every(x=>x.positiveTrainingAllowed===false));
+const externalMemory=index.positive.find(x=>x.id==='s-blackbox');
+assert.deepEqual(externalMemory.distilledApplicationPrinciples,external.distilledApplicationPrinciples);
+assert.deepEqual(externalMemory.distilledAvoidancePrinciples,external.distilledAvoidancePrinciples);
+assert.deepEqual(externalMemory.distilledLearningUseAllowed,external.distilledLearningUseAllowed);
+const externalRetrieval=retrieveVibeVerifiedPatterns({index,request:'menu motion spatial feedback',taskType:'qa',project:'block-blast',topKSuccess:8});
+const externalPlaybook=createVibeTaskPlaybook({taskType:'qa',retrieval:externalRetrieval});
+const externalReuse=externalPlaybook.reuse.find(row=>row.id==='s-blackbox');
+assert.ok(externalReuse);
+assert.deepEqual(externalReuse.distilledApplicationPrinciples,external.distilledApplicationPrinciples);
+assert.deepEqual(externalReuse.distilledAvoidancePrinciples,external.distilledAvoidancePrinciples);
+assert.deepEqual(externalReuse.distilledLearningUseAllowed,external.distilledLearningUseAllowed);
 const retrieval=retrieveVibeVerifiedPatterns({index,request:'inventory save bug repair',taskType:'bugfix',project:'game-a'});
 assert(retrieval.successes.length>0);
 assert.equal(retrieval.successes[0].entry.taskType,'bugfix');
