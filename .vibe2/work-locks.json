@@ -3,27 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-166r9uv",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-roblox-second-gate-rebuild-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau",
-        "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
-        "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau"
-      ],
-      "baseSha": "dc3d9c8a1a392e4a8426101bdcfc2cc46cecd0ae",
-      "runId": "36466432484",
-      "runAttempt": "1",
-      "acquiredAt": "2026-09-28T18:46:27.578Z",
-      "expiresAt": "2026-09-28T19:31:27.578Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-roblox-second-gate-rebuild-v1"
-      ]
-    },
-    {
       "id": "wl-61j0n8",
       "worker": "vibe2",
       "taskId": "seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1",
@@ -586,6 +565,27 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:line-defense-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1bhn9ou",
+      "worker": "vibe2",
+      "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "files": [
+        "roblox-games/seed-puzzle-chromatic-cascade/client/Game.client.luau",
+        "roblox-games/seed-puzzle-chromatic-cascade/server/Game.server.luau",
+        "roblox-games/seed-puzzle-chromatic-cascade/shared/GameConfig.luau"
+      ],
+      "baseSha": "2f4ba742bf79f09c755b8657bb49f01c4d4c4a17",
+      "runId": "36472347338",
+      "runAttempt": "1",
+      "acquiredAt": "2026-09-28T19:31:23.223Z",
+      "expiresAt": "2026-09-28T20:16:23.223Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
