@@ -24318,7 +24318,7 @@
       "currentStep": "REPAIR_REQUIRED",
       "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T22:37:59.187Z",
+      "updatedAt": "2026-09-28T23:53:17.882Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -24915,25 +24915,7 @@
             "ok": true
           },
           {
-            "id": "map-route-nw",
-            "type": "mcp-map-route-audit",
-            "dispatched": true,
-            "ok": false
-          },
-          {
-            "id": "map-route-ne",
-            "type": "mcp-map-route-audit",
-            "dispatched": true,
-            "ok": false
-          },
-          {
-            "id": "map-route-sw",
-            "type": "mcp-map-route-audit",
-            "dispatched": true,
-            "ok": false
-          },
-          {
-            "id": "map-route-se",
+            "id": "map-route-unreachable",
             "type": "mcp-map-route-audit",
             "dispatched": true,
             "ok": false
@@ -25073,6 +25055,12 @@
             "pass": true
           },
           {
+            "id": "initial-character-playable",
+            "name": "initial-character-playable",
+            "required": true,
+            "pass": true
+          },
+          {
             "id": "floating-character-map-readiness",
             "name": "floating-character-map-readiness",
             "required": true,
@@ -25115,6 +25103,12 @@
             "pass": false
           },
           {
+            "id": "scenario-adaptive-start-playability",
+            "name": "scenario-adaptive-start-playability",
+            "required": true,
+            "pass": false
+          },
+          {
             "id": "scenario-visual-capture-sane",
             "name": "scenario-visual-capture-sane",
             "required": true,
@@ -25135,6 +25129,12 @@
           {
             "id": "scenario-adaptive-ui-commercial-quality",
             "name": "scenario-adaptive-ui-commercial-quality",
+            "required": true,
+            "pass": false
+          },
+          {
+            "id": "scenario-adaptive-ui-blocking-overlay",
+            "name": "scenario-adaptive-ui-blocking-overlay",
             "required": true,
             "pass": false
           },
@@ -25363,7 +25363,7 @@
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 4,
+          "scenarioFailureCount": 6,
           "primaryActionDisplacement": 0,
           "primaryActionVelocity": 0,
           "primaryActionFeedbackChanged": false,
@@ -25399,6 +25399,7 @@
           "studio-state-readable",
           "play-mode-started",
           "actual-play-initial-client-probe",
+          "initial-character-playable",
           "floating-character-map-readiness",
           "actual-play-pre-action-client-probe",
           "mcp-input-dispatched",
@@ -25411,7 +25412,6 @@
           "scenario-adaptive-spawn-safety",
           "scenario-adaptive-interaction-surface",
           "scenario-adaptive-semantic-interaction-effect",
-          "scenario-adaptive-system-transaction-effect",
           "ROBLOX_CHARACTER_RESPAWN_STATE"
         ],
         "rawSourceIncluded": false,
@@ -25419,10 +25419,14 @@
         "rawViewportIncluded": false,
         "scenarioContractRequired": true,
         "scenarioContractVersion": 3,
-        "scenarioContractFingerprint": "sha256:dc5cf6fd4c2fdd3b5438b3c0612ead3fe5e07211632854b1fee8997d46c69af3",
+        "scenarioContractFingerprint": "sha256:9d5dfc9e6f4f8c2af869af7b4eac1c180b8919bcdf2441522da2edaa3799c2e0",
         "scenarioCoverage": [
           {
             "id": "character-camera-ready",
+            "pass": false
+          },
+          {
+            "id": "adaptive-start-playability",
             "pass": false
           },
           {
@@ -25439,6 +25443,10 @@
           },
           {
             "id": "adaptive-ui-commercial-quality",
+            "pass": false
+          },
+          {
+            "id": "adaptive-ui-blocking-overlay",
             "pass": false
           },
           {
@@ -25577,7 +25585,9 @@
         "scenarioCoveragePass": false,
         "qualityFailureKinds": [
           "character-camera-ready",
+          "adaptive-start-playability",
           "adaptive-ui-commercial-quality",
+          "adaptive-ui-blocking-overlay",
           "adaptive-world-safety",
           "adaptive-map-route-coverage"
         ],
@@ -25606,6 +25616,21 @@
             }
           },
           {
+            "id": "adaptive-start-playability",
+            "repairSurface": "GAME_START",
+            "priority": "CRITICAL",
+            "hint": "Repair initial character health/state and start/continue flow so Studio reaches a healthy controllable character and gameplay state.",
+            "observed": {
+              "initialDead": false,
+              "finalDead": true,
+              "initialHealth": 100,
+              "finalHealth": 3.015148162841797,
+              "startGateVisible": false,
+              "startGateActionOk": false,
+              "startGateEffectObserved": true
+            }
+          },
+          {
             "id": "adaptive-ui-commercial-quality",
             "repairSurface": "MOBILE_UI",
             "priority": "HIGH",
@@ -25615,7 +25640,26 @@
               "undersizedTouchButtons": 1,
               "suboptimalTouchButtons": 0,
               "textOverflowButtons": 0,
-              "overlapPairs": 0
+              "overlapPairs": 0,
+              "largeOverlayCount": 1,
+              "largeBlockingOverlayCount": 0,
+              "largestOverlayCoverage": 0.6242881070579247
+            }
+          },
+          {
+            "id": "adaptive-ui-blocking-overlay",
+            "repairSurface": "MOBILE_UI",
+            "priority": "CRITICAL",
+            "hint": "Remove or dismiss persistent full-screen modal/guide overlays that block gameplay input or obscure the playable viewport.",
+            "observed": {
+              "offscreenButtons": 0,
+              "undersizedTouchButtons": 1,
+              "suboptimalTouchButtons": 0,
+              "textOverflowButtons": 0,
+              "overlapPairs": 0,
+              "largeOverlayCount": 1,
+              "largeBlockingOverlayCount": 0,
+              "largestOverlayCoverage": 0.6242881070579247
             }
           },
           {
@@ -25643,33 +25687,12 @@
             "priority": "CRITICAL",
             "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
             "observed": {
-              "routeAttemptCount": 4,
+              "routeAttemptCount": 1,
               "routePassCount": 0,
-              "routeRequired": 2,
+              "routeRequired": 1,
               "routes": [
                 {
-                  "id": "map-route-nw",
-                  "ok": false,
-                  "moved": 0,
-                  "fall": 0,
-                  "floorBelow": false
-                },
-                {
-                  "id": "map-route-ne",
-                  "ok": false,
-                  "moved": 0,
-                  "fall": 0,
-                  "floorBelow": false
-                },
-                {
-                  "id": "map-route-sw",
-                  "ok": false,
-                  "moved": 0,
-                  "fall": 0,
-                  "floorBelow": false
-                },
-                {
-                  "id": "map-route-se",
+                  "id": "map-route-unreachable",
                   "ok": false,
                   "moved": 0,
                   "fall": 0,
@@ -25686,8 +25709,8 @@
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-28T22:37:59.187Z",
-        "workflowRunId": 36481419448,
+        "testedAt": "2026-09-28T23:53:17.882Z",
+        "workflowRunId": 36481661807,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -25746,7 +25769,9 @@
         "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
         "qualityFailureKinds": [
           "character-camera-ready",
+          "adaptive-start-playability",
           "adaptive-ui-commercial-quality",
+          "adaptive-ui-blocking-overlay",
           "adaptive-world-safety",
           "adaptive-map-route-coverage"
         ],
@@ -25775,6 +25800,21 @@
             }
           },
           {
+            "id": "adaptive-start-playability",
+            "repairSurface": "GAME_START",
+            "priority": "CRITICAL",
+            "hint": "Repair initial character health/state and start/continue flow so Studio reaches a healthy controllable character and gameplay state.",
+            "observed": {
+              "initialDead": false,
+              "finalDead": true,
+              "initialHealth": 100,
+              "finalHealth": 3.015148162841797,
+              "startGateVisible": false,
+              "startGateActionOk": false,
+              "startGateEffectObserved": true
+            }
+          },
+          {
             "id": "adaptive-ui-commercial-quality",
             "repairSurface": "MOBILE_UI",
             "priority": "HIGH",
@@ -25784,7 +25824,26 @@
               "undersizedTouchButtons": 1,
               "suboptimalTouchButtons": 0,
               "textOverflowButtons": 0,
-              "overlapPairs": 0
+              "overlapPairs": 0,
+              "largeOverlayCount": 1,
+              "largeBlockingOverlayCount": 0,
+              "largestOverlayCoverage": 0.6242881070579247
+            }
+          },
+          {
+            "id": "adaptive-ui-blocking-overlay",
+            "repairSurface": "MOBILE_UI",
+            "priority": "CRITICAL",
+            "hint": "Remove or dismiss persistent full-screen modal/guide overlays that block gameplay input or obscure the playable viewport.",
+            "observed": {
+              "offscreenButtons": 0,
+              "undersizedTouchButtons": 1,
+              "suboptimalTouchButtons": 0,
+              "textOverflowButtons": 0,
+              "overlapPairs": 0,
+              "largeOverlayCount": 1,
+              "largeBlockingOverlayCount": 0,
+              "largestOverlayCoverage": 0.6242881070579247
             }
           },
           {
@@ -25812,33 +25871,12 @@
             "priority": "CRITICAL",
             "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
             "observed": {
-              "routeAttemptCount": 4,
+              "routeAttemptCount": 1,
               "routePassCount": 0,
-              "routeRequired": 2,
+              "routeRequired": 1,
               "routes": [
                 {
-                  "id": "map-route-nw",
-                  "ok": false,
-                  "moved": 0,
-                  "fall": 0,
-                  "floorBelow": false
-                },
-                {
-                  "id": "map-route-ne",
-                  "ok": false,
-                  "moved": 0,
-                  "fall": 0,
-                  "floorBelow": false
-                },
-                {
-                  "id": "map-route-sw",
-                  "ok": false,
-                  "moved": 0,
-                  "fall": 0,
-                  "floorBelow": false
-                },
-                {
-                  "id": "map-route-se",
+                  "id": "map-route-unreachable",
                   "ok": false,
                   "moved": 0,
                   "fall": 0,
@@ -25850,13 +25888,14 @@
         ],
         "repairSurfaces": [
           "CHARACTER_BOOT",
+          "GAME_START",
           "MOBILE_UI",
           "WORLD_GEOMETRY",
           "MAP_ROUTEABILITY"
         ],
         "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
-        "testedAt": "2026-09-28T22:37:59.187Z",
-        "workflowRunId": 36481419448,
+        "testedAt": "2026-09-28T23:53:17.882Z",
+        "workflowRunId": 36481661807,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxNativeFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
@@ -27821,7 +27860,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T23:50:45.923Z",
+  "updatedAt": "2026-09-28T23:53:17.882Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
