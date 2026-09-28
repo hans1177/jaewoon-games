@@ -70,8 +70,15 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.equal(source.verifiedLearningApplication.retrievedCount,2);
     assert.equal(source.verifiedLearningApplication.appliedCount,2);
     assert.deepEqual(source.verifiedLearningApplication.externalLearningIds,['external-black-box-alpha','external-black-box-beta']);
-    assert.ok(source.verifiedLearningApplication.applyAxes.includes('MENU_FLOW_AND_INFORMATION_ARCHITECTURE'));
-    assert.ok(source.verifiedLearningApplication.applyAxes.includes('MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION'));
+    assert.deepEqual(source.verifiedLearningApplication.applyAxes,[
+      'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
+      'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
+      'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
+      'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
+      'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
+      'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
+      'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
+    ]);
     assert.match(build,/public static void BuildWeb\(\)/);
     assert.match(runtime,/JAEWOON_UNITY_WEB_QA BOOT/);
     assert.match(runtime,/JAEWOON_UNITY_WEB_QA MOBILE_TARGET/);
