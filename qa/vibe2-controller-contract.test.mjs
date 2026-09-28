@@ -1408,6 +1408,14 @@ test('game and asset-development workers bind verified learning-runtime playbook
   assert.ok(workflow.includes('verifiedExternalLearningIds:Array.isArray(workOrder.knowledgeApplicationContract.verifiedExternalLearningIds)'));
   assert.ok(workflow.includes('verifiedExternalLearningCoveragePct:Number(workOrder.knowledgeApplicationContract.verifiedExternalLearningCoveragePct||0)'));
   assert.ok(workflow.includes('verifiedExternalLearningApplyAxes:Array.isArray(workOrder.knowledgeApplicationContract.verifiedExternalLearningApplyAxes)'));
+  const fanInReview=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  const experienceMemory=fs.readFileSync('assets/vibe-experience-memory.js','utf8');
+  const experienceControl=fs.readFileSync('tools/vibe2-experience-control.mjs','utf8');
+  assert.ok(fanInReview.includes('VERIFIED_EXTERNAL_LEARNING_PARTIAL_APPLICATION'));
+  assert.ok(fanInReview.includes('VERIFIED_EXTERNAL_LEARNING_AXIS_MISSING'));
+  assert.ok(experienceMemory.includes('verifiedExternalLearningApplication'));
+  assert.ok(experienceMemory.includes('fullCoverageVerified'));
+  assert.ok(experienceControl.includes('verifiedExternalLearningApplication: review.verifiedExternalLearningApplication || null'));
   assert.ok(workflow.includes('verified-external-learning-apply-axes:'));
   assert.ok(workflow.includes('verifiedLearningMemorySha:'));
   assert.ok(continuousRunnerSource.includes("Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs"));
