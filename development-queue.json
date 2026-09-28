@@ -17649,10 +17649,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T21:45:58.478Z",
+      "updatedAt": "2026-09-28T23:27:40.245Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -18698,8 +18698,8 @@
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
           "scenarioFailureCount": 4,
-          "primaryActionDisplacement": 244.93121767850585,
-          "primaryActionVelocity": 6.532791414692017,
+          "primaryActionDisplacement": 0,
+          "primaryActionVelocity": 0,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
@@ -18902,6 +18902,10 @@
           {
             "id": "adaptive-performance-budget",
             "pass": true
+          },
+          {
+            "id": "visual-asset-load-integrity",
+            "pass": true
           }
         ],
         "scenarioCoveragePass": false,
@@ -18923,7 +18927,7 @@
               "combatSurfaceCount": 0,
               "npcSurfaceCount": 0,
               "companionSurfaceCount": 0,
-              "itemSurfaceCount": 1,
+              "itemSurfaceCount": 0,
               "remoteCount": 16,
               "soundCount": 0,
               "effectCount": 0,
@@ -18955,7 +18959,7 @@
             "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
             "observed": {
               "boundsFinite": true,
-              "collidablePartCount": 4,
+              "collidablePartCount": 1,
               "floorBelowPlayer": false,
               "floorSamples": 9,
               "floorHits": 0,
@@ -19016,8 +19020,8 @@
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-28T21:10:43.399Z",
-        "workflowRunId": 36479878848,
+        "testedAt": "2026-09-28T23:27:40.245Z",
+        "workflowRunId": 36481661807,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -19062,7 +19066,7 @@
               "combatSurfaceCount": 0,
               "npcSurfaceCount": 0,
               "companionSurfaceCount": 0,
-              "itemSurfaceCount": 1,
+              "itemSurfaceCount": 0,
               "remoteCount": 16,
               "soundCount": 0,
               "effectCount": 0,
@@ -19094,7 +19098,7 @@
             "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
             "observed": {
               "boundsFinite": true,
-              "collidablePartCount": 4,
+              "collidablePartCount": 1,
               "floorBelowPlayer": false,
               "floorSamples": 9,
               "floorHits": 0,
@@ -19155,8 +19159,8 @@
           "MAP_ROUTEABILITY"
         ],
         "robloxFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
-        "testedAt": "2026-09-28T21:10:43.399Z",
-        "workflowRunId": 36479878848,
+        "testedAt": "2026-09-28T23:27:40.245Z",
+        "workflowRunId": 36481661807,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxNativeFailureClass": "ROBLOX_CHARACTER_RESPAWN_STATE",
@@ -27730,7 +27734,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T23:24:56.408Z",
+  "updatedAt": "2026-09-28T23:27:40.245Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
