@@ -1,5 +1,5 @@
 {
-  "version": 490,
+  "version": 491,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -10415,9 +10415,8 @@
     "verifiedExternalNativeDevelopmentBinding20260928": {
       "id": "VERIFIED_EXTERNAL_NATIVE_DEVELOPMENT_BINDING_2026-09-28",
       "authority": "OWNER_DIRECTIVE_2026-09-28",
-      "status": "CODE_UPDATED_PENDING_FULL_QA_AND_NATIVE_RUNTIME",
-      "objective": "BIND_ALL_VERIFIED_EXTERNAL_BLACK_BOX_APK_LEARNING_TO_ACTUAL_ROBLOX_AND_UNITY_NATIVE_SOURCE_DEVELOPMENT_WITH_100_PERCENT_COVERAGE_AND_STALE_SOURCE_REBIND",
-      "verifiedExternalLearningCoveragePct": 100,
+      "status": "ACTIVE_ROBLOX_FIRST",
+      "objective": "APPLY_CURRENTLY_VERIFIED_EXTERNAL_BLACK_BOX_GAME_DEVELOPMENT_PRINCIPLES_TO_REAL_NATIVE_GAME_SOURCE; ROBLOX_FIRST; COVERAGE_PERCENTAGE_IS_NOT_THE GOAL",
       "unityNativeSourceGenerationBound": true,
       "unityNativeSourceReuseInvalidatedWhenLearningChanges": true,
       "robloxNewSourceGenerationBound": true,
@@ -10434,7 +10433,54 @@
         "tools/company-development-roblox-bootstrap.mjs",
         "tools/company-development-roblox-source-reconcile.mjs",
         ".github/workflows/company-development-roblox-runtime.yml"
-      ]
+      ],
+      "coveragePercentageIsNotGoal": true,
+      "robloxUiOnlyApplicationForbidden": true,
+      "robloxWorldAnimationMotionSkillVfxCameraGameplayFeedbackApplicationRequired": true,
+      "qaInfrastructurePrinciplesRemainValidationSide": true,
+      "unrelatedServerInspectionMustNotBlockPresentationWork": true
+    },
+    "robloxExternalBlackBoxFullSourceApplication20260928": {
+      "id": "ROBLOX_EXTERNAL_BLACK_BOX_FULL_SOURCE_APPLICATION_2026-09-28",
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
+      "documentationFirst": true,
+      "status": "CENTRAL_POLICY_RECORDED_IMPLEMENTATION_CONTINUES",
+      "priority": "ROBLOX_FIRST",
+      "summary": "Verified external black-box game-development principles must materially change Roblox-native game source across all semantically relevant gameplay and presentation domains, not UI alone and not metadata/prompt evidence alone.",
+      "requiredDomains": [
+        "CORE_GAMEPLAY_FEEL",
+        "PLAYER_INPUT_AND_TOUCH",
+        "VISIBLE_ACTION_FEEDBACK",
+        "WORLD_AND_BACKGROUND_PRESENTATION",
+        "ENVIRONMENTAL_FEEDBACK",
+        "CHARACTER_NPC_CREATURE_ANIMATION",
+        "MOTION_AND_TRANSITIONS",
+        "SKILL_AND_COMBAT_PRESENTATION",
+        "VFX_AND_IMPACT_EFFECTS",
+        "CAMERA_RESPONSE",
+        "HUD_AND_CONTEXTUAL_GUIDANCE",
+        "PROGRESSION_RISK_READABILITY",
+        "REWARD_AND_EVENT_PRESENTATION",
+        "MOBILE_READABILITY_AND_RESPONSE"
+      ],
+      "existingGamesIncluded": true,
+      "serverInspectionIsAffectedScopeOnly": true,
+      "continuationBindings": [
+        "tools/vibe3-roblox-learning-context.mjs",
+        "tools/company-development-roblox-bootstrap.mjs",
+        "tools/company-development-roblox-source-reconcile.mjs",
+        ".github/workflows/company-development-roblox-runtime.yml",
+        "qa/company-development-roblox-source-reconcile.test.mjs"
+      ],
+      "nextImplementationOrder": [
+        "EXPAND_CURRENT_SEMANTIC_MAPPING_BEYOND_UI_TO_WORLD_ENVIRONMENT_ANIMATION_MOTION_SKILL_VFX_CAMERA_AND_GAMEPLAY_FEEDBACK",
+        "KEEP_EXISTING_GAME_STALE_REBIND",
+        "RUN_IMPACT_SCOPED_ROBLOX_SOURCE_TESTS",
+        "TRACE_REAL_SOURCE_COMMIT_AND_PROMOTION_FOR_EXISTING_GAMES",
+        "REMOVE_RUNTIME_QUEUE_OR_FETCH_BOTTLENECKS_WITHOUT_REDUCING_EVOLUTION_LOOP"
+      ],
+      "noNewPipelineOrQueue": true,
+      "evolutionLoopPreserved": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -25233,7 +25279,14 @@
       "externalProviderCapacityIsOnlyHeavyExecutionBoundary": true
     },
     "fortniteUefnDevelopmentStatus": "DEVELOPMENT_PAUSED",
-    "fortniteUefnStatusLabel": "개발보류"
+    "fortniteUefnStatusLabel": "개발보류",
+    "ownerExecutionPriority": {
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
+      "currentPriority": "ROBLOX_FIRST",
+      "unityWorkDeferredUntilRobloxApplicationPathIsVerified": true,
+      "preserveExistingDualPlatformArchitecture": true,
+      "noNewPipeline": true
+    }
   },
   "centralDocumentation": {
     "version": 3,
@@ -26681,7 +26734,7 @@
     }
   },
   "robloxNativeCodingQualityContract": {
-    "version": 2,
+    "version": 3,
     "status": "ACTIVE_EXECUTABLE_CONTRACT",
     "authority": "OWNER_DIRECTIVE_2026-09-26",
     "objective": "MAKE_ROBLOX_IMPLEMENTATION_NATIVE_TO_LUAU_SERVER_CLIENT_STUDIO_RUNTIME_AND_MOBILE_INPUT_WHILE_REUSING_THE_EXISTING_BUILD_UP_SOURCE_QA_STUDIO_MCP_AND_LEARNING_PIPELINE",
@@ -26718,21 +26771,30 @@
       "requiredBeforeRobloxGeneration": true,
       "inspectExistingGameFirst": true,
       "requiredResponsibilityMap": [
-        "SERVER_AUTHORITY",
         "CLIENT_PRESENTATION",
-        "REMOTE_EVENTS_AND_REMOTE_FUNCTIONS",
         "INPUT_AND_TOUCH",
-        "CHARACTER_AND_RESPAWN",
-        "DATASTORE_AND_SAVE",
         "UI_STATE",
-        "CORE_STATE_MACHINE",
-        "MULTIPLAYER_SYNC",
-        "RIG_AND_ANIMATION_OWNERSHIP",
-        "NPC_AND_CREATURE_MOTION"
+        "CORE_STATE_MACHINE_WHEN_AFFECTED",
+        "RIG_AND_ANIMATION_OWNERSHIP_WHEN_AFFECTED",
+        "NPC_AND_CREATURE_MOTION_WHEN_AFFECTED",
+        "WORLD_ENVIRONMENT_PRESENTATION_WHEN_AFFECTED",
+        "SKILL_COMBAT_PRESENTATION_WHEN_AFFECTED",
+        "VFX_CAMERA_FEEDBACK_WHEN_AFFECTED"
       ],
       "genericCrossPlatformImplementationWithoutRobloxSourceInspectionForbidden": true,
       "existingFunctionsAndModulesPreferred": true,
-      "wrapperOverrideOrTemporaryHelperAccumulationForbidden": true
+      "wrapperOverrideOrTemporaryHelperAccumulationForbidden": true,
+      "affectedResponsibilityInspectionOnly": true,
+      "conditionalServerResponsibilityMap": [
+        "SERVER_AUTHORITY",
+        "REMOTE_EVENTS_AND_REMOTE_FUNCTIONS",
+        "DATASTORE_AND_SAVE",
+        "MULTIPLAYER_SYNC",
+        "AUTHORITATIVE_COMBAT_REWARD_ECONOMY"
+      ],
+      "serverInspectionRequiredOnlyWhenAffectedResponsibilityIncludesServerAuthority": true,
+      "globalServerFileInspectionAsPresentationPreconditionForbidden": true,
+      "clientPresentationMotionVfxEnvironmentWorkMustNotWaitForUnrelatedServerInspection": true
     },
     "buildUpRobloxHandoff": {
       "required": true,
@@ -26759,7 +26821,14 @@
         "ENEMY_AI",
         "CHARACTER_STATE",
         "MULTIPLAYER_SYNC",
-        "CHARACTER_MOTION"
+        "CHARACTER_MOTION",
+        "WORLD_ENVIRONMENT",
+        "BACKGROUND_PRESENTATION",
+        "ANIMATION_TRANSITIONS",
+        "SKILL_COMBAT_PRESENTATION",
+        "VFX",
+        "CAMERA_FEEDBACK",
+        "MOBILE_TOUCH_FEEDBACK"
       ],
       "unrelatedResponsibleFilesMayRunInParallel": true,
       "sameResponsibleFileConcurrentWriteForbidden": true,
@@ -26857,12 +26926,90 @@
         "STUDIO_RUNTIME_DEBUGGING",
         "RIG_ANIMATION",
         "MOTION_BLEND",
-        "MOTION_CONTACT_IK"
+        "MOTION_CONTACT_IK",
+        "WORLD_ENVIRONMENT_PRESENTATION",
+        "BACKGROUND_PRESENTATION",
+        "ANIMATION_FEEL",
+        "SKILL_COMBAT_PRESENTATION",
+        "VFX_IMPACT_FEEDBACK",
+        "CAMERA_RESPONSE",
+        "PROGRESSION_RISK_READABILITY",
+        "MOBILE_TOUCH_RESPONSE"
       ],
       "sourceAndOutcomeEvidenceRequired": true,
       "failedPatternMustBeReusableAvoidEvidence": true,
       "rawUnverifiedStudioOutputCannotBecomePositiveLearning": true,
-      "noNewLearningStore": true
+      "noNewLearningStore": true,
+      "verifiedExternalBlackBoxGameDevelopmentApplication": {
+        "authority": "OWNER_DIRECTIVE_2026-09-28",
+        "status": "ACTIVE_EXECUTABLE_CONTRACT",
+        "priority": "ROBLOX_FIRST",
+        "goal": "USE_EVERY_CURRENTLY_VERIFIED_EXTERNAL_BLACK_BOX_GAME_DEVELOPMENT_PRINCIPLE_IN_REAL_ROBLOX_SOURCE_AS_ROBLOX_NATIVE_IMPLEMENTATION_NOT_AS_A_COVERAGE_PERCENTAGE_OR_METADATA_BADGE",
+        "coveragePercentageIsNotGoal": true,
+        "appliesToNewAndExistingRobloxGames": true,
+        "staleExistingSourceMustRebindWhenVerifiedLearningFingerprintChanges": true,
+        "uiOnlyApplicationForbidden": true,
+        "metadataOnlyApplicationForbidden": true,
+        "promptOnlyApplicationForbidden": true,
+        "sourceMutationRequired": true,
+        "robloxNativeExpressionRequired": true,
+        "applicationDomains": [
+          "CORE_GAMEPLAY_FEEL",
+          "PLAYER_INPUT_AND_TOUCH",
+          "VISIBLE_ACTION_FEEDBACK",
+          "WORLD_AND_BACKGROUND_PRESENTATION",
+          "ENVIRONMENTAL_FEEDBACK",
+          "CHARACTER_NPC_CREATURE_ANIMATION",
+          "MOTION_AND_TRANSITIONS",
+          "SKILL_AND_COMBAT_PRESENTATION",
+          "VFX_AND_IMPACT_EFFECTS",
+          "CAMERA_RESPONSE",
+          "HUD_AND_CONTEXTUAL_GUIDANCE",
+          "PROGRESSION_RISK_READABILITY",
+          "REWARD_AND_EVENT_PRESENTATION",
+          "MOBILE_READABILITY_AND_RESPONSE"
+        ],
+        "everyVerifiedGameDevelopmentPrincipleMustMapToAtLeastOneConcreteRobloxBehaviorOrPresentationChange": true,
+        "unmappedVerifiedGameDevelopmentPrincipleMustFailClosed": true,
+        "qaInfrastructureAndroidInstallArtifactPrinciplesRemainInValidationAndMustNotBeFakedIntoGameplaySource": true,
+        "rawCommercialCodeAssetAlgorithmExtractionForbidden": true,
+        "preserveGameRulesBalanceSaveEconomyHitSemanticsAndNetworkAuthorityUnlessSeparatelyAuthorized": true,
+        "serverInspectionPolicy": {
+          "defaultForPresentationOnlyWork": "NOT_REQUIRED",
+          "requiredWhen": [
+            "SERVER_AUTHORITY_IS_CHANGED",
+            "REMOTE_CONTRACT_IS_CHANGED",
+            "SAVE_OR_DATASTORE_MEANING_IS_CHANGED",
+            "AUTHORITATIVE_COMBAT_REWARD_OR_ECONOMY_IS_CHANGED",
+            "MULTIPLAYER_SYNC_IS_CHANGED"
+          ],
+          "unrelatedServerFileInspectionMayNotBlock": [
+            "BACKGROUND",
+            "ENVIRONMENT",
+            "ANIMATION",
+            "MOTION",
+            "SKILL_PRESENTATION",
+            "VFX",
+            "CAMERA",
+            "CLIENT_FEEDBACK",
+            "HUD"
+          ]
+        },
+        "continuationBindings": [
+          "tools/vibe3-roblox-learning-context.mjs",
+          "tools/company-development-roblox-bootstrap.mjs",
+          "tools/company-development-roblox-source-reconcile.mjs",
+          ".github/workflows/company-development-roblox-runtime.yml",
+          "qa/company-development-roblox-source-reconcile.test.mjs"
+        ],
+        "continuationOrder": [
+          "EXPAND_CURRENT_SEMANTIC_MAPPING_BEYOND_UI_TO_WORLD_ENVIRONMENT_ANIMATION_MOTION_SKILL_VFX_CAMERA_AND_GAMEPLAY_FEEDBACK",
+          "KEEP_EXISTING_GAME_STALE_REBIND",
+          "RUN_IMPACT_SCOPED_ROBLOX_SOURCE_TESTS",
+          "TRACE_REAL_SOURCE_COMMIT_AND_PROMOTION_FOR_EXISTING_GAMES",
+          "REMOVE_RUNTIME_QUEUE_OR_FETCH_BOTTLENECKS_WITHOUT_REDUCING_EVOLUTION_LOOP"
+        ]
+      }
     },
     "protectedSemantics": {
       "gameRulesBalanceProgressionSaveKeysSaveMeaningEconomyAndNetworkAuthorityMayNotChangeWithoutExistingAuthority": true,
