@@ -10875,7 +10875,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T22:28:59.047Z",
+      "updatedAt": "2026-09-28T23:09:47.575Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -11300,7 +11300,7 @@
             "id": "map-route-ne",
             "type": "mcp-map-route-audit",
             "dispatched": true,
-            "ok": true
+            "ok": false
           },
           {
             "id": "map-route-sw",
@@ -11815,6 +11815,7 @@
           "actual-play-final-server-probe",
           "scenario-character-camera-ready",
           "scenario-visual-capture-sane",
+          "scenario-adaptive-runtime-surface",
           "ROBLOX_DATASTORE_SAVE_LOAD"
         ],
         "rawSourceIncluded": false,
@@ -12013,7 +12014,7 @@
               "routeSamples": 16,
               "routeSuccess": 2,
               "routeCoveragePass": false,
-              "spawnThreatDistance": 63.41260274455254,
+              "spawnThreatDistance": 63.49458747359045,
               "spawnOverlapSafe": true
             }
           },
@@ -12031,7 +12032,7 @@
                   "semantic": "UPGRADE",
                   "effectObserved": false,
                   "effect": {
-                    "moved": 11.310383702519275,
+                    "moved": 12.138526645135377,
                     "progress": false,
                     "inventory": false,
                     "feedback": false,
@@ -12158,8 +12159,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-28T22:28:59.047Z",
-        "workflowRunId": 36481419448,
+        "testedAt": "2026-09-28T23:09:47.575Z",
+        "workflowRunId": 36481567173,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -28491,7 +28492,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T22:59:39.528Z",
+  "updatedAt": "2026-09-28T23:09:47.575Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
