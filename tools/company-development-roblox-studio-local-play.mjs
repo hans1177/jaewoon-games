@@ -1931,12 +1931,14 @@ export async function runOfficialStudioMcpPlay({
         }
         const routeId=clean(candidate.kind)+':'+clean(candidate.name);
         visitedRoutes.add(routeId);
-        const waypoints=entityRows(candidate.waypoints);
-        const completePath=Number(candidate.waypointCount||0)>0
-          &&Number(candidate.waypointCount)===waypoints.length
-          &&waypoints.length<=16;
-        let navOk=completePath,probe=previousRouteProbe,fall=0;
-        if(completePath){
+        let navOk=true,probe=previousRouteProbe,fall=0,reached=false,waypointCount=0;
+        let routeCandidate=candidate;
+        for(let segment=0;segment<4&&navOk&&!reached;segment++){
+          const waypoints=entityRows(routeCandidate.waypoints);
+          if(!waypoints.length||waypoints.length>16||Number(routeCandidate.waypointCount||0)<waypoints.length){
+            navOk=false;
+            break;
+          }
           for(const waypoint of waypoints){
             try{
               const navResult=await client.call('character_navigation',characterNavigationArgs(navigationTool.inputSchema||{},studioId,waypoint));
@@ -1951,16 +1953,24 @@ export async function runOfficialStudioMcpPlay({
                 break;
               }
               probe=next;
+              waypointCount++;
               timelineProbes.push(next);
             }catch{navOk=false;break;}
           }
+          const remaining=Math.hypot(Number(probe?.player?.rootX)-Number(candidate.x),Number(probe?.player?.rootZ)-Number(candidate.z));
+          reached=navOk&&Number.isFinite(remaining)&&remaining<=6;
+          if(reached||!navOk)break;
+          if(Number(routeCandidate.waypointCount||0)<=waypoints.length){navOk=false;break;}
+          routeCandidate=entityRows(probe?.world?.routes).find(row=>row?.pass===true
+            &&clean(row.kind)+':'+clean(row.name)===routeId);
+          if(!routeCandidate)navOk=false;
         }
         const moved=pointDistance(previousRouteProbe?.player||{},probe?.player||{});
         const arrivalDistance=Math.hypot(Number(probe?.player?.rootX)-Number(candidate.x),Number(probe?.player?.rootZ)-Number(candidate.z));
-        const safe=Boolean(navOk&&Number.isFinite(arrivalDistance)&&arrivalDistance<=6
+        const safe=Boolean(navOk&&reached&&Number.isFinite(arrivalDistance)&&arrivalDistance<=6
           &&probe?.world?.floorBelowPlayer===true&&fall<35&&moved>=1);
         actions.push({id:'map-route-'+routeId,type:'mcp-map-route-audit',dispatched:true,ok:safe,moved,fall,arrivalDistance,
-          waypointCount:Number(candidate.waypointCount||0),reason:completePath?'': 'path-too-long-or-missing',
+          waypointCount,reason:safe?'':'path-incomplete-or-blocked',
           floorBelow:probe?.world?.floorBelowPlayer===true});
         if(probe)previousRouteProbe=probe;
         if(!safe)break;
