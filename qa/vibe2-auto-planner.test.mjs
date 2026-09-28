@@ -3431,7 +3431,7 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
   assert.match(task.goal,/Unity Web 전용 HTML\/CSS\/JS gameplay UI/);
   assert.match(task.goal,/작은 결함은 1~10개/);
   assert.match(task.goal,/응용·재조합/);
-  assert.match(task.goal,/메인메뉴·인벤토리·상점·제작·퀘스트·설정·결과창/);
+  assert.match(task.goal,/메인메뉴·로비\/허브·로딩 전환·첫 플레이 안내·인벤토리·상점·제작·퀘스트·설정·결과창/);
   assert.match(task.goal,/같은 카드\/그리드\/탭 템플릿/);
 });
 
