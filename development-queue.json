@@ -4804,19 +4804,12 @@
         "authority": "OWNER_DIRECTIVE",
         "gameId": "fantasy-survival",
         "sourcePath": "web-games/fantasy-survival",
-        "sourceBefore": "10fcf8bad7287a7ceb0da3f085f632944749139e",
-        "sourceAfter": "f1124446e42807989b8e70f51bf83c828d9e93c5",
-        "semanticIntentFingerprint": "b5eab02bfd913fe7d48969987835a16d13669fd9f826527a5b5494fff59f1718",
+        "sourceBefore": "57fa13924b54259be182879c108705122b5fce51",
+        "sourceAfter": "0f752231cbaa14655618ea4ce07dee9ac7abe53f",
+        "semanticIntentFingerprint": "d5fa9260febafd4980a5f69be0bb0abca732547f44e250bb7b80ec24b1d19226",
         "affectedSystems": [
           "MOVEMENT",
-          "COMBAT",
-          "CRAFTING",
-          "INVENTORY",
-          "WORLD",
-          "PROGRESSION",
-          "UI_UX",
-          "SAVE",
-          "BALANCE"
+          "COMBAT"
         ],
         "platformTargets": [
           "UNITY",
@@ -4826,11 +4819,11 @@
         "semanticIntentPropagationRequired": true,
         "affectedWebQaRequired": true,
         "affectedPlatformQaRequired": true,
-        "detectedAt": "2026-09-28T10:15:31.232Z",
+        "detectedAt": "2026-09-28T11:09:57.341Z",
         "state": "PLATFORM_PROPAGATION_REQUIRED"
       },
       "ownerWebEditPropagationPending": true,
-      "ownerWebEditPropagationUpdatedAt": "2026-09-28T10:15:31.232Z",
+      "ownerWebEditPropagationUpdatedAt": "2026-09-28T11:09:57.341Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "fantasy-survival",
@@ -9293,7 +9286,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T10:37:35.062Z",
+  "updatedAt": "2026-09-28T11:09:57.341Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
