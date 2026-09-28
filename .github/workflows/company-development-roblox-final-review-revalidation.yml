@@ -8,6 +8,7 @@ on:
       - '.github/workflows/company-development-roblox-final-review-revalidation.yml'
       - '.github/workflows/company-development-roblox-release-promotion.yml'
       - 'qa/company-development-roblox-final-review-revalidation.test.mjs'
+      - 'qa/company-development-roblox-runtime-foundation.test.mjs'
       - 'qa/company-development-roblox-release-promotion.test.mjs'
   workflow_dispatch:
     inputs:
