@@ -1084,7 +1084,7 @@ function studioActualPlayWorldProbeSource(){
     '  local ok,pathObj=pcall(function() local path=PathfindingService:CreatePath({AgentRadius=2,AgentHeight=5,AgentCanJump=true});path:ComputeAsync(root.Position,Vector3.new(row.x,row.y,row.z));return path end)',
     '  local pass=ok and pathObj and pathObj.Status==Enum.PathStatus.Success',
     '  if pass then routeSuccessCount=routeSuccessCount+1 end',
-    '  if #routeRows<16 then table.insert(routeRows,{kind=row.kind,name=row.name,pass=pass}) end',
+    '  if #routeRows<16 then local points={};local total=0;if pass then local waypoints=pathObj:GetWaypoints();total=#waypoints;for i=2,math.min(#waypoints,17) do local v=waypoints[i].Position;table.insert(points,{x=v.X,y=v.Y,z=v.Z}) end end;table.insert(routeRows,{kind=row.kind,name=row.name,pass=pass,x=row.x,y=row.y,z=row.z,waypointCount=math.max(0,total-1),waypoints=points}) end',
     ' end',
     'end',
     'local floorBelow=false',
@@ -1914,40 +1914,66 @@ export async function runOfficialStudioMcpPlay({
         const generic=probeEffectSummary(initialClientProbe||{},combatProbe||{});
         actions.push({id:'commercial-combat-action',type:'mcp-combat-action',dispatched:true,ok:navOk&&attackOk,effectObserved:generic.effectObserved||mobDelta.healthChanged>0||mobDelta.stateChanged>0||mobDelta.targetChanged>0,effect:{...generic,mobDelta}});
       }
-      const routeTargets=[];
-      const minX=Number(initialWorld?.minX),maxX=Number(initialWorld?.maxX),minZ=Number(initialWorld?.minZ),maxZ=Number(initialWorld?.maxZ);
-      const rootX=Number(rootPos?.rootX||0),rootY=Number(rootPos?.rootY||0),rootZ=Number(rootPos?.rootZ||0);
-      if([minX,maxX,minZ,maxZ].every(Number.isFinite)&&maxX-minX>12&&maxZ-minZ>12){
-        const raw=[
-          {id:'nw',x:minX+(maxX-minX)*0.2,z:minZ+(maxZ-minZ)*0.2},
-          {id:'ne',x:minX+(maxX-minX)*0.8,z:minZ+(maxZ-minZ)*0.2},
-          {id:'sw',x:minX+(maxX-minX)*0.2,z:minZ+(maxZ-minZ)*0.8},
-          {id:'se',x:minX+(maxX-minX)*0.8,z:minZ+(maxZ-minZ)*0.8}
-        ];
-        const maxDistance=auditMode==='F9_SOAK'?120:70;
-        for(const row of raw){
-          const dx=row.x-rootX,dz=row.z-rootZ,dist=Math.hypot(dx,dz)||1;
-          const scale=Math.min(1,maxDistance/dist);
-          routeTargets.push({id:row.id,x:rootX+dx*scale,y:rootY,z:rootZ+dz*scale});
-        }
-      }
       const routeLimit=auditMode==='F9_SOAK'?4:2;
+      const visitedRoutes=new Set();
       let previousRouteProbe=initialClientProbe;
-      for(const target of routeTargets.slice(0,routeLimit)){
-        let navOk=false,probe=null;
-        try{
-          const navResult=await client.call('character_navigation',characterNavigationArgs(navigationTool.inputSchema||{},studioId,target));
-          navOk=navResult?.isError!==true;
-          await wait(auditMode==='F9_SOAK'?850:550);
-          probe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
-          if(probe)timelineProbes.push(probe);
-        }catch{}
+      for(let routeIndex=0;routeIndex<routeLimit;routeIndex++){
+        const routeRows=entityRows(previousRouteProbe?.world?.routes);
+        const root=previousRouteProbe?.player||{};
+        const candidate=routeRows.find(row=>row?.pass===true
+          &&!visitedRoutes.has(clean(row.kind)+':'+clean(row.name))
+          &&Math.hypot(Number(row.x||0)-Number(root.rootX||0),Number(row.z||0)-Number(root.rootZ||0))>8);
+        if(!candidate){
+          if(routeRows.length>0&&routeIndex===0){
+            actions.push({id:'map-route-unreachable',type:'mcp-map-route-audit',dispatched:true,ok:false,reason:'no-reachable-anchor'});
+          }
+          break;
+        }
+        const routeId=clean(candidate.kind)+':'+clean(candidate.name);
+        visitedRoutes.add(routeId);
+        let navOk=true,probe=previousRouteProbe,fall=0,reached=false,waypointCount=0;
+        let routeCandidate=candidate;
+        for(let segment=0;segment<4&&navOk&&!reached;segment++){
+          const waypoints=entityRows(routeCandidate.waypoints);
+          if(!waypoints.length||waypoints.length>16||Number(routeCandidate.waypointCount||0)<waypoints.length){
+            navOk=false;
+            break;
+          }
+          for(const waypoint of waypoints){
+            try{
+              const navResult=await client.call('character_navigation',characterNavigationArgs(navigationTool.inputSchema||{},studioId,waypoint));
+              if(navResult?.isError===true){navOk=false;break;}
+              await wait(300);
+              const next=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+              const waypointDistance=Math.hypot(Number(next?.player?.rootX)-Number(waypoint.x),Number(next?.player?.rootZ)-Number(waypoint.z));
+              fall=Math.max(fall,Number(probe?.player?.rootY||0)-Number(next?.player?.rootY||0));
+              if(!next||next.world?.floorBelowPlayer!==true||!Number.isFinite(waypointDistance)||waypointDistance>6||fall>=35){
+                navOk=false;
+                if(next)probe=next;
+                break;
+              }
+              probe=next;
+              waypointCount++;
+              timelineProbes.push(next);
+            }catch{navOk=false;break;}
+          }
+          const remaining=Math.hypot(Number(probe?.player?.rootX)-Number(candidate.x),Number(probe?.player?.rootZ)-Number(candidate.z));
+          reached=navOk&&Number.isFinite(remaining)&&remaining<=6;
+          if(reached||!navOk)break;
+          if(Number(routeCandidate.waypointCount||0)<=waypoints.length){navOk=false;break;}
+          routeCandidate=entityRows(probe?.world?.routes).find(row=>row?.pass===true
+            &&clean(row.kind)+':'+clean(row.name)===routeId);
+          if(!routeCandidate)navOk=false;
+        }
         const moved=pointDistance(previousRouteProbe?.player||{},probe?.player||{});
-        const y0=Number(previousRouteProbe?.player?.rootY),y1=Number(probe?.player?.rootY);
-        const fall=Number.isFinite(y0)&&Number.isFinite(y1)?Math.max(0,y0-y1):0;
-        const safe=Boolean(navOk&&probe?.world?.floorBelowPlayer===true&&fall<35&&moved>=1);
-        actions.push({id:'map-route-'+target.id,type:'mcp-map-route-audit',dispatched:true,ok:safe,moved,fall,floorBelow:probe?.world?.floorBelowPlayer===true});
+        const arrivalDistance=Math.hypot(Number(probe?.player?.rootX)-Number(candidate.x),Number(probe?.player?.rootZ)-Number(candidate.z));
+        const safe=Boolean(navOk&&reached&&Number.isFinite(arrivalDistance)&&arrivalDistance<=6
+          &&probe?.world?.floorBelowPlayer===true&&fall<35&&moved>=1);
+        actions.push({id:'map-route-'+routeId,type:'mcp-map-route-audit',dispatched:true,ok:safe,moved,fall,arrivalDistance,
+          waypointCount,reason:safe?'':'path-incomplete-or-blocked',
+          floorBelow:probe?.world?.floorBelowPlayer===true});
         if(probe)previousRouteProbe=probe;
+        if(!safe)break;
       }
       const semanticOf=row=>{
         const text=(clean(row?.actionText)+' '+clean(row?.objectText)+' '+clean(row?.name)).toLowerCase();
