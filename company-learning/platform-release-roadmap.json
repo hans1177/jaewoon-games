@@ -1,5 +1,5 @@
 {
-  "version": 488,
+  "version": 489,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -6624,8 +6624,32 @@
       "authority": "OWNER_DIRECTIVE_2026-09-28",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "objective": "PRESERVE_EXISTING_AUTONOMOUS_GAME_EVOLUTION_WHILE_REMOVING_DUPLICATE_VALIDATION_WORK",
+      "appliesTo": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "excludedPlatforms": [
+        "FORTNITE_UEFN"
+      ],
+      "existingFloorSequence": "F0_THROUGH_F9",
+      "newFloorCreated": false,
+      "developmentEvolutionLoopUnchanged": true,
       "evolutionLoopMustRemainUnchanged": true,
       "floorStructureMustRemainUnchanged": true,
+      "everyVerifiedDevelopmentDeltaStillRunsF0ThroughF9": true,
+      "redundantCheckDeduplicationEnabled": true,
+      "externalServerObservationRequiredForInternalDevelopment": false,
+      "robloxInternalRuntimeAuthority": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD",
+      "sameExactCandidateSecurityEvidenceReusableWithinCycle": true,
+      "securityRevalidationByAffectedResponsibility": true,
+      "fullSecurityRescanEveryFloor": false,
+      "multiplayerEvidenceReusableWithinExactCycle": true,
+      "externalMultiplayerServerRequiredForInternalDevelopment": false,
+      "notApplicableSubcheckAllowedWithDesignOrSourceEvidence": true,
+      "f1ThroughF8MayShareOneInternalRuntimeSession": true,
+      "f9FanInOnlyNoDuplicateRuntimeSession": true,
+      "f9DoesNotTerminateEvolution": true,
+      "f9ReturnsResultToExistingBuildUpDirectiveLoop": true,
       "floors": [
         "F0",
         "F1",
@@ -6647,18 +6671,30 @@
         "externalServerObservationNotRequiredForInternalDevelopment": true,
         "f9EvidenceAggregationNotRuntimeReplay": true,
         "unchangedExactEvidenceMayBeReused": true,
-        "multiplayerChecksApplicableOnly": true
+        "securityEvidenceReuseRequiresExactSourceArtifactAndCompatibleSecurityScope": true,
+        "securityRelevantResponsibilityChangeInvalidatesOnlyAffectedSecurityEvidence": true,
+        "securityBoundaryChangeAlwaysRevalidatesAffectedSecurityGate": true,
+        "multiplayerChecksApplicableOnly": true,
+        "notApplicableRequiresVerifiedDesignOrCurrentSourceAbsenceEvidence": true,
+        "releaseStateIsNotEvolutionTerminalState": true,
+        "unchangedSourceValidationBusyLoopForbidden": true
       },
       "roblox": {
         "f1ThroughF8Session": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD",
         "externalServerBoot": "OPTIONAL_MANUAL_DIAGNOSTIC_ONLY",
         "openCloudServerProbeAutomatic": false,
+        "externalMultiplayerServerRequiredForInternalDevelopment": false,
         "robloxPlayerAutomationForbidden": true,
-        "publicServerBotPlayForbidden": true
+        "publicServerBotPlayForbidden": true,
+        "externalPublicApprovalAuthority": "OWNER_EXPLICIT_DIRECTIVE_ONLY",
+        "externalPublicApprovalMayNotBeInferred": true
       },
       "unity": {
         "existingSourceFingerprintReusePreserved": true,
-        "duplicateRuntimeSessionForSameExactArtifact": false
+        "duplicateRuntimeSessionForSameExactArtifact": false,
+        "sameExactArtifactBuildRuntimeQaRegressionEvidenceReusable": true,
+        "internalOrPublicReleaseDoesNotTerminateEvolution": true,
+        "existingPublicReleaseStateMayNotBeAutomaticallyDemotedByDevelopmentValidation": true
       },
       "multiplayer": {
         "floor": "F7",
@@ -6673,6 +6709,9 @@
         "mode": "EVIDENCE_FAN_IN_AND_REGRESSION_REVIEW",
         "startsNewRuntimeSession": false,
         "reusesExactF0ToF8Evidence": true,
+        "rerunsSecurityScan": false,
+        "rerunsMultiplayerSession": false,
+        "terminatesEvolution": false,
         "verifies": [
           "EXACT_SOURCE_ARTIFACT_BINDING",
           "APPLICABLE_FLOORS_PASS_OR_NOT_APPLICABLE",

@@ -1,5 +1,5 @@
 {
-  "version": 59,
+  "version": 60,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -762,8 +762,37 @@
   },
   "minimumNecessaryDevelopmentSecurity": {
     "version": 1,
-    "centralContract": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.developmentLoopOptimization",
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
     "defaultMode": "SCOPED_AUTOMATED_SECURITY_NONBLOCKING_WHEN_NO_RELEVANT_BOUNDARY_CHANGED",
+    "evidenceReuse": {
+      "evidenceKey": [
+        "sourceRevision",
+        "artifactIdentity",
+        "securityScopeFingerprint",
+        "affectedResponsibilities",
+        "pass",
+        "checkedAt"
+      ],
+      "reuseRequires": [
+        "EXACT_SOURCE_REVISION",
+        "EXACT_ARTIFACT_IDENTITY",
+        "UNCHANGED_RELEVANT_SECURITY_SCOPE",
+        "NO_CHANGED_SECURITY_RESPONSIBILITY"
+      ],
+      "alwaysInvalidateAffectedEvidenceOn": [
+        "REMOTE_EVENT_OR_REMOTE_FUNCTION_CHANGE",
+        "SERVER_AUTHORITY_CHANGE",
+        "SAVE_OR_DATASTORE_CHANGE",
+        "ECONOMY_OR_REWARD_CHANGE",
+        "DAMAGE_OR_COOLDOWN_AUTHORITY_CHANGE",
+        "INVENTORY_OWNERSHIP_CHANGE",
+        "ANTI_CHEAT_OR_SECURITY_BOUNDARY_CHANGE",
+        "NETWORKING_OR_MULTIPLAYER_AUTHORITY_CHANGE"
+      ],
+      "fullRescanEveryFloor": false,
+      "f9UsesCurrentExactEvidenceFanIn": true,
+      "newSecurityPipelineForbidden": true
+    },
     "protections": {
       "unrelatedSecurityProcedureMayNotSerializeGameBuildUp": true,
       "verifiedUnchangedSecurityEvidenceMayBeReused": true,

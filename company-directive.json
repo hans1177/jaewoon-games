@@ -1433,5 +1433,38 @@
     "companyRuntimeSeedStateOverlayRequired": true,
     "unverifiedDesignMayNotAuthorizeCoreFunOrProgression": true,
     "queueTelemetryMayDeferDesignGeneration": false
+  },
+  "validationEfficiencyOptimization": {
+    "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
+    "mirrorOnly": true,
+    "appliesTo": [
+      "ROBLOX",
+      "UNITY"
+    ],
+    "excludedPlatforms": [
+      "FORTNITE_UEFN"
+    ],
+    "existingFloorSequence": [
+      "F0",
+      "F1",
+      "F2",
+      "F3",
+      "F4",
+      "F5",
+      "F6",
+      "F7",
+      "F8",
+      "F9"
+    ],
+    "f10Forbidden": true,
+    "developmentEvolutionLoopUnchanged": true,
+    "everyVerifiedDevelopmentDeltaStillRunsF0ThroughF9": true,
+    "robloxInternalRuntimeAuthority": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD",
+    "externalServerObservationRequiredForInternalDevelopment": false,
+    "securityEvidenceDeduplication": "EXACT_SOURCE_ARTIFACT_AND_AFFECTED_RESPONSIBILITY",
+    "multiplayerEvidenceReusableWithinExactCycle": true,
+    "f9FanInOnlyNoDuplicateRuntimeSession": true,
+    "f9DoesNotTerminateEvolution": true,
+    "externalPublicApprovalAuthority": "OWNER_EXPLICIT_DIRECTIVE_ONLY"
   }
 }

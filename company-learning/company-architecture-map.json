@@ -1,5 +1,5 @@
 {
-  "version": 298,
+  "version": 299,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6547,8 +6547,17 @@
     "version": 1,
     "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
     "objective": "KEEP_EXISTING_AUTONOMOUS_GAME_EVOLUTION_AND_REMOVE_ONLY_DUPLICATE_VALIDATION",
+    "appliesTo": [
+      "ROBLOX",
+      "UNITY"
+    ],
+    "excludedPlatforms": [
+      "FORTNITE_UEFN"
+    ],
     "gameEvolutionPipelineUnchanged": true,
     "floorStructureUnchanged": true,
+    "releaseStateDoesNotTerminateEvolution": true,
+    "unchangedSourceValidationBusyLoopForbidden": true,
     "flow": [
       "VIBE_GAME_SPECIFIC_BUILD_UP_AND_REAL_SOURCE_CHANGE",
       "F0_SOURCE_INTEGRITY_ONCE",
@@ -6562,15 +6571,31 @@
       "internalRuntimeSurface": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD",
       "externalServerProbe": "MANUAL_DIAGNOSTIC_ONLY",
       "automaticOpenCloudServerProbe": false,
-      "playerAutomation": false
+      "playerAutomation": false,
+      "externalMultiplayerServerRequiredForInternalDevelopment": false,
+      "externalPublicApprovalAuthority": "OWNER_EXPLICIT_DIRECTIVE_ONLY"
     },
     "unity": {
       "internalRuntimeExecutor": ".github/workflows/company-development-unity-runtime.yml",
       "existingFingerprintReusePreserved": true
     },
+    "security": {
+      "sameExactCandidateEvidenceReusableWithinCycle": true,
+      "reuseKeyIncludes": [
+        "sourceRevision",
+        "artifactIdentity",
+        "securityScopeFingerprint",
+        "affectedResponsibilities"
+      ],
+      "invalidateOnlyAffectedResponsibilities": true,
+      "securityBoundaryChangeRequiresRevalidation": true,
+      "fullRescanEveryFloor": false
+    },
     "multiplayer": {
       "ownerFloor": "F7",
       "onlyWhenApplicable": true,
+      "nonMultiplayerFloorResult": "NOT_APPLICABLE",
+      "notApplicableRequiresDesignOrSourceEvidence": true,
       "oneExactTwoParticipantSyncProofPerCycle": true,
       "reusedByF9": true,
       "duplicateReleaseRecheck": false
@@ -6578,7 +6603,10 @@
     "f9": {
       "role": "EVIDENCE_FAN_IN_AND_REGRESSION_REVIEW",
       "startsRuntimeSession": false,
-      "duplicateF1ToF8ReplayForbidden": true
+      "duplicateF1ToF8ReplayForbidden": true,
+      "rerunsSecurityOrMultiplayerSession": false,
+      "terminalState": false,
+      "nextAction": "RETURN_TO_EXISTING_GAME_SPECIFIC_BUILD_UP_LOOP"
     },
     "noNewPipeline": true,
     "noShadowValidationPath": true
