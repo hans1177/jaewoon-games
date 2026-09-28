@@ -1433,5 +1433,28 @@
     "companyRuntimeSeedStateOverlayRequired": true,
     "unverifiedDesignMayNotAuthorizeCoreFunOrProgression": true,
     "queueTelemetryMayDeferDesignGeneration": false
+  },
+  "validationEfficiencyMirror": {
+    "policy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
+    "autonomousEvolutionUnchanged": true,
+    "floors": [
+      "F0",
+      "F1",
+      "F2",
+      "F3",
+      "F4",
+      "F5",
+      "F6",
+      "F7",
+      "F8",
+      "F9"
+    ],
+    "f10Exists": false,
+    "externalServerAutomatic": false,
+    "f9RuntimeReplay": false,
+    "multiplayerRoutine": "STATIC_SYNC_AUTHORITY_CONTRACT_PLUS_INTERNAL_RUNTIME",
+    "multiplayerExtendedOnlyOnRelevantDeltaOrPriorFailure": true,
+    "securityFullRescanOnlyOnRelevantBoundaryDeltaOrPriorFailure": true,
+    "idleRecoveryScan": "STATE_DISCOVERY_ONLY"
   }
 }
