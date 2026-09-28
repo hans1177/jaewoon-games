@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function worldToScreen(x,y){return{x:x-state.camera.x,y:y-state.camera.y}}",
+      "replace": "ctx.fillStyle=c.dark;ctx.beginPath();ctx.ellipse(-12,0,10,8,0,0,TAU);ctx.ellipse(1,0,9,7,0,0,TAU);ctx.ellipse(13,0,classId==='soldier'?10:8,classId==='soldier'?9:7,0,0,TAU);ctx.fill();ctx.strokeStyle=c.color;ctx.lineWidth=3;for(const yy of [-7,7]){ctx.beginPath();ctx.moveTo(-5,yy*.5);ctx.lineTo(-14,yy*1.5);ctx.moveTo(4,yy*.5);ctx.lineTo(12,yy*1.5);ctx.moveTo(9,yy*.4);ctx.lineTo(21,yy*1.3);ctx.stroke()}ctx.fillStyle=c.color;drawCircle(13,0,classId==='soldier'?5:4,c.color);ctx.restore()"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
