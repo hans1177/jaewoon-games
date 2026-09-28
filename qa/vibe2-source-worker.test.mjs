@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, verifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
@@ -3807,4 +3807,45 @@ test('adaptive graphics replacement report failure is retriable and classified s
   const error=new Error('GRAPHICS_REPLACEMENT_REPORT_REQUIRED:GRAPHICS_REPLACEMENT_REPORT_MISSING');
   assert.equal(generationFailureClass(error),'GRAPHICS_REPLACEMENT_REPORT');
   assert.equal(shouldRetryGenerationError(error),true);
+});
+
+
+test('verified APK black-box learning is fail-closed and survives every source-generation compaction path',()=>{
+  const order={
+    target:'web',
+    department:'development',
+    goal:'실제 게임 기능 개발',
+    qa:[],
+    knowledgeApplicationContract:{
+      mandatoryForGameTarget:true,
+      verifiedExternalLearningIds:['external-black-box-a-run-1','external-black-box-b-run-2'],
+      verifiedExternalLearningRetrievedCount:2,
+      verifiedExternalLearningAppliedCount:2,
+      verifiedExternalLearningCoveragePct:100,
+      verifiedExternalDistilledContentComplete:true,
+      retrievedVerifiedExternalLearningTruncationForbidden:true,
+      verifiedExternalLearningApplyAxes:['UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY','GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT']
+    },
+    unifiedLearning:{
+      playbookReuse:[
+        {id:'external-black-box-a-run-1',verified:true,authority:'verified-task-playbook',distilledApplicationPrinciples:['A-menu-flow','A-touch-feedback'],distilledAvoidancePrinciples:['A-no-clone'],distilledLearningUseAllowed:['A-allowed'],distilledLearningUseForbidden:['A-forbidden']},
+        {id:'external-black-box-b-run-2',verified:true,authority:'verified-task-playbook',distilledApplicationPrinciples:['B-state-feedback'],distilledAvoidancePrinciples:['B-no-hidden-inference'],distilledLearningUseAllowed:['B-allowed'],distilledLearningUseForbidden:['B-forbidden']}
+      ]
+    }
+  };
+  const contract=buildVerifiedExternalLearningPromptContract(order);
+  assert.equal(contract.coveragePct,100);
+  assert.equal(contract.count,2);
+  for(const expected of ['external-black-box-a-run-1','external-black-box-b-run-2','A-menu-flow','A-touch-feedback','B-state-feedback'])assert.match(contract.block,new RegExp(expected));
+  const context={files:[{path:'index.html',content:'<button id="play">Play</button>',editable:true,truncated:false}],bytes:38};
+  const initial=buildPrompt(order,context,['index.html'],{verifiedExternalLearningContract:contract});
+  assert.equal(verifiedExternalLearningBlockFromPrompt(initial),contract.block);
+  const retry=buildGenerationRetryPrompt(initial,{error:new Error('timeout'),responsibleFiles:['index.html'],attempt:2});
+  assert.equal(verifiedExternalLearningBlockFromPrompt(retry),contract.block);
+  const focused=buildFocusedReplaceOnlyPrompt(initial,{error:new Error('timeout'),responsibleFiles:['index.html']});
+  assert.ok(focused);
+  assert.equal(verifiedExternalLearningBlockFromPrompt(focused.prompt),contract.block);
+  const expansion=buildFullWebExpansionPrompt(initial,{content:'<!doctype html><html><body><main id="game"></main></body></html>'},{stage:1,minBytes:9000,maxBytes:18000});
+  assert.equal(verifiedExternalLearningBlockFromPrompt(expansion),contract.block);
+  assert.throws(()=>buildVerifiedExternalLearningPromptContract({...order,unifiedLearning:{playbookReuse:[order.unifiedLearning.playbookReuse[0]]}}),/ROW_MISSING:external-black-box-b-run-2/);
 });

@@ -97,6 +97,8 @@ const FULL_FILE_END_MARKER='---VIBE2_FILE_END---';
 const FULL_WEB_EXPANSION_PREFIX='VIBE2_WEB_EXPANSION';
 const FULL_WEB_EXPANSION_CONTENT_MARKER='---VIBE2_EXPANSION_CONTENT---';
 const FULL_WEB_EXPANSION_END_MARKER='---VIBE2_EXPANSION_END---';
+const VERIFIED_EXTERNAL_LEARNING_BEGIN='[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]';
+const VERIFIED_EXTERNAL_LEARNING_END='[VERIFIED EXTERNAL BLACK-BOX LEARNING END]';
 
 const TARGET_EXTENSIONS=Object.freeze({
   roblox:new Set(['.luau','.lua','.json']),
@@ -370,6 +372,7 @@ export function buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration={},s
     prompt:[
       'You are the Vibe2 causal diagnostic source repair worker. Return JSON only.',
       goal,
+      verifiedExternalLearningBlockFromPrompt(raw),
       `Reproduced diagnostic: ${spec.diagnosticType}:${spec.path}; line=${spec.diagnosticLine??'UNKNOWN'}; needle=${spec.diagnosticNeedle||'UNKNOWN'}`,
       spec.diagnosticMicroTask?`Required repair: ${spec.diagnosticMicroTask}`:'',
       hardRule,
@@ -557,7 +560,7 @@ function fullWebExpansionStageTarget(source='',stage=1){
   };
   return{capability,missing,present:FULL_WEB_STAGE_CAPABILITY_ORDER.filter(name=>capabilities[name]===true),directive:directives[capability]||'Add one new coherent gameplay dimension that changes decisions, state transitions, or outcomes. Do not duplicate an already-present capability.'};
 }
-function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_GENERATION_TARGET_MIN_BYTES,maxBytes=FULL_WEB_GENERATION_TARGET_MAX_BYTES,remainingStages=1,previousFailure='',capabilityTarget=null}={}){
+export function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_GENERATION_TARGET_MIN_BYTES,maxBytes=FULL_WEB_GENERATION_TARGET_MAX_BYTES,remainingStages=1,previousFailure='',capabilityTarget=null}={}){
   const content=String(seed?.content??''),currentBytes=Buffer.byteLength(content,'utf8'),gap=Math.max(0,minBytes-currentBytes),stageByteTarget=Math.min(7000,Math.max(3200,Math.ceil(gap/Math.max(1,remainingStages))+800));
   const promptText=String(basePrompt??'');
   const line=(label)=>promptText.split('\n').find(row=>row.startsWith(label))||'';
@@ -565,6 +568,7 @@ function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_
     'You are the Vibe2 game source worker. Return one additive Web expansion only.',
     line('Engine:'),
     line('Goal:'),
+    verifiedExternalLearningBlockFromPrompt(promptText),
     buildUpDirectiveBlockFromPrompt(promptText),
     line('Allowed edit paths:'),
     line('Full Web generation target after automatic expansion:')||line('Full Web generation target:'),
@@ -1164,12 +1168,66 @@ function weatherWorkerGuidance(order = {}) {
   ].join('\n');
 }
 
+export function buildVerifiedExternalLearningPromptContract(order={}){
+  const contract=order?.knowledgeApplicationContract&&typeof order.knowledgeApplicationContract==='object'?order.knowledgeApplicationContract:{};
+  const required=contract.mandatoryForGameTarget===true;
+  const ids=unique((contract.verifiedExternalLearningIds||[]).map(clean).filter(Boolean));
+  if(!required&&!ids.length)return Object.freeze({required:false,pass:true,ids:Object.freeze([]),count:0,coveragePct:0,block:''});
+  if(required&&!ids.length)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_REQUIRED:NO_IDS');
+  if(contract.retrievedVerifiedExternalLearningTruncationForbidden!==true)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_REQUIRED:TRUNCATION_POLICY_MISSING');
+  const retrievedCount=Number(contract.verifiedExternalLearningRetrievedCount||0);
+  if(retrievedCount!==ids.length)throw new Error(`VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_COUNT_MISMATCH:ids=${ids.length}:retrieved=${retrievedCount}`);
+  if(Number(contract.verifiedExternalLearningCoveragePct||0)!==100||Number(contract.verifiedExternalLearningAppliedCount||0)!==ids.length||contract.verifiedExternalDistilledContentComplete!==true){
+    throw new Error(`VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_COVERAGE_INVALID:ids=${ids.length}:applied=${Number(contract.verifiedExternalLearningAppliedCount||0)}:coverage=${Number(contract.verifiedExternalLearningCoveragePct||0)}`);
+  }
+  const rows=(order?.unifiedLearning?.playbookReuse||[])
+    .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook'&&ids.includes(clean(row?.id)));
+  const byId=new Map(rows.map(row=>[clean(row.id),row]));
+  const blocks=[];
+  for(const id of ids){
+    const row=byId.get(id);
+    if(!row)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_ROW_MISSING:'+id);
+    const application=(row.distilledApplicationPrinciples||[]).map(clean).filter(Boolean);
+    const avoidance=(row.distilledAvoidancePrinciples||[]).map(clean).filter(Boolean);
+    const allowed=(row.distilledLearningUseAllowed||[]).map(clean).filter(Boolean);
+    const forbidden=(row.distilledLearningUseForbidden||[]).map(clean).filter(Boolean);
+    if(!application.length)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_APPLICATION_MISSING:'+id);
+    blocks.push(
+      `[EXTERNAL_LEARNING ${id}]`,
+      ...application.map(value=>`APPLY=${value}`),
+      ...avoidance.map(value=>`AVOID=${value}`),
+      ...allowed.map(value=>`ALLOWED=${value}`),
+      ...forbidden.map(value=>`FORBIDDEN=${value}`),
+      `[END_EXTERNAL_LEARNING ${id}]`
+    );
+  }
+  const axes=(contract.verifiedExternalLearningApplyAxes||[]).map(clean).filter(Boolean);
+  const block=[
+    VERIFIED_EXTERNAL_LEARNING_BEGIN,
+    `coverage=${ids.length}/${ids.length}; coveragePct=100; truncation=FORBIDDEN`,
+    axes.length?`applyAxes=${axes.join('|')}`:'',
+    'HARD SOURCE-WORKER RULE: every verified external black-box item below is actual implementation context for this candidate. Do not silently omit any item during initial generation, retry, focused repair, or full-Web expansion. Apply only where causally relevant and preserve proprietary boundaries.',
+    ...blocks,
+    VERIFIED_EXTERNAL_LEARNING_END
+  ].filter(Boolean).join('\n');
+  return Object.freeze({required,pass:true,ids:Object.freeze([...ids]),count:ids.length,coveragePct:100,block});
+}
+export function verifiedExternalLearningBlockFromPrompt(prompt=''){
+  const raw=String(prompt??'');
+  const start=raw.indexOf(VERIFIED_EXTERNAL_LEARNING_BEGIN);
+  if(start<0)return'';
+  const end=raw.indexOf(VERIFIED_EXTERNAL_LEARNING_END,start+VERIFIED_EXTERNAL_LEARNING_BEGIN.length);
+  if(end<0)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_BLOCK_TRUNCATED');
+  return raw.slice(start,end+VERIFIED_EXTERNAL_LEARNING_END.length);
+}
+
 function fullWebGenerationTarget(order={}){const requirements=[...clean(order?.goal).matchAll(/REAL_GAME_FOOTPRINT_TOO_SMALL:\\d+:(\\d+)/gi)].map(match=>Number(match[1])).filter(Number.isFinite);const minBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MIN_BYTES,...requirements));const maxBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minBytes*2));return{minBytes,maxBytes};}
-function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);return[
+export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);return[
 allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON. Do not use markdown fences.':'You are the Vibe2 game source worker. Return JSON only.',
 `Engine: ${order.target}`,
 `Goal: ${order.goal}`,
 `Department: ${order.department||'development'}`,
+(verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order)).block,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
@@ -1499,6 +1557,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
     prompt:[
       'You are the Vibe2 focused source repair worker. Return JSON only.',
       goal,
+      verifiedExternalLearningBlockFromPrompt(raw),
       buildUpDirectiveBlockFromPrompt(raw,{compact:true}),
       reason?'Previous failure: '+reason:'',
       'Exact writable path: '+JSON.stringify(spec.path),
@@ -1682,6 +1741,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON.',
       rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
       rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
+      verifiedExternalLearningBlockFromPrompt(rawPrompt),
       buildUpDirectiveBlockFromPrompt(rawPrompt),
       allowedLine,
       fullWebTargetLine,
@@ -1746,6 +1806,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           'You are the Vibe2 game source worker. Return JSON only.',
           rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
           rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
+          verifiedExternalLearningBlockFromPrompt(rawPrompt),
           buildUpDirectiveBlockFromPrompt(rawPrompt),
           allowedLine,
           'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
@@ -2525,7 +2586,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     });
   if(!context.files.length)throw new Error('worker context 파일 없음');
   const fullWebTarget=allowFullRewrite?fullWebGenerationTarget(order):null;
-  const prompt=buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,sourceRootBootstrap:bootstrap,focusedWebRepair});
+  const verifiedExternalLearningContract=buildVerifiedExternalLearningPromptContract(order);
+  const prompt=buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,sourceRootBootstrap:bootstrap,focusedWebRepair,verifiedExternalLearningContract});
   const editContract=exploration?.editContract||{};
   const systemRegressionFiles=target==='system'?responsibleFiles.filter(file=>/^qa\/.+\.test\.(?:mjs|js|cjs)$/i.test(file)):[];
   const systemSourceFiles=target==='system'?responsibleFiles.filter(file=>!/^qa\/.+\.test\.(?:mjs|js|cjs)$/i.test(file)):[];
@@ -2682,6 +2744,11 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     patchRecipeMode:clean(editContract?.patchRecipe?.mode)||null,
     verifiedFailureLocalMemoryCount:Number(editContract?.patchRecipe?.verifiedMemoryCount||0),
     verifiedFailureLocalMemoryIds:Array.isArray(editContract?.patchRecipe?.verifiedMemoryIds)?editContract.patchRecipe.verifiedMemoryIds.slice(0,8):[],
+    verifiedExternalLearningSourcePromptRequired:verifiedExternalLearningContract.required===true,
+    verifiedExternalLearningSourcePromptIds:[...verifiedExternalLearningContract.ids],
+    verifiedExternalLearningSourcePromptCount:Number(verifiedExternalLearningContract.count||0),
+    verifiedExternalLearningSourcePromptCoveragePct:Number(verifiedExternalLearningContract.coveragePct||0),
+    verifiedExternalLearningSourcePromptTruncationForbidden:order?.knowledgeApplicationContract?.retrievedVerifiedExternalLearningTruncationForbidden===true,
     contextFiles:context.files.length,
     contextBytes:context.bytes,
     contextMode:generation.contextMode||'STANDARD_CONTEXT',
