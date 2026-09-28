@@ -2696,8 +2696,47 @@ test('zero-output timeout keeps focused recovery enabled for studio build-up',()
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/const zeroOutputTimeoutRecovery=!allowFullRewrite/);
   assert.match(workerSource,/&&\s*!zeroOutputTimeoutRecovery\b/);
-  assert.match(workerSource,/\(!studioExpansion\|\|zeroOutputTimeoutRecovery\|\|robloxZeroOutputTimeoutFocusedRecoveryActive\|\|assetDevelopmentFocusedGraphics\)/);
+  assert.match(workerSource,/\(!studioExpansion\|\|zeroOutputTimeoutRecovery\|\|unityStudioTimeoutFocusedRecovery\|\|robloxZeroOutputTimeoutFocusedRecoveryActive\|\|assetDevelopmentFocusedGraphics\)/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY/);
+});
+
+test('Unity Studio timeout recovery pins one exact responsible file before another large model retry',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/const UNITY_STUDIO_FOCUSED_TIMEOUT_MS=120000/);
+  assert.match(source,/const unityStudioTimeoutFocusedRecovery=!allowFullRewrite[\s\S]*?target==='unity'[\s\S]*?studioExpansion[\s\S]*?priorFailureClass==='TIMEOUT'/);
+  assert.match(source,/VIBE2_UNITY_STUDIO_TIMEOUT_FOCUSED_RECOVERY/);
+  assert.match(source,/unityStudioTimeoutFocusedRecovery\?UNITY_STUDIO_FOCUSED_TIMEOUT_MS/);
+});
+
+test('Unity Studio timeout focused prompt cannot drift to a read-only UnityWebFloorGame path',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'unity-games/demo');
+  const gameCore='Assets/Scripts/GameCore.cs';
+  const runtimeBootstrap='Assets/Scripts/RuntimeBootstrap.cs';
+  write(path.join(sourceRoot,gameCore),'public sealed class GameCore { public int Score = 1; }\n');
+  write(path.join(sourceRoot,runtimeBootstrap),'public sealed class RuntimeBootstrap { public bool Ready = false; }\n');
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: unity',
+    'Goal: [STUDIO_QUALITY_EVOLUTION] improve the existing Unity gameplay implementation',
+    'Allowed edit paths: '+gameCore+', '+runtimeBootstrap,
+    '=== FILE '+gameCore+' [EDITABLE] ===',
+    'public sealed class GameCore { public int Score = 1; }',
+    '=== FILE '+runtimeBootstrap+' [EDITABLE] ===',
+    'public sealed class RuntimeBootstrap { public bool Ready = false; }',
+    '=== FILE Assets/Scripts/UnityWebFloorGame.cs [READ-ONLY IMPACT CONTEXT] ===',
+    'public sealed class UnityWebFloorGame { }'
+  ].join('\n');
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{
+    error:new Error('Ollama 응답 시간 초과: 240000ms'),
+    responsibleFiles:[gameCore,runtimeBootstrap],
+    sourceRoot
+  });
+  assert.ok(focused);
+  assert.ok([gameCore,runtimeBootstrap].includes(focused.spec.path));
+  assert.match(focused.prompt,/Exact writable path:/);
+  assert.doesNotMatch(focused.prompt,/Exact writable path: .*UnityWebFloorGame/);
+  assert.match(focused.prompt,/Do NOT return path or find/);
 });
 
 test('focused retry derives exact unique find anchors from writable source',()=>{
