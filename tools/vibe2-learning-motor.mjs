@@ -1165,7 +1165,10 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
         score:Math.max(Number(previous?.score||0),Number(raw?.score||0)),
         verified:true,
         authority:'verified-task-playbook',
-        sourcePlaybooks:uniq([...(previous?.sourcePlaybooks||[]),item.key])
+        sourcePlaybooks:uniq([...(previous?.sourcePlaybooks||[]),item.key]),
+        distilledApplicationPrinciples:uniq([...(previous?.distilledApplicationPrinciples||[]),...(Array.isArray(raw?.distilledApplicationPrinciples)?raw.distilledApplicationPrinciples:[])]),
+        distilledAvoidancePrinciples:uniq([...(previous?.distilledAvoidancePrinciples||[]),...(Array.isArray(raw?.distilledAvoidancePrinciples)?raw.distilledAvoidancePrinciples:[])]),
+        distilledLearningUseAllowed:uniq([...(previous?.distilledLearningUseAllowed||[]),...(Array.isArray(raw?.distilledLearningUseAllowed)?raw.distilledLearningUseAllowed:[])])
       };
       playbookReuseById.set(id,next);
     }
@@ -1239,7 +1242,12 @@ export function learningGuidance(context={}){
   for(const row of context.codePatterns||[]) lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
   for(const row of context.practiceDistilled||[]) lines.push(`- verified-practice-distilled=${row.domain}; confirmations=${row.confirmations}; evidence=${(row.verificationEvidence||[]).slice(0,3).join('|')}`);
   for(const row of context.externalAiDistilled||[]) lines.push(`- external-ai-distilled-advisory=${row.id}; provider=${row.provider||'unknown'}; relevance=${row.relevance}; patterns=${(row.patterns||[]).slice(0,4).join('|')}; cautions=${(row.cautions||[]).slice(0,3).join('|')}`);
-  for(const row of context.playbookReuse||[]) lines.push(`- verified-commercial-app-reuse=${row.id}; project=${row.project||'unknown'}; score=${row.score}; sourcePlaybooks=${(row.sourcePlaybooks||[]).join('|')||'unknown'}; sourceRevision=${row.sourceRevision||'unknown'}; apply=TRANSFORMATIVE_REUSE_NOT_RAW_COPY`);
+  for(const row of context.playbookReuse||[]){
+    lines.push(`- verified-commercial-app-reuse=${row.id}; project=${row.project||'unknown'}; score=${row.score}; sourcePlaybooks=${(row.sourcePlaybooks||[]).join('|')||'unknown'}; sourceRevision=${row.sourceRevision||'unknown'}; apply=TRANSFORMATIVE_REUSE_NOT_RAW_COPY`);
+    for(const principle of row.distilledApplicationPrinciples||[]) lines.push(`  - verified-commercial-application-principle=${principle}`);
+    for(const principle of row.distilledAvoidancePrinciples||[]) lines.push(`  - verified-commercial-avoidance-principle=${principle}`);
+    for(const allowed of row.distilledLearningUseAllowed||[]) lines.push(`  - verified-commercial-learning-use=${allowed}`);
+  }
   if(context.mastery?.length) lines.push(`- production-confidence=${context.mastery.map(x=>x.domain+':PC'+Number(x.productionConfidenceLevel||1)).join(' | ')}`);
   if(context.playbook?.checklist?.length) lines.push(`- playbook=${context.playbook.checklist.join(' | ')}`);
   if(context.mastery?.length) lines.push(`- mastery=${context.mastery.map(x=>x.domain+':LV'+x.level).join(' | ')}`);
