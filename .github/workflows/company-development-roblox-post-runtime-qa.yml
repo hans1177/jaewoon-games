@@ -207,6 +207,33 @@ jobs:
           const sharedUniverse=String(sharedTarget.universeId||'').trim();
           const sharedPlace=String(sharedTarget.placeId||'').trim();
           const sharedRotationEnabled=sharedTarget.enabled===true&&sharedTarget.sharedFastMvpRotationAllowed===true;
+          const candidateForItem=item=>{
+            const persisted=item.robloxRuntimeCandidateEvidence||{};
+            if(persisted.published===true)return persisted;
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const f0=item.robloxFoundationF0Evidence||{};
+            const artifactRunId=Number(f0.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||0);
+            const localExact=
+              item.robloxFoundationF0Passed===true
+              &&item.robloxBuildPreflightPassed===true
+              &&item.robloxBuildOrPackagePassed===true
+              &&item.robloxBuildSourceRevision===sourceRevision
+              &&f0.sourceRevision===sourceRevision
+              &&f0.artifactIdentity===artifactIdentity
+              &&artifactRunId>0;
+            return localExact?{
+              published:false,
+              releaseClaim:false,
+              authority:'roblox-local-f0-pre-f9-artifact',
+              sourceRevision,
+              artifactIdentity,
+              artifactRunId,
+              universeId:'',
+              placeId:'',
+              versionNumber:artifactRunId,
+            }:persisted;
+          };
           const candidates=(q.items||[]).filter(item=>{
             if(requested&&item.gameId!==requested)return false;
             if(!requested&&transientRetryIds.has(item.gameId)){
@@ -431,7 +458,7 @@ jobs:
             if(!requested&&transientRetryIds.has(item.gameId)){
               console.log('ROBLOX_OPEN_CLOUD_RUNTIME_STATE_RETRY_IN_CURRENT_SCAN='+item.gameId);
             }
-            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const candidate=candidateForItem(item);
             if(isSharedCandidate(candidate)&&item.robloxSharedTargetCurrent===false)return false;
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
@@ -443,7 +470,7 @@ jobs:
               return false;
             }
             const studioPlay=item.robloxInternalVibePlayEvidence||{};
-            const explicitRuntimeStage=['TARGET_PLATFORM_RUNTIME_FOUNDATION','TARGET_PLATFORM_RUNTIME_ACCEPTANCE'].includes(String(item.robloxFailureStage||''));
+            const explicitRuntimeStage=['VIBE_INTERNAL_PLAY','PRIVATE_RUNTIME_CANDIDATE_DEPLOY','TARGET_PLATFORM_RUNTIME_FOUNDATION','TARGET_PLATFORM_RUNTIME_ACCEPTANCE'].includes(String(item.robloxFailureStage||''));
             const exactStudioPlayPendingRuntime=
               studioPlay.pass===true
               &&studioPlay.actualPlay===true
@@ -459,7 +486,7 @@ jobs:
                 ||item.robloxRegressionPassed!==true
               );
             const externalRuntimeObservationPending=item.robloxPublicReleaseRuntimeObservationPending===true;
-            return candidate.published===true
+            return (candidate.published===true||candidate.authority==='roblox-local-f0-pre-f9-artifact')
               &&item.robloxFoundationF0Passed===true
               &&item.robloxPublicRelease!==true
               &&(item.robloxInternalReleaseReady!==true||externalRuntimeObservationPending)
@@ -491,15 +518,21 @@ jobs:
           };
 
           for(const item of candidates){
-            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const candidate=candidateForItem(item);
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const localPreF9Candidate=candidate.authority==='roblox-local-f0-pre-f9-artifact';
             const exactCandidate=
               candidate.sourceRevision===sourceRevision
               &&candidate.artifactIdentity===artifactIdentity
               &&Number(candidate.versionNumber)>0
-              &&/^[1-9][0-9]*$/.test(String(candidate.universeId||''))
-              &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''));
+              &&(
+                localPreF9Candidate
+                ||(
+                  /^[1-9][0-9]*$/.test(String(candidate.universeId||''))
+                  &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''))
+                )
+              );
             if(!exactCandidate){
               item.robloxRuntimeFoundationPassed=false;
               item.robloxRuntimePassed=false;
