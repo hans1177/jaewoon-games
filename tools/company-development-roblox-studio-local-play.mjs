@@ -1814,6 +1814,27 @@ export async function runOfficialStudioMcpPlay({
     if(actualPlayContract?.required===true){
       initialClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
       checkpoint('actual-play-initial-client-probe',initialClientProbe!=null);
+      const floatingSpawnCandidate=Boolean(
+        initialClientProbe?.player?.rootPresent===true
+        &&initialClientProbe?.world?.floorBelowPlayer!==true
+        &&(initialClientProbe?.world?.boundsFinite!==true||Number(initialClientProbe?.world?.collidablePartCount||0)<1)
+      );
+      if(floatingSpawnCandidate){
+        await wait(450);
+        const floatingConfirm=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+        const floatingConfirmed=Boolean(
+          floatingConfirm?.player?.rootPresent===true
+          &&floatingConfirm?.world?.floorBelowPlayer!==true
+          &&(floatingConfirm?.world?.boundsFinite!==true||Number(floatingConfirm?.world?.collidablePartCount||0)<1)
+        );
+        if(floatingConfirmed){
+          checkpoint('floating-character-map-readiness',false);
+          actions.push({id:'floating-character-map-readiness',type:'mcp-world-safety-abort',dispatched:true,ok:false});
+          try{await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,false));started=false;}catch{}
+          throw new Error('ROBLOX_STUDIO_FLOATING_CHARACTER_ABORT:NO_WALKABLE_WORLD');
+        }
+      }
+      checkpoint('floating-character-map-readiness',true);
       if(clean(actualPlayContract.selectionButtonText)){
         const target=initialClientProbe?.ui?.buttons?.[clean(actualPlayContract.selectionButtonText)]||null;
         let ok=false;
