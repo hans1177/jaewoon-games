@@ -461,10 +461,10 @@ jobs:
             --header 'X-GitHub-Api-Version: 2022-11-28' \
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" \
             --output /tmp/vibe2-recent-actions-runs.json; then
-            completed_reservation_runs="$(node <<'NODE'
+            completed_reservation_runs="$(node - "$control_root/.vibe2/queue.json" /tmp/vibe2-recent-actions-runs.json <<'NODE'
           const fs=require('fs');
-          const queue=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));
-          const actions=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const queue=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const actions=JSON.parse(fs.readFileSync(process.argv[3],'utf8'));
           const candidates=new Set((queue.tasks||[])
             .filter(task=>
               String(task.status||'').toLowerCase()==='running'
@@ -480,7 +480,7 @@ jobs:
             .filter(id=>id&&candidates.has(id)))];
           process.stdout.write(completed.join(','));
           NODE
-            "$control_root/.vibe2/queue.json" /tmp/vibe2-recent-actions-runs.json)"
+            )"
             echo 'VIBE2_COMPLETED_RESERVATION_RUN_OBSERVATION=PASS'
             echo "VIBE2_COMPLETED_RESERVATION_RUN_MATCHES=${completed_reservation_runs:-NONE}"
             if [ -n "$completed_reservation_runs" ]; then
