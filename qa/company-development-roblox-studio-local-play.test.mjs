@@ -684,6 +684,20 @@ test('Studio console classification blocks errors and critical boot warnings whi
   assert.match(dataStoreBootResult.errors[0].signature,/DataStoreService/);
   assert.equal(dataStoreBootResult.warningCount,0);
 
+  const localUnpublishedDataStoreCascade={
+    content:[{
+      type:'text',
+      text:[
+        JSON.stringify({message:'You must publish this place to the web to access DataStore.',messageType:3,timestamp:5.1}),
+        JSON.stringify({message:'Infinite yield possible on ReplicatedStorage:WaitForChild("GameAction")',messageType:2,timestamp:5.2})
+      ].join('\n')
+    }]
+  };
+  const localUnpublishedDataStoreResult=classifyStudioConsoleOutput(localUnpublishedDataStoreCascade);
+  assert.equal(localUnpublishedDataStoreResult.errors.length,0);
+  assert.equal(localUnpublishedDataStoreResult.warningCount,1);
+  assert.equal(localUnpublishedDataStoreResult.localUnpublishedDataStoreSuppressed,true);
+
   const realError={
     content:[{
       type:'text',

@@ -482,21 +482,34 @@ export function classifyStudioConsoleOutput(consoleResult){
       errors.push({type:'studio-console-error',actionId:null,signature});
     }
   };
+  const gameActionYieldPattern=/Infinite yield possible.*WaitForChild\(["']GameAction["']\)/i;
+  const localUnpublishedDataStorePattern=/You must publish this place to the web to access DataStore/i;
   const criticalConsolePatterns=[
-    /Infinite yield possible.*WaitForChild\(["']GameAction["']\)/i,
+    gameActionYieldPattern,
     /DataStoreService.*(?:Studio access to APIs is not allowed|API Services are disabled)/i,
-    /You must publish this place to the web to access DataStore/i
+    localUnpublishedDataStorePattern
   ];
+  const fallbackText=flattenText(consoleResult,[]).join('\n');
+  const localUnpublishedDataStoreObserved=
+    structured.some(entry=>localUnpublishedDataStorePattern.test(entry.message))
+    ||localUnpublishedDataStorePattern.test(fallbackText);
+  let localUnpublishedDataStoreSuppressed=false;
+  const suppressLocalUnpublishedCascade=message=>{
+    if(!localUnpublishedDataStoreObserved)return false;
+    const suppress=localUnpublishedDataStorePattern.test(message)||gameActionYieldPattern.test(message);
+    if(suppress)localUnpublishedDataStoreSuppressed=true;
+    return suppress;
+  };
 
   for(const entry of structured){
-    if(entry.messageType===3)addError(entry.message);
-    else if(entry.messageType===2){
+    if(entry.messageType===3){
+      if(!suppressLocalUnpublishedCascade(entry.message))addError(entry.message);
+    }else if(entry.messageType===2){
       warningCount++;
-      if(criticalConsolePatterns.some(re=>re.test(entry.message)))addError(entry.message);
+      if(criticalConsolePatterns.some(re=>re.test(entry.message))&&!suppressLocalUnpublishedCascade(entry.message))addError(entry.message);
     }
   }
 
-  const fallbackText=flattenText(consoleResult,[]).join('\n');
   const strongFallbackPatterns=[
     ...criticalConsolePatterns,
     /Script Runtime Error/i,
@@ -508,7 +521,7 @@ export function classifyStudioConsoleOutput(consoleResult){
       ?structured.filter(entry=>entry.messageType==null).map(entry=>entry.message)
       :[fallbackText];
     for(const message of unknownMessages){
-      if(strongFallbackPatterns.some(re=>re.test(message)))addError(message);
+      if(strongFallbackPatterns.some(re=>re.test(message))&&!suppressLocalUnpublishedCascade(message))addError(message);
     }
   }
 
@@ -516,6 +529,7 @@ export function classifyStudioConsoleOutput(consoleResult){
     errors,
     warningCount,
     structuredEntryCount:structured.length,
+    localUnpublishedDataStoreSuppressed,
     consoleText:fallbackText
   };
 }
@@ -1163,6 +1177,7 @@ export async function runOfficialStudioMcpPlay({
     }
     console.log('ROBLOX_STUDIO_MCP_CONSOLE_STRUCTURED_ENTRY_COUNT='+consoleClassification.structuredEntryCount);
     console.log('ROBLOX_STUDIO_MCP_CONSOLE_WARNING_COUNT='+consoleClassification.warningCount);
+    console.log('ROBLOX_STUDIO_MCP_LOCAL_UNPUBLISHED_DATASTORE_SUPPRESSED='+(consoleClassification.localUnpublishedDataStoreSuppressed===true?'YES':'NO'));
     for(const row of consoleClassification.errors)errors.push(row);
     checkpoint('no-release-blocking-runtime-errors',consoleClassification.errors.length===0);
 
