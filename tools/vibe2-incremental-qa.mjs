@@ -297,9 +297,15 @@ function htmlScriptType(attributes='') {
   return clean(match?.[1]??match?.[2]??match?.[3]??'');
 }
 function checkHtmlInlineScriptSyntax(text, file) {
+  const source=String(text??'');
+  const openScriptCount=(source.match(/<script\b[^>]*>/gi)||[]).length;
+  const closeScriptCount=(source.match(/<\/script\s*>/gi)||[]).length;
+  if(openScriptCount!==closeScriptCount){
+    throw new Error(`markup script tag mismatch: ${file}:open=${openScriptCount}:close=${closeScriptCount}`);
+  }
   const scriptPattern=/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
   let match, scriptIndex=0, checked=0;
-  while((match=scriptPattern.exec(text))){
+  while((match=scriptPattern.exec(source))){
     scriptIndex+=1;
     const attributes=String(match[1]||'');
     const body=String(match[2]||'');
@@ -860,7 +866,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const studioAssetBinding=robloxStudioAssetBindingContract(data);
   const graphicsReplacementReport=data?.graphicsReplacementReport||null;
   const graphicsReplacementValidation=data?.graphicsReplacementValidation||null;
-  const payload = ['vibe2-incremental-qa-v15', namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null), JSON.stringify(graphicsReplacementReport), JSON.stringify(graphicsReplacementValidation)];
+  const payload = ['vibe2-incremental-qa-v16', namespace, JSON.stringify(replayPlan||null), JSON.stringify(gameRepair||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null), JSON.stringify(weatherPresentation||null), JSON.stringify(specializedRequest||null), JSON.stringify(studioAssetBinding||null), JSON.stringify(graphicsReplacementReport), JSON.stringify(graphicsReplacementValidation)];
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
