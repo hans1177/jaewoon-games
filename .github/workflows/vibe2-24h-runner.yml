@@ -94,7 +94,7 @@ env:
 # Keep one continuous scheduler chain. v7 releases the stale v6 scheduler epoch
 # while keeping the canonical scheduler and moving only its lightweight plan onto the ARM control pool.
 concurrency:
-  group: vibe2-24h-cycle-singleton-v7
+  group: vibe2-24h-cycle-singleton-v8
   cancel-in-progress: false
 
 jobs:
