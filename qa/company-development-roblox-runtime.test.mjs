@@ -269,7 +269,7 @@ test('Roblox source workflow keeps compiled candidates pending when Actions cann
   assert.ok(workflow.includes('ROBLOX_SOURCE_PROMOTION_PENDING_COUNT'));
 });
 
-test('Roblox package completion follows F0 then private runtime candidate then existing tester QA then F9',()=>{
+test('Roblox package completion follows F0 validation target then F9 canonical publish then repeats',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const preflight=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime-continuation.yml',import.meta.url),'utf8');
   const f0=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-headless-fast-mvp.yml',import.meta.url),'utf8');
@@ -277,26 +277,20 @@ test('Roblox package completion follows F0 then private runtime candidate then e
   const runtimeQa=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-post-runtime-qa.yml',import.meta.url),'utf8');
   const f9=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-final-review-revalidation.yml',import.meta.url),'utf8');
   assert.ok(preflight.includes('workflow_dispatch:'));
-  assert.ok(!preflight.includes('workflow_run:'));
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
-  assert.ok(preflight.includes('Vibe plus shared-model build preflight'));
-  assert.ok(preflight.includes('company-development-roblox-headless-fast-mvp.yml'));
   assert.ok(preflight.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCHED=YES'));
   assert.ok(f0.includes('Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight'));
-  assert.ok(f0.includes('company-development-roblox-headless-fast-mvp.mjs'));
-  assert.ok(f0.includes('HEADLESS_SOURCE_PREFLIGHT_F0')||f0.includes('robloxFoundationF0Passed'));
   assert.ok(f0.includes("item.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'"));
-  assert.ok(f0.includes('Dispatch exact Roblox runtime private-candidate handoff'));
-  assert.ok(f0.includes('company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"'));
-  assert.ok(candidate.includes('Private Runtime Candidate Deployment'));
+  assert.ok(workflow.includes('publish_stage=validation'));
+  assert.ok(candidate.includes('robloxValidationTarget'));
   assert.ok(candidate.includes("item.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION'"));
   assert.ok(candidate.includes('company-development-roblox-post-runtime-qa.yml'));
-  assert.ok(runtimeQa.includes('Roblox Runtime Foundation QA'));
-  assert.ok(runtimeQa.includes('validateRobloxRuntimeFoundationEvidence'));
   assert.ok(runtimeQa.includes("item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION'"));
-  assert.ok(runtimeQa.includes('company-development-roblox-final-review-revalidation.yml'));
   assert.ok(f9.includes('Roblox F9 Final Review'));
-  assert.ok(f9.includes('item.robloxInternalReleaseReady=true'));
+  assert.ok(f9.includes('item.robloxCanonicalPublishPending=true'));
+  assert.ok(f9.includes('publish_stage=final'));
+  assert.ok(candidate.includes('ROBLOX_CANONICAL_FINAL_PUBLISH=PASS'));
+  assert.ok(candidate.includes('ROBLOX_CANONICAL_PUBLISH_FANIN_DISPATCHED='));
   assert.ok(!f0.includes('ROBLOX_FAKE_RUNTIME_PASS=ALLOWED'));
 });
 
@@ -963,12 +957,12 @@ test('private runtime recovery uses exact F0 failure evidence even when a concur
   assert.doesNotMatch(block,/String\(x\.currentStep\|\|''\)\.toUpperCase\(\)==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
 });
 
-test('pending private candidate dispatch reuses only a candidate bound to the current Roblox publication target',()=>{
+test('pending F0 dispatch routes only to the separate validation publish stage',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
-  assert.match(workflow,/const publicationTarget=x\.robloxPublicationTarget\|\|\{\}/);
-  assert.match(workflow,/String\(candidate\.universeId\|\|''\)===String\(publicationTarget\.universeId\|\|''\)/);
-  assert.match(workflow,/String\(candidate\.placeId\|\|''\)===String\(publicationTarget\.placeId\|\|''\)/);
-  assert.match(workflow,/bootstrapState\|\|''\)\.toUpperCase\(\)==='CREATED_PRIVATE_UNPUBLISHED'/);
+  assert.match(workflow,/Roblox publish · /);
+  assert.match(workflow,/suffix=' · validation'/);
+  assert.match(workflow,/publish_stage=validation/);
+  assert.match(workflow,/company-development-roblox-release-promotion\.yml/);
 });
 
 test('Roblox continuation dispatch is per-game and does not wait behind one global active continuation',()=>{
