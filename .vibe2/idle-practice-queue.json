@@ -116,7 +116,8 @@
         "MOBILE_INPUT",
         "ANIMATION_FEEL",
         "UNITY_RUNTIME",
-        "STORYTELLING"
+        "STORYTELLING",
+        "CAMERA_LANGUAGE"
       ],
       "sourceFailure": "fail_17sa11i"
     },
@@ -146,38 +147,32 @@
         "ROBLOX_STUDIO",
         "CHARACTER_ARC",
         "UNITY_RUNTIME",
-        "AI"
+        "AI",
+        "CAMERA_LANGUAGE"
       ],
       "sourceFailure": "fail_3e38u6"
     },
     {
-      "id": "review-fail_c9xvk3",
+      "id": "review-fail_v4re74",
       "kind": "REPRO_DRILL",
       "priority": "high",
       "productionPreemptible": true,
       "countsAsProductionPass": false,
       "domains": [
         "STATE_MACHINE",
-        "PROGRESSION",
         "MOBILE_INPUT",
-        "DEBUGGING",
-        "QUEST_DESIGN",
-        "WEB_RUNTIME",
         "UI_STATE",
-        "COMBAT",
-        "RECOVERY",
-        "SECURITY",
-        "ANIMATION_FEEL",
+        "DEBUGGING",
+        "WEB_RUNTIME",
         "ROBLOX_STUDIO",
-        "STORYTELLING",
+        "UNITY_RUNTIME",
         "ASSET_PRODUCTION",
-        "ASSET_ADAPTATION",
         "VFX",
+        "CAMERA_LANGUAGE",
         "VISUAL_IDENTITY",
-        "CONCEPT_DIRECTION",
-        "UNITY_RUNTIME"
+        "STORYTELLING"
       ],
-      "sourceFailure": "fail_c9xvk3"
+      "sourceFailure": "fail_v4re74"
     },
     {
       "id": "relearn-fail_wu3qnk",
@@ -270,7 +265,8 @@
         "MOBILE_INPUT",
         "ANIMATION_FEEL",
         "UNITY_RUNTIME",
-        "STORYTELLING"
+        "STORYTELLING",
+        "CAMERA_LANGUAGE"
       ],
       "sourceFailure": "fail_17sa11i"
     },
@@ -1665,7 +1661,7 @@
       ]
     },
     {
-      "id": "gap-camera_language-l4",
+      "id": "gap-camera_language-l5",
       "kind": "CAMERA_LANGUAGE_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -1755,16 +1751,6 @@
       ]
     },
     {
-      "id": "gap-unity_runtime-l11",
-      "kind": "UNITY_NATIVE_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "UNITY_RUNTIME"
-      ]
-    },
-    {
       "id": "gap-asset_production-l12",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1805,6 +1791,16 @@
       ]
     },
     {
+      "id": "gap-unity_runtime-l12",
+      "kind": "UNITY_NATIVE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "UNITY_RUNTIME"
+      ]
+    },
+    {
       "id": "gap-progression-l13",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1835,16 +1831,6 @@
       ]
     },
     {
-      "id": "gap-ui_state-l14",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "UI_STATE"
-      ]
-    },
-    {
       "id": "gap-animation_feel-l15",
       "kind": "ANIMATION_FEEL_DRILL",
       "priority": "low",
@@ -1852,16 +1838,6 @@
       "countsAsProductionPass": false,
       "domains": [
         "ANIMATION_FEEL"
-      ]
-    },
-    {
-      "id": "gap-mobile_input-l15",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "MOBILE_INPUT"
       ]
     },
     {
@@ -1875,7 +1851,27 @@
       ]
     },
     {
-      "id": "gap-web_runtime-l21",
+      "id": "gap-ui_state-l15",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "UI_STATE"
+      ]
+    },
+    {
+      "id": "gap-mobile_input-l16",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "MOBILE_INPUT"
+      ]
+    },
+    {
+      "id": "gap-web_runtime-l22",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -1885,7 +1881,7 @@
       ]
     },
     {
-      "id": "gap-debugging-l25",
+      "id": "gap-debugging-l26",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
@@ -1895,7 +1891,7 @@
       ]
     },
     {
-      "id": "gap-state_machine-l25",
+      "id": "gap-state_machine-l26",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
       "productionPreemptible": true,
