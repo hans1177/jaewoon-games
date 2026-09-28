@@ -64,7 +64,7 @@ jobs:
     name: resolve Roblox source work
     # Exact-game ingress uses the ARM game-control pool; batch push ingress stays on fixed 24.04.
     # This spreads control work without consuming heavy ubuntu-latest game capacity.
-    runs-on: ${{ inputs.game_id != '' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 8
     outputs:
       count: ${{ steps.targets.outputs.count || '0' }}
@@ -546,7 +546,7 @@ jobs:
     name: persist Roblox source-bind results
     needs: [source-plan, source-worker]
     if: always() && needs.source-plan.result == 'success'
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
@@ -900,7 +900,7 @@ jobs:
     name: resolve Roblox technical package work
     needs: source-bootstrap
     if: always() && needs.source-bootstrap.result == 'success'
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 8
     outputs:
       count: ${{ steps.targets.outputs.count }}
@@ -1304,7 +1304,7 @@ jobs:
     concurrency:
       group: roblox-private-runtime-dispatch-${{ inputs.game_id || github.run_id }}
       cancel-in-progress: false
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
