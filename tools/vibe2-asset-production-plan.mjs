@@ -476,7 +476,10 @@ export function buildVibeAssetProductionPlan({
       project:clean(row.project)||null,
       sourceRevision:clean(row.sourceRevision)||null,
       score:Number(row.score||0),
-      sourcePlaybooks:freezeList(row.sourcePlaybooks||[])
+      sourcePlaybooks:freezeList(row.sourcePlaybooks||[]),
+      distilledApplicationPrinciples:freezeList((row.distilledApplicationPrinciples||[]).map(clean).filter(Boolean)),
+      distilledAvoidancePrinciples:freezeList((row.distilledAvoidancePrinciples||[]).map(clean).filter(Boolean)),
+      distilledLearningUseAllowed:freezeList((row.distilledLearningUseAllowed||[]).map(clean).filter(Boolean))
     }))
     .filter(row=>row.id));
   const exactKnowledgeIds=freezeList((verifiedLearning?.exactKnowledgeIds||[]).map(clean).filter(Boolean));
@@ -484,7 +487,11 @@ export function buildVibeAssetProductionPlan({
     .filter(id=>id.startsWith('PLAYBOOK_REUSE:external-black-box-'))
     .map(id=>id.slice('PLAYBOOK_REUSE:'.length))
     .filter(Boolean))]);
-  const appliedVerifiedExternalIds=freezeList([...new Set(verifiedCommercialReuse.map(row=>row.id).filter(Boolean))]);
+  const identityBoundVerifiedExternalIds=freezeList([...new Set(verifiedCommercialReuse.map(row=>row.id).filter(Boolean))]);
+  const appliedVerifiedExternalIds=freezeList([...new Set(verifiedCommercialReuse
+    .filter(row=>row.distilledApplicationPrinciples.length>0)
+    .map(row=>row.id)
+    .filter(Boolean))]);
   const matchedVerifiedExternalCount=retrievedVerifiedExternalIds.filter(id=>appliedVerifiedExternalIds.includes(id)).length;
   const fullRetrievedSetBound=!assetLearningRequired||(
     retrievedVerifiedExternalIds.length>0
@@ -506,6 +513,7 @@ export function buildVibeAssetProductionPlan({
     verifiedReuse:verifiedCommercialReuse,
     exactKnowledgeIds,
     retrievedVerifiedExternalIds,
+    identityBoundVerifiedExternalIds,
     appliedVerifiedExternalIds,
     retrievedCount:retrievedVerifiedExternalIds.length,
     appliedCount:appliedVerifiedExternalIds.length,
