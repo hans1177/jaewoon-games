@@ -1100,7 +1100,19 @@ function probeEffectSummary(before={},after={}){
   const uiBefore=Number(before?.ui?.visibleObjects||0),uiAfter=Number(after?.ui?.visibleObjects||0);
   const ui=uiBefore!==uiAfter;
   const round=clean(before?.player?.roundState)!==clean(after?.player?.roundState);
-  return{moved,progress,inventory,feedback,health,ui,round,effectObserved:moved>=0.5||progress||inventory||feedback||health||ui||round};
+  const map=clean(before?.player?.currentMap)!==clean(after?.player?.currentMap)
+    ||clean(before?.workspace?.CurrentMapId)!==clean(after?.workspace?.CurrentMapId)
+    ||clean(before?.workspace?.CurrentMapName)!==clean(after?.workspace?.CurrentMapName);
+  return{moved,progress,inventory,feedback,health,ui,round,map,effectObserved:moved>=0.5||progress||inventory||feedback||health||ui||round||map};
+}
+function semanticEffectPass(semantic='',effect={}){
+  const kind=clean(semantic).toUpperCase();
+  if(kind==='QUEST')return effect.progress||effect.ui||effect.feedback||effect.round;
+  if(kind==='REWARD'||kind==='COLLECT')return effect.inventory||effect.progress||effect.feedback||effect.ui;
+  if(kind==='SHOP'||kind==='CRAFT'||kind==='EQUIP'||kind==='UPGRADE')return effect.inventory||effect.progress||effect.ui||effect.feedback;
+  if(kind==='TRAVEL')return Number(effect.moved||0)>=3||effect.map||effect.round||effect.feedback;
+  if(kind==='HEAL')return effect.health||effect.feedback||effect.ui;
+  return effect.effectObserved===true;
 }
 export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[],timelineProbes=[],auditProfile='FAST_DEEP'}={}){
   if(contract?.required!==true)return{required:false,scenarios:[],qualityFailureKinds:[],authoritativeStateChangeObserved:false,capture:{before:{pass:true,frames:[]},after:{pass:true,frames:[]}},metrics:{}};
@@ -1706,8 +1718,9 @@ export async function runOfficialStudioMcpPlay({
           await wait(Math.max(350,Math.min(2200,holdMs+250)));
           const interactionProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
           const effect=probeEffectSummary(beforeProbe||{},interactionProbe||{});
+          const semanticPass=semanticEffectPass(semantic,effect);
           if(interactionProbe)timelineProbes.push(interactionProbe);
-          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',semantic,dispatched:true,ok:navOk&&inputOk,effectObserved:effect.effectObserved,effect});
+          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',semantic,dispatched:true,ok:navOk&&inputOk,effectObserved:semanticPass,effect});
         }catch{
           actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',semantic,dispatched:true,ok:false,effectObserved:false});
         }
