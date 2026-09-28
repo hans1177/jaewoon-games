@@ -586,8 +586,35 @@ jobs:
               }
 
               const multiplayer=multiplayerRequirementFor(item);
+              const f0=item.robloxFoundationF0Evidence||{};
+              const exactF0MultiplayerContract=
+                item.robloxFoundationF0Passed===true
+                &&f0.sourceRevision===sourceRevision
+                &&f0.artifactIdentity===artifactIdentity
+                &&f0.serverClientBoundaryPreflightPassed===true
+                &&f0.multiplayerSyncContractPassed===true;
               const multiplayerValidationPassed=multiplayer.known===true
-                &&(multiplayer.required!==true||item.robloxMultiplayerQaPassed===true);
+                &&(multiplayer.required!==true||exactF0MultiplayerContract);
+              item.robloxInternalMultiplayerValidationPassed=multiplayerValidationPassed;
+              item.robloxInternalMultiplayerValidationEvidence=multiplayer.known===true?{
+                version:1,
+                gameId:item.gameId,
+                sourceRevision,
+                artifactIdentity,
+                candidateVersionNumber:Number(candidate.versionNumber),
+                required:multiplayer.required===true,
+                mode:multiplayer.mode,
+                f0SyncContractPassed:multiplayer.required===true?exactF0MultiplayerContract:true,
+                exactStudioRuntimePassed:true,
+                externalServerRequired:false,
+                twoClientRoutineGate:false,
+                extendedTwoClientLifecycleOnlyOnCausalFailure:true,
+                pass:multiplayerValidationPassed,
+                authority:multiplayer.required===true
+                  ?'roblox-exact-f0-sync-contract-plus-studio-runtime'
+                  :'roblox-multiplayer-not-applicable',
+                verifiedAt:stamp,
+              }:null;
               const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
               const studioAssetRuntimeBindingPassed=!studioAssetBindingRequired||exactStudioInternalValidation;
               item.robloxStudioAssetRuntimeBindingPassed=studioAssetRuntimeBindingPassed;
