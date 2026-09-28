@@ -69,6 +69,109 @@ local function button(parent,text,color)
  local b=Instance.new("TextButton");b.Text=text;b.TextScaled=true;b.Font=Enum.Font.GothamBold;b.TextColor3=Color3.new(1,1,1);b.BackgroundColor3=color;b.Parent=parent;corner(b,11);stroke(b,.48);return b
 end
 
+-- 로딩/시작 메뉴: 마을 진입 전 목표와 기본 조작 안내
+local startupOverlay=Instance.new("Frame")
+startupOverlay.Name="RPGStartupEntry"
+startupOverlay.Size=UDim2.fromScale(1,1)
+startupOverlay.BackgroundColor3=Color3.fromRGB(19,21,29)
+startupOverlay.BackgroundTransparency=.03
+startupOverlay.BorderSizePixel=0
+startupOverlay.Active=true
+startupOverlay.ZIndex=100
+startupOverlay.Parent=gui
+
+local startupCard=Instance.new("Frame")
+startupCard.AnchorPoint=Vector2.new(.5,.5)
+startupCard.Position=UDim2.fromScale(.5,.5)
+startupCard.Size=touchEnabled and UDim2.new(.9,0,0,318)or UDim2.fromOffset(480,334)
+startupCard.BackgroundColor3=Color3.fromRGB(34,37,48)
+startupCard.BackgroundTransparency=.04
+startupCard.BorderSizePixel=0
+startupCard.ZIndex=101
+startupCard.Parent=startupOverlay
+corner(startupCard,18);stroke(startupCard,.34)
+
+local startupTitle=Instance.new("TextLabel")
+startupTitle.AnchorPoint=Vector2.new(.5,0)
+startupTitle.Position=UDim2.new(.5,0,0,24)
+startupTitle.Size=UDim2.new(.88,0,0,54)
+startupTitle.BackgroundTransparency=1
+startupTitle.Text="5포탈 RPG: 던전 파티"
+startupTitle.TextColor3=Color3.fromRGB(255,220,146)
+startupTitle.TextScaled=true
+startupTitle.Font=Enum.Font.GothamBold
+startupTitle.ZIndex=102
+startupTitle.Parent=startupCard
+
+local startupSubtitle=Instance.new("TextLabel")
+startupSubtitle.AnchorPoint=Vector2.new(.5,0)
+startupSubtitle.Position=UDim2.new(.5,0,0,86)
+startupSubtitle.Size=UDim2.new(.86,0,0,34)
+startupSubtitle.BackgroundTransparency=1
+startupSubtitle.Text="마을 준비 · 직업 선택 · 5개 포탈 정복"
+startupSubtitle.TextColor3=Color3.fromRGB(214,221,239)
+startupSubtitle.TextScaled=true
+startupSubtitle.Font=Enum.Font.GothamBold
+startupSubtitle.ZIndex=102
+startupSubtitle.Parent=startupCard
+
+local startupGuide=Instance.new("TextLabel")
+startupGuide.AnchorPoint=Vector2.new(.5,0)
+startupGuide.Position=UDim2.new(.5,0,0,130)
+startupGuide.Size=UDim2.new(.84,0,0,78)
+startupGuide.BackgroundTransparency=1
+startupGuide.Text="게임 시작 후 직업을 먼저 고르고\n마을에서 퀘스트와 장비를 준비한 뒤 포탈로 이동해."
+startupGuide.TextColor3=Color3.fromRGB(232,235,244)
+startupGuide.TextWrapped=true
+startupGuide.TextScaled=true
+startupGuide.Font=Enum.Font.Gotham
+startupGuide.ZIndex=102
+startupGuide.Parent=startupCard
+
+local startupStatus=Instance.new("TextLabel")
+startupStatus.AnchorPoint=Vector2.new(.5,0)
+startupStatus.Position=UDim2.new(.5,0,0,216)
+startupStatus.Size=UDim2.new(.84,0,0,28)
+startupStatus.BackgroundTransparency=1
+startupStatus.Text="마을과 캐릭터를 준비하는 중..."
+startupStatus.TextColor3=Color3.fromRGB(170,178,201)
+startupStatus.TextScaled=true
+startupStatus.Font=Enum.Font.Gotham
+startupStatus.ZIndex=102
+startupStatus.Parent=startupCard
+
+local startupPlay=button(startupCard,"게임 시작",Color3.fromRGB(86,103,163))
+startupPlay.Name="PlayButton"
+startupPlay.AnchorPoint=Vector2.new(.5,1)
+startupPlay.Position=UDim2.new(.5,0,1,-22)
+startupPlay.Size=UDim2.new(.72,0,0,50)
+startupPlay.Visible=false
+startupPlay.ZIndex=102
+
+task.spawn(function()
+ local deadline=os.clock()+5
+ repeat
+  local camera=workspace.CurrentCamera
+  local character=p.Character
+  local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+  local stateReady=p:GetAttribute("LastAction")~=nil
+  local cameraReady=camera and humanoid and camera.CameraSubject==humanoid
+  if stateReady and cameraReady then break end
+  task.wait(.1)
+ until os.clock()>=deadline
+
+ if startupOverlay.Parent then
+  startupStatus.Text="준비 완료 · 진행 데이터는 자동 저장"
+  startupPlay.Visible=true
+ end
+end)
+
+startupPlay.Activated:Connect(function()
+ if not startupPlay.Visible then return end
+ startupPlay.Active=false
+ startupOverlay:Destroy()
+end)
+
 local stats=Instance.new("Frame");
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
 local verifiedLearningPlayers = game:GetService("Players")
