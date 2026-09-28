@@ -305,9 +305,23 @@ test('central policy requires perpetual F0-F9 cycles and canonical publish only 
   assert.equal(cycle.nextCycleMayStartOnlyAfterCanonicalPublishSuccess,false);
   assert.equal(cycle.nextCycleStartsAfterPublishDispatch,true);
   assert.equal(cycle.publicationOutcomeBlocksEvolution,false);
+  assert.equal(cycle.publicationFailureMustRemainRetryTracked,true);
+  assert.equal(cycle.publicationRetryMode,'AUTOMATIC_UNBOUNDED_CAUSAL_REDISPATCH');
+  assert.equal(cycle.publicationRetryMustPreserveExactFailedCycleIdentity,true);
   assert.match(candidate,/const publicationTarget=publishStage==='final'\?\(item\.robloxPublicationTarget\|\|\{\}\):\(item\.robloxValidationTarget\|\|\{\}\)/);
   assert.match(candidate,/ROBLOX_VALIDATION_TARGET_PUBLISH=PASS/);
   assert.match(candidate,/ROBLOX_CANONICAL_FINAL_PUBLISH=PASS/);
+});
+
+test('Roblox publication failure remains retry-tracked without blocking the next evolution cycle',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(workflow,/entry\.status='RETRY_REQUIRED'/);
+  assert.match(workflow,/item\.robloxCanonicalPublishPending=true/);
+  assert.match(workflow,/robloxCanonicalPublishRepairCycleId/);
+  assert.match(workflow,/ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=YES_EXISTING_RUNTIME_REPAIR/);
+  assert.match(workflow,/company-development-confirmed-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$GAME_ID"/);
+  assert.match(workflow,/ROBLOX_PUBLICATION_RETRY_BLOCKS_NEXT_EVOLUTION=NO/);
+  assert.doesNotMatch(workflow,/ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=NO/);
 });
 
 test('every rebuilt Roblox candidate invalidates prior Vibe play and external-public evidence before revalidation',()=>{
