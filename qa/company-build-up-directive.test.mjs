@@ -36,7 +36,7 @@ test('existing UI without entry or loading flow becomes a cross-platform build-u
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'entry-flow-directive-'));
   const sourcePath=path.join(root,'roblox-games','puzzle','client','Game.client.luau');
   fs.mkdirSync(path.dirname(sourcePath),{recursive:true});
-  fs.writeFileSync(sourcePath,'local gui = Instance.new("ScreenGui")\\nlocal button = Instance.new("TextButton")\\nbutton.Activated:Connect(function() end)\\n');
+  fs.writeFileSync(sourcePath,'local gui = Instance.new("ScreenGui")\nlocal button = Instance.new("TextButton")\nbutton.Activated:Connect(function() end)\n');
   const sourceObservation=inspectGameSources({repoRoot:root,sourceRoots:['roblox-games/puzzle']});
   assert.ok(sourceObservation.signals.ui>0);
   assert.equal(sourceObservation.signals.entryFlow,0);
