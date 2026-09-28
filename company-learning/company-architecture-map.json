@@ -1,5 +1,5 @@
 {
-  "version": 298,
+  "version": 299,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -143,7 +143,7 @@
       "FAN_IN_REGRESSION",
       "CAUSAL_GAME_ERROR_REPAIR",
       "SCENARIO_AND_INVARIANT_QA",
-      "SAVE_AND_MULTIPLAYER_COMPATIBILITY_QA",
+      "SAVE_AND_MULTIPLAYER_COMPATIBILITY_QA_WHEN_RELEVANT",
       "FULL_REGRESSION_FAN_IN"
     ],
     "assetProduction": [
@@ -211,14 +211,14 @@
       "IMPACT_SCOPED_QA",
       "FULL_REGRESSION_FAN_IN",
       "ACCEPT_OR_ROLLBACK_REQUEUE",
-      "MACHINE_ONLY_TWO_PLUS_CLIENT_MULTIPLAYER_REPRODUCTION",
+      "MACHINE_ONLY_TWO_PLUS_CLIENT_MULTIPLAYER_REPRODUCTION_WHEN_MULTIPLAYER_FAILURE_OR_OWNER_PUBLIC_RELEASE_VALIDATION",
       "JOIN_LEAVE_REJOIN_LATE_JOIN_AUTHORITATIVE_SYNC_VALIDATION",
       "USER_ASSISTANCE_NOT_REQUIRED_FOR_MULTIPLAYER_PASS",
       "MULTIPLAYER_VALIDATION_PARALLEL_NON_BLOCKING_FOR_DEVELOPMENT",
       "MULTIPLAYER_EVIDENCE_BLOCKS_PROMOTION_ONLY_WHEN_REQUIRED",
       "UNRELATED_IMPLEMENTATION_QA_REGRESSION_AND_QUALITY_WORK_CONTINUES_WHILE_MULTIPLAYER_PENDING",
       "SIMPLIFIED_MULTIPLAYER_CONTRACT_MAY_PROMOTE_INTERNAL_RELEASE",
-      "FULL_TWO_PLUS_CLIENT_MULTIPLAYER_EVIDENCE_REQUIRED_BEFORE_PUBLIC_RELEASE",
+      "FULL_TWO_PLUS_CLIENT_MULTIPLAYER_EVIDENCE_ONLY_AFTER_OWNER_PUBLIC_RELEASE_VALIDATION_TRIGGER",
       "INTERNAL_PLAYTEST_CONTINUES_WHILE_FULL_MULTIPLAYER_VALIDATION_RUNS_IN_PARALLEL"
     ],
     "webStartupRepair": [
@@ -3780,7 +3780,10 @@
     "publicRelease": {
       "platformIndependent": true,
       "onePlatformDoesNotWaitForOther": true,
-      "perpetualBuildupContinuesAfterPublicRelease": true
+      "perpetualBuildupContinuesAfterPublicRelease": true,
+      "validationActivation": "OWNER_EXPLICIT_DIRECTIVE_ONLY",
+      "proactiveBackgroundValidationDuringDevelopment": false,
+      "continuousBuildUpUnaffectedBeforeOwnerTrigger": true
     },
     "robloxPerpetualInternalBuildup": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalBuildupLoop",
@@ -3912,7 +3915,11 @@
       "externalServerObservationRequiredForInternalDevelopment": false,
       "f1ThroughF8SingleStudioSession": true,
       "f9RuntimeReplay": false,
-      "f9ConsumesExistingExactEvidence": true
+      "f9ConsumesExistingExactEvidence": true,
+      "securityFullRescanEveryCycle": false,
+      "multiplayerFullTwoClientEveryCycle": false,
+      "publicReleasePrevalidationConsumesDevelopmentCycle": false,
+      "developmentFocusValidationPolicy": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.developmentFocusRuntimeValidation"
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
@@ -6623,5 +6630,43 @@
     "nativeVerificationStillRequired": true,
     "authorityExpansion": false,
     "continuousLearningReturn": true
+  },
+  "validationOptimizationTopology": {
+    "version": 1,
+    "centralPolicy": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.developmentFocusRuntimeValidation",
+    "principle": "KEEP_EXISTING_AUTONOMOUS_EVOLUTION_AND_F0_TO_F9; REMOVE_ONLY_DUPLICATE_OR_PREMATURE_PROCEDURE",
+    "autonomousEvolutionLoopPreserved": true,
+    "f0ThroughF9Preserved": true,
+    "implementationPriority": "GAME_SOURCE_BUILD_UP_AND_CAUSAL_REPAIR",
+    "externalServer": {
+      "routineDevelopmentAutomatic": false,
+      "internalGate": false,
+      "trigger": [
+        "OWNER_PUBLIC_RELEASE_VALIDATION_REQUEST",
+        "MANUAL_DIAGNOSTIC"
+      ]
+    },
+    "security": {
+      "routineFullScanEachCycle": false,
+      "reuseExactPassingEvidence": true,
+      "trigger": [
+        "SECURITY_RELEVANT_DELTA",
+        "SECURITY_FINDING",
+        "OWNER_PUBLIC_RELEASE_VALIDATION_REQUEST"
+      ],
+      "unrelatedDevelopmentNonblocking": true
+    },
+    "multiplayer": {
+      "routineFullTwoClientEachCycle": false,
+      "reuseExactPassingEvidence": true,
+      "nonMultiplayerNotApplicable": true,
+      "trigger": [
+        "MULTIPLAYER_AUTHORITY_OR_SYNC_DELTA",
+        "REPRODUCED_MULTIPLAYER_FAILURE",
+        "OWNER_PUBLIC_RELEASE_VALIDATION_REQUEST"
+      ]
+    },
+    "f9": "EVIDENCE_FAN_IN_AND_IMPACT_SCOPED_REGRESSION_WITHOUT_PROCEDURE_REPLAY",
+    "publicRelease": "OWNER_TRIGGERED_SEPARATE_EVALUATION_DOES_NOT_TAX_CONTINUOUS_BUILD_UP"
   }
 }
