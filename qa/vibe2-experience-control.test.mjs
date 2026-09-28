@@ -448,7 +448,7 @@ test('verified experience is injected into the next similar worker goal as advis
       }
     }
   });
-  assert.equal(order.run, true);
+  assert.equal(order.run, true, `work order blocked: ${order.reason || 'unknown'} ${JSON.stringify(order.knowledgeApplicationContract || order.gate || {})}`);
   assert.equal(order.learningAppliedToWorkerGoal, true);
   assert.equal(order.knowledgeApplicationContract.verifiedExternalLearningFirst,true);
   assert.equal(order.knowledgeApplicationContract.verifiedExternalLearningCoveragePct,100);
