@@ -3,26 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-tlhmnd",
-      "worker": "vibe2",
-      "taskId": "line-defense-unity-web-base-implementation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "f698b54dfa9813d5fc82439ec91facafd3ca3e6f",
-      "runId": null,
-      "runAttempt": null,
-      "acquiredAt": "2026-09-28T16:16:29.800Z",
-      "expiresAt": "2026-09-28T17:01:29.800Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-8c2x9r",
       "worker": "vibe2",
       "taskId": "bug-defense-roblox-second-gate-rebuild-v1",
@@ -1034,6 +1014,27 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-3e97wk",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-roblox-second-gate-rebuild-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "roblox-games/amusement-tycoon/shared/GameConfig.luau",
+        "roblox-games/amusement-tycoon/server/Game.server.luau",
+        "roblox-games/amusement-tycoon/client/Game.client.luau"
+      ],
+      "baseSha": "f005630d16e9f5883c3a9c951f37f62f6f8a20e5",
+      "runId": "36453673390",
+      "runAttempt": "1",
+      "acquiredAt": "2026-09-28T17:01:30.634Z",
+      "expiresAt": "2026-09-28T17:46:30.634Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-roblox-second-gate-rebuild-v1"
       ]
     }
   ]
