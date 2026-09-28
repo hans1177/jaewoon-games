@@ -490,6 +490,24 @@ test('central policy makes external server observation diagnostic only while Stu
  assert.equal(stack.releaseGate.externalServerBootRequiredForPublicReleaseReady,false);
 });
 
+test('development-focus policy preserves evolution and F0-F9 while removing routine external, security and two-client tax',()=>{
+ const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+ const security=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
+ const policy=roadmap.minimumNecessaryProcedurePolicy.developmentFocusRuntimeValidation;
+ assert.equal(policy.preserveExistingAutonomousEvolutionLoop,true);
+ assert.equal(policy.preserveExistingF0ThroughF9,true);
+ assert.equal(policy.externalServer.automaticDuringDevelopment,false);
+ assert.equal(policy.security.fullRescanEveryDevelopmentCycle,false);
+ assert.equal(policy.multiplayer.fullTwoClientEveryDevelopmentCycle,false);
+ assert.equal(policy.publicRelease.ownerExplicitApprovalRemainsRequired,true);
+ assert.equal(architecture.validationOptimizationTopology.autonomousEvolutionLoopPreserved,true);
+ assert.equal(architecture.validationOptimizationTopology.f0ThroughF9Preserved,true);
+ assert.equal(architecture.validationOptimizationTopology.externalServer.routineDevelopmentAutomatic,false);
+ assert.equal(security.gameSecurityStewardship.developmentScanPolicy.fullSecurityScanEveryDevelopmentCycle,false);
+ assert.equal(security.gameSecurityStewardship.developmentScanPolicy.confirmedHighRiskFindingStillFailClosed,true);
+});
+
 test('runtime QA uses Studio for internal validation and runs Open Cloud server probe only by explicit diagnostic input',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/Probe exact Roblox Open Cloud engine execution[\s\S]*?if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
@@ -585,18 +603,23 @@ test('post-runtime QA preserves independent and regression progress while shared
 });
 
 
-test('F7 multiplayer runs only when applicable and its exact proof is reused by F9',()=>{
+test('F7 multiplayer keeps routine build-up on scoped internal proof and defers full two-client validation',()=>{
  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+ const multiplayerWorkflow=fs.readFileSync('.github/workflows/company-development-roblox-multiplayer-qa.yml','utf8');
  assert.match(runtime,/const multiplayerRequirementFor=item=>/);
- assert.match(runtime,/multiplayerRequired:multiplayer\.required/);
- assert.match(runtime,/f7Status:multiplayer\.known!==true\?'APPLICABILITY_UNKNOWN':multiplayer\.required===true\?\(multiplayerValidationPassed\?'PASS_REUSED':'PENDING_SINGLE_REQUIRED_CHECK'\):'NOT_APPLICABLE'/);
- assert.match(runtime,/ROBLOX_INTERNAL_STUDIO_PASS_F7_PENDING=/);
+ assert.match(runtime,/const studioAuthoritativeStateObserved=/);
+ assert.match(runtime,/const multiplayerInternalContractPassed=/);
+ assert.match(runtime,/fullTwoClientValidationDeferred/);
+ assert.match(runtime,/fullTwoClientRequiredForInternalDevelopment:false/);
+ assert.match(runtime,/OWNER_PUBLIC_RELEASE_OR_REPRODUCED_MULTIPLAYER_FAILURE/);
+ assert.match(runtime,/PASS_INTERNAL_SCOPED/);
+ assert.match(runtime,/ROBLOX_F7_FULL_TWO_CLIENT_DEFERRED=/);
  assert.match(finalReview,/const internalStudioValidationAccepted=/);
  assert.match(finalReview,/post\.multiplayerValidationPassed===true/);
- assert.match(finalReview,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred\|\|internalStudioValidationAccepted/);
  assert.match(finalReview,/f9RuntimeReplay:false/);
  assert.match(finalReview,/item\.robloxPublicReleaseReady=false/);
+ assert.match(multiplayerWorkflow,/Roblox Multiplayer Studio QA \(Disabled\)/);
  assert.doesNotMatch(finalReview,/publishRobloxPlace/);
 });
 
