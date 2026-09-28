@@ -91,9 +91,9 @@ local function makeButton(parent,text,color)
  return b
 end
 
--- 로딩 진입 화면: 월드/카메라 준비 전 조작 차단
+-- 로딩/시작 메뉴: 월드 준비 뒤 플레이어가 직접 게임 진입
 local startupOverlay=Instance.new("Frame")
-startupOverlay.Name="StartupLoading"
+startupOverlay.Name="StartupEntry"
 startupOverlay.Size=UDim2.fromScale(1,1)
 startupOverlay.BackgroundColor3=Color3.fromRGB(20,36,33)
 startupOverlay.BackgroundTransparency=.04
@@ -102,41 +102,73 @@ startupOverlay.Active=true
 startupOverlay.ZIndex=100
 startupOverlay.Parent=gui
 
+local startupCard=Instance.new("Frame")
+startupCard.AnchorPoint=Vector2.new(.5,.5)
+startupCard.Position=UDim2.fromScale(.5,.5)
+startupCard.Size=touchEnabled and UDim2.new(.88,0,0,300)or UDim2.fromOffset(460,320)
+startupCard.BackgroundColor3=Color3.fromRGB(31,54,48)
+startupCard.BackgroundTransparency=.06
+startupCard.BorderSizePixel=0
+startupCard.ZIndex=101
+startupCard.Parent=startupOverlay
+roundify(startupCard,18);outline(startupCard,.35)
+
 local startupTitle=Instance.new("TextLabel")
-startupTitle.AnchorPoint=Vector2.new(.5,.5)
-startupTitle.Position=UDim2.fromScale(.5,.44)
-startupTitle.Size=UDim2.new(.8,0,0,54)
+startupTitle.AnchorPoint=Vector2.new(.5,0)
+startupTitle.Position=UDim2.new(.5,0,0,24)
+startupTitle.Size=UDim2.new(.86,0,0,54)
 startupTitle.BackgroundTransparency=1
 startupTitle.Text="포근섬"
 startupTitle.TextColor3=Color3.fromRGB(255,244,208)
 startupTitle.TextScaled=true
 startupTitle.Font=Enum.Font.GothamBold
-startupTitle.ZIndex=101
-startupTitle.Parent=startupOverlay
+startupTitle.ZIndex=102
+startupTitle.Parent=startupCard
+
+local startupSubtitle=Instance.new("TextLabel")
+startupSubtitle.AnchorPoint=Vector2.new(.5,0)
+startupSubtitle.Position=UDim2.new(.5,0,0,82)
+startupSubtitle.Size=UDim2.new(.86,0,0,34)
+startupSubtitle.BackgroundTransparency=1
+startupSubtitle.Text="채집 · 마을 성장 · 5개 거점 정복"
+startupSubtitle.TextColor3=Color3.fromRGB(211,239,213)
+startupSubtitle.TextScaled=true
+startupSubtitle.Font=Enum.Font.GothamBold
+startupSubtitle.ZIndex=102
+startupSubtitle.Parent=startupCard
+
+local startupGuide=Instance.new("TextLabel")
+startupGuide.AnchorPoint=Vector2.new(.5,0)
+startupGuide.Position=UDim2.new(.5,0,0,126)
+startupGuide.Size=UDim2.new(.84,0,0,64)
+startupGuide.BackgroundTransparency=1
+startupGuide.Text="나무와 작물에 가까이 가서 채집하고\n주민을 배치해 병사를 키운 뒤 거점을 공격해."
+startupGuide.TextColor3=Color3.fromRGB(227,236,228)
+startupGuide.TextWrapped=true
+startupGuide.TextScaled=true
+startupGuide.Font=Enum.Font.Gotham
+startupGuide.ZIndex=102
+startupGuide.Parent=startupCard
 
 local startupStatus=Instance.new("TextLabel")
-startupStatus.AnchorPoint=Vector2.new(.5,.5)
-startupStatus.Position=UDim2.fromScale(.5,.53)
-startupStatus.Size=UDim2.new(.82,0,0,34)
+startupStatus.AnchorPoint=Vector2.new(.5,0)
+startupStatus.Position=UDim2.new(.5,0,0,198)
+startupStatus.Size=UDim2.new(.84,0,0,28)
 startupStatus.BackgroundTransparency=1
 startupStatus.Text="월드와 조작을 준비하는 중..."
-startupStatus.TextColor3=Color3.fromRGB(211,239,213)
+startupStatus.TextColor3=Color3.fromRGB(170,201,186)
 startupStatus.TextScaled=true
 startupStatus.Font=Enum.Font.Gotham
-startupStatus.ZIndex=101
-startupStatus.Parent=startupOverlay
+startupStatus.ZIndex=102
+startupStatus.Parent=startupCard
 
-local startupHint=Instance.new("TextLabel")
-startupHint.AnchorPoint=Vector2.new(.5,.5)
-startupHint.Position=UDim2.fromScale(.5,.59)
-startupHint.Size=UDim2.new(.82,0,0,28)
-startupHint.BackgroundTransparency=1
-startupHint.Text=touchEnabled and "준비되면 화면을 터치해서 이동해." or "준비되면 이동해서 자원을 채집해."
-startupHint.TextColor3=Color3.fromRGB(170,201,186)
-startupHint.TextScaled=true
-startupHint.Font=Enum.Font.Gotham
-startupHint.ZIndex=101
-startupHint.Parent=startupOverlay
+local startupPlay=makeButton(startupCard,"게임 시작",Color3.fromRGB(86,132,89))
+startupPlay.Name="PlayButton"
+startupPlay.AnchorPoint=Vector2.new(.5,1)
+startupPlay.Position=UDim2.new(.5,0,1,-22)
+startupPlay.Size=UDim2.new(.72,0,0,48)
+startupPlay.Visible=false
+startupPlay.ZIndex=102
 
 task.spawn(function()
  local deadline=os.clock()+5
@@ -151,10 +183,15 @@ task.spawn(function()
  until os.clock()>=deadline
 
  if startupOverlay.Parent then
-  startupStatus.Text="준비 완료"
-  task.wait(.2)
-  startupOverlay:Destroy()
+  startupStatus.Text="준비 완료 · 진행 데이터는 자동 저장"
+  startupPlay.Visible=true
  end
+end)
+
+startupPlay.Activated:Connect(function()
+ if not startupPlay.Visible then return end
+ startupPlay.Active=false
+ startupOverlay:Destroy()
 end)
 
 local feedbackFlash=Instance.new("Frame")
