@@ -2881,6 +2881,9 @@
       ]
     },
     "publicationFailureMayCoexistWithNextEvolution": true,
-    "publicationVisibilityMayNotBlockNextEvolution": true
+    "publicationVisibilityMayNotBlockNextEvolution": true,
+    "publicationFailureMustRemainRetryTracked": true,
+    "automaticPublicationRetryRequired": true,
+    "publicationRetryPreservesExactFailedCycleIdentity": true
   }
 }
