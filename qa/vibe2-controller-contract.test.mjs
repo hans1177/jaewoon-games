@@ -1393,6 +1393,7 @@ test('game and asset-development workers bind verified learning-runtime playbook
   assert.ok(workflow.includes('ref: vibe2-learning-runtime'));
   assert.ok(workflow.includes('company-learning/vibe3-task-playbooks.json'));
   assert.ok(workflow.includes('VIBE2_VERIFIED_COMMERCIAL_PLAYBOOK=PASS'));
+  assert.match(workflow,/name: Verify commercial learning memory is reusable\n\s+if: env\.VIBE2_EXECUTION_LANE == 'game-primary' \|\| env\.VIBE2_EXECUTION_LANE == 'asset-development'/);
   assert.ok(workflow.includes("generatedFrom||'')!=='VERIFIED_MEMORY_ONLY'"));
   assert.ok(workflow.includes('VERIFIED_PLAYBOOK_AUTHORITY_REQUIRED'));
   assert.ok(workflow.includes('VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED'));
