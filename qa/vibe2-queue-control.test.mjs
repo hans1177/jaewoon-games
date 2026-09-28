@@ -1823,6 +1823,57 @@ test('game-primary reserves Unity and Web floors alongside Roblox development',(
 });
 
 
+test('game-primary keeps live 6:2:1 mix without verified history consuming future share',()=>{
+  const verifiedRoblox=Array.from({length:30},(_,index)=>({
+    id:`verified-roblox-${index}`,gameId:`verified-roblox-${index}`,target:'roblox',
+    department:'development',type:'implementation',goal:'historical verified work',status:'verified',
+    sourceRoot:`roblox-games/verified-roblox-${index}`
+  }));
+  const queued=[
+    ...Array.from({length:12},(_,index)=>({
+      id:`roblox-live-${index}`,gameId:`roblox-live-${index}`,target:'roblox',
+      department:'development',type:'implementation',goal:'roblox live development',status:'queued',
+      sourceRoot:`roblox-games/roblox-live-${index}`
+    })),
+    ...Array.from({length:12},(_,index)=>({
+      id:`unity-live-${index}`,gameId:`unity-live-${index}`,target:'unity',
+      department:'development',type:'implementation',goal:'unity live development',status:'queued',
+      sourceRoot:`unity-games/unity-live-${index}`
+    })),
+    ...Array.from({length:12},(_,index)=>({
+      id:`web-live-${index}`,gameId:`web-live-${index}`,target:'web',
+      department:'development',type:'implementation',goal:'web live development',status:'queued',
+      sourceRoot:`web-games/web-live-${index}`
+    }))
+  ];
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:9,tasks:[...verifiedRoblox,...queued]});
+  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:9,lane:'game-primary',reservation:{id:'live-ratio:1',runId:'live-ratio',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
+  const counts=batch.tasks.reduce((acc,task)=>{acc[task.target]=(acc[task.target]||0)+1;return acc;},{});
+  assert.equal(batch.tasks.length,9);
+  assert.deepEqual(counts,{roblox:6,unity:2,web:1});
+});
+
+test('platform floors never displace higher release-stage Roblox work',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:3,tasks:[
+    ...Array.from({length:3},(_,index)=>({
+      id:`release-roblox-${index}`,gameId:`release-roblox-${index}`,target:'roblox',
+      department:'development',type:'implementation',goal:'release repair',status:'queued',
+      releaseState:'release-confirmed',sourceRoot:`roblox-games/release-roblox-${index}`
+    })),
+    {
+      id:'development-unity',gameId:'development-unity',target:'unity',department:'development',type:'implementation',
+      goal:'unity development',status:'queued',releaseState:'development-confirmed',sourceRoot:'unity-games/development-unity'
+    },
+    {
+      id:'development-web',gameId:'development-web',target:'web',department:'development',type:'implementation',
+      goal:'web development',status:'queued',releaseState:'development-confirmed',sourceRoot:'web-games/development-web'
+    }
+  ]});
+  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:3,lane:'game-primary',reservation:{id:'release-priority:1',runId:'release-priority',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
+  assert.deepEqual(batch.tasks.map(task=>task.id).sort(),['release-roblox-0','release-roblox-1','release-roblox-2']);
+});
+
+
 test('queue CLI exposes deferred conflict task and reason telemetry',()=>{
   const source=fs.readFileSync('tools/vibe2-queue-control.mjs','utf8');
   assert.match(source,/VIBE2_QUEUE_DEFERRED_CONFLICT_COUNT=/);
