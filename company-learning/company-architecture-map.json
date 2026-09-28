@@ -1,5 +1,5 @@
 {
-  "version": 298,
+  "version": 299,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3912,7 +3912,9 @@
       "externalServerObservationRequiredForInternalDevelopment": false,
       "f1ThroughF8SingleStudioSession": true,
       "f9RuntimeReplay": false,
-      "f9ConsumesExistingExactEvidence": true
+      "f9ConsumesExistingExactEvidence": true,
+      "securityRevalidation": "IMPACT_SCOPED_ONLY_AFTER_VERIFIED_BASELINE",
+      "multiplayerRevalidation": "APPLICABILITY_AND_IMPACT_SCOPED_ONLY"
     },
     "robloxExternalPublicReleaseHardGate": {
       "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
@@ -3933,6 +3935,41 @@
       "explicitExternalPublicationEvidenceRequiredForPublicRelease": true,
       "staleBuildEvidenceRejected": true,
       "changedSourceRequiresRebuildBeforeGateReevaluation": true
+    },
+    "minimumNecessaryValidation": {
+      "version": 1,
+      "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
+      "preservesAutonomousEvolutionLoop": true,
+      "preservesExistingFloors": [
+        "F0",
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "f10Exists": false,
+      "executionModel": "ONE_EXACT_INTERNAL_RUNTIME_SESSION_PLUS_IMPACT_SCOPED_REUSE",
+      "robloxInternalRuntime": "OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD",
+      "unityInternalRuntime": "EXISTING_EXACT_UNITY_RUNTIME_SESSION",
+      "externalServer": "OPTIONAL_MANUAL_DIAGNOSTIC_ONLY",
+      "f9": "EVIDENCE_FAN_IN_NO_RUNTIME_REPLAY",
+      "multiplayer": {
+        "appliesWhen": "VERIFIED_MULTIPLAYER_REQUIRED",
+        "rerunWhen": "MULTIPLAYER_RELEVANT_SOURCE_OR_DESIGN_DELTA_OR_PRIOR_FAILURE",
+        "unrelatedChange": "REUSE_VERIFIED_EXACT_EVIDENCE",
+        "duplicateF9OrPublicReplay": false
+      },
+      "security": {
+        "rerunWhen": "SECURITY_RELEVANT_BOUNDARY_DELTA_OR_PRIOR_FAILURE",
+        "unrelatedChange": "REUSE_VERIFIED_EXACT_EVIDENCE",
+        "f9FullRescanDefault": false
+      },
+      "resultReturn": "EXISTING_VIBE_AUTONOMOUS_EVOLUTION_LOOP"
     }
   },
   "autonomousBottleneckRecovery": {
@@ -5155,7 +5192,8 @@
         ],
         "parallelSafeLanesRemainEligible": true,
         "securityQaReleaseAuthorityUnchanged": true,
-        "externalServerObservationMayNotBlockIndependentDevelopment": true
+        "externalServerObservationMayNotBlockIndependentDevelopment": true,
+        "validationOptimizationAuthority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization"
       },
       "holisticGameEvolution": {
         "policy": "company-learning/platform-release-roadmap.json#continuousGameplaySystemEvolutionContract.gameSpecificBuildUpDirective.holisticGameEvolution",
@@ -6623,5 +6661,13 @@
     "nativeVerificationStillRequired": true,
     "authorityExpansion": false,
     "continuousLearningReturn": true
+  },
+  "securityArchitecture": {
+    "validationDeduplication": {
+      "policy": "company-learning/security-immune-system.json#validationDeduplicationSecurity",
+      "fullScanOnlyOnRelevantBoundaryChangeOrPriorFailure": true,
+      "unrelatedGameEvolutionDeltaMayReuseVerifiedEvidence": true,
+      "f9DoesNotForceFullRescan": true
+    }
   }
 }
