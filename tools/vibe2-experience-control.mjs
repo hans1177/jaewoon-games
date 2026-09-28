@@ -42,6 +42,51 @@ function normalizeOutcome(value) {
 }
 function sameValue(a, b) { return clean(a) === clean(b); }
 function sameOptionalNumber(a, b) { return clean(a) === clean(b); }
+const VERIFIED_EXTERNAL_LEARNING_AXES=Object.freeze([
+  'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
+  'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
+  'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
+  'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
+  'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
+  'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
+  'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
+]);
+
+function verifiedExternalLearningApplicationFromResult(result = {}) {
+  const application=result?.knowledgeApplication&&typeof result.knowledgeApplication==='object'?result.knowledgeApplication:null;
+  if(!application||application.verifiedExternalLearningFirst!==true)return null;
+  return Object.freeze({
+    version:1,
+    sourceAuthority:'VERIFIED_MEMORY_ONLY',
+    verifiedExternalLearningFirst:true,
+    verifiedExternalLearningIds:Object.freeze(unique(application.verifiedExternalLearningIds||[])),
+    verifiedExternalLearningRetrievedCount:Math.max(0,Number(application.verifiedExternalLearningRetrievedCount||0)),
+    verifiedExternalLearningAppliedCount:Math.max(0,Number(application.verifiedExternalLearningAppliedCount||0)),
+    verifiedExternalLearningCoveragePct:Math.max(0,Math.min(100,Number(application.verifiedExternalLearningCoveragePct||0))),
+    verifiedExternalLearningApplyAxes:Object.freeze(unique(application.verifiedExternalLearningApplyAxes||[])),
+    retrievedVerifiedExternalLearningTruncationForbidden:application.retrievedVerifiedExternalLearningTruncationForbidden===true,
+    verifiedLearningMemorySha:clean(application.verifiedLearningMemorySha)||null,
+    rawCommercialCodeCopy:false,
+    rawCommercialAssetCopy:false,
+    distinctiveExpressionClone:false,
+    authorityExpanded:false
+  });
+}
+
+function validateVerifiedExternalLearningApplication(value = null) {
+  if(!value||typeof value!=='object')return[];
+  const issues=[];
+  const ids=unique(value.verifiedExternalLearningIds||[]);
+  const axes=unique(value.verifiedExternalLearningApplyAxes||[]);
+  const retrieved=Math.max(0,Number(value.verifiedExternalLearningRetrievedCount||0));
+  const applied=Math.max(0,Number(value.verifiedExternalLearningAppliedCount||0));
+  if(value.verifiedExternalLearningFirst!==true||!ids.length)issues.push('verified-external-learning-required');
+  if(retrieved!==ids.length||applied!==retrieved||Number(value.verifiedExternalLearningCoveragePct||0)!==100)issues.push('verified-external-learning-100-coverage-required');
+  if(value.retrievedVerifiedExternalLearningTruncationForbidden!==true)issues.push('verified-external-learning-truncation-forbidden');
+  for(const axis of VERIFIED_EXTERNAL_LEARNING_AXES)if(!axes.includes(axis))issues.push('verified-external-learning-axis-required:'+axis);
+  if(value.rawCommercialCodeCopy===true||value.rawCommercialAssetCopy===true||value.distinctiveExpressionClone===true)issues.push('raw-commercial-expression-copy-forbidden');
+  return unique(issues);
+}
 function verifiedEvidence(value) {
   if (value === true) return true;
   if (!value || typeof value !== 'object') return false;
@@ -53,7 +98,7 @@ export function validateVibeExperiencePromotion(review = {}) {
   const reviewDecision = normalizeDecision(review.reviewDecision);
   const evidence = unique(review.evidence || []);
   const designValidation = validateDesignAwareExperience(review);
-  const issues = [...designValidation.issues];
+  const issues = [...designValidation.issues,...validateVerifiedExternalLearningApplication(review.verifiedExternalLearningApplication)];
   if (!clean(review.gameId)) issues.push('game-id-required');
   if (!clean(review.engine)) issues.push('engine-required');
   if (!clean(review.taskType)) issues.push('task-type-required');
@@ -103,6 +148,7 @@ export function promoteVibeReviewedExperience(memoryInput, review = {}) {
     evidence: validation.evidence,
     reusablePatterns: unique(review.reusablePatterns || []),
     avoidPatterns: unique(review.avoidPatterns || []),
+    verifiedExternalLearningApplication: review.verifiedExternalLearningApplication || null,
     verified: true,
     createdAt: clean(review.createdAt)
   });
@@ -241,6 +287,7 @@ export function buildSupervisedWebExperienceReview({ task = {}, candidateResult 
   ]);
   const pass=decision==='PASS'&&resultOutcome==='PASS';
   const reusable=unique(supervisionReview.reusablePatterns||[]);
+  const verifiedExternalLearningApplication=verifiedExternalLearningApplicationFromResult(candidateResult);
   const avoid=unique([
     ...(Array.isArray(supervisionReview.avoidPatterns)?supervisionReview.avoidPatterns:[]),
     ...(!pass&&rationale?[rationale]:[])
@@ -275,6 +322,7 @@ export function buildSupervisedWebExperienceReview({ task = {}, candidateResult 
     reviewDecision:verified?'PASS':'REVISE',
     designIntelligenceRequired:false,
     authorityExpanded:false,
+    verifiedExternalLearningApplication,
     supervisionDecision:decision,
     supervisionRationale:rationale,
     candidateBranch:candidateBranch||null
