@@ -1048,7 +1048,7 @@ function progressionChanged(beforeRows=[],afterRows=[]){
   }
   return false;
 }
-export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[]}={}){
+export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[],timelineProbes=[],auditProfile='FAST_DEEP'}={}){
   if(contract?.required!==true)return{required:false,scenarios:[],qualityFailureKinds:[],authoritativeStateChangeObserved:false,capture:{before:{pass:true,frames:[]},after:{pass:true,frames:[]}},metrics:{}};
   const exp=contract?.expectations||{};
   const requiredIds=new Set(Array.isArray(contract?.requiredScenarios)?contract.requiredScenarios.map(clean).filter(Boolean):[]);
@@ -1087,6 +1087,17 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const companionMotion=entityMotionSummary(initialWorld?.companions,world?.companions);
   const npcMotion=entityMotionSummary(initialWorld?.npcs,world?.npcs);
   const progressChanged=progressionChanged(initialClientProbe?.runtime?.progression,runtime?.progression);
+  const timeline=Array.isArray(timelineProbes)?timelineProbes.filter(Boolean):[];
+  let timelineMobDynamic=false,timelineCompanionDynamic=false,timelineProgressChanged=false;
+  let previous=initialClientProbe;
+  for(const probe of timeline){
+    if(!previous){previous=probe;continue;}
+    timelineMobDynamic=timelineMobDynamic||entityMotionSummary(previous?.world?.mobs,probe?.world?.mobs).dynamic;
+    timelineCompanionDynamic=timelineCompanionDynamic||entityMotionSummary(previous?.world?.companions,probe?.world?.companions).dynamic;
+    timelineProgressChanged=timelineProgressChanged||progressionChanged(previous?.runtime?.progression,probe?.runtime?.progression);
+    previous=probe;
+  }
+  const soak=clean(auditProfile).toUpperCase()==='F9_SOAK';
   const visibleButtons=Number(ui.visibleButtons||0);
   const uiCommercialPass=
     Number(ui.offscreenButtons||0)===0
@@ -1124,11 +1135,11 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-interaction-surface',pass:!signals.interactions||interactionSurfaceCount>0},
     {id:'adaptive-progression-surface',pass:!signals.progression||progressionSurfaceCount>0},
     {id:'adaptive-remote-surface',pass:!signals.serverBoundary||Number(runtime.remoteCount||0)>0},
-    {id:'adaptive-combat-surface',pass:!signals.combat||combatSurfaceCount>0},
+    {id:'adaptive-combat-surface',pass:!signals.combat||(combatSurfaceCount>0&&(!soak||entityRows(world.mobs).length===0||timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged))},
     {id:'adaptive-motion-surface',pass:!signals.motion||(player.animatorPresent===true&&Number(player.motorCount||0)>0&&displacement>=0.1)},
     {id:'adaptive-audio-surface',pass:!signals.audio||Number(runtime.soundCount||0)>0},
     {id:'adaptive-npc-surface',pass:!signals.npc||npcSurfaceCount>0},
-    {id:'adaptive-companion-ai-surface',pass:!signals.companion||companionSurfaceCount>0},
+    {id:'adaptive-companion-ai-surface',pass:!signals.companion||(companionSurfaceCount>0&&(!soak||timelineCompanionDynamic||companionMotion.dynamic))},
     {id:'adaptive-item-surface',pass:!signals.items||itemSurfaceCount>0},
     {id:'adaptive-environment-surface',pass:!signals.environment||(Number(world.environmentModels||0)>0||Number(world.collidablePartCount||0)>=20)},
     {id:'adaptive-effects-surface',pass:!signals.effects||(Number(world.effectCount||0)>0||primaryActionFeedbackChanged)},
@@ -1157,6 +1168,11 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
       primaryActionVelocity:velocity,
       primaryActionFeedbackChanged,
       progressChanged,
+      timelineProgressChanged,
+      timelineMobDynamic,
+      timelineCompanionDynamic,
+      auditProfile:soak?'F9_SOAK':'FAST_DEEP',
+      timelineProbeCount:timeline.length,
       mobMotion,
       companionMotion,
       npcMotion,
@@ -1452,7 +1468,7 @@ export async function runOfficialStudioMcpPlay({
       finalServerProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Server');
       checkpoint('actual-play-final-client-probe',finalClientProbe!=null);
       checkpoint('actual-play-final-server-probe',finalServerProbe!=null);
-      const evaluated=evaluateStudioActualPlayContract({contract:actualPlayContract,initialClientProbe,preActionClientProbe,postActionClientProbe,clientProbe:finalClientProbe,serverProbe:finalServerProbe,actions,beforeImages,afterImages,timelineProbes});
+      const evaluated=evaluateStudioActualPlayContract({contract:actualPlayContract,initialClientProbe,preActionClientProbe,postActionClientProbe,clientProbe:finalClientProbe,serverProbe:finalServerProbe,actions,beforeImages,afterImages,timelineProbes,auditProfile:auditMode});
       scenarioCoverage=evaluated.scenarios;
       authoritativeStateChangeObserved=evaluated.authoritativeStateChangeObserved===true;
       qualityFailureKinds=evaluated.qualityFailureKinds;
