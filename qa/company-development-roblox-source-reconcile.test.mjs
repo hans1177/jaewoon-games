@@ -552,13 +552,14 @@ test('verified APK principles drive the full Roblox native stack for new and exi
   assert.match(source,/VerifiedLearningColorGrade/);
   assert.match(source,/VerifiedLearningBloom/);
   assert.match(source,/syncVerifiedLearningCharacterMotion/);
-  assert.match(source,/Animator:GetPlayingAnimationTracks/);
+  assert.match(source,/animator:GetPlayingAnimationTracks/);
   assert.match(source,/VerifiedLearningSkillImpact/);
   assert.match(source,/VerifiedLearningSkillSparkles/);
   assert.match(source,/FieldOfView/);
   assert.match(source,/VerifiedLearningTouchTarget/);
   assert.match(source,/VerifiedLearningProgressionRiskCue/);
   assert.match(source,/VerifiedExternalLearningGameplayState/);
+  assert.match(source,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=3/);
   assert.match(source,/ApplicationPrinciples = \{/);
   assert.match(source,/GameDevelopmentPrinciples = \{/);
   assert.doesNotMatch(source,/ROBLOX_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED/);
