@@ -1437,7 +1437,9 @@ test('game and asset-development workers bind verified learning-runtime playbook
   assert.ok(continuousRunnerSource.includes('verifiedExternalDistilledContentComplete'));
   assert.ok(continuousRunnerSource.includes('VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED_BEFORE_GAME_OR_ASSET_WORK'));
   assert.ok(continuousRunnerSource.includes('verifiedExternalLearningApplyAxes'));
-  assert.ok(continuousRunnerSource.includes('GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'));
+  assert.ok(continuousRunnerSource.includes('allRetrievedPrinciplesHaveExplicitDisposition'));
+  assert.ok(continuousRunnerSource.includes('verifiedExternalLearningDispositions'));
+  assert.ok(continuousRunnerSource.includes('verifiedExternalGameSourcePrincipleCount'));
   assert.ok(continuousRunnerSource.includes("'verifiedExternalLearningApplyAxes='+knowledgeApplicationContract.verifiedExternalLearningApplyAxes.join(',')"));
   assert.ok(continuousRunnerSource.includes('VERIFIED_EXTERNAL_BLACK_BOX_LEARNING_REQUIRED_BEFORE_GAME_OR_ASSET_WORK'));
   assert.ok(continuousRunnerSource.includes('Before any game source or internal asset authoring starts'));
