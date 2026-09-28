@@ -57,10 +57,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-      "canonicalState": "ROBLOX_RUNTIME_ACCEPTANCE_PASSED",
+      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
+      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-28T19:08:35.830Z",
+      "updatedAt": "2026-09-28T19:09:39.909Z",
       "robloxSourceCommit": "825a26d1b013de94f2086c6d38a9839895abb781",
       "robloxSourceBootstrapPassedAt": "2026-09-28T14:16:49.731Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -281,7 +281,7 @@
       "robloxRegressionPassed": true,
       "robloxRegressionPassedAt": "2026-09-28T14:58:09.244Z",
       "robloxFinalReviewPassed": true,
-      "robloxFinalReviewPassedAt": "2026-09-28T15:36:03.863Z",
+      "robloxFinalReviewPassedAt": "2026-09-28T19:09:39.909Z",
       "robloxF9ReleaseRegressionPassed": true,
       "robloxF9ReleaseRegressionEvidence": {
         "version": 1,
@@ -315,7 +315,7 @@
           "qa/vibe3-roblox-platform.test.mjs"
         ],
         "authority": "deterministic-f9-exact-runtime-candidate-review",
-        "verifiedAt": "2026-09-28T15:36:03.863Z"
+        "verifiedAt": "2026-09-28T19:09:39.909Z"
       },
       "robloxPostRuntimeQaEvidence": {
         "version": 6,
@@ -362,11 +362,9 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F9_RELEASE_REGRESSION",
-      "robloxFailureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-      "robloxFailureSignature": "ROBLOX_FINAL_REVIEW_PENDING",
-      "routingBlockers": [
-        "roblox-final-review-pending"
-      ],
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -1051,7 +1049,7 @@
         "canonicalPublishRequired": true,
         "canonicalPublishCompleted": false,
         "authority": "roblox-f9-verified-prepublish-gate",
-        "verifiedAt": "2026-09-28T15:36:03.863Z"
+        "verifiedAt": "2026-09-28T19:09:39.909Z"
       },
       "robloxCanonicalReleaseEvidence": {
         "version": 2,
@@ -1160,10 +1158,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-      "canonicalState": "ROBLOX_RUNTIME_ACCEPTANCE_PASSED",
+      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
+      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-28T19:08:35.830Z",
+      "updatedAt": "2026-09-28T19:09:39.909Z",
       "robloxSourceCommit": "825a26d1b013de94f2086c6d38a9839895abb781",
       "robloxSourceBootstrapPassedAt": "2026-09-28T14:16:49.731Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -1384,7 +1382,7 @@
       "robloxRegressionPassed": true,
       "robloxRegressionPassedAt": "2026-09-28T14:58:09.244Z",
       "robloxFinalReviewPassed": true,
-      "robloxFinalReviewPassedAt": "2026-09-28T15:36:03.863Z",
+      "robloxFinalReviewPassedAt": "2026-09-28T19:09:39.909Z",
       "robloxF9ReleaseRegressionPassed": true,
       "robloxF9ReleaseRegressionEvidence": {
         "version": 1,
@@ -1418,7 +1416,7 @@
           "qa/vibe3-roblox-platform.test.mjs"
         ],
         "authority": "deterministic-f9-exact-runtime-candidate-review",
-        "verifiedAt": "2026-09-28T15:36:03.863Z"
+        "verifiedAt": "2026-09-28T19:09:39.909Z"
       },
       "robloxPostRuntimeQaEvidence": {
         "version": 6,
@@ -1465,11 +1463,9 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F9_RELEASE_REGRESSION",
-      "robloxFailureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-      "robloxFailureSignature": "ROBLOX_FINAL_REVIEW_PENDING",
-      "routingBlockers": [
-        "roblox-final-review-pending"
-      ],
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -2370,7 +2366,7 @@
         "canonicalPublishRequired": true,
         "canonicalPublishCompleted": false,
         "authority": "roblox-f9-verified-prepublish-gate",
-        "verifiedAt": "2026-09-28T15:36:03.863Z"
+        "verifiedAt": "2026-09-28T19:09:39.909Z"
       },
       "robloxCanonicalReleaseEvidence": {
         "version": 2,
@@ -6942,10 +6938,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-      "canonicalState": "ROBLOX_RUNTIME_ACCEPTANCE_PASSED",
+      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
+      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T19:08:35.830Z",
+      "updatedAt": "2026-09-28T19:09:39.909Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -7171,7 +7167,7 @@
       "robloxRegressionPassed": true,
       "robloxRegressionPassedAt": "2026-09-28T14:58:09.244Z",
       "robloxFinalReviewPassed": true,
-      "robloxFinalReviewPassedAt": "2026-09-28T15:36:03.863Z",
+      "robloxFinalReviewPassedAt": "2026-09-28T19:09:39.909Z",
       "robloxF9ReleaseRegressionPassed": true,
       "robloxF9ReleaseRegressionEvidence": {
         "version": 1,
@@ -7205,7 +7201,7 @@
           "qa/vibe3-roblox-platform.test.mjs"
         ],
         "authority": "deterministic-f9-exact-runtime-candidate-review",
-        "verifiedAt": "2026-09-28T15:36:03.863Z"
+        "verifiedAt": "2026-09-28T19:09:39.909Z"
       },
       "robloxPostRuntimeQaEvidence": {
         "version": 6,
@@ -7252,11 +7248,9 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F9_RELEASE_REGRESSION",
-      "robloxFailureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-      "robloxFailureSignature": "ROBLOX_FINAL_REVIEW_PENDING",
-      "routingBlockers": [
-        "roblox-final-review-pending"
-      ],
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -7925,7 +7919,7 @@
         "canonicalPublishRequired": true,
         "canonicalPublishCompleted": false,
         "authority": "roblox-f9-verified-prepublish-gate",
-        "verifiedAt": "2026-09-28T15:36:03.863Z"
+        "verifiedAt": "2026-09-28T19:09:39.909Z"
       },
       "robloxCanonicalReleaseEvidence": {
         "version": 2,
@@ -17519,7 +17513,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T19:08:35.830Z",
+  "updatedAt": "2026-09-28T19:09:39.909Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
