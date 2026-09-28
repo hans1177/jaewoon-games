@@ -741,3 +741,11 @@ test('F9 optimistic persistence binds the tested local artifact and fails closed
  assert.equal(predicate({...item,robloxFoundationF0Evidence:{...item.robloxFoundationF0Evidence,artifactRunId:51}},delta),false);
  assert.equal(predicate({...item,robloxRuntimeCandidateEvidence:{published:true}},delta),false);
 });
+
+test('F9 scan dedupe cancels only older queued runs and preserves a newer main scan',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+ const dedupe=workflow.slice(workflow.indexOf('      - name: Cancel stale queued F9 runs before scan'),workflow.indexOf('      - name: Select newest same-identity F9 run'));
+ assert.match(dedupe,/Number\(r\.id\)>=Number\(process\.env\.CURRENT_RUN_ID\|\|0\)/);
+ assert.match(dedupe,/String\(r\.head_sha\|\|''\)===String\(process\.env\.CURRENT_SHA\|\|''\)/);
+ assert.match(dedupe,/states\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)/);
+});
