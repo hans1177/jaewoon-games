@@ -23,6 +23,10 @@ function stepUp(current) {
   const index = ADAPTIVE_PARALLELISM_STEPS.indexOf(normalizeStep(current));
   return ADAPTIVE_PARALLELISM_STEPS[Math.min(ADAPTIVE_PARALLELISM_STEPS.length - 1, index + 1)];
 }
+function stepAtOrAbove(value) {
+  const raw=Math.max(1,Math.floor(num(value)||1));
+  return ADAPTIVE_PARALLELISM_STEPS.find(step=>step>=raw) ?? DEFAULT_ADAPTIVE_MAX;
+}
 
 export function createParallelismControl(input = {}) {
   return Object.freeze({
@@ -117,9 +121,17 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   const current = Math.max(originalCurrent, configuredFloor);
   const workerCount = Math.max(0, Math.floor(num(telemetry.workerCount)));
   const effectiveMax = Math.max(1, Math.floor(num(telemetry.effectiveMax) || current));
+  const actualPeakConcurrency = Math.max(0, Math.floor(num(telemetry.actualPeakConcurrency)));
+  const peakUtilizationPct = num(telemetry.effectivePeakUtilizationPct);
   const saturationFloor = Math.max(1, Math.ceil(current * 0.75));
   const loaded = workerCount >= saturationFloor;
   const localBackpressureActive = effectiveMax < current;
+  const observedExternalCapacityBound = workerCount >= 8
+    && actualPeakConcurrency >= 4
+    && workerCount >= actualPeakConcurrency + 4
+    && effectiveMax > actualPeakConcurrency
+    && peakUtilizationPct > 0
+    && peakUtilizationPct < 50;
   const level = pressureLevel(telemetry);
   const reasons = pressureReasons(telemetry);
   const firstPass=num(telemetry?.throughput?.firstCandidatePassRatePct);
@@ -140,6 +152,12 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     healthyStreak = 0;
     pressureStreak = 0;
     reason = 'RUN_LOCAL_BACKPRESSURE_ACTIVE';
+  } else if (observedExternalCapacityBound) {
+    next = Math.max(configuredFloor, stepAtOrAbove(actualPeakConcurrency));
+    healthyStreak = 0;
+    pressureStreak = 0;
+    decision = next < current ? 'DOWN' : 'HOLD';
+    reason = next < current ? `EXTERNAL_CAPACITY_OBSERVED_${actualPeakConcurrency}` : 'EXTERNAL_CAPACITY_ALREADY_ALIGNED';
   } else if (!workerCount || !loaded) {
     healthyStreak = 0;
     pressureStreak = 0;

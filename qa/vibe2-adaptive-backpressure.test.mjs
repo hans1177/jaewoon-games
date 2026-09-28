@@ -51,6 +51,43 @@ test('verified external pressure downshifts one step without an internal floor a
   assert.equal(from20.lastDecision,'DOWN');
 });
 
+test('observed external concurrency ceiling fast-converges to the nearest safe step',()=>{
+  const next=decideAdaptiveBackpressure(
+    createParallelismControl({currentMax:256}),
+    pressuredTelemetry({
+      runId:'external-capacity-19',
+      workerCount:42,
+      effectiveMax:256,
+      actualPeakConcurrency:19,
+      effectivePeakUtilizationPct:7.42,
+      failureRatePct:88.1,
+      pressureLevel:'SEVERE',
+      bottleneck:'SOURCE_CANDIDATE_GENERATION'
+    }),
+    {minimumMax:4}
+  );
+  assert.equal(next.currentMax,20);
+  assert.equal(next.lastDecision,'DOWN');
+  assert.equal(next.lastReason,'EXTERNAL_CAPACITY_OBSERVED_19');
+});
+
+test('small low-load wave is not mistaken for an external capacity ceiling',()=>{
+  const next=decideAdaptiveBackpressure(
+    createParallelismControl({currentMax:256}),
+    pressuredTelemetry({
+      runId:'small-wave',
+      workerCount:7,
+      effectiveMax:256,
+      actualPeakConcurrency:4,
+      effectivePeakUtilizationPct:1.56
+    }),
+    {minimumMax:4}
+  );
+  assert.equal(next.currentMax,256);
+  assert.equal(next.lastDecision,'HOLD');
+  assert.equal(next.lastReason,'LOW_LOAD');
+});
+
 test('verified pressure can reach floor 4 but never lower',()=>{
   const at4=decideAdaptiveBackpressure(
     createParallelismControl({currentMax:4}),
