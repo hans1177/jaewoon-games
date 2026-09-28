@@ -618,8 +618,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     ?Math.floor((verifiedExternalDistilledContentIds.length/verifiedExternalPlaybookReuse.length)*100)
     :0;
   const externalDisposition=classifyVerifiedExternalBlackBoxPrinciples(verifiedExternalPlaybookRows,{gameId:task.gameId,target:plan.target});
-  const externalDispositionRows=freezeList(externalDisposition.rows);
-  const externalGameSourceRows=freezeList(externalDisposition.sourceRows);
+  const externalDispositionRows=freeze([...externalDisposition.rows]);
+  const externalGameSourceRows=freeze([...externalDisposition.sourceRows]);
   const verifiedExternalLearningApplyAxes=freezeList(externalGameSourceRows.flatMap(row=>row.domains));
   const knowledgeApplicationContract=freeze({
     version:3,
