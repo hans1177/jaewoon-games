@@ -310,6 +310,32 @@ export function ingestVerifiedUnityReleases({ mainRef = 'origin/main', outDir = 
   return result;
 }
 
+export function buildExternalBlackBoxLearningPrinciples(record = {}) {
+  const serialize = (row = {}) => {
+    const id = clean(row?.id);
+    const scope = clean(row?.scope);
+    const lesson = clean(row?.lesson);
+    const reuseRule = clean(row?.reuseRule);
+    return [
+      id && `id=${id}`,
+      scope && `scope=${scope}`,
+      lesson && `lesson=${lesson}`,
+      reuseRule && `apply=${reuseRule}`,
+    ].filter(Boolean).join('; ');
+  };
+  const application = (Array.isArray(record?.distilledPositiveRuntimePatterns) ? record.distilledPositiveRuntimePatterns : [])
+    .map(serialize).filter(Boolean);
+  const avoidance = (Array.isArray(record?.distilledFailurePatterns) ? record.distilledFailurePatterns : [])
+    .map(serialize).filter(Boolean);
+  const allowed = (Array.isArray(record?.learningUse?.allowed) ? record.learningUse.allowed : [])
+    .map(clean).filter(Boolean);
+  return Object.freeze({
+    application:Object.freeze([...new Set(application)]),
+    avoidance:Object.freeze([...new Set(avoidance)]),
+    allowed:Object.freeze([...new Set(allowed)]),
+  });
+}
+
 function externalBlackBoxRecord(mainRef, distillationPath) {
   const record = readJsonAt(mainRef, distillationPath);
   const gameId = clean(record?.gameId);
@@ -337,6 +363,8 @@ function externalBlackBoxRecord(mainRef, distillationPath) {
     }
   }
   const candidateId = `external-black-box-${gameId}-run-${runNumber}`;
+  const distilledLearning=buildExternalBlackBoxLearningPrinciples(record);
+  if(!distilledLearning.application.length) return { pass:false, reason:'EXTERNAL_DISTILLED_APPLICATION_PRINCIPLES_MISSING', gameId, distillationPath };
   const instruction = '외부 Android 게임을 black-box로 검증할 때 실행, 실제 게임 진입, 입력 반응, 프로세스 생존, 크래시 부재를 단계별 증거로 결속해 판정하고 코드·에셋·내부 알고리즘은 추출하거나 추론하지 않는다.';
   const input = JSON.stringify({
     evidenceMode: 'EXTERNAL_BLACK_BOX',
@@ -355,12 +383,19 @@ function externalBlackBoxRecord(mainRef, distillationPath) {
     '- 성공 범위는 캡처된 검증 구간으로 제한하고 장시간 안정성이나 숨은 규칙을 추정하지 않는다.',
     '- 부분 성공 뒤 실패가 생기면 성공 경계와 실패 경계를 모두 기록한다.',
     '- 외부 게임의 소스 코드, 에셋, 고유 UI 표현, 내부 알고리즘, 숨은 점수·경제 규칙은 black-box 학습 데이터로 추출하거나 복제하지 않는다.',
+    '검증된 게임별 적용 원리:',
+    ...distilledLearning.application.map(value=>`- APPLY: ${value}`),
+    ...(distilledLearning.avoidance.length?['검증된 게임별 회피 원리:',...distilledLearning.avoidance.map(value=>`- AVOID: ${value}`)]:[]),
+    ...(distilledLearning.allowed.length?['검증된 학습 활용 범위:',...distilledLearning.allowed.map(value=>`- ALLOWED: ${value}`)]:[]),
   ].join('\n');
   const sample = {
     version: TRAINING_SAMPLE_VERSION,
     instruction,
     input,
     output,
+    distilledApplicationPrinciples:[...distilledLearning.application],
+    distilledAvoidancePrinciples:[...distilledLearning.avoidance],
+    distilledLearningUseAllowed:[...distilledLearning.allowed],
     taskType: 'qa',
     difficulty: 'regression',
     lifecycle: 'active',
@@ -415,6 +450,9 @@ export function ingestVerifiedExternalBlackBox({ mainRef = 'origin/main', outDir
       && Number(existing.version ?? 0) >= TRAINING_SAMPLE_VERSION
       && existing.provenance?.sourceKind === 'external-black-box'
       && existing.provenance?.sourceRevision === external.sourceRevision
+      && JSON.stringify(existing.distilledApplicationPrinciples||[]) === JSON.stringify(external.sample.distilledApplicationPrinciples||[])
+      && JSON.stringify(existing.distilledAvoidancePrinciples||[]) === JSON.stringify(external.sample.distilledAvoidancePrinciples||[])
+      && JSON.stringify(existing.distilledLearningUseAllowed||[]) === JSON.stringify(external.sample.distilledLearningUseAllowed||[])
       && qaEvidencePasses({ taskType: existing.taskType, independentQa: existing.independentQa, browserQa: existing.browserQa, runtime: existing.verification?.runtime });
     if (currentEnough) { result.skipped.push({ distillationPath, gameId: external.gameId, reason: 'ALREADY_CURRENT' }); continue; }
     fs.writeFileSync(outFile, `${JSON.stringify(external.sample, null, 2)}\n`);
