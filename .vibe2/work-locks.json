@@ -3,27 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-8c2x9r",
-      "worker": "vibe2",
-      "taskId": "bug-defense-roblox-second-gate-rebuild-v1",
-      "gameId": "bug-defense",
-      "files": [
-        "roblox-games/bug-defense/shared/GameConfig.luau",
-        "roblox-games/bug-defense/server/Game.server.luau",
-        "roblox-games/bug-defense/client/Game.client.luau"
-      ],
-      "baseSha": "f698b54dfa9813d5fc82439ec91facafd3ca3e6f",
-      "runId": null,
-      "runAttempt": null,
-      "acquiredAt": "2026-09-28T16:17:15.326Z",
-      "expiresAt": "2026-09-28T17:02:15.326Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:bug-defense-roblox-second-gate-rebuild-v1"
-      ]
-    },
-    {
       "id": "wl-1okajc8",
       "worker": "vibe2",
       "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
@@ -675,27 +654,6 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
-      "id": "wl-1k16561",
-      "worker": "vibe2",
-      "taskId": "SYS-ARCH-28a2f2747401-v1",
-      "gameId": "__vibe_system__",
-      "files": [
-        "tools/vibe2-queue-control.mjs",
-        ".github/workflows/vibe2-continuous-core.yml",
-        "qa/vibe2-queue-control.test.mjs"
-      ],
-      "baseSha": "f005630d16e9f5883c3a9c951f37f62f6f8a20e5",
-      "runId": null,
-      "runAttempt": null,
-      "acquiredAt": "2026-09-28T16:50:33.420Z",
-      "expiresAt": "2026-09-28T17:35:33.420Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:SYS-ARCH-28a2f2747401-v1"
       ]
     },
     {
