@@ -6376,10 +6376,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "VIBE_INTERNAL_PLAY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T13:10:37.513Z",
+      "updatedAt": "2026-09-28T13:31:39.513Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -6532,9 +6532,7 @@
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
-      "routingBlockers": [
-        "roblox-studio-internal-validation-pending"
-      ],
+      "routingBlockers": [],
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "7f9333f29c1843b81279bcc82436a572921b2985",
       "robloxBuildArtifactIdentity": "sha256:91ce8b13e87151d6c7946e7027f6415a3cf46726a69410bf30069994a43c539f",
@@ -6741,9 +6739,9 @@
       "robloxPostRuntimeQaEvidence": null,
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING",
+      "robloxLastSuccessfulStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -6809,14 +6807,14 @@
         "version": 2,
         "gameId": "fantasy-survival",
         "authority": "roblox-official-studio-mcp-runtime",
-        "pass": false,
+        "pass": true,
         "actualPlay": true,
-        "runtimeVerified": false,
+        "runtimeVerified": true,
         "learningReusable": true,
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
         "infrastructureFailure": false,
-        "failureClass": "STUDIO_MCP_RUNTIME_ERROR",
-        "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
+        "failureClass": null,
+        "robloxFailureClass": null,
         "actualPlayEligibility": "PRIVATE_INTERNAL_CANDIDATE_EXACT",
         "studioMcpServerEnablementRequired": false,
         "operatorPrerequisite": null,
@@ -6827,12 +6825,12 @@
         "externalGuiAutomation": false,
         "undocumentedStudioCliAutomation": false,
         "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "d16adbfc1286b57e20c4166ec870dc48a95adb1a",
-        "artifactIdentity": "sha256:9e24690040d59df5b6734e6ba8ece8c0dc6e51b365290ccaa92774538b272ad1",
-        "artifactRunId": 36407298943,
-        "universeId": "10768435490",
-        "placeId": "112084264328161",
-        "versionNumber": 2,
+        "sourceRevision": "7f9333f29c1843b81279bcc82436a572921b2985",
+        "artifactIdentity": "sha256:91ce8b13e87151d6c7946e7027f6415a3cf46726a69410bf30069994a43c539f",
+        "artifactRunId": 36426405419,
+        "universeId": "",
+        "placeId": "",
+        "versionNumber": 36426405419,
         "historicalSharedTargetExactArtifact": false,
         "historicalExactBuildReplay": false,
         "currentSourceArtifactBinding": true,
@@ -6925,7 +6923,7 @@
             "id": "no-release-blocking-runtime-errors",
             "name": "no-release-blocking-runtime-errors",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "play-mode-stopped",
@@ -6934,15 +6932,9 @@
             "pass": true
           }
         ],
-        "errors": [
-          {
-            "type": "studio-console-error",
-            "actionId": null,
-            "signature": "You must publish this place to the web to access DataStore. Stack Begin Script 'ServerScriptService.GameServer.Game', Line 4 Stack End Infinite yield possible on 'ReplicatedStorage:WaitForChild(\"GameAction\")' Stack Begin Script 'Players.anyanguy1981.PlayerScripts.GameClient.Game', Line 28 Stack End text"
-          }
-        ],
+        "errors": [],
         "runtimeSummary": {
-          "consoleErrorCount": 1,
+          "consoleErrorCount": 0,
           "consoleWarningCount": 0,
           "distinctFrameChange": true,
           "characterMotionRuntimeRequired": false,
@@ -6973,10 +6965,8 @@
           "mcp-input-dispatched",
           "viewport-changed-after-input",
           "console-output-captured",
-          "play-mode-stopped",
-          "debugging",
-          "runtime error",
-          "ROBLOX_DATASTORE_SAVE_LOAD"
+          "no-release-blocking-runtime-errors",
+          "play-mode-stopped"
         ],
         "rawSourceIncluded": false,
         "rawGameplayValuesIncluded": false,
@@ -6989,13 +6979,13 @@
         "qualityFailureKinds": [],
         "functionalChainEvidence": {
           "inputDispatched": true,
-          "runtimeVerified": false,
+          "runtimeVerified": true,
           "screenChanged": true,
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": false
         },
-        "testedAt": "2026-09-28T11:57:34.702Z",
-        "workflowRunId": 36416558414,
+        "testedAt": "2026-09-28T13:31:39.513Z",
+        "workflowRunId": 36424423568,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false
       },
@@ -7036,27 +7026,15 @@
       "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
       "failureCount": 1,
       "contractCanaryPassed": false,
-      "robloxInternalPlaytestPassed": false,
-      "robloxInternalPlaytestPassedAt": null,
-      "robloxStudioLocalPlayRepairRequired": true,
+      "robloxInternalPlaytestPassed": true,
+      "robloxInternalPlaytestPassedAt": "2026-09-28T13:31:39.513Z",
+      "robloxStudioLocalPlayRepairRequired": false,
       "robloxStudioLocalPlayInfrastructurePending": false,
-      "robloxQualityBuildUpRequired": true,
-      "robloxQualityFailureClass": "PRODUCT",
-      "robloxQualityBuildUpSourceRevision": "d16adbfc1286b57e20c4166ec870dc48a95adb1a",
-      "robloxQualityBuildUpEvidence": {
-        "version": 1,
-        "sourceRevision": "d16adbfc1286b57e20c4166ec870dc48a95adb1a",
-        "artifactIdentity": "sha256:9e24690040d59df5b6734e6ba8ece8c0dc6e51b365290ccaa92774538b272ad1",
-        "versionNumber": 2,
-        "failureStage": "VIBE_INTERNAL_PLAY",
-        "failureSignature": "ROBLOX_STUDIO_MCP_RUNTIME_ERROR",
-        "qualityFailureKinds": [],
-        "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
-        "testedAt": "2026-09-28T11:57:34.702Z",
-        "workflowRunId": 36416558414,
-        "authority": "roblox-official-studio-mcp-product-quality-failure"
-      },
-      "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
+      "robloxQualityBuildUpRequired": false,
+      "robloxQualityFailureClass": null,
+      "robloxQualityBuildUpSourceRevision": null,
+      "robloxQualityBuildUpEvidence": null,
+      "robloxNativeFailureClass": null,
       "robloxValidationTarget": {
         "version": 3,
         "gameId": "fantasy-survival",
@@ -7083,7 +7061,8 @@
         "previousSourceRevision": "d16adbfc1286b57e20c4166ec870dc48a95adb1a",
         "newSourceRevision": "57230549403637f422766febf83c3976af84d8b6",
         "invalidatedAt": "2026-09-28T13:07:41.596Z"
-      }
+      },
+      "robloxQualityBuildUpLastPassedAt": "2026-09-28T13:31:39.513Z"
     },
     {
       "gameId": "monster-adventure",
@@ -13295,7 +13274,7 @@
       "robloxF9PendingInParallel": true
     }
   ],
-  "updatedAt": "2026-09-28T13:10:37.513Z",
+  "updatedAt": "2026-09-28T13:31:39.513Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
