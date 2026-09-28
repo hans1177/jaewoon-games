@@ -6554,6 +6554,7 @@
     "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
     "objective": "KEEP_EXISTING_AUTONOMOUS_GAME_EVOLUTION_AND_REMOVE_ONLY_DUPLICATE_VALIDATION",
     "appliesTo": [
+      "WEB",
       "ROBLOX",
       "UNITY"
     ],
@@ -6615,7 +6616,13 @@
       "nextAction": "RETURN_TO_EXISTING_GAME_SPECIFIC_BUILD_UP_LOOP"
     },
     "noNewPipeline": true,
-    "noShadowValidationPath": true
+    "noShadowValidationPath": true,
+    "web": {
+      "internalRuntimeExecutor": ".github/workflows/vibe2-continuous-core.yml#fan-in",
+      "releaseExecutor": ".github/workflows/vibe2-candidate-release.yml#web-release",
+      "actualDeploymentTarget": "CLOUDFLARE_PAGES_CONFIGURED_WEB_TARGET",
+      "publicationOutcomeBlocksEvolution": false
+    }
   },
   "verifiedExternalLearningFirstApplicationTopology": {
     "version": 3,
@@ -6777,40 +6784,6 @@
     "publicationVisibilityBlocksEvolution": false,
     "publicationOutcomeBlocksNextCycle": false,
     "exposureStateBlocksNextCycle": false
-  },
-  "verifiedPlatformCyclePublicationContract": {
-    "version": 1,
-    "authority": "company-learning/platform-release-roadmap.json#verifiedPlatformCyclePublication",
-    "platforms": [
-      "WEB",
-      "ROBLOX",
-      "UNITY"
-    ],
-    "existingEvolutionTopologyPreserved": true,
-    "newTopLevelPipeline": false,
-    "cycle": [
-      "SOURCE_MUTATION",
-      "F0",
-      "F1",
-      "F2",
-      "F3",
-      "F4",
-      "F5",
-      "F6",
-      "F7",
-      "F8",
-      "F9",
-      "PUBLISH_OR_DEPLOY_EXACT_F9_ARTIFACT",
-      "NEXT_EVOLUTION_CYCLE"
-    ],
-    "f9Terminal": false,
-    "repeat": "UNBOUNDED_UNTIL_OWNER_HOLD_OR_PROJECT_REMOVAL",
-    "publishBeforeF9Forbidden": true,
-    "nextCycleGate": "F9_PASS_AND_PUBLISH_DISPATCH",
-    "publicationOutcomeBlocksNextCycle": false,
-    "exposureStateBlocksNextCycle": false,
-    "publishFailure": "ASYNC_RETRY_WITHOUT_STOPPING_NEXT_F0_TO_F9",
-    "exactF9ArtifactRequired": true
   },
   "platformVerifiedF0F9PublicationLoop": {
     "version": 1,
