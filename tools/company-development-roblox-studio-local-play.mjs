@@ -1205,30 +1205,72 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const finalState=clean(player.roundState);
   const initialPop=Number(initialClientProbe?.workspace?.ActivePopulation||0);
   const finalPop=Number(ws.ActivePopulation||humanCount+monsterCount||0);
+  const metrics={
+    primaryActionDisplacement:displacement,
+    primaryActionVelocity:velocity,
+    primaryActionFeedbackChanged,
+    progressChanged,
+    inventoryChanged:inventoryDelta,
+    timelineProgressChanged,
+    timelineMobDynamic,
+    timelineCompanionDynamic,
+    auditProfile:soak?'F9_SOAK':'FAST_DEEP',
+    timelineProbeCount:timeline.length,
+    mobMotion,
+    companionMotion,
+    npcMotion,
+    uiCommercial:{offscreenButtons:Number(ui.offscreenButtons||0),undersizedTouchButtons:Number(ui.undersizedTouchButtons||0),suboptimalTouchButtons:Number(ui.suboptimalTouchButtons||0),textOverflowButtons:Number(ui.textOverflowButtons||0),overlapPairs:Number(ui.overlapPairs||0)},
+    surfaces:{interactionSurfaceCount,progressionSurfaceCount,combatSurfaceCount,npcSurfaceCount,companionSurfaceCount,itemSurfaceCount,remoteCount:Number(runtime.remoteCount||0),soundCount:Number(runtime.soundCount||0),effectCount:Number(world.effectCount||0),promptCount:Number(world.proximityPromptCount||0),inventoryCount:Number(runtime.inventoryCount||0)},
+    performance:{memoryMb:Number(runtime.memoryMb||0),descendantCount:Number(runtime.descendantCount||0)}
+  };
+  const repairMap={
+    'adaptive-ui-commercial-quality':['MOBILE_UI','HIGH','Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.'],
+    'adaptive-world-safety':['WORLD_GEOMETRY','CRITICAL','Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.'],
+    'adaptive-interaction-surface':['INTERACTION_CHAIN','HIGH','Restore usable prompts/buttons/click surfaces and verify input leads to a visible or authoritative result.'],
+    'adaptive-progression-surface':['PROGRESSION','CRITICAL','Restore observable progression state for levels, quests, waves, zones, unlocks, or rewards.'],
+    'adaptive-remote-surface':['SERVER_CLIENT_BOUNDARY','CRITICAL','Restore server-authoritative RemoteEvent/RemoteFunction surface and validation path.'],
+    'adaptive-combat-surface':['COMBAT_AI','CRITICAL','Repair combat targets, damage/state transitions, enemy liveness, attack feedback, and F9 AI movement.'],
+    'adaptive-motion-surface':['CHARACTER_MOTION','HIGH','Repair Animator/Motor6D rig behavior and verify movement/action animation response.'],
+    'adaptive-audio-surface':['AUDIO','MEDIUM','Restore required gameplay/BGM/SFX surface and ensure runtime audio feedback exists.'],
+    'adaptive-npc-surface':['NPC','HIGH','Restore required NPC actors, interaction affordances, dialogue/shop/quest links, and runtime state.'],
+    'adaptive-companion-ai-surface':['COMPANION_AI','CRITICAL','Repair companion spawn/follow/target/attack/recovery behavior and F9 liveness.'],
+    'adaptive-item-surface':['ITEM_INVENTORY','HIGH','Restore item/tool/inventory/equipment surface and verify acquisition/equip state.'],
+    'adaptive-environment-surface':['ENVIRONMENT_ART','MEDIUM','Restore environment/world dressing while preserving collision and gameplay readability.'],
+    'adaptive-effects-surface':['VFX_FEEDBACK','MEDIUM','Restore readable telegraphs, hit feedback, particles/trails/highlights without blocking play.'],
+    'adaptive-quest-loop-surface':['QUEST_LOOP','CRITICAL','Repair quest accept-progress-complete-reward state chain and prevent stuck quest states.'],
+    'adaptive-reward-loop-surface':['REWARD_LOOP','HIGH','Repair reward delivery and progression feedback; prevent missing or duplicated rewards.'],
+    'adaptive-economy-surface':['ECONOMY','HIGH','Repair shop/cost/currency/upgrade transaction surface and progression affordability flow.'],
+    'adaptive-save-surface':['SAVE_REJOIN','CRITICAL','Repair save/load/rejoin persistence and idempotency without duplicating rewards.'],
+    'adaptive-retry-loop-surface':['FAILURE_RECOVERY','HIGH','Repair death/failure/restart/respawn flow and remove softlocks after retry.'],
+    'adaptive-camera-quality':['CAMERA','HIGH','Repair camera subject/FOV/occlusion behavior and keep gameplay readable during movement/combat.'],
+    'adaptive-performance-budget':['PERFORMANCE','HIGH','Reduce runaway instance count/memory pressure and keep long-session runtime stable.'],
+    'primary-action-effect':['ACTION_IMPLEMENTATION','CRITICAL','Ensure primary action produces authoritative gameplay feedback, movement, damage, or state transition.'],
+    'visual-capture-sane':['VISUAL_RUNTIME','HIGH','Repair blank/invalid/too-small viewport or unreadable lighting during actual play.'],
+    'character-camera-ready':['CHARACTER_BOOT','CRITICAL','Repair character spawn, Humanoid/root, and camera binding before gameplay starts.']
+  };
+  const observedFor=id=>{
+    if(id==='adaptive-ui-commercial-quality')return metrics.uiCommercial;
+    if(id==='adaptive-world-safety')return{boundsFinite:world.boundsFinite===true,collidablePartCount:Number(world.collidablePartCount||0),floorBelowPlayer:world.floorBelowPlayer===true};
+    if(id==='adaptive-combat-surface')return{combatSurfaceCount,mobCount:entityRows(world.mobs).length,mobMotion:metrics.mobMotion,timelineMobDynamic};
+    if(id==='adaptive-companion-ai-surface')return{companionSurfaceCount,companionCount:entityRows(world.companions).length,companionMotion:metrics.companionMotion,timelineCompanionDynamic};
+    if(id==='adaptive-progression-surface'||id==='adaptive-quest-loop-surface'||id==='adaptive-reward-loop-surface')return{progressionSurfaceCount,progressChanged,timelineProgressChanged};
+    if(id==='adaptive-item-surface')return{itemSurfaceCount,inventoryCount:Number(runtime.inventoryCount||0),inventoryChanged:inventoryDelta};
+    if(id==='adaptive-performance-budget')return metrics.performance;
+    if(id==='adaptive-interaction-surface')return{interactionSurfaceCount,promptCount:Number(world.proximityPromptCount||0),clickDetectorCount:Number(world.clickDetectorCount||0),visibleButtons};
+    return metrics.surfaces;
+  };
+  const qualityFailureDetails=qualityFailureKinds.map(id=>{
+    const [repairSurface,priority,hint]=repairMap[id]||['ROBLOX_PRODUCT_QUALITY','HIGH','Repair the failing Studio actual-play scenario and re-run the exact artifact.'];
+    return{id,repairSurface,priority,hint,observed:observedFor(id)};
+  });
   return{
     required:true,
     scenarios,
     qualityFailureKinds,
+    qualityFailureDetails,
     authoritativeStateChangeObserved:Boolean(primaryActionFeedbackChanged||progressChanged||mobMotion.healthChanged>0||mobMotion.stateChanged>0||(initialState&&finalState&&initialState!==finalState)||finalPop>initialPop),
     capture:{before,after},
-    metrics:{
-      primaryActionDisplacement:displacement,
-      primaryActionVelocity:velocity,
-      primaryActionFeedbackChanged,
-      progressChanged,
-      inventoryChanged:inventoryDelta,
-      timelineProgressChanged,
-      timelineMobDynamic,
-      timelineCompanionDynamic,
-      auditProfile:soak?'F9_SOAK':'FAST_DEEP',
-      timelineProbeCount:timeline.length,
-      mobMotion,
-      companionMotion,
-      npcMotion,
-      uiCommercial:{offscreenButtons:Number(ui.offscreenButtons||0),undersizedTouchButtons:Number(ui.undersizedTouchButtons||0),suboptimalTouchButtons:Number(ui.suboptimalTouchButtons||0),textOverflowButtons:Number(ui.textOverflowButtons||0),overlapPairs:Number(ui.overlapPairs||0)},
-      surfaces:{interactionSurfaceCount,progressionSurfaceCount,combatSurfaceCount,npcSurfaceCount,companionSurfaceCount,itemSurfaceCount,remoteCount:Number(runtime.remoteCount||0),soundCount:Number(runtime.soundCount||0),effectCount:Number(world.effectCount||0)},
-      performance:{memoryMb:Number(runtime.memoryMb||0),descendantCount:Number(runtime.descendantCount||0)}
-    }
+    metrics
   };
 }
 
@@ -1380,7 +1422,7 @@ export async function runOfficialStudioMcpPlay({
   const checkpoint=(id,pass)=>checkpoints.push({id,name:id,required:true,pass:pass===true});
   let studioId='',beforeImages=[],afterImages=[],consoleResult=null,characterMotionRuntime=null,started=false;
   let initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,finalClientProbe=null,finalServerProbe=null,scenarioCoverage=[];
-  let authoritativeStateChangeObserved=false,qualityFailureKinds=[],captureQuality=null,scenarioMetrics={};
+  let authoritativeStateChangeObserved=false,qualityFailureKinds=[],qualityFailureDetails=[],captureQuality=null,scenarioMetrics={};
   const auditMode=clean(auditProfile).toUpperCase()==='F9_SOAK'?'F9_SOAK':'FAST_DEEP';
   const timelineProbes=[];
   try{
@@ -1562,6 +1604,7 @@ export async function runOfficialStudioMcpPlay({
       scenarioCoverage=evaluated.scenarios;
       authoritativeStateChangeObserved=evaluated.authoritativeStateChangeObserved===true;
       qualityFailureKinds=evaluated.qualityFailureKinds;
+      qualityFailureDetails=Array.isArray(evaluated.qualityFailureDetails)?evaluated.qualityFailureDetails:[];
       captureQuality=evaluated.capture;
       scenarioMetrics=evaluated.metrics||{};
       for(const row of scenarioCoverage)checkpoint('scenario-'+row.id,row.pass===true);
@@ -1645,6 +1688,7 @@ export async function runOfficialStudioMcpPlay({
       scenarioCoverage,
       authoritativeStateChangeObserved,
       qualityFailureKinds,
+      qualityFailureDetails,
       runtimeProbes:actualPlayContract?.required===true?{initialClient:initialClientProbe,preActionClient:preActionClientProbe,postActionClient:postActionClientProbe,finalClient:finalClientProbe,finalServer:finalServerProbe}:null,
       mcp:{
         protocolVersion:client.protocolVersion,
@@ -1703,7 +1747,7 @@ export async function runOfficialStudioMcpPlay({
       scenarioContractRequired:actualPlayContract?.required===true,
       scenarioContractVersion:Number(actualPlayContract?.version||0),
       scenarioContractFingerprint:actualPlayContract?.required===true?'sha256:'+stableSha256(actualPlayContract):null,
-      scenarioCoverage,authoritativeStateChangeObserved,qualityFailureKinds,
+      scenarioCoverage,authoritativeStateChangeObserved,qualityFailureKinds,qualityFailureDetails,
       actions,checkpoints,errors,
       metrics:{beforeFrameCount:beforeImages.length,afterFrameCount:afterImages.length,distinctFrameChange:false,consoleErrorCount:errors.length},
       rawSourceIncluded:false,rawGameplayValuesIncluded:false,rawViewportIncluded:false
@@ -1843,7 +1887,14 @@ export function createLocalStudioPlayEvidence({
   const scenarioContractPass=!scenarioContractRequired||scenarioCoveragePass;
   const scenarioContractVersion=Number(runtime?.scenarioContractVersion||0);
   const scenarioContractFingerprint=clean(runtime?.scenarioContractFingerprint)||null;
-  const qualityFailureKinds=(Array.isArray(runtime?.qualityFailureKinds)?runtime.qualityFailureKinds:[]).map(clean).filter(Boolean).slice(0,24);
+  const qualityFailureKinds=(Array.isArray(runtime?.qualityFailureKinds)?runtime.qualityFailureKinds:[]).map(clean).filter(Boolean).slice(0,48);
+  const qualityFailureDetails=(Array.isArray(runtime?.qualityFailureDetails)?runtime.qualityFailureDetails:[]).map(row=>({
+    id:clean(row?.id),
+    repairSurface:clean(row?.repairSurface)||'ROBLOX_PRODUCT_QUALITY',
+    priority:clean(row?.priority)||'HIGH',
+    hint:clean(row?.hint).slice(0,320),
+    observed:row?.observed&&typeof row.observed==='object'?row.observed:{}
+  })).filter(row=>row.id).slice(0,48);
   const pass=basePass&&scenarioContractPass;
   const infrastructureFailure=errors.some(row=>/infrastructure|mcp.*missing|no_studio/i.test(row.type+' '+(row.signature||'')));
   const studioMcpServerEnablementRequired=errors.some(row=>{
@@ -1959,6 +2010,7 @@ export function createLocalStudioPlayEvidence({
       scenarioCoverage,
       scenarioCoveragePass,
       qualityFailureKinds,
+      qualityFailureDetails,
       functionalChainEvidence,
       testedAt,
       workflowRunId:Number(workflowRunId||0),
@@ -2021,7 +2073,9 @@ export function applyLocalStudioPlayResult({queue={},gameId='',runtime={},expect
       versionNumber:Number(result.evidence.versionNumber||0),
       failureStage:'VIBE_INTERNAL_PLAY',
       failureSignature:qualityFailureSignature,
-      qualityFailureKinds:Array.isArray(result.evidence.qualityFailureKinds)?result.evidence.qualityFailureKinds.slice(0,24):[],
+      qualityFailureKinds:Array.isArray(result.evidence.qualityFailureKinds)?result.evidence.qualityFailureKinds.slice(0,48):[],
+      qualityFailureDetails:Array.isArray(result.evidence.qualityFailureDetails)?result.evidence.qualityFailureDetails.slice(0,48):[],
+      repairSurfaces:[...new Set((result.evidence.qualityFailureDetails||[]).map(row=>clean(row?.repairSurface)).filter(Boolean))].slice(0,24),
       robloxFailureClass:result.evidence.robloxFailureClass||null,
       testedAt:result.evidence.testedAt,
       workflowRunId:Number(result.evidence.workflowRunId||0),
