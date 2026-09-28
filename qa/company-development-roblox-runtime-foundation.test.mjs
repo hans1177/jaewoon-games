@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {spawnSync} from 'node:child_process';
 import {fetchRobloxRuntimeFoundationEvidence,probeRobloxOpenCloudEngine,validateRobloxRuntimeFoundationEvidence,validateRobloxMultiplayerSourceContract} from '../tools/company-development-roblox-runtime-foundation.mjs';
 
 const checkpoint=(name,sequence)=>({name,at:1,sequence,userId:1,gameId:'cozy-island',placeId:116850096561713,placeVersion:21,...(name==='MULTIPLAYER_SYNC'?{participantCount:2}:{})});
@@ -748,4 +749,13 @@ test('F9 scan dedupe cancels only older queued runs and preserves a newer main s
  assert.match(dedupe,/Number\(r\.id\)>=Number\(process\.env\.CURRENT_RUN_ID\|\|0\)/);
  assert.match(dedupe,/String\(r\.head_sha\|\|''\)===String\(process\.env\.CURRENT_SHA\|\|''\)/);
  assert.match(dedupe,/states\.has\(String\(r\.status\|\|''\)\.toLowerCase\(\)\)/);
+});
+
+test('F9 Vibe fan-in shell parses so verified publication never strands the next evolution',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+ const step=workflow.slice(workflow.indexOf('      - name: Fan verified F9 runtime proof into waiting Vibe Roblox tasks'));
+ const body=step.slice(step.indexOf('        run: |\n')+'        run: |\n'.length);
+ const script=body.split('\n').map(line=>line.startsWith('          ')?line.slice(10):line).join('\n');
+ const result=spawnSync('bash',['-n'],{input:script,encoding:'utf8'});
+ assert.equal(result.status,0,result.stderr);
 });
