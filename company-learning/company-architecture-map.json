@@ -3962,14 +3962,61 @@
         "appliesWhen": "VERIFIED_MULTIPLAYER_REQUIRED",
         "rerunWhen": "MULTIPLAYER_RELEVANT_SOURCE_OR_DESIGN_DELTA_OR_PRIOR_FAILURE",
         "unrelatedChange": "REUSE_VERIFIED_EXACT_EVIDENCE",
-        "duplicateF9OrPublicReplay": false
+        "duplicateF9OrPublicReplay": false,
+        "routineProof": "EXACT_F0_STATIC_SYNC_AUTHORITY_CONTRACT_PLUS_OFFICIAL_INTERNAL_RUNTIME",
+        "extendedTwoParticipantOnlyOnRelevantDeltaOrPriorFailure": true,
+        "twoParticipantEveryCycle": false
       },
       "security": {
         "rerunWhen": "SECURITY_RELEVANT_BOUNDARY_DELTA_OR_PRIOR_FAILURE",
         "unrelatedChange": "REUSE_VERIFIED_EXACT_EVIDENCE",
         "f9FullRescanDefault": false
       },
-      "resultReturn": "EXISTING_VIBE_AUTONOMOUS_EVOLUTION_LOOP"
+      "resultReturn": "EXISTING_VIBE_AUTONOMOUS_EVOLUTION_LOOP",
+      "scheduledRecoveryScan": "STATE_DISCOVERY_ONLY_WHEN_IDLE"
+    },
+    "validationEfficiency": {
+      "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
+      "gameEvolutionPipelineUnchanged": true,
+      "floorsUnchanged": [
+        "F0",
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9"
+      ],
+      "f10Exists": false,
+      "externalServer": {
+        "automatic": false,
+        "role": "OPTIONAL_MANUAL_DIAGNOSTIC_ONLY"
+      },
+      "multiplayer": {
+        "onlyWhenApplicable": true,
+        "routineProof": "EXACT_F0_STATIC_SYNC_AUTHORITY_CONTRACT_PLUS_OFFICIAL_INTERNAL_RUNTIME",
+        "extendedTwoParticipantOnlyOnRelevantDeltaOrPriorFailure": true,
+        "duplicateF9OrPublicReplay": false,
+        "truthfulTwoParticipantClaimOnlyWhenObserved": true
+      },
+      "security": {
+        "impactScoped": true,
+        "unchangedEvidenceReusable": true,
+        "unrelatedGameplayDeltaFullRescan": false,
+        "f9FullRescanDefault": false
+      },
+      "scheduledRecoveryScan": {
+        "idleMode": "STATE_DISCOVERY_ONLY",
+        "heavyQaWhenIdle": false,
+        "externalServerWhenIdle": false,
+        "multiplayerRecheckWhenIdle": false,
+        "securityFullRescanWhenIdle": false
+      },
+      "f9": "EXACT_EVIDENCE_FAN_IN_NO_RUNTIME_REPLAY",
+      "result": "RETURN_TO_EXISTING_AUTONOMOUS_GAME_EVOLUTION"
     }
   },
   "autonomousBottleneckRecovery": {
