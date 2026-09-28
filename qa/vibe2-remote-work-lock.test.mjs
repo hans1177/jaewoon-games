@@ -200,3 +200,52 @@ test('remote release retries a 409 with the latest state SHA', async () => {
   assert.equal(result.commitSha, 'release-commit');
   assert.equal(call, 4);
 });
+
+
+test('completed Vibe2 owner run is reclaimed before overlapping acquire', async () => {
+  const held = activeLock({
+    id: 'stale-vibe-lock',
+    worker: 'vibe2',
+    taskId: 'old-vibe-task',
+    runId: '123456',
+    runAttempt: '1'
+  });
+  let stateReads = 0;
+  let runReads = 0;
+  let writes = 0;
+  const fetchImpl = async (url, options = {}) => {
+    if (url.includes('/actions/runs/123456')) {
+      runReads += 1;
+      return jsonResponse(200, { status: 'completed', conclusion: 'cancelled' });
+    }
+    if ((options.method || 'GET') === 'GET') {
+      stateReads += 1;
+      return jsonResponse(200, { sha: 'stale-state-sha', content: encodedState([held]) });
+    }
+    writes += 1;
+    const body = JSON.parse(options.body);
+    const written = JSON.parse(Buffer.from(body.content, 'base64').toString('utf8'));
+    assert.equal(written.locks.some((lock) => lock.id === 'stale-vibe-lock'), false);
+    assert.equal(written.locks.length, 1);
+    assert.equal(written.locks[0].taskId, 'new-vibe-task');
+    assert.equal(written.locks[0].runId, '987654');
+    return jsonResponse(200, { commit: { sha: 'reclaim-commit' } });
+  };
+
+  const result = await acquireRemoteVibeWorkLock({
+    worker: 'vibe2',
+    task: 'new-vibe-task',
+    game: 'demo',
+    files: 'unity-games/demo/Assets/Scripts/Player.cs',
+    'base-sha': 'main-b',
+    'run-id': '987654',
+    'run-attempt': '2'
+  }, { context, fetchImpl, delay: noDelay });
+
+  assert.equal(result.acquired, true);
+  assert.deepEqual(result.reclaimedLockIds, ['stale-vibe-lock']);
+  assert.equal(result.remoteUpdated, true);
+  assert.equal(stateReads, 1);
+  assert.equal(runReads, 1);
+  assert.equal(writes, 1);
+});
