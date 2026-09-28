@@ -8,6 +8,19 @@
     "UNITY"
   ],
   "primaryPlatform": "ROBLOX",
+  "robloxDevelopmentInvestment": {
+    "authority": "OWNER_DIRECTIVE_2026-09-29",
+    "platformWeights": {"ROBLOX": 6, "UNITY": 2, "WEB": 1},
+    "minimumPlatformDevelopment": {"UNITY": "ONE_SLOT_WHEN_CAPACITY_AND_ELIGIBLE", "WEB": "ONE_SLOT_WHEN_CAPACITY_AND_ELIGIBLE"},
+    "smallCapacitySelection": "WEIGHTED_OBSERVED_SERVICE_ROTATION",
+    "robloxGamePriority": ["VERIFIED_PLAYER_VALUE", "COMPETITIVE_DIFFERENTIATION", "COMPLETION_READINESS", "BLOCKER_REPAIR_IMPACT", "REUSABLE_LEARNING"],
+    "unverifiedFunOrCommercialValue": "UNKNOWN_NOT_NEGATIVE",
+    "ownerHoldGameIds": [],
+    "ownerHoldOnlyOnExplicitDirection": true,
+    "ownerHoldStopsNewAssignmentsWithoutDeletingGame": true,
+    "existingRunningSafeWorkNotCancelledSolelyForPriority": true,
+    "platformF0F9QualityGatesUnchanged": true
+  },
   "currentPhase": "UNITY_WEB_DEVELOPMENT_FLOOR_THEN_ROBLOX_UNITY_UPPER_PLATFORM_DEVELOPMENT",
   "priorityMeaning": "UNITY_WEB_UPPER_PLATFORM_READINESS_PASS_STARTS_ROBLOX_AND_UNITY_NATIVE_IMPLEMENTATIONS_FOR_THE_SAME_GAME",
   "developmentAccess": {

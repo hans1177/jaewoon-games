@@ -256,6 +256,8 @@ function normalizeTask(input = {}, index = 0) {
     responsibleFiles: freezeList(input.responsibleFiles || []),
     dependencies: freezeList(input.dependencies || []),
     priority,
+    portfolioValueScore: clampInt(input.portfolioValueScore || 0, 0, 100),
+    ownerDevelopmentHold: input.ownerDevelopmentHold === true,
     releaseState: normalizeReleaseState(input.releaseState || input.homepageCategory),
     status,
     retries: clampInt(input.retries),
@@ -368,6 +370,7 @@ function completedIds(queue) {
 function taskBlockedReasons(task, completed) {
   const reasons = [];
   if (!task.goal) reasons.push('goal-required');
+  if (task.ownerDevelopmentHold) reasons.push('owner-development-hold');
   if (task.requiresOwnerDecision) reasons.push('owner-decision-required');
   if (task.protectedChange) reasons.push('protected-change-requires-authorization');
   if (task.paidResourceRequired) reasons.push('paid-resource-forbidden');
@@ -391,6 +394,7 @@ function scoreTask(task, index) {
     + (task.ownerFocusedCaretaker ? 900 : 0)
     + (RELEASE_STATE_SCORE[task.releaseState] || 0)
     + (PRIORITY_SCORE[task.priority] || 0)
+    + (clean(task.target).toLowerCase()==='roblox' ? Number(task.portfolioValueScore || 0) : 0)
     + Math.min(6, Number(task.packageWorkUnits || task.taskWorkUnits || 0))
     + (task.packageLongWorkProtected ? 3 : 0)
     - (nonBlockingSupervisionResearch ? 1000 : 0)
@@ -507,15 +511,29 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     else candidates.push(freeze({ task, score: scoreTask(task, index) }));
   });
   candidates.sort((a, b) => b.score - a.score || a.task.id.localeCompare(b.task.id));
-  const robloxFirstLane=['game-primary','asset-development'].includes(laneMode);
-  const robloxCandidateAvailable=robloxFirstLane&&candidates.some((row)=>clean(row.task?.target).toLowerCase()==='roblox');
-  const schedulingCandidates=robloxCandidateAvailable
-    ?candidates.filter((row)=>clean(row.task?.target).toLowerCase()==='roblox')
-    :candidates;
-  const robloxFirstDeferred=robloxCandidateAvailable
-    ?candidates.filter((row)=>clean(row.task?.target).toLowerCase()!=='roblox').map((row)=>row.task)
-    :[];
-
+  const priorityLane=['game-primary','asset-development'].includes(laneMode);
+  const platform=(task)=>clean(task.target).toLowerCase();
+  // Reserve scarce slots by observed service, then give remaining capacity to Roblox.
+  // Running and verified tasks provide rotation across cohorts when capacity is small.
+  const weights={roblox:6,unity:2,web:1};
+  const service=Object.fromEntries(Object.keys(weights).map((name)=>[
+    name,queue.tasks.filter((task)=>platform(task)===name&&['running','verified'].includes(task.status)&&taskMatchesExecutionLane(task,laneMode)).length
+  ]));
+  const platformRows=Object.fromEntries(Object.keys(weights).map((name)=>[
+    name,candidates.filter((row)=>platform(row.task)===name)
+  ]));
+  const schedulingCandidates=priorityLane
+    ? [...candidates].sort((a,b)=>{
+      const pa=platform(a.task),pb=platform(b.task);
+      if(a.task.ownerDirective!==b.task.ownerDirective)return b.score-a.score;
+      if(a.task.releaseState!==b.task.releaseState)return (RELEASE_STATE_SCORE[b.task.releaseState]||0)-(RELEASE_STATE_SCORE[a.task.releaseState]||0);
+      const sa=weights[pa] ? (service[pa]+1)/weights[pa] : 2;
+      const sb=weights[pb] ? (service[pb]+1)/weights[pb] : 2;
+      return sa-sb || b.score-a.score || a.task.id.localeCompare(b.task.id);
+    })
+    : candidates;
+  const robloxCandidateAvailable=priorityLane&&platformRows.roblox.length>0;
+  const robloxFirstDeferred=[];
   const selected = [];
   const deferredConflicts = [];
   const active = [...running];
@@ -539,6 +557,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
 
   if (freeSlots > 0) {
     for (const focusedRow of focusedCandidates) {
+      if(priorityLane && selected.length>=Math.max(0,freeSlots-(platformRows.unity.length?1:0)-(platformRows.web.length?1:0)))break;
       if(selected.length>=freeSlots||!focusedSlotAvailable(focusedRow.task))continue;
       const conflict = conflictDetails(focusedRow.task, active);
       if (conflict) {
@@ -555,10 +574,27 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const postReleaseFocusedSlotUsed=postReleaseFocusedTaskIds.length>0;
   const postReleaseFocusedTaskId=postReleaseFocusedTaskIds[0]||null;
 
+  // Nonzero Unity/Web floors whenever a batch has room; the remaining work follows value score.
+  if(priorityLane && freeSlots>=3){
+    for(const name of ['unity','web']){
+      if(!platformRows[name].length || selected.some((task)=>platform(task)===name))continue;
+      for(const row of platformRows[name]){
+        if(selected.length>=freeSlots)break;
+        const conflict=conflictDetails(row.task,active);
+        if(conflict)continue;
+        selected.push(row.task);active.push(row.task);
+        shardUse[row.task.shard]=(shardUse[row.task.shard]||0)+1;
+        noteFocusedSelection(row.task);
+        break;
+      }
+    }
+  }
+
   let longWorkProtectedSlotUsed = false;
   let longWorkOwnerTaskId = null;
   if (freeSlots > 0 && !capacityRunning.some(isProtectedLongOwner)) {
     for (const protectedRow of schedulingCandidates.filter((row) => isProtectedLongOwner(row.task))) {
+      if(selected.length>=freeSlots)break;
       if(isPostReleaseFocused(protectedRow.task)&&!focusedSlotAvailable(protectedRow.task))continue;
       const conflict = conflictDetails(protectedRow.task, active);
       if (conflict) {
@@ -596,7 +632,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
 
   const queuedEligible = schedulingCandidates.length;
   return freeze({
-    selected: freeze(selected),
+    selected: freeze([...selected].sort((a,b)=>scoreTask(b,0)-scoreTask(a,0)||a.id.localeCompare(b.id))),
     lane: laneMode,
     laneDeferred: freeze([...laneDeferred,...robloxFirstDeferred]),
     robloxFirstMode: robloxCandidateAvailable,

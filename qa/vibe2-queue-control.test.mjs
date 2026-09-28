@@ -1779,7 +1779,7 @@ test('asset production tasks use the dedicated asset-development lane and never 
 });
 
 
-test('asset-development reserves only Roblox while any Roblox asset work is ready',()=>{
+test('asset-development preserves Unity floor alongside Roblox work',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:64,tasks:[
     {
       id:'unity-asset',gameId:'unity-asset',target:'unity',department:'development',type:'implementation',
@@ -1795,14 +1795,13 @@ test('asset-development reserves only Roblox while any Roblox asset work is read
     }
   ]});
   const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:64,lane:'asset-development',reservation:{id:'asset-priority:1',runId:'asset-priority',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
-  assert.deepEqual(batch.tasks.map(task=>task.id),['roblox-asset']);
+  assert.deepEqual(batch.tasks.map(task=>task.id).sort(),['roblox-asset','unity-asset']);
   assert.equal(batch.selection.robloxFirstMode,true);
-  assert.deepEqual(batch.selection.robloxFirstDeferred.map(task=>task.id),['unity-asset']);
-  assert.equal(batch.matrix[0].target,'roblox');
-  assert.equal(batch.matrix[0].speculativeVariants,1);
+  assert.deepEqual(batch.selection.robloxFirstDeferred,[]);
+  assert.ok(batch.matrix.every(row=>row.speculativeVariants===1));
 });
 
-test('game-primary does not reserve Unity or Web while Roblox game work is ready',()=>{
+test('game-primary reserves Unity and Web floors alongside Roblox development',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:256,tasks:[
     {
       id:'unity-game',gameId:'unity-game',target:'unity',department:'development',type:'implementation',
@@ -1818,10 +1817,9 @@ test('game-primary does not reserve Unity or Web while Roblox game work is ready
     }
   ]});
   const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:256,lane:'game-primary',reservation:{id:'roblox-first:1',runId:'roblox-first',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
-  assert.deepEqual(batch.tasks.map(task=>task.id),['roblox-game']);
-  assert.equal(batch.matrix[0].target,'roblox');
+  assert.deepEqual(batch.tasks.map(task=>task.id).sort(),['roblox-game','unity-game','web-game']);
   assert.equal(batch.selection.robloxFirstMode,true);
-  assert.deepEqual(batch.selection.robloxFirstDeferred.map(task=>task.id).sort(),['unity-game','web-game']);
+  assert.deepEqual(batch.selection.robloxFirstDeferred,[]);
 });
 
 
@@ -1829,4 +1827,15 @@ test('queue CLI exposes deferred conflict task and reason telemetry',()=>{
   const source=fs.readFileSync('tools/vibe2-queue-control.mjs','utf8');
   assert.match(source,/VIBE2_QUEUE_DEFERRED_CONFLICT_COUNT=/);
   assert.match(source,/VIBE2_QUEUE_DEFERRED_CONFLICTS=/);
+});
+
+test('Roblox investment score ranks eligible games and explicit owner hold blocks new assignment',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[
+    {id:'low',gameId:'low',target:'roblox',department:'development',goal:'develop',portfolioValueScore:10},
+    {id:'high',gameId:'high',target:'roblox',department:'development',goal:'develop',portfolioValueScore:80},
+    {id:'held',gameId:'held',target:'roblox',department:'development',goal:'develop',portfolioValueScore:100,ownerDevelopmentHold:true}
+  ]});
+  const selection=selectVibeQueueBatch(queue,{maxConcurrentTasks:1,lane:'game-primary'});
+  assert.deepEqual(selection.selected.map(task=>task.id),['high']);
+  assert.ok(selection.blocked.some(row=>row.task.id==='held'&&row.reasons.includes('owner-development-hold')));
 });
