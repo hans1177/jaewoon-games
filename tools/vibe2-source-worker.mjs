@@ -946,7 +946,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
   ].filter(Boolean).join('\n');
 }
-function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false}={}){
+function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxVisual=false}={}){
   const raw=String(prompt??'');
   const begin='[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]';
   const end='[GAME SPECIFIC BUILD UP DIRECTIVE END]';
@@ -956,7 +956,10 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false}={}){
   if(finish<0)return'';
   const block=raw.slice(start,finish+end.length);
   if(!compact)return block;
-  const keepPrefixes=[
+  const keepPrefixes=focusedRobloxVisual?[
+    'directiveId=','gameIdentity=','primaryGoal=','sourceAnchors=','expectedPlayerEffect=',
+    'visual=','platform=','preserve=','acceptance='
+  ]:[
     'directiveId=','gameIdentity=','primaryGoal=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
@@ -1534,6 +1537,8 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
       let score=0;
       if(/(?:^|\/)client(?:\/|$)|\.client\.luau$/.test(normalized))score+=100;
       if(/(?:visual|render|presentation|camera|vfx|effect|effects|ui|hud|style|fx)/i.test(normalized))score+=60;
+      if(/(?:^|\/)(?:qa|test|debug)(?:\/|[^/]*$)|(?:qacamera|screenshot|capture|telemetry)/i.test(normalized))score-=220;
+      if(/(?:battle|combat|world|character|monster|environment|game\.client)/i.test(normalized))score+=80;
       if(/(?:^|\/)server(?:\/|$)|\.server\.luau$/.test(normalized))score-=40;
       return score;
     };
@@ -1554,7 +1559,7 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
       if(file.startsWith(root+path.sep)&&fs.existsSync(file)&&fs.statSync(file).isFile()){
         const source=fs.readFileSync(file,'utf8'),at=source.indexOf(selected.find);
         if(at>=0){
-          const radius=1400;
+          const radius=robloxTask&&presentationTask?500:1400;
           const before=source.slice(Math.max(0,at-radius),at);
           const after=source.slice(at+selected.find.length,Math.min(source.length,at+selected.find.length+radius));
           context=(before+selected.find+after).trim();
@@ -1580,7 +1585,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'You are the Vibe2 focused source repair worker. Return JSON only.',
       goal,
       verifiedExternalLearningBlockFromPrompt(raw),
-      buildUpDirectiveBlockFromPrompt(raw,{compact:true}),
+      buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask}),
       reason?'Previous failure: '+reason:'',
       'Exact writable path: '+JSON.stringify(spec.path),
       'Exact find anchor already fixed by the worker: '+JSON.stringify(spec.find),
