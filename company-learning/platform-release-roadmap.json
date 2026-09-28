@@ -42,11 +42,15 @@
     "legacyWebFirstPolicyRemoved": true,
     "requiredWhenWebGLBuildable": true,
     "executionParityWithNativeDevelopmentFlow": true,
-    "deploymentStage": false,
-    "internalReleaseStage": false,
+    "deploymentStage": true,
+    "internalReleaseStage": true,
     "publicReleaseStage": false,
-    "regressionPassNextAction": "UPPER_PLATFORM_DEVELOPMENT_READINESS_EVALUATION",
-    "passIsCheckpointNotTerminal": true
+    "regressionPassNextAction": "F9_EXACT_REVIEW_THEN_CANONICAL_WEB_PUBLISH_DISPATCH_THEN_NEXT_F0",
+    "passIsCheckpointNotTerminal": true,
+    "f0ThroughF9RequiredEveryCycle": true,
+    "usesCommonFoundationFloorDefinitions": true,
+    "publicationOutcomeBlocksNextCycle": false,
+    "internalOrExternalExposureStateBlocksNextCycle": false
   },
   "livingMotionVisualQualityContract": {
     "version": 6,
@@ -1332,15 +1336,15 @@
       "verifiedCyclePublication": {
         "version": 1,
         "authority": "OWNER_DIRECTIVE_2026-09-28",
-        "objective": "RUN_EVERY_ROBLOX_EVOLUTION_CYCLE_THROUGH_F0_TO_F9_THEN_DISPATCH_THE_EXACT_F9_ARTIFACT_TO_THE_GAME_SERVER_AND_IMMEDIATELY_START_THE_NEXT_CYCLE_REGARDLESS_OF_PUBLICATION_OR_VISIBILITY_STATE",
+        "objective": "RUN_EVERY_ROBLOX_EVOLUTION_CYCLE_THROUGH_F0_TO_F9_DISPATCH_EXACT_F9_CANONICAL_PUBLISH_THEN_IMMEDIATELY_START_NEXT_CYCLE_WITHOUT_WAITING_FOR_PUBLICATION_OUTCOME",
         "sequence": [
           "EVOLUTION_SOURCE_MUTATION",
           "F0_SOURCE_INTEGRITY",
           "F1_TO_F8_EXACT_PRIVATE_VALIDATION_TARGET_AND_STUDIO_QA",
           "F9_EXACT_FINAL_REVIEW",
-          "DISPATCH_EXACT_F9_VERIFIED_ARTIFACT_TO_CANONICAL_GAME_TARGET",
-          "START_NEXT_EVOLUTION_CYCLE_AT_F0_WITHOUT_WAITING_FOR_PUBLICATION_RESULT",
-          "PUBLICATION_REPAIR_OR_RETRY_CONTINUES_IN_PARALLEL_IF_NEEDED"
+          "DISPATCH_EXACT_F9_ARTIFACT_TO_CANONICAL_GAME_TARGET",
+          "START_NEXT_EVOLUTION_CYCLE_IMMEDIATELY",
+          "RECONCILE_CANONICAL_PUBLISH_RESULT_ASYNC"
         ],
         "f9Terminal": false,
         "perpetualRepeat": true,
@@ -1356,7 +1360,11 @@
         "publicationVisibilityBlocksEvolution": false,
         "internalReleaseStateBlocksEvolution": false,
         "externalPublicReleaseStateBlocksEvolution": false,
-        "publicationRepairRunsInParallel": true
+        "publicationRepairRunsInParallel": true,
+        "nextCycleStartsAfterF9PublishDispatch": true,
+        "publicationOutcomeBlocksNextCycle": false,
+        "internalOrExternalExposureStateBlocksNextCycle": false,
+        "publishFailureRetriesInParallelWithNextCycle": true
       }
     },
     "validationMode": "HEADLESS_FAST_MVP",
@@ -1581,7 +1589,9 @@
         "perpetualF0ThroughF9RepublishLoop": true,
         "finalPublishDispatchStartsNextF0ThroughF9EvolutionCycle": true,
         "publicationOutcomeBlocksEvolution": false,
-        "publicationVisibilityBlocksEvolution": false
+        "publicationVisibilityBlocksEvolution": false,
+        "f9PublishDispatchStartsNextF0ThroughF9EvolutionCycle": true,
+        "internalOrExternalExposureStateBlocksEvolution": false
       }
     }
   },
@@ -1589,7 +1599,14 @@
     "platformAdapter": "tools/company-development-unity-platform.mjs",
     "existingPathPreserved": true,
     "developmentAlwaysAllowed": true,
-    "robloxDoesNotReplaceUnity": true
+    "robloxDoesNotReplaceUnity": true,
+    "f0ThroughF9RequiredEveryCycle": true,
+    "usesCommonFoundationFloorDefinitions": true,
+    "f9PublishesExactApkArtifact": true,
+    "f9Terminal": false,
+    "publicationOutcomeBlocksNextCycle": false,
+    "internalOrExternalExposureStateBlocksNextCycle": false,
+    "nextCycleStartsImmediatelyAfterF9PublishDispatch": true
   },
   "fortniteUefn": {
     "platformAdapter": "tools/company-development-uefn-platform.mjs",
@@ -1774,7 +1791,7 @@
       },
       "taskIdentity": "GAME_ID_PLUS_CURRENT_ROBLOX_SOURCE_TREE_SHA",
       "refillCondition": "ONLY_WHEN_EXACT_PUBLISHED_RELEASE_EVIDENCE_MATCHES_CURRENT_RELEASE_SOURCE_AND_NO_EXACT_DUPLICATE_OR_OVERLAPPING_RESPONSIBILITY_FOCUS_TASK_EXISTS",
-      "nextCycleCondition": "SUCCESSFUL_F9_VERIFIED_CANONICAL_PUBLISH_THEN_CREATE_NEXT_FOCUS_CYCLE",
+      "nextCycleCondition": "F9_PASS_AND_PUBLISH_DISPATCH_THEN_IMMEDIATE_NEXT_F0",
       "protectedSlotEnforcer": "assets/vibe-continuous-queue.js",
       "protectedSlotCount": null,
       "machinePriorityOrder": [
@@ -2032,7 +2049,9 @@
       "fixedDurationOrElapsedTimeExitForbidden": true,
       "limitedPublicTestRequirement": false,
       "externalPublicReleaseGate": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.externalPublicReleaseHardGate",
-      "canonicalRepublishRule": "EVERY_VERIFIED_F0_TO_F9_CYCLE_REPLACES_CANONICAL_ROBLOX_BUILD_ONLY_AFTER_F9"
+      "canonicalRepublishRule": "EVERY_WEB_ROBLOX_UNITY_VERIFIED_F0_TO_F9_CYCLE_DISPATCHES_EXACT_F9_PUBLICATION_AND_IMMEDIATELY_STARTS_NEXT_CYCLE",
+      "publicationOutcomeBlocksNextCycle": false,
+      "internalOrExternalExposureStateBlocksNextCycle": false
     },
     "executionBindings": {
       "webValidationProducer": ".github/workflows/company-development-confirmed-runtime.yml",
@@ -6738,7 +6757,14 @@
         "missingCompilerEvidenceAction": "F0_BLOCKED",
         "workflow": ".github/workflows/company-development-roblox-headless-fast-mvp.yml",
         "prGate": ".github/workflows/vibe3-engine-contract.yml"
-      }
+      },
+      "appliesTo": [
+        "WEB",
+        "ROBLOX",
+        "UNITY"
+      ],
+      "webAuthority": "UNITY_WEB_ACTUAL_BROWSER_PLAY_AND_EXISTING_BROWSER_QA",
+      "webUsesSameF0ThroughF9FloorSequence": true
     },
     "qualityFailureRecoveryPolicySource": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit",
     "validationEfficiencyOptimization": {
@@ -7111,7 +7137,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-28T06:37:19.924Z",
+  "updatedAt": "2026-09-28T06:58:33.247Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -25936,6 +25962,7 @@
     "status": "ACTIVE_EXECUTABLE_CONTRACT",
     "intent": "GAME_MUST_KEEP_ADVANCING_TOWARD_AND_BEYOND_APPROVED_DESIGN_COMPLETENESS_WHILE_PRESENTATION_EVOLVES_IN_PARALLEL",
     "appliesTo": [
+      "WEB",
       "ROBLOX",
       "UNITY",
       "WEB_VALIDATION_SURFACE_WHEN_IT_IS_THE_ACTIVE_IMPLEMENTATION_SURFACE"
@@ -26845,7 +26872,12 @@
           "fanInReviewEvidenceGateRemainsStrictPerTask": true
         }
       }
-    }
+    },
+    "verifiedCyclePublicationAuthority": "company-learning/platform-release-roadmap.json#verifiedPlatformCyclePublication",
+    "everyVerifiedDeltaRunsF0ThroughF9OnEachActivePlatformLane": true,
+    "f9PublishThenImmediateNextCycle": true,
+    "publicationOutcomeMayNotPauseEvolution": true,
+    "internalOrExternalExposureStateMayNotPauseEvolution": true
   },
   "robloxNativeCodingQualityContract": {
     "version": 3,
@@ -27229,5 +27261,65 @@
       "qa/company-roblox-thumbnail-sync.test.mjs",
       "qa/company-homepage-runtime-propagation.test.mjs"
     ]
+  },
+  "verifiedPlatformCyclePublication": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-28",
+    "status": "ACTIVE_EXECUTABLE_CONTRACT",
+    "objective": "WEB_ROBLOX_UNITY_EACH_REPEAT_SOURCE_MUTATION_F0_THROUGH_F9_THEN_PUBLISH_OR_DEPLOY_THE_EXACT_F9_ARTIFACT_AND_IMMEDIATELY_START_THE_NEXT_EVOLUTION_CYCLE_WITHOUT_WAITING_FOR_PUBLICATION_OUTCOME_OR_EXPOSURE_STATE",
+    "platforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "existingPipelinesOnly": true,
+    "newTopLevelPipeline": false,
+    "sequence": [
+      "SOURCE_MUTATION",
+      "F0",
+      "F1",
+      "F2",
+      "F3",
+      "F4",
+      "F5",
+      "F6",
+      "F7",
+      "F8",
+      "F9",
+      "PUBLISH_OR_DEPLOY_EXACT_F9_ARTIFACT",
+      "START_NEXT_EVOLUTION_CYCLE_IMMEDIATELY",
+      "RECONCILE_PUBLICATION_RESULT_ASYNC"
+    ],
+    "f9Terminal": false,
+    "perpetualRepeat": true,
+    "f10Forbidden": true,
+    "publishBeforeF9Forbidden": true,
+    "publishAttemptRequiredAfterEveryF9Pass": true,
+    "exactF9SourceArtifactBindingRequired": true,
+    "nextCycleTrigger": "F9_PASS_AFTER_PUBLISH_DISPATCH",
+    "publicationOutcomeBlocksNextCycle": false,
+    "internalOrExternalExposureStateBlocksNextCycle": false,
+    "publicationFailureAction": "RETRY_PUBLICATION_IN_PARALLEL_WITH_NEXT_EVOLUTION_CYCLE",
+    "publicationSuccessAction": "RECORD_EXACT_PUBLISHED_ARTIFACT_WITHOUT_STOPPING_EVOLUTION",
+    "cycleMayWaitForPublicationSuccess": false,
+    "cycleMayWaitForPublicVisibility": false,
+    "platformBindings": {
+      "WEB": {
+        "validationAndF9Workflow": ".github/workflows/unity-web-first-stage-build.yml",
+        "canonicalPublish": "PROMOTE_EXACT_F9_WEB_BUNDLE_TO_web-games/<gameId>_ON_MAIN_AND_TRIGGER_EXISTING_HOSTING_OR_HOMEPAGE_SYNC",
+        "nextCycle": "VIBE2_FANIN_REFILL_IMMEDIATELY_AFTER_F9_PUBLISH_DISPATCH"
+      },
+      "ROBLOX": {
+        "validationWorkflow": ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+        "canonicalPublishWorkflow": ".github/workflows/company-development-roblox-release-promotion.yml",
+        "canonicalPublish": "OPEN_CLOUD_EXACT_F9_ARTIFACT_TO_GAME_TARGET",
+        "nextCycle": "VIBE2_FANIN_REFILL_IMMEDIATELY_AFTER_F9_PUBLISH_DISPATCH"
+      },
+      "UNITY": {
+        "validationAndF9Workflow": ".github/workflows/company-development-unity-runtime.yml",
+        "canonicalPublish": "PERSIST_EXACT_F9_APK_AS_CANONICAL_INTERNAL_OR_CLOSED_TEST_BUILD_AND_RUN_EXISTING_PLATFORM_EXPOSURE_SYNC",
+        "nextCycle": "VIBE2_FANIN_REFILL_IMMEDIATELY_AFTER_F9_PUBLISH_DISPATCH"
+      }
+    }
   }
 }
