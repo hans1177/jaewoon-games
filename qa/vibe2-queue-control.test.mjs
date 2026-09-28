@@ -1836,7 +1836,7 @@ test('Roblox investment score ranks eligible games and explicit owner hold block
     {id:'high',gameId:'high',target:'roblox',department:'development',goal:'develop',portfolioValueScore:80},
     {id:'held',gameId:'held',target:'roblox',department:'development',goal:'develop',portfolioValueScore:100,ownerDevelopmentHold:true}
   ]});
-  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:1,lane:'game-primary'});
-  assert.deepEqual(batch.tasks.map(task=>task.id),['high']);
-  assert.ok(batch.selection.blocked.some(row=>row.task.id==='held'&&row.reasons.includes('owner-development-hold')));
+  const selection=selectVibeQueueBatch(queue,{maxConcurrentTasks:1,lane:'game-primary'});
+  assert.deepEqual(selection.selected.map(task=>task.id),['high']);
+  assert.ok(selection.blocked.some(row=>row.task.id==='held'&&row.reasons.includes('owner-development-hold')));
 });
