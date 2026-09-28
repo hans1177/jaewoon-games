@@ -1,5 +1,24 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-tlhmnd",
+      "worker": "vibe2",
+      "taskId": "line-defense-unity-web-base-implementation-v1",
+      "gameId": "line-defense",
+      "files": [
+        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
+        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "f698b54dfa9813d5fc82439ec91facafd3ca3e6f",
+      "acquiredAt": "2026-09-28T16:16:29.800Z",
+      "expiresAt": "2026-09-28T17:01:29.800Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:line-defense-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
