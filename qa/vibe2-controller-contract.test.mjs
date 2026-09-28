@@ -1442,7 +1442,7 @@ test('game and asset-development workers bind verified learning-runtime playbook
   assert.ok(continuousRunnerSource.includes('verifiedExternalGameSourcePrincipleCount'));
   assert.ok(continuousRunnerSource.includes("'verifiedExternalLearningApplyAxes='+knowledgeApplicationContract.verifiedExternalLearningApplyAxes.join(',')"));
   assert.ok(continuousRunnerSource.includes('VERIFIED_EXTERNAL_BLACK_BOX_LEARNING_REQUIRED_BEFORE_GAME_OR_ASSET_WORK'));
-  assert.ok(continuousRunnerSource.includes('Before any game source or internal asset authoring starts'));
+  assert.ok(continuousRunnerSource.includes('Before authoring, assign every verified external black-box principle an explicit game-source, validation-only, or not-applicable disposition'));
   assert.ok(workflow.includes("asset-development"));
   assert.ok(continuousRunnerSource.includes('VERIFIED_COMMERCIAL_BLACK_BOX_DISTILLATION_REQUIRED_FOR_INTERNAL_ASSET_PRODUCTION'));
   assert.ok(continuousRunnerSource.includes('verified-commercial-distillation-internal-asset-contract'));
