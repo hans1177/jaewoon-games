@@ -301,10 +301,33 @@ test('verified experience is injected into the next similar worker goal as advis
         maxRetries: 2
       }]
     },
-    experience: learned.memory
+    experience: learned.memory,
+    playbooks: {
+      generatedFrom:'VERIFIED_MEMORY_ONLY',
+      taskTypes:{
+        unity:{
+          authority:'verified-task-playbook',
+          checklist:['bind-current-source-tree-and-build'],
+          reuse:[{id:'external-black-box-test-unity',project:'verified-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1}]
+        },
+        coding:{
+          authority:'verified-task-playbook',
+          checklist:['rank-responsible-source-before-edit'],
+          reuse:[{id:'external-black-box-test-unity',project:'verified-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1}]
+        },
+        general:{
+          authority:'verified-task-playbook',
+          checklist:['require-verifiable-completion'],
+          reuse:[{id:'external-black-box-test-unity',project:'verified-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1}]
+        }
+      }
+    }
   });
   assert.equal(order.run, true);
   assert.equal(order.learningAppliedToWorkerGoal, true);
+  assert.equal(order.knowledgeApplicationContract.verifiedExternalLearningFirst,true);
+  assert.equal(order.knowledgeApplicationContract.verifiedExternalLearningCoveragePct,100);
+  assert.deepEqual(order.knowledgeApplicationContract.verifiedExternalLearningIds,['external-black-box-test-unity']);
   assert.match(order.goal, /VERIFIED EXPERIENCE MEMORY/);
   assert.match(order.goal, /검증 없이 공격 판정 타이밍을 추측하지 않기/);
   assert.equal(order.workerPolicy.protectedGameplayMutationAutomatic, false);
