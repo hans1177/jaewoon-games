@@ -15,7 +15,6 @@ on:
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/company-development-roblox-source-reconcile.mjs'
       - 'tools/vibe3-roblox-learning-context.mjs'
-      - 'qa/company-development-roblox-source-reconcile.test.mjs'
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-upper-platform-admission.mjs'
       - 'company-asset-library.json'
@@ -42,8 +41,8 @@ permissions:
   actions: write
 
 concurrency:
-  group: roblox-native-${{ inputs.game_id || 'batch' }}
-  cancel-in-progress: true
+  group: roblox-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
