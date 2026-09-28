@@ -3888,12 +3888,14 @@ test('verified APK learning preserves game-source and QA-only dispositions throu
   assert.throws(()=>buildVerifiedExternalLearningPromptContract({...order,knowledgeApplicationContract:{...order.knowledgeApplicationContract,verifiedExternalLearningDispositions:[]}}),/DISPOSITION_DRIFT/);
 });
 
-test('fan-in rejects candidates without actual APK learning prompt proof',()=>{
+test('fan-in accepts only proven model-prompt or deterministic APK learning application',()=>{
   const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   assert.match(workflowSource,/verified-external-learning-source-prompt-unproven/);
+  assert.match(workflowSource,/const deterministicLearningProof=/);
+  assert.match(workflowSource,/const sourcePromptLearningOk=!sourcePromptLearningRequired\|\|promptLearningProof\|\|deterministicLearningProof/);
   assert.match(workflowSource,/const effectiveCandidateOk=candidateOk&&sourcePromptLearningOk/);
-  assert.match(workflowSource,/verified-external-learning-source-prompt:\$\{sourcePromptLearningOk\?'PASS':'FAIL'\}/);
-  assert.match(workflowSource,/actualSourcePromptVerified:sourcePromptLearningOk/);
+  assert.match(workflowSource,/actualSourcePromptVerified:promptLearningProof/);
+  assert.match(workflowSource,/actualSourceGenerationLearningMode:deterministicLearningProof\?'DETERMINISTIC_CONTRACT'/);
 });
 
 
