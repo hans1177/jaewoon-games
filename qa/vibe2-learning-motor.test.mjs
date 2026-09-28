@@ -131,8 +131,8 @@ test('verified local Studio runtime failure becomes reusable failure lesson but 
 
 test('same-game verified experience outranks same-engine cross-game experience',()=>{
   const experience={records:[
-    {id:'same',gameId:'g1',engine:'web',verified:true,reusable:true,outcome:'PASS',goal:'combat save mobile',reusablePatterns:['combat-state']},
-    {id:'other',gameId:'g2',engine:'web',verified:true,reusable:true,outcome:'PASS',goal:'combat save mobile',reusablePatterns:['combat-state']}
+    {id:'same',gameId:'g1',engine:'web',verified:true,reusable:true,outcome:'PASS',goal:'combat save mobile',evidence:['test:verified-same-game'],reusablePatterns:['combat-state']},
+    {id:'other',gameId:'g2',engine:'web',verified:true,reusable:true,outcome:'PASS',goal:'combat save mobile',evidence:['test:verified-cross-game'],reusablePatterns:['combat-state']}
   ]};
   const ctx=retrieveUnifiedLearning({task:{gameId:'g1',target:'web',goal:'combat save mobile'},experienceInput:experience});
   assert.equal(ctx.experience[0].id,'same');
@@ -506,8 +506,8 @@ test('failure-local retrieval prioritizes verified same-game same-failure memory
   const fp=failureFingerprintForTask(task);
   assert.ok(fp.includes('MOBILE_PLACEMENT_INPUT_MISSING'));
   const experienceInput={records:[
-    {id:'same',gameId:'tower-demo',engine:'web',verified:true,reusable:true,outcome:'PASS',problem:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING pointer placement',change:'bind pointer state to placeTower',failureCause:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING',reusablePatterns:['trace input to placement state'],avoidPatterns:['do not patch unrelated economy'],confirmations:3},
-    {id:'other-game',gameId:'other',engine:'web',verified:true,reusable:true,outcome:'PASS',problem:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING pointer placement',change:'fix input',failureCause:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING',reusablePatterns:['trace input'],avoidPatterns:[],confirmations:3},
+    {id:'same',gameId:'tower-demo',engine:'web',verified:true,reusable:true,outcome:'PASS',problem:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING pointer placement',change:'bind pointer state to placeTower',failureCause:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING',evidence:['test:verified-same-failure'],reusablePatterns:['trace input to placement state'],avoidPatterns:['do not patch unrelated economy'],confirmations:3},
+    {id:'other-game',gameId:'other',engine:'web',verified:true,reusable:true,outcome:'PASS',problem:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING pointer placement',change:'fix input',failureCause:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING',evidence:['test:verified-cross-game-failure'],reusablePatterns:['trace input'],avoidPatterns:[],confirmations:3},
     {id:'unverified',gameId:'tower-demo',engine:'web',verified:false,reusable:true,outcome:'PASS',problem:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING',change:'guess',failureCause:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING',reusablePatterns:['unsafe guess'],avoidPatterns:[]}
   ]};
   const result=retrieveUnifiedLearning({task,experienceInput,codePatternsInput:{patterns:[]},playbooksInput:{taskTypes:{}},practiceDistilledInput:{entries:[]},masteryInput:{}});
@@ -1197,7 +1197,7 @@ test('phase 4 practice waits when no unseen catalog game exists',()=>{
 });
 
 test('verified external AI distilled knowledge enters retrieval after internal verified memory and raw output is not required',()=>{
-  const experienceInput={records:[{id:'internal-1',gameId:'g1',engine:'web',verified:true,reusable:true,outcome:'PASS',goal:'combat mobile save',reusablePatterns:['internal-safe-pattern']}]};
+  const experienceInput={records:[{id:'internal-1',gameId:'g1',engine:'web',verified:true,reusable:true,outcome:'PASS',goal:'combat mobile save',evidence:['test:verified-internal-memory'],reusablePatterns:['internal-safe-pattern']}]};
   const externalAiDistilledInput={entries:[{
     id:'external-ai-distilled:gem-1',sourceKind:'external-ai-distilled',provider:'GEMINI',model:'gemini-test',
     engine:'web',gameId:'cross-game',domains:['COMBAT','MOBILE_INPUT'],patterns:['trace combat input to state before patch'],cautions:['do not widen writable scope'],
