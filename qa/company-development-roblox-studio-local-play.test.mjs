@@ -2069,6 +2069,18 @@ test('Studio retry preserves a verified product failure instead of letting later
   assert.ok(restartAt<0||block.lastIndexOf('break',restartAt)>preservedAt);
 });
 
+test('Studio launches opt out of runner orphan cleanup so manual save remains possible after final capture',()=>{
+  const studioLaunches=[...workflow.matchAll(/Start-Process -FilePath \\$env:VIBE2_ROBLOX_STUDIO_PATH/g)];
+  assert.equal(studioLaunches.length,3);
+  for(const launch of studioLaunches){
+    const before=workflow.slice(Math.max(0,launch.index-500),launch.index);
+    assert.match(before,/\\$env:RUNNER_TRACKING_ID = ''/);
+  }
+  assert.match(workflow,/ROBLOX_STUDIO_MANUAL_SAVE_RUNNER_CLEANUP_BYPASS=YES/);
+  assert.match(workflow,/ROBLOX_STUDIO_MCP_MANUAL_SAVE_WINDOW_PRESERVED_AFTER_JOB=YES/);
+  assert.doesNotMatch(workflow,/name: Cleanup owned Studio process/);
+});
+
 test('Studio screenshots are captured only as the final Studio audit action',()=>{
   assert.doesNotMatch(helper,/viewport-before-captured/);
   assert.doesNotMatch(helper,/checkpoint\('viewport-changed-after-input'/);
