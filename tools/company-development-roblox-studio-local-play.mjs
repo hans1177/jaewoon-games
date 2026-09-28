@@ -1010,6 +1010,40 @@ function pointDistance(a={},b={}){
   if(!values.every(Number.isFinite))return 0;
   return Math.hypot(values[3]-values[0],values[4]-values[1],values[5]-values[2]);
 }
+function entityRows(value){
+  return Array.isArray(value)?value.filter(row=>row&&typeof row==='object'):[];
+}
+function entityMotionSummary(beforeRows=[],afterRows=[]){
+  const before=entityRows(beforeRows),after=entityRows(afterRows);
+  const byName=new Map();
+  for(const row of before){
+    const key=clean(row?.name);
+    if(!key)continue;
+    if(!byName.has(key))byName.set(key,[]);
+    byName.get(key).push(row);
+  }
+  let matched=0,moved=0,stateChanged=0,healthChanged=0,targetChanged=0;
+  for(const row of after){
+    const key=clean(row?.name);
+    const candidates=byName.get(key)||[];
+    if(!key||!candidates.length)continue;
+    const prior=candidates.shift();matched++;
+    const values=[prior?.x,prior?.y,prior?.z,row?.x,row?.y,row?.z].map(Number);
+    if(values.every(Number.isFinite)&&Math.hypot(values[3]-values[0],values[4]-values[1],values[5]-values[2])>=0.2)moved++;
+    if(clean(prior?.state)!==clean(row?.state))stateChanged++;
+    if(Number.isFinite(Number(prior?.hp))&&Number.isFinite(Number(row?.hp))&&Number(prior.hp)!==Number(row.hp))healthChanged++;
+    if(clean(prior?.target)!==clean(row?.target))targetChanged++;
+  }
+  return{matched,moved,stateChanged,healthChanged,targetChanged,dynamic:moved+stateChanged+healthChanged+targetChanged>0};
+}
+function progressionChanged(beforeRows=[],afterRows=[]){
+  const before=new Map(entityRows(beforeRows).map(row=>[clean(row?.scope)+'|'+clean(row?.name),clean(row?.value)]));
+  for(const row of entityRows(afterRows)){
+    const key=clean(row?.scope)+'|'+clean(row?.name);
+    if(before.has(key)&&before.get(key)!==clean(row?.value))return true;
+  }
+  return false;
+}
 export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[]}={}){
   if(contract?.required!==true)return{required:false,scenarios:[],qualityFailureKinds:[],authoritativeStateChangeObserved:false,capture:{before:{pass:true,frames:[]},after:{pass:true,frames:[]}},metrics:{}};
   const exp=contract?.expectations||{};
@@ -1040,6 +1074,32 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const postActionFeedback=clean(actionPlayer?.feedbackEvent);
   const primaryActionFeedbackChanged=Boolean(actionOk('ui-primary-action')&&postActionFeedback&&postActionFeedback!==preActionFeedback);
   const lightingBrightness=Number(client?.lighting?.brightness??server?.lighting?.brightness??0);
+  const adaptive=contract?.adaptiveCoverage&&typeof contract.adaptiveCoverage==='object'?contract.adaptiveCoverage:{};
+  const signals=adaptive?.signals&&typeof adaptive.signals==='object'?adaptive.signals:{};
+  const runtime={...(client?.runtime||{}),...(server?.runtime||{})};
+  const categories=runtime?.categories&&typeof runtime.categories==='object'?runtime.categories:{};
+  const initialWorld=initialClientProbe?.world||{};
+  const mobMotion=entityMotionSummary(initialWorld?.mobs,world?.mobs);
+  const companionMotion=entityMotionSummary(initialWorld?.companions,world?.companions);
+  const npcMotion=entityMotionSummary(initialWorld?.npcs,world?.npcs);
+  const progressChanged=progressionChanged(initialClientProbe?.runtime?.progression,runtime?.progression);
+  const visibleButtons=Number(ui.visibleButtons||0);
+  const uiCommercialPass=
+    Number(ui.offscreenButtons||0)===0
+    &&Number(ui.undersizedTouchButtons||0)===0
+    &&Number(ui.textOverflowButtons||0)===0
+    &&Number(ui.overlapPairs||0)<=1
+    &&visibleButtons>=0;
+  const worldSafetyPass=
+    world.boundsFinite===true
+    &&Number(world.collidablePartCount||0)>0
+    &&world.floorBelowPlayer===true;
+  const interactionSurfaceCount=Number(world.proximityPromptCount||0)+Number(world.clickDetectorCount||0)+visibleButtons;
+  const progressionSurfaceCount=entityRows(runtime.progression).length+Number(categories.progression||0);
+  const combatSurfaceCount=entityRows(world.mobs).length+Number(categories.combat||0);
+  const npcSurfaceCount=entityRows(world.npcs).length+Number(categories.npc||0);
+  const companionSurfaceCount=entityRows(world.companions).length+Number(categories.companion||0);
+  const itemSurfaceCount=entityRows(world.items).length+Number(categories.item||0)+Number(categories.inventory||0);
   const rows=[
     {id:'character-camera-ready',pass:player.characterPresent===true&&player.humanoidPresent===true&&player.rootPresent===true&&client?.camera?.present===true},
     {id:'role-selection-interaction',pass:!clean(contract.selectionButtonText)||(actionOk('ui-role-selection')&&(selectionIntent==='SURVIVOR'||acceptedRoles.includes(clean(selectionPlayer.role))))},
@@ -1053,7 +1113,28 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'world-geometry-present',pass:world.arenaPresent===true&&Number(world.arenaPartCount||0)>=Number(exp.minimumArenaParts||0)},
     {id:'primary-action-input',pass:!clean(contract.primaryActionButtonText)||actionOk('ui-primary-action')},
     {id:'primary-action-effect',pass:!clean(contract.primaryActionButtonText)||primaryActionFeedbackChanged||displacement>=Number(exp.minimumPrimaryActionDisplacement||0.25)||velocity>=1},
-    {id:'visual-capture-sane',pass:before.pass&&after.pass&&lightingBrightness>=Number(exp.minimumLightingBrightness||0)}
+    {id:'visual-capture-sane',pass:before.pass&&after.pass&&lightingBrightness>=Number(exp.minimumLightingBrightness||0)},
+    {id:'adaptive-runtime-surface',pass:Number(runtime.descendantCount||0)>0&&Number(runtime.systemSignals||0)>0},
+    {id:'adaptive-ui-commercial-quality',pass:!signals.ui||uiCommercialPass},
+    {id:'adaptive-world-safety',pass:!signals.map||worldSafetyPass},
+    {id:'adaptive-interaction-surface',pass:!signals.interactions||interactionSurfaceCount>0},
+    {id:'adaptive-progression-surface',pass:!signals.progression||progressionSurfaceCount>0},
+    {id:'adaptive-remote-surface',pass:!signals.serverBoundary||Number(runtime.remoteCount||0)>0},
+    {id:'adaptive-combat-surface',pass:!signals.combat||combatSurfaceCount>0},
+    {id:'adaptive-motion-surface',pass:!signals.motion||(player.animatorPresent===true&&Number(player.motorCount||0)>0&&displacement>=0.1)},
+    {id:'adaptive-audio-surface',pass:!signals.audio||Number(runtime.soundCount||0)>0},
+    {id:'adaptive-npc-surface',pass:!signals.npc||npcSurfaceCount>0},
+    {id:'adaptive-companion-ai-surface',pass:!signals.companion||companionSurfaceCount>0},
+    {id:'adaptive-item-surface',pass:!signals.items||itemSurfaceCount>0},
+    {id:'adaptive-environment-surface',pass:!signals.environment||(Number(world.environmentModels||0)>0||Number(world.collidablePartCount||0)>=20)},
+    {id:'adaptive-effects-surface',pass:!signals.effects||(Number(world.effectCount||0)>0||primaryActionFeedbackChanged)},
+    {id:'adaptive-quest-loop-surface',pass:!signals.quests||(Number(categories.quest||0)>0||entityRows(runtime.progression).some(row=>/quest|mission|objective|trial/i.test(clean(row?.name))))},
+    {id:'adaptive-reward-loop-surface',pass:!signals.rewards||(Number(categories.reward||0)>0||entityRows(runtime.progression).some(row=>/gold|coin|xp|reward|loot|drop/i.test(clean(row?.name))))},
+    {id:'adaptive-economy-surface',pass:!signals.economy||Number(categories.economy||0)>0},
+    {id:'adaptive-save-surface',pass:!signals.save||Number(categories.save||0)>0},
+    {id:'adaptive-retry-loop-surface',pass:!signals.retry||Number(categories.retry||0)>0},
+    {id:'adaptive-camera-quality',pass:!signals.camera||(client?.camera?.present===true&&client?.camera?.subjectPresent===true&&Number(client?.camera?.fieldOfView||0)>0)},
+    {id:'adaptive-performance-budget',pass:Number(runtime.memoryMb||0)>=0&&Number(runtime.descendantCount||0)<120000}
   ];
   const scenarios=rows.filter(row=>requiredIds.size===0||requiredIds.has(row.id)).map(row=>({...row,required:true}));
   const qualityFailureKinds=scenarios.filter(row=>row.pass!==true).map(row=>row.id);
@@ -1061,7 +1142,25 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const finalState=clean(player.roundState);
   const initialPop=Number(initialClientProbe?.workspace?.ActivePopulation||0);
   const finalPop=Number(ws.ActivePopulation||humanCount+monsterCount||0);
-  return{required:true,scenarios,qualityFailureKinds,authoritativeStateChangeObserved:Boolean(primaryActionFeedbackChanged||(initialState&&finalState&&initialState!==finalState)||finalPop>initialPop),capture:{before,after},metrics:{primaryActionDisplacement:displacement,primaryActionVelocity:velocity,primaryActionFeedbackChanged}};
+  return{
+    required:true,
+    scenarios,
+    qualityFailureKinds,
+    authoritativeStateChangeObserved:Boolean(primaryActionFeedbackChanged||progressChanged||mobMotion.healthChanged>0||mobMotion.stateChanged>0||(initialState&&finalState&&initialState!==finalState)||finalPop>initialPop),
+    capture:{before,after},
+    metrics:{
+      primaryActionDisplacement:displacement,
+      primaryActionVelocity:velocity,
+      primaryActionFeedbackChanged,
+      progressChanged,
+      mobMotion,
+      companionMotion,
+      npcMotion,
+      uiCommercial:{offscreenButtons:Number(ui.offscreenButtons||0),undersizedTouchButtons:Number(ui.undersizedTouchButtons||0),suboptimalTouchButtons:Number(ui.suboptimalTouchButtons||0),textOverflowButtons:Number(ui.textOverflowButtons||0),overlapPairs:Number(ui.overlapPairs||0)},
+      surfaces:{interactionSurfaceCount,progressionSurfaceCount,combatSurfaceCount,npcSurfaceCount,companionSurfaceCount,itemSurfaceCount,remoteCount:Number(runtime.remoteCount||0),soundCount:Number(runtime.soundCount||0),effectCount:Number(world.effectCount||0)},
+      performance:{memoryMb:Number(runtime.memoryMb||0),descendantCount:Number(runtime.descendantCount||0)}
+    }
+  };
 }
 
 class McpStdioClient{
