@@ -3448,10 +3448,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T00:02:11.432Z",
+      "updatedAt": "2026-09-28T00:06:58.577Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3753,9 +3753,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING",
       "routingBlockers": [
-        "roblox-studio-internal-validation-pending"
+        "roblox-studio-mcp-infrastructure-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -3927,7 +3927,118 @@
       },
       "robloxReleaseVersionNumber": 4,
       "robloxPublicRelease": false,
-      "robloxInternalVibePlayEvidence": null,
+      "robloxInternalVibePlayEvidence": {
+        "version": 2,
+        "gameId": "amusement-tycoon",
+        "authority": "roblox-official-studio-mcp-runtime",
+        "pass": false,
+        "actualPlay": false,
+        "runtimeVerified": false,
+        "learningReusable": false,
+        "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
+        "infrastructureFailure": true,
+        "failureClass": "STUDIO_MCP_INFRASTRUCTURE_PENDING",
+        "robloxFailureClass": "ROBLOX_STUDIO_RUNTIME",
+        "actualPlayEligibility": "EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT",
+        "studioMcpServerEnablementRequired": false,
+        "operatorPrerequisite": null,
+        "localPlaceFile": true,
+        "officialStudioMcp": true,
+        "onlinePlaceDirectOpen": false,
+        "robloxPlayerAutomation": false,
+        "externalGuiAutomation": false,
+        "undocumentedStudioCliAutomation": false,
+        "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
+        "sourceRevision": "7bbae1f7f5c446f08d1ee9e337605dce92dd7277",
+        "artifactIdentity": "sha256:b93c507ea753922cc62e5b727ab10d24f250f7a52acff825c7fc0a748502ddbd",
+        "artifactRunId": 36313983210,
+        "universeId": "10768075841",
+        "placeId": "72938557172866",
+        "versionNumber": 4,
+        "historicalSharedTargetExactArtifact": false,
+        "historicalExactBuildReplay": false,
+        "currentSourceArtifactBinding": true,
+        "currentPublishedRuntimeClaim": false,
+        "publishedCandidateCrossCheckPassed": true,
+        "publishedCandidateCrossCheckAuthority": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE",
+        "capabilities": {
+          "officialStudioMcp": false,
+          "playMode": false,
+          "mcpInput": false,
+          "screenCapture": false,
+          "consoleCapture": false
+        },
+        "actions": [],
+        "checkpoints": [
+          {
+            "id": "official-studio-mcp-connected",
+            "name": "official-studio-mcp-connected",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "local-studio-selected",
+            "name": "local-studio-selected",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "studio-state-readable",
+            "name": "studio-state-readable",
+            "required": true,
+            "pass": true
+          }
+        ],
+        "errors": [
+          {
+            "type": "studio-mcp-infrastructure-or-runtime-error",
+            "actionId": null,
+            "signature": "MCP timeout: tools/call"
+          }
+        ],
+        "runtimeSummary": {
+          "consoleErrorCount": 1,
+          "consoleWarningCount": 0,
+          "distinctFrameChange": false,
+          "characterMotionRuntimeRequired": false,
+          "characterMotionRuntimePassed": true,
+          "scenarioContractRequired": false,
+          "scenarioFailureCount": 0,
+          "primaryActionDisplacement": 0,
+          "primaryActionVelocity": 0,
+          "primaryActionFeedbackChanged": false
+        },
+        "characterMotionRuntime": null,
+        "learningSignals": [
+          "roblox official studio mcp local runtime",
+          "official-studio-mcp-connected",
+          "local-studio-selected",
+          "studio-state-readable",
+          "debugging",
+          "runtime error",
+          "ROBLOX_STUDIO_RUNTIME"
+        ],
+        "rawSourceIncluded": false,
+        "rawGameplayValuesIncluded": false,
+        "rawViewportIncluded": false,
+        "scenarioContractRequired": false,
+        "scenarioContractVersion": 0,
+        "scenarioContractFingerprint": null,
+        "scenarioCoverage": [],
+        "scenarioCoveragePass": false,
+        "qualityFailureKinds": [],
+        "functionalChainEvidence": {
+          "inputDispatched": false,
+          "runtimeVerified": false,
+          "screenChanged": false,
+          "authoritativeStateChangeObserved": false,
+          "exactScenarioObserved": false
+        },
+        "testedAt": "2026-09-28T00:06:58.577Z",
+        "workflowRunId": 36359892458,
+        "publicationAuthority": false,
+        "publicationTargetDiscovery": false
+      },
       "robloxDedicatedTargetMigration": {
         "version": 1,
         "fromUniverseId": "10766974456",
@@ -3972,7 +4083,12 @@
       },
       "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
       "failureCount": 1,
-      "contractCanaryPassed": false
+      "contractCanaryPassed": false,
+      "robloxInternalPlaytestPassed": false,
+      "robloxInternalPlaytestPassedAt": null,
+      "robloxStudioLocalPlayRepairRequired": false,
+      "robloxStudioLocalPlayInfrastructurePending": true,
+      "robloxQualityFailureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY"
     },
     {
       "gameId": "bug-defense",
@@ -11159,7 +11275,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-28T00:02:46.647Z",
+  "updatedAt": "2026-09-28T00:06:58.577Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
