@@ -310,12 +310,13 @@ test('foundation QA has no periodic cron fanout and newest same-game work supers
 test('batch scan bypasses stale scan concurrency and cancels only stale queued foundation runs before heavy work',()=>{
   const head=workflow.slice(0,workflow.indexOf('\njobs:\n'));
   const dedupe=workflow.slice(workflow.indexOf('\n  dedupe:'),workflow.indexOf('\n  runtime-foundation-qa:'));
+  const cleanup=dedupe.slice(dedupe.indexOf('Cancel stale queued foundation runs before batch scan'),dedupe.indexOf('Select newest same-identity runtime foundation run'));
   assert.match(head,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| github\.sha \}\}/);
   assert.match(dedupe,/runs-on: ubuntu-slim/);
-  assert.match(dedupe,/Cancel stale queued foundation runs before batch scan/);
-  assert.match(dedupe,/github\.event_name != 'workflow_dispatch' \|\| inputs\.game_id == ''/);
-  assert.match(dedupe,/const states=new Set\(\['queued','pending','requested'\]\)/);
-  assert.doesNotMatch(dedupe,/const states=new Set\(\[[^\]]*'in_progress'/);
+  assert.match(cleanup,/Cancel stale queued foundation runs before batch scan/);
+  assert.match(cleanup,/github\.event_name != 'workflow_dispatch' \|\| inputs\.game_id == ''/);
+  assert.match(cleanup,/const states=new Set\(\['queued','pending','requested'\]\)/);
+  assert.doesNotMatch(cleanup,/'in_progress'/);
   assert.match(dedupe,/head_sha/);
   assert.match(dedupe,/actions\/runs\/\$run_id\/cancel/);
   assert.match(dedupe,/ROBLOX_STALE_FOUNDATION_RUN_CANCELLED=/);
