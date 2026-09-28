@@ -920,26 +920,68 @@ jobs:
           echo "passed=$passed" >> "$GITHUB_OUTPUT"
           echo "COMPANY_RUNTIME_UNITY_GAME_PERSIST=PASS:$GAME_ID"
 
-      - name: Publish exact F9 Unity APK as canonical server artifact
+      - name: Publish exact F9 Unity APK to canonical internal release target
         id: f9_publish
         if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
         continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: unity-f9-canonical-${{ matrix.item.gameId }}-${{ steps.buildref.outputs.run_id }}
-          path: |
-            /tmp/unity-build/
-            /tmp/unity-runtime/
-            /tmp/unity-independent/
-            /tmp/unity-regression/
-          if-no-files-found: error
-          retention-days: 14
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.item.gameId }}
+          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
+          ARTIFACT_ID: ${{ steps.artifact.outputs.identity }}
+          BUILD_RUN_ID: ${{ steps.buildref.outputs.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$ARTIFACT_ID" =~ ^sha256:[0-9a-f]{64}$ ]]
+          [[ "$BUILD_RUN_ID" =~ ^[0-9]+$ ]]
+          apk="$(find /tmp/unity-build -type f -name '*.apk' -size +0c | head -n1)"
+          info="$(find /tmp/unity-build -type f -name build-info.json -size +0c | head -n1)"
+          test -n "$apk" -a -n "$info"
+          expected="${ARTIFACT_ID#sha256:}"
+          actual="$(sha256sum "$apk" | awk '{print $1}')"
+          [ "$actual" = "$expected" ] || { echo "UNITY_F9_CANONICAL_ARTIFACT_MISMATCH=$GAME_ID" >&2; exit 21; }
+          info_source="$(node -e "const b=require(process.argv[1]);process.stdout.write(String(b.sourceCommit||''))" "$info")"
+          [ "$info_source" = "$SOURCE_REVISION" ] || { echo "UNITY_F9_CANONICAL_SOURCE_MISMATCH=$GAME_ID" >&2; exit 22; }
+
+          release_dir="/tmp/unity-f9-release-$GAME_ID"
+          rm -rf "$release_dir"
+          mkdir -p "$release_dir"
+          cp "$apk" "$release_dir/$GAME_ID.apk"
+          cp "$info" "$release_dir/build-info.json"
+          printf '%s  %s\n' "$actual" "$GAME_ID.apk" > "$release_dir/$GAME_ID.apk.sha256"
+          for pair in "runtime:/tmp/unity-runtime" "independent:/tmp/unity-independent" "regression:/tmp/unity-regression"; do
+            label="${pair%%:*}"
+            dir="${pair#*:}"
+            evidence="$(find "$dir" -type f -name evidence.json -size +0c 2>/dev/null | head -n1 || true)"
+            [ -n "$evidence" ] && cp "$evidence" "$release_dir/$label-evidence.json"
+          done
+
+          tag="unity-f9-$GAME_ID-${SOURCE_REVISION:0:12}-$BUILD_RUN_ID"
+          published=0
+          for publish_attempt in 1 2 3; do
+            if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+              if gh release upload "$tag" "$release_dir"/* --repo "$GITHUB_REPOSITORY" --clobber; then published=1; break; fi
+            else
+              if gh release create "$tag" "$release_dir"/* --repo "$GITHUB_REPOSITORY" --target "$SOURCE_REVISION" --title "$GAME_ID Unity F9 verified build" --notes "Exact F9-verified Unity build. Source: $SOURCE_REVISION. Artifact: $ARTIFACT_ID." --prerelease; then published=1; break; fi
+            fi
+            echo "UNITY_F9_CANONICAL_PUBLISH_RETRY=$GAME_ID:$publish_attempt" >&2
+            sleep "$publish_attempt"
+          done
+          [ "$published" = 1 ] || { echo "UNITY_F9_CANONICAL_PUBLISH_REPAIR_REQUIRED=$GAME_ID:$tag" >&2; exit 23; }
+          release_url="$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json url --jq .url)"
+          echo "release_tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "release_url=$release_url" >> "$GITHUB_OUTPUT"
+          echo "UNITY_F9_CANONICAL_RELEASE=$GAME_ID:$tag"
+          echo "UNITY_F9_CANONICAL_SOURCE_ARTIFACT_MATCH=YES"
 
       - name: Record Unity F9 publication dispatch without gating next cycle
         if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
         env:
           GAME_ID: ${{ matrix.item.gameId }}
           PUBLISH_OUTCOME: ${{ steps.f9_publish.outcome }}
+          RELEASE_TAG: ${{ steps.f9_publish.outputs.release_tag }}
         shell: bash
         run: |
           set -euo pipefail
@@ -948,6 +990,10 @@ jobs:
           echo "UNITY_F9_CANONICAL_PUBLISH_DISPATCHED=$GAME_ID"
           echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED=UNITY:$GAME_ID"
           echo "UNITY_F9_CANONICAL_PUBLISH_OUTCOME=${PUBLISH_OUTCOME:-unknown}"
+          echo "UNITY_F9_DEPLOYED_INTERNAL_OR_CLOSED_BUILD=$GAME_ID:${PUBLISH_OUTCOME:-unknown}:${RELEASE_TAG:-NONE}"
+          if [ "${PUBLISH_OUTCOME:-}" != success ]; then
+            echo "UNITY_F9_PUBLICATION_REPAIR_REQUIRED=$GAME_ID"
+          fi
           echo 'UNITY_F9_CANONICAL_PUBLISH_BLOCKS_NEXT_CYCLE=NO'
           echo 'UNITY_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=NO'
 
