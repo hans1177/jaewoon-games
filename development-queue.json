@@ -9368,10 +9368,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T20:34:30.772Z",
+      "updatedAt": "2026-09-28T20:44:26.907Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -9726,9 +9726,11 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F9_RELEASE_REGRESSION",
-      "robloxFailureStage": null,
-      "robloxFailureSignature": null,
-      "routingBlockers": [],
+      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING",
+      "routingBlockers": [
+        "roblox-studio-mcp-infrastructure-pending"
+      ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -9934,15 +9936,15 @@
         "version": 2,
         "gameId": "monster-adventure",
         "authority": "roblox-official-studio-mcp-runtime",
-        "pass": true,
-        "actualPlay": true,
-        "runtimeVerified": true,
-        "learningReusable": true,
+        "pass": false,
+        "actualPlay": false,
+        "runtimeVerified": false,
+        "learningReusable": false,
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
-        "infrastructureFailure": false,
-        "failureClass": null,
-        "robloxFailureClass": null,
-        "actualPlayEligibility": "PRIVATE_INTERNAL_CANDIDATE_EXACT",
+        "infrastructureFailure": true,
+        "failureClass": "STUDIO_MCP_INFRASTRUCTURE_PENDING",
+        "robloxFailureClass": "ROBLOX_UI_STATE",
+        "actualPlayEligibility": "INTERNAL_RELEASE_OR_HISTORICAL_REPLAY",
         "studioMcpServerEnablementRequired": false,
         "operatorPrerequisite": null,
         "localPlaceFile": true,
@@ -9965,38 +9967,13 @@
         "publishedCandidateCrossCheckPassed": true,
         "publishedCandidateCrossCheckAuthority": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE",
         "capabilities": {
-          "officialStudioMcp": true,
-          "playMode": true,
-          "mcpInput": true,
-          "screenCapture": true,
-          "consoleCapture": true
+          "officialStudioMcp": false,
+          "playMode": false,
+          "mcpInput": false,
+          "screenCapture": false,
+          "consoleCapture": false
         },
-        "actions": [
-          {
-            "id": "keyboard-w",
-            "type": "mcp-keyboard-input",
-            "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "keyboard-a",
-            "type": "mcp-keyboard-input",
-            "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "keyboard-d",
-            "type": "mcp-keyboard-input",
-            "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "keyboard-space",
-            "type": "mcp-keyboard-input",
-            "dispatched": true,
-            "ok": true
-          }
-        ],
+        "actions": [],
         "checkpoints": [
           {
             "id": "official-studio-mcp-connected",
@@ -10027,98 +10004,75 @@
             "name": "viewport-before-captured",
             "required": true,
             "pass": true
-          },
-          {
-            "id": "mcp-input-dispatched",
-            "name": "mcp-input-dispatched",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "viewport-changed-after-input",
-            "name": "viewport-changed-after-input",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "console-output-captured",
-            "name": "console-output-captured",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "no-release-blocking-runtime-errors",
-            "name": "no-release-blocking-runtime-errors",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "play-mode-stopped",
-            "name": "play-mode-stopped",
-            "required": true,
-            "pass": true
           }
         ],
-        "errors": [],
+        "errors": [
+          {
+            "type": "studio-mcp-infrastructure-or-runtime-error",
+            "actionId": null,
+            "signature": "ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:66: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: Failed to parse command code | text"
+          }
+        ],
         "runtimeSummary": {
-          "consoleErrorCount": 0,
+          "consoleErrorCount": 1,
           "consoleWarningCount": 0,
-          "distinctFrameChange": true,
+          "distinctFrameChange": false,
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
-          "scenarioContractRequired": false,
+          "scenarioContractRequired": true,
           "scenarioFailureCount": 0,
           "primaryActionDisplacement": 0,
           "primaryActionVelocity": 0,
-          "primaryActionFeedbackChanged": false
+          "primaryActionFeedbackChanged": false,
+          "commercialAudit": {
+            "auditProfile": "FAST_DEEP",
+            "timelineProbeCount": 0,
+            "progressChanged": false,
+            "inventoryChanged": false,
+            "timelineProgressChanged": false,
+            "timelineMobDynamic": false,
+            "timelineCompanionDynamic": false,
+            "uiCommercial": {},
+            "surfaces": {},
+            "performance": {},
+            "saveRejoin": null
+          }
         },
-        "characterMotionRuntime": {
-          "required": false,
-          "observed": false,
-          "started": false,
-          "pass": false,
-          "failed": false,
-          "failureReasons": [],
-          "hardFailure": "ROBLOX_CHARACTER_MOTION_MANNEQUIN"
-        },
+        "characterMotionRuntime": null,
         "learningSignals": [
           "roblox official studio mcp local runtime",
-          "mcp-keyboard-input",
           "official-studio-mcp-connected",
           "local-studio-selected",
           "studio-state-readable",
           "play-mode-started",
           "viewport-before-captured",
-          "mcp-input-dispatched",
-          "viewport-changed-after-input",
-          "console-output-captured",
-          "no-release-blocking-runtime-errors",
-          "play-mode-stopped"
+          "debugging",
+          "runtime error",
+          "ROBLOX_UI_STATE"
         ],
         "rawSourceIncluded": false,
         "rawGameplayValuesIncluded": false,
         "rawViewportIncluded": false,
-        "scenarioContractRequired": false,
-        "scenarioContractVersion": 0,
-        "scenarioContractFingerprint": null,
+        "scenarioContractRequired": true,
+        "scenarioContractVersion": 3,
+        "scenarioContractFingerprint": "sha256:dc5cf6fd4c2fdd3b5438b3c0612ead3fe5e07211632854b1fee8997d46c69af3",
         "scenarioCoverage": [],
         "scenarioCoveragePass": false,
         "qualityFailureKinds": [],
+        "qualityFailureDetails": [],
         "functionalChainEvidence": {
-          "inputDispatched": true,
-          "runtimeVerified": true,
-          "screenChanged": true,
+          "inputDispatched": false,
+          "runtimeVerified": false,
+          "screenChanged": false,
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": false
         },
-        "testedAt": "2026-09-28T14:05:27.463Z",
-        "workflowRunId": 36425620773,
+        "testedAt": "2026-09-28T20:44:26.907Z",
+        "workflowRunId": 36479878848,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
-        "reusedFromExactArtifactIdentity": true,
-        "historicalSourceRevision": "7f9333f29c1843b81279bcc82436a572921b2985",
-        "historicalVersionNumber": 36426405419,
-        "reusedAt": "2026-09-28T14:30:09.138Z"
+        "commercialRegressionDetected": false,
+        "commercialRegressionDetails": []
       },
       "robloxGameCompletionEvidence": null,
       "robloxPlatformAdaptationEvidence": null,
@@ -10157,12 +10111,12 @@
       "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
       "failureCount": 1,
       "contractCanaryPassed": false,
-      "robloxInternalPlaytestPassed": true,
-      "robloxInternalPlaytestPassedAt": "2026-09-28T14:30:09.138Z",
+      "robloxInternalPlaytestPassed": false,
+      "robloxInternalPlaytestPassedAt": null,
       "robloxStudioLocalPlayRepairRequired": false,
-      "robloxStudioLocalPlayInfrastructurePending": false,
+      "robloxStudioLocalPlayInfrastructurePending": true,
       "robloxQualityBuildUpRequired": false,
-      "robloxQualityFailureClass": null,
+      "robloxQualityFailureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
       "robloxQualityBuildUpSourceRevision": null,
       "robloxQualityBuildUpEvidence": null,
       "robloxNativeFailureClass": null,
@@ -17781,7 +17735,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T20:43:08.553Z",
+  "updatedAt": "2026-09-28T20:44:26.907Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
