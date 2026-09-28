@@ -269,6 +269,20 @@ function colorForKind(kind){
   })[kind]||[255,220,124];
 }
 
+function moodForKind(kind){
+  return ({
+    PUZZLE:{id:'BRIGHT_BOARD',saturation:0.12,contrast:0.06,brightness:0.02},
+    DEFENSE:{id:'TACTICAL_WAVE',saturation:0.03,contrast:0.11,brightness:0},
+    COMBAT:{id:'IMPACT_ARENA',saturation:0.08,contrast:0.12,brightness:0},
+    PROGRESSION:{id:'ADVENTURE_GROWTH',saturation:0.07,contrast:0.06,brightness:0.01},
+    ECONOMY:{id:'WARM_BUILDER',saturation:0.11,contrast:0.04,brightness:0.02},
+    SURVIVAL:{id:'TENSE_WILDERNESS',saturation:0.06,contrast:0.04,brightness:0.01},
+    MOVEMENT:{id:'CLEAR_MOTION',saturation:0.08,contrast:0.05,brightness:0.02},
+    SOCIAL:{id:'WELCOMING_SPACE',saturation:0.10,contrast:0.03,brightness:0.02},
+    OBJECTIVE:{id:'READABLE_EXPLORATION',saturation:0.07,contrast:0.05,brightness:0.01}
+  })[kind]||{id:'READABLE_EXPLORATION',saturation:0.07,contrast:0.05,brightness:0.01};
+}
+
 function buildSemanticApplication({gameId='',profile={},rows=[]}={}){
   const kind=coreKind(profile);
   const byId=new Map();
@@ -429,6 +443,7 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     semanticMappingFingerprint:semantic.mappingFingerprint,
     semanticVariant:semantic.variant,
     semanticColor:Object.freeze({r:semantic.color[0],g:semantic.color[1],b:semantic.color[2]}),
+    semanticMood:Object.freeze(moodForKind(kind)),
     gameSpecificSemanticMappings:Object.freeze(semantic.mappings.map(row=>Object.freeze({...row}))),
     verifiedExternalLearningDispositions,
     verifiedExternalLearningDispositionCount:verifiedExternalLearningDispositions.length,
