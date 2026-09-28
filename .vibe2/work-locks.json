@@ -3,60 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-38z7j3",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-studio-evolution-unity-web-presentation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "unity-games/monster-adventure/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/monster-adventure/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "d50d20f3e4c8066f74f183fe4d344ad1f6dc7dd1",
-      "acquiredAt": "2026-09-28T02:16:50.350Z",
-      "expiresAt": "2026-09-28T03:01:50.350Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-studio-evolution-unity-web-presentation-v1"
-      ]
-    },
-    {
-      "id": "wl-wxlxes",
-      "worker": "vibe2",
-      "taskId": "monster-adventure-unity-web-base-implementation-v1",
-      "gameId": "monster-adventure",
-      "files": [
-        "unity-games/monster-adventure/Assets/Scripts/GameCore.cs",
-        "unity-games/monster-adventure/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "d50d20f3e4c8066f74f183fe4d344ad1f6dc7dd1",
-      "acquiredAt": "2026-09-28T02:17:27.511Z",
-      "expiresAt": "2026-09-28T03:02:27.511Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:monster-adventure-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1wibl75",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-unity-web-base-implementation-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
-        "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "d50d20f3e4c8066f74f183fe4d344ad1f6dc7dd1",
-      "acquiredAt": "2026-09-28T02:17:59.942Z",
-      "expiresAt": "2026-09-28T03:02:59.942Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-cl8o20",
       "worker": "vibe2",
       "taskId": "SYS-ARCH-28a2f2747401-v1",
@@ -91,6 +37,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
+      ]
+    },
+    {
+      "id": "wl-1s8oew9",
+      "worker": "vibe2",
+      "taskId": "seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-casual-realm-weaver",
+      "files": [
+        "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
+        "roblox-games/seed-casual-realm-weaver/server/Game.server.luau",
+        "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau"
+      ],
+      "baseSha": "fc7bb39c284c934ec39e4194e5d586e23e8c4c9f",
+      "acquiredAt": "2026-09-28T03:03:02.234Z",
+      "expiresAt": "2026-09-28T03:48:02.234Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
