@@ -1951,6 +1951,10 @@ test('commercial Studio deep audit execution rules stay locked',()=>{
   assert.equal(contract.realDeathRespawnRecoveryRequiredWhenObserved,true);
   assert.equal(contract.f9SaveRejoinRestartRequiredWhenSaveDeclared,true);
   assert.equal(contract.f9SoakPerformanceTrendRequired,true);
+  assert.equal(contract.f9MultiplayerActualTwoPlayerRequired,true);
+  assert.equal(contract.f9MultiplayerRemoteOnlyCannotPass,true);
+  assert.equal(contract.f9MultiplayerSynchronizedStateTransitionRequired,true);
+  assert.ok(contract.requiredAxes.includes('F9_ACTUAL_TWO_PLAYER_SYNCHRONIZED_RUNTIME'));
   assert.ok(Number(contract.fastDeepMinimumTimelineSamples)>=4);
   assert.ok(Number(contract.f9SoakMinimumTimelineSamples)>=12);
   for(const axis of [
