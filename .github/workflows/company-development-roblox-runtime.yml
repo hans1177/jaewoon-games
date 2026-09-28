@@ -452,10 +452,32 @@ jobs:
         run: |
           set -euo pipefail
           pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$SOURCE_BRANCH" --title "development: bootstrap Roblox ${GAME_ID}" --body "DEVELOPMENT_CONFIRMED Roblox source candidate. Static source contract: PASS. Roblox runtime/independent QA/regression: NOT YET CLAIMED. Policy: COMPANY_FLOW.md.")"
-          gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "ROBLOX_SOURCE_PROMOTION_ATTEMPT=$GAME_ID:$attempt"
+            if gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch; then
+              break
+            fi
+            state="$(gh pr view "$pr_url" --repo "$GITHUB_REPOSITORY" --json state --jq '.state' 2>/dev/null || true)"
+            if [ "$state" = 'MERGED' ]; then
+              echo "ROBLOX_SOURCE_PROMOTION_ALREADY_MERGED=$GAME_ID:$attempt"
+              break
+            fi
+            echo "ROBLOX_SOURCE_PROMOTION_BASE_ADVANCED_REBASE=$GAME_ID:$attempt"
+            git fetch --no-tags --depth=1 origin main "+refs/heads/$SOURCE_BRANCH:refs/remotes/origin/$SOURCE_BRANCH"
+            git checkout "$SOURCE_BRANCH"
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "ROBLOX_SOURCE_PROMOTION_REBASE_CONFLICT=$GAME_ID:$attempt" >&2
+              exit 75
+            fi
+            git push --force-with-lease origin "HEAD:$SOURCE_BRANCH"
+            sleep 1
+          done
           merge_sha="$(gh pr view "$pr_url" --repo "$GITHUB_REPOSITORY" --json mergeCommit --jq '.mergeCommit.oid')"
           [[ "$merge_sha" =~ ^[0-9a-f]{40}$ ]] || { echo 'Roblox source merge revision missing' >&2; exit 2; }
-          echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
           echo "source_revision=$merge_sha" >> "$GITHUB_OUTPUT"
           echo "ROBLOX_SOURCE_MERGED=$GAME_ID:$merge_sha"
 
