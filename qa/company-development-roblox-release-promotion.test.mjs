@@ -318,8 +318,8 @@ test('Roblox publication failure remains retry-tracked without blocking the next
   assert.match(workflow,/entry\.status='RETRY_REQUIRED'/);
   assert.match(workflow,/item\.robloxCanonicalPublishPending=true/);
   assert.match(workflow,/robloxCanonicalPublishRepairCycleId/);
-  assert.match(workflow,/ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=YES_EXISTING_RUNTIME_REPAIR/);
-  assert.match(workflow,/company-development-confirmed-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$GAME_ID"/);
+  assert.match(workflow,/ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=YES_EXISTING_F9_REPAIR/);
+  assert.match(workflow,/company-development-roblox-final-review-revalidation\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$GAME_ID"/);
   assert.match(workflow,/ROBLOX_PUBLICATION_RETRY_BLOCKS_NEXT_EVOLUTION=NO/);
   assert.doesNotMatch(workflow,/ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=NO/);
 });
