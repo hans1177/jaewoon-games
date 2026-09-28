@@ -255,6 +255,6 @@ test('completed Vibe2 owner run is reclaimed before overlapping acquire', async 
 test('continuous worker binds shared lock to the owning Actions run', () => {
   const workflow = fs.readFileSync('.github/workflows/vibe2-continuous-core.yml', 'utf8');
   const acquire = workflow.slice(workflow.indexOf('      - name: Acquire shared Work Lock before source write'));
-  assert.match(acquire, /--run-id="\\\$\{GITHUB_RUN_ID:-\}"/);
-  assert.match(acquire, /--run-attempt="\\\$\{GITHUB_RUN_ATTEMPT:-\}"/);
+  assert.match(acquire, /--run-id="\$\{GITHUB_RUN_ID:-\}"/);
+  assert.match(acquire, /--run-attempt="\$\{GITHUB_RUN_ATTEMPT:-\}"/);
 });
