@@ -1408,6 +1408,9 @@ test('game and asset-development workers bind verified learning-runtime playbook
   assert.ok(continuousRunnerSource.includes("Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs"));
   assert.ok(continuousRunnerSource.includes('verifiedExternalLearningFirst:true'));
   assert.ok(continuousRunnerSource.includes('verifiedExternalLearningCoveragePct:verifiedExternalPlaybookReuse.length>0?100:0'));
+  assert.ok(continuousRunnerSource.includes('verifiedExternalLearningApplyAxes'));
+  assert.ok(continuousRunnerSource.includes('GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'));
+  assert.ok(continuousRunnerSource.includes('verifiedExternalLearningApplyAxes='+knowledgeApplicationContract.verifiedExternalLearningApplyAxes.join(',')));
   assert.ok(continuousRunnerSource.includes('VERIFIED_EXTERNAL_BLACK_BOX_LEARNING_REQUIRED_BEFORE_GAME_OR_ASSET_WORK'));
   assert.ok(continuousRunnerSource.includes('Before any game source or internal asset authoring starts'));
   assert.ok(workflow.includes("asset-development"));
