@@ -674,3 +674,17 @@ test('existing Roblox Studio binding requires verified APK learning unconditiona
   assert.match(fn,/afterClient=bindExistingClientVerifiedExternalLearning\(afterClient,verifiedLearning\)/);
   assert.match(fn,/verifiedExternalLearningApplied:true/);
 });
+
+test('stale Roblox technical workers drop before Rojo model and F0 without poisoning runtime state',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/Drop superseded Roblox technical work before heavy execution/);
+  assert.match(workflow,/ROBLOX_TECHNICAL_SUPERSEDED=/);
+  assert.match(workflow,/SOURCE_REVISION_MOVED/);
+  assert.match(workflow,/VERIFIED_LEARNING_BINDING_STALE/);
+  assert.match(workflow,/if: steps\.freshness\.outputs\.superseded != 'true'[\s\S]{0,220}Install pinned Rojo package tool/);
+  assert.match(workflow,/superseded,\n\s+supersedeReason:/);
+  assert.match(workflow,/ROBLOX_PACKAGE_SUPERSEDED_RESULT_IGNORED/);
+  assert.match(workflow,/ROBLOX_TECHNICAL_WORK=SUPERSEDED/);
+  assert.doesNotMatch(workflow,/max-parallel:\s*[0-9]+/);
+});
+

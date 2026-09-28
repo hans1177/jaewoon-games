@@ -999,9 +999,48 @@ jobs:
       - name: Fetch exact source and current company runtime
         run: |
           set -euo pipefail
-          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
-          git fetch --no-tags origin "${{ matrix.sourceRevision }}"
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
+          git fetch --no-tags --depth=1 origin "${{ matrix.sourceRevision }}"
+
+      - name: Drop superseded Roblox technical work before heavy execution
+        id: freshness
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_PATH: ${{ matrix.sourcePath }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-technical-current-queue.json
+          current_revision="$(GAME_ID="$GAME_ID" SECONDARY_OWNER_FOCUS="$SECONDARY_OWNER_FOCUS" node - <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-technical-current-queue.json','utf8'));
+          const item=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);
+          if(!item)process.exit(2);
+          const secondary=String(process.env.SECONDARY_OWNER_FOCUS||'').toLowerCase()==='true';
+          process.stdout.write(String(secondary?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||''));
+          NODE
+          )"
+          current_binding_version="$(git show origin/main:tools/company-development-roblox-bootstrap.mjs | sed -nE 's/^export const ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=([0-9]+);/\1/p' | head -n1)"
+          source_binding_version="$(git show "$SOURCE_REVISION:$SOURCE_PATH/shared/GameConfig.luau" 2>/dev/null | sed -nE 's/^[[:space:]]*NativeBindingVersion[[:space:]]*=[[:space:]]*([0-9]+),?/\1/p' | head -n1 || true)"
+          superseded=false
+          reason=NONE
+          if [ -z "$current_revision" ] || [ "$current_revision" != "$SOURCE_REVISION" ]; then
+            superseded=true
+            reason=SOURCE_REVISION_MOVED
+          elif [ -z "$current_binding_version" ] || [ -z "$source_binding_version" ] || [ "$source_binding_version" != "$current_binding_version" ]; then
+            superseded=true
+            reason=VERIFIED_LEARNING_BINDING_STALE
+          fi
+          echo "superseded=$superseded" >> "$GITHUB_OUTPUT"
+          echo "reason=$reason" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_TECHNICAL_CURRENT_SOURCE_REVISION=${current_revision:-MISSING}"
+          echo "ROBLOX_TECHNICAL_SOURCE_BINDING_VERSION=${source_binding_version:-MISSING}"
+          echo "ROBLOX_TECHNICAL_CURRENT_BINDING_VERSION=${current_binding_version:-MISSING}"
+          echo "ROBLOX_TECHNICAL_SUPERSEDED=$superseded:$reason"
       - name: Install pinned Rojo package tool
+        if: steps.freshness.outputs.superseded != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -1016,6 +1055,7 @@ jobs:
           /tmp/rojo-bin/rojo --version
       - name: Build exact-revision Roblox package
         id: package
+        if: steps.freshness.outputs.superseded != 'true'
         continue-on-error: true
         env:
           GAME_ID: ${{ matrix.gameId }}
@@ -1073,6 +1113,8 @@ jobs:
           SOURCE_REVISION: ${{ matrix.sourceRevision }}
           SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
           BUILD_EVIDENCE: ${{ steps.package.outputs.build_evidence }}
+          SUPERSEDED: ${{ steps.freshness.outputs.superseded }}
+          SUPERSEDE_REASON: ${{ steps.freshness.outputs.reason }}
         shell: bash
         run: |
           set -euo pipefail
@@ -1171,7 +1213,8 @@ jobs:
           const path=require('path');
           const id=process.env.GAME_ID;
           const safe=String(id).replace(/[^a-zA-Z0-9._-]+/g,'-');
-          const packagePassed=process.env.PACKAGE_OUTCOME==='success';
+          const superseded=String(process.env.SUPERSEDED||'').toLowerCase()==='true';
+          const packagePassed=!superseded&&process.env.PACKAGE_OUTCOME==='success';
           const secondary=String(process.env.SECONDARY_OWNER_FOCUS||'').toLowerCase()==='true';
           let evidence=null;
           if(packagePassed&&process.env.BUILD_EVIDENCE&&fs.existsSync(process.env.BUILD_EVIDENCE))evidence=JSON.parse(fs.readFileSync(process.env.BUILD_EVIDENCE,'utf8'));
@@ -1183,7 +1226,9 @@ jobs:
           const f0Pass=secondary?null:(process.env.F0_OUTCOME==='success'&&f0Evidence?.pass===true);
           const result={
             gameId:id,
-            pass:packagePassed&&evidence?.buildOrPackagePassed===true,
+            superseded,
+            supersedeReason:superseded?(process.env.SUPERSEDE_REASON||'ROBLOX_TECHNICAL_SUPERSEDED'):null,
+            pass:!superseded&&packagePassed&&evidence?.buildOrPackagePassed===true,
             preflightPass,
             f0Pass,
             preflightEvidence,
@@ -1193,10 +1238,10 @@ jobs:
             sourceRevision:process.env.SOURCE_REVISION,
             artifactIdentity:evidence?.artifactIdentity||null,
             saveRequired:evidence?.saveRequired===true,
-            failure:!packagePassed?'roblox-build-package-failed':secondary?null:!preflightPass?'roblox-build-preflight-blocked':(!f0Pass?'roblox-f0-source-preflight-failed':null),
+            failure:superseded?'roblox-technical-superseded':!packagePassed?'roblox-build-package-failed':secondary?null:!preflightPass?'roblox-build-preflight-blocked':(!f0Pass?'roblox-f0-source-preflight-failed':null),
           };
           fs.writeFileSync(path.join('/tmp/roblox-technical/results',`${safe}.result.json`),JSON.stringify(result,null,2)+'\n');
-          console.log(`ROBLOX_TECHNICAL_PACKAGE_RESULT=${id}:${result.pass?'PASS':'FAIL'}`);
+          console.log(`ROBLOX_TECHNICAL_PACKAGE_RESULT=${id}:${superseded?'SUPERSEDED':result.pass?'PASS':'FAIL'}`);
           console.log(`ROBLOX_FUSED_PREFLIGHT_RESULT=${id}:${result.preflightPass===null?'N/A':result.preflightPass?'PASS':'FAIL'}`);
           console.log(`ROBLOX_FUSED_F0_RESULT=${id}:${result.f0Pass===null?'N/A':result.f0Pass?'PASS':'FAIL'}`);
           console.log(`ROBLOX_BUILD_PREFLIGHT_PASS=${result.preflightPass?'YES':'NO'}`);
@@ -1220,7 +1265,13 @@ jobs:
           PREFLIGHT_OUTCOME: ${{ steps.fused_preflight.outcome }}
           F0_OUTCOME: ${{ steps.fused_f0.outcome }}
           SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
+          SUPERSEDED: ${{ steps.freshness.outputs.superseded }}
+          SUPERSEDE_REASON: ${{ steps.freshness.outputs.reason }}
         run: |
+          if [ "$SUPERSEDED" = 'true' ]; then
+            echo "ROBLOX_TECHNICAL_WORK=SUPERSEDED:${SUPERSEDE_REASON:-UNKNOWN}"
+            exit 0
+          fi
           if [ "$PACKAGE_OUTCOME" != 'success' ]; then
             echo 'ROBLOX_BUILD_PACKAGE=FAIL'
             exit 1
@@ -1302,6 +1353,10 @@ jobs:
           for(const result of results){
             const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
             if(!item)throw new Error(`queue item missing during Roblox package persist: ${result.gameId}`);
+            if(result.superseded===true){
+              console.log(`ROBLOX_PACKAGE_SUPERSEDED_RESULT_IGNORED=${result.gameId}:${result.supersedeReason||'UNKNOWN'}`);
+              continue;
+            }
             const secondaryOwnerFocus=expectedById.get(result.gameId)?.secondaryOwnerFocus===true;
             const boundSourceRevision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
             const resultSourceRevision=String(result.sourceRevision||'').trim();
