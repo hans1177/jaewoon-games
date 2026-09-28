@@ -14300,7 +14300,7 @@
       "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
       "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T15:14:33.023Z",
+      "updatedAt": "2026-09-28T15:20:13.684Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -15124,10 +15124,12 @@
           "internalStudioValidationOnly": true,
           "runtimeAcceptancePassed": true,
           "studioAssetRuntimeBindingPassed": true,
-          "status": "PENDING",
-          "attempts": 0,
+          "status": "RETRY_REQUIRED",
+          "attempts": 1,
           "enqueuedAt": "2026-09-28T15:14:33.023Z",
-          "authority": "roblox-f9-immutable-canonical-publish-queue"
+          "authority": "roblox-f9-immutable-canonical-publish-queue",
+          "lastAttemptAt": "2026-09-28T15:20:13.684Z",
+          "lastFailureSignature": "ROBLOX_CANONICAL_PUBLISH_REPAIR_REQUIRED"
         }
       ],
       "robloxF9Blockers": [],
@@ -15154,7 +15156,9 @@
       },
       "robloxInternalReleasePublished": false,
       "robloxPromotionBlockers": [],
-      "robloxPublicReleaseEvidence": null
+      "robloxPublicReleaseEvidence": null,
+      "robloxCanonicalPublishRepairRequired": true,
+      "robloxCanonicalPublishRepairCycleId": "825a26d1b013de94f2086c6d38a9839895abb781:sha256:2f1da667fcdc53f82f72d79ae1ca49e9783f743b4f7da4af3d5dc02b1779fc02"
     },
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -17127,7 +17131,7 @@
       "robloxPublicReleaseEvidence": null
     }
   ],
-  "updatedAt": "2026-09-28T15:20:06.683Z",
+  "updatedAt": "2026-09-28T15:20:13.684Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
