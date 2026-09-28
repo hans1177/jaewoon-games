@@ -862,7 +862,7 @@ function captureSanity(images=[],minimumWidth=320,minimumHeight=180,minimumBytes
   });
   return{pass:rows.length>0&&rows.every(row=>row.pass),frames:rows};
 }
-function studioActualPlayProbeSource(contract={},context='Client'){
+function studioActualPlayCoreProbeSource(contract={},context='Client'){
   const exp=contract?.expectations||{};
   const guiNames=[...new Set([clean(exp.screenGuiName),...(Array.isArray(exp.requiredGuiObjects)?exp.requiredGuiObjects.map(clean):[])].filter(Boolean))];
   const buttonTexts=[...new Set([clean(contract?.selectionButtonText),clean(contract?.primaryActionButtonText)].filter(Boolean))];
@@ -872,19 +872,18 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     'local Players=game:GetService("Players")',
     'local Lighting=game:GetService("Lighting")',
     'local Workspace=game:GetService("Workspace")',
-    'local ReplicatedStorage=game:GetService("ReplicatedStorage")',
-    'local SoundService=game:GetService("SoundService")',
-    'local Stats=game:GetService("Stats")',
-    'local PathfindingService=game:GetService("PathfindingService")',
     'local requiredGuiNames='+luaStrings(guiNames),
     'local requiredButtonTexts='+luaStrings(buttonTexts),
     'local playerList=Players:GetPlayers()',
     'local p=Players.LocalPlayer or playerList[1]',
-    'local actualPlayerCount=#playerList',
-    'local playerRows={}',
-    'for _,plr in ipairs(playerList) do if #playerRows<12 then table.insert(playerRows,{userId=plr.UserId,name=plr.Name,roundState=tostring(plr:GetAttribute("RoundState") or ""),role=tostring(plr:GetAttribute("Role") or ""),team=plr.Team and plr.Team.Name or "",currentMap=tostring(plr:GetAttribute("CurrentMap") or ""),humanCount=plr:GetAttribute("HumanCount"),monsterCount=plr:GetAttribute("MonsterCount")}) end end',
     'local camera=Workspace.CurrentCamera',
     'local viewport=camera and camera.ViewportSize or Vector2.new(0,0)',
+    'local function attr(inst,name)',
+    ' if not inst then return nil end',
+    ' local ok,value=pcall(function() return inst:GetAttribute(name) end)',
+    ' if ok then return value end',
+    ' return nil',
+    'end',
     'local function visible(inst)',
     ' if not inst then return false end',
     ' local cur=inst',
@@ -899,27 +898,44 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     ' if not inst or not inst:IsA("GuiObject") then return {present=inst~=nil,visible=false,offscreen=false} end',
     ' local pos=inst.AbsolutePosition',
     ' local size=inst.AbsoluteSize',
-    ' local off=viewport.X>0 and viewport.Y>0 and (pos.X+size.X<0 or pos.Y+size.Y<0 or pos.X>viewport.X or pos.Y>viewport.Y) or false',
+    ' local off=false',
+    ' if viewport.X>0 and viewport.Y>0 then off=(pos.X+size.X<0 or pos.Y+size.Y<0 or pos.X>viewport.X or pos.Y>viewport.Y) end',
     ' return {present=true,visible=visible(inst),offscreen=off,x=pos.X,y=pos.Y,width=size.X,height=size.Y}',
     'end',
     'local gui={screenGuiPresent=false,visibleButtons=0,visibleObjects=0,visibleTextCount=0,visibleTexts={},required={},buttons={},interactive={},offscreenButtons=0,undersizedTouchButtons=0,suboptimalTouchButtons=0,textOverflowButtons=0,overlapPairs=0}',
     'local pg=p and p:FindFirstChildOfClass("PlayerGui")',
     'if pg then',
     ' for _,d in ipairs(pg:GetDescendants()) do',
-    '  if d:IsA("GuiObject") and visible(d) then gui.visibleObjects+=1 end',
-    '  if (d:IsA("TextLabel") or d:IsA("TextButton")) and visible(d) and tostring(d.Text)~="" then gui.visibleTextCount+=1;if #gui.visibleTexts<80 then table.insert(gui.visibleTexts,{name=d.Name,text=tostring(d.Text)}) end end',
+    '  if d:IsA("GuiObject") and visible(d) then gui.visibleObjects=gui.visibleObjects+1 end',
+    '  if (d:IsA("TextLabel") or d:IsA("TextButton")) and visible(d) and tostring(d.Text)~="" then',
+    '   gui.visibleTextCount=gui.visibleTextCount+1',
+    '   if #gui.visibleTexts<80 then table.insert(gui.visibleTexts,{name=d.Name,text=tostring(d.Text)}) end',
+    '  end',
     '  if (d:IsA("TextButton") or d:IsA("ImageButton")) and visible(d) then',
-    '   gui.visibleButtons+=1',
-    '   local row=guiInfo(d);row.name=d.Name;row.className=d.ClassName;row.centerX=row.x+row.width/2;row.centerY=row.y+row.height/2',
-    '   if d:IsA("TextButton") then row.text=tostring(d.Text) else row.text="" end',
-    '   if row.offscreen then gui.offscreenButtons+=1 end',
-    '   if math.min(row.width,row.height)<36 then gui.undersizedTouchButtons+=1 elseif math.min(row.width,row.height)<44 then gui.suboptimalTouchButtons+=1 end',
-    '   if d:IsA("TextButton") and not d.TextScaled and d.TextBounds.X>row.width+3 then gui.textOverflowButtons+=1 end',
+    '   gui.visibleButtons=gui.visibleButtons+1',
+    '   local row=guiInfo(d)',
+    '   row.name=d.Name',
+    '   row.className=d.ClassName',
+    '   row.centerX=row.x+row.width/2',
+    '   row.centerY=row.y+row.height/2',
+    '   row.text=d:IsA("TextButton") and tostring(d.Text) or ""',
+    '   if row.offscreen then gui.offscreenButtons=gui.offscreenButtons+1 end',
+    '   local shortSide=math.min(row.width,row.height)',
+    '   if shortSide<36 then gui.undersizedTouchButtons=gui.undersizedTouchButtons+1 elseif shortSide<44 then gui.suboptimalTouchButtons=gui.suboptimalTouchButtons+1 end',
+    '   if d:IsA("TextButton") and not d.TextScaled and d.TextBounds.X>row.width+3 then gui.textOverflowButtons=gui.textOverflowButtons+1 end',
     '   if #gui.interactive<80 then table.insert(gui.interactive,row) end',
     '   for _,target in ipairs(requiredButtonTexts) do if d:IsA("TextButton") and tostring(d.Text)==target then gui.buttons[target]=row end end',
     '  end',
     ' end',
-    ' for i=1,#gui.interactive do local a=gui.interactive[i];for j=i+1,#gui.interactive do local b=gui.interactive[j];local x=math.max(0,math.min(a.x+a.width,b.x+b.width)-math.max(a.x,b.x));local y=math.max(0,math.min(a.y+a.height,b.y+b.height)-math.max(a.y,b.y));if x*y>math.min(a.width*a.height,b.width*b.height)*0.35 then gui.overlapPairs+=1 end end end',
+    ' for i=1,#gui.interactive do',
+    '  local a=gui.interactive[i]',
+    '  for j=i+1,#gui.interactive do',
+    '   local b=gui.interactive[j]',
+    '   local ox=math.max(0,math.min(a.x+a.width,b.x+b.width)-math.max(a.x,b.x))',
+    '   local oy=math.max(0,math.min(a.y+a.height,b.y+b.height)-math.max(a.y,b.y))',
+    '   if ox*oy>math.min(a.width*a.height,b.width*b.height)*0.35 then gui.overlapPairs=gui.overlapPairs+1 end',
+    '  end',
+    ' end',
     ' for _,name in ipairs(requiredGuiNames) do',
     '  local found=pg:FindFirstChild(name,true)',
     '  if found and found:IsA("ScreenGui") then gui.required[name]={present=true,visible=found.Enabled==true,offscreen=false} else gui.required[name]=guiInfo(found) end',
@@ -927,16 +943,59 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     'end',
     'local screenGuiName='+JSON.stringify(clean(exp.screenGuiName)),
     'if pg and screenGuiName~="" then local sg=pg:FindFirstChild(screenGuiName,true);gui.screenGuiPresent=sg~=nil and (not sg:IsA("ScreenGui") or sg.Enabled==true) end',
+    'local root=nil',
+    'local hum=nil',
+    'local animator=nil',
+    'local animationTrackCount=0',
+    'local motorCount=0',
+    'if p and p.Character then',
+    ' root=p.Character:FindFirstChild("HumanoidRootPart")',
+    ' hum=p.Character:FindFirstChildOfClass("Humanoid")',
+    ' if hum then animator=hum:FindFirstChildOfClass("Animator") end',
+    ' if animator then local ok,tracks=pcall(function() return animator:GetPlayingAnimationTracks() end);if ok then animationTrackCount=#tracks end end',
+    ' for _,d in ipairs(p.Character:GetDescendants()) do if d:IsA("Motor6D") then motorCount=motorCount+1 end end',
+    'end',
+    'local floorBelow=false',
+    'local cameraOccluded=false',
+    'local cameraDistance=0',
+    'if root then',
+    ' local params=RaycastParams.new()',
+    ' params.FilterType=Enum.RaycastFilterType.Exclude',
+    ' params.FilterDescendantsInstances=p and p.Character and {p.Character} or {}',
+    ' local hit=Workspace:Raycast(root.Position+Vector3.new(0,4,0),Vector3.new(0,-128,0),params)',
+    ' floorBelow=hit~=nil',
+    ' if camera then',
+    '  cameraDistance=(camera.CFrame.Position-root.Position).Magnitude',
+    '  local direction=root.Position-camera.CFrame.Position',
+    '  local camHit=Workspace:Raycast(camera.CFrame.Position,direction,params)',
+    '  cameraOccluded=camHit~=nil and camHit.Instance~=nil and not camHit.Instance:IsDescendantOf(p.Character)',
+    ' end',
+    'end',
+    'local payload={',
+    ' context='+JSON.stringify(context)+',',
+    ' player={present=p~=nil,characterPresent=p~=nil and p.Character~=nil,humanoidPresent=hum~=nil,rootPresent=root~=nil,rootX=root and root.Position.X or nil,rootY=root and root.Position.Y or nil,rootZ=root and root.Position.Z or nil,velocityX=root and root.AssemblyLinearVelocity.X or nil,velocityY=root and root.AssemblyLinearVelocity.Y or nil,velocityZ=root and root.AssemblyLinearVelocity.Z or nil,health=hum and hum.Health or nil,maxHealth=hum and hum.MaxHealth or nil,floorMaterial=hum and tostring(hum.FloorMaterial) or nil,humanoidState=hum and tostring(hum:GetState()) or nil,animatorPresent=animator~=nil,animationTrackCount=animationTrackCount,motorCount=motorCount,roundState=attr(p,"RoundState"),role=attr(p,"Role"),monsterPreference=attr(p,"MonsterPreference"),soloRole=attr(p,"SoloRole"),feedbackEvent=attr(p,"FeedbackEvent"),currentMap=attr(p,"CurrentMap"),currentMapEvent=attr(p,"CurrentMapEvent"),humanCount=attr(p,"HumanCount"),monsterCount=attr(p,"MonsterCount"),objectivesDone=attr(p,"ObjectivesDone"),objectivesTotal=attr(p,"ObjectivesTotal")},',
+    ' camera={present=camera~=nil,viewportX=viewport.X,viewportY=viewport.Y,fieldOfView=camera and camera.FieldOfView or nil,subjectPresent=camera and camera.CameraSubject~=nil or false,distance=cameraDistance,occluded=cameraOccluded},',
+    ' ui=gui,',
+    ' workspace={MapReady=attr(Workspace,"MapReady"),ActivePopulation=attr(Workspace,"ActivePopulation"),AIBotCount=attr(Workspace,"AIBotCount"),HumanCount=attr(Workspace,"HumanCount"),MonsterCount=attr(Workspace,"MonsterCount"),CurrentMapId=attr(Workspace,"CurrentMapId"),CurrentMapName=attr(Workspace,"CurrentMapName"),CurrentMapEvent=attr(Workspace,"CurrentMapEvent"),WorldArtPass=attr(Workspace,"WorldArtPass"),CharacterArtDirection=attr(Workspace,"CharacterArtDirection"),DesignCodeSync=attr(Workspace,"DesignCodeSync")},',
+    ' lighting={brightness=Lighting.Brightness,clockTime=Lighting.ClockTime,ambientR=Lighting.Ambient.R,ambientG=Lighting.Ambient.G,ambientB=Lighting.Ambient.B}',
+    '}',
+    'return "ROBLOX_STUDIO_ACTUAL_PLAY_CORE="..HttpService:JSONEncode(payload)'
+  ];
+  return lines.join('\n');
+}
+function studioActualPlayWorldProbeSource(){
+  return [
+    'local HttpService=game:GetService("HttpService")',
+    'local Players=game:GetService("Players")',
+    'local Workspace=game:GetService("Workspace")',
+    'local PathfindingService=game:GetService("PathfindingService")',
+    'local p=Players.LocalPlayer or Players:GetPlayers()[1]',
+    'local root=p and p.Character and p.Character:FindFirstChild("HumanoidRootPart")',
     'local prompts=0',
     'local clickDetectors=0',
-    'local parts=0',
     'local collidableParts=0',
     'local spawnLocations=0',
     'local spawnRows={}',
-    'local arena=Workspace:FindFirstChild("MidnightArena")',
-    'if arena then for _,d in ipairs(arena:GetDescendants()) do if d:IsA("BasePart") then parts+=1 end end end',
-    'local minX,minY,minZ=math.huge,math.huge,math.huge',
-    'local maxX,maxY,maxZ=-math.huge,-math.huge,-math.huge',
     'local promptRows={}',
     'local mobRows={}',
     'local npcRows={}',
@@ -944,99 +1003,166 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     'local itemRows={}',
     'local effectCount=0',
     'local environmentModels=0',
-    'local soundCount=0;local playingSoundCount=0',
+    'local arena=Workspace:FindFirstChild("MidnightArena")',
+    'local parts=0',
+    'if arena then for _,d in ipairs(arena:GetDescendants()) do if d:IsA("BasePart") then parts=parts+1 end end end',
+    'local minX,minY,minZ=math.huge,math.huge,math.huge',
+    'local maxX,maxY,maxZ=-math.huge,-math.huge,-math.huge',
     'for _,d in ipairs(Workspace:GetDescendants()) do',
     ' if d:IsA("BasePart") then',
-    '  if d.CanCollide then collidableParts+=1;local p0=d.Position;local h=d.Size*0.5;minX=math.min(minX,p0.X-h.X);minY=math.min(minY,p0.Y-h.Y);minZ=math.min(minZ,p0.Z-h.Z);maxX=math.max(maxX,p0.X+h.X);maxY=math.max(maxY,p0.Y+h.Y);maxZ=math.max(maxZ,p0.Z+h.Z) end',
-    '  if d:IsA("SpawnLocation") then spawnLocations+=1;if #spawnRows<24 then table.insert(spawnRows,{name=d.Name,x=d.Position.X,y=d.Position.Y,z=d.Position.Z}) end end',
-    '  local hp=attr and attr(d,"HP") or d:GetAttribute("HP");local maxHp=attr and attr(d,"MaxHP") or d:GetAttribute("MaxHP")',
+    '  if d.CanCollide then',
+    '   collidableParts=collidableParts+1',
+    '   local p0=d.Position',
+    '   local h=d.Size*0.5',
+    '   minX=math.min(minX,p0.X-h.X);minY=math.min(minY,p0.Y-h.Y);minZ=math.min(minZ,p0.Z-h.Z)',
+    '   maxX=math.max(maxX,p0.X+h.X);maxY=math.max(maxY,p0.Y+h.Y);maxZ=math.max(maxZ,p0.Z+h.Z)',
+    '  end',
+    '  if d:IsA("SpawnLocation") then spawnLocations=spawnLocations+1;if #spawnRows<24 then table.insert(spawnRows,{name=d.Name,x=d.Position.X,y=d.Position.Y,z=d.Position.Z}) end end',
+    '  local hp=d:GetAttribute("HP")',
+    '  local maxHp=d:GetAttribute("MaxHP")',
     '  local lname=string.lower(d.Name)',
-    '  if (#mobRows<80) and ((typeof(hp)=="number" and typeof(maxHp)=="number") or string.find(lname,"enemy") or string.find(lname,"monster") or string.find(lname,"mob") or string.find(lname,"zombie") or string.find(lname,"boss") or string.find(lname,"raider")) then table.insert(mobRows,{name=d.Name,x=d.Position.X,y=d.Position.Y,z=d.Position.Z,hp=hp,maxHp=maxHp,target=tostring(d:GetAttribute("Target") or ""),state=tostring(d:GetAttribute("State") or d:GetAttribute("AIState") or ""),dormant=d:GetAttribute("Dormant")}) end',
+    '  if #mobRows<80 and ((typeof(hp)=="number" and typeof(maxHp)=="number") or string.find(lname,"enemy") or string.find(lname,"monster") or string.find(lname,"mob") or string.find(lname,"zombie") or string.find(lname,"boss") or string.find(lname,"raider")) then',
+    '   table.insert(mobRows,{name=d.Name,x=d.Position.X,y=d.Position.Y,z=d.Position.Z,hp=hp,maxHp=maxHp,target=tostring(d:GetAttribute("Target") or ""),state=tostring(d:GetAttribute("State") or d:GetAttribute("AIState") or ""),dormant=d:GetAttribute("Dormant")})',
+    '  end',
     ' elseif d:IsA("ProximityPrompt") then',
-    '  prompts+=1;local parent=d.Parent;local pos=parent and parent:IsA("BasePart") and parent.Position or Vector3.new();if #promptRows<60 then table.insert(promptRows,{name=d.Name,actionText=tostring(d.ActionText),objectText=tostring(d.ObjectText),x=pos.X,y=pos.Y,z=pos.Z,maxDistance=d.MaxActivationDistance,key=tostring(d.KeyboardKeyCode),holdDuration=d.HoldDuration,enabled=d.Enabled}) end',
-    ' elseif d:IsA("ClickDetector") then clickDetectors+=1',
-    ' elseif d:IsA("Sound") then soundCount+=1;if d.IsPlaying then playingSoundCount+=1',
-    ' elseif d:IsA("ParticleEmitter") or d:IsA("Trail") or d:IsA("Beam") or d:IsA("Highlight") then effectCount+=1',
+    '  prompts=prompts+1',
+    '  local parent=d.Parent',
+    '  local pos=parent and parent:IsA("BasePart") and parent.Position or Vector3.new()',
+    '  if #promptRows<60 then table.insert(promptRows,{name=d.Name,actionText=tostring(d.ActionText),objectText=tostring(d.ObjectText),x=pos.X,y=pos.Y,z=pos.Z,maxDistance=d.MaxActivationDistance,key=tostring(d.KeyboardKeyCode),holdDuration=d.HoldDuration,enabled=d.Enabled}) end',
+    ' elseif d:IsA("ClickDetector") then',
+    '  clickDetectors=clickDetectors+1',
+    ' elseif d:IsA("ParticleEmitter") or d:IsA("Trail") or d:IsA("Beam") or d:IsA("Highlight") then',
+    '  effectCount=effectCount+1',
     ' elseif d:IsA("Model") then',
-    '  local lname=string.lower(d.Name);local pivot=d:GetPivot();local dh=d:FindFirstChildOfClass("Humanoid");local isPlayer=Players:GetPlayerFromCharacter(d)~=nil',
+    '  local lname=string.lower(d.Name)',
+    '  local dh=d:FindFirstChildOfClass("Humanoid")',
+    '  local isPlayer=Players:GetPlayerFromCharacter(d)~=nil',
     '  local companion=dh and not isPlayer and (string.find(lname,"companion") or string.find(lname,"follower") or string.find(lname,"pet") or string.find(lname,"summon") or d:GetAttribute("Companion")==true or d:GetAttribute("IsCompanion")==true)',
     '  local npc=dh and not isPlayer and not companion and (string.find(lname,"npc") or string.find(lname,"merchant") or string.find(lname,"chief") or string.find(lname,"healer") or string.find(lname,"resident") or string.find(lname,"worker") or string.find(lname,"villager") or string.find(lname,"master") or string.find(lname,"trainer") or d:GetAttribute("NPC")==true or d:GetAttribute("IsNPC")==true)',
     '  local mob=dh and not isPlayer and not companion and not npc and (string.find(lname,"enemy") or string.find(lname,"monster") or string.find(lname,"mob") or string.find(lname,"zombie") or string.find(lname,"boss") or string.find(lname,"raider") or d:GetAttribute("Enemy")==true or d:GetAttribute("IsEnemy")==true or d:GetAttribute("EnemyType")~=nil or d:GetAttribute("MobType")~=nil)',
-    '  local animator=dh and dh:FindFirstChildOfClass("Animator");local trackCount=0;if animator then local ok,tracks=pcall(function() return animator:GetPlayingAnimationTracks() end);if ok then trackCount=#tracks end end',
-    '  local motors=0;for _,joint in ipairs(d:GetDescendants()) do if joint:IsA("Motor6D") then motors+=1 end end',
-    '  if mob and #mobRows<80 then table.insert(mobRows,{name=d.Name,kind="HumanoidModel",x=pivot.Position.X,y=pivot.Position.Y,z=pivot.Position.Z,hp=dh.Health,maxHp=dh.MaxHealth,target=tostring(d:GetAttribute("Target") or d:GetAttribute("TargetUserId") or ""),state=tostring(d:GetAttribute("State") or d:GetAttribute("AIState") or ""),aggro=tostring(d:GetAttribute("Aggro") or d:GetAttribute("AggroState") or ""),animatorPresent=animator~=nil,animationTrackCount=trackCount,motorCount=motors,dormant=d:GetAttribute("Dormant")}) end',
-    '  if companion and #companionRows<50 then table.insert(companionRows,{name=d.Name,x=pivot.Position.X,y=pivot.Position.Y,z=pivot.Position.Z,health=dh.Health,maxHealth=dh.MaxHealth,state=tostring(d:GetAttribute("State") or d:GetAttribute("AIState") or ""),target=tostring(d:GetAttribute("Target") or ""),owner=tostring(d:GetAttribute("OwnerUserId") or ""),animatorPresent=animator~=nil,animationTrackCount=trackCount,motorCount=motors}) end',
-    '  if npc and #npcRows<60 then table.insert(npcRows,{name=d.Name,x=pivot.Position.X,y=pivot.Position.Y,z=pivot.Position.Z,health=dh.Health,maxHealth=dh.MaxHealth,hasPrompt=d:FindFirstChildWhichIsA("ProximityPrompt",true)~=nil,animatorPresent=animator~=nil,animationTrackCount=trackCount,motorCount=motors,state=tostring(d:GetAttribute("State") or d:GetAttribute("AIState") or "")}) end',
-    '  if string.find(lname,"environment") or string.find(lname,"decor") or string.find(lname,"building") or string.find(lname,"house") or string.find(lname,"terrain") or string.find(lname,"village") then environmentModels+=1 end',
+    '  local okPivot,pivot=pcall(function() return d:GetPivot() end)',
+    '  local pos=okPivot and pivot.Position or Vector3.new()',
+    '  local animator=dh and dh:FindFirstChildOfClass("Animator")',
+    '  local trackCount=0',
+    '  if animator then local ok,tracks=pcall(function() return animator:GetPlayingAnimationTracks() end);if ok then trackCount=#tracks end end',
+    '  local motors=0',
+    '  for _,joint in ipairs(d:GetDescendants()) do if joint:IsA("Motor6D") then motors=motors+1 end end',
+    '  if mob and #mobRows<80 then table.insert(mobRows,{name=d.Name,kind="HumanoidModel",x=pos.X,y=pos.Y,z=pos.Z,hp=dh.Health,maxHp=dh.MaxHealth,target=tostring(d:GetAttribute("Target") or d:GetAttribute("TargetUserId") or ""),state=tostring(d:GetAttribute("State") or d:GetAttribute("AIState") or ""),aggro=tostring(d:GetAttribute("Aggro") or d:GetAttribute("AggroState") or ""),animatorPresent=animator~=nil,animationTrackCount=trackCount,motorCount=motors,dormant=d:GetAttribute("Dormant")}) end',
+    '  if companion and #companionRows<50 then table.insert(companionRows,{name=d.Name,x=pos.X,y=pos.Y,z=pos.Z,health=dh.Health,maxHealth=dh.MaxHealth,state=tostring(d:GetAttribute("State") or d:GetAttribute("AIState") or ""),target=tostring(d:GetAttribute("Target") or ""),owner=tostring(d:GetAttribute("OwnerUserId") or ""),animatorPresent=animator~=nil,animationTrackCount=trackCount,motorCount=motors}) end',
+    '  if npc and #npcRows<60 then table.insert(npcRows,{name=d.Name,x=pos.X,y=pos.Y,z=pos.Z,health=dh.Health,maxHealth=dh.MaxHealth,hasPrompt=d:FindFirstChildWhichIsA("ProximityPrompt",true)~=nil,animatorPresent=animator~=nil,animationTrackCount=trackCount,motorCount=motors,state=tostring(d:GetAttribute("State") or d:GetAttribute("AIState") or "")}) end',
+    '  if string.find(lname,"environment") or string.find(lname,"decor") or string.find(lname,"building") or string.find(lname,"house") or string.find(lname,"terrain") or string.find(lname,"village") then environmentModels=environmentModels+1 end',
     ' elseif d:IsA("Tool") or d:IsA("Accessory") then',
     '  if #itemRows<60 then table.insert(itemRows,{name=d.Name,className=d.ClassName,parent=d.Parent and d.Parent.Name or ""}) end',
     ' end',
     'end',
-    'for _,d in ipairs(SoundService:GetDescendants()) do if d:IsA("Sound") then soundCount+=1;if d.IsPlaying then playingSoundCount+=1 end end end',
-    'local remoteRows={};local remoteCount=0',
-    'for _,d in ipairs(ReplicatedStorage:GetDescendants()) do if d:IsA("RemoteEvent") or d:IsA("RemoteFunction") then remoteCount+=1;if #remoteRows<80 then table.insert(remoteRows,{name=d.Name,className=d.ClassName}) end end end',
-    'local root=nil',
-    'local hum=nil',
-    'local animator=nil',
-    'local animationTrackCount=0',
-    'local motorCount=0',
-    'if p and p.Character then root=p.Character:FindFirstChild("HumanoidRootPart");hum=p.Character:FindFirstChildOfClass("Humanoid");if hum then animator=hum:FindFirstChildOfClass("Animator");if animator then local ok,tracks=pcall(function() return animator:GetPlayingAnimationTracks() end);if ok then animationTrackCount=#tracks end end end;for _,d in ipairs(p.Character:GetDescendants()) do if d:IsA("Motor6D") then motorCount+=1 end end end',
-    'local function attr(inst,name) if not inst then return nil end;local ok,value=pcall(function() return inst:GetAttribute(name) end);if ok then return value end;return nil end',
-    'local progressionRows={}',
-    'local function collectProgress(inst,scope)',
-    ' if not inst then return end',
-    ' for name,value in pairs(inst:GetAttributes()) do local lower=string.lower(name);if string.find(lower,"level") or string.find(lower,"xp") or string.find(lower,"gold") or string.find(lower,"quest") or string.find(lower,"wave") or string.find(lower,"round") or string.find(lower,"stage") or string.find(lower,"zone") or string.find(lower,"portal") or string.find(lower,"base") or string.find(lower,"unlock") or string.find(lower,"progress") or string.find(lower,"mastery") or string.find(lower,"tier") or string.find(lower,"kill") or string.find(lower,"reward") then if #progressionRows<80 then table.insert(progressionRows,{scope=scope,name=name,valueType=typeof(value),value=tostring(value)}) end end end',
-    'end',
-    'collectProgress(p,"player");collectProgress(Workspace,"workspace")',
-    'local inventoryRows={};local inventoryCount=0',
-    'if p then local backpack=p:FindFirstChildOfClass("Backpack");if backpack then for _,d in ipairs(backpack:GetChildren()) do if d:IsA("Tool") then inventoryCount+=1;if #inventoryRows<60 then table.insert(inventoryRows,{name=d.Name,className=d.ClassName,scope="Backpack"}) end end end end;if p.Character then for _,d in ipairs(p.Character:GetChildren()) do if d:IsA("Tool") then inventoryCount+=1;if #inventoryRows<60 then table.insert(inventoryRows,{name=d.Name,className=d.ClassName,scope="Character"}) end end end end end',
-    'local leaderstats=p and p:FindFirstChild("leaderstats")',
-    'if leaderstats then for _,d in ipairs(leaderstats:GetChildren()) do if d:IsA("IntValue") or d:IsA("NumberValue") or d:IsA("StringValue") then if #progressionRows<80 then table.insert(progressionRows,{scope="leaderstats",name=d.Name,valueType=d.ClassName,value=tostring(d.Value)}) end end end end',
-    'local systemSignals=0',
-    'local category={quest=0,reward=0,economy=0,inventory=0,combat=0,progression=0,save=0,retry=0,npc=0,companion=0,item=0,environment=0,effects=effectCount}',
-    'for _,rootInst in ipairs({ReplicatedStorage,Workspace,pg}) do if rootInst then for _,d in ipairs(rootInst:GetDescendants()) do local n=string.lower(d.Name);local matched=false',
-    ' if string.find(n,"quest") or string.find(n,"mission") or string.find(n,"objective") or string.find(n,"trial") then category.quest+=1;matched=true end',
-    ' if string.find(n,"reward") or string.find(n,"gold") or string.find(n,"coin") or string.find(n,"xp") or string.find(n,"loot") or string.find(n,"drop") or string.find(n,"chest") then category.reward+=1;matched=true end',
-    ' if string.find(n,"shop") or string.find(n,"merchant") or string.find(n,"price") or string.find(n,"cost") or string.find(n,"upgrade") or string.find(n,"purchase") or string.find(n,"sell") then category.economy+=1;matched=true end',
-    ' if string.find(n,"inventory") or string.find(n,"equip") or string.find(n,"weapon") or string.find(n,"armor") or string.find(n,"relic") or string.find(n,"item") then category.inventory+=1;matched=true end',
-    ' if string.find(n,"attack") or string.find(n,"skill") or string.find(n,"combat") or string.find(n,"damage") or string.find(n,"enemy") or string.find(n,"monster") or string.find(n,"boss") or string.find(n,"mob") then category.combat+=1;matched=true end',
-    ' if string.find(n,"level") or string.find(n,"wave") or string.find(n,"round") or string.find(n,"portal") or string.find(n,"progress") or string.find(n,"unlock") or string.find(n,"mastery") or string.find(n,"stage") then category.progression+=1;matched=true end',
-    ' if string.find(n,"save") or string.find(n,"load") or string.find(n,"datastore") or string.find(n,"persist") then category.save+=1;matched=true end',
-    ' if string.find(n,"retry") or string.find(n,"restart") or string.find(n,"respawn") or string.find(n,"reset") or string.find(n,"newrun") then category.retry+=1;matched=true end',
-    ' if string.find(n,"npc") or string.find(n,"merchant") or string.find(n,"chief") or string.find(n,"healer") or string.find(n,"resident") or string.find(n,"worker") or string.find(n,"villager") or string.find(n,"trainer") or string.find(n,"master") then category.npc+=1;matched=true end',
-    ' if string.find(n,"companion") or string.find(n,"follower") or string.find(n,"pet") or string.find(n,"summon") then category.companion+=1;matched=true end',
-    ' if string.find(n,"item") or string.find(n,"loot") or string.find(n,"drop") or string.find(n,"weapon") or string.find(n,"armor") or string.find(n,"relic") or string.find(n,"resource") or string.find(n,"material") then category.item+=1;matched=true end',
-    ' if string.find(n,"environment") or string.find(n,"decor") or string.find(n,"building") or string.find(n,"house") or string.find(n,"terrain") or string.find(n,"biome") then category.environment+=1;matched=true end',
-    ' if matched then systemSignals+=1 end',
-    'end end end',
-    'local floorBelow=false',
-    'local cameraOccluded=false;local cameraDistance=0',
-    'if root then local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances=p and p.Character and {p.Character} or {};local hit=Workspace:Raycast(root.Position+Vector3.new(0,4,0),Vector3.new(0,-128,0),params);floorBelow=hit~=nil;if camera then cameraDistance=(camera.CFrame.Position-root.Position).Magnitude;local direction=root.Position-camera.CFrame.Position;local camHit=Workspace:Raycast(camera.CFrame.Position,direction,params);cameraOccluded=camHit~=nil and camHit.Instance~=nil and not camHit.Instance:IsDescendantOf(p.Character) end end',
+    'local boundsFinite=minX<math.huge and maxX>-math.huge and minY<math.huge and maxY>-math.huge and minZ<math.huge and maxZ>-math.huge',
     'local minSpawnThreatDistance=math.huge',
     'for _,spawnRow in ipairs(spawnRows) do for _,mobRow in ipairs(mobRows) do local dist=math.sqrt((spawnRow.x-mobRow.x)^2+(spawnRow.y-mobRow.y)^2+(spawnRow.z-mobRow.z)^2);minSpawnThreatDistance=math.min(minSpawnThreatDistance,dist) end end',
     'if minSpawnThreatDistance==math.huge then minSpawnThreatDistance=-1 end',
-    'local boundsFinite=minX<math.huge and maxX>-math.huge and minY<math.huge and maxY>-math.huge and minZ<math.huge and maxZ>-math.huge',
-    'local floorSampleCount=0;local floorHitCount=0;local routeSampleCount=0;local routeSuccessCount=0;local routeRows={}',
-    'if boundsFinite then local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances=p and p.Character and {p.Character} or {};local cx=(minX+maxX)/2;local cz=(minZ+maxZ)/2;local sx=math.max(8,(maxX-minX)*0.35);local sz=math.max(8,(maxZ-minZ)*0.35);local topY=maxY+32;for _,o in ipairs({Vector2.new(0,0),Vector2.new(-sx,0),Vector2.new(sx,0),Vector2.new(0,-sz),Vector2.new(0,sz),Vector2.new(-sx,-sz),Vector2.new(sx,-sz),Vector2.new(-sx,sz),Vector2.new(sx,sz)}) do floorSampleCount+=1;local hit=Workspace:Raycast(Vector3.new(cx+o.X,topY,cz+o.Y),Vector3.new(0,-math.max(256,(maxY-minY)+96),0),params);if hit then floorHitCount+=1 end end end',
-    'if root then local anchors={};local function addAnchor(kind,name,x,y,z) if #anchors<16 and tonumber(x) and tonumber(y) and tonumber(z) then table.insert(anchors,{kind=kind,name=tostring(name or kind),x=tonumber(x),y=tonumber(y),z=tonumber(z)}) end end;for _,row in ipairs(spawnRows) do addAnchor("spawn",row.name,row.x,row.y,row.z) end;for _,row in ipairs(promptRows) do addAnchor("prompt",row.objectText~="" and row.objectText or row.name,row.x,row.y,row.z) end;for _,row in ipairs(npcRows) do addAnchor("npc",row.name,row.x,row.y,row.z) end;for _,row in ipairs(mobRows) do addAnchor("mob",row.name,row.x,row.y,row.z) end;for _,row in ipairs(anchors) do routeSampleCount+=1;local ok,pathObj=pcall(function() local path=PathfindingService:CreatePath({AgentRadius=2,AgentHeight=5,AgentCanJump=true});path:ComputeAsync(root.Position,Vector3.new(row.x,row.y,row.z));return path end);local pass=ok and pathObj and pathObj.Status==Enum.PathStatus.Success;if pass then routeSuccessCount+=1 end;if #routeRows<16 then table.insert(routeRows,{kind=row.kind,name=row.name,pass=pass}) end end end',
-    'local descendantCount=#Workspace:GetDescendants()',
-    'local memoryMb=0;pcall(function() memoryMb=Stats:GetTotalMemoryUsageMb() end)',
-    'local payload={',
-    ' context='+JSON.stringify(context)+',',
-    ' player={present=p~=nil,characterPresent=p~=nil and p.Character~=nil,humanoidPresent=hum~=nil,rootPresent=root~=nil,rootX=root and root.Position.X or nil,rootY=root and root.Position.Y or nil,rootZ=root and root.Position.Z or nil,velocityX=root and root.AssemblyLinearVelocity.X or nil,velocityY=root and root.AssemblyLinearVelocity.Y or nil,velocityZ=root and root.AssemblyLinearVelocity.Z or nil,health=hum and hum.Health or nil,maxHealth=hum and hum.MaxHealth or nil,floorMaterial=hum and tostring(hum.FloorMaterial) or nil,humanoidState=hum and tostring(hum:GetState()) or nil,animatorPresent=animator~=nil,animationTrackCount=animationTrackCount,motorCount=motorCount,roundState=attr(p,"RoundState"),role=attr(p,"Role"),monsterPreference=attr(p,"MonsterPreference"),soloRole=attr(p,"SoloRole"),feedbackEvent=attr(p,"FeedbackEvent"),currentMap=attr(p,"CurrentMap"),currentMapEvent=attr(p,"CurrentMapEvent"),humanCount=attr(p,"HumanCount"),monsterCount=attr(p,"MonsterCount"),objectivesDone=attr(p,"ObjectivesDone"),objectivesTotal=attr(p,"ObjectivesTotal")},',
-    ' camera={present=camera~=nil,viewportX=viewport.X,viewportY=viewport.Y,fieldOfView=camera and camera.FieldOfView or nil,subjectPresent=camera and camera.CameraSubject~=nil or false,distance=cameraDistance,occluded=cameraOccluded},',
-    ' ui=gui,',
-    ' world={arenaPresent=arena~=nil,arenaPartCount=parts,proximityPromptCount=prompts,clickDetectorCount=clickDetectors,collidablePartCount=collidableParts,spawnLocationCount=spawnLocations,spawns=spawnRows,minSpawnThreatDistance=minSpawnThreatDistance,boundsFinite=boundsFinite,minX=boundsFinite and minX or nil,minY=boundsFinite and minY or nil,minZ=boundsFinite and minZ or nil,maxX=boundsFinite and maxX or nil,maxY=boundsFinite and maxY or nil,maxZ=boundsFinite and maxZ or nil,floorBelowPlayer=floorBelow,floorSampleCount=floorSampleCount,floorHitCount=floorHitCount,routeSampleCount=routeSampleCount,routeSuccessCount=routeSuccessCount,routes=routeRows,prompts=promptRows,mobs=mobRows,npcs=npcRows,companions=companionRows,items=itemRows,environmentModels=environmentModels,effectCount=effectCount},',
-    ' runtime={actualPlayerCount=actualPlayerCount,players=playerRows,remoteCount=remoteCount,remotes=remoteRows,progression=progressionRows,inventory=inventoryRows,inventoryCount=inventoryCount,systemSignals=systemSignals,categories=category,descendantCount=descendantCount,memoryMb=memoryMb,soundCount=soundCount,playingSoundCount=playingSoundCount},',
-    ' workspace={MapReady=attr(Workspace,"MapReady"),ActivePopulation=attr(Workspace,"ActivePopulation"),AIBotCount=attr(Workspace,"AIBotCount"),HumanCount=attr(Workspace,"HumanCount"),MonsterCount=attr(Workspace,"MonsterCount"),CurrentMapId=attr(Workspace,"CurrentMapId"),CurrentMapName=attr(Workspace,"CurrentMapName"),CurrentMapEvent=attr(Workspace,"CurrentMapEvent"),WorldArtPass=attr(Workspace,"WorldArtPass"),CharacterArtDirection=attr(Workspace,"CharacterArtDirection"),DesignCodeSync=attr(Workspace,"DesignCodeSync")},',
-    ' lighting={brightness=Lighting.Brightness,clockTime=Lighting.ClockTime,ambientR=Lighting.Ambient.R,ambientG=Lighting.Ambient.G,ambientB=Lighting.Ambient.B}',
-    '}',
-    'return "ROBLOX_STUDIO_ACTUAL_PLAY_PROBE="..HttpService:JSONEncode(payload)'
-  ];
-  return lines.join('\n');
+    'local floorSampleCount=0',
+    'local floorHitCount=0',
+    'if boundsFinite then',
+    ' local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances=p and p.Character and {p.Character} or {}',
+    ' local cx=(minX+maxX)/2;local cz=(minZ+maxZ)/2;local sx=math.max(8,(maxX-minX)*0.35);local sz=math.max(8,(maxZ-minZ)*0.35);local topY=maxY+32',
+    ' local offsets={Vector2.new(0,0),Vector2.new(-sx,0),Vector2.new(sx,0),Vector2.new(0,-sz),Vector2.new(0,sz),Vector2.new(-sx,-sz),Vector2.new(sx,-sz),Vector2.new(-sx,sz),Vector2.new(sx,sz)}',
+    ' for _,o in ipairs(offsets) do floorSampleCount=floorSampleCount+1;local hit=Workspace:Raycast(Vector3.new(cx+o.X,topY,cz+o.Y),Vector3.new(0,-math.max(256,(maxY-minY)+96),0),params);if hit then floorHitCount=floorHitCount+1 end end',
+    'end',
+    'local routeSampleCount=0',
+    'local routeSuccessCount=0',
+    'local routeRows={}',
+    'if root then',
+    ' local anchors={}',
+    ' local function addAnchor(kind,name,x,y,z) if #anchors<16 and tonumber(x) and tonumber(y) and tonumber(z) then table.insert(anchors,{kind=kind,name=tostring(name or kind),x=tonumber(x),y=tonumber(y),z=tonumber(z)}) end end',
+    ' for _,row in ipairs(spawnRows) do addAnchor("spawn",row.name,row.x,row.y,row.z) end',
+    ' for _,row in ipairs(promptRows) do addAnchor("prompt",row.objectText~="" and row.objectText or row.name,row.x,row.y,row.z) end',
+    ' for _,row in ipairs(npcRows) do addAnchor("npc",row.name,row.x,row.y,row.z) end',
+    ' for _,row in ipairs(mobRows) do addAnchor("mob",row.name,row.x,row.y,row.z) end',
+    ' for _,row in ipairs(anchors) do',
+    '  routeSampleCount=routeSampleCount+1',
+    '  local ok,pathObj=pcall(function() local path=PathfindingService:CreatePath({AgentRadius=2,AgentHeight=5,AgentCanJump=true});path:ComputeAsync(root.Position,Vector3.new(row.x,row.y,row.z));return path end)',
+    '  local pass=ok and pathObj and pathObj.Status==Enum.PathStatus.Success',
+    '  if pass then routeSuccessCount=routeSuccessCount+1 end',
+    '  if #routeRows<16 then table.insert(routeRows,{kind=row.kind,name=row.name,pass=pass}) end',
+    ' end',
+    'end',
+    'local floorBelow=false',
+    'if root then local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances=p and p.Character and {p.Character} or {};floorBelow=Workspace:Raycast(root.Position+Vector3.new(0,4,0),Vector3.new(0,-128,0),params)~=nil end',
+    'local payload={world={arenaPresent=arena~=nil,arenaPartCount=parts,proximityPromptCount=prompts,clickDetectorCount=clickDetectors,collidablePartCount=collidableParts,spawnLocationCount=spawnLocations,spawns=spawnRows,minSpawnThreatDistance=minSpawnThreatDistance,boundsFinite=boundsFinite,minX=boundsFinite and minX or nil,minY=boundsFinite and minY or nil,minZ=boundsFinite and minZ or nil,maxX=boundsFinite and maxX or nil,maxY=boundsFinite and maxY or nil,maxZ=boundsFinite and maxZ or nil,floorBelowPlayer=floorBelow,floorSampleCount=floorSampleCount,floorHitCount=floorHitCount,routeSampleCount=routeSampleCount,routeSuccessCount=routeSuccessCount,routes=routeRows,prompts=promptRows,mobs=mobRows,npcs=npcRows,companions=companionRows,items=itemRows,environmentModels=environmentModels,effectCount=effectCount}}',
+    'return "ROBLOX_STUDIO_ACTUAL_PLAY_WORLD="..HttpService:JSONEncode(payload)'
+  ].join('\n');
 }
-function parseStudioActualPlayProbe(result){
-  const marker='ROBLOX_STUDIO_ACTUAL_PLAY_PROBE=';
+function studioActualPlayRuntimeProbeSource(){
+  return [
+    'local HttpService=game:GetService("HttpService")',
+    'local Players=game:GetService("Players")',
+    'local Workspace=game:GetService("Workspace")',
+    'local ReplicatedStorage=game:GetService("ReplicatedStorage")',
+    'local SoundService=game:GetService("SoundService")',
+    'local Stats=game:GetService("Stats")',
+    'local playerList=Players:GetPlayers()',
+    'local p=Players.LocalPlayer or playerList[1]',
+    'local pg=p and p:FindFirstChildOfClass("PlayerGui")',
+    'local playerRows={}',
+    'for _,plr in ipairs(playerList) do if #playerRows<12 then table.insert(playerRows,{userId=plr.UserId,name=plr.Name,roundState=tostring(plr:GetAttribute("RoundState") or ""),role=tostring(plr:GetAttribute("Role") or ""),team=plr.Team and plr.Team.Name or "",currentMap=tostring(plr:GetAttribute("CurrentMap") or ""),humanCount=plr:GetAttribute("HumanCount"),monsterCount=plr:GetAttribute("MonsterCount")}) end end',
+    'local progressionRows={}',
+    'local function collectProgress(inst,scope)',
+    ' if not inst then return end',
+    ' for name,value in pairs(inst:GetAttributes()) do',
+    '  local lower=string.lower(name)',
+    '  if string.find(lower,"level") or string.find(lower,"xp") or string.find(lower,"gold") or string.find(lower,"quest") or string.find(lower,"wave") or string.find(lower,"round") or string.find(lower,"stage") or string.find(lower,"zone") or string.find(lower,"portal") or string.find(lower,"base") or string.find(lower,"unlock") or string.find(lower,"progress") or string.find(lower,"mastery") or string.find(lower,"tier") or string.find(lower,"kill") or string.find(lower,"reward") then',
+    '   if #progressionRows<80 then table.insert(progressionRows,{scope=scope,name=name,valueType=typeof(value),value=tostring(value)}) end',
+    '  end',
+    ' end',
+    'end',
+    'collectProgress(p,"player")',
+    'collectProgress(Workspace,"workspace")',
+    'local inventoryRows={}',
+    'local inventoryCount=0',
+    'if p then',
+    ' local backpack=p:FindFirstChildOfClass("Backpack")',
+    ' if backpack then for _,d in ipairs(backpack:GetChildren()) do if d:IsA("Tool") then inventoryCount=inventoryCount+1;if #inventoryRows<60 then table.insert(inventoryRows,{name=d.Name,className=d.ClassName,scope="Backpack"}) end end end end',
+    ' if p.Character then for _,d in ipairs(p.Character:GetChildren()) do if d:IsA("Tool") then inventoryCount=inventoryCount+1;if #inventoryRows<60 then table.insert(inventoryRows,{name=d.Name,className=d.ClassName,scope="Character"}) end end end end',
+    ' local leaderstats=p:FindFirstChild("leaderstats")',
+    ' if leaderstats then for _,d in ipairs(leaderstats:GetChildren()) do if d:IsA("IntValue") or d:IsA("NumberValue") or d:IsA("StringValue") then if #progressionRows<80 then table.insert(progressionRows,{scope="leaderstats",name=d.Name,valueType=d.ClassName,value=tostring(d.Value)}) end end end end',
+    'end',
+    'local remoteRows={}',
+    'local remoteCount=0',
+    'for _,d in ipairs(ReplicatedStorage:GetDescendants()) do if d:IsA("RemoteEvent") or d:IsA("RemoteFunction") then remoteCount=remoteCount+1;if #remoteRows<80 then table.insert(remoteRows,{name=d.Name,className=d.ClassName}) end end end',
+    'local soundCount=0',
+    'local playingSoundCount=0',
+    'for _,rootInst in ipairs({Workspace,SoundService}) do for _,d in ipairs(rootInst:GetDescendants()) do if d:IsA("Sound") then soundCount=soundCount+1;if d.IsPlaying then playingSoundCount=playingSoundCount+1 end end end end',
+    'local category={quest=0,reward=0,economy=0,inventory=0,combat=0,progression=0,save=0,retry=0,npc=0,companion=0,item=0,environment=0,effects=0}',
+    'local systemSignals=0',
+    'for _,rootInst in ipairs({ReplicatedStorage,Workspace,pg}) do',
+    ' if rootInst then',
+    '  for _,d in ipairs(rootInst:GetDescendants()) do',
+    '   local n=string.lower(d.Name)',
+    '   local matched=false',
+    '   if string.find(n,"quest") or string.find(n,"mission") or string.find(n,"objective") or string.find(n,"trial") then category.quest=category.quest+1;matched=true end',
+    '   if string.find(n,"reward") or string.find(n,"gold") or string.find(n,"coin") or string.find(n,"xp") or string.find(n,"loot") or string.find(n,"drop") or string.find(n,"chest") then category.reward=category.reward+1;matched=true end',
+    '   if string.find(n,"shop") or string.find(n,"merchant") or string.find(n,"price") or string.find(n,"cost") or string.find(n,"upgrade") or string.find(n,"purchase") or string.find(n,"sell") then category.economy=category.economy+1;matched=true end',
+    '   if string.find(n,"inventory") or string.find(n,"equip") or string.find(n,"weapon") or string.find(n,"armor") or string.find(n,"relic") or string.find(n,"item") then category.inventory=category.inventory+1;matched=true end',
+    '   if string.find(n,"attack") or string.find(n,"skill") or string.find(n,"combat") or string.find(n,"damage") or string.find(n,"enemy") or string.find(n,"monster") or string.find(n,"boss") or string.find(n,"mob") then category.combat=category.combat+1;matched=true end',
+    '   if string.find(n,"level") or string.find(n,"wave") or string.find(n,"round") or string.find(n,"portal") or string.find(n,"progress") or string.find(n,"unlock") or string.find(n,"mastery") or string.find(n,"stage") then category.progression=category.progression+1;matched=true end',
+    '   if string.find(n,"save") or string.find(n,"load") or string.find(n,"datastore") or string.find(n,"persist") then category.save=category.save+1;matched=true end',
+    '   if string.find(n,"retry") or string.find(n,"restart") or string.find(n,"respawn") or string.find(n,"reset") or string.find(n,"newrun") then category.retry=category.retry+1;matched=true end',
+    '   if string.find(n,"npc") or string.find(n,"merchant") or string.find(n,"chief") or string.find(n,"healer") or string.find(n,"resident") or string.find(n,"worker") or string.find(n,"villager") or string.find(n,"trainer") or string.find(n,"master") then category.npc=category.npc+1;matched=true end',
+    '   if string.find(n,"companion") or string.find(n,"follower") or string.find(n,"pet") or string.find(n,"summon") then category.companion=category.companion+1;matched=true end',
+    '   if string.find(n,"item") or string.find(n,"loot") or string.find(n,"drop") or string.find(n,"weapon") or string.find(n,"armor") or string.find(n,"relic") or string.find(n,"resource") or string.find(n,"material") then category.item=category.item+1;matched=true end',
+    '   if string.find(n,"environment") or string.find(n,"decor") or string.find(n,"building") or string.find(n,"house") or string.find(n,"terrain") or string.find(n,"biome") then category.environment=category.environment+1;matched=true end',
+    '   if d:IsA("ParticleEmitter") or d:IsA("Trail") or d:IsA("Beam") or d:IsA("Highlight") then category.effects=category.effects+1;matched=true end',
+    '   if matched then systemSignals=systemSignals+1 end',
+    '  end',
+    ' end',
+    'end',
+    'local descendantCount=#Workspace:GetDescendants()',
+    'local memoryMb=0',
+    'pcall(function() memoryMb=Stats:GetTotalMemoryUsageMb() end)',
+    'local payload={runtime={actualPlayerCount=#playerList,players=playerRows,remoteCount=remoteCount,remotes=remoteRows,progression=progressionRows,inventory=inventoryRows,inventoryCount=inventoryCount,systemSignals=systemSignals,categories=category,descendantCount=descendantCount,memoryMb=memoryMb,soundCount=soundCount,playingSoundCount=playingSoundCount}}',
+    'return "ROBLOX_STUDIO_ACTUAL_PLAY_RUNTIME="..HttpService:JSONEncode(payload)'
+  ].join('\n');
+}
+function parseStudioActualPlayProbe(result,marker='ROBLOX_STUDIO_ACTUAL_PLAY_PROBE='){
   for(const text of flattenText(result,[])){
     for(const line of String(text||'').split(/\r?\n/)){
       const at=line.indexOf(marker);if(at<0)continue;
@@ -1050,101 +1176,19 @@ function parseStudioActualPlayProbe(result){
 }
 async function collectStudioActualPlayProbe(client,studioId,contract,context){
   const tool=client.tool('execute_luau');
-  const result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},studioId,studioActualPlayProbeSource(contract,context),context));
-  return parseStudioActualPlayProbe(result);
-}
-async function executeStudioLuauText(client,studioId,code,context='Edit'){
-  const tool=client.tool('execute_luau');
-  const result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},studioId,code,context));
-  return flattenText(result,[]).join(' | ');
-}
-function multiplayerPlayerIds(probe={}){
-  return entityRows(probe?.runtime?.players).map(row=>String(row?.userId??'')).filter(Boolean).sort();
-}
-function sameStringSet(a=[],b=[]){
-  return a.length===b.length&&a.every((value,index)=>value===b[index]);
-}
-async function runStudioMultiplayerAudit(client,studioId,contract){
-  const evidence={
-    attempted:true,launched:false,pass:false,infrastructureFailure:false,error:null,
-    initialServerCount:0,initialClientCount:0,lateServerCount:0,lateClientCount:0,afterLeaveServerCount:0,
-    initialIdSync:false,lateJoinIdSync:false,lateJoinPass:false,leavePass:false,remoteSurface:false
-  };
-  let launched=false;
-  try{
-    const launchCode=[
-      'local StudioTestService=game:GetService("StudioTestService")',
-      'if StudioTestService.EditModeActive~=true then return "ROBLOX_STUDIO_MULTIPLAYER_EDIT_NOT_IDLE" end',
-      'task.spawn(function()',
-      ' local ok,result=pcall(function() return StudioTestService:ExecuteMultiplayerTestAsync(2,"COMMERCIAL_F9_MULTIPLAYER_AUDIT") end)',
-      ' if ok then print("ROBLOX_STUDIO_MULTIPLAYER_SESSION_DONE="..tostring(result)) else warn("ROBLOX_STUDIO_MULTIPLAYER_SESSION_ERROR="..tostring(result)) end',
-      'end)',
-      'return "ROBLOX_STUDIO_MULTIPLAYER_SESSION_STARTED"'
-    ].join('\n');
-    const launchText=await executeStudioLuauText(client,studioId,launchCode,'Edit');
-    if(!/ROBLOX_STUDIO_MULTIPLAYER_SESSION_STARTED/.test(launchText))throw new Error('ROBLOX_STUDIO_MULTIPLAYER_START_NOT_CONFIRMED:'+clean(launchText).slice(0,300));
-    launched=true;evidence.launched=true;
-    await wait(3500);
-
-    const initialServer=await collectStudioActualPlayProbe(client,studioId,contract,'Server');
-    const initialClient=await collectStudioActualPlayProbe(client,studioId,contract,'Client');
-    evidence.initialServerCount=Number(initialServer?.runtime?.actualPlayerCount||0);
-    evidence.initialClientCount=Number(initialClient?.runtime?.actualPlayerCount||0);
-    const initialServerIds=multiplayerPlayerIds(initialServer),initialClientIds=multiplayerPlayerIds(initialClient);
-    evidence.initialIdSync=evidence.initialServerCount>=2&&evidence.initialClientCount>=2&&sameStringSet(initialServerIds,initialClientIds);
-    evidence.remoteSurface=Number(initialServer?.runtime?.remoteCount||0)>0;
-
-    const addText=await executeStudioLuauText(client,studioId,[
-      'local StudioTestService=game:GetService("StudioTestService")',
-      'local ok,err=pcall(function() StudioTestService:AddPlayers(1) end)',
-      'return ok and "ROBLOX_STUDIO_MULTIPLAYER_ADD_PLAYER=PASS" or ("ROBLOX_STUDIO_MULTIPLAYER_ADD_PLAYER=FAIL:"..tostring(err))'
-    ].join('\n'),'Server');
-    if(!/ADD_PLAYER=PASS/.test(addText))throw new Error('ROBLOX_STUDIO_MULTIPLAYER_ADD_PLAYER_FAILED:'+clean(addText).slice(0,300));
-    await wait(2200);
-
-    const lateServer=await collectStudioActualPlayProbe(client,studioId,contract,'Server');
-    const lateClient=await collectStudioActualPlayProbe(client,studioId,contract,'Client');
-    evidence.lateServerCount=Number(lateServer?.runtime?.actualPlayerCount||0);
-    evidence.lateClientCount=Number(lateClient?.runtime?.actualPlayerCount||0);
-    const lateServerIds=multiplayerPlayerIds(lateServer),lateClientIds=multiplayerPlayerIds(lateClient);
-    evidence.lateJoinIdSync=evidence.lateServerCount>=3&&evidence.lateClientCount>=3&&sameStringSet(lateServerIds,lateClientIds);
-    evidence.lateJoinPass=evidence.lateJoinIdSync;
-
-    const leaveText=await executeStudioLuauText(client,studioId,[
-      'local StudioTestService=game:GetService("StudioTestService")',
-      'local can=StudioTestService:CanLeaveTest()',
-      'if can then StudioTestService:LeaveTest();return "ROBLOX_STUDIO_MULTIPLAYER_LEAVE=PASS" end',
-      'return "ROBLOX_STUDIO_MULTIPLAYER_LEAVE=BLOCKED"'
-    ].join('\n'),'Client');
-    if(!/LEAVE=PASS/.test(leaveText))throw new Error('ROBLOX_STUDIO_MULTIPLAYER_LEAVE_FAILED:'+clean(leaveText).slice(0,300));
-    await wait(1800);
-    const afterLeaveServer=await collectStudioActualPlayProbe(client,studioId,contract,'Server');
-    evidence.afterLeaveServerCount=Number(afterLeaveServer?.runtime?.actualPlayerCount||0);
-    evidence.leavePass=evidence.afterLeaveServerCount>=2&&evidence.afterLeaveServerCount<evidence.lateServerCount;
-
-    evidence.pass=Boolean(
-      evidence.initialIdSync
-      &&evidence.remoteSurface
-      &&evidence.lateJoinPass
-      &&evidence.leavePass
-    );
-    return evidence;
-  }catch(error){
-    evidence.error=clean(error?.message||error).slice(0,500);
-    evidence.infrastructureFailure=!launched||/plugin|security|permission|edit|datamodel|tool|studio.*test.*service|mcp/i.test(evidence.error);
-    return evidence;
-  }finally{
-    if(launched){
-      try{
-        await executeStudioLuauText(client,studioId,[
-          'local StudioTestService=game:GetService("StudioTestService")',
-          'local ok,err=pcall(function() StudioTestService:EndTest("COMMERCIAL_F9_MULTIPLAYER_AUDIT_DONE") end)',
-          'return ok and "ROBLOX_STUDIO_MULTIPLAYER_END=PASS" or ("ROBLOX_STUDIO_MULTIPLAYER_END=FAIL:"..tostring(err))'
-        ].join('\n'),'Server');
-      }catch{}
-      await wait(900);
-    }
+  const segments=[
+    {marker:'ROBLOX_STUDIO_ACTUAL_PLAY_CORE=',code:studioActualPlayCoreProbeSource(contract,context)},
+    {marker:'ROBLOX_STUDIO_ACTUAL_PLAY_WORLD=',code:studioActualPlayWorldProbeSource()},
+    {marker:'ROBLOX_STUDIO_ACTUAL_PLAY_RUNTIME=',code:studioActualPlayRuntimeProbeSource()}
+  ];
+  const merged={};
+  for(const segment of segments){
+    const result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},studioId,segment.code,context));
+    const parsed=parseStudioActualPlayProbe(result,segment.marker);
+    if(!parsed)throw new Error('ROBLOX_STUDIO_ACTUAL_PLAY_PROBE_PARSE_EMPTY:'+segment.marker);
+    Object.assign(merged,parsed);
   }
+  return merged;
 }
 function pointDistance(a={},b={}){
   const values=[a?.rootX,a?.rootY,a?.rootZ,b?.rootX,b?.rootY,b?.rootZ].map(Number);
