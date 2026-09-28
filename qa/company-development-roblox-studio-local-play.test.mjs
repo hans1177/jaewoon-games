@@ -2120,6 +2120,17 @@ test('complex Studio routes follow path waypoints and verify actual arrival',()=
   assert.match(helper,/navOk&&reached&&Number\.isFinite\(arrivalDistance\)&&arrivalDistance<=6/);
   assert.match(helper,/for\(let segment=0;segment<4&&navOk&&!reached;segment\+\+\)/);
 });
+test('automated Studio close workflow contains one clean close step and one refill step',()=>{
+  assert.equal((workflow.match(/- name: Close owned Studio after evidence persistence/g)||[]).length,1);
+  assert.equal((workflow.match(/- name: Refill existing 24H development loop after verified play/g)||[]).length,1);
+  const closeAt=workflow.indexOf('- name: Close owned Studio after evidence persistence');
+  const refillAt=workflow.indexOf('- name: Refill existing 24H development loop after verified play');
+  const block=workflow.slice(closeAt,refillAt);
+  assert.match(block,/\^\[0-9\]\+\$/);
+  assert.doesNotMatch(block,/event_type = 'vibe2-fanin-refill'/);
+  assert.doesNotMatch(block,/GH_TOKEN:/);
+});
+
 test('final Studio capture requires no user save and closes only after evidence persistence',()=>{
   const finalizeAt=workflow.indexOf('- name: Finalize Studio session after final capture');
   const persistAt=workflow.indexOf('- name: Persist exact Studio MCP play evidence');
