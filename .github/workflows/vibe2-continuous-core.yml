@@ -824,6 +824,11 @@ jobs:
           put('game_id',order.gameId||'');
           put('target',order.target||'');
           put('route',order.executionRoute||'');
+          const presentationPass=String(order?.presentationQuality?.pass||'').toUpperCase();
+          const deterministicRoblox=String(order.target||'').toLowerCase()==='roblox'
+            && order?.presentationQuality?.required===true
+            && ['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','CAMERA_LANGUAGE','POLISH_MOBILE'].includes(presentationPass);
+          put('deterministic_source',deterministicRoblox?'true':'false');
           put('source_root',order.source?.root||'');
           put('work_lock_required',order.compiledWorkContract?.workLock?.requiredBeforeSourceWrite===true?'true':'false');
           put('work_lock_base_sha',order.compiledWorkContract?.workLock?.baseSha||'');
@@ -838,6 +843,7 @@ jobs:
           ORDER_RUN: ${{ steps.order.outputs.run }}
           ROUTE: ${{ steps.order.outputs.route }}
           TARGET: ${{ steps.order.outputs.target }}
+          DETERMINISTIC_SOURCE: ${{ steps.order.outputs.deterministic_source }}
         shell: bash
         run: |
           set -euo pipefail
@@ -848,7 +854,7 @@ jobs:
           elif [ "$ROUTE" = 'analysis-only' ] || [ "$ROUTE" = 'learning-web-artifact' ]; then
             required='true'
             reason='LEARNING_ROUTE'
-          elif [ "$ROUTE" = 'text-source-worker' ] && [ "$TARGET" = 'roblox' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
+          elif [ "$ROUTE" = 'text-source-worker' ] && [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
             required='false'
             reason='ROBLOX_DETERMINISTIC_SOURCE'
           elif [ "$ROUTE" = 'text-source-worker' ]; then
@@ -996,7 +1002,8 @@ jobs:
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           target="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.target||''))")"
           model_calls=1
-          if [ "$target" = 'roblox' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then model_calls=0; fi
+          deterministic_source="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));const p=String(o?.presentationQuality?.pass||'').toUpperCase();process.stdout.write(String(String(o.target||'').toLowerCase()==='roblox'&&o?.presentationQuality?.required===true&&['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','CAMERA_LANGUAGE','POLISH_MOBILE'].includes(p)))")"
+          if [ "$deterministic_source" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then model_calls=0; fi
           node "$contract_root/tools/free-budget-telemetry.mjs" \
             --verify-public-repo=true \
             --runner=ubuntu-latest \
@@ -1077,6 +1084,7 @@ jobs:
           SAFE_TASK: ${{ matrix.safeTask }}
           SOURCE_ROOT: ${{ steps.order.outputs.source_root }}
           TARGET: ${{ steps.order.outputs.target }}
+          DETERMINISTIC_SOURCE: ${{ steps.order.outputs.deterministic_source }}
           VARIANT: ${{ matrix.variant }}
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           GH_TOKEN: ${{ github.token }}
@@ -1103,7 +1111,7 @@ jobs:
           echo 'VIBE2_GAME_SOURCE_PROVIDER=LOCAL_OLLAMA'
           echo 'VIBE2_CODEX_GAME_SOURCE_WRITE=FORBIDDEN'
 
-          if [ "$TARGET" = 'roblox' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
+          if [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
             echo 'VIBE2_ROBLOX_SOURCE_MODE=DETERMINISTIC_LOCAL'
             echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
           else
