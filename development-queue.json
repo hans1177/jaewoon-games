@@ -26545,10 +26545,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T21:45:58.478Z",
+      "updatedAt": "2026-09-28T22:48:22.333Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -27298,14 +27298,14 @@
             "pass": true
           },
           {
-            "id": "viewport-before-captured",
-            "name": "viewport-before-captured",
+            "id": "actual-play-initial-client-probe",
+            "name": "actual-play-initial-client-probe",
             "required": true,
             "pass": true
           },
           {
-            "id": "actual-play-initial-client-probe",
-            "name": "actual-play-initial-client-probe",
+            "id": "floating-character-map-readiness",
+            "name": "floating-character-map-readiness",
             "required": true,
             "pass": true
           },
@@ -27324,12 +27324,6 @@
           {
             "id": "commercial-audit-timeline-sampled",
             "name": "commercial-audit-timeline-sampled",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "viewport-changed-after-input",
-            "name": "viewport-changed-after-input",
             "required": true,
             "pass": true
           },
@@ -27580,6 +27574,12 @@
             "pass": true
           },
           {
+            "id": "final-visual-capture-sane",
+            "name": "final-visual-capture-sane",
+            "required": true,
+            "pass": true
+          },
+          {
             "id": "play-mode-stopped",
             "name": "play-mode-stopped",
             "required": true,
@@ -27595,8 +27595,8 @@
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
           "scenarioFailureCount": 3,
-          "primaryActionDisplacement": 495.0558768425606,
-          "primaryActionVelocity": 189.259033203125,
+          "primaryActionDisplacement": 0,
+          "primaryActionVelocity": 330.28515625,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
@@ -27629,12 +27629,11 @@
           "local-studio-selected",
           "studio-state-readable",
           "play-mode-started",
-          "viewport-before-captured",
           "actual-play-initial-client-probe",
+          "floating-character-map-readiness",
           "actual-play-pre-action-client-probe",
           "mcp-input-dispatched",
           "commercial-audit-timeline-sampled",
-          "viewport-changed-after-input",
           "actual-play-final-client-probe",
           "actual-play-final-server-probe",
           "scenario-character-camera-ready",
@@ -27648,6 +27647,7 @@
           "scenario-adaptive-travel-effect",
           "scenario-adaptive-gameplay-loop-cadence",
           "scenario-adaptive-quest-state-transition",
+          "scenario-adaptive-reward-effect",
           "ROBLOX_UI_STATE"
         ],
         "rawSourceIncluded": false,
@@ -27804,6 +27804,10 @@
           {
             "id": "adaptive-performance-budget",
             "pass": true
+          },
+          {
+            "id": "visual-asset-load-integrity",
+            "pass": true
           }
         ],
         "scenarioCoveragePass": false,
@@ -27894,8 +27898,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-28T20:46:53.510Z",
-        "workflowRunId": 36479878848,
+        "testedAt": "2026-09-28T22:48:22.333Z",
+        "workflowRunId": 36481419448,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -28056,8 +28060,8 @@
           "MAP_ROUTEABILITY"
         ],
         "robloxFailureClass": "ROBLOX_UI_STATE",
-        "testedAt": "2026-09-28T20:46:53.510Z",
-        "workflowRunId": 36479878848,
+        "testedAt": "2026-09-28T22:48:22.333Z",
+        "workflowRunId": 36481419448,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T13:55:43.285Z",
@@ -28241,7 +28245,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T22:44:44.843Z",
+  "updatedAt": "2026-09-28T22:48:22.333Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
