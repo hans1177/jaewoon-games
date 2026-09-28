@@ -196,8 +196,8 @@ export function deriveStudioActualPlayContract(launch={}){
   const evidencePolicy=launch?.evidencePolicy&&typeof launch.evidencePolicy==='object'?launch.evidencePolicy:{};
   const signals=adaptiveCoverageSignals(launch);
   const adaptiveScenarios=[
-    'character-camera-ready','visual-capture-sane','adaptive-runtime-surface','adaptive-ftue-clarity',
-    'adaptive-ui-commercial-quality','adaptive-world-safety','adaptive-map-route-coverage','adaptive-spawn-safety','adaptive-interaction-surface','adaptive-semantic-interaction-effect','adaptive-system-transaction-effect','adaptive-travel-effect',
+    'character-camera-ready','adaptive-start-playability','visual-capture-sane','adaptive-runtime-surface','adaptive-ftue-clarity',
+    'adaptive-ui-commercial-quality','adaptive-ui-blocking-overlay','adaptive-world-safety','adaptive-map-route-coverage','adaptive-spawn-safety','adaptive-interaction-surface','adaptive-semantic-interaction-effect','adaptive-system-transaction-effect','adaptive-travel-effect',
     'adaptive-gameplay-loop-cadence','adaptive-quest-state-transition','adaptive-reward-effect','adaptive-progression-surface','adaptive-remote-surface','adaptive-combat-surface','adaptive-mob-animation-ai',
     'adaptive-motion-surface','adaptive-audio-surface','adaptive-npc-surface',
     'adaptive-companion-ai-surface','adaptive-item-surface','adaptive-environment-surface',
@@ -904,11 +904,27 @@ function studioActualPlayCoreProbeSource(contract={},context='Client'){
     ' if viewport.X>0 and viewport.Y>0 then off=(pos.X+size.X<0 or pos.Y+size.Y<0 or pos.X>viewport.X or pos.Y>viewport.Y) end',
     ' return {present=true,visible=visible(inst),offscreen=off,x=pos.X,y=pos.Y,width=size.X,height=size.Y}',
     'end',
-    'local gui={screenGuiPresent=false,visibleButtons=0,visibleObjects=0,visibleTextCount=0,visibleTexts={},required={},buttons={},interactive={},offscreenButtons=0,undersizedTouchButtons=0,suboptimalTouchButtons=0,textOverflowButtons=0,overlapPairs=0}',
+    'local gui={screenGuiPresent=false,visibleButtons=0,visibleObjects=0,visibleTextCount=0,visibleTexts={},required={},buttons={},interactive={},offscreenButtons=0,undersizedTouchButtons=0,suboptimalTouchButtons=0,textOverflowButtons=0,overlapPairs=0,largeOverlayCount=0,largeBlockingOverlayCount=0,largestOverlayCoverage=0}',
     'local pg=p and p:FindFirstChildOfClass("PlayerGui")',
     'if pg then',
     ' for _,d in ipairs(pg:GetDescendants()) do',
-    '  if d:IsA("GuiObject") and visible(d) then gui.visibleObjects=gui.visibleObjects+1 end',
+    '  if d:IsA("GuiObject") and visible(d) then',
+    '   gui.visibleObjects=gui.visibleObjects+1',
+    '   if viewport.X>0 and viewport.Y>0 then',
+    '    local pos=d.AbsolutePosition;local size=d.AbsoluteSize',
+    '    local x1=math.max(0,pos.X);local y1=math.max(0,pos.Y);local x2=math.min(viewport.X,pos.X+size.X);local y2=math.min(viewport.Y,pos.Y+size.Y)',
+    '    local coverage=math.max(0,x2-x1)*math.max(0,y2-y1)/math.max(1,viewport.X*viewport.Y)',
+    '    local opaque=d.BackgroundTransparency<0.85',
+    '    if d:IsA("ImageLabel") or d:IsA("ImageButton") then opaque=opaque or d.ImageTransparency<0.85 end',
+    '    if d:IsA("TextLabel") or d:IsA("TextButton") then opaque=opaque or d.TextTransparency<0.85 end',
+    '    if coverage>=0.55 and opaque then',
+    '     gui.largeOverlayCount=gui.largeOverlayCount+1;gui.largestOverlayCoverage=math.max(gui.largestOverlayCoverage,coverage)',
+    '     local actionable=d:IsA("GuiButton") and d.Active~=false',
+    '     if not actionable then for _,child in ipairs(d:GetDescendants()) do if child:IsA("GuiButton") and child.Active~=false and visible(child) then actionable=true;break end end end',
+    '     if not actionable then gui.largeBlockingOverlayCount=gui.largeBlockingOverlayCount+1 end',
+    '    end',
+    '   end',
+    '  end',
     '  if (d:IsA("TextLabel") or d:IsA("TextButton")) and visible(d) and tostring(d.Text)~="" then',
     '   gui.visibleTextCount=gui.visibleTextCount+1',
     '   if #gui.visibleTexts<80 then table.insert(gui.visibleTexts,{name=d.Name,text=tostring(d.Text)}) end',
@@ -921,6 +937,7 @@ function studioActualPlayCoreProbeSource(contract={},context='Client'){
     '   row.centerX=row.x+row.width/2',
     '   row.centerY=row.y+row.height/2',
     '   row.text=d:IsA("TextButton") and tostring(d.Text) or ""',
+    '   row.active=d.Active~=false',
     '   if row.offscreen then gui.offscreenButtons=gui.offscreenButtons+1 end',
     '   local shortSide=math.min(row.width,row.height)',
     '   if shortSide<36 then gui.undersizedTouchButtons=gui.undersizedTouchButtons+1 elseif shortSide<44 then gui.suboptimalTouchButtons=gui.suboptimalTouchButtons+1 end',
@@ -1414,6 +1431,12 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const performanceTrendPass=!soak||(memoryGrowthMb<=300&&descendantGrowth<=6000);
   const visibleButtons=Number(ui.visibleButtons||0);
   const visibleTexts=entityRows(ui.visibleTexts).map(row=>clean(row?.text)).filter(Boolean);
+  const initialHealth=Number(initialClientProbe?.player?.health);
+  const finalHealth=Number(player.health);
+  const initialDead=initialClientProbe?.player?.characterPresent===true&&((Number.isFinite(initialHealth)&&initialHealth<=0)||/Dead/i.test(clean(initialClientProbe?.player?.humanoidState)));
+  const finalDead=player.characterPresent===true&&((Number.isFinite(finalHealth)&&finalHealth<=0)||/Dead/i.test(clean(player.humanoidState)));
+  const startGateAction=(actions||[]).find(row=>row?.id==='ui-start-gate')||null;
+  const initialStartLikeButton=entityRows(initialClientProbe?.ui?.interactive).find(row=>row?.visible!==false&&row?.active!==false&&/^(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text)))||null;
   const onboardingText=visibleTexts.join(' ').toLowerCase();
   const onboardingClarityPass=!signals.onboarding||(
     visibleButtons>0
@@ -1426,6 +1449,33 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     &&Number(ui.textOverflowButtons||0)===0
     &&Number(ui.overlapPairs||0)<=1
     &&visibleButtons>=0;
+  const startGateEffectObserved=!initialStartLikeButton
+    ||(
+      startGateAction?.ok===true
+      &&(
+        activeLoopObserved
+        ||displacement>=0.1
+        ||clean(initialClientProbe?.player?.roundState)!==clean(player.roundState)
+        ||initialClientProbe?.player?.characterPresent!==player.characterPresent
+        ||Number(initialClientProbe?.ui?.largeOverlayCount||0)>Number(ui.largeOverlayCount||0)
+      )
+    );
+  const startPlayabilityPass=!initialDead
+    &&!finalDead
+    &&player.characterPresent===true
+    &&player.humanoidPresent===true
+    &&player.rootPresent===true
+    &&(!Number.isFinite(finalHealth)||finalHealth>0)
+    &&startGateEffectObserved;
+  const blockingOverlayPass=
+    Number(ui.largeBlockingOverlayCount||0)===0
+    &&(
+      Number(ui.largeOverlayCount||0)===0
+      ||activeLoopObserved
+      ||displacement>=0.1
+      ||semanticEffects>0
+      ||timelineProgressChanged
+    );
   const floorSamples=Number(world.floorSampleCount||0),floorHits=Number(world.floorHitCount||0);
   const routeSamples=Number(world.routeSampleCount||0),routeSuccess=Number(world.routeSuccessCount||0);
   const floorCoveragePass=floorSamples===0||floorHits>=Math.max(1,Math.ceil(floorSamples*0.44));
@@ -1449,6 +1499,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const itemSurfaceCount=entityRows(world.items).length+Number(categories.item||0)+Number(categories.inventory||0);
   const rows=[
     {id:'character-camera-ready',pass:player.characterPresent===true&&player.humanoidPresent===true&&player.rootPresent===true&&client?.camera?.present===true},
+    {id:'adaptive-start-playability',pass:startPlayabilityPass},
     {id:'role-selection-interaction',pass:!clean(contract.selectionButtonText)||(actionOk('ui-role-selection')&&(selectionIntent==='SURVIVOR'||acceptedRoles.includes(clean(selectionPlayer.role))))},
     {id:'round-running',pass:acceptedRoundStates.length===0||acceptedRoundStates.includes(clean(selectionPlayer.roundState||player.roundState))},
     {id:'logical-population-eight',pass:logicalPopulation<=0||(humanCount+monsterCount===logicalPopulation&&humanCount>=Number(exp.minimumHumans||0)&&monsterCount>=Number(exp.minimumMonsters||0))},
@@ -1464,6 +1515,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-runtime-surface',pass:Number(runtime.descendantCount||0)>0&&(Number(runtime.systemSignals||0)>0||Number(runtime.remoteCount||0)>0||interactionSurfaceCount>0||progressionSurfaceCount>0||combatSurfaceCount>0||npcSurfaceCount>0||itemSurfaceCount>0)},
     {id:'adaptive-ftue-clarity',pass:onboardingClarityPass},
     {id:'adaptive-ui-commercial-quality',pass:!signals.ui||uiCommercialPass},
+    {id:'adaptive-ui-blocking-overlay',pass:blockingOverlayPass},
     {id:'adaptive-world-safety',pass:!signals.map||worldSafetyPass},
     {id:'adaptive-map-route-coverage',pass:!signals.map||routeActions.length===0||routePassCount>=routeRequired},
     {id:'adaptive-spawn-safety',pass:!signals.combat||spawnThreatDistance<0||spawnThreatDistance>=10},
@@ -1523,15 +1575,18 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     companionMotion,
     npcMotion,
     ftue:{declared:signals.onboarding===true,pass:onboardingClarityPass,visibleTextCount:visibleTexts.length,visibleButtonCount:visibleButtons},
-    uiCommercial:{offscreenButtons:Number(ui.offscreenButtons||0),undersizedTouchButtons:Number(ui.undersizedTouchButtons||0),suboptimalTouchButtons:Number(ui.suboptimalTouchButtons||0),textOverflowButtons:Number(ui.textOverflowButtons||0),overlapPairs:Number(ui.overlapPairs||0)},
+    uiCommercial:{offscreenButtons:Number(ui.offscreenButtons||0),undersizedTouchButtons:Number(ui.undersizedTouchButtons||0),suboptimalTouchButtons:Number(ui.suboptimalTouchButtons||0),textOverflowButtons:Number(ui.textOverflowButtons||0),overlapPairs:Number(ui.overlapPairs||0),largeOverlayCount:Number(ui.largeOverlayCount||0),largeBlockingOverlayCount:Number(ui.largeBlockingOverlayCount||0),largestOverlayCoverage:Number(ui.largestOverlayCoverage||0)},
+    startPlayability:{initialDead,finalDead,initialHealth:Number.isFinite(initialHealth)?initialHealth:null,finalHealth:Number.isFinite(finalHealth)?finalHealth:null,startGateVisible:Boolean(initialStartLikeButton),startGateActionOk:startGateAction?.ok===true,startGateEffectObserved},
     surfaces:{interactionSurfaceCount,progressionSurfaceCount,combatSurfaceCount,npcSurfaceCount,companionSurfaceCount,itemSurfaceCount,remoteCount:Number(runtime.remoteCount||0),soundCount:Number(runtime.soundCount||0),effectCount:Number(world.effectCount||0),promptCount:Number(world.proximityPromptCount||0),inventoryCount:Number(runtime.inventoryCount||0),currentActualPlayerCount,maxActualPlayerCount,multiplayerStateTransition,multiplayerActualSessionPass},
     performance:{memoryMb:Number(runtime.memoryMb||0),descendantCount:Number(runtime.descendantCount||0)},
     worldAudit:{floorSamples,floorHits,floorCoveragePass,routeSamples,routeSuccess,routeCoveragePass,spawnThreatDistance,spawnOverlapSafe},
     characterAndAi:{mobRigAnimationPass,humanoidMobCount:humanoidMobRows.length,cameraOccluded:client?.camera?.occluded===true,cameraDistance:Number(client?.camera?.distance||0)}
   };
   const repairMap={
+    'adaptive-start-playability':['GAME_START','CRITICAL','Repair initial character health/state and start/continue flow so Studio reaches a healthy controllable character and gameplay state.'],
     'adaptive-ftue-clarity':['FTUE_ONBOARDING','HIGH','Restore a clear start/loading/tutorial/objective presentation with an actionable control and readable guidance before normal play.'],
     'adaptive-ui-commercial-quality':['MOBILE_UI','HIGH','Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.'],
+    'adaptive-ui-blocking-overlay':['MOBILE_UI','CRITICAL','Remove or dismiss persistent full-screen modal/guide overlays that block gameplay input or obscure the playable viewport.'],
     'adaptive-world-safety':['WORLD_GEOMETRY','CRITICAL','Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.'],
     'adaptive-map-route-coverage':['MAP_ROUTEABILITY','CRITICAL','Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.'],
     'adaptive-spawn-safety':['SPAWN_FAIRNESS','HIGH','Move hostile spawns away from player spawn or add safe startup protection/telegraphing.'],
@@ -1570,8 +1625,9 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     'character-camera-ready':['CHARACTER_BOOT','CRITICAL','Repair character spawn, Humanoid/root, and camera binding before gameplay starts.']
   };
   const observedFor=id=>{
+    if(id==='adaptive-start-playability')return metrics.startPlayability;
     if(id==='adaptive-ftue-clarity')return{declared:signals.onboarding===true,visibleButtonCount:visibleButtons,visibleTextCount:visibleTexts.length,visibleTexts:visibleTexts.slice(0,12),pass:onboardingClarityPass};
-    if(id==='adaptive-ui-commercial-quality')return metrics.uiCommercial;
+    if(id==='adaptive-ui-commercial-quality'||id==='adaptive-ui-blocking-overlay')return metrics.uiCommercial;
     if(id==='adaptive-world-safety')return{boundsFinite:world.boundsFinite===true,collidablePartCount:Number(world.collidablePartCount||0),floorBelowPlayer:world.floorBelowPlayer===true,floorSamples,floorHits,floorCoveragePass,routeSamples,routeSuccess,routeCoveragePass,spawnThreatDistance,spawnOverlapSafe};
     if(id==='adaptive-map-route-coverage')return{routeAttemptCount:routeActions.length,routePassCount,routeRequired,routes:routeActions.slice(0,8).map(row=>({id:row.id,ok:row.ok===true,moved:Number(row.moved||0),fall:Number(row.fall||0),floorBelow:row.floorBelow===true}))};
     if(id==='adaptive-spawn-safety')return{spawnLocationCount:Number(world.spawnLocationCount||0),minSpawnThreatDistance:spawnThreatDistance};
@@ -1810,6 +1866,33 @@ export async function runOfficialStudioMcpPlay({
     if(actualPlayContract?.required===true){
       initialClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
       checkpoint('actual-play-initial-client-probe',initialClientProbe!=null);
+      const initialHealth=Number(initialClientProbe?.player?.health);
+      const initialDeadCandidate=Boolean(
+        initialClientProbe?.player?.characterPresent===true
+        &&(
+          (Number.isFinite(initialHealth)&&initialHealth<=0)
+          ||/Dead/i.test(clean(initialClientProbe?.player?.humanoidState))
+        )
+      );
+      if(initialDeadCandidate){
+        await wait(450);
+        const deadConfirm=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+        const confirmHealth=Number(deadConfirm?.player?.health);
+        const deadConfirmed=Boolean(
+          deadConfirm?.player?.characterPresent===true
+          &&(
+            (Number.isFinite(confirmHealth)&&confirmHealth<=0)
+            ||/Dead/i.test(clean(deadConfirm?.player?.humanoidState))
+          )
+        );
+        if(deadConfirmed){
+          checkpoint('initial-character-playable',false);
+          actions.push({id:'initial-character-playable',type:'mcp-start-playability-abort',dispatched:true,ok:false});
+          try{await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,false));started=false;}catch{}
+          throw new Error('ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:INITIAL_CHARACTER_NOT_PLAYABLE');
+        }
+      }
+      checkpoint('initial-character-playable',true);
       const floatingSpawnCandidate=Boolean(
         initialClientProbe?.player?.rootPresent===true
         &&initialClientProbe?.world?.floorBelowPlayer!==true
@@ -1840,6 +1923,25 @@ export async function runOfficialStudioMcpPlay({
         actions.push({id:'ui-role-selection',type:'mcp-mouse-input',dispatched:target!=null,ok});
         checkpoint('role-selection-input-dispatched',ok);
         await wait(Math.max(250,Number(actualPlayContract.afterSelectionWaitMs||1800)));
+      }else if(!clean(actualPlayContract.primaryActionButtonText)){
+        const startTarget=entityRows(initialClientProbe?.ui?.interactive).find(row=>
+          row?.visible!==false
+          &&row?.active!==false
+          &&/^(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text))
+        )||null;
+        if(startTarget){
+          let ok=false;
+          if(Number.isFinite(Number(startTarget.centerX))&&Number.isFinite(Number(startTarget.centerY))){
+            try{
+              const mouseTool=client.tool('user_mouse_input');
+              const result=await client.call('user_mouse_input',mouseClickArgs(mouseTool.inputSchema||{},studioId,startTarget.centerX,startTarget.centerY));
+              ok=result?.isError!==true;
+            }catch{}
+          }
+          actions.push({id:'ui-start-gate',type:'mcp-mouse-input',dispatched:true,ok,text:clean(startTarget.text)});
+          checkpoint('adaptive-start-gate-input-dispatched',ok);
+          await wait(1200);
+        }
       }
     }
 
@@ -2362,8 +2464,26 @@ export async function runOfficialStudioMcpPlay({
       signature=(signature+':settingHint=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY').slice(0,500);
       console.log('ROBLOX_STUDIO_MCP_SETTING_HINT=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY');
     }
+    const deadStart=signature.startsWith('ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:');
     const floatingWorld=signature.startsWith('ROBLOX_STUDIO_FLOATING_CHARACTER_ABORT:');
-    if(floatingWorld){
+    if(deadStart){
+      scenarioCoverage.push({id:'adaptive-start-playability',pass:false,required:true});
+      qualityFailureKinds.push('adaptive-start-playability');
+      qualityFailureDetails.push({
+        id:'adaptive-start-playability',
+        repairSurface:'GAME_START',
+        priority:'CRITICAL',
+        hint:'Studio started with a dead/unplayable character. Restore healthy spawn/respawn/start state before normal gameplay QA.',
+        observed:{
+          characterPresent:initialClientProbe?.player?.characterPresent===true,
+          humanoidPresent:initialClientProbe?.player?.humanoidPresent===true,
+          health:Number(initialClientProbe?.player?.health),
+          maxHealth:Number(initialClientProbe?.player?.maxHealth),
+          humanoidState:clean(initialClientProbe?.player?.humanoidState)
+        }
+      });
+      errors.push({type:'studio-product-start-playability-error',actionId:'initial-character-playable',signature});
+    }else if(floatingWorld){
       scenarioCoverage.push({id:'adaptive-world-safety',pass:false,required:true});
       qualityFailureKinds.push('adaptive-world-safety');
       qualityFailureDetails.push({
