@@ -42,8 +42,8 @@ permissions:
   actions: write
 
 concurrency:
-  group: roblox-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
-  cancel-in-progress: false
+  group: roblox-native-${{ inputs.game_id || 'batch' }}
+  cancel-in-progress: true
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
