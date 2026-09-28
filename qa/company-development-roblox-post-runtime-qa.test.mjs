@@ -151,7 +151,7 @@ test('post-runtime QA collapses duplicate scans before heavy work with scan-scop
   const studioPlan=workflow.slice(studioPlanAt,studioAutoPlayAt);
   assert.doesNotMatch(studioPlan,/\n\s+needs:\s+dedupe(?:\s|$)/);
   assert.match(studioPlan,/concurrency:\n\s+group: roblox-studio-mcp-plan-/);
-  assert.match(studioPlan,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  assert.match(studioPlan,/runs-on: ubuntu-slim/);
 });
 
 
