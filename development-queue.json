@@ -8802,7 +8802,7 @@
       "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T10:10:16.740Z",
+      "updatedAt": "2026-09-28T10:37:35.062Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -9231,7 +9231,7 @@
         "publicDiscoveryAllowed": false,
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
-      "robloxSharedTargetCurrent": true,
+      "robloxSharedTargetCurrent": false,
       "robloxFastMvpSupersededBy": null,
       "robloxReleaseVersionNumber": 6,
       "robloxPublicRelease": false,
@@ -9272,10 +9272,28 @@
       },
       "resumeStage": "SINGLE_BUILD_OR_PACKAGE",
       "failureCount": 1,
-      "contractCanaryPassed": false
+      "contractCanaryPassed": false,
+      "robloxValidationTarget": {
+        "version": 1,
+        "gameId": "survival",
+        "universeId": "10768436682",
+        "placeId": "128385309795036",
+        "verified": false,
+        "verifiedAt": null,
+        "lastVerifiedAt": null,
+        "source": "canonical-dedicated-open-cloud-bootstrap",
+        "authority": "roblox-pre-f9-validation-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
+        "reservedAt": "2026-09-28T10:37:35.062Z"
+      }
     }
   ],
-  "updatedAt": "2026-09-28T10:37:15.313Z",
+  "updatedAt": "2026-09-28T10:37:35.062Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
