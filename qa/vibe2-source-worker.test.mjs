@@ -3971,3 +3971,49 @@ test('Unity bootstrap pair retry explicitly forbids empty edits and requires bot
   assert.match(retry,/at least two edits total/i);
   assert.match(retry,/Every replace must differ from find/i);
 });
+
+test('local Roblox visual retry targets gameplay visuals and keeps a bounded build-up prompt',()=>{
+  const root=tempRoot();
+  const sourceRoot=path.join(root,'roblox-games','cozy-island');
+  write(path.join(sourceRoot,'server/BattleVisual.luau'),
+    'local TweenService=game:GetService("TweenService")\nlocal pulse=Color3.fromRGB(70,116,165)\nTweenService:Create(pulse,TweenInfo.new(1.8),{Position=goal}):Play()\n');
+  write(path.join(sourceRoot,'shared/QACamera.luau'),
+    'local button=Instance.new("TextButton")\nbutton.BackgroundColor3=Color3.fromRGB(35,38,46)\n');
+  const directive=[
+    '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
+    'directiveId=cozy-g2',
+    'primaryGoal=실제 전투 연출과 움직임을 개선한다.',
+    'sourceAnchors=server/BattleVisual.luau',
+    'expectedPlayerEffect=전투 상태를 명확하게 본다.',
+    'contentBundle='+('unrelated-system-detail '.repeat(500)),
+    'contentRule='+('unrelated-world-rule '.repeat(500)),
+    'visual=지역 색과 실제 Tween 모션을 연결',
+    'platform=Roblox native render',
+    'preserve=전투 숫자와 저장',
+    'acceptance=실제 렌더 변화',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
+  ].join('\n');
+  const prompt=[
+    '[PRESENTATION_PASS:ASSET_ADAPTATION]',
+    'Engine: roblox',
+    'Goal: improve actual battle visuals',
+    directive,
+    'Allowed edit paths: shared/QACamera.luau, server/BattleVisual.luau',
+    '=== FILE shared/QACamera.luau [EDITABLE] ===',
+    'button.BackgroundColor3=Color3.fromRGB(35,38,46)',
+    '=== FILE server/BattleVisual.luau [EDITABLE] ===',
+    'local pulse=Color3.fromRGB(70,116,165)',
+    'TweenService:Create(pulse,TweenInfo.new(1.8),{Position=goal}):Play()'
+  ].join('\n');
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{
+    error:new Error('Ollama 응답 시간 초과: 240000ms'),
+    responsibleFiles:['shared/QACamera.luau','server/BattleVisual.luau'],
+    sourceRoot
+  });
+  assert.ok(focused);
+  assert.equal(focused.spec.path,'server/BattleVisual.luau');
+  assert.match(focused.prompt,/primaryGoal=실제 전투 연출/);
+  assert.match(focused.prompt,/visual=지역 색/);
+  assert.doesNotMatch(focused.prompt,/unrelated-system-detail/);
+  assert.ok(Buffer.byteLength(focused.prompt,'utf8')<7000);
+});
