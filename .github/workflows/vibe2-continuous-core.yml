@@ -95,9 +95,9 @@ env:
 
 jobs:
   reserve:
-    # Asset reserve and pressure-driven fan-in refill use the ARM control pool.
-    # Default game-primary ingress stays on slim; heavy game workers remain on ubuntu-latest.
-    runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || (github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && 'ubuntu-24.04-arm' || 'ubuntu-slim') }}
+    # Lightweight reserve stays on slim for every lane; pressure-driven fan-in refill keeps the ARM bypass.
+    # Heavy game workers remain on their existing execution pools.
+    runs-on: ${{ (github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && 'ubuntu-24.04-arm' || 'ubuntu-slim') }}
     timeout-minutes: 7
     # Reserve jobs may run concurrently. Only the existing optimistic shared-state
     # fetch/reset/replan/push retry section serializes on an actual write conflict.

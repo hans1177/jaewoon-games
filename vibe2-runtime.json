@@ -705,7 +705,7 @@
       ]
     },
     "cohortFanInPressureIngressEnabled": true,
-    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v8",
+    "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v9",
     "reserveConcurrency": {
       "mode": "PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE",
       "crossLaneGlobalReserveLock": false,
@@ -718,7 +718,7 @@
     "assetDevelopmentControlRunnerPool": {
       "authority": "company-learning/platform-release-roadmap.json#changeRecord.assetArmControlPlaneIsolation20260927",
       "schedulerPlan": "ubuntu-24.04-arm",
-      "reserve": "ubuntu-24.04-arm",
+      "reserve": "ubuntu-slim",
       "modelCache": "ubuntu-24.04-arm",
       "worker": "ubuntu-24.04-arm",
       "fanIn": "ubuntu-24.04-arm",
