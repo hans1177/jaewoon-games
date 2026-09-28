@@ -632,7 +632,7 @@ jobs:
 
       - name: Probe shared Ollama cache from reserve runner
         id: ollama_cache_probe
-        if: steps.batch.outputs.worker_count != '0'
+        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
         uses: actions/cache/restore@v4
         with:
           path: |
@@ -643,7 +643,7 @@ jobs:
           lookup-only: true
 
       - name: Record reserve model cache decision
-        if: steps.batch.outputs.worker_count != '0'
+        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
         shell: bash
         run: |
           echo 'VIBE2_MODEL_CACHE_RESERVE_PROBE_LOOKUP_ONLY=YES'
@@ -654,9 +654,16 @@ jobs:
             echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=RUN_CACHE_MISS'
           fi
 
+      - name: Record asset no-model cache bypass
+        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE == 'asset-development'
+        shell: bash
+        run: |
+          echo 'VIBE2_MODEL_CACHE_RESERVE_PROBE=SKIPPED_ASSET_LANE'
+          echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_ASSET_WORKER_LOCAL_DECISION'
+
   model_cache:
     needs: reserve
-    if: needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_cache_hit != 'true'
+    if: needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_cache_hit != 'true' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'asset-development'
     runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     timeout-minutes: 12
     continue-on-error: true
