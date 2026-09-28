@@ -1,7 +1,7 @@
 {
   "version": 2,
   "revision": 86,
-  "updatedAt": "2026-09-28T06:18:11.485Z",
+  "updatedAt": "2026-09-28T06:37:19.929Z",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -1094,8 +1094,11 @@
     "canonicalGameTargetPublishBeforeF9Forbidden": true,
     "preF9ValidationTargetMustBeSeparate": true,
     "f9IsNonTerminal": true,
-    "canonicalPublishSuccessStartsNextF0ThroughF9Cycle": true,
-    "perpetualVerifiedRepublishLoop": true
+    "canonicalPublishSuccessStartsNextF0ThroughF9Cycle": false,
+    "perpetualVerifiedRepublishLoop": true,
+    "finalPublishDispatchStartsNextF0ThroughF9Cycle": true,
+    "publicationOutcomeBlocksEvolution": false,
+    "publicationVisibilityBlocksEvolution": false
   },
   "currentExecutionMode": "UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_ROBLOX_UNITY",
   "currentExecutionAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
@@ -1447,7 +1450,10 @@
     "queueTelemetryMayDeferDesignGeneration": false,
     "f9Terminal": false,
     "canonicalRobloxPublishAfterEveryVerifiedF9Cycle": true,
-    "nextCycleStartsAfterCanonicalPublishSuccess": true
+    "nextCycleStartsAfterCanonicalPublishSuccess": false,
+    "nextCycleStartsAfterFinalPublishDispatch": true,
+    "publicationOutcomeBlocksEvolution": false,
+    "publicationVisibilityBlocksEvolution": false
   },
   "validationEfficiencyOptimization": {
     "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
