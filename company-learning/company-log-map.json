@@ -2850,6 +2850,34 @@
     "optionalPublicationMarkers": [
       "ROBLOX_CANONICAL_FINAL_PUBLISH=PASS",
       "ROBLOX_CANONICAL_FINAL_PUBLISH=REPAIR_REQUIRED"
+    ],
+    "nextCycleStartsAfterF9PublishDispatch": true,
+    "publicationOutcomeDiagnosticOnly": true
+  },
+  "verifiedPlatformCyclePublicationEvidence": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#verifiedPlatformCyclePublication",
+    "platforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "requiredPerCycle": [
+      "PLATFORM_F0_TO_F9_VERIFIED",
+      "PLATFORM_F9_EXACT_ARTIFACT_BOUND",
+      "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED",
+      "PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED"
+    ],
+    "publicationResultMarkers": [
+      "PLATFORM_PUBLISH_PASS",
+      "PLATFORM_PUBLISH_RETRY_REQUIRED"
+    ],
+    "publicationResultDiagnosticOnlyForNextCycle": true,
+    "internalOrExternalExposureDiagnosticOnlyForNextCycle": true,
+    "forbidden": [
+      "PUBLISH_BEFORE_F9",
+      "WAIT_NEXT_CYCLE_FOR_PUBLISH_SUCCESS",
+      "WAIT_NEXT_CYCLE_FOR_PUBLIC_VISIBILITY"
     ]
   }
 }
