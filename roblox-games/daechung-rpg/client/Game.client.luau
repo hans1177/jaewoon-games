@@ -7,6 +7,13 @@ local SoundService=game:GetService("SoundService")
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
+local verifiedExternalLearningContext = C.VerifiedExternalLearning or C.LearningContext or {}
+local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
+local verifiedExternalLearningPrinciples = verifiedExternalLearningContext.ApplicationPrinciples or {}
+local verifiedExternalGameDevelopmentPrinciples = verifiedExternalLearningContext.GameDevelopmentPrinciples or {}
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END
+
 -- STUDIO_ASSET_BINDING_CLIENT_BEGIN
 local STUDIO_ASSET_BINDING_VERSION = 2
 local studioAssetConfig = C.StudioAssets or {}
@@ -61,6 +68,151 @@ local function button(parent,text,color)
 end
 
 local stats=Instance.new("Frame");
+-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
+local verifiedLearningPlayers = game:GetService("Players")
+local verifiedLearningTweenService = game:GetService("TweenService")
+local verifiedLearningLighting = game:GetService("Lighting")
+local verifiedLearningPlayer = verifiedLearningPlayers.LocalPlayer
+local verifiedLearningContext = C.VerifiedExternalLearning or C.LearningContext or {}
+local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
+local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
+local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 3
+local verifiedLearningRoot = stats
+verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
+verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
+verifiedLearningRoot:SetAttribute("VerifiedExternalLearningAxisCount", #verifiedLearningAxes)
+verifiedLearningRoot:SetAttribute("VerifiedExternalLearningFingerprint", verifiedLearningContext.MemoryFingerprint or "")
+
+-- Roblox environment / background adaptation.
+local verifiedLearningColorGrade = verifiedLearningLighting:FindFirstChild("VerifiedLearningColorGrade")
+if not verifiedLearningColorGrade then
+  verifiedLearningColorGrade = Instance.new("ColorCorrectionEffect")
+  verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
+  verifiedLearningColorGrade.Parent = verifiedLearningLighting
+end
+verifiedLearningColorGrade.Saturation = 0.06
+verifiedLearningColorGrade.Contrast = 0.04
+verifiedLearningColorGrade.Brightness = 0.01
+local verifiedLearningBloom = verifiedLearningLighting:FindFirstChild("VerifiedLearningBloom")
+if not verifiedLearningBloom then
+  verifiedLearningBloom = Instance.new("BloomEffect")
+  verifiedLearningBloom.Name = "VerifiedLearningBloom"
+  verifiedLearningBloom.Parent = verifiedLearningLighting
+end
+verifiedLearningBloom.Intensity = 0.22
+verifiedLearningBloom.Size = 18
+verifiedLearningBloom.Threshold = 1.1
+
+-- Roblox character animation / motion adaptation.
+local function syncVerifiedLearningCharacterMotion(character)
+  local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid", 5)
+  if not humanoid then return end
+  local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 5)
+  if not animator then return end
+  humanoid.Running:Connect(function(speed)
+    local ratio = speed > 0.1 and math.clamp(speed / math.max(humanoid.WalkSpeed, 1), 0.82, 1.25) or 1
+    for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+      if track.Priority == Enum.AnimationPriority.Movement or track.Priority == Enum.AnimationPriority.Core then
+        track:AdjustSpeed(ratio)
+      end
+    end
+  end)
+end
+if verifiedLearningPlayer.Character then task.defer(syncVerifiedLearningCharacterMotion, verifiedLearningPlayer.Character) end
+verifiedLearningPlayer.CharacterAdded:Connect(syncVerifiedLearningCharacterMotion)
+
+-- Roblox UI / touch / progression guidance.
+local verifiedLearningGuidance = Instance.new("TextLabel")
+verifiedLearningGuidance.Name = "VerifiedLearningGuidance"
+verifiedLearningGuidance.Size = UDim2.new(1, -20, 0, 30)
+verifiedLearningGuidance.Position = UDim2.fromOffset(10, 8)
+verifiedLearningGuidance.BackgroundTransparency = 1
+verifiedLearningGuidance.TextWrapped = true
+verifiedLearningGuidance.TextScaled = true
+verifiedLearningGuidance.Text = "핵심 조작을 눌러 바로 플레이"
+verifiedLearningGuidance.Parent = verifiedLearningRoot
+local verifiedLearningRiskCue = Instance.new("TextLabel")
+verifiedLearningRiskCue.Name = "VerifiedLearningProgressionRiskCue"
+verifiedLearningRiskCue.Size = UDim2.new(1, -20, 0, 26)
+verifiedLearningRiskCue.Position = UDim2.fromOffset(10, 40)
+verifiedLearningRiskCue.BackgroundTransparency = 1
+verifiedLearningRiskCue.TextWrapped = true
+verifiedLearningRiskCue.TextScaled = true
+verifiedLearningRiskCue.Text = "도전 전 레벨·상태·위험 조건 확인"
+verifiedLearningRiskCue.Parent = verifiedLearningRoot
+
+-- Roblox skill VFX / camera / motion feedback.
+local function playVerifiedLearningActionFeedback(control)
+  verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control.Name)
+  verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputRespondedAt", os.clock())
+  verifiedLearningGuidance.Visible = false
+
+  local scale = control:FindFirstChild("VerifiedLearningMotionScale")
+  if not scale then
+    scale = Instance.new("UIScale")
+    scale.Name = "VerifiedLearningMotionScale"
+    scale.Parent = control
+  end
+  scale.Scale = 0.94
+  verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+
+  local camera = workspace.CurrentCamera
+  if camera then
+    local baseFov = camera.FieldOfView
+    verifiedLearningTweenService:Create(camera, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {FieldOfView = math.clamp(baseFov + 3, 40, 100)}):Play()
+    task.delay(0.09, function()
+      if camera then verifiedLearningTweenService:Create(camera, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {FieldOfView = baseFov}):Play() end
+    end)
+  end
+
+  local character = verifiedLearningPlayer.Character
+  local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+  if character and rootPart then
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "VerifiedLearningSkillImpact"
+    highlight.FillTransparency = 0.35
+    highlight.OutlineTransparency = 0.12
+    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    highlight.Parent = character
+    verifiedLearningTweenService:Create(highlight, TweenInfo.new(0.20), {FillTransparency = 1, OutlineTransparency = 1}):Play()
+    local sparkles = Instance.new("Sparkles")
+    sparkles.Name = "VerifiedLearningSkillSparkles"
+    sparkles.SparkleColor = Color3.fromRGB(170, 220, 255)
+    sparkles.Parent = rootPart
+    task.delay(0.22, function()
+      if sparkles then sparkles:Destroy() end
+      if highlight then highlight:Destroy() end
+    end)
+  end
+end
+
+local function bindVerifiedLearningControl(control)
+  if not control:IsA("GuiButton") then return end
+  if not control:FindFirstChild("VerifiedLearningTouchTarget") then
+    local size = Instance.new("UISizeConstraint")
+    size.Name = "VerifiedLearningTouchTarget"
+    size.MinSize = Vector2.new(0, 52)
+    size.Parent = control
+  end
+  control.Activated:Connect(function()
+    playVerifiedLearningActionFeedback(control)
+  end)
+end
+for _, descendant in ipairs(verifiedLearningRoot:GetDescendants()) do bindVerifiedLearningControl(descendant) end
+verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
+verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
+  verifiedLearningRoot:SetAttribute("VerifiedExternalLearningGameplayState", verifiedLearningPlayer:GetAttribute("LastApprovedScope") or "")
+end)
+-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
+
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
+stats:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternalLearningContext.CoveragePct or 0)
+stats:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
+stats:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
+stats:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
+stats:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verifiedExternalGameDevelopmentPrinciples)
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END
+
 if hasStudioAssetAtom("FRAME_PANEL") then
   local studioAssetStroke = Instance.new("UIStroke")
   studioAssetStroke.Name = "StudioAssetFramePanel"
