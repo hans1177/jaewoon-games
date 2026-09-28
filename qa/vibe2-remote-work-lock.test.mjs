@@ -1,4 +1,5 @@
 import test from 'node:test';
+import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {
   acquireRemoteVibeWorkLock,
@@ -248,4 +249,12 @@ test('completed Vibe2 owner run is reclaimed before overlapping acquire', async 
   assert.equal(stateReads, 1);
   assert.equal(runReads, 1);
   assert.equal(writes, 1);
+});
+
+
+test('continuous worker binds shared lock to the owning Actions run', () => {
+  const workflow = fs.readFileSync('.github/workflows/vibe2-continuous-core.yml', 'utf8');
+  const acquire = workflow.slice(workflow.indexOf('      - name: Acquire shared Work Lock before source write'));
+  assert.match(acquire, /--run-id="\\\$\{GITHUB_RUN_ID:-\}"/);
+  assert.match(acquire, /--run-attempt="\\\$\{GITHUB_RUN_ATTEMPT:-\}"/);
 });
