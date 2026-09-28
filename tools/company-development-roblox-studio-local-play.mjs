@@ -610,15 +610,17 @@ export function classifyStudioConsoleOutput(consoleResult){
   const addError=message=>{
     const signature=clean(message).replace(/\s+/g,' ').slice(0,500);
     if(signature&&!errors.some(row=>row.signature===signature)){
-      errors.push({type:'studio-console-error',actionId:null,signature});
+      errors.push({type:assetLoadPattern.test(signature)?'studio-asset-load-error':'studio-console-error',actionId:null,signature});
     }
   };
+  const assetLoadPattern=/(?:failed to load|unable to load|not authorized to access|asset is not available).{0,160}(?:asset|mesh|texture|image|animation|rbxasset)/i;
   const gameActionYieldPattern=/Infinite yield possible.*WaitForChild\(["']GameAction["']\)/i;
   const localUnpublishedDataStorePattern=/You must publish this place to the web to access DataStore/i;
   const criticalConsolePatterns=[
     gameActionYieldPattern,
     /DataStoreService.*(?:Studio access to APIs is not allowed|API Services are disabled)/i,
-    localUnpublishedDataStorePattern
+    localUnpublishedDataStorePattern,
+    assetLoadPattern
   ];
   const fallbackText=flattenText(consoleResult,[]).join('\n');
   const localUnpublishedDataStoreObserved=
@@ -2195,6 +2197,18 @@ export async function runOfficialStudioMcpPlay({
     console.log('ROBLOX_STUDIO_MCP_CONSOLE_WARNING_COUNT='+consoleClassification.warningCount);
     console.log('ROBLOX_STUDIO_MCP_LOCAL_UNPUBLISHED_DATASTORE_SUPPRESSED='+(consoleClassification.localUnpublishedDataStoreSuppressed===true?'YES':'NO'));
     for(const row of consoleClassification.errors)errors.push(row);
+    const brokenAssets=consoleClassification.errors.filter(row=>row.type==='studio-asset-load-error');
+    scenarioCoverage.push({id:'visual-asset-load-integrity',pass:brokenAssets.length===0,required:true});
+    if(brokenAssets.length){
+      qualityFailureKinds.push('visual-asset-load-integrity');
+      qualityFailureDetails.push({
+        id:'visual-asset-load-integrity',
+        repairSurface:'VISUAL_ASSET_LOADING',
+        priority:'HIGH',
+        hint:'Repair unavailable or unauthorized Roblox mesh, texture, image, or animation assets observed during Studio play.',
+        observed:{assetErrors:brokenAssets.map(row=>row.signature).slice(0,8)}
+      });
+    }
     checkpoint('no-release-blocking-runtime-errors',consoleClassification.errors.length===0);
 
     if(!started){
