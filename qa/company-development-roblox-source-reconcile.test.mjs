@@ -6,10 +6,24 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {applyRobloxStudioAssetBindingToExistingSource,compileRobloxSource,projectJsonForGame} from '../tools/company-development-roblox-bootstrap.mjs';
 import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
+import {createRobloxVibe3LearningContext,verifiedExternalBlackBoxPlaybookContract} from '../tools/vibe3-roblox-learning-context.mjs';
 
 const gameId='seed-roblox-simulator-tycoon-i-adopt-me';
 const baseline={content:{identity:'Pocket Foundry',coreFun:'collect resources, upgrade production, earn income, unlock areas',coreLoop:['collect resources','upgrade production','unlock the next area'],mobileUx:'touch controls',progressionDirection:'Persistent progression system',platformProfiles:{ROBLOX:{platform:'ROBLOX',inputModel:'Roblox touch input and gamepad fallback',sessionModel:'Roblox private server session lifecycle',multiplayerRuntime:'Roblox server authoritative RemoteEvent synchronization',performanceBudget:'Mobile Roblox performance budget for frame memory network instances',uiUx:'Roblox ScreenGui touch-first interaction layout',saveAndNetwork:'DataStore and validated remote network boundaries',platformContentAdaptation:'Roblox native avatar camera scene and UI adaptation',internalReleaseTarget:'Private restricted Roblox owner playtest experience',validationEvidence:'Exact Roblox runtime independent QA regression evidence'}}}};
 const companyAssetLibrary=JSON.parse(fs.readFileSync(new URL('../company-asset-library.json',import.meta.url),'utf8'));
+const verifiedExternalRow={
+  id:'external-black-box-fixture-run-1',
+  project:'fixture-black-box',
+  sourceRevision:'sha256:fixture',
+  distilledApplicationPrinciples:['id=fixture-feedback; scope=mobile-feedback; lesson=visible response follows input; apply=keep immediate visible feedback'],
+  distilledAvoidancePrinciples:['id=fixture-copy; scope=expression; lesson=do not copy proprietary expression; apply=preserve original expression'],
+  distilledLearningUseAllowed:['interaction feedback'],
+  distilledLearningUseForbidden:['source-code or asset copying']
+};
+const verifiedTask=()=>({authority:'verified-task-playbook',checklist:['apply verified black-box learning'],verifiedExternalBlackBoxReuseCount:1,verifiedExternalBlackBoxCoveragePct:100,reuse:[verifiedExternalRow]});
+const verifiedPlaybooks={policy:{verifiedExternalBlackBoxAllTaskTypesRequired:true,verifiedExternalBlackBoxTruncationForbidden:true},taskTypes:{roblox:verifiedTask(),coding:verifiedTask(),graphics:verifiedTask(),general:verifiedTask(),qa:verifiedTask(),bugfix:verifiedTask(),planning:verifiedTask(),unity:verifiedTask()}};
+const verifiedLearning=createRobloxVibe3LearningContext({gameId,profile:{genre:'Simulation',subgenre:'Tycoon',playMode:'SINGLE'},playbooks:verifiedPlaybooks});
+
 
 function writeLegacyStudioUnboundTree(root){
   fs.mkdirSync(path.join(root,'shared'),{recursive:true});
@@ -456,4 +470,74 @@ test('Roblox runtime workflow watches library changes and routes existing source
   assert.match(workflow,/existingSourceAssetRebind/);
   assert.match(workflow,/existing-source-studio-asset-binding-required/);
   assert.match(workflow,/ROBLOX_EXISTING_SOURCE_ASSET_REBIND_EVIDENCE=PASS/);
+});
+
+
+test('verified external black-box contract is complete and fingerprinted for Roblox native development',()=>{
+  const contract=verifiedExternalBlackBoxPlaybookContract(verifiedPlaybooks,{required:true,requiredTaskTypes:['roblox','coding']});
+  assert.deepEqual(contract.ids,['external-black-box-fixture-run-1']);
+  assert.equal(contract.coveragePct,100);
+  assert.equal(contract.appliedCount,1);
+  assert.ok(contract.fingerprint);
+  assert.equal(verifiedLearning.applied,true);
+  assert.equal(verifiedLearning.verifiedExternalLearningCoveragePct,100);
+  assert.equal(verifiedLearning.verifiedExternalLearningFingerprint,contract.fingerprint);
+});
+
+test('existing Roblox source is re-queued when current verified APK learning is missing',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-learning-refresh-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary});
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={...staleItem(),currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxSourceCommit:revision};
+    const rows=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,assetLibrary:companyAssetLibrary,playbooks:verifiedPlaybooks,loadBaseline:()=>baseline});
+    assert.equal(rows.length,1);
+    assert.equal(rows[0].failure,'existing-source-verified-external-learning-required');
+    assert.equal(rows[0].verifiedExternalLearningRefreshRequired,true);
+    assert.ok(rows[0].blockers.includes('ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED'));
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('existing Roblox source rebind applies all verified APK learning without changing gameplay server authority',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-learning-rebind-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    const serverFile=path.join(root,'server','Game.server.luau');
+    const serverBefore=fs.readFileSync(serverFile,'utf8');
+    const applied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
+    assert.equal(applied.verifiedExternalLearningApplied,true);
+    assert.equal(applied.gameplayAuthorityChanged,false);
+    assert.equal(fs.readFileSync(serverFile,'utf8'),serverBefore);
+    const config=fs.readFileSync(path.join(root,'shared','GameConfig.luau'),'utf8');
+    const client=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
+    assert.match(config,/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/);
+    assert.match(config,/CoveragePct\s*=\s*100/);
+    assert.match(config,/external-black-box-fixture-run-1/);
+    assert.match(client,/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/);
+    assert.match(client,/VerifiedExternalLearningCoveragePct/);
+    assert.match(client,/VerifiedExternalLearningPrincipleCount/);
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={...staleItem(),currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxSourceCommit:revision};
+    const rows=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,assetLibrary:companyAssetLibrary,playbooks:verifiedPlaybooks,loadBaseline:()=>baseline});
+    assert.equal(rows.length,0);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('Roblox runtime source lane treats stale verified APK learning as an existing-source maintenance rebind',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/ROBLOX_RECONCILE_VERIFIED_EXTERNAL_LEARNING=READY/);
+  assert.match(workflow,/existing-source-verified-external-learning-required/);
+  assert.match(workflow,/existingSourceLearningRebind/);
+  assert.match(workflow,/existingSourceMaintenanceRebind/);
+  assert.match(workflow,/VERIFIED_EXTERNAL_LEARNING_REBIND/);
+  assert.match(workflow,/verifiedExternalLearningAppliedToExistingSource/);
 });

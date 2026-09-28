@@ -176,12 +176,15 @@ jobs:
           node --check tools/vibe3-roblox-learning-context.mjs
           node --test qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs qa/company-upper-platform-admission.test.mjs
 
-      - name: Fetch current company runtime
+      - name: Fetch current company runtime and verified Vibe learning
         if: steps.freshness.outputs.run == 'true'
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+          git fetch --no-tags --depth=1 origin "+refs/heads/$VIBE2_LEARNING_RUNTIME_BRANCH:refs/remotes/origin/$VIBE2_LEARNING_RUNTIME_BRANCH"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
+          git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-task-playbooks.json" > /tmp/vibe3-task-playbooks.json
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('/tmp/vibe3-task-playbooks.json'));const r=p.taskTypes?.roblox||{};const rows=(r.reuse||[]).filter(x=>String(x.id||'').startsWith('external-black-box-'));if(p.policy?.verifiedExternalBlackBoxTruncationForbidden!==true||Number(r.verifiedExternalBlackBoxCoveragePct||0)!==100||!rows.length)process.exit(2);console.log('ROBLOX_RECONCILE_VERIFIED_EXTERNAL_LEARNING=READY:'+rows.length)"
           node - <<'NODE' > /tmp/roblox-bound-source-revisions
           const fs=require('fs');
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
@@ -209,6 +212,7 @@ jobs:
             --runtime-ref="origin/$COMPANY_RUNTIME_BRANCH" \
             --repo-root=. \
             --source-revision="$SOURCE_REVISION" \
+            --playbooks=/tmp/vibe3-task-playbooks.json \
             --results=/tmp/roblox-source-reconciliation.json
 
       - name: Resolve next Roblox source execution slice from unbounded native queue
@@ -254,6 +258,8 @@ jobs:
             const target=`roblox-games/${item.gameId}`;
             const reconciliationRow=reconciliationById.get(item.gameId);
             const existingSourceAssetRebind=reconciliationRow?.failure==='existing-source-studio-asset-binding-required';
+            const existingSourceLearningRebind=reconciliationRow?.failure==='existing-source-verified-external-learning-required';
+            const existingSourceMaintenanceRebind=existingSourceAssetRebind||existingSourceLearningRebind;
             const bootstrapFailed=secondaryOwnerFocus?item.ownerFocusRobloxSourceBootstrapFailedAt:item.robloxSourceBootstrapFailedAt;
             const f0FoundationRepair=!secondaryOwnerFocus
               &&item.robloxFoundationF0Passed!==true
@@ -269,13 +275,13 @@ jobs:
             const candidateReady=secondaryOwnerFocus
               ?Boolean(item.ownerFocusRobloxSourceCandidateReadyAt)&&String(item.ownerFocusRobloxSourceCandidateBranch||'').trim()
               :Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim();
-            const repairSupersedesCandidate=existingSourceAssetRebind||knownSourceRepairDebt;
+            const repairSupersedesCandidate=existingSourceMaintenanceRebind||knownSourceRepairDebt;
             if(candidateReady&&!repairSupersedesCandidate)continue;
             if(candidateReady&&repairSupersedesCandidate){
-              console.log('ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR='+item.gameId+':'+(existingSourceAssetRebind?'STUDIO_ASSET_REBIND':'KNOWN_SOURCE_REPAIR_DEBT'));
+              console.log('ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR='+item.gameId+':'+(existingSourceLearningRebind?'VERIFIED_EXTERNAL_LEARNING_REBIND':existingSourceAssetRebind?'STUDIO_ASSET_REBIND':'KNOWN_SOURCE_REPAIR_DEBT'));
             }
             if(!secondaryOwnerFocus&&reconciledPass.has(item.gameId)&&!knownSourceRepairDebt)continue;
-            if(fs.existsSync(target)&&!knownSourceRepairDebt&&!existingSourceAssetRebind)continue;
+            if(fs.existsSync(target)&&!knownSourceRepairDebt&&!existingSourceMaintenanceRebind)continue;
             rows.push({
               gameId:item.gameId,
               gameName:item.gameName||item.gameId,
@@ -285,6 +291,7 @@ jobs:
               target,
               secondaryOwnerFocus,
               existingSourceAssetRebind,
+              existingSourceLearningRebind,
               reconciliationSourceTreeSha:String(reconciliationRow?.sourceTreeSha||''),
               foundationRepair:f0FoundationRepair,
               knownSourceRepairDebt,
@@ -426,7 +433,7 @@ jobs:
           echo "safe=$safe" >> "$GITHUB_OUTPUT"
           echo "ROBLOX_SOURCE_CANDIDATE=PASS:$GAME_ID"
           echo 'ROBLOX_SOURCE_MODEL_USED=NO'
-          node -e "const e=require(process.argv[1]);const assetRebind=e.existingSourcePreserved===true&&e.generationMode==='EXISTING_SOURCE_STUDIO_ASSET_REBIND';const foundationRepair=e.existingSourcePreserved===true&&e.generationMode==='EXISTING_SOURCE_FOUNDATION_REPAIR';if(foundationRepair){if(e.studioAssetBindingApplied!==true||e.gameplayAuthorityChanged!==false||e.serverSourceChanged!==true||e.foundationRepairApplied!==true)process.exit(2);console.log('ROBLOX_EXISTING_SOURCE_FOUNDATION_REPAIR_EVIDENCE=PASS');}else if(assetRebind){if(e.studioAssetBindingApplied!==true||e.gameplayAuthorityChanged!==false||e.serverSourceChanged!==false)process.exit(2);console.log('ROBLOX_EXISTING_SOURCE_ASSET_REBIND_EVIDENCE=PASS');}else{if(e.vibe3LearningApplied!==true||!e.recombinationRecipeId)process.exit(2);console.log('ROBLOX_VIBE3_LEARNING_EVIDENCE=PASS');}" "$evidence"
+          node -e "const e=require(process.argv[1]);const assetRebind=e.existingSourcePreserved===true&&e.generationMode==='EXISTING_SOURCE_STUDIO_ASSET_REBIND';const foundationRepair=e.existingSourcePreserved===true&&e.generationMode==='EXISTING_SOURCE_FOUNDATION_REPAIR';const learningOk=e.vibe3LearningApplied===true&&e.verifiedExternalLearningFirst===true&&Number(e.verifiedExternalLearningCoveragePct||0)===100&&Number(e.verifiedExternalLearningRetrievedCount||0)>0&&Number(e.verifiedExternalLearningRetrievedCount||0)===Number(e.verifiedExternalLearningAppliedCount||0)&&Array.isArray(e.verifiedExternalLearningIds)&&e.verifiedExternalLearningIds.length===Number(e.verifiedExternalLearningAppliedCount||0)&&String(e.verifiedExternalLearningFingerprint||'').length>0;if(!learningOk)process.exit(3);if(foundationRepair){if(e.studioAssetBindingApplied!==true||e.gameplayAuthorityChanged!==false||e.serverSourceChanged!==true||e.foundationRepairApplied!==true||e.verifiedExternalLearningAppliedToExistingSource!==true)process.exit(2);console.log('ROBLOX_EXISTING_SOURCE_FOUNDATION_REPAIR_EVIDENCE=PASS');}else if(assetRebind){if(e.studioAssetBindingApplied!==true||e.gameplayAuthorityChanged!==false||e.serverSourceChanged!==false||e.verifiedExternalLearningAppliedToExistingSource!==true)process.exit(2);console.log('ROBLOX_EXISTING_SOURCE_ASSET_REBIND_EVIDENCE=PASS');}else{console.log('ROBLOX_VIBE3_LEARNING_EVIDENCE=PASS');}" "$evidence"
 
       - name: Attempt validated Roblox source promotion through PR
         id: merge

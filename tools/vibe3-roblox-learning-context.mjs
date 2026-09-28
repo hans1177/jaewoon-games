@@ -55,51 +55,61 @@ function selectDistilled(records=[],{gameId='',terms=[],profileText=''}={}){
   });
 }
 
+export function verifiedExternalBlackBoxPlaybookContract(playbooks={}, {required=false,requiredTaskTypes=['roblox','coding']}={}){
+  const taskTypes=playbooks?.taskTypes&&typeof playbooks.taskTypes==='object'?playbooks.taskTypes:{};
+  const allRows=[];
+  for(const task of Object.values(taskTypes))for(const row of task?.reuse||[])if(clean(row?.id).startsWith('external-black-box-'))allRows.push(row);
+  const byId=new Map();
+  for(const row of allRows){
+    const id=clean(row?.id);
+    if(!id)continue;
+    const previous=byId.get(id)||{id,project:clean(row?.project),sourceRevision:clean(row?.sourceRevision),distilledApplicationPrinciples:[],distilledAvoidancePrinciples:[],distilledLearningUseAllowed:[],distilledLearningUseForbidden:[]};
+    previous.distilledApplicationPrinciples=unique([...previous.distilledApplicationPrinciples,...(row?.distilledApplicationPrinciples||[])]);
+    previous.distilledAvoidancePrinciples=unique([...previous.distilledAvoidancePrinciples,...(row?.distilledAvoidancePrinciples||[])]);
+    previous.distilledLearningUseAllowed=unique([...previous.distilledLearningUseAllowed,...(row?.distilledLearningUseAllowed||[])]);
+    previous.distilledLearningUseForbidden=unique([...previous.distilledLearningUseForbidden,...(row?.distilledLearningUseForbidden||[])]);
+    byId.set(id,previous);
+  }
+  const rows=[...byId.values()].sort((a,b)=>a.id.localeCompare(b.id));
+  const ids=rows.map(row=>row.id);
+  const contentIds=rows.filter(row=>row.distilledApplicationPrinciples.length>0).map(row=>row.id);
+  const complete=ids.length>0&&contentIds.length===ids.length;
+  const coveragePct=ids.length?Math.floor((contentIds.length/ids.length)*100):0;
+  if(required){
+    if(playbooks?.policy?.verifiedExternalBlackBoxAllTaskTypesRequired!==true||playbooks?.policy?.verifiedExternalBlackBoxTruncationForbidden!==true)throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_POLICY_REQUIRED');
+    if(!ids.length)throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_REQUIRED');
+    for(const taskType of requiredTaskTypes){
+      const task=taskTypes?.[taskType]||{};
+      const taskIds=unique((task?.reuse||[]).filter(row=>clean(row?.id).startsWith('external-black-box-')).map(row=>row.id)).sort();
+      if(clean(task?.authority)!=='verified-task-playbook'||Number(task?.verifiedExternalBlackBoxCoveragePct||0)!==100||taskIds.length!==ids.length||!ids.every(id=>taskIds.includes(id)))throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_TASK_COVERAGE_INVALID:'+taskType);
+    }
+    if(!complete||coveragePct!==100)throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_CONTENT_INCOMPLETE');
+  }
+  return Object.freeze({
+    rows:Object.freeze(rows.map(row=>Object.freeze({...row}))),
+    ids:Object.freeze([...ids]),
+    contentIds:Object.freeze([...contentIds]),
+    retrievedCount:ids.length,
+    appliedCount:contentIds.length,
+    coveragePct,
+    distilledContentComplete:complete,
+    truncationForbidden:playbooks?.policy?.verifiedExternalBlackBoxTruncationForbidden===true,
+    fingerprint:ids.length?stableHash(JSON.stringify(rows)):null
+  });
+}
+
 export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={},playbooks={},recombination={},distillation={}}={}){
   const roblox=playbooks?.taskTypes?.roblox||{};
   const coding=playbooks?.taskTypes?.coding||{};
   const checklist=unique([...(roblox.checklist||[]),...(coding.checklist||[])]);
   const reuseRows=[...(roblox.reuse||[]),...(coding.reuse||[])];
   const reuseProjects=unique(reuseRows.map(row=>row?.project));
-  const verifiedExternalById=new Map();
-  for(const row of reuseRows){
-    const id=clean(row?.id);
-    if(!id.startsWith('external-black-box-'))continue;
-    const previous=verifiedExternalById.get(id)||{
-      id,
-      distilledApplicationPrinciples:[],
-      distilledAvoidancePrinciples:[],
-      distilledLearningUseAllowed:[],
-      distilledLearningUseForbidden:[]
-    };
-    previous.distilledApplicationPrinciples=unique([
-      ...previous.distilledApplicationPrinciples,
-      ...(Array.isArray(row?.distilledApplicationPrinciples)?row.distilledApplicationPrinciples:[])
-    ]);
-    previous.distilledAvoidancePrinciples=unique([
-      ...previous.distilledAvoidancePrinciples,
-      ...(Array.isArray(row?.distilledAvoidancePrinciples)?row.distilledAvoidancePrinciples:[])
-    ]);
-    previous.distilledLearningUseAllowed=unique([
-      ...previous.distilledLearningUseAllowed,
-      ...(Array.isArray(row?.distilledLearningUseAllowed)?row.distilledLearningUseAllowed:[])
-    ]);
-    previous.distilledLearningUseForbidden=unique([
-      ...previous.distilledLearningUseForbidden,
-      ...(Array.isArray(row?.distilledLearningUseForbidden)?row.distilledLearningUseForbidden:[])
-    ]);
-    verifiedExternalById.set(id,previous);
-  }
-  const verifiedExternalReuseRows=[...verifiedExternalById.values()];
-  const verifiedExternalPlaybookIds=unique(verifiedExternalReuseRows.map(row=>row.id));
-  const verifiedExternalContentIds=unique(verifiedExternalReuseRows
-    .filter(row=>row.distilledApplicationPrinciples.map(clean).filter(Boolean).length>0)
-    .map(row=>row.id));
-  const verifiedExternalDistilledContentComplete=verifiedExternalPlaybookIds.length>0
-    &&verifiedExternalContentIds.length===verifiedExternalPlaybookIds.length;
-  const verifiedExternalLearningCoveragePct=verifiedExternalPlaybookIds.length>0
-    ?Math.floor((verifiedExternalContentIds.length/verifiedExternalPlaybookIds.length)*100)
-    :0;
+  const verifiedExternalContract=verifiedExternalBlackBoxPlaybookContract(playbooks);
+  const verifiedExternalReuseRows=[...verifiedExternalContract.rows];
+  const verifiedExternalPlaybookIds=[...verifiedExternalContract.ids];
+  const verifiedExternalContentIds=[...verifiedExternalContract.contentIds];
+  const verifiedExternalDistilledContentComplete=verifiedExternalContract.distilledContentComplete;
+  const verifiedExternalLearningCoveragePct=verifiedExternalContract.coveragePct;
   const verifiedExternalLearningPrinciples=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledApplicationPrinciples||[]));
   const verifiedExternalAvoidancePrinciples=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledAvoidancePrinciples||[]));
   const verifiedExternalLearningUseAllowed=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledLearningUseAllowed||[]));
@@ -167,6 +177,7 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     distilledPatterns:distilled.patterns,
     distilledPrinciples:distilled.principles,
     verifiedExternalLearningIds:Object.freeze(verifiedExternalLearningIds),
+    verifiedExternalLearningFingerprint:verifiedExternalContract.fingerprint,
     verifiedExternalLearningRetrievedCount:verifiedExternalLearningIds.length,
     verifiedExternalLearningAppliedCount:verifiedExternalContentIds.length,
     verifiedExternalLearningCoveragePct,

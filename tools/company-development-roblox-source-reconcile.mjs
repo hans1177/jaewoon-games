@@ -7,6 +7,7 @@ import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {buildRobloxStudioAssetBootstrapPlan,validateRobloxBootstrap} from './company-development-roblox-bootstrap.mjs';
 import {platformDevelopmentEligible} from './company-selected-platform-router.mjs';
+import {verifiedExternalBlackBoxPlaybookContract} from './vibe3-roblox-learning-context.mjs';
 
 const clean=value=>String(value??'').trim();
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
@@ -37,6 +38,27 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
     ||!clientConfigBound
     ||!clientVisibleBound;
   return {required:true,refreshRequired,libraryVersion:Number(expected.libraryVersion||0),currentLibraryVersion:libraryVersion,bindingVersion,clientBindingVersion,expectedBindingVersion,applied,clientConfigBound,clientVisibleBound,reason:refreshRequired?'STALE_OR_MISSING_STUDIO_ASSET_BINDING':null};
+}
+
+function verifiedExternalLearningRefreshState({root='',playbooks={}}={}){
+  const expected=verifiedExternalBlackBoxPlaybookContract(playbooks);
+  if(!expected.ids.length)return {required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
+  const configFile=path.join(root,'shared','GameConfig.luau');
+  if(!fs.existsSync(configFile))return {required:true,refreshRequired:true,expectedIds:[...expected.ids],fingerprint:expected.fingerprint,reason:'CONFIG_MISSING'};
+  const config=fs.readFileSync(configFile,'utf8');
+  const managed=config.match(/-- VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN\n([\s\S]*?)-- VERIFIED_EXTERNAL_LEARNING_BINDING_END/);
+  const full=config.match(/LearningContext\s*=\s*\{([\s\S]*?)\n\s*\},\n\s*InitialState\s*=/);
+  const block=managed?.[1]||full?.[1]||'';
+  const ids=[...new Set([...block.matchAll(/["'](external-black-box-[^"']+)["']/g)].map(match=>match[1]))].sort();
+  const expectedIds=[...expected.ids].sort();
+  const coverage=Number(block.match(/CoveragePct\s*=\s*(\d+)/)?.[1]||0);
+  const retrieved=Number(block.match(/RetrievedCount\s*=\s*(\d+)/)?.[1]||0);
+  const applied=Number(block.match(/AppliedCount\s*=\s*(\d+)/)?.[1]||0);
+  const truncation=/TruncationForbidden\s*=\s*true/.test(block);
+  const fingerprint=clean(block.match(/MemoryFingerprint\s*=\s*["']([^"']+)["']/)?.[1]);
+  const exactIds=ids.length===expectedIds.length&&expectedIds.every(id=>ids.includes(id));
+  const refreshRequired=!block||coverage!==100||retrieved!==expectedIds.length||applied!==expectedIds.length||!truncation||!exactIds||fingerprint!==clean(expected.fingerprint);
+  return {required:true,refreshRequired,expectedIds,currentIds:ids,fingerprint:expected.fingerprint,currentFingerprint:fingerprint,coverage,retrieved,applied,reason:refreshRequired?'STALE_OR_MISSING_VERIFIED_EXTERNAL_LEARNING':null};
 }
 
 export function hasVerifiedVibe2SourceHandoff(item={}){
@@ -102,7 +124,7 @@ function currentSourceTreeSha({repoRoot='.',sourcePath=''}){
   }
 }
 
-export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevision='',loadBaseline,assetLibrary={}}={}){
+export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevision='',loadBaseline,assetLibrary={},playbooks={}}={}){
   if(typeof loadBaseline!=='function')throw new Error('loadBaseline callback required');
   const results=[];
   for(const item of queue.items||[]){
@@ -113,6 +135,11 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     const currentRevision=clean(sourceRevision);
     const sourceTreeSha=fs.existsSync(root)?currentSourceTreeSha({repoRoot,sourcePath}):'';
     const studioState=fs.existsSync(root)?studioAssetRefreshState({root,assetLibrary}):{required:false,refreshRequired:false,libraryVersion:Number(assetLibrary?.version||0)};
+    const learningState=fs.existsSync(root)?verifiedExternalLearningRefreshState({root,playbooks}):{required:false,refreshRequired:false,expectedIds:[],fingerprint:null};
+    if(learningState.refreshRequired===true){
+      results.push({gameId:item.gameId,pass:false,sourcePath,sourceRevision:currentRevision,sourceTreeSha,sourceDrift:!sourceBind,saveRequired:false,blockers:['ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED'],failure:'existing-source-verified-external-learning-required',verifiedExternalLearningRefreshRequired:true,verifiedExternalLearningExpectedIds:learningState.expectedIds,verifiedExternalLearningCurrentIds:learningState.currentIds||[],verifiedExternalLearningFingerprint:learningState.fingerprint,verifiedExternalLearningCurrentFingerprint:learningState.currentFingerprint||null});
+      continue;
+    }
     if(studioState.refreshRequired===true){
       results.push({
         gameId:item.gameId,
@@ -240,14 +267,17 @@ function runCli(){
   const repoRoot=arg('repo-root','.');
   const sourceRevision=arg('source-revision');
   const resultsFile=arg('results','/tmp/roblox-source-reconciliation.json');
+  const playbooksFile=arg('playbooks');
   if(!queueFile||!runtimeRef||!sourceRevision)throw new Error('required: --queue, --runtime-ref, --source-revision');
   const queue=readJson(queueFile);
   const assetLibrary=readJson(path.join(repoRoot,'company-asset-library.json'));
+  const playbooks=playbooksFile&&fs.existsSync(playbooksFile)?readJson(playbooksFile):{};
   const results=evaluateExistingRobloxSources({
     queue,
     repoRoot,
     sourceRevision,
     assetLibrary,
+    playbooks,
     loadBaseline:item=>{
       const baselinePath=clean(item.designBaselineSource);
       if(!baselinePath)throw new Error(`designBaselineSource missing: ${item.gameId}`);
