@@ -595,9 +595,8 @@ test('F7 multiplayer runs only when applicable and reuses exact game-code artifa
  const runtimeAt=runtime.indexOf('const exactRuntimeMultiplayerValidation=Boolean(',priorAt);
  assert.ok(priorAt>0&&runtimeAt>priorAt);
  const priorBlock=runtime.slice(priorAt,runtimeAt);
- assert.match(priorBlock,/priorMultiplayer\.sourceRevision===sourceRevision/);
  assert.match(priorBlock,/priorMultiplayer\.artifactIdentity===artifactIdentity/);
- assert.doesNotMatch(priorBlock,/placeId|candidateVersionNumber/);
+ assert.doesNotMatch(priorBlock,/sourceRevision|placeId|candidateVersionNumber/);
  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
  assert.match(runtime,/const multiplayerRequirementFor=item=>/);
  assert.match(runtime,/multiplayerRequired:multiplayer\.required/);
