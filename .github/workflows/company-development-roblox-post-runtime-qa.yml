@@ -643,8 +643,17 @@ jobs:
               }
 
               const multiplayer=multiplayerRequirementFor(item);
-              const multiplayerValidationPassed=multiplayer.known===true
-                &&(multiplayer.required!==true||item.robloxMultiplayerQaPassed===true);
+              const f0Multiplayer=item.robloxHeadlessFastMvpEvidence||item.robloxFoundationF0Evidence||{};
+              const exactF0MultiplayerContract=
+                multiplayer.required!==true
+                ||(
+                  f0Multiplayer.pass===true
+                  &&f0Multiplayer.multiplayerApplicable===true
+                  &&f0Multiplayer.multiplayerSyncContractPassed===true
+                  &&f0Multiplayer.sourceRevision===sourceRevision
+                  &&f0Multiplayer.artifactIdentity===artifactIdentity
+                );
+              const multiplayerValidationPassed=multiplayer.known===true&&exactF0MultiplayerContract;
               const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
               const studioAssetRuntimeBindingPassed=!studioAssetBindingRequired||exactStudioInternalValidation;
               item.robloxStudioAssetRuntimeBindingPassed=studioAssetRuntimeBindingPassed;
@@ -685,7 +694,10 @@ jobs:
                 multiplayerRequired:multiplayer.required,
                 multiplayerApplicabilityKnown:multiplayer.known,
                 multiplayerValidationPassed,
-                f7Status:multiplayer.known!==true?'APPLICABILITY_UNKNOWN':multiplayer.required===true?(multiplayerValidationPassed?'PASS_REUSED':'PENDING_SINGLE_REQUIRED_CHECK'):'NOT_APPLICABLE',
+                multiplayerValidationMode:multiplayer.required===true?'EXACT_F0_AUTHORITATIVE_SYNC_CONTRACT_PLUS_STUDIO_SESSION':'NOT_APPLICABLE',
+                multiplayerTwoParticipantRuntimeRequired:false,
+                multiplayerEvidenceSource:multiplayer.required===true?'ROBLOX_F0_EXACT_SYNC_CONTRACT':'NOT_APPLICABLE',
+                f7Status:multiplayer.known!==true?'APPLICABILITY_UNKNOWN':multiplayer.required===true?(multiplayerValidationPassed?'PASS_EXACT_F0_SYNC_CONTRACT':'PENDING_TARGETED_MULTIPLAYER_REPAIR'):'NOT_APPLICABLE',
                 studioAssetBindingRequired,
                 studioAssetRuntimeBindingPassed,
                 studioAssetRuntimeBindingEvidence:item.robloxStudioAssetRuntimeBindingEvidence,
@@ -696,8 +708,8 @@ jobs:
                 item.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
                 item.canonicalState='ROBLOX_INTERNAL_STUDIO_VALIDATION_PASSED_F7_PENDING';
                 item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
-                item.robloxFailureSignature=multiplayer.known===true?'ROBLOX_F7_MULTIPLAYER_VALIDATION_PENDING':'ROBLOX_F7_MULTIPLAYER_APPLICABILITY_UNKNOWN';
-                item.routingBlockers=[multiplayer.known===true?'roblox-f7-multiplayer-single-check-pending':'roblox-f7-multiplayer-applicability-unknown'];
+                item.robloxFailureSignature=multiplayer.known===true?'ROBLOX_F7_MULTIPLAYER_CONTRACT_REPAIR_REQUIRED':'ROBLOX_F7_MULTIPLAYER_APPLICABILITY_UNKNOWN';
+                item.routingBlockers=[multiplayer.known===true?'roblox-f7-multiplayer-contract-repair-required':'roblox-f7-multiplayer-applicability-unknown'];
                 item.updatedAt=stamp;
                 changed=true;
                 pending++;
