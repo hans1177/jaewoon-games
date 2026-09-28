@@ -850,9 +850,7 @@ test('Windows workflow uses documented mcp.bat only when its installed text is h
   assert.match(studioMcpBlock,/\$mcpBatchHealth = 'BROKEN_USE_OFFICIAL_EXE'/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_HEALTH=\$mcpBatchHealth/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_BATCH_REWRITE=NO/);
-  assert.match(studioMcpBlock,/Get-Process StudioMCP -ErrorAction SilentlyContinue/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STALE_OFFICIAL_PROCESS_REAPED=/);
-  assert.match(studioMcpBlock,/StartsWith\(\$officialVersionsRoot,\[System\.StringComparison\]::OrdinalIgnoreCase\)/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_OTHER_PROCESS_PRESERVED=YES/);
 });
 
 
@@ -918,7 +916,7 @@ test('Studio MCP opens the exact local Place as the single Studio before MCP and
   assert.match(bindBlock,/ROBLOX_STUDIO_MCP_SINGLE_EXACT_STUDIO=YES/);
   assert.match(bindBlock,/ROBLOX_STUDIO_MCP_PRE_MCP_RELAUNCH=YES/);
   assert.match(bindBlock,/ROBLOX_STUDIO_MCP_PRE_MCP_PROCESS_READY_COUNT=/);
-  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_PROCESS_HANDOFF_RECOVERED=/);
+  assert.match(bindBlock,/without provable ownership; preserve all other Studio windows/);
   assert.match(bindBlock,/for \(\$processProbe = 1; \$processProbe -le 12; \$processProbe\+\+\)/);
   assert.doesNotMatch(bindBlock,/Roblox Studio exited before exact local Place MCP probe/);
   assert.match(bindBlock,/AssistantVersion:\|Running plugin sabuiltin_Assistant\\\.rbxm/);
@@ -932,10 +930,9 @@ test('Studio MCP opens the exact local Place as the single Studio before MCP and
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_ASSISTANT_LOG_GATE=ADVISORY_ONLY/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SINGLE_EXACT_STUDIO=YES/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_PROCESS_NOT_READY=/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_PROCESS_HANDOFF_RECOVERED=/);
+  assert.match(studioMcpBlock,/without provable ownership; preserve other Studio windows/);
   assert.doesNotMatch(studioMcpBlock,/Roblox Studio exited before MCP recovery Place probe/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_STALE_OFFICIAL_PROCESS_REAPED=/);
-  assert.match(studioMcpBlock,/StartsWith\(\$officialVersionsRoot,\[System\.StringComparison\]::OrdinalIgnoreCase\)/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_OTHER_PROCESS_PRESERVED=YES/);
   assert.match(studioMcpBlock,/foreach \(\$ownedId in \$ownedIds\)/);
   assert.doesNotMatch(studioMcpBlock,/AutoHotkey|pyautogui|SendKeys|mouse_event|keybd_event/i);
 });
@@ -1993,6 +1990,16 @@ test('final Studio capture releases the owned Studio before evidence persistence
   assert.ok(closeAt>=0&&persistAt>closeAt);
   const block=workflow.slice(closeAt,persistAt);
   assert.match(block,/ROBLOX_STUDIO_MCP_POST_CAPTURE_PROCESS_REAPED/);
-  assert.match(block,/ROBLOX_STUDIO_MCP_POST_CAPTURE_MCP_REAPED/);
+  assert.match(helper,/finally\{\s*client\.close\(\)/);
   assert.match(block,/ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES/);
+});
+
+
+test('Studio QA keeps user windows and releases only its exact owned process',()=>{
+  const block=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  assert.match(block,/ROBLOX_STUDIO_USER_SESSION_PRESERVED=YES/);
+  assert.doesNotMatch(block,/Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue \| Stop-Process/);
+  assert.match(block,/\$ownedStudioIds = @\(\[string\]\$studioProcess\.Id\)/);
+  assert.equal((block.match(/- name: Persist exact Studio MCP play evidence/g)||[]).length,1);
+  assert.equal((block.match(/- name: Refill existing 24H development loop/g)||[]).length,1);
 });
