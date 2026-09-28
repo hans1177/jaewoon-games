@@ -585,13 +585,26 @@ jobs:
           const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
           for(const item of q.items||[]){
             if(requested&&item.gameId!==requested)continue;
-            if(item.robloxFinalReviewPassed!==true||item.robloxRuntimePassed!==true)continue;
+            if(item.robloxFinalReviewPassed!==true||item.robloxInternalReleaseReady!==true)continue;
             const studioRequired=item.robloxStudioAssetBindingApplied===true;
             if(studioRequired&&item.robloxStudioAssetRuntimeBindingPassed!==true)continue;
             const source=String(item.robloxSourceCommit||'').trim();
             const version=Number(item.robloxRuntimeCandidateEvidence?.versionNumber||item.robloxReleaseVersionNumber||0);
-            if(!/^[0-9a-f]{40}$/i.test(source)||version<=0)continue;
-            process.stdout.write([item.gameId,studioRequired?'YES':'NO',source,String(version)].join('\t')+'\n');
+            const release=item.robloxInternalReleaseEvidence||{};
+            const exactInternalF9Proof=
+              release.finalReviewPassed===true
+              &&release.f9ReleaseRegressionPassed===true
+              &&release.f9RuntimeReplay===false
+              &&release.sourceRevision===source
+              &&Number(release.versionNumber||0)===version
+              &&release.publicRelease===false;
+            if(!exactInternalF9Proof||!/^[0-9a-f]{40}$/i.test(source)||version<=0)continue;
+            const acceptanceMode=release.internalStudioValidationOnly===true
+              ?'STUDIO_INTERNAL'
+              :item.robloxRuntimePassed===true
+                ?'EXTERNAL_RUNTIME'
+                :'INTERNAL_F9';
+            process.stdout.write([item.gameId,studioRequired?'YES':'NO',source,String(version),acceptanceMode].join('\t')+'\n');
           }
           NODE
 
@@ -610,7 +623,7 @@ jobs:
             attempt_settled=0
             git -C /tmp/vibe2-f9-control fetch origin vibe2-unreal-core --quiet
             git -C /tmp/vibe2-f9-control reset --hard origin/vibe2-unreal-core >/dev/null
-            while IFS=$'\t' read -r game_id studio_required source_revision version_number; do
+            while IFS=$'\t' read -r game_id studio_required source_revision version_number acceptance_mode; do
               [ -n "$game_id" ] || continue
               git -C main fetch --no-tags origin "$source_revision" --quiet
               runtime_source_tree_sha="$(git -C main rev-parse "$source_revision:roblox-games/$game_id")"
@@ -635,7 +648,12 @@ jobs:
               NODE
               )
               for task_id in "${task_ids[@]}"; do
-                evidence="roblox-runtime-acceptance-pass,roblox-final-review-pass,roblox-runtime-source-revision:${source_revision},roblox-runtime-source-tree:${runtime_source_tree_sha},roblox-runtime-version:${version_number},verification-conclusion:success,target-engine-qa-ref:roblox-f9-${GITHUB_RUN_ID},actions-run:${GITHUB_RUN_ID}"
+                evidence="roblox-internal-runtime-acceptance-pass,roblox-final-review-pass,roblox-runtime-acceptance-mode:${acceptance_mode},roblox-runtime-source-revision:${source_revision},roblox-runtime-source-tree:${runtime_source_tree_sha},roblox-runtime-version:${version_number},verification-conclusion:success,target-engine-qa-ref:roblox-f9-${GITHUB_RUN_ID},actions-run:${GITHUB_RUN_ID}"
+                if [ "$acceptance_mode" = EXTERNAL_RUNTIME ]; then
+                  evidence="${evidence},roblox-runtime-acceptance-pass"
+                elif [ "$acceptance_mode" = STUDIO_INTERNAL ]; then
+                  evidence="${evidence},roblox-studio-mcp-local-exact-build-pass"
+                fi
                 if [ "$studio_required" = YES ]; then
                   evidence="${evidence},ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS,roblox-studio-asset-runtime-binding-pass"
                 fi
