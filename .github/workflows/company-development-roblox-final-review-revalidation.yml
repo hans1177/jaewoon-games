@@ -47,7 +47,7 @@ jobs:
               const prefix='Roblox F9 · ';
               for(const r of j.workflow_runs||[]){
                 if(!states.has(String(r.status||'').toLowerCase()))continue;
-                if(String(r.id)===String(process.env.CURRENT_RUN_ID||''))continue;
+                if(Number(r.id)>=Number(process.env.CURRENT_RUN_ID||0))continue;
                 if(!String(r.display_title||'').startsWith(prefix))continue;
                 if(String(r.head_sha||'')===String(process.env.CURRENT_SHA||''))continue;
                 process.stdout.write(String(r.id)+'\n');
