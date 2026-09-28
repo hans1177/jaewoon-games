@@ -3,61 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-m34ul2",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-unity-web-repair-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "d50d20f3e4c8066f74f183fe4d344ad1f6dc7dd1",
-      "acquiredAt": "2026-09-28T01:56:27.230Z",
-      "expiresAt": "2026-09-28T02:41:27.230Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-unity-web-repair-v1"
-      ]
-    },
-    {
-      "id": "wl-dumkzd",
-      "worker": "vibe2",
-      "taskId": "cozy-island-unity-web-base-implementation-v1",
-      "gameId": "cozy-island",
-      "files": [
-        "unity-games/cozy-island/Assets/Scripts/GameCore.cs",
-        "unity-games/cozy-island/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "d50d20f3e4c8066f74f183fe4d344ad1f6dc7dd1",
-      "acquiredAt": "2026-09-28T01:56:50.394Z",
-      "expiresAt": "2026-09-28T02:41:50.394Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:cozy-island-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-qskkmj",
-      "worker": "vibe2",
-      "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-puzzle-chromatic-cascade",
-      "files": [
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-puzzle-chromatic-cascade/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "d50d20f3e4c8066f74f183fe4d344ad1f6dc7dd1",
-      "acquiredAt": "2026-09-28T01:56:52.396Z",
-      "expiresAt": "2026-09-28T02:41:52.396Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-puzzle-chromatic-cascade-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-sznv22",
       "worker": "vibe2",
       "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
@@ -474,6 +419,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:monster-adventure-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-1mp5r2x",
+      "worker": "vibe2",
+      "taskId": "survival-roblox-presentation-asset-adaptation-v1",
+      "gameId": "survival",
+      "files": [
+        "roblox-games/survival/client/Game.client.luau",
+        "roblox-games/survival/server/Game.server.luau",
+        "roblox-games/survival/shared/GameConfig.luau"
+      ],
+      "baseSha": "5faf5bec2cc69b7acfd0d61feafdb7716f6097e8",
+      "acquiredAt": "2026-09-28T02:42:48.070Z",
+      "expiresAt": "2026-09-28T03:27:48.070Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:survival-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
