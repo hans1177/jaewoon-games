@@ -1220,6 +1220,30 @@ export function verifiedExternalLearningBlockFromPrompt(prompt=''){
   if(end<0)throw new Error('VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_BLOCK_TRUNCATED');
   return raw.slice(start,end+VERIFIED_EXTERNAL_LEARNING_END.length);
 }
+export function assertVerifiedExternalLearningPromptCoverage(prompt='',contract={}){
+  const required=contract?.required===true;
+  const expectedIds=unique((contract?.ids||[]).map(clean).filter(Boolean));
+  if(!required&&!expectedIds.length)return Object.freeze({required:false,pass:true,count:0,ids:Object.freeze([])});
+  const block=verifiedExternalLearningBlockFromPrompt(prompt);
+  if(!block)throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_BLOCK_MISSING');
+  const header=block.match(/coverage=(\d+)\/(\d+);\s*coveragePct=(\d+);\s*truncation=FORBIDDEN/);
+  if(!header)throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_HEADER_INVALID');
+  const actualIds=unique([...block.matchAll(/\[EXTERNAL_LEARNING\s+([^\]]+)\]/g)].map(match=>clean(match[1])).filter(Boolean));
+  if(Number(header[1])!==expectedIds.length||Number(header[2])!==expectedIds.length||Number(header[3])!==100){
+    throw new Error(`VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_COVERAGE_INVALID:expected=${expectedIds.length}:header=${header.slice(1).join('/')}`);
+  }
+  if(actualIds.length!==expectedIds.length||!expectedIds.every(id=>actualIds.includes(id))){
+    throw new Error(`VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_IDS_MISMATCH:expected=${expectedIds.join(',')}:actual=${actualIds.join(',')}`);
+  }
+  for(const id of expectedIds){
+    const start=block.indexOf(`[EXTERNAL_LEARNING ${id}]`);
+    const end=block.indexOf(`[END_EXTERNAL_LEARNING ${id}]`,start);
+    if(start<0||end<0)throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_ITEM_TRUNCATED:'+id);
+    const item=block.slice(start,end);
+    if(!/\nAPPLY=/.test(item))throw new Error('VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT_APPLY_MISSING:'+id);
+  }
+  return Object.freeze({required:true,pass:true,count:actualIds.length,ids:Object.freeze([...actualIds])});
+}
 
 function fullWebGenerationTarget(order={}){const requirements=[...clean(order?.goal).matchAll(/REAL_GAME_FOOTPRINT_TOO_SMALL:\\d+:(\\d+)/gi)].map(match=>Number(match[1])).filter(Number.isFinite);const minBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MIN_BYTES,...requirements));const maxBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minBytes*2));return{minBytes,maxBytes};}
 export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);return[
@@ -1927,7 +1951,7 @@ export function modelResponseComplete(output,mode='JSON_EDIT'){
     return Boolean(parsed&&typeof parsed==='object'&&!Array.isArray(parsed));
   }catch{return false;}
 }
-async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,exploration=null,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null,candidateVariant='primary',systemAtomicPairRequired=false,multiFilePairRequired=false}={}){
+async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,exploration=null,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null,candidateVariant='primary',systemAtomicPairRequired=false,multiFilePairRequired=false,verifiedExternalLearningContract=null}={}){
   let lastError=null;
   let lastRaw='';
   let lastRejectedCandidate=null;
@@ -1954,6 +1978,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let robloxFullGraphicsPackageActive=false;
   let robloxZeroOutputTimeoutFocusedRecoveryActive=false;
   let robloxTimeoutRecoveryEscalatedFullGraphics=false;
+  let verifiedExternalLearningPromptChecks=0;
   const studioExpansion=/\[STUDIO[_ ]QUALITY[_ ]EVOLUTION\]/i.test(String(prompt??''));
   const assetDevelopmentLane=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
   const robloxGraphicsInitial=!allowFullRewrite
@@ -2072,6 +2097,11 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const focusedFirstEditEarlyStop=focusedWebRepair&&!retry&&!allowFullRewrite&&!focusedReplaceOnly&&!robloxAssetAdaptationTask;
     const completionMode=(systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(((timeoutFastEscalation||focusedFirstEditEarlyStop)&&!robloxFullGraphicsPackageRecovery)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
     try{
+      const promptCoverage=assertVerifiedExternalLearningPromptCoverage(attemptPrompt,verifiedExternalLearningContract||{});
+      if(promptCoverage.required===true){
+        verifiedExternalLearningPromptChecks+=1;
+        console.log(`VIBE2_VERIFIED_EXTERNAL_LEARNING_RUNTIME_PROMPT=PASS:${attempt}:${promptCoverage.count}`);
+      }
       const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow,temperature,completionMode});
       lastRaw=raw;
       const fullWebClosedHtmlEarlyStop=completionMode==='FULL_WEB'
@@ -2123,7 +2153,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       lastRejectedCandidate=candidate;
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,studioCausalRecoveryCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,verifiedExternalLearningPromptChecks,verifiedExternalLearningPromptAllAttempts:(verifiedExternalLearningContract?.required!==true)||verifiedExternalLearningPromptChecks===attempt,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,studioCausalRecoveryCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -2142,7 +2172,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
             if(focusedCandidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,focusedCandidate.edits,{dryRun:true});
             lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(focusedCandidate):null;
             console.log('VIBE2_FOCUSED_REPLACE_STRING_RECOVERED='+attempt+':'+failureClass+':'+focusedReplaceOnly.spec.path);
-            return{candidate:focusedCandidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:true,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,partialTimeoutRecovery:failureClass==='TIMEOUT',partialMalformedRecovery:failureClass==='MALFORMED_OUTPUT',streamedPartialEditRecovery:false,focusedReplaceStringRecovery:true,focusedFinalRetry:focusedFinal,focusedReplaceOnly:true,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+            return{candidate:focusedCandidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:true,verifiedExternalLearningPromptChecks,verifiedExternalLearningPromptAllAttempts:(verifiedExternalLearningContract?.required!==true)||verifiedExternalLearningPromptChecks===attempt,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,partialTimeoutRecovery:failureClass==='TIMEOUT',partialMalformedRecovery:failureClass==='MALFORMED_OUTPUT',streamedPartialEditRecovery:false,focusedReplaceStringRecovery:true,focusedFinalRetry:focusedFinal,focusedReplaceOnly:true,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
           }catch(recoveryError){
             console.log('VIBE2_FOCUSED_REPLACE_STRING_REJECTED='+attempt+':'+generationFailureClass(recoveryError)+':'+clean(recoveryError?.message||recoveryError).replace(/\s+/g,' ').slice(0,240));
           }
@@ -2671,7 +2701,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     return{...result,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
-  const deterministicDiagnostic=!allowFullRewrite?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles}):null;
+  const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles}):null;
   let generated=null;
   if(deterministicDiagnostic){
     try{
@@ -2684,7 +2714,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       console.log('VIBE2_DETERMINISTIC_DIAGNOSTIC_REPAIR=FALLBACK:'+generationFailureClass(error)+':'+clean(error?.message||error).replace(/\s+/g,' ').slice(0,240));
     }
   }
-  if(!generated)generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity'});
+  if(!generated)generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract});
   const candidate=generated.candidate;
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
   const presentationCandidateDelta=semanticDiffEnforcement?.presentationDelta||evaluatePresentationCandidateDelta({candidate,sourceRoot,contract:order?.presentationQuality||{}});
@@ -2749,6 +2779,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     verifiedExternalLearningSourcePromptCount:Number(verifiedExternalLearningContract.count||0),
     verifiedExternalLearningSourcePromptCoveragePct:Number(verifiedExternalLearningContract.coveragePct||0),
     verifiedExternalLearningSourcePromptTruncationForbidden:order?.knowledgeApplicationContract?.retrievedVerifiedExternalLearningTruncationForbidden===true,
+    verifiedExternalLearningRuntimePromptChecks:Number(generation.verifiedExternalLearningPromptChecks||0),
+    verifiedExternalLearningRuntimePromptAllAttempts:generation.verifiedExternalLearningPromptAllAttempts===true,
+    deterministicDiagnosticBypassedForVerifiedExternalLearning:verifiedExternalLearningContract.required===true&&deterministicDiagnostic===null,
     contextFiles:context.files.length,
     contextBytes:context.bytes,
     contextMode:generation.contextMode||'STANDARD_CONTEXT',

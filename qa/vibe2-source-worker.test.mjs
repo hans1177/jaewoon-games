@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, verifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
@@ -3857,4 +3857,31 @@ test('fan-in rejects candidates without actual APK learning prompt proof',()=>{
   assert.match(workflowSource,/const effectiveCandidateOk=candidateOk&&sourcePromptLearningOk/);
   assert.match(workflowSource,/verified-external-learning-source-prompt:\$\{sourcePromptLearningOk\?'PASS':'FAIL'\}/);
   assert.match(workflowSource,/actualSourcePromptVerified:sourcePromptLearningOk/);
+});
+
+
+test('runtime model-call gate rejects truncated APK learning and verifies exact IDs',()=>{
+  const contract={required:true,ids:['external-black-box-a','external-black-box-b']};
+  const prompt=[
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]',
+    'coverage=2/2; coveragePct=100; truncation=FORBIDDEN',
+    '[EXTERNAL_LEARNING external-black-box-a]',
+    'APPLY=a',
+    '[END_EXTERNAL_LEARNING external-black-box-a]',
+    '[EXTERNAL_LEARNING external-black-box-b]',
+    'APPLY=b',
+    '[END_EXTERNAL_LEARNING external-black-box-b]',
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
+  ].join('\n');
+  const pass=assertVerifiedExternalLearningPromptCoverage(prompt,contract);
+  assert.equal(pass.count,2);
+  assert.throws(()=>assertVerifiedExternalLearningPromptCoverage(prompt.replace('[EXTERNAL_LEARNING external-black-box-b]','[EXTERNAL_LEARNING external-black-box-c]'),contract),/IDS_MISMATCH/);
+  assert.throws(()=>assertVerifiedExternalLearningPromptCoverage(prompt.replace('APPLY=b',''),contract),/APPLY_MISSING/);
+});
+
+test('mandatory verified APK learning disables deterministic diagnostic source bypass',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(source,/deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract\.required!==true/);
+  assert.match(source,/assertVerifiedExternalLearningPromptCoverage\(attemptPrompt,verifiedExternalLearningContract\|\|\{\}\)/);
+  assert.match(source,/verifiedExternalLearningRuntimePromptAllAttempts/);
 });

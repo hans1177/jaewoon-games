@@ -1555,6 +1555,8 @@ jobs:
             &&Number(manifest?.codingMethod?.verifiedExternalLearningSourcePromptCoveragePct||0)===100
             &&Number(manifest?.codingMethod?.verifiedExternalLearningSourcePromptCount||0)===expectedExternalLearningIds.length
             &&manifest?.codingMethod?.verifiedExternalLearningSourcePromptTruncationForbidden===true
+            &&manifest?.codingMethod?.verifiedExternalLearningRuntimePromptAllAttempts===true
+            &&Number(manifest?.codingMethod?.verifiedExternalLearningRuntimePromptChecks||0)>=1
             &&sameExternalLearningIds
           );
           const effectiveCandidateOk=candidateOk&&sourcePromptLearningOk;
@@ -1844,6 +1846,8 @@ jobs:
             actualSourcePromptVerified:sourcePromptLearningOk,
             actualSourcePromptVerifiedExternalLearningIds:sourcePromptExternalLearningIds,
             actualSourcePromptCoveragePct:sourcePromptLearningOk&&sourcePromptLearningRequired?100:0,
+            actualRuntimePromptChecks:Number(manifest?.codingMethod?.verifiedExternalLearningRuntimePromptChecks||0),
+            actualRuntimePromptAllAttempts:manifest?.codingMethod?.verifiedExternalLearningRuntimePromptAllAttempts===true,
             verifiedLearningMemorySha:clean(workOrder.knowledgeApplicationContract.verifiedLearningMemorySha)||clean(process.env.VIBE2_VERIFIED_LEARNING_MEMORY_SHA)||null,
             freshIndependentQaRequired:true,
             infrastructureFailurePenalizesKnowledge:false,
