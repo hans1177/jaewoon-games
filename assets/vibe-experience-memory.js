@@ -124,6 +124,61 @@ function normalizeCapabilityPortfolio(value = {}) {
   });
 }
 
+function normalizeVerifiedExternalLearningApplication(value = null) {
+  if (!value || typeof value !== 'object') return null;
+  const ids = freezeList(value.verifiedExternalLearningIds || value.ids || []);
+  const axes = freezeList(value.verifiedExternalLearningApplyAxes || value.applyAxes || []);
+  const retrievedCount = Math.max(0, Math.floor(Number(value.verifiedExternalLearningRetrievedCount ?? value.retrievedCount ?? ids.length) || 0));
+  const appliedCount = Math.max(0, Math.floor(Number(value.verifiedExternalLearningAppliedCount ?? value.appliedCount ?? ids.length) || 0));
+  const applicationCoveragePct = Math.max(0, Math.min(100, Number(value.verifiedExternalLearningCoveragePct ?? value.applicationCoveragePct ?? 0) || 0));
+  const verifiedExternalLearningFirst = value.verifiedExternalLearningFirst === true;
+  const truncationForbidden = value.retrievedVerifiedExternalLearningTruncationForbidden === true || value.truncationForbidden === true;
+  const fullCoverageVerified = verifiedExternalLearningFirst
+    && ids.length > 0
+    && retrievedCount === appliedCount
+    && retrievedCount === ids.length
+    && applicationCoveragePct === 100
+    && truncationForbidden;
+  return freeze({
+    version: 1,
+    sourceAuthority: clean(value.sourceAuthority) || 'VERIFIED_MEMORY_ONLY',
+    verifiedExternalLearningFirst,
+    verifiedExternalLearningIds: ids,
+    verifiedExternalLearningRetrievedCount: retrievedCount,
+    verifiedExternalLearningAppliedCount: appliedCount,
+    verifiedExternalLearningCoveragePct: applicationCoveragePct,
+    verifiedExternalLearningApplyAxes: axes,
+    retrievedVerifiedExternalLearningTruncationForbidden: truncationForbidden,
+    verifiedLearningMemorySha: clean(value.verifiedLearningMemorySha) || null,
+    fullCoverageVerified,
+    rawCommercialCodeCopy: false,
+    rawCommercialAssetCopy: false,
+    distinctiveExpressionClone: false,
+    authorityExpanded: false
+  });
+}
+
+function mergeVerifiedExternalLearningApplication(left = null, right = null) {
+  const a = normalizeVerifiedExternalLearningApplication(left);
+  const b = normalizeVerifiedExternalLearningApplication(right);
+  if (!a) return b;
+  if (!b) return a;
+  const ids = freezeList([...(a.verifiedExternalLearningIds || []), ...(b.verifiedExternalLearningIds || [])]);
+  const axes = freezeList([...(a.verifiedExternalLearningApplyAxes || []), ...(b.verifiedExternalLearningApplyAxes || [])]);
+  const bothFull = a.fullCoverageVerified === true && b.fullCoverageVerified === true;
+  return normalizeVerifiedExternalLearningApplication({
+    sourceAuthority: 'VERIFIED_MEMORY_ONLY',
+    verifiedExternalLearningFirst: a.verifiedExternalLearningFirst === true && b.verifiedExternalLearningFirst === true,
+    verifiedExternalLearningIds: ids,
+    verifiedExternalLearningRetrievedCount: ids.length,
+    verifiedExternalLearningAppliedCount: bothFull ? ids.length : Math.min(ids.length, Math.max(a.verifiedExternalLearningAppliedCount || 0, b.verifiedExternalLearningAppliedCount || 0)),
+    verifiedExternalLearningCoveragePct: bothFull ? 100 : Math.min(a.verifiedExternalLearningCoveragePct || 0, b.verifiedExternalLearningCoveragePct || 0),
+    verifiedExternalLearningApplyAxes: axes,
+    retrievedVerifiedExternalLearningTruncationForbidden: a.retrievedVerifiedExternalLearningTruncationForbidden === true && b.retrievedVerifiedExternalLearningTruncationForbidden === true,
+    verifiedLearningMemorySha: clean(b.verifiedLearningMemorySha) || clean(a.verifiedLearningMemorySha) || null
+  });
+}
+
 function capabilityLifecycleFor(taskType = '', applications = [], benchmarks = [], portfolio = {}) {
   if (clean(taskType) !== 'coding-capability-distillation') return null;
   const rows = normalizeCapabilityApplications(applications);
@@ -251,7 +306,8 @@ export function createVibeExperienceRecord({
   lastVerifiedAt = '',
   capabilityApplications = [],
   capabilityBenchmarks = [],
-  capabilityPortfolio = {}
+  capabilityPortfolio = {},
+  verifiedExternalLearningApplication = null
 } = {}) {
   const normalizedOutcome = ['PASS', 'FAIL', 'REVISE'].includes(clean(outcome).toUpperCase()) ? clean(outcome).toUpperCase() : 'REVISE';
   const proof = freezeList(evidence);
@@ -265,6 +321,7 @@ export function createVibeExperienceRecord({
   const normalizedCapabilityApplications = normalizeCapabilityApplications(capabilityApplications);
   const normalizedCapabilityBenchmarks = normalizeCapabilityBenchmarks(capabilityBenchmarks);
   const normalizedCapabilityPortfolio = normalizeCapabilityPortfolio(capabilityPortfolio);
+  const normalizedVerifiedExternalLearningApplication = normalizeVerifiedExternalLearningApplication(verifiedExternalLearningApplication);
   const capabilityLifecycle = capabilityLifecycleFor(clean(taskType), normalizedCapabilityApplications, normalizedCapabilityBenchmarks, normalizedCapabilityPortfolio);
   return freeze({
     version: 3,
@@ -291,6 +348,7 @@ export function createVibeExperienceRecord({
     capabilityApplications: freeze(normalizedCapabilityApplications),
     capabilityBenchmarks: freeze(normalizedCapabilityBenchmarks),
     capabilityPortfolio: normalizedCapabilityPortfolio,
+    verifiedExternalLearningApplication: normalizedVerifiedExternalLearningApplication,
     capabilityLifecycle,
     capabilityConfidence: capabilityLifecycle?.confidence ?? null,
     createdAt: firstVerifiedAt,
@@ -306,6 +364,7 @@ function mergeVerifiedExperience(left, right) {
   const rightPortfolio = normalizeCapabilityPortfolio(right?.capabilityPortfolio || {});
   const leftPortfolio = normalizeCapabilityPortfolio(left?.capabilityPortfolio || {});
   const capabilityPortfolio = rightPortfolio.decisionId ? rightPortfolio : leftPortfolio;
+  const verifiedExternalLearningApplication = mergeVerifiedExternalLearningApplication(left?.verifiedExternalLearningApplication, right?.verifiedExternalLearningApplication);
   const capabilityLifecycle = capabilityLifecycleFor(clean(left?.taskType || right?.taskType), capabilityApplications, capabilityBenchmarks, capabilityPortfolio);
   return freeze({
     ...left,
@@ -320,6 +379,7 @@ function mergeVerifiedExperience(left, right) {
     capabilityApplications: freeze(capabilityApplications),
     capabilityBenchmarks: freeze(capabilityBenchmarks),
     capabilityPortfolio,
+    verifiedExternalLearningApplication,
     capabilityLifecycle,
     capabilityConfidence: capabilityLifecycle?.confidence ?? null,
     createdAt: clean(left?.createdAt) || clean(right?.createdAt) || null,
@@ -564,6 +624,7 @@ export function createVibeLearningContext(memory, query = {}, options = {}) {
       failureCause: record.failureCause,
       reusablePatterns: record.reusablePatterns,
       avoidPatterns: record.avoidPatterns,
+      verifiedExternalLearningApplication: record.verifiedExternalLearningApplication,
       evidence: record.evidence,
       confirmations: record.confirmations,
       confidence: record.confidence,
