@@ -1598,6 +1598,8 @@ test('commercial adaptive Studio contract expands automatically from launch core
     'adaptive-effects-surface',
     'adaptive-quest-loop-surface',
     'adaptive-reward-loop-surface',
+    'adaptive-start-playability',
+    'adaptive-ui-blocking-overlay',
     'adaptive-economy-surface',
     'adaptive-save-surface',
     'adaptive-retry-loop-surface',
@@ -1634,6 +1636,76 @@ test('commercial Studio evaluator rejects clipped tiny UI and unsafe world even 
   });
   assert.ok(result.qualityFailureKinds.includes('adaptive-ui-commercial-quality'));
   assert.ok(result.qualityFailureKinds.includes('adaptive-world-safety'));
+});
+
+test('commercial Studio start gate rejects a dead character before gameplay begins',()=>{
+  const contract=deriveStudioActualPlayContract({launchCore:['simple exploration'],releaseGates:[]});
+  const probe={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,health:0,maxHealth:100,humanoidState:'Enum.HumanoidStateType.Dead',animatorPresent:true,motorCount:6},
+    camera:{present:true,subjectPresent:true,fieldOfView:70,occluded:false},
+    ui:{visibleButtons:0,visibleObjects:0,visibleTexts:[],interactive:[],offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,largeOverlayCount:0,largeBlockingOverlayCount:0,largestOverlayCoverage:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:40,floorBelowPlayer:true,floorSampleCount:9,floorHitCount:9,routeSampleCount:0,routeSuccessCount:0,minSpawnThreatDistance:-1,proximityPromptCount:0,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{remoteCount:1,progression:[],inventory:[],inventoryCount:0,systemSignals:1,descendantCount:100,memoryMb:100,soundCount:0,categories:{}},
+    workspace:{},lighting:{brightness:1.2}
+  };
+  const result=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:probe,preActionClientProbe:probe,postActionClientProbe:probe,
+    clientProbe:probe,serverProbe:{runtime:probe.runtime,world:probe.world,workspace:{}},
+    actions:[]
+  });
+  assert.equal(result.scenarios.find(row=>row.id==='adaptive-start-playability')?.pass,false);
+  assert.ok(result.qualityFailureKinds.includes('adaptive-start-playability'));
+  assert.equal(result.qualityFailureDetails.find(row=>row.id==='adaptive-start-playability')?.repairSurface,'GAME_START');
+});
+
+test('commercial Studio UI gate rejects a persistent full-screen blocking guide or modal',()=>{
+  const contract=deriveStudioActualPlayContract({launchCore:['mobile UI simple exploration'],releaseGates:[]});
+  const probe={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,health:100,maxHealth:100,humanoidState:'Enum.HumanoidStateType.Running',animatorPresent:true,motorCount:6},
+    camera:{present:true,subjectPresent:true,fieldOfView:70,occluded:false},
+    ui:{visibleButtons:0,visibleObjects:2,visibleTexts:[{name:'Guide',text:'안내'}],interactive:[],offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,largeOverlayCount:1,largeBlockingOverlayCount:1,largestOverlayCoverage:0.92,required:{}},
+    world:{boundsFinite:true,collidablePartCount:40,floorBelowPlayer:true,floorSampleCount:9,floorHitCount:9,routeSampleCount:0,routeSuccessCount:0,minSpawnThreatDistance:-1,proximityPromptCount:0,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{remoteCount:1,progression:[],inventory:[],inventoryCount:0,systemSignals:1,descendantCount:100,memoryMb:100,soundCount:0,categories:{}},
+    workspace:{},lighting:{brightness:1.2}
+  };
+  const result=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:probe,preActionClientProbe:probe,
+    postActionClientProbe:{...probe,player:{...probe.player,rootX:1}},
+    clientProbe:probe,serverProbe:{runtime:probe.runtime,world:probe.world,workspace:{}},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}]
+  });
+  assert.equal(result.scenarios.find(row=>row.id==='adaptive-ui-blocking-overlay')?.pass,false);
+  assert.ok(result.qualityFailureKinds.includes('adaptive-ui-blocking-overlay'));
+  assert.equal(result.qualityFailureDetails.find(row=>row.id==='adaptive-ui-blocking-overlay')?.repairSurface,'MOBILE_UI');
+});
+
+test('dead-start Studio product evidence enters repair-required instead of infrastructure-pending',()=>{
+  const broken=runtime();
+  broken.runtimeVerified=false;
+  broken.scenarioContractRequired=true;
+  broken.scenarioCoverage=[{id:'adaptive-start-playability',pass:false}];
+  broken.qualityFailureKinds=['adaptive-start-playability'];
+  broken.qualityFailureDetails=[{id:'adaptive-start-playability',repairSurface:'GAME_START',priority:'CRITICAL',hint:'Restore playable spawn',observed:{health:0,humanoidState:'Dead'}}];
+  broken.errors=[{type:'studio-product-start-playability-error',signature:'ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:INITIAL_CHARACTER_NOT_PLAYABLE'}];
+  const applied=applyLocalStudioPlayResult({
+    queue:{items:[item()]},gameId:'g1',runtime:broken,expected,workflowRunId:85,studioStepSucceeded:false,
+    testedAt:'2026-09-29T00:01:00.000Z'
+  });
+  assert.equal(applied.result.evidence.infrastructureFailure,false);
+  assert.equal(applied.item.currentStep,'REPAIR_REQUIRED');
+  assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
+  assert.ok(applied.item.robloxQualityBuildUpEvidence.repairSurfaces.includes('GAME_START'));
+});
+
+test('Studio startup probe explicitly checks dead spawn, start buttons, and blocking overlays before normal QA',()=>{
+  assert.match(helper,/ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:INITIAL_CHARACTER_NOT_PLAYABLE/);
+  assert.match(helper,/initial-character-playable/);
+  assert.match(helper,/ui-start-gate/);
+  assert.match(helper,/start\|play\|begin\|continue\|ready\|시작\|플레이\|계속\|준비/);
+  assert.match(helper,/largeOverlayCount/);
+  assert.match(helper,/largeBlockingOverlayCount/);
+  assert.match(helper,/largestOverlayCoverage/);
+  assert.match(helper,/adaptive-ui-blocking-overlay/);
 });
 
 test('commercial Studio evaluator records progression and AI movement deltas',()=>{
