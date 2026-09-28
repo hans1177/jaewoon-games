@@ -965,6 +965,17 @@ test('pending F0 dispatch routes only to the separate validation publish stage',
   assert.match(workflow,/company-development-roblox-release-promotion\.yml/);
 });
 
+test('F0 validation dispatch never reuses the canonical Roblox game target',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/const validationTarget=x\.robloxValidationTarget\|\|\{\}/);
+  assert.match(workflow,/const canonicalTarget=x\.robloxPublicationTarget\|\|\{\}/);
+  assert.match(workflow,/const validationTargetCollision=validationTargetBound/);
+  assert.match(workflow,/validationTargetCollision!==true/);
+  assert.match(workflow,/ROBLOX_VALIDATION_TARGET_COLLISION_WITH_CANONICAL=/);
+  assert.match(workflow,/ROBLOX_VALIDATION_TARGET_PROVISION_REQUIRED=/);
+  assert.match(workflow,/publish_stage=validation/);
+});
+
 test('Roblox continuation dispatch is per-game and does not wait behind one global active continuation',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/roblox-continuation-ready-ids/);
