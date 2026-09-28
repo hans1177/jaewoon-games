@@ -103,3 +103,15 @@ test('canonical Roblox workflow contains build package checkpoint and keeps full
   assert.match(workflow,/ROBLOX_RUNTIME_PASS=NO/);
   assert.match(workflow,/ROBLOX_FINAL_REVIEW_PASS=NO/);
 });
+
+
+test('Roblox bootstrap keeps local Studio DataStore initialization fail-safe without weakening published persistence',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/local store = nil/);
+  assert.match(bootstrap,/local storeOk, storeResult = pcall/);
+  assert.match(bootstrap,/DataStoreService:GetDataStore/);
+  assert.match(bootstrap,/if storeOk then store = storeResult end/);
+  assert.doesNotMatch(bootstrap,/local store = DataStoreService:GetDataStore/);
+  assert.match(bootstrap,/store:GetAsync/);
+  assert.match(bootstrap,/store:UpdateAsync/);
+});

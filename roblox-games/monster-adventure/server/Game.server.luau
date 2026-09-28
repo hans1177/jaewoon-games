@@ -1,7 +1,11 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
-local store = DataStoreService:GetDataStore("monster-adventure-development-v1")
+local store = nil
+local storeOk, storeResult = pcall(function()
+  return DataStoreService:GetDataStore("monster-adventure-development-v1")
+end)
+if storeOk then store = storeResult end
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 
