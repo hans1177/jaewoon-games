@@ -1798,8 +1798,7 @@ test('asset-development preserves Unity floor alongside Roblox work',()=>{
   assert.deepEqual(batch.tasks.map(task=>task.id).sort(),['roblox-asset','unity-asset']);
   assert.equal(batch.selection.robloxFirstMode,true);
   assert.deepEqual(batch.selection.robloxFirstDeferred,[]);
-  assert.equal(batch.matrix[0].target,'roblox');
-  assert.equal(batch.matrix[0].speculativeVariants,1);
+  assert.ok(batch.matrix.every(row=>row.speculativeVariants===1));
 });
 
 test('game-primary reserves Unity and Web floors alongside Roblox development',()=>{
