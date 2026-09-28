@@ -1794,6 +1794,7 @@ test('asset-development reserves only Roblox while any Roblox asset work is read
   assert.deepEqual(batch.tasks.map(task=>task.id),['roblox-asset']);
   assert.equal(batch.selection.robloxFirstMode,true);
   assert.deepEqual(batch.selection.robloxFirstDeferred.map(task=>task.id),['unity-asset']);
+  assert.equal(batch.matrix[0].target,'roblox');
   assert.equal(batch.matrix[0].speculativeVariants,1);
 });
 
@@ -1814,6 +1815,7 @@ test('game-primary does not reserve Unity or Web while Roblox game work is ready
   ]});
   const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:256,lane:'game-primary',reservation:{id:'roblox-first:1',runId:'roblox-first',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
   assert.deepEqual(batch.tasks.map(task=>task.id),['roblox-game']);
+  assert.equal(batch.matrix[0].target,'roblox');
   assert.equal(batch.selection.robloxFirstMode,true);
   assert.deepEqual(batch.selection.robloxFirstDeferred.map(task=>task.id).sort(),['unity-game','web-game']);
 });
