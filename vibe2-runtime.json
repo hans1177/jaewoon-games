@@ -726,7 +726,9 @@
       "cacheKey": "vibe2-ollama-v4-${runner.os}-${runner.arch}-qwen3-1.7b",
       "architectureAwareCache": true,
       "gamePrimaryWorkerUnchanged": "ubuntu-latest",
-      "canonicalQueueUnchanged": true
+      "canonicalQueueUnchanged": true,
+      "robloxDeterministicPresentationModelCacheRequired": false,
+      "nonDeterministicAssetTasksModelCachePreserved": true
     }
   },
   "adaptiveBackpressure": {
