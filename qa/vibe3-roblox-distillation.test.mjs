@@ -85,8 +85,19 @@ test('Roblox learning context consumes distilled principles without granting pas
     principles:['Keep attack anticipation and impact visually distinct.'],tags:['combat']
   });
   const ledger=mergeRobloxDistillationLedger({},[internal,external]);
+  const verifiedReuse=[{
+    id:'external-black-box-verified-game-run-1',
+    project:'verified-commercial-game',
+    sourceRevision:'sha256:'+'c'.repeat(64),
+    distilledApplicationPrinciples:['Keep first playable entry distinct and bind input to immediate local feedback.'],
+    distilledAvoidancePrinciples:['Do not copy distinctive commercial UI expression.'],
+    distilledLearningUseAllowed:['menu flow timing','local motion feedback']
+  }];
   const ctx=createRobloxVibe3LearningContext({
-    gameId:'same-game',profile:{genre:'Action'},playbooks:{taskTypes:{roblox:{checklist:['bind-current-source'],authority:'verified-task-playbook'},coding:{checklist:['run-qa']}}},
+    gameId:'same-game',profile:{genre:'Action'},playbooks:{taskTypes:{
+      roblox:{checklist:['bind-current-source'],authority:'verified-task-playbook',reuse:verifiedReuse},
+      coding:{checklist:['run-qa'],authority:'verified-task-playbook',reuse:verifiedReuse}
+    }},
     distillation:ledger
   });
   assert.equal(ctx.applied,true);
@@ -96,4 +107,24 @@ test('Roblox learning context consumes distilled principles without granting pas
   assert.equal(ctx.rawAssetOutputAllowed,false);
   assert.equal(ctx.externalExpressionCopyAllowed,false);
   assert.equal(ctx.freshQaRequiredForDistilledTransfer,true);
+  assert.equal(ctx.verifiedExternalLearningRetrievedCount,1);
+  assert.equal(ctx.verifiedExternalLearningAppliedCount,1);
+  assert.equal(ctx.verifiedExternalLearningCoveragePct,100);
+  assert.equal(ctx.verifiedExternalDistilledContentComplete,true);
+  assert.ok(ctx.verifiedExternalLearningPrinciples.includes('Keep first playable entry distinct and bind input to immediate local feedback.'));
+});
+
+test('Roblox learning context refuses id-only verified external playbook coverage',()=>{
+  const ctx=createRobloxVibe3LearningContext({
+    gameId:'id-only',profile:{genre:'Action'},playbooks:{taskTypes:{
+      roblox:{checklist:['bind-current-source'],authority:'verified-task-playbook',reuse:[{id:'external-black-box-id-only',project:'x',sourceRevision:'sha256:x'}]},
+      coding:{checklist:['run-qa'],authority:'verified-task-playbook',reuse:[{id:'external-black-box-id-only',project:'x',sourceRevision:'sha256:x'}]}
+    }},
+    distillation:{records:[]}
+  });
+  assert.equal(ctx.applied,false);
+  assert.equal(ctx.verifiedExternalLearningRetrievedCount,1);
+  assert.equal(ctx.verifiedExternalLearningAppliedCount,0);
+  assert.equal(ctx.verifiedExternalLearningCoveragePct,0);
+  assert.equal(ctx.verifiedExternalDistilledContentComplete,false);
 });
