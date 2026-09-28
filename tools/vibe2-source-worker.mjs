@@ -392,6 +392,10 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
       'root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)',
       'root.Parent = gui'
     ].join('\n');
+    const rootFallbackAnchor='root.Parent = gui';
+    const rootSourceAnchor=source.includes(rootAnchor)
+      ?rootAnchor
+      :(source.split(rootFallbackAnchor).length-1===1?rootFallbackAnchor:null);
     const titleAnchor=[
       'title.BackgroundTransparency = 1',
       'title.TextColor3 = Color3.fromRGB(245, 248, 255)',
@@ -496,7 +500,7 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
     ].join('\n');
 
     const rows=[
-      ['ROOT',rootAnchor,rootBlock],
+      ['ROOT',rootSourceAnchor,rootBlock],
       ['TITLE',titleAnchor,titleBlock],
       ['STATUS',statusAnchor,statusBlock]
     ].map(([key,sourceAnchor,block])=>{
@@ -2938,6 +2942,15 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   if(!generated&&target==='roblox'){
     generated=deterministicRobloxBuildUpCandidate({order,sourceRoot,sourceRootRelative,responsibleFiles,candidateValidator,verifiedExternalLearningContract});
     if(generated)console.log('VIBE2_DETERMINISTIC_ROBLOX_BUILDUP=PASS:stage='+Number(generated.generation?.deterministicRobloxBuildStage||0));
+  }
+  const deterministicRobloxRequired=target==='roblox'
+    &&clean(order?.presentationQuality?.pass).toUpperCase()==='ASSET_ADAPTATION'
+    &&order?.presentationQuality?.required===true
+    &&clean(process.env.VIBE2_ROBLOX_DETERMINISTIC_SOURCE).toLowerCase()==='true';
+  if(!generated&&deterministicRobloxRequired){
+    const error=new Error('DETERMINISTIC_ROBLOX_BUILDUP_REQUIRED:NO_VALID_LOCAL_CANDIDATE');
+    error.vibe2GenerationFailureClass='DETERMINISTIC_ROBLOX_BUILDUP';
+    throw error;
   }
   if(!generated)generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract});
   const candidate=generated.candidate;
