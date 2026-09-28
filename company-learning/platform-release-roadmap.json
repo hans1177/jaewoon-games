@@ -9303,14 +9303,14 @@
       "robloxSourcePlanCriticalIngressException": {
         "workflow": ".github/workflows/company-development-roblox-runtime.yml::source-plan",
         "previousRunner": "ubuntu-slim",
-        "runner": "SPLIT_EXACT_ARM_BATCH_FIXED_2404",
-        "reason": "EXACT_GAME_FANOUT_PRESSURE_ON_FIXED_2404_WITH_CANONICAL_GAME_CONTROL_ARM_AVAILABLE",
+        "runner": "FIXED_2404",
+        "reason": "FIXED_2404_CONTROL_POOL_AVOIDS_ARM_QUEUE_BOTTLENECK",
         "centralNativePlanRemains": "ubuntu-slim",
         "unityPrepareRemains": "ubuntu-slim",
         "vibeReserveRemains": "ubuntu-slim",
         "heavyExecutionUnchanged": "ubuntu-latest",
-        "technicalPlanUnchanged": "ubuntu-24.04-arm",
-        "exactGameRunner": "ubuntu-24.04-arm",
+        "technicalPlanUnchanged": "ubuntu-24.04",
+        "exactGameRunner": "ubuntu-24.04",
         "batchRunner": "ubuntu-24.04"
       }
     },
@@ -9888,7 +9888,7 @@
       "id": "ROBLOX_SOURCE_PLAN_WAKE_AND_RUNNER_ISOLATION_2026-09-27",
       "authority": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy",
       "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
-      "objective": "WAKE_ROBLOX_SOURCE_PLAN_IMMEDIATELY_AND_SPREAD_EXACT_GAME_INGRESS_TO_ARM_WHILE_KEEPING_BATCH_PUSH_INGRESS_ON_FIXED_2404_WITHOUT_TOUCHING_HEAVY_GAME_CAPACITY",
+      "objective": "WAKE_ROBLOX_SOURCE_PLAN_IMMEDIATELY_ON_FIXED_2404_CONTROL_CAPACITY_WITHOUT_ARM_QUEUE_DEPENDENCY_OR_HEAVY_GAME_CAPACITY_CONTENTION",
       "observedEvidence": {
         "directorDrainRunId": 36290168197,
         "directorDrainSucceededOnFixed2404": true,
@@ -9896,9 +9896,9 @@
         "sourcePlanContractIncludedRoadmapWithoutPushWake": true,
         "staleBatchWouldOtherwiseNeed_TO_RUN_BEFORE_REDISPATCH": true
       },
-      "sourcePlanRunner": "EXACT_GAME=ubuntu-24.04-arm;BATCH=ubuntu-24.04",
+      "sourcePlanRunner": "ubuntu-24.04",
       "previousSourcePlanRunner": "ubuntu-slim",
-      "technicalPlanRunnerUnchanged": "ubuntu-24.04-arm",
+      "technicalPlanRunnerUnchanged": "ubuntu-24.04",
       "heavyExecutionRunnerUnchanged": "ubuntu-latest",
       "sourcePlanContractPushWakeRequired": true,
       "sourcePlanContractPaths": [
@@ -9915,9 +9915,9 @@
       "currentArtifactBindingRequired": true,
       "activeGameCancellationForbidden": true,
       "qualitySecurityReleaseGatesUnchanged": true,
-      "sourcePlanExactGameRunner": "ubuntu-24.04-arm",
+      "sourcePlanExactGameRunner": "ubuntu-24.04",
       "sourcePlanBatchRunner": "ubuntu-24.04",
-      "runnerRoutingReason": "CURRENT_EXACT_GAME_FANOUT_SATURATED_FIXED_2404_WHILE_ARM_IS_THE_CANONICAL_GAME_CONTROL_POOL",
+      "runnerRoutingReason": "FIXED_2404_CONTROL_POOL_AVOIDS_ARM_INGRESS_QUEUE_BOTTLENECK_WHILE_HEAVY_GAME_WORK_REMAINS_ON_UBUNTU_LATEST",
       "exactGameParallelismPreserved": true,
       "batchFreshnessGuardPreserved": true
     },

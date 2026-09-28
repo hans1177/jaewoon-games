@@ -8,9 +8,11 @@ const headless=fs.readFileSync(new URL('../.github/workflows/company-development
 const headlessEvaluator=fs.readFileSync(new URL('../tools/company-development-roblox-headless-fast-mvp.mjs',import.meta.url),'utf8');
 const parent=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
 const runtime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+const postRuntime=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-post-runtime-qa.yml',import.meta.url),'utf8');
+const f9=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-final-review-revalidation.yml',import.meta.url),'utf8');
 const directive=JSON.parse(fs.readFileSync(new URL('../company-directive.json',import.meta.url),'utf8'));
 
-test('Roblox native path is package -> shared preflight -> F0 -> private runtime candidate -> actual tester QA',()=>{
+test('Roblox native path is package -> shared preflight -> F0 -> local Studio tester QA -> F9 final publish',()=>{
   assert.ok(preflight.includes('workflow_dispatch:'));
   assert.ok(!preflight.includes('company-development-roblox-package.mjs'));
   assert.ok(preflight.includes('company-development-roblox-build-preflight.mjs'));
@@ -20,7 +22,11 @@ test('Roblox native path is package -> shared preflight -> F0 -> private runtime
   assert.ok(headless.includes('Roblox F0 Source Preflight'));
   assert.ok(headless.includes('company-development-roblox-headless-fast-mvp.mjs'));
   assert.ok(headless.includes('company-development-roblox-runtime.yml'));
-  assert.ok(runtime.includes('company-development-roblox-release-promotion.yml'));
+  assert.ok(runtime.includes('company-development-roblox-post-runtime-qa.yml'));
+  assert.ok(runtime.includes('ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED'));
+  assert.ok(postRuntime.includes('roblox-local-f0-pre-f9-artifact'));
+  assert.ok(f9.includes('publish_stage=final'));
+  assert.ok(!runtime.includes('publish_stage=validation'));
 });
 
 test('shared preflight requires exact immutable build and one shared model',()=>{

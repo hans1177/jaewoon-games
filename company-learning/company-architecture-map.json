@@ -5768,10 +5768,10 @@
         "technical-worker",
         "private-runtime-publish"
       ],
-      "sourcePlanRunner": "EXACT_GAME=ubuntu-24.04-arm;BATCH=ubuntu-24.04",
+      "sourcePlanRunner": "ubuntu-24.04",
       "sourcePlanPreviousRunner": "ubuntu-slim",
       "sourcePlanCriticalIngressException": true,
-      "sourcePlanExactGameRunner": "ubuntu-24.04-arm",
+      "sourcePlanExactGameRunner": "ubuntu-24.04",
       "sourcePlanBatchRunner": "ubuntu-24.04"
     },
     "unity": {
@@ -6147,15 +6147,15 @@
     },
     "robloxSourcePlanCriticalIngressException": {
       "previousRunner": "ubuntu-slim",
-      "runner": "SPLIT_EXACT_ARM_BATCH_FIXED_2404",
+      "runner": "FIXED_2404",
       "administrativeSlimPoolStillUsedBy": [
         "centralNativePlan",
         "unityPrepare",
         "vibe2Reserve"
       ],
-      "technicalPlanRunner": "ubuntu-24.04-arm",
+      "technicalPlanRunner": "ubuntu-24.04",
       "heavyExecutionRunner": "ubuntu-latest",
-      "exactGameRunner": "ubuntu-24.04-arm",
+      "exactGameRunner": "ubuntu-24.04",
       "batchRunner": "ubuntu-24.04"
     }
   },
@@ -6218,7 +6218,7 @@
     "version": 2,
     "source": "company-learning/platform-release-roadmap.json#changeRecord.robloxSourcePlanWakeAndRunnerIsolation20260927",
     "workflow": ".github/workflows/company-development-roblox-runtime.yml",
-    "sourcePlanRunner": "EXACT_GAME=ubuntu-24.04-arm;BATCH=ubuntu-24.04",
+    "sourcePlanRunner": "ubuntu-24.04",
     "previousSourcePlanRunner": "ubuntu-slim",
     "pushWakeMatchesContractPaths": true,
     "sourcePlanContractPaths": [
@@ -6231,11 +6231,11 @@
       "company-learning/platform-release-roadmap.json"
     ],
     "freshnessGuardPreserved": true,
-    "technicalPlanRunnerUnchanged": "ubuntu-24.04-arm",
+    "technicalPlanRunnerUnchanged": "ubuntu-24.04",
     "heavyGameRunnerUnchanged": "ubuntu-latest",
     "exactGameParallelismPreserved": true,
     "qualitySecurityReleaseGatesUnchanged": true,
-    "sourcePlanExactGameRunner": "ubuntu-24.04-arm",
+    "sourcePlanExactGameRunner": "ubuntu-24.04",
     "sourcePlanBatchRunner": "ubuntu-24.04"
   },
   "concurrentPlatformSharedProgressMonotonicity": {
