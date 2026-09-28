@@ -357,6 +357,9 @@ export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',r
 
 export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sourceRootRelative='',responsibleFiles=[],candidateValidator=null}={}){
   if(clean(order?.target).toLowerCase()!=='roblox'||!clean(sourceRoot))return null;
+  const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
+  const supportedPasses=new Set(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','CAMERA_LANGUAGE','POLISH_MOBILE']);
+  if(order?.presentationQuality?.required!==true||!supportedPasses.has(presentationPass))return null;
   const clientFiles=unique(responsibleFiles).filter(file=>/(?:^|\/)client(?:\/|$)|\.client\.luau$/i.test(file));
   if(!clientFiles.length)return null;
 
