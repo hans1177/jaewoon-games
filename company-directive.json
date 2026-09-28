@@ -1,7 +1,7 @@
 {
   "version": 2,
   "revision": 86,
-  "updatedAt": "2026-09-28",
+  "updatedAt": "2026-09-28T06:18:11.485Z",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -1057,11 +1057,13 @@
       "EXACT_SOURCE_ROJO_PACKAGE",
       "VIBE_PLUS_ONE_SHARED_MODEL_PREFLIGHT",
       "F0_SOURCE_INTEGRITY",
-      "PRIVATE_RUNTIME_CANDIDATE",
+      "SEPARATE_PRIVATE_VALIDATION_RUNTIME_CANDIDATE",
       "ACTUAL_RUNTIME_FOUNDATION_F1_THROUGH_F6_AND_F8",
       "INDEPENDENT_QA",
       "REGRESSION",
-      "F9_INTERNAL_REVIEW"
+      "F9_INTERNAL_REVIEW",
+      "CANONICAL_GAME_TARGET_PUBLISH_AFTER_F9",
+      "NEXT_EVOLUTION_CYCLE"
     ],
     "simplifiedMultiplayerForInternalRelease": {
       "allowed": true,
@@ -1088,7 +1090,12 @@
     "robloxStudioRequired": false,
     "departmentMultiModelRequired": false,
     "sharedModelReviewCount": 1,
-    "fakeEvidenceForbidden": true
+    "fakeEvidenceForbidden": true,
+    "canonicalGameTargetPublishBeforeF9Forbidden": true,
+    "preF9ValidationTargetMustBeSeparate": true,
+    "f9IsNonTerminal": true,
+    "canonicalPublishSuccessStartsNextF0ThroughF9Cycle": true,
+    "perpetualVerifiedRepublishLoop": true
   },
   "currentExecutionMode": "UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_ROBLOX_UNITY",
   "currentExecutionAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
@@ -1437,7 +1444,10 @@
     "companyRuntimeDesignOverlayRequired": true,
     "companyRuntimeSeedStateOverlayRequired": true,
     "unverifiedDesignMayNotAuthorizeCoreFunOrProgression": true,
-    "queueTelemetryMayDeferDesignGeneration": false
+    "queueTelemetryMayDeferDesignGeneration": false,
+    "f9Terminal": false,
+    "canonicalRobloxPublishAfterEveryVerifiedF9Cycle": true,
+    "nextCycleStartsAfterCanonicalPublishSuccess": true
   },
   "validationEfficiencyOptimization": {
     "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",

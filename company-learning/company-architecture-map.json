@@ -4871,10 +4871,12 @@
       "HANDOFF",
       "VIBE2_VIBE3_APPLY",
       "STATIC_QA",
-      "PUBLISH_EXACT_CANDIDATE_WITHOUT_FINAL_PASS",
+      "PUBLISH_EXACT_CANDIDATE_TO_SEPARATE_PRIVATE_VALIDATION_TARGET_ONLY",
       "TARGET_ENGINE_EXACT_SELECTION_QA",
       "RUNTIME_FOUNDATION_AND_ACCEPTANCE",
       "F9_EXACT_REVIEW",
+      "PUBLISH_F9_VERIFIED_ARTIFACT_TO_CANONICAL_GAME_TARGET",
+      "START_NEXT_EVOLUTION_CYCLE_AFTER_CANONICAL_PUBLISH",
       "F9_TO_VIBE_QUEUE_FAN_IN",
       "PROMOTE_OR_REPAIR"
     ],
@@ -4888,7 +4890,9 @@
     "exactGameRuntimeDispatchAfterPublish": true,
     "f9FanInRequiresExactSourceArtifactPlaceVersion": true,
     "f9FanInCarriesRuntimeMarker": "ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS",
-    "positiveAssetMasteryRequiresRuntimeBindingMarker": true
+    "positiveAssetMasteryRequiresRuntimeBindingMarker": true,
+    "canonicalPublishBeforeF9Forbidden": true,
+    "f9NonTerminal": true
   },
   "studioQualityEvolutionTopology": {
     "version": 1,
@@ -6472,9 +6476,11 @@
       "CANDIDATE_RELEASE_REVIEWED_MAIN_PROMOTION",
       "PROMOTED_SOURCE_ROOT_TREE_SHA_RECORDED",
       "ROBLOX_SOURCE_BIND_PACKAGE_PREFLIGHT_F0",
-      "PRIVATE_RUNTIME_CANDIDATE",
+      "SEPARATE_PRIVATE_VALIDATION_RUNTIME_CANDIDATE",
       "RUNTIME_FOUNDATION_ACCEPTANCE_INDEPENDENT_QA_REGRESSION",
       "F9_EXACT_RUNTIME_REVIEW",
+      "CANONICAL_GAME_TARGET_PUBLISH_AFTER_F9",
+      "NEXT_EVOLUTION_CYCLE",
       "VIBE2_WAITING_TASK_SETTLEMENT_ONLY_IF_SOURCE_TREE_MATCHES"
     ],
     "exactSourceRules": {
@@ -6737,5 +6743,34 @@
       "legalBoundary": "BLACK_BOX_OBSERVATION_TO_GENERAL_PRINCIPLES_ONLY_NO_CODE_BINARY_ASSET_OR_HIDDEN_ALGORITHM_COPY",
       "runtimeCompletion": "REQUIRES_EXACT_RUNTIME_EVIDENCE_NOT_SOURCE_ONLY_PASS"
     }
+  },
+  "robloxVerifiedCyclePublicationContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#roblox.deploymentControl.verifiedCyclePublication",
+    "existingEvolutionTopologyPreserved": true,
+    "newTopLevelPipeline": false,
+    "cycle": [
+      "SOURCE_MUTATION",
+      "F0",
+      "F1",
+      "F2",
+      "F3",
+      "F4",
+      "F5",
+      "F6",
+      "F7",
+      "F8",
+      "F9",
+      "CANONICAL_ROBLOX_SERVER_PUBLISH",
+      "VERIFIED_FAN_IN",
+      "NEXT_EVOLUTION_CYCLE"
+    ],
+    "f9Terminal": false,
+    "repeat": "UNBOUNDED_UNTIL_OWNER_HOLD_OR_PROJECT_REMOVAL",
+    "preF9RuntimeTarget": "SEPARATE_PRIVATE_VALIDATION_TARGET_ONLY",
+    "canonicalTarget": "robloxPublicationTarget",
+    "validationTarget": "robloxValidationTarget",
+    "canonicalPublishGate": "EXACT_F9_PASS_AND_EXACT_SOURCE_ARTIFACT_IDENTITY",
+    "nextCycleGate": "CANONICAL_PUBLISH_SUCCESS"
   }
 }

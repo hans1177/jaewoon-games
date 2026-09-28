@@ -1661,13 +1661,14 @@ jobs:
           const fs=require('fs');
           const payload=JSON.parse(fs.readFileSync('/tmp/roblox-private-runtime-active-runs.json','utf8'));
           const activeStates=new Set(['queued','pending','in_progress','requested']);
-          const prefix='Roblox private runtime · ';
+          const prefix='Roblox publish · ';
+          const suffix=' · validation';
           const ids=new Set();
           for(const run of payload.workflow_runs||[]){
             if(!activeStates.has(String(run.status||'').toLowerCase()))continue;
             const title=String(run.display_title||'');
-            if(!title.startsWith(prefix))continue;
-            const id=title.slice(prefix.length).trim();
+            if(!title.startsWith(prefix)||!title.endsWith(suffix))continue;
+            const id=title.slice(prefix.length,-suffix.length).trim();
             if(/^[a-z0-9][a-z0-9-]{1,48}$/.test(id))ids.add(id);
           }
           for(const id of [...ids].sort())console.log(id);
@@ -1681,7 +1682,7 @@ jobs:
                 echo "ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=DEDUPED_ACTIVE:$id"
                 continue
               fi
-              gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+              gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" -f publish_stage=validation
               printf '%s\n' "$id" >> /tmp/roblox-private-runtime-active-ids
               dispatch_count=$((dispatch_count+1))
               echo "ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH=$id"

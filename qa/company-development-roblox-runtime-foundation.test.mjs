@@ -384,26 +384,23 @@ test('F9 final review requires exact Studio asset runtime proof when a binding w
  assert.match(workflow,/&&studioAssetRuntimeBindingExact===true/);
 });
 
-test('F9 returns exact Roblox runtime and Studio asset proof to waiting Vibe tasks',()=>{
+test('F9 fans verified proof only after canonical publish completes and then reopens the Vibe loop',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
  assert.match(workflow,/Fan verified F9 runtime proof into waiting Vibe Roblox tasks/);
  assert.match(workflow,/node --input-type=module - "runtime\/development-queue\.json" "\$REQUESTED_GAME_ID"/);
- assert.doesNotMatch(workflow,/node --input-type=module - "\.\.\/runtime\/development-queue\.json"/);
+ assert.match(workflow,/item\.robloxFinalReviewPassed!==true\|\|item\.robloxInternalReleaseReady!==true/);
+ assert.match(workflow,/const release=item\.robloxInternalReleaseEvidence\|\|\{\}/);
+ assert.match(workflow,/release\.f9ReleaseRegressionPassed===true/);
+ assert.match(workflow,/release\.sourceRevision===source/);
+ assert.match(workflow,/item\.robloxCanonicalReleaseEvidence\?\.versionNumber\|\|item\.robloxReleaseVersionNumber/);
  assert.match(workflow,/candidate-awaiting-roblox-runtime-qa/);
  assert.match(workflow,/roblox-runtime-await-game:/);
- assert.match(workflow,/robloxRuntimePassed!==true/);
  assert.match(workflow,/studioRequired&&item\.robloxStudioAssetRuntimeBindingPassed!==true/);
  assert.match(workflow,/ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS/);
  assert.match(workflow,/verification-conclusion:success/);
  assert.match(workflow,/target-engine-qa-ref:roblox-f9-/);
- assert.match(workflow,/while IFS=\$'\\t' read -r game_id studio_required source_revision version_number/);
  assert.match(workflow,/vibe2-queue-control\.mjs" pass/);
- assert.match(workflow,/settled_count=0/);
- assert.match(workflow,/attempt_settled=\$\(\(attempt_settled\+1\)\)/);
- assert.match(workflow,/ROBLOX_F9_VIBE_SETTLED_COUNT=\$settled_count/);
- assert.match(workflow,/if \[ "\$settled_count" -gt 0 \]; then/);
  assert.match(workflow,/event_type:"vibe2-fanin-refill"/);
- assert.match(workflow,/reason:"roblox-f9-verified"/);
  assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=\$settled_count/);
 });
 

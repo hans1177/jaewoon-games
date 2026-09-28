@@ -2829,5 +2829,21 @@
       "legalBoundary": "BLACK_BOX_OBSERVATION_TO_GENERAL_PRINCIPLES_ONLY_NO_CODE_BINARY_ASSET_OR_HIDDEN_ALGORITHM_COPY",
       "runtimeCompletion": "REQUIRES_EXACT_RUNTIME_EVIDENCE_NOT_SOURCE_ONLY_PASS"
     }
+  },
+  "robloxVerifiedCyclePublicationEvidence": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#roblox.deploymentControl.verifiedCyclePublication",
+    "requiredMarkers": [
+      "ROBLOX_VALIDATION_TARGET_PUBLISH=PASS",
+      "ROBLOX_F9_FINAL_REVIEW_PASS",
+      "ROBLOX_CANONICAL_FINAL_PUBLISH=PASS",
+      "ROBLOX_CANONICAL_FINAL_SOURCE_ARTIFACT_MATCH=YES",
+      "ROBLOX_NEXT_EVOLUTION_CYCLE_DISPATCHED"
+    ],
+    "forbiddenMarkers": [
+      "ROBLOX_CANONICAL_PUBLISH_FROM_F0"
+    ],
+    "f9Terminal": false,
+    "nextCycleRequiresCanonicalPublishSuccess": true
   }
 }

@@ -493,7 +493,12 @@ test('Roblox deployment control allows guarded Open Cloud publishing only',()=>{
   ]);
   assert.equal(control.studioUiPublishAllowed,false);
   assert.equal(control.cookiePublishAllowed,false);
-  assert.equal(control.resumeMode,'AUTO_AFTER_CANONICAL_FINAL_REVIEW');
+  assert.equal(control.resumeMode,'AUTO_AFTER_EACH_F9_VERIFIED_CANONICAL_PUBLISH');
+  assert.equal(control.verifiedCyclePublication.f9Terminal,false);
+  assert.equal(control.verifiedCyclePublication.perpetualRepeat,true);
+  assert.equal(control.verifiedCyclePublication.canonicalGameTargetPublishBeforeF9Forbidden,true);
+  assert.equal(control.verifiedCyclePublication.preF9ValidationMustUseSeparateTarget,true);
+  assert.equal(control.verifiedCyclePublication.nextCycleMayStartOnlyAfterCanonicalPublishSuccess,true);
   assert.equal(control.openCloudSafety.officialApiOnly,true);
   assert.equal(control.openCloudSafety.exactFinalReviewedArtifactRequired,true);
   assert.equal(control.openCloudSafety.transient409RetryWithinRun,true);

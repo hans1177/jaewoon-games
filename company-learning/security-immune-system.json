@@ -987,5 +987,15 @@
     "retryBudgetExpansion": false,
     "workerAuthorityExpansion": false,
     "sharedContextRevalidationRequiredOnFailurePath": true
+  },
+  "robloxVerifiedCyclePublicationSecurity": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#roblox.deploymentControl.verifiedCyclePublication",
+    "canonicalGameTargetPublishBeforeF9Forbidden": true,
+    "preF9ValidationTargetIsolationRequired": true,
+    "exactSourceRevisionAndArtifactIdentityRequiredAcrossValidationF9AndCanonicalPublish": true,
+    "f9MayNotEndEvolution": true,
+    "canonicalPublishSuccessRequiredBeforeNextCycleRefill": true,
+    "failureAction": "REPAIR_REQUIRED_AT_RESPONSIBLE_STAGE_AND_REVALIDATE_EXACT_STAGE"
   }
 }
