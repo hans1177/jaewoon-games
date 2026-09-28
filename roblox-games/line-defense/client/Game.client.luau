@@ -6,6 +6,12 @@ local STUDIO_ASSET_BINDING_VERSION = 2
 local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
+local verifiedExternalLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
+local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
+local verifiedExternalLearningPrinciples = verifiedExternalLearningContext.ApplicationPrinciples or {}
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END
+
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
 
 local gui = Instance.new("ScreenGui")
@@ -13,6 +19,13 @@ gui.Name = "ApprovedScopeHud"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 local root = Instance.new("Frame")
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
+root:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternalLearningContext.CoveragePct or 0)
+root:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
+root:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
+root:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END
+
 root.Name = "Root"
 root.AnchorPoint = Vector2.new(0.5, 1)
 root.Position = UDim2.fromScale(0.5, 0.98)
