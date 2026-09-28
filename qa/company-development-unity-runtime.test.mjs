@@ -152,7 +152,8 @@ test('Unity executor uses unbounded eligibility with capacity batching, canary a
   assert.match(workflowSource,/executionEvidence:evidence/);
   assert.match(workflowSource,/unityInternalReleaseReady:internalReady/);
   assert.match(workflowSource,/distribution:'INTERNAL_OR_CLOSED_APP_TEST_BUILD'/);
-  assert.match(workflowSource,/unityPublicRelease:false/);
+  assert.doesNotMatch(workflowSource,/unityPublicReleaseReady:false,unityPublicRelease:false/);
+  assert.match(workflowSource,/UNITY_PUBLIC_RELEASE_MUTATION=NO/);
   assert.match(workflowSource,/currentStep:internalReady\?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG'/);
   assert.match(workflowSource,/resumeStage:failure\|\|\(internalReady\?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'IMMEDIATE_NEXT_STAGE_DISPATCH'\)/);
   assert.match(workflowSource,/BUILD_ONCE_PER_SOURCE_FINGERPRINT=ENABLED/);
@@ -457,4 +458,15 @@ test('Unity BUILD_UP settlement requires exact source tree plus runtime independ
   assert.match(workflow,/unity-runtime-pass,unity-independent-qa-pass,unity-regression-pass/);
   assert.match(workflow,/unity-runtime-source-tree:\$\{runtime_source_tree_sha\}/);
   assert.match(workflow,/UNITY_BUILD_UP_VIBE_TASK_PASS=/);
+});
+
+test('Unity exact-candidate validation never demotes an existing external publication state',()=>{
+  const checkpointAt=workflowSource.indexOf("const row={");
+  const persistAt=workflowSource.indexOf("Persist this game's checkpoint immediately");
+  assert.ok(checkpointAt>0&&persistAt>checkpointAt);
+  const checkpoint=workflowSource.slice(checkpointAt,persistAt);
+  assert.doesNotMatch(checkpoint,/unityPublicReleaseReady:false/);
+  assert.doesNotMatch(checkpoint,/unityPublicRelease:false/);
+  assert.match(checkpoint,/UNITY_PUBLIC_RELEASE_MUTATION=NO/);
+  assert.match(workflowSource,/Object\.assign\(item,mergedUpdate\)/);
 });
