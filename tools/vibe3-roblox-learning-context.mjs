@@ -152,25 +152,25 @@ const GAME_DEVELOPMENT_RULES=Object.freeze([
   {
     id:'persistent-primary-rpg-navigation',
     match:'persistent-primary-rpg-navigation',
-    kinds:['PROGRESSION','ECONOMY','OBJECTIVE','SOCIAL'],
+    kinds:ALL_KINDS,
     domains:['HUD_AND_CONTEXTUAL_GUIDANCE','PROGRESSION_RISK_READABILITY','REWARD_AND_EVENT_PRESENTATION'],
-    mapping:kind=>kind==='ECONOMY'?'Keep resource and upgrade context visible around the primary economy action.':kind==='SOCIAL'?'Keep shared role and session context visible around the primary social action.':'Keep level, progression, and next-step context visible around the primary action.',
+    mapping:kind=>kind==='ECONOMY'?'Keep resource and upgrade context visible around the primary economy action.':kind==='SOCIAL'?'Keep shared role and session context visible around the primary social action.':kind==='PUZZLE'?'Keep board goals and next valid move visible beside the active puzzle action.':kind==='DEFENSE'?'Keep wave, base and placement navigation visible beside the defense action.':'Keep level, progression, and next-step context visible around the primary action.',
     implementation:kind=>'persistent context cue uses existing Config.Actions and replicated player attributes'
   },
   {
     id:'danger-and-level-gating-visible-before-commitment',
     match:'danger-and-level-gating-visible-before-commitment',
-    kinds:['PROGRESSION','SURVIVAL','DEFENSE','COMBAT','OBJECTIVE'],
+    kinds:ALL_KINDS,
     domains:['PROGRESSION_RISK_READABILITY','HUD_AND_CONTEXTUAL_GUIDANCE','VISIBLE_ACTION_FEEDBACK'],
-    mapping:kind=>kind==='DEFENSE'?'Show wave and base-health risk before tower placement is committed.':kind==='SURVIVAL'?'Show health and threat risk before the next survival action is committed.':'Show level and risk context before the next action is committed.',
+    mapping:kind=>kind==='DEFENSE'?'Show wave and base-health risk before tower placement is committed.':kind==='SURVIVAL'?'Show health and threat risk before the next survival action is committed.':kind==='PUZZLE'?'Show valid move and board-goal context before a puzzle move is committed.':kind==='ECONOMY'?'Show resource cost and upgrade availability before a purchase is committed.':kind==='SOCIAL'?'Show session readiness and role context before a shared action is committed.':'Show level and risk context before the next action is committed.',
     implementation:kind=>'pre-action risk cue reads existing replicated state; it never grants authority'
   },
   {
     id:'touch-look-produces-immediate-spatial-feedback',
     match:'touch-look-produces-immediate-spatial-feedback',
-    kinds:['MOVEMENT','COMBAT','SURVIVAL','OBJECTIVE','SOCIAL'],
+    kinds:ALL_KINDS,
     domains:['PLAYER_INPUT_AND_TOUCH','CAMERA_RESPONSE','VISIBLE_ACTION_FEEDBACK','MOBILE_READABILITY_AND_RESPONSE'],
-    mapping:kind=>kind==='COMBAT'?'Give attack direction and target-space feedback at the moment the action is confirmed.':kind==='SURVIVAL'?'Give threat-space feedback at the moment the survival action is confirmed.':'Give spatial feedback at the moment the touch action is confirmed.',
+    mapping:kind=>kind==='COMBAT'?'Give attack direction and target-space feedback at the moment the action is confirmed.':kind==='SURVIVAL'?'Give threat-space feedback at the moment the survival action is confirmed.':kind==='PUZZLE'?'Give board-cell selection and result-space feedback at the touched puzzle control.':kind==='ECONOMY'?'Give placement or upgrade target feedback at the touched world object.':'Give spatial feedback at the moment the touch action is confirmed.',
     implementation:kind=>'variant-specific camera or spatial cue follows LastApprovedScope'
   },
   {
@@ -184,9 +184,9 @@ const GAME_DEVELOPMENT_RULES=Object.freeze([
   {
     id:'movement-needs-immediate-visible-response',
     match:'movement-needs-immediate-visible-response',
-    kinds:['MOVEMENT','COMBAT','SURVIVAL','OBJECTIVE'],
+    kinds:ALL_KINDS,
     domains:['CHARACTER_NPC_CREATURE_ANIMATION','MOTION_AND_TRANSITIONS','PLAYER_INPUT_AND_TOUCH','VISIBLE_ACTION_FEEDBACK'],
-    mapping:kind=>kind==='MOVEMENT'?'Show movement direction and transition response immediately after input.':kind==='COMBAT'?'Show attack motion transition immediately after input.':'Show the player action transition immediately after input.',
+    mapping:kind=>kind==='MOVEMENT'?'Show movement direction and transition response immediately after input.':kind==='COMBAT'?'Show attack motion transition immediately after input.':kind==='PUZZLE'?'Animate the affected board cell and goal transition after a move.':kind==='ECONOMY'?'Animate the affected build or upgrade object after a confirmed action.':kind==='SOCIAL'?'Animate the affected avatar or social interaction after a confirmed action.':'Show the player action transition immediately after input.',
     implementation:kind=>'variant-specific motion response is client feedback only and follows authoritative state'
   },
   {
@@ -267,6 +267,20 @@ function colorForKind(kind){
     SOCIAL:[238,170,255],
     OBJECTIVE:[255,220,124]
   })[kind]||[255,220,124];
+}
+
+function moodForKind(kind){
+  return ({
+    PUZZLE:{id:'BRIGHT_BOARD',saturation:0.12,contrast:0.06,brightness:0.02},
+    DEFENSE:{id:'TACTICAL_WAVE',saturation:0.03,contrast:0.11,brightness:0},
+    COMBAT:{id:'IMPACT_ARENA',saturation:0.08,contrast:0.12,brightness:0},
+    PROGRESSION:{id:'ADVENTURE_GROWTH',saturation:0.07,contrast:0.06,brightness:0.01},
+    ECONOMY:{id:'WARM_BUILDER',saturation:0.11,contrast:0.04,brightness:0.02},
+    SURVIVAL:{id:'TENSE_WILDERNESS',saturation:0.06,contrast:0.04,brightness:0.01},
+    MOVEMENT:{id:'CLEAR_MOTION',saturation:0.08,contrast:0.05,brightness:0.02},
+    SOCIAL:{id:'WELCOMING_SPACE',saturation:0.10,contrast:0.03,brightness:0.02},
+    OBJECTIVE:{id:'READABLE_EXPLORATION',saturation:0.07,contrast:0.05,brightness:0.01}
+  })[kind]||{id:'READABLE_EXPLORATION',saturation:0.07,contrast:0.05,brightness:0.01};
 }
 
 function buildSemanticApplication({gameId='',profile={},rows=[]}={}){
@@ -429,6 +443,7 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     semanticMappingFingerprint:semantic.mappingFingerprint,
     semanticVariant:semantic.variant,
     semanticColor:Object.freeze({r:semantic.color[0],g:semantic.color[1],b:semantic.color[2]}),
+    semanticMood:Object.freeze(moodForKind(kind)),
     gameSpecificSemanticMappings:Object.freeze(semantic.mappings.map(row=>Object.freeze({...row}))),
     verifiedExternalLearningDispositions,
     verifiedExternalLearningDispositionCount:verifiedExternalLearningDispositions.length,

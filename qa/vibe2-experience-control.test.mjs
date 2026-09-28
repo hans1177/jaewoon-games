@@ -414,7 +414,7 @@ test('verified experience is injected into the next similar worker goal as advis
             project:'verified-reference',
             sourceRevision:'sha256:'+ 'a'.repeat(64),
             score:1,
-            distilledApplicationPrinciples:['bind attack input to immediate visible motion and state feedback'],
+            distilledApplicationPrinciples:['id=movement-needs-immediate-visible-response;scope=rpg-input-feedback;lesson=respond to action;apply=show immediate visible motion and state feedback'],
             distilledAvoidancePrinciples:['do not clone distinctive commercial presentation'],
             distilledLearningUseAllowed:['input-to-feedback timing']
           }]
@@ -427,7 +427,7 @@ test('verified experience is injected into the next similar worker goal as advis
             project:'verified-reference',
             sourceRevision:'sha256:'+ 'a'.repeat(64),
             score:1,
-            distilledApplicationPrinciples:['bind attack input to immediate visible motion and state feedback'],
+            distilledApplicationPrinciples:['id=movement-needs-immediate-visible-response;scope=rpg-input-feedback;lesson=respond to action;apply=show immediate visible motion and state feedback'],
             distilledAvoidancePrinciples:['do not clone distinctive commercial presentation'],
             distilledLearningUseAllowed:['input-to-feedback timing']
           }]
@@ -440,7 +440,7 @@ test('verified experience is injected into the next similar worker goal as advis
             project:'verified-reference',
             sourceRevision:'sha256:'+ 'a'.repeat(64),
             score:1,
-            distilledApplicationPrinciples:['bind attack input to immediate visible motion and state feedback'],
+            distilledApplicationPrinciples:['id=movement-needs-immediate-visible-response;scope=rpg-input-feedback;lesson=respond to action;apply=show immediate visible motion and state feedback'],
             distilledAvoidancePrinciples:['do not clone distinctive commercial presentation'],
             distilledLearningUseAllowed:['input-to-feedback timing']
           }]
@@ -454,14 +454,11 @@ test('verified experience is injected into the next similar worker goal as advis
   assert.equal(order.knowledgeApplicationContract.verifiedExternalLearningCoveragePct,100);
   assert.deepEqual(order.knowledgeApplicationContract.verifiedExternalLearningIds,['external-black-box-test-unity']);
   assert.deepEqual(order.knowledgeApplicationContract.verifiedExternalLearningApplyAxes,[
-    'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
-    'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
-    'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
     'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
-    'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
-    'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
-    'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
+    'VISIBLE_ACTION_FEEDBACK'
   ]);
+  assert.equal(order.knowledgeApplicationContract.verifiedExternalGameSourcePrincipleCount,1);
+  assert.equal(order.knowledgeApplicationContract.allRetrievedPrinciplesHaveExplicitDisposition,true);
   assert.match(order.goal, /verifiedExternalLearningApplyAxes=/);
   assert.match(order.goal, /VERIFIED EXPERIENCE MEMORY/);
   assert.match(order.goal, /검증 없이 공격 판정 타이밍을 추측하지 않기/);

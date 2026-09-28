@@ -17,6 +17,67 @@ const freeze=v=>Object.freeze(v);
 const freezeList=v=>freeze([...(v||[])]);
 const hash=s=>{let h=2166136261;for(const ch of String(s)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0).toString(36);};
 
+// 검증된 외부 APK 관찰은 게임 소스 원칙과 런타임 검증 원칙으로 명시적으로 분류한다.
+const EXTERNAL_GAME_PRINCIPLE_DOMAINS=freeze({
+  'compact-tactical-state-with-immediate-feedback':['CORE_GAMEPLAY_FEEL','VISIBLE_ACTION_FEEDBACK','UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY'],
+  'persistent-primary-rpg-navigation':['HUD_AND_CONTEXTUAL_GUIDANCE','PROGRESSION_RISK_READABILITY'],
+  'danger-and-level-gating-visible-before-commitment':['PROGRESSION_RISK_READABILITY','HUD_AND_CONTEXTUAL_GUIDANCE'],
+  'touch-look-produces-immediate-spatial-feedback':['PLAYER_INPUT_AND_TOUCH','CAMERA_RESPONSE'],
+  'persistent-core-state-around-world-view':['WORLD_AND_BACKGROUND_PRESENTATION','HUD_AND_CONTEXTUAL_GUIDANCE'],
+  'movement-needs-immediate-visible-response':['MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION','VISIBLE_ACTION_FEEDBACK'],
+  'persistent-contextual-action-controls':['HUD_AND_CONTEXTUAL_GUIDANCE','PLAYER_INPUT_AND_TOUCH'],
+  'immediate-spatially-anchored-input-feedback':['PLAYER_INPUT_AND_TOUCH','VISIBLE_ACTION_FEEDBACK'],
+  'touch-instruction-near-first-play-state':['CONTEXTUAL_ONBOARDING','MOBILE_READABILITY_AND_RESPONSE']
+});
+const EXTERNAL_VALIDATION_PRINCIPLE_IDS=freeze(new Set([
+  'native-arm64-redroid-is-valid-free-server-route',
+  'separate-system-overlay-consent-and-game-entry',
+  'visual-state-change-plus-process-survival-strengthens-input-evidence',
+  'tutorial-separated-from-game-entry',
+  'semantic-gameplay-input-plus-survival',
+  'first-run-friction-separated-from-game-entry',
+  'semantic-input-plus-runtime-survival',
+  'content-setup-is-separate-from-3d-game-entry',
+  'world-entry-needs-load-window-before-input-proof',
+  'narrative-onboarding-is-not-game-entry',
+  'gameplay-state-must-be-visually-distinct-from-selection-state',
+  'before-after-plus-runtime-survival-evidence',
+  'separate-android-overlay-onboarding-and-gameplay-entry',
+  'input-visual-transition-plus-foreground-survival'
+]));
+function externalGameMood(gameId=''){
+  const game=lower(gameId);
+  if(/puzzle|cascade|block/.test(game))return'BRIGHT_BOARD_AND_PRECISE_CELL_FEEDBACK';
+  if(/survival|horror|escape/.test(game))return'TENSE_WORLD_AND_THREAT_READABILITY';
+  if(/tycoon|simulator|island/.test(game))return'WARM_BUILDER_AND_RESOURCE_FEEDBACK';
+  if(/rpg|dungeon|fantasy|adventure/.test(game))return'ADVENTURE_PROGRESS_AND_CHARACTER_MOTION';
+  if(/roleplay|social/.test(game))return'WELCOMING_SHARED_AVATAR_SPACE';
+  if(/defense|war/.test(game))return'TACTICAL_WAVE_AND_PLACEMENT_READABILITY';
+  return'READABLE_GAME_SPECIFIC_ACTION_FEEDBACK';
+}
+export function classifyVerifiedExternalBlackBoxPrinciples(rows=[],{gameId='',target=''}={}){
+  const dispositionRows=[];
+  const game=lower(gameId),platform=upper(target);
+  for(const row of rows){
+    for(const raw of row?.distilledApplicationPrinciples||[]){
+      const value=clean(raw);
+      const id=value.match(/(?:^|;)\s*id=([^;]+)/i)?.[1]?.trim()||'';
+      if(!id)throw new Error('EXTERNAL_PRINCIPLE_ID_REQUIRED:'+clean(row?.id));
+      let disposition='FAIL_CLOSED',domains=[],reason='UNMAPPED_VERIFIED_PRINCIPLE';
+      if(EXTERNAL_VALIDATION_PRINCIPLE_IDS.has(id)){
+        disposition='VALIDATION_ONLY';reason='ANDROID_OR_QA_RUNTIME_EVIDENCE';
+      }else if(EXTERNAL_GAME_PRINCIPLE_DOMAINS[id]){
+        disposition='APPLIED_GAME_SOURCE';
+        domains=EXTERNAL_GAME_PRINCIPLE_DOMAINS[id];
+        reason=game?'GAME_SPECIFIC_SEMANTIC_ADAPTATION':'GAME_SOURCE_SEMANTIC_ADAPTATION';
+      }
+      dispositionRows.push(freeze({id,sourceLearningId:clean(row?.id),raw:value,disposition,domains:freezeList(domains),reason,gameId:clean(gameId),target:platform,genreMood:externalGameMood(gameId)}));
+    }
+  }
+  const failClosed=dispositionRows.filter(row=>row.disposition==='FAIL_CLOSED');
+  return freeze({rows:freezeList(dispositionRows),sourceRows:freezeList(dispositionRows.filter(row=>row.disposition==='APPLIED_GAME_SOURCE')),validationRows:freezeList(dispositionRows.filter(row=>row.disposition==='VALIDATION_ONLY')),failClosed:freezeList(failClosed),allDisposed:dispositionRows.length>0&&!failClosed.length});
+}
+
 export const MASTERY_DOMAINS=freeze([
   'CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE',
   'DEBUGGING','RECOVERY','SECURITY','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE',

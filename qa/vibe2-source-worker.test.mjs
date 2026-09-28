@@ -3811,33 +3811,34 @@ test('adaptive graphics replacement report failure is retriable and classified s
 });
 
 
-test('verified APK black-box learning is fail-closed and survives every source-generation compaction path',()=>{
+test('verified APK learning preserves game-source and QA-only dispositions through source generation',()=>{
+  const gamePrinciple='id=persistent-contextual-action-controls;scope=mobile-interaction-observation;lesson=keep contextual controls visible;apply=keep controls beside play';
+  const qaPrinciple='id=semantic-gameplay-input-plus-survival;scope=qa-evidence;lesson=validate runtime;apply=check process survival';
+  const rows=[
+    {id:'external-black-box-a-run-1',verified:true,authority:'verified-task-playbook',distilledApplicationPrinciples:[gamePrinciple],distilledAvoidancePrinciples:['A-no-clone']},
+    {id:'external-black-box-b-run-2',verified:true,authority:'verified-task-playbook',distilledApplicationPrinciples:[qaPrinciple],distilledAvoidancePrinciples:['B-no-hidden-inference']}
+  ];
   const order={
-    target:'web',
-    department:'development',
-    goal:'실제 게임 기능 개발',
-    qa:[],
+    target:'web',selectedTask:{gameId:'demo'},department:'development',goal:'실제 게임 기능 개발',qa:[],
     knowledgeApplicationContract:{
       mandatoryForGameTarget:true,
-      verifiedExternalLearningIds:['external-black-box-a-run-1','external-black-box-b-run-2'],
+      verifiedExternalLearningIds:rows.map(row=>row.id),
       verifiedExternalLearningRetrievedCount:2,
-      verifiedExternalLearningAppliedCount:2,
-      verifiedExternalLearningCoveragePct:100,
-      verifiedExternalDistilledContentComplete:true,
       retrievedVerifiedExternalLearningTruncationForbidden:true,
-      verifiedExternalLearningApplyAxes:['UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY','GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT']
-    },
-    unifiedLearning:{
-      playbookReuse:[
-        {id:'external-black-box-a-run-1',verified:true,authority:'verified-task-playbook',distilledApplicationPrinciples:['A-menu-flow','A-touch-feedback'],distilledAvoidancePrinciples:['A-no-clone'],distilledLearningUseAllowed:['A-allowed'],distilledLearningUseForbidden:['A-forbidden']},
-        {id:'external-black-box-b-run-2',verified:true,authority:'verified-task-playbook',distilledApplicationPrinciples:['B-state-feedback'],distilledAvoidancePrinciples:['B-no-hidden-inference'],distilledLearningUseAllowed:['B-allowed'],distilledLearningUseForbidden:['B-forbidden']}
+      allRetrievedPrinciplesHaveExplicitDisposition:true,
+      verifiedExternalLearningDispositions:[
+        {id:'persistent-contextual-action-controls',disposition:'APPLIED_GAME_SOURCE'},
+        {id:'semantic-gameplay-input-plus-survival',disposition:'VALIDATION_ONLY'}
       ]
-    }
+    },
+    unifiedLearning:{playbookReuse:rows}
   };
   const contract=buildVerifiedExternalLearningPromptContract(order);
-  assert.equal(contract.coveragePct,100);
   assert.equal(contract.count,2);
-  for(const expected of ['external-black-box-a-run-1','external-black-box-b-run-2','A-menu-flow','A-touch-feedback','B-state-feedback'])assert.match(contract.block,new RegExp(expected));
+  assert.equal(contract.sourcePrincipleCount,1);
+  assert.match(contract.block,/APPLY=id=persistent-contextual-action-controls/);
+  assert.doesNotMatch(contract.block,/APPLY=id=semantic-gameplay-input-plus-survival/);
+  assert.match(contract.block,/DISPOSITION=semantic-gameplay-input-plus-survival:VALIDATION_ONLY/);
   const context={files:[{path:'index.html',content:'<button id="play">Play</button>',editable:true,truncated:false}],bytes:38};
   const initial=buildPrompt(order,context,['index.html'],{verifiedExternalLearningContract:contract});
   assert.equal(verifiedExternalLearningBlockFromPrompt(initial),contract.block);
@@ -3848,9 +3849,9 @@ test('verified APK black-box learning is fail-closed and survives every source-g
   assert.equal(verifiedExternalLearningBlockFromPrompt(focused.prompt),contract.block);
   const expansion=buildFullWebExpansionPrompt(initial,{content:'<!doctype html><html><body><main id="game"></main></body></html>'},{stage:1,minBytes:9000,maxBytes:18000});
   assert.equal(verifiedExternalLearningBlockFromPrompt(expansion),contract.block);
-  assert.throws(()=>buildVerifiedExternalLearningPromptContract({...order,unifiedLearning:{playbookReuse:[order.unifiedLearning.playbookReuse[0]]}}),/ROW_MISSING:external-black-box-b-run-2/);
+  assert.throws(()=>buildVerifiedExternalLearningPromptContract({...order,unifiedLearning:{playbookReuse:[rows[0]]}}),/ROW_MISSING:external-black-box-b-run-2/);
+  assert.throws(()=>buildVerifiedExternalLearningPromptContract({...order,knowledgeApplicationContract:{...order.knowledgeApplicationContract,verifiedExternalLearningDispositions:[]}}),/DISPOSITION_DRIFT/);
 });
-
 
 test('fan-in rejects candidates without actual APK learning prompt proof',()=>{
   const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
@@ -3861,23 +3862,23 @@ test('fan-in rejects candidates without actual APK learning prompt proof',()=>{
 });
 
 
-test('runtime model-call gate rejects truncated APK learning and verifies exact IDs',()=>{
+test('runtime model-call gate rejects missing APK disposition or source principle',()=>{
   const contract={required:true,ids:['external-black-box-a','external-black-box-b']};
   const prompt=[
     '[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]',
-    'coverage=2/2; coveragePct=100; truncation=FORBIDDEN',
+    'dispositions=2/2; sourcePrinciples=1; validationOnly=1; truncation=FORBIDDEN',
     '[EXTERNAL_LEARNING external-black-box-a]',
-    'APPLY=a',
+    'DISPOSITION=persistent-contextual-action-controls:APPLIED_GAME_SOURCE;GAME=demo;TARGET=WEB;DOMAINS=PLAYER_INPUT_AND_TOUCH',
+    'APPLY=id=persistent-contextual-action-controls',
     '[END_EXTERNAL_LEARNING external-black-box-a]',
     '[EXTERNAL_LEARNING external-black-box-b]',
-    'APPLY=b',
+    'DISPOSITION=semantic-gameplay-input-plus-survival:VALIDATION_ONLY;GAME=demo;TARGET=WEB;DOMAINS=NONE',
     '[END_EXTERNAL_LEARNING external-black-box-b]',
     '[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
   ].join('\n');
-  const pass=assertVerifiedExternalLearningPromptCoverage(prompt,contract);
-  assert.equal(pass.count,2);
+  assert.equal(assertVerifiedExternalLearningPromptCoverage(prompt,contract).count,2);
   assert.throws(()=>assertVerifiedExternalLearningPromptCoverage(prompt.replace('[EXTERNAL_LEARNING external-black-box-b]','[EXTERNAL_LEARNING external-black-box-c]'),contract),/IDS_MISMATCH/);
-  assert.throws(()=>assertVerifiedExternalLearningPromptCoverage(prompt.replace('APPLY=b',''),contract),/APPLY_MISSING/);
+  assert.throws(()=>assertVerifiedExternalLearningPromptCoverage(prompt.replace('APPLY=id=persistent-contextual-action-controls',''),contract),/APPLY_MISMATCH/);
 });
 
 test('mandatory verified APK learning disables deterministic diagnostic source bypass',()=>{
