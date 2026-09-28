@@ -1168,7 +1168,8 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
         sourcePlaybooks:uniq([...(previous?.sourcePlaybooks||[]),item.key]),
         distilledApplicationPrinciples:uniq([...(previous?.distilledApplicationPrinciples||[]),...(Array.isArray(raw?.distilledApplicationPrinciples)?raw.distilledApplicationPrinciples:[])]),
         distilledAvoidancePrinciples:uniq([...(previous?.distilledAvoidancePrinciples||[]),...(Array.isArray(raw?.distilledAvoidancePrinciples)?raw.distilledAvoidancePrinciples:[])]),
-        distilledLearningUseAllowed:uniq([...(previous?.distilledLearningUseAllowed||[]),...(Array.isArray(raw?.distilledLearningUseAllowed)?raw.distilledLearningUseAllowed:[])])
+        distilledLearningUseAllowed:uniq([...(previous?.distilledLearningUseAllowed||[]),...(Array.isArray(raw?.distilledLearningUseAllowed)?raw.distilledLearningUseAllowed:[])]),
+        distilledLearningUseForbidden:uniq([...(previous?.distilledLearningUseForbidden||[]),...(Array.isArray(raw?.distilledLearningUseForbidden)?raw.distilledLearningUseForbidden:[])])
       };
       playbookReuseById.set(id,next);
     }
@@ -1247,6 +1248,7 @@ export function learningGuidance(context={}){
     for(const principle of row.distilledApplicationPrinciples||[]) lines.push(`  - verified-commercial-application-principle=${principle}`);
     for(const principle of row.distilledAvoidancePrinciples||[]) lines.push(`  - verified-commercial-avoidance-principle=${principle}`);
     for(const allowed of row.distilledLearningUseAllowed||[]) lines.push(`  - verified-commercial-learning-use=${allowed}`);
+    for(const forbidden of row.distilledLearningUseForbidden||[]) lines.push(`  - verified-commercial-learning-forbidden=${forbidden}`);
   }
   if(context.mastery?.length) lines.push(`- production-confidence=${context.mastery.map(x=>x.domain+':PC'+Number(x.productionConfidenceLevel||1)).join(' | ')}`);
   if(context.playbook?.checklist?.length) lines.push(`- playbook=${context.playbook.checklist.join(' | ')}`);
