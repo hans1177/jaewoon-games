@@ -496,11 +496,30 @@ jobs:
             }
             if(!Object.keys(fields).length)continue;
             const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const verified=fields.robloxF9VerifiedPrepublishEvidence?.after;
+            const f0=item.robloxFoundationF0Evidence||{};
+            const localF0Candidate=Boolean(
+              verified?.finalReviewPassed===true
+              &&verified?.f9ReleaseRegressionPassed===true
+              &&candidate.published!==true
+              &&item.robloxFoundationF0Passed===true
+              &&item.robloxBuildPreflightPassed===true
+              &&item.robloxBuildOrPackagePassed===true
+              &&item.robloxBuildSourceRevision===item.robloxSourceCommit
+              &&f0.sourceRevision===item.robloxSourceCommit
+              &&f0.artifactIdentity===item.robloxBuildArtifactIdentity
+              &&Number(verified.artifactRunId||0)>0
+              &&Number(verified.artifactRunId)===Number(f0.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||0)
+              &&Number(verified.validationVersionNumber)===Number(verified.artifactRunId)
+            );
             patches.push({
               gameId,
               sourceRevision:String(item.robloxSourceCommit||''),
               artifactIdentity:String(item.robloxBuildArtifactIdentity||''),
-              candidateVersionNumber:Number(candidate.versionNumber||0),
+              candidateOrigin:localF0Candidate?'LOCAL_F0':'PERSISTED_RUNTIME',
+              candidateVersionNumber:localF0Candidate
+                ?Number(verified.validationVersionNumber)
+                :Number(candidate.versionNumber||0),
               updatedAt:String(item.updatedAt||stamp),
               fields,
             });
@@ -546,12 +565,27 @@ jobs:
               continue;
             }
             const candidate=item.robloxRuntimeCandidateEvidence||{};
-            const identityExact=
-              String(item.robloxSourceCommit||'')===String(delta.sourceRevision||'')
-              &&String(item.robloxBuildArtifactIdentity||'')===String(delta.artifactIdentity||'')
+            const f0=item.robloxFoundationF0Evidence||{};
+            const localF0Identity=
+              delta.candidateOrigin==='LOCAL_F0'
+              &&candidate.published!==true
+              &&item.robloxFoundationF0Passed===true
+              &&item.robloxBuildPreflightPassed===true
+              &&item.robloxBuildOrPackagePassed===true
+              &&String(item.robloxBuildSourceRevision||'')===String(delta.sourceRevision||'')
+              &&String(f0.sourceRevision||'')===String(delta.sourceRevision||'')
+              &&String(f0.artifactIdentity||'')===String(delta.artifactIdentity||'')
+              &&Number(delta.candidateVersionNumber||0)>0
+              &&Number(f0.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||0)===Number(delta.candidateVersionNumber);
+            const persistedRuntimeIdentity=
+              delta.candidateOrigin==='PERSISTED_RUNTIME'
               &&Number(candidate.versionNumber||0)===Number(delta.candidateVersionNumber||0)
               &&String(candidate.sourceRevision||'')===String(delta.sourceRevision||'')
               &&String(candidate.artifactIdentity||'')===String(delta.artifactIdentity||'');
+            const identityExact=
+              String(item.robloxSourceCommit||'')===String(delta.sourceRevision||'')
+              &&String(item.robloxBuildArtifactIdentity||'')===String(delta.artifactIdentity||'')
+              &&(localF0Identity||persistedRuntimeIdentity);
             if(!identityExact){
               conflicts.push({gameId:delta.gameId,field:'EXACT_CANDIDATE_IDENTITY'});
               continue;
