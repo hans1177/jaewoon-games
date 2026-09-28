@@ -145,7 +145,29 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
   const sourceRevision=clean(item.robloxSourceCommit);
   const artifactIdentity=clean(item.robloxBuildArtifactIdentity);
   const f0=item.robloxFoundationF0Evidence||item.robloxHeadlessFastMvpEvidence||{};
-  if(['HEADLESS_FAST_MVP','HEADLESS_SOURCE_PREFLIGHT_F0'].includes(validationMode)){
+  const earlyCandidate=item.robloxRuntimeCandidateEvidence||{};
+  const earlyPost=item.robloxPostRuntimeQaEvidence||{};
+  const earlyStudio=item.robloxInternalVibePlayEvidence||{};
+  const earlyInternalStudioValidationPassed=Boolean(
+    earlyPost.internalStudioValidationOnly===true
+    &&earlyPost.externalServerBootRequired===false
+    &&earlyPost.officialStudioMcpActualPlayPassed===true
+    &&earlyPost.independentQaPassed===true
+    &&earlyPost.regressionPassed===true
+    &&clean(earlyPost.sourceRevision)===sourceRevision
+    &&clean(earlyPost.artifactIdentity)===artifactIdentity
+    &&Number(earlyPost.candidateVersionNumber||0)>0
+    &&Number(earlyPost.candidateVersionNumber)===Number(earlyCandidate.versionNumber||0)
+    &&earlyStudio.pass===true
+    &&earlyStudio.actualPlay===true
+    &&earlyStudio.runtimeVerified===true
+    &&earlyStudio.officialStudioMcp===true
+    &&earlyStudio.localPlaceFile===true
+    &&clean(earlyStudio.sourceRevision)===sourceRevision
+    &&clean(earlyStudio.artifactIdentity)===artifactIdentity
+    &&Number(earlyStudio.versionNumber||0)===Number(earlyCandidate.versionNumber||0)
+  );
+  if(['HEADLESS_FAST_MVP','HEADLESS_SOURCE_PREFLIGHT_F0'].includes(validationMode)&&!earlyInternalStudioValidationPassed){
     return Object.freeze({
       version:4,
       platform:'ROBLOX',
@@ -186,22 +208,7 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
     ||runtime.actualRuntimeEvidence===true
     ||foundation.actualRuntimeEvidence===true
     ||/roblox-real-studio-runtime/i.test(clean(runtime.authority));
-  const internalStudioValidationPassed=Boolean(
-    post.internalStudioValidationOnly===true
-    &&post.externalServerBootRequired===false
-    &&post.officialStudioMcpActualPlayPassed===true
-    &&post.independentQaPassed===true
-    &&post.regressionPassed===true
-    &&studioPlay.pass===true
-    &&studioPlay.actualPlay===true
-    &&studioPlay.runtimeVerified===true
-    &&studioPlay.officialStudioMcp===true
-    &&studioPlay.localPlaceFile===true
-    &&clean(post.sourceRevision)===sourceRevision
-    &&clean(post.artifactIdentity)===artifactIdentity
-    &&clean(studioPlay.sourceRevision)===sourceRevision
-    &&clean(studioPlay.artifactIdentity)===artifactIdentity
-  );
+  const internalStudioValidationPassed=earlyInternalStudioValidationPassed;
   const actualPostRuntimeEvidence=
     post.actualRuntimeEvidence===true
     ||post.localStudioRuntimeEvidence===true
