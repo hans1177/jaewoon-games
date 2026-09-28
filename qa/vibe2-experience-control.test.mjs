@@ -139,7 +139,7 @@ test('verified external application rejects incomplete axes unverified authority
     distinctiveExpressionClone:false
   };
   const promote=application=>promoteVibeReviewedExperience(createVibeExperienceMemory(),successfulReview({
-    id:'external-hard-gate-'+Math.random().toString(36).slice(2),
+    id:'external-hard-gate-fixture',
     verifiedExternalLearningApplication:application
   })).record.verifiedExternalLearningApplication;
 
