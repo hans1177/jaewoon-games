@@ -2016,3 +2016,21 @@ test('Studio flags inaccessible graphics assets for exact visual repair while re
   assert.match(helper,/repairSurface:'VISUAL_ASSET_LOADING'/);
   assert.match(helper,/visual-asset-load-integrity/);
 });
+
+
+test('zero-floor Studio abort routes exact artifact to WORLD_GEOMETRY repair',()=>{
+  assert.match(helper,/floorSampleCount\|\|0\)>0&&Number\(initialClientProbe\?\.world\?\.floorHitCount\|\|0\)===0/);
+  assert.match(helper,/floorSampleCount\|\|0\)>0&&Number\(floatingConfirm\?\.world\?\.floorHitCount\|\|0\)===0/);
+  const broken=runtime();
+  broken.runtimeVerified=false;
+  broken.scenarioContractRequired=true;
+  broken.scenarioCoverage=[{id:'adaptive-world-safety',pass:false}];
+  broken.qualityFailureKinds=['adaptive-world-safety'];
+  broken.qualityFailureDetails=[{id:'adaptive-world-safety',repairSurface:'WORLD_GEOMETRY',priority:'CRITICAL',hint:'Restore floor',observed:{floorSampleCount:9,floorHitCount:0}}];
+  broken.errors=[{type:'studio-product-world-geometry-error',signature:'ROBLOX_STUDIO_FLOATING_CHARACTER_ABORT:NO_WALKABLE_WORLD'}];
+  const applied=applyLocalStudioPlayResult({queue:{items:[item()]},gameId:'g1',runtime:broken,expected,workflowRunId:84,studioStepSucceeded:false,testedAt:'2026-09-29T00:00:00.000Z'});
+  assert.equal(applied.result.evidence.infrastructureFailure,false);
+  assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
+  assert.equal(applied.item.robloxFailureSignature,'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED');
+  assert.ok(applied.item.robloxQualityBuildUpEvidence.repairSurfaces.includes('WORLD_GEOMETRY'));
+});
