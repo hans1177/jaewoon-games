@@ -3206,13 +3206,13 @@ function updateSwampSpecial(e,targetP,now,playerD){
  if(e.type.fearSpecial){
   const engaged=e.hostile&&playerD<enemyDetectRange(e,700);
   if(!engaged)return null;
-  if(!e.nextFearRoll)e.nextFearRoll=now+3000;
+  if(!e.nextFearRoll)e.nextFearRoll=now+4000;
   if(now>=e.nextFearRoll){
-   e.nextFearRoll=now+3000;
+   e.nextFearRoll=now+4000;
    if(Math.random()<.50){
-    targetP.attackBlockedUntil=Math.max(targetP.attackBlockedUntil||0,now+5000);
+    targetP.attackBlockedUntil=Math.max(targetP.attackBlockedUntil||0,now+2000);
     e.hp=Math.min(e.maxHp,e.hp+200);
-    showNotice('공포 곰 · 공포 5초 · 공격 불가 · 곰 체력 200 회복')
+    showNotice('공포 곰 · 공포 · 공격 불가 2초 · 곰 체력 200 회복')
    }
   }
  }
