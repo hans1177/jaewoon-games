@@ -7053,7 +7053,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T04:05:28.202Z",
+      "updatedAt": "2026-09-28T04:10:17.932Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -7069,20 +7069,21 @@
       "robloxBuildArtifactIdentity": "sha256:89998ac9110df81f4d7afbbd443d326d9daf0efb88b6ffdb191a40fc0dc8f055",
       "robloxBuildPassedAt": "2026-09-28T04:05:28.202Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-09-28T04:05:28.202Z",
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-09-28T04:10:17.932Z",
+      "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "seed-single-defense-strat-celestial-bastion",
-        "pass": false,
-        "state": "BLOCKED",
-        "checkedAt": "2026-09-28T04:03:06.569Z",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-09-28T04:08:54.021Z",
+        "sourceRevision": "241632c86075c41e8156577ed63a1b7c1944a0d3",
+        "artifactIdentity": "sha256:89998ac9110df81f4d7afbbd443d326d9daf0efb88b6ffdb191a40fc0dc8f055",
+        "secondaryOwnerFocus": false,
         "facts": {
-          "pass": false,
-          "blockers": [
-            "roblox-platform-required"
-          ],
+          "pass": true,
+          "blockers": [],
           "leads": {
             "planning": "llama3.2:1b",
             "graphics": "llama3.2:1b",
@@ -7093,9 +7094,9 @@
           "sharedModel": "llama3.2:1b",
           "distinctLeadCount": 1,
           "secondaryOwnerFocus": false,
-          "robloxLaneEligible": false,
+          "robloxLaneEligible": true,
           "directRoblox": false,
-          "concurrentRoblox": false,
+          "concurrentRoblox": true,
           "build": {
             "sourceRevision": "241632c86075c41e8156577ed63a1b7c1944a0d3",
             "artifactIdentity": "sha256:89998ac9110df81f4d7afbbd443d326d9daf0efb88b6ffdb191a40fc0dc8f055",
@@ -7108,10 +7109,16 @@
             "buildOrPackagePassed": true
           }
         },
-        "leadReviews": [],
-        "blockers": [
-          "roblox-platform-required"
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "llama3.2:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "BUILD_EVIDENCE contains a contradiction: `sourceValidationPassed` is `true` but `sourceEligibilityAuthority` is `exact-immutable-roblox-package` which implies `sourceRevision` must be `>= 241632c86075c41e8156577ed63a1b7c1944a0d3`."
+          }
         ],
+        "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
       "robloxFoundationF0Passed": false,
@@ -7150,11 +7157,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
+      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureStage": "F0_SOURCE_INTEGRITY",
+      "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_PENDING",
       "routingBlockers": [
-        "roblox-build-preflight-blocked"
+        "roblox-f0-source-preflight-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -8317,7 +8324,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-28T04:09:57.252Z",
+  "updatedAt": "2026-09-28T04:10:17.932Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
