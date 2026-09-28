@@ -656,7 +656,11 @@ jobs:
               [[ "$version" =~ ^[1-9][0-9]*$ ]]
               printf 'version_number=%s\n' "$version" >> "$GITHUB_OUTPUT"
               printf 'deferred=false\n' >> "$GITHUB_OUTPUT"
-              echo 'ROBLOX_RUNTIME_CANDIDATE_OPEN_CLOUD_PUBLISH=PASS'
+              if [ "${{ steps.target.outputs.publish_stage }}" = 'final' ]; then
+                 echo 'ROBLOX_CANONICAL_FINAL_OPEN_CLOUD_PUBLISH=PASS'
+               else
+                 echo 'ROBLOX_RUNTIME_CANDIDATE_OPEN_CLOUD_PUBLISH=PASS'
+               fi
               exit 0
             fi
             if ! grep -Eqi 'Roblox publish failed HTTP 409:.*(server is busy|unable to process your upload request)' /tmp/roblox-final-release-publish.log; then
@@ -740,7 +744,8 @@ jobs:
               published:true,publishedAt:stamp,finalReviewPassed:true,f9ReleaseRegressionPassed:true,
               exactValidationCandidateVersionNumber:Number(validation.versionNumber||0),
               exactValidationUniverseId:String(validation.universeId||''),exactValidationPlaceId:String(validation.placeId||''),
-              releaseClaim:'INTERNAL_PLATFORM_RELEASE_AFTER_F9',publicRelease:false,
+              releaseClaim:'INTERNAL_PLATFORM_RELEASE_AFTER_F9',publicRelease:false,f9RuntimeReplay:false,
+              internalStudioValidationOnly:item.robloxF9VerifiedPrepublishEvidence?.internalStudioValidationOnly===true,
               authority:'roblox-open-cloud-f9-verified-canonical-publish'
             };
             item.robloxPublicationTarget={...existingTarget,version:Number(existingTarget.version||3),gameId:item.gameId,universeId,placeId,verified:true,verifiedAt:existingTarget.verifiedAt||stamp,lastVerifiedAt:stamp,authority:'roblox-canonical-publication-target',dedicated:true,shared:false,bootstrapState:'PUBLISHED_PRIVATE'};
@@ -922,7 +927,7 @@ jobs:
           echo 'ROBLOX_RELEASE_RUNTIME_PERSIST=PASS'
 
       - name: Dispatch existing game tester runtime foundation QA
-        if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success' && steps.publish.outputs.deferred != 'true'
+        if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success' && steps.publish.outputs.deferred != 'true' && steps.target.outputs.publish_stage != 'final'
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.target.outputs.game_id }}
@@ -931,6 +936,17 @@ jobs:
           set -euo pipefail
           gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
           echo "ROBLOX_EXISTING_TESTER_FOUNDATION_QA_DISPATCHED=$GAME_ID"
+
+      - name: Resume verified fan-in only after canonical publish succeeds
+        if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success' && steps.publish.outputs.deferred != 'true' && steps.target.outputs.publish_stage == 'final'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ steps.target.outputs.game_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
+          echo "ROBLOX_CANONICAL_PUBLISH_FANIN_DISPATCHED=$GAME_ID"
 
       - name: Apply and verify Roblox title description and server size
         id: metadata
