@@ -6,11 +6,13 @@ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-pos
 
 test('Roblox runtime foundation lane remains Open Cloud only while post-release actual play is a separate Studio MCP lane',()=>{
   const foundation=workflow.split('\n  studio-local-plan:')[0];
+  const runtimeFoundation=foundation.slice(foundation.indexOf('\n  runtime-foundation-qa:'),foundation.length);
   assert.match(foundation,/name: Company DEVELOPMENT_CONFIRMED Roblox Runtime Foundation QA/);
-  assert.match(foundation,/runs-on: ubuntu-24\.04/);
-  assert.doesNotMatch(foundation,/runs-on: ubuntu-slim/);
-  assert.doesNotMatch(foundation,/runs-on: ubuntu-latest/);
-  assert.match(foundation,/ROBLOX_OPEN_CLOUD_API_KEY/);
+  assert.match(foundation,/\n  dedupe:[\s\S]*?runs-on: ubuntu-slim/);
+  assert.match(runtimeFoundation,/runs-on: ubuntu-24\.04/);
+  assert.doesNotMatch(runtimeFoundation,/runs-on: ubuntu-slim/);
+  assert.doesNotMatch(runtimeFoundation,/runs-on: ubuntu-latest/);
+  assert.match(runtimeFoundation,/ROBLOX_OPEN_CLOUD_API_KEY/);
   assert.match(foundation,/fetchRobloxRuntimeFoundationEvidence/);
   assert.match(foundation,/validateRobloxRuntimeFoundationEvidence/);
   assert.match(foundation,/native-foundation-sentinel-v1|company-development-roblox-runtime-foundation\.mjs/);
@@ -302,4 +304,16 @@ test('foundation QA has no periodic cron fanout and newest same-game work supers
   assert.doesNotMatch(head,/schedule:/);
   assert.match(head,/cancel-in-progress: true/);
   assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
+});
+
+
+test('stale exact foundation runs are cancelled by the batch scan controller before heavy work',()=>{
+  const dedupe=workflow.slice(workflow.indexOf('\n  dedupe:'),workflow.indexOf('\n  runtime-foundation-qa:'));
+  assert.match(dedupe,/runs-on: ubuntu-slim/);
+  assert.match(dedupe,/Cancel stale exact-game foundation runs before batch scan/);
+  assert.match(dedupe,/inputs\.game_id == ''/);
+  assert.match(dedupe,/head_sha/);
+  assert.match(dedupe,/actions\/runs\/\$run_id\/cancel/);
+  assert.match(dedupe,/ROBLOX_STALE_FOUNDATION_EXACT_CANCELLED=/);
+  assert.match(dedupe,/ROBLOX_STALE_FOUNDATION_EXACT_CANCEL_COUNT=/);
 });
