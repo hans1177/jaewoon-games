@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -109178,38 +109176,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_185e2acbdd237e4f03d22169",
-          "taskId": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
-          "workKey": null,
-          "gameId": "daechung-rpg",
-          "engine": "unity",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_98ff2306686a32e38f808a33",
-            "capability_ctrace_a2b005913e4bbc43fa7d8870",
-            "capability_ctrace_328d0c1d1272087207a460af",
-            "capability_ctrace_4e729cec4540b040a1e80cd6",
-            "capability_ctrace_55e4122dce1152dff50b8714"
-          ],
-          "evidence": [
-            "actions-run:35805493486",
-            "reservation-id:35805493486:1",
-            "capability-application-sample:b271fb66901e3880d08a"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_42791803fe653c152f1302f0",
           "taskId": "pwa-c9ce17c0-bf0f-4066-90c0-5d047f728827",
           "workKey": null,
@@ -111299,6 +111265,43 @@
             "actions-run:36399496147",
             "reservation-id:36399496147:1",
             "capability-application-sample:562ca5270f5d5a042cf6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_9062a6fc6cbcccfc43bbae3a",
+          "taskId": "daechung-rpg-unity-web-repair-v1",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "unity",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870",
+            "capability_ctrace_328d0c1d1272087207a460af",
+            "capability_ctrace_a97262b32a8c0f10b5766528",
+            "capability_ctrace_4e729cec4540b040a1e80cd6"
+          ],
+          "evidence": [
+            "candidate-sha:705ec6ae091e8037ad783d917c41f5b24357a2bb",
+            "base-main:cfc11b905e17ab35b2a1b0f95704cfb926602550",
+            "incremental-qa-hash:f06813653f77363d79bac72f5394e5d7a76e758d21dbce644f13a582c7169e41",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36400993011",
+            "reservation-id:36400993011:1",
+            "capability-application-sample:f86f44aca6e23af93410"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -118223,39 +118226,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_eab744125b2a94b4a03c97a2",
-          "taskId": "horror-escape-room-unity-web-base-implementation-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "unity",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_2b85332e992c8a45252a2ace",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_98ff2306686a32e38f808a33",
-            "capability_ctrace_a2b005913e4bbc43fa7d8870",
-            "capability_ctrace_257da6a3fae15f846f251574"
-          ],
-          "evidence": [
-            "base-main:9a1e4fb94ac87e3456f17d205adbcb14e2709754",
-            "actions-run:36242804329",
-            "reservation-id:36242804329:1",
-            "capability-application-sample:18542b2b82096d43e949"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_8b73dce51e90ad7dd4370745",
           "taskId": "seed-casual-realm-weaver-studio-evolution-unity-web-usability-v1",
           "workKey": null,
@@ -120359,6 +120329,43 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_5c91a6c121d87731b3946fa8",
+          "taskId": "daechung-rpg-unity-web-repair-v1",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "unity",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870",
+            "capability_ctrace_328d0c1d1272087207a460af",
+            "capability_ctrace_a97262b32a8c0f10b5766528",
+            "capability_ctrace_4e729cec4540b040a1e80cd6"
+          ],
+          "evidence": [
+            "candidate-sha:705ec6ae091e8037ad783d917c41f5b24357a2bb",
+            "base-main:cfc11b905e17ab35b2a1b0f95704cfb926602550",
+            "incremental-qa-hash:f06813653f77363d79bac72f5394e5d7a76e758d21dbce644f13a582c7169e41",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36400993011",
+            "reservation-id:36400993011:1",
+            "capability-application-sample:f86f44aca6e23af93410"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -120472,40 +120479,6 @@
       "confirmations": 8,
       "confidence": 0.8889,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_67374bb6f5b27b7705a8fcf1",
-          "taskId": "daechung-rpg-roblox-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "daechung-rpg",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_98ff2306686a32e38f808a33",
-            "capability_ctrace_c77e9012adc1458e5f026af9",
-            "capability_ctrace_a2b005913e4bbc43fa7d8870",
-            "capability_ctrace_8384b04814b6ef675cd54829",
-            "capability_ctrace_328d0c1d1272087207a460af"
-          ],
-          "evidence": [
-            "candidate-sha:9da217bc59673fd1bafd8c74dd62cf8d2efea89e",
-            "base-main:231528315f728bfba8368605a77364f5f59178bf",
-            "actions-run:35838335919",
-            "reservation-id:35838335919:1",
-            "capability-application-sample:8e29f752a9b171fe80bd"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_9c1bc86470a48d727338c6b6",
@@ -122631,6 +122604,43 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_41e8652ec9f50b56acfe35c4",
+          "taskId": "daechung-rpg-unity-web-repair-v1",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "unity",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870",
+            "capability_ctrace_328d0c1d1272087207a460af",
+            "capability_ctrace_a97262b32a8c0f10b5766528",
+            "capability_ctrace_4e729cec4540b040a1e80cd6"
+          ],
+          "evidence": [
+            "candidate-sha:705ec6ae091e8037ad783d917c41f5b24357a2bb",
+            "base-main:cfc11b905e17ab35b2a1b0f95704cfb926602550",
+            "incremental-qa-hash:f06813653f77363d79bac72f5394e5d7a76e758d21dbce644f13a582c7169e41",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36400993011",
+            "reservation-id:36400993011:1",
+            "capability-application-sample:f86f44aca6e23af93410"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -124113,39 +124123,6 @@
       "confirmations": 15,
       "confidence": 0.9375,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_40440f475a4153df96f3bde3",
-          "taskId": "fantasy-survival-unity-web-base-implementation-v1",
-          "workKey": null,
-          "gameId": "fantasy-survival",
-          "engine": "unity",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_2c1e0b632b0d0b35e5780f79",
-            "capability_ctrace_363cfebe4daa49dc2935b54a",
-            "capability_ctrace_de31124d749f456035b606b6",
-            "capability_ctrace_98ff2306686a32e38f808a33",
-            "capability_ctrace_a2b005913e4bbc43fa7d8870"
-          ],
-          "evidence": [
-            "base-main:9382e855f77884a3bfa3965b2d510bb9e73cea1a",
-            "actions-run:36283490547",
-            "reservation-id:36283490547:1",
-            "capability-application-sample:eefe2e9a893f8b5f5ecf"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_16690c28b969032e5f17d378",
@@ -126295,6 +126272,43 @@
             "actions-run:36399496147",
             "reservation-id:36399496147:1",
             "capability-application-sample:562ca5270f5d5a042cf6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_72010fde09059a9cd7ca09e5",
+          "taskId": "daechung-rpg-unity-web-repair-v1",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "unity",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870",
+            "capability_ctrace_328d0c1d1272087207a460af",
+            "capability_ctrace_a97262b32a8c0f10b5766528",
+            "capability_ctrace_4e729cec4540b040a1e80cd6"
+          ],
+          "evidence": [
+            "candidate-sha:705ec6ae091e8037ad783d917c41f5b24357a2bb",
+            "base-main:cfc11b905e17ab35b2a1b0f95704cfb926602550",
+            "incremental-qa-hash:f06813653f77363d79bac72f5394e5d7a76e758d21dbce644f13a582c7169e41",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36400993011",
+            "reservation-id:36400993011:1",
+            "capability-application-sample:f86f44aca6e23af93410"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -403515,6 +403529,43 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_bd5234b5efa42a77d41b1d5d",
+          "taskId": "daechung-rpg-unity-web-repair-v1",
+          "workKey": null,
+          "gameId": "daechung-rpg",
+          "engine": "unity",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_98ff2306686a32e38f808a33",
+            "capability_ctrace_a2b005913e4bbc43fa7d8870",
+            "capability_ctrace_328d0c1d1272087207a460af",
+            "capability_ctrace_a97262b32a8c0f10b5766528",
+            "capability_ctrace_4e729cec4540b040a1e80cd6"
+          ],
+          "evidence": [
+            "candidate-sha:705ec6ae091e8037ad783d917c41f5b24357a2bb",
+            "base-main:cfc11b905e17ab35b2a1b0f95704cfb926602550",
+            "incremental-qa-hash:f06813653f77363d79bac72f5394e5d7a76e758d21dbce644f13a582c7169e41",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36400993011",
+            "reservation-id:36400993011:1",
+            "capability-application-sample:f86f44aca6e23af93410"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -403534,7 +403585,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 12,
+        "applicationCount": 13,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
