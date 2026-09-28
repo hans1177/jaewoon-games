@@ -12,6 +12,7 @@ const obsoleteAgentsPath=path.join(repoRoot,'AGENTS.md');
 const directive=readJson('company-directive.json');
 const roadmap=readJson('company-learning/platform-release-roadmap.json');
 const architecture=readJson('company-learning/company-architecture-map.json');
+const security=readJson('company-learning/security-immune-system.json');
 const autonomousExpansionPolicy=readJson('company-learning/vibe-autonomous-content-expansion-policy.json');
 const logMap=readJson('company-learning/company-log-map.json');
 const multimodelWorkflow=readText('.github/workflows/artbook-free-department-bots.yml');
@@ -1847,4 +1848,57 @@ test('BUILD_UP grounding stays connected from source proof through exact target 
   assert.equal(webChange.robloxRuntimeDispatchFromWebReleaseForbidden,true);
   assert.equal(webChange.noNewWorkflowOrStage,true);
   assert.equal(webChange.gameplaySemanticsUnchanged,true);
+});
+
+test('development-focused F0-F9 validation dedupe preserves perpetual game evolution',()=>{
+  const policy=roadmap.developmentLifecycleMachine.validationEfficiencyOptimization;
+  assert.deepEqual(policy.appliesTo,['ROBLOX','UNITY']);
+  assert.deepEqual(policy.excludedPlatforms,['FORTNITE_UEFN']);
+  assert.deepEqual(policy.floors,['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9']);
+  assert.equal(policy.floors.includes('F10'),false);
+  assert.equal(policy.f10Forbidden,true);
+  assert.equal(policy.newFloorCreated,false);
+  assert.equal(policy.developmentEvolutionLoopUnchanged,true);
+  assert.equal(policy.everyVerifiedDevelopmentDeltaStillRunsF0ThroughF9,true);
+  assert.equal(policy.externalServerObservationRequiredForInternalDevelopment,false);
+  assert.equal(policy.robloxInternalRuntimeAuthority,'OFFICIAL_STUDIO_MCP_LOCAL_EXACT_BUILD');
+  assert.equal(policy.sameExactCandidateSecurityEvidenceReusableWithinCycle,true);
+  assert.equal(policy.securityRevalidationByAffectedResponsibility,true);
+  assert.equal(policy.fullSecurityRescanEveryFloor,false);
+  assert.equal(policy.multiplayerEvidenceReusableWithinExactCycle,true);
+  assert.equal(policy.notApplicableSubcheckAllowedWithDesignOrSourceEvidence,true);
+  assert.equal(policy.f1ThroughF8MayShareOneInternalRuntimeSession,true);
+  assert.equal(policy.f9FanInOnlyNoDuplicateRuntimeSession,true);
+  assert.equal(policy.f9DoesNotTerminateEvolution,true);
+  assert.equal(policy.f9ReturnsResultToExistingBuildUpDirectiveLoop,true);
+  assert.equal(policy.f9.startsNewRuntimeSession,false);
+  assert.equal(policy.f9.terminatesEvolution,false);
+
+  const evolution=roadmap.continuousGameplaySystemEvolutionContract;
+  assert.equal(evolution.status,'ACTIVE_EXECUTABLE_CONTRACT');
+  assert.equal(evolution.taskGeneration.terminalCompletionStateForbidden,true);
+  assert.equal(evolution.taskGeneration.nextVerifiedGapCycleRequired,true);
+  assert.equal(evolution.gameSpecificBuildUpDirective.loopEscalation.everyVerifiedCycleCreatesNextDirective,true);
+  assert.equal(evolution.gameSpecificBuildUpDirective.loopEscalation.completedGoalBecomesBaseline,true);
+  assert.equal(evolution.gameSpecificBuildUpDirective.loopEscalation.terminalCompletionStateForbidden,true);
+
+  const topology=architecture.validationEfficiencyTopology;
+  assert.equal(topology.gameEvolutionPipelineUnchanged,true);
+  assert.equal(topology.releaseStateDoesNotTerminateEvolution,true);
+  assert.equal(topology.f9.terminalState,false);
+  assert.equal(topology.f9.nextAction,'RETURN_TO_EXISTING_GAME_SPECIFIC_BUILD_UP_LOOP');
+  assert.equal(topology.security.fullRescanEveryFloor,false);
+  assert.equal(topology.multiplayer.nonMultiplayerFloorResult,'NOT_APPLICABLE');
+
+  const mirror=directive.validationEfficiencyOptimization;
+  assert.equal(mirror.mirrorOnly,true);
+  assert.equal(mirror.f9DoesNotTerminateEvolution,true);
+  assert.equal(mirror.externalPublicApprovalAuthority,'OWNER_EXPLICIT_DIRECTIVE_ONLY');
+
+  const securityPolicy=security.minimumNecessaryDevelopmentSecurity;
+  assert.deepEqual(securityPolicy.evidenceReuse.evidenceKey,[
+    'sourceRevision','artifactIdentity','securityScopeFingerprint','affectedResponsibilities','pass','checkedAt'
+  ]);
+  assert.equal(securityPolicy.evidenceReuse.fullRescanEveryFloor,false);
+  assert.equal(securityPolicy.evidenceReuse.newSecurityPipelineForbidden,true);
 });
