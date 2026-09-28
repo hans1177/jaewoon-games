@@ -6771,9 +6771,45 @@
     "canonicalTarget": "robloxPublicationTarget",
     "validationTarget": "robloxValidationTarget",
     "canonicalPublishGate": "EXACT_F9_PASS_AND_EXACT_SOURCE_ARTIFACT_IDENTITY",
-    "nextCycleGate": "F9_FINAL_PUBLISH_DISPATCHED",
+    "nextCycleGate": "F9_PASS_AND_PUBLISH_DISPATCH",
     "canonicalPublishSuccessRequiredForNextCycle": false,
     "publicationOutcomeBlocksEvolution": false,
-    "publicationVisibilityBlocksEvolution": false
+    "publicationVisibilityBlocksEvolution": false,
+    "publicationOutcomeBlocksNextCycle": false,
+    "exposureStateBlocksNextCycle": false
+  },
+  "verifiedPlatformCyclePublicationContract": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#verifiedPlatformCyclePublication",
+    "platforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "existingEvolutionTopologyPreserved": true,
+    "newTopLevelPipeline": false,
+    "cycle": [
+      "SOURCE_MUTATION",
+      "F0",
+      "F1",
+      "F2",
+      "F3",
+      "F4",
+      "F5",
+      "F6",
+      "F7",
+      "F8",
+      "F9",
+      "PUBLISH_OR_DEPLOY_EXACT_F9_ARTIFACT",
+      "NEXT_EVOLUTION_CYCLE"
+    ],
+    "f9Terminal": false,
+    "repeat": "UNBOUNDED_UNTIL_OWNER_HOLD_OR_PROJECT_REMOVAL",
+    "publishBeforeF9Forbidden": true,
+    "nextCycleGate": "F9_PASS_AND_PUBLISH_DISPATCH",
+    "publicationOutcomeBlocksNextCycle": false,
+    "exposureStateBlocksNextCycle": false,
+    "publishFailure": "ASYNC_RETRY_WITHOUT_STOPPING_NEXT_F0_TO_F9",
+    "exactF9ArtifactRequired": true
   }
 }
