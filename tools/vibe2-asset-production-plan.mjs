@@ -479,17 +479,39 @@ export function buildVibeAssetProductionPlan({
       sourcePlaybooks:freezeList(row.sourcePlaybooks||[])
     }))
     .filter(row=>row.id));
+  const exactKnowledgeIds=freezeList((verifiedLearning?.exactKnowledgeIds||[]).map(clean).filter(Boolean));
+  const retrievedVerifiedExternalIds=freezeList([...new Set(exactKnowledgeIds
+    .filter(id=>id.startsWith('PLAYBOOK_REUSE:external-black-box-'))
+    .map(id=>id.slice('PLAYBOOK_REUSE:'.length))
+    .filter(Boolean))]);
+  const appliedVerifiedExternalIds=freezeList([...new Set(verifiedCommercialReuse.map(row=>row.id).filter(Boolean))]);
+  const matchedVerifiedExternalCount=retrievedVerifiedExternalIds.filter(id=>appliedVerifiedExternalIds.includes(id)).length;
+  const fullRetrievedSetBound=!assetLearningRequired||(
+    retrievedVerifiedExternalIds.length>0
+    &&retrievedVerifiedExternalIds.length===appliedVerifiedExternalIds.length
+    &&matchedVerifiedExternalCount===retrievedVerifiedExternalIds.length
+  );
+  const actualApplicationCoveragePct=!assetLearningRequired
+    ?100
+    :(retrievedVerifiedExternalIds.length>0?Math.floor((matchedVerifiedExternalCount/retrievedVerifiedExternalIds.length)*100):0);
   const commercialDistillation=freeze({
     required:assetLearningRequired,
-    ready:!assetLearningRequired||verifiedCommercialReuse.length>0,
+    ready:!assetLearningRequired||(verifiedCommercialReuse.length>0&&fullRetrievedSetBound),
     verifiedExternalBlackBoxRequired:assetLearningRequired,
-    allRetrievedVerifiedExternalApplied:!assetLearningRequired||verifiedCommercialReuse.length>0,
+    allRetrievedVerifiedExternalApplied:fullRetrievedSetBound,
     retrievedVerifiedExternalTruncationForbidden:true,
     applicationOrder:'VERIFIED_EXTERNAL_LEARNING_FIRST_THEN_TRANSFORMATIVE_INTERNAL_ASSET_EVOLUTION',
     source:'vibe2-learning-runtime:company-learning/vibe3-task-playbooks.json',
     verifiedReuseCount:verifiedCommercialReuse.length,
     verifiedReuse:verifiedCommercialReuse,
-    exactKnowledgeIds:freezeList((verifiedLearning?.exactKnowledgeIds||[]).filter(id=>clean(id).startsWith('PLAYBOOK_REUSE:'))),
+    exactKnowledgeIds,
+    retrievedVerifiedExternalIds,
+    appliedVerifiedExternalIds,
+    retrievedCount:retrievedVerifiedExternalIds.length,
+    appliedCount:appliedVerifiedExternalIds.length,
+    matchedCount:matchedVerifiedExternalCount,
+    exactRetrievedSetBinding:fullRetrievedSetBound,
+    applicationCoveragePct:actualApplicationCoveragePct,
     applicationMode:'TRANSFORMATIVE_INTERNAL_ASSET_EVOLUTION',
     mandatoryApplicationCoveragePct:100,
     internalAssetEvolutionRequired:true,
@@ -1038,7 +1060,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
-    plan.commercialDistillation?.required?('검증된 상업용 블랙박스 증류 적용=필수; reuse='+plan.commercialDistillation.verifiedReuseCount+'; mode='+plan.commercialDistillation.applicationMode+'; coverage='+plan.commercialDistillation.mandatoryApplicationCoveragePct+'%. 메뉴/UI·그래픽·모션·환경·VFX/카메라/피드백 원리를 내부 자산으로 재저작·재구성하고 실제 런타임 검증 결과로 계속 발전시킨다.'): '',
+    plan.commercialDistillation?.required?('검증된 상업용 블랙박스 증류 적용=필수; retrieved='+plan.commercialDistillation.retrievedCount+'; applied='+plan.commercialDistillation.appliedCount+'; mode='+plan.commercialDistillation.applicationMode+'; coverage='+plan.commercialDistillation.applicationCoveragePct+'%/required '+plan.commercialDistillation.mandatoryApplicationCoveragePct+'%. 메뉴/UI·그래픽·모션·환경·VFX/카메라/피드백 원리를 내부 자산으로 재저작·재구성하고 실제 런타임 검증 결과로 계속 발전시킨다.'): '',
     plan.commercialDistillation?.required?'상업용 원본 에셋·코드·고유 메뉴/장면/애니메이션의 직접 복제는 금지한다. 관찰·증류한 원리를 게임별 Style Lock과 플랫폼 네이티브 규칙에 맞춰 새로운 내부 자산으로 구현한다.':'',
     '이 계획은 독립 그래픽 작업이 아니다. 모든 에셋 결정은 단일 GRAPHICS_PRODUCTION 루트에 입력되고 같은 루트에서 캐릭터·환경·애니메이션·VFX·조명·UI와 함께 fan-in 된다.',
     'Vibe2/Vibe3가 게임 소스 구현 주체이며 현재 게임 정체성과 실제 화면 품질을 기준으로 필요한 에셋 방식을 선택한다.',
