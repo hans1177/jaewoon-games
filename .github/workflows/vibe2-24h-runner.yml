@@ -843,7 +843,7 @@ jobs:
 
   asset_development:
     needs: plan
-    if: ${{ needs.plan.outputs.asset_development_refill_ready == 'YES' && needs.plan.outputs.asset_development_queued != '0' }}
+    if: ${{ needs.plan.outputs.asset_development_refill_ready == 'YES' && (needs.plan.outputs.asset_development_queued != '0' || needs.plan.outputs.asset_development_active != '0') }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: asset-development
