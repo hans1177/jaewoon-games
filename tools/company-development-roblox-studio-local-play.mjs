@@ -154,6 +154,63 @@ function internalReleaseObserved(item={},candidate={}){
   );
 }
 
+function launchStringList(value){
+  return Array.isArray(value)?value.map(clean).filter(Boolean):[];
+}
+
+function adaptiveCoverageSignals(launch={}){
+  const launchCore=launchStringList(launch?.launchCore);
+  const releaseGates=launchStringList(launch?.releaseGates);
+  const text=[...launchCore,...releaseGates].join(' ').toLowerCase();
+  return Object.freeze({
+    ui:/ui|hud|mobile|button|menu|inventory|shop|equip|craft|control|dock|screen|lobby|loading/.test(text),
+    map:/map|zone|portal|dungeon|room|island|arena|world|base|village|ground|route|school|hospital|park|forest|cave|field/.test(text),
+    interactions:/quest|shop|inventory|equip|craft|prompt|interact|hire|recruit|build|upgrade|attack|skill|ability|button|door|portal|collect|gather|heal|trade/.test(text),
+    progression:/level|xp|gold|quest|wave|round|stage|boss|base|zone|portal|unlock|progress|mastery|advancement|tier|reward/.test(text),
+    multiplayer:/multiplayer|player|party|team|co-op|coop|sync|join|rejoin|human|monster/.test(text),
+    serverBoundary:/remote|server|authority|authoritative|spam|abuse|validation|datastore|save|rejoin/.test(text),
+    combat:/combat|attack|skill|ability|damage|boss|enemy|monster|mob|zombie|wolf|spider|raider|defense|battle/.test(text),
+    motion:/dash|dodge|parry|block|movement|move|chase|charge|jump|attack|skill|ability/.test(text),
+    audio:/audio|bgm|music|sound|sfx|footstep/.test(text)
+  });
+}
+
+export function deriveStudioActualPlayContract(launch={}){
+  const explicit=launch?.studioActualPlayContract&&typeof launch.studioActualPlayContract==='object'
+    ?launch.studioActualPlayContract:{};
+  const launchCore=launchStringList(launch?.launchCore);
+  const releaseGates=launchStringList(launch?.releaseGates);
+  const evidencePolicy=launch?.evidencePolicy&&typeof launch.evidencePolicy==='object'?launch.evidencePolicy:{};
+  const signals=adaptiveCoverageSignals(launch);
+  const adaptiveScenarios=['character-camera-ready','visual-capture-sane','adaptive-runtime-surface'];
+  if(signals.ui)adaptiveScenarios.push('adaptive-ui-commercial-quality');
+  if(signals.map)adaptiveScenarios.push('adaptive-world-safety');
+  if(signals.interactions)adaptiveScenarios.push('adaptive-interaction-surface');
+  if(signals.progression)adaptiveScenarios.push('adaptive-progression-surface');
+  if(signals.serverBoundary)adaptiveScenarios.push('adaptive-remote-surface');
+  if(signals.combat)adaptiveScenarios.push('adaptive-combat-surface');
+  if(signals.motion)adaptiveScenarios.push('adaptive-motion-surface');
+  if(signals.audio||evidencePolicy.audioFeedbackPassRequired===true)adaptiveScenarios.push('adaptive-audio-surface');
+  const explicitScenarios=launchStringList(explicit?.requiredScenarios);
+  return Object.freeze({
+    ...explicit,
+    version:Math.max(3,Number(explicit?.version||0)),
+    required:true,
+    source:clean(explicit?.source)||'COMMERCIAL_ADAPTIVE_STUDIO_AUDIT',
+    requiredScenarios:[...new Set([...explicitScenarios,...adaptiveScenarios])],
+    expectations:{...(explicit?.expectations||{})},
+    adaptiveCoverage:Object.freeze({
+      version:1,
+      launchCore,
+      releaseGates,
+      evidencePolicy,
+      signals,
+      featureCount:launchCore.length+releaseGates.length,
+      contractHash:'sha256:'+stableSha256({launchCore,releaseGates,evidencePolicy,signals})
+    })
+  });
+}
+
 function localStudioActualPlayContractMetadata(repoRoot='',gameId=''){
   const root=clean(repoRoot);
   const id=clean(gameId);
@@ -162,9 +219,14 @@ function localStudioActualPlayContractMetadata(repoRoot='',gameId=''){
   if(!fs.existsSync(file))return{required:false,version:0,fingerprint:null};
   let launch={};
   try{launch=readJson(file);}catch{return{required:false,version:0,fingerprint:null};}
-  const contract=launch?.studioActualPlayContract||{};
-  if(contract?.required!==true)return{required:false,version:Number(contract?.version||0),fingerprint:null};
-  return{required:true,version:Number(contract?.version||0),fingerprint:'sha256:'+stableSha256(contract)};
+  const contract=deriveStudioActualPlayContract(launch);
+  return{
+    required:true,
+    version:Number(contract.version||0),
+    fingerprint:'sha256:'+stableSha256(contract),
+    adaptiveCoverage:true,
+    featureCount:Number(contract?.adaptiveCoverage?.featureCount||0)
+  };
 }
 
 export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='',repoRoot=''}={}){
@@ -1041,7 +1103,8 @@ export async function runOfficialStudioMcpPlay({
   mcpCommand='',output='',expectedStudioName='',timeoutMs=45000,toolAttempts=5,toolDelayMs=1000,
   settingState='',settingCandidatePathCount=-1,actualPlayContractPath=''
 }={}){
-  const actualPlayContract=actualPlayContractPath&&fs.existsSync(actualPlayContractPath)?(readJson(actualPlayContractPath)?.studioActualPlayContract||{}):{};
+  const actualPlayLaunch=actualPlayContractPath&&fs.existsSync(actualPlayContractPath)?readJson(actualPlayContractPath):{};
+  const actualPlayContract=deriveStudioActualPlayContract(actualPlayLaunch);
   const launch=mcpCommandArgs(mcpCommand);
   const client=new McpStdioClient({...launch,timeoutMs});
   const actions=[],checkpoints=[],errors=[];
