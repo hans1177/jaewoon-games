@@ -733,6 +733,7 @@ jobs:
           VERSION_NUMBER: ${{ steps.publish.outputs.version_number }}
           RELEASE_RUN_ID: ${{ github.run_id }}
           PUBLISH_STAGE: ${{ steps.target.outputs.publish_stage }}
+          PUBLISH_CYCLE_ID: ${{ steps.target.outputs.publish_cycle_id }}
         shell: bash
         run: |
           set -euo pipefail
@@ -753,17 +754,31 @@ jobs:
           const releaseRunId=Number(process.env.RELEASE_RUN_ID);
           const publishStage=String(process.env.PUBLISH_STAGE||'validation').trim().toLowerCase();
           if(!['validation','final'].includes(publishStage))throw new Error('invalid publish stage: '+publishStage);
+          const publishCycleId=String(process.env.PUBLISH_CYCLE_ID||'').trim();
+          const publishQueue=Array.isArray(item.robloxCanonicalPublishQueue)?item.robloxCanonicalPublishQueue:[];
+          const queuedFinalEntry=publishStage==='final'
+            ?publishQueue.find(row=>String(row?.cycleId||'')===publishCycleId)
+            :null;
+          if(publishStage==='final'&&!publishCycleId)throw new Error('final publish cycle id missing during persist');
+          if(publishStage==='final'&&!queuedFinalEntry)throw new Error('final publish queue entry missing during persist: '+publishCycleId);
           const universeId=String(process.env.UNIVERSE_ID||'').trim();
           const placeId=String(process.env.PLACE_ID||'').trim();
           const targetSource=String(process.env.PUBLICATION_TARGET_SOURCE||'').trim();
           const sharedRotation=String(process.env.SHARED_ROTATION||'').trim()==='true';
-          if(item.robloxSourceCommit!==process.env.SOURCE_REVISION)throw new Error('release source revision changed before persist');
-          if(item.robloxBuildArtifactIdentity!==process.env.ARTIFACT_IDENTITY)throw new Error('release artifact identity changed before persist');
+          if(publishStage==='validation'){
+            if(item.robloxSourceCommit!==process.env.SOURCE_REVISION)throw new Error('validation source revision changed before persist');
+            if(item.robloxBuildArtifactIdentity!==process.env.ARTIFACT_IDENTITY)throw new Error('validation artifact identity changed before persist');
+          }else{
+            if(String(queuedFinalEntry.sourceRevision||'')!==String(process.env.SOURCE_REVISION||''))throw new Error('queued final source revision mismatch during persist');
+            if(String(queuedFinalEntry.artifactIdentity||'')!==String(process.env.ARTIFACT_IDENTITY||''))throw new Error('queued final artifact identity mismatch during persist');
+          }
           const finalGate=publishStage==='final'
-            ?item.robloxFinalReviewPassed===true&&item.robloxF9ReleaseRegressionPassed===true&&item.robloxCanonicalPublishPending===true
+            ?queuedFinalEntry?.finalReviewPassed===true
+              &&queuedFinalEntry?.f9ReleaseRegressionPassed===true
+              &&['PENDING','RETRY_REQUIRED','PUBLISHING'].includes(String(queuedFinalEntry?.status||''))
             :item.robloxFoundationF0Passed===true&&item.robloxFoundationF0Evidence?.sourcePreflightPassed===true;
           if(!finalGate)throw new Error(publishStage==='final'
-            ?'F9 exact final review no longer passed before canonical publish persist'
+            ?'immutable F9 publish queue gate no longer valid during canonical persist'
             :'F0 source preflight no longer passed before validation candidate persist');
           if(!Number.isInteger(version)||version<=0)throw new Error('published Roblox version missing');
           if(!/^[1-9][0-9]*$/.test(universeId)||!/^[1-9][0-9]*$/.test(placeId))throw new Error('published Roblox target IDs missing');
@@ -774,50 +789,54 @@ jobs:
           const visibilityIntent=String(process.env.VISIBILITY_INTENT||'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE');
           const preserveExistingVisibility=visibilityIntent==='PRESERVE_EXISTING_TARGET_VISIBILITY';
           if(publishStage==='final'){
-            const validation=item.robloxRuntimeCandidateEvidence||{};
-            if(validation.published!==true||validation.sourceRevision!==process.env.SOURCE_REVISION||validation.artifactIdentity!==process.env.ARTIFACT_IDENTITY){
-              throw new Error('F9 validation candidate identity changed before canonical publish persist');
-            }
+            const entry=queuedFinalEntry;
+            if(Number(entry.validationVersionNumber||0)<=0)throw new Error('queued F9 validation version missing during canonical persist');
+            if(!/^[1-9][0-9]*$/.test(String(entry.validationUniverseId||''))||!/^[1-9][0-9]*$/.test(String(entry.validationPlaceId||'')))throw new Error('queued F9 validation target missing during canonical persist');
             const canonicalEvidence={
-              version:1,gameId:item.gameId,platform:'ROBLOX',
+              version:2,gameId:item.gameId,platform:'ROBLOX',cycleId:publishCycleId,
               sourceRevision:process.env.SOURCE_REVISION,artifactIdentity:process.env.ARTIFACT_IDENTITY,artifactRunId,
               universeId,placeId,versionNumber:version,workflowRunId:releaseRunId,
               published:true,publishedAt:stamp,finalReviewPassed:true,f9ReleaseRegressionPassed:true,
-              exactValidationCandidateVersionNumber:Number(validation.versionNumber||0),
-              exactValidationUniverseId:String(validation.universeId||''),exactValidationPlaceId:String(validation.placeId||''),
-              releaseClaim:'INTERNAL_PLATFORM_RELEASE_AFTER_F9',publicRelease:false,f9RuntimeReplay:false,
-              internalStudioValidationOnly:item.robloxF9VerifiedPrepublishEvidence?.internalStudioValidationOnly===true,
+              exactValidationCandidateVersionNumber:Number(entry.validationVersionNumber||0),
+              exactValidationUniverseId:String(entry.validationUniverseId||''),exactValidationPlaceId:String(entry.validationPlaceId||''),
+              releaseClaim:'INTERNAL_PLATFORM_RELEASE_AFTER_F9',publicRelease:false,f9RuntimeReplay:entry.f9RuntimeReplay===false,
+              internalStudioValidationOnly:entry.internalStudioValidationOnly===true,
               authority:'roblox-open-cloud-f9-verified-canonical-publish'
             };
+            entry.status='PUBLISHED';
+            entry.published=true;
+            entry.publishedAt=stamp;
+            entry.versionNumber=version;
+            entry.universeId=universeId;
+            entry.placeId=placeId;
+            entry.workflowRunId=releaseRunId;
+            entry.attempts=Number(entry.attempts||0)+1;
+            entry.lastAttemptAt=stamp;
+            item.robloxCanonicalPublishQueue=publishQueue;
+            item.robloxCanonicalPublishPending=publishQueue.some(row=>['PENDING','RETRY_REQUIRED','PUBLISHING'].includes(String(row?.status||'')));
             item.robloxPublicationTarget={...existingTarget,version:Number(existingTarget.version||3),gameId:item.gameId,universeId,placeId,verified:true,verifiedAt:existingTarget.verifiedAt||stamp,lastVerifiedAt:stamp,authority:'roblox-canonical-publication-target',dedicated:true,shared:false,bootstrapState:'PUBLISHED_PRIVATE'};
             item.robloxCanonicalReleaseEvidence=canonicalEvidence;
-            item.robloxInternalReleaseReady=true;
+            item.robloxLastCanonicalPublishedEvidence=canonicalEvidence;
             item.robloxInternalReleasePublished=true;
             item.robloxInternalReleaseAt=stamp;
             item.robloxInternalReleaseEvidence={...canonicalEvidence};
             item.robloxReleaseEvidence={...canonicalEvidence,authority:'roblox-canonical-release-compatibility-after-f9'};
             item.robloxReleaseVersionNumber=version;
-            item.robloxCanonicalPublishPending=false;
-            item.robloxPublicReleaseReady=false;
-            item.robloxPublicRelease=false;
             item.robloxReleaseClaim=false;
             item.robloxReleasePublishedAt=null;
-            item.currentStep='POST_RELEASE_FOCUSED_DEVELOPMENT';
-            item.canonicalState='F9_VERIFIED_CANONICAL_PUBLISHED_CONTINUOUS_EVOLUTION';
-            item.robloxLastSuccessfulStage='INTERNAL_PLATFORM_RELEASE';
-            item.robloxFailureStage=null;
-            item.robloxFailureSignature=null;
-            item.routingBlockers=[];
-            if(item.executionEvidence&&String(item.executionEvidence.platform||'').toUpperCase()==='ROBLOX'){
-              item.executionEvidence.lastSuccessfulStage='INTERNAL_PLATFORM_RELEASE';
-              item.executionEvidence.failureStage=null;
-              item.executionEvidence.failureSignature=null;
+            const currentIdentityStillSame=
+              String(item.robloxSourceCommit||'')===String(process.env.SOURCE_REVISION||'')
+              &&String(item.robloxBuildArtifactIdentity||'')===String(process.env.ARTIFACT_IDENTITY||'');
+            if(currentIdentityStillSame){
+              item.robloxInternalReleaseReady=true;
             }
             item.updatedAt=stamp;q.updatedAt=stamp;
             fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
             console.log('ROBLOX_CANONICAL_FINAL_PUBLISH=PASS');
             console.log('ROBLOX_CANONICAL_FINAL_SOURCE_ARTIFACT_MATCH=YES');
             console.log('ROBLOX_CANONICAL_FINAL_VERSION='+version);
+            console.log('ROBLOX_CANONICAL_FINAL_CYCLE_ID='+publishCycleId);
+            console.log('ROBLOX_CANONICAL_FINAL_PERSIST_PRESERVED_CURRENT_EVOLUTION=YES');
             process.exit(0);
           }
           if(!preserveExistingVisibility&&visibilityIntent!=='PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE')throw new Error('release visibility intent changed');
