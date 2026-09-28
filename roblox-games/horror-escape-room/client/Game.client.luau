@@ -796,7 +796,11 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
  p:SetAttribute("MonsterCount",tonumber(snapshot.MonsterCount)or 0)
 end)
 
-QACamera.install(C,gui,function()
+p:SetAttribute("SyncedHumanParticipants", tonumber(snapshot.ParticipantCount) or 1)
+ p:SetAttribute("SyncedParticipants", tonumber(snapshot.ActivePopulation) or tonumber(snapshot.ParticipantCount) or 1)
+ p:SetAttribute("SyncedAICount", tonumber(snapshot.AICount) or 0)
+ p:SetAttribute("HumanCount", tonumber(snapshot.HumanCount) or 0)
+ p:SetAttribute("MonsterCount", tonumber(snapshot.MonsterCount) or 0)
  local arena=workspace:FindFirstChild("MidnightArena")
  if not arena or workspace:GetAttribute("MapReady")~=true then return{}end
  local id=tostring(workspace:GetAttribute("CurrentMapId")or"SCHOOL")
