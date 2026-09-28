@@ -163,22 +163,22 @@ function adaptiveCoverageSignals(launch={}){
   const releaseGates=launchStringList(launch?.releaseGates);
   const text=[...launchCore,...releaseGates].join(' ').toLowerCase();
   return Object.freeze({
-    ui:/ui|hud|mobile|button|menu|inventory|shop|equip|craft|control|dock|screen|lobby|loading/.test(text),
-    map:/map|zone|portal|dungeon|room|island|arena|world|base|village|ground|route|school|hospital|park|forest|cave|field/.test(text),
-    interactions:/quest|shop|inventory|equip|craft|prompt|interact|hire|recruit|build|upgrade|attack|skill|ability|button|door|portal|collect|gather|heal|trade/.test(text),
-    progression:/level|xp|gold|quest|wave|round|stage|boss|base|zone|portal|unlock|progress|mastery|advancement|tier|reward/.test(text),
+    ui:/ui|hud|mobile|button|menu|inventory|shop|equip|craft|control|dock|screen|lobby|loading|모바일|버튼|메뉴|인벤|상점|장비|제작|조작|화면|로비|로딩/.test(text),
+    map:/map|zone|portal|dungeon|room|island|arena|world|base|village|ground|route|school|hospital|park|forest|cave|field|맵|지역|포탈|던전|방|섬|아레나|마을|사냥터|학교|병원|공원|숲|동굴/.test(text),
+    interactions:/quest|shop|inventory|equip|craft|prompt|interact|hire|recruit|build|upgrade|attack|skill|ability|button|door|portal|collect|gather|heal|trade|퀘스트|상점|인벤|장비|제작|상호작용|고용|모집|건설|강화|공격|스킬|문|포탈|채집|회복|거래/.test(text),
+    progression:/level|xp|gold|quest|wave|round|stage|boss|base|zone|portal|unlock|progress|mastery|advancement|tier|reward|레벨|경험치|골드|퀘스트|웨이브|라운드|스테이지|보스|해금|진행|숙련|전직|티어|보상/.test(text),
     multiplayer:/multiplayer|player|party|team|co-op|coop|sync|join|rejoin|human|monster/.test(text),
     serverBoundary:/remote|server|authority|authoritative|spam|abuse|validation|datastore|save|rejoin/.test(text),
-    combat:/combat|attack|skill|ability|damage|boss|enemy|monster|mob|zombie|wolf|spider|raider|defense|battle/.test(text),
+    combat:/combat|attack|skill|ability|damage|boss|enemy|monster|mob|zombie|wolf|spider|raider|defense|battle|전투|공격|스킬|데미지|보스|적|몬스터|좀비|늑대|거미|방어/.test(text),
     motion:/dash|dodge|parry|block|movement|move|chase|charge|jump|attack|skill|ability/.test(text),
     audio:/audio|bgm|music|sound|sfx|footstep/.test(text),
-    npc:/npc|merchant|chief|healer|resident|worker|villager|quest giver|trainer|master|shopkeeper/.test(text),
-    companion:/companion|follower|pet|summon|party member|ai party|boss companion|worker automation/.test(text),
+    npc:/npc|merchant|chief|healer|resident|worker|villager|quest giver|trainer|master|shopkeeper|상인|이장|치유사|주민|일꾼|마을사람|교관|전직|상점주인/.test(text),
+    companion:/companion|follower|pet|summon|party member|ai party|boss companion|worker automation|동료|펫|소환|파티원|동료 ai|자동 일꾼/.test(text),
     items:/item|loot|drop|weapon|armor|relic|inventory|resource|material|chest|food|potion/.test(text),
     environment:/environment|decoration|asset|visual|art|biome|terrain|lighting|forest|village|house|building|theme/.test(text),
     effects:/vfx|effect|feedback|telegraph|trail|flash|particle|beam|highlight|sound|sfx/.test(text),
-    quests:/quest|mission|objective|task|contract|hunt|delivery|trial/.test(text),
-    rewards:/reward|gold|coin|xp|loot|drop|chest|prize|currency|income/.test(text),
+    quests:/quest|mission|objective|task|contract|hunt|delivery|trial|퀘스트|임무|목표|과제|의뢰|사냥|배달|시험/.test(text),
+    rewards:/reward|gold|coin|xp|loot|drop|chest|prize|currency|income|보상|골드|코인|경험치|전리품|드롭|상자|재화|수입/.test(text),
     economy:/gold|coin|currency|shop|merchant|price|cost|upgrade|purchase|sell/.test(text),
     save:/save|load|rejoin|datastore|persist|progression persists|unlock persists/.test(text),
     retry:/retry|restart|respawn|round restart|new run|reroll|reset|rejoin/.test(text),
@@ -194,27 +194,16 @@ export function deriveStudioActualPlayContract(launch={}){
   const releaseGates=launchStringList(launch?.releaseGates);
   const evidencePolicy=launch?.evidencePolicy&&typeof launch.evidencePolicy==='object'?launch.evidencePolicy:{};
   const signals=adaptiveCoverageSignals(launch);
-  const adaptiveScenarios=['character-camera-ready','visual-capture-sane','adaptive-runtime-surface'];
-  if(signals.ui)adaptiveScenarios.push('adaptive-ui-commercial-quality');
-  if(signals.map)adaptiveScenarios.push('adaptive-world-safety');
-  if(signals.interactions)adaptiveScenarios.push('adaptive-interaction-surface');
-  if(signals.progression)adaptiveScenarios.push('adaptive-progression-surface');
-  if(signals.serverBoundary)adaptiveScenarios.push('adaptive-remote-surface');
-  if(signals.combat)adaptiveScenarios.push('adaptive-combat-surface');
-  if(signals.motion)adaptiveScenarios.push('adaptive-motion-surface');
-  if(signals.audio||evidencePolicy.audioFeedbackPassRequired===true)adaptiveScenarios.push('adaptive-audio-surface');
-  if(signals.npc)adaptiveScenarios.push('adaptive-npc-surface');
-  if(signals.companion)adaptiveScenarios.push('adaptive-companion-ai-surface');
-  if(signals.items)adaptiveScenarios.push('adaptive-item-surface');
-  if(signals.environment)adaptiveScenarios.push('adaptive-environment-surface');
-  if(signals.effects)adaptiveScenarios.push('adaptive-effects-surface');
-  if(signals.quests)adaptiveScenarios.push('adaptive-quest-loop-surface');
-  if(signals.rewards)adaptiveScenarios.push('adaptive-reward-loop-surface');
-  if(signals.economy)adaptiveScenarios.push('adaptive-economy-surface');
-  if(signals.save||evidencePolicy.saveRejoinPassRequired===true)adaptiveScenarios.push('adaptive-save-surface');
-  if(signals.retry)adaptiveScenarios.push('adaptive-retry-loop-surface');
-  if(signals.camera)adaptiveScenarios.push('adaptive-camera-quality');
-  adaptiveScenarios.push('adaptive-performance-budget');
+  const adaptiveScenarios=[
+    'character-camera-ready','visual-capture-sane','adaptive-runtime-surface',
+    'adaptive-ui-commercial-quality','adaptive-world-safety','adaptive-interaction-surface',
+    'adaptive-progression-surface','adaptive-remote-surface','adaptive-combat-surface',
+    'adaptive-motion-surface','adaptive-audio-surface','adaptive-npc-surface',
+    'adaptive-companion-ai-surface','adaptive-item-surface','adaptive-environment-surface',
+    'adaptive-effects-surface','adaptive-quest-loop-surface','adaptive-reward-loop-surface',
+    'adaptive-economy-surface','adaptive-save-surface','adaptive-retry-loop-surface',
+    'adaptive-camera-quality','adaptive-performance-budget'
+  ];
   const explicitScenarios=launchStringList(explicit?.requiredScenarios);
   return Object.freeze({
     ...explicit,
@@ -1113,9 +1102,33 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const primaryActionFeedbackChanged=Boolean(actionOk('ui-primary-action')&&postActionFeedback&&postActionFeedback!==preActionFeedback);
   const lightingBrightness=Number(client?.lighting?.brightness??server?.lighting?.brightness??0);
   const adaptive=contract?.adaptiveCoverage&&typeof contract.adaptiveCoverage==='object'?contract.adaptiveCoverage:{};
-  const signals=adaptive?.signals&&typeof adaptive.signals==='object'?adaptive.signals:{};
+  const declaredSignals=adaptive?.signals&&typeof adaptive.signals==='object'?adaptive.signals:{};
   const runtime={...(client?.runtime||{}),...(server?.runtime||{})};
   const categories=runtime?.categories&&typeof runtime.categories==='object'?runtime.categories:{};
+  const observedWorld=client?.world||server?.world||{};
+  const signals={
+    ...declaredSignals,
+    ui:declaredSignals.ui===true||Number(client?.ui?.visibleObjects||0)>0,
+    map:declaredSignals.map===true||Number(observedWorld?.collidablePartCount||0)>0,
+    interactions:declaredSignals.interactions===true||Number(observedWorld?.proximityPromptCount||0)>0||Number(observedWorld?.clickDetectorCount||0)>0,
+    progression:declaredSignals.progression===true||Number(categories.progression||0)>0||entityRows(runtime.progression).length>0,
+    serverBoundary:declaredSignals.serverBoundary===true||Number(runtime.remoteCount||0)>0,
+    combat:declaredSignals.combat===true||Number(categories.combat||0)>0||entityRows(observedWorld?.mobs).length>0,
+    motion:declaredSignals.motion===true||Number(client?.player?.motorCount||0)>0,
+    audio:declaredSignals.audio===true||Number(runtime.soundCount||0)>0,
+    npc:declaredSignals.npc===true||Number(categories.npc||0)>0||entityRows(observedWorld?.npcs).length>0,
+    companion:declaredSignals.companion===true||Number(categories.companion||0)>0||entityRows(observedWorld?.companions).length>0,
+    items:declaredSignals.items===true||Number(categories.item||0)>0||Number(categories.inventory||0)>0||entityRows(observedWorld?.items).length>0||Number(runtime.inventoryCount||0)>0,
+    environment:declaredSignals.environment===true||Number(observedWorld?.environmentModels||0)>0,
+    effects:declaredSignals.effects===true||Number(observedWorld?.effectCount||0)>0,
+    quests:declaredSignals.quests===true||Number(categories.quest||0)>0,
+    rewards:declaredSignals.rewards===true||Number(categories.reward||0)>0,
+    economy:declaredSignals.economy===true||Number(categories.economy||0)>0,
+    save:declaredSignals.save===true||Number(categories.save||0)>0,
+    retry:declaredSignals.retry===true||Number(categories.retry||0)>0,
+    camera:declaredSignals.camera===true||client?.camera?.present===true,
+    performance:true
+  };
   const initialWorld=initialClientProbe?.world||{};
   const mobMotion=entityMotionSummary(initialWorld?.mobs,world?.mobs);
   const companionMotion=entityMotionSummary(initialWorld?.companions,world?.companions);
