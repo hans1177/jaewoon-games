@@ -1178,13 +1178,25 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     &&Number(ui.textOverflowButtons||0)===0
     &&Number(ui.overlapPairs||0)<=1
     &&visibleButtons>=0;
+  const floorSamples=Number(world.floorSampleCount||0),floorHits=Number(world.floorHitCount||0);
+  const routeSamples=Number(world.routeSampleCount||0),routeSuccess=Number(world.routeSuccessCount||0);
+  const floorCoveragePass=floorSamples===0||floorHits>=Math.max(1,Math.ceil(floorSamples*0.44));
+  const routeCoveragePass=routeSamples===0||routeSuccess>=Math.max(1,Math.ceil(routeSamples*0.5));
+  const spawnThreatDistance=Number(world.minSpawnThreatDistance??-1);
+  const spawnOverlapSafe=spawnThreatDistance<0||spawnThreatDistance>=2.5;
   const worldSafetyPass=
     world.boundsFinite===true
     &&Number(world.collidablePartCount||0)>0
-    &&world.floorBelowPlayer===true;
+    &&world.floorBelowPlayer===true
+    &&floorCoveragePass
+    &&routeCoveragePass
+    &&spawnOverlapSafe;
   const interactionSurfaceCount=Number(world.proximityPromptCount||0)+Number(world.clickDetectorCount||0)+visibleButtons;
   const progressionSurfaceCount=entityRows(runtime.progression).length+Number(categories.progression||0);
-  const combatSurfaceCount=entityRows(world.mobs).length+Number(categories.combat||0);
+  const mobRows=entityRows(world.mobs);
+  const humanoidMobRows=mobRows.filter(row=>clean(row?.kind)==='HumanoidModel');
+  const mobRigAnimationPass=humanoidMobRows.length===0||humanoidMobRows.every(row=>row?.animatorPresent===true&&Number(row?.motorCount||0)>0);
+  const combatSurfaceCount=mobRows.length+Number(categories.combat||0);
   const npcSurfaceCount=entityRows(world.npcs).length+Number(categories.npc||0);
   const companionSurfaceCount=entityRows(world.companions).length+Number(categories.companion||0);
   const itemSurfaceCount=entityRows(world.items).length+Number(categories.item||0)+Number(categories.inventory||0);
@@ -1210,7 +1222,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-interaction-surface',pass:!signals.interactions||interactionSurfaceCount>0},
     {id:'adaptive-progression-surface',pass:!signals.progression||progressionSurfaceCount>0},
     {id:'adaptive-remote-surface',pass:!signals.serverBoundary||Number(runtime.remoteCount||0)>0},
-    {id:'adaptive-combat-surface',pass:!signals.combat||(combatSurfaceCount>0&&(!soak||entityRows(world.mobs).length===0||timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged))},
+    {id:'adaptive-combat-surface',pass:!signals.combat||(combatSurfaceCount>0&&mobRigAnimationPass&&(!soak||mobRows.length===0||timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged))},
     {id:'adaptive-mob-animation-ai',pass:!signals.combat||modelMobs.length===0||(animatedMobCount===modelMobs.length&&(!soak||timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged))},
     {id:'adaptive-motion-surface',pass:!signals.motion||(player.animatorPresent===true&&Number(player.motorCount||0)>0&&displacement>=0.1)},
     {id:'adaptive-audio-surface',pass:!signals.audio||Number(runtime.soundCount||0)>0},
@@ -1249,7 +1261,9 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     npcMotion,
     uiCommercial:{offscreenButtons:Number(ui.offscreenButtons||0),undersizedTouchButtons:Number(ui.undersizedTouchButtons||0),suboptimalTouchButtons:Number(ui.suboptimalTouchButtons||0),textOverflowButtons:Number(ui.textOverflowButtons||0),overlapPairs:Number(ui.overlapPairs||0)},
     surfaces:{interactionSurfaceCount,progressionSurfaceCount,combatSurfaceCount,npcSurfaceCount,companionSurfaceCount,itemSurfaceCount,remoteCount:Number(runtime.remoteCount||0),soundCount:Number(runtime.soundCount||0),effectCount:Number(world.effectCount||0),promptCount:Number(world.proximityPromptCount||0),inventoryCount:Number(runtime.inventoryCount||0)},
-    performance:{memoryMb:Number(runtime.memoryMb||0),descendantCount:Number(runtime.descendantCount||0)}
+    performance:{memoryMb:Number(runtime.memoryMb||0),descendantCount:Number(runtime.descendantCount||0)},
+    worldAudit:{floorSamples,floorHits,floorCoveragePass,routeSamples,routeSuccess,routeCoveragePass,spawnThreatDistance,spawnOverlapSafe},
+    characterAndAi:{mobRigAnimationPass,humanoidMobCount:humanoidMobRows.length,cameraOccluded:client?.camera?.occluded===true,cameraDistance:Number(client?.camera?.distance||0)}
   };
   const repairMap={
     'adaptive-ui-commercial-quality':['MOBILE_UI','HIGH','Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.'],
@@ -1281,11 +1295,11 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   };
   const observedFor=id=>{
     if(id==='adaptive-ui-commercial-quality')return metrics.uiCommercial;
-    if(id==='adaptive-world-safety')return{boundsFinite:world.boundsFinite===true,collidablePartCount:Number(world.collidablePartCount||0),floorBelowPlayer:world.floorBelowPlayer===true};
+    if(id==='adaptive-world-safety')return{boundsFinite:world.boundsFinite===true,collidablePartCount:Number(world.collidablePartCount||0),floorBelowPlayer:world.floorBelowPlayer===true,floorSamples,floorHits,floorCoveragePass,routeSamples,routeSuccess,routeCoveragePass,spawnThreatDistance,spawnOverlapSafe};
     if(id==='adaptive-map-route-coverage')return{routeAttemptCount:routeActions.length,routePassCount,routeRequired,routes:routeActions.slice(0,8).map(row=>({id:row.id,ok:row.ok===true,moved:Number(row.moved||0),fall:Number(row.fall||0),floorBelow:row.floorBelow===true}))};
     if(id==='adaptive-spawn-safety')return{spawnLocationCount:Number(world.spawnLocationCount||0),minSpawnThreatDistance:spawnThreatDistance};
     if(id==='adaptive-mob-animation-ai')return{modelMobCount:modelMobs.length,animatedMobCount,mobMotion:metrics.mobMotion,timelineMobDynamic};
-    if(id==='adaptive-combat-surface')return{combatSurfaceCount,mobCount:entityRows(world.mobs).length,mobMotion:metrics.mobMotion,timelineMobDynamic};
+    if(id==='adaptive-combat-surface')return{combatSurfaceCount,mobCount:mobRows.length,humanoidMobCount:humanoidMobRows.length,mobRigAnimationPass,mobMotion:metrics.mobMotion,timelineMobDynamic};
     if(id==='adaptive-companion-ai-surface')return{companionSurfaceCount,companionCount:entityRows(world.companions).length,companionMotion:metrics.companionMotion,timelineCompanionDynamic};
     if(id==='adaptive-progression-surface'||id==='adaptive-quest-loop-surface'||id==='adaptive-reward-loop-surface')return{progressionSurfaceCount,progressChanged,timelineProgressChanged};
     if(id==='adaptive-item-surface')return{itemSurfaceCount,inventoryCount:Number(runtime.inventoryCount||0),inventoryChanged:inventoryDelta};
