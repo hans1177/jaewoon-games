@@ -41,13 +41,14 @@
   ],
   "verifiedExternalLearningFingerprint": "hfed4s",
   "verifiedExternalLearningApplyAxes": [
-    "ROBLOX_ENVIRONMENT_BACKGROUND_AND_LIGHTING",
-    "ROBLOX_CHARACTER_ANIMATION_AND_MOTION",
-    "ROBLOX_SKILL_VFX_AND_IMPACT_FEEDBACK",
-    "ROBLOX_CAMERA_AND_VISUAL_FEEDBACK",
-    "ROBLOX_UI_UX_TOUCH_AND_CONTROLS",
-    "ROBLOX_GAMEPLAY_STATE_AND_PROGRESSION",
-    "ROBLOX_RUNTIME_QA_AND_RELIABILITY"
+    "CORE_GAMEPLAY_FEEL",
+    "PLAYER_INPUT_AND_TOUCH",
+    "VISIBLE_ACTION_FEEDBACK",
+    "HUD_AND_CONTEXTUAL_GUIDANCE",
+    "MOBILE_READABILITY_AND_RESPONSE",
+    "WORLD_AND_BACKGROUND_PRESENTATION",
+    "CAMERA_RESPONSE",
+    "CONTEXTUAL_ONBOARDING"
   ],
   "studioAssetBinding": {
     "version": 3,
@@ -204,5 +205,453 @@
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
   "createdAt": "2026-09-28T03:43:37.630Z",
   "serverTouchedByVerifiedExternalLearningSweep": false,
-  "verifiedExternalLearningSweepAt": "2026-09-28T04:01:00.214Z"
+  "verifiedExternalLearningSweepAt": "2026-09-28T05:16:35.575Z",
+  "semanticMappingVersion": 1,
+  "semanticMappingFingerprint": "1huv5jx",
+  "semanticVariant": "PUZZLE_STATE",
+  "coreKind": "PUZZLE",
+  "gameSpecificSemanticMappings": [
+    {
+      "principleId": "compact-tactical-state-with-immediate-feedback",
+      "sourceLearningId": "external-black-box-cavern-cravers-run-47",
+      "sourceLearningIds": [
+        "external-black-box-cavern-cravers-run-47"
+      ],
+      "coreKind": "PUZZLE",
+      "disposition": "APPLIED_GAME_SOURCE",
+      "scope": "mobile-rpg-interaction",
+      "domains": [
+        "CORE_GAMEPLAY_FEEL",
+        "PLAYER_INPUT_AND_TOUCH",
+        "VISIBLE_ACTION_FEEDBACK",
+        "HUD_AND_CONTEXTUAL_GUIDANCE",
+        "MOBILE_READABILITY_AND_RESPONSE"
+      ],
+      "domain": "CORE_GAMEPLAY_FEEL",
+      "mapping": "Keep board state beside the active puzzle action and acknowledge the server-confirmed move immediately.",
+      "implementation": "variant-specific puzzle-chain cue bound to LastApprovedScope",
+      "variant": "PUZZLE_STATE",
+      "raw": "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view."
+    },
+    {
+      "principleId": "persistent-core-state-around-world-view",
+      "sourceLearningId": "external-black-box-revengate-run-59",
+      "sourceLearningIds": [
+        "external-black-box-revengate-run-59"
+      ],
+      "coreKind": "PUZZLE",
+      "disposition": "APPLIED_GAME_SOURCE",
+      "scope": "rpg-mobile-ux",
+      "domains": [
+        "WORLD_AND_BACKGROUND_PRESENTATION",
+        "HUD_AND_CONTEXTUAL_GUIDANCE",
+        "CORE_GAMEPLAY_FEEL"
+      ],
+      "domain": "WORLD_AND_BACKGROUND_PRESENTATION",
+      "mapping": "Keep board progress visible while the puzzle world remains readable.",
+      "implementation": "world-view cue reuses the existing HUD state and does not replace the game camera",
+      "variant": "PUZZLE_STATE",
+      "raw": "id=persistent-core-state-around-world-view; scope=rpg-mobile-ux; lesson=The verified gameplay view keeps the world map, player marker, health readout, inventory access and primary action controls visible together, reducing context switching during basic play.; apply=For a Roblox RPG, keep essential player state and high-frequency actions legible around the core world view without copying this game's visual design."
+    },
+    {
+      "principleId": "persistent-contextual-action-controls",
+      "sourceLearningId": "external-black-box-sgtpuzzles-run-29",
+      "sourceLearningIds": [
+        "external-black-box-sgtpuzzles-run-29"
+      ],
+      "coreKind": "PUZZLE",
+      "disposition": "APPLIED_GAME_SOURCE",
+      "scope": "mobile-interaction-observation",
+      "domains": [
+        "HUD_AND_CONTEXTUAL_GUIDANCE",
+        "PLAYER_INPUT_AND_TOUCH",
+        "MOBILE_READABILITY_AND_RESPONSE"
+      ],
+      "domain": "HUD_AND_CONTEXTUAL_GUIDANCE",
+      "mapping": "Keep contextual puzzle actions anchored beside the active board region.",
+      "implementation": "touch-sized contextual buttons remain bound to existing RemoteEvent action ids",
+      "variant": "PUZZLE_STATE",
+      "raw": "id=persistent-contextual-action-controls; scope=mobile-interaction-observation; lesson=The verified puzzle state keeps the numeric action controls visible beside the active play surface so the next valid interaction is immediately available without reopening a separate menu.; apply=When appropriate for a Roblox mobile interaction, keep the small set of context-relevant actions directly available near the active gameplay state instead of adding unnecessary navigation layers."
+    },
+    {
+      "principleId": "immediate-spatially-anchored-input-feedback",
+      "sourceLearningId": "external-black-box-sgtpuzzles-run-29",
+      "sourceLearningIds": [
+        "external-black-box-sgtpuzzles-run-29"
+      ],
+      "coreKind": "PUZZLE",
+      "disposition": "APPLIED_GAME_SOURCE",
+      "scope": "mobile-feedback-observation",
+      "domains": [
+        "PLAYER_INPUT_AND_TOUCH",
+        "VISIBLE_ACTION_FEEDBACK",
+        "CAMERA_RESPONSE"
+      ],
+      "domain": "PLAYER_INPUT_AND_TOUCH",
+      "mapping": "Anchor move feedback to the active puzzle control.",
+      "implementation": "control-local motion cue is separate from server authority and save state",
+      "variant": "PUZZLE_STATE",
+      "raw": "id=immediate-spatially-anchored-input-feedback; scope=mobile-feedback-observation; lesson=The exercised input produces an immediate visible value change in the affected board cell, making the result of the touch easy to associate with the selected target.; apply=For Roblox mobile controls, prefer visible feedback at or near the affected gameplay object so the user can confirm that the touch produced the intended state change."
+    },
+    {
+      "principleId": "touch-instruction-near-first-play-state",
+      "sourceLearningId": "external-black-box-shattered-pixel-dungeon-run-4",
+      "sourceLearningIds": [
+        "external-black-box-shattered-pixel-dungeon-run-4"
+      ],
+      "coreKind": "PUZZLE",
+      "disposition": "APPLIED_GAME_SOURCE",
+      "scope": "mobile-onboarding-observation",
+      "domains": [
+        "CONTEXTUAL_ONBOARDING",
+        "HUD_AND_CONTEXTUAL_GUIDANCE",
+        "MOBILE_READABILITY_AND_RESPONSE"
+      ],
+      "domain": "CONTEXTUAL_ONBOARDING",
+      "mapping": "Place the first-move instruction beside the first puzzle action.",
+      "implementation": "contextual instruction is rendered in the game-specific HUD variant",
+      "variant": "PUZZLE_STATE",
+      "raw": "id=touch-instruction-near-first-play-state; scope=mobile-onboarding-observation; lesson=The first verified dungeon view immediately presents a concise touch interaction instruction while the playable board and character are already visible.; apply=For Roblox mobile onboarding, prefer contextual control guidance at the moment the relevant playable state is visible rather than front-loading a long instruction sequence."
+    }
+  ],
+  "verifiedExternalLearningDispositions": [
+    {
+      "principleId": "native-arm64-redroid-is-valid-free-server-route",
+      "sourceLearningId": "external-black-box-block-blast-run-30",
+      "sourceLearningIds": [
+        "external-black-box-block-blast-run-30"
+      ],
+      "disposition": "VALIDATION_ONLY",
+      "scope": "android-runtime-compatibility",
+      "domains": [],
+      "mapping": "",
+      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
+      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
+    },
+    {
+      "principleId": "separate-system-overlay-consent-and-game-entry",
+      "sourceLearningId": "external-black-box-block-blast-run-30",
+      "sourceLearningIds": [
+        "external-black-box-block-blast-run-30"
+      ],
+      "disposition": "VALIDATION_ONLY",
+      "scope": "black-box-playtest-automation",
+      "domains": [],
+      "mapping": "",
+      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
+      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
+    },
+    {
+      "principleId": "visual-state-change-plus-process-survival-strengthens-input-evidence",
+      "sourceLearningId": "external-black-box-block-blast-run-30",
+      "sourceLearningIds": [
+        "external-black-box-block-blast-run-30"
+      ],
+      "disposition": "VALIDATION_ONLY",
+      "scope": "qa-evidence",
+      "domains": [],
+      "mapping": "",
+      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
+      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
+    },
+    {
+      "principleId": "tutorial-separated-from-game-entry",
+      "sourceLearningId": "external-black-box-cavern-cravers-run-47",
+      "sourceLearningIds": [
+        "external-black-box-cavern-cravers-run-47"
+      ],
+      "disposition": "VALIDATION_ONLY",
+      "scope": "mobile-rpg-onboarding",
+      "domains": [],
+      "mapping": "",
+      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
+      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
+    },
+    {
+      "principleId": "compact-tactical-state-with-immediate-feedback",
+      "sourceLearningId": "external-black-box-cavern-cravers-run-47",
+      "sourceLearningIds": [
+        "external-black-box-cavern-cravers-run-47"
+      ],
+      "coreKind": "PUZZLE",
+      "disposition": "APPLIED_GAME_SOURCE",
+      "scope": "mobile-rpg-interaction",
+      "domains": [
+        "CORE_GAMEPLAY_FEEL",
+        "PLAYER_INPUT_AND_TOUCH",
+        "VISIBLE_ACTION_FEEDBACK",
+        "HUD_AND_CONTEXTUAL_GUIDANCE",
+        "MOBILE_READABILITY_AND_RESPONSE"
+      ],
+      "domain": "CORE_GAMEPLAY_FEEL",
+      "mapping": "Keep board state beside the active puzzle action and acknowledge the server-confirmed move immediately.",
+      "implementation": "variant-specific puzzle-chain cue bound to LastApprovedScope",
+      "variant": "PUZZLE_STATE",
+      "raw": "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view."
+    },
+    {
+      "principleId": "semantic-gameplay-input-plus-survival",
+      "sourceLearningId": "external-black-box-cavern-cravers-run-47",
+      "sourceLearningIds": [
+        "external-black-box-cavern-cravers-run-47"
+      ],
+      "disposition": "VALIDATION_ONLY",
+      "scope": "qa-evidence",
+      "domains": [],
+      "mapping": "",
+      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
+      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
+    },
+    {
+      "principleId": "first-run-friction-separated-from-game-entry",
+      "sourceLearningId": "external-black-box-idle-fantasy-run-42",
+      "sourceLearningIds": [
+        "external-black-box-idle-fantasy-run-42"
+      ],
+      "disposition": "VALIDATION_ONLY",
+      "scope": "mobile-rpg-onboarding",
+      "domains": [],
+      "mapping": "",
+      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
+      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
+    },
+    {
+      "principleId": "persistent-primary-rpg-navigation",
+      "sourceLearningId": "external-black-box-idle-fantasy-run-42",
+      "sourceLearningIds": [
+        "external-black-box-idle-fantasy-run-42"
+      ],
+      "disposition": "NOT_APPLICABLE",
+      "scope": "mobile-rpg-ui",
+      "domains": [],
+      "mapping": "",
+      "implementation": "",
+      "reason": "CORE_KIND_NOT_APPLICABLE"
+    },
+    {
+      "principleId": "danger-and-level-gating-visible-before-commitment",
+      "sourceLearningId": "external-black-box-idle-fantasy-run-42",
+      "sourceLearningIds": [
+        "external-black-box-idle-fantasy-run-42"
+      ],
+      "disposition": "NOT_APPLICABLE",
+      "scope": "rpg-progression-observation",
+      "domains": [],
+      "mapping": "",
+      "implementation": "",
+      "reason": "CORE_KIND_NOT_APPLICABLE"
+    },
+    {
+      "principleId": "semantic-input-plus-runtime-survival",
+      "sourceLearningId": "external-black-box-idle-fantasy-run-42",
+      "sourceLearningIds": [
+        "external-black-box-idle-fantasy-run-42"
+      ],
+      "disposition": "VALIDATION_ONLY",
+      "scope": "qa-evidence",
+      "domains": [],
+      "mapping": "",
+      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
+      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
+    },
+    {
+      "principleId": "content-setup-is-separate-from-3d-game-entry",
+      "sourceLearningId": "external-black-box-luanti-run-10",
+      "sourceLearningIds": [
+        "external-black-box-luanti-run-10"
+      ],
+      "disposition": "VALIDATION_ONLY",
+      "scope": "sandbox-onboarding-observation",
+      "domains": [],
+      "mapping": "",
+      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
+      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
+    },
+    {
+      "principleId": "touch-look-produces-immediate-spatial-feedback",
+      "sourceLearningId": "external-black-box-luanti-run-10",
+      "sourceLearningIds": [
+        "external-black-box-luanti-run-10"
+      ],
+      "disposition": "NOT_APPLICABLE",
+      "scope": "mobile-3d-controls",
+      "domains": [],
+      "mapping": "",
+      "implementation": "",
+      "reason": "CORE_KIND_NOT_APPLICABLE"
+    },
+    {
+      "principleId": "world-entry-needs-load-window-before-input-proof",
+      "sourceLearningId": "external-black-box-luanti-run-10",
+      "sourceLearningIds": [
+        "external-black-box-luanti-run-10"
+      ],
+      "disposition": "VALIDATION_ONLY",
+      "scope": "mobile-runtime-evidence",
+      "domains": [],
+      "mapping": "",
+      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
+      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
+    },
+    {
+      "principleId": "narrative-onboarding-is-not-game-entry",
+      "sourceLearningId": "external-black-box-revengate-run-59",
+      "sourceLearningIds": [
+        "external-black-box-revengate-run-59"
+      ],
+      "disposition": "VALIDATION_ONLY",
+      "scope": "rpg-onboarding-qa",
+      "domains": [],
+      "mapping": "",
+      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
+      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
+    },
+    {
+      "principleId": "persistent-core-state-around-world-view",
+      "sourceLearningId": "external-black-box-revengate-run-59",
+      "sourceLearningIds": [
+        "external-black-box-revengate-run-59"
+      ],
+      "coreKind": "PUZZLE",
+      "disposition": "APPLIED_GAME_SOURCE",
+      "scope": "rpg-mobile-ux",
+      "domains": [
+        "WORLD_AND_BACKGROUND_PRESENTATION",
+        "HUD_AND_CONTEXTUAL_GUIDANCE",
+        "CORE_GAMEPLAY_FEEL"
+      ],
+      "domain": "WORLD_AND_BACKGROUND_PRESENTATION",
+      "mapping": "Keep board progress visible while the puzzle world remains readable.",
+      "implementation": "world-view cue reuses the existing HUD state and does not replace the game camera",
+      "variant": "PUZZLE_STATE",
+      "raw": "id=persistent-core-state-around-world-view; scope=rpg-mobile-ux; lesson=The verified gameplay view keeps the world map, player marker, health readout, inventory access and primary action controls visible together, reducing context switching during basic play.; apply=For a Roblox RPG, keep essential player state and high-frequency actions legible around the core world view without copying this game's visual design."
+    },
+    {
+      "principleId": "movement-needs-immediate-visible-response",
+      "sourceLearningId": "external-black-box-revengate-run-59",
+      "sourceLearningIds": [
+        "external-black-box-revengate-run-59"
+      ],
+      "disposition": "NOT_APPLICABLE",
+      "scope": "rpg-input-feedback",
+      "domains": [],
+      "mapping": "",
+      "implementation": "",
+      "reason": "CORE_KIND_NOT_APPLICABLE"
+    },
+    {
+      "principleId": "gameplay-state-must-be-visually-distinct-from-selection-state",
+      "sourceLearningId": "external-black-box-sgtpuzzles-run-29",
+      "sourceLearningIds": [
+        "external-black-box-sgtpuzzles-run-29"
+      ],
+      "disposition": "VALIDATION_ONLY",
+      "scope": "mobile-runtime-evidence",
+      "domains": [],
+      "mapping": "",
+      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
+      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
+    },
+    {
+      "principleId": "persistent-contextual-action-controls",
+      "sourceLearningId": "external-black-box-sgtpuzzles-run-29",
+      "sourceLearningIds": [
+        "external-black-box-sgtpuzzles-run-29"
+      ],
+      "coreKind": "PUZZLE",
+      "disposition": "APPLIED_GAME_SOURCE",
+      "scope": "mobile-interaction-observation",
+      "domains": [
+        "HUD_AND_CONTEXTUAL_GUIDANCE",
+        "PLAYER_INPUT_AND_TOUCH",
+        "MOBILE_READABILITY_AND_RESPONSE"
+      ],
+      "domain": "HUD_AND_CONTEXTUAL_GUIDANCE",
+      "mapping": "Keep contextual puzzle actions anchored beside the active board region.",
+      "implementation": "touch-sized contextual buttons remain bound to existing RemoteEvent action ids",
+      "variant": "PUZZLE_STATE",
+      "raw": "id=persistent-contextual-action-controls; scope=mobile-interaction-observation; lesson=The verified puzzle state keeps the numeric action controls visible beside the active play surface so the next valid interaction is immediately available without reopening a separate menu.; apply=When appropriate for a Roblox mobile interaction, keep the small set of context-relevant actions directly available near the active gameplay state instead of adding unnecessary navigation layers."
+    },
+    {
+      "principleId": "immediate-spatially-anchored-input-feedback",
+      "sourceLearningId": "external-black-box-sgtpuzzles-run-29",
+      "sourceLearningIds": [
+        "external-black-box-sgtpuzzles-run-29"
+      ],
+      "coreKind": "PUZZLE",
+      "disposition": "APPLIED_GAME_SOURCE",
+      "scope": "mobile-feedback-observation",
+      "domains": [
+        "PLAYER_INPUT_AND_TOUCH",
+        "VISIBLE_ACTION_FEEDBACK",
+        "CAMERA_RESPONSE"
+      ],
+      "domain": "PLAYER_INPUT_AND_TOUCH",
+      "mapping": "Anchor move feedback to the active puzzle control.",
+      "implementation": "control-local motion cue is separate from server authority and save state",
+      "variant": "PUZZLE_STATE",
+      "raw": "id=immediate-spatially-anchored-input-feedback; scope=mobile-feedback-observation; lesson=The exercised input produces an immediate visible value change in the affected board cell, making the result of the touch easy to associate with the selected target.; apply=For Roblox mobile controls, prefer visible feedback at or near the affected gameplay object so the user can confirm that the touch produced the intended state change."
+    },
+    {
+      "principleId": "before-after-plus-runtime-survival-evidence",
+      "sourceLearningId": "external-black-box-sgtpuzzles-run-29",
+      "sourceLearningIds": [
+        "external-black-box-sgtpuzzles-run-29"
+      ],
+      "disposition": "VALIDATION_ONLY",
+      "scope": "qa-evidence",
+      "domains": [],
+      "mapping": "",
+      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
+      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
+    },
+    {
+      "principleId": "separate-android-overlay-onboarding-and-gameplay-entry",
+      "sourceLearningId": "external-black-box-shattered-pixel-dungeon-run-4",
+      "sourceLearningIds": [
+        "external-black-box-shattered-pixel-dungeon-run-4"
+      ],
+      "disposition": "VALIDATION_ONLY",
+      "scope": "black-box-playtest-automation",
+      "domains": [],
+      "mapping": "",
+      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
+      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
+    },
+    {
+      "principleId": "touch-instruction-near-first-play-state",
+      "sourceLearningId": "external-black-box-shattered-pixel-dungeon-run-4",
+      "sourceLearningIds": [
+        "external-black-box-shattered-pixel-dungeon-run-4"
+      ],
+      "coreKind": "PUZZLE",
+      "disposition": "APPLIED_GAME_SOURCE",
+      "scope": "mobile-onboarding-observation",
+      "domains": [
+        "CONTEXTUAL_ONBOARDING",
+        "HUD_AND_CONTEXTUAL_GUIDANCE",
+        "MOBILE_READABILITY_AND_RESPONSE"
+      ],
+      "domain": "CONTEXTUAL_ONBOARDING",
+      "mapping": "Place the first-move instruction beside the first puzzle action.",
+      "implementation": "contextual instruction is rendered in the game-specific HUD variant",
+      "variant": "PUZZLE_STATE",
+      "raw": "id=touch-instruction-near-first-play-state; scope=mobile-onboarding-observation; lesson=The first verified dungeon view immediately presents a concise touch interaction instruction while the playable board and character are already visible.; apply=For Roblox mobile onboarding, prefer contextual control guidance at the moment the relevant playable state is visible rather than front-loading a long instruction sequence."
+    },
+    {
+      "principleId": "input-visual-transition-plus-foreground-survival",
+      "sourceLearningId": "external-black-box-shattered-pixel-dungeon-run-4",
+      "sourceLearningIds": [
+        "external-black-box-shattered-pixel-dungeon-run-4"
+      ],
+      "disposition": "VALIDATION_ONLY",
+      "scope": "qa-evidence",
+      "domains": [],
+      "mapping": "",
+      "implementation": "QA/Android/runtime validation only; not emitted into Roblox game source.",
+      "reason": "QA_OR_PLATFORM_INFRASTRUCTURE"
+    }
+  ],
+  "verifiedExternalValidationOnlyPrincipleCount": 14,
+  "verifiedExternalLearningGameDevelopmentAppliedCount": 5
 }
