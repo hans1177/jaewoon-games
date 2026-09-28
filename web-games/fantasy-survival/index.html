@@ -3152,33 +3152,38 @@ function updateSwampSpecial(e,targetP,now,playerD){
    e.nextShieldRoll=now+3000;
    if(Math.random()<.40)spawnToxicShieldOrbs(e,now)
   }
-  if(now<(e.toxicGasUntil||0)){
-   if(!item(state.player.armor)?.gasImmune&&playerD<155&&now>=(e.toxicGasTick||0)){
-    e.toxicGasTick=now+500;
-    enemyDamageTarget(e,22,true)
+  if(now<(e.toxicGasUntil||0)&&!item(state.player.armor)?.gasImmune&&playerD<155&&now>=(e.toxicGasTick||0)){
+   e.toxicGasTick=now+500;
+   enemyDamageTarget(e,22,true)
+  }
+  const c=e.toxicCharge;
+  if(c&&c.left>0){
+   if(c.phase==='wait'){
+    if(now<(c.waitUntil||0))return{vx:0,vy:0};
+    const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;
+    c.dirX=dx/d;
+    c.dirY=dy/d;
+    c.phase='rush';
+    c.endAt=now+850;
+    c.hit=false
    }
-   const c=e.toxicCharge;
-   if(c&&c.left>0){
-    if(now>=c.endAt){
-     c.left--;
-     if(c.left<=0){
-      e.toxicCharge=null;
-      return null
-     }
-     const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;
-     c.dirX=dx/d;
-     c.dirY=dy/d;
-     c.endAt=now+850;
-     c.hit=false
+   if(now>=c.endAt){
+    c.left--;
+    if(c.left<=0){
+     e.toxicCharge=null;
+     return null
     }
-    if(!c.hit&&playerD<e.type.r+28){
-     c.hit=true;
-     enemyDamageTarget(e,60,true);
-     showNotice('가스 돌진 적중 · 60 피해')
-    }
-    const sp=(Number(targetP.speed)||185)*2;
-    return{vx:c.dirX*sp,vy:c.dirY*sp}
+    c.phase='wait';
+    c.waitUntil=now+1500;
+    return{vx:0,vy:0}
    }
+   if(!c.hit&&playerD<e.type.r+28){
+    c.hit=true;
+    enemyDamageTarget(e,60,true);
+    showNotice('가스 돌진 적중 · 60 피해')
+   }
+   const sp=(Number(targetP.speed)||185)*2;
+   return{vx:c.dirX*sp,vy:c.dirY*sp}
   }
   if(!e.nextGasRush)e.nextGasRush=now+3000;
   if(now>=e.nextGasRush){
@@ -3187,7 +3192,7 @@ function updateSwampSpecial(e,targetP,now,playerD){
     const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;
     e.toxicGasUntil=now+3000;
     e.toxicGasTick=now;
-    e.toxicCharge={left:3,dirX:dx/d,dirY:dy/d,endAt:now+850,hit:false};
+    e.toxicCharge={left:3,phase:'rush',dirX:dx/d,dirY:dy/d,endAt:now+850,waitUntil:0,hit:false};
     showNotice('맹독 균사체 · 가스 돌진 3회');
     return{vx:dx/d*(targetP.speed||185)*2,vy:dy/d*(targetP.speed||185)*2}
    }
