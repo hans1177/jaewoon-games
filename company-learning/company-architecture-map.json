@@ -1,5 +1,5 @@
 {
-  "version": 299,
+  "version": 300,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3964,7 +3964,12 @@
         "rerun": "ONLY_MULTIPLAYER_RELEVANT_DELTA_OR_PRIOR_FAILURE",
         "exactEvidenceReuseAcrossF9AndReleaseReadiness": true,
         "duplicateSessionForbidden": true,
-        "nonMultiplayer": "NOT_APPLICABLE"
+        "nonMultiplayer": "NOT_APPLICABLE",
+        "internalDevelopmentMinimumProof": "EXACT_F0_AUTHORITATIVE_SYNC_CONTRACT_PLUS_EXACT_STUDIO_INTERNAL_SESSION",
+        "automaticTwoParticipantRuntimeCheck": false,
+        "twoParticipantRuntimeEscalation": "CONFIRMED_MULTIPLAYER_FAILURE_OR_EXPLICIT_OWNER_RELEASE_REVIEW_ONLY",
+        "externalServerRequired": false,
+        "normalCycleExtraMultiplayerSession": false
       },
       "scheduledRecoveryScan": {
         "cadencePreserved": true,
