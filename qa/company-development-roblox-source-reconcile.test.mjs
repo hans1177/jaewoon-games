@@ -58,7 +58,7 @@ root.Parent=gui
 }
 
 function writeCompiledTree(root){
-  const compiled=compileRobloxSource({gameId,gameName:'Pocket Foundry',baseline,artbook:{}});
+  const compiled=compileRobloxSource({gameId,gameName:'Pocket Foundry',baseline,artbook:{},playbooks:verifiedPlaybooks,assetLibrary:companyAssetLibrary});
   fs.mkdirSync(path.join(root,'shared'),{recursive:true});
   fs.mkdirSync(path.join(root,'server'),{recursive:true});
   fs.mkdirSync(path.join(root,'client'),{recursive:true});
@@ -559,7 +559,7 @@ test('verified APK principles drive the full Roblox native stack for new and exi
   assert.match(source,/VerifiedLearningTouchTarget/);
   assert.match(source,/VerifiedLearningProgressionRiskCue/);
   assert.match(source,/VerifiedExternalLearningGameplayState/);
-  assert.match(source,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=3/);
+  assert.match(source,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=4/);
   assert.match(source,/ApplicationPrinciples = \{/);
   assert.match(source,/GameDevelopmentPrinciples = \{/);
   assert.doesNotMatch(source,/ROBLOX_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED/);
