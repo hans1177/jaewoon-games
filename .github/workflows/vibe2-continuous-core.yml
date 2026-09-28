@@ -454,6 +454,44 @@ jobs:
             --experience="$control_root/.vibe2/experience.json" \
             --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
             --output=/tmp/vibe2-handoff-before-reserve.json >/tmp/vibe2-handoff-before-reserve.log
+          completed_reservation_runs=''
+          if curl --fail-with-body --silent --show-error \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" \
+            --output /tmp/vibe2-recent-actions-runs.json; then
+            completed_reservation_runs="$(node <<'NODE'
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));
+          const actions=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const candidates=new Set((queue.tasks||[])
+            .filter(task=>
+              String(task.status||'').toLowerCase()==='running'
+              &&String(task.department||'').toLowerCase()==='development'
+              &&String(task.type||'implementation').toLowerCase()==='implementation'
+              &&!String(task.blocker||'').trim()
+              &&String(task.reservationRunId||'').trim()
+            )
+            .map(task=>String(task.reservationRunId).trim()));
+          const completed=[...new Set((actions.workflow_runs||[])
+            .filter(run=>String(run.status||'').toLowerCase()==='completed')
+            .map(run=>String(run.id||'').trim())
+            .filter(id=>id&&candidates.has(id)))];
+          process.stdout.write(completed.join(','));
+          NODE
+            "$control_root/.vibe2/queue.json" /tmp/vibe2-recent-actions-runs.json)"
+            echo 'VIBE2_COMPLETED_RESERVATION_RUN_OBSERVATION=PASS'
+            echo "VIBE2_COMPLETED_RESERVATION_RUN_MATCHES=${completed_reservation_runs:-NONE}"
+            if [ -n "$completed_reservation_runs" ]; then
+              node /tmp/vibe2-main/tools/vibe2-queue-control.mjs recover-completed-reservations \
+                --queue="$control_root/.vibe2/queue.json" \
+                --completed-runs="$completed_reservation_runs" | tee /tmp/vibe2-completed-reservation-recovery.log
+            fi
+          else
+            echo 'VIBE2_COMPLETED_RESERVATION_RUN_OBSERVATION=FAIL_OPEN'
+          fi
+
           active_worker_reservations="$(node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const requested=String(process.env.VIBE2_EXECUTION_LANE||'game-primary').toUpperCase().replaceAll('-','_');const lane=t=>{const status=String(t.status||'').toLowerCase(),blocker=String(t.blocker||''),dep=String(t.department||'').toLowerCase(),type=String(t.type||'implementation').toLowerCase(),ev=(t.evidence||[]).map(String);if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';if(t.assetProductionLane===true||ev.includes('asset-production-parallel:v1'))return'ASSET_DEVELOPMENT';if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';if(t.systemSteward===true)return'RECOVERY_FAST';return'CONTROL_FAST';};const rows=(q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)===requested);process.stdout.write(String(rows.length))" "$control_root/.vibe2/queue.json")"
           echo "VIBE2_EXECUTION_LANE=$VIBE2_EXECUTION_LANE"
           echo "VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE=${active_worker_reservations:-0}"
