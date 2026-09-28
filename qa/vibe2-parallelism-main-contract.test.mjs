@@ -237,9 +237,11 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.match(core,/\[ "\$VIBE2_EXECUTION_LANE" != 'asset-development' \]/);
   assert.match(core,/execution_lane:String\(process\.env\.VIBE2_EXECUTION_LANE\|\|'game-primary'\)/);
   assert.match(core,/VIBE2_COMPLETED_RESERVATION_RUN_OBSERVATION=PASS/);
-  assert.match(core,/VIBE2_COMPLETED_RESERVATION_RUN_OBSERVATION=FAIL_OPEN/);
+  assert.match(core,/VIBE2_COMPLETED_RESERVATION_RUN_OBSERVATION=PARTIAL_FAIL_OPEN/);
   assert.match(core,/recover-completed-reservations/);
   assert.match(core,/VIBE2_COMPLETED_RESERVATION_RUN_MATCHES=/);
+  assert.match(core,/actions\/runs\/\$\{reservation_run_id\}/);
+  assert.match(core,/VIBE2_COMPLETED_RESERVATION_RUN_CANDIDATES=/);
 
   const reserveStart=core.indexOf('\n  reserve:\n');
   const reserveOutputs=core.indexOf('    outputs:',reserveStart);
