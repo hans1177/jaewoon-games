@@ -21,7 +21,7 @@ test('teacher 단계는 GitHub-hosted 온라인에서 실행되고 local Ollama�
   assert.equal(contract.localOllamaTeacherRequired, false);
   assert.equal(contract.paidApiRequired, false);
   assert.match(workflow, /online-teacher:/);
-  assert.match(workflow, /runs-on: ubuntu-latest/);
+  assert.match(workflow, /online-teacher:[\s\S]{0,220}?runs-on: ubuntu-slim/);
   assert.match(workflow, /LOCAL_OLLAMA_TEACHER=NO/);
   assert.doesNotMatch(workflow, /ollama show|ollama pull|api\/generate/);
 });
