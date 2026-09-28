@@ -6871,10 +6871,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "VIBE_INTERNAL_PLAY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T19:39:44.118Z",
+      "updatedAt": "2026-09-28T19:43:44.738Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -7111,12 +7111,10 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING",
-      "routingBlockers": [
-        "roblox-studio-internal-validation-pending"
-      ],
+      "robloxLastSuccessfulStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -7170,12 +7168,12 @@
         "externalGuiAutomation": false,
         "undocumentedStudioCliAutomation": false,
         "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
-        "artifactIdentity": "sha256:e21b310a56e0b6ba44bd35cd0bc5ecadb250cf2641e3b52f96ed9cc4f864c09b",
-        "artifactRunId": 36432015025,
+        "sourceRevision": "f1edcf85599d6e73120ae474dc867f222b9318d4",
+        "artifactIdentity": "sha256:59fc07acde45315eb6a55a7844fe546bb6d7cc39e4c57c4a2add05ca71c7d4a9",
+        "artifactRunId": 36469470904,
         "universeId": "",
         "placeId": "",
-        "versionNumber": 36432015025,
+        "versionNumber": 36469470904,
         "historicalSharedTargetExactArtifact": false,
         "historicalExactBuildReplay": false,
         "currentSourceArtifactBinding": true,
@@ -7329,14 +7327,10 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": false
         },
-        "testedAt": "2026-09-28T13:58:12.471Z",
-        "workflowRunId": 36425620773,
+        "testedAt": "2026-09-28T19:43:44.738Z",
+        "workflowRunId": 36473577523,
         "publicationAuthority": false,
-        "publicationTargetDiscovery": false,
-        "reusedFromExactArtifactIdentity": true,
-        "historicalSourceRevision": "7f9333f29c1843b81279bcc82436a572921b2985",
-        "historicalVersionNumber": 36426405419,
-        "reusedAt": "2026-09-28T14:30:09.138Z"
+        "publicationTargetDiscovery": false
       },
       "robloxDedicatedTargetMigration": {
         "version": 1,
@@ -7354,7 +7348,7 @@
       },
       "robloxInternalReleasePublished": false,
       "robloxInternalPlaytestPassed": true,
-      "robloxInternalPlaytestPassedAt": "2026-09-28T14:30:09.138Z",
+      "robloxInternalPlaytestPassedAt": "2026-09-28T19:43:44.738Z",
       "robloxStudioLocalPlayRepairRequired": false,
       "robloxStudioLocalPlayInfrastructurePending": false,
       "robloxDedicatedTargetRegistryBinding": {
@@ -7625,7 +7619,7 @@
       "robloxQualityFailureClass": null,
       "robloxQualityBuildUpSourceRevision": null,
       "robloxQualityBuildUpEvidence": null,
-      "robloxQualityBuildUpLastPassedAt": "2026-09-28T13:58:12.471Z",
+      "robloxQualityBuildUpLastPassedAt": "2026-09-28T19:43:44.738Z",
       "robloxPublicReleaseVersionNumber": 25,
       "robloxPublicReleaseEvidence": null,
       "robloxValidationTarget": {
@@ -17379,7 +17373,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T19:39:44.118Z",
+  "updatedAt": "2026-09-28T19:43:44.738Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
