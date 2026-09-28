@@ -3,9 +3,20 @@
   "currentMax": 256,
   "healthyStreak": 0,
   "pressureStreak": 0,
-  "lastDecision": "RESET",
-  "lastReason": "SYSTEM_STEWARD_STALE_TELEMETRY_RESET_TO_256",
-  "lastRunId": null,
-  "lastUpdatedAt": "2026-09-28T07:17:34.579Z",
-  "lastTelemetry": null
+  "lastDecision": "HOLD",
+  "lastReason": "LOW_LOAD",
+  "lastRunId": "36396861573",
+  "lastUpdatedAt": "2026-09-28T08:40:57.273Z",
+  "lastTelemetry": {
+    "runId": "36396861573",
+    "workerCount": 1,
+    "effectiveMax": 256,
+    "actualPeakConcurrency": 1,
+    "effectivePeakUtilizationPct": 0.39,
+    "failureRatePct": 0,
+    "pressureLevel": "LOW",
+    "bottleneck": "NONE",
+    "firstCandidatePassRatePct": 100,
+    "verifiedCandidatesPerMinute": 0.15
+  }
 }
