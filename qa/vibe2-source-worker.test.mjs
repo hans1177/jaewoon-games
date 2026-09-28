@@ -4123,12 +4123,70 @@ test('deterministic Roblox build-up creates real style and motion edits without 
   assert.ok(second.candidate.edits.every(row=>/VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_/.test(row.find)));
 });
 
+
+test('deterministic Roblox build-up keeps motion when Root styling was already customized',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'roblox-games/line-defense');
+  const relative='client/Game.client.luau';
+  const source=[
+    'local gui = Instance.new("ScreenGui")',
+    'local root = Instance.new("Frame")',
+    'root.Name = "Root"',
+    'root.AnchorPoint = Vector2.new(0.5, 1)',
+    'root.Position = UDim2.fromScale(0.5, 0.98)',
+    'root.Size = UDim2.new(1, -24, 0, 360)',
+    'root.BackgroundTransparency = 0.15',
+    'local studioUi = {}',
+    'root.BackgroundColor3 = Color3.fromRGB(22, 34, 58)',
+    'root:SetAttribute("StudioAssetBindingVersion", 2)',
+    'root.Parent = gui',
+    'local title = Instance.new("TextLabel")',
+    'title.BackgroundTransparency = 1',
+    'title.TextColor3 = Color3.fromRGB(245, 248, 255)',
+    'title.TextScaled = true',
+    'title.Text = string.format("%s · %s · %s", Config.GameName, Config.Genre, Config.PlayMode)',
+    'title.Parent = root',
+    'local status = Instance.new("TextLabel")',
+    'status.BackgroundColor3 = Color3.fromRGB(10, 17, 30)',
+    'status.TextColor3 = Color3.fromRGB(220, 232, 250)',
+    'status.TextScaled = true',
+    'status.Parent = root',
+    ''
+  ].join('\n');
+  write(path.join(sourceRoot,relative),source);
+  const result=deterministicRobloxBuildUpCandidate({
+    order:{
+      target:'roblox',
+      gameId:'line-defense',
+      presentationQuality:{required:true,pass:'ASSET_ADAPTATION'}
+    },
+    sourceRoot,
+    sourceRootRelative:'roblox-games/line-defense',
+    responsibleFiles:[relative]
+  });
+  assert.ok(result);
+  assert.equal(result.candidate.edits.length,3);
+  const rootEdit=result.candidate.edits.find(row=>/TweenService/.test(row.replace));
+  assert.ok(rootEdit);
+  assert.equal(rootEdit.find,'root.Parent = gui');
+  assert.match(rootEdit.replace,/VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_ROOT_BEGIN stage=1/);
+  assert.match(rootEdit.replace,/deterministicGameplayHudTweenService:Create/);
+});
+
+test('Roblox deterministic workflow never falls back to Ollama after local generation failure',()=>{
+  const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(worker,/deterministicRobloxRequired/);
+  assert.match(worker,/DETERMINISTIC_ROBLOX_BUILDUP_REQUIRED:NO_VALID_LOCAL_CANDIDATE/);
+  assert.match(worker,/if\(!generated&&deterministicRobloxRequired\)/);
+});
+
 test('continuous workflow marks Roblox text source as model-independent',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
   assert.match(workflow,/VIBE2_ROBLOX_DETERMINISTIC_SOURCE: 'true'/);
   assert.match(workflow,/reason='ROBLOX_DETERMINISTIC_SOURCE'/);
   assert.match(workflow,/VIBE2_ROBLOX_SOURCE_MODE=DETERMINISTIC_LOCAL/);
   assert.match(workflow,/VIBE2_LOCAL_MODEL_REQUIRED=NO/);
+  assert.match(workflow,/VIBE2_ACTIVE_SOURCE_PROVIDER=DETERMINISTIC_LOCAL/);
   assert.match(workflow,/verifiedExternalLearningDeterministicContractConsumed/);
   assert.match(workflow,/deterministicLearningProof/);
 });
