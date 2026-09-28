@@ -773,7 +773,8 @@ test('verified external black-box learning is applied first at full retrieved co
   assert.equal(evidence.nativeRuntimeOrReleasePassNotImplied,true);
 
   assert.doesNotMatch(robloxLearning,/sort\(\(a,b\)=>b\.score-a\.score\|\|a\.tie\.localeCompare\(b\.tie\)\)\.slice\(0,3\)/);
-  assert.match(robloxLearning,/verifiedExternalLearningCoveragePct:verifiedExternalLearningIds\.length>0\?100:0/);
+  assert.match(robloxLearning,/const verifiedExternalLearningCoveragePct=verifiedExternalPlaybookIds\.length>0[\s\S]*Math\.floor\(\(verifiedExternalContentIds\.length\/verifiedExternalPlaybookIds\.length\)\*100\)[\s\S]*:0;/);
+  assert.match(robloxLearning,/const applied=checklist\.length>0[\s\S]*&&verifiedExternalLearningIds\.length>0[\s\S]*&&verifiedExternalDistilledContentComplete/);
   assert.match(robloxBootstrap,/VerifiedExternalLearningFirst = \$\{learning\.verifiedExternalLearningFirst\?'true':'false'\}/);
   assert.match(robloxBootstrap,/CoveragePct = \$\{Number\(learning\.verifiedExternalLearningCoveragePct\|\|0\)\}/);
   assert.match(unityBootstrap,/UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REQUIRED/);
