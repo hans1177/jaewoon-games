@@ -65,6 +65,7 @@ function verifiedExternalLearningRefreshState({root='',playbooks={},gameId=''}={
   const semanticMappingFingerprint=clean(block.match(/SemanticMappingFingerprint\s*=\s*["']([^"']+)["']/)?.[1]);
   const semanticVariant=clean(block.match(/SemanticVariant\s*=\s*["']([^"']+)["']/)?.[1]);
   const mappingCount=Number(block.match(/AppliedGameDevelopmentPrincipleCount\s*=\s*(\d+)/)?.[1]||0);
+  const gameSpecificMappingsPresent=/GameSpecificSemanticMappings\s*=\s*\{/.test(block);
   const truncation=/TruncationForbidden\s*=\s*true/.test(block);
   const fingerprint=clean(block.match(/MemoryFingerprint\s*=\s*["']([^"']+)["']/)?.[1]);
   const exactIds=ids.length===expectedIds.length&&expectedIds.every(id=>ids.includes(id));
@@ -90,6 +91,7 @@ function verifiedExternalLearningRefreshState({root='',playbooks={},gameId=''}={
     ||semanticMappingFingerprint!==clean(expectedLearning.semanticMappingFingerprint)
     ||!semanticVariant
     ||mappingCount<=0
+    ||!gameSpecificMappingsPresent
     ||!fullNativeClient;
   return {
     required:true,
@@ -104,6 +106,7 @@ function verifiedExternalLearningRefreshState({root='',playbooks={},gameId=''}={
     currentSemanticMappingFingerprint:semanticMappingFingerprint,
     semanticVariant,
     mappingCount,
+    gameSpecificMappingsPresent,
     coverage,
     retrieved,
     applied,
