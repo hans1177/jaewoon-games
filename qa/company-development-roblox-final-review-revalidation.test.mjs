@@ -141,3 +141,15 @@ test('F9 runtime persistence retries from latest company-runtime with a field-sc
   assert.doesNotMatch(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
   assert.doesNotMatch(workflow,/group:.*company-runtime-writer/);
 });
+
+test('F9 fans exact Studio-only internal proof back to the existing Vibe loop without requiring external runtime truth',()=>{
+  assert.doesNotMatch(workflow,/item\.robloxFinalReviewPassed!==true\|\|item\.robloxRuntimePassed!==true/);
+  assert.match(workflow,/item\.robloxFinalReviewPassed!==true\|\|item\.robloxInternalReleaseReady!==true/);
+  assert.match(workflow,/const exactInternalF9Proof=/);
+  assert.match(workflow,/release\.f9RuntimeReplay===false/);
+  assert.match(workflow,/const acceptanceMode=release\.internalStudioValidationOnly===true/);
+  assert.match(workflow,/roblox-internal-runtime-acceptance-pass/);
+  assert.match(workflow,/roblox-runtime-acceptance-mode:\$\{acceptance_mode\}/);
+  assert.match(workflow,/roblox-studio-mcp-local-exact-build-pass/);
+  assert.match(workflow,/if \[ "\$acceptance_mode" = EXTERNAL_RUNTIME \]/);
+});
