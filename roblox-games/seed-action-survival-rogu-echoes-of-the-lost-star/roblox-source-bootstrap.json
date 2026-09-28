@@ -15,13 +15,40 @@
   "gameplayAuthorityChanged": false,
   "serverSourceChanged": false,
   "foundationRepairApplied": false,
-  "generatedFiles": [],
+  "generatedFiles": [
+    "shared/GameConfig.luau",
+    "client/Game.client.luau"
+  ],
   "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
-  "vibe3LearningApplied": false,
-  "recombinationRecipeId": null,
+  "vibe3LearningApplied": true,
+  "recombinationRecipeId": "recombine_e0cdf2a3aa96b995",
+  "verifiedExternalLearningAppliedToExistingSource": true,
+  "verifiedExternalLearningFirst": true,
+  "verifiedExternalLearningCoveragePct": 100,
+  "verifiedExternalLearningRetrievedCount": 7,
+  "verifiedExternalLearningAppliedCount": 7,
+  "verifiedExternalLearningIds": [
+    "external-black-box-block-blast-run-30",
+    "external-black-box-cavern-cravers-run-47",
+    "external-black-box-idle-fantasy-run-42",
+    "external-black-box-luanti-run-10",
+    "external-black-box-revengate-run-59",
+    "external-black-box-sgtpuzzles-run-29",
+    "external-black-box-shattered-pixel-dungeon-run-4"
+  ],
+  "verifiedExternalLearningFingerprint": "hfed4s",
+  "verifiedExternalLearningApplyAxes": [
+    "MENU_FLOW_AND_INFORMATION_ARCHITECTURE",
+    "UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY",
+    "GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION",
+    "MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION",
+    "ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY",
+    "VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE",
+    "GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"
+  ],
   "studioAssetBinding": {
     "version": 3,
     "bindingVersion": 2,
@@ -168,12 +195,12 @@
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g1-faf59f56ea71",
+  "buildUpDirectiveId": "seed-action-survival-rogu-echoes-of-the-lost-star-build-up-g1-738d61ad0c35",
   "buildUpGeneration": 1,
   "buildUpGoal": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "buildUpDirectiveFingerprint": "faf59f56ea71e7d3084a4300102d4b061298b1ec03f885649f73f72c086abaab",
+  "buildUpDirectiveFingerprint": "738d61ad0c359a346bdb993d79f42a51ed3e52faf53a509cb65ed07aee504115",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-09-27T11:12:32.684Z"
+  "createdAt": "2026-09-28T02:27:00.785Z"
 }
