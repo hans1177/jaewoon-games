@@ -943,9 +943,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo "UNITY_F9_VERIFIED=$GAME_ID"
+          echo "PLATFORM_F9_VERIFIED=UNITY:$GAME_ID"
           echo "UNITY_F9_CANONICAL_PUBLISH_DISPATCHED=$GAME_ID"
+          echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED=UNITY:$GAME_ID"
           echo "UNITY_F9_CANONICAL_PUBLISH_OUTCOME=${PUBLISH_OUTCOME:-unknown}"
           echo 'UNITY_F9_CANONICAL_PUBLISH_BLOCKS_NEXT_CYCLE=NO'
+          echo 'UNITY_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=NO'
 
       - name: Refill Unity repair loop after any failed F0-F9 floor
         if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed != 'true'
@@ -1020,7 +1024,7 @@ jobs:
             for task_id in "${task_ids[@]}"; do
               (
                 cd /tmp/vibe2-unity-runtime-control
-                node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" pass --id="$task_id" --evidence="unity-runtime-pass,unity-independent-qa-pass,unity-regression-pass,unity-runtime-source-revision:${SOURCE_REVISION},unity-runtime-source-tree:${runtime_source_tree_sha},unity-artifact:${ARTIFACT_ID},unity-build-run:${BUILD_RUN_ID},unity-runtime-run:${RUNTIME_RUN_ID},unity-independent-qa-run:${QA_RUN_ID},unity-regression-run:${REGRESSION_RUN_ID},verification-conclusion:success,actions-run:${GITHUB_RUN_ID}"
+                node "$GITHUB_WORKSPACE/tools/vibe2-queue-control.mjs" pass --id="$task_id" --evidence="unity-f0-f9-verified,unity-f9-pass,unity-f9-nonterminal,unity-publication-outcome-blocks-evolution:NO,unity-runtime-pass,unity-independent-qa-pass,unity-regression-pass,unity-runtime-source-revision:${SOURCE_REVISION},unity-runtime-source-tree:${runtime_source_tree_sha},unity-artifact:${ARTIFACT_ID},unity-build-run:${BUILD_RUN_ID},unity-runtime-run:${RUNTIME_RUN_ID},unity-independent-qa-run:${QA_RUN_ID},unity-regression-run:${REGRESSION_RUN_ID},verification-conclusion:success,actions-run:${GITHUB_RUN_ID}"
               )
               echo "UNITY_BUILD_UP_VIBE_TASK_PASS=${GAME_ID}:${task_id}:source_tree=${runtime_source_tree_sha}"
               attempt_settled=$((attempt_settled+1))
@@ -1048,6 +1052,8 @@ jobs:
             --header 'X-GitHub-Api-Version: 2022-11-28' \
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" --data "$payload"
           echo "UNITY_NEXT_EVOLUTION_CYCLE_DISPATCHED=$GAME_ID"
+          echo "PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=UNITY:$GAME_ID"
+          echo 'UNITY_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO'
           echo "UNITY_BUILD_UP_VIBE_REFILL_DISPATCHED=$settled_count"
       - name: Unity runtime summary
         if: always()
