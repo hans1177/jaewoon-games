@@ -927,22 +927,21 @@ test('fresh Roblox source worker failure clears stale candidate pointers for can
 });
 
 
-test('F0-passed candidates route to local Studio QA even when technical target count is zero',()=>{
+test('F0-passed batch candidates collapse to one foundation scan while exact retry stays per-game',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
   assert.equal(roadmap.developmentSpeedExecution.retryMustResumeFromExactFailedStageWhenPriorEvidenceStillMatches,true);
   assert.equal(roadmap.developmentSpeedExecution.successfulStepMustNotBeRepeatedWithoutInvalidatingChange,true);
   assert.match(workflow,/name: Route F0-passed artifacts to internal Studio QA without pre-F9 server publish[\s\S]*?if: always\(\)/);
-  assert.match(workflow,/ROBLOX_LOCAL_F0_QA_DISPATCH=/);
-  assert.match(workflow,/ROBLOX_LOCAL_F0_QA_DISPATCH_COUNT=/);
-  assert.match(workflow,/ROBLOX_LOCAL_F0_QA_DEDUPED_COUNT=/);
-  assert.match(workflow,/ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:/);
-  assert.match(workflow,/actions\/workflows\/company-development-roblox-post-runtime-qa\.yml\/runs\?per_page=100/);
+  assert.match(workflow,/ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DISPATCHED:/);
+  assert.match(workflow,/ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DEDUPED_ACTIVE:/);
+  assert.match(workflow,/gh workflow run company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$REQUESTED_GAME_ID"/);
+  assert.match(workflow,/gh workflow run company-development-roblox-post-runtime-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main\n/);
+  assert.match(workflow,/ROBLOX_LOCAL_F0_QA_CANDIDATE_COUNT=/);
   assert.match(workflow,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
   assert.match(workflow,/ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES/);
   assert.doesNotMatch(workflow,/publish_stage=validation/);
 });
-
 
 test('local Studio QA routing uses exact F0 evidence even when a concurrent platform moved shared step',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');

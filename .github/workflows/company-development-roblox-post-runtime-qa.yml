@@ -24,8 +24,6 @@ on:
         required: false
         default: false
         type: boolean
-  schedule:
-    - cron: '*/15 * * * *'
 
 permissions:
   contents: write
@@ -36,7 +34,7 @@ env:
 
 concurrency:
   group: roblox-runtime-foundation-${{ inputs.game_id || 'scan' }}
-  cancel-in-progress: ${{ inputs.game_id == '' }}
+  cancel-in-progress: true
 
 jobs:
   dedupe:
@@ -67,7 +65,7 @@ jobs:
                 .filter(Number.isFinite)
                 .sort((a,b)=>a-b);
               if(!ids.length){process.stdout.write('');return;}
-              process.stdout.write(String(game?ids[0]:ids[ids.length-1]));
+              process.stdout.write(String(ids[ids.length-1]));
             });
           ")"
           echo "ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=${winner:-NONE}"

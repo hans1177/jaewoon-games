@@ -1655,34 +1655,170 @@ jobs:
           NODE
 
           gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100" > /tmp/roblox-local-f0-active-runs.json
-          node <<'NODE' > /tmp/roblox-local-f0-active-ids
+          candidate_count="$(grep -cve '^
+          echo 'ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED'
+          echo 'ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES'
+
+      - name: Dispatch Roblox HEADLESS FAST_MVP continuation
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git checkout --detach origin/main
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-continuation-dispatch-queue.json
+          state="$(node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-dispatch-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');
+          let packagePending=0,preflightReady=0,f0Ready=0,externalBlocked=0;
+          const readyIds=new Set();
+          for(const item of q.items||[]){
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
+            const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(!concurrentDefault&&!secondaryOwnerFocus)continue;
+            if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
+            const revision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
+            const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
+            const exactBuild=secondaryOwnerFocus
+              ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
+              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
+            if(exactBuild){
+              const preflightPassed=secondaryOwnerFocus?item.ownerFocusRobloxBuildPreflightPassed:item.robloxBuildPreflightPassed;
+              const runtimePassed=secondaryOwnerFocus?item.ownerFocusRobloxRuntimePassed:item.robloxRuntimePassed;
+              const runtimeHarness=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeHarnessVersion:item.robloxRuntimeHarnessVersion;
+              const runtimeEvidence=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeEvidence:item.robloxRuntimeEvidence;
+              const securityHoldFlag=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeSecurityHold:item.robloxRuntimeSecurityHold;
+              const f0Passed=secondaryOwnerFocus?false:item.robloxFoundationF0Passed===true;
+              const f0RepairRequired=!secondaryOwnerFocus
+                &&String(item.canonicalState||'').toUpperCase()==='F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED'
+                &&String(item.robloxFailureStage||'').toUpperCase()==='F0_SOURCE_INTEGRITY'
+                &&String(item.robloxFailureSignature||'').toUpperCase()==='ROBLOX_F0_SOURCE_PREFLIGHT_FAILED';
+              if(preflightPassed!==true){
+                preflightReady++;
+                readyIds.add(item.gameId);
+              }else if(!secondaryOwnerFocus&&f0Passed!==true&&!f0RepairRequired){
+                f0Ready++;
+                readyIds.add(item.gameId);
+              }else if(runtimePassed!==true||String(runtimeHarness||'')!==harnessVersion){
+                const securityBlocked=securityHoldFlag===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(runtimeEvidence?.failure);
+                if(securityBlocked)externalBlocked++;
+              }
+              continue;
+            }
+            if(secondaryOwnerFocus){
+              if(['SOURCE_READY','BUILD_REPAIR_REQUIRED'].includes(String(item.ownerFocusRobloxAssetPipelineState||'').toUpperCase()))packagePending++;
+              continue;
+            }
+            if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
+            if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
+            packagePending++;
+          }
+          fs.writeFileSync('/tmp/roblox-continuation-ready-ids',[...readyIds].filter(Boolean).sort().join('\n')+([...readyIds].length?'\n':''));
+          process.stdout.write(`${packagePending} ${preflightReady} ${f0Ready} ${externalBlocked}`);
+          NODE
+          )"
+          read -r package_pending preflight_ready f0_ready external_blocked <<<"$state"
+          echo "ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION=$package_pending"
+          echo "ROBLOX_PREFLIGHT_READY_COUNT=$preflight_ready"
+          echo "ROBLOX_F0_READY_COUNT=$f0_ready"
+          echo "ROBLOX_EXTERNAL_BLOCKED_COUNT=$external_blocked"
+          echo "ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION"
+          echo 'ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED_CAUSAL_REPAIR'
+          echo 'ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0'
+          echo 'ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED'
+          echo 'ROBLOX_HEADLESS_FAST_MVP_AUTODISPATCH=ENABLED'
+          echo 'ROBLOX_STUDIO_RUNTIME_REQUIRED=NO'
+          echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=DISABLED_HEADLESS_PATH'
+          echo 'ROBLOX_GLOBAL_PACKAGE_BARRIER=DISABLED'
+
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=100" > /tmp/roblox-continuation-active-runs.json
+          node <<'NODE' > /tmp/roblox-continuation-active-ids
           const fs=require('fs');
-          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-local-f0-active-runs.json','utf8'));
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-active-runs.json','utf8'));
           const states=new Set(['queued','pending','in_progress','requested']);
-          const prefix='Roblox runtime foundation QA · ';
+          const prefix='Roblox shared preflight · ';
+          const ids=new Set();
           for(const run of payload.workflow_runs||[]){
             if(!states.has(String(run.status||'').toLowerCase()))continue;
             const title=String(run.display_title||'');
             if(!title.startsWith(prefix))continue;
             const id=title.slice(prefix.length).trim();
-            if(id&&id!=='scan')console.log(id);
+            if(/^[a-z0-9][a-z0-9-]{1,48}$/.test(id))ids.add(id);
           }
+          for(const id of [...ids].sort())console.log(id);
           NODE
+
+          active_continuations="$(grep -c . /tmp/roblox-continuation-active-ids || true)"
+          echo "ROBLOX_ACTIVE_CONTINUATIONS=$active_continuations"
+          echo "ROBLOX_ACTIVE_CONTINUATION_IDS=$(paste -sd, /tmp/roblox-continuation-active-ids 2>/dev/null || true)"
 
           dispatch_count=0
           deduped_count=0
           while read -r id; do
             [ -n "$id" ] || continue
-            if grep -Fxq "$id" /tmp/roblox-local-f0-active-ids; then
+            if grep -Fxq "$id" /tmp/roblox-continuation-active-ids; then
               deduped_count=$((deduped_count+1))
-              echo "ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:$id"
+              echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=DEDUPED_ACTIVE:$id"
               continue
             fi
-            gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
-            printf '%s\n' "$id" >> /tmp/roblox-local-f0-active-ids
+            gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            printf '%s\n' "$id" >> /tmp/roblox-continuation-active-ids
             dispatch_count=$((dispatch_count+1))
-            echo "ROBLOX_LOCAL_F0_QA_DISPATCH=$id"
-          done < /tmp/roblox-local-f0-qa-ids
+            echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES:$id"
+          done < /tmp/roblox-continuation-ready-ids
+
+          if [ "$dispatch_count" -eq 0 ] && [ "$deduped_count" -eq 0 ]; then
+            echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=NO'
+          fi
+          echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH_COUNT=$dispatch_count"
+          echo "ROBLOX_POST_PACKAGE_CONTINUATION_DEDUPED_COUNT=$deduped_count"
+ /tmp/roblox-local-f0-qa-ids || true)"
+          dispatch_count=0
+          deduped_count=0
+          if [ "$candidate_count" -gt 0 ]; then
+            if [ -n "$REQUESTED_GAME_ID" ]; then
+              exact_active="$(node - <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-local-f0-active-runs.json','utf8'));
+          const states=new Set(['queued','pending','in_progress','requested']);
+          const title='Roblox runtime foundation QA · '+String(process.env.REQUESTED_GAME_ID||'').trim();
+          process.stdout.write(String((payload.workflow_runs||[]).filter(run=>states.has(String(run.status||'').toLowerCase())&&String(run.display_title||'')===title).length));
+          NODE
+              )"
+              if [ "$exact_active" -gt 0 ]; then
+                deduped_count=1
+                echo "ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:$REQUESTED_GAME_ID"
+              else
+                gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
+                dispatch_count=1
+                echo "ROBLOX_LOCAL_F0_QA_DISPATCH=$REQUESTED_GAME_ID"
+              fi
+            else
+              scan_active="$(node - <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-local-f0-active-runs.json','utf8'));
+          const states=new Set(['queued','pending','in_progress','requested']);
+          const title='Roblox runtime foundation QA · scan';
+          process.stdout.write(String((payload.workflow_runs||[]).filter(run=>states.has(String(run.status||'').toLowerCase())&&String(run.display_title||'')===title).length));
+          NODE
+              )"
+              if [ "$scan_active" -gt 0 ]; then
+                deduped_count="$candidate_count"
+                echo "ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DEDUPED_ACTIVE:candidates=$candidate_count"
+              else
+                gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main
+                dispatch_count=1
+                echo "ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DISPATCHED:candidates=$candidate_count"
+              fi
+            fi
+          fi
+          echo "ROBLOX_LOCAL_F0_QA_CANDIDATE_COUNT=$candidate_count"
           echo "ROBLOX_LOCAL_F0_QA_DISPATCH_COUNT=$dispatch_count"
           echo "ROBLOX_LOCAL_F0_QA_DEDUPED_COUNT=$deduped_count"
           echo 'ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED'
