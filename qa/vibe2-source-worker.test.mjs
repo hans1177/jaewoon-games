@@ -3875,7 +3875,7 @@ test('runtime model-call gate rejects missing APK disposition or source principl
     'DISPOSITION=semantic-gameplay-input-plus-survival:VALIDATION_ONLY;GAME=demo;TARGET=WEB;DOMAINS=NONE',
     '[END_EXTERNAL_LEARNING external-black-box-b]',
     '[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
-  ].join('\\n');
+  ].join('\n');
   assert.equal(assertVerifiedExternalLearningPromptCoverage(prompt,contract).count,2);
   assert.throws(()=>assertVerifiedExternalLearningPromptCoverage(prompt.replace('[EXTERNAL_LEARNING external-black-box-b]','[EXTERNAL_LEARNING external-black-box-c]'),contract),/IDS_MISMATCH/);
   assert.throws(()=>assertVerifiedExternalLearningPromptCoverage(prompt.replace('APPLY=id=persistent-contextual-action-controls',''),contract),/APPLY_MISMATCH/);
