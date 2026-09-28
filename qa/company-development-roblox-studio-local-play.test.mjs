@@ -12,7 +12,8 @@ import {
   planLocalStudioCandidates,
   createLocalStudioPlayEvidence,
   applyLocalStudioPlayResult,
-  evaluateStudioActualPlayContract
+  evaluateStudioActualPlayContract,
+  deriveStudioActualPlayContract
 } from '../tools/company-development-roblox-studio-local-play.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
@@ -1563,4 +1564,115 @@ test('Studio infrastructure failure does not fabricate a product-quality buildup
   assert.notEqual(applied.item.robloxQualityBuildUpRequired,true);
   assert.equal(applied.item.robloxQualityFailureClass,'INFRASTRUCTURE_OR_EVIDENCE_ONLY');
   assert.equal(applied.item.canonicalState,'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG');
+});
+
+
+test('commercial adaptive Studio contract expands automatically from launch core and release gates',()=>{
+  const contract=deriveStudioActualPlayContract({
+    launchCore:[
+      'quest NPC merchant with rewards and inventory',
+      'combat with monsters companion AI and boss',
+      'large village map with mobile HUD and camera feedback'
+    ],
+    releaseGates:[
+      'save/rejoin',
+      'round restart regression',
+      'server authoritative remotes',
+      'BGM and VFX'
+    ],
+    evidencePolicy:{saveRejoinPassRequired:true,audioFeedbackPassRequired:true}
+  });
+  assert.equal(contract.required,true);
+  assert.ok(contract.version>=3);
+  for(const id of [
+    'adaptive-ui-commercial-quality',
+    'adaptive-world-safety',
+    'adaptive-interaction-surface',
+    'adaptive-progression-surface',
+    'adaptive-remote-surface',
+    'adaptive-combat-surface',
+    'adaptive-motion-surface',
+    'adaptive-audio-surface',
+    'adaptive-npc-surface',
+    'adaptive-companion-ai-surface',
+    'adaptive-item-surface',
+    'adaptive-environment-surface',
+    'adaptive-effects-surface',
+    'adaptive-quest-loop-surface',
+    'adaptive-reward-loop-surface',
+    'adaptive-economy-surface',
+    'adaptive-save-surface',
+    'adaptive-retry-loop-surface',
+    'adaptive-camera-quality',
+    'adaptive-performance-budget'
+  ])assert.ok(contract.requiredScenarios.includes(id),id);
+  assert.match(contract.adaptiveCoverage.contractHash,/^sha256:[0-9a-f]{64}$/);
+});
+
+test('commercial Studio evaluator rejects clipped tiny UI and unsafe world even when basic play input works',()=>{
+  const contract=deriveStudioActualPlayContract({
+    launchCore:['mobile HUD','large village map','quest progression'],
+    releaseGates:['mobile controls']
+  });
+  const probe={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6},
+    camera:{present:true,subjectPresent:true,fieldOfView:70},
+    ui:{visibleButtons:2,offscreenButtons:1,undersizedTouchButtons:1,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:100,floorBelowPlayer:false,proximityPromptCount:1,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:2,effectCount:0},
+    runtime:{remoteCount:1,progression:[{scope:'player',name:'QuestProgress',value:'0'}],systemSignals:4,descendantCount:400,memoryMb:220,categories:{quest:1,progression:1}},
+    workspace:{},
+    lighting:{brightness:1.5}
+  };
+  const result=evaluateStudioActualPlayContract({
+    contract,
+    initialClientProbe:probe,
+    preActionClientProbe:probe,
+    postActionClientProbe:{...probe,player:{...probe.player,rootX:2}},
+    clientProbe:probe,
+    serverProbe:{runtime:probe.runtime,world:probe.world,workspace:{}},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}],
+    beforeImages:[],
+    afterImages:[]
+  });
+  assert.ok(result.qualityFailureKinds.includes('adaptive-ui-commercial-quality'));
+  assert.ok(result.qualityFailureKinds.includes('adaptive-world-safety'));
+});
+
+test('commercial Studio evaluator records progression and AI movement deltas',()=>{
+  const contract=deriveStudioActualPlayContract({
+    launchCore:['monster combat','companion AI','quest reward progression','mobile UI'],
+    releaseGates:[]
+  });
+  const base={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6},
+    camera:{present:true,subjectPresent:true,fieldOfView:70},
+    ui:{visibleButtons:2,offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:100,floorBelowPlayer:true,proximityPromptCount:1,clickDetectorCount:0,
+      mobs:[{name:'EnemyA',x:0,y:3,z:10,hp:100,state:'CHASE',target:'P1'}],
+      companions:[{name:'CompanionA',x:0,y:3,z:1,hp:100,state:'FOLLOW',target:'EnemyA'}],
+      npcs:[],items:[],environmentModels:1,effectCount:1},
+    runtime:{remoteCount:1,progression:[{scope:'player',name:'QuestProgress',value:'0'},{scope:'player',name:'Gold',value:'10'}],systemSignals:8,descendantCount:600,memoryMb:240,soundCount:1,categories:{quest:1,reward:1,progression:1,combat:1,companion:1}},
+    workspace:{},
+    lighting:{brightness:1.5}
+  };
+  const final=structuredClone(base);
+  final.world.mobs[0].x=4;final.world.mobs[0].hp=80;final.world.companions[0].x=3;
+  final.runtime.progression[0].value='1';final.runtime.progression[1].value='25';
+  const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
+  const image={type:'image',mimeType:'image/png',data:png.toString('base64')};
+  const result=evaluateStudioActualPlayContract({
+    contract,
+    initialClientProbe:base,
+    preActionClientProbe:base,
+    postActionClientProbe:{...final,player:{...final.player,rootX:2}},
+    clientProbe:final,
+    serverProbe:{runtime:final.runtime,world:final.world,workspace:{}},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}],
+    beforeImages:[image],
+    afterImages:[image]
+  });
+  assert.equal(result.metrics.progressChanged,true);
+  assert.equal(result.metrics.mobMotion.dynamic,true);
+  assert.equal(result.metrics.companionMotion.dynamic,true);
+  assert.equal(result.authoritativeStateChangeObserved,true);
 });
