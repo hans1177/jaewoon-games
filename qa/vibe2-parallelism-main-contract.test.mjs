@@ -221,6 +221,8 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
   assert.equal(runtime.continuous.reserveConcurrency.sharedQueueWriteRetryAttempts,null);
   assert.equal(runtime.continuous.reserveConcurrency.sharedQueueWriteRetryPolicy,'UNBOUNDED_WITH_CAPPED_BACKOFF');
+  assert.equal(runtime.continuous.assetDevelopmentControlRunnerPool.robloxDeterministicPresentationModelCacheRequired,false);
+  assert.equal(runtime.continuous.assetDevelopmentControlRunnerPool.nonDeterministicAssetTasksModelCachePreserved,true);
   assert.equal(runtime.continuous.reserveConcurrency.reserveJobsParallel,true);
   assert.equal(runtime.continuous.reserveConcurrency.serializationScope,'ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY');
   assert.equal(runtime.continuous.reserveConcurrency.gamePrimaryExternalBoundary,256);
@@ -237,6 +239,11 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.match(core,/runner-pressure-wave-leader-free-slot-refill/);
   assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED/);
   assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=/);
+  assert.match(core,/VIBE2_RESERVE_MODEL_REQUIRED=/);
+  assert.match(core,/VIBE2_DETERMINISTIC_ROBLOX_ASSET_BATCH=/);
+  assert.match(core,/model_required=\$\{modelRequired\?'true':'false'\}/);
+  assert.match(core,/VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_DETERMINISTIC_ROBLOX_ASSET/);
+  assert.match(core,/needs\.reserve\.outputs\.model_required == 'true'/);
   assert.doesNotMatch(core,/for state_attempt in 1 2 3 4 5/);
   assert.doesNotMatch(core,/VIBE2_CONTROL_OPTIMISTIC_ATTEMPT=\$state_attempt\/5/);
   assert.match(core,/VIBE2_ASSET_NEURON_PRESSURE_BYPASS=IMMEDIATE_MICRO_FANIN/);
