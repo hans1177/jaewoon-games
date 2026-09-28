@@ -498,7 +498,10 @@ test('Roblox deployment control allows guarded Open Cloud publishing only',()=>{
   assert.equal(control.verifiedCyclePublication.perpetualRepeat,true);
   assert.equal(control.verifiedCyclePublication.canonicalGameTargetPublishBeforeF9Forbidden,true);
   assert.equal(control.verifiedCyclePublication.preF9ValidationMustUseSeparateTarget,true);
-  assert.equal(control.verifiedCyclePublication.nextCycleMayStartOnlyAfterCanonicalPublishSuccess,true);
+  assert.equal(control.verifiedCyclePublication.nextCycleMayStartOnlyAfterCanonicalPublishSuccess,false);
+  assert.equal(control.verifiedCyclePublication.nextCycleStartsAfterPublishDispatch,true);
+  assert.equal(control.verifiedCyclePublication.publicationOutcomeBlocksEvolution,false);
+  assert.equal(control.verifiedCyclePublication.publicationVisibilityBlocksEvolution,false);
   assert.equal(control.openCloudSafety.officialApiOnly,true);
   assert.equal(control.openCloudSafety.exactFinalReviewedArtifactRequired,true);
   assert.equal(control.openCloudSafety.transient409RetryWithinRun,true);
@@ -508,6 +511,31 @@ test('Roblox deployment control allows guarded Open Cloud publishing only',()=>{
   assert.equal(control.ownerPinnedPublicationTarget.requireGitHubSecretIdMatch,true);
   assert.equal(control.openCloudSafety.credentialSmoke.passed,true);
   assert.equal(control.openCloudSafety.credentialSmoke.releaseClaim,false);
+});
+
+test('Web Roblox and Unity all repeat F0 through F9 then deploy and immediately start the next cycle',()=>{
+  const loop=roadmap.developmentLifecycleMachine.verifiedF0F9PublicationLoop;
+  assert.deepEqual(loop.appliesTo,['WEB','ROBLOX','UNITY']);
+  assert.deepEqual(loop.sequence,[
+    'GAME_SOURCE_MUTATION','F0','F1','F2','F3','F4','F5','F6','F7','F8','F9',
+    'PLATFORM_PUBLISH_OR_DEPLOY_DISPATCH','IMMEDIATE_NEXT_EVOLUTION_CYCLE'
+  ]);
+  assert.equal(loop.f9Terminal,false);
+  assert.equal(loop.f10Forbidden,true);
+  assert.equal(loop.publishBeforeF9Forbidden,true);
+  assert.equal(loop.publicationOutcomeBlocksNextEvolution,false);
+  assert.equal(loop.publicationVisibilityBlocksNextEvolution,false);
+  assert.equal(loop.internalOrExternalVisibilityIrrelevantToEvolutionLoop,true);
+  assert.equal(loop.nextCycleTrigger,'F9_VERIFIED_AND_PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED');
+  assert.equal(loop.repeat,'UNBOUNDED_UNTIL_OWNER_HOLD_OR_PROJECT_REMOVAL');
+  const efficiency=roadmap.developmentLifecycleMachine.validationEfficiencyOptimization;
+  assert.deepEqual(efficiency.appliesTo,['WEB','ROBLOX','UNITY']);
+  assert.equal(efficiency.everyVerifiedDevelopmentDeltaStillRunsF0ThroughF9,true);
+  assert.equal(efficiency.f9DoesNotTerminateEvolution,true);
+  assert.equal(efficiency.publishOrDeployDispatchAfterF9Required,true);
+  assert.equal(efficiency.nextF0CycleStartsAfterPublishOrDeployDispatchWithoutWaitingForOutcome,true);
+  assert.equal(efficiency.publicationOutcomeBlocksEvolution,false);
+  assert.equal(efficiency.publicationVisibilityBlocksEvolution,false);
 });
 
 
