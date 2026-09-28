@@ -549,9 +549,16 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
   const adaptation=project.firstStageUnityWeb===true?'':platformAdaptationInstruction(project.engine);
   const adaptedGoal=adaptation?goal+adaptation:goal;
   const focused=project.ownerFocusedCaretaker===true,unlimitedRepair=focused||project.engine==='roblox';
+  const portfolioValueScore=project.engine==='roblox'
+    ? Math.min(100,(project.queueRobloxQualityBuildUpRequired?35:0)
+      +(project.queueRobloxInternalReleaseReady?20:0)
+      +(project.queueRuntimePassed?15:0)
+      +Math.min(25,Math.max(0,Number(project.progress||0))/4)
+      +(project.genre&&project.subgenre?5:0))
+    : 0;
   const plannedTask={
     id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal:adaptedGoal,responsibleFiles,dependencies:[],priority:focused?'critical':priority,
-    releaseState:project.releaseState,status:'queued',retries:0,maxRetries:unlimitedRepair?null:2,retryPolicy:unlimitedRepair?'UNLIMITED_CAUSAL_REPAIR':undefined,ownerDirective:focused,requiresOwnerDecision:false,protectedChange:false,
+    releaseState:project.releaseState,portfolioValueScore,status:'queued',retries:0,maxRetries:unlimitedRepair?null:2,retryPolicy:unlimitedRepair?'UNLIMITED_CAUSAL_REPAIR':undefined,ownerDirective:focused,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',
     productionMode:supervised?'SUPERVISED_VIBE_COAUTHORING':'AUTONOMOUS_VIBE',
     supervisionApproved:false,
