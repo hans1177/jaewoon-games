@@ -322,3 +322,14 @@ test('batch scan bypasses stale scan concurrency and cancels only stale queued f
   assert.match(dedupe,/ROBLOX_STALE_FOUNDATION_RUN_CANCELLED=/);
   assert.match(dedupe,/ROBLOX_STALE_FOUNDATION_RUN_CANCEL_COUNT=/);
 });
+
+
+test('runtime foundation workflow retriggers when its deterministic QA contract changes',()=>{
+  const head=workflow.slice(0,workflow.indexOf('\njobs:\n'));
+  for(const path of [
+    'qa/company-development-roblox-runtime-foundation.test.mjs',
+    'qa/company-development-roblox-headless-fast-mvp.test.mjs',
+    'qa/company-development-roblox-studio-local-play.test.mjs',
+    'qa/company-tester-debug-intake.test.mjs',
+  ]) assert.ok(head.includes(path),path);
+});
