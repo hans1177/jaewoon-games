@@ -445,8 +445,29 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       for(const marker of specializedFinal.trace)evidence.add(marker);
       const capabilityReview=buildVerifiedCapabilityExperienceReview({task,result:selectedResult,finalReviewPass:true,selected:true});
       if(capabilityReview)experienceReviews.push(capabilityReview);
+      const platformTarget=clean(task.target).toLowerCase();
+      if(platformTarget==='web'){
+        evidence.add('web-f0-f9-verified');
+        evidence.add('web-f9-verified');
+        evidence.add('web-publish-after-f9-required');
+        evidence.add('signal-state:VERIFIED_CHECKPOINT');
+        evidence.add('signal-continuity:NEXT_CAUSAL_INPUT');
+      }
       reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause,neuralEventRoute,supervisorNeuralEventRoute,presentationRuntimeVisual});
-      releaseCandidates.push({taskId:clean(task.id),candidateBranch});
+      releaseCandidates.push({taskId:clean(task.id),candidateBranch,target:platformTarget,gameId:clean(task.gameId),f0ToF9Verified:platformTarget==='web'?true:undefined,f9Verified:true});
+      if(platformTarget==='web'){
+        return{
+          ...task,
+          status:'verified',
+          blocker:null,
+          reservationId:null,
+          reservationRunId:null,
+          reservationRunAttempt:0,
+          reservedAt:null,
+          lastOutcome:'PASS',
+          evidence:[...evidence]
+        };
+      }
     }
     return{...task,evidence:[...evidence]};
   });

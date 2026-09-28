@@ -2293,23 +2293,40 @@ jobs:
           for(const row of review.releaseCandidates||[]){
             const taskId=String(row?.taskId||'').trim();
             const candidateBranch=String(row?.candidateBranch||'').trim();
-            if(taskId&&candidateBranch)process.stdout.write(taskId+'\t'+candidateBranch+'\n');
+            const target=String(row?.target||'').trim().toLowerCase();
+            const gameId=String(row?.gameId||'').trim();
+            if(taskId&&candidateBranch)process.stdout.write([taskId,candidateBranch,target,gameId].join('|')+'\n');
           }
           NODE
           count="$(wc -l < /tmp/vibe2-release-candidates.tsv | tr -d ' ')"
           echo "VIBE2_RELEASE_CANDIDATE_COUNT=${count:-0}"
-          while IFS=$'\t' read -r task_id candidate_branch; do
+          while IFS='|' read -r task_id candidate_branch target game_id; do
             [ -n "$task_id" ] || continue
             [ -n "$candidate_branch" ] || continue
+            echo "PLATFORM_F9_VERIFIED=${target:-unknown}:${game_id:-unknown}:$task_id"
+            echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCH_ATTEMPTED=${target:-unknown}:${game_id:-unknown}:$task_id"
             body="$(jq -nc --arg branch "$candidate_branch" '{ref:"main",inputs:{candidate_branch:$branch}}')"
-            curl --fail-with-body --silent --show-error \
-              --request POST \
-              --header 'Accept: application/vnd.github+json' \
-              --header "Authorization: Bearer $GH_TOKEN" \
-              --header 'X-GitHub-Api-Version: 2022-11-28' \
-              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-candidate-release.yml/dispatches" \
-              --data "$body"
-            echo "VIBE2_RELEASE_DISPATCHED=${task_id}:${candidate_branch}"
+            dispatched=0
+            for dispatch_attempt in 1 2 3; do
+              if curl --fail-with-body --silent --show-error \
+                --request POST \
+                --header 'Accept: application/vnd.github+json' \
+                --header "Authorization: Bearer $GH_TOKEN" \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-candidate-release.yml/dispatches" \
+                --data "$body"; then
+                dispatched=1
+                echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED=${target:-unknown}:${game_id:-unknown}:${task_id}"
+                echo "VIBE2_RELEASE_DISPATCHED=${task_id}:${candidate_branch}"
+                break
+              fi
+              echo "VIBE2_RELEASE_DISPATCH_RETRY=${task_id}:${dispatch_attempt}" >&2
+              sleep "$dispatch_attempt"
+            done
+            if [ "$dispatched" != 1 ]; then
+              echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCH_REPAIR_REQUIRED=${target:-unknown}:${game_id:-unknown}:${task_id}" >&2
+              echo "PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=NO"
+            fi
           done < /tmp/vibe2-release-candidates.tsv
 
       - name: Dispatch verified system architecture candidates

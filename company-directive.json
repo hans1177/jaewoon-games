@@ -1,7 +1,7 @@
 {
   "version": 2,
   "revision": 86,
-  "updatedAt": "2026-09-28T06:18:11.485Z",
+  "updatedAt": "2026-09-28T07:10:00.363Z",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -1094,8 +1094,13 @@
     "canonicalGameTargetPublishBeforeF9Forbidden": true,
     "preF9ValidationTargetMustBeSeparate": true,
     "f9IsNonTerminal": true,
-    "canonicalPublishSuccessStartsNextF0ThroughF9Cycle": true,
-    "perpetualVerifiedRepublishLoop": true
+    "canonicalPublishSuccessStartsNextF0ThroughF9Cycle": false,
+    "perpetualVerifiedRepublishLoop": true,
+    "finalPublishDispatchStartsNextF0ThroughF9Cycle": true,
+    "publicationOutcomeBlocksEvolution": false,
+    "publicationVisibilityBlocksEvolution": false,
+    "f9PublishDispatchStartsNextF0ThroughF9Cycle": true,
+    "publicationOutcomeBlocksNextCycle": false
   },
   "currentExecutionMode": "UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_ROBLOX_UNITY",
   "currentExecutionAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment",
@@ -1447,12 +1452,25 @@
     "queueTelemetryMayDeferDesignGeneration": false,
     "f9Terminal": false,
     "canonicalRobloxPublishAfterEveryVerifiedF9Cycle": true,
-    "nextCycleStartsAfterCanonicalPublishSuccess": true
+    "nextCycleStartsAfterCanonicalPublishSuccess": false,
+    "nextCycleStartsAfterFinalPublishDispatch": true,
+    "publicationOutcomeBlocksEvolution": false,
+    "publicationVisibilityBlocksEvolution": false,
+    "nextCycleStartsAfterF9PublishDispatch": true,
+    "webRobloxUnitySameF0ThroughF9Cycle": true,
+    "publicationOutcomeBlocksNextCycle": false,
+    "platforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "publishOrDeployAfterEveryF9": true
   },
   "validationEfficiencyOptimization": {
     "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
     "mirrorOnly": true,
     "appliesTo": [
+      "WEB",
       "ROBLOX",
       "UNITY"
     ],
@@ -1561,5 +1579,20 @@
     "unverifiedUncivEligible": false,
     "legalBoundary": "BLACK_BOX_OBSERVATION_TO_GENERAL_PRINCIPLES_ONLY_NO_CODE_BINARY_ASSET_OR_HIDDEN_ALGORITHM_COPY",
     "runtimeCompletion": "REQUIRES_EXACT_RUNTIME_EVIDENCE_NOT_SOURCE_ONLY_PASS"
+  },
+  "platformVerifiedF0F9PublicationLoop": {
+    "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.verifiedF0F9PublicationLoop",
+    "platforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "sequence": "MODIFY>F0>F1>F2>F3>F4>F5>F6>F7>F8>F9>PUBLISH_OR_DEPLOY_DISPATCH>NEXT_CYCLE",
+    "repeat": "UNBOUNDED",
+    "f9Terminal": false,
+    "publishBeforeF9Forbidden": true,
+    "publicationOutcomeBlocksEvolution": false,
+    "publicationVisibilityBlocksEvolution": false,
+    "nextCycleStartsAfterPublishOrDeployDispatch": true
   }
 }

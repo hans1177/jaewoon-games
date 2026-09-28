@@ -25,7 +25,7 @@ test('reviewed winner release dispatch remains structurally intact',()=>{
   assert.ok(dispatch>0&&dispatch<upload&&upload<telemetry&&telemetry<refill);
 
   const section=workflow.slice(dispatch,upload);
-  assert.match(section,/while IFS=\$'\\t' read -r task_id candidate_branch; do/);
+  assert.match(section,/while IFS='\\|' read -r task_id candidate_branch target game_id; do/);
   assert.match(section,/done < \/tmp\/vibe2-release-candidates\.tsv/);
   assert.match(section,/actions\/workflows\/vibe2-candidate-release\.yml\/dispatches/);
   assert.match(section,/VIBE2_RELEASE_DISPATCHED=/);
@@ -155,4 +155,45 @@ test('Vibe2 runtime design overlay never runs git inside the archived main snaps
   assert.match(workflow,/VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state\.json/);
   assert.equal(workflow.split('VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state.json').length-1,2);
   assert.equal(workflow.split('git -C /tmp/vibe2-main').length-1,0);
+});
+
+test('platform release dispatch is emitted only after fan-in F9 selection',()=>{
+  const fanInReview=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  assert.match(fanInReview,/releaseCandidates\.push\(\{taskId:clean\(task\.id\),candidateBranch,target:platformTarget,gameId:clean\(task\.gameId\),f0ToF9Verified:platformTarget==='web'\?true:undefined,f9Verified:true\}\)/);
+  const dispatch=workflow.slice(
+    workflow.indexOf('      - name: Dispatch reviewed winner candidates to release gate'),
+    workflow.indexOf('      - name: Dispatch verified system architecture candidates')
+  );
+  assert.match(dispatch,/PLATFORM_F9_VERIFIED=/);
+  assert.match(dispatch,/PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED=/);
+});
+
+test('Web requires F0-F9 fan-in proof before deploy and immediately refills regardless deploy outcome',()=>{
+  const fanInReview=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
+  assert.match(fanInReview,/evidence\.add\('web-f0-f9-verified'\)/);
+  assert.match(fanInReview,/evidence\.add\('web-f9-verified'\)/);
+  assert.match(fanInReview,/if\(platformTarget==='web'\)\{[\s\S]*status:'verified'[\s\S]*lastOutcome:'PASS'/);
+  assert.match(releaseWorkflow,/target!==\'web\'\|\|\(evidence\.includes\('web-f0-f9-verified'\)&&evidence\.includes\('web-f9-verified'\)\)/);
+  assert.match(releaseWorkflow,/const publicationPending=task[\s\S]*task\.status==='verified'[\s\S]*web-publish-after-f9-required/);
+  assert.match(workflow,/VIBE2_RELEASE_DISPATCH_RETRY=/);
+  assert.match(workflow,/PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=NO/);
+  const start=releaseWorkflow.indexOf('  web-release:');
+  const end=releaseWorkflow.indexOf('\n  unity-build:',start);
+  const section=releaseWorkflow.slice(start,end);
+  assert.match(section,/WEB_F9_VERIFIED=YES/);
+  assert.match(section,/WEB_DEPLOY_ATTEMPTED=/);
+  assert.match(section,/WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=/);
+  assert.match(section,/PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:/);
+  assert.match(section,/WEB_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=NO/);
+});
+
+test('Roblox generic candidate release cannot publish canonical Open Cloud before native F9',()=>{
+  const start=releaseWorkflow.indexOf('  roblox-release:');
+  const end=releaseWorkflow.indexOf('\n  reject:',start);
+  const section=releaseWorkflow.slice(start,end);
+  assert.match(section,/ROBLOX_PRE_F9_CANONICAL_PUBLISH=FORBIDDEN/);
+  assert.match(section,/ROBLOX_F0_F9_RUNTIME_HANDOFF=PASS/);
+  assert.match(section,/ROBLOX_CANONICAL_SERVER_PUBLISH_OWNER=F9_FINAL_REVIEW_ONLY/);
+  assert.doesNotMatch(section,/vibe3-roblox-platform\.mjs[^\n]*--execute/);
+  assert.doesNotMatch(section,/roblox-open-cloud-published/);
 });

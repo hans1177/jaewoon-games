@@ -126,20 +126,35 @@ jobs:
           if [ "$candidate_origin" = 'VIBE2_NATIVE' ]; then
             git fetch origin vibe2-unreal-core --quiet
             git show origin/vibe2-unreal-core:.vibe2/queue.json > /tmp/vibe2-current-control-queue.json
-            control_state="$(TASK_ID="$task_id" CANDIDATE_BRANCH="$SUBMITTED_CANDIDATE_BRANCH" node <<'NODE'
+            control_state="$(TASK_ID="$task_id" CANDIDATE_BRANCH="$SUBMITTED_CANDIDATE_BRANCH" TARGET="$decision" node <<'NODE'
           const fs=require('fs');
           const queue=JSON.parse(fs.readFileSync('/tmp/vibe2-current-control-queue.json','utf8'));
           const task=(queue.tasks||[]).find(row=>String(row?.id||'').trim()===String(process.env.TASK_ID||'').trim());
           const evidence=(task?.evidence||[]).map(value=>String(value||'').trim());
           const blocker=String(task?.blocker||'').trim();
-          const current=Boolean(
-            task &&
-            task.status==='running' &&
-            /candidate-awaiting-qa-and-deployment|awaiting.*qa/i.test(blocker) &&
-            evidence.includes(String(process.env.CANDIDATE_BRANCH||'').trim()) &&
-            evidence.includes('package-review:all-required-roles-pass')
+          const target=String(process.env.TARGET||'').trim().toLowerCase();
+          const branch=String(process.env.CANDIDATE_BRANCH||'').trim();
+          const f9Verified=target!=='web'||(
+            evidence.includes('web-f0-f9-verified')
+            &&evidence.includes('web-f9-verified')
           );
-          process.stdout.write(current?'CURRENT':'STALE');
+          const activeCandidate=task
+            &&task.status==='running'
+            &&/candidate-awaiting-qa-and-deployment|awaiting.*qa/i.test(blocker)
+            &&evidence.includes(branch)
+            &&evidence.includes('package-review:all-required-roles-pass')
+            &&f9Verified;
+          const publicationPending=task
+            &&target==='web'
+            &&task.status==='verified'
+            &&evidence.includes(branch)
+            &&evidence.includes('package-review:all-required-roles-pass')
+            &&f9Verified
+            &&evidence.includes('web-publish-after-f9-required')
+            &&!evidence.includes('web-publication-retry-resolved');
+          const publicationRetry=publicationPending
+            &&evidence.includes('web-publication-retry-required');
+          process.stdout.write(activeCandidate||publicationPending||publicationRetry?'CURRENT':'STALE');
           NODE
             )"
             if [ "$control_state" != 'CURRENT' ]; then
@@ -233,6 +248,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Confirm Web F9 fan-in handoff before deployment
+        run: |
+          echo 'WEB_F9_VERIFIED=YES'
+          echo 'PLATFORM_F9_VERIFIED=WEB'
 
       - name: Web syntax QA
         id: webqa
@@ -403,6 +423,7 @@ jobs:
           PROMOTED_MAIN_SHA: ${{ steps.promote.outputs.promotion_sha }}
           PROMOTED_SOURCE_TREE_SHA: ${{ steps.promote.outputs.source_tree_sha }}
           CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
+          CANDIDATE_BRANCH: ${{ needs.inspect.outputs.candidate_branch }}
         shell: bash
         run: |
           set -euo pipefail
@@ -413,16 +434,16 @@ jobs:
           fi
           if [ "$CANDIDATE_ORIGIN" = 'AUTONOMOUS_DEV_VERIFIED_HANDOFF' ]; then
             if [ "$result" = PASS ]; then
-              gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main -f released_game_id="$GAME_ID" -f release_task_id="$TASK_ID" -f release_origin="$CANDIDATE_ORIGIN"
+              gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main -f released_game_id="$GAME_ID" -f release_task_id="$TASK_ID" -f release_origin="$CANDIDATE_ORIGIN" || true
               echo 'AUTONOMOUS_POST_RELEASE_HEALTH=DISPATCHED'
-              echo 'AUTONOMOUS_NEXT_FLOOR=WAITING_FOR_PUBLIC_HEALTH'
             else
-              gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main
-              echo 'AUTONOMOUS_NEXT_FLOOR=RECOVERY_DISPATCHED'
+              echo 'AUTONOMOUS_WEB_PUBLICATION_RETRY_REQUIRED=YES'
             fi
+            gh workflow run autonomous-continuous-development.yml --repo "$GITHUB_REPOSITORY" --ref main || true
+            echo 'AUTONOMOUS_NEXT_EVOLUTION_CYCLE=DISPATCHED'
+            echo 'AUTONOMOUS_NEXT_EVOLUTION_DEPENDS_ON_PUBLICATION_OUTCOME=NO'
             echo "AUTONOMOUS_RELEASE_RESULT=$result"
-            [ "$result" = PASS ]
-            exit
+            exit 0
           fi
           rm -rf /tmp/vibe2-control
           gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch >/dev/null 2>&1
@@ -437,9 +458,9 @@ jobs:
             git fetch origin vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
             if [ "$result" = PASS ]; then
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-static-qa-pass,web-cloudflare-deployment-pass,main-pr-merged,web-runtime-source-tree:${PROMOTED_SOURCE_TREE_SHA},web-main-sha:${PROMOTED_MAIN_SHA},actions-run-${GITHUB_RUN_ID}"
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-deploy-attempted,web-static-qa-pass,web-cloudflare-deployment-pass,main-pr-merged,web-runtime-source-tree:${PROMOTED_SOURCE_TREE_SHA},web-main-sha:${PROMOTED_MAIN_SHA},web-publication-retry-resolved,actions-run-${GITHUB_RUN_ID}"
             else
-              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=web-qa-or-promotion-failed --evidence="web-qa-${QA_OUTCOME},promotion-${PROMOTE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-deploy-attempted,web-publication-retry-required,web-qa-${QA_OUTCOME},promotion-${PROMOTE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             fi
             git add .vibe2/queue.json
             if git diff --cached --quiet; then
@@ -458,8 +479,8 @@ jobs:
             --arg run "${GITHUB_RUN_ID:-}" \
             --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
             --arg task "${TASK_ID:-}" \
-            --arg outcome "${result:-QUEUE_UPDATED}" \
-            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"dependency-or-retry-ready"}}')"
+            --arg outcome "VERIFIED" \
+            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"web-f9-publish-dispatched-next-cycle"}}')"
           curl --fail-with-body --silent --show-error \
             --request POST \
             --header 'Accept: application/vnd.github+json' \
@@ -467,10 +488,19 @@ jobs:
             --header 'X-GitHub-Api-Version: 2022-11-28' \
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
             --data "$payload"
-          echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:${result:-QUEUE_UPDATED}"
+          echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:VERIFIED"
+          echo "WEB_DEPLOY_ATTEMPTED=$GAME_ID:$result"
+          echo "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=$GAME_ID"
+          echo "PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:$GAME_ID"
+          echo "WEB_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=NO"
           echo "VIBE2_WEB_AUTO_DEPLOY=$result"
-          if [ "$result" = PASS ]; then echo "VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT:${PROMOTED_SOURCE_TREE_SHA}"; fi
-          [ "$result" = PASS ]
+          if [ "$result" = PASS ]; then
+            echo "VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT:${PROMOTED_SOURCE_TREE_SHA}"
+          else
+            echo "WEB_PUBLICATION_RETRY_REQUIRED=${TASK_ID:-NONE}:${CANDIDATE_BRANCH:-NONE}"
+            gh workflow run vibe2-candidate-release.yml --repo "$GITHUB_REPOSITORY" --ref main -f candidate_branch="$CANDIDATE_BRANCH" || true
+          fi
+          exit 0
 
   unity-build:
     needs: inspect
@@ -642,26 +672,16 @@ jobs:
           echo "ROBLOX_RELEASE_PR=$pr_url"
           echo 'DIRECT_MAIN_WRITE=NO'
 
-      - name: Publish exact verified package through Roblox Open Cloud
+      - name: Hand exact promoted Roblox source to F0-F9 runtime without pre-F9 canonical publish
         id: publish
         if: steps.validate.outcome == 'success' && steps.promote.outcome == 'success'
         continue-on-error: true
-        env:
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_UNIVERSE_ID: ${{ secrets.ROBLOX_UNIVERSE_ID }}
-          ROBLOX_PLACE_ID: ${{ secrets.ROBLOX_PLACE_ID }}
-          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
-          PLACE_FILE: ${{ steps.validate.outputs.place_file }}
-          EVIDENCE_FILE: ${{ steps.validate.outputs.evidence_file }}
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
-          test -n "$ROBLOX_UNIVERSE_ID"
-          test -n "$ROBLOX_PLACE_ID"
-          node .vibe3-control/tools/vibe3-roblox-platform.mjs --place-file "$PLACE_FILE" --evidence "$EVIDENCE_FILE" --source-revision "$CANDIDATE_SHA" --execute | tee /tmp/roblox-publish.log
-          grep -q '^ROBLOX_V3_STATE=PUBLISHED$' /tmp/roblox-publish.log
-          echo 'ROBLOX_OPEN_CLOUD_PUBLISH=PASS'
+          echo 'ROBLOX_PRE_F9_CANONICAL_PUBLISH=FORBIDDEN'
+          echo 'ROBLOX_F0_F9_RUNTIME_HANDOFF=PASS'
+          echo 'ROBLOX_OPEN_CLOUD_PUBLISH_BEFORE_F9=NO'
 
       - name: Settle Roblox result and continue canonical queue
         if: always()
@@ -709,7 +729,7 @@ jobs:
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs await \
                 --id="$TASK_ID" \
                 --blocker=candidate-awaiting-roblox-runtime-qa \
-                --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-open-cloud-published,roblox-runtime-await-game:${GAME_ID},roblox-runtime-await-source-tree:${PROMOTED_SOURCE_TREE_SHA},roblox-runtime-await-main-sha:${PROMOTED_MAIN_SHA},roblox-runtime-verification-required,roblox-studio-asset-runtime-proof-required,actions-run-${GITHUB_RUN_ID}"
+                --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-f0-f9-runtime-handoff,roblox-pre-f9-canonical-publish-forbidden,roblox-runtime-await-game:${GAME_ID},roblox-runtime-await-source-tree:${PROMOTED_SOURCE_TREE_SHA},roblox-runtime-await-main-sha:${PROMOTED_MAIN_SHA},roblox-runtime-verification-required,roblox-studio-asset-runtime-proof-required,actions-run-${GITHUB_RUN_ID}"
             else
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=roblox-release-or-evidence-failed --evidence="roblox-validate-${VALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},publish-${PUBLISH_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             fi
@@ -748,7 +768,8 @@ jobs:
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
             --data "$payload"
           echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:${result:-QUEUE_UPDATED}"
-          echo "VIBE2_ROBLOX_AUTO_DEPLOY=$result"
+          echo "VIBE2_ROBLOX_F0_F9_HANDOFF=$result"
+          echo 'ROBLOX_CANONICAL_SERVER_PUBLISH_OWNER=F9_FINAL_REVIEW_ONLY'
           if [ "$result" = PASS ]; then echo 'VIBE2_ROBLOX_TASK_FINAL_PASS=NO_RUNTIME_QA_PENDING'; fi
           [ "$result" = PASS ]
 

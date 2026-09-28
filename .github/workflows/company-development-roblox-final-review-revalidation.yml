@@ -356,26 +356,54 @@ jobs:
               authority:'roblox-f9-verified-prepublish-gate',
               verifiedAt:stamp,
             };
+            const publishCycleId=sourceRevision+':'+artifactIdentity;
+            const publishQueue=Array.isArray(item.robloxCanonicalPublishQueue)?item.robloxCanonicalPublishQueue:[];
+            const f0Snapshot=JSON.parse(JSON.stringify(item.robloxFoundationF0Evidence||{}));
+            if(!publishQueue.some(row=>row?.cycleId===publishCycleId)){
+              publishQueue.push({
+                version:1,
+                cycleId:publishCycleId,
+                gameId:item.gameId,
+                sourceRevision,
+                artifactIdentity,
+                artifactRunId:Number(candidate.artifactRunId||0),
+                validationUniverseId:String(candidate.universeId||''),
+                validationPlaceId:String(candidate.placeId||''),
+                validationVersionNumber:Number(candidate.versionNumber||0),
+                f0Evidence:f0Snapshot,
+                finalReviewPassed:true,
+                f9ReleaseRegressionPassed:true,
+                f9RuntimeReplay:false,
+                internalStudioValidationOnly:internalStudioValidationAccepted,
+                runtimeAcceptancePassed:internalRuntimeAcceptance,
+                studioAssetRuntimeBindingPassed:studioAssetRuntimeBindingExact,
+                status:'PENDING',
+                attempts:0,
+                enqueuedAt:stamp,
+                authority:'roblox-f9-immutable-canonical-publish-queue',
+              });
+            }
+            item.robloxCanonicalPublishQueue=publishQueue;
+            item.robloxCanonicalPublishPending=true;
             item.robloxInternalReleaseEvidence=null;
             item.robloxReleaseEvidence=null;
             item.robloxReleaseVersionNumber=null;
-            item.robloxCanonicalPublishPending=true;
             item.robloxPublicReleaseReady=false;
             item.robloxPublicRelease=false;
             item.robloxReleaseClaim=false;
             item.robloxReleasePublishedAt=null;
             item.robloxPublicReleaseEvidence=null;
-            item.robloxPromotionBlockers=['roblox-f9-verified-canonical-publish-pending'];
-            item.currentStep='CANONICAL_ROBLOX_PUBLISH_PENDING';
-            item.canonicalState='F9_VERIFIED_CANONICAL_PUBLISH_PENDING';
+            item.robloxPromotionBlockers=[];
+            item.currentStep='POST_F9_CONTINUOUS_EVOLUTION';
+            item.canonicalState='F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION';
             item.robloxLastSuccessfulStage='F9_RELEASE_REGRESSION';
-            item.robloxFailureStage='CANONICAL_ROBLOX_PUBLISH';
-            item.robloxFailureSignature='ROBLOX_CANONICAL_FINAL_PUBLISH_PENDING';
-            item.routingBlockers=['roblox-f9-verified-canonical-publish-pending'];
+            item.robloxFailureStage=null;
+            item.robloxFailureSignature=null;
+            item.routingBlockers=[];
             if(item.executionEvidence){
               item.executionEvidence.lastSuccessfulStage='F9_RELEASE_REGRESSION';
-              item.executionEvidence.failureStage='CANONICAL_ROBLOX_PUBLISH';
-              item.executionEvidence.failureSignature='ROBLOX_CANONICAL_FINAL_PUBLISH_PENDING';
+              item.executionEvidence.failureStage=null;
+              item.executionEvidence.failureSignature=null;
             }
             item.updatedAt=stamp;promoted++;
           }
@@ -540,25 +568,32 @@ jobs:
           set -euo pipefail
           git -C runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
           git -C runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
-          mapfile -t ids < <(REQUESTED_GAME_ID="$REQUESTED_GAME_ID" node <<'NODE'
+          mapfile -t rows < <(REQUESTED_GAME_ID="$REQUESTED_GAME_ID" node <<'NODE'
           const fs=require('fs');
           const q=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           for(const item of q.items||[]){
             if(requested&&item.gameId!==requested)continue;
-            if(item.robloxFinalReviewPassed!==true)continue;
-            if(item.robloxF9ReleaseRegressionPassed!==true)continue;
-            if(item.robloxCanonicalPublishPending!==true)continue;
-            console.log(item.gameId);
+            for(const row of item.robloxCanonicalPublishQueue||[]){
+              if(!['PENDING','RETRY_REQUIRED'].includes(String(row?.status||'')))continue;
+              if(row.finalReviewPassed!==true||row.f9ReleaseRegressionPassed!==true)continue;
+              process.stdout.write([item.gameId,row.cycleId].join('\t')+'\n');
+            }
           }
           NODE
           )
           count=0
-          for id in "${ids[@]}"; do
-            [ -n "$id" ] || continue
-            gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" -f publish_stage=final
-            count=$((count+1))
-            echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=$id"
+          for row in "${rows[@]}"; do
+            [ -n "$row" ] || continue
+            id="${row%%$'\t'*}"
+            cycle_id="${row#*$'\t'}"
+            if gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" -f publish_stage=final -f publish_cycle_id="$cycle_id"; then
+              count=$((count+1))
+              echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED=$id:$cycle_id"
+            else
+              echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCH_RETRY_REQUIRED=$id:$cycle_id" >&2
+              echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCH_BLOCKS_NEXT_CYCLE=NO"
+            fi
           done
           echo "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCH_COUNT=$count"
 
@@ -576,21 +611,20 @@ jobs:
           const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
           for(const item of q.items||[]){
             if(requested&&item.gameId!==requested)continue;
-            if(item.robloxFinalReviewPassed!==true||item.robloxInternalReleaseReady!==true)continue;
+            if(item.robloxFinalReviewPassed!==true||item.robloxF9ReleaseRegressionPassed!==true)continue;
             const studioRequired=item.robloxStudioAssetBindingApplied===true;
             if(studioRequired&&item.robloxStudioAssetRuntimeBindingPassed!==true)continue;
             const source=String(item.robloxSourceCommit||'').trim();
-            const version=Number(item.robloxCanonicalReleaseEvidence?.versionNumber||item.robloxReleaseVersionNumber||item.robloxRuntimeCandidateEvidence?.versionNumber||0);
-            const release=item.robloxInternalReleaseEvidence||{};
+            const prepublish=item.robloxF9VerifiedPrepublishEvidence||{};
+            const version=Number(prepublish.validationVersionNumber||item.robloxRuntimeCandidateEvidence?.versionNumber||0);
             const exactInternalF9Proof=
-              release.finalReviewPassed===true
-              &&release.f9ReleaseRegressionPassed===true
-              &&release.f9RuntimeReplay===false
-              &&release.sourceRevision===source
-              &&Number(release.versionNumber||0)===version
-              &&release.publicRelease===false;
+              prepublish.finalReviewPassed===true
+              &&prepublish.f9ReleaseRegressionPassed===true
+              &&prepublish.f9RuntimeReplay===false
+              &&prepublish.sourceRevision===source
+              &&Number(prepublish.validationVersionNumber||0)===version;
             if(!exactInternalF9Proof||!/^[0-9a-f]{40}$/i.test(source)||version<=0)continue;
-            const acceptanceMode=release.internalStudioValidationOnly===true
+            const acceptanceMode=prepublish.internalStudioValidationOnly===true
               ?'STUDIO_INTERNAL'
               :item.robloxRuntimePassed===true
                 ?'EXTERNAL_RUNTIME'
@@ -691,3 +725,4 @@ jobs:
             echo 'ROBLOX_F9_VIBE_REFILL_DISPATCHED=0'
           fi
           echo 'ROBLOX_F9_VIBE_FANIN=PASS'
+          echo 'ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO'
