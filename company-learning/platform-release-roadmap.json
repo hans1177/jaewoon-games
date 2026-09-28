@@ -6110,7 +6110,11 @@
           "singleExactProofPerCycle": true,
           "duplicateF9OrPublicRecheckForbidden": true,
           "revalidationTrigger": "MULTIPLAYER_RELEVANT_SOURCE_OR_DESIGN_DELTA_OR_PRIOR_FAILURE",
-          "unrelatedDeltaEvidenceReuse": true
+          "unrelatedDeltaEvidenceReuse": true,
+          "routineMode": "EXACT_STATIC_SERVER_AUTHORITY_SYNC_CONTRACT_PLUS_OFFICIAL_INTERNAL_RUNTIME",
+          "extendedMode": "TWO_PARTICIPANT_SYNC_ONLY_ON_MULTIPLAYER_RELEVANT_DELTA_OR_PRIOR_FAILURE",
+          "twoParticipantEveryCycle": false,
+          "truthfulTwoParticipantObservationRequired": true
         },
         {
           "id": "F8",
@@ -6284,7 +6288,11 @@
           "externalPublicServerRequired": false,
           "revalidationTrigger": "MULTIPLAYER_RELEVANT_SOURCE_OR_DESIGN_DELTA_OR_PRIOR_FAILURE",
           "unrelatedDeltaEvidenceReuse": true,
-          "singleExactProofPerSourceCycle": true
+          "singleExactProofPerSourceCycle": true,
+          "routineInternalDevelopmentProof": "EXACT_F0_STATIC_MULTIPLAYER_CONTRACT_PLUS_OFFICIAL_STUDIO_MCP_RUNTIME",
+          "extendedTwoParticipantProofRequiredOnlyOnRelevantDeltaOrPriorFailure": true,
+          "twoParticipantEveryDevelopmentCycle": false,
+          "twoClientObservationClaimRequiresActualObservation": true
         },
         "externalServerBootRequiredForInternalRelease": false
       },
@@ -6693,7 +6701,18 @@
         "unrelatedChange": "REUSE_EXACT_VERIFIED_MULTIPLAYER_EVIDENCE",
         "singleExactProofPerSourceCycle": true,
         "duplicateF9Check": false,
-        "duplicatePublicReadinessCheck": false
+        "duplicatePublicReadinessCheck": false,
+        "routineProof": "EXACT_F0_SERVER_AUTHORITY_AND_SYNC_CONTRACT_PLUS_OFFICIAL_INTERNAL_RUNTIME_SESSION",
+        "extendedTwoParticipantProofRequiredWhen": [
+          "NETWORK_AUTHORITY_CHANGED",
+          "REPLICATION_OR_SYNC_PATH_CHANGED",
+          "SESSION_OR_PARTY_MATCHMAKING_CHANGED",
+          "PRIOR_MULTIPLAYER_EVIDENCE_FAILED_OR_STALE"
+        ],
+        "twoParticipantEveryCycle": false,
+        "truthfulEvidenceRequired": true,
+        "mayNotClaimTwoParticipantObservationUnlessActuallyObserved": true,
+        "idleScheduleRecheck": false
       },
       "f9": {
         "mode": "EVIDENCE_FAN_IN_AND_IMPACT_SCOPED_REGRESSION_REVIEW",
@@ -6723,7 +6742,8 @@
         "cheapStaticBoundaryCheckAllowed": true,
         "exactUnchangedEvidenceReusable": true,
         "highRiskFindingStillFailClosed": true,
-        "publicReleaseRelevantSecurityEvidenceStillRequired": true
+        "publicReleaseRelevantSecurityEvidenceStillRequired": true,
+        "fullRescanMayNotRunFromIdleSchedule": true
       },
       "externalServer": {
         "automaticProbe": false,
@@ -6732,6 +6752,12 @@
         "publicReleaseRequirement": false,
         "role": "OPTIONAL_MANUAL_DIAGNOSTIC_ONLY",
         "mayNotBlockGameEvolution": true
+      },
+      "scheduledRecoveryScan": {
+        "purpose": "RECOVER_PENDING_STATE_NOT_REPEAT_FULL_VALIDATION",
+        "idleScanMode": "STATE_DISCOVERY_ONLY",
+        "heavyContractQaOnIdleSchedule": false,
+        "noPendingWorkAction": "EXIT_WITHOUT_RUNTIME_SECURITY_OR_MULTIPLAYER_REVALIDATION"
       }
     }
   },
@@ -10424,7 +10450,8 @@
       "summary": "Preserve the existing autonomous evolution and F0-F9 structure while removing duplicate external-server, multiplayer, security and F9 replay work.",
       "noEvolutionLoopReplacement": true,
       "noFloorRemoval": true,
-      "noQaFaking": true
+      "noQaFaking": true,
+      "multiplayerRoutine": "STATIC_AUTHORITY_SYNC_CONTRACT_PLUS_INTERNAL_RUNTIME; TWO_PARTICIPANT_ONLY_ON_RELEVANT_DELTA_OR_FAILURE"
     }
   },
   "vibeExecutionLaneContract": {
