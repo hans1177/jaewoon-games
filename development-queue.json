@@ -57,10 +57,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "VIBE_INTERNAL_PLAY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-28T19:37:48.054Z",
+      "updatedAt": "2026-09-28T19:47:47.142Z",
       "robloxSourceCommit": "15d9ebb42466049456bb2e215e5bfa08ae5f8f57",
       "robloxSourceBootstrapPassedAt": "2026-09-28T19:31:29.862Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -292,12 +292,10 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING",
-      "routingBlockers": [
-        "roblox-studio-internal-validation-pending"
-      ],
+      "robloxLastSuccessfulStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -351,12 +349,12 @@
         "externalGuiAutomation": false,
         "undocumentedStudioCliAutomation": false,
         "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
-        "artifactIdentity": "sha256:012898d7055ef1e5611b2dd031a738247c6b60129b583a0042d1dcf8db8e69d9",
-        "artifactRunId": 36432015025,
+        "sourceRevision": "15d9ebb42466049456bb2e215e5bfa08ae5f8f57",
+        "artifactIdentity": "sha256:5da5b0060f238775c6cff0da1967faf3c236a61d3fd75dadf8dd5b302e9c3548",
+        "artifactRunId": 36472843870,
         "universeId": "",
         "placeId": "",
-        "versionNumber": 36432015025,
+        "versionNumber": 36472843870,
         "historicalSharedTargetExactArtifact": false,
         "historicalExactBuildReplay": false,
         "currentSourceArtifactBinding": true,
@@ -510,14 +508,10 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": false
         },
-        "testedAt": "2026-09-28T13:38:08.016Z",
-        "workflowRunId": 36426761668,
+        "testedAt": "2026-09-28T19:47:47.142Z",
+        "workflowRunId": 36473562992,
         "publicationAuthority": false,
-        "publicationTargetDiscovery": false,
-        "reusedFromExactArtifactIdentity": true,
-        "historicalSourceRevision": "7f9333f29c1843b81279bcc82436a572921b2985",
-        "historicalVersionNumber": 36426405419,
-        "reusedAt": "2026-09-28T14:30:09.138Z"
+        "publicationTargetDiscovery": false
       },
       "robloxGameCompletionEvidence": null,
       "robloxPlatformAdaptationEvidence": null,
@@ -546,7 +540,7 @@
       },
       "robloxInternalReleasePublished": false,
       "robloxInternalPlaytestPassed": true,
-      "robloxInternalPlaytestPassedAt": "2026-09-28T14:30:09.138Z",
+      "robloxInternalPlaytestPassedAt": "2026-09-28T19:47:47.142Z",
       "robloxStudioLocalPlayRepairRequired": false,
       "robloxStudioLocalPlayInfrastructurePending": false,
       "robloxDedicatedTargetRegistryBinding": {
@@ -822,7 +816,7 @@
       "robloxQualityFailureClass": null,
       "robloxQualityBuildUpSourceRevision": null,
       "robloxQualityBuildUpEvidence": null,
-      "robloxQualityBuildUpLastPassedAt": "2026-09-28T13:38:08.016Z",
+      "robloxQualityBuildUpLastPassedAt": "2026-09-28T19:47:47.142Z",
       "robloxPublicReleaseVersionNumber": 26,
       "robloxPublicReleaseEvidence": null,
       "robloxValidationTarget": {
@@ -17373,7 +17367,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T19:43:44.738Z",
+  "updatedAt": "2026-09-28T19:47:47.142Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
