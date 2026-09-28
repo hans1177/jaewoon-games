@@ -1001,7 +1001,8 @@
     "publicationFailureBlocksEvolution": false,
     "publicationVisibilityBlocksEvolution": false,
     "nextCycleStartsAfterF9PublishDispatch": true,
-    "publicationFailureMayNotBlockNextCycle": true
+    "publicationFailureMayNotBlockNextCycle": true,
+    "canonicalPublishDispatchRequiredBeforeNextCycleRefill": true
   },
   "verifiedPlatformCyclePublicationSecurity": {
     "version": 1,
@@ -1019,5 +1020,21 @@
     "publicationFailureAction": "RETRY_PUBLICATION_ASYNC_WHILE_NEXT_VERIFIED_EVOLUTION_CYCLE_CONTINUES",
     "publicationFailureMayNotDowngradeVerifiedF9Evidence": true,
     "publicationFailureMayNotBlockNewSourceMutation": true
+  },
+  "platformVerifiedF0F9PublicationLoopSecurity": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.verifiedF0F9PublicationLoop",
+    "platforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "publishBeforeF9Forbidden": true,
+    "exactF9VerifiedVersionRequiredForPublishAttempt": true,
+    "publicationSuccessMayNotGateEvolution": true,
+    "visibilityStateMayNotGateEvolution": true,
+    "publicationFailureRoutesToExistingRepairWithoutStoppingNextDevelopmentCycle": true,
+    "f10Forbidden": true,
+    "terminalEvolutionStateForbidden": true
   }
 }
