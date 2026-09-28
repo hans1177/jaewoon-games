@@ -1,5 +1,5 @@
 {
-  "version": 153,
+  "version": 154,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2692,7 +2692,7 @@
     }
   },
   "verifiedExternalLearningFirstApplicationEvidenceContract": {
-    "version": 2,
+    "version": 3,
     "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.machineOnlyProjectContinuation.verifiedLearningMaxUse.externalVerifiedBlackBoxFirstApplication",
     "recordKind": "verified-external-learning-application-evidence",
     "requiredFields": [
@@ -2714,14 +2714,15 @@
     ],
     "requiredValues": {
       "sourceAuthority": "VERIFIED_MEMORY_ONLY",
-      "applicationCoveragePct": 100,
-      "allRetrievedTaskRelevantVerifiedExternalItemsApplied": true,
+      "applicationCoveragePct": null,
+      "allRetrievedTaskRelevantVerifiedExternalItemsApplied": false,
       "rawCommercialCodeCopy": false,
       "rawCommercialAssetCopy": false,
       "distinctiveExpressionClone": false,
       "nativeSourceReuseInvalidatesWhenVerifiedLearningChanges": true,
       "existingSourceMaintenanceRebindsWhenLearningChanges": true,
-      "exactAppliedIdsAndFingerprintEvidence": true
+      "exactAppliedIdsAndFingerprintEvidence": true,
+      "allRetrievedPrinciplesHaveExplicitDisposition": true
     },
     "requiredMarkers": [
       "ROBLOX_VERIFIED_EXTERNAL_LEARNING_FIRST=",
@@ -2748,6 +2749,85 @@
     ],
     "failureAction": "REPAIR_REQUIRED_AT_RESPONSIBLE_DEVELOPMENT_OR_ASSET_STAGE",
     "nativeRuntimeOrReleasePassNotImplied": true,
-    "verifiedOutcomeMustReturnToExistingLearningMotor": true
+    "verifiedOutcomeMustReturnToExistingLearningMotor": true,
+    "semanticApplicationContract": {
+      "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.machineOnlyProjectContinuation.verifiedLearningMaxUse.externalVerifiedBlackBoxFirstApplication",
+      "version": 3,
+      "implementationPriority": "ROBLOX_FIRST_UNITY_IMPLEMENTATION_UNCHANGED",
+      "objective": "VERIFIED_GENERAL_GAME_DEVELOPMENT_PRINCIPLE_TO_GAME_SPECIFIC_NATIVE_PLAY_EXPERIENCE",
+      "coveragePercentageIsCompletionEvidence": false,
+      "uiOnlyApplicationForbidden": true,
+      "sameEffectsForAllGamesForbidden": true,
+      "gameSpecificSemanticMappingRequired": true,
+      "unmappedGameDevelopmentPrinciple": "FAIL_CLOSED",
+      "qaInfrastructurePrinciples": "QA_ONLY_NOT_FORCED_INTO_GAME_SOURCE",
+      "existingGameRefresh": "FINGERPRINT_OR_MAPPING_VERSION_CHANGE_REQUIRES_REAL_BEHAVIOR_SOURCE_DIFF",
+      "preserveExistingEvolutionLoop": true,
+      "preserveExistingFloors": true,
+      "requiredEvidence": [
+        "PRINCIPLE",
+        "GAME_SPECIFIC_SEMANTIC_MAPPING",
+        "EXECUTABLE_SOURCE_DIFF",
+        "TEST_RESULT",
+        "SOURCE_COMMIT",
+        "PROMOTION_RESULT"
+      ],
+      "gameDevelopmentSurfaces": [
+        "GAMEPLAY",
+        "INPUT_FEEDBACK",
+        "CHARACTER_MOTION",
+        "ANIMATION",
+        "COMBAT_HIT_FEEDBACK",
+        "SKILL_TELEGRAPH",
+        "SKILL_EFFECTS",
+        "VFX",
+        "PARTICLES",
+        "CAMERA_FEEDBACK",
+        "WORLD_ENVIRONMENT",
+        "OBJECT_PRESENTATION",
+        "PROGRESSION",
+        "RISK_REWARD",
+        "CONTEXTUAL_ONBOARDING",
+        "MOBILE_TOUCH",
+        "HUD_UI",
+        "AUDIO_VISUAL_TIMING"
+      ],
+      "qaOnlySurfaces": [
+        "APK_INSTALLATION",
+        "ANDROID_ABI",
+        "ARTIFACT_INTEGRITY",
+        "HOSTED_EMULATOR",
+        "CI_QA_EVIDENCE",
+        "RUNTIME_INFRASTRUCTURE",
+        "AUTOMATION_INFRASTRUCTURE"
+      ],
+      "serverValidation": {
+        "serverFilesAreAssets": false,
+        "onlyWhenAffected": [
+          "DAMAGE_AUTHORITY",
+          "REWARDS",
+          "SAVE",
+          "ECONOMY",
+          "MULTIPLAYER_AUTHORITY",
+          "AUTHORITATIVE_STATE",
+          "EXPLOIT_PREVENTION"
+        ],
+        "pureClientPresentationRequiresServerRescan": false,
+        "exactValidEvidenceReuseRequired": true,
+        "sourceIntegrityStillRequired": true
+      },
+      "verifiedPositiveExternalIds": [
+        "external-black-box-block-blast-run-30",
+        "external-black-box-cavern-cravers-run-47",
+        "external-black-box-idle-fantasy-run-42",
+        "external-black-box-luanti-run-10",
+        "external-black-box-revengate-run-59",
+        "external-black-box-sgtpuzzles-run-29",
+        "external-black-box-shattered-pixel-dungeon-run-4"
+      ],
+      "unverifiedUncivEligible": false,
+      "legalBoundary": "BLACK_BOX_OBSERVATION_TO_GENERAL_PRINCIPLES_ONLY_NO_CODE_BINARY_ASSET_OR_HIDDEN_ALGORITHM_COPY",
+      "runtimeCompletion": "REQUIRES_EXACT_RUNTIME_EVIDENCE_NOT_SOURCE_ONLY_PASS"
+    }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "version": 491,
+  "version": 492,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -2357,10 +2357,10 @@
         "learningMayExpandAuthority": false,
         "learningMayReplaceNativeVerification": false,
         "externalVerifiedBlackBoxFirstApplication": {
-          "version": 2,
+          "version": 3,
           "authority": "OWNER_DIRECTIVE_2026-09-28",
           "required": true,
-          "objective": "APPLY_ALL_TASK_RELEVANT_VERIFIED_EXTERNAL_BLACK_BOX_LEARNING_BEFORE_GAME_DEVELOPMENT_OR_INTERNAL_ASSET_AUTHORING_THEN_TRANSFORM_IT_INTO_GAME_SPECIFIC_IMPLEMENTATION_AND_RETURN_FRESH_RUNTIME_OUTCOMES_TO_LEARNING",
+          "objective": "VERIFIED_GENERAL_GAME_DEVELOPMENT_PRINCIPLE_TO_GAME_SPECIFIC_NATIVE_PLAY_EXPERIENCE",
           "appliesTo": [
             "ROBLOX",
             "UNITY",
@@ -2369,15 +2369,15 @@
           ],
           "applicationOrder": [
             "LOAD_TASK_RELEVANT_VERIFIED_EXTERNAL_BLACK_BOX_LEARNING",
-            "REQUIRE_100_PERCENT_RETRIEVED_VERIFIED_EXTERNAL_LEARNING_COVERAGE",
+            "CLASSIFY_GAME_DEVELOPMENT_AND_QA_PRINCIPLES_THEN_MAP_APPLICABLE_GAME_SEMANTICS",
             "APPLY_TO_MENU_UI_GRAPHICS_MOTION_ENVIRONMENT_VFX_CAMERA_FEEDBACK_AND_GAMEPLAY_IMPLEMENTATION_AS_RELEVANT",
             "REAUTHOR_OR_RECOMPOSE_FOR_GAME_STYLE_LOCK_AND_PLATFORM_NATIVE_RULES",
             "RUN_FRESH_RUNTIME_MOBILE_AND_PLATFORM_QA",
             "RETURN_VERIFIED_POSITIVE_AND_NEGATIVE_OUTCOMES_TO_CANONICAL_LEARNING",
             "REPEAT_DURING_CONTINUOUS_EVOLUTION"
           ],
-          "mandatoryApplicationCoveragePct": 100,
-          "allRetrievedTaskRelevantVerifiedExternalItemsMustBeApplied": true,
+          "mandatoryApplicationCoveragePct": null,
+          "allRetrievedTaskRelevantVerifiedExternalItemsMustBeApplied": false,
           "retrievedVerifiedExternalLearningTruncationForbidden": true,
           "silentIgnoreForbidden": true,
           "applicationBeforeInternalAuthoringRequired": true,
@@ -2423,7 +2423,82 @@
           "unityNativeSourceGenerationWithoutVerifiedExternalLearningForbidden": true,
           "robloxExistingSourceMaintenanceWithoutVerifiedExternalLearningForbidden": true,
           "nativeSourceReuseMustInvalidateWhenVerifiedExternalLearningChanges": true,
-          "actualNativeDevelopmentMustExposeExactAppliedLearningIdsAndFingerprint": true
+          "actualNativeDevelopmentMustExposeExactAppliedLearningIdsAndFingerprint": true,
+          "implementationPriority": "ROBLOX_FIRST_UNITY_IMPLEMENTATION_UNCHANGED",
+          "coveragePercentageIsCompletionEvidence": false,
+          "uiOnlyApplicationForbidden": true,
+          "sameEffectsForAllGamesForbidden": true,
+          "gameSpecificSemanticMappingRequired": true,
+          "unmappedGameDevelopmentPrinciple": "FAIL_CLOSED",
+          "qaInfrastructurePrinciples": "QA_ONLY_NOT_FORCED_INTO_GAME_SOURCE",
+          "existingGameRefresh": "FINGERPRINT_OR_MAPPING_VERSION_CHANGE_REQUIRES_REAL_BEHAVIOR_SOURCE_DIFF",
+          "preserveExistingEvolutionLoop": true,
+          "preserveExistingFloors": true,
+          "requiredEvidence": [
+            "PRINCIPLE",
+            "GAME_SPECIFIC_SEMANTIC_MAPPING",
+            "EXECUTABLE_SOURCE_DIFF",
+            "TEST_RESULT",
+            "SOURCE_COMMIT",
+            "PROMOTION_RESULT"
+          ],
+          "gameDevelopmentSurfaces": [
+            "GAMEPLAY",
+            "INPUT_FEEDBACK",
+            "CHARACTER_MOTION",
+            "ANIMATION",
+            "COMBAT_HIT_FEEDBACK",
+            "SKILL_TELEGRAPH",
+            "SKILL_EFFECTS",
+            "VFX",
+            "PARTICLES",
+            "CAMERA_FEEDBACK",
+            "WORLD_ENVIRONMENT",
+            "OBJECT_PRESENTATION",
+            "PROGRESSION",
+            "RISK_REWARD",
+            "CONTEXTUAL_ONBOARDING",
+            "MOBILE_TOUCH",
+            "HUD_UI",
+            "AUDIO_VISUAL_TIMING"
+          ],
+          "qaOnlySurfaces": [
+            "APK_INSTALLATION",
+            "ANDROID_ABI",
+            "ARTIFACT_INTEGRITY",
+            "HOSTED_EMULATOR",
+            "CI_QA_EVIDENCE",
+            "RUNTIME_INFRASTRUCTURE",
+            "AUTOMATION_INFRASTRUCTURE"
+          ],
+          "serverValidation": {
+            "serverFilesAreAssets": false,
+            "onlyWhenAffected": [
+              "DAMAGE_AUTHORITY",
+              "REWARDS",
+              "SAVE",
+              "ECONOMY",
+              "MULTIPLAYER_AUTHORITY",
+              "AUTHORITATIVE_STATE",
+              "EXPLOIT_PREVENTION"
+            ],
+            "pureClientPresentationRequiresServerRescan": false,
+            "exactValidEvidenceReuseRequired": true,
+            "sourceIntegrityStillRequired": true
+          },
+          "verifiedPositiveExternalIds": [
+            "external-black-box-block-blast-run-30",
+            "external-black-box-cavern-cravers-run-47",
+            "external-black-box-idle-fantasy-run-42",
+            "external-black-box-luanti-run-10",
+            "external-black-box-revengate-run-59",
+            "external-black-box-sgtpuzzles-run-29",
+            "external-black-box-shattered-pixel-dungeon-run-4"
+          ],
+          "unverifiedUncivEligible": false,
+          "legalBoundary": "BLACK_BOX_OBSERVATION_TO_GENERAL_PRINCIPLES_ONLY_NO_CODE_BINARY_ASSET_OR_HIDDEN_ALGORITHM_COPY",
+          "runtimeCompletion": "REQUIRES_EXACT_RUNTIME_EVIDENCE_NOT_SOURCE_ONLY_PASS",
+          "allRetrievedPrinciplesMustHaveExplicitDisposition": true
         }
       },
       "unityWebDevelopmentFloor": {
