@@ -621,6 +621,16 @@ end
 
 -- 상태 갱신
 local function render()
+  local idx=p:GetAttribute("NextBaseIndex")or 1
+  local b=C.Bases[idx]
+  local target=b and (b.Name .. " · " .. (b.Enemy or "수비대") .. " · 전력 " .. b.Strength)or "5개 거점 정복 완료"
+  resources.Text=string.format("나무 %d · 식량 %d · 코인 %d
+병사 %d · 병영 Lv.%d · 점령 %d/5",
+   p:GetAttribute("Wood")or 0,p:GetAttribute("Food")or 0,p:GetAttribute("Coins")or 0,
+   p:GetAttribute("Troops")or 0,p:GetAttribute("BarracksLevel")or 1,p:GetAttribute("CapturedBases")or 0)
+
+  local inBattle=p:GetAttribute("InBattle")==true
+  local activity= /no_think
  local idx=p:GetAttribute("NextBaseIndex")or 1
  local b=C.Bases[idx]
  local target=b and (b.Name.." · "..(b.Enemy or"수비대").." · 전력 "..b.Strength)or"5개 거점 정복 완료"
