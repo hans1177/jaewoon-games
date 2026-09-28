@@ -986,7 +986,7 @@ jobs:
           if(runtime&&qa&&!multiplayerPass)failure='F7_MULTIPLAYER_FOUNDATION';else if(multiplayerPass&&runtime&&qa)last='F7_MULTIPLAYER_FOUNDATION';
           if(runtime&&qa&&multiplayerPass)last='F8_GAMEPLAY_SYSTEMS';
           if(runtime&&qa&&multiplayerPass&&!regression)failure='F9_RELEASE_REGRESSION';else if(regression&&multiplayerPass)last='F9_RELEASE_REGRESSION';
-          const canonical=process.env.MEETING_STATE||'WAITING_TARGET_PLATFORM_VALIDATION';
+          const canonical='TARGET_PLATFORM_REPAIR_REQUIRED';
           const runtimeRun=Number(process.env.RUNTIME_RUN_NEW||process.env.RUNTIME_RUN_OLD||0)||null;
           const qaRun=Number(process.env.QA_RUN_NEW||process.env.QA_RUN_OLD||0)||null;
           const regressionRun=Number(process.env.REGRESSION_RUN_NEW||process.env.REGRESSION_RUN_OLD||0)||null;

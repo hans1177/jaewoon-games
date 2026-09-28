@@ -242,9 +242,12 @@ test('target platform failures stay in repair states in native workers',()=>{
   assert.match(router,/return 'TARGET_PLATFORM_REPAIR_REQUIRED'/);
   assert.match(roblox,/canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'/);
   assert.match(roblox,/BUILD_REPAIR_REQUIRED/);
-  assert.match(unity,/failure='TARGET_PLATFORM_RUNTIME'/);
-  assert.match(unity,/failure='INDEPENDENT_QA'/);
-  assert.match(unity,/failure='REGRESSION'/);
+  assert.match(unity,/failure='F1_SERVER_BOOT'/);
+  assert.match(unity,/failure='F5_INPUT_CAMERA_UI'/);
+  assert.match(unity,/failure='F7_MULTIPLAYER_FOUNDATION'/);
+  assert.match(unity,/failure='F9_RELEASE_REGRESSION'/);
+  assert.match(unity,/const canonical='TARGET_PLATFORM_REPAIR_REQUIRED'/);
+  assert.doesNotMatch(unity,/WAITING_TARGET_PLATFORM_VALIDATION/);
 });
 
 test('development runtime uses company-runtime queue authority and canonical native eligibility',()=>{
