@@ -733,13 +733,12 @@ jobs:
               distribution:'INTERNAL_OR_CLOSED_APP_TEST_BUILD',artifactInternalTestingAllowed:true,publicRelease:false,
               authority:'unity-exact-apk-runtime-qa-regression'
             }:null,
-            unityPublicReleaseReady:false,unityPublicRelease:false,
             executionEvidence:evidence,resumeStage:failure||(internalReady?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'IMMEDIATE_NEXT_STAGE_DISPATCH'),
             failureCount:failure?1:0,contractCanaryPassed:String(process.env.IS_CANARY).toLowerCase()==='true'&&regression,updatedAt:stamp
           };
           fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.json`,JSON.stringify(row,null,2)+'\n');
           fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.evidence.json`,JSON.stringify(evidence,null,2)+'\n');
-          console.log(`CHECKPOINT_LAST_SUCCESS=${last}`);console.log(`CHECKPOINT_FAILURE_STAGE=${failure||'NONE'}`);console.log(`UNITY_INTERNAL_RELEASE_READY=${internalReady?'YES':'NO'}`);console.log('UNITY_PUBLIC_RELEASE=NO');
+          console.log(`CHECKPOINT_LAST_SUCCESS=${last}`);console.log(`CHECKPOINT_FAILURE_STAGE=${failure||'NONE'}`);console.log(`UNITY_INTERNAL_RELEASE_READY=${internalReady?'YES':'NO'}`);console.log('UNITY_PUBLIC_RELEASE_MUTATION=NO');
           NODE
 
       - name: Upload checkpoint for company-runtime persistence
