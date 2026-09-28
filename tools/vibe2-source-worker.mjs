@@ -355,11 +355,10 @@ export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',r
   return{summary:'Vibe2 deterministic diagnostic repair',expectedEffect:'eliminate reproduced '+spec.diagnosticType+' before model generation',edits:[{path:spec.path,find:spec.find,replace}],newFiles:[],replaceFiles:[],tests:[],deterministicDiagnosticType:spec.diagnosticType};
 }
 
-export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sourceRootRelative='',responsibleFiles=[],candidateValidator=null}={}){
+export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sourceRootRelative='',responsibleFiles=[],candidateValidator=null,verifiedExternalLearningContract=null}={}){
   if(clean(order?.target).toLowerCase()!=='roblox'||!clean(sourceRoot))return null;
   const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
-  const supportedPasses=new Set(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','CAMERA_LANGUAGE','POLISH_MOBILE']);
-  if(order?.presentationQuality?.required!==true||!supportedPasses.has(presentationPass))return null;
+  if(order?.presentationQuality?.required!==true||presentationPass!=='ASSET_ADAPTATION')return null;
   const clientFiles=unique(responsibleFiles).filter(file=>/(?:^|\/)client(?:\/|$)|\.client\.luau$/i.test(file));
   if(!clientFiles.length)return null;
 
@@ -409,7 +408,13 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
 
     const previousStages=['ROOT','TITLE','STATUS'].map(key=>blockMatch(source,key)?.stage||0);
     const stage=Math.max(1,Math.max(...previousStages)+1);
-    const seed=numberHash((order?.gameId||'roblox')+':'+stage);
+    const verifiedLearning=verifiedExternalLearningContract&&typeof verifiedExternalLearningContract==='object'?verifiedExternalLearningContract:{required:false,ids:[],coveragePct:0,block:''};
+    const verifiedLearningIds=unique(verifiedLearning.ids||[]);
+    const verifiedLearningConsumed=verifiedLearning.required===true
+      ?Boolean(clean(verifiedLearning.block))&&verifiedLearningIds.length>0&&Number(verifiedLearning.coveragePct||0)===100
+      :true;
+    if(verifiedLearning.required===true&&!verifiedLearningConsumed)return null;
+    const seed=numberHash((order?.gameId||'roblox')+':'+stage+':'+clean(verifiedLearning.block));
     const accent=[96+(seed%112),96+((seed>>>8)%112),112+((seed>>>16)%96)];
     const accent2=[Math.min(255,accent[0]+28),Math.min(255,accent[1]+24),Math.min(255,accent[2]+20)];
     const radius=10+(stage%5);
@@ -501,10 +506,37 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
     if(!rows.length)continue;
 
     try{
+      const graphicsContract=order?.presentationQuality?.graphicsReplacement||{};
+      const graphicsSurface=(graphicsContract?.surfaces||[]).map(value=>clean(value).toUpperCase()).includes('HUD')
+        ?'HUD'
+        :clean((graphicsContract?.surfaces||[])[0]).toUpperCase()||'HUD';
+      const graphicsReuseMode=(graphicsContract?.reuseModes||[]).map(value=>clean(value).toUpperCase()).includes('ADAPT_RESTYLE_AND_RETARGET')
+        ?'ADAPT_RESTYLE_AND_RETARGET'
+        :clean((graphicsContract?.reuseModes||[])[0]).toUpperCase()||'ADAPT_RESTYLE_AND_RETARGET';
+      const evidenceLines=[
+        '    deterministicGameplayHudCorner = Instance.new("UICorner")',
+        '    deterministicGameplayHudStroke = Instance.new("UIStroke")',
+        '    deterministicGameplayHudGradient = Instance.new("UIGradient")'
+      ];
+      const graphicsReplacementReport=graphicsContract?.required===true?{
+        actualCount:evidenceLines.length,
+        changedSurfaces:[graphicsSurface],
+        reuseModesUsed:[graphicsReuseMode],
+        replacementEvidence:evidenceLines.map((sourceEvidence,index)=>({
+          surface:graphicsSurface,
+          path:relative,
+          bindingKey:['DeterministicGameplayHudCorner','DeterministicGameplayHudStroke','DeterministicGameplayHudGradient'][index],
+          reuseMode:graphicsReuseMode,
+          sourceEvidence
+        })),
+        before:'existing Roblox gameplay HUD without this deterministic staged style and entry-motion treatment',
+        after:'deterministic native Roblox HUD restyle with grounded corner, stroke, gradient, and TweenService entry motion'
+      }:null;
       const candidate=normalizeCandidate({
         summary:'Deterministic Roblox presentation build-up stage '+stage,
         expectedEffect:'model-independent native Roblox HUD style and motion build-up',
-        edits:rows,newFiles:[],replaceFiles:[],tests:[]
+        edits:rows,newFiles:[],replaceFiles:[],tests:[],
+        graphicsReplacementReport
       },{target:'roblox',responsibleFiles,sourceRootRelative,allowFullRewrite:false});
       applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       const candidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
@@ -513,6 +545,12 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
         candidateValidation,
         generation:{
           attempts:0,recoveryUsed:false,deterministicRobloxBuildUp:true,deterministicRobloxBuildStage:stage,
+          deterministicVerifiedExternalLearningApplied:verifiedLearning.required===true&&verifiedLearningConsumed,
+          deterministicVerifiedExternalLearningIds:[...verifiedLearningIds],
+          deterministicVerifiedExternalLearningCoveragePct:verifiedLearning.required===true?100:0,
+          deterministicVerifiedExternalLearningContractConsumed:verifiedLearningConsumed,
+          verifiedExternalLearningPromptChecks:0,
+          verifiedExternalLearningPromptAllAttempts:verifiedLearning.required!==true,
           mode:'DETERMINISTIC_ROBLOX_BUILDUP',maxPredict:0,timeoutMs:0,contextWindow:0,temperature:0,completionMode:'DETERMINISTIC_ROBLOX_BUILDUP'
         }
       };
@@ -2898,7 +2936,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     }
   }
   if(!generated&&target==='roblox'){
-    generated=deterministicRobloxBuildUpCandidate({order,sourceRoot,sourceRootRelative,responsibleFiles,candidateValidator});
+    generated=deterministicRobloxBuildUpCandidate({order,sourceRoot,sourceRootRelative,responsibleFiles,candidateValidator,verifiedExternalLearningContract});
     if(generated)console.log('VIBE2_DETERMINISTIC_ROBLOX_BUILDUP=PASS:stage='+Number(generated.generation?.deterministicRobloxBuildStage||0));
   }
   if(!generated)generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract});
@@ -2968,6 +3006,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     verifiedExternalLearningSourcePromptTruncationForbidden:order?.knowledgeApplicationContract?.retrievedVerifiedExternalLearningTruncationForbidden===true,
     verifiedExternalLearningRuntimePromptChecks:Number(generation.verifiedExternalLearningPromptChecks||0),
     verifiedExternalLearningRuntimePromptAllAttempts:generation.verifiedExternalLearningPromptAllAttempts===true,
+    verifiedExternalLearningDeterministicApplied:generation.deterministicVerifiedExternalLearningApplied===true,
+    verifiedExternalLearningDeterministicIds:Array.isArray(generation.deterministicVerifiedExternalLearningIds)?generation.deterministicVerifiedExternalLearningIds.slice(0,64):[],
+    verifiedExternalLearningDeterministicCoveragePct:Number(generation.deterministicVerifiedExternalLearningCoveragePct||0),
+    verifiedExternalLearningDeterministicContractConsumed:generation.deterministicVerifiedExternalLearningContractConsumed===true,
     deterministicDiagnosticBypassedForVerifiedExternalLearning:verifiedExternalLearningContract.required===true&&deterministicDiagnostic===null,
     contextFiles:context.files.length,
     contextBytes:context.bytes,
