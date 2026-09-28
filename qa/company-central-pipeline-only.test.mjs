@@ -813,7 +813,9 @@ test('verified external black-box learning is applied first at full retrieved co
   assert.match(robloxBootstrap,/VerifiedExternalLearningFirst = \$\{learning\.verifiedExternalLearningFirst\?'true':'false'\}/);
   assert.match(robloxBootstrap,/MemoryFingerprint = \$\{luauString\(learning\.verifiedExternalLearningFingerprint\|\|' '\.trim\(\)\)\}|MemoryFingerprint = \$\{luauString\(learning\.verifiedExternalLearningFingerprint\|\|''\)\}/);
   assert.match(robloxBootstrap,/CoveragePct = \$\{Number\(learning\.verifiedExternalLearningCoveragePct\|\|0\)\}/);
-  assert.match(robloxBootstrap,/ROBLOX_EXISTING_SOURCE_VERIFIED_EXTERNAL_LEARNING_REQUIRED/);
+  assert.match(robloxBootstrap,/requireRobloxVerifiedExternalLearning/);
+  assert.match(robloxBootstrap,/GameSpecificSemanticMappings/);
+  assert.match(robloxBootstrap,/LearningDispositions/);
   assert.match(robloxReconcile,/existing-source-verified-external-learning-required/);
   assert.match(robloxNativeWorkflow,/ROBLOX_RECONCILE_VERIFIED_EXTERNAL_LEARNING=READY/);
   assert.match(unityNativeBootstrap,/verifiedExternalLearningFromPlaybooks/);
