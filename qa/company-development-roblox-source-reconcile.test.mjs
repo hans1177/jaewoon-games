@@ -488,7 +488,7 @@ test('existing Roblox source is re-queued when current verified APK learning is 
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-learning-refresh-'));
   try{
     const root=path.join(tmp,'roblox-games',gameId);
-    writeCompiledTree(root);
+    writeLegacyStudioUnboundTree(root);
     applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary});
     initGitRepo(tmp);
     const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
