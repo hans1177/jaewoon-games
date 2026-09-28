@@ -2003,3 +2003,16 @@ test('Studio QA keeps user windows and releases only its exact owned process',()
   assert.equal((block.match(/- name: Persist exact Studio MCP play evidence/g)||[]).length,1);
   assert.equal((block.match(/- name: Refill existing 24H development loop/g)||[]).length,1);
 });
+
+
+test('Studio flags inaccessible graphics assets for exact visual repair while retaining ordinary warnings',()=>{
+  const result=classifyStudioConsoleOutput({content:[{type:'text',text:[
+    JSON.stringify({message:'Failed to load texture asset rbxassetid://123: not authorized to access',messageType:2}),
+    JSON.stringify({message:'Ordinary warning about frame rate',messageType:2})
+  ].join('\\n')}]});
+  assert.equal(result.errors.length,1);
+  assert.equal(result.errors[0].type,'studio-asset-load-error');
+  assert.equal(result.warningCount,2);
+  assert.match(helper,/repairSurface:'VISUAL_ASSET_LOADING'/);
+  assert.match(helper,/visual-asset-load-integrity/);
+});
