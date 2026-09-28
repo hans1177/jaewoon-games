@@ -111,3 +111,21 @@ test('base SHA overlap requires replan; unrelated changes only require rebase an
   const clean = detectVibeBaseShaOverlap(first.lock, []);
   assert.equal(clean.decision, 'QA_ALLOWED');
 });
+
+
+test('lock preserves owning workflow run identity', () => {
+  const first = acquireVibeWorkLock(createVibeWorkLockState(), {
+    worker: 'vibe2',
+    taskId: 'run-owned-task',
+    files: ['roblox-games/demo/client/Game.client.luau'],
+    baseSha: 'sha-run',
+    runId: '12345',
+    runAttempt: '2'
+  }, NOW);
+  assert.equal(first.acquired, true);
+  assert.equal(first.lock.runId, '12345');
+  assert.equal(first.lock.runAttempt, '2');
+  const restored = createVibeWorkLockState(first.state);
+  assert.equal(restored.locks[0].runId, '12345');
+  assert.equal(restored.locks[0].runAttempt, '2');
+});
