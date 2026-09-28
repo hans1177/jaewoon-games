@@ -16,14 +16,39 @@
   "serverSourceChanged": false,
   "foundationRepairApplied": false,
   "generatedFiles": [
-    "shared/GameConfig.luau"
+    "shared/GameConfig.luau",
+    "client/Game.client.luau"
   ],
   "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
-  "vibe3LearningApplied": false,
-  "recombinationRecipeId": null,
+  "vibe3LearningApplied": true,
+  "recombinationRecipeId": "recombine_e0cdf2a3aa96b995",
+  "verifiedExternalLearningAppliedToExistingSource": true,
+  "verifiedExternalLearningFirst": true,
+  "verifiedExternalLearningCoveragePct": 100,
+  "verifiedExternalLearningRetrievedCount": 7,
+  "verifiedExternalLearningAppliedCount": 7,
+  "verifiedExternalLearningIds": [
+    "external-black-box-block-blast-run-30",
+    "external-black-box-cavern-cravers-run-47",
+    "external-black-box-idle-fantasy-run-42",
+    "external-black-box-luanti-run-10",
+    "external-black-box-revengate-run-59",
+    "external-black-box-sgtpuzzles-run-29",
+    "external-black-box-shattered-pixel-dungeon-run-4"
+  ],
+  "verifiedExternalLearningFingerprint": "hfed4s",
+  "verifiedExternalLearningApplyAxes": [
+    "MENU_FLOW_AND_INFORMATION_ARCHITECTURE",
+    "UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY",
+    "GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION",
+    "MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION",
+    "ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY",
+    "VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE",
+    "GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"
+  ],
   "studioAssetBinding": {
     "version": 3,
     "bindingVersion": 2,
@@ -170,12 +195,12 @@
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "survival-build-up-g1-bdb3801e43bc",
+  "buildUpDirectiveId": "survival-build-up-g1-174b7129dd90",
   "buildUpGeneration": 1,
   "buildUpGoal": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "buildUpDirectiveFingerprint": "bdb3801e43bcbe3c141dc7f9b50f527f428e7474dd163aaf68c4a17d2c37809c",
+  "buildUpDirectiveFingerprint": "174b7129dd907e0b9adf791d8de35bf2d120041e25f83c84ee97d0ca094d6edb",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-09-27T09:22:14.504Z"
+  "createdAt": "2026-09-28T02:31:33.663Z"
 }
