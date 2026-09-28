@@ -1992,7 +1992,8 @@ test('complex Studio routes follow path waypoints and verify actual arrival',()=
   assert.match(helper,/waypointDistance>6/);
   assert.match(helper,/arrivalDistance<=6/);
   assert.match(helper,/no-reachable-anchor/);
-  assert.doesNotMatch(helper,/moved>=1\);\s*actions\.push\(\{id:'map-route-/);
+  assert.match(helper,/navOk&&reached&&Number\.isFinite\(arrivalDistance\)&&arrivalDistance<=6/);
+  assert.match(helper,/for\(let segment=0;segment<4&&navOk&&!reached;segment\+\+\)/);
 });
 test('final Studio capture stops play and keeps the owned Studio available for manual save',()=>{
   const releaseAt=workflow.indexOf('- name: Release Studio controls for manual save after final capture');
