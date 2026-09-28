@@ -3,43 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1dmv55q",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-roblox-second-gate-rebuild-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/shared/GameConfig.luau",
-        "roblox-games/horror-escape-room/server/Game.server.luau",
-        "roblox-games/horror-escape-room/client/Game.client.luau"
-      ],
-      "baseSha": "7f9333f29c1843b81279bcc82436a572921b2985",
-      "acquiredAt": "2026-09-28T13:12:20.613Z",
-      "expiresAt": "2026-09-28T13:57:20.613Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-roblox-second-gate-rebuild-v1"
-      ]
-    },
-    {
-      "id": "wl-1j8byin",
-      "worker": "vibe2",
-      "taskId": "line-defense-unity-web-base-implementation-v1",
-      "gameId": "line-defense",
-      "files": [
-        "unity-games/line-defense/Assets/Scripts/GameCore.cs",
-        "unity-games/line-defense/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "7f9333f29c1843b81279bcc82436a572921b2985",
-      "acquiredAt": "2026-09-28T13:12:58.524Z",
-      "expiresAt": "2026-09-28T13:57:58.524Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:line-defense-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-sokst2",
       "worker": "vibe2",
       "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
@@ -487,25 +450,6 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
-      "id": "wl-1nkgz2r",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-unity-web-repair-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "a651564022b08efd1273f08381f4b31d3885c670",
-      "acquiredAt": "2026-09-28T13:50:36.902Z",
-      "expiresAt": "2026-09-28T14:35:36.902Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-unity-web-repair-v1"
       ]
     },
     {
