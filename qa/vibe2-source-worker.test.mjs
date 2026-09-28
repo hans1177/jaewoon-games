@@ -3849,3 +3849,12 @@ test('verified APK black-box learning is fail-closed and survives every source-g
   assert.equal(verifiedExternalLearningBlockFromPrompt(expansion),contract.block);
   assert.throws(()=>buildVerifiedExternalLearningPromptContract({...order,unifiedLearning:{playbookReuse:[order.unifiedLearning.playbookReuse[0]]}}),/ROW_MISSING:external-black-box-b-run-2/);
 });
+
+
+test('fan-in rejects candidates without actual APK learning prompt proof',()=>{
+  const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workflowSource,/verified-external-learning-source-prompt-unproven/);
+  assert.match(workflowSource,/const effectiveCandidateOk=candidateOk&&sourcePromptLearningOk/);
+  assert.match(workflowSource,/verified-external-learning-source-prompt:\$\{sourcePromptLearningOk\?'PASS':'FAIL'\}/);
+  assert.match(workflowSource,/actualSourcePromptVerified:sourcePromptLearningOk/);
+});

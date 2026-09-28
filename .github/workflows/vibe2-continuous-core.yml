@@ -1545,6 +1545,23 @@ jobs:
           const explorationFile=clean(process.env.EXPLORATION_FILE);
           const exploration=manifest.exploration||(explorationFile&&fs.existsSync(explorationFile)?JSON.parse(fs.readFileSync(explorationFile,'utf8')):null);
           const sourceGenerationAttempted=process.env.ORDER_RUN==='true' && route==='text-source-worker' && workLockAcquired;
+          const expectedExternalLearningIds=[...new Set((workOrder?.knowledgeApplicationContract?.verifiedExternalLearningIds||[]).map(clean).filter(Boolean))];
+          const sourcePromptExternalLearningIds=[...new Set((manifest?.codingMethod?.verifiedExternalLearningSourcePromptIds||[]).map(clean).filter(Boolean))];
+          const sameExternalLearningIds=expectedExternalLearningIds.length===sourcePromptExternalLearningIds.length
+            &&expectedExternalLearningIds.every(id=>sourcePromptExternalLearningIds.includes(id));
+          const sourcePromptLearningRequired=workOrder?.knowledgeApplicationContract?.mandatoryForGameTarget===true;
+          const sourcePromptLearningOk=!sourcePromptLearningRequired||(
+            manifest?.codingMethod?.verifiedExternalLearningSourcePromptRequired===true
+            &&Number(manifest?.codingMethod?.verifiedExternalLearningSourcePromptCoveragePct||0)===100
+            &&Number(manifest?.codingMethod?.verifiedExternalLearningSourcePromptCount||0)===expectedExternalLearningIds.length
+            &&manifest?.codingMethod?.verifiedExternalLearningSourcePromptTruncationForbidden===true
+            &&sameExternalLearningIds
+          );
+          const effectiveCandidateOk=candidateOk&&sourcePromptLearningOk;
+          if(sourceGenerationAttempted&&sourcePromptLearningRequired&&!sourcePromptLearningOk){
+            outcome='FAIL';
+            blocker='verified-external-learning-source-prompt-unproven';
+          }
           const capabilityApplicationIds=[...new Set((workOrder?.capabilityApplicationContract?.exactInjectedCapabilityIds||[]).map(clean).filter(Boolean))].slice(0,8);
           const capabilityApplication={
             version:1,
@@ -1561,8 +1578,12 @@ jobs:
             hiddenChainOfThoughtStored:false,
             authorityExpanded:false
           };
-          const candidateFailureClass=sourceGenerationAttempted&&!candidateOk?(clean(process.env.CANDIDATE_FAILURE_CLASS)||null):null;
-          const candidateFailureMessage=sourceGenerationAttempted&&!candidateOk?(clean(process.env.CANDIDATE_FAILURE_MESSAGE)||null):null;
+          const candidateFailureClass=sourceGenerationAttempted&&!effectiveCandidateOk
+            ?(!sourcePromptLearningOk?'VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT':(clean(process.env.CANDIDATE_FAILURE_CLASS)||null))
+            :null;
+          const candidateFailureMessage=sourceGenerationAttempted&&!effectiveCandidateOk
+            ?(!sourcePromptLearningOk?'verified external APK black-box learning was not proven in the actual source-generation prompt':(clean(process.env.CANDIDATE_FAILURE_MESSAGE)||null))
+            :null;
           const fallbackCodingMethod=clean(workOrder?.candidateStrategyRole?.strategy)?{
             version:2,
             strategy:clean(workOrder.candidateStrategyRole.strategy),
@@ -1602,7 +1623,7 @@ jobs:
           const graphicsReplacementQa=incrementalQaReport?.graphicsReplacementQa&&typeof incrementalQaReport.graphicsReplacementQa==='object'?incrementalQaReport.graphicsReplacementQa:{status:'NOT_REQUIRED',required:false,actualCount:0,groundedCount:0,checks:[],authorityExpanded:false};
           const roleResults={
             exploration:exploration?.reuseKey?'PASS':'FAIL',
-            implementation:candidateOk?'PASS':'FAIL',
+            implementation:effectiveCandidateOk?'PASS':'FAIL',
             test:testOk?'PASS':'FAIL',
             performance:performanceOk?'PASS':'FAIL',
             regression:'WAITING_FAN_IN',
@@ -1644,6 +1665,8 @@ jobs:
             ['MEDIUM','HIGH'].includes(clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK).toUpperCase())?'architecture-drift-focused-review-required:YES':'',
             ...Object.entries(roleResults).map(([role,status])=>`role-result:${role}:${status}`),
             candidateFailureClass&&`source-generation-failure:${candidateFailureClass}`,
+            sourcePromptLearningRequired?`verified-external-learning-source-prompt:${sourcePromptLearningOk?'PASS':'FAIL'}`:'',
+            sourcePromptLearningOk&&sourcePromptLearningRequired?`verified-external-learning-source-prompt-count:${sourcePromptExternalLearningIds.length}`:'',
             clean(baseCodingMethod?.strategy)&&`coding-strategy:${clean(baseCodingMethod.strategy)}`,
             clean(baseCodingMethod?.responsibilityConfidence)&&`coding-responsibility-confidence:${clean(baseCodingMethod.responsibilityConfidence)}`,
             Number(baseCodingMethod?.generationAttempts)>0&&`coding-generation-attempts:${Number(baseCodingMethod.generationAttempts)}`,
@@ -1758,7 +1781,7 @@ jobs:
           }
           const candidateBranch=clean(process.env.CANDIDATE_BRANCH)||null;
           const baseMainSha=clean(process.env.BASE_SHA)||null;
-          const candidateIdentity=candidateOk?{
+          const candidateIdentity=effectiveCandidateOk?{
             taskId:clean(manifest.taskId)||null,
             gameId:clean(manifest.gameId)||null,
             target:clean(manifest.target).toLowerCase()||null,
@@ -1766,13 +1789,13 @@ jobs:
             baseMainSha:clean(manifest.baseMainSha)||null,
             manifestPath:candidateManifest||null
           }:null;
-          const candidateFailure=sourceGenerationAttempted&&!candidateOk?{class:candidateFailureClass||'OTHER',message:candidateFailureMessage}:null;
+          const candidateFailure=sourceGenerationAttempted&&!effectiveCandidateOk?{class:candidateFailureClass||'OTHER',message:candidateFailureMessage}:null;
           const codingMethod=baseCodingMethod?{
             ...baseCodingMethod,
-            implementationPass:candidateOk,
+            implementationPass:effectiveCandidateOk,
             incrementalQaPass:testOk,
             performanceSanityPass:performanceOk,
-            firstCandidatePass:Boolean(candidateOk&&testOk&&performanceOk&&baseCodingMethod.candidateProducedFirstAttempt===true),
+            firstCandidatePass:Boolean(effectiveCandidateOk&&testOk&&performanceOk&&baseCodingMethod.candidateProducedFirstAttempt===true),
             fullRegressionVerified:false,
             reviewVerified:false,
             causalReplayStatus:clean(process.env.IQA_CAUSAL_REPLAY_STATUS)||clean(baseCodingMethod?.causalReplay?.status)||'NOT_REQUIRED',
@@ -1818,6 +1841,9 @@ jobs:
             verifiedExternalLearningCoveragePct:Number(workOrder.knowledgeApplicationContract.verifiedExternalLearningCoveragePct||0),
             verifiedExternalLearningApplyAxes:Array.isArray(workOrder.knowledgeApplicationContract.verifiedExternalLearningApplyAxes)?workOrder.knowledgeApplicationContract.verifiedExternalLearningApplyAxes:[],
             retrievedVerifiedExternalLearningTruncationForbidden:workOrder.knowledgeApplicationContract.retrievedVerifiedExternalLearningTruncationForbidden===true,
+            actualSourcePromptVerified:sourcePromptLearningOk,
+            actualSourcePromptVerifiedExternalLearningIds:sourcePromptExternalLearningIds,
+            actualSourcePromptCoveragePct:sourcePromptLearningOk&&sourcePromptLearningRequired?100:0,
             verifiedLearningMemorySha:clean(workOrder.knowledgeApplicationContract.verifiedLearningMemorySha)||clean(process.env.VIBE2_VERIFIED_LEARNING_MEMORY_SHA)||null,
             freshIndependentQaRequired:true,
             infrastructureFailurePenalizesKnowledge:false,
