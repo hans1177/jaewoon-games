@@ -76,7 +76,7 @@ local verifiedLearningPlayer = verifiedLearningPlayers.LocalPlayer
 local verifiedLearningContext = C.VerifiedExternalLearning or C.LearningContext or {}
 local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
-local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 5
+local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
 local verifiedLearningRoot = stats
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
@@ -255,6 +255,7 @@ end)
 
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
 stats:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternalLearningContext.CoveragePct or 0)
+stats:SetAttribute("VerifiedExternalLearningContentComplete", verifiedExternalLearningContext.ContentComplete == true)
 stats:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
 stats:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
 stats:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
