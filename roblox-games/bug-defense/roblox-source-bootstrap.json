@@ -16,14 +16,39 @@
   "serverSourceChanged": false,
   "foundationRepairApplied": false,
   "generatedFiles": [
-    "shared/GameConfig.luau"
+    "shared/GameConfig.luau",
+    "client/Game.client.luau"
   ],
   "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
-  "vibe3LearningApplied": false,
-  "recombinationRecipeId": null,
+  "vibe3LearningApplied": true,
+  "recombinationRecipeId": "recombine_70251cbc8b613192",
+  "verifiedExternalLearningAppliedToExistingSource": true,
+  "verifiedExternalLearningFirst": true,
+  "verifiedExternalLearningCoveragePct": 100,
+  "verifiedExternalLearningRetrievedCount": 7,
+  "verifiedExternalLearningAppliedCount": 7,
+  "verifiedExternalLearningIds": [
+    "external-black-box-block-blast-run-30",
+    "external-black-box-cavern-cravers-run-47",
+    "external-black-box-idle-fantasy-run-42",
+    "external-black-box-luanti-run-10",
+    "external-black-box-revengate-run-59",
+    "external-black-box-sgtpuzzles-run-29",
+    "external-black-box-shattered-pixel-dungeon-run-4"
+  ],
+  "verifiedExternalLearningFingerprint": "hfed4s",
+  "verifiedExternalLearningApplyAxes": [
+    "MENU_FLOW_AND_INFORMATION_ARCHITECTURE",
+    "UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY",
+    "GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION",
+    "MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION",
+    "ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY",
+    "VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE",
+    "GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"
+  ],
   "studioAssetBinding": {
     "version": 3,
     "bindingVersion": 2,
@@ -170,12 +195,12 @@
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "bug-defense-build-up-g1-7e224ada05e2",
+  "buildUpDirectiveId": "bug-defense-build-up-g1-5dd0ddd44216",
   "buildUpGeneration": 1,
   "buildUpGoal": "곤충 디펜스는 생태계의 먹이사슬과 곤충의 고유한 생물학적 특성을 전략적 상성으로 치환한 하드코어 타워 디펜스 게임입니다. 플레이어는 정원이라는 제한된 공간에서 침입하는 해충 군단을 막기 위해 포식자 곤충을 배치하며, 각 곤충의 공격 방식과 환경 상성을 고려한 배치 선택이 게임의 핵심 상태 변화를 주도합니다. 기존 디펜스 게임의 단순 수치 싸움을 넘어, 곤충의 서식지 적응도와 포식 패턴이라는 시그니처 시스템을 통해 매 웨이브마다 완전히 다른 전략적 선택을 강제하는 독자적인 정체성을 구축합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "buildUpDirectiveFingerprint": "7e224ada05e299028da525f0c73368d678dd25d28d9457d02c8a10a4b71581e0",
+  "buildUpDirectiveFingerprint": "5dd0ddd44216f0cd35c7bf41c97ea94e57ae8f5ed542762868664d46b499ca6e",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-09-27T09:21:11.542Z"
+  "createdAt": "2026-09-28T02:27:52.934Z"
 }
