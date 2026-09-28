@@ -513,25 +513,46 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   candidates.sort((a, b) => b.score - a.score || a.task.id.localeCompare(b.task.id));
   const priorityLane=['game-primary','asset-development'].includes(laneMode);
   const platform=(task)=>clean(task.target).toLowerCase();
-  // Reserve scarce slots by observed service, then give remaining capacity to Roblox.
-  // Running and verified tasks provide rotation across cohorts when capacity is small.
+  // Roblox:Unity:Web 6:2:1은 현재 실행량을 시작점으로 같은 배치 안에서 계속 재계산한다.
+  // 완료된 과거 작업은 다음 배치의 플랫폼 몫을 잠식하지 않는다.
   const weights={roblox:6,unity:2,web:1};
   const service=Object.fromEntries(Object.keys(weights).map((name)=>[
-    name,queue.tasks.filter((task)=>platform(task)===name&&['running','verified'].includes(task.status)&&taskMatchesExecutionLane(task,laneMode)).length
+    name,queue.tasks.filter((task)=>platform(task)===name&&task.status==='running'&&taskMatchesExecutionLane(task,laneMode)).length
   ]));
   const platformRows=Object.fromEntries(Object.keys(weights).map((name)=>[
     name,candidates.filter((row)=>platform(row.task)===name)
   ]));
-  const schedulingCandidates=priorityLane
-    ? [...candidates].sort((a,b)=>{
-      const pa=platform(a.task),pb=platform(b.task);
-      if(a.task.ownerDirective!==b.task.ownerDirective)return b.score-a.score;
-      if(a.task.releaseState!==b.task.releaseState)return (RELEASE_STATE_SCORE[b.task.releaseState]||0)-(RELEASE_STATE_SCORE[a.task.releaseState]||0);
-      const sa=weights[pa] ? (service[pa]+1)/weights[pa] : 2;
-      const sb=weights[pb] ? (service[pb]+1)/weights[pb] : 2;
-      return sa-sb || b.score-a.score || a.task.id.localeCompare(b.task.id);
-    })
-    : candidates;
+  const strictOwnerRank=(task)=>task.ownerDirective===true?1:0;
+  const strictReleaseRank=(task)=>RELEASE_STATE_SCORE[task.releaseState]||0;
+  const strictlyHigherPlatformPriority=(left,right)=>{
+    const ownerDelta=strictOwnerRank(left)-strictOwnerRank(right);
+    if(ownerDelta!==0)return ownerDelta>0;
+    return strictReleaseRank(left)>strictReleaseRank(right);
+  };
+  const weightedPlatformOrder=(rows)=>{
+    const pending=[...rows];
+    const ordered=[];
+    const virtualService={...service};
+    while(pending.length){
+      const ownerRank=Math.max(...pending.map((row)=>strictOwnerRank(row.task)));
+      const ownerTier=pending.filter((row)=>strictOwnerRank(row.task)===ownerRank);
+      const releaseRank=Math.max(...ownerTier.map((row)=>strictReleaseRank(row.task)));
+      const tier=ownerTier.filter((row)=>strictReleaseRank(row.task)===releaseRank);
+      tier.sort((a,b)=>{
+        const pa=platform(a.task),pb=platform(b.task);
+        const sa=weights[pa] ? (virtualService[pa]+1)/weights[pa] : 2;
+        const sb=weights[pb] ? (virtualService[pb]+1)/weights[pb] : 2;
+        return sa-sb || b.score-a.score || a.task.id.localeCompare(b.task.id);
+      });
+      const next=tier[0];
+      ordered.push(next);
+      pending.splice(pending.indexOf(next),1);
+      const selectedPlatform=platform(next.task);
+      if(weights[selectedPlatform])virtualService[selectedPlatform]=(virtualService[selectedPlatform]||0)+1;
+    }
+    return ordered;
+  };
+  const schedulingCandidates=priorityLane?weightedPlatformOrder(candidates):candidates;
   const robloxCandidateAvailable=priorityLane&&platformRows.roblox.length>0;
   const robloxFirstDeferred=[];
   const selected = [];
@@ -574,12 +595,23 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const postReleaseFocusedSlotUsed=postReleaseFocusedTaskIds.length>0;
   const postReleaseFocusedTaskId=postReleaseFocusedTaskIds[0]||null;
 
-  // Nonzero Unity/Web floors whenever a batch has room; the remaining work follows value score.
+  // Unity/Web 최소 슬롯은 보장하되 더 높은 owner/release 단계 작업을 밀어내지는 않는다.
   if(priorityLane && freeSlots>=3){
+    const selectedIds=()=>new Set(selected.map((task)=>task.id));
+    const floorCanUseSlot=(row)=>{
+      const used=selectedIds();
+      const higherPending=schedulingCandidates.filter((candidate)=>
+        !used.has(candidate.task.id)
+        &&candidate.task.id!==row.task.id
+        &&strictlyHigherPlatformPriority(candidate.task,row.task)
+      ).length;
+      return selected.length+higherPending<freeSlots;
+    };
     for(const name of ['unity','web']){
       if(!platformRows[name].length || selected.some((task)=>platform(task)===name))continue;
-      for(const row of platformRows[name]){
+      for(const row of schedulingCandidates.filter((candidate)=>platform(candidate.task)===name)){
         if(selected.length>=freeSlots)break;
+        if(!floorCanUseSlot(row))continue;
         const conflict=conflictDetails(row.task,active);
         if(conflict)continue;
         selected.push(row.task);active.push(row.task);
