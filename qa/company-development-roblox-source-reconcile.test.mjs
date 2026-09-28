@@ -543,22 +543,23 @@ test('Roblox runtime source lane treats stale verified APK learning as an existi
 });
 
 
-test('existing Roblox APK-derived principles change actual client UX behavior',()=>{
+test('verified APK principles drive the full Roblox native stack for new and existing source',()=>{
   const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
-  assert.match(source,/verifiedExternalGameDevelopmentProfile/);
-  assert.match(source,/VERIFIED_EXTERNAL_LEARNING_CLIENT_BEHAVIOR_BEGIN/);
+  const context=fs.readFileSync(new URL('../tools/vibe3-roblox-learning-context.mjs',import.meta.url),'utf8');
+  assert.match(context,/verifiedExternalGameDevelopmentPrinciples=Object\.freeze\(\[\.\.\.verifiedExternalLearningPrinciples\]\)/);
+  assert.doesNotMatch(context,/verifiedExternalLearningPrinciples\.filter\(gameDevelopmentPrinciple\)/);
+  assert.match(source,/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/);
+  assert.match(source,/VerifiedLearningColorGrade/);
+  assert.match(source,/VerifiedLearningBloom/);
+  assert.match(source,/syncVerifiedLearningCharacterMotion/);
+  assert.match(source,/Animator:GetPlayingAnimationTracks/);
+  assert.match(source,/VerifiedLearningSkillImpact/);
+  assert.match(source,/VerifiedLearningSkillSparkles/);
+  assert.match(source,/FieldOfView/);
   assert.match(source,/VerifiedLearningTouchTarget/);
-  assert.match(source,/VerifiedExternalLearningLastControl/);
-  assert.match(source,/VerifiedExternalLearningInputRespondedAt/);
-  assert.match(source,/control\.Activated:Connect/);
-});
-
-
-test('Roblox game-development APK principles cannot remain unmapped',()=>{
-  const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
-  assert.match(source,/ROBLOX_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED/);
-  assert.match(source,/VISIBLE_PROGRESSION_RISK_CUE/);
   assert.match(source,/VerifiedLearningProgressionRiskCue/);
-  assert.match(source,/도전 전 레벨·위험 조건 확인/);
-  assert.match(source,/mappings:Object\.freeze\(mappings\)/);
+  assert.match(source,/VerifiedExternalLearningGameplayState/);
+  assert.match(source,/ApplicationPrinciples = \{/);
+  assert.match(source,/GameDevelopmentPrinciples = \{/);
+  assert.doesNotMatch(source,/ROBLOX_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED/);
 });
