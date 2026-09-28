@@ -49,7 +49,32 @@ for (const item of queue.items || []) {
   if (String(item.productionClass || '').toUpperCase() !== 'DEVELOPMENT_CONFIRMED') continue;
   const pairedTargets = Array.isArray(item.concurrentTargetPlatforms) ? item.concurrentTargetPlatforms.map(value => String(value || '').toUpperCase()) : [];
   if (!pairedTargets.includes('ROBLOX') && !item.platformDesignProfiles?.ROBLOX && !item.targetSourcePaths?.ROBLOX) continue;
-  if (item.robloxRuntimePassed !== true || item.robloxIndependentQaPassed !== true || item.robloxRegressionPassed !== true) continue;
+  const sourceRevision = String(item.robloxSourceCommit || '').trim();
+  const artifactIdentity = String(item.robloxBuildArtifactIdentity || '').trim();
+  const post = item.robloxPostRuntimeQaEvidence || {};
+  const exactPost =
+    post.sourceRevision === sourceRevision
+    && post.artifactIdentity === artifactIdentity;
+  const scopedF7Accepted =
+    exactPost
+    && post.multiplayerApplicabilityKnown === true
+    && (
+      post.multiplayerRequired !== true
+      || post.multiplayerValidationPassed === true
+    );
+  const internalStudioValidationAccepted =
+    exactPost
+    && post.internalStudioValidationOnly === true
+    && post.externalServerBootRequired === false
+    && post.officialStudioMcpActualPlayPassed === true
+    && post.independentQaPassed === true
+    && post.regressionPassed === true
+    && scopedF7Accepted;
+  const legacyRuntimeAccepted =
+    item.robloxRuntimePassed === true
+    && item.robloxIndependentQaPassed === true
+    && item.robloxRegressionPassed === true;
+  if (!legacyRuntimeAccepted && !internalStudioValidationAccepted) continue;
 
   let designRecord = findLatestDesign(item.gameId);
   let design = designRecord?.design || null;
@@ -71,13 +96,23 @@ for (const item of queue.items || []) {
   const saveGate = !saveRequired || item.robloxDatastoreRejoinPassed === true;
   const modeDefined = allowedModes.has(mode);
   const multiplayerApplicable = modeDefined && mode !== 'SINGLE';
-  const multiplayerGate = modeDefined && (mode === 'SINGLE' || item.robloxMultiplayerQaPassed === true);
+  const extendedMultiplayerRequired =
+    multiplayerApplicable
+    && post.extendedMultiplayerRevalidationRequired === true;
+  const multiplayerGate =
+    modeDefined
+    && (
+      mode === 'SINGLE'
+      || scopedF7Accepted
+      || item.robloxMultiplayerQaPassed === true
+    );
   const exact = item.robloxExactRevisionPassed === true;
-  const core = item.robloxRuntimePassed === true
+  const legacyCore = item.robloxRuntimePassed === true
     && item.robloxServerClientBoundaryPassed === true
     && item.robloxMobileControlUiPassed === true
     && item.robloxIndependentQaPassed === true
-    && item.robloxRegressionPassed === true
+    && item.robloxRegressionPassed === true;
+  const core = (legacyCore || internalStudioValidationAccepted)
     && exact
     && saveGate;
   const finalPass = core && multiplayerGate;
@@ -116,12 +151,16 @@ for (const item of queue.items || []) {
     item.robloxFailureSignature = 'ROBLOX_MULTIPLAYER_DESIGN_DECISION_MISSING';
     item.routingBlockers = ['roblox-multiplayer-design-decision-missing'];
     blocked++;
-  } else if (multiplayerApplicable && item.robloxMultiplayerQaPassed !== true) {
+  } else if (multiplayerApplicable && !multiplayerGate) {
     item.robloxReleaseClaim = false;
     item.robloxFailureStage = 'FINAL_REVIEW';
-    item.robloxFailureSignature = 'ROBLOX_MULTIPLAYER_QA_REQUIRED';
-    item.routingBlockers = ['roblox-multiplayer-qa-required'];
-    multiplayerPendingIds.push(item.gameId);
+    item.robloxFailureSignature = extendedMultiplayerRequired
+      ? 'ROBLOX_MULTIPLAYER_EXTENDED_QA_REQUIRED'
+      : 'ROBLOX_F7_EXACT_EVIDENCE_REQUIRED';
+    item.routingBlockers = [extendedMultiplayerRequired
+      ? 'roblox-multiplayer-extended-qa-required'
+      : 'roblox-f7-exact-evidence-required'];
+    if (extendedMultiplayerRequired) multiplayerPendingIds.push(item.gameId);
     blocked++;
   } else {
     item.robloxReleaseClaim = false;
