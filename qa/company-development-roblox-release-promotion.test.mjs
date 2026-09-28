@@ -332,6 +332,15 @@ test('pre-F9 validation target cannot fall back to the canonical game target',()
 });
 
 
+test('validation target collision with canonical target is repaired before pre-F9 publish',()=>{
+  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
+  assert.match(candidate,/const validationCollision=publishStage==='validation'/);
+  assert.match(candidate,/ROBLOX_VALIDATION_TARGET_COLLISION_REPAIR=/);
+  assert.match(candidate,/const validationTargetCollision=publishStage==='validation'/);
+  assert.match(candidate,/ROBLOX_VALIDATION_TARGET_COLLIDES_WITH_CANONICAL:/);
+  assert.match(candidate,/validationCollision!==true/);
+});
+
 test('validation and canonical targets are separate persisted fields',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   assert.match(candidate,/item\.robloxValidationTarget=\{/);
