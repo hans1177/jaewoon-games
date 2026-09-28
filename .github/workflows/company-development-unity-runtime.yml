@@ -1243,6 +1243,102 @@ jobs:
           echo 'UNITY_F9_CANONICAL_PUBLISH_BLOCKS_NEXT_CYCLE=NO'
           echo 'UNITY_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=NO'
 
+      - name: Persist Unity F9 publication outcome without gating evolution
+        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.item.gameId }}
+          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
+          ARTIFACT_ID: ${{ steps.artifact.outputs.identity }}
+          BUILD_RUN_ID: ${{ steps.buildref.outputs.run_id }}
+          RUNTIME_RUN_ID: ${{ steps.runtime.outputs.run_id || matrix.item.unityRuntimeSmokeRunId }}
+          QA_RUN_ID: ${{ steps.independent.outputs.run_id || matrix.item.unityIndependentQaRunId }}
+          REGRESSION_RUN_ID: ${{ steps.regression.outputs.run_id || matrix.item.unityRegressionRunId }}
+          PUBLISH_OUTCOME: ${{ steps.f9_publish.outcome }}
+          RELEASE_TAG: ${{ steps.f9_publish.outputs.release_tag }}
+          RELEASE_URL: ${{ steps.f9_publish.outputs.release_url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/unity-publication-state
+          git clone --filter=blob:none --branch company-runtime --single-branch "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" /tmp/unity-publication-state >/dev/null 2>&1
+          git -C /tmp/unity-publication-state config user.name 'jaewoon-unity-publication'
+          git -C /tmp/unity-publication-state config user.email 'actions@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            git -C /tmp/unity-publication-state fetch origin company-runtime --quiet
+            git -C /tmp/unity-publication-state reset --hard origin/company-runtime >/dev/null
+            (
+              cd /tmp/unity-publication-state
+              node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const item=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID);
+          if(!item)throw new Error('Unity publication state item missing');
+          const exact=item.unityInternalReleaseEvidence||{};
+          if(item.unityF9ReleaseRegressionPassed!==true||exact.f0ThroughF9Passed!==true||exact.f9ReleaseRegressionPassed!==true)throw new Error('Unity publication state requires exact F9 PASS');
+          if(String(exact.sourceRevision||'')!==String(process.env.SOURCE_REVISION||'')||String(exact.artifactIdentity||'')!==String(process.env.ARTIFACT_ID||'')||String(exact.buildRunId||'')!==String(process.env.BUILD_RUN_ID||''))throw new Error('Unity publication state identity drift');
+          const stamp=new Date().toISOString();
+          const pass=String(process.env.PUBLISH_OUTCOME||'')==='success';
+          const record={
+            version:1,status:pass?'PUBLISHED':'RETRY_REQUIRED',
+            sourceRevision:process.env.SOURCE_REVISION,
+            artifactIdentity:process.env.ARTIFACT_ID,
+            buildRunId:Number(process.env.BUILD_RUN_ID),
+            runtimeRunId:Number(process.env.RUNTIME_RUN_ID||0)||null,
+            independentQaRunId:Number(process.env.QA_RUN_ID||0)||null,
+            regressionRunId:Number(process.env.REGRESSION_RUN_ID||0)||null,
+            releaseTag:process.env.RELEASE_TAG||null,
+            releaseUrl:process.env.RELEASE_URL||null,
+            lastAttemptAt:stamp,
+            workflowRunId:Number(process.env.GITHUB_RUN_ID||0)||null
+          };
+          item.unityCanonicalPublishPending=!pass;
+          item.unityCanonicalPublishRepairRequired=!pass;
+          item.unityCanonicalPublishRetry=record;
+          if(pass)item.unityCanonicalReleaseEvidence={...record,published:true,publishedAt:stamp,authority:'unity-f9-exact-canonical-internal-release'};
+          item.updatedAt=stamp;q.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+              git add development-queue.json
+              if git diff --cached --quiet; then exit 10; fi
+              git commit -m "runtime: persist Unity publication outcome $GAME_ID [skip ci]"
+            ) && commit_state=0 || commit_state=$?
+            if [[ "$commit_state" == 10 ]]; then persisted=1; break; fi
+            if [[ "$commit_state" != 0 ]]; then exit "$commit_state"; fi
+            if git -C /tmp/unity-publication-state push origin HEAD:company-runtime; then persisted=1; break; fi
+            sleep $((attempt*2))
+          done
+          test "$persisted" = 1
+          echo "UNITY_F9_PUBLICATION_STATE_PERSISTED=$GAME_ID:${PUBLISH_OUTCOME:-unknown}"
+          echo 'UNITY_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=NO'
+
+      - name: Dispatch exact Unity F9 publication repair in parallel
+        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true' && steps.f9_publish.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.item.gameId }}
+          SOURCE_REVISION: ${{ steps.source.outputs.source_revision }}
+          ARTIFACT_ID: ${{ steps.artifact.outputs.identity }}
+          BUILD_RUN_ID: ${{ steps.buildref.outputs.run_id }}
+          RUNTIME_RUN_ID: ${{ steps.runtime.outputs.run_id || matrix.item.unityRuntimeSmokeRunId }}
+          QA_RUN_ID: ${{ steps.independent.outputs.run_id || matrix.item.unityIndependentQaRunId }}
+          REGRESSION_RUN_ID: ${{ steps.regression.outputs.run_id || matrix.item.unityRegressionRunId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            -f game_id="$GAME_ID" \
+            -f publication_retry_only=true \
+            -f publication_retry_source_revision="$SOURCE_REVISION" \
+            -f publication_retry_artifact_identity="$ARTIFACT_ID" \
+            -f publication_retry_build_run_id="$BUILD_RUN_ID" \
+            -f publication_retry_runtime_run_id="$RUNTIME_RUN_ID" \
+            -f publication_retry_qa_run_id="$QA_RUN_ID" \
+            -f publication_retry_regression_run_id="$REGRESSION_RUN_ID"
+          echo "UNITY_F9_PUBLICATION_AUTOMATIC_REDISPATCH=YES:$GAME_ID:$BUILD_RUN_ID"
+          echo 'UNITY_PUBLICATION_RETRY_BLOCKS_NEXT_EVOLUTION=NO'
+
       - name: Refill Unity repair loop after any failed F0-F9 floor
         if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed != 'true'
         env:
