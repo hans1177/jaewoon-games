@@ -162,6 +162,38 @@ test('bound Roblox games re-enter reconciliation only when their own source tree
 });
 
 
+test('metadata-only Roblox bootstrap changes do not invalidate exact build evidence',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-source-metadata-only-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    initGitRepo(tmp);
+    const boundRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={
+      ...staleItem(),
+      currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+      robloxSourceCommit:boundRevision,
+      robloxInternalReleaseReady:true,
+      robloxRuntimePassed:true,
+    };
+    fs.writeFileSync(path.join(root,'roblox-source-bootstrap.json'),JSON.stringify({version:2,learning:'metadata-only'})+'\n');
+    execFileSync('git',['add',path.join('roblox-games',gameId,'roblox-source-bootstrap.json')],{cwd:tmp});
+    execFileSync('git',['commit','-m','metadata only'],{cwd:tmp,stdio:'ignore'});
+    const currentRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const rows=evaluateExistingRobloxSources({
+      queue:{items:[item]},
+      repoRoot:tmp,
+      sourceRevision:currentRevision,
+      loadBaseline:()=>baseline,
+    });
+    assert.deepEqual(rows,[]);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+
 test('SOURCE_BIND debt revalidates unchanged exact Roblox source even when only unrelated repository files changed',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-source-bind-unchanged-'));
   try{

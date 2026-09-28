@@ -223,7 +223,7 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         if(!sourceBind)continue;
       }else{
         try{
-          execFileSync('git',['diff','--quiet',boundRevision,currentRevision,'--',sourcePath],{cwd:repoRoot,stdio:'ignore'});
+          execFileSync('git',['diff','--quiet',boundRevision,currentRevision,'--',`${sourcePath}/default.project.json`,`${sourcePath}/shared`,`${sourcePath}/server`,`${sourcePath}/client`],{cwd:repoRoot,stdio:'ignore'});
           if(!sourceBind)continue;
         }catch(error){
           if(Number(error?.status)!==1){
