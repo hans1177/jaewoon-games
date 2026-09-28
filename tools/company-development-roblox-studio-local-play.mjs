@@ -176,7 +176,14 @@ function adaptiveCoverageSignals(launch={}){
     companion:/companion|follower|pet|summon|party member|ai party|boss companion|worker automation/.test(text),
     items:/item|loot|drop|weapon|armor|relic|inventory|resource|material|chest|food|potion/.test(text),
     environment:/environment|decoration|asset|visual|art|biome|terrain|lighting|forest|village|house|building|theme/.test(text),
-    effects:/vfx|effect|feedback|telegraph|trail|flash|particle|beam|highlight|sound|sfx/.test(text)
+    effects:/vfx|effect|feedback|telegraph|trail|flash|particle|beam|highlight|sound|sfx/.test(text),
+    quests:/quest|mission|objective|task|contract|hunt|delivery|trial/.test(text),
+    rewards:/reward|gold|coin|xp|loot|drop|chest|prize|currency|income/.test(text),
+    economy:/gold|coin|currency|shop|merchant|price|cost|upgrade|purchase|sell/.test(text),
+    save:/save|load|rejoin|datastore|persist|progression persists|unlock persists/.test(text),
+    retry:/retry|restart|respawn|round restart|new run|reroll|reset|rejoin/.test(text),
+    camera:/camera|chase screen|field of view|fov|spectat/.test(text),
+    performance:/performance|optimization|streaming|large map|expanded map|population|many|roster/.test(text)
   });
 }
 
@@ -201,6 +208,13 @@ export function deriveStudioActualPlayContract(launch={}){
   if(signals.items)adaptiveScenarios.push('adaptive-item-surface');
   if(signals.environment)adaptiveScenarios.push('adaptive-environment-surface');
   if(signals.effects)adaptiveScenarios.push('adaptive-effects-surface');
+  if(signals.quests)adaptiveScenarios.push('adaptive-quest-loop-surface');
+  if(signals.rewards)adaptiveScenarios.push('adaptive-reward-loop-surface');
+  if(signals.economy)adaptiveScenarios.push('adaptive-economy-surface');
+  if(signals.save||evidencePolicy.saveRejoinPassRequired===true)adaptiveScenarios.push('adaptive-save-surface');
+  if(signals.retry)adaptiveScenarios.push('adaptive-retry-loop-surface');
+  if(signals.camera)adaptiveScenarios.push('adaptive-camera-quality');
+  adaptiveScenarios.push('adaptive-performance-budget');
   const explicitScenarios=launchStringList(explicit?.requiredScenarios);
   return Object.freeze({
     ...explicit,
@@ -938,7 +952,22 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     'end',
     'collectProgress(p,"player");collectProgress(Workspace,"workspace")',
     'local systemSignals=0',
-    'for _,rootInst in ipairs({ReplicatedStorage,Workspace,pg}) do if rootInst then for _,d in ipairs(rootInst:GetDescendants()) do local n=string.lower(d.Name);if string.find(n,"quest") or string.find(n,"inventory") or string.find(n,"shop") or string.find(n,"craft") or string.find(n,"level") or string.find(n,"wave") or string.find(n,"round") or string.find(n,"portal") or string.find(n,"boss") or string.find(n,"progress") or string.find(n,"upgrade") or string.find(n,"equip") or string.find(n,"enemy") or string.find(n,"monster") or string.find(n,"mob") then systemSignals+=1 end end end end',
+    'local category={quest=0,reward=0,economy=0,inventory=0,combat=0,progression=0,save=0,retry=0,npc=0,companion=0,item=0,environment=0,effects=effectCount}',
+    'for _,rootInst in ipairs({ReplicatedStorage,Workspace,pg}) do if rootInst then for _,d in ipairs(rootInst:GetDescendants()) do local n=string.lower(d.Name);local matched=false',
+    ' if string.find(n,"quest") or string.find(n,"mission") or string.find(n,"objective") or string.find(n,"trial") then category.quest+=1;matched=true end',
+    ' if string.find(n,"reward") or string.find(n,"gold") or string.find(n,"coin") or string.find(n,"xp") or string.find(n,"loot") or string.find(n,"drop") or string.find(n,"chest") then category.reward+=1;matched=true end',
+    ' if string.find(n,"shop") or string.find(n,"merchant") or string.find(n,"price") or string.find(n,"cost") or string.find(n,"upgrade") or string.find(n,"purchase") or string.find(n,"sell") then category.economy+=1;matched=true end',
+    ' if string.find(n,"inventory") or string.find(n,"equip") or string.find(n,"weapon") or string.find(n,"armor") or string.find(n,"relic") or string.find(n,"item") then category.inventory+=1;matched=true end',
+    ' if string.find(n,"attack") or string.find(n,"skill") or string.find(n,"combat") or string.find(n,"damage") or string.find(n,"enemy") or string.find(n,"monster") or string.find(n,"boss") or string.find(n,"mob") then category.combat+=1;matched=true end',
+    ' if string.find(n,"level") or string.find(n,"wave") or string.find(n,"round") or string.find(n,"portal") or string.find(n,"progress") or string.find(n,"unlock") or string.find(n,"mastery") or string.find(n,"stage") then category.progression+=1;matched=true end',
+    ' if string.find(n,"save") or string.find(n,"load") or string.find(n,"datastore") or string.find(n,"persist") then category.save+=1;matched=true end',
+    ' if string.find(n,"retry") or string.find(n,"restart") or string.find(n,"respawn") or string.find(n,"reset") or string.find(n,"newrun") then category.retry+=1;matched=true end',
+    ' if string.find(n,"npc") or string.find(n,"merchant") or string.find(n,"chief") or string.find(n,"healer") or string.find(n,"resident") or string.find(n,"worker") or string.find(n,"villager") or string.find(n,"trainer") or string.find(n,"master") then category.npc+=1;matched=true end',
+    ' if string.find(n,"companion") or string.find(n,"follower") or string.find(n,"pet") or string.find(n,"summon") then category.companion+=1;matched=true end',
+    ' if string.find(n,"item") or string.find(n,"loot") or string.find(n,"drop") or string.find(n,"weapon") or string.find(n,"armor") or string.find(n,"relic") or string.find(n,"resource") or string.find(n,"material") then category.item+=1;matched=true end',
+    ' if string.find(n,"environment") or string.find(n,"decor") or string.find(n,"building") or string.find(n,"house") or string.find(n,"terrain") or string.find(n,"biome") then category.environment+=1;matched=true end',
+    ' if matched then systemSignals+=1 end',
+    'end end end',
     'local floorBelow=false',
     'if root then local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances=p and p.Character and {p.Character} or {};local hit=Workspace:Raycast(root.Position+Vector3.new(0,4,0),Vector3.new(0,-128,0),params);floorBelow=hit~=nil end',
     'local boundsFinite=minX<math.huge and maxX>-math.huge and minY<math.huge and maxY>-math.huge and minZ<math.huge and maxZ>-math.huge',
@@ -950,7 +979,7 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     ' camera={present=camera~=nil,viewportX=viewport.X,viewportY=viewport.Y,fieldOfView=camera and camera.FieldOfView or nil,subjectPresent=camera and camera.CameraSubject~=nil or false},',
     ' ui=gui,',
     ' world={arenaPresent=arena~=nil,arenaPartCount=parts,proximityPromptCount=prompts,clickDetectorCount=clickDetectors,collidablePartCount=collidableParts,spawnLocationCount=spawnLocations,boundsFinite=boundsFinite,minX=boundsFinite and minX or nil,minY=boundsFinite and minY or nil,minZ=boundsFinite and minZ or nil,maxX=boundsFinite and maxX or nil,maxY=boundsFinite and maxY or nil,maxZ=boundsFinite and maxZ or nil,floorBelowPlayer=floorBelow,prompts=promptRows,mobs=mobRows,npcs=npcRows,companions=companionRows,items=itemRows,environmentModels=environmentModels,effectCount=effectCount},',
-    ' runtime={remoteCount=remoteCount,remotes=remoteRows,progression=progressionRows,systemSignals=systemSignals,descendantCount=descendantCount,memoryMb=memoryMb,soundCount=soundCount,playingSoundCount=playingSoundCount},'
+    ' runtime={remoteCount=remoteCount,remotes=remoteRows,progression=progressionRows,systemSignals=systemSignals,categories=category,descendantCount=descendantCount,memoryMb=memoryMb,soundCount=soundCount,playingSoundCount=playingSoundCount},',
     ' workspace={MapReady=attr(Workspace,"MapReady"),ActivePopulation=attr(Workspace,"ActivePopulation"),AIBotCount=attr(Workspace,"AIBotCount"),HumanCount=attr(Workspace,"HumanCount"),MonsterCount=attr(Workspace,"MonsterCount"),CurrentMapId=attr(Workspace,"CurrentMapId"),CurrentMapName=attr(Workspace,"CurrentMapName"),CurrentMapEvent=attr(Workspace,"CurrentMapEvent"),WorldArtPass=attr(Workspace,"WorldArtPass"),CharacterArtDirection=attr(Workspace,"CharacterArtDirection"),DesignCodeSync=attr(Workspace,"DesignCodeSync")},',
     ' lighting={brightness=Lighting.Brightness,clockTime=Lighting.ClockTime,ambientR=Lighting.Ambient.R,ambientG=Lighting.Ambient.G,ambientB=Lighting.Ambient.B}',
     '}',
