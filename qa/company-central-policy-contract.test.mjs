@@ -1937,3 +1937,28 @@ test('development-focused F0-F9 validation dedupe preserves perpetual game evolu
   assert.equal(securityPolicy.evidenceReuse.fullRescanEveryFloor,false);
   assert.equal(securityPolicy.evidenceReuse.newSecurityPipelineForbidden,true);
 });
+
+
+test('commercial Studio deep audit execution rules stay locked',()=>{
+  const contract=roadmap.roblox?.studioExecution?.actualPlayQualityContract||{};
+  assert.ok(Number(contract.version)>=4);
+  assert.equal(contract.commercialAuditRequired,true);
+  assert.equal(contract.adaptiveRuntimeDiscoveryRequired,true);
+  assert.equal(contract.semanticCoverageDiversityRequired,true);
+  assert.equal(contract.worldFloorGridSamplingRequired,true);
+  assert.equal(contract.pathfindingRouteCoverageRequired,true);
+  assert.equal(contract.liveCombatTargetActionEffectRequired,true);
+  assert.equal(contract.realDeathRespawnRecoveryRequiredWhenObserved,true);
+  assert.equal(contract.f9SaveRejoinRestartRequiredWhenSaveDeclared,true);
+  assert.equal(contract.f9SoakPerformanceTrendRequired,true);
+  assert.ok(Number(contract.fastDeepMinimumTimelineSamples)>=4);
+  assert.ok(Number(contract.f9SoakMinimumTimelineSamples)>=12);
+  for(const axis of [
+    'MAP_FLOOR_GRID_AND_PATHFINDING_COVERAGE',
+    'LIVE_COMBAT_TARGET_ACTION_EFFECT',
+    'F9_SAVE_REJOIN_RESTART_PERSISTENCE',
+    'REAL_DEATH_RESPAWN_RECOVERY',
+    'SEMANTIC_CATEGORY_DIVERSITY',
+    'F9_SOAK_MEMORY_AND_INSTANCE_TREND'
+  ])assert.ok(contract.requiredAxes.includes(axis),axis);
+});
