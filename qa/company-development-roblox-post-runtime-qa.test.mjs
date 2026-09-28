@@ -109,15 +109,20 @@ test('exact Roblox foundation QA isolates exact games while collapsing duplicate
   assert.match(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
 
-test('two-client one-sync is the shared internal and public release gate',()=>{
-  assert.match(workflow,/ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING/);
-  assert.match(workflow,/item\.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE'/);
-  assert.match(workflow,/item\.robloxFailureSignature='ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING'/);
-  assert.match(workflow,/item\.routingBlockers=\['roblox-two-client-one-sync-pending'\]/);
-  assert.match(workflow,/item\.robloxPromotionBlockers=\['roblox-two-client-one-sync-pending'\]/);
-  assert.doesNotMatch(workflow,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
+test('routine F7 uses exact static sync plus Studio play and only escalates two-client QA on relevant failure or change',()=>{
+  assert.match(workflow,/const exactStaticRoutineF7=/);
+  assert.match(workflow,/f0ForRoutineF7\.serverClientBoundaryPreflightPassed===true/);
+  assert.match(workflow,/f0ForRoutineF7\.remoteSecurityPreflightPassed===true/);
+  assert.match(workflow,/f0ForRoutineF7\.multiplayerSyncContractPassed===true/);
+  assert.match(workflow,/const extendedMultiplayerRevalidationRequired=/);
+  assert.match(workflow,/item\.robloxMultiplayerRevalidationRequired===true/);
+  assert.match(workflow,/const routineF7Accepted=/);
+  assert.match(workflow,/ROBLOX_F7_ROUTINE_INTERNAL_CONTRACT_PASS=/);
+  assert.match(workflow,/f7Status:'PASS_INTERNAL_CONTRACT'/);
+  assert.match(workflow,/twoParticipantRuntimeObserved:false/);
+  assert.match(workflow,/item\.robloxParallelMultiplayerValidationPending=false/);
+  assert.match(workflow,/else if\(multiplayerOnlyPending\)/);
 });
-
 
 test('shared fallback QA only probes the one current candidate and marks older duplicate-current entries superseded',()=>{
   assert.match(workflow,/sharedFastMvpRotationAllowed/);

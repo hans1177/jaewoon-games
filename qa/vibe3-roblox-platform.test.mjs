@@ -320,10 +320,22 @@ test('Roblox runtime candidate publish plan rejects headless evidence that claim
 });
 
 
-test('Roblox release evidence rejects marker-only runtime claims even when all legacy booleans are true',()=>{
-  const markerOnly={...evidence,actualRuntimeEvidence:false,runtimeFoundationPassed:false};
+test('Roblox release evidence rejects marker-only runtime claims but accepts explicit internal Studio runtime authority without fabricating server observation',()=>{
+  const markerOnly={...evidence,actualRuntimeEvidence:false,internalRuntimeAccepted:false,runtimeFoundationPassed:false};
   const gate=validateRobloxReleaseEvidence(markerOnly,'abcdef1234567890');
   assert.equal(gate.pass,false);
-  assert.ok(gate.blockedReasons.includes('actual-runtime-evidence-missing'));
+  assert.ok(gate.blockedReasons.includes('runtime-evidence-not-accepted'));
   assert.ok(gate.blockedReasons.includes('runtime-foundation-not-passed'));
+
+  const studioAccepted={
+    ...evidence,
+    actualRuntimeEvidence:false,
+    internalRuntimeAccepted:true,
+    internalStudioValidationOnly:true,
+    runtimeFoundationPassed:true,
+    runtimePassed:true
+  };
+  const accepted=validateRobloxReleaseEvidence(studioAccepted,'abcdef1234567890');
+  assert.equal(accepted.pass,true);
+  assert.equal(studioAccepted.actualRuntimeEvidence,false);
 });

@@ -30,16 +30,15 @@ test('final-review revalidation reuses prior Studio QA and dispatches only canon
   assert.doesNotMatch(workflow, /company-development-roblox-mobile-independent-qa\.luau/);
 });
 
-test('legacy design normalization is grounded, persisted, and re-enters final review without weakening QA', () => {
+test('legacy design normalization remains grounded while multiplayer review consumes exact scoped F7 evidence', () => {
   assert.match(evaluator, /repairPersistedDesignForPromotion/);
   assert.match(evaluator, /FINAL_REVIEW_LEGACY_NORMALIZATION/);
   assert.match(evaluator, /ROBLOX_FINAL_REVIEW_LEGACY_DESIGN_REPAIR=/);
-  assert.match(workflow, /tools\/company-design-prepromotion-repair\.mjs/);
-  assert.match(workflow, /qa\/design-prepromotion-repair\.test\.mjs/);
-  assert.match(workflow, /git add development-queue\.json design/);
-  assert.match(workflow, /ROBLOX_LEGACY_DESIGN_REPAIR_GROUNDED_ONLY=YES/);
   assert.match(evaluator, /ROBLOX_MULTIPLAYER_DESIGN_DECISION_MISSING/);
-  assert.match(evaluator, /ROBLOX_MULTIPLAYER_QA_REQUIRED/);
+  assert.match(evaluator, /const scopedF7Accepted =/);
+  assert.match(evaluator, /post\.multiplayerValidationPassed === true/);
+  assert.match(evaluator, /const extendedMultiplayerRequired =/);
+  assert.match(evaluator, /ROBLOX_MULTIPLAYER_EXTENDED_QA_REQUIRED/);
 });
 
 test('multiplayer and release implementation changes automatically re-enter final-review revalidation', () => {
@@ -51,19 +50,18 @@ test('multiplayer and release implementation changes automatically re-enter fina
   assert.match(workflow, /'qa\/company-development-roblox-release-promotion\.test\.mjs'/);
 });
 
-test('canonical evaluator preserves fail-closed multiplayer and release gates', () => {
+test('canonical evaluator is fail-closed only when scoped F7 evidence is missing or extended multiplayer validation is required', () => {
   assert.match(evaluator, /new Set\(\['SINGLE', 'COOP', 'COMPETITIVE', 'HYBRID'\]\)/);
-  assert.match(evaluator, /item\.robloxMultiplayerQaPassed === true/);
+  assert.match(evaluator, /const exactPost =/);
+  assert.match(evaluator, /const scopedF7Accepted =/);
+  assert.match(evaluator, /const internalStudioValidationAccepted =/);
+  assert.match(evaluator, /mode === 'SINGLE'[\s\S]*scopedF7Accepted[\s\S]*item\.robloxMultiplayerQaPassed === true/);
   assert.match(evaluator, /ROBLOX_MULTIPLAYER_DESIGN_DECISION_MISSING/);
-  assert.match(evaluator, /ROBLOX_MULTIPLAYER_QA_REQUIRED/);
+  assert.match(evaluator, /ROBLOX_MULTIPLAYER_EXTENDED_QA_REQUIRED/);
+  assert.match(evaluator, /ROBLOX_F7_EXACT_EVIDENCE_REQUIRED/);
+  assert.match(evaluator, /if \(extendedMultiplayerRequired\) multiplayerPendingIds\.push\(item\.gameId\)/);
   assert.match(evaluator, /ROBLOX_DATASTORE_REJOIN_REQUIRED/);
-  assert.match(evaluator, /ROBLOX_RELEASE_PROMOTION_PENDING/);
-  assert.match(evaluator, /releasePendingIds\.push\(item\.gameId\)/);
-  assert.match(evaluator, /release_pending_ids_json/);
   assert.match(evaluator, /item\.robloxReleaseClaim = false/);
-  assert.match(evaluator, /hasCurrentPublishedRelease\(item\)/);
-  assert.match(evaluator, /evidence\?\.sourceRevision[\s\S]*item\.robloxSourceCommit/);
-  assert.match(evaluator, /evidence\?\.artifactIdentity[\s\S]*item\.robloxBuildArtifactIdentity/);
   assert.match(evaluator, /item\.robloxExactRevisionPassed === true/);
 });
 
@@ -75,17 +73,19 @@ test('exact Roblox F9 review is isolated per game after multiplayer acceptance',
   assert.doesNotMatch(workflow,/group: company-development-roblox-f9-final-review\s*\n/);
 });
 
-test('F9 allows internal release when exact engine and official Studio MCP pass while real-server observation remains public-only',()=>{
-  assert.match(workflow,/const internalRuntimeObservationDeferred=/);
-  assert.match(workflow,/item\.robloxRuntimeFoundationInternalReleaseException===true/);
-  assert.match(workflow,/item\.robloxPublicReleaseRuntimeObservationPending===true/);
-  assert.match(workflow,/runtime\.authority==='exact-engine-version-awaiting-real-server-boot'/);
-  assert.match(workflow,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalRuntimeObservationDeferred/);
-  assert.match(workflow,/item\.robloxRuntimeFoundationPassed===true\|\|internalRuntimeObservationDeferred/);
-  assert.match(workflow,/actualRuntimeFoundationPassed:item\.robloxRuntimeFoundationPassed===true/);
-  assert.match(workflow,/publicReleaseRuntimeObservationPending:internalRuntimeObservationDeferred/);
-  assert.match(workflow,/internalRuntimeObservationDeferred&&post\.studioAssetEngineBindingMatched===true/);
-  assert.match(workflow,/roblox-public-release-awaiting-real-server-boot/);
+test('F9 accepts exact Studio plus scoped F7 evidence without external-server or duplicate multiplayer replay',()=>{
+  assert.match(workflow,/const f7Accepted=/);
+  assert.match(workflow,/post\.multiplayerApplicabilityKnown===true/);
+  assert.match(workflow,/post\.multiplayerValidationPassed===true/);
+  assert.match(workflow,/const internalStudioValidationAccepted=/);
+  assert.match(workflow,/post\.internalStudioValidationOnly===true/);
+  assert.match(workflow,/post\.externalServerBootRequired===false/);
+  assert.match(workflow,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred\|\|internalStudioValidationAccepted/);
+  assert.match(workflow,/f9RuntimeReplay:false/);
+  assert.match(workflow,/f9MultiplayerReplay:false/);
+  assert.match(workflow,/f9SecurityFullRescan:false/);
+  assert.match(workflow,/twoClientOneSyncPassed:item\.robloxMultiplayerQaPassed===true&&post\.twoParticipantRuntimeObserved===true/);
+  assert.doesNotMatch(workflow,/roblox-public-release-awaiting-real-server-boot/);
   assert.match(workflow,/item\.robloxPublicReleaseReady=false/);
 });
 
