@@ -587,6 +587,14 @@ test('post-runtime QA preserves independent and regression progress while shared
 
 test('F7 multiplayer runs only when applicable and its exact proof is reused by F9',()=>{
  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(runtime,/robloxMultiplayerQaEvidence/);
+ assert.match(runtime,/exactMultiplayerValidationReusable/);
+ assert.match(runtime,/ROBLOX_F7_MULTIPLAYER_EVIDENCE_REUSED=/);
+ assert.match(runtime,/ROBLOX_F7_MULTIPLAYER_EVIDENCE_PERSISTED=/);
+ assert.match(runtime,/priorMultiplayer\.sourceRevision===sourceRevision/);
+ assert.match(runtime,/priorMultiplayer\.artifactIdentity===artifactIdentity/);
+ assert.match(runtime,/String\(priorMultiplayer\.placeId\|\|''\)===String\(candidate\.placeId\|\|''\)/);
+ assert.match(runtime,/Number\(priorMultiplayer\.candidateVersionNumber\)===Number\(candidate\.versionNumber\)/);
  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
  assert.match(runtime,/const multiplayerRequirementFor=item=>/);
  assert.match(runtime,/multiplayerRequired:multiplayer\.required/);
