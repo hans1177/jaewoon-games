@@ -78,6 +78,7 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.equal(source.verifiedLearningApplication.allRetrievedVerifiedExternalLearningApplied,true);
     assert.equal(source.verifiedLearningApplication.retrievedCount,2);
     assert.equal(source.verifiedLearningApplication.appliedCount,2);
+    assert.equal(source.verifiedLearningApplication.applicationCoveragePct,100);
     assert.deepEqual(source.verifiedLearningApplication.externalLearningIds,['external-black-box-alpha','external-black-box-beta']);
     assert.deepEqual(source.verifiedLearningApplication.externalApplicationPrinciples,[
       'id=menu-flow; scope=menu; lesson=make gameplay entry distinct; apply=clear menu-to-play transition',
@@ -187,6 +188,33 @@ test('Unity Web floor consumes the exact Vibe directive without creating a platf
   }
 });
 
+
+test('Unity Web floor bootstrap rejects id-only verified external learning',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-floor-learning-content-required-'));
+  const old=process.cwd();
+  try{
+    process.chdir(root);
+    const baseline=path.join(root,'design-revised.json');
+    fs.writeFileSync(baseline,JSON.stringify({content:{platformProfiles:{UNITY:{
+      platform:'UNITY',inputModel:'mobile input model',sessionModel:'session model long enough',multiplayerRuntime:'single player runtime',
+      performanceBudget:'performance budget enough',uiUx:'touch first ui ux',saveAndNetwork:'save and network contract',
+      platformContentAdaptation:'platform adaptation contract',internalReleaseTarget:'private internal release',validationEvidence:'runtime evidence contract'
+    }}}}));
+    const playbooks=writeVerifiedPlaybooks(root);
+    const data=JSON.parse(fs.readFileSync(playbooks,'utf8'));
+    for(const row of Object.values(data.taskTypes||{})){
+      for(const item of row.reuse||[])if(item.id==='external-black-box-beta')item.distilledApplicationPrinciples=[];
+    }
+    fs.writeFileSync(playbooks,JSON.stringify(data,null,2));
+    assert.throws(()=>execFileSync(process.execPath,[tool.pathname,
+      '--game-id=test-game','--baseline='+baseline,'--output=unity-games/test-game',
+      '--playbooks='+playbooks,'--learning-revision='+ 'e'.repeat(40)
+    ],{stdio:'pipe'}),/Command failed/);
+  }finally{
+    process.chdir(old);
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
 
 test('Unity Web floor bootstrap refuses development when verified external learning is missing',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-floor-learning-required-'));
