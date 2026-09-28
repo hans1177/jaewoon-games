@@ -141,9 +141,20 @@ test('same-game verified experience outranks same-engine cross-game experience',
 
 test('verified commercial playbook reuse is fully injected and traceable for game development',()=>{
   const reuse=[
-    {id:'external-black-box-block-blast-run-30',project:'block-blast',sourceRevision:'sha256:a',score:0.4},
-    {id:'external-black-box-shattered-pixel-dungeon-run-4',project:'shattered-pixel-dungeon',sourceRevision:'sha256:b',score:0.3},
-    {id:'external-black-box-cavern-cravers-run-47',project:'cavern-cravers',sourceRevision:'sha256:c',score:0.2}
+    {
+      id:'external-black-box-block-blast-run-30',project:'block-blast',sourceRevision:'sha256:a',score:0.4,
+      distilledApplicationPrinciples:['id=menu-flow; scope=menu; lesson=separate menu from gameplay entry; apply=make first playable state obvious'],
+      distilledAvoidancePrinciples:['id=avoid-clone; scope=visual; lesson=do not clone trade dress; apply=reauthor with game identity'],
+      distilledLearningUseAllowed:['menu flow timing','visible interaction feedback']
+    },
+    {
+      id:'external-black-box-shattered-pixel-dungeon-run-4',project:'shattered-pixel-dungeon',sourceRevision:'sha256:b',score:0.3,
+      distilledApplicationPrinciples:['id=touch-onboarding; scope=mobile; lesson=teach control at first playable state; apply=contextual touch hint']
+    },
+    {
+      id:'external-black-box-cavern-cravers-run-47',project:'cavern-cravers',sourceRevision:'sha256:c',score:0.2,
+      distilledApplicationPrinciples:['id=tactical-feedback; scope=interaction; lesson=action changes visible state immediately; apply=prompt same-view feedback']
+    }
   ];
   const ctx=retrieveUnifiedLearning({
     task:{gameId:'commercial-reuse-game',target:'web',taskType:'coding',goal:'build combat progression mobile game'},
@@ -155,6 +166,11 @@ test('verified commercial playbook reuse is fully injected and traceable for gam
   for(const row of reuse)assert.ok(ctx.exactKnowledgeIds.includes('PLAYBOOK_REUSE:'+row.id));
   const guidance=learningGuidance(ctx);
   for(const row of reuse)assert.ok(guidance.includes('verified-commercial-app-reuse='+row.id));
+  for(const row of reuse)for(const principle of row.distilledApplicationPrinciples||[])assert.ok(guidance.includes('verified-commercial-application-principle='+principle));
+  assert.ok(guidance.includes('verified-commercial-avoidance-principle='+reuse[0].distilledAvoidancePrinciples[0]));
+  assert.ok(guidance.includes('verified-commercial-learning-use=menu flow timing'));
+  assert.deepEqual(ctx.playbookReuse[0].distilledApplicationPrinciples,reuse[0].distilledApplicationPrinciples);
+  assert.equal(ctx.playbookReuse.length,reuse.length);
   assert.ok(guidance.includes('apply=TRANSFORMATIVE_REUSE_NOT_RAW_COPY'));
 });
 
