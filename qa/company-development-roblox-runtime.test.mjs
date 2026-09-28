@@ -410,13 +410,14 @@ test('Roblox bootstrap consumes Vibe3 playbook and transformative learning conte
   assert.ok(learned.learning.verifiedExternalAvoidancePrinciples.includes('id=avoid-trade-dress; scope=visual; lesson=do not clone distinctive expression; apply=reauthor with Pocket Foundry identity'));
   assert.ok(learned.learning.verifiedExternalLearningUseAllowed.includes('immediate feedback'));
   assert.deepEqual(learned.learning.verifiedExternalLearningApplyAxes,[
-    'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
-    'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
-    'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
-    'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
-    'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
-    'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
-    'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
+    'CORE_GAMEPLAY_FEEL',
+    'PLAYER_INPUT_AND_TOUCH',
+    'VISIBLE_ACTION_FEEDBACK',
+    'HUD_AND_CONTEXTUAL_GUIDANCE',
+    'MOBILE_READABILITY_AND_RESPONSE',
+    'WORLD_AND_BACKGROUND_PRESENTATION',
+    'PROGRESSION_RISK_READABILITY',
+    'REWARD_AND_EVENT_PRESENTATION'
   ]);
   assert.equal(learned.learning.recipeId,'recombine-roblox-test');
   assert.equal(learned.generationMode,'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT');
