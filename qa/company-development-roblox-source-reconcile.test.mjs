@@ -582,3 +582,26 @@ test('verified APK learning is unconditional across Roblox native gameplay axes'
   assert.match(source,/VerifiedExternalLearningServerConfirmedAt/);
   assert.match(source,/playVerifiedLearningActionFeedback\(verifiedLearningLastControl\)/);
 });
+
+
+test('Roblox APK learning gate ignores server instrumentation and requires native application axes',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.doesNotMatch(bootstrap,/SERVER_VIBE3_LEARNING_INSTRUMENTATION_REQUIRED/);
+  assert.match(bootstrap,/ROBLOX_ENVIRONMENT_BACKGROUND_AND_LIGHTING/);
+  assert.match(bootstrap,/ROBLOX_CHARACTER_ANIMATION_AND_MOTION/);
+  assert.match(bootstrap,/ROBLOX_SKILL_VFX_AND_IMPACT_FEEDBACK/);
+  assert.match(bootstrap,/ROBLOX_CAMERA_AND_VISUAL_FEEDBACK/);
+  assert.match(bootstrap,/ROBLOX_UI_UX_TOUCH_AND_CONTROLS/);
+  assert.match(bootstrap,/ROBLOX_GAMEPLAY_STATE_AND_PROGRESSION/);
+  assert.match(bootstrap,/ColorCorrectionEffect/);
+  assert.match(bootstrap,/BloomEffect/);
+  assert.match(bootstrap,/AdjustSpeed/);
+  assert.match(bootstrap,/VerifiedLearningSkillImpact/);
+  assert.match(bootstrap,/Sparkles/);
+  assert.match(bootstrap,/FieldOfView/);
+  assert.match(bootstrap,/UISizeConstraint/);
+  assert.match(bootstrap,/VerifiedLearningProgressionRiskCue/);
+  assert.doesNotMatch(workflow,/learningOk[\s\S]{0,1000}gameplayAuthorityChanged/);
+  assert.doesNotMatch(workflow,/learningOk[\s\S]{0,1000}serverSourceChanged/);
+});
