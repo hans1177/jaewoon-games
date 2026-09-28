@@ -553,15 +553,11 @@ jobs:
               priorMultiplayer.passed===true
               &&priorMultiplayer.sourceRevision===sourceRevision
               &&priorMultiplayer.artifactIdentity===artifactIdentity
-              &&String(priorMultiplayer.placeId||'')===String(candidate.placeId||'')
-              &&Number(priorMultiplayer.candidateVersionNumber)===Number(candidate.versionNumber)
             );
             const exactRuntimeMultiplayerValidation=Boolean(
               priorRuntime.f7MultiplayerFoundationPassed===true
               &&priorRuntime.sourceRevision===sourceRevision
               &&priorRuntime.artifactIdentity===artifactIdentity
-              &&String(priorRuntime.placeId||'')===String(candidate.placeId||'')
-              &&Number(priorRuntime.candidateVersionNumber)===Number(candidate.versionNumber)
             );
             const exactMultiplayerValidationReusable=exactPriorMultiplayerValidation||exactRuntimeMultiplayerValidation;
             const exactStudioInternalValidation=

@@ -268,3 +268,22 @@ test('same exact Studio internal evidence is reused inside the cycle without fab
   assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false;[\s\S]{0,100}item\.robloxRuntimePassed=false;/);
   assert.match(workflow,/externalServerBootRequired:false/);
 });
+
+
+test('two-client PASS is reusable for the same exact game code artifact even when private candidate place or version changes',()=>{
+  const priorAt=workflow.indexOf('const exactPriorMultiplayerValidation=Boolean(');
+  const runtimeAt=workflow.indexOf('const exactRuntimeMultiplayerValidation=Boolean(',priorAt);
+  assert.ok(priorAt>0&&runtimeAt>priorAt);
+  const priorBlock=workflow.slice(priorAt,runtimeAt);
+  const runtimeBlock=workflow.slice(runtimeAt,workflow.indexOf('const exactMultiplayerValidationReusable=',runtimeAt));
+  assert.match(priorBlock,/priorMultiplayer\.passed===true/);
+  assert.match(priorBlock,/priorMultiplayer\.sourceRevision===sourceRevision/);
+  assert.match(priorBlock,/priorMultiplayer\.artifactIdentity===artifactIdentity/);
+  assert.doesNotMatch(priorBlock,/placeId|candidateVersionNumber/);
+  assert.match(runtimeBlock,/priorRuntime\.f7MultiplayerFoundationPassed===true/);
+  assert.match(runtimeBlock,/priorRuntime\.sourceRevision===sourceRevision/);
+  assert.match(runtimeBlock,/priorRuntime\.artifactIdentity===artifactIdentity/);
+  assert.doesNotMatch(runtimeBlock,/placeId|candidateVersionNumber/);
+  assert.match(workflow,/item\.robloxMultiplayerQaPassed=true/);
+  assert.match(workflow,/ROBLOX_F7_MULTIPLAYER_EVIDENCE_REUSED=/);
+});
