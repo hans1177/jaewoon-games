@@ -565,23 +565,25 @@ test('post-runtime QA keeps exact Studio MCP-passed candidates eligible after St
  assert.match(workflow,/Number\(studioPlay\.versionNumber\)===Number\(candidate\.versionNumber\)/);
  assert.match(workflow,/item\.robloxRuntimeFoundationPassed!==true/);
  assert.match(workflow,/item\.robloxRuntimePassed!==true/);
- assert.match(workflow,/&&\(explicitRuntimeStage\|\|exactStudioPlayPendingRuntime\|\|externalRuntimeObservationPending\)/);
+ assert.match(workflow,/&&\(explicitRuntimeStage\|\|exactStudioPlayPendingRuntime\)/);
+ assert.doesNotMatch(workflow,/const externalRuntimeObservationPending=/);
 });
 
-test('post-runtime QA preserves independent and regression progress while shared two-client sync is pending',()=>{
+test('internal F7 reuses the exact F0 authoritative sync contract instead of requiring a routine two-client session',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- assert.match(workflow,/multiplayerOnlyPending=result\.developmentContinuationPassed===true&&result\.multiplayerPromotionPending===true/);
- assert.match(workflow,/robloxIndependentQaPassed=true/);
- assert.match(workflow,/robloxRegressionPassed=true/);
- assert.match(workflow,/robloxParallelMultiplayerValidationPending=true/);
- assert.match(workflow,/item\.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE'/);
- assert.match(workflow,/item\.robloxFailureSignature='ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING'/);
- assert.match(workflow,/robloxPromotionBlockers=\['roblox-two-client-one-sync-pending'\]/);
- assert.match(workflow,/routingBlockers=\['roblox-two-client-one-sync-pending'\]/);
- const pendingBlock=workflow.match(/if\(multiplayerOnlyPending\)\{[\s\S]*?console\.log\('ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING='\+item\.gameId\);\s*pending\+\+;/)?.[0]||'';
- assert.ok(pendingBlock,'two-client pending branch must exist');
- assert.doesNotMatch(pendingBlock,/f9Ids\.push\(item\.gameId\)/);
- assert.doesNotMatch(workflow,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
+ assert.match(workflow,/const f0Multiplayer=item\.robloxHeadlessFastMvpEvidence\|\|item\.robloxFoundationF0Evidence\|\|\{\}/);
+ assert.match(workflow,/f0Multiplayer\.multiplayerApplicable===true/);
+ assert.match(workflow,/f0Multiplayer\.multiplayerSyncContractPassed===true/);
+ assert.match(workflow,/f0Multiplayer\.sourceRevision===sourceRevision/);
+ assert.match(workflow,/f0Multiplayer\.artifactIdentity===artifactIdentity/);
+ assert.match(workflow,/const multiplayerValidationPassed=multiplayer\.known===true&&exactF0MultiplayerContract/);
+ assert.doesNotMatch(workflow,/multiplayer\.required!==true\|\|item\.robloxMultiplayerQaPassed===true/);
+ assert.match(workflow,/multiplayerValidationMode:multiplayer\.required===true\?'EXACT_F0_AUTHORITATIVE_SYNC_CONTRACT_PLUS_STUDIO_SESSION':'NOT_APPLICABLE'/);
+ assert.match(workflow,/multiplayerTwoParticipantRuntimeRequired:false/);
+ assert.match(workflow,/multiplayerEvidenceSource:multiplayer\.required===true\?'ROBLOX_F0_EXACT_SYNC_CONTRACT':'NOT_APPLICABLE'/);
+ assert.match(workflow,/PASS_EXACT_F0_SYNC_CONTRACT/);
+ assert.match(workflow,/ROBLOX_F7_MULTIPLAYER_CONTRACT_REPAIR_REQUIRED/);
+ assert.match(workflow,/roblox-f7-multiplayer-contract-repair-required/);
 });
 
 
@@ -590,7 +592,7 @@ test('F7 multiplayer runs only when applicable and its exact proof is reused by 
  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
  assert.match(runtime,/const multiplayerRequirementFor=item=>/);
  assert.match(runtime,/multiplayerRequired:multiplayer\.required/);
- assert.match(runtime,/f7Status:multiplayer\.known!==true\?'APPLICABILITY_UNKNOWN':multiplayer\.required===true\?\(multiplayerValidationPassed\?'PASS_REUSED':'PENDING_SINGLE_REQUIRED_CHECK'\):'NOT_APPLICABLE'/);
+ assert.match(runtime,/f7Status:multiplayer\.known!==true\?'APPLICABILITY_UNKNOWN':multiplayer\.required===true\?\(multiplayerValidationPassed\?'PASS_EXACT_F0_SYNC_CONTRACT':'PENDING_TARGETED_MULTIPLAYER_REPAIR'\):'NOT_APPLICABLE'/);
  assert.match(runtime,/ROBLOX_INTERNAL_STUDIO_PASS_F7_PENDING=/);
  assert.match(finalReview,/const internalStudioValidationAccepted=/);
  assert.match(finalReview,/post\.multiplayerValidationPassed===true/);
@@ -684,6 +686,48 @@ test('post-runtime dedupe job runs without a same-game concurrency lock',()=>{
   assert.match(block,/runs-on:\s*ubuntu-24\.04/);
   assert.doesNotMatch(block,/concurrency:/);
   assert.match(block,/ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=/);
+});
+
+test('central validation efficiency keeps evolution primary and scopes idle security multiplayer and server work',()=>{
+ const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+ const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
+ const security=JSON.parse(fs.readFileSync('company-learning/security-immune-system.json','utf8'));
+ const opt=roadmap.developmentLifecycleMachine.validationEfficiencyOptimization;
+ assert.equal(opt.evolutionLoopMustRemainUnchanged,true);
+ assert.equal(opt.floorStructureMustRemainUnchanged,true);
+ assert.deepEqual(opt.floors,['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9']);
+ assert.equal(opt.f10Forbidden,true);
+ assert.equal(opt.externalServer.automaticProbe,false);
+ assert.equal(opt.externalServer.role,'OPTIONAL_MANUAL_DIAGNOSTIC_ONLY');
+ assert.equal(opt.security.unrelatedGameplayPresentationContentChange,'NO_FULL_SECURITY_RESCAN');
+ assert.equal(opt.security.exactUnchangedEvidenceReusable,true);
+ assert.equal(opt.security.fullRescanMayNotRunFromIdleSchedule,true);
+ assert.equal(opt.multiplayer.automaticTwoParticipantRuntimeCheck,false);
+ assert.equal(opt.multiplayer.internalDevelopmentMinimumProof,'EXACT_F0_AUTHORITATIVE_SYNC_CONTRACT_PLUS_EXACT_STUDIO_INTERNAL_SESSION');
+ assert.equal(opt.multiplayer.idleScheduleRecheck,false);
+ assert.equal(opt.f9.startsNewRuntimeSession,false);
+ assert.equal(opt.f9.startsFullSecurityRescan,false);
+ assert.equal(opt.f9.startsDuplicateMultiplayerSession,false);
+ assert.equal(opt.scheduledRecoveryScan.idleScanMode,'STATE_DISCOVERY_ONLY');
+ assert.equal(opt.scheduledRecoveryScan.heavyContractQaOnIdleSchedule,false);
+ assert.equal(opt.scheduledRecoveryScan.noPendingWorkAction,'EXIT_WITHOUT_RUNTIME_SECURITY_OR_MULTIPLAYER_REVALIDATION');
+ assert.equal(architecture.releaseExposureLifecycle.validationEfficiency.gameEvolutionPipelineUnchanged,true);
+ assert.equal(architecture.releaseExposureLifecycle.validationEfficiency.multiplayer.automaticTwoParticipantRuntimeCheck,false);
+ assert.equal(architecture.releaseExposureLifecycle.validationEfficiency.scheduledRecoveryScan.idleMode,'STATE_DISCOVERY_ONLY');
+ assert.equal(security.minimumNecessaryDevelopmentSecurity.protections.unrelatedGameplayPresentationOrContentDeltaDoesNotRequireFullSecurityRescan,true);
+ assert.equal(security.minimumNecessaryDevelopmentSecurity.protections.idleScheduledRecoveryScanDoesNotRequireFullSecurityRescan,true);
+});
+
+test('scheduled Roblox recovery scan is state-only when there is no exact pending internal validation',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/Classify pending internal validation work/);
+ assert.match(workflow,/ROBLOX_INTERNAL_VALIDATION_PENDING=/);
+ assert.match(workflow,/ROBLOX_IDLE_SCAN=/);
+ assert.match(workflow,/Run deterministic foundation protocol QA\n\s+if: \$\{\{ inputs\.retry_open_cloud_only != true && \(github\.event_name != 'schedule' \|\| steps\.internal_work\.outputs\.count != '0'\) \}\}/);
+ assert.match(workflow,/Read exact runtime sentinel and persist tester QA evidence\n\s+if: \$\{\{ inputs\.retry_open_cloud_only == true \|\| github\.event_name != 'schedule' \|\| steps\.internal_work\.outputs\.count != '0' \}\}/);
+ assert.match(workflow,/Dispatch F9 review for runtime-accepted candidates\n\s+if: \$\{\{ inputs\.retry_open_cloud_only != true && \(github\.event_name != 'schedule' \|\| steps\.internal_work\.outputs\.count != '0'\) \}\}/);
+ assert.match(workflow,/Enforce persistent Open Cloud probe failures after evidence persistence\n\s+if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
+ assert.doesNotMatch(workflow,/const externalRuntimeObservationPending=/);
 });
 
 test('F9 dedupe job itself has no same-game concurrency lock',()=>{
