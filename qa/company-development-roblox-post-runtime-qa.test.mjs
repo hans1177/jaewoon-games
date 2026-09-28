@@ -31,7 +31,7 @@ test('runtime QA rescans when the private candidate producer workflow changes',(
 
 test('Studio asset binding promotion waits for exact accepted Roblox runtime',()=>{
   assert.match(workflow,/const studioAssetBindingRequired=item\.robloxStudioAssetBindingApplied===true/);
-  assert.match(workflow,/result\.runtimeAcceptancePassed===true/);
+  assert.match(workflow,/&&runtimeAcceptanceForRelease/);
   assert.match(workflow,/result\.f5InputCameraUiPassed===true/);
   assert.match(workflow,/result\.f8GameplaySystemsPassed===true/);
   assert.match(workflow,/ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS/);
@@ -111,15 +111,14 @@ test('exact Roblox foundation QA isolates exact games while collapsing duplicate
   assert.match(workflow,/git rebase "origin\/\$COMPANY_RUNTIME_BRANCH"/);
 });
 
-test('two-client one-sync is the shared internal and public release gate',()=>{
-  assert.match(workflow,/ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING/);
-  assert.match(workflow,/item\.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE'/);
-  assert.match(workflow,/item\.robloxFailureSignature='ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING'/);
-  assert.match(workflow,/item\.routingBlockers=\['roblox-two-client-one-sync-pending'\]/);
-  assert.match(workflow,/item\.robloxPromotionBlockers=\['roblox-two-client-one-sync-pending'\]/);
-  assert.doesNotMatch(workflow,/ROBLOX_MULTIPLAYER_SIMPLIFIED_INTERNAL_RELEASE_REVIEW/);
+test('F7 multiplayer checks the exact Roblox source contract before F9',()=>{
+  assert.match(workflow,/validateRobloxMultiplayerSourceContract/);
+  assert.match(workflow,/const staticMultiplayerCodePass=multiplayer\.required===true&&multiplayerSourceContract\.passed===true/);
+  assert.match(workflow,/ROBLOX_F7_MULTIPLAYER_CODE_CONTRACT_PASS=/);
+  assert.match(workflow,/item\.robloxMultiplayerQaPassed=true/);
+  assert.match(workflow,/runtimeTwoClientExecutionRequired:false/);
+  assert.match(workflow,/ROBLOX_FINAL_REVIEW_PENDING/);
 });
-
 
 test('shared fallback QA only probes the one current candidate and marks older duplicate-current entries superseded',()=>{
   assert.match(workflow,/sharedFastMvpRotationAllowed/);
@@ -272,22 +271,18 @@ test('same exact Studio internal evidence is reused inside the cycle without fab
 });
 
 
-test('two-client PASS is reusable for the same exact game artifact across source metadata and candidate changes',()=>{
+test('F7 reuses exact artifact evidence or the current source contract',()=>{
   const priorAt=workflow.indexOf('const exactPriorMultiplayerValidation=Boolean(');
-  const runtimeAt=workflow.indexOf('const exactRuntimeMultiplayerValidation=Boolean(',priorAt);
-  assert.ok(priorAt>0&&runtimeAt>priorAt);
-  const priorBlock=workflow.slice(priorAt,runtimeAt);
-  const runtimeBlock=workflow.slice(runtimeAt,workflow.indexOf('const exactMultiplayerValidationReusable=',runtimeAt));
+  const reuseAt=workflow.indexOf('const exactMultiplayerValidationReusable=',priorAt);
+  assert.ok(priorAt>0&&reuseAt>priorAt);
+  const priorBlock=workflow.slice(priorAt,reuseAt);
   assert.match(priorBlock,/priorMultiplayer\.passed===true/);
   assert.match(priorBlock,/priorMultiplayer\.artifactIdentity===artifactIdentity/);
   assert.doesNotMatch(priorBlock,/sourceRevision|placeId|candidateVersionNumber/);
-  assert.match(runtimeBlock,/priorRuntime\.f7MultiplayerFoundationPassed===true/);
-  assert.match(runtimeBlock,/priorRuntime\.artifactIdentity===artifactIdentity/);
-  assert.doesNotMatch(runtimeBlock,/sourceRevision|placeId|candidateVersionNumber/);
+  assert.match(workflow,/const exactMultiplayerValidationReusable=exactPriorMultiplayerValidation\|\|staticMultiplayerCodePass/);
   assert.match(workflow,/item\.robloxMultiplayerQaPassed=true/);
   assert.match(workflow,/ROBLOX_F7_MULTIPLAYER_EVIDENCE_REUSED=/);
 });
-
 
 test('exact local F0 artifact rebinds prior Studio evidence instead of replaying identical bytes',()=>{
   assert.match(workflow,/const reusableLocalStudioArtifactEvidence=Boolean\(/);
