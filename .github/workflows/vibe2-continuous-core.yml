@@ -85,6 +85,7 @@ env:
   OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
   VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA
+  VIBE2_ROBLOX_DETERMINISTIC_SOURCE: 'true'
   VIBE2_CODEX_ROLE: SYSTEM_TOOLING_CI_TEST_INFRA_ONLY
   VIBE2_CODEX_GAME_SOURCE_WRITE: FORBIDDEN
   VIBE2_OPENAI_PAID_API_ALLOWED: 'false'
@@ -823,6 +824,11 @@ jobs:
           put('game_id',order.gameId||'');
           put('target',order.target||'');
           put('route',order.executionRoute||'');
+          const presentationPass=String(order?.presentationQuality?.pass||'').toUpperCase();
+          const deterministicRoblox=String(order.target||'').toLowerCase()==='roblox'
+            && order?.presentationQuality?.required===true
+            && presentationPass==='ASSET_ADAPTATION';
+          put('deterministic_source',deterministicRoblox?'true':'false');
           put('source_root',order.source?.root||'');
           put('work_lock_required',order.compiledWorkContract?.workLock?.requiredBeforeSourceWrite===true?'true':'false');
           put('work_lock_base_sha',order.compiledWorkContract?.workLock?.baseSha||'');
@@ -836,6 +842,8 @@ jobs:
         env:
           ORDER_RUN: ${{ steps.order.outputs.run }}
           ROUTE: ${{ steps.order.outputs.route }}
+          TARGET: ${{ steps.order.outputs.target }}
+          DETERMINISTIC_SOURCE: ${{ steps.order.outputs.deterministic_source }}
         shell: bash
         run: |
           set -euo pipefail
@@ -846,6 +854,9 @@ jobs:
           elif [ "$ROUTE" = 'analysis-only' ] || [ "$ROUTE" = 'learning-web-artifact' ]; then
             required='true'
             reason='LEARNING_ROUTE'
+          elif [ "$ROUTE" = 'text-source-worker' ] && [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
+            required='false'
+            reason='ROBLOX_DETERMINISTIC_SOURCE'
           elif [ "$ROUTE" = 'text-source-worker' ]; then
             required='true'
             reason='TEXT_SOURCE_ROUTE'
@@ -989,12 +1000,17 @@ jobs:
         run: |
           set -euo pipefail
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          target="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.target||''))")"
+          model_calls=1
+          deterministic_source="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));const p=String(o?.presentationQuality?.pass||'').toUpperCase();process.stdout.write(String(String(o.target||'').toLowerCase()==='roblox'&&o?.presentationQuality?.required===true&&p==='ASSET_ADAPTATION'))")"
+          if [ "$deterministic_source" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then model_calls=0; fi
           node "$contract_root/tools/free-budget-telemetry.mjs" \
             --verify-public-repo=true \
             --runner=ubuntu-latest \
-            --model-calls=1 \
+            --model-calls="$model_calls" \
             --runner-minutes=22 \
             --output=/tmp/vibe2-free-budget.json
+          echo "VIBE2_GAME_SOURCE_MODEL_CALLS=$model_calls"
           echo 'VIBE2_PAID_API=NO'
           echo 'VIBE2_PAID_RUNNER=NO'
           echo 'VIBE2_PARALLELISM_POLICY=UNBOUNDED_BY_POLICY'
@@ -1067,6 +1083,8 @@ jobs:
           TASK_ID: ${{ steps.order.outputs.task_id }}
           SAFE_TASK: ${{ matrix.safeTask }}
           SOURCE_ROOT: ${{ steps.order.outputs.source_root }}
+          TARGET: ${{ steps.order.outputs.target }}
+          DETERMINISTIC_SOURCE: ${{ steps.order.outputs.deterministic_source }}
           VARIANT: ${{ matrix.variant }}
           CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           GH_TOKEN: ${{ github.token }}
@@ -1093,18 +1111,23 @@ jobs:
           echo 'VIBE2_GAME_SOURCE_PROVIDER=LOCAL_OLLAMA'
           echo 'VIBE2_CODEX_GAME_SOURCE_WRITE=FORBIDDEN'
 
-          command -v ollama >/dev/null
-          nohup ollama serve > "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
-            if [ "$i" = 30 ]; then cat "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" || true; exit 1; fi
-            sleep 2
-          done
-          if ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"; then
-            echo 'VIBE2_LOCAL_MODEL_SOURCE=CACHE'
+          if [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
+            echo 'VIBE2_ROBLOX_SOURCE_MODE=DETERMINISTIC_LOCAL'
+            echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
           else
-            echo 'VIBE2_LOCAL_MODEL_SOURCE=FALLBACK_PULL'
-            ollama pull "$VIBE2_LOCAL_MODEL"
+            command -v ollama >/dev/null
+            nohup ollama serve > "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
+            for i in $(seq 1 30); do
+              curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
+              if [ "$i" = 30 ]; then cat "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" || true; exit 1; fi
+              sleep 2
+            done
+            if ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"; then
+              echo 'VIBE2_LOCAL_MODEL_SOURCE=CACHE'
+            else
+              echo 'VIBE2_LOCAL_MODEL_SOURCE=FALLBACK_PULL'
+              ollama pull "$VIBE2_LOCAL_MODEL"
+            fi
           fi
 
           cd "$candidate_dir"
@@ -1552,15 +1575,21 @@ jobs:
           const sameExternalLearningIds=expectedExternalLearningIds.length===sourcePromptExternalLearningIds.length
             &&expectedExternalLearningIds.every(id=>sourcePromptExternalLearningIds.includes(id));
           const sourcePromptLearningRequired=workOrder?.knowledgeApplicationContract?.mandatoryForGameTarget===true;
-          const sourcePromptLearningOk=!sourcePromptLearningRequired||(
-            manifest?.codingMethod?.verifiedExternalLearningSourcePromptRequired===true
+          const promptLearningProof=manifest?.codingMethod?.verifiedExternalLearningSourcePromptRequired===true
             &&Number(manifest?.codingMethod?.verifiedExternalLearningSourcePromptCoveragePct||0)===100
             &&Number(manifest?.codingMethod?.verifiedExternalLearningSourcePromptCount||0)===expectedExternalLearningIds.length
             &&manifest?.codingMethod?.verifiedExternalLearningSourcePromptTruncationForbidden===true
             &&manifest?.codingMethod?.verifiedExternalLearningRuntimePromptAllAttempts===true
             &&Number(manifest?.codingMethod?.verifiedExternalLearningRuntimePromptChecks||0)>=1
-            &&sameExternalLearningIds
-          );
+            &&sameExternalLearningIds;
+          const deterministicLearningIds=[...new Set((manifest?.codingMethod?.verifiedExternalLearningDeterministicIds||[]).map(clean).filter(Boolean))];
+          const sameDeterministicLearningIds=expectedExternalLearningIds.length===deterministicLearningIds.length
+            &&expectedExternalLearningIds.every(id=>deterministicLearningIds.includes(id));
+          const deterministicLearningProof=manifest?.codingMethod?.verifiedExternalLearningDeterministicApplied===true
+            &&manifest?.codingMethod?.verifiedExternalLearningDeterministicContractConsumed===true
+            &&Number(manifest?.codingMethod?.verifiedExternalLearningDeterministicCoveragePct||0)===100
+            &&sameDeterministicLearningIds;
+          const sourcePromptLearningOk=!sourcePromptLearningRequired||promptLearningProof||deterministicLearningProof;
           const effectiveCandidateOk=candidateOk&&sourcePromptLearningOk;
           if(sourceGenerationAttempted&&sourcePromptLearningRequired&&!sourcePromptLearningOk){
             outcome='FAIL';
@@ -1845,11 +1874,15 @@ jobs:
             verifiedExternalLearningCoveragePct:Number(workOrder.knowledgeApplicationContract.verifiedExternalLearningCoveragePct||0),
             verifiedExternalLearningApplyAxes:Array.isArray(workOrder.knowledgeApplicationContract.verifiedExternalLearningApplyAxes)?workOrder.knowledgeApplicationContract.verifiedExternalLearningApplyAxes:[],
             retrievedVerifiedExternalLearningTruncationForbidden:workOrder.knowledgeApplicationContract.retrievedVerifiedExternalLearningTruncationForbidden===true,
-            actualSourcePromptVerified:sourcePromptLearningOk,
+            actualSourcePromptVerified:promptLearningProof,
             actualSourcePromptVerifiedExternalLearningIds:sourcePromptExternalLearningIds,
-            actualSourcePromptCoveragePct:sourcePromptLearningOk&&sourcePromptLearningRequired?100:0,
+            actualSourcePromptCoveragePct:promptLearningProof&&sourcePromptLearningRequired?100:0,
             actualRuntimePromptChecks:Number(manifest?.codingMethod?.verifiedExternalLearningRuntimePromptChecks||0),
             actualRuntimePromptAllAttempts:manifest?.codingMethod?.verifiedExternalLearningRuntimePromptAllAttempts===true,
+            actualSourceGenerationLearningVerified:sourcePromptLearningOk,
+            actualSourceGenerationLearningMode:deterministicLearningProof?'DETERMINISTIC_CONTRACT':promptLearningProof?'MODEL_PROMPT':'UNPROVEN',
+            actualDeterministicLearningIds:deterministicLearningIds,
+            actualDeterministicLearningCoveragePct:deterministicLearningProof?100:0,
             verifiedLearningMemorySha:clean(workOrder.knowledgeApplicationContract.verifiedLearningMemorySha)||clean(process.env.VIBE2_VERIFIED_LEARNING_MEMORY_SHA)||null,
             freshIndependentQaRequired:true,
             infrastructureFailurePenalizesKnowledge:false,

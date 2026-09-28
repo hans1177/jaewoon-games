@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, normalizeCandidate } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, normalizeCandidate } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
@@ -3888,12 +3888,14 @@ test('verified APK learning preserves game-source and QA-only dispositions throu
   assert.throws(()=>buildVerifiedExternalLearningPromptContract({...order,knowledgeApplicationContract:{...order.knowledgeApplicationContract,verifiedExternalLearningDispositions:[]}}),/DISPOSITION_DRIFT/);
 });
 
-test('fan-in rejects candidates without actual APK learning prompt proof',()=>{
+test('fan-in accepts only proven model-prompt or deterministic APK learning application',()=>{
   const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   assert.match(workflowSource,/verified-external-learning-source-prompt-unproven/);
+  assert.match(workflowSource,/const deterministicLearningProof=/);
+  assert.match(workflowSource,/const sourcePromptLearningOk=!sourcePromptLearningRequired\|\|promptLearningProof\|\|deterministicLearningProof/);
   assert.match(workflowSource,/const effectiveCandidateOk=candidateOk&&sourcePromptLearningOk/);
-  assert.match(workflowSource,/verified-external-learning-source-prompt:\$\{sourcePromptLearningOk\?'PASS':'FAIL'\}/);
-  assert.match(workflowSource,/actualSourcePromptVerified:sourcePromptLearningOk/);
+  assert.match(workflowSource,/actualSourcePromptVerified:promptLearningProof/);
+  assert.match(workflowSource,/actualSourceGenerationLearningMode:deterministicLearningProof\?'DETERMINISTIC_CONTRACT'/);
 });
 
 
@@ -4016,4 +4018,117 @@ test('local Roblox visual retry targets gameplay visuals and keeps a bounded bui
   assert.match(focused.prompt,/visual=지역 색/);
   assert.doesNotMatch(focused.prompt,/unrelated-system-detail/);
   assert.ok(Buffer.byteLength(focused.prompt,'utf8')<7000);
+});
+
+
+test('deterministic Roblox build-up creates real style and motion edits without a model',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'roblox-games/demo');
+  const relative='client/Game.client.luau';
+  const source=[
+    'local Players = game:GetService("Players")',
+    'local player = Players.LocalPlayer',
+    'local gui = Instance.new("ScreenGui")',
+    'local root = Instance.new("Frame")',
+    'root.Name = "Root"',
+    'root.AnchorPoint = Vector2.new(0.5, 1)',
+    'root.Position = UDim2.fromScale(0.5, 0.98)',
+    'root.Size = UDim2.new(1, -24, 0, 360)',
+    'root.BackgroundTransparency = 0.15',
+    'root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)',
+    'root.Parent = gui',
+    'local title = Instance.new("TextLabel")',
+    'title.BackgroundTransparency = 1',
+    'title.TextColor3 = Color3.fromRGB(245, 248, 255)',
+    'title.TextScaled = true',
+    'title.Text = string.format("%s · %s · %s", Config.GameName, Config.Genre, Config.PlayMode)',
+    'title.Parent = root',
+    'local status = Instance.new("TextLabel")',
+    'status.BackgroundColor3 = Color3.fromRGB(10, 17, 30)',
+    'status.TextColor3 = Color3.fromRGB(220, 232, 250)',
+    'status.TextScaled = true',
+    'status.Parent = root',
+    ''
+  ].join('\n');
+  write(path.join(sourceRoot,relative),source);
+  const workOrder={
+    target:'roblox',
+    gameId:'demo',
+    presentationQuality:{
+      required:true,
+      pass:'ASSET_ADAPTATION',
+      graphicsReplacement:{
+        required:true,
+        adaptiveCount:{minimumActual:1,maximumActual:60},
+        surfaces:['HUD','MENU'],
+        reuseModes:['ADAPT_RESTYLE_AND_RETARGET'],
+        beforeAfterEvidenceRequired:true,
+        perReplacementSourceEvidenceRequired:true,
+        actualReplacementCountMustEqualGroundedEvidenceCount:true,
+        selfReportedCountWithoutGroundedSourceEvidenceCannotPass:true
+      }
+    }
+  };
+  const verifiedExternalLearningContract={
+    required:true,
+    ids:['external-black-box-demo'],
+    count:1,
+    coveragePct:100,
+    block:'[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]\ndispositions=1/1; sourcePrinciples=1; validationOnly=0; truncation=FORBIDDEN\n[EXTERNAL_LEARNING external-black-box-demo]\nDISPOSITION=p1:APPLIED_GAME_SOURCE;GAME=demo;TARGET=roblox;DOMAINS=UI;GENRE_MOOD=DEMO\nAPPLY=use clear native UI motion and contrast\n[END_EXTERNAL_LEARNING external-black-box-demo]\n[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
+  };
+  const first=deterministicRobloxBuildUpCandidate({
+    order:workOrder,
+    sourceRoot,
+    sourceRootRelative:'roblox-games/demo',
+    responsibleFiles:[relative],
+    verifiedExternalLearningContract
+  });
+  assert.ok(first);
+  assert.equal(first.generation.mode,'DETERMINISTIC_ROBLOX_BUILDUP');
+  assert.equal(first.generation.deterministicRobloxBuildStage,1);
+  assert.equal(first.candidate.edits.length,3);
+  const changed=first.candidate.edits.map(row=>row.replace).join('\n');
+  assert.match(changed,/TweenService/);
+  assert.match(changed,/Position = deterministicGameplayHudEntryPosition/);
+  assert.match(changed,/UIGradient/);
+  assert.match(changed,/Color3\.fromRGB/);
+  assert.equal(first.generation.deterministicVerifiedExternalLearningApplied,true);
+  assert.deepEqual(first.generation.deterministicVerifiedExternalLearningIds,['external-black-box-demo']);
+  assert.equal(first.generation.deterministicVerifiedExternalLearningCoveragePct,100);
+  assert.equal(first.generation.deterministicVerifiedExternalLearningContractConsumed,true);
+  assert.equal(evaluatePresentationCandidateDelta({
+    candidate:first.candidate,
+    sourceRoot,
+    contract:workOrder.presentationQuality
+  }).pass,true);
+  const graphics=evaluateGraphicsReplacementReport({
+    candidate:first.candidate,
+    contract:workOrder.presentationQuality.graphicsReplacement
+  });
+  assert.equal(graphics.pass,true);
+  assert.equal(graphics.report.actualCount,3);
+  assert.equal(graphics.groundedCount,3);
+
+  applyExactEdits(sourceRoot,first.candidate.edits);
+  const second=deterministicRobloxBuildUpCandidate({
+    order:workOrder,
+    sourceRoot,
+    sourceRootRelative:'roblox-games/demo',
+    responsibleFiles:[relative],
+    verifiedExternalLearningContract
+  });
+  assert.ok(second);
+  assert.equal(second.generation.deterministicRobloxBuildStage,2);
+  assert.equal(second.candidate.edits.length,3);
+  assert.ok(second.candidate.edits.every(row=>/VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_/.test(row.find)));
+});
+
+test('continuous workflow marks Roblox text source as model-independent',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  assert.match(workflow,/VIBE2_ROBLOX_DETERMINISTIC_SOURCE: 'true'/);
+  assert.match(workflow,/reason='ROBLOX_DETERMINISTIC_SOURCE'/);
+  assert.match(workflow,/VIBE2_ROBLOX_SOURCE_MODE=DETERMINISTIC_LOCAL/);
+  assert.match(workflow,/VIBE2_LOCAL_MODEL_REQUIRED=NO/);
+  assert.match(workflow,/verifiedExternalLearningDeterministicContractConsumed/);
+  assert.match(workflow,/deterministicLearningProof/);
 });

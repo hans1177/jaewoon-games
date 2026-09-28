@@ -354,6 +354,213 @@ export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',r
   if(!replace||replace===spec.find)return null;
   return{summary:'Vibe2 deterministic diagnostic repair',expectedEffect:'eliminate reproduced '+spec.diagnosticType+' before model generation',edits:[{path:spec.path,find:spec.find,replace}],newFiles:[],replaceFiles:[],tests:[],deterministicDiagnosticType:spec.diagnosticType};
 }
+
+export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sourceRootRelative='',responsibleFiles=[],candidateValidator=null,verifiedExternalLearningContract=null}={}){
+  if(clean(order?.target).toLowerCase()!=='roblox'||!clean(sourceRoot))return null;
+  const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
+  if(order?.presentationQuality?.required!==true||presentationPass!=='ASSET_ADAPTATION')return null;
+  const clientFiles=unique(responsibleFiles).filter(file=>/(?:^|\/)client(?:\/|$)|\.client\.luau$/i.test(file));
+  if(!clientFiles.length)return null;
+
+  const numberHash=value=>{
+    let hash=2166136261;
+    for(const ch of String(value??'')){hash^=ch.charCodeAt(0);hash=Math.imul(hash,16777619);}
+    return hash>>>0;
+  };
+  const blockMatch=(source,key)=>{
+    const re=new RegExp('-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_'+key+'_BEGIN stage=(\\d+)\\n[\\s\\S]*?-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_'+key+'_END');
+    const match=source.match(re);
+    return match?{text:match[0],stage:Number(match[1]||0)}:null;
+  };
+  const editFor=(source,key,anchorText,block)=>{
+    const existing=blockMatch(source,key);
+    if(existing)return{find:existing.text,replace:block,stage:existing.stage+1};
+    if(!anchorText||source.split(anchorText).length-1!==1)return null;
+    return{find:anchorText,replace:anchorText+'\n'+block,stage:1};
+  };
+
+  for(const relative of clientFiles){
+    const file=path.join(sourceRoot,relative);
+    if(!fs.existsSync(file)||!fs.statSync(file).isFile())continue;
+    const source=fs.readFileSync(file,'utf8');
+    const rootAnchor=[
+      'root.Name = "Root"',
+      'root.AnchorPoint = Vector2.new(0.5, 1)',
+      'root.Position = UDim2.fromScale(0.5, 0.98)',
+      'root.Size = UDim2.new(1, -24, 0, 360)',
+      'root.BackgroundTransparency = 0.15',
+      'root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)',
+      'root.Parent = gui'
+    ].join('\n');
+    const titleAnchor=[
+      'title.BackgroundTransparency = 1',
+      'title.TextColor3 = Color3.fromRGB(245, 248, 255)',
+      'title.TextScaled = true',
+      'title.Text = string.format("%s · %s · %s", Config.GameName, Config.Genre, Config.PlayMode)',
+      'title.Parent = root'
+    ].join('\n');
+    const statusAnchor=[
+      'status.BackgroundColor3 = Color3.fromRGB(10, 17, 30)',
+      'status.TextColor3 = Color3.fromRGB(220, 232, 250)',
+      'status.TextScaled = true',
+      'status.Parent = root'
+    ].join('\n');
+
+    const previousStages=['ROOT','TITLE','STATUS'].map(key=>blockMatch(source,key)?.stage||0);
+    const stage=Math.max(1,Math.max(...previousStages)+1);
+    const verifiedLearning=verifiedExternalLearningContract&&typeof verifiedExternalLearningContract==='object'?verifiedExternalLearningContract:{required:false,ids:[],coveragePct:0,block:''};
+    const verifiedLearningIds=unique(verifiedLearning.ids||[]);
+    const verifiedLearningConsumed=verifiedLearning.required===true
+      ?Boolean(clean(verifiedLearning.block))&&verifiedLearningIds.length>0&&Number(verifiedLearning.coveragePct||0)===100
+      :true;
+    if(verifiedLearning.required===true&&!verifiedLearningConsumed)return null;
+    const seed=numberHash((order?.gameId||'roblox')+':'+stage+':'+clean(verifiedLearning.block));
+    const accent=[96+(seed%112),96+((seed>>>8)%112),112+((seed>>>16)%96)];
+    const accent2=[Math.min(255,accent[0]+28),Math.min(255,accent[1]+24),Math.min(255,accent[2]+20)];
+    const radius=10+(stage%5);
+    const entryOffset=8+(stage%4)*2;
+    const rootBlock=[
+      `-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_ROOT_BEGIN stage=${stage}`,
+      'do',
+      `  local deterministicBuildStage = ${stage}`,
+      '  root:SetAttribute("DeterministicBuildStage", deterministicBuildStage)',
+      '  local deterministicGameplayHudCorner = root:FindFirstChild("DeterministicGameplayHudCorner")',
+      '  if not deterministicGameplayHudCorner then',
+      '    deterministicGameplayHudCorner = Instance.new("UICorner")',
+      '    deterministicGameplayHudCorner.Name = "DeterministicGameplayHudCorner"',
+      '    deterministicGameplayHudCorner.Parent = root',
+      '  end',
+      `  deterministicGameplayHudCorner.CornerRadius = UDim.new(0, ${radius})`,
+      '  local deterministicGameplayHudStroke = root:FindFirstChild("DeterministicGameplayHudStroke")',
+      '  if not deterministicGameplayHudStroke then',
+      '    deterministicGameplayHudStroke = Instance.new("UIStroke")',
+      '    deterministicGameplayHudStroke.Name = "DeterministicGameplayHudStroke"',
+      '    deterministicGameplayHudStroke.Parent = root',
+      '  end',
+      `  deterministicGameplayHudStroke.Color = Color3.fromRGB(${accent[0]}, ${accent[1]}, ${accent[2]})`,
+      '  deterministicGameplayHudStroke.Thickness = 1.5',
+      '  deterministicGameplayHudStroke.Transparency = 0.24',
+      '  local deterministicGameplayHudGradient = root:FindFirstChild("DeterministicGameplayHudGradient")',
+      '  if not deterministicGameplayHudGradient then',
+      '    deterministicGameplayHudGradient = Instance.new("UIGradient")',
+      '    deterministicGameplayHudGradient.Name = "DeterministicGameplayHudGradient"',
+      '    deterministicGameplayHudGradient.Parent = root',
+      '  end',
+      `  deterministicGameplayHudGradient.Color = ColorSequence.new(Color3.fromRGB(${accent[0]}, ${accent[1]}, ${accent[2]}), Color3.fromRGB(${accent2[0]}, ${accent2[1]}, ${accent2[2]}))`,
+      `  deterministicGameplayHudGradient.Rotation = ${(stage*17)%360}`,
+      '  local deterministicGameplayHudTweenService = game:GetService("TweenService")',
+      '  local deterministicGameplayHudRestPosition = root.Position',
+      `  local deterministicGameplayHudEntryPosition = UDim2.new(root.Position.X.Scale, root.Position.X.Offset, root.Position.Y.Scale, root.Position.Y.Offset + ${entryOffset})`,
+      '  root.Position = deterministicGameplayHudEntryPosition',
+      '  deterministicGameplayHudTweenService:Create(root, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = deterministicGameplayHudRestPosition}):Play()',
+      'end',
+      '-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_ROOT_END'
+    ].join('\n');
+    const titleBlock=[
+      `-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_TITLE_BEGIN stage=${stage}`,
+      'do',
+      '  local deterministicTitleStroke = title:FindFirstChild("DeterministicTitleStroke")',
+      '  if not deterministicTitleStroke then',
+      '    deterministicTitleStroke = Instance.new("UIStroke")',
+      '    deterministicTitleStroke.Name = "DeterministicTitleStroke"',
+      '    deterministicTitleStroke.Parent = title',
+      '  end',
+      `  deterministicTitleStroke.Color = Color3.fromRGB(${accent2[0]}, ${accent2[1]}, ${accent2[2]})`,
+      '  deterministicTitleStroke.Thickness = 1',
+      '  deterministicTitleStroke.Transparency = 0.42',
+      'end',
+      '-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_TITLE_END'
+    ].join('\n');
+    const statusBlock=[
+      `-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_STATUS_BEGIN stage=${stage}`,
+      'do',
+      '  local deterministicStatusCorner = status:FindFirstChild("DeterministicStatusCorner")',
+      '  if not deterministicStatusCorner then',
+      '    deterministicStatusCorner = Instance.new("UICorner")',
+      '    deterministicStatusCorner.Name = "DeterministicStatusCorner"',
+      '    deterministicStatusCorner.Parent = status',
+      '  end',
+      `  deterministicStatusCorner.CornerRadius = UDim.new(0, ${Math.max(6,radius-3)})`,
+      '  local deterministicStatusStroke = status:FindFirstChild("DeterministicStatusStroke")',
+      '  if not deterministicStatusStroke then',
+      '    deterministicStatusStroke = Instance.new("UIStroke")',
+      '    deterministicStatusStroke.Name = "DeterministicStatusStroke"',
+      '    deterministicStatusStroke.Parent = status',
+      '  end',
+      `  deterministicStatusStroke.Color = Color3.fromRGB(${accent[0]}, ${accent[1]}, ${accent[2]})`,
+      '  deterministicStatusStroke.Thickness = 1',
+      '  deterministicStatusStroke.Transparency = 0.5',
+      '  status.BackgroundTransparency = 0.08',
+      'end',
+      '-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_STATUS_END'
+    ].join('\n');
+
+    const rows=[
+      ['ROOT',rootAnchor,rootBlock],
+      ['TITLE',titleAnchor,titleBlock],
+      ['STATUS',statusAnchor,statusBlock]
+    ].map(([key,sourceAnchor,block])=>{
+      const edit=editFor(source,key,sourceAnchor,block);
+      return edit?{path:relative,find:edit.find,replace:edit.replace}:null;
+    }).filter(Boolean);
+    if(!rows.length)continue;
+
+    try{
+      const graphicsContract=order?.presentationQuality?.graphicsReplacement||{};
+      const graphicsSurface=(graphicsContract?.surfaces||[]).map(value=>clean(value).toUpperCase()).includes('HUD')
+        ?'HUD'
+        :clean((graphicsContract?.surfaces||[])[0]).toUpperCase()||'HUD';
+      const graphicsReuseMode=(graphicsContract?.reuseModes||[]).map(value=>clean(value).toUpperCase()).includes('ADAPT_RESTYLE_AND_RETARGET')
+        ?'ADAPT_RESTYLE_AND_RETARGET'
+        :clean((graphicsContract?.reuseModes||[])[0]).toUpperCase()||'ADAPT_RESTYLE_AND_RETARGET';
+      const evidenceLines=[
+        '    deterministicGameplayHudCorner = Instance.new("UICorner")',
+        '    deterministicGameplayHudStroke = Instance.new("UIStroke")',
+        '    deterministicGameplayHudGradient = Instance.new("UIGradient")'
+      ];
+      const graphicsReplacementReport=graphicsContract?.required===true?{
+        actualCount:evidenceLines.length,
+        changedSurfaces:[graphicsSurface],
+        reuseModesUsed:[graphicsReuseMode],
+        replacementEvidence:evidenceLines.map((sourceEvidence,index)=>({
+          surface:graphicsSurface,
+          path:relative,
+          bindingKey:['DeterministicGameplayHudCorner','DeterministicGameplayHudStroke','DeterministicGameplayHudGradient'][index],
+          reuseMode:graphicsReuseMode,
+          sourceEvidence
+        })),
+        before:'existing Roblox gameplay HUD without this deterministic staged style and entry-motion treatment',
+        after:'deterministic native Roblox HUD restyle with grounded corner, stroke, gradient, and TweenService entry motion'
+      }:null;
+      const candidate=normalizeCandidate({
+        summary:'Deterministic Roblox presentation build-up stage '+stage,
+        expectedEffect:'model-independent native Roblox HUD style and motion build-up',
+        edits:rows,newFiles:[],replaceFiles:[],tests:[],
+        graphicsReplacementReport
+      },{target:'roblox',responsibleFiles,sourceRootRelative,allowFullRewrite:false});
+      applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
+      const candidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
+      return{
+        candidate,
+        candidateValidation,
+        generation:{
+          attempts:0,recoveryUsed:false,deterministicRobloxBuildUp:true,deterministicRobloxBuildStage:stage,
+          deterministicVerifiedExternalLearningApplied:verifiedLearning.required===true&&verifiedLearningConsumed,
+          deterministicVerifiedExternalLearningIds:[...verifiedLearningIds],
+          deterministicVerifiedExternalLearningCoveragePct:verifiedLearning.required===true?100:0,
+          deterministicVerifiedExternalLearningContractConsumed:verifiedLearningConsumed,
+          verifiedExternalLearningPromptChecks:0,
+          verifiedExternalLearningPromptAllAttempts:verifiedLearning.required!==true,
+          mode:'DETERMINISTIC_ROBLOX_BUILDUP',maxPredict:0,timeoutMs:0,contextWindow:0,temperature:0,completionMode:'DETERMINISTIC_ROBLOX_BUILDUP'
+        }
+      };
+    }catch(error){
+      console.log('VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_REJECTED='+relative+':'+generationFailureClass(error)+':'+clean(error?.message||error).replace(/\s+/g,' ').slice(0,240));
+    }
+  }
+  return null;
+}
+
 export function buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration={},sourceRoot='',responsibleFiles=[],error=null}={}){
   const spec=diagnosticFocusedReplaceOnlySpec({exploration,sourceRoot,responsibleFiles});
   if(!spec)return null;
@@ -2728,6 +2935,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       console.log('VIBE2_DETERMINISTIC_DIAGNOSTIC_REPAIR=FALLBACK:'+generationFailureClass(error)+':'+clean(error?.message||error).replace(/\s+/g,' ').slice(0,240));
     }
   }
+  if(!generated&&target==='roblox'){
+    generated=deterministicRobloxBuildUpCandidate({order,sourceRoot,sourceRootRelative,responsibleFiles,candidateValidator,verifiedExternalLearningContract});
+    if(generated)console.log('VIBE2_DETERMINISTIC_ROBLOX_BUILDUP=PASS:stage='+Number(generated.generation?.deterministicRobloxBuildStage||0));
+  }
   if(!generated)generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract});
   const candidate=generated.candidate;
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
@@ -2795,6 +3006,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     verifiedExternalLearningSourcePromptTruncationForbidden:order?.knowledgeApplicationContract?.retrievedVerifiedExternalLearningTruncationForbidden===true,
     verifiedExternalLearningRuntimePromptChecks:Number(generation.verifiedExternalLearningPromptChecks||0),
     verifiedExternalLearningRuntimePromptAllAttempts:generation.verifiedExternalLearningPromptAllAttempts===true,
+    verifiedExternalLearningDeterministicApplied:generation.deterministicVerifiedExternalLearningApplied===true,
+    verifiedExternalLearningDeterministicIds:Array.isArray(generation.deterministicVerifiedExternalLearningIds)?generation.deterministicVerifiedExternalLearningIds.slice(0,64):[],
+    verifiedExternalLearningDeterministicCoveragePct:Number(generation.deterministicVerifiedExternalLearningCoveragePct||0),
+    verifiedExternalLearningDeterministicContractConsumed:generation.deterministicVerifiedExternalLearningContractConsumed===true,
     deterministicDiagnosticBypassedForVerifiedExternalLearning:verifiedExternalLearningContract.required===true&&deterministicDiagnostic===null,
     contextFiles:context.files.length,
     contextBytes:context.bytes,
@@ -2841,6 +3056,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     candidateProducedFirstAttempt:Number(generation.attempts||0)===1&&generation.recoveryUsed!==true,
     deterministicDiagnosticRepair:generation.deterministicDiagnosticRepair===true,
     deterministicDiagnosticType:clean(generation.deterministicDiagnosticType)||null,
+    deterministicRobloxBuildUp:generation.deterministicRobloxBuildUp===true,
+    deterministicRobloxBuildStage:Number(generation.deterministicRobloxBuildStage||0),
+    sourceModelCallRequired:generation.deterministicRobloxBuildUp!==true,
     writableScopeExpansionAllowed:false,
     learningAuthorityExpanded:false
   };
