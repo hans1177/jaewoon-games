@@ -1626,6 +1626,8 @@ export function generationFailureClass(error){
   if(/UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구/i.test(message))return'UNITY_BOOTSTRAP_PAIR';
   if(/SYSTEM_CAUSAL_TEST_REQUIRED/i.test(message))return'SYSTEM_CAUSAL_TEST_REQUIRED';
   if(/SYSTEM_CANDIDATE_SYNTAX_INVALID/i.test(message))return'SYSTEM_CANDIDATE_SYNTAX';
+  if(/WEB_SOURCE_STRUCTURAL_CONTINUITY/i.test(message))return'WEB_STRUCTURAL_CONTINUITY';
+  if(/ROBLOX_SOURCE_STRUCTURAL_CONTINUITY/i.test(message))return'ROBLOX_STRUCTURAL_CONTINUITY';
   if(/DIAGNOSTIC_POSTCONDITION_MISSING/i.test(message))return'DIAGNOSTIC_POSTCONDITION';
   if(/ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)/i.test(message))return'ROBLOX_STUDIO_ASSET_APPLICATION';
   if(/ROBLOX_ASSET_ADAPTATION_DOMAINS_REQUIRED/i.test(message))return'ROBLOX_VISUAL_DOMAINS';
@@ -1640,11 +1642,11 @@ export function generationFailureClass(error){
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
-function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX'].includes(generationFailureClass(error));}
+function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET','PRESENTATION_PATCH_DELTA','GRAPHICS_REPLACEMENT_REPORT','ROBLOX_VISUAL_DOMAINS','ROBLOX_VISUAL_MOTION','STUDIO_QUALITY_DELTA','DIAGNOSTIC_POSTCONDITION','ROBLOX_STUDIO_ASSET_APPLICATION','SYSTEM_CAUSAL_TEST_REQUIRED','SYSTEM_CANDIDATE_SYNTAX','WEB_STRUCTURAL_CONTINUITY','ROBLOX_STRUCTURAL_CONTINUITY'].includes(generationFailureClass(error));}
 function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|GRAPHICS_REPLACEMENT_REPORT_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|prediction aborted|token repeat limit/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|GRAPHICS_REPLACEMENT_REPORT_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_STUDIO_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|WEB_SOURCE_STRUCTURAL_CONTINUITY|ROBLOX_SOURCE_STRUCTURAL_CONTINUITY|prediction aborted|token repeat limit/i.test(message);
 }
 export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[],preferredTargets=[]}={}){
   const raw=String(prompt??'');
@@ -2856,6 +2858,58 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       ...(candidate.newFiles||[]).map(row=>row.path),
       ...(candidate.replaceFiles||[]).map(row=>row.path)
     ]);
+    if(target==='roblox'&&sourceRootExists){
+      const modelControlToken=/(?:\/no_think\b|<\/?think\b|\`\`\`)/i;
+      const robloxRows=[
+        ...(candidate.edits||[]).map(row=>({path:clean(row.path),find:String(row.find||''),content:String(row.replace||''),kind:'edit'})),
+        ...(candidate.newFiles||[]).map(row=>({path:clean(row.path),find:'',content:String(row.content||''),kind:'new'})),
+        ...(candidate.replaceFiles||[]).map(row=>({path:clean(row.path),find:'',content:String(row.content||''),kind:'replace'}))
+      ];
+      for(const row of robloxRows){
+        if(!/\.(?:lua|luau)$/i.test(row.path))continue;
+        if(modelControlToken.test(row.content)){
+          throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:'+row.path);
+        }
+        if(row.kind!=='edit')continue;
+        const find=String(row.find||'').trim();
+        const replacement=String(row.content||'').trim();
+        const headerOnly=/^(?:local\s+)?function\s+[A-Za-z_][\w.:]*\s*\([^\n]*\)\s*$/.test(find);
+        if(!headerOnly||!replacement.startsWith(find))continue;
+        const tail=replacement.slice(find.length);
+        if(/(?:^|\n)\s*end\s*(?:--[^\n]*)?(?:\n|$)/.test(tail)){
+          throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:FUNCTION_HEADER_PREMATURE_END:'+row.path);
+        }
+      }
+    }
+    if(target==='web'&&sourceRootExists){
+      const candidateBindingText=[
+        ...(candidate.edits||[]).map(row=>String(row.replace||'')),
+        ...(candidate.newFiles||[]).map(row=>String(row.content||'')),
+        ...(candidate.replaceFiles||[]).map(row=>String(row.content||''))
+      ].join('\n');
+      for(const edit of candidate.edits||[]){
+        const relative=clean(edit.path);
+        if(!/\.(?:html?|js|mjs|cjs)$/i.test(relative))continue;
+        const removedFunctions=[...String(edit.find||'').matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(match=>match[1]);
+        if(!removedFunctions.length)continue;
+        const absolute=path.resolve(sourceRoot,relative);
+        if(!(absolute===sourceRoot||absolute.startsWith(sourceRoot+path.sep))||!fs.existsSync(absolute)||!fs.statSync(absolute).isFile())continue;
+        const before=fs.readFileSync(absolute,'utf8');
+        const find=String(edit.find||'');
+        const at=before.indexOf(find);
+        if(at<0)continue;
+        const remaining=before.slice(0,at)+before.slice(at+find.length);
+        for(const name of removedFunctions){
+          const escaped=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+
+          const remainingCall=new RegExp('(^|[^.$\\w])'+escaped+'\\s*\\(','m');
+          if(!remainingCall.test(remaining))continue;
+          const binding=new RegExp('(?:\\bfunction\\s+'+escaped+'\\s*\\(|\\b(?:const|let|var|class)\\s+'+escaped+'\\b|\\b(?:window|globalThis)\\s*\\.\\s*'+escaped+'\\s*=|\\bimport\\b[^\\n;]*\\b'+escaped+'\\b)');
+          if(binding.test(remaining)||binding.test(candidateBindingText))continue;
+          throw new Error('WEB_SOURCE_STRUCTURAL_CONTINUITY:REMOVED_FUNCTION_STILL_REFERENCED:'+relative+':'+name);
+        }
+      }
+    }
     if(robloxStudioAssetBackfillRequired){
       if(!robloxStudioAssetVisualOwners.length)throw new Error('ROBLOX_STUDIO_ASSET_VISUAL_OWNER_REQUIRED:NO_VISUAL_OWNER_IN_RESPONSIBLE_FILES');
       const touchedVisual=robloxStudioAssetVisualOwners.filter(file=>touched.has(file));

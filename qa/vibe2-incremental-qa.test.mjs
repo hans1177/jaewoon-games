@@ -57,6 +57,19 @@ test('HTML inline JavaScript syntax fails closed before presentation or fan-in',
   );
 });
 
+test('HTML script tag structure rejects a missing opening bracket before fan-in',()=>{
+  const root=repo();
+  const file=path.join(root,'index.html');
+  fs.writeFileSync(file,'<!doctype html><html><body><script type="module" src="./render-performance.js"></script><script>function start(){return 1}</script></body></html>\n','utf8');
+  const pass=runIncrementalQa({root,files:['index.html'],namespace:'web:cozy-island'});
+  assert.equal(pass.outcome,'PASS');
+  fs.writeFileSync(file,'<!doctype html><html><body>script type="module" src="./render-performance.js"></script><script>function start(){return 1}</script></body></html>\n','utf8');
+  assert.throws(
+    ()=>runIncrementalQa({root,files:['index.html'],namespace:'web:cozy-island'}),
+    /markup script tag mismatch: index\.html:open=1:close=2/
+  );
+});
+
 test('old v8 cached PASS cannot bypass the inline script syntax gate',()=>{
   const root=repo();
   const cache=path.join(root,'.cache','qa.json');

@@ -2186,6 +2186,92 @@ test('semantic diff violation retries inside the same worker and succeeds with a
   assert.equal(result.codingMethod.candidateProducedFirstAttempt,false);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
+test('Web source worker retries when a function declaration is removed while local calls remain',async()=>{
+  const cwd=tempRoot();
+  const bad=path.join(cwd,'structural-bad.json');
+  const good=path.join(cwd,'structural-good.json');
+  const source=[
+    '<!doctype html><html><body><canvas id="game"></canvas><script>',
+    'const state={camera:{x:0,y:0}};',
+    'function worldToScreen(x,y){return{x:x-state.camera.x,y:y-state.camera.y}}',
+    'function drawQueen(q){const s=worldToScreen(q.x,q.y);return s}',
+    'function drawBug(b){const s=worldToScreen(b.x,b.y);return s}',
+    '</script></body></html>'
+  ].join('\n');
+  write(path.join(cwd,'web-games/demo/index.html'),source);
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'web-structural-continuity'});
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const find='function worldToScreen(x,y){return{x:x-state.camera.x,y:y-state.camera.y}}';
+  write(bad,JSON.stringify({edits:[{path:'index.html',find,replace:"ctx.fillStyle=c.dark;ctx.restore()"}],newFiles:[],replaceFiles:[]}));
+  write(good,JSON.stringify({edits:[{path:'index.html',find,replace:'function worldToScreen(x,y){return{x:Math.round(x-state.camera.x),y:Math.round(y-state.camera.y)}}'}],newFiles:[],replaceFiles:[]}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad,good]});
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.deepEqual(result.changedFiles,['index.html']);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/web-structural-continuity/files/index.html'),'utf8'),/function worldToScreen/);
+  const error=new Error('WEB_SOURCE_STRUCTURAL_CONTINUITY:REMOVED_FUNCTION_STILL_REFERENCED:index.html:worldToScreen');
+  assert.equal(generationFailureClass(error),'WEB_STRUCTURAL_CONTINUITY');
+  assert.equal(shouldRetryGenerationError(error),true);
+});
+
+test('Roblox source worker retries when a function-header anchor prematurely closes the existing function',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local status = Instance.new("TextLabel")',
+    'local function render()',
+    '  status.Text = "ok"',
+    'end',
+    'render()'
+  ].join('\n');
+  write(path.join(cwd,root,relative),source);
+  const workOrder=order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'roblox-structural-premature-end'});
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const bad=path.join(cwd,'roblox-structural-bad.json');
+  const good=path.join(cwd,'roblox-structural-good.json');
+  write(bad,JSON.stringify({edits:[{
+    path:relative,
+    find:'local function render()',
+    replace:['local function render()','  status.TextWrapped = true','end'].join('\n')
+  }]}));
+  write(good,JSON.stringify({edits:[{
+    path:relative,
+    find:'local function render()',
+    replace:['local function render()','  status.TextWrapped = true'].join('\n')
+  }]}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad,good]});
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(generationFailureClass(new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:FUNCTION_HEADER_PREMATURE_END:client/Game.client.luau')),'ROBLOX_STRUCTURAL_CONTINUITY');
+  assert.equal(shouldRetryGenerationError(new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:FUNCTION_HEADER_PREMATURE_END:client/Game.client.luau')),true);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/status\.TextWrapped = true/);
+  assert.doesNotMatch(candidate,/status\.TextWrapped = true\s*\nend\s*\n\s*status\.Text = "ok"/);
+});
+
+test('Roblox source worker retries when model control tokens leak into Luau source',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source='local activity = "idle"\n';
+  write(path.join(cwd,root,relative),source);
+  const workOrder=order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'roblox-structural-model-token'});
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const bad=path.join(cwd,'roblox-token-bad.json');
+  const good=path.join(cwd,'roblox-token-good.json');
+  write(bad,JSON.stringify({edits:[{path:relative,find:'local activity = "idle"',replace:'local activity = /no_think'}]}));
+  write(good,JSON.stringify({edits:[{path:relative,find:'local activity = "idle"',replace:'local activity = "ready"'}]}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad,good]});
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(generationFailureClass(new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:client/Game.client.luau')),'ROBLOX_STRUCTURAL_CONTINUITY');
+  assert.equal(shouldRetryGenerationError(new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:client/Game.client.luau')),true);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/local activity = "ready"/);
+  assert.doesNotMatch(candidate,/no_think/);
+});
+
 test('semantic diff hard gate allows primary responsibility edits inside the compiled system budget',()=>{
   const result=evaluateSemanticDiffBudget({
     candidate:{edits:[{path:'index.html',find:'function handlePointer(e){ pointerState=e; return placeTower(pointerState); }',replace:'function handlePointer(e){ pointerState=normalizePointer(e); return placeTower(pointerState); }'}],newFiles:[],replaceFiles:[]},
