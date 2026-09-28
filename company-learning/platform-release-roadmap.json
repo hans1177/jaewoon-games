@@ -1286,7 +1286,7 @@
       ],
       "studioUiPublishAllowed": false,
       "cookiePublishAllowed": false,
-      "resumeMode": "AUTO_AFTER_EACH_F9_VERIFIED_CANONICAL_PUBLISH",
+      "resumeMode": "AUTO_AFTER_EACH_F9_FINAL_PUBLISH_DISPATCH",
       "authority": "OWNER_DIRECTIVE_2026-09-22",
       "openCloudSafety": {
         "officialApiOnly": true,
@@ -1332,16 +1332,15 @@
       "verifiedCyclePublication": {
         "version": 1,
         "authority": "OWNER_DIRECTIVE_2026-09-28",
-        "objective": "RUN_EVERY_ROBLOX_EVOLUTION_CYCLE_THROUGH_F0_TO_F9_BEFORE_REPLACING_THE_CANONICAL_GAME_SERVER_BUILD_THEN_IMMEDIATELY_START_THE_NEXT_CYCLE",
+        "objective": "RUN_EVERY_ROBLOX_EVOLUTION_CYCLE_THROUGH_F0_TO_F9_THEN_DISPATCH_THE_EXACT_F9_ARTIFACT_TO_THE_GAME_SERVER_AND_IMMEDIATELY_START_THE_NEXT_CYCLE_REGARDLESS_OF_PUBLICATION_OR_VISIBILITY_STATE",
         "sequence": [
           "EVOLUTION_SOURCE_MUTATION",
           "F0_SOURCE_INTEGRITY",
           "F1_TO_F8_EXACT_PRIVATE_VALIDATION_TARGET_AND_STUDIO_QA",
           "F9_EXACT_FINAL_REVIEW",
-          "PUBLISH_EXACT_F9_VERIFIED_ARTIFACT_TO_CANONICAL_GAME_TARGET",
-          "CONFIRM_CANONICAL_PUBLISH",
-          "FAN_IN_VERIFIED_RESULT",
-          "START_NEXT_EVOLUTION_CYCLE_AT_F0"
+          "DISPATCH_EXACT_F9_VERIFIED_ARTIFACT_TO_CANONICAL_GAME_TARGET",
+          "START_NEXT_EVOLUTION_CYCLE_AT_F0_WITHOUT_WAITING_FOR_PUBLICATION_RESULT",
+          "PUBLICATION_REPAIR_OR_RETRY_CONTINUES_IN_PARALLEL_IF_NEEDED"
         ],
         "f9Terminal": false,
         "perpetualRepeat": true,
@@ -1350,7 +1349,14 @@
         "preF9ValidationTargetMayNeverReplaceCanonicalGameTarget": true,
         "finalPublishMustReuseExactF9SourceRevision": true,
         "finalPublishMustReuseExactF9ArtifactIdentity": true,
-        "nextCycleMayStartOnlyAfterCanonicalPublishSuccess": true
+        "nextCycleMayStartOnlyAfterCanonicalPublishSuccess": false,
+        "nextCycleStartsAfterFinalPublishDispatch": true,
+        "publicationSuccessBlocksEvolution": false,
+        "publicationFailureBlocksEvolution": false,
+        "publicationVisibilityBlocksEvolution": false,
+        "internalReleaseStateBlocksEvolution": false,
+        "externalPublicReleaseStateBlocksEvolution": false,
+        "publicationRepairRunsInParallel": true
       }
     },
     "validationMode": "HEADLESS_FAST_MVP",
@@ -1570,9 +1576,12 @@
         "canonicalGameServerPublishAtF0Forbidden": true,
         "preF9ValidationTargetMustBeSeparateFromCanonicalGameTarget": true,
         "f9PassImmediatelyPublishesExactVerifiedArtifactToCanonicalGameTarget": true,
-        "canonicalPublishSuccessStartsNextF0ThroughF9EvolutionCycle": true,
+        "canonicalPublishSuccessStartsNextF0ThroughF9EvolutionCycle": false,
         "f9IsNonTerminalCheckpoint": true,
-        "perpetualF0ThroughF9RepublishLoop": true
+        "perpetualF0ThroughF9RepublishLoop": true,
+        "finalPublishDispatchStartsNextF0ThroughF9EvolutionCycle": true,
+        "publicationOutcomeBlocksEvolution": false,
+        "publicationVisibilityBlocksEvolution": false
       }
     }
   },
@@ -7102,7 +7111,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-28T06:09:16.967Z",
+  "updatedAt": "2026-09-28T06:37:19.924Z",
   "priorityTiers": [
     {
       "tier": 1,
