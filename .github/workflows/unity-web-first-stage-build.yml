@@ -535,56 +535,25 @@ jobs:
             qa:{pass:qaPass,multiplayerRequired,multiplayerPass},
             portability:{pass:portabilityPass},
           };
-          const f0ToF9={
-            version:1,
-            platform:'WEB',
-            sourceCommit:process.env.SOURCE_COMMIT||process.env.GITHUB_SHA,
-            unitySourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA,
-            buildTreeSha256:build.buildTreeSha256,
-            evidenceMode:'EXACT_UNITY_WEBGL_BROWSER_PLAY_INDEPENDENT_QA_REGRESSION',
-            floors:{
-              F0:{state:webglPass&&portabilityPass?'PASS':'FAIL',authority:'UNITY_WEBGL_BUILD_AND_EXACT_SOURCE_BINDING'},
-              F1:{state:play.boot?.pass===true?'PASS':'FAIL',authority:'ACTUAL_BROWSER_BOOT'},
-              F2:{state:play.gameplay?.gameplayStartObserved===true?'PASS':'FAIL',authority:'ACTUAL_BROWSER_GAMEPLAY_START'},
-              F3:{state:play.gameplay?.coreActionObserved===true?'PASS_PLATFORM_EQUIVALENT':'FAIL',authority:'ACTUAL_BROWSER_PRIMARY_PLAYER_AGENT_OR_INTERACTION'},
-              F4:{state:actualPlayPass?'PASS_PLATFORM_EQUIVALENT':'FAIL',authority:'ACTUAL_BROWSER_CONTROLLED_GAMEPLAY_AND_MOBILE_INPUT'},
-              F5:{state:play.input?.pass===true&&play.mobile?.pass===true?'PASS':'FAIL',authority:'ACTUAL_BROWSER_INPUT_CAMERA_UI_SURFACE'},
-              F6:{state:play.saveRestore?.pass===true&&independent.saveRestore?.pass===true&&regression.saveRestore?.pass===true?'PASS':'FAIL',authority:'ACTUAL_BROWSER_SAVE_RESTORE_AND_STATE_REGRESSION'},
-              F7:{state:multiplayerRequired?(multiplayerPass?'PASS':'FAIL'):'NOT_APPLICABLE',authority:multiplayerRequired?'UNITY_WEB_MULTIPLAYER_QA_EVIDENCE':'VERIFIED_DESIGN_SINGLE_PLAYER',participantCount:Number(multiplayerEvidence?.participantCount||0),authoritativeSync:multiplayerEvidence?.authoritativeSync===true},
-              F8:{state:play.gameplay?.pass===true&&play.coreFun?.pass===true?'PASS':'FAIL',authority:'ACTUAL_BROWSER_CORE_LOOP_AND_CORE_FUN'},
-              F9:{state:'PENDING',authority:'EXACT_F0_TO_F8_EVIDENCE_PLUS_INDEPENDENT_QA_REGRESSION'}
-            }
-          };
-          const preF9Pass=Object.entries(f0ToF9.floors).filter(([id])=>id!=='F9').every(([,row])=>['PASS','PASS_PLATFORM_EQUIVALENT','NOT_APPLICABLE'].includes(row.state));
-          const pass=Object.values(criteria).every(row=>row.pass===true)&&preF9Pass;
-          f0ToF9.floors.F9.state=pass?'PASS':'FAIL';
-          f0ToF9.verified=pass;
-          f0ToF9.verifiedAt=new Date().toISOString();
-          build.releaseOrDeploymentAuthority=pass;
-          build.f0ThroughF9Passed=pass;
-          build.f0ThroughF9EvidenceFile='f0-f9-cycle-evidence.json';
-          fs.writeFileSync(path.join(root,'unity-web-build.json'),JSON.stringify(build,null,2)+'\n');
-          fs.writeFileSync(path.join(root,'f0-f9-cycle-evidence.json'),JSON.stringify(f0ToF9,null,2)+'\n');
+          const pass=Object.values(criteria).every(row=>row.pass===true);
           const evidence={
-            version:2,
+            version:1,
             gameId,
-            state:pass?'F9_VERIFIED_CANONICAL_WEB_PUBLISH_PENDING':'REPAIR_REQUIRED',
+            state:pass?'UPPER_PLATFORM_DEVELOPMENT_READY':'REPAIR_REQUIRED',
             pass,
             sourceCommit:process.env.SOURCE_COMMIT||process.env.GITHUB_SHA,
             unitySourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA,
             buildTreeSha256:build.buildTreeSha256,
             criteria,
-            f0ThroughF9:f0ToF9,
-            passAction:pass?'PUBLISH_EXACT_F9_WEB_ARTIFACT_AND_IMMEDIATELY_START_NEXT_EVOLUTION_CYCLE':null,
-            failureAction:pass?null:'REPAIR_CAUSAL_FAILED_F0_TO_F9_FLOOR_THEN_REBUILD_REPLAY_REQA_REREGRESSION',
-            releaseOrDeploymentAuthority:pass,
+            passAction:pass?'START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT':null,
+            failureAction:pass?null:'REPAIR_CAUSAL_UNITY_WEB_FLOOR_THEN_REBUILD_REPLAY_REQA_REREGRESSION',
+            releaseOrDeploymentAuthority:false,
             generatedAt:new Date().toISOString(),
           };
           fs.writeFileSync(path.join(root,'upper-platform-development-readiness.json'),JSON.stringify(evidence,null,2)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'pass='+(pass?'true':'false')+'\n');
-          console.log('WEB_PLATFORM_F0_TO_F9_VERIFIED='+(pass?'YES':'NO'));
           console.log('UPPER_PLATFORM_DEVELOPMENT_READY='+(pass?'PASS':'NO'));
-          if(!pass)console.log('UPPER_PLATFORM_REPAIR_REQUIRED='+JSON.stringify({criteria,f0ToF9}));
+          if(!pass)console.log('UPPER_PLATFORM_REPAIR_REQUIRED='+JSON.stringify(criteria));
           NODE
 
       - name: Upload Unity Web artifact
@@ -609,10 +578,8 @@ jobs:
           echo 'UNITY_WEB_REPAIR_PLANNER_HANDOFF=REUSABLE_WORKFLOW'
           exit 42
 
-      - name: Dispatch exact F9 Web artifact to canonical web publication
-        id: f9_publish
+      - name: Create verified Unity Web readiness PR
         if: steps.readiness.outputs.pass == 'true' && (github.event_name == 'push' || inputs.publish_to_main == true)
-        continue-on-error: true
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -642,31 +609,11 @@ jobs:
             echo "UNITY_WEB_PUBLICATION_PR=NO_CHANGE"
             exit 0
           fi
-          git commit -m "build: publish $GAME_ID F9-verified Web artifact"
+          git commit -m "build: publish $GAME_ID Unity Web readiness"
           git push --force-with-lease origin HEAD:"$branch"
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" --title "build: publish $GAME_ID F9-verified Web artifact" --body "Exact F9-verified Unity Web artifact from workflow run $GITHUB_RUN_ID. F0-F9 evidence is bound in web-games/$GAME_ID/f0-f9-cycle-evidence.json. Publication outcome does not gate the next evolution cycle.")"
-          echo "UNITY_WEB_F9_PUBLICATION_PR=$pr_url"
-          if gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --auto; then
-            echo "UNITY_WEB_F9_CANONICAL_PUBLISH_DISPATCH=PASS:$GAME_ID"
-          else
-            echo "UNITY_WEB_F9_CANONICAL_PUBLISH_DISPATCH=RETRY_REQUIRED:$GAME_ID" >&2
-          fi
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "build: publish $GAME_ID Unity Web readiness"             --body "Verified Unity Web development-floor artifact from workflow run $GITHUB_RUN_ID. upper-platform-development-readiness.json must PASS before Roblox/Unity upper-platform development starts. This artifact is not release or deployment authority.")"
+          echo "UNITY_WEB_READINESS_PR=$pr_url"
           echo 'UNITY_WEB_DIRECT_MAIN_WRITE=NO'
-
-      - name: Start next Web evolution cycle immediately after F9 publish dispatch
-        if: always() && steps.readiness.outputs.pass == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ steps.request.outputs.game_id }}
-          PUBLISH_OUTCOME: ${{ steps.f9_publish.outcome }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          payload="$(jq -nc --arg run "${GITHUB_RUN_ID:-}" --arg attempt "${GITHUB_RUN_ATTEMPT:-}" --arg game "${GAME_ID:-}" '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$game,source_outcome:"VERIFIED",reason:"web-f9-publish-dispatched-next-cycle"}}')"
-          curl --fail-with-body --silent --show-error --request POST             --header 'Accept: application/vnd.github+json'             --header "Authorization: Bearer $GH_TOKEN"             --header 'X-GitHub-Api-Version: 2022-11-28'             "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" --data "$payload"
-          echo "WEB_F9_PUBLISH_OUTCOME=${PUBLISH_OUTCOME:-unknown}"
-          echo "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=$GAME_ID"
-          echo 'WEB_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO'
 
 
   repair-vibe2:
