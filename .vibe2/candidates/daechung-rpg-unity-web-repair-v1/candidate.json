@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "                if (Player.gold < 0)",
+      "replace": "                if (string.IsNullOrEmpty(Player.currentRegionId) || !GameCatalog.Regions.ContainsKey(Player.currentRegionId))\n                {\n                    Player.currentRegionId = \"town\";\n                }"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
