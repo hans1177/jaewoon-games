@@ -1215,7 +1215,6 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const routeSamples=Number(world.routeSampleCount||0),routeSuccess=Number(world.routeSuccessCount||0);
   const floorCoveragePass=floorSamples===0||floorHits>=Math.max(1,Math.ceil(floorSamples*0.44));
   const routeCoveragePass=routeSamples===0||routeSuccess>=Math.max(1,Math.ceil(routeSamples*0.5));
-  const spawnThreatDistance=Number(world.minSpawnThreatDistance??-1);
   const spawnOverlapSafe=spawnThreatDistance<0||spawnThreatDistance>=2.5;
   const worldSafetyPass=
     world.boundsFinite===true
