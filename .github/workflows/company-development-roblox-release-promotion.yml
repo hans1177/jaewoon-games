@@ -1241,12 +1241,16 @@ jobs:
           failures=()
           for game_id in $GAME_IDS; do
             echo "ROBLOX_THUMBNAIL_SYNC_START=$game_id"
+            log_file=".tmp/roblox-thumbnail-evidence/$game_id.log"
             if node tools/company-roblox-thumbnail-sync.mjs \
               --game-id="$game_id" \
               --catalog=game-catalog.json \
               --queue=../runtime/development-queue.json \
-              --output=".tmp/roblox-thumbnail-evidence/$game_id.json"; then
+              --output=".tmp/roblox-thumbnail-evidence/$game_id.json" 2>&1 | tee "$log_file"; then
               cat ".tmp/roblox-thumbnail-evidence/$game_id.json"
+            elif grep -Eq 'ROBLOX_THUMBNAIL_UPLOAD_FAILED:403:.*Scope not authorized' "$log_file"; then
+              rm -f ".tmp/roblox-thumbnail-evidence/$game_id.json"
+              echo "ROBLOX_THUMBNAIL_SCOPE_403_NON_BLOCKING=$game_id"
             else
               failures+=("$game_id")
             fi
@@ -1266,7 +1270,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/roblox-thumbnail-evidence
-          cp .tmp/roblox-thumbnail-evidence/*.json /tmp/roblox-thumbnail-evidence/
+          shopt -s nullglob
+          evidence_files=(.tmp/roblox-thumbnail-evidence/*.json)
+          if [ "${#evidence_files[@]}" -gt 0 ]; then
+            cp "${evidence_files[@]}" /tmp/roblox-thumbnail-evidence/
+          fi
           for attempt in 1 2 3 4 5; do
             git -C ../runtime fetch --no-tags origin "$RUNTIME_BRANCH"
             git -C ../runtime reset --hard "origin/$RUNTIME_BRANCH"
@@ -1277,6 +1285,10 @@ jobs:
           let latest=queue.updatedAt||null;
           for(const gameId of String(process.env.GAME_IDS||'').trim().split(/\s+/).filter(Boolean)){
             const evidencePath='/tmp/roblox-thumbnail-evidence/'+gameId+'.json';
+            if(!fs.existsSync(evidencePath)){
+              console.log('ROBLOX_THUMBNAIL_EVIDENCE_SKIPPED_NON_BLOCKING='+gameId);
+              continue;
+            }
             const evidence=JSON.parse(fs.readFileSync(evidencePath,'utf8'));
             const item=(queue.items||[]).find(row=>String(row?.gameId||'')===gameId);
             if(!item)throw new Error('ROBLOX_THUMBNAIL_RUNTIME_ITEM_MISSING:'+gameId);
