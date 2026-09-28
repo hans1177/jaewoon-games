@@ -4173,9 +4173,11 @@ test('deterministic Roblox build-up keeps motion when Root styling was already c
   assert.match(rootEdit.replace,/deterministicGameplayHudTweenService:Create/);
 });
 
-test('Roblox deterministic workflow never falls back to Ollama after local generation failure',()=>{
+test('Roblox deterministic workflow activates only for an explicit deterministic work order and never falls back to Ollama',()=>{
   const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
-  assert.match(worker,/deterministicRobloxRequired/);
+  assert.match(worker,/const deterministicRobloxMode=target==='roblox'/);
+  assert.match(worker,/process\.env\.DETERMINISTIC_SOURCE/);
+  assert.match(worker,/const deterministicRobloxRequired=deterministicRobloxMode/);
   assert.match(worker,/DETERMINISTIC_ROBLOX_BUILDUP_REQUIRED:NO_VALID_LOCAL_CANDIDATE/);
   assert.match(worker,/if\(!generated&&deterministicRobloxRequired\)/);
 });
