@@ -196,8 +196,8 @@ export function deriveStudioActualPlayContract(launch={}){
   const signals=adaptiveCoverageSignals(launch);
   const adaptiveScenarios=[
     'character-camera-ready','visual-capture-sane','adaptive-runtime-surface',
-    'adaptive-ui-commercial-quality','adaptive-world-safety','adaptive-interaction-surface',
-    'adaptive-progression-surface','adaptive-remote-surface','adaptive-combat-surface',
+    'adaptive-ui-commercial-quality','adaptive-world-safety','adaptive-map-route-coverage','adaptive-spawn-safety','adaptive-interaction-surface',
+    'adaptive-progression-surface','adaptive-remote-surface','adaptive-combat-surface','adaptive-mob-animation-ai',
     'adaptive-motion-surface','adaptive-audio-surface','adaptive-npc-surface',
     'adaptive-companion-ai-surface','adaptive-item-surface','adaptive-environment-surface',
     'adaptive-effects-surface','adaptive-quest-loop-surface','adaptive-reward-loop-surface',
@@ -1006,7 +1006,7 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     'local cameraOccluded=false;local cameraDistance=0',
     'if root then local params=RaycastParams.new();params.FilterType=Enum.RaycastFilterType.Exclude;params.FilterDescendantsInstances=p and p.Character and {p.Character} or {};local hit=Workspace:Raycast(root.Position+Vector3.new(0,4,0),Vector3.new(0,-128,0),params);floorBelow=hit~=nil;if camera then cameraDistance=(camera.CFrame.Position-root.Position).Magnitude;local direction=root.Position-camera.CFrame.Position;local camHit=Workspace:Raycast(camera.CFrame.Position,direction,params);cameraOccluded=camHit~=nil and camHit.Instance~=nil and not camHit.Instance:IsDescendantOf(p.Character) end end',
     'local minSpawnThreatDistance=math.huge',
-    'for _,spawnRow in ipairs(spawnRows) do for _,mobRow in ipairs(mobRows) do local dx=NumberRange and 0 or 0;local dist=math.sqrt((spawnRow.x-mobRow.x)^2+(spawnRow.y-mobRow.y)^2+(spawnRow.z-mobRow.z)^2);minSpawnThreatDistance=math.min(minSpawnThreatDistance,dist) end end',
+    'for _,spawnRow in ipairs(spawnRows) do for _,mobRow in ipairs(mobRows) do local dist=math.sqrt((spawnRow.x-mobRow.x)^2+(spawnRow.y-mobRow.y)^2+(spawnRow.z-mobRow.z)^2);minSpawnThreatDistance=math.min(minSpawnThreatDistance,dist) end end',
     'if minSpawnThreatDistance==math.huge then minSpawnThreatDistance=-1 end',
     'local boundsFinite=minX<math.huge and maxX>-math.huge and minY<math.huge and maxY>-math.huge and minZ<math.huge and maxZ>-math.huge',
     'local descendantCount=#Workspace:GetDescendants()',
@@ -1161,6 +1161,12 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     previous=probe;
   }
   const soak=clean(auditProfile).toUpperCase()==='F9_SOAK';
+  const routeActions=(actions||[]).filter(row=>row?.type==='mcp-map-route-audit'&&row?.dispatched===true);
+  const routePassCount=routeActions.filter(row=>row?.ok===true).length;
+  const routeRequired=soak?Math.min(2,routeActions.length):Math.min(1,routeActions.length);
+  const modelMobs=entityRows(world.mobs).filter(row=>clean(row?.kind)==='HumanoidModel');
+  const animatedMobCount=modelMobs.filter(row=>row?.animatorPresent===true&&Number(row?.motorCount||0)>0).length;
+  const spawnThreatDistance=Number(world.minSpawnThreatDistance??-1);
   const visibleButtons=Number(ui.visibleButtons||0);
   const uiCommercialPass=
     Number(ui.offscreenButtons||0)===0
@@ -1195,10 +1201,13 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-runtime-surface',pass:Number(runtime.descendantCount||0)>0&&Number(runtime.systemSignals||0)>0},
     {id:'adaptive-ui-commercial-quality',pass:!signals.ui||uiCommercialPass},
     {id:'adaptive-world-safety',pass:!signals.map||worldSafetyPass},
+    {id:'adaptive-map-route-coverage',pass:!signals.map||routeActions.length===0||routePassCount>=routeRequired},
+    {id:'adaptive-spawn-safety',pass:!signals.combat||spawnThreatDistance<0||spawnThreatDistance>=10},
     {id:'adaptive-interaction-surface',pass:!signals.interactions||interactionSurfaceCount>0},
     {id:'adaptive-progression-surface',pass:!signals.progression||progressionSurfaceCount>0},
     {id:'adaptive-remote-surface',pass:!signals.serverBoundary||Number(runtime.remoteCount||0)>0},
     {id:'adaptive-combat-surface',pass:!signals.combat||(combatSurfaceCount>0&&(!soak||entityRows(world.mobs).length===0||timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged))},
+    {id:'adaptive-mob-animation-ai',pass:!signals.combat||modelMobs.length===0||(animatedMobCount===modelMobs.length&&(!soak||timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged))},
     {id:'adaptive-motion-surface',pass:!signals.motion||(player.animatorPresent===true&&Number(player.motorCount||0)>0&&displacement>=0.1)},
     {id:'adaptive-audio-surface',pass:!signals.audio||Number(runtime.soundCount||0)>0},
     {id:'adaptive-npc-surface',pass:!signals.npc||npcSurfaceCount>0},
@@ -1241,6 +1250,9 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const repairMap={
     'adaptive-ui-commercial-quality':['MOBILE_UI','HIGH','Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.'],
     'adaptive-world-safety':['WORLD_GEOMETRY','CRITICAL','Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.'],
+    'adaptive-map-route-coverage':['MAP_ROUTEABILITY','CRITICAL','Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.'],
+    'adaptive-spawn-safety':['SPAWN_FAIRNESS','HIGH','Move hostile spawns away from player spawn or add safe startup protection/telegraphing.'],
+    'adaptive-mob-animation-ai':['MONSTER_MOTION_AI','CRITICAL','Repair monster Humanoid rig, Animator/Motor6D motion, target/aggro transitions, attack movement, and runtime liveness.'],
     'adaptive-interaction-surface':['INTERACTION_CHAIN','HIGH','Restore usable prompts/buttons/click surfaces and verify input leads to a visible or authoritative result.'],
     'adaptive-progression-surface':['PROGRESSION','CRITICAL','Restore observable progression state for levels, quests, waves, zones, unlocks, or rewards.'],
     'adaptive-remote-surface':['SERVER_CLIENT_BOUNDARY','CRITICAL','Restore server-authoritative RemoteEvent/RemoteFunction surface and validation path.'],
@@ -1266,6 +1278,9 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const observedFor=id=>{
     if(id==='adaptive-ui-commercial-quality')return metrics.uiCommercial;
     if(id==='adaptive-world-safety')return{boundsFinite:world.boundsFinite===true,collidablePartCount:Number(world.collidablePartCount||0),floorBelowPlayer:world.floorBelowPlayer===true};
+    if(id==='adaptive-map-route-coverage')return{routeAttemptCount:routeActions.length,routePassCount,routeRequired,routes:routeActions.slice(0,8).map(row=>({id:row.id,ok:row.ok===true,moved:Number(row.moved||0),fall:Number(row.fall||0),floorBelow:row.floorBelow===true}))};
+    if(id==='adaptive-spawn-safety')return{spawnLocationCount:Number(world.spawnLocationCount||0),minSpawnThreatDistance:spawnThreatDistance};
+    if(id==='adaptive-mob-animation-ai')return{modelMobCount:modelMobs.length,animatedMobCount,mobMotion:metrics.mobMotion,timelineMobDynamic};
     if(id==='adaptive-combat-surface')return{combatSurfaceCount,mobCount:entityRows(world.mobs).length,mobMotion:metrics.mobMotion,timelineMobDynamic};
     if(id==='adaptive-companion-ai-surface')return{companionSurfaceCount,companionCount:entityRows(world.companions).length,companionMotion:metrics.companionMotion,timelineCompanionDynamic};
     if(id==='adaptive-progression-surface'||id==='adaptive-quest-loop-surface'||id==='adaptive-reward-loop-surface')return{progressionSurfaceCount,progressChanged,timelineProgressChanged};
@@ -1549,6 +1564,43 @@ export async function runOfficialStudioMcpPlay({
     if(actualPlayContract?.required===true){
       const promptRows=entityRows(initialClientProbe?.world?.prompts).filter(row=>row?.enabled!==false);
       const rootPos=initialClientProbe?.player||{};
+      const initialWorld=initialClientProbe?.world||{};
+      const navigationTool=client.tool('character_navigation');
+      const routeTargets=[];
+      const minX=Number(initialWorld?.minX),maxX=Number(initialWorld?.maxX),minZ=Number(initialWorld?.minZ),maxZ=Number(initialWorld?.maxZ);
+      const rootX=Number(rootPos?.rootX||0),rootY=Number(rootPos?.rootY||0),rootZ=Number(rootPos?.rootZ||0);
+      if([minX,maxX,minZ,maxZ].every(Number.isFinite)&&maxX-minX>12&&maxZ-minZ>12){
+        const raw=[
+          {id:'nw',x:minX+(maxX-minX)*0.2,z:minZ+(maxZ-minZ)*0.2},
+          {id:'ne',x:minX+(maxX-minX)*0.8,z:minZ+(maxZ-minZ)*0.2},
+          {id:'sw',x:minX+(maxX-minX)*0.2,z:minZ+(maxZ-minZ)*0.8},
+          {id:'se',x:minX+(maxX-minX)*0.8,z:minZ+(maxZ-minZ)*0.8}
+        ];
+        const maxDistance=auditMode==='F9_SOAK'?120:70;
+        for(const row of raw){
+          const dx=row.x-rootX,dz=row.z-rootZ,dist=Math.hypot(dx,dz)||1;
+          const scale=Math.min(1,maxDistance/dist);
+          routeTargets.push({id:row.id,x:rootX+dx*scale,y:rootY,z:rootZ+dz*scale});
+        }
+      }
+      const routeLimit=auditMode==='F9_SOAK'?4:2;
+      let previousRouteProbe=initialClientProbe;
+      for(const target of routeTargets.slice(0,routeLimit)){
+        let navOk=false,probe=null;
+        try{
+          const navResult=await client.call('character_navigation',characterNavigationArgs(navigationTool.inputSchema||{},studioId,target));
+          navOk=navResult?.isError!==true;
+          await wait(auditMode==='F9_SOAK'?850:550);
+          probe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+          if(probe)timelineProbes.push(probe);
+        }catch{}
+        const moved=pointDistance(previousRouteProbe?.player||{},probe?.player||{});
+        const y0=Number(previousRouteProbe?.player?.rootY),y1=Number(probe?.player?.rootY);
+        const fall=Number.isFinite(y0)&&Number.isFinite(y1)?Math.max(0,y0-y1):0;
+        const safe=Boolean(navOk&&probe?.world?.floorBelowPlayer===true&&fall<35&&moved>=1);
+        actions.push({id:'map-route-'+target.id,type:'mcp-map-route-audit',dispatched:true,ok:safe,moved,fall,floorBelow:probe?.world?.floorBelowPlayer===true});
+        if(probe)previousRouteProbe=probe;
+      }
       const semanticWeight=row=>{
         const text=(clean(row?.actionText)+' '+clean(row?.objectText)+' '+clean(row?.name)).toLowerCase();
         const priorities=[
@@ -1567,7 +1619,6 @@ export async function runOfficialStudioMcpPlay({
         return da-db;
       });
       const exploreLimit=auditMode==='F9_SOAK'?3:1;
-      const navigationTool=client.tool('character_navigation');
       for(const prompt of promptRows.slice(0,exploreLimit)){
         let navOk=false,inputOk=false;
         try{
