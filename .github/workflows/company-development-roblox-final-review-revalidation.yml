@@ -15,8 +15,6 @@ on:
         description: Optional exact gameId. Empty means all Roblox candidates ready for F9.
         required: false
         type: string
-  schedule:
-    - cron: '7,22,37,52 * * * *'
 
 permissions:
   contents: write
