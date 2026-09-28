@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-5tcvui",
-      "worker": "vibe2",
-      "taskId": "survival-unity-web-base-implementation-v1",
-      "gameId": "survival",
-      "files": [
-        "unity-games/survival/Assets/Scripts/GameCore.cs",
-        "unity-games/survival/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "289b5b7b5ef74c05205958c1b108812436b72f7f",
-      "acquiredAt": "2026-09-28T08:27:09.104Z",
-      "expiresAt": "2026-09-28T09:12:09.104Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-flqjol",
       "worker": "vibe2",
       "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
@@ -543,6 +525,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-wdiqgx",
+      "worker": "vibe2",
+      "taskId": "line-defense-studio-evolution-unity-web-usability-v1",
+      "gameId": "line-defense",
+      "files": [
+        "unity-games/line-defense/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/line-defense/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "2c5a3d82a21f44eb54c8257f93ee4892580ed884",
+      "acquiredAt": "2026-09-28T09:12:13.198Z",
+      "expiresAt": "2026-09-28T09:57:13.198Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:line-defense-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
