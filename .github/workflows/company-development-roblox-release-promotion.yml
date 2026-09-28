@@ -22,6 +22,10 @@ on:
         options:
           - validation
           - final
+      publish_cycle_id:
+        description: Immutable F9 publish queue cycle id. Required when publish_stage=final.
+        required: false
+        type: string
       thumbnail_only:
         description: Sync canonical Roblox/homepage thumbnail only; do not republish the place
         required: false
@@ -267,6 +271,7 @@ jobs:
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
           PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
+          PUBLISH_CYCLE_ID: ${{ inputs.publish_cycle_id || '' }}
           OWNER_SECRET_UNIVERSE_ID: ${{ secrets.ROBLOX_UNIVERSE_ID }}
           OWNER_SECRET_PLACE_ID: ${{ secrets.ROBLOX_PLACE_ID }}
         shell: bash
@@ -298,14 +303,23 @@ jobs:
           }
           const item=(q.items||[]).find(row=>row.gameId===gameId);
           if(!item)throw new Error(`ROBLOX_RELEASE_TARGET_NOT_FOUND:${gameId}`);
-          const revision=String(item.robloxSourceCommit||'').trim();
-          const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
+          const requestedCycleId=String(process.env.PUBLISH_CYCLE_ID||'').trim();
+          const finalEntry=publishStage==='final'
+            ?(item.robloxCanonicalPublishQueue||[]).find(row=>String(row?.cycleId||'')===requestedCycleId)
+            :null;
+          if(publishStage==='final'&&!requestedCycleId)throw new Error('ROBLOX_FINAL_PUBLISH_CYCLE_ID_REQUIRED:'+gameId);
+          if(publishStage==='final'&&!finalEntry)throw new Error('ROBLOX_FINAL_PUBLISH_QUEUE_ENTRY_MISSING:'+gameId+':'+requestedCycleId);
+          const revision=String(publishStage==='final'?finalEntry.sourceRevision:item.robloxSourceCommit||'').trim();
+          const artifact=String(publishStage==='final'?finalEntry.artifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
           const sourceRoot=String(item.robloxProjectPath||item.targetSourcePath||'').replace(/^\/+|\/+$/g,'');
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const canonicalRobloxValidationMode=String(roadmap?.roblox?.validationMode||'').trim().toUpperCase();
-          const f0EvidenceMode=String(item.robloxFoundationF0Evidence?.validationMode||item.robloxHeadlessFastMvpEvidence?.validationMode||'').trim().toUpperCase();
+          const f0Evidence=publishStage==='final'?(finalEntry.f0Evidence||{}):(item.robloxFoundationF0Evidence||{});
+          const f0EvidenceMode=String(f0Evidence?.validationMode||item.robloxHeadlessFastMvpEvidence?.validationMode||'').trim().toUpperCase();
           const headlessMode=canonicalRobloxValidationMode==='HEADLESS_FAST_MVP'&&f0EvidenceMode==='HEADLESS_SOURCE_PREFLIGHT_F0';
-          const artifactRunId=Number(item.robloxFoundationF0Evidence?.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||item.robloxRuntimeEvidence?.artifactRunId||0);
+          const artifactRunId=Number(publishStage==='final'
+            ?finalEntry.artifactRunId
+            :(item.robloxFoundationF0Evidence?.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||item.robloxRuntimeEvidence?.artifactRunId||0));
           const publicationTarget=publishStage==='final'?(item.robloxPublicationTarget||{}):(item.robloxValidationTarget||{});
           const currentValidationCandidate=publishStage==='validation'
             &&item.robloxRuntimeCandidateEvidence?.published===true
@@ -316,11 +330,16 @@ jobs:
             &&String(item.robloxRuntimeCandidateEvidence?.placeId||'')===String(publicationTarget.placeId||'');
           const canonicalEvidence=item.robloxCanonicalReleaseEvidence||{};
           const currentFinalPublish=publishStage==='final'
-            &&canonicalEvidence.published===true
-            &&canonicalEvidence.sourceRevision===revision
-            &&canonicalEvidence.artifactIdentity===artifact
-            &&String(canonicalEvidence.universeId||'')===String(publicationTarget.universeId||'')
-            &&String(canonicalEvidence.placeId||'')===String(publicationTarget.placeId||'');
+            &&(
+              String(finalEntry?.status||'')==='PUBLISHED'
+              ||(
+                canonicalEvidence.published===true
+                &&canonicalEvidence.sourceRevision===revision
+                &&canonicalEvidence.artifactIdentity===artifact
+                &&String(canonicalEvidence.universeId||'')===String(publicationTarget.universeId||'')
+                &&String(canonicalEvidence.placeId||'')===String(publicationTarget.placeId||'')
+              )
+            );
           if(currentValidationCandidate||currentFinalPublish){
             put('skip','true');
             put('skip_reason',publishStage==='final'?'canonical-final-already-published':'runtime-validation-candidate-already-deployed');
@@ -353,13 +372,12 @@ jobs:
           const finalCanonical=
             publishStage==='final'
             &&String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
-            &&item.robloxFinalReviewPassed===true
-            &&item.robloxF9ReleaseRegressionPassed===true
-            &&item.robloxCanonicalPublishPending===true
-            &&validationCandidate.published===true
-            &&validationCandidate.sourceRevision===revision
-            &&validationCandidate.artifactIdentity===artifact
-            &&Number(validationCandidate.versionNumber)>0
+            &&finalEntry?.finalReviewPassed===true
+            &&finalEntry?.f9ReleaseRegressionPassed===true
+            &&['PENDING','RETRY_REQUIRED'].includes(String(finalEntry?.status||''))
+            &&Number(finalEntry?.validationVersionNumber)>0
+            &&/^[1-9][0-9]*$/.test(String(finalEntry?.validationUniverseId||''))
+            &&/^[1-9][0-9]*$/.test(String(finalEntry?.validationPlaceId||''))
             &&/^[0-9a-f]{40}$/i.test(revision)
             &&/^sha256:[0-9a-f]{64}$/i.test(artifact)
             &&sourceRoot===`roblox-games/${gameId}`
@@ -453,6 +471,7 @@ jobs:
           put('shared_rotation',sharedRotation?'true':'false');
           put('visibility_intent',String(persistedTarget.visibilityIntent||'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE'));
           put('publish_stage',publishStage);
+          put('publish_cycle_id',publishStage==='final'?requestedCycleId:'');
           console.log((publishStage==='final'?'ROBLOX_CANONICAL_FINAL_TARGET=':'ROBLOX_VALIDATION_TARGET=')+gameId);
           console.log(`ROBLOX_RELEASE_SOURCE_REVISION=${revision}`);
           console.log(`ROBLOX_RELEASE_ARTIFACT_IDENTITY=${artifact}`);
