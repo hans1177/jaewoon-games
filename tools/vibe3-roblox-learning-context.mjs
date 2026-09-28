@@ -119,7 +119,7 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
   const verifiedExternalDistilledContentComplete=verifiedExternalContract.distilledContentComplete;
   const verifiedExternalLearningCoveragePct=verifiedExternalContract.coveragePct;
   const verifiedExternalLearningPrinciples=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledApplicationPrinciples||[]));
-  const verifiedExternalGameDevelopmentPrinciples=unique(verifiedExternalLearningPrinciples.filter(gameDevelopmentPrinciple));
+  const verifiedExternalGameDevelopmentPrinciples=Object.freeze([...verifiedExternalLearningPrinciples]);
   const verifiedExternalAvoidancePrinciples=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledAvoidancePrinciples||[]));
   const verifiedExternalLearningUseAllowed=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledLearningUseAllowed||[]));
   const verifiedExternalLearningUseForbidden=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledLearningUseForbidden||[]));
@@ -159,19 +159,17 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
   const verifiedExternalLearningIds=unique(verifiedExternalPlaybookIds);
   const externalBlackBoxAdvisoryIds=unique(distilled.externalIds||[]);
   const verifiedExternalLearningApplyAxes=Object.freeze([
-    'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
-    'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
-    'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
-    'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
-    'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
-    'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
-    'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
+    'ROBLOX_ENVIRONMENT_BACKGROUND_AND_LIGHTING',
+    'ROBLOX_CHARACTER_ANIMATION_AND_MOTION',
+    'ROBLOX_SKILL_VFX_AND_IMPACT_FEEDBACK',
+    'ROBLOX_CAMERA_AND_VISUAL_FEEDBACK',
+    'ROBLOX_UI_UX_TOUCH_AND_CONTROLS',
+    'ROBLOX_GAMEPLAY_STATE_AND_PROGRESSION',
+    'ROBLOX_RUNTIME_QA_AND_RELIABILITY'
   ]);
-  const applied=checklist.length>0
-    &&verifiedExternalLearningIds.length>0
+  const applied=verifiedExternalLearningIds.length>0
     &&verifiedExternalDistilledContentComplete
-    &&verifiedExternalGameDevelopmentPrinciples.length>0
-    &&(Boolean(selected)||distilled.patterns.length>0||distilled.principles.length>0||verifiedExternalLearningPrinciples.length>0);
+    &&verifiedExternalLearningPrinciples.length>0;
 
   return Object.freeze({
     applied,
@@ -197,6 +195,7 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     verifiedExternalLearningPrinciples:Object.freeze(verifiedExternalLearningPrinciples),
     verifiedExternalGameDevelopmentPrinciples:Object.freeze(verifiedExternalGameDevelopmentPrinciples),
     verifiedExternalGameDevelopmentPrincipleCount:verifiedExternalGameDevelopmentPrinciples.length,
+    verifiedExternalRobloxNativeUseRequired:true,
     verifiedExternalAvoidancePrinciples:Object.freeze(verifiedExternalAvoidancePrinciples),
     verifiedExternalLearningUseAllowed:Object.freeze(verifiedExternalLearningUseAllowed),
     verifiedExternalLearningUseForbidden:Object.freeze(verifiedExternalLearningUseForbidden),
