@@ -207,7 +207,7 @@ export function deriveStudioActualPlayContract(launch={}){
   const explicitScenarios=launchStringList(explicit?.requiredScenarios);
   return Object.freeze({
     ...explicit,
-    version:Math.max(3,Number(explicit?.version||0)),
+    version:Number(explicit?.version||3),
     required:true,
     source:clean(explicit?.source)||'COMMERCIAL_ADAPTIVE_STUDIO_AUDIT',
     requiredScenarios:[...new Set([...explicitScenarios,...adaptiveScenarios])],
