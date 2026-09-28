@@ -827,7 +827,7 @@ jobs:
           const presentationPass=String(order?.presentationQuality?.pass||'').toUpperCase();
           const deterministicRoblox=String(order.target||'').toLowerCase()==='roblox'
             && order?.presentationQuality?.required===true
-            && ['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','CAMERA_LANGUAGE','POLISH_MOBILE'].includes(presentationPass);
+            && presentationPass==='ASSET_ADAPTATION';
           put('deterministic_source',deterministicRoblox?'true':'false');
           put('source_root',order.source?.root||'');
           put('work_lock_required',order.compiledWorkContract?.workLock?.requiredBeforeSourceWrite===true?'true':'false');
@@ -1002,7 +1002,7 @@ jobs:
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           target="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.target||''))")"
           model_calls=1
-          deterministic_source="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));const p=String(o?.presentationQuality?.pass||'').toUpperCase();process.stdout.write(String(String(o.target||'').toLowerCase()==='roblox'&&o?.presentationQuality?.required===true&&['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','CAMERA_LANGUAGE','POLISH_MOBILE'].includes(p)))")"
+          deterministic_source="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));const p=String(o?.presentationQuality?.pass||'').toUpperCase();process.stdout.write(String(String(o.target||'').toLowerCase()==='roblox'&&o?.presentationQuality?.required===true&&p==='ASSET_ADAPTATION'))")"
           if [ "$deterministic_source" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then model_calls=0; fi
           node "$contract_root/tools/free-budget-telemetry.mjs" \
             --verify-public-repo=true \
@@ -1575,15 +1575,21 @@ jobs:
           const sameExternalLearningIds=expectedExternalLearningIds.length===sourcePromptExternalLearningIds.length
             &&expectedExternalLearningIds.every(id=>sourcePromptExternalLearningIds.includes(id));
           const sourcePromptLearningRequired=workOrder?.knowledgeApplicationContract?.mandatoryForGameTarget===true;
-          const sourcePromptLearningOk=!sourcePromptLearningRequired||(
-            manifest?.codingMethod?.verifiedExternalLearningSourcePromptRequired===true
+          const promptLearningProof=manifest?.codingMethod?.verifiedExternalLearningSourcePromptRequired===true
             &&Number(manifest?.codingMethod?.verifiedExternalLearningSourcePromptCoveragePct||0)===100
             &&Number(manifest?.codingMethod?.verifiedExternalLearningSourcePromptCount||0)===expectedExternalLearningIds.length
             &&manifest?.codingMethod?.verifiedExternalLearningSourcePromptTruncationForbidden===true
             &&manifest?.codingMethod?.verifiedExternalLearningRuntimePromptAllAttempts===true
             &&Number(manifest?.codingMethod?.verifiedExternalLearningRuntimePromptChecks||0)>=1
-            &&sameExternalLearningIds
-          );
+            &&sameExternalLearningIds;
+          const deterministicLearningIds=[...new Set((manifest?.codingMethod?.verifiedExternalLearningDeterministicIds||[]).map(clean).filter(Boolean))];
+          const sameDeterministicLearningIds=expectedExternalLearningIds.length===deterministicLearningIds.length
+            &&expectedExternalLearningIds.every(id=>deterministicLearningIds.includes(id));
+          const deterministicLearningProof=manifest?.codingMethod?.verifiedExternalLearningDeterministicApplied===true
+            &&manifest?.codingMethod?.verifiedExternalLearningDeterministicContractConsumed===true
+            &&Number(manifest?.codingMethod?.verifiedExternalLearningDeterministicCoveragePct||0)===100
+            &&sameDeterministicLearningIds;
+          const sourcePromptLearningOk=!sourcePromptLearningRequired||promptLearningProof||deterministicLearningProof;
           const effectiveCandidateOk=candidateOk&&sourcePromptLearningOk;
           if(sourceGenerationAttempted&&sourcePromptLearningRequired&&!sourcePromptLearningOk){
             outcome='FAIL';
