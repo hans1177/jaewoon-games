@@ -347,3 +347,16 @@ test('runtime-state persistence defines its local F0 candidate resolver in the s
   assert.match(block,/f0\.artifactIdentity===artifactIdentity/);
   assert.match(block,/versionNumber:artifactRunId/);
 });
+
+
+test('runtime QA collapses F9 fanout to one scan for all ready games',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  const start=workflow.indexOf('Dispatch one F9 scan for all runtime-accepted candidates');
+  const end=workflow.indexOf('Dispatch exact Studio MCP follow-up',start);
+  const block=workflow.slice(start,end);
+  assert.ok(start>0&&end>start);
+  assert.match(block,/company-development-roblox-final-review-revalidation\.yml --repo "\$GITHUB_REPOSITORY" --ref main\n/);
+  assert.match(block,/ROBLOX_F9_SCAN_DISPATCHED=candidates=/);
+  assert.doesNotMatch(block,/-f game_id=/);
+  assert.doesNotMatch(block,/while read -r id/);
+});

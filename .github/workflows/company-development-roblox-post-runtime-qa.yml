@@ -1551,18 +1551,18 @@ jobs:
           test "$pushed" = '1'
           echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES'
 
-      - name: Dispatch F9 review for runtime-accepted candidates
+      - name: Dispatch one F9 scan for all runtime-accepted candidates
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           test -f /tmp/roblox-f9-ids || exit 0
-          while read -r id; do
-            [ -n "$id" ] || continue
-            gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
-            echo "ROBLOX_F9_DISPATCHED=$id"
-          done < /tmp/roblox-f9-ids
+          candidate_count="$(wc -l < /tmp/roblox-f9-ids | tr -d '[:space:]')"
+          candidate_count="${candidate_count:-0}"
+          [ "$candidate_count" -gt 0 ] || exit 0
+          gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo "ROBLOX_F9_SCAN_DISPATCHED=candidates=$candidate_count"
 
       - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
         env:
