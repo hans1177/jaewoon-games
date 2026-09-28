@@ -201,7 +201,7 @@ export function deriveStudioActualPlayContract(launch={}){
     'adaptive-motion-surface','adaptive-audio-surface','adaptive-npc-surface',
     'adaptive-companion-ai-surface','adaptive-item-surface','adaptive-environment-surface',
     'adaptive-effects-surface','adaptive-quest-loop-surface','adaptive-reward-loop-surface',
-    'adaptive-economy-surface','adaptive-save-surface','adaptive-retry-loop-surface',
+    'adaptive-economy-surface','adaptive-save-surface','adaptive-save-rejoin-persistence','adaptive-retry-loop-surface',
     'adaptive-camera-quality','adaptive-performance-budget'
   ];
   const explicitScenarios=launchStringList(explicit?.requiredScenarios);
@@ -1114,6 +1114,23 @@ function semanticEffectPass(semantic='',effect={}){
   if(kind==='HEAL')return effect.health||effect.feedback||effect.ui;
   return effect.effectObserved===true;
 }
+function persistentStateSummary(probe={}){
+  const stablePattern=/level|xp|gold|coin|currency|unlock|mastery|tier|rank|레벨|경험치|골드|코인|재화|해금|숙련|티어|랭크/i;
+  const progression=entityRows(probe?.runtime?.progression)
+    .filter(row=>stablePattern.test(clean(row?.name)))
+    .map(row=>({scope:clean(row?.scope),name:clean(row?.name),value:clean(row?.value)}))
+    .sort((a,b)=>(a.scope+'|'+a.name).localeCompare(b.scope+'|'+b.name));
+  const inventory=entityRows(probe?.runtime?.inventory)
+    .map(row=>({scope:clean(row?.scope),name:clean(row?.name),className:clean(row?.className)}))
+    .sort((a,b)=>(a.scope+'|'+a.name+'|'+a.className).localeCompare(b.scope+'|'+b.name+'|'+b.className));
+  return{
+    progression,
+    inventory,
+    progressionFingerprint:stableSha256(progression),
+    inventoryFingerprint:stableSha256(inventory),
+    persistentSignalCount:progression.length
+  };
+}
 export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[],timelineProbes=[],auditProfile='FAST_DEEP'}={}){
   if(contract?.required!==true)return{required:false,scenarios:[],qualityFailureKinds:[],authoritativeStateChangeObserved:false,capture:{before:{pass:true,frames:[]},after:{pass:true,frames:[]}},metrics:{}};
   const exp=contract?.expectations||{};
@@ -1286,6 +1303,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-reward-loop-surface',pass:!signals.rewards||(Number(categories.reward||0)>0||entityRows(runtime.progression).some(row=>/gold|coin|xp|reward|loot|drop/i.test(clean(row?.name))))},
     {id:'adaptive-economy-surface',pass:!signals.economy||Number(categories.economy||0)>0},
     {id:'adaptive-save-surface',pass:!signals.save||Number(categories.save||0)>0},
+    {id:'adaptive-save-rejoin-persistence',pass:true},
     {id:'adaptive-retry-loop-surface',pass:!signals.retry||Number(categories.retry||0)>0},
     {id:'adaptive-camera-quality',pass:!signals.camera||(client?.camera?.present===true&&client?.camera?.subjectPresent===true&&Number(client?.camera?.fieldOfView||0)>0&&client?.camera?.occluded!==true)},
     {id:'adaptive-performance-budget',pass:Number(runtime.memoryMb||0)>=0&&Number(runtime.descendantCount||0)<120000&&performanceTrendPass}
@@ -1342,6 +1360,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     'adaptive-reward-loop-surface':['REWARD_LOOP','HIGH','Repair reward delivery and progression feedback; prevent missing or duplicated rewards.'],
     'adaptive-economy-surface':['ECONOMY','HIGH','Repair shop/cost/currency/upgrade transaction surface and progression affordability flow.'],
     'adaptive-save-surface':['SAVE_REJOIN','CRITICAL','Repair save/load/rejoin persistence and idempotency without duplicating rewards.'],
+    'adaptive-save-rejoin-persistence':['SAVE_REJOIN','CRITICAL','Repair save timing/load ordering/schema migration so stable progression survives an actual F9 Studio stop/start cycle without reset or duplication.'],
     'adaptive-retry-loop-surface':['FAILURE_RECOVERY','HIGH','Repair death/failure/restart/respawn flow and remove softlocks after retry.'],
     'adaptive-camera-quality':['CAMERA','HIGH','Repair camera subject/FOV/occlusion behavior and keep gameplay readable during movement/combat.'],
     'adaptive-performance-budget':['PERFORMANCE','HIGH','Reduce runaway instance count/memory pressure and keep long-session runtime stable.'],
@@ -1530,8 +1549,8 @@ export async function runOfficialStudioMcpPlay({
   const actions=[],checkpoints=[],errors=[];
   const checkpoint=(id,pass)=>checkpoints.push({id,name:id,required:true,pass:pass===true});
   let studioId='',beforeImages=[],afterImages=[],consoleResult=null,characterMotionRuntime=null,started=false;
-  let initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,finalClientProbe=null,finalServerProbe=null,scenarioCoverage=[];
-  let authoritativeStateChangeObserved=false,qualityFailureKinds=[],qualityFailureDetails=[],captureQuality=null,scenarioMetrics={};
+  let initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,finalClientProbe=null,finalServerProbe=null,rejoinClientProbe=null,scenarioCoverage=[];
+  let authoritativeStateChangeObserved=false,qualityFailureKinds=[],qualityFailureDetails=[],captureQuality=null,scenarioMetrics={},saveRejoinSummary=null;
   const auditMode=clean(auditProfile).toUpperCase()==='F9_SOAK'?'F9_SOAK':'FAST_DEEP';
   const timelineProbes=[];
   try{
@@ -1822,6 +1841,45 @@ export async function runOfficialStudioMcpPlay({
       captureQuality=evaluated.capture;
       scenarioMetrics=evaluated.metrics||{};
       for(const row of scenarioCoverage)checkpoint('scenario-'+row.id,row.pass===true);
+
+      const saveDeclared=actualPlayContract?.adaptiveCoverage?.signals?.save===true
+        ||actualPlayContract?.adaptiveCoverage?.evidencePolicy?.saveRejoinPassRequired===true;
+      if(auditMode==='F9_SOAK'&&saveDeclared){
+        const beforePersist=persistentStateSummary(finalClientProbe||{});
+        let restartOk=false;
+        try{
+          const restartTool=client.tool('start_stop_play');
+          await client.call('start_stop_play',startStopArgs(restartTool.inputSchema||{},studioId,false));
+          started=false;
+          await wait(900);
+          await client.call('start_stop_play',startStopArgs(restartTool.inputSchema||{},studioId,true));
+          started=true;
+          await wait(2800);
+          rejoinClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+          restartOk=rejoinClientProbe!=null;
+        }catch{}
+        const afterPersist=persistentStateSummary(rejoinClientProbe||{});
+        const progressionObserved=beforePersist.persistentSignalCount>0&&afterPersist.persistentSignalCount>0;
+        const progressionPreserved=progressionObserved&&beforePersist.progressionFingerprint===afterPersist.progressionFingerprint;
+        const inventoryComparable=beforePersist.inventory.length>0||afterPersist.inventory.length>0;
+        const inventoryPreserved=!inventoryComparable||beforePersist.inventoryFingerprint===afterPersist.inventoryFingerprint;
+        const pass=restartOk&&progressionPreserved&&inventoryPreserved;
+        saveRejoinSummary={restartOk,progressionObserved,progressionPreserved,inventoryComparable,inventoryPreserved,before:beforePersist,after:afterPersist};
+        const existingIndex=scenarioCoverage.findIndex(row=>row?.id==='adaptive-save-rejoin-persistence');
+        const row={id:'adaptive-save-rejoin-persistence',pass,required:true};
+        if(existingIndex>=0)scenarioCoverage[existingIndex]=row;else scenarioCoverage.push(row);
+        checkpoint('scenario-adaptive-save-rejoin-persistence',pass);
+        if(!pass){
+          if(!qualityFailureKinds.includes('adaptive-save-rejoin-persistence'))qualityFailureKinds.push('adaptive-save-rejoin-persistence');
+          qualityFailureDetails.push({
+            id:'adaptive-save-rejoin-persistence',
+            repairSurface:'SAVE_REJOIN',
+            priority:'CRITICAL',
+            hint:'F9 Studio restart did not preserve stable progression/inventory state. Repair save timing, load ordering, schema migration, or reset/duplication behavior.',
+            observed:{restartOk,progressionObserved,progressionPreserved,inventoryComparable,inventoryPreserved}
+          });
+        }
+      }
     }
 
     const consoleTool=client.tool('get_console_output');
@@ -1903,7 +1961,8 @@ export async function runOfficialStudioMcpPlay({
       authoritativeStateChangeObserved,
       qualityFailureKinds,
       qualityFailureDetails,
-      runtimeProbes:actualPlayContract?.required===true?{initialClient:initialClientProbe,preActionClient:preActionClientProbe,postActionClient:postActionClientProbe,finalClient:finalClientProbe,finalServer:finalServerProbe}:null,
+      runtimeProbes:actualPlayContract?.required===true?{initialClient:initialClientProbe,preActionClient:preActionClientProbe,postActionClient:postActionClientProbe,finalClient:finalClientProbe,finalServer:finalServerProbe,rejoinClient:rejoinClientProbe}:null,
+      saveRejoinSummary,
       mcp:{
         protocolVersion:client.protocolVersion,
         serverName:clean(client.serverInfo?.name),
@@ -1927,6 +1986,9 @@ export async function runOfficialStudioMcpPlay({
         primaryActionDisplacement:Number(scenarioMetrics.primaryActionDisplacement||0),
         primaryActionVelocity:Number(scenarioMetrics.primaryActionVelocity||0),
         primaryActionFeedbackChanged:scenarioMetrics.primaryActionFeedbackChanged===true,
+        saveRejoinRestartOk:saveRejoinSummary?.restartOk===true,
+        saveRejoinProgressionPreserved:saveRejoinSummary?.progressionPreserved===true,
+        saveRejoinInventoryPreserved:saveRejoinSummary?.inventoryPreserved===true,
         captureQuality
       },
       characterMotionRuntime,
@@ -2214,7 +2276,14 @@ export function createLocalStudioPlayEvidence({
           timelineCompanionDynamic:runtime?.metrics?.timelineCompanionDynamic===true,
           uiCommercial:runtime?.metrics?.uiCommercial&&typeof runtime.metrics.uiCommercial==='object'?runtime.metrics.uiCommercial:{},
           surfaces:runtime?.metrics?.surfaces&&typeof runtime.metrics.surfaces==='object'?runtime.metrics.surfaces:{},
-          performance:runtime?.metrics?.performance&&typeof runtime.metrics.performance==='object'?runtime.metrics.performance:{}
+          performance:runtime?.metrics?.performance&&typeof runtime.metrics.performance==='object'?runtime.metrics.performance:{},
+          saveRejoin:runtime?.saveRejoinSummary&&typeof runtime.saveRejoinSummary==='object'?{
+            restartOk:runtime.saveRejoinSummary.restartOk===true,
+            progressionObserved:runtime.saveRejoinSummary.progressionObserved===true,
+            progressionPreserved:runtime.saveRejoinSummary.progressionPreserved===true,
+            inventoryComparable:runtime.saveRejoinSummary.inventoryComparable===true,
+            inventoryPreserved:runtime.saveRejoinSummary.inventoryPreserved===true
+          }:null
         }
       },
       characterMotionRuntime:characterMotionRuntime?{
