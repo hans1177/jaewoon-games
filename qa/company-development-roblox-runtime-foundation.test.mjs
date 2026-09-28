@@ -23,9 +23,10 @@ test('Roblox runtime foundation push wake ignores QA-only and descriptive archit
  assert.match(pushBlock,/roblox-games\/\.company-runtime-trigger/);
 });
 
-test('recurring Roblox runtime foundation QA does not require full git history',()=>{
+test('event-driven Roblox runtime foundation QA has no delayed cron and does not require full git history',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
- assert.match(workflow,/schedule:\s*\n\s*- cron: '\*\/15 \* \* \* \*'/);
+ const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
+ assert.doesNotMatch(header,/schedule:/);
  assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
  assert.match(workflow,/Checkout current canonical implementation[\s\S]*?fetch-depth:\s*1/);
 });
@@ -660,7 +661,7 @@ test('shared FAST_MVP runtime QA keeps only newest shared candidate current and 
 });
 
 
-test('Roblox post-runtime QA keeps distinct games parallel while collapsing duplicate scans',()=>{
+test('Roblox post-runtime QA keeps distinct identities parallel while newest same-identity work replaces stale runs',()=>{
   const post=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   const f9=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   const postJobs=post.indexOf('\njobs:\n');
@@ -668,7 +669,7 @@ test('Roblox post-runtime QA keeps distinct games parallel while collapsing dupl
   assert.ok(postJobs>0&&f9Jobs>0);
   const postHeader=post.slice(0,postJobs);
   assert.match(postHeader,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
-  assert.match(postHeader,/cancel-in-progress: \$\{\{ inputs\.game_id == '' \}\}/);
+  assert.match(postHeader,/cancel-in-progress: true/);
   assert.doesNotMatch(postHeader,/group: roblox-runtime-foundation-scan\s*$/m);
   assert.doesNotMatch(f9.slice(0,f9Jobs),/\nconcurrency:/);
 });
