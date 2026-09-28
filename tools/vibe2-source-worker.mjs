@@ -2939,14 +2939,16 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       console.log('VIBE2_DETERMINISTIC_DIAGNOSTIC_REPAIR=FALLBACK:'+generationFailureClass(error)+':'+clean(error?.message||error).replace(/\s+/g,' ').slice(0,240));
     }
   }
-  if(!generated&&target==='roblox'){
+  const deterministicRobloxMode=target==='roblox'
+    &&clean(process.env.DETERMINISTIC_SOURCE).toLowerCase()==='true'
+    &&clean(process.env.VIBE2_ROBLOX_DETERMINISTIC_SOURCE).toLowerCase()==='true'
+    &&clean(order?.presentationQuality?.pass).toUpperCase()==='ASSET_ADAPTATION'
+    &&order?.presentationQuality?.required===true;
+  if(!generated&&deterministicRobloxMode){
     generated=deterministicRobloxBuildUpCandidate({order,sourceRoot,sourceRootRelative,responsibleFiles,candidateValidator,verifiedExternalLearningContract});
     if(generated)console.log('VIBE2_DETERMINISTIC_ROBLOX_BUILDUP=PASS:stage='+Number(generated.generation?.deterministicRobloxBuildStage||0));
   }
-  const deterministicRobloxRequired=target==='roblox'
-    &&clean(order?.presentationQuality?.pass).toUpperCase()==='ASSET_ADAPTATION'
-    &&order?.presentationQuality?.required===true
-    &&clean(process.env.VIBE2_ROBLOX_DETERMINISTIC_SOURCE).toLowerCase()==='true';
+  const deterministicRobloxRequired=deterministicRobloxMode;
   if(!generated&&deterministicRobloxRequired){
     const error=new Error('DETERMINISTIC_ROBLOX_BUILDUP_REQUIRED:NO_VALID_LOCAL_CANDIDATE');
     error.vibe2GenerationFailureClass='DETERMINISTIC_ROBLOX_BUILDUP';
