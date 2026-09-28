@@ -1305,11 +1305,12 @@ export function createLocalStudioPlayEvidence({
     &&runtimeFoundationEvidence?.exactEngineVersion===true
     &&runtimeFoundationEvidence?.serverBootObserved!==true
   );
-  const currentExactPublishedArtifact=Boolean(
+  const currentInternalReleaseExact=internalReleaseObserved(item,candidate);
+  const currentExactPrivateCandidate=Boolean(
     currentSourceArtifactBinding
     &&candidateMatchesExpected
-    &&(runtimeFoundationExact||exactEngineVersionAwaitingRealServerBoot||internalReleaseObserved(item,candidate))
   );
+  const currentExactPublishedArtifact=currentExactPrivateCandidate;
   const historicalExactPublishedArtifact=Boolean(
     !currentSourceArtifactBinding
     &&candidateMatchesExpected
@@ -1429,7 +1430,7 @@ export function createLocalStudioPlayEvidence({
       infrastructureFailure,
       failureClass,
       robloxFailureClass,
-      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineVersionAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY',
+      actualPlayEligibility:runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineVersionAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':(currentInternalReleaseExact||historicalExactPublishedArtifact)?'INTERNAL_RELEASE_OR_HISTORICAL_REPLAY':'PRIVATE_INTERNAL_CANDIDATE_EXACT',
       studioMcpServerEnablementRequired,
       operatorPrerequisite:studioMcpServerEnablementRequired?'ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT':null,
       localPlaceFile:true,

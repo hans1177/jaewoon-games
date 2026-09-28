@@ -162,6 +162,24 @@ test('planner selects exact private candidate before any external server observa
   assert.equal(result.include[0].actualPlayEligibility,'PRIVATE_INTERNAL_CANDIDATE_EXACT');
 });
 
+test('exact private candidate persists Studio evidence before runtime foundation',()=>{
+  const candidate=item();
+  candidate.currentStep='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+  candidate.canonicalState='PRE_F9_VALIDATION_CANDIDATE_DEPLOYED';
+  candidate.robloxInternalReleasePublished=false;
+  candidate.robloxInternalReleaseEvidence={};
+  candidate.robloxRuntimeFoundationPassed=false;
+  candidate.robloxRuntimeFoundationEvidence={};
+  const applied=applyLocalStudioPlayResult({
+    queue:{items:[candidate]},gameId:'g1',runtime:runtime(),expected,workflowRunId:100,studioStepSucceeded:true,
+    testedAt:'2026-09-28T11:45:00.000Z'
+  });
+  assert.equal(applied.result.pass,true);
+  assert.equal(applied.result.evidence.actualPlayEligibility,'PRIVATE_INTERNAL_CANDIDATE_EXACT');
+  assert.equal(applied.result.evidence.currentSourceArtifactBinding,true);
+  assert.equal(applied.item.robloxRuntimeFoundationPassed,false);
+});
+
 test('planner selects exact runtime-foundation artifact before internal release',()=>{
   const candidate=item();
   candidate.robloxInternalReleasePublished=false;
