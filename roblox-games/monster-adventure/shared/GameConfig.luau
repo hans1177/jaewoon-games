@@ -122,18 +122,19 @@ local Config = {
     GameId = "monster-adventure",
     CoreKind = "COMBAT",
     SemanticVariant = "COMBAT_IMPACT",
+    SemanticMood = "IMPACT_ARENA",
     SemanticMappingVersion = 1,
-    SemanticMappingFingerprint = "5vqqm3",
+    SemanticMappingFingerprint = "1e8orjb",
     MemoryFingerprint = "hfed4s",
     NativeBindingVersion = 6,
     CoveragePct = 100,
     ContentComplete = true,
     RetrievedCount = 7,
     AppliedCount = 7,
-    AppliedGameDevelopmentPrincipleCount = 8,
+    AppliedGameDevelopmentPrincipleCount = 9,
     RetrievedPrincipleCount = 23,
     ValidationOnlyPrincipleCount = 14,
-    NotApplicablePrincipleCount = 1,
+    NotApplicablePrincipleCount = 0,
     TruncationForbidden = true,
     VerifiedExternalLearningIds = {
       "external-black-box-block-blast-run-30",
@@ -151,6 +152,7 @@ local Config = {
       "HUD_AND_CONTEXTUAL_GUIDANCE",
       "MOBILE_READABILITY_AND_RESPONSE",
       "PROGRESSION_RISK_READABILITY",
+      "REWARD_AND_EVENT_PRESENTATION",
       "CAMERA_RESPONSE",
       "WORLD_AND_BACKGROUND_PRESENTATION",
       "CHARACTER_NPC_CREATURE_ANIMATION",
@@ -159,6 +161,7 @@ local Config = {
     },
     ApplicationPrinciples = {
       "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view.",
+      "id=persistent-primary-rpg-navigation; scope=mobile-rpg-ui; lesson=The verified gameplay state exposes persistent primary destinations such as skills, combat, home, quests and profile, allowing a player to move between major RPG systems without leaving the core game shell.; apply=For a Roblox RPG, keep high-frequency progression systems easy to reach and verify that each navigation action produces an immediate, legible state change.",
       "id=danger-and-level-gating-visible-before-commitment; scope=rpg-progression-observation; lesson=The verified Combat screen shows dungeon names together with level requirements and visible danger guidance before a run is chosen.; apply=Expose progression requirements and risk cues before players commit to a dangerous activity, while independently validating the actual balance in the target game.",
       "id=touch-look-produces-immediate-spatial-feedback; scope=mobile-3d-controls; lesson=A short horizontal touch gesture on the first-person play surface produced an immediate, clearly visible camera-orientation change while the movement and action HUD remained available.; apply=For Roblox mobile 3D controls, validate look gestures with before/after scene framing while preserving consistent movement and action affordances.",
       "id=persistent-core-state-around-world-view; scope=rpg-mobile-ux; lesson=The verified gameplay view keeps the world map, player marker, health readout, inventory access and primary action controls visible together, reducing context switching during basic play.; apply=For a Roblox RPG, keep essential player state and high-frequency actions legible around the core world view without copying this game's visual design.",
@@ -169,6 +172,7 @@ local Config = {
     },
     GameDevelopmentPrinciples = {
       "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view.",
+      "id=persistent-primary-rpg-navigation; scope=mobile-rpg-ui; lesson=The verified gameplay state exposes persistent primary destinations such as skills, combat, home, quests and profile, allowing a player to move between major RPG systems without leaving the core game shell.; apply=For a Roblox RPG, keep high-frequency progression systems easy to reach and verify that each navigation action produces an immediate, legible state change.",
       "id=danger-and-level-gating-visible-before-commitment; scope=rpg-progression-observation; lesson=The verified Combat screen shows dungeon names together with level requirements and visible danger guidance before a run is chosen.; apply=Expose progression requirements and risk cues before players commit to a dangerous activity, while independently validating the actual balance in the target game.",
       "id=touch-look-produces-immediate-spatial-feedback; scope=mobile-3d-controls; lesson=A short horizontal touch gesture on the first-person play surface produced an immediate, clearly visible camera-orientation change while the movement and action HUD remained available.; apply=For Roblox mobile 3D controls, validate look gestures with before/after scene framing while preserving consistent movement and action affordances.",
       "id=persistent-core-state-around-world-view; scope=rpg-mobile-ux; lesson=The verified gameplay view keeps the world map, player marker, health readout, inventory access and primary action controls visible together, reducing context switching during basic play.; apply=For a Roblox RPG, keep essential player state and high-frequency actions legible around the core world view without copying this game's visual design.",
@@ -179,6 +183,7 @@ local Config = {
     },
     GameSpecificSemanticMappings = {
       { PrincipleId = "compact-tactical-state-with-immediate-feedback", SourceLearningId = "external-black-box-cavern-cravers-run-47", CoreKind = "COMBAT", Disposition = "APPLIED_GAME_SOURCE", Scope = "mobile-rpg-interaction", Domain = "CORE_GAMEPLAY_FEEL", Domains = { "CORE_GAMEPLAY_FEEL", "PLAYER_INPUT_AND_TOUCH", "VISIBLE_ACTION_FEEDBACK", "HUD_AND_CONTEXTUAL_GUIDANCE", "MOBILE_READABILITY_AND_RESPONSE" }, Mapping = "Keep the primary game state beside the active action and acknowledge the server-confirmed action immediately.", Implementation = "variant-specific action cue bound to LastApprovedScope", Variant = "COMBAT_IMPACT" },
+      { PrincipleId = "persistent-primary-rpg-navigation", SourceLearningId = "external-black-box-idle-fantasy-run-42", CoreKind = "COMBAT", Disposition = "APPLIED_GAME_SOURCE", Scope = "mobile-rpg-ui", Domain = "HUD_AND_CONTEXTUAL_GUIDANCE", Domains = { "HUD_AND_CONTEXTUAL_GUIDANCE", "PROGRESSION_RISK_READABILITY", "REWARD_AND_EVENT_PRESENTATION" }, Mapping = "Keep level, progression, and next-step context visible around the primary action.", Implementation = "persistent context cue uses existing Config.Actions and replicated player attributes", Variant = "COMBAT_IMPACT" },
       { PrincipleId = "danger-and-level-gating-visible-before-commitment", SourceLearningId = "external-black-box-idle-fantasy-run-42", CoreKind = "COMBAT", Disposition = "APPLIED_GAME_SOURCE", Scope = "rpg-progression-observation", Domain = "PROGRESSION_RISK_READABILITY", Domains = { "PROGRESSION_RISK_READABILITY", "HUD_AND_CONTEXTUAL_GUIDANCE", "VISIBLE_ACTION_FEEDBACK" }, Mapping = "Show level and risk context before the next action is committed.", Implementation = "pre-action risk cue reads existing replicated state; it never grants authority", Variant = "COMBAT_IMPACT" },
       { PrincipleId = "touch-look-produces-immediate-spatial-feedback", SourceLearningId = "external-black-box-luanti-run-10", CoreKind = "COMBAT", Disposition = "APPLIED_GAME_SOURCE", Scope = "mobile-3d-controls", Domain = "PLAYER_INPUT_AND_TOUCH", Domains = { "PLAYER_INPUT_AND_TOUCH", "CAMERA_RESPONSE", "VISIBLE_ACTION_FEEDBACK", "MOBILE_READABILITY_AND_RESPONSE" }, Mapping = "Give attack direction and target-space feedback at the moment the action is confirmed.", Implementation = "variant-specific camera or spatial cue follows LastApprovedScope", Variant = "COMBAT_IMPACT" },
       { PrincipleId = "persistent-core-state-around-world-view", SourceLearningId = "external-black-box-revengate-run-59", CoreKind = "COMBAT", Disposition = "APPLIED_GAME_SOURCE", Scope = "rpg-mobile-ux", Domain = "WORLD_AND_BACKGROUND_PRESENTATION", Domains = { "WORLD_AND_BACKGROUND_PRESENTATION", "HUD_AND_CONTEXTUAL_GUIDANCE", "CORE_GAMEPLAY_FEEL" }, Mapping = "Keep the core state visible while the game world remains readable.", Implementation = "world-view cue reuses the existing HUD state and does not replace the game camera", Variant = "COMBAT_IMPACT" },
@@ -195,7 +200,7 @@ local Config = {
       { PrincipleId = "compact-tactical-state-with-immediate-feedback", SourceLearningId = "external-black-box-cavern-cravers-run-47", Disposition = "APPLIED_GAME_SOURCE", Scope = "mobile-rpg-interaction", Domains = { "CORE_GAMEPLAY_FEEL", "PLAYER_INPUT_AND_TOUCH", "VISIBLE_ACTION_FEEDBACK", "HUD_AND_CONTEXTUAL_GUIDANCE", "MOBILE_READABILITY_AND_RESPONSE" }, Mapping = "Keep the primary game state beside the active action and acknowledge the server-confirmed action immediately.", Implementation = "variant-specific action cue bound to LastApprovedScope", Reason = "" },
       { PrincipleId = "semantic-gameplay-input-plus-survival", SourceLearningId = "external-black-box-cavern-cravers-run-47", Disposition = "VALIDATION_ONLY", Scope = "qa-evidence", Domains = {  }, Mapping = "", Implementation = "QA/Android/runtime validation only; not emitted into Roblox game source.", Reason = "QA_OR_PLATFORM_INFRASTRUCTURE" },
       { PrincipleId = "first-run-friction-separated-from-game-entry", SourceLearningId = "external-black-box-idle-fantasy-run-42", Disposition = "VALIDATION_ONLY", Scope = "mobile-rpg-onboarding", Domains = {  }, Mapping = "", Implementation = "QA/Android/runtime validation only; not emitted into Roblox game source.", Reason = "QA_OR_PLATFORM_INFRASTRUCTURE" },
-      { PrincipleId = "persistent-primary-rpg-navigation", SourceLearningId = "external-black-box-idle-fantasy-run-42", Disposition = "NOT_APPLICABLE", Scope = "mobile-rpg-ui", Domains = {  }, Mapping = "", Implementation = "", Reason = "CORE_KIND_NOT_APPLICABLE" },
+      { PrincipleId = "persistent-primary-rpg-navigation", SourceLearningId = "external-black-box-idle-fantasy-run-42", Disposition = "APPLIED_GAME_SOURCE", Scope = "mobile-rpg-ui", Domains = { "HUD_AND_CONTEXTUAL_GUIDANCE", "PROGRESSION_RISK_READABILITY", "REWARD_AND_EVENT_PRESENTATION" }, Mapping = "Keep level, progression, and next-step context visible around the primary action.", Implementation = "persistent context cue uses existing Config.Actions and replicated player attributes", Reason = "" },
       { PrincipleId = "danger-and-level-gating-visible-before-commitment", SourceLearningId = "external-black-box-idle-fantasy-run-42", Disposition = "APPLIED_GAME_SOURCE", Scope = "rpg-progression-observation", Domains = { "PROGRESSION_RISK_READABILITY", "HUD_AND_CONTEXTUAL_GUIDANCE", "VISIBLE_ACTION_FEEDBACK" }, Mapping = "Show level and risk context before the next action is committed.", Implementation = "pre-action risk cue reads existing replicated state; it never grants authority", Reason = "" },
       { PrincipleId = "semantic-input-plus-runtime-survival", SourceLearningId = "external-black-box-idle-fantasy-run-42", Disposition = "VALIDATION_ONLY", Scope = "qa-evidence", Domains = {  }, Mapping = "", Implementation = "QA/Android/runtime validation only; not emitted into Roblox game source.", Reason = "QA_OR_PLATFORM_INFRASTRUCTURE" },
       { PrincipleId = "content-setup-is-separate-from-3d-game-entry", SourceLearningId = "external-black-box-luanti-run-10", Disposition = "VALIDATION_ONLY", Scope = "sandbox-onboarding-observation", Domains = {  }, Mapping = "", Implementation = "QA/Android/runtime validation only; not emitted into Roblox game source.", Reason = "QA_OR_PLATFORM_INFRASTRUCTURE" },
@@ -229,7 +234,7 @@ local Config = {
       "input-visual-transition-plus-foreground-survival",
     },
     NotApplicablePrinciples = {
-      "persistent-primary-rpg-navigation",
+
     },
     AvoidancePrinciples = {
       "id=android-hosted-x86-arm-translation-native-crash; scope=android-runtime-compatibility; lesson=A successful ARM64 split-APK install on an x86_64 Android guest does not prove sustained runtime compatibility. Native translation can still fail after launch or game entry in JNI/native-library or application initialization paths.; apply=Do not promote install or game-entry success to stable runtime success. Preserve the partial success boundary, then require process survival, foreground state and crash-free input evidence for full runtime pass.",

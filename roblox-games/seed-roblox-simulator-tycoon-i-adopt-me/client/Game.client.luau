@@ -36,6 +36,7 @@ local verifiedLearningRoot = root
 local verifiedLearningSemanticVariant = "ECONOMY_RESOURCE"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
 local verifiedLearningSemanticColor = Color3.fromRGB(92, 214, 166)
+local verifiedLearningSemanticMood = "WARM_BUILDER"
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningAxisCount", #verifiedLearningAxes)
@@ -44,19 +45,22 @@ verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMappingVersion", veri
 verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMappingFingerprint", verifiedLearningContext.SemanticMappingFingerprint or "")
 verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticVariant", verifiedLearningSemanticVariant)
 verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticDomain", verifiedLearningSemanticDomain)
+verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
 verifiedLearningRoot:SetAttribute("VerifiedLearningGameSpecificMappingCount", #(verifiedLearningContext.GameSpecificSemanticMappings or {}))
 
-if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
--- Roblox environment / background adaptation.
+-- Game-specific color and atmosphere response, authored locally in Roblox.
 local verifiedLearningColorGrade = verifiedLearningLighting:FindFirstChild("VerifiedLearningColorGrade")
 if not verifiedLearningColorGrade then
   verifiedLearningColorGrade = Instance.new("ColorCorrectionEffect")
   verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
   verifiedLearningColorGrade.Parent = verifiedLearningLighting
 end
-verifiedLearningColorGrade.Saturation = 0.06
+verifiedLearningColorGrade.Saturation = 0.11
 verifiedLearningColorGrade.Contrast = 0.04
-verifiedLearningColorGrade.Brightness = 0.01
+verifiedLearningColorGrade.Brightness = 0.02
+verifiedLearningColorGrade:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
+if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
+-- Survival alone receives atmospheric depth and threat haze.
 local verifiedLearningBloom = verifiedLearningLighting:FindFirstChild("VerifiedLearningBloom")
 if not verifiedLearningBloom then
   verifiedLearningBloom = Instance.new("BloomEffect")
@@ -117,6 +121,8 @@ verifiedLearningGuidance.Position = UDim2.fromOffset(10, 8)
 verifiedLearningGuidance.BackgroundTransparency = 1
 verifiedLearningGuidance.TextWrapped = true
 verifiedLearningGuidance.TextScaled = true
+verifiedLearningGuidance.TextColor3 = verifiedLearningSemanticColor
+verifiedLearningGuidance:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
 if verifiedLearningSemanticVariant == "PUZZLE_STATE" then
   verifiedLearningGuidance.Text = "퍼즐 보드와 현재 이동을 함께 확인"
 elseif verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
@@ -144,6 +150,7 @@ verifiedLearningRiskCue.Position = UDim2.fromOffset(10, 40)
 verifiedLearningRiskCue.BackgroundTransparency = 1
 verifiedLearningRiskCue.TextWrapped = true
 verifiedLearningRiskCue.TextScaled = true
+verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
 if verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
   verifiedLearningRiskCue.Text = "배치 전 웨이브·기지 위험 확인"
 elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then

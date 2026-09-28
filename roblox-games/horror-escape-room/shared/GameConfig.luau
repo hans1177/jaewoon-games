@@ -105,6 +105,7 @@ local Config={
     GameId = "horror-escape-room",
     CoreKind = "OBJECTIVE",
     SemanticVariant = "OBJECTIVE_GOAL",
+    SemanticMood = "READABLE_EXPLORATION",
     SemanticMappingVersion = 1,
     SemanticMappingFingerprint = "jm4zab",
     MemoryFingerprint = "hfed4s",

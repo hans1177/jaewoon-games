@@ -48,8 +48,10 @@
     "MOBILE_READABILITY_AND_RESPONSE",
     "PROGRESSION_RISK_READABILITY",
     "REWARD_AND_EVENT_PRESENTATION",
-    "WORLD_AND_BACKGROUND_PRESENTATION",
     "CAMERA_RESPONSE",
+    "WORLD_AND_BACKGROUND_PRESENTATION",
+    "CHARACTER_NPC_CREATURE_ANIMATION",
+    "MOTION_AND_TRANSITIONS",
     "CONTEXTUAL_ONBOARDING"
   ],
   "studioAssetBinding": {
@@ -207,9 +209,9 @@
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
   "createdAt": "2026-09-28T03:17:19.765Z",
   "serverTouchedByVerifiedExternalLearningSweep": false,
-  "verifiedExternalLearningSweepAt": "2026-09-28T05:16:35.573Z",
+  "verifiedExternalLearningSweepAt": "2026-09-28T10:00:15.775Z",
   "semanticMappingVersion": 1,
-  "semanticMappingFingerprint": "sha5hc",
+  "semanticMappingFingerprint": "sgpo04",
   "semanticVariant": "PROGRESSION_RISK",
   "coreKind": "PROGRESSION",
   "gameSpecificSemanticMappings": [
@@ -276,6 +278,27 @@
       "raw": "id=danger-and-level-gating-visible-before-commitment; scope=rpg-progression-observation; lesson=The verified Combat screen shows dungeon names together with level requirements and visible danger guidance before a run is chosen.; apply=Expose progression requirements and risk cues before players commit to a dangerous activity, while independently validating the actual balance in the target game."
     },
     {
+      "principleId": "touch-look-produces-immediate-spatial-feedback",
+      "sourceLearningId": "external-black-box-luanti-run-10",
+      "sourceLearningIds": [
+        "external-black-box-luanti-run-10"
+      ],
+      "coreKind": "PROGRESSION",
+      "disposition": "APPLIED_GAME_SOURCE",
+      "scope": "mobile-3d-controls",
+      "domains": [
+        "PLAYER_INPUT_AND_TOUCH",
+        "CAMERA_RESPONSE",
+        "VISIBLE_ACTION_FEEDBACK",
+        "MOBILE_READABILITY_AND_RESPONSE"
+      ],
+      "domain": "PLAYER_INPUT_AND_TOUCH",
+      "mapping": "Give spatial feedback at the moment the touch action is confirmed.",
+      "implementation": "variant-specific camera or spatial cue follows LastApprovedScope",
+      "variant": "PROGRESSION_RISK",
+      "raw": "id=touch-look-produces-immediate-spatial-feedback; scope=mobile-3d-controls; lesson=A short horizontal touch gesture on the first-person play surface produced an immediate, clearly visible camera-orientation change while the movement and action HUD remained available.; apply=For Roblox mobile 3D controls, validate look gestures with before/after scene framing while preserving consistent movement and action affordances."
+    },
+    {
       "principleId": "persistent-core-state-around-world-view",
       "sourceLearningId": "external-black-box-revengate-run-59",
       "sourceLearningIds": [
@@ -294,6 +317,27 @@
       "implementation": "world-view cue reuses the existing HUD state and does not replace the game camera",
       "variant": "PROGRESSION_RISK",
       "raw": "id=persistent-core-state-around-world-view; scope=rpg-mobile-ux; lesson=The verified gameplay view keeps the world map, player marker, health readout, inventory access and primary action controls visible together, reducing context switching during basic play.; apply=For a Roblox RPG, keep essential player state and high-frequency actions legible around the core world view without copying this game's visual design."
+    },
+    {
+      "principleId": "movement-needs-immediate-visible-response",
+      "sourceLearningId": "external-black-box-revengate-run-59",
+      "sourceLearningIds": [
+        "external-black-box-revengate-run-59"
+      ],
+      "coreKind": "PROGRESSION",
+      "disposition": "APPLIED_GAME_SOURCE",
+      "scope": "rpg-input-feedback",
+      "domains": [
+        "CHARACTER_NPC_CREATURE_ANIMATION",
+        "MOTION_AND_TRANSITIONS",
+        "PLAYER_INPUT_AND_TOUCH",
+        "VISIBLE_ACTION_FEEDBACK"
+      ],
+      "domain": "CHARACTER_NPC_CREATURE_ANIMATION",
+      "mapping": "Show the player action transition immediately after input.",
+      "implementation": "variant-specific motion response is client feedback only and follows authoritative state",
+      "variant": "PROGRESSION_RISK",
+      "raw": "id=movement-needs-immediate-visible-response; scope=rpg-input-feedback; lesson=A bounded gameplay input produced an immediate visible player-position change in the same world view.; apply=For mobile Roblox RPG movement, bind successful input to prompt and unambiguous world-state feedback, then validate it with semantic before and after frames."
     },
     {
       "principleId": "persistent-contextual-action-controls",
@@ -529,12 +573,20 @@
       "sourceLearningIds": [
         "external-black-box-luanti-run-10"
       ],
-      "disposition": "NOT_APPLICABLE",
+      "coreKind": "PROGRESSION",
+      "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-3d-controls",
-      "domains": [],
-      "mapping": "",
-      "implementation": "",
-      "reason": "CORE_KIND_NOT_APPLICABLE"
+      "domains": [
+        "PLAYER_INPUT_AND_TOUCH",
+        "CAMERA_RESPONSE",
+        "VISIBLE_ACTION_FEEDBACK",
+        "MOBILE_READABILITY_AND_RESPONSE"
+      ],
+      "domain": "PLAYER_INPUT_AND_TOUCH",
+      "mapping": "Give spatial feedback at the moment the touch action is confirmed.",
+      "implementation": "variant-specific camera or spatial cue follows LastApprovedScope",
+      "variant": "PROGRESSION_RISK",
+      "raw": "id=touch-look-produces-immediate-spatial-feedback; scope=mobile-3d-controls; lesson=A short horizontal touch gesture on the first-person play surface produced an immediate, clearly visible camera-orientation change while the movement and action HUD remained available.; apply=For Roblox mobile 3D controls, validate look gestures with before/after scene framing while preserving consistent movement and action affordances."
     },
     {
       "principleId": "world-entry-needs-load-window-before-input-proof",
@@ -588,12 +640,20 @@
       "sourceLearningIds": [
         "external-black-box-revengate-run-59"
       ],
-      "disposition": "NOT_APPLICABLE",
+      "coreKind": "PROGRESSION",
+      "disposition": "APPLIED_GAME_SOURCE",
       "scope": "rpg-input-feedback",
-      "domains": [],
-      "mapping": "",
-      "implementation": "",
-      "reason": "CORE_KIND_NOT_APPLICABLE"
+      "domains": [
+        "CHARACTER_NPC_CREATURE_ANIMATION",
+        "MOTION_AND_TRANSITIONS",
+        "PLAYER_INPUT_AND_TOUCH",
+        "VISIBLE_ACTION_FEEDBACK"
+      ],
+      "domain": "CHARACTER_NPC_CREATURE_ANIMATION",
+      "mapping": "Show the player action transition immediately after input.",
+      "implementation": "variant-specific motion response is client feedback only and follows authoritative state",
+      "variant": "PROGRESSION_RISK",
+      "raw": "id=movement-needs-immediate-visible-response; scope=rpg-input-feedback; lesson=A bounded gameplay input produced an immediate visible player-position change in the same world view.; apply=For mobile Roblox RPG movement, bind successful input to prompt and unambiguous world-state feedback, then validate it with semantic before and after frames."
     },
     {
       "principleId": "gameplay-state-must-be-visually-distinct-from-selection-state",
@@ -709,5 +769,5 @@
     }
   ],
   "verifiedExternalValidationOnlyPrincipleCount": 14,
-  "verifiedExternalLearningGameDevelopmentAppliedCount": 7
+  "verifiedExternalLearningGameDevelopmentAppliedCount": 9
 }

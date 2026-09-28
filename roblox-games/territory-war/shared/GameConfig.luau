@@ -59,6 +59,7 @@ local Config = {
     GameId = "territory-war",
     CoreKind = "OBJECTIVE",
     SemanticVariant = "OBJECTIVE_GOAL",
+    SemanticMood = "READABLE_EXPLORATION",
     SemanticMappingVersion = 1,
     SemanticMappingFingerprint = "1dlgek4",
     MemoryFingerprint = "hfed4s",

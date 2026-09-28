@@ -123,6 +123,7 @@ local Config = {
     GameId = "seed-casual-realm-weaver",
     CoreKind = "OBJECTIVE",
     SemanticVariant = "OBJECTIVE_GOAL",
+    SemanticMood = "READABLE_EXPLORATION",
     SemanticMappingVersion = 1,
     SemanticMappingFingerprint = "s2qr5d",
     MemoryFingerprint = "hfed4s",
