@@ -654,7 +654,7 @@ test('verified APK native binding covers Roblox background motion and skill effe
 });
 
 
-test('Roblox native binding v5 requires expanded environment and skill VFX signals',()=>{
+test('Roblox native binding v6 requires expanded environment and skill VFX signals',()=>{
   const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
   const reconcile=fs.readFileSync(new URL('../tools/company-development-roblox-source-reconcile.mjs',import.meta.url),'utf8');
   assert.match(bootstrap,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=6/);
