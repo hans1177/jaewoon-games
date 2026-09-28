@@ -152,14 +152,22 @@ jobs:
           }
           const valid=v=>/^[1-9][0-9]*$/.test(String(v||'').trim());
           const current=publishStage==='final'?(item.robloxPublicationTarget||{}):(item.robloxValidationTarget||{});
+          const canonicalTarget=item.robloxPublicationTarget||{};
+          const validationCollision=publishStage==='validation'
+            &&valid(current.universeId)&&valid(current.placeId)
+            &&valid(canonicalTarget.universeId)&&valid(canonicalTarget.placeId)
+            &&String(current.universeId)===String(canonicalTarget.universeId)
+            &&String(current.placeId)===String(canonicalTarget.placeId);
           const dedicated=current.dedicated===true
             &&current.shared!==true
             &&valid(current.universeId)
-            &&valid(current.placeId);
+            &&valid(current.placeId)
+            &&validationCollision!==true;
           if(dedicated){
             console.log('ROBLOX_DEDICATED_TARGET_REUSE='+gameId);
             process.exit(0);
           }
+          if(validationCollision)console.log('ROBLOX_VALIDATION_TARGET_COLLISION_REPAIR='+gameId);
           const cookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
           const created=await createRobloxDedicatedExperience({
             apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
@@ -366,6 +374,13 @@ jobs:
 
           const validIds=(target)=>/^[1-9][0-9]*$/.test(String(target?.universeId||'').trim())&&/^[1-9][0-9]*$/.test(String(target?.placeId||'').trim());
           const persistedTarget=publishStage==='final'?(item.robloxPublicationTarget||{}):(item.robloxValidationTarget||{});
+          const canonicalTarget=item.robloxPublicationTarget||{};
+          const validationTargetCollision=publishStage==='validation'
+            &&validIds(persistedTarget)
+            &&validIds(canonicalTarget)
+            &&String(persistedTarget.universeId||'')===String(canonicalTarget.universeId||'')
+            &&String(persistedTarget.placeId||'')===String(canonicalTarget.placeId||'');
+          if(validationTargetCollision)throw new Error('ROBLOX_VALIDATION_TARGET_COLLIDES_WITH_CANONICAL:'+gameId);
           const persistedValid=validIds(persistedTarget)
             &&persistedTarget.dedicated===true
             &&persistedTarget.shared!==true
