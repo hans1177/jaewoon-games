@@ -282,14 +282,15 @@ test('private runtime persistence retries from fresh company-runtime state inste
   assert.doesNotMatch(block,/git cherry-pick /);
 });
 
-test('validation and final publish dedupe same-game stage without workflow-level pending cancellation',()=>{
+test('final-only publish dedupes same-game runs without workflow-level pending cancellation',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
-  assert.match(workflow,/run-name: Roblox publish · \$\{\{ inputs\.game_id \|\| 'push' \}\} · \$\{\{ inputs\.publish_stage \|\| 'validation' \}\}/);
+  assert.match(workflow,/run-name: Roblox publish · \$\{\{ inputs\.game_id \|\| 'push' \}\} · \$\{\{ github\.event_name == 'workflow_dispatch' && \(inputs\.publish_stage \|\| 'final'\) \|\| 'sync-only' \}\}/);
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
   assert.match(workflow,/release-dedupe:/);
-  assert.match(workflow,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'validation' \}\}/);
+  assert.match(workflow,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'final' \}\}/);
+  assert.match(workflow,/ROBLOX_PUBLISH_STAGE_FINAL_ONLY/);
   assert.match(workflow,/const title='Roblox publish · '/);
 });
 
@@ -367,10 +368,11 @@ test('validation and canonical targets are separate persisted fields',()=>{
 });
 
 
-test('publish-stage target provisioning keeps pre-F9 validation separate and creates canonical target for final F9 publish',()=>{
+test('final-only target provisioning uses canonical target only after F9',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   assert.match(candidate,/name: Ensure game-specific private Roblox target for current publish stage/);
-  assert.match(candidate,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'validation' \}\}/);
+  assert.match(candidate,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'final' \}\}/);
+  assert.match(candidate,/if\(publishStage!=='final'\)throw new Error\('ROBLOX_PUBLISH_STAGE_FINAL_ONLY:'/);
   assert.match(candidate,/const current=publishStage==='final'\?\(item\.robloxPublicationTarget\|\|\{\}\):\(item\.robloxValidationTarget\|\|\{\}\)/);
   assert.match(candidate,/createRobloxDedicatedExperience/);
   assert.match(candidate,/configureRobloxExperience/);
