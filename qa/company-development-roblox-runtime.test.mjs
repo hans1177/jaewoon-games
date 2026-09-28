@@ -432,7 +432,13 @@ test('Roblox verified external coverage excludes PRACTICE_ONLY black-box advisor
         roblox:{
           authority:'verified-task-playbook',
           checklist:['apply-verified-external-learning'],
-          reuse:[{id:'external-black-box-verified-playbook',project:'verified-reference'}]
+          reuse:[{
+            id:'external-black-box-verified-playbook',
+            project:'verified-reference',
+            distilledApplicationPrinciples:['bind touch input to immediate visible local feedback'],
+            distilledAvoidancePrinciples:['do not clone distinctive commercial UI expression'],
+            distilledLearningUseAllowed:['interaction feedback timing']
+          }]
         },
         coding:{authority:'verified-task-playbook',checklist:[],reuse:[]}
       }
@@ -457,6 +463,8 @@ test('Roblox verified external coverage excludes PRACTICE_ONLY black-box advisor
   assert.equal(learning.verifiedExternalLearningRetrievedCount,1);
   assert.equal(learning.verifiedExternalLearningAppliedCount,1);
   assert.equal(learning.verifiedExternalLearningCoveragePct,100);
+  assert.equal(learning.verifiedExternalDistilledContentComplete,true);
+  assert.ok(learning.verifiedExternalLearningPrinciples.includes('bind touch input to immediate visible local feedback'));
   assert.deepEqual(learning.externalBlackBoxAdvisoryIds,['practice-only-black-box-observation']);
   assert.equal(learning.externalBlackBoxAdvisoryUsed,true);
   assert.equal(learning.verifiedExternalLearningIds.includes('practice-only-black-box-observation'),false);
