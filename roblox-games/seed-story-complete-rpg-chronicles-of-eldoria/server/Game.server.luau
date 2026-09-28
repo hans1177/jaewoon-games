@@ -1,7 +1,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
-local store = DataStoreService:GetDataStore("seed-story-complete-rpg-chronicles-of-eldoria-development-v1")
+local store = DataStoreService:GetDataStore("seed-story-eldoria-v1")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
 
