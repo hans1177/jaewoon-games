@@ -775,16 +775,21 @@ export function validateRobloxBootstrap({sharedConfig='',serverCode='',clientCod
     if(!/LearningContext\s*=/.test(sharedConfig))blockers.push('CONFIG_VIBE3_LEARNING_CONTEXT_REQUIRED');
     if(!/VerifiedExternalLearningFirst\s*=\s*true/.test(sharedConfig)||!/CoveragePct\s*=\s*100/.test(sharedConfig))blockers.push('CONFIG_VERIFIED_EXTERNAL_LEARNING_100_REQUIRED');
     for(const axis of [
-      'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
-      'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
-      'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
-      'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
-      'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
-      'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
-      'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
+      'ROBLOX_ENVIRONMENT_BACKGROUND_AND_LIGHTING',
+      'ROBLOX_CHARACTER_ANIMATION_AND_MOTION',
+      'ROBLOX_SKILL_VFX_AND_IMPACT_FEEDBACK',
+      'ROBLOX_CAMERA_AND_VISUAL_FEEDBACK',
+      'ROBLOX_UI_UX_TOUCH_AND_CONTROLS',
+      'ROBLOX_GAMEPLAY_STATE_AND_PROGRESSION',
+      'ROBLOX_RUNTIME_QA_AND_RELIABILITY'
     ])if(!sharedConfig.includes(axis))blockers.push('CONFIG_VERIFIED_EXTERNAL_LEARNING_AXIS_MISSING:'+axis);
-    if(!/ActionSequence/.test(serverCode)||!/LastLearningPattern/.test(serverCode))blockers.push('SERVER_VIBE3_LEARNING_INSTRUMENTATION_REQUIRED');
-    if(!/ContextActionService/.test(clientCode)||!/BindAction\s*\(/.test(clientCode))blockers.push('CLIENT_VIBE3_LEARNED_INPUT_REQUIRED');
+    if(!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_ROBLOX_NATIVE_BINDING_REQUIRED');
+    if(!/ColorCorrectionEffect/.test(clientCode)||!/BloomEffect/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_ENVIRONMENT_REQUIRED');
+    if(!/AdjustSpeed/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_ANIMATION_MOTION_REQUIRED');
+    if(!/VerifiedLearningSkillImpact/.test(clientCode)||!/Sparkles/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_SKILL_VFX_REQUIRED');
+    if(!/FieldOfView/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_CAMERA_FEEDBACK_REQUIRED');
+    if(!/UISizeConstraint/.test(clientCode)||!/ContextActionService/.test(clientCode)||!/BindAction\s*\(/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_TOUCH_CONTROL_REQUIRED');
+    if(!/VerifiedLearningProgressionRiskCue/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_GAMEPLAY_PROGRESSION_REQUIRED');
   }
   return Object.freeze({pass:blockers.length===0,blockers:Object.freeze([...new Set(blockers)]),saveRequired,profile:buildProfile,learningApplied:learning?.applied===true});
 }
