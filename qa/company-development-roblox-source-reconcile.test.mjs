@@ -559,7 +559,7 @@ test('verified APK principles drive the full Roblox native stack for new and exi
   assert.match(source,/VerifiedLearningTouchTarget/);
   assert.match(source,/VerifiedLearningProgressionRiskCue/);
   assert.match(source,/VerifiedExternalLearningGameplayState/);
-  assert.match(source,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=4/);
+  assert.match(source,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=5/);
   assert.match(source,/ApplicationPrinciples = \{/);
   assert.match(source,/GameDevelopmentPrinciples = \{/);
   assert.doesNotMatch(source,/ROBLOX_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED/);
@@ -652,4 +652,15 @@ test('verified APK native binding covers Roblox background motion and skill effe
     'AdjustSpeed','ParticleEmitter','PointLight','VerifiedLearningSkillImpact',
     'VerifiedLearningSkillParticles','VerifiedLearningSkillLight','FieldOfView'
   ])assert.match(source,new RegExp(signal));
+});
+
+
+test('Roblox native binding v5 requires expanded environment and skill VFX signals',()=>{
+  const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  const reconcile=fs.readFileSync(new URL('../tools/company-development-roblox-source-reconcile.mjs',import.meta.url),'utf8');
+  assert.match(bootstrap,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=5/);
+  for(const signal of ['VerifiedLearningAtmosphere','VerifiedLearningDepthOfField','VerifiedLearningSkillParticles','VerifiedLearningSkillLight']){
+    assert.match(bootstrap,new RegExp(signal));
+    assert.match(reconcile,new RegExp(signal));
+  }
 });

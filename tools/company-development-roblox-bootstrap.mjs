@@ -14,7 +14,7 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const arg=(name,fallback='')=>process.argv.find(value=>value.startsWith(`--${name}=`))?.slice(name.length+3)??fallback;
 const luauString=value=>`"${String(value??'').replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\r/g,'\\r').replace(/\n/g,'\\n')}"`;
 const MODES=new Set(['SINGLE','COOP','COMPETITIVE','HYBRID']);
-export const ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=4;
+export const ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=5;
 
 const SHA256=/^[a-f0-9]{64}$/i;
 export function validateWebPlatformHandoff({handoff={},roadmap={},gameId=''}={}){
