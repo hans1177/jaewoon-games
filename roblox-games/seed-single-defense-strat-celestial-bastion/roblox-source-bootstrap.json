@@ -16,14 +16,39 @@
   "serverSourceChanged": false,
   "foundationRepairApplied": false,
   "generatedFiles": [
-    "shared/GameConfig.luau"
+    "shared/GameConfig.luau",
+    "client/Game.client.luau"
   ],
   "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
-  "vibe3LearningApplied": false,
-  "recombinationRecipeId": null,
+  "vibe3LearningApplied": true,
+  "recombinationRecipeId": "recombine_70251cbc8b613192",
+  "verifiedExternalLearningAppliedToExistingSource": true,
+  "verifiedExternalLearningFirst": true,
+  "verifiedExternalLearningCoveragePct": 100,
+  "verifiedExternalLearningRetrievedCount": 7,
+  "verifiedExternalLearningAppliedCount": 7,
+  "verifiedExternalLearningIds": [
+    "external-black-box-block-blast-run-30",
+    "external-black-box-cavern-cravers-run-47",
+    "external-black-box-idle-fantasy-run-42",
+    "external-black-box-luanti-run-10",
+    "external-black-box-revengate-run-59",
+    "external-black-box-sgtpuzzles-run-29",
+    "external-black-box-shattered-pixel-dungeon-run-4"
+  ],
+  "verifiedExternalLearningFingerprint": "hfed4s",
+  "verifiedExternalLearningApplyAxes": [
+    "MENU_FLOW_AND_INFORMATION_ARCHITECTURE",
+    "UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY",
+    "GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION",
+    "MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION",
+    "ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY",
+    "VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE",
+    "GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"
+  ],
   "studioAssetBinding": {
     "version": 3,
     "bindingVersion": 2,
@@ -170,12 +195,12 @@
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "seed-single-defense-strat-celestial-bastion-build-up-g1-b3b1011b220a",
+  "buildUpDirectiveId": "seed-single-defense-strat-celestial-bastion-build-up-g1-0fc1f09a544f",
   "buildUpGeneration": 1,
   "buildUpGoal": "천상의 보루는 고전적인 타워 디펜스 장르를 재해석하여, 플레이어가 실시간으로 전장의 지형을 변형하고 유닛의 속성을 동적으로 조합하는 전략적 깊이를 제공합니다. 핵심 루프인 '적의 경로 예측-방어선 구축-자원 최적화'는 단순한 배치를 넘어, 지형 변형 시스템과 속성 상성 시스템을 통해 매 순간 플레이어의 창의적인 선택이 전황을 뒤바꾸는 고유한 경험을 창출합니다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "buildUpDirectiveFingerprint": "b3b1011b220a33626e55776c48d2c0e78eea23c4a361e845d61f9dc9fcac986d",
+  "buildUpDirectiveFingerprint": "0fc1f09a544fc9918e5b15d677cb6902de1563aec41f9a65f0b6ad3724189875",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-09-27T09:23:22.826Z"
+  "createdAt": "2026-09-28T02:25:28.483Z"
 }
