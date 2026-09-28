@@ -1213,6 +1213,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const rewardActions=semanticActions.filter(row=>['REWARD','COLLECT'].includes(row?.semantic));
   const questEffects=questActions.filter(row=>row?.effectObserved===true).length;
   const rewardEffects=rewardActions.filter(row=>row?.effectObserved===true).length;
+  const combatActions=(actions||[]).filter(row=>(row?.type==='mcp-combat-action'||row?.semantic==='COMBAT')&&row?.dispatched===true&&row?.ok===true);
+  const combatEffects=combatActions.filter(row=>row?.effectObserved===true).length;
   const activeLoopExpected=signals.combat||signals.quests||signals.rewards||signals.progression||signals.interactions;
   const activeLoopObserved=semanticEffects>0||timelineProgressChanged||timelineMobDynamic||timelineCompanionDynamic||primaryActionFeedbackChanged||progressChanged||inventoryDelta;
   const performanceTrendPass=!soak||(memoryGrowthMb<=300&&descendantGrowth<=6000);
@@ -1270,7 +1272,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-reward-effect',pass:!signals.rewards||rewardActions.length===0||rewardEffects>0||progressChanged||inventoryDelta},
     {id:'adaptive-progression-surface',pass:!signals.progression||progressionSurfaceCount>0},
     {id:'adaptive-remote-surface',pass:!signals.serverBoundary||Number(runtime.remoteCount||0)>0},
-    {id:'adaptive-combat-surface',pass:!signals.combat||(combatSurfaceCount>0&&mobRigAnimationPass&&(!soak||mobRows.length===0||timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged))},
+    {id:'adaptive-combat-surface',pass:!signals.combat||(combatSurfaceCount>0&&mobRigAnimationPass&&(!soak||(mobRows.length>0&&(timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged||combatEffects>0))))},
+    {id:'adaptive-combat-action-effect',pass:!signals.combat||combatActions.length===0||combatEffects>0},
     {id:'adaptive-mob-animation-ai',pass:!signals.combat||modelMobs.length===0||(animatedMobCount===modelMobs.length&&(!soak||timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged))},
     {id:'adaptive-motion-surface',pass:!signals.motion||(player.animatorPresent===true&&Number(player.motorCount||0)>0&&displacement>=0.1)},
     {id:'adaptive-audio-surface',pass:!signals.audio||Number(runtime.soundCount||0)>0},
@@ -1327,6 +1330,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     'adaptive-progression-surface':['PROGRESSION','CRITICAL','Restore observable progression state for levels, quests, waves, zones, unlocks, or rewards.'],
     'adaptive-remote-surface':['SERVER_CLIENT_BOUNDARY','CRITICAL','Restore server-authoritative RemoteEvent/RemoteFunction surface and validation path.'],
     'adaptive-combat-surface':['COMBAT_AI','CRITICAL','Repair combat targets, damage/state transitions, enemy liveness, attack feedback, and F9 AI movement.'],
+    'adaptive-combat-action-effect':['ACTION_IMPLEMENTATION','CRITICAL','Studio reached a live combat target and dispatched attack input, but no damage/AI/target/player/UI feedback change was observed. Repair hit detection, attack binding, server authority, and feedback timing.'],
     'adaptive-motion-surface':['CHARACTER_MOTION','HIGH','Repair Animator/Motor6D rig behavior and verify movement/action animation response.'],
     'adaptive-audio-surface':['AUDIO','MEDIUM','Restore required gameplay/BGM/SFX surface and ensure runtime audio feedback exists.'],
     'adaptive-npc-surface':['NPC','HIGH','Restore required NPC actors, interaction affordances, dialogue/shop/quest links, and runtime state.'],
@@ -1351,7 +1355,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     if(id==='adaptive-map-route-coverage')return{routeAttemptCount:routeActions.length,routePassCount,routeRequired,routes:routeActions.slice(0,8).map(row=>({id:row.id,ok:row.ok===true,moved:Number(row.moved||0),fall:Number(row.fall||0),floorBelow:row.floorBelow===true}))};
     if(id==='adaptive-spawn-safety')return{spawnLocationCount:Number(world.spawnLocationCount||0),minSpawnThreatDistance:spawnThreatDistance};
     if(id==='adaptive-mob-animation-ai')return{modelMobCount:modelMobs.length,animatedMobCount,mobMotion:metrics.mobMotion,timelineMobDynamic};
-    if(id==='adaptive-combat-surface')return{combatSurfaceCount,mobCount:mobRows.length,humanoidMobCount:humanoidMobRows.length,mobRigAnimationPass,mobMotion:metrics.mobMotion,timelineMobDynamic};
+    if(id==='adaptive-combat-surface')return{combatSurfaceCount,mobCount:mobRows.length,humanoidMobCount:humanoidMobRows.length,mobRigAnimationPass,mobMotion:metrics.mobMotion,timelineMobDynamic,combatActionCount:combatActions.length,combatEffectCount:combatEffects};
+    if(id==='adaptive-combat-action-effect')return{combatActionCount:combatActions.length,combatEffectCount:combatEffects,actions:combatActions.slice(0,8).map(row=>({id:row.id,type:row.type,effectObserved:row.effectObserved===true,effect:row.effect||null}))};
     if(id==='adaptive-companion-ai-surface')return{companionSurfaceCount,companionCount:entityRows(world.companions).length,companionMotion:metrics.companionMotion,timelineCompanionDynamic};
     if(id==='adaptive-progression-surface'||id==='adaptive-quest-loop-surface'||id==='adaptive-reward-loop-surface')return{progressionSurfaceCount,progressChanged,timelineProgressChanged};
     if(id==='adaptive-item-surface')return{itemSurfaceCount,inventoryCount:Number(runtime.inventoryCount||0),inventoryChanged:inventoryDelta};
@@ -1640,6 +1645,34 @@ export async function runOfficialStudioMcpPlay({
       const rootPos=initialClientProbe?.player||{};
       const initialWorld=initialClientProbe?.world||{};
       const navigationTool=client.tool('character_navigation');
+      const contractSignals=actualPlayContract?.adaptiveCoverage?.signals||{};
+      const initialMobs=entityRows(initialWorld?.mobs);
+      if((contractSignals.combat===true||initialMobs.length>0)&&initialMobs.length>0){
+        const rootX0=Number(rootPos?.rootX||0),rootY0=Number(rootPos?.rootY||0),rootZ0=Number(rootPos?.rootZ||0);
+        const nearest=[...initialMobs].sort((a,b)=>Math.hypot(Number(a?.x||0)-rootX0,Number(a?.z||0)-rootZ0)-Math.hypot(Number(b?.x||0)-rootX0,Number(b?.z||0)-rootZ0))[0];
+        const dx=Number(nearest?.x||0)-rootX0,dz=Number(nearest?.z||0)-rootZ0,dist=Math.hypot(dx,dz)||1;
+        const target={x:Number(nearest?.x||0)-dx/dist*5,y:rootY0,z:Number(nearest?.z||0)-dz/dist*5};
+        let navOk=false,attackOk=false,combatProbe=null;
+        try{
+          const navResult=await client.call('character_navigation',characterNavigationArgs(navigationTool.inputSchema||{},studioId,target));
+          navOk=navResult?.isError!==true;
+          await wait(500);
+          if(Number(initialClientProbe?.runtime?.inventoryCount||0)>0){
+            await client.call('user_keyboard_input',keyboardArgs(keyboardTool.inputSchema||{},studioId,'1'));
+            await wait(180);
+          }
+          const mouseTool=client.tool('user_mouse_input');
+          const vx=Number(initialClientProbe?.camera?.viewportX||0),vy=Number(initialClientProbe?.camera?.viewportY||0);
+          const attackResult=await client.call('user_mouse_input',mouseClickArgs(mouseTool.inputSchema||{},studioId,Math.max(1,vx/2),Math.max(1,vy/2)));
+          attackOk=attackResult?.isError!==true;
+          await wait(700);
+          combatProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+          if(combatProbe)timelineProbes.push(combatProbe);
+        }catch{}
+        const mobDelta=entityMotionSummary(initialClientProbe?.world?.mobs,combatProbe?.world?.mobs);
+        const generic=probeEffectSummary(initialClientProbe||{},combatProbe||{});
+        actions.push({id:'commercial-combat-action',type:'mcp-combat-action',dispatched:true,ok:navOk&&attackOk,effectObserved:generic.effectObserved||mobDelta.healthChanged>0||mobDelta.stateChanged>0||mobDelta.targetChanged>0,effect:{...generic,mobDelta}});
+      }
       const routeTargets=[];
       const minX=Number(initialWorld?.minX),maxX=Number(initialWorld?.maxX),minZ=Number(initialWorld?.minZ),maxZ=Number(initialWorld?.maxZ);
       const rootX=Number(rootPos?.rootX||0),rootY=Number(rootPos?.rootY||0),rootZ=Number(rootPos?.rootZ||0);
@@ -1746,7 +1779,12 @@ export async function runOfficialStudioMcpPlay({
           if(afterProbe)timelineProbes.push(afterProbe);
         }catch{}
         const effect=probeEffectSummary(beforeProbe||{},afterProbe||{});
-        actions.push({id:'ui-discovered-'+clean(target?.name||target?.text||'button'),type:'mcp-ui-exploration',dispatched:true,ok,effectObserved:effect.effectObserved,effect});
+        const uiText=(clean(target?.text)+' '+clean(target?.name)).toLowerCase();
+        const semantic=/attack|공격|skill|스킬|ability|능력/.test(uiText)?'COMBAT'
+          :/quest|퀘스트|mission|임무/.test(uiText)?'QUEST'
+          :/reward|보상|claim|수령/.test(uiText)?'REWARD'
+          :/shop|상점|craft|제작|equip|장비/.test(uiText)?'SYSTEM':'GENERAL';
+        actions.push({id:'ui-discovered-'+clean(target?.name||target?.text||'button'),type:'mcp-ui-exploration',semantic,dispatched:true,ok,effectObserved:effect.effectObserved,effect});
       }
 
       const sampleCount=auditMode==='F9_SOAK'?12:4;
