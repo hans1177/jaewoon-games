@@ -347,6 +347,7 @@ jobs:
               validationVersionNumber:Number(candidate.versionNumber||0),
               finalReviewPassed:true,
               f9ReleaseRegressionPassed:true,
+              f9RuntimeReplay:false,
               internalStudioValidationOnly:internalStudioValidationAccepted,
               runtimeAcceptancePassed:internalRuntimeAcceptance,
               studioAssetRuntimeBindingPassed:studioAssetRuntimeBindingExact,
