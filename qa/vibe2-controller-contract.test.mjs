@@ -1406,6 +1406,10 @@ test('game and asset-development workers bind verified learning-runtime playbook
   assert.ok(workflow.includes('allRetrievedKnowledgeApplied:workOrder.knowledgeApplicationContract.allRetrievedKnowledgeApplied===true'));
   assert.ok(workflow.includes('verifiedLearningMemorySha:'));
   assert.ok(continuousRunnerSource.includes("Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs"));
+  assert.ok(continuousRunnerSource.includes('verifiedExternalLearningFirst:true'));
+  assert.ok(continuousRunnerSource.includes('verifiedExternalLearningCoveragePct:verifiedExternalPlaybookReuse.length>0?100:0'));
+  assert.ok(continuousRunnerSource.includes('VERIFIED_EXTERNAL_BLACK_BOX_LEARNING_REQUIRED_BEFORE_GAME_OR_ASSET_WORK'));
+  assert.ok(continuousRunnerSource.includes('Before any game source or internal asset authoring starts'));
   assert.ok(workflow.includes("asset-development"));
   assert.ok(continuousRunnerSource.includes('VERIFIED_COMMERCIAL_BLACK_BOX_DISTILLATION_REQUIRED_FOR_INTERNAL_ASSET_PRODUCTION'));
   assert.ok(continuousRunnerSource.includes('verified-commercial-distillation-internal-asset-contract'));
