@@ -1237,10 +1237,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "canonicalState": "ROBLOX_RUNTIME_ACCEPTANCE_PASSED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-28T20:32:56.146Z",
+      "updatedAt": "2026-09-28T20:33:49.211Z",
       "robloxSourceCommit": "825a26d1b013de94f2086c6d38a9839895abb781",
       "robloxSourceBootstrapPassedAt": "2026-09-28T19:16:01.303Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2332,7 +2332,7 @@
         "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
         "artifactIdentity": "sha256:6101e58da18b7326c7d94f7698c4ac0ee3d4ce0930feb54ae256079010305095",
         "candidateVersionNumber": 36432015025,
-        "reusedAt": "2026-09-28T20:32:52.829Z",
+        "reusedAt": "2026-09-28T20:33:49.211Z",
         "reusedServerBootEvidence": false,
         "reusedStudioInternalEvidence": true,
         "reason": "EXACT_SOURCE_ARTIFACT_VERSION_STUDIO_INTERNAL_EVIDENCE_ALREADY_VERIFIED"
@@ -17673,7 +17673,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T20:33:31.875Z",
+  "updatedAt": "2026-09-28T20:33:49.211Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
