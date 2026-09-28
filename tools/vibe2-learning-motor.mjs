@@ -45,6 +45,16 @@ const EXTERNAL_VALIDATION_PRINCIPLE_IDS=freeze(new Set([
   'separate-android-overlay-onboarding-and-gameplay-entry',
   'input-visual-transition-plus-foreground-survival'
 ]));
+function externalGameMood(gameId=''){
+  const game=lower(gameId);
+  if(/puzzle|cascade|block/.test(game))return'BRIGHT_BOARD_AND_PRECISE_CELL_FEEDBACK';
+  if(/survival|horror|escape/.test(game))return'TENSE_WORLD_AND_THREAT_READABILITY';
+  if(/tycoon|simulator|island/.test(game))return'WARM_BUILDER_AND_RESOURCE_FEEDBACK';
+  if(/rpg|dungeon|fantasy|adventure/.test(game))return'ADVENTURE_PROGRESS_AND_CHARACTER_MOTION';
+  if(/roleplay|social/.test(game))return'WELCOMING_SHARED_AVATAR_SPACE';
+  if(/defense|war/.test(game))return'TACTICAL_WAVE_AND_PLACEMENT_READABILITY';
+  return'READABLE_GAME_SPECIFIC_ACTION_FEEDBACK';
+}
 export function classifyVerifiedExternalBlackBoxPrinciples(rows=[],{gameId='',target=''}={}){
   const dispositionRows=[];
   const game=lower(gameId),platform=upper(target);
@@ -61,7 +71,7 @@ export function classifyVerifiedExternalBlackBoxPrinciples(rows=[],{gameId='',ta
         domains=EXTERNAL_GAME_PRINCIPLE_DOMAINS[id];
         reason=game?'GAME_SPECIFIC_SEMANTIC_ADAPTATION':'GAME_SOURCE_SEMANTIC_ADAPTATION';
       }
-      dispositionRows.push(freeze({id,sourceLearningId:clean(row?.id),raw:value,disposition,domains:freezeList(domains),reason,gameId:clean(gameId),target:platform}));
+      dispositionRows.push(freeze({id,sourceLearningId:clean(row?.id),raw:value,disposition,domains:freezeList(domains),reason,gameId:clean(gameId),target:platform,genreMood:externalGameMood(gameId)}));
     }
   }
   const failClosed=dispositionRows.filter(row=>row.disposition==='FAIL_CLOSED');
