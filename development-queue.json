@@ -4111,7 +4111,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T04:05:28.202Z",
+      "updatedAt": "2026-09-28T04:11:17.002Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -4265,27 +4265,28 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-build-preflight-blocked"
+        "roblox-f0-source-preflight-pending"
       ],
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "241632c86075c41e8156577ed63a1b7c1944a0d3",
       "robloxBuildArtifactIdentity": "sha256:568891ab1e68eb54866a68f5a0da18e1f00ee36e49117949b7173900778179c9",
       "robloxBuildPassedAt": "2026-09-28T04:05:28.202Z",
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
-      "robloxBuildPreflightPassedAt": null,
-      "robloxBuildPreflightFailedAt": "2026-09-28T04:05:28.202Z",
+      "robloxBuildPreflightPassed": true,
+      "robloxBuildPreflightPassedAt": "2026-09-28T04:11:17.002Z",
+      "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "fantasy-survival",
-        "pass": false,
-        "state": "BLOCKED",
-        "checkedAt": "2026-09-28T04:01:32.347Z",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-09-28T04:10:26.252Z",
+        "sourceRevision": "241632c86075c41e8156577ed63a1b7c1944a0d3",
+        "artifactIdentity": "sha256:568891ab1e68eb54866a68f5a0da18e1f00ee36e49117949b7173900778179c9",
+        "secondaryOwnerFocus": false,
         "facts": {
-          "pass": false,
-          "blockers": [
-            "roblox-platform-required"
-          ],
+          "pass": true,
+          "blockers": [],
           "leads": {
             "planning": "llama3.2:1b",
             "graphics": "llama3.2:1b",
@@ -4296,9 +4297,9 @@
           "sharedModel": "llama3.2:1b",
           "distinctLeadCount": 1,
           "secondaryOwnerFocus": false,
-          "robloxLaneEligible": false,
+          "robloxLaneEligible": true,
           "directRoblox": false,
-          "concurrentRoblox": false,
+          "concurrentRoblox": true,
           "build": {
             "sourceRevision": "241632c86075c41e8156577ed63a1b7c1944a0d3",
             "artifactIdentity": "sha256:568891ab1e68eb54866a68f5a0da18e1f00ee36e49117949b7173900778179c9",
@@ -4311,10 +4312,16 @@
             "buildOrPackagePassed": true
           }
         },
-        "leadReviews": [],
-        "blockers": [
-          "roblox-platform-required"
+        "leadReviews": [
+          {
+            "role": "shared-review",
+            "model": "llama3.2:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blockers found in BUILD_EVIDENCE."
+          }
         ],
+        "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
       "robloxFoundationF0Passed": false,
@@ -4344,9 +4351,9 @@
       "robloxPostRuntimeQaEvidence": null,
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_BLOCKED",
+      "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
+      "robloxFailureStage": "F0_SOURCE_INTEGRITY",
+      "robloxFailureSignature": "ROBLOX_F0_SOURCE_PREFLIGHT_PENDING",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -8331,7 +8338,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-28T04:10:25.680Z",
+  "updatedAt": "2026-09-28T04:11:17.002Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
