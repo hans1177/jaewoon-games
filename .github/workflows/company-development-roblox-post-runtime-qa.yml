@@ -59,7 +59,7 @@ jobs:
           printf '%s' "$payload" | CURRENT_RUN_ID="$GITHUB_RUN_ID" CURRENT_SHA="$GITHUB_SHA" node -e "
             let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
               const j=JSON.parse(s);
-              const states=new Set(['queued','pending','requested']);
+              const states=new Set(['queued','pending','requested','in_progress']);
               const prefix='Roblox runtime foundation QA · ';
               for(const r of j.workflow_runs||[]){
                 const title=String(r.display_title||'');
