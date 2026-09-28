@@ -66,6 +66,7 @@ function verifiedExternalLearningRefreshState({root='',playbooks={},gameId=''}={
   const semanticVariant=clean(block.match(/SemanticVariant\s*=\s*["']([^"']+)["']/)?.[1]);
   const mappingCount=Number(block.match(/AppliedGameDevelopmentPrincipleCount\s*=\s*(\d+)/)?.[1]||0);
   const gameSpecificMappingsPresent=/GameSpecificSemanticMappings\s*=\s*\{/.test(block);
+  const learningDispositionsPresent=/LearningDispositions\s*=\s*\{/.test(block);
   const truncation=/TruncationForbidden\s*=\s*true/.test(block);
   const fingerprint=clean(block.match(/MemoryFingerprint\s*=\s*["']([^"']+)["']/)?.[1]);
   const exactIds=ids.length===expectedIds.length&&expectedIds.every(id=>ids.includes(id));
@@ -92,6 +93,7 @@ function verifiedExternalLearningRefreshState({root='',playbooks={},gameId=''}={
     ||!semanticVariant
     ||mappingCount<=0
     ||!gameSpecificMappingsPresent
+    ||!learningDispositionsPresent
     ||!fullNativeClient;
   return {
     required:true,
@@ -107,6 +109,7 @@ function verifiedExternalLearningRefreshState({root='',playbooks={},gameId=''}={
     semanticVariant,
     mappingCount,
     gameSpecificMappingsPresent,
+    learningDispositionsPresent,
     coverage,
     retrieved,
     applied,
