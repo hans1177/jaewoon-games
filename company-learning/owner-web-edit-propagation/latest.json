@@ -1,22 +1,21 @@
 {
   "version": 1,
-  "before": "459fbe1aabf8d9fb8207b6f3fec7620a13e2e566",
-  "after": "e64ab87bfb2e77f0befde48ed023d621a7b0f677",
-  "generatedAt": "2026-09-28T09:41:20.193Z",
+  "before": "e64ab87bfb2e77f0befde48ed023d621a7b0f677",
+  "after": "5a5d4d890bed99f9749fdefa353b5c8dfcc90b86",
+  "generatedAt": "2026-09-28T09:49:44.271Z",
   "manifests": [
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
       "gameId": "fantasy-survival",
       "sourcePath": "web-games/fantasy-survival",
-      "sourceBefore": "459fbe1aabf8d9fb8207b6f3fec7620a13e2e566",
-      "sourceAfter": "e64ab87bfb2e77f0befde48ed023d621a7b0f677",
-      "semanticIntentFingerprint": "f3a4d838de9907318963ea7aa0d572710632770b154972120173a56a7dc194ba",
+      "sourceBefore": "e64ab87bfb2e77f0befde48ed023d621a7b0f677",
+      "sourceAfter": "5a5d4d890bed99f9749fdefa353b5c8dfcc90b86",
+      "semanticIntentFingerprint": "9092ba55e0f875e487b0d6c76c79d40a2901f116c56e1a9ddc4ba2bcb5df30aa",
       "affectedSystems": [
         "MOVEMENT",
         "COMBAT",
-        "WORLD",
-        "MULTIPLAYER",
+        "INVENTORY",
         "BALANCE"
       ],
       "platformTargets": [
@@ -27,7 +26,7 @@
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-09-28T09:41:20.193Z",
+      "detectedAt": "2026-09-28T09:49:44.271Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     }
   ]
