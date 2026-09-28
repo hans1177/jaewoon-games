@@ -3715,7 +3715,7 @@
       "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T10:10:16.740Z",
+      "updatedAt": "2026-09-28T10:31:32.981Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -3957,7 +3957,7 @@
       },
       "strictDesignReviewRefreshRequired": true,
       "robloxExactRevisionPassed": true,
-      "robloxSharedTargetCurrent": true,
+      "robloxSharedTargetCurrent": false,
       "robloxFastMvpSupersededBy": null,
       "robloxPublicationTarget": {
         "version": 3,
@@ -4321,6 +4321,24 @@
         "publicExposurePending": false,
         "externalPublicHardGatePending": true,
         "sameAsInternalVersion": true
+      },
+      "robloxValidationTarget": {
+        "version": 1,
+        "gameId": "cozy-island",
+        "universeId": "10768436216",
+        "placeId": "123712124890681",
+        "verified": false,
+        "verifiedAt": null,
+        "lastVerifiedAt": null,
+        "source": "canonical-dedicated-open-cloud-bootstrap",
+        "authority": "roblox-pre-f9-validation-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
+        "reservedAt": "2026-09-28T10:31:32.981Z"
       }
     },
     {
@@ -9131,7 +9149,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-28T10:23:28.315Z",
+  "updatedAt": "2026-09-28T10:31:32.981Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
