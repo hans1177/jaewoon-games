@@ -2326,60 +2326,8 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = 'Continue'
-          $ownedIds = @(([string]$env:VIBE2_STUDIO_PROCESS_IDS).Split(',') | Where-Object { $_ -match '^[0-9]+
-        if: steps.studio_play.outcome == 'success' && steps.persist.outcome == 'success'
-        shell: powershell
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ matrix.gameId }}
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $headers = @{
-            Accept = 'application/vnd.github+json'
-            Authorization = "Bearer $env:GH_TOKEN"
-            'X-GitHub-Api-Version' = '2022-11-28'
-          }
-          $body = @{
-            event_type = 'vibe2-fanin-refill'
-            client_payload = @{
-              source_run = "${{ github.run_id }}"
-              source_attempt = "${{ github.run_attempt }}"
-              source_task = "$env:GAME_ID"
-              source_outcome = 'VERIFIED'
-              reason = 'roblox-official-studio-mcp-actual-play'
-            }
-          } | ConvertTo-Json -Depth 5
-          Invoke-RestMethod -Method Post -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/dispatches" -Headers $headers -Body $body -ContentType 'application/json'
-          Write-Host "ROBLOX_STUDIO_MCP_VIBE_REFILL_DISPATCHED=$env:GAME_ID"
-
- } | Select-Object -Unique)
-          if (-not $ownedIds.Count -and $env:VIBE2_STUDIO_PROCESS_ID -match '^[0-9]+
-        if: steps.studio_play.outcome == 'success' && steps.persist.outcome == 'success'
-        shell: powershell
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ matrix.gameId }}
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $headers = @{
-            Accept = 'application/vnd.github+json'
-            Authorization = "Bearer $env:GH_TOKEN"
-            'X-GitHub-Api-Version' = '2022-11-28'
-          }
-          $body = @{
-            event_type = 'vibe2-fanin-refill'
-            client_payload = @{
-              source_run = "${{ github.run_id }}"
-              source_attempt = "${{ github.run_attempt }}"
-              source_task = "$env:GAME_ID"
-              source_outcome = 'VERIFIED'
-              reason = 'roblox-official-studio-mcp-actual-play'
-            }
-          } | ConvertTo-Json -Depth 5
-          Invoke-RestMethod -Method Post -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/dispatches" -Headers $headers -Body $body -ContentType 'application/json'
-          Write-Host "ROBLOX_STUDIO_MCP_VIBE_REFILL_DISPATCHED=$env:GAME_ID"
-
-) {
+          $ownedIds = @(([string]$env:VIBE2_STUDIO_PROCESS_IDS).Split(',') | Where-Object { $_ -match '^[0-9]+$' } | Select-Object -Unique)
+          if (-not $ownedIds.Count -and $env:VIBE2_STUDIO_PROCESS_ID -match '^[0-9]+$') {
             $ownedIds = @([string]$env:VIBE2_STUDIO_PROCESS_ID)
           }
           foreach ($ownedId in $ownedIds) {
