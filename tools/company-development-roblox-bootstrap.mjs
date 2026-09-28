@@ -483,6 +483,40 @@ ${frameVar}:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verif
   return output;
 }
 
+export function applyVerifiedExternalLearningToExistingRobloxSource({root='',learning={}}={}){
+  requireRobloxVerifiedExternalLearning(learning);
+  const configFile=path.join(root,'shared','GameConfig.luau');
+  const clientFile=path.join(root,'client','Game.client.luau');
+  for(const file of [configFile,clientFile])if(!fs.existsSync(file))throw new Error('EXISTING_ROBLOX_LEARNING_SOURCE_FILE_MISSING:'+file);
+  const beforeConfig=fs.readFileSync(configFile,'utf8');
+  const beforeClient=fs.readFileSync(clientFile,'utf8');
+  const afterConfig=replaceOrInsertVerifiedExternalLearningConfig(beforeConfig,learning);
+  const afterClient=bindExistingClientVerifiedExternalLearning(beforeClient,learning);
+  const requiredClientSignals=[
+    'VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN',
+    'ColorCorrectionEffect',
+    'BloomEffect',
+    'AdjustSpeed',
+    'VerifiedLearningSkillImpact',
+    'Sparkles',
+    'FieldOfView',
+    'UISizeConstraint',
+    'VerifiedLearningProgressionRiskCue'
+  ];
+  for(const signal of requiredClientSignals)if(!afterClient.includes(signal))throw new Error('ROBLOX_NATIVE_LEARNING_SIGNAL_MISSING:'+signal);
+  const changedFiles=[];
+  if(afterConfig!==beforeConfig){fs.writeFileSync(configFile,afterConfig);changedFiles.push(configFile);}
+  if(afterClient!==beforeClient){fs.writeFileSync(clientFile,afterClient);changedFiles.push(clientFile);}
+  return Object.freeze({
+    changed:changedFiles.length>0,
+    changedFiles:Object.freeze(changedFiles),
+    serverTouched:false,
+    verifiedExternalLearningIds:Object.freeze([...(learning.verifiedExternalLearningIds||[])]),
+    verifiedExternalLearningFingerprint:learning.verifiedExternalLearningFingerprint||null,
+    verifiedExternalLearningApplyAxes:Object.freeze([...(learning.verifiedExternalLearningApplyAxes||[])])
+  });
+}
+
 function studioAssetConfigBlock(studioAssets={}){
   const familyRows=Object.entries(studioAssets?.families||{}).map(([family,atoms])=>`      ${family} = { ${(atoms||[]).map(value=>luauString(value)).join(', ')} },`).join('\n');
   return `  -- STUDIO_ASSET_BINDING_BEGIN
