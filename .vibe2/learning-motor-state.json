@@ -5108,7 +5108,8 @@
       "coding_negative_uzk486",
       "coding_negative_1ksqy0g",
       "coding_negative_1ptggp9",
-      "coding_negative_1u2pgwy"
+      "coding_negative_1u2pgwy",
+      "coding_negative_85slr3"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -13099,19 +13100,19 @@
         "verifiedApplications": 0,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 0,
-        "verifiedFailures": 7,
+        "verifiedFailures": 8,
         "games": {},
         "targets": {},
         "contextModes": {
           "STANDARD_CONTEXT": {
             "verifiedApplications": 0,
-            "verifiedFailures": 5,
+            "verifiedFailures": 6,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
             "totalContextBytes": 0,
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1yc395x",
-            "lastUpdatedAt": "2026-09-27T23:24:16.880Z"
+            "lastFailureEvidence": "coding_negative_85slr3",
+            "lastUpdatedAt": "2026-09-28T02:21:49.088Z"
           }
         },
         "failureFingerprints": {
@@ -13235,12 +13236,32 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_5xot8g",
             "lastUpdatedAt": "2026-09-28T01:39:24.257Z"
+          },
+          "roblox|EDIT_MATCH|INVALID_PATH|NO_OP|OTHER|PRESENTATION_DELTA|PRESENTATION_PATCH_DELTA|ROBLOX_VISUAL_DOMAINS|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "bug-defense": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "TIMEOUT": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_85slr3",
+            "lastUpdatedAt": "2026-09-28T02:21:49.088Z"
           }
         },
         "state": "CANDIDATE",
         "lastEvidence": null,
-        "lastFailureEvidence": "coding_negative_5xot8g",
-        "lastUpdatedAt": "2026-09-28T01:39:24.257Z"
+        "lastFailureEvidence": "coding_negative_85slr3",
+        "lastUpdatedAt": "2026-09-28T02:21:49.088Z"
       },
       "OBSERVABLE_DELTA_FIRST": {
         "verifiedApplications": 0,
@@ -16625,7 +16646,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-28T02:16:33.101Z",
+    "lastBuiltAt": "2026-09-28T02:21:49.161Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -23378,5 +23399,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-28T02:16:33.101Z"
+  "updatedAt": "2026-09-28T02:21:49.161Z"
 }
