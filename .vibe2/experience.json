@@ -94240,39 +94240,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_fd350b667f203ea3853ebc22",
-          "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "seed-puzzle-chromatic-cascade",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_1f1be9a0c88f2a521e3fb20f",
-            "capability_ctrace_0d2630a9c5fc72b6115ab032",
-            "capability_ctrace_57338ef0f553485ab60a913f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:c86bb8f67338eef1284dcc1d1e3af32ca876f328",
-            "actions-run:36065979426",
-            "reservation-id:36065979426:1",
-            "capability-application-sample:7481f13d7782fbf9fd01"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_ec5509b80a76806e59179097",
           "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -96352,6 +96319,43 @@
             "actions-run:36425270262",
             "reservation-id:36425270262:1",
             "capability-application-sample:9ab965b5a0561faae1b2"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0bd77a1a3efde2aada819bb1",
+          "taskId": "seed-puzzle-chromatic-cascade-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "roblox",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4e906f223c2a12a7007033ab",
+            "capability_ctrace_d97829ecdc84733c1ef7cfee",
+            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
+          ],
+          "evidence": [
+            "candidate-sha:784f8f7d918cd64e536606ffdbab717f913b4ee5",
+            "base-main:d5dbad0ecff7ef1ddde708c05be110e399929c5c",
+            "incremental-qa-hash:874e3ef7a4457dbd58a153b96432b173b5bc550ef0dc4a8227cfa9dcb11a6f43",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36435510023",
+            "reservation-id:36435510023:1",
+            "capability-application-sample:b55e00af7811d23dcfd6"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -149489,39 +149493,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_8a7375f844b304b374f71c5c",
-          "taskId": "line-defense-unity-web-base-implementation-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "unity",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_0be1b657978bacf1ebbc24ea",
-            "capability_ctrace_25bf3e940d5c7e66d3694a6c",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_5460f74d1cffa90fab8122d4"
-          ],
-          "evidence": [
-            "base-main:81435c833397a8cecff4a1b7ac335681b6ea2a8b",
-            "actions-run:36260866149",
-            "reservation-id:36260866149:1",
-            "capability-application-sample:a8184914fa45f6375e26"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_1ed2b9b67b933da8c69d5472",
           "taskId": "ant-simulator-existing-web-assessment-v1",
           "workKey": null,
@@ -151740,6 +151711,43 @@
             "actions-run:36431780140",
             "reservation-id:36431780140:1",
             "capability-application-sample:1f50a3dc564718a7bdeb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_437acad3aca838593c792212",
+          "taskId": "line-defense-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "roblox",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_7e8205ce09f2f476e5aedafa",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea"
+          ],
+          "evidence": [
+            "candidate-sha:324b11942fae09e634a10fde54bd2fb0fe005b9b",
+            "base-main:d5dbad0ecff7ef1ddde708c05be110e399929c5c",
+            "incremental-qa-hash:06bc85be2c74bcc9b9c3a7dd8c1ea45e5035baca7e864657d50f28e602392360",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36435510023",
+            "reservation-id:36435510023:1",
+            "capability-application-sample:c40ff697c31550d8b2ec"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -175610,44 +175618,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_9a1a6209c8e3082c0186643e",
-          "taskId": "line-defense-web-runtime-repair-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "web",
-          "outcome": "FRESH_QA_PASS",
-          "selected": true,
-          "finalReviewPass": true,
-          "freshTaskQaPass": true,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_3b6ad5256a4470ed7070280a",
-            "capability_ctrace_061bbbee164f6b943e5d7293",
-            "capability_ctrace_20d2fced3f152813ab7e4829",
-            "capability_ctrace_3e594c27420dbbc93ac6e5d6"
-          ],
-          "evidence": [
-            "candidate-sha:9f94738dfc28789aa9b0c9bccc2a58921ca42777",
-            "base-main:9ac9e04194b85d453264d2b6ff681a2439e62b4f",
-            "incremental-qa-hash:60c4a0c63f0d399126b3fc1b77da516bfd6c7d8121cd1ea773da9eb9ed6d6d87",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:ANALYZED",
-            "actions-run:35570912073",
-            "reservation-id:35570912073:1",
-            "fan-in-review:PASS",
-            "capability-application-sample:6b62a5b3f8ad8e23c786"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_476fe652a5c39ae87716229b",
           "taskId": "line-defense-web-runtime-repair-v1",
           "workKey": null,
@@ -177787,6 +177757,43 @@
             "actions-run:36431780140",
             "reservation-id:36431780140:1",
             "capability-application-sample:1f50a3dc564718a7bdeb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_1cf29c2f028089bc2b49d749",
+          "taskId": "line-defense-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "roblox",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_7e8205ce09f2f476e5aedafa",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea"
+          ],
+          "evidence": [
+            "candidate-sha:324b11942fae09e634a10fde54bd2fb0fe005b9b",
+            "base-main:d5dbad0ecff7ef1ddde708c05be110e399929c5c",
+            "incremental-qa-hash:06bc85be2c74bcc9b9c3a7dd8c1ea45e5035baca7e864657d50f28e602392360",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36435510023",
+            "reservation-id:36435510023:1",
+            "capability-application-sample:c40ff697c31550d8b2ec"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -185506,39 +185513,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_7dd8462fcda1d228f329b600",
-          "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "seed-puzzle-chromatic-cascade",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_1f1be9a0c88f2a521e3fb20f",
-            "capability_ctrace_0d2630a9c5fc72b6115ab032",
-            "capability_ctrace_57338ef0f553485ab60a913f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:199ed4abb014f7aec0f82ea2b6ea1f65e5354541",
-            "actions-run:36078653868",
-            "reservation-id:36078653868:1",
-            "capability-application-sample:d3971ea46e99917ba5e1"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_5acf994d6f0f0b3cf2b5f46f",
           "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -187613,6 +187587,43 @@
             "actions-run:36425270262",
             "reservation-id:36425270262:1",
             "capability-application-sample:9ab965b5a0561faae1b2"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_457b93f4c4010ef188053a7b",
+          "taskId": "seed-puzzle-chromatic-cascade-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "roblox",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4e906f223c2a12a7007033ab",
+            "capability_ctrace_d97829ecdc84733c1ef7cfee",
+            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
+          ],
+          "evidence": [
+            "candidate-sha:784f8f7d918cd64e536606ffdbab717f913b4ee5",
+            "base-main:d5dbad0ecff7ef1ddde708c05be110e399929c5c",
+            "incremental-qa-hash:874e3ef7a4457dbd58a153b96432b173b5bc550ef0dc4a8227cfa9dcb11a6f43",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36435510023",
+            "reservation-id:36435510023:1",
+            "capability-application-sample:b55e00af7811d23dcfd6"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -262403,6 +262414,43 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f7896c47159593db758ed7d8",
+          "taskId": "seed-puzzle-chromatic-cascade-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "roblox",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4e906f223c2a12a7007033ab",
+            "capability_ctrace_d97829ecdc84733c1ef7cfee",
+            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
+          ],
+          "evidence": [
+            "candidate-sha:784f8f7d918cd64e536606ffdbab717f913b4ee5",
+            "base-main:d5dbad0ecff7ef1ddde708c05be110e399929c5c",
+            "incremental-qa-hash:874e3ef7a4457dbd58a153b96432b173b5bc550ef0dc4a8227cfa9dcb11a6f43",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36435510023",
+            "reservation-id:36435510023:1",
+            "capability-application-sample:b55e00af7811d23dcfd6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -262422,7 +262470,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 28,
+        "applicationCount": 29,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -276192,6 +276240,43 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_250c4469c8f5279af9fe6038",
+          "taskId": "seed-puzzle-chromatic-cascade-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "roblox",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4e906f223c2a12a7007033ab",
+            "capability_ctrace_d97829ecdc84733c1ef7cfee",
+            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
+          ],
+          "evidence": [
+            "candidate-sha:784f8f7d918cd64e536606ffdbab717f913b4ee5",
+            "base-main:d5dbad0ecff7ef1ddde708c05be110e399929c5c",
+            "incremental-qa-hash:874e3ef7a4457dbd58a153b96432b173b5bc550ef0dc4a8227cfa9dcb11a6f43",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36435510023",
+            "reservation-id:36435510023:1",
+            "capability-application-sample:b55e00af7811d23dcfd6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -276211,7 +276296,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 25,
+        "applicationCount": 26,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -303125,6 +303210,43 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_67ad8861e4948983a7279b24",
+          "taskId": "line-defense-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "roblox",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_7e8205ce09f2f476e5aedafa",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea"
+          ],
+          "evidence": [
+            "candidate-sha:324b11942fae09e634a10fde54bd2fb0fe005b9b",
+            "base-main:d5dbad0ecff7ef1ddde708c05be110e399929c5c",
+            "incremental-qa-hash:06bc85be2c74bcc9b9c3a7dd8c1ea45e5035baca7e864657d50f28e602392360",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36435510023",
+            "reservation-id:36435510023:1",
+            "capability-application-sample:c40ff697c31550d8b2ec"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -303144,7 +303266,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 21,
+        "applicationCount": 22,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -324388,6 +324510,43 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_e24b9273723a8972aa8196b6",
+          "taskId": "seed-puzzle-chromatic-cascade-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "roblox",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4e906f223c2a12a7007033ab",
+            "capability_ctrace_d97829ecdc84733c1ef7cfee",
+            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
+          ],
+          "evidence": [
+            "candidate-sha:784f8f7d918cd64e536606ffdbab717f913b4ee5",
+            "base-main:d5dbad0ecff7ef1ddde708c05be110e399929c5c",
+            "incremental-qa-hash:874e3ef7a4457dbd58a153b96432b173b5bc550ef0dc4a8227cfa9dcb11a6f43",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36435510023",
+            "reservation-id:36435510023:1",
+            "capability-application-sample:b55e00af7811d23dcfd6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -324407,7 +324566,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 18,
+        "applicationCount": 19,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
@@ -347002,39 +347161,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_425953c2e57dd52f1179810c",
-          "taskId": "line-defense-unity-web-base-implementation-v1",
-          "workKey": null,
-          "gameId": "line-defense",
-          "engine": "unity",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_0be1b657978bacf1ebbc24ea",
-            "capability_ctrace_25bf3e940d5c7e66d3694a6c",
-            "capability_ctrace_5460f74d1cffa90fab8122d4",
-            "capability_ctrace_d6cd06eb09f0b689d894ce60",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18"
-          ],
-          "evidence": [
-            "base-main:50673ac9ac61015195ee2db525dc6e371c67d252",
-            "actions-run:36285969527",
-            "reservation-id:36285969527:1",
-            "capability-application-sample:5c4555a4a2405c01861f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_86ec1538528085952be3223e",
           "taskId": "line-defense-roblox-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -349117,6 +349243,43 @@
             "actions-run:36431780140",
             "reservation-id:36431780140:1",
             "capability-application-sample:1f50a3dc564718a7bdeb"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d71964072bc74eeb3642917c",
+          "taskId": "line-defense-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "roblox",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_7e8205ce09f2f476e5aedafa",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea"
+          ],
+          "evidence": [
+            "candidate-sha:324b11942fae09e634a10fde54bd2fb0fe005b9b",
+            "base-main:d5dbad0ecff7ef1ddde708c05be110e399929c5c",
+            "incremental-qa-hash:06bc85be2c74bcc9b9c3a7dd8c1ea45e5035baca7e864657d50f28e602392360",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36435510023",
+            "reservation-id:36435510023:1",
+            "capability-application-sample:c40ff697c31550d8b2ec"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -372752,6 +372915,43 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_16765fe4fc014fe3e289fb58",
+          "taskId": "line-defense-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "line-defense",
+          "engine": "roblox",
+          "outcome": "OBSERVED_NOT_FINAL",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_7e8205ce09f2f476e5aedafa",
+            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
+            "capability_ctrace_3b6ad5256a4470ed7070280a",
+            "capability_ctrace_d6cd06eb09f0b689d894ce60",
+            "capability_ctrace_0be1b657978bacf1ebbc24ea"
+          ],
+          "evidence": [
+            "candidate-sha:324b11942fae09e634a10fde54bd2fb0fe005b9b",
+            "base-main:d5dbad0ecff7ef1ddde708c05be110e399929c5c",
+            "incremental-qa-hash:06bc85be2c74bcc9b9c3a7dd8c1ea45e5035baca7e864657d50f28e602392360",
+            "causal-replay-status:PLAN_ONLY",
+            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
+            "actions-run:36435510023",
+            "reservation-id:36435510023:1",
+            "capability-application-sample:c40ff697c31550d8b2ec"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -372771,7 +372971,7 @@
       "capabilityLifecycle": {
         "version": 2,
         "state": "VERIFIED_REUSABLE",
-        "applicationCount": 61,
+        "applicationCount": 62,
         "independentPassCount": 0,
         "crossGameVerifiedApplicationCount": 0,
         "directSupportCount": 0,
