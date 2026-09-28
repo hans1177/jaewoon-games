@@ -44,8 +44,8 @@ test('verified commercial black-box distillation is mandatory input for internal
   const verifiedLearning={
     exactKnowledgeIds:['PLAYBOOK_REUSE:external-black-box-commercial-ui','PLAYBOOK_REUSE:external-black-box-commercial-motion'],
     playbookReuse:[
-      {id:'external-black-box-commercial-ui',project:'commercial-app-a',sourceRevision:'sha256:a',score:0.7,verified:true,authority:'verified-task-playbook',sourcePlaybooks:['ui','graphics']},
-      {id:'external-black-box-commercial-motion',project:'commercial-app-b',sourceRevision:'sha256:b',score:0.6,verified:true,authority:'verified-task-playbook',sourcePlaybooks:['motion','graphics']}
+      {id:'external-black-box-commercial-ui',project:'commercial-app-a',sourceRevision:'sha256:a',score:0.7,verified:true,authority:'verified-task-playbook',sourcePlaybooks:['ui','graphics'],distilledApplicationPrinciples:['menu hierarchy keeps first playable state obvious']},
+      {id:'external-black-box-commercial-motion',project:'commercial-app-b',sourceRevision:'sha256:b',score:0.6,verified:true,authority:'verified-task-playbook',sourcePlaybooks:['motion','graphics'],distilledApplicationPrinciples:['interaction feedback is spatially anchored and immediate']}
     ]
   };
   const plan=buildVibeAssetProductionPlan({
@@ -58,6 +58,8 @@ test('verified commercial black-box distillation is mandatory input for internal
   assert.equal(plan.commercialDistillation.verifiedReuseCount,2);
   assert.equal(plan.commercialDistillation.retrievedCount,2);
   assert.equal(plan.commercialDistillation.appliedCount,2);
+  assert.equal(plan.commercialDistillation.identityBoundVerifiedExternalIds.length,2);
+  assert.equal(plan.commercialDistillation.verifiedReuse.every(row=>row.distilledApplicationPrinciples.length>0),true);
   assert.equal(plan.commercialDistillation.matchedCount,2);
   assert.equal(plan.commercialDistillation.exactRetrievedSetBinding,true);
   assert.equal(plan.commercialDistillation.applicationCoveragePct,100);
@@ -86,7 +88,7 @@ test('internal asset development rejects partial binding of retrieved verified e
     verifiedLearning:{
       exactKnowledgeIds:['PLAYBOOK_REUSE:external-black-box-commercial-ui','PLAYBOOK_REUSE:external-black-box-commercial-motion'],
       playbookReuse:[
-        {id:'external-black-box-commercial-ui',project:'commercial-app-a',sourceRevision:'sha256:a',score:0.7,verified:true,authority:'verified-task-playbook',sourcePlaybooks:['ui','graphics']}
+        {id:'external-black-box-commercial-ui',project:'commercial-app-a',sourceRevision:'sha256:a',score:0.7,verified:true,authority:'verified-task-playbook',sourcePlaybooks:['ui','graphics'],distilledApplicationPrinciples:['menu hierarchy keeps first playable state obvious']}
       ]
     },
     manifest:{version:1,assets:[]},
@@ -100,6 +102,7 @@ test('internal asset development rejects partial binding of retrieved verified e
   assert.equal(plan.commercialDistillation.matchedCount,1);
   assert.equal(plan.commercialDistillation.exactRetrievedSetBinding,false);
   assert.equal(plan.commercialDistillation.applicationCoveragePct,50);
+  assert.equal(plan.commercialDistillation.identityBoundVerifiedExternalIds.length,1);
 });
 
 test('internal asset development is not ready when verified commercial distillation is absent',()=>{
