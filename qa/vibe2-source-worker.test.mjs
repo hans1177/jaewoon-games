@@ -2214,6 +2214,64 @@ test('Web source worker retries when a function declaration is removed while loc
   assert.equal(shouldRetryGenerationError(error),true);
 });
 
+test('Roblox source worker retries when a function-header anchor prematurely closes the existing function',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local status = Instance.new("TextLabel")',
+    'local function render()',
+    '  status.Text = "ok"',
+    'end',
+    'render()'
+  ].join('\n');
+  write(path.join(cwd,root,relative),source);
+  const workOrder=order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'roblox-structural-premature-end'});
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const bad=path.join(cwd,'roblox-structural-bad.json');
+  const good=path.join(cwd,'roblox-structural-good.json');
+  write(bad,JSON.stringify({edits:[{
+    path:relative,
+    find:'local function render()',
+    replace:'local function render()\\n  status.TextWrapped = true\\nend'
+  }]}));
+  write(good,JSON.stringify({edits:[{
+    path:relative,
+    find:'local function render()',
+    replace:'local function render()\\n  status.TextWrapped = true'
+  }]}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad,good]});
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(generationFailureClass(new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:FUNCTION_HEADER_PREMATURE_END:client/Game.client.luau')),'ROBLOX_STRUCTURAL_CONTINUITY');
+  assert.equal(shouldRetryGenerationError(new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:FUNCTION_HEADER_PREMATURE_END:client/Game.client.luau')),true);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/status\.TextWrapped = true/);
+  assert.doesNotMatch(candidate,/status\.TextWrapped = true\s*\nend\s*\n\s*status\.Text = "ok"/);
+});
+
+test('Roblox source worker retries when model control tokens leak into Luau source',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source='local activity = "idle"\n';
+  write(path.join(cwd,root,relative),source);
+  const workOrder=order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'roblox-structural-model-token'});
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const bad=path.join(cwd,'roblox-token-bad.json');
+  const good=path.join(cwd,'roblox-token-good.json');
+  write(bad,JSON.stringify({edits:[{path:relative,find:'local activity = "idle"',replace:'local activity = /no_think'}]}));
+  write(good,JSON.stringify({edits:[{path:relative,find:'local activity = "idle"',replace:'local activity = "ready"'}]}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad,good]});
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(generationFailureClass(new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:client/Game.client.luau')),'ROBLOX_STRUCTURAL_CONTINUITY');
+  assert.equal(shouldRetryGenerationError(new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:client/Game.client.luau')),true);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/local activity = "ready"/);
+  assert.doesNotMatch(candidate,/no_think/);
+});
+
 test('semantic diff hard gate allows primary responsibility edits inside the compiled system budget',()=>{
   const result=evaluateSemanticDiffBudget({
     candidate:{edits:[{path:'index.html',find:'function handlePointer(e){ pointerState=e; return placeTower(pointerState); }',replace:'function handlePointer(e){ pointerState=normalizePointer(e); return placeTower(pointerState); }'}],newFiles:[],replaceFiles:[]},
