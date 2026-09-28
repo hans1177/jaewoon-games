@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildVerifiedTrainingSample, MAX_PATCH_BYTES, TRAINING_SAMPLE_VERSION, validatePositiveTrace, qaEvidencePasses, qaRequirementsForTask } from '../tools/vibe2-training-sample.mjs';
-import { validateVerifiedWebFinalBinding } from '../tools/vibe2-distillation-ingest.mjs';
+import { validateVerifiedWebFinalBinding, buildExternalBlackBoxLearningPrinciples } from '../tools/vibe2-distillation-ingest.mjs';
 
 function trace(sourceRevision = 'abc123', overrides = {}) {
   return { state: 'PASS', sourceRevision, commitSha: sourceRevision, pullRequest: 123, ci: 'PASS', independentQa: 'PASS', runtime: 'PASS', stale: false, flaky: false, ...overrides };
@@ -77,6 +77,25 @@ test('FAIL STALLED NO_ACTIONABLE_WORK stale SHA mismatch는 성공 데이터가 
   for (const state of ['FAIL', 'STALLED', 'NO_ACTIONABLE_WORK', 'INCOMPLETE_PROGRESS', 'FLAKY', 'STALE', 'SHA_MISMATCH']) assert.throws(() => validatePositiveTrace(trace('abc123', { state }), 'abc123'), /성공 trace 상태/);
   assert.throws(() => validatePositiveTrace(trace('abc123', { stale: true }), 'abc123'), /stale/);
   assert.throws(() => validatePositiveTrace(trace('other'), 'abc123'), /SHA mismatch/);
+});
+
+test('external black-box distillation preserves every concrete application principle without truncation',()=>{
+  const positive=Array.from({length:64},(_,index)=>({
+    id:'principle-'+index,
+    scope:index%2?'mobile-feedback':'menu-flow',
+    lesson:'verified lesson '+index,
+    reuseRule:'transformatively apply rule '+index
+  }));
+  const result=buildExternalBlackBoxLearningPrinciples({
+    distilledPositiveRuntimePatterns:positive,
+    distilledFailurePatterns:[{id:'avoid-copy',scope:'presentation',lesson:'do not clone expression',reuseRule:'reauthor with game identity'}],
+    learningUse:{allowed:['menu flow timing','spatial feedback','motion response']}
+  });
+  assert.equal(result.application.length,64);
+  assert.ok(result.application[0].includes('id=principle-0'));
+  assert.ok(result.application[63].includes('apply=transformatively apply rule 63'));
+  assert.deepEqual(result.avoidance,['id=avoid-copy; scope=presentation; lesson=do not clone expression; apply=reauthor with game identity']);
+  assert.deepEqual(result.allowed,['menu flow timing','spatial feedback','motion response']);
 });
 
 function validFinalWebItem(){
