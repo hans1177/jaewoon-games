@@ -357,9 +357,29 @@ test('experience storage failure does not change the already verified review dec
 });
 
 test('verified experience is injected into the next similar worker goal as advisory context', () => {
+  const verifiedExternalLearningApplication = {
+    sourceAuthority:'VERIFIED_MEMORY_ONLY',
+    verifiedExternalLearningFirst:true,
+    verifiedExternalLearningIds:['external-black-box-test-unity'],
+    verifiedExternalLearningRetrievedCount:1,
+    verifiedExternalLearningAppliedCount:1,
+    verifiedExternalLearningCoveragePct:100,
+    verifiedExternalLearningApplyAxes:[
+      'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
+      'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
+      'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
+      'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
+      'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
+      'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
+      'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
+    ],
+    retrievedVerifiedExternalLearningTruncationForbidden:true,
+    verifiedLearningMemorySha:'test-verified-memory'
+  };
   const learned = promoteVibeReviewedExperience(createVibeExperienceMemory(), successfulReview({
     taskType: 'modify',
-    avoidPatterns: ['검증 없이 공격 판정 타이밍을 추측하지 않기']
+    avoidPatterns: ['검증 없이 공격 판정 타이밍을 추측하지 않기'],
+    verifiedExternalLearningApplication
   }));
   const order = buildVibeContinuousWorkOrder({
     runtime: {
