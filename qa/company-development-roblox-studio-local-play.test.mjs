@@ -1995,3 +1995,23 @@ test('floating character without a walkable world aborts the Studio session imme
   assert.match(helper,/floating-character-map-readiness/);
   assert.match(helper,/start_stop_play/);
 });
+
+
+test('Studio screenshots are captured only as the final Studio audit action',()=>{
+  assert.doesNotMatch(helper,/viewport-before-captured/);
+  assert.doesNotMatch(helper,/checkpoint\('viewport-changed-after-input'/);
+  assert.match(helper,/visualCaptureDeferred:true/);
+  const consoleAt=helper.indexOf("checkpoint('no-release-blocking-runtime-errors'");
+  const finalCaptureAt=helper.indexOf('ROBLOX_STUDIO_MCP_FINAL_CAPTURE=LAST_STUDIO_AUDIT_ACTION');
+  assert.ok(consoleAt>=0&&finalCaptureAt>consoleAt);
+  const tail=helper.slice(finalCaptureAt,finalCaptureAt+900);
+  assert.match(tail,/start_stop_play/);
+  assert.match(tail,/play-mode-stopped/);
+});
+
+test('final Studio capture is completed before workflow releases Studio and persists evidence',()=>{
+  const closeAt=workflow.indexOf('- name: Close owned Studio immediately after capture and actual-play audit');
+  const persistAt=workflow.indexOf('- name: Persist exact Studio MCP play evidence');
+  assert.ok(closeAt>=0&&persistAt>closeAt);
+  assert.match(workflow.slice(closeAt,persistAt),/ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES/);
+});
