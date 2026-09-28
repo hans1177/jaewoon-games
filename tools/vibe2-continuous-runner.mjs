@@ -609,6 +609,15 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const verifiedExternalPlaybookReuse=freezeList((unifiedLearning?.playbookReuse||[])
     .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook'&&clean(row?.id).startsWith('external-black-box-'))
     .map(row=>row.id));
+  const verifiedExternalLearningApplyAxes=freezeList([
+    'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
+    'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
+    'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
+    'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
+    'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
+    'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
+    'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
+  ]);
   const knowledgeApplicationContract=freeze({
     version:3,
     exactInjectedKnowledgeIds,
@@ -625,6 +634,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     verifiedExternalLearningRetrievedCount:verifiedExternalPlaybookReuse.length,
     verifiedExternalLearningAppliedCount:verifiedExternalPlaybookReuse.length,
     verifiedExternalLearningCoveragePct:verifiedExternalPlaybookReuse.length>0?100:0,
+    verifiedExternalLearningApplyAxes,
     retrievedVerifiedExternalLearningTruncationForbidden:true,
     verifiedLearningMemorySha:clean(process.env.VIBE2_VERIFIED_LEARNING_MEMORY_SHA)||null,
     freshIndependentQaRequired:true,
@@ -639,7 +649,9 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     'verifiedLearningApplicationCoverage=100%',
     'verifiedExternalLearningFirst=true',
     'verifiedExternalLearningIds='+knowledgeApplicationContract.verifiedExternalLearningIds.join(','),
+    'verifiedExternalLearningApplyAxes='+knowledgeApplicationContract.verifiedExternalLearningApplyAxes.join(','),
     'Before any game source or internal asset authoring starts, apply every task-relevant verified external black-box learning item retrieved into this work order. Truncating or silently ignoring any retrieved verified external item is forbidden.',
+    'Apply verified external learning across menu flow/information architecture, UI/UX feedback and touch readability, graphics/art/material/light/composition, motion/animation/transitions/impact/secondary motion, environment density/landmark/readability, VFX/camera/audio-visual feedback, and gameplay-system implementation when causally relevant.',
     'For Roblox, Unity, Web, and asset-development work, every knowledge item retrieved into this work order must be applied as a transformative implementation input. Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs; do not silently ignore verified playbook reuse or raw-copy commercial source assets.',
     'Only these injected knowledge items may receive credit or blame from this task. Infrastructure failures must not penalize knowledge. Fresh QA/regression/review is required before attribution.'
   ].join('\n'):'';
