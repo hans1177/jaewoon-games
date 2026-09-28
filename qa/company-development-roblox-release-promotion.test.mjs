@@ -341,13 +341,16 @@ test('validation and canonical targets are separate persisted fields',()=>{
 });
 
 
-test('canonical Roblox rebuild provisions a dedicated validation target before F9',()=>{
+test('publish-stage target provisioning keeps pre-F9 validation separate and creates canonical target for final F9 publish',()=>{
   const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
-  assert.match(candidate,/name: Ensure game-specific private Roblox validation target/);
+  assert.match(candidate,/name: Ensure game-specific private Roblox target for current publish stage/);
+  assert.match(candidate,/PUBLISH_STAGE: \$\{\{ inputs\.publish_stage \|\| 'validation' \}\}/);
+  assert.match(candidate,/const current=publishStage==='final'\?\(item\.robloxPublicationTarget\|\|\{\}\):\(item\.robloxValidationTarget\|\|\{\}\)/);
   assert.match(candidate,/createRobloxDedicatedExperience/);
   assert.match(candidate,/configureRobloxExperience/);
   assert.match(candidate,/ensureRobloxExperiencePrivate/);
-  assert.match(candidate,/item\.robloxValidationTarget=\{/);
+  assert.match(candidate,/const targetField=r\.publishStage==='final'\?'robloxPublicationTarget':'robloxValidationTarget'/);
+  assert.match(candidate,/const authority=r\.publishStage==='final'\?'roblox-canonical-publication-target':'roblox-pre-f9-validation-target'/);
   assert.match(candidate,/bootstrapState:'CREATED_PRIVATE_UNPUBLISHED'/);
 });
 
