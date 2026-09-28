@@ -2007,8 +2007,8 @@ test('Studio QA keeps user windows and releases only its exact owned process',()
 
 test('Studio flags inaccessible graphics assets for exact visual repair while retaining ordinary warnings',()=>{
   const result=classifyStudioConsoleOutput({content:[{type:'text',text:[
-    JSON.stringify({message:'Failed to load texture asset rbxassetid://123: not authorized to access',messageType:2}),
-    JSON.stringify({message:'Ordinary warning about frame rate',messageType:2})
+    JSON.stringify({message:'Failed to load texture asset rbxassetid://123: not authorized to access',messageType:2,timestamp:1}),
+    JSON.stringify({message:'Ordinary warning about frame rate',messageType:2,timestamp:2})
   ].join('\\n')}]});
   assert.equal(result.errors.length,1);
   assert.equal(result.errors[0].type,'studio-asset-load-error');
