@@ -43,7 +43,7 @@ jobs:
   release-dedupe:
     name: select one active private runtime deployment per game
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.thumbnail_only != true }}
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 3
     outputs:
       run: ${{ steps.guard.outputs.run }}
