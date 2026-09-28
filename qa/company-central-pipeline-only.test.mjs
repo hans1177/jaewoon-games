@@ -773,10 +773,16 @@ test('verified external black-box learning is applied first at full retrieved co
   assert.equal(evidence.nativeRuntimeOrReleasePassNotImplied,true);
 
   assert.doesNotMatch(robloxLearning,/sort\(\(a,b\)=>b\.score-a\.score\|\|a\.tie\.localeCompare\(b\.tie\)\)\.slice\(0,3\)/);
-  assert.match(robloxLearning,/const verifiedExternalLearningCoveragePct=verifiedExternalPlaybookIds\.length>0[\s\S]*Math\.floor\(\(verifiedExternalContentIds\.length\/verifiedExternalPlaybookIds\.length\)\*100\)[\s\S]*:0;/);
+  assert.match(robloxLearning,/export function verifiedExternalBlackBoxPlaybookContract/);
+  assert.match(robloxLearning,/verifiedExternalBlackBoxAllTaskTypesRequired/);
+  assert.match(robloxLearning,/verifiedExternalBlackBoxTruncationForbidden/);
+  assert.match(robloxLearning,/const verifiedExternalLearningCoveragePct=verifiedExternalContract\.coveragePct/);
+  assert.match(robloxLearning,/verifiedExternalLearningFingerprint:verifiedExternalContract\.fingerprint/);
   assert.match(robloxLearning,/const applied=checklist\.length>0[\s\S]*&&verifiedExternalLearningIds\.length>0[\s\S]*&&verifiedExternalDistilledContentComplete/);
   assert.match(robloxBootstrap,/VerifiedExternalLearningFirst = \$\{learning\.verifiedExternalLearningFirst\?'true':'false'\}/);
+  assert.match(robloxBootstrap,/MemoryFingerprint = \$\{luauString\(learning\.verifiedExternalLearningFingerprint\|\|' '\.trim\(\)\)\}|MemoryFingerprint = \$\{luauString\(learning\.verifiedExternalLearningFingerprint\|\|''\)\}/);
   assert.match(robloxBootstrap,/CoveragePct = \$\{Number\(learning\.verifiedExternalLearningCoveragePct\|\|0\)\}/);
+  assert.match(robloxBootstrap,/ROBLOX_EXISTING_SOURCE_VERIFIED_EXTERNAL_LEARNING_REQUIRED/);
   assert.match(unityBootstrap,/UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REQUIRED/);
   assert.match(unityBootstrap,/mandatoryApplicationCoveragePct:100/);
   assert.match(unityWorkflow,/git fetch --no-tags --depth=1 origin vibe2-learning-runtime/);

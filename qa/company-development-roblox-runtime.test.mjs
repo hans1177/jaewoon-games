@@ -478,7 +478,11 @@ test('Roblox source workflow requires durable Vibe3 learning memory for source g
   assert.ok(workflow.includes('--playbooks=/tmp/vibe3-task-playbooks.json'));
   assert.ok(workflow.includes('--recombination=/tmp/vibe3-recombination-memory.json'));
   assert.ok(workflow.includes('ROBLOX_VIBE3_LEARNING_MEMORY=READY'));
-  assert.ok(workflow.includes('e.vibe3LearningApplied!==true||!e.recombinationRecipeId'));
+  assert.ok(workflow.includes('ROBLOX_RECONCILE_VERIFIED_EXTERNAL_LEARNING=READY'));
+  assert.ok(workflow.includes("e.vibe3LearningApplied===true&&e.verifiedExternalLearningFirst===true"));
+  assert.ok(workflow.includes("Number(e.verifiedExternalLearningCoveragePct||0)===100"));
+  assert.ok(workflow.includes("e.verifiedExternalLearningIds.length===Number(e.verifiedExternalLearningAppliedCount||0)"));
+  assert.ok(workflow.includes("String(e.verifiedExternalLearningFingerprint||'').length>0"));
 });
 
 test('Roblox source workflow treats every development-confirmed game as the Roblox side of the automatic pair',()=>{
@@ -891,7 +895,9 @@ test('known Roblox source repair debt outranks reconciliation pass and canonical
   assert.match(workflow,/String\(item\.robloxFailureStage\|\|''\)\.toUpperCase\(\)==='TARGET_PLATFORM_SOURCE_BIND'/);
   assert.match(workflow,/const knownSourceRepairDebt=\(Boolean\(bootstrapFailed\)&&!resolvedSourceBindDebt\)\|\|f0FoundationRepair/);
   assert.match(workflow,/ROBLOX_STALE_SOURCE_BIND_DEBT_RESOLVED_BY_EXACT_RECONCILIATION=/);
-  assert.match(workflow,/const repairSupersedesCandidate=existingSourceAssetRebind\|\|knownSourceRepairDebt/);
+  assert.match(workflow,/const existingSourceLearningRebind=reconciliationRow\?\.failure==='existing-source-verified-external-learning-required'/);
+  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind\|\|existingSourceLearningRebind/);
+  assert.match(workflow,/const repairSupersedesCandidate=existingSourceMaintenanceRebind\|\|knownSourceRepairDebt/);
   assert.match(workflow,/if\(candidateReady&&!repairSupersedesCandidate\)continue/);
   assert.match(workflow,/ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR=/);
   assert.ok(workflow.indexOf('const repairSupersedesCandidate=')<workflow.indexOf('if(candidateReady&&!repairSupersedesCandidate)continue'));
