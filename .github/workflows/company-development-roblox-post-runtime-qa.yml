@@ -37,7 +37,8 @@ env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 concurrency:
-  group: roblox-runtime-foundation-${{ inputs.game_id || github.sha }}
+  # Emergency cancellation: match the currently running stale Studio scan once, so GitHub cancels it immediately.
+  group: roblox-runtime-foundation-284b20fb610279d59f0b28f8eb98976ac6024f75
   cancel-in-progress: true
 
 jobs:
@@ -1514,6 +1515,7 @@ jobs:
           echo "ROBLOX_F9_SCAN_DISPATCHED=candidates=$candidate_count"
 
       - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
+        if: ${{ false }} # TEMP: floating-character Studio sessions paused
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -1554,7 +1556,7 @@ jobs:
           echo 'ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE=NO'
 
   studio-local-plan:
-    if: ${{ inputs.retry_open_cloud_only != true }}
+    if: ${{ false }} # TEMP: stop opening Studio until floating-character map readiness is repaired
     # Planning is read-only Node work and must not occupy the authenticated Studio runner.
     # Only actual Studio MCP play keeps the self-hosted Windows requirement.
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
