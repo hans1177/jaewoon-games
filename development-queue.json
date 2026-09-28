@@ -5923,27 +5923,27 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "REPAIR_REQUIRED",
-      "canonicalState": "REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T11:50:15.550Z",
+      "updatedAt": "2026-09-28T11:57:21.208Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "robloxSourceCommit": "d16adbfc1286b57e20c4166ec870dc48a95adb1a",
-      "robloxSourceBootstrapPassedAt": "2026-09-28T10:04:12.506Z",
+      "robloxSourceCommit": "9e4c7e159ededc3d675f4c7bd33c607777742eec",
+      "robloxSourceBootstrapPassedAt": "2026-09-28T11:57:21.208Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "d16adbfc1286b57e20c4166ec870dc48a95adb1a",
-      "robloxBuildArtifactIdentity": "sha256:7eb12aa0e7909efd36387bd3767d773f71cf9f04d730497140c463f50916ff52",
-      "robloxBuildPassedAt": "2026-09-28T10:10:16.740Z",
+      "robloxBuildOrPackagePassed": false,
+      "robloxBuildSourceRevision": null,
+      "robloxBuildArtifactIdentity": null,
+      "robloxBuildPassedAt": null,
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-28T10:10:16.740Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
@@ -6058,7 +6058,7 @@
         "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
-      "robloxHeadlessFastMvpPassed": true,
+      "robloxHeadlessFastMvpPassed": false,
       "robloxHeadlessFastMvpEvidence": {
         "version": 3,
         "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -6172,11 +6172,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_RUNTIME_ERROR",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-studio-mcp-play-repair-required"
+        "roblox-build-package-revalidation-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -6187,7 +6187,7 @@
         "capturedAt": "2026-09-25T04:26:19.832Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -6644,7 +6644,16 @@
         "workflowRunId": 36416486580,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
-      "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD"
+      "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
+      "robloxHeadlessPassedAt": null,
+      "robloxInternalReleasePublished": false,
+      "robloxFastMvpPublished": false,
+      "robloxFastMvpPublishedAt": null,
+      "robloxEvidenceInvalidatedBySourceChange": {
+        "previousSourceRevision": "d16adbfc1286b57e20c4166ec870dc48a95adb1a",
+        "newSourceRevision": "9e4c7e159ededc3d675f4c7bd33c607777742eec",
+        "invalidatedAt": "2026-09-28T11:57:21.208Z"
+      }
     },
     {
       "gameId": "seed-casual-realm-weaver",
@@ -10014,7 +10023,7 @@
       "robloxCanonicalPublishPending": false
     }
   ],
-  "updatedAt": "2026-09-28T11:52:39.336Z",
+  "updatedAt": "2026-09-28T11:57:21.208Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
