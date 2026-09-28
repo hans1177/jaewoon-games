@@ -379,6 +379,15 @@ test('Roblox bootstrap consumes Vibe3 playbook and transformative learning conte
   assert.equal(learned.learning.verifiedExternalLearningCoveragePct,100);
   assert.equal(learned.learning.verifiedExternalLearningRetrievedCount,3);
   assert.equal(learned.learning.verifiedExternalLearningAppliedCount,3);
+  assert.deepEqual(learned.learning.verifiedExternalLearningApplyAxes,[
+    'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
+    'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
+    'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
+    'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
+    'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
+    'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
+    'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
+  ]);
   assert.equal(learned.learning.recipeId,'recombine-roblox-test');
   assert.equal(learned.generationMode,'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT');
   assert.ok(learned.actions.some(action=>Boolean(action.learningPattern)));
@@ -386,6 +395,8 @@ test('Roblox bootstrap consumes Vibe3 playbook and transformative learning conte
   assert.ok(learned.result.sharedConfig.includes('RecipeId = "recombine-roblox-test"'));
   assert.ok(learned.result.sharedConfig.includes('VerifiedExternalLearningFirst = true'));
   assert.ok(learned.result.sharedConfig.includes('CoveragePct = 100'));
+  assert.ok(learned.result.sharedConfig.includes('ApplyAxes = {'));
+  assert.ok(learned.result.sharedConfig.includes('GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'));
   assert.ok(learned.result.serverCode.includes('ActionSequence'));
   assert.ok(learned.result.serverCode.includes('LastLearningPattern'));
   assert.ok(learned.result.clientCode.includes('ContextActionService'));
