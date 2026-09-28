@@ -116,6 +116,46 @@ test('verified external learning application survives reviewed experience promot
   assert.deepEqual(promoted.record.verifiedExternalLearningApplication.verifiedExternalLearningApplyAxes,["MENU_FLOW_AND_INFORMATION_ARCHITECTURE","UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY","GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION","MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION","ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY","VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE","GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"]);
 });
 
+test('verified external application rejects incomplete axes unverified authority or raw expression reuse',()=>{
+  const fullAxes=[
+    'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
+    'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
+    'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
+    'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
+    'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
+    'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
+    'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
+  ];
+  const base={
+    verifiedExternalLearningFirst:true,
+    verifiedExternalLearningIds:['external-black-box-a'],
+    verifiedExternalLearningRetrievedCount:1,
+    verifiedExternalLearningAppliedCount:1,
+    verifiedExternalLearningCoveragePct:100,
+    retrievedVerifiedExternalLearningTruncationForbidden:true,
+    verifiedLearningMemorySha:'verified-memory-sha',
+    rawCommercialCodeCopy:false,
+    rawCommercialAssetCopy:false,
+    distinctiveExpressionClone:false
+  };
+  const promote=application=>promoteVibeReviewedExperience(createVibeExperienceMemory(),successfulReview({
+    id:'external-hard-gate-'+Math.random().toString(36).slice(2),
+    verifiedExternalLearningApplication:application
+  })).record.verifiedExternalLearningApplication;
+
+  const missingMotion=promote({...base,sourceAuthority:'VERIFIED_MEMORY_ONLY',verifiedExternalLearningApplyAxes:fullAxes.filter(axis=>axis!=='MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION')});
+  assert.equal(missingMotion.allRequiredAxesPresent,false);
+  assert.equal(missingMotion.fullCoverageVerified,false);
+
+  const wrongAuthority=promote({...base,sourceAuthority:'PRACTICE_ONLY',verifiedExternalLearningApplyAxes:fullAxes});
+  assert.equal(wrongAuthority.allRequiredAxesPresent,true);
+  assert.equal(wrongAuthority.fullCoverageVerified,false);
+
+  const rawCopy=promote({...base,sourceAuthority:'VERIFIED_MEMORY_ONLY',verifiedExternalLearningApplyAxes:fullAxes,rawCommercialCodeCopy:true});
+  assert.equal(rawCopy.rawCommercialCodeCopy,true);
+  assert.equal(rawCopy.fullCoverageVerified,false);
+});
+
 test('batch promotion persists phase 3 capability application evidence without double counting the same application',()=>{
   const writes=[];
   const capability=successfulReview({
