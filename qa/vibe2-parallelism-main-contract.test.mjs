@@ -316,3 +316,17 @@ test('24h runner wakes asset lane when active reservations need recovery even wi
   assert.match(runner,/asset_development_refill_ready/);
   assert.match(runner,/needs\.plan\.outputs\.asset_development_refill_ready == 'YES' && \(needs\.plan\.outputs\.asset_development_queued != '0' \|\| needs\.plan\.outputs\.asset_development_active != '0'\)/);
 });
+
+test('failed worker releases its exact lock after immutable upload while PASS holds until fan-in',()=>{
+  const upload=core.indexOf('- name: Upload worker result for fan-in');
+  const release=core.indexOf('- name: Release failed worker Work Lock after immutable result upload');
+  const callback=core.indexOf('- name: Dispatch or coalesce atomic neuron completion');
+  assert.ok(upload>=0&&release>upload&&callback>release);
+  const block=core.slice(release,callback);
+  assert.match(block,/steps\.worker_result_upload\.outcome == 'success'/);
+  assert.match(block,/row\.workLock\?\.id/);
+  assert.match(block,/result_fields\[0\].*PASS/);
+  assert.match(block,/HELD_FOR_FAN_IN/);
+  assert.match(block,/vibe2-remote-work-lock\.mjs" release --worker=vibe2 --id="\$lock_id"/);
+  assert.match(core,/VIBE_REMOTE_WORK_LOCK_REASON=lock-not-found/);
+});

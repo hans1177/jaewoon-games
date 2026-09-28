@@ -1956,6 +1956,7 @@ jobs:
           NODE
 
       - name: Upload worker result for fan-in
+        id: worker_result_upload
         if: always() && steps.result.outputs.file != ''
         uses: actions/upload-artifact@v4
         with:
@@ -1963,6 +1964,30 @@ jobs:
           path: ${{ steps.result.outputs.file }}
           if-no-files-found: error
           retention-days: 1
+
+      - name: Release failed worker Work Lock after immutable result upload
+        if: always() && steps.worker_result_upload.outcome == 'success' && steps.work_lock.outputs.acquired == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT_FILE: ${{ steps.result.outputs.file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          readarray -t result_fields < <(node - "$RESULT_FILE" <<'NODE'
+          const fs=require('fs');
+          const row=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          process.stdout.write(String(row.outcome||'')+'\n'+String(row.workLock?.id||'')+'\n');
+          NODE
+          )
+          if [ "${result_fields[0]}" = 'PASS' ]; then
+            echo 'VIBE2_FAILED_WORK_LOCK_EARLY_RELEASE=HELD_FOR_FAN_IN'
+            exit 0
+          fi
+          lock_id="${result_fields[1]:-}"
+          test -n "$lock_id"
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-remote-work-lock.mjs" release --worker=vibe2 --id="$lock_id" | tee /tmp/vibe2-failed-work-lock-release.log
+          grep -Eq '^VIBE_REMOTE_WORK_LOCK_RELEASED=YES$|^VIBE_REMOTE_WORK_LOCK_REASON=lock-not-found$' /tmp/vibe2-failed-work-lock-release.log
+          echo "VIBE2_FAILED_WORK_LOCK_EARLY_RELEASE=$lock_id"
 
       - name: Dispatch or coalesce atomic neuron completion
         if: steps.result.outputs.file != '' && env.VIBE2_EXECUTION_LANE != 'learning-idle'
@@ -2369,7 +2394,7 @@ jobs:
           while IFS= read -r lock_id; do
             [ -n "$lock_id" ] || continue
             node "$contract_root/tools/vibe2-remote-work-lock.mjs" release --worker=vibe2 --id="$lock_id" | tee "/tmp/vibe2-work-lock-release-$released.log"
-            grep -q '^VIBE_REMOTE_WORK_LOCK_RELEASED=YES$' "/tmp/vibe2-work-lock-release-$released.log"
+            grep -Eq '^VIBE_REMOTE_WORK_LOCK_RELEASED=YES$|^VIBE_REMOTE_WORK_LOCK_REASON=lock-not-found$' "/tmp/vibe2-work-lock-release-$released.log"
             released=$((released+1))
           done < /tmp/vibe2-work-lock-release-ids.txt
           echo "VIBE2_SHARED_WORK_LOCK_RELEASED=$released"
