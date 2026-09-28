@@ -197,7 +197,7 @@ export function deriveStudioActualPlayContract(launch={}){
   const adaptiveScenarios=[
     'character-camera-ready','visual-capture-sane','adaptive-runtime-surface',
     'adaptive-ui-commercial-quality','adaptive-world-safety','adaptive-map-route-coverage','adaptive-spawn-safety','adaptive-interaction-surface','adaptive-semantic-interaction-effect',
-    'adaptive-progression-surface','adaptive-remote-surface','adaptive-combat-surface','adaptive-mob-animation-ai',
+    'adaptive-gameplay-loop-cadence','adaptive-quest-state-transition','adaptive-reward-effect','adaptive-progression-surface','adaptive-remote-surface','adaptive-combat-surface','adaptive-mob-animation-ai',
     'adaptive-motion-surface','adaptive-audio-surface','adaptive-npc-surface',
     'adaptive-companion-ai-surface','adaptive-item-surface','adaptive-environment-surface',
     'adaptive-effects-surface','adaptive-quest-loop-surface','adaptive-reward-loop-surface',
@@ -1168,14 +1168,26 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const inventoryDelta=inventoryChanged(initialClientProbe?.runtime?.inventory,runtime?.inventory);
   const timeline=Array.isArray(timelineProbes)?timelineProbes.filter(Boolean):[];
   let timelineMobDynamic=false,timelineCompanionDynamic=false,timelineProgressChanged=false;
+  let activeTimelineTransitions=0,idleTimelineTransitions=0;
+  let memoryMin=Number(initialClientProbe?.runtime?.memoryMb),memoryMax=memoryMin;
+  let descendantsMin=Number(initialClientProbe?.runtime?.descendantCount),descendantsMax=descendantsMin;
   let previous=initialClientProbe;
   for(const probe of timeline){
     if(!previous){previous=probe;continue;}
-    timelineMobDynamic=timelineMobDynamic||entityMotionSummary(previous?.world?.mobs,probe?.world?.mobs).dynamic;
-    timelineCompanionDynamic=timelineCompanionDynamic||entityMotionSummary(previous?.world?.companions,probe?.world?.companions).dynamic;
-    timelineProgressChanged=timelineProgressChanged||progressionChanged(previous?.runtime?.progression,probe?.runtime?.progression);
+    const mobDelta=entityMotionSummary(previous?.world?.mobs,probe?.world?.mobs).dynamic;
+    const companionDelta=entityMotionSummary(previous?.world?.companions,probe?.world?.companions).dynamic;
+    const progressDelta=progressionChanged(previous?.runtime?.progression,probe?.runtime?.progression);
+    const genericDelta=probeEffectSummary(previous,probe).effectObserved;
+    timelineMobDynamic=timelineMobDynamic||mobDelta;
+    timelineCompanionDynamic=timelineCompanionDynamic||companionDelta;
+    timelineProgressChanged=timelineProgressChanged||progressDelta;
+    if(mobDelta||companionDelta||progressDelta||genericDelta)activeTimelineTransitions++;else idleTimelineTransitions++;
+    const mem=Number(probe?.runtime?.memoryMb);if(Number.isFinite(mem)){if(!Number.isFinite(memoryMin))memoryMin=mem;if(!Number.isFinite(memoryMax))memoryMax=mem;memoryMin=Math.min(memoryMin,mem);memoryMax=Math.max(memoryMax,mem)}
+    const desc=Number(probe?.runtime?.descendantCount);if(Number.isFinite(desc)){if(!Number.isFinite(descendantsMin))descendantsMin=desc;if(!Number.isFinite(descendantsMax))descendantsMax=desc;descendantsMin=Math.min(descendantsMin,desc);descendantsMax=Math.max(descendantsMax,desc)}
     previous=probe;
   }
+  const memoryGrowthMb=Number.isFinite(memoryMin)&&Number.isFinite(memoryMax)?Math.max(0,memoryMax-memoryMin):0;
+  const descendantGrowth=Number.isFinite(descendantsMin)&&Number.isFinite(descendantsMax)?Math.max(0,descendantsMax-descendantsMin):0;
   const soak=clean(auditProfile).toUpperCase()==='F9_SOAK';
   const routeActions=(actions||[]).filter(row=>row?.type==='mcp-map-route-audit'&&row?.dispatched===true);
   const routePassCount=routeActions.filter(row=>row?.ok===true).length;
@@ -1185,6 +1197,13 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const spawnThreatDistance=Number(world.minSpawnThreatDistance??-1);
   const semanticActions=(actions||[]).filter(row=>['mcp-world-interaction','mcp-ui-exploration'].includes(row?.type)&&row?.dispatched===true&&row?.ok===true);
   const semanticEffects=semanticActions.filter(row=>row?.effectObserved===true).length;
+  const questActions=semanticActions.filter(row=>row?.semantic==='QUEST');
+  const rewardActions=semanticActions.filter(row=>['REWARD','COLLECT'].includes(row?.semantic));
+  const questEffects=questActions.filter(row=>row?.effectObserved===true).length;
+  const rewardEffects=rewardActions.filter(row=>row?.effectObserved===true).length;
+  const activeLoopExpected=signals.combat||signals.quests||signals.rewards||signals.progression||signals.interactions;
+  const activeLoopObserved=semanticEffects>0||timelineProgressChanged||timelineMobDynamic||timelineCompanionDynamic||primaryActionFeedbackChanged||progressChanged||inventoryDelta;
+  const performanceTrendPass=!soak||(memoryGrowthMb<=300&&descendantGrowth<=6000);
   const visibleButtons=Number(ui.visibleButtons||0);
   const uiCommercialPass=
     Number(ui.offscreenButtons||0)===0
@@ -1235,6 +1254,9 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-spawn-safety',pass:!signals.combat||spawnThreatDistance<0||spawnThreatDistance>=10},
     {id:'adaptive-interaction-surface',pass:!signals.interactions||interactionSurfaceCount>0},
     {id:'adaptive-semantic-interaction-effect',pass:!signals.interactions||semanticActions.length===0||semanticEffects>0},
+    {id:'adaptive-gameplay-loop-cadence',pass:!activeLoopExpected||activeLoopObserved},
+    {id:'adaptive-quest-state-transition',pass:!signals.quests||questActions.length===0||questEffects>0||timelineProgressChanged},
+    {id:'adaptive-reward-effect',pass:!signals.rewards||rewardActions.length===0||rewardEffects>0||progressChanged||inventoryDelta},
     {id:'adaptive-progression-surface',pass:!signals.progression||progressionSurfaceCount>0},
     {id:'adaptive-remote-surface',pass:!signals.serverBoundary||Number(runtime.remoteCount||0)>0},
     {id:'adaptive-combat-surface',pass:!signals.combat||(combatSurfaceCount>0&&mobRigAnimationPass&&(!soak||mobRows.length===0||timelineMobDynamic||mobMotion.dynamic||primaryActionFeedbackChanged))},
@@ -1252,7 +1274,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-save-surface',pass:!signals.save||Number(categories.save||0)>0},
     {id:'adaptive-retry-loop-surface',pass:!signals.retry||Number(categories.retry||0)>0},
     {id:'adaptive-camera-quality',pass:!signals.camera||(client?.camera?.present===true&&client?.camera?.subjectPresent===true&&Number(client?.camera?.fieldOfView||0)>0&&client?.camera?.occluded!==true)},
-    {id:'adaptive-performance-budget',pass:Number(runtime.memoryMb||0)>=0&&Number(runtime.descendantCount||0)<120000}
+    {id:'adaptive-performance-budget',pass:Number(runtime.memoryMb||0)>=0&&Number(runtime.descendantCount||0)<120000&&performanceTrendPass}
   ];
   const scenarios=rows.filter(row=>requiredIds.size===0||requiredIds.has(row.id)).map(row=>({...row,required:true}));
   const qualityFailureKinds=scenarios.filter(row=>row.pass!==true).map(row=>row.id);
@@ -1288,6 +1310,9 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     'adaptive-mob-animation-ai':['MONSTER_MOTION_AI','CRITICAL','Repair monster Humanoid rig, Animator/Motor6D motion, target/aggro transitions, attack movement, and runtime liveness.'],
     'adaptive-interaction-surface':['INTERACTION_CHAIN','HIGH','Restore usable prompts/buttons/click surfaces and verify input leads to a visible or authoritative result.'],
     'adaptive-semantic-interaction-effect':['INTERACTION_CHAIN','CRITICAL','A discovered quest/shop/craft/equip/travel/heal/upgrade/collect/UI interaction accepted input but produced no observable gameplay/UI/progression/inventory result.'],
+    'adaptive-gameplay-loop-cadence':['CORE_GAMEPLAY_LOOP','CRITICAL','Actual-play samples show no meaningful action-feedback-progression/AI change across an active gameplay loop. Reduce dead time or restore the broken loop transition.'],
+    'adaptive-quest-state-transition':['QUEST_LOOP','CRITICAL','Quest interaction did not advance quest/UI/progression state. Repair accept-progress-complete transitions and softlock handling.'],
+    'adaptive-reward-effect':['REWARD_LOOP','CRITICAL','Reward/collect interaction did not change reward, inventory, progression, or visible state. Repair delivery and duplicate-safe claim handling.'],
     'adaptive-progression-surface':['PROGRESSION','CRITICAL','Restore observable progression state for levels, quests, waves, zones, unlocks, or rewards.'],
     'adaptive-remote-surface':['SERVER_CLIENT_BOUNDARY','CRITICAL','Restore server-authoritative RemoteEvent/RemoteFunction surface and validation path.'],
     'adaptive-combat-surface':['COMBAT_AI','CRITICAL','Repair combat targets, damage/state transitions, enemy liveness, attack feedback, and F9 AI movement.'],
@@ -1322,6 +1347,9 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     if(id==='adaptive-performance-budget')return metrics.performance;
     if(id==='adaptive-interaction-surface')return{interactionSurfaceCount,promptCount:Number(world.proximityPromptCount||0),clickDetectorCount:Number(world.clickDetectorCount||0),visibleButtons};
     if(id==='adaptive-semantic-interaction-effect')return{semanticActionCount:semanticActions.length,semanticEffectCount:semanticEffects,actions:semanticActions.slice(0,10).map(row=>({id:row.id,type:row.type,semantic:row.semantic||null,effectObserved:row.effectObserved===true,effect:row.effect||null}))};
+    if(id==='adaptive-gameplay-loop-cadence')return{activeLoopExpected,activeLoopObserved,activeTimelineTransitions,idleTimelineTransitions,semanticEffectCount:semanticEffects,timelineProgressChanged,timelineMobDynamic,timelineCompanionDynamic};
+    if(id==='adaptive-quest-state-transition')return{questActionCount:questActions.length,questEffectCount:questEffects,timelineProgressChanged};
+    if(id==='adaptive-reward-effect')return{rewardActionCount:rewardActions.length,rewardEffectCount:rewardEffects,progressChanged,inventoryChanged:inventoryDelta};
     return metrics.surfaces;
   };
   const qualityFailureDetails=qualityFailureKinds.map(id=>{
@@ -1709,8 +1737,8 @@ export async function runOfficialStudioMcpPlay({
         actions.push({id:'ui-discovered-'+clean(target?.name||target?.text||'button'),type:'mcp-ui-exploration',dispatched:true,ok,effectObserved:effect.effectObserved,effect});
       }
 
-      const sampleCount=auditMode==='F9_SOAK'?6:3;
-      const sampleDelay=auditMode==='F9_SOAK'?900:450;
+      const sampleCount=auditMode==='F9_SOAK'?12:4;
+      const sampleDelay=auditMode==='F9_SOAK'?1200:500;
       for(let sample=0;sample<sampleCount;sample++){
         await wait(sampleDelay);
         const probe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
