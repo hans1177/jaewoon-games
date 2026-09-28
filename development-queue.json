@@ -2011,7 +2011,7 @@
       "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T10:10:16.740Z",
+      "updatedAt": "2026-09-28T10:23:28.315Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2424,7 +2424,7 @@
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
       },
-      "robloxSharedTargetCurrent": true,
+      "robloxSharedTargetCurrent": false,
       "robloxFastMvpSupersededBy": null,
       "robloxPublicationTarget": {
         "version": 3,
@@ -2511,7 +2511,25 @@
         "workflowRunId": 36360211838,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
-      "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD"
+      "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
+      "robloxValidationTarget": {
+        "version": 1,
+        "gameId": "amusement-tycoon",
+        "universeId": "10768435689",
+        "placeId": "89656367357352",
+        "verified": false,
+        "verifiedAt": null,
+        "lastVerifiedAt": null,
+        "source": "canonical-dedicated-open-cloud-bootstrap",
+        "authority": "roblox-pre-f9-validation-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
+        "reservedAt": "2026-09-28T10:23:28.315Z"
+      }
     },
     {
       "gameId": "bug-defense",
@@ -9113,7 +9131,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-28T10:20:37.186Z",
+  "updatedAt": "2026-09-28T10:23:28.315Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
