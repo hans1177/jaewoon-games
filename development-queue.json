@@ -11256,7 +11256,7 @@
       "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
       "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T15:14:33.023Z",
+      "updatedAt": "2026-09-28T15:19:53.870Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -12055,10 +12055,12 @@
           "internalStudioValidationOnly": true,
           "runtimeAcceptancePassed": true,
           "studioAssetRuntimeBindingPassed": true,
-          "status": "PENDING",
-          "attempts": 0,
+          "status": "RETRY_REQUIRED",
+          "attempts": 1,
           "enqueuedAt": "2026-09-28T15:14:33.023Z",
-          "authority": "roblox-f9-immutable-canonical-publish-queue"
+          "authority": "roblox-f9-immutable-canonical-publish-queue",
+          "lastAttemptAt": "2026-09-28T15:19:53.870Z",
+          "lastFailureSignature": "ROBLOX_CANONICAL_PUBLISH_REPAIR_REQUIRED"
         }
       ],
       "robloxF9Blockers": [],
@@ -12084,7 +12086,9 @@
         "verifiedAt": "2026-09-28T15:14:33.023Z"
       },
       "robloxPromotionBlockers": [],
-      "robloxPublicReleaseEvidence": null
+      "robloxPublicReleaseEvidence": null,
+      "robloxCanonicalPublishRepairRequired": true,
+      "robloxCanonicalPublishRepairCycleId": "825a26d1b013de94f2086c6d38a9839895abb781:sha256:9e9e4476caf9224d4ec45c9221122d0a47966f1db08288ac11e1c8e36c9751f9"
     },
     {
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -17014,7 +17018,7 @@
       "robloxPublicReleaseEvidence": null
     }
   ],
-  "updatedAt": "2026-09-28T15:19:50.560Z",
+  "updatedAt": "2026-09-28T15:19:53.870Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
