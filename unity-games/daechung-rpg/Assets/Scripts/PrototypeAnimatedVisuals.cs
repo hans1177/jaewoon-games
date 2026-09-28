@@ -274,6 +274,7 @@ namespace JaewoonGames.DaechungRpg
             }
 
             var frames = new Sprite[frameCount];
+            frames[0] = Sprite.Create("enemy_sprite", SpriteStandardMode.Fill, new Rect(0, 0, 1, 1));
 
             for (var i = 0; i < frameCount; i++)
             {
