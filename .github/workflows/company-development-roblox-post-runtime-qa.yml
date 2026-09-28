@@ -33,7 +33,7 @@ env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 concurrency:
-  group: roblox-runtime-foundation-${{ inputs.game_id || 'scan' }}
+  group: roblox-runtime-foundation-${{ inputs.game_id || github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -44,8 +44,8 @@ jobs:
     outputs:
       run: ${{ steps.guard.outputs.run }}
     steps:
-      - name: Cancel stale exact-game foundation runs before batch scan
-        if: ${{ inputs.game_id == '' }}
+      - name: Cancel stale queued foundation runs before batch scan
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.game_id == '' }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -55,13 +55,13 @@ jobs:
           printf '%s' "$payload" | CURRENT_RUN_ID="$GITHUB_RUN_ID" CURRENT_SHA="$GITHUB_SHA" node -e "
             let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
               const j=JSON.parse(s);
-              const states=new Set(['queued','pending','in_progress','requested']);
+              const states=new Set(['queued','pending','requested']);
               const prefix='Roblox runtime foundation QA · ';
               for(const r of j.workflow_runs||[]){
                 const title=String(r.display_title||'');
                 if(!states.has(String(r.status||'').toLowerCase()))continue;
                 if(String(r.id)===String(process.env.CURRENT_RUN_ID||''))continue;
-                if(!title.startsWith(prefix)||title===prefix+'scan')continue;
+                if(!title.startsWith(prefix))continue;
                 if(String(r.head_sha||'')===String(process.env.CURRENT_SHA||''))continue;
                 process.stdout.write(String(r.id)+'\n');
               }
@@ -72,9 +72,9 @@ jobs:
             [ -n "$run_id" ] || continue
             gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null || true
             cancelled=$((cancelled+1))
-            echo "ROBLOX_STALE_FOUNDATION_EXACT_CANCELLED=$run_id"
+            echo "ROBLOX_STALE_FOUNDATION_RUN_CANCELLED=$run_id"
           done < /tmp/roblox-stale-foundation-run-ids
-          echo "ROBLOX_STALE_FOUNDATION_EXACT_CANCEL_COUNT=$cancelled"
+          echo "ROBLOX_STALE_FOUNDATION_RUN_CANCEL_COUNT=$cancelled"
 
       - name: Select newest same-identity runtime foundation run
         id: guard
