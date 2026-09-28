@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-3bw6fu",
-      "worker": "vibe2",
-      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1",
-      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "files": [
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/GameCore.cs",
-        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "289b5b7b5ef74c05205958c1b108812436b72f7f",
-      "acquiredAt": "2026-09-28T08:15:21.298Z",
-      "expiresAt": "2026-09-28T09:00:21.298Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-3w718n",
       "worker": "vibe2",
       "taskId": "monster-adventure-studio-evolution-unity-web-presentation-v1",
@@ -486,6 +468,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:line-defense-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-1grzmo0",
+      "worker": "vibe2",
+      "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1",
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "files": [
+        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/seed-story-complete-rpg-chronicles-of-eldoria/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "2c5a3d82a21f44eb54c8257f93ee4892580ed884",
+      "acquiredAt": "2026-09-28T09:00:31.781Z",
+      "expiresAt": "2026-09-28T09:45:31.781Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-unity-web-usability-v1"
       ]
     }
   ]
