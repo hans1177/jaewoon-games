@@ -217,6 +217,17 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
   });
 }
 
+function verifiedExternalGameDevelopmentProfile(learning={}){
+  const principles=(learning?.verifiedExternalGameDevelopmentPrinciples||[]).map(value=>clean(value).toLowerCase());
+  const text=principles.join(' ');
+  return Object.freeze({
+    principles:Object.freeze([...(learning?.verifiedExternalGameDevelopmentPrinciples||[])]),
+    immediateVisibleFeedback:/immediate visible|visible state|state feedback|movement feedback|spatially anchored|prompt, legible|prompt and unambiguous/.test(text),
+    contextualOnboarding:/onboarding|touch interaction instruction|first playable|first live|game entry/.test(text),
+    persistentActions:/persistent primary|context-relevant actions|high-frequency progression|action controls visible/.test(text)
+  });
+}
+
 function verifiedExternalLearningConfigBlock(learning={}){
   if(learning?.applied!==true||Number(learning?.verifiedExternalLearningCoveragePct||0)!==100||Number(learning?.verifiedExternalLearningRetrievedCount||0)<=0||Number(learning?.verifiedExternalLearningRetrievedCount||0)!==Number(learning?.verifiedExternalLearningAppliedCount||0)||learning?.verifiedExternalLearningTruncationForbidden!==true)throw new Error('ROBLOX_EXISTING_SOURCE_VERIFIED_EXTERNAL_LEARNING_REQUIRED');
   const rows=values=>(values||[]).map(value=>`      ${luauString(value)},`).join('\n');
@@ -234,6 +245,9 @@ ${rows(learning.verifiedExternalLearningIds||[])}
     },
     ApplicationPrinciples = {
 ${rows(learning.verifiedExternalLearningPrinciples||[])}
+    },
+    GameDevelopmentPrinciples = {
+${rows(learning.verifiedExternalGameDevelopmentPrinciples||[])}
     },
     AvoidancePrinciples = {
 ${rows(learning.verifiedExternalAvoidancePrinciples||[])}
@@ -259,7 +273,7 @@ function replaceOrInsertVerifiedExternalLearningConfig(source='',learning={}){
   return source.slice(0,closeIndex+1)+block+source.slice(closeIndex+1);
 }
 
-function bindExistingClientVerifiedExternalLearning(source=''){
+function bindExistingClientVerifiedExternalLearning(source='',learning={}){
   let output=source;
   const requireMatch=output.match(/local\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*require\([^\n]*GameConfig[^\n]*\)/);
   if(!requireMatch)throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_CONFIG_REQUIRE_MISSING');
@@ -268,6 +282,7 @@ function bindExistingClientVerifiedExternalLearning(source=''){
 local verifiedExternalLearningContext = ${configVar}.VerifiedExternalLearning or ${configVar}.LearningContext or {}
 local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
 local verifiedExternalLearningPrinciples = verifiedExternalLearningContext.ApplicationPrinciples or {}
+local verifiedExternalGameDevelopmentPrinciples = verifiedExternalLearningContext.GameDevelopmentPrinciples or {}
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END
 `;
   const managedContext=/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END\n/;
@@ -284,6 +299,7 @@ ${frameVar}:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternal
 ${frameVar}:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
 ${frameVar}:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
 ${frameVar}:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
+${frameVar}:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verifiedExternalGameDevelopmentPrinciples)
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END
 `;
   const managedRuntime=/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END\n/;
@@ -292,6 +308,58 @@ ${frameVar}:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternal
     let at=(frameMatch.index||0)+frameMatch[0].length;
     if(output[at]===';')at++;
     output=output.slice(0,at)+'\n'+runtimeBlock+output.slice(at);
+  }
+  const profile=verifiedExternalGameDevelopmentProfile(learning);
+  if(profile.immediateVisibleFeedback||profile.contextualOnboarding||profile.persistentActions){
+    const behavior=`-- VERIFIED_EXTERNAL_LEARNING_CLIENT_BEHAVIOR_BEGIN
+local verifiedLearningRoot = ${frameVar}
+local verifiedLearningImmediateFeedback = ${profile.immediateVisibleFeedback?'true':'false'}
+local verifiedLearningContextualOnboarding = ${profile.contextualOnboarding?'true':'false'}
+local verifiedLearningPersistentActions = ${profile.persistentActions?'true':'false'}
+local verifiedLearningGuidance = nil
+if verifiedLearningContextualOnboarding then
+  verifiedLearningGuidance = Instance.new("TextLabel")
+  verifiedLearningGuidance.Name = "VerifiedLearningGuidance"
+  verifiedLearningGuidance.Size = UDim2.new(1, -20, 0, 32)
+  verifiedLearningGuidance.Position = UDim2.fromOffset(10, 8)
+  verifiedLearningGuidance.BackgroundTransparency = 1
+  verifiedLearningGuidance.TextWrapped = true
+  verifiedLearningGuidance.TextScaled = true
+  verifiedLearningGuidance.Text = "핵심 조작을 눌러 바로 플레이"
+  verifiedLearningGuidance.Parent = verifiedLearningRoot
+end
+local function bindVerifiedLearningControl(control)
+  if not control:IsA("GuiButton") then return end
+  if verifiedLearningPersistentActions then
+    local size = Instance.new("UISizeConstraint")
+    size.Name = "VerifiedLearningTouchTarget"
+    size.MinSize = Vector2.new(0, 52)
+    size.Parent = control
+  end
+  control.Activated:Connect(function()
+    verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control.Name)
+    verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputRespondedAt", os.clock())
+    if verifiedLearningGuidance then verifiedLearningGuidance.Visible = false end
+    if verifiedLearningImmediateFeedback then
+      local oldTransparency = control.BackgroundTransparency
+      control.BackgroundTransparency = math.clamp(oldTransparency + 0.18, 0, 1)
+      task.delay(0.12, function()
+        if control and control.Parent then control.BackgroundTransparency = oldTransparency end
+      end)
+    end
+  end)
+end
+for _, descendant in ipairs(verifiedLearningRoot:GetDescendants()) do bindVerifiedLearningControl(descendant) end
+verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_BEHAVIOR_END
+`;
+    const behaviorRe=/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_BEHAVIOR_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_BEHAVIOR_END\n/;
+    if(behaviorRe.test(output))output=output.replace(behaviorRe,behavior);
+    else{
+      let at=(frameMatch.index||0)+frameMatch[0].length;
+      if(output[at]===';')at++;
+      output=output.slice(0,at)+'\n'+behavior+output.slice(at);
+    }
   }
   return output;
 }
@@ -396,7 +464,7 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   let afterServer=beforeServer;
   if(learning?.applied===true){
     afterConfig=replaceOrInsertVerifiedExternalLearningConfig(afterConfig,learning);
-    afterClient=bindExistingClientVerifiedExternalLearning(afterClient);
+    afterClient=bindExistingClientVerifiedExternalLearning(afterClient,learning);
   }
 
   if(foundationRepair===true){
@@ -481,7 +549,7 @@ task.defer(reportNativeFoundationReady)
   if(!studioClientConfigBound||!studioClientVisibleBound)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
   if(learning?.applied===true){
     if(!/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/.test(afterConfig)||!/CoveragePct\s*=\s*100/.test(afterConfig)||!afterConfig.includes(`MemoryFingerprint = ${luauString(learning.verifiedExternalLearningFingerprint||'')}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CONFIG_VERIFY_FAILED');
-    if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)||!/VerifiedExternalLearningCoveragePct/.test(afterClient)||!/VerifiedExternalLearningPrincipleCount/.test(afterClient))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
+    if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)||!/VerifiedExternalLearningCoveragePct/.test(afterClient)||!/VerifiedExternalLearningPrincipleCount/.test(afterClient)||!/VERIFIED_EXTERNAL_LEARNING_CLIENT_BEHAVIOR_BEGIN/.test(afterClient))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
   }
   if(foundationRepair===true){
     const combined=afterServer+'\n'+afterClient;

@@ -541,3 +541,14 @@ test('Roblox runtime source lane treats stale verified APK learning as an existi
   assert.match(workflow,/VERIFIED_EXTERNAL_LEARNING_REBIND/);
   assert.match(workflow,/verifiedExternalLearningAppliedToExistingSource/);
 });
+
+
+test('existing Roblox APK-derived principles change actual client UX behavior',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(source,/verifiedExternalGameDevelopmentProfile/);
+  assert.match(source,/VERIFIED_EXTERNAL_LEARNING_CLIENT_BEHAVIOR_BEGIN/);
+  assert.match(source,/VerifiedLearningTouchTarget/);
+  assert.match(source,/VerifiedExternalLearningLastControl/);
+  assert.match(source,/VerifiedExternalLearningInputRespondedAt/);
+  assert.match(source,/control\.Activated:Connect/);
+});

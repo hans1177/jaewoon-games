@@ -4,6 +4,14 @@
 
 const clean=value=>String(value??'').trim();
 const unique=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
+function gameDevelopmentPrinciple(value=''){
+  const text=clean(value).toLowerCase();
+  const scope=clean(text.match(/scope=([^;]+)/)?.[1]).toLowerCase();
+  if(!text)return false;
+  if(/qa-evidence|automation|runtime-compatibility|runtime-evidence|android|abi|install|artifact|infrastructure|hosted-emulator|experiment-strategy/.test(scope))return false;
+  return /onboarding|interaction|ui|ux|controls|feedback|navigation|progression|rpg|sandbox|gameplay|mobile-3d|mobile-feedback|input-feedback/.test(scope)
+    ||/immediate visible|persistent primary|contextual control|touch interaction|movement feedback|spatially anchored/.test(text);
+}
 const stableHash=value=>{let h=2166136261;for(const ch of String(value??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return(h>>>0).toString(36);};
 
 function coreKind(profile={}){
@@ -111,6 +119,7 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
   const verifiedExternalDistilledContentComplete=verifiedExternalContract.distilledContentComplete;
   const verifiedExternalLearningCoveragePct=verifiedExternalContract.coveragePct;
   const verifiedExternalLearningPrinciples=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledApplicationPrinciples||[]));
+  const verifiedExternalGameDevelopmentPrinciples=unique(verifiedExternalLearningPrinciples.filter(gameDevelopmentPrinciple));
   const verifiedExternalAvoidancePrinciples=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledAvoidancePrinciples||[]));
   const verifiedExternalLearningUseAllowed=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledLearningUseAllowed||[]));
   const verifiedExternalLearningUseForbidden=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledLearningUseForbidden||[]));
@@ -161,6 +170,7 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
   const applied=checklist.length>0
     &&verifiedExternalLearningIds.length>0
     &&verifiedExternalDistilledContentComplete
+    &&verifiedExternalGameDevelopmentPrinciples.length>0
     &&(Boolean(selected)||distilled.patterns.length>0||distilled.principles.length>0||verifiedExternalLearningPrinciples.length>0);
 
   return Object.freeze({
@@ -185,6 +195,8 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     verifiedExternalDistilledContentComplete,
     verifiedExternalLearningApplyAxes,
     verifiedExternalLearningPrinciples:Object.freeze(verifiedExternalLearningPrinciples),
+    verifiedExternalGameDevelopmentPrinciples:Object.freeze(verifiedExternalGameDevelopmentPrinciples),
+    verifiedExternalGameDevelopmentPrincipleCount:verifiedExternalGameDevelopmentPrinciples.length,
     verifiedExternalAvoidancePrinciples:Object.freeze(verifiedExternalAvoidancePrinciples),
     verifiedExternalLearningUseAllowed:Object.freeze(verifiedExternalLearningUseAllowed),
     verifiedExternalLearningUseForbidden:Object.freeze(verifiedExternalLearningUseForbidden),
