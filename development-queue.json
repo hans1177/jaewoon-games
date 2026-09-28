@@ -12145,7 +12145,7 @@
       "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
       "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T15:14:33.023Z",
+      "updatedAt": "2026-09-28T15:19:50.560Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -13050,10 +13050,12 @@
           "internalStudioValidationOnly": true,
           "runtimeAcceptancePassed": true,
           "studioAssetRuntimeBindingPassed": true,
-          "status": "PENDING",
-          "attempts": 0,
+          "status": "RETRY_REQUIRED",
+          "attempts": 1,
           "enqueuedAt": "2026-09-28T15:14:33.023Z",
-          "authority": "roblox-f9-immutable-canonical-publish-queue"
+          "authority": "roblox-f9-immutable-canonical-publish-queue",
+          "lastAttemptAt": "2026-09-28T15:19:50.560Z",
+          "lastFailureSignature": "ROBLOX_CANONICAL_PUBLISH_REPAIR_REQUIRED"
         }
       ],
       "robloxF9Blockers": [],
@@ -13139,7 +13141,9 @@
         "reusedServerBootEvidence": false,
         "reusedStudioInternalEvidence": true,
         "reason": "EXACT_SOURCE_ARTIFACT_VERSION_STUDIO_INTERNAL_EVIDENCE_ALREADY_VERIFIED"
-      }
+      },
+      "robloxCanonicalPublishRepairRequired": true,
+      "robloxCanonicalPublishRepairCycleId": "825a26d1b013de94f2086c6d38a9839895abb781:sha256:f34852ab83c0f7a1b3ecbb9073b988617d580088f97ca678c3a97be7731969c0"
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -17010,7 +17014,7 @@
       "robloxPublicReleaseEvidence": null
     }
   ],
-  "updatedAt": "2026-09-28T15:19:44.547Z",
+  "updatedAt": "2026-09-28T15:19:50.560Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
