@@ -157,3 +157,29 @@ test('stage recording keeps platform QA evidence independent',()=>{
   assert.equal(evidence.regressionPassed,true);
   assert.equal(evidence.lastSuccessfulStage,'REGRESSION');
 });
+
+test('released native platforms re-enter only for real next-cycle work and never because release itself is terminal',()=>{
+  const roblox={...nativeItem('released-roblox','ROBLOX'),
+    currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+    canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+    robloxSourceCommit:'b'.repeat(40),
+    robloxInternalReleaseReady:true,
+    robloxInternalReleaseEvidence:{sourceRevision:'b'.repeat(40)}
+  };
+  assert.equal(platformDevelopmentEligible(roblox,'ROBLOX'),false);
+  assert.equal(platformDevelopmentEligible({...roblox,nextEscalationRequired:true,buildUpDirectiveId:'released-roblox:g2'},'ROBLOX'),true);
+  assert.equal(platformDevelopmentEligible({...roblox,robloxSourceCommit:'c'.repeat(40)},'ROBLOX'),true);
+
+  const unity={...nativeItem('released-unity','UNITY'),
+    productionClass:'RELEASE_CONFIRMED',
+    currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+    canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',
+    unitySourceCommit:'d'.repeat(40),
+    unityPublicRelease:true,
+    unityInternalReleaseEvidence:{sourceRevision:'d'.repeat(40)}
+  };
+  assert.equal(platformDevelopmentEligible(unity,'UNITY'),false);
+  assert.equal(platformDevelopmentEligible({...unity,nextEscalationRequired:true,buildUpDirectiveId:'released-unity:g3'},'UNITY'),true);
+  assert.equal(platformDevelopmentEligible({...unity,canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED'},'UNITY'),true);
+  assert.equal(platformDevelopmentEligible({...unity,nextEscalationRequired:true,buildUpDirectiveId:'released-unity:g3'},'FORTNITE_UEFN'),false);
+});
