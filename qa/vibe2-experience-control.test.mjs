@@ -138,22 +138,22 @@ test('verified external application rejects incomplete axes unverified authority
     rawCommercialAssetCopy:false,
     distinctiveExpressionClone:false
   };
-  const promote=application=>promoteVibeReviewedExperience(createVibeExperienceMemory(),successfulReview({
+  const reject=application=>promoteVibeReviewedExperience(createVibeExperienceMemory(),successfulReview({
     id:'external-hard-gate-fixture',
     verifiedExternalLearningApplication:application
-  })).record.verifiedExternalLearningApplication;
+  }));
 
-  const missingMotion=promote({...base,sourceAuthority:'VERIFIED_MEMORY_ONLY',verifiedExternalLearningApplyAxes:fullAxes.filter(axis=>axis!=='MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION')});
-  assert.equal(missingMotion.allRequiredAxesPresent,false);
-  assert.equal(missingMotion.fullCoverageVerified,false);
+  const missingMotion=reject({...base,sourceAuthority:'VERIFIED_MEMORY_ONLY',verifiedExternalLearningApplyAxes:fullAxes.filter(axis=>axis!=='MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION')});
+  assert.equal(missingMotion.promoted,false);
+  assert.ok(missingMotion.validation.issues.includes('verified-external-learning-axis-required:MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION'));
 
-  const wrongAuthority=promote({...base,sourceAuthority:'PRACTICE_ONLY',verifiedExternalLearningApplyAxes:fullAxes});
-  assert.equal(wrongAuthority.allRequiredAxesPresent,true);
-  assert.equal(wrongAuthority.fullCoverageVerified,false);
+  const wrongAuthority=reject({...base,sourceAuthority:'PRACTICE_ONLY',verifiedExternalLearningApplyAxes:fullAxes});
+  assert.equal(wrongAuthority.promoted,false);
+  assert.ok(wrongAuthority.validation.issues.includes('verified-external-learning-authority-required'));
 
-  const rawCopy=promote({...base,sourceAuthority:'VERIFIED_MEMORY_ONLY',verifiedExternalLearningApplyAxes:fullAxes,rawCommercialCodeCopy:true});
-  assert.equal(rawCopy.rawCommercialCodeCopy,true);
-  assert.equal(rawCopy.fullCoverageVerified,false);
+  const rawCopy=reject({...base,sourceAuthority:'VERIFIED_MEMORY_ONLY',verifiedExternalLearningApplyAxes:fullAxes,rawCommercialCodeCopy:true});
+  assert.equal(rawCopy.promoted,false);
+  assert.ok(rawCopy.validation.issues.includes('raw-commercial-expression-copy-forbidden'));
 });
 
 test('batch promotion persists phase 3 capability application evidence without double counting the same application',()=>{
@@ -389,17 +389,41 @@ test('verified experience is injected into the next similar worker goal as advis
         unity:{
           authority:'verified-task-playbook',
           checklist:['bind-current-source-tree-and-build'],
-          reuse:[{id:'external-black-box-test-unity',project:'verified-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1}]
+          reuse:[{
+            id:'external-black-box-test-unity',
+            project:'verified-reference',
+            sourceRevision:'sha256:'+ 'a'.repeat(64),
+            score:1,
+            distilledApplicationPrinciples:['bind attack input to immediate visible motion and state feedback'],
+            distilledAvoidancePrinciples:['do not clone distinctive commercial presentation'],
+            distilledLearningUseAllowed:['input-to-feedback timing']
+          }]
         },
         coding:{
           authority:'verified-task-playbook',
           checklist:['rank-responsible-source-before-edit'],
-          reuse:[{id:'external-black-box-test-unity',project:'verified-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1}]
+          reuse:[{
+            id:'external-black-box-test-unity',
+            project:'verified-reference',
+            sourceRevision:'sha256:'+ 'a'.repeat(64),
+            score:1,
+            distilledApplicationPrinciples:['bind attack input to immediate visible motion and state feedback'],
+            distilledAvoidancePrinciples:['do not clone distinctive commercial presentation'],
+            distilledLearningUseAllowed:['input-to-feedback timing']
+          }]
         },
         general:{
           authority:'verified-task-playbook',
           checklist:['require-verifiable-completion'],
-          reuse:[{id:'external-black-box-test-unity',project:'verified-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1}]
+          reuse:[{
+            id:'external-black-box-test-unity',
+            project:'verified-reference',
+            sourceRevision:'sha256:'+ 'a'.repeat(64),
+            score:1,
+            distilledApplicationPrinciples:['bind attack input to immediate visible motion and state feedback'],
+            distilledAvoidancePrinciples:['do not clone distinctive commercial presentation'],
+            distilledLearningUseAllowed:['input-to-feedback timing']
+          }]
         }
       }
     }
