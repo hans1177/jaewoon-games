@@ -11,6 +11,8 @@ local verifiedExternalLearningContext = Config.VerifiedExternalLearning or Confi
 local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
 local verifiedExternalLearningPrinciples = verifiedExternalLearningContext.ApplicationPrinciples or {}
 local verifiedExternalGameDevelopmentPrinciples = verifiedExternalLearningContext.GameDevelopmentPrinciples or {}
+local verifiedExternalLearningMappings = verifiedExternalLearningContext.GameSpecificSemanticMappings or {}
+local verifiedExternalLearningDispositions = verifiedExternalLearningContext.LearningDispositions or {}
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END
 
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
@@ -30,11 +32,20 @@ local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
 local verifiedLearningRoot = root
+local verifiedLearningSemanticVariant = "DEFENSE_WAVE"
+local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
+local verifiedLearningSemanticColor = Color3.fromRGB(255, 148, 74)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningAxisCount", #verifiedLearningAxes)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningFingerprint", verifiedLearningContext.MemoryFingerprint or "")
+verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMappingVersion", verifiedLearningContext.SemanticMappingVersion or 0)
+verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMappingFingerprint", verifiedLearningContext.SemanticMappingFingerprint or "")
+verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticVariant", verifiedLearningSemanticVariant)
+verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticDomain", verifiedLearningSemanticDomain)
+verifiedLearningRoot:SetAttribute("VerifiedLearningGameSpecificMappingCount", #(verifiedLearningContext.GameSpecificSemanticMappings or {}))
 
+if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
 -- Roblox environment / background adaptation.
 local verifiedLearningColorGrade = verifiedLearningLighting:FindFirstChild("VerifiedLearningColorGrade")
 if not verifiedLearningColorGrade then
@@ -74,6 +85,9 @@ verifiedLearningDepth.NearIntensity = 0.02
 verifiedLearningDepth.FocusDistance = 28
 verifiedLearningDepth.InFocusRadius = 24
 
+end
+
+if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "COMBAT_IMPACT" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
 -- Roblox character animation / motion adaptation.
 local function syncVerifiedLearningCharacterMotion(character)
   local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid", 5)
@@ -92,6 +106,8 @@ end
 if verifiedLearningPlayer.Character then task.defer(syncVerifiedLearningCharacterMotion, verifiedLearningPlayer.Character) end
 verifiedLearningPlayer.CharacterAdded:Connect(syncVerifiedLearningCharacterMotion)
 
+end
+
 -- Roblox UI / touch / progression guidance.
 local verifiedLearningGuidance = Instance.new("TextLabel")
 verifiedLearningGuidance.Name = "VerifiedLearningGuidance"
@@ -100,7 +116,25 @@ verifiedLearningGuidance.Position = UDim2.fromOffset(10, 8)
 verifiedLearningGuidance.BackgroundTransparency = 1
 verifiedLearningGuidance.TextWrapped = true
 verifiedLearningGuidance.TextScaled = true
-verifiedLearningGuidance.Text = "핵심 조작을 눌러 바로 플레이"
+if verifiedLearningSemanticVariant == "PUZZLE_STATE" then
+  verifiedLearningGuidance.Text = "퍼즐 보드와 현재 이동을 함께 확인"
+elseif verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
+  verifiedLearningGuidance.Text = "웨이브와 기지 상태를 보며 배치"
+elseif verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
+  verifiedLearningGuidance.Text = "공격 방향과 타격 응답을 확인"
+elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
+  verifiedLearningGuidance.Text = "레벨과 다음 성장 조건을 확인"
+elseif verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" then
+  verifiedLearningGuidance.Text = "자원과 업그레이드 상태를 확인"
+elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
+  verifiedLearningGuidance.Text = "체력과 위협 상태를 확인"
+elseif verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" then
+  verifiedLearningGuidance.Text = "이동 방향과 공간 응답을 확인"
+elseif verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
+  verifiedLearningGuidance.Text = "공유 세션과 내 역할을 확인"
+else
+  verifiedLearningGuidance.Text = "현재 목표와 다음 행동을 확인"
+end
 verifiedLearningGuidance.Parent = verifiedLearningRoot
 local verifiedLearningRiskCue = Instance.new("TextLabel")
 verifiedLearningRiskCue.Name = "VerifiedLearningProgressionRiskCue"
@@ -109,7 +143,16 @@ verifiedLearningRiskCue.Position = UDim2.fromOffset(10, 40)
 verifiedLearningRiskCue.BackgroundTransparency = 1
 verifiedLearningRiskCue.TextWrapped = true
 verifiedLearningRiskCue.TextScaled = true
-verifiedLearningRiskCue.Text = "도전 전 레벨·상태·위험 조건 확인"
+if verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
+  verifiedLearningRiskCue.Text = "배치 전 웨이브·기지 위험 확인"
+elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
+  verifiedLearningRiskCue.Text = "행동 전 체력·위협 위험 확인"
+elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
+  verifiedLearningRiskCue.Text = "행동 전 레벨·성장 조건 확인"
+else
+  verifiedLearningRiskCue.Text = "현재 상태와 다음 행동 확인"
+end
+verifiedLearningRiskCue.Visible = verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" or verifiedLearningSemanticVariant == "PROGRESSION_RISK"
 verifiedLearningRiskCue.Parent = verifiedLearningRoot
 
 -- Roblox skill VFX / camera / motion feedback.
@@ -129,6 +172,7 @@ local function playVerifiedLearningActionFeedback(control)
     verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
   end
 
+  if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
   local camera = workspace.CurrentCamera
   if camera then
     local baseFov = camera.FieldOfView
@@ -137,7 +181,9 @@ local function playVerifiedLearningActionFeedback(control)
       if camera then verifiedLearningTweenService:Create(camera, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {FieldOfView = baseFov}):Play() end
     end)
   end
+  end
 
+  if verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
   local character = verifiedLearningPlayer.Character
   local rootPart = character and character:FindFirstChild("HumanoidRootPart")
   if character and rootPart then
@@ -178,6 +224,12 @@ local function playVerifiedLearningActionFeedback(control)
       if highlight then highlight:Destroy() end
     end)
   end
+  end
+
+  if verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" or verifiedLearningSemanticVariant == "PUZZLE_STATE" or verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
+    verifiedLearningRiskCue.Visible = true
+    verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
+  end
 end
 
 local verifiedLearningLastControl = nil
@@ -187,6 +239,7 @@ local function bindVerifiedLearningControl(control)
     local size = Instance.new("UISizeConstraint")
     size.Name = "VerifiedLearningTouchTarget"
     size.MinSize = Vector2.new(0, 52)
+    size:SetAttribute("SemanticTouchTarget", verifiedLearningSemanticVariant)
     size.Parent = control
   end
   control.Activated:Connect(function()
@@ -212,6 +265,11 @@ root:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
 root:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
 root:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
 root:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verifiedExternalGameDevelopmentPrinciples)
+root:SetAttribute("VerifiedExternalLearningSemanticMappingVersion", verifiedExternalLearningContext.SemanticMappingVersion or 0)
+root:SetAttribute("VerifiedExternalLearningSemanticMappingFingerprint", verifiedExternalLearningContext.SemanticMappingFingerprint or "")
+root:SetAttribute("VerifiedExternalLearningDispositionCount", #verifiedExternalLearningDispositions)
+root:SetAttribute("VerifiedExternalLearningMappingCount", #verifiedExternalLearningMappings)
+root:SetAttribute("VerifiedLearningSemanticVariant", verifiedExternalLearningContext.SemanticVariant or "")
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END
 
 root.Name = "Root"
