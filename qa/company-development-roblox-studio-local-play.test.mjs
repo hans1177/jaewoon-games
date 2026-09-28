@@ -1947,3 +1947,29 @@ test('commercial system transaction gate fails when a discovered shop action has
   assert.equal(result.scenarios.find(row=>row.id==='adaptive-system-transaction-effect')?.pass,false);
   assert.ok(result.qualityFailureKinds.includes('adaptive-system-transaction-effect'));
 });
+
+
+test('commercial Studio probes are split into parser-safe core world and runtime Luau chunks',()=>{
+  const start=helper.indexOf("function studioActualPlayCoreProbeSource");
+  const end=helper.indexOf("function pointDistance",start);
+  assert.ok(start>=0&&end>start);
+  const block=helper.slice(start,end);
+  assert.match(block,/ROBLOX_STUDIO_ACTUAL_PLAY_CORE=/);
+  assert.match(block,/ROBLOX_STUDIO_ACTUAL_PLAY_WORLD=/);
+  assert.match(block,/ROBLOX_STUDIO_ACTUAL_PLAY_RUNTIME=/);
+  assert.match(block,/const segments=\[/);
+  assert.doesNotMatch(block,/function studioActualPlayProbeSource\(/);
+  assert.doesNotMatch(block,/\+=/);
+  assert.ok(block.indexOf('local function attr')<block.indexOf('roundState=attr('));
+});
+
+test('Studio evidence push conflicts reapply onto latest company-runtime instead of rebasing JSON',()=>{
+  const persistStart=workflow.indexOf('- name: Persist exact Studio MCP play evidence');
+  const persistEnd=workflow.indexOf('- name: Refill existing 24H development loop after verified play',persistStart);
+  assert.ok(persistStart>=0&&persistEnd>persistStart);
+  const block=workflow.slice(persistStart,persistEnd);
+  assert.match(block,/ROBLOX_STUDIO_MCP_RUNTIME_PUSH_CONFLICT=REAPPLY_LATEST/);
+  assert.match(block,/git -C runtime reset --hard origin\/company-runtime/);
+  assert.match(block,/Studio MCP evidence reapply on latest runtime failed/);
+  assert.doesNotMatch(block,/git -C runtime rebase origin\/company-runtime/);
+});
