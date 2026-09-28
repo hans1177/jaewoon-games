@@ -786,6 +786,32 @@ function keyboardArgs(schema,studioId,key){
   }
   return fillRequired(args,schema);
 }
+function characterNavigationArgs(schema,studioId,target={}){
+  const args={};setStudioId(args,schema,studioId);
+  const props=schemaProps(schema);
+  const x=Number(target?.x||0),y=Number(target?.y||0),z=Number(target?.z||0);
+  for(const [key,def] of Object.entries(props)){
+    if(/studio.*id/i.test(key))continue;
+    if(/^(x|world.?x|target.?x|destination.?x)$/i.test(key)){args[key]=x;continue;}
+    if(/^(y|world.?y|target.?y|destination.?y)$/i.test(key)){args[key]=y;continue;}
+    if(/^(z|world.?z|target.?z|destination.?z)$/i.test(key)){args[key]=z;continue;}
+    if(/position|destination|target|goal|point/i.test(key)&&def.type==='object'){
+      args[key]={x,y,z};continue;
+    }
+    if(/action|mode|operation/i.test(key)){
+      if(Array.isArray(def.enum))args[key]=enumValue(def,['navigate','move_to','moveto','walk','goto','go_to']);
+      else if(def.type==='string')args[key]='navigate';
+      continue;
+    }
+    if(/speed/i.test(key)&&['number','integer'].includes(def.type))args[key]=16;
+    if(/timeout/i.test(key)&&['number','integer'].includes(def.type))args[key]=8;
+  }
+  return fillRequired(args,schema);
+}
+function promptKeyboardKey(value=''){
+  const raw=clean(value).split('.').at(-1)||'E';
+  return /^[A-Za-z0-9]+$/.test(raw)?raw:'E';
+}
 
 
 function datamodelEnumValue(def={},desired='Client'){
@@ -1441,6 +1467,35 @@ export async function runOfficialStudioMcpPlay({
     checkpoint('mcp-input-dispatched',keyboardActions.length===4&&keyboardActions.every(x=>x.ok));
 
     if(actualPlayContract?.required===true){
+      const promptRows=entityRows(initialClientProbe?.world?.prompts).filter(row=>row?.enabled!==false);
+      const rootPos=initialClientProbe?.player||{};
+      promptRows.sort((a,b)=>{
+        const da=Math.hypot(Number(a?.x||0)-Number(rootPos?.rootX||0),Number(a?.y||0)-Number(rootPos?.rootY||0),Number(a?.z||0)-Number(rootPos?.rootZ||0));
+        const db=Math.hypot(Number(b?.x||0)-Number(rootPos?.rootX||0),Number(b?.y||0)-Number(rootPos?.rootY||0),Number(b?.z||0)-Number(rootPos?.rootZ||0));
+        return da-db;
+      });
+      const exploreLimit=auditMode==='F9_SOAK'?3:1;
+      const navigationTool=client.tool('character_navigation');
+      for(const prompt of promptRows.slice(0,exploreLimit)){
+        let navOk=false,inputOk=false;
+        try{
+          const target={x:Number(prompt?.x||0),y:Number(prompt?.y||0),z:Number(prompt?.z||0)};
+          const navResult=await client.call('character_navigation',characterNavigationArgs(navigationTool.inputSchema||{},studioId,target));
+          navOk=navResult?.isError!==true;
+          await wait(450);
+          const key=promptKeyboardKey(prompt?.key);
+          const inputResult=await client.call('user_keyboard_input',keyboardArgs(keyboardTool.inputSchema||{},studioId,key));
+          inputOk=inputResult?.isError!==true;
+          await wait(Math.max(350,Math.min(1800,Number(prompt?.holdDuration||0)*1000+350)));
+          const interactionProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+          if(interactionProbe)timelineProbes.push(interactionProbe);
+          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',dispatched:true,ok:navOk&&inputOk});
+        }catch{
+          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',dispatched:true,ok:false});
+        }
+      }
+      if(promptRows.length>0)checkpoint('commercial-prompt-exploration',actions.some(row=>row.type==='mcp-world-interaction'&&row.ok===true));
+
       const sampleCount=auditMode==='F9_SOAK'?6:3;
       const sampleDelay=auditMode==='F9_SOAK'?900:450;
       for(let sample=0;sample<sampleCount;sample++){
