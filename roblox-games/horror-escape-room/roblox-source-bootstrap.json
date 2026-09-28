@@ -16,14 +16,39 @@
   "serverSourceChanged": false,
   "foundationRepairApplied": false,
   "generatedFiles": [
-    "shared/GameConfig.luau"
+    "shared/GameConfig.luau",
+    "client/Game.client.luau"
   ],
   "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
-  "vibe3LearningApplied": false,
-  "recombinationRecipeId": null,
+  "vibe3LearningApplied": true,
+  "recombinationRecipeId": "recombine_b7e484ceee9efa46",
+  "verifiedExternalLearningAppliedToExistingSource": true,
+  "verifiedExternalLearningFirst": true,
+  "verifiedExternalLearningCoveragePct": 100,
+  "verifiedExternalLearningRetrievedCount": 7,
+  "verifiedExternalLearningAppliedCount": 7,
+  "verifiedExternalLearningIds": [
+    "external-black-box-block-blast-run-30",
+    "external-black-box-cavern-cravers-run-47",
+    "external-black-box-idle-fantasy-run-42",
+    "external-black-box-luanti-run-10",
+    "external-black-box-revengate-run-59",
+    "external-black-box-sgtpuzzles-run-29",
+    "external-black-box-shattered-pixel-dungeon-run-4"
+  ],
+  "verifiedExternalLearningFingerprint": "hfed4s",
+  "verifiedExternalLearningApplyAxes": [
+    "ROBLOX_ENVIRONMENT_BACKGROUND_AND_LIGHTING",
+    "ROBLOX_CHARACTER_ANIMATION_AND_MOTION",
+    "ROBLOX_SKILL_VFX_AND_IMPACT_FEEDBACK",
+    "ROBLOX_CAMERA_AND_VISUAL_FEEDBACK",
+    "ROBLOX_UI_UX_TOUCH_AND_CONTROLS",
+    "ROBLOX_GAMEPLAY_STATE_AND_PROGRESSION",
+    "ROBLOX_RUNTIME_QA_AND_RELIABILITY"
+  ],
   "studioAssetBinding": {
     "version": 3,
     "bindingVersion": 2,
@@ -177,5 +202,5 @@
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-09-27T09:35:03.153Z"
+  "createdAt": "2026-09-28T03:11:49.762Z"
 }
