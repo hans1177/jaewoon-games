@@ -981,6 +981,10 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     ' for name,value in pairs(inst:GetAttributes()) do local lower=string.lower(name);if string.find(lower,"level") or string.find(lower,"xp") or string.find(lower,"gold") or string.find(lower,"quest") or string.find(lower,"wave") or string.find(lower,"round") or string.find(lower,"stage") or string.find(lower,"zone") or string.find(lower,"portal") or string.find(lower,"base") or string.find(lower,"unlock") or string.find(lower,"progress") or string.find(lower,"mastery") or string.find(lower,"tier") or string.find(lower,"kill") or string.find(lower,"reward") then if #progressionRows<80 then table.insert(progressionRows,{scope=scope,name=name,valueType=typeof(value),value=tostring(value)}) end end end',
     'end',
     'collectProgress(p,"player");collectProgress(Workspace,"workspace")',
+    'local inventoryRows={};local inventoryCount=0',
+    'if p then local backpack=p:FindFirstChildOfClass("Backpack");if backpack then for _,d in ipairs(backpack:GetChildren()) do if d:IsA("Tool") then inventoryCount+=1;if #inventoryRows<60 then table.insert(inventoryRows,{name=d.Name,className=d.ClassName,scope="Backpack"}) end end end end;for _,d in ipairs((p.Character and p.Character:GetChildren()) or {}) do if d:IsA("Tool") then inventoryCount+=1;if #inventoryRows<60 then table.insert(inventoryRows,{name=d.Name,className=d.ClassName,scope="Character"}) end end end end',
+    'local leaderstats=p and p:FindFirstChild("leaderstats")',
+    'if leaderstats then for _,d in ipairs(leaderstats:GetChildren()) do if d:IsA("IntValue") or d:IsA("NumberValue") or d:IsA("StringValue") then if #progressionRows<80 then table.insert(progressionRows,{scope="leaderstats",name=d.Name,valueType=d.ClassName,value=tostring(d.Value)}) end end end end',
     'local systemSignals=0',
     'local category={quest=0,reward=0,economy=0,inventory=0,combat=0,progression=0,save=0,retry=0,npc=0,companion=0,item=0,environment=0,effects=effectCount}',
     'for _,rootInst in ipairs({ReplicatedStorage,Workspace,pg}) do if rootInst then for _,d in ipairs(rootInst:GetDescendants()) do local n=string.lower(d.Name);local matched=false',
@@ -1009,7 +1013,7 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     ' camera={present=camera~=nil,viewportX=viewport.X,viewportY=viewport.Y,fieldOfView=camera and camera.FieldOfView or nil,subjectPresent=camera and camera.CameraSubject~=nil or false},',
     ' ui=gui,',
     ' world={arenaPresent=arena~=nil,arenaPartCount=parts,proximityPromptCount=prompts,clickDetectorCount=clickDetectors,collidablePartCount=collidableParts,spawnLocationCount=spawnLocations,boundsFinite=boundsFinite,minX=boundsFinite and minX or nil,minY=boundsFinite and minY or nil,minZ=boundsFinite and minZ or nil,maxX=boundsFinite and maxX or nil,maxY=boundsFinite and maxY or nil,maxZ=boundsFinite and maxZ or nil,floorBelowPlayer=floorBelow,prompts=promptRows,mobs=mobRows,npcs=npcRows,companions=companionRows,items=itemRows,environmentModels=environmentModels,effectCount=effectCount},',
-    ' runtime={remoteCount=remoteCount,remotes=remoteRows,progression=progressionRows,systemSignals=systemSignals,categories=category,descendantCount=descendantCount,memoryMb=memoryMb,soundCount=soundCount,playingSoundCount=playingSoundCount},',
+    ' runtime={remoteCount=remoteCount,remotes=remoteRows,progression=progressionRows,inventory=inventoryRows,inventoryCount=inventoryCount,systemSignals=systemSignals,categories=category,descendantCount=descendantCount,memoryMb=memoryMb,soundCount=soundCount,playingSoundCount=playingSoundCount},',
     ' workspace={MapReady=attr(Workspace,"MapReady"),ActivePopulation=attr(Workspace,"ActivePopulation"),AIBotCount=attr(Workspace,"AIBotCount"),HumanCount=attr(Workspace,"HumanCount"),MonsterCount=attr(Workspace,"MonsterCount"),CurrentMapId=attr(Workspace,"CurrentMapId"),CurrentMapName=attr(Workspace,"CurrentMapName"),CurrentMapEvent=attr(Workspace,"CurrentMapEvent"),WorldArtPass=attr(Workspace,"WorldArtPass"),CharacterArtDirection=attr(Workspace,"CharacterArtDirection"),DesignCodeSync=attr(Workspace,"DesignCodeSync")},',
     ' lighting={brightness=Lighting.Brightness,clockTime=Lighting.ClockTime,ambientR=Lighting.Ambient.R,ambientG=Lighting.Ambient.G,ambientB=Lighting.Ambient.B}',
     '}',
@@ -1074,6 +1078,10 @@ function progressionChanged(beforeRows=[],afterRows=[]){
   }
   return false;
 }
+function inventoryChanged(beforeRows=[],afterRows=[]){
+  const key=rows=>entityRows(rows).map(row=>clean(row?.scope)+'|'+clean(row?.name)+'|'+clean(row?.className)).sort().join('\n');
+  return key(beforeRows)!==key(afterRows);
+}
 export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[],timelineProbes=[],auditProfile='FAST_DEEP'}={}){
   if(contract?.required!==true)return{required:false,scenarios:[],qualityFailureKinds:[],authoritativeStateChangeObserved:false,capture:{before:{pass:true,frames:[]},after:{pass:true,frames:[]}},metrics:{}};
   const exp=contract?.expectations||{};
@@ -1113,6 +1121,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const companionMotion=entityMotionSummary(initialWorld?.companions,world?.companions);
   const npcMotion=entityMotionSummary(initialWorld?.npcs,world?.npcs);
   const progressChanged=progressionChanged(initialClientProbe?.runtime?.progression,runtime?.progression);
+  const inventoryDelta=inventoryChanged(initialClientProbe?.runtime?.inventory,runtime?.inventory);
   const timeline=Array.isArray(timelineProbes)?timelineProbes.filter(Boolean):[];
   let timelineMobDynamic=false,timelineCompanionDynamic=false,timelineProgressChanged=false;
   let previous=initialClientProbe;
@@ -1194,6 +1203,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
       primaryActionVelocity:velocity,
       primaryActionFeedbackChanged,
       progressChanged,
+      inventoryChanged:inventoryDelta,
       timelineProgressChanged,
       timelineMobDynamic,
       timelineCompanionDynamic,
@@ -1469,7 +1479,19 @@ export async function runOfficialStudioMcpPlay({
     if(actualPlayContract?.required===true){
       const promptRows=entityRows(initialClientProbe?.world?.prompts).filter(row=>row?.enabled!==false);
       const rootPos=initialClientProbe?.player||{};
+      const semanticWeight=row=>{
+        const text=(clean(row?.actionText)+' '+clean(row?.objectText)+' '+clean(row?.name)).toLowerCase();
+        const priorities=[
+          /quest|퀘스트|mission|임무/,/reward|보상|claim|수령/,/shop|상점|merchant|구매|판매/,
+          /craft|제작|forge|대장간/,/equip|장비|weapon|무기|armor|방어구/,/portal|포탈|입장|enter|door|문/,
+          /heal|회복|healer|치유/,/upgrade|강화|전직|advance|train/,/collect|채집|줍기|pickup|loot|전리품/
+        ];
+        const hit=priorities.findIndex(re=>re.test(text));
+        return hit<0?100:hit;
+      };
       promptRows.sort((a,b)=>{
+        const aw=semanticWeight(a),bw=semanticWeight(b);
+        if(aw!==bw)return aw-bw;
         const da=Math.hypot(Number(a?.x||0)-Number(rootPos?.rootX||0),Number(a?.y||0)-Number(rootPos?.rootY||0),Number(a?.z||0)-Number(rootPos?.rootZ||0));
         const db=Math.hypot(Number(b?.x||0)-Number(rootPos?.rootX||0),Number(b?.y||0)-Number(rootPos?.rootY||0),Number(b?.z||0)-Number(rootPos?.rootZ||0));
         return da-db;
