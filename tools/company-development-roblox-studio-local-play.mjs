@@ -164,6 +164,7 @@ function adaptiveCoverageSignals(launch={}){
   const text=[...launchCore,...releaseGates].join(' ').toLowerCase();
   return Object.freeze({
     ui:/ui|hud|mobile|button|menu|inventory|shop|equip|craft|control|dock|screen|lobby|loading|모바일|버튼|메뉴|인벤|상점|장비|제작|조작|화면|로비|로딩/.test(text),
+    onboarding:/tutorial|guide|onboarding|ftue|start screen|loading|lobby|objective|hint|튜토리얼|가이드|초보|시작 화면|로딩|로비|목표|안내/.test(text),
     map:/map|zone|portal|dungeon|room|island|arena|world|base|village|ground|route|school|hospital|park|forest|cave|field|맵|지역|포탈|던전|방|섬|아레나|마을|사냥터|학교|병원|공원|숲|동굴/.test(text),
     interactions:/quest|shop|inventory|equip|craft|prompt|interact|hire|recruit|build|upgrade|attack|skill|ability|button|door|portal|collect|gather|heal|trade|퀘스트|상점|인벤|장비|제작|상호작용|고용|모집|건설|강화|공격|스킬|문|포탈|채집|회복|거래/.test(text),
     progression:/level|xp|gold|quest|wave|round|stage|boss|base|zone|portal|unlock|progress|mastery|advancement|tier|reward|레벨|경험치|골드|퀘스트|웨이브|라운드|스테이지|보스|해금|진행|숙련|전직|티어|보상/.test(text),
@@ -195,7 +196,7 @@ export function deriveStudioActualPlayContract(launch={}){
   const evidencePolicy=launch?.evidencePolicy&&typeof launch.evidencePolicy==='object'?launch.evidencePolicy:{};
   const signals=adaptiveCoverageSignals(launch);
   const adaptiveScenarios=[
-    'character-camera-ready','visual-capture-sane','adaptive-runtime-surface',
+    'character-camera-ready','visual-capture-sane','adaptive-runtime-surface','adaptive-ftue-clarity',
     'adaptive-ui-commercial-quality','adaptive-world-safety','adaptive-map-route-coverage','adaptive-spawn-safety','adaptive-interaction-surface','adaptive-semantic-interaction-effect','adaptive-system-transaction-effect','adaptive-travel-effect',
     'adaptive-gameplay-loop-cadence','adaptive-quest-state-transition','adaptive-reward-effect','adaptive-progression-surface','adaptive-remote-surface','adaptive-combat-surface','adaptive-mob-animation-ai',
     'adaptive-motion-surface','adaptive-audio-surface','adaptive-npc-surface',
@@ -901,11 +902,12 @@ function studioActualPlayProbeSource(contract={},context='Client'){
     ' local off=viewport.X>0 and viewport.Y>0 and (pos.X+size.X<0 or pos.Y+size.Y<0 or pos.X>viewport.X or pos.Y>viewport.Y) or false',
     ' return {present=true,visible=visible(inst),offscreen=off,x=pos.X,y=pos.Y,width=size.X,height=size.Y}',
     'end',
-    'local gui={screenGuiPresent=false,visibleButtons=0,visibleObjects=0,required={},buttons={},interactive={},offscreenButtons=0,undersizedTouchButtons=0,suboptimalTouchButtons=0,textOverflowButtons=0,overlapPairs=0}',
+    'local gui={screenGuiPresent=false,visibleButtons=0,visibleObjects=0,visibleTextCount=0,visibleTexts={},required={},buttons={},interactive={},offscreenButtons=0,undersizedTouchButtons=0,suboptimalTouchButtons=0,textOverflowButtons=0,overlapPairs=0}',
     'local pg=p and p:FindFirstChildOfClass("PlayerGui")',
     'if pg then',
     ' for _,d in ipairs(pg:GetDescendants()) do',
     '  if d:IsA("GuiObject") and visible(d) then gui.visibleObjects+=1 end',
+    '  if (d:IsA("TextLabel") or d:IsA("TextButton")) and visible(d) and tostring(d.Text)~="" then gui.visibleTextCount+=1;if #gui.visibleTexts<80 then table.insert(gui.visibleTexts,{name=d.Name,text=tostring(d.Text)}) end end',
     '  if (d:IsA("TextButton") or d:IsA("ImageButton")) and visible(d) then',
     '   gui.visibleButtons+=1',
     '   local row=guiInfo(d);row.name=d.Name;row.className=d.ClassName;row.centerX=row.x+row.width/2;row.centerY=row.y+row.height/2',
@@ -1174,6 +1176,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const signals={
     ...declaredSignals,
     ui:declaredSignals.ui===true||Number(client?.ui?.visibleObjects||0)>0,
+    onboarding:declaredSignals.onboarding===true,
     map:declaredSignals.map===true||Number(observedWorld?.collidablePartCount||0)>0,
     interactions:declaredSignals.interactions===true||Number(observedWorld?.proximityPromptCount||0)>0||Number(observedWorld?.clickDetectorCount||0)>0,
     progression:declaredSignals.progression===true||Number(categories.progression||0)>0||entityRows(runtime.progression).length>0,
@@ -1271,6 +1274,13 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const activeLoopObserved=semanticEffects>0||timelineProgressChanged||timelineMobDynamic||timelineCompanionDynamic||primaryActionFeedbackChanged||progressChanged||inventoryDelta;
   const performanceTrendPass=!soak||(memoryGrowthMb<=300&&descendantGrowth<=6000);
   const visibleButtons=Number(ui.visibleButtons||0);
+  const visibleTexts=entityRows(ui.visibleTexts).map(row=>clean(row?.text)).filter(Boolean);
+  const onboardingText=visibleTexts.join(' ').toLowerCase();
+  const onboardingClarityPass=!signals.onboarding||(
+    visibleButtons>0
+    &&visibleTexts.length>0
+    &&/start|play|begin|objective|goal|quest|guide|tutorial|loading|ready|시작|플레이|목표|퀘스트|가이드|튜토리얼|준비|로딩/.test(onboardingText)
+  );
   const uiCommercialPass=
     Number(ui.offscreenButtons||0)===0
     &&Number(ui.undersizedTouchButtons||0)===0
@@ -1313,6 +1323,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'primary-action-effect',pass:!clean(contract.primaryActionButtonText)||primaryActionFeedbackChanged||displacement>=Number(exp.minimumPrimaryActionDisplacement||0.25)||velocity>=1},
     {id:'visual-capture-sane',pass:before.pass&&after.pass&&lightingBrightness>=Number(exp.minimumLightingBrightness||0)},
     {id:'adaptive-runtime-surface',pass:Number(runtime.descendantCount||0)>0&&(Number(runtime.systemSignals||0)>0||Number(runtime.remoteCount||0)>0||interactionSurfaceCount>0||progressionSurfaceCount>0||combatSurfaceCount>0||npcSurfaceCount>0||itemSurfaceCount>0)},
+    {id:'adaptive-ftue-clarity',pass:onboardingClarityPass},
     {id:'adaptive-ui-commercial-quality',pass:!signals.ui||uiCommercialPass},
     {id:'adaptive-world-safety',pass:!signals.map||worldSafetyPass},
     {id:'adaptive-map-route-coverage',pass:!signals.map||routeActions.length===0||routePassCount>=routeRequired},
@@ -1372,6 +1383,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     mobMotion,
     companionMotion,
     npcMotion,
+    ftue:{declared:signals.onboarding===true,pass:onboardingClarityPass,visibleTextCount:visibleTexts.length,visibleButtonCount:visibleButtons},
     uiCommercial:{offscreenButtons:Number(ui.offscreenButtons||0),undersizedTouchButtons:Number(ui.undersizedTouchButtons||0),suboptimalTouchButtons:Number(ui.suboptimalTouchButtons||0),textOverflowButtons:Number(ui.textOverflowButtons||0),overlapPairs:Number(ui.overlapPairs||0)},
     surfaces:{interactionSurfaceCount,progressionSurfaceCount,combatSurfaceCount,npcSurfaceCount,companionSurfaceCount,itemSurfaceCount,remoteCount:Number(runtime.remoteCount||0),soundCount:Number(runtime.soundCount||0),effectCount:Number(world.effectCount||0),promptCount:Number(world.proximityPromptCount||0),inventoryCount:Number(runtime.inventoryCount||0),currentActualPlayerCount,maxActualPlayerCount,multiplayerStateTransition,multiplayerActualSessionPass},
     performance:{memoryMb:Number(runtime.memoryMb||0),descendantCount:Number(runtime.descendantCount||0)},
@@ -1379,6 +1391,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     characterAndAi:{mobRigAnimationPass,humanoidMobCount:humanoidMobRows.length,cameraOccluded:client?.camera?.occluded===true,cameraDistance:Number(client?.camera?.distance||0)}
   };
   const repairMap={
+    'adaptive-ftue-clarity':['FTUE_ONBOARDING','HIGH','Restore a clear start/loading/tutorial/objective presentation with an actionable control and readable guidance before normal play.'],
     'adaptive-ui-commercial-quality':['MOBILE_UI','HIGH','Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.'],
     'adaptive-world-safety':['WORLD_GEOMETRY','CRITICAL','Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.'],
     'adaptive-map-route-coverage':['MAP_ROUTEABILITY','CRITICAL','Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.'],
@@ -1418,6 +1431,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     'character-camera-ready':['CHARACTER_BOOT','CRITICAL','Repair character spawn, Humanoid/root, and camera binding before gameplay starts.']
   };
   const observedFor=id=>{
+    if(id==='adaptive-ftue-clarity')return{declared:signals.onboarding===true,visibleButtonCount:visibleButtons,visibleTextCount:visibleTexts.length,visibleTexts:visibleTexts.slice(0,12),pass:onboardingClarityPass};
     if(id==='adaptive-ui-commercial-quality')return metrics.uiCommercial;
     if(id==='adaptive-world-safety')return{boundsFinite:world.boundsFinite===true,collidablePartCount:Number(world.collidablePartCount||0),floorBelowPlayer:world.floorBelowPlayer===true,floorSamples,floorHits,floorCoveragePass,routeSamples,routeSuccess,routeCoveragePass,spawnThreatDistance,spawnOverlapSafe};
     if(id==='adaptive-map-route-coverage')return{routeAttemptCount:routeActions.length,routePassCount,routeRequired,routes:routeActions.slice(0,8).map(row=>({id:row.id,ok:row.ok===true,moved:Number(row.moved||0),fall:Number(row.fall||0),floorBelow:row.floorBelow===true}))};
