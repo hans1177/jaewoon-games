@@ -1053,6 +1053,99 @@ async function collectStudioActualPlayProbe(client,studioId,contract,context){
   const result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},studioId,studioActualPlayProbeSource(contract,context),context));
   return parseStudioActualPlayProbe(result);
 }
+async function executeStudioLuauText(client,studioId,code,context='Edit'){
+  const tool=client.tool('execute_luau');
+  const result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},studioId,code,context));
+  return flattenText(result,[]).join(' | ');
+}
+function multiplayerPlayerIds(probe={}){
+  return entityRows(probe?.runtime?.players).map(row=>String(row?.userId??'')).filter(Boolean).sort();
+}
+function sameStringSet(a=[],b=[]){
+  return a.length===b.length&&a.every((value,index)=>value===b[index]);
+}
+async function runStudioMultiplayerAudit(client,studioId,contract){
+  const evidence={
+    attempted:true,launched:false,pass:false,infrastructureFailure:false,error:null,
+    initialServerCount:0,initialClientCount:0,lateServerCount:0,lateClientCount:0,afterLeaveServerCount:0,
+    initialIdSync:false,lateJoinIdSync:false,lateJoinPass:false,leavePass:false,remoteSurface:false
+  };
+  let launched=false;
+  try{
+    const launchCode=[
+      'local StudioTestService=game:GetService("StudioTestService")',
+      'if StudioTestService.EditModeActive~=true then return "ROBLOX_STUDIO_MULTIPLAYER_EDIT_NOT_IDLE" end',
+      'task.spawn(function()',
+      ' local ok,result=pcall(function() return StudioTestService:ExecuteMultiplayerTestAsync(2,"COMMERCIAL_F9_MULTIPLAYER_AUDIT") end)',
+      ' if ok then print("ROBLOX_STUDIO_MULTIPLAYER_SESSION_DONE="..tostring(result)) else warn("ROBLOX_STUDIO_MULTIPLAYER_SESSION_ERROR="..tostring(result)) end',
+      'end)',
+      'return "ROBLOX_STUDIO_MULTIPLAYER_SESSION_STARTED"'
+    ].join('\n');
+    const launchText=await executeStudioLuauText(client,studioId,launchCode,'Edit');
+    if(!/ROBLOX_STUDIO_MULTIPLAYER_SESSION_STARTED/.test(launchText))throw new Error('ROBLOX_STUDIO_MULTIPLAYER_START_NOT_CONFIRMED:'+clean(launchText).slice(0,300));
+    launched=true;evidence.launched=true;
+    await wait(3500);
+
+    const initialServer=await collectStudioActualPlayProbe(client,studioId,contract,'Server');
+    const initialClient=await collectStudioActualPlayProbe(client,studioId,contract,'Client');
+    evidence.initialServerCount=Number(initialServer?.runtime?.actualPlayerCount||0);
+    evidence.initialClientCount=Number(initialClient?.runtime?.actualPlayerCount||0);
+    const initialServerIds=multiplayerPlayerIds(initialServer),initialClientIds=multiplayerPlayerIds(initialClient);
+    evidence.initialIdSync=evidence.initialServerCount>=2&&evidence.initialClientCount>=2&&sameStringSet(initialServerIds,initialClientIds);
+    evidence.remoteSurface=Number(initialServer?.runtime?.remoteCount||0)>0;
+
+    const addText=await executeStudioLuauText(client,studioId,[
+      'local StudioTestService=game:GetService("StudioTestService")',
+      'local ok,err=pcall(function() StudioTestService:AddPlayers(1) end)',
+      'return ok and "ROBLOX_STUDIO_MULTIPLAYER_ADD_PLAYER=PASS" or ("ROBLOX_STUDIO_MULTIPLAYER_ADD_PLAYER=FAIL:"..tostring(err))'
+    ].join('\n'),'Server');
+    if(!/ADD_PLAYER=PASS/.test(addText))throw new Error('ROBLOX_STUDIO_MULTIPLAYER_ADD_PLAYER_FAILED:'+clean(addText).slice(0,300));
+    await wait(2200);
+
+    const lateServer=await collectStudioActualPlayProbe(client,studioId,contract,'Server');
+    const lateClient=await collectStudioActualPlayProbe(client,studioId,contract,'Client');
+    evidence.lateServerCount=Number(lateServer?.runtime?.actualPlayerCount||0);
+    evidence.lateClientCount=Number(lateClient?.runtime?.actualPlayerCount||0);
+    const lateServerIds=multiplayerPlayerIds(lateServer),lateClientIds=multiplayerPlayerIds(lateClient);
+    evidence.lateJoinIdSync=evidence.lateServerCount>=3&&evidence.lateClientCount>=3&&sameStringSet(lateServerIds,lateClientIds);
+    evidence.lateJoinPass=evidence.lateJoinIdSync;
+
+    const leaveText=await executeStudioLuauText(client,studioId,[
+      'local StudioTestService=game:GetService("StudioTestService")',
+      'local can=StudioTestService:CanLeaveTest()',
+      'if can then StudioTestService:LeaveTest();return "ROBLOX_STUDIO_MULTIPLAYER_LEAVE=PASS" end',
+      'return "ROBLOX_STUDIO_MULTIPLAYER_LEAVE=BLOCKED"'
+    ].join('\n'),'Client');
+    if(!/LEAVE=PASS/.test(leaveText))throw new Error('ROBLOX_STUDIO_MULTIPLAYER_LEAVE_FAILED:'+clean(leaveText).slice(0,300));
+    await wait(1800);
+    const afterLeaveServer=await collectStudioActualPlayProbe(client,studioId,contract,'Server');
+    evidence.afterLeaveServerCount=Number(afterLeaveServer?.runtime?.actualPlayerCount||0);
+    evidence.leavePass=evidence.afterLeaveServerCount>=2&&evidence.afterLeaveServerCount<evidence.lateServerCount;
+
+    evidence.pass=Boolean(
+      evidence.initialIdSync
+      &&evidence.remoteSurface
+      &&evidence.lateJoinPass
+      &&evidence.leavePass
+    );
+    return evidence;
+  }catch(error){
+    evidence.error=clean(error?.message||error).slice(0,500);
+    evidence.infrastructureFailure=!launched||/plugin|security|permission|edit|datamodel|tool|studio.*test.*service|mcp/i.test(evidence.error);
+    return evidence;
+  }finally{
+    if(launched){
+      try{
+        await executeStudioLuauText(client,studioId,[
+          'local StudioTestService=game:GetService("StudioTestService")',
+          'local ok,err=pcall(function() StudioTestService:EndTest("COMMERCIAL_F9_MULTIPLAYER_AUDIT_DONE") end)',
+          'return ok and "ROBLOX_STUDIO_MULTIPLAYER_END=PASS" or ("ROBLOX_STUDIO_MULTIPLAYER_END=FAIL:"..tostring(err))'
+        ].join('\n'),'Server');
+      }catch{}
+      await wait(900);
+    }
+  }
+}
 function pointDistance(a={},b={}){
   const values=[a?.rootX,a?.rootY,a?.rootZ,b?.rootX,b?.rootY,b?.rootZ].map(Number);
   if(!values.every(Number.isFinite))return 0;
@@ -1618,7 +1711,7 @@ export async function runOfficialStudioMcpPlay({
   const checkpoint=(id,pass)=>checkpoints.push({id,name:id,required:true,pass:pass===true});
   let studioId='',beforeImages=[],afterImages=[],consoleResult=null,characterMotionRuntime=null,started=false;
   let initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,finalClientProbe=null,finalServerProbe=null,rejoinClientProbe=null,scenarioCoverage=[];
-  let authoritativeStateChangeObserved=false,qualityFailureKinds=[],qualityFailureDetails=[],captureQuality=null,scenarioMetrics={},saveRejoinSummary=null;
+  let authoritativeStateChangeObserved=false,qualityFailureKinds=[],qualityFailureDetails=[],captureQuality=null,scenarioMetrics={},saveRejoinSummary=null,multiplayerAuditSummary=null;
   const auditMode=clean(auditProfile).toUpperCase()==='F9_SOAK'?'F9_SOAK':'FAST_DEEP';
   const timelineProbes=[];
   try{
@@ -1962,6 +2055,43 @@ export async function runOfficialStudioMcpPlay({
           });
         }
       }
+      const multiplayerDeclared=actualPlayContract?.adaptiveCoverage?.signals?.multiplayer===true;
+      if(auditMode==='F9_SOAK'&&multiplayerDeclared){
+        if(started){
+          try{
+            const stopTool=client.tool('start_stop_play');
+            await client.call('start_stop_play',startStopArgs(stopTool.inputSchema||{},studioId,false));
+            started=false;
+            await wait(900);
+          }catch{}
+        }
+        multiplayerAuditSummary=await runStudioMultiplayerAudit(client,studioId,actualPlayContract);
+        const pass=multiplayerAuditSummary?.pass===true;
+        const index=scenarioCoverage.findIndex(row=>row?.id==='adaptive-multiplayer-sync-surface');
+        const row={id:'adaptive-multiplayer-sync-surface',pass,required:true};
+        if(index>=0)scenarioCoverage[index]=row;else scenarioCoverage.push(row);
+        checkpoint('scenario-adaptive-multiplayer-sync-surface-f9',pass);
+        if(pass){
+          qualityFailureKinds=qualityFailureKinds.filter(id=>id!=='adaptive-multiplayer-sync-surface');
+          qualityFailureDetails=qualityFailureDetails.filter(row=>row?.id!=='adaptive-multiplayer-sync-surface');
+        }else if(multiplayerAuditSummary?.infrastructureFailure===true){
+          errors.push({
+            type:'studio-multiplayer-harness-infrastructure',
+            actionId:'studio-test-service-multiplayer',
+            signature:'ROBLOX_STUDIO_MULTIPLAYER_HARNESS_PENDING:'+(multiplayerAuditSummary?.error||'UNKNOWN')
+          });
+        }else{
+          if(!qualityFailureKinds.includes('adaptive-multiplayer-sync-surface'))qualityFailureKinds.push('adaptive-multiplayer-sync-surface');
+          qualityFailureDetails=qualityFailureDetails.filter(row=>row?.id!=='adaptive-multiplayer-sync-surface');
+          qualityFailureDetails.push({
+            id:'adaptive-multiplayer-sync-surface',
+            repairSurface:'MULTIPLAYER_SYNC',
+            priority:'CRITICAL',
+            hint:'F9 StudioTestService did not prove 2-client synchronization, late join, and leave recovery. Repair replicated state, player lifecycle, lobby/team sync, or server authority.',
+            observed:multiplayerAuditSummary
+          });
+        }
+      }
     }
 
     const consoleTool=client.tool('get_console_output');
@@ -2045,6 +2175,7 @@ export async function runOfficialStudioMcpPlay({
       qualityFailureDetails,
       runtimeProbes:actualPlayContract?.required===true?{initialClient:initialClientProbe,preActionClient:preActionClientProbe,postActionClient:postActionClientProbe,finalClient:finalClientProbe,finalServer:finalServerProbe,rejoinClient:rejoinClientProbe}:null,
       saveRejoinSummary,
+      multiplayerAuditSummary,
       mcp:{
         protocolVersion:client.protocolVersion,
         serverName:clean(client.serverInfo?.name),
@@ -2071,6 +2202,10 @@ export async function runOfficialStudioMcpPlay({
         saveRejoinRestartOk:saveRejoinSummary?.restartOk===true,
         saveRejoinProgressionPreserved:saveRejoinSummary?.progressionPreserved===true,
         saveRejoinInventoryPreserved:saveRejoinSummary?.inventoryPreserved===true,
+        multiplayerAuditPass:multiplayerAuditSummary?.pass===true,
+        multiplayerInitialServerCount:Number(multiplayerAuditSummary?.initialServerCount||0),
+        multiplayerLateServerCount:Number(multiplayerAuditSummary?.lateServerCount||0),
+        multiplayerLeavePass:multiplayerAuditSummary?.leavePass===true,
         captureQuality
       },
       characterMotionRuntime,
