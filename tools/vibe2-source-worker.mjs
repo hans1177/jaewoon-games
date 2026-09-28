@@ -2876,12 +2876,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         if(at<0)continue;
         const remaining=before.slice(0,at)+before.slice(at+find.length);
         for(const name of removedFunctions){
-          const escaped=name.replace(/[.*+?^${}()|[\]\\]/g,'\\  const candidateValidator=candidate=>{
-    const touched=new Set([
-      ...(candidate.edits||[]).map(row=>row.path),
-      ...(candidate.newFiles||[]).map(row=>row.path),
-      ...(candidate.replaceFiles||[]).map(row=>row.path)
-    ]);');
+          const escaped=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+
           const remainingCall=new RegExp('(^|[^.$\\w])'+escaped+'\\s*\\(','m');
           if(!remainingCall.test(remaining))continue;
           const binding=new RegExp('(?:\\bfunction\\s+'+escaped+'\\s*\\(|\\b(?:const|let|var|class)\\s+'+escaped+'\\b|\\b(?:window|globalThis)\\s*\\.\\s*'+escaped+'\\s*=|\\bimport\\b[^\\n;]*\\b'+escaped+'\\b)');
