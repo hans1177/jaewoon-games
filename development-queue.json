@@ -3881,10 +3881,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T03:15:26.434Z",
+      "updatedAt": "2026-09-28T03:18:58.677Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -4080,7 +4080,25 @@
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
-      "robloxRuntimeCandidateEvidence": null,
+      "robloxRuntimeCandidateEvidence": {
+        "version": 1,
+        "gameId": "cozy-island",
+        "platform": "ROBLOX",
+        "sourceRevision": "6be4d457ed8f7da8dfba6f4df95e10919a193d56",
+        "artifactIdentity": "sha256:23ae8e06362922e11dd88108767053e8faca20e2b2df941090561f5114e1cfe0",
+        "artifactRunId": 36372683994,
+        "universeId": "10767445741",
+        "placeId": "116850096561713",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": false,
+        "exposure": "PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 26,
+        "workflowRunId": 36373199750,
+        "publishedAt": "2026-09-28T03:18:58.677Z",
+        "authority": "roblox-open-cloud-private-runtime-candidate"
+      },
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -4110,11 +4128,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -4135,7 +4153,7 @@
         "placeId": "116850096561713",
         "verified": true,
         "verifiedAt": "2026-09-25T14:08:10.303Z",
-        "lastVerifiedAt": "2026-09-27T11:15:26.802Z",
+        "lastVerifiedAt": "2026-09-28T03:18:58.677Z",
         "source": "owner-dedicated-github-bootstrap",
         "authority": "roblox-canonical-publication-target",
         "dedicated": true,
@@ -4145,194 +4163,9 @@
         "publicDiscoveryAllowed": false,
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
-      "robloxReleaseVersionNumber": 25,
+      "robloxReleaseVersionNumber": 26,
       "robloxPublicRelease": false,
-      "robloxInternalVibePlayEvidence": {
-        "version": 2,
-        "gameId": "cozy-island",
-        "authority": "roblox-official-studio-mcp-runtime",
-        "pass": true,
-        "actualPlay": true,
-        "runtimeVerified": true,
-        "learningReusable": true,
-        "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
-        "infrastructureFailure": false,
-        "failureClass": null,
-        "robloxFailureClass": null,
-        "actualPlayEligibility": "EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT",
-        "studioMcpServerEnablementRequired": false,
-        "operatorPrerequisite": null,
-        "localPlaceFile": true,
-        "officialStudioMcp": true,
-        "onlinePlaceDirectOpen": false,
-        "robloxPlayerAutomation": false,
-        "externalGuiAutomation": false,
-        "undocumentedStudioCliAutomation": false,
-        "studioLaunchTarget": "LOCAL_EXACT_BUILD_ARTIFACT",
-        "sourceRevision": "1bd1049d86c1a2b5c731180e5fa7e19b408e9da5",
-        "artifactIdentity": "sha256:b74eb5af0c980bb7a9fe42fd93851c83a8acf381753eae3c2a39f0edfd498805",
-        "artifactRunId": 36310706302,
-        "universeId": "10767445741",
-        "placeId": "116850096561713",
-        "versionNumber": 25,
-        "historicalSharedTargetExactArtifact": false,
-        "historicalExactBuildReplay": false,
-        "currentSourceArtifactBinding": true,
-        "currentPublishedRuntimeClaim": false,
-        "publishedCandidateCrossCheckPassed": true,
-        "publishedCandidateCrossCheckAuthority": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE",
-        "capabilities": {
-          "officialStudioMcp": true,
-          "playMode": true,
-          "mcpInput": true,
-          "screenCapture": true,
-          "consoleCapture": true
-        },
-        "actions": [
-          {
-            "id": "keyboard-w",
-            "type": "mcp-keyboard-input",
-            "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "keyboard-a",
-            "type": "mcp-keyboard-input",
-            "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "keyboard-d",
-            "type": "mcp-keyboard-input",
-            "dispatched": true,
-            "ok": true
-          },
-          {
-            "id": "keyboard-space",
-            "type": "mcp-keyboard-input",
-            "dispatched": true,
-            "ok": true
-          }
-        ],
-        "checkpoints": [
-          {
-            "id": "official-studio-mcp-connected",
-            "name": "official-studio-mcp-connected",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "local-studio-selected",
-            "name": "local-studio-selected",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "studio-state-readable",
-            "name": "studio-state-readable",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "play-mode-started",
-            "name": "play-mode-started",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "viewport-before-captured",
-            "name": "viewport-before-captured",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "mcp-input-dispatched",
-            "name": "mcp-input-dispatched",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "viewport-changed-after-input",
-            "name": "viewport-changed-after-input",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "console-output-captured",
-            "name": "console-output-captured",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "no-release-blocking-runtime-errors",
-            "name": "no-release-blocking-runtime-errors",
-            "required": true,
-            "pass": true
-          },
-          {
-            "id": "play-mode-stopped",
-            "name": "play-mode-stopped",
-            "required": true,
-            "pass": true
-          }
-        ],
-        "errors": [],
-        "runtimeSummary": {
-          "consoleErrorCount": 0,
-          "consoleWarningCount": 0,
-          "distinctFrameChange": true,
-          "characterMotionRuntimeRequired": false,
-          "characterMotionRuntimePassed": true,
-          "scenarioContractRequired": false,
-          "scenarioFailureCount": 0,
-          "primaryActionDisplacement": 0,
-          "primaryActionVelocity": 0,
-          "primaryActionFeedbackChanged": false
-        },
-        "characterMotionRuntime": {
-          "required": false,
-          "observed": false,
-          "started": false,
-          "pass": false,
-          "failed": false,
-          "failureReasons": [],
-          "hardFailure": "ROBLOX_CHARACTER_MOTION_MANNEQUIN"
-        },
-        "learningSignals": [
-          "roblox official studio mcp local runtime",
-          "mcp-keyboard-input",
-          "official-studio-mcp-connected",
-          "local-studio-selected",
-          "studio-state-readable",
-          "play-mode-started",
-          "viewport-before-captured",
-          "mcp-input-dispatched",
-          "viewport-changed-after-input",
-          "console-output-captured",
-          "no-release-blocking-runtime-errors",
-          "play-mode-stopped"
-        ],
-        "rawSourceIncluded": false,
-        "rawGameplayValuesIncluded": false,
-        "rawViewportIncluded": false,
-        "scenarioContractRequired": false,
-        "scenarioContractVersion": 0,
-        "scenarioContractFingerprint": null,
-        "scenarioCoverage": [],
-        "scenarioCoveragePass": false,
-        "qualityFailureKinds": [],
-        "functionalChainEvidence": {
-          "inputDispatched": true,
-          "runtimeVerified": true,
-          "screenChanged": true,
-          "authoritativeStateChangeObserved": false,
-          "exactScenarioObserved": false
-        },
-        "testedAt": "2026-09-27T11:28:46.531Z",
-        "workflowRunId": 36315184541,
-        "publicationAuthority": false,
-        "publicationTargetDiscovery": false
-      },
+      "robloxInternalVibePlayEvidence": null,
       "robloxDedicatedTargetMigration": {
         "version": 1,
         "fromUniverseId": "10766974456",
@@ -8771,7 +8604,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-28T03:18:39.744Z",
+  "updatedAt": "2026-09-28T03:18:58.677Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
