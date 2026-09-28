@@ -715,3 +715,29 @@ test('F9 persistence accepts the exact locally validated F0 artifact and rejects
  assert.match(persist,/localF0Identity\|\|persistedRuntimeIdentity/);
  assert.match(persist,/EXACT_CANDIDATE_IDENTITY/);
 });
+
+test('F9 optimistic persistence binds the tested local artifact and fails closed on source or artifact drift',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+ const start=workflow.indexOf('            const candidate=item.robloxRuntimeCandidateEvidence||{};',workflow.indexOf('      - name: Persist F9 internal release state'));
+ const end=workflow.indexOf('            if(!identityExact){',start);
+ assert.ok(start>0&&end>start);
+ const predicate=new Function('item','delta',workflow.slice(start,end)+'return identityExact;');
+ const source='a'.repeat(40);
+ const artifact='sha256:verified';
+ const item={
+   robloxSourceCommit:source,
+   robloxBuildArtifactIdentity:artifact,
+   robloxRuntimeCandidateEvidence:{published:false,versionNumber:12},
+   robloxFoundationF0Passed:true,
+   robloxBuildPreflightPassed:true,
+   robloxBuildOrPackagePassed:true,
+   robloxBuildSourceRevision:source,
+   robloxFoundationF0Evidence:{sourceRevision:source,artifactIdentity:artifact,artifactRunId:50},
+ };
+ const delta={candidateOrigin:'LOCAL_F0',sourceRevision:source,artifactIdentity:artifact,candidateVersionNumber:50};
+ assert.equal(predicate(item,delta),true,'local F0 run identity is authoritative even with an older runtime candidate');
+ assert.equal(predicate({...item,robloxSourceCommit:'b'.repeat(40)},delta),false);
+ assert.equal(predicate({...item,robloxFoundationF0Evidence:{...item.robloxFoundationF0Evidence,artifactIdentity:'sha256:changed'}},delta),false);
+ assert.equal(predicate({...item,robloxFoundationF0Evidence:{...item.robloxFoundationF0Evidence,artifactRunId:51}},delta),false);
+ assert.equal(predicate({...item,robloxRuntimeCandidateEvidence:{published:true}},delta),false);
+});
