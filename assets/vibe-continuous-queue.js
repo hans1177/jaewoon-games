@@ -526,7 +526,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     ? [...candidates].sort((a,b)=>{
       const pa=platform(a.task),pb=platform(b.task);
       if(a.task.ownerDirective!==b.task.ownerDirective)return b.score-a.score;
-      if(a.task.releaseState!==b.task.releaseState)return b.score-a.score;
+      if(a.task.releaseState!==b.task.releaseState)return (RELEASE_STATE_SCORE[b.task.releaseState]||0)-(RELEASE_STATE_SCORE[a.task.releaseState]||0);
       const sa=weights[pa] ? (service[pa]+1)/weights[pa] : 2;
       const sb=weights[pb] ? (service[pb]+1)/weights[pb] : 2;
       return sa-sb || b.score-a.score || a.task.id.localeCompare(b.task.id);
