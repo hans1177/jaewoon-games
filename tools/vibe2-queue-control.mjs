@@ -380,7 +380,14 @@ export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, res
 
 export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'game-primary', speculativeExpansionAllowed = true, speculativeExpansionReason = 'AVAILABLE' } = {}) {
   const recovered = recoverRunnableInfrastructureState(queueInput);
-  const queue = recovered.queue;
+  const policy=readJson('company-learning/platform-release-roadmap.json');
+  const ownerHoldGameIds=new Set(policy.robloxDevelopmentInvestment?.ownerHoldGameIds || []);
+  const queue=ownerHoldGameIds.size ? createVibeContinuousQueue({
+    ...recovered.queue,
+    tasks:recovered.queue.tasks.map((task)=>clean(task.target).toLowerCase()==='roblox' && ownerHoldGameIds.has(task.gameId)
+      ? {...task,ownerDevelopmentHold:true}
+      : task)
+  }) : recovered.queue;
   const laneMode=clean(lane||'game-primary').toLowerCase();
   const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation, lane:laneMode });
   let tasks = started.tasks || [];
