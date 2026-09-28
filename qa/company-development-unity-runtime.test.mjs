@@ -522,3 +522,13 @@ test('Unity APK principles drive concrete gameplay UX instead of hash-based moti
   assert.doesNotMatch(source,/float learningPulse/);
   assert.doesNotMatch(source,/verifiedLearningSignal/);
 });
+
+
+test('Unity game-development APK principles cannot remain unmapped',()=>{
+  const source=fs.readFileSync(generatorSource,'utf8');
+  assert.match(source,/UNITY_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED/);
+  assert.match(source,/VISIBLE_PROGRESSION_RISK_CUE/);
+  assert.match(source,/UseVisibleProgressionRiskCue/);
+  assert.match(source,/도전 전 상태 확인/);
+  assert.match(source,/mappings:Object\.freeze\(mappings\)/);
+});
