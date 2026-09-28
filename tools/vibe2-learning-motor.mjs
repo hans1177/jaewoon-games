@@ -1077,6 +1077,8 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
   const domainClassification=classifyLearningDomains(task);
   const primaryDomains=new Set(domainClassification.primary);
   const secondaryDomains=new Set(domainClassification.secondary);
+  const normalizedExperience=createVibeExperienceMemory(experienceInput);
+  const normalizedExperienceById=new Map((normalizedExperience.records||[]).map(row=>[clean(row.id),row]));
   const ranked=(experienceInput?.records||[]).filter(r=>r?.verified===true&&r?.reusable===true).map(record=>{
     let score=0;const reasons=[];
     const recordFailureFingerprint=failureFingerprintForExperience(record);
@@ -1200,7 +1202,10 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     failureFingerprint,
     domainClassification,
     failureLocalMemory:ranked.filter(x=>x.reasons.includes('same-game-same-failure')||x.reasons.includes('same-failure')).slice(0,5).map(x=>({id:x.record.id,gameId:x.record.gameId,engine:x.record.engine,outcome:x.record.outcome,failureCause:x.record.failureCause,reusablePatterns:x.record.reusablePatterns,avoidPatterns:x.record.avoidPatterns,relevance:x.score,reasons:x.reasons,verified:true,reusable:true})),
-    experience:ranked.map(x=>({id:x.record.id,gameId:x.record.gameId,engine:x.record.engine,outcome:x.record.outcome,reusablePatterns:x.record.reusablePatterns,avoidPatterns:x.record.avoidPatterns,failureCause:x.record.failureCause,relevance:x.score,reasons:x.reasons})),
+    experience:ranked.map(x=>{
+      const normalized=normalizedExperienceById.get(clean(x.record.id))||null;
+      return {id:x.record.id,gameId:x.record.gameId,engine:x.record.engine,outcome:x.record.outcome,reusablePatterns:x.record.reusablePatterns,avoidPatterns:x.record.avoidPatterns,failureCause:x.record.failureCause,relevance:x.score,reasons:x.reasons,verifiedExternalLearningApplication:normalized?.verifiedExternalLearningApplication||null};
+    }),
     codePatterns:patterns,
     practiceDistilled,
     externalAiDistilled,
