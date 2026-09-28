@@ -399,7 +399,7 @@ function knowledgeRefsFromEvidence(evidence=[]){
   if(!marker)return[];
   try{
     const rows=JSON.parse(decodeURIComponent(marker.slice('learning-knowledge-ids:'.length)));
-    return Array.isArray(rows)?rows.map(clean).filter(Boolean).slice(0,40):[];
+    return Array.isArray(rows)?uniq(rows.map(clean).filter(Boolean)):[];
   }catch{return[];}
 }
 export function applyVerifiedKnowledgeOutcomes(stateInput={},queueInput={}){
