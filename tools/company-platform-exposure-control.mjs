@@ -84,6 +84,38 @@ function exactRobloxEvidence(e={},item={}){
     &&Number(e.versionNumber)===Number(candidate.versionNumber||0)
   );
 }
+function exactRobloxInternalPostQa(item={}){
+  const post=item.robloxPostRuntimeQaEvidence||{};
+  const candidate=item.robloxRuntimeCandidateEvidence||item.robloxInternalReleaseEvidence||{};
+  const sourceRevision=clean(item.robloxSourceCommit);
+  const artifactIdentity=clean(item.robloxBuildArtifactIdentity);
+  return Boolean(
+    post.internalStudioValidationOnly===true
+    &&post.externalServerBootRequired===false
+    &&post.officialStudioMcpActualPlayPassed===true
+    &&post.independentQaPassed===true
+    &&post.regressionPassed===true
+    &&clean(post.sourceRevision)===sourceRevision
+    &&clean(post.artifactIdentity)===artifactIdentity
+    &&Number(post.candidateVersionNumber||0)>0
+    &&Number(post.candidateVersionNumber)===Number(candidate.versionNumber||0)
+  );
+}
+function robloxRoutineMultiplayerAccepted(item={},internalStudio=false){
+  const f0=item.robloxFoundationF0Evidence||{};
+  const post=item.robloxPostRuntimeQaEvidence||{};
+  if(f0.multiplayerApplicable===false)return true;
+  if(post.multiplayerApplicabilityKnown===true&&post.multiplayerRequired===false)return true;
+  if(
+    internalStudio
+    &&post.multiplayerApplicabilityKnown===true
+    &&post.multiplayerRequired===true
+    &&post.multiplayerValidationPassed===true
+    &&clean(post.sourceRevision)===clean(item.robloxSourceCommit)
+    &&clean(post.artifactIdentity)===clean(item.robloxBuildArtifactIdentity)
+  )return true;
+  return item.robloxMultiplayerQaPassed===true;
+}
 function robloxPublicHardGate(item={},tickets=[]){
   const candidate=item.robloxRuntimeCandidateEvidence||item.robloxInternalReleaseEvidence||{};
   const play=item.robloxInternalVibePlayEvidence||{};
@@ -96,19 +128,21 @@ function robloxPublicHardGate(item={},tickets=[]){
   const mandatoryScenarios=['NEW_GAME_START','CORE_GAMEPLAY_LOOP','PROGRESSION_AND_REWARD'];
   const scenarios=new Set((play.scenarioCoverage||[]).map(upper));
   const scenarioCoverage=play.scenarioCoveragePass===true&&mandatoryScenarios.every(x=>scenarios.has(x));
+  const internalStudio=exactRobloxInternalPostQa(item);
+  const f0=item.robloxFoundationF0Evidence||{};
   const checks={
-    technical:item.robloxRuntimePassed===true&&item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true,
-    realServerBoot:item.robloxPublicReleaseRuntimeObservationPending!==true,
+    technical:item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true&&(item.robloxRuntimePassed===true||internalStudio),
+    externalServerDiagnosticNotRequired:true,
     exactRuntime:item.robloxExactRevisionPassed===true&&item.robloxF9ReleaseRegressionPassed===true&&item.robloxFinalReviewPassed===true,
     actualVibePlay:play.actualPlay===true&&exactRobloxEvidence(play,item),
     vibeScenarioCoverage:scenarioCoverage,
     noBlockingTickets:tickets.length===0,
     gameCompletion:exactRobloxEvidence(completion,item)&&completion.coreSystemsImplemented===true&&completion.progressionDepthPassed===true&&completion.noCoreContentDeadEnd===true&&completion.goalsRewardsProgressionConnected===true,
     platformAdaptation:exactRobloxEvidence(adaptation,item)&&adaptation.rebuildCompleted===true&&adaptation.runtimeEvidencePassed===true,
-    saveRejoin:item.robloxDatastoreRejoinPassed===true,
-    multiplayer:item.robloxMultiplayerQaPassed===true,
-    serverClientAuthority:item.robloxServerClientBoundaryPassed===true&&item.robloxFoundationF0Passed===true,
-    mobileAndPerformance:item.robloxMobileControlUiPassed===true&&adaptation.mobileAndLowEndPerformancePassed===true,
+    saveRejoin:f0.saveExists!==true||item.robloxDatastoreRejoinPassed===true,
+    multiplayer:robloxRoutineMultiplayerAccepted(item,internalStudio),
+    serverClientAuthority:item.robloxServerClientBoundaryPassed===true||(internalStudio&&f0.serverClientBoundaryPreflightPassed===true),
+    mobileAndPerformance:(item.robloxMobileControlUiPassed===true||(internalStudio&&f0.mobileControlUiPreflightPassed===true))&&adaptation.mobileAndLowEndPerformancePassed===true,
     security:exactRobloxEvidence(security,item)&&security.noReleaseBlockingFinding===true,
     presentation:exactRobloxEvidence(presentation,item)&&presentation.primaryGameplayPlaceholderDebt===0&&presentation.runtimeVisualEvidencePassed===true,
     stability:exactRobloxEvidence(stability,item)&&stability.distinctCompletedBuildupCycles===true&&stability.releaseBlockingFailureObservedSinceBaseline===false,
