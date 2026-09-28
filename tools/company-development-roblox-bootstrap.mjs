@@ -6,13 +6,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {deriveApprovedScopeInventory} from './company-approved-scope-contract.mjs';
-import {createRobloxVibe3LearningContext,decorateRobloxActionsWithLearning} from './vibe3-roblox-learning-context.mjs';
+import {createRobloxVibe3LearningContext,decorateRobloxActionsWithLearning,ROBLOX_SEMANTIC_MAPPING_VERSION} from './vibe3-roblox-learning-context.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
 const arg=(name,fallback='')=>process.argv.find(value=>value.startsWith(`--${name}=`))?.slice(name.length+3)??fallback;
 const luauString=value=>`"${String(value??'').replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\r/g,'\\r').replace(/\n/g,'\\n')}"`;
+function luauSemanticMappingRows(mappings=[],indent='      '){
+  return (mappings||[]).map(row=>indent+'{ PrincipleId = '+luauString(row.principleId)+', SourceLearningId = '+luauString(row.sourceLearningId)+', CoreKind = '+luauString(row.coreKind||'')+', Disposition = '+luauString(row.disposition||'')+', Scope = '+luauString(row.scope||'')+', Domain = '+luauString(row.domain||'')+', Domains = { '+(row.domains||[]).map(luauString).join(', ')+' }, Mapping = '+luauString(row.mapping||'')+', Implementation = '+luauString(row.implementation||'')+', Variant = '+luauString(row.variant||'')+' },').join('\n');
+}
+function luauLearningDispositionRows(dispositions=[],indent='      '){
+  return (dispositions||[]).map(row=>indent+'{ PrincipleId = '+luauString(row.principleId)+', SourceLearningId = '+luauString(row.sourceLearningId)+', Disposition = '+luauString(row.disposition||'')+', Scope = '+luauString(row.scope||'')+', Domains = { '+(row.domains||[]).map(luauString).join(', ')+' }, Mapping = '+luauString(row.mapping||'')+', Implementation = '+luauString(row.implementation||'')+', Reason = '+luauString(row.reason||'')+' },').join('\n');
+}
 const MODES=new Set(['SINGLE','COOP','COMPETITIVE','HYBRID']);
 export const ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=6;
 
@@ -221,28 +227,38 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
 function requireRobloxVerifiedExternalLearning(learning={}){
   const ids=Array.isArray(learning?.verifiedExternalLearningIds)?learning.verifiedExternalLearningIds:[];
   const principles=Array.isArray(learning?.verifiedExternalLearningPrinciples)?learning.verifiedExternalLearningPrinciples:[];
-  if(learning?.applied!==true||!ids.length||!principles.length)throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_REQUIRED');
+  const mappings=Array.isArray(learning?.gameSpecificSemanticMappings)?learning.gameSpecificSemanticMappings:[];
+  const dispositions=Array.isArray(learning?.verifiedExternalLearningDispositions)?learning.verifiedExternalLearningDispositions:[];
+  if(learning?.applied!==true||!ids.length||!principles.length||!mappings.length||!dispositions.length)throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_REQUIRED');
+  if(Number(learning?.semanticMappingVersion||0)!==ROBLOX_SEMANTIC_MAPPING_VERSION)throw new Error('ROBLOX_SEMANTIC_MAPPING_VERSION_REQUIRED');
+  if(learning?.allRetrievedPrinciplesHaveExplicitDisposition!==true||dispositions.some(row=>row?.disposition==='FAIL_CLOSED'))throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_DISPOSITION_REQUIRED');
   return learning;
 }
 
 function verifiedExternalGameDevelopmentProfile(learning={}){
   requireRobloxVerifiedExternalLearning(learning);
   const principles=[...(learning?.verifiedExternalLearningPrinciples||[])];
-  if(!principles.length)throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_PRINCIPLES_REQUIRED');
+  const mappings=[...(learning?.gameSpecificSemanticMappings||[])];
+  if(!principles.length||!mappings.length)throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_PRINCIPLES_REQUIRED');
   return Object.freeze({
     principles:Object.freeze(principles),
-    environmentBackground:true,
-    characterAnimationMotion:true,
-    skillVfxImpact:true,
-    cameraVisualFeedback:true,
-    uiUxTouchControls:true,
-    gameplayStateProgression:true,
-    runtimeQaReliability:true
+    mappings:Object.freeze(mappings),
+    semanticMappingVersion:Number(learning.semanticMappingVersion||0),
+    semanticVariant:clean(learning.semanticVariant||'OBJECTIVE_GOAL'),
+    environmentBackground:mappings.some(row=>(row.domains||[]).includes('WORLD_AND_BACKGROUND_PRESENTATION')||(row.domains||[]).includes('ENVIRONMENTAL_FEEDBACK')),
+    characterAnimationMotion:mappings.some(row=>(row.domains||[]).includes('CHARACTER_NPC_CREATURE_ANIMATION')||(row.domains||[]).includes('MOTION_AND_TRANSITIONS')),
+    skillVfxImpact:mappings.some(row=>(row.domains||[]).includes('SKILL_AND_COMBAT_PRESENTATION')||(row.domains||[]).includes('VFX_AND_IMPACT_EFFECTS')),
+    cameraVisualFeedback:mappings.some(row=>(row.domains||[]).includes('CAMERA_RESPONSE')),
+    uiUxTouchControls:mappings.some(row=>(row.domains||[]).includes('PLAYER_INPUT_AND_TOUCH')||(row.domains||[]).includes('HUD_AND_CONTEXTUAL_GUIDANCE')),
+    gameplayStateProgression:mappings.some(row=>(row.domains||[]).includes('CORE_GAMEPLAY_FEEL')||(row.domains||[]).includes('PROGRESSION_RISK_READABILITY')),
+    runtimeQaReliability:false
   });
 }
-
 function robloxNativeLearningRuntimeBlock({frameVar='root',configVar='Config',learning={}}={}){
-  verifiedExternalGameDevelopmentProfile(learning);
+  const semanticProfile=verifiedExternalGameDevelopmentProfile(learning);
+  const semanticVariant=clean(learning.semanticVariant||'OBJECTIVE_GOAL');
+  const semanticDomain=clean(learning.gameSpecificSemanticMappings?.[0]?.domain||'CORE_GAMEPLAY_FEEL');
+  const semanticColor=learning.semanticColor||{r:255,g:220,b:124};
   return `-- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
 local verifiedLearningPlayers = game:GetService("Players")
 local verifiedLearningTweenService = game:GetService("TweenService")
@@ -253,11 +269,20 @@ local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION}
 local verifiedLearningRoot = ${frameVar}
+local verifiedLearningSemanticVariant = ${luauString(semanticVariant)}
+local verifiedLearningSemanticDomain = ${luauString(semanticDomain)}
+local verifiedLearningSemanticColor = Color3.fromRGB(${semanticColor.r}, ${semanticColor.g}, ${semanticColor.b})
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningAxisCount", #verifiedLearningAxes)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningFingerprint", verifiedLearningContext.MemoryFingerprint or "")
+verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMappingVersion", verifiedLearningContext.SemanticMappingVersion or 0)
+verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticMappingFingerprint", verifiedLearningContext.SemanticMappingFingerprint or "")
+verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticVariant", verifiedLearningSemanticVariant)
+verifiedLearningRoot:SetAttribute("VerifiedLearningSemanticDomain", verifiedLearningSemanticDomain)
+verifiedLearningRoot:SetAttribute("VerifiedLearningGameSpecificMappingCount", #(verifiedLearningContext.GameSpecificSemanticMappings or {}))
 
+if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
 -- Roblox environment / background adaptation.
 local verifiedLearningColorGrade = verifiedLearningLighting:FindFirstChild("VerifiedLearningColorGrade")
 if not verifiedLearningColorGrade then
@@ -297,6 +322,9 @@ verifiedLearningDepth.NearIntensity = 0.02
 verifiedLearningDepth.FocusDistance = 28
 verifiedLearningDepth.InFocusRadius = 24
 
+end
+
+if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "COMBAT_IMPACT" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
 -- Roblox character animation / motion adaptation.
 local function syncVerifiedLearningCharacterMotion(character)
   local humanoid = character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid", 5)
@@ -315,6 +343,8 @@ end
 if verifiedLearningPlayer.Character then task.defer(syncVerifiedLearningCharacterMotion, verifiedLearningPlayer.Character) end
 verifiedLearningPlayer.CharacterAdded:Connect(syncVerifiedLearningCharacterMotion)
 
+end
+
 -- Roblox UI / touch / progression guidance.
 local verifiedLearningGuidance = Instance.new("TextLabel")
 verifiedLearningGuidance.Name = "VerifiedLearningGuidance"
@@ -323,7 +353,25 @@ verifiedLearningGuidance.Position = UDim2.fromOffset(10, 8)
 verifiedLearningGuidance.BackgroundTransparency = 1
 verifiedLearningGuidance.TextWrapped = true
 verifiedLearningGuidance.TextScaled = true
-verifiedLearningGuidance.Text = "핵심 조작을 눌러 바로 플레이"
+if verifiedLearningSemanticVariant == "PUZZLE_STATE" then
+  verifiedLearningGuidance.Text = "퍼즐 보드와 현재 이동을 함께 확인"
+elseif verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
+  verifiedLearningGuidance.Text = "웨이브와 기지 상태를 보며 배치"
+elseif verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
+  verifiedLearningGuidance.Text = "공격 방향과 타격 응답을 확인"
+elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
+  verifiedLearningGuidance.Text = "레벨과 다음 성장 조건을 확인"
+elseif verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" then
+  verifiedLearningGuidance.Text = "자원과 업그레이드 상태를 확인"
+elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
+  verifiedLearningGuidance.Text = "체력과 위협 상태를 확인"
+elseif verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" then
+  verifiedLearningGuidance.Text = "이동 방향과 공간 응답을 확인"
+elseif verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
+  verifiedLearningGuidance.Text = "공유 세션과 내 역할을 확인"
+else
+  verifiedLearningGuidance.Text = "현재 목표와 다음 행동을 확인"
+end
 verifiedLearningGuidance.Parent = verifiedLearningRoot
 local verifiedLearningRiskCue = Instance.new("TextLabel")
 verifiedLearningRiskCue.Name = "VerifiedLearningProgressionRiskCue"
@@ -332,7 +380,16 @@ verifiedLearningRiskCue.Position = UDim2.fromOffset(10, 40)
 verifiedLearningRiskCue.BackgroundTransparency = 1
 verifiedLearningRiskCue.TextWrapped = true
 verifiedLearningRiskCue.TextScaled = true
-verifiedLearningRiskCue.Text = "도전 전 레벨·상태·위험 조건 확인"
+if verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
+  verifiedLearningRiskCue.Text = "배치 전 웨이브·기지 위험 확인"
+elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
+  verifiedLearningRiskCue.Text = "행동 전 체력·위협 위험 확인"
+elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
+  verifiedLearningRiskCue.Text = "행동 전 레벨·성장 조건 확인"
+else
+  verifiedLearningRiskCue.Text = "현재 상태와 다음 행동 확인"
+end
+verifiedLearningRiskCue.Visible = verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" or verifiedLearningSemanticVariant == "PROGRESSION_RISK"
 verifiedLearningRiskCue.Parent = verifiedLearningRoot
 
 -- Roblox skill VFX / camera / motion feedback.
@@ -352,6 +409,7 @@ local function playVerifiedLearningActionFeedback(control)
     verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
   end
 
+  if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
   local camera = workspace.CurrentCamera
   if camera then
     local baseFov = camera.FieldOfView
@@ -360,7 +418,9 @@ local function playVerifiedLearningActionFeedback(control)
       if camera then verifiedLearningTweenService:Create(camera, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {FieldOfView = baseFov}):Play() end
     end)
   end
+  end
 
+  if verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
   local character = verifiedLearningPlayer.Character
   local rootPart = character and character:FindFirstChild("HumanoidRootPart")
   if character and rootPart then
@@ -401,6 +461,12 @@ local function playVerifiedLearningActionFeedback(control)
       if highlight then highlight:Destroy() end
     end)
   end
+  end
+
+  if verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" or verifiedLearningSemanticVariant == "PUZZLE_STATE" or verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
+    verifiedLearningRiskCue.Visible = true
+    verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
+  end
 end
 
 local verifiedLearningLastControl = nil
@@ -410,6 +476,7 @@ local function bindVerifiedLearningControl(control)
     local size = Instance.new("UISizeConstraint")
     size.Name = "VerifiedLearningTouchTarget"
     size.MinSize = Vector2.new(0, 52)
+    size:SetAttribute("SemanticTouchTarget", verifiedLearningSemanticVariant)
     size.Parent = control
   end
   control.Activated:Connect(function()
@@ -433,25 +500,53 @@ end)
 function verifiedExternalLearningConfigBlock(learning={}){
   requireRobloxVerifiedExternalLearning(learning);
   const rows=values=>(values||[]).map(value=>`      ${luauString(value)},`).join('\n');
+  const mappingRows=luauSemanticMappingRows(learning.gameSpecificSemanticMappings||[],'      ');
+  const dispositionRows=luauLearningDispositionRows(learning.verifiedExternalLearningDispositions||[],'      ');
+  const validationRows=rows(learning.verifiedExternalValidationOnlyPrinciples||[]);
+  const notApplicableRows=rows(learning.verifiedExternalNotApplicablePrinciples||[]);
   return `  -- VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN
   VerifiedExternalLearning = {
     Applied = true,
     Authority = ${luauString(learning.authority||'vibe3-roblox-learning-context')},
+    GameId = ${luauString(learning.gameId||'')},
+    CoreKind = ${luauString(learning.coreKind||'')},
+    SemanticVariant = ${luauString(learning.semanticVariant||'')},
+    SemanticMappingVersion = ${Number(learning.semanticMappingVersion||0)},
+    SemanticMappingFingerprint = ${luauString(learning.semanticMappingFingerprint||'')},
     MemoryFingerprint = ${luauString(learning.verifiedExternalLearningFingerprint||'')},
     NativeBindingVersion = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION},
     CoveragePct = ${Number(learning.verifiedExternalLearningCoveragePct||0)},
     ContentComplete = ${learning.verifiedExternalDistilledContentComplete?'true':'false'},
     RetrievedCount = ${Number(learning.verifiedExternalLearningRetrievedCount||0)},
     AppliedCount = ${Number(learning.verifiedExternalLearningAppliedCount||0)},
+    AppliedGameDevelopmentPrincipleCount = ${Number(learning.verifiedExternalLearningGameDevelopmentAppliedCount||0)},
+    RetrievedPrincipleCount = ${Number(learning.verifiedExternalLearningRetrievedPrincipleCount||0)},
+    ValidationOnlyPrincipleCount = ${Number(learning.verifiedExternalValidationOnlyPrincipleCount||0)},
+    NotApplicablePrincipleCount = ${Number(learning.verifiedExternalNotApplicablePrincipleCount||0)},
     TruncationForbidden = true,
     VerifiedExternalLearningIds = {
 ${rows(learning.verifiedExternalLearningIds||[])}
+    },
+    ApplyAxes = {
+${rows(learning.verifiedExternalLearningApplyAxes||[])}
     },
     ApplicationPrinciples = {
 ${rows(learning.verifiedExternalLearningPrinciples||[])}
     },
     GameDevelopmentPrinciples = {
 ${rows(learning.verifiedExternalGameDevelopmentPrinciples||[])}
+    },
+    GameSpecificSemanticMappings = {
+${mappingRows}
+    },
+    LearningDispositions = {
+${dispositionRows}
+    },
+    ValidationOnlyPrinciples = {
+${validationRows}
+    },
+    NotApplicablePrinciples = {
+${notApplicableRows}
     },
     AvoidancePrinciples = {
 ${rows(learning.verifiedExternalAvoidancePrinciples||[])}
@@ -466,7 +561,6 @@ ${rows(learning.verifiedExternalLearningUseForbidden||[])}
   -- VERIFIED_EXTERNAL_LEARNING_BINDING_END
 `;
 }
-
 function replaceOrInsertVerifiedExternalLearningConfig(source='',learning={}){
   const block=verifiedExternalLearningConfigBlock(learning);
   const managed=/  -- VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN\n[\s\S]*?  -- VERIFIED_EXTERNAL_LEARNING_BINDING_END\n/;
@@ -487,6 +581,8 @@ local verifiedExternalLearningContext = ${configVar}.VerifiedExternalLearning or
 local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
 local verifiedExternalLearningPrinciples = verifiedExternalLearningContext.ApplicationPrinciples or {}
 local verifiedExternalGameDevelopmentPrinciples = verifiedExternalLearningContext.GameDevelopmentPrinciples or {}
+local verifiedExternalLearningMappings = verifiedExternalLearningContext.GameSpecificSemanticMappings or {}
+local verifiedExternalLearningDispositions = verifiedExternalLearningContext.LearningDispositions or {}
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END
 `;
   const managedContext=/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END\n/;
@@ -505,6 +601,11 @@ ${frameVar}:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearn
 ${frameVar}:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
 ${frameVar}:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
 ${frameVar}:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verifiedExternalGameDevelopmentPrinciples)
+${frameVar}:SetAttribute("VerifiedExternalLearningSemanticMappingVersion", verifiedExternalLearningContext.SemanticMappingVersion or 0)
+${frameVar}:SetAttribute("VerifiedExternalLearningSemanticMappingFingerprint", verifiedExternalLearningContext.SemanticMappingFingerprint or "")
+${frameVar}:SetAttribute("VerifiedExternalLearningDispositionCount", #verifiedExternalLearningDispositions)
+${frameVar}:SetAttribute("VerifiedExternalLearningMappingCount", #verifiedExternalLearningMappings)
+${frameVar}:SetAttribute("VerifiedLearningSemanticVariant", verifiedExternalLearningContext.SemanticVariant or "")
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END
 `;
   const managedRuntime=/-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN\n[\s\S]*?-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END\n/;
@@ -524,7 +625,6 @@ ${frameVar}:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verif
   }
   return output;
 }
-
 export function applyVerifiedExternalLearningToExistingRobloxSource({root='',learning={}}={}){
   requireRobloxVerifiedExternalLearning(learning);
   const configFile=path.join(root,'shared','GameConfig.luau');
@@ -536,20 +636,17 @@ export function applyVerifiedExternalLearningToExistingRobloxSource({root='',lea
   const afterClient=bindExistingClientVerifiedExternalLearning(beforeClient,learning);
   const requiredClientSignals=[
     'VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN',
-    'ColorCorrectionEffect',
-    'BloomEffect',
-    'Atmosphere',
-    'DepthOfFieldEffect',
-    'AdjustSpeed',
-    'VerifiedLearningSkillImpact',
-    'Sparkles',
-    'ParticleEmitter',
-    'PointLight',
+    'VerifiedLearningSemanticVariant',
+    'VerifiedLearningSemanticDomain',
+    'VerifiedLearningSemanticMappingFingerprint',
+    'VerifiedLearningGameSpecificMappingCount',
+    'VerifiedLearningTouchTarget',
+    'VerifiedExternalLearningGameplayState',
     'FieldOfView',
-    'UISizeConstraint',
-    'VerifiedLearningProgressionRiskCue'
+    'UISizeConstraint'
   ];
   for(const signal of requiredClientSignals)if(!afterClient.includes(signal))throw new Error('ROBLOX_NATIVE_LEARNING_SIGNAL_MISSING:'+signal);
+  if(!afterConfig.includes('GameSpecificSemanticMappings')||!afterConfig.includes('LearningDispositions')||!afterConfig.includes(`SemanticMappingVersion = ${Number(learning.semanticMappingVersion||0)}`))throw new Error('ROBLOX_SEMANTIC_MAPPING_CONFIG_MISSING');
   const changedFiles=[];
   if(afterConfig!==beforeConfig){fs.writeFileSync(configFile,afterConfig);changedFiles.push(configFile);}
   if(afterClient!==beforeClient){fs.writeFileSync(clientFile,afterClient);changedFiles.push(clientFile);}
@@ -557,12 +654,17 @@ export function applyVerifiedExternalLearningToExistingRobloxSource({root='',lea
     changed:changedFiles.length>0,
     changedFiles:Object.freeze(changedFiles),
     serverTouched:false,
+    serverInspection:'AFFECTED_SCOPE_ONLY_PRESENTATION_BINDING',
+    semanticMappingVersion:Number(learning.semanticMappingVersion||0),
+    semanticMappingFingerprint:learning.semanticMappingFingerprint||null,
+    semanticVariant:learning.semanticVariant||null,
+    gameSpecificSemanticMappings:Object.freeze([...(learning.gameSpecificSemanticMappings||[])]),
+    verifiedExternalLearningDispositions:Object.freeze([...(learning.verifiedExternalLearningDispositions||[])]),
     verifiedExternalLearningIds:Object.freeze([...(learning.verifiedExternalLearningIds||[])]),
     verifiedExternalLearningFingerprint:learning.verifiedExternalLearningFingerprint||null,
     verifiedExternalLearningApplyAxes:Object.freeze([...(learning.verifiedExternalLearningApplyAxes||[])])
   });
 }
-
 function studioAssetConfigBlock(studioAssets={}){
   const familyRows=Object.entries(studioAssets?.families||{}).map(([family,atoms])=>`      ${family} = { ${(atoms||[]).map(value=>luauString(value)).join(', ')} },`).join('\n');
   return `  -- STUDIO_ASSET_BINDING_BEGIN
@@ -746,8 +848,8 @@ task.defer(reportNativeFoundationReady)
   const studioClientVisibleBound=/StudioAssetFramePanel/.test(afterClient)
     ||(/StudioAssetBindingVersion/.test(afterClient)&&/StudioAssetAtoms/.test(afterClient)&&/FRAME_PANEL/.test(afterClient)&&/(hasStudioAssetAtom|hasStudioAtom)/.test(afterClient));
   if(!studioClientConfigBound||!studioClientVisibleBound)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
-  if(!/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/.test(afterConfig)||!/ContentComplete\s*=\s*true/.test(afterConfig)||!afterConfig.includes(`MemoryFingerprint = ${luauString(verifiedLearning.verifiedExternalLearningFingerprint||'')}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CONFIG_VERIFY_FAILED');
-  if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)||!/VerifiedExternalLearningContentComplete/.test(afterClient)||!/VerifiedExternalLearningPrincipleCount/.test(afterClient)||!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(afterClient)||!/VerifiedLearningColorGrade/.test(afterClient)||!/syncVerifiedLearningCharacterMotion/.test(afterClient)||!/VerifiedLearningSkillImpact/.test(afterClient)||!/FieldOfView/.test(afterClient)||!afterClient.includes(`VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
+  if(!/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/.test(afterConfig)    ||!/ContentComplete\s*=\s*true/.test(afterConfig)    ||!/GameSpecificSemanticMappings\s*=\s*\{/.test(afterConfig)    ||!/LearningDispositions\s*=\s*\{/.test(afterConfig)    ||!afterConfig.includes(`SemanticMappingVersion = ${Number(verifiedLearning.semanticMappingVersion||0)}`)    ||!afterConfig.includes(`MemoryFingerprint = ${luauString(verifiedLearning.verifiedExternalLearningFingerprint||'')}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CONFIG_VERIFY_FAILED');
+  if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)    ||!/VerifiedExternalLearningContentComplete/.test(afterClient)    ||!/VerifiedExternalLearningSemanticMappingVersion/.test(afterClient)    ||!/VerifiedExternalLearningSemanticMappingFingerprint/.test(afterClient)    ||!/VerifiedLearningSemanticVariant/.test(afterClient)    ||!/VerifiedLearningSemanticMappingFingerprint/.test(afterClient)    ||!/VerifiedLearningTouchTarget/.test(afterClient)    ||!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(afterClient)    ||!/FieldOfView/.test(afterClient)    ||!afterClient.includes(`VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
   if(foundationRepair===true){
     const combined=afterServer+'\n'+afterClient;
     for(const [token,re] of Object.entries({
@@ -849,22 +951,17 @@ export function validateRobloxBootstrap({sharedConfig='',serverCode='',clientCod
   if(learning?.applied===true){
     if(!/LearningContext\s*=/.test(sharedConfig))blockers.push('CONFIG_VIBE3_LEARNING_CONTEXT_REQUIRED');
     if(!/VerifiedExternalLearningFirst\s*=\s*true/.test(sharedConfig)||!/ContentComplete\s*=\s*true/.test(sharedConfig))blockers.push('CONFIG_VERIFIED_EXTERNAL_LEARNING_CONTENT_REQUIRED');
-    for(const axis of [
-      'ROBLOX_ENVIRONMENT_BACKGROUND_AND_LIGHTING',
-      'ROBLOX_CHARACTER_ANIMATION_AND_MOTION',
-      'ROBLOX_SKILL_VFX_AND_IMPACT_FEEDBACK',
-      'ROBLOX_CAMERA_AND_VISUAL_FEEDBACK',
-      'ROBLOX_UI_UX_TOUCH_AND_CONTROLS',
-      'ROBLOX_GAMEPLAY_STATE_AND_PROGRESSION',
-      'ROBLOX_RUNTIME_QA_AND_RELIABILITY'
-    ])if(!sharedConfig.includes(axis))blockers.push('CONFIG_VERIFIED_EXTERNAL_LEARNING_AXIS_MISSING:'+axis);
+    const semanticVersion=Number(learning.semanticMappingVersion||1);
+    if(!sharedConfig.includes(`SemanticMappingVersion = ${semanticVersion}`))blockers.push('CONFIG_ROBLOX_SEMANTIC_MAPPING_VERSION_REQUIRED');
+    if(!/GameSpecificSemanticMappings\s*=\s*\{/.test(sharedConfig))blockers.push('CONFIG_ROBLOX_GAME_SPECIFIC_SEMANTIC_MAPPING_REQUIRED');
+    if(!/LearningDispositions\s*=\s*\{/.test(sharedConfig))blockers.push('CONFIG_ROBLOX_LEARNING_DISPOSITION_REQUIRED');
+    if(learning.allRetrievedPrinciplesHaveExplicitDisposition!==true)blockers.push('CONFIG_ROBLOX_LEARNING_DISPOSITION_INCOMPLETE');
+    for(const axis of learning.verifiedExternalLearningApplyAxes||[])if(!sharedConfig.includes(axis))blockers.push('CONFIG_ROBLOX_SEMANTIC_DOMAIN_MISSING:'+axis);
+    if(/ROBLOX_RUNTIME_QA_AND_RELIABILITY|APK_INSTALLATION|ANDROID_ABI|HOSTED_EMULATOR/.test(sharedConfig))blockers.push('CONFIG_QA_INFRASTRUCTURE_PRINCIPLE_IN_GAME_SOURCE');
     if(!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_ROBLOX_NATIVE_BINDING_REQUIRED');
-    if(!/ColorCorrectionEffect/.test(clientCode)||!/BloomEffect/.test(clientCode)||!/Atmosphere/.test(clientCode)||!/DepthOfFieldEffect/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_ENVIRONMENT_REQUIRED');
-    if(!/AdjustSpeed/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_ANIMATION_MOTION_REQUIRED');
-    if(!/VerifiedLearningSkillImpact/.test(clientCode)||!/Sparkles/.test(clientCode)||!/ParticleEmitter/.test(clientCode)||!/PointLight/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_SKILL_VFX_REQUIRED');
-    if(!/FieldOfView/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_CAMERA_FEEDBACK_REQUIRED');
-    if(!/UISizeConstraint/.test(clientCode)||!/ContextActionService/.test(clientCode)||!/BindAction\s*\(/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_TOUCH_CONTROL_REQUIRED');
-    if(!/VerifiedLearningProgressionRiskCue/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_GAMEPLAY_PROGRESSION_REQUIRED');
+    if(!/VerifiedLearningSemanticVariant/.test(clientCode)||!/VerifiedLearningSemanticDomain/.test(clientCode)||!/VerifiedLearningSemanticMappingFingerprint/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_SEMANTIC_BINDING_REQUIRED');
+    if(!/VerifiedLearningTouchTarget/.test(clientCode)||!/ContextActionService/.test(clientCode)||!/BindAction\s*\(/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_TOUCH_CONTROL_REQUIRED');
+    if(!/VerifiedExternalLearningGameplayState/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_GAMEPLAY_STATE_REQUIRED');
   }
   return Object.freeze({pass:blockers.length===0,blockers:Object.freeze([...new Set(blockers)]),saveRequired,profile:buildProfile,learningApplied:learning?.applied===true});
 }
@@ -908,8 +1005,32 @@ function sharedConfigSource({gameId,gameName,saveRequired,actions,profile,platfo
   const verifiedExternalAvoidanceRows=(learning.verifiedExternalAvoidancePrinciples||[]).map(value=>`      ${luauString(value)},`).join('\n');
   const verifiedExternalAllowedRows=(learning.verifiedExternalLearningUseAllowed||[]).map(value=>`      ${luauString(value)},`).join('\n');
   const verifiedExternalForbiddenRows=(learning.verifiedExternalLearningUseForbidden||[]).map(value=>`      ${luauString(value)},`).join('\n');
+  const semanticMappingRows=luauSemanticMappingRows(learning.gameSpecificSemanticMappings||[],'      ');
+  const semanticDispositionRows=luauLearningDispositionRows(learning.verifiedExternalLearningDispositions||[],'      ');
+  const validationRows=(learning.verifiedExternalValidationOnlyPrinciples||[]).map(value=>`      ${luauString(value)},`).join('\n');
+  const notApplicableRows=(learning.verifiedExternalNotApplicablePrinciples||[]).map(value=>`      ${luauString(value)},`).join('\n');
   const studioFamilyRows=Object.entries(studioAssets?.families||{}).map(([family,atoms])=>`    ${family} = { ${(atoms||[]).map(value=>luauString(value)).join(', ')} },`).join('\n');
-  return `local Config = {\n  PolicySource = "company-learning/platform-release-roadmap.json",\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  Genre = ${luauString(profile.genre)},\n  Subgenre = ${luauString(profile.subgenre||'')},\n  PlayMode = ${luauString(profile.playMode)},\n  MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'},\n  CoopRequired = ${profile.coopImplementationRequired?'true':'false'},\n  CompetitiveRequired = ${profile.competitiveImplementationRequired?'true':'false'},\n  MinimumParticipants = ${profile.minimumParticipantsForRequiredQa},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  DesignBaseline = {\n    Required = true,\n    AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY",\n    StrictScoreRequiredForAdmission = false,\n  },\n  PlatformProfile = {\n    Platform = "ROBLOX",\n    InputModel = ${luauString(platformProfile.inputModel)},\n    SessionModel = ${luauString(platformProfile.sessionModel)},\n    MultiplayerRuntime = ${luauString(platformProfile.multiplayerRuntime)},\n    PerformanceBudget = ${luauString(platformProfile.performanceBudget)},\n    UiUx = ${luauString(platformProfile.uiUx)},\n    SaveAndNetwork = ${luauString(platformProfile.saveAndNetwork)},\n    ContentAdaptation = ${luauString(platformProfile.platformContentAdaptation)},\n    InternalReleaseTarget = ${luauString(platformProfile.internalReleaseTarget)},\n    ValidationEvidence = ${luauString(platformProfile.validationEvidence)},\n  },\n  -- STUDIO_ASSET_BINDING_BEGIN\n  StudioAssets = {\n    Applied = ${studioAssets.applied?'true':'false'},\n    BindingVersion = 2,\n    LibraryVersion = ${Number(studioAssets.libraryVersion||0)},\n    Source = ${luauString(studioAssets.source||'company-asset-library.json#baseMaterialLibrary')},\n    AtomState = ${luauString(studioAssets.atomState||'')},\n    RecipeId = ${luauString(studioAssets.recipeId||'NORMAL_VARIANT')},\n    ProductionVerified = false,\n    RuntimeVerificationRequired = true,\n    Families = {\n${studioFamilyRows}\n    },\n    MotionQuality = {\n      Contract = "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",\n      LibraryFirst = true,\n      ArticulatedRigRequired = true,\n      AnimatorRequired = true,\n      BlendAndSpeedSyncRequired = true,\n      RuntimeVerificationRequired = true,\n      MannequinHardFailure = "CHARACTER_MOTION_MANNEQUIN",\n    },\n  },\n  -- STUDIO_ASSET_BINDING_END\n  LearningContext = {\n    Applied = ${learning.applied?'true':'false'},\n    Authority = ${luauString(learning.authority||'roblox-baseline-only')},\n    RecipeId = ${luauString(learning.recipeId||'')},\n    Operator = ${luauString(learning.transformationOperator||'')},\n    OriginalModifierRequired = ${learning.originalModifierRequired?'true':'false'},\n    PlaybookChecklist = {\n${checklistRows}\n    },\n    FeatureBlend = {\n${featureRows}\n    },\n    SourceProjects = {\n${sourceRows}\n    },\n    VerifiedExternalLearningFirst = ${learning.verifiedExternalLearningFirst?'true':'false'},\n    MemoryFingerprint = ${luauString(learning.verifiedExternalLearningFingerprint||'')},\n    NativeBindingVersion = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION},\n    CoveragePct = ${Number(learning.verifiedExternalLearningCoveragePct||0)},\n    ContentComplete = ${learning.verifiedExternalDistilledContentComplete?'true':'false'},\n    RetrievedCount = ${Number(learning.verifiedExternalLearningRetrievedCount||0)},\n    AppliedCount = ${Number(learning.verifiedExternalLearningAppliedCount||0)},\n    TruncationForbidden = ${learning.verifiedExternalLearningTruncationForbidden?'true':'false'},\n    ApplyAxes = {\n${verifiedExternalLearningAxisRows}\n    },\n    VerifiedExternalLearningIds = {\n${verifiedExternalLearningRows}\n    },\n    ApplicationPrinciples = {\n${verifiedExternalLearningPrincipleRows}\n    },\n    GameDevelopmentPrinciples = {\n${verifiedExternalLearningPrincipleRows}\n    },\n    AvoidancePrinciples = {\n${verifiedExternalAvoidanceRows}\n    },\n    LearningUseAllowed = {\n${verifiedExternalAllowedRows}\n    },\n    LearningUseForbidden = {\n${verifiedExternalForbiddenRows}\n    },\n  },\n  InitialState = {\n    Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,\n    Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,\n    PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,\n    SharedObjective = 0, RoundScore = 0,\n  },\n  Actions = {\n${actionRows}\n  },\n}\n\nreturn table.freeze(Config)\n`;
+  return `local Config = {\n  PolicySource = "company-learning/platform-release-roadmap.json",\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  Genre = ${luauString(profile.genre)},\n  Subgenre = ${luauString(profile.subgenre||'')},\n  PlayMode = ${luauString(profile.playMode)},\n  MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'},\n  CoopRequired = ${profile.coopImplementationRequired?'true':'false'},\n  CompetitiveRequired = ${profile.competitiveImplementationRequired?'true':'false'},\n  MinimumParticipants = ${profile.minimumParticipantsForRequiredQa},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  DesignBaseline = {\n    Required = true,\n    AdmissionGate = "MINIMUM_DUAL_PLATFORM_DESIGN_READY",\n    StrictScoreRequiredForAdmission = false,\n  },\n  PlatformProfile = {\n    Platform = "ROBLOX",\n    InputModel = ${luauString(platformProfile.inputModel)},\n    SessionModel = ${luauString(platformProfile.sessionModel)},\n    MultiplayerRuntime = ${luauString(platformProfile.multiplayerRuntime)},\n    PerformanceBudget = ${luauString(platformProfile.performanceBudget)},\n    UiUx = ${luauString(platformProfile.uiUx)},\n    SaveAndNetwork = ${luauString(platformProfile.saveAndNetwork)},\n    ContentAdaptation = ${luauString(platformProfile.platformContentAdaptation)},\n    InternalReleaseTarget = ${luauString(platformProfile.internalReleaseTarget)},\n    ValidationEvidence = ${luauString(platformProfile.validationEvidence)},\n  },\n  -- STUDIO_ASSET_BINDING_BEGIN\n  StudioAssets = {\n    Applied = ${studioAssets.applied?'true':'false'},\n    BindingVersion = 2,\n    LibraryVersion = ${Number(studioAssets.libraryVersion||0)},\n    Source = ${luauString(studioAssets.source||'company-asset-library.json#baseMaterialLibrary')},\n    AtomState = ${luauString(studioAssets.atomState||'')},\n    RecipeId = ${luauString(studioAssets.recipeId||'NORMAL_VARIANT')},\n    ProductionVerified = false,\n    RuntimeVerificationRequired = true,\n    Families = {\n${studioFamilyRows}\n    },\n    MotionQuality = {\n      Contract = "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.robloxCharacterMotionQuality",\n      LibraryFirst = true,\n      ArticulatedRigRequired = true,\n      AnimatorRequired = true,\n      BlendAndSpeedSyncRequired = true,\n      RuntimeVerificationRequired = true,\n      MannequinHardFailure = "CHARACTER_MOTION_MANNEQUIN",\n    },\n  },\n  -- STUDIO_ASSET_BINDING_END\n  LearningContext = {\n    Applied = ${learning.applied?'true':'false'},\n    Authority = ${luauString(learning.authority||'roblox-baseline-only')},\n    RecipeId = ${luauString(learning.recipeId||'')},\n    Operator = ${luauString(learning.transformationOperator||'')},\n    OriginalModifierRequired = ${learning.originalModifierRequired?'true':'false'},\n    PlaybookChecklist = {\n${checklistRows}\n    },\n    FeatureBlend = {\n${featureRows}\n    },\n    SourceProjects = {\n${sourceRows}\n    },\n    VerifiedExternalLearningFirst = ${learning.verifiedExternalLearningFirst?'true':'false'},\n    MemoryFingerprint = ${luauString(learning.verifiedExternalLearningFingerprint||'')},\n    NativeBindingVersion = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION},\n    CoveragePct = ${Number(learning.verifiedExternalLearningCoveragePct||0)},\n    ContentComplete = ${learning.verifiedExternalDistilledContentComplete?'true':'false'},\n    RetrievedCount = ${Number(learning.verifiedExternalLearningRetrievedCount||0)},\n    AppliedCount = ${Number(learning.verifiedExternalLearningAppliedCount||0)},\n    TruncationForbidden = ${learning.verifiedExternalLearningTruncationForbidden?'true':'false'},
+    SemanticMappingVersion = ${Number(learning.semanticMappingVersion||0)},
+    SemanticMappingFingerprint = ${luauString(learning.semanticMappingFingerprint||'')},
+    SemanticVariant = ${luauString(learning.semanticVariant||'')},
+    CoreKind = ${luauString(learning.coreKind||'')},
+    AppliedGameDevelopmentPrincipleCount = ${Number(learning.verifiedExternalLearningGameDevelopmentAppliedCount||0)},
+    RetrievedPrincipleCount = ${Number(learning.verifiedExternalLearningRetrievedPrincipleCount||0)},
+    ValidationOnlyPrincipleCount = ${Number(learning.verifiedExternalValidationOnlyPrincipleCount||0)},
+    NotApplicablePrincipleCount = ${Number(learning.verifiedExternalNotApplicablePrincipleCount||0)},\n    ApplyAxes = {\n${verifiedExternalLearningAxisRows}\n    },\n    VerifiedExternalLearningIds = {\n${verifiedExternalLearningRows}\n    },\n    ApplicationPrinciples = {\n${verifiedExternalLearningPrincipleRows}\n    },\n    GameDevelopmentPrinciples = {\n${verifiedExternalLearningPrincipleRows}\n    },\n    GameSpecificSemanticMappings = {
+${semanticMappingRows}
+    },
+    LearningDispositions = {
+${semanticDispositionRows}
+    },
+    ValidationOnlyPrinciples = {
+${validationRows}
+    },
+    NotApplicablePrinciples = {
+${notApplicableRows}
+    },
+    AvoidancePrinciples = {\n${verifiedExternalAvoidanceRows}\n    },\n    LearningUseAllowed = {\n${verifiedExternalAllowedRows}\n    },\n    LearningUseForbidden = {\n${verifiedExternalForbiddenRows}\n    },\n  },\n  InitialState = {\n    Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,\n    Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,\n    PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,\n    SharedObjective = 0, RoundScore = 0,\n  },\n  Actions = {\n${actionRows}\n  },\n}\n\nreturn table.freeze(Config)\n`;
 }
 
 function serverHandlerBody(kind,index){
