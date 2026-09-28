@@ -149,6 +149,39 @@ jobs:
             fi
           fi
 
+      - name: Cancel stale exact-game runtime runs after contract change
+        if: github.event_name == 'push' && steps.freshness.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" > /tmp/roblox-runtime-contract-runs.json
+          node <<'NODE' > /tmp/roblox-runtime-stale-run-ids
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-contract-runs.json','utf8'));
+          const states=new Set(['queued','pending','in_progress','requested']);
+          const currentRun=Number(process.env.GITHUB_RUN_ID||0);
+          const currentSha=String(process.env.GITHUB_SHA||'');
+          for(const run of payload.workflow_runs||[]){
+            if(Number(run.id)===currentRun)continue;
+            if(!states.has(String(run.status||'').toLowerCase()))continue;
+            const title=String(run.display_title||'');
+            if(!title.startsWith('Roblox runtime · ')||title==='Roblox runtime · batch')continue;
+            if(String(run.head_sha||'')===currentSha)continue;
+            console.log(run.id);
+          }
+          NODE
+          cancelled=0
+          while read -r run_id; do
+            [ -n "$run_id" ] || continue
+            if gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null 2>&1; then
+              cancelled=$((cancelled+1))
+              echo "ROBLOX_STALE_EXACT_RUNTIME_CANCELLED=$run_id"
+            fi
+          done < /tmp/roblox-runtime-stale-run-ids
+          echo "ROBLOX_STALE_EXACT_RUNTIME_CANCEL_COUNT=$cancelled"
+
       - name: Bind Roblox source-plan contract fingerprint
         id: contract
         if: steps.freshness.outputs.run == 'true'
