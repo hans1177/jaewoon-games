@@ -1404,10 +1404,18 @@ test('game and asset-development workers bind verified learning-runtime playbook
   assert.equal(workflow.includes('exactInjectedKnowledgeIds.slice(0,40)'),false);
   assert.ok(workflow.includes('applicationCoveragePct:Number(workOrder.knowledgeApplicationContract.applicationCoveragePct||0)'));
   assert.ok(workflow.includes('allRetrievedKnowledgeApplied:workOrder.knowledgeApplicationContract.allRetrievedKnowledgeApplied===true'));
+  assert.ok(workflow.includes('verifiedExternalLearningFirst:workOrder.knowledgeApplicationContract.verifiedExternalLearningFirst===true'));
+  assert.ok(workflow.includes('verifiedExternalLearningIds:Array.isArray(workOrder.knowledgeApplicationContract.verifiedExternalLearningIds)'));
+  assert.ok(workflow.includes('verifiedExternalLearningCoveragePct:Number(workOrder.knowledgeApplicationContract.verifiedExternalLearningCoveragePct||0)'));
+  assert.ok(workflow.includes('verifiedExternalLearningApplyAxes:Array.isArray(workOrder.knowledgeApplicationContract.verifiedExternalLearningApplyAxes)'));
+  assert.ok(workflow.includes('verified-external-learning-apply-axes:'));
   assert.ok(workflow.includes('verifiedLearningMemorySha:'));
   assert.ok(continuousRunnerSource.includes("Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs"));
   assert.ok(continuousRunnerSource.includes('verifiedExternalLearningFirst:true'));
   assert.ok(continuousRunnerSource.includes('verifiedExternalLearningCoveragePct:verifiedExternalPlaybookReuse.length>0?100:0'));
+  assert.ok(continuousRunnerSource.includes('verifiedExternalLearningApplyAxes'));
+  assert.ok(continuousRunnerSource.includes('GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'));
+  assert.ok(continuousRunnerSource.includes('verifiedExternalLearningApplyAxes='+knowledgeApplicationContract.verifiedExternalLearningApplyAxes.join(',')));
   assert.ok(continuousRunnerSource.includes('VERIFIED_EXTERNAL_BLACK_BOX_LEARNING_REQUIRED_BEFORE_GAME_OR_ASSET_WORK'));
   assert.ok(continuousRunnerSource.includes('Before any game source or internal asset authoring starts'));
   assert.ok(workflow.includes("asset-development"));
