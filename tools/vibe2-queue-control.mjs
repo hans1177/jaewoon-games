@@ -1123,6 +1123,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_BRAIN_LIVE=${result.summary?.brainLive===true?'YES':'NO'}`);
   console.log(`VIBE2_CAUSAL_REPLAN_REQUIRED=${result.summary?.causalReplanRequired===true?'YES':'NO'}`);
   console.log(`VIBE2_QUEUE_RELEASED_WORKER_SLOTS=${(result.summary?.releasedWorkerSlotTaskIds || []).length}`);
+  if(Array.isArray(result.selection?.deferredConflicts)){
+    const conflicts=result.selection.deferredConflicts.slice(0,20);
+    console.log(`VIBE2_QUEUE_DEFERRED_CONFLICT_COUNT=${result.selection.deferredConflicts.length}`);
+    console.log(`VIBE2_QUEUE_DEFERRED_CONFLICTS=${conflicts.map(row=>`${row?.task?.id||'UNKNOWN'}=>${row?.reason||'UNKNOWN'}`).join('|')||'NONE'}`);
+  }
   if (result.command === 'release-slot') console.log(`VIBE2_SLOT_RELEASED=${result.released ? 'YES' : 'NO'}`);
   if (result.adaptiveControl) {
     console.log(`VIBE2_ADAPTIVE_MAX=${result.adaptiveControl.currentMax}`);
