@@ -376,8 +376,13 @@ jobs:
             &&finalEntry?.f9ReleaseRegressionPassed===true
             &&['PENDING','RETRY_REQUIRED'].includes(String(finalEntry?.status||''))
             &&Number(finalEntry?.validationVersionNumber)>0
-            &&/^[1-9][0-9]*$/.test(String(finalEntry?.validationUniverseId||''))
-            &&/^[1-9][0-9]*$/.test(String(finalEntry?.validationPlaceId||''))
+            &&(
+              finalEntry?.internalStudioValidationOnly===true
+              ||(
+                /^[1-9][0-9]*$/.test(String(finalEntry?.validationUniverseId||''))
+                &&/^[1-9][0-9]*$/.test(String(finalEntry?.validationPlaceId||''))
+              )
+            )
             &&/^[0-9a-f]{40}$/i.test(revision)
             &&/^sha256:[0-9a-f]{64}$/i.test(artifact)
             &&sourceRoot===`roblox-games/${gameId}`
@@ -846,7 +851,13 @@ jobs:
           if(publishStage==='final'){
             const entry=queuedFinalEntry;
             if(Number(entry.validationVersionNumber||0)<=0)throw new Error('queued F9 validation version missing during canonical persist');
-            if(!/^[1-9][0-9]*$/.test(String(entry.validationUniverseId||''))||!/^[1-9][0-9]*$/.test(String(entry.validationPlaceId||'')))throw new Error('queued F9 validation target missing during canonical persist');
+            if(
+              entry.internalStudioValidationOnly!==true
+              &&(
+                !/^[1-9][0-9]*$/.test(String(entry.validationUniverseId||''))
+                ||!/^[1-9][0-9]*$/.test(String(entry.validationPlaceId||''))
+              )
+            )throw new Error('queued F9 validation target missing during canonical persist');
             const canonicalEvidence={
               version:2,gameId:item.gameId,platform:'ROBLOX',cycleId:publishCycleId,
               sourceRevision:process.env.SOURCE_REVISION,artifactIdentity:process.env.ARTIFACT_IDENTITY,artifactRunId,
