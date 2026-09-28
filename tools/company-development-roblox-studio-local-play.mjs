@@ -1813,7 +1813,7 @@ export async function runOfficialStudioMcpPlay({
       const floatingSpawnCandidate=Boolean(
         initialClientProbe?.player?.rootPresent===true
         &&initialClientProbe?.world?.floorBelowPlayer!==true
-        &&(initialClientProbe?.world?.boundsFinite!==true||Number(initialClientProbe?.world?.collidablePartCount||0)<1)
+        &&(initialClientProbe?.world?.boundsFinite!==true||Number(initialClientProbe?.world?.collidablePartCount||0)<1||(Number(initialClientProbe?.world?.floorSampleCount||0)>0&&Number(initialClientProbe?.world?.floorHitCount||0)===0))
       );
       if(floatingSpawnCandidate){
         await wait(450);
@@ -1821,7 +1821,7 @@ export async function runOfficialStudioMcpPlay({
         const floatingConfirmed=Boolean(
           floatingConfirm?.player?.rootPresent===true
           &&floatingConfirm?.world?.floorBelowPlayer!==true
-          &&(floatingConfirm?.world?.boundsFinite!==true||Number(floatingConfirm?.world?.collidablePartCount||0)<1)
+          &&(floatingConfirm?.world?.boundsFinite!==true||Number(floatingConfirm?.world?.collidablePartCount||0)<1||(Number(floatingConfirm?.world?.floorSampleCount||0)>0&&Number(floatingConfirm?.world?.floorHitCount||0)===0))
         );
         if(floatingConfirmed){
           checkpoint('floating-character-map-readiness',false);
@@ -2336,7 +2336,26 @@ export async function runOfficialStudioMcpPlay({
       signature=(signature+':settingHint=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY').slice(0,500);
       console.log('ROBLOX_STUDIO_MCP_SETTING_HINT=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY');
     }
-    errors.push({type:'studio-mcp-infrastructure-or-runtime-error',actionId:null,signature});
+    const floatingWorld=signature.startsWith('ROBLOX_STUDIO_FLOATING_CHARACTER_ABORT:');
+    if(floatingWorld){
+      scenarioCoverage.push({id:'adaptive-world-safety',pass:false,required:true});
+      qualityFailureKinds.push('adaptive-world-safety');
+      qualityFailureDetails.push({
+        id:'adaptive-world-safety',
+        repairSurface:'WORLD_GEOMETRY',
+        priority:'CRITICAL',
+        hint:'Spawned character has no walkable floor; restore the world floor and spawn collision before further Studio QA.',
+        observed:{
+          floorBelowPlayer:initialClientProbe?.world?.floorBelowPlayer===true,
+          floorSampleCount:Number(initialClientProbe?.world?.floorSampleCount||0),
+          floorHitCount:Number(initialClientProbe?.world?.floorHitCount||0),
+          collidablePartCount:Number(initialClientProbe?.world?.collidablePartCount||0)
+        }
+      });
+      errors.push({type:'studio-product-world-geometry-error',actionId:'floating-character-map-readiness',signature});
+    }else{
+      errors.push({type:'studio-mcp-infrastructure-or-runtime-error',actionId:null,signature});
+    }
     if(started&&studioId&&client.tools.has('start_stop_play')){
       try{const tool=client.tool('start_stop_play');await client.call('start_stop_play',startStopArgs(tool.inputSchema||{},studioId,false));}catch{}
     }
