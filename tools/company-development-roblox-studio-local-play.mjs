@@ -167,7 +167,7 @@ function adaptiveCoverageSignals(launch={}){
     map:/map|zone|portal|dungeon|room|island|arena|world|base|village|ground|route|school|hospital|park|forest|cave|field|맵|지역|포탈|던전|방|섬|아레나|마을|사냥터|학교|병원|공원|숲|동굴/.test(text),
     interactions:/quest|shop|inventory|equip|craft|prompt|interact|hire|recruit|build|upgrade|attack|skill|ability|button|door|portal|collect|gather|heal|trade|퀘스트|상점|인벤|장비|제작|상호작용|고용|모집|건설|강화|공격|스킬|문|포탈|채집|회복|거래/.test(text),
     progression:/level|xp|gold|quest|wave|round|stage|boss|base|zone|portal|unlock|progress|mastery|advancement|tier|reward|레벨|경험치|골드|퀘스트|웨이브|라운드|스테이지|보스|해금|진행|숙련|전직|티어|보상/.test(text),
-    multiplayer:/multiplayer|player|party|team|co-op|coop|sync|join|rejoin|human|monster/.test(text),
+    multiplayer:/multiplayer|multi-player|party|team|co-op|coop|cooperative|sync|late.?join|rejoin|2\+ players|멀티|파티|팀|협동|동기화|재접속/.test(text),
     serverBoundary:/remote|server|authority|authoritative|spam|abuse|validation|datastore|save|rejoin/.test(text),
     combat:/combat|attack|skill|ability|damage|boss|enemy|monster|mob|zombie|wolf|spider|raider|defense|battle|전투|공격|스킬|데미지|보스|적|몬스터|좀비|늑대|거미|방어/.test(text),
     motion:/dash|dodge|parry|block|movement|move|chase|charge|jump|attack|skill|ability/.test(text),
@@ -202,7 +202,7 @@ export function deriveStudioActualPlayContract(launch={}){
     'adaptive-companion-ai-surface','adaptive-item-surface','adaptive-environment-surface',
     'adaptive-effects-surface','adaptive-quest-loop-surface','adaptive-reward-loop-surface',
     'adaptive-economy-surface','adaptive-save-surface','adaptive-save-rejoin-persistence','adaptive-retry-loop-surface','adaptive-retry-action-effect','adaptive-death-respawn-recovery',
-    'adaptive-camera-quality','adaptive-performance-budget'
+    'adaptive-multiplayer-sync-surface','adaptive-camera-quality','adaptive-performance-budget'
   ];
   const explicitScenarios=launchStringList(explicit?.requiredScenarios);
   return Object.freeze({
@@ -1187,6 +1187,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     economy:declaredSignals.economy===true||Number(categories.economy||0)>0,
     save:declaredSignals.save===true||Number(categories.save||0)>0,
     retry:declaredSignals.retry===true||Number(categories.retry||0)>0,
+    multiplayer:declaredSignals.multiplayer===true,
     camera:declaredSignals.camera===true||client?.camera?.present===true,
     performance:true
   };
@@ -1240,6 +1241,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const combatEffects=combatActions.filter(row=>row?.effectObserved===true).length;
   const retryActions=semanticActions.filter(row=>row?.semantic==='RETRY');
   const retryEffects=retryActions.filter(row=>row?.effectObserved===true).length;
+  const multiplayerSignals=Number(player.humanCount||0)+Number(player.monsterCount||0)+Number(ws.HumanCount||0)+Number(ws.MonsterCount||0);
+  const multiplayerRuntimeSurface=Number(runtime.remoteCount||0)>0&&(multiplayerSignals>0||entityRows(runtime.progression).some(row=>/party|team|human|playercount|sync|join|멀티|파티|팀|동기화/i.test(clean(row?.name))));
   const activeLoopExpected=signals.combat||signals.quests||signals.rewards||signals.progression||signals.interactions;
   const activeLoopObserved=semanticEffects>0||timelineProgressChanged||timelineMobDynamic||timelineCompanionDynamic||primaryActionFeedbackChanged||progressChanged||inventoryDelta;
   const performanceTrendPass=!soak||(memoryGrowthMb<=300&&descendantGrowth<=6000);
@@ -1315,6 +1318,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-retry-loop-surface',pass:!signals.retry||Number(categories.retry||0)>0},
     {id:'adaptive-retry-action-effect',pass:!signals.retry||retryActions.length===0||retryEffects>0},
     {id:'adaptive-death-respawn-recovery',pass:!deathObserved||respawnObserved},
+    {id:'adaptive-multiplayer-sync-surface',pass:!signals.multiplayer||multiplayerRuntimeSurface},
     {id:'adaptive-camera-quality',pass:!signals.camera||(client?.camera?.present===true&&client?.camera?.subjectPresent===true&&Number(client?.camera?.fieldOfView||0)>0&&client?.camera?.occluded!==true)},
     {id:'adaptive-performance-budget',pass:Number(runtime.memoryMb||0)>=0&&Number(runtime.descendantCount||0)<120000&&performanceTrendPass}
   ];
@@ -1374,6 +1378,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     'adaptive-retry-loop-surface':['FAILURE_RECOVERY','HIGH','Repair death/failure/restart/respawn flow and remove softlocks after retry.'],
     'adaptive-retry-action-effect':['FAILURE_RECOVERY','CRITICAL','Retry/restart input was accepted but did not restore or transition gameplay/UI/round state.'],
     'adaptive-death-respawn-recovery':['CHARACTER_RESPAWN','CRITICAL','A real death was observed during Studio play but the character did not return to a healthy playable state.'],
+    'adaptive-multiplayer-sync-surface':['MULTIPLAYER_SYNC','CRITICAL','The game declares multiplayer/co-op behavior but Studio found no credible replicated player/team state plus server Remote surface. Restore actual 2+ player synchronization evidence before release.'],
     'adaptive-camera-quality':['CAMERA','HIGH','Repair camera subject/FOV/occlusion behavior and keep gameplay readable during movement/combat.'],
     'adaptive-performance-budget':['PERFORMANCE','HIGH','Reduce runaway instance count/memory pressure and keep long-session runtime stable.'],
     'primary-action-effect':['ACTION_IMPLEMENTATION','CRITICAL','Ensure primary action produces authoritative gameplay feedback, movement, damage, or state transition.'],
@@ -1399,6 +1404,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     if(id==='adaptive-reward-effect')return{rewardActionCount:rewardActions.length,rewardEffectCount:rewardEffects,progressChanged,inventoryChanged:inventoryDelta};
     if(id==='adaptive-retry-action-effect')return{retryActionCount:retryActions.length,retryEffectCount:retryEffects};
     if(id==='adaptive-death-respawn-recovery')return{deathObserved,respawnObserved};
+    if(id==='adaptive-multiplayer-sync-surface')return{declaredMultiplayer:signals.multiplayer===true,multiplayerRuntimeSurface,multiplayerSignals,remoteCount:Number(runtime.remoteCount||0)};
     return metrics.surfaces;
   };
   const qualityFailureDetails=qualityFailureKinds.map(id=>{
@@ -1751,6 +1757,7 @@ export async function runOfficialStudioMcpPlay({
           :/portal|포탈|enter|입장|door|문/.test(text)?'TRAVEL'
           :/heal|회복|healer|치유/.test(text)?'HEAL'
           :/upgrade|강화|전직|advance|train/.test(text)?'UPGRADE'
+          :/retry|재도전|restart|재시작|respawn|리스폰|revive|부활/.test(text)?'RETRY'
           :/collect|채집|줍기|pickup|loot|전리품/.test(text)?'COLLECT':'GENERAL';
       };
       const semanticRank={QUEST:0,REWARD:1,SHOP:2,CRAFT:3,EQUIP:4,TRAVEL:5,HEAL:6,UPGRADE:7,COLLECT:8,GENERAL:99};
