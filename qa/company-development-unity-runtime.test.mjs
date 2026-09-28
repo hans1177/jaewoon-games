@@ -508,3 +508,17 @@ test('Unity actual native source generation consumes 100% verified APK black-box
   assert.match(source,/ApplyVerifiedExternalLearningFeedback/);
   assert.match(source,/verifiedExternalLearningCoveragePct:verifiedExternalLearning\.coveragePct/);
 });
+
+
+test('Unity APK principles drive concrete gameplay UX instead of hash-based motion',()=>{
+  const source=fs.readFileSync(generatorSource,'utf8');
+  assert.match(source,/unityGameDevelopmentProfile/);
+  assert.match(source,/VerifiedGameDevelopmentPrinciples/);
+  assert.match(source,/UseImmediateVisibleFeedback/);
+  assert.match(source,/UseContextualOnboarding/);
+  assert.match(source,/UsePersistentActionControls/);
+  assert.match(source,/입력 반영/);
+  assert.match(source,/핵심 조작을 눌러 바로 플레이/);
+  assert.doesNotMatch(source,/float learningPulse/);
+  assert.doesNotMatch(source,/verifiedLearningSignal/);
+});
