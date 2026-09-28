@@ -225,6 +225,26 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         try{
           execFileSync('git',['diff','--quiet',boundRevision,currentRevision,'--',`${sourcePath}/default.project.json`,`${sourcePath}/shared`,`${sourcePath}/server`,`${sourcePath}/client`],{cwd:repoRoot,stdio:'ignore'});
           if(!sourceBind)continue;
+          const exactBuildReusable=item.robloxBuildOrPackagePassed===true
+            &&item.robloxBuildSourceRevision===boundRevision
+            &&/^sha256:[0-9a-f]{64}$/i.test(clean(item.robloxBuildArtifactIdentity));
+          if(exactBuildReusable){
+            results.push({
+              gameId:item.gameId,
+              pass:true,
+              sourcePath,
+              sourceRevision:boundRevision,
+              sourceTreeSha,
+              sourceDrift:false,
+              preserveDownstreamEvidence:true,
+              sourceBindDebtResolved:true,
+              saveRequired:false,
+              blockers:[],
+              failure:null,
+              authority:'unchanged-game-source-revalidation',
+            });
+            continue;
+          }
         }catch(error){
           if(Number(error?.status)!==1){
             results.push({

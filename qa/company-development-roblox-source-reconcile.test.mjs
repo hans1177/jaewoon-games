@@ -226,7 +226,9 @@ test('SOURCE_BIND debt revalidates unchanged exact Roblox source even when only 
     assert.equal(rows.length,1,'SOURCE_BIND debt must be revalidated even when the exact game path did not change');
     assert.equal(rows[0].pass,true,rows[0].blockers.join(','));
     assert.equal(rows[0].sourceDrift,false);
-    assert.equal(rows[0].sourceRevision,currentRevision);
+    assert.equal(rows[0].preserveDownstreamEvidence,true);
+    assert.equal(rows[0].sourceBindDebtResolved,true);
+    assert.equal(rows[0].sourceRevision,boundRevision);
     assert.match(rows[0].sourceTreeSha,/^[0-9a-f]{40}$/);
     assert.notEqual(boundRevision,currentRevision);
   }finally{
@@ -770,3 +772,17 @@ test('stale Roblox technical workers drop before Rojo model and F0 without poiso
   assert.doesNotMatch(workflow,/max-parallel:\s*[0-9]+/);
 });
 
+
+
+test('runtime reconciliation preserves downstream evidence for unchanged game bytes',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const marker=workflow.indexOf('if(result.pass===true&&result.preserveDownstreamEvidence===true)');
+  const reset=workflow.indexOf('if(result.pass===true){',marker);
+  assert.ok(marker>0&&reset>marker);
+  const block=workflow.slice(marker,reset);
+  assert.match(block,/ROBLOX_UNCHANGED_SOURCE_DOWNSTREAM_EVIDENCE_PRESERVED=/);
+  assert.match(block,/item\.robloxBuildArtifactIdentity/);
+  assert.doesNotMatch(block,/robloxBuildArtifactIdentity:null/);
+  assert.doesNotMatch(block,/robloxFoundationF0Passed:false/);
+  assert.doesNotMatch(block,/robloxF9ReleaseRegressionPassed:false/);
+});

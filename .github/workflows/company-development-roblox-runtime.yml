@@ -684,6 +684,30 @@ jobs:
             if(reconciliationRevision!==currentMainRevision){
               console.log(`ROBLOX_SOURCE_RECONCILIATION_UNRELATED_MAIN_ADVANCE_ACCEPTED=${result.gameId}:${reconciliationRevision}:${currentMainRevision}:tree=${reconciliationTreeSha}`);
             }
+            if(result.pass===true&&result.preserveDownstreamEvidence===true){
+              const studioPass=item.robloxInternalVibePlayEvidence?.pass===true
+                &&item.robloxInternalVibePlayEvidence?.artifactIdentity===item.robloxBuildArtifactIdentity;
+              const f9Pass=item.robloxF9ReleaseRegressionPassed===true;
+              const f0Pass=item.robloxFoundationF0Passed===true;
+              const nextStep=f9Pass?'POST_F9_CONTINUOUS_EVOLUTION':studioPass?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':f0Pass?'VIBE_INTERNAL_PLAY':'TARGET_PLATFORM_TECHNICAL_VALIDATION';
+              const nextState=f9Pass?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION':studioPass?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':f0Pass?'F0_SOURCE_PREFLIGHT_PASSED':'TARGET_PLATFORM_REPAIR_REQUIRED';
+              Object.assign(item,robloxSelectionPatch(item),{
+                status:'ACTIVE',
+                currentStep:nextStep,
+                canonicalState:nextState,
+                sourcePath:result.sourcePath,
+                targetSourcePath:result.sourcePath,
+                robloxProjectPath:result.sourcePath,
+                robloxSourceBootstrapPassedAt:stamp,
+                robloxSourceBootstrapFailedAt:null,
+                robloxSourceCandidateBranch:null,
+                robloxSourceCandidateReadyAt:null,
+                updatedAt:stamp,
+              });
+              reconciliationPass++;
+              console.log('ROBLOX_UNCHANGED_SOURCE_DOWNSTREAM_EVIDENCE_PRESERVED='+item.gameId+':'+item.robloxBuildArtifactIdentity);
+              continue;
+            }
             if(result.pass===true){
               Object.assign(item,robloxSelectionPatch(item),{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
