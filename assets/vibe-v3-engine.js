@@ -85,6 +85,7 @@ function memoryCorpus(entry={}){return [
   ...(entry.distilledApplicationPrinciples||[]),
   ...(entry.distilledAvoidancePrinciples||[]),
   ...(entry.distilledLearningUseAllowed||[]),
+  ...(entry.distilledLearningUseForbidden||[]),
   ...(entry.sourcePaths||[]),...(entry.tags||[])
 ].join(' ');}
 function normalizeMemoryEntry(record={},kind='sample',index=0){
@@ -100,6 +101,7 @@ function normalizeMemoryEntry(record={},kind='sample',index=0){
     distilledApplicationPrinciples:Object.freeze(unique(record.distilledApplicationPrinciples||[])),
     distilledAvoidancePrinciples:Object.freeze(unique(record.distilledAvoidancePrinciples||[])),
     distilledLearningUseAllowed:Object.freeze(unique(record.distilledLearningUseAllowed||[])),
+    distilledLearningUseForbidden:Object.freeze(unique(record.distilledLearningUseForbidden||[])),
     sourcePaths:Object.freeze(sourcePaths),
     sourceRevision:revision||null,
     tags:Object.freeze(unique(record.tags||[])),
@@ -162,7 +164,8 @@ export function createVibeTaskPlaybook({taskType='general',retrieval=null,source
       sourceRevision:item.entry.sourceRevision,
       distilledApplicationPrinciples:Object.freeze([...(item.entry.distilledApplicationPrinciples||[])]),
       distilledAvoidancePrinciples:Object.freeze([...(item.entry.distilledAvoidancePrinciples||[])]),
-      distilledLearningUseAllowed:Object.freeze([...(item.entry.distilledLearningUseAllowed||[])])
+      distilledLearningUseAllowed:Object.freeze([...(item.entry.distilledLearningUseAllowed||[])]),
+      distilledLearningUseForbidden:Object.freeze([...(item.entry.distilledLearningUseForbidden||[])])
     }))),
     avoid:Object.freeze((retrieval?.failureWarnings||[]).map(item=>({id:item.entry.id,score:item.score,failureClass:item.entry.failureClass,failure:item.entry.failure}))),
     responsibleSources:Object.freeze((sourceRanking?.candidates||[]).map(item=>({path:item.path,score:item.score}))),
