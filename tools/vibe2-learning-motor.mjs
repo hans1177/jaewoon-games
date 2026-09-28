@@ -1079,7 +1079,7 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
   const secondaryDomains=new Set(domainClassification.secondary);
   const normalizedExperience=createVibeExperienceMemory(experienceInput);
   const normalizedExperienceById=new Map((normalizedExperience.records||[]).map(row=>[clean(row.id),row]));
-  const ranked=(experienceInput?.records||[]).filter(r=>r?.verified===true&&r?.reusable===true).map(record=>{
+  const ranked=(normalizedExperience.records||[]).map(record=>{
     let score=0;const reasons=[];
     const recordFailureFingerprint=failureFingerprintForExperience(record);
     const recordFailureCodes=explicitFailureCodes([
