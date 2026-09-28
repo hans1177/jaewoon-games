@@ -61,12 +61,14 @@ env:
 
 concurrency:
   group: vibe2-distillation-ingest-pr
-  cancel-in-progress: true
+  # Preserve the active memory rebuild; GitHub keeps only the newest pending run in this group.
+  cancel-in-progress: false
 
 jobs:
   ingest:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-latest
+    # Distillation ingest is control-plane Git/Node/Python validation, not heavy game execution.
+    runs-on: ubuntu-slim
     timeout-minutes: 8
     steps:
       - name: Checkout main
@@ -78,6 +80,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
       - name: Fetch verified autonomous history and candidate refs
         shell: bash
