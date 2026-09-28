@@ -769,7 +769,7 @@ jobs:
                 if(!evidence.includes(exactTreeMarker))continue;
                 process.stdout.write(String(task.id)+'\n');
               }
-              NODE
+          NODE
               )
               for task_id in "${task_ids[@]}"; do
                 evidence="roblox-internal-runtime-acceptance-pass,roblox-final-review-pass,roblox-runtime-acceptance-mode:${acceptance_mode},roblox-runtime-source-revision:${source_revision},roblox-runtime-source-tree:${runtime_source_tree_sha},roblox-runtime-version:${version_number},verification-conclusion:success,target-engine-qa-ref:roblox-f9-${GITHUB_RUN_ID},actions-run:${GITHUB_RUN_ID}"
