@@ -1559,8 +1559,8 @@ jobs:
     # Coalesce only the same planner identity so duplicate push scans do not consume the authenticated runner.
     name: plan exact local Studio MCP playtests for earliest eligible artifacts
     concurrency:
-      group: roblox-studio-mcp-plan-${{ inputs.game_id || 'scan' }}
-      cancel-in-progress: ${{ inputs.game_id == '' }}
+      group: roblox-studio-mcp-plan-${{ inputs.game_id || github.sha }}
+      cancel-in-progress: true
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 8
     outputs:
