@@ -158,3 +158,43 @@ test('stale pressure evidence resets to maximum before fresh evaluation',()=>{
   assert.equal(next.currentMax,256);
   assert.equal(next.lastReason,'AT_MAX_HEALTHY');
 });
+
+
+test('game-primary reserve-batch applies adaptive capacity to actual reservation',()=>{
+  const files=tempFiles();
+  try{
+    const tasks=Array.from({length:40},(_,i)=>({
+      id:`adaptive-task-${i}`,gameId:`g-${i}`,target:'web',department:'development',type:'implementation',
+      goal:'adaptive reservation',status:'queued',sourceRoot:`web-games/g-${i}`,responsibleFiles:['index.html']
+    }));
+    fs.writeFileSync(files.queue,JSON.stringify({maxConcurrentTasks:256,tasks}), 'utf8');
+    fs.writeFileSync(files.control,JSON.stringify({version:4,currentMax:20,lastReason:'EXTERNAL_CAPACITY_OBSERVED_19'}),'utf8');
+    const result=runQueueCommand({
+      command:'reserve-batch',queue:files.queue,control:files.control,lane:'game-primary',
+      max:'256',min:'4','reservation-id':'adaptive:1','reservation-run':'adaptive','reserved-at':'2026-09-28T00:00:00Z',output:files.output
+    });
+    assert.equal(result.adaptiveMaxConcurrentTasks,20);
+    assert.equal(result.reservationMaxConcurrentTasks,20);
+    assert.equal(result.tasks.length,20);
+  }finally{fs.rmSync(files.dir,{recursive:true,force:true});}
+});
+
+test('auxiliary reserve-batch is not capped by game-primary adaptive control',()=>{
+  const files=tempFiles();
+  try{
+    const tasks=Array.from({length:24},(_,i)=>({
+      id:`asset-task-${i}`,gameId:`asset-${i}`,target:'unity',department:'development',type:'implementation',
+      assetProductionLane:true,goal:'asset production',status:'queued',sourceRoot:`unity-games/asset-${i}`,
+      responsibleFiles:['Assets/asset.txt'],evidence:['asset-production-parallel:v1']
+    }));
+    fs.writeFileSync(files.queue,JSON.stringify({maxConcurrentTasks:256,tasks}), 'utf8');
+    fs.writeFileSync(files.control,JSON.stringify({version:4,currentMax:20,lastReason:'EXTERNAL_CAPACITY_OBSERVED_19'}),'utf8');
+    const result=runQueueCommand({
+      command:'reserve-batch',queue:files.queue,control:files.control,lane:'asset-development',
+      max:'64',min:'4','reservation-id':'asset:1','reservation-run':'asset','reserved-at':'2026-09-28T00:00:00Z',output:files.output
+    });
+    assert.equal(result.adaptiveMaxConcurrentTasks,20);
+    assert.equal(result.reservationMaxConcurrentTasks,64);
+    assert.equal(result.tasks.length,24);
+  }finally{fs.rmSync(files.dir,{recursive:true,force:true});}
+});
