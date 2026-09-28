@@ -387,14 +387,14 @@ test('publish stage selects validation target before F9 and canonical target aft
   assert.match(candidate,/const currentFinalPublish=publishStage==='final'/);
 });
 
-test('internal Roblox modification loop is F0-F9 then canonical publish then repeat',()=>{
+test('internal Roblox modification loop is F0-F9 then one canonical publish then repeat',()=>{
   const drift=fs.readFileSync('tools/company-roblox-source-drift-sync.mjs','utf8');
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
-  const candidate=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   assert.match(drift,/validateExistingRobloxSourceTree/);
-  assert.match(runtime,/publish_stage=validation/);
-  assert.match(candidate,/Publish exact package to validation target or F9-verified canonical target/);
+  assert.doesNotMatch(runtime,/publish_stage=validation/);
+  assert.match(runtime,/ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED/);
+  assert.match(runtime,/company-development-roblox-post-runtime-qa\.yml/);
   assert.match(finalReview,/publish_stage=final/);
   assert.match(finalReview,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=/);
   assert.match(finalReview,/ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
