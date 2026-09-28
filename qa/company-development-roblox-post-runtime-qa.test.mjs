@@ -257,3 +257,14 @@ test('exact transient Open Cloud retry is cancelled when source or artifact chan
   assert.match(workflow,/Number\(transientEvidence\.candidateVersionNumber\|\|0\)===Number\(c\.versionNumber\|\|0\)/);
   assert.match(workflow,/ROBLOX_OPEN_CLOUD_EXACT_GATE_RETRY_SUPERSEDED_BY_CURRENT_SOURCE=/);
 });
+
+test('same exact Studio internal evidence is reused inside the cycle without fabricating external runtime PASS',()=>{
+  assert.match(workflow,/const exactExternalRuntimeEvidenceReusable=/);
+  assert.match(workflow,/const exactStudioRuntimeEvidenceReusable=/);
+  assert.match(workflow,/const exactRuntimeEvidenceReusable=exactExternalRuntimeEvidenceReusable\|\|exactStudioRuntimeEvidenceReusable/);
+  assert.match(workflow,/reusedServerBootEvidence:exactExternalRuntimeEvidenceReusable/);
+  assert.match(workflow,/reusedStudioInternalEvidence:exactStudioRuntimeEvidenceReusable/);
+  assert.match(workflow,/EXACT_SOURCE_ARTIFACT_VERSION_STUDIO_INTERNAL_EVIDENCE_ALREADY_VERIFIED/);
+  assert.match(workflow,/item\.robloxRuntimeFoundationPassed=false;[\s\S]{0,100}item\.robloxRuntimePassed=false;/);
+  assert.match(workflow,/externalServerBootRequired:false/);
+});
