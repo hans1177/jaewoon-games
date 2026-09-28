@@ -733,3 +733,53 @@ test('Roblox source-plan wake and runner isolation stay aligned across central r
   assert.equal(change.heavyExecutionRunnerUnchanged,'ubuntu-latest');
 });
 
+
+
+test('verified external black-box learning is applied first at full retrieved coverage across development and internal assets',()=>{
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  const architecture=JSON.parse(read('company-learning/company-architecture-map.json'));
+  const logMap=JSON.parse(read('company-learning/company-log-map.json'));
+  const robloxLearning=read('tools/vibe3-roblox-learning-context.mjs');
+  const robloxBootstrap=read('tools/company-development-roblox-bootstrap.mjs');
+  const unityBootstrap=read('tools/company-unity-web-floor-bootstrap.mjs');
+  const unityWorkflow=read('.github/workflows/unity-web-floor-source-bootstrap.yml');
+  const assetPlan=read('tools/vibe2-asset-production-plan.mjs');
+
+  const policy=roadmap.developmentLifecycleMachine?.machineOnlyProjectContinuation?.verifiedLearningMaxUse?.externalVerifiedBlackBoxFirstApplication||{};
+  assert.equal(policy.required,true);
+  assert.equal(policy.mandatoryApplicationCoveragePct,100);
+  assert.equal(policy.allRetrievedTaskRelevantVerifiedExternalItemsMustBeApplied,true);
+  assert.equal(policy.retrievedVerifiedExternalLearningTruncationForbidden,true);
+  assert.equal(policy.applicationBeforeInternalAuthoringRequired,true);
+  assert.equal(policy.applicationBeforeGameSourceGenerationRequired,true);
+  assert.equal(policy.internalAssetProductionMustConsumeVerifiedCommercialDistillationFirst,true);
+  assert.equal(policy.unityWebBootstrapWithoutVerifiedExternalLearningForbidden,true);
+  assert.equal(policy.rawCommercialCodeCopyForbidden,true);
+  assert.equal(policy.rawCommercialAssetCopyForbidden,true);
+  assert.equal(policy.transformativeReauthoringOrRecompositionRequired,true);
+  assert.equal(policy.freshVerificationRequired,true);
+
+  const topology=architecture.verifiedExternalLearningFirstApplicationTopology||{};
+  assert.equal(topology.mandatoryApplicationCoveragePct,100);
+  assert.equal(topology.retrievedSetTruncationAllowed,false);
+  assert.equal(topology.silentIgnoreAllowed,false);
+  assert.equal(topology.consumers?.robloxSourceBootstrap,'tools/company-development-roblox-bootstrap.mjs');
+  assert.equal(topology.consumers?.unityWebSourceBootstrap,'tools/company-unity-web-floor-bootstrap.mjs');
+  assert.equal(topology.consumers?.assetProduction,'tools/vibe2-asset-production-plan.mjs');
+
+  const evidence=logMap.verifiedExternalLearningFirstApplicationEvidenceContract||{};
+  assert.equal(evidence.requiredValues?.applicationCoveragePct,100);
+  assert.equal(evidence.requiredValues?.allRetrievedTaskRelevantVerifiedExternalItemsApplied,true);
+  assert.equal(evidence.nativeRuntimeOrReleasePassNotImplied,true);
+
+  assert.doesNotMatch(robloxLearning,/sort\(\(a,b\)=>b\.score-a\.score\|\|a\.tie\.localeCompare\(b\.tie\)\)\.slice\(0,3\)/);
+  assert.match(robloxLearning,/verifiedExternalLearningCoveragePct:verifiedExternalLearningIds\.length>0\?100:0/);
+  assert.match(robloxBootstrap,/VerifiedExternalLearningFirst = \$\{learning\.verifiedExternalLearningFirst\?'true':'false'\}/);
+  assert.match(robloxBootstrap,/CoveragePct = \$\{Number\(learning\.verifiedExternalLearningCoveragePct\|\|0\)\}/);
+  assert.match(unityBootstrap,/UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REQUIRED/);
+  assert.match(unityBootstrap,/mandatoryApplicationCoveragePct:100/);
+  assert.match(unityWorkflow,/git fetch --no-tags --depth=1 origin vibe2-learning-runtime/);
+  assert.match(unityWorkflow,/--playbooks=\/tmp\/vibe3-task-playbooks\.json/);
+  assert.match(assetPlan,/mandatoryApplicationCoveragePct:100/);
+  assert.match(assetPlan,/TRANSFORMATIVE_INTERNAL_ASSET_EVOLUTION/);
+});
