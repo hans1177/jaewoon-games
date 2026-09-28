@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-09-28T14:17:07.291Z",
+  "updatedAt": "2026-09-28T14:37:20.823Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -1968,8 +1968,8 @@
       "externalReleaseBlockingOnly": true,
       "status": "OPEN",
       "createdAt": "2026-09-27T02:05:11.299Z",
-      "updatedAt": "2026-09-28T14:17:07.288Z",
-      "occurrenceCount": 154
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 155
     },
     {
       "id": "bug-b3e14193de493e2916b5",
@@ -2548,8 +2548,8 @@
       "externalReleaseBlockingOnly": true,
       "status": "OPEN",
       "createdAt": "2026-09-27T12:01:41.645Z",
-      "updatedAt": "2026-09-28T14:17:07.288Z",
-      "occurrenceCount": 41
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 42
     },
     {
       "id": "bug-0dc7e54671e4c6f10d9d",
@@ -2626,8 +2626,8 @@
       "externalReleaseBlockingOnly": true,
       "status": "OPEN",
       "createdAt": "2026-09-27T22:12:11.993Z",
-      "updatedAt": "2026-09-28T14:17:07.288Z",
-      "occurrenceCount": 50
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 51
     },
     {
       "id": "bug-01db4d43370f3d6ba193",
@@ -2718,8 +2718,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T12:54:28.283Z",
-      "updatedAt": "2026-09-28T14:17:07.288Z",
-      "occurrenceCount": 7
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 8
     },
     {
       "id": "bug-40f841b81f963f4f3466",
@@ -2741,8 +2741,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T12:54:28.283Z",
-      "updatedAt": "2026-09-28T14:17:07.288Z",
-      "occurrenceCount": 7
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 8
     },
     {
       "id": "bug-72d2bf07d33ab3aade8c",
@@ -2810,8 +2810,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T12:54:28.283Z",
-      "updatedAt": "2026-09-28T14:17:07.288Z",
-      "occurrenceCount": 7
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 8
     },
     {
       "id": "bug-5f5778c89cf85f14d291",
@@ -2833,8 +2833,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T12:54:28.283Z",
-      "updatedAt": "2026-09-28T14:17:07.288Z",
-      "occurrenceCount": 7
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 8
     },
     {
       "id": "bug-b1759e3b7e329173215f",
@@ -2856,8 +2856,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T13:03:18.738Z",
-      "updatedAt": "2026-09-28T14:17:07.288Z",
-      "occurrenceCount": 6
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 7
     },
     {
       "id": "bug-5ee4bfbf28be43389da3",
@@ -2879,8 +2879,491 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-28T13:03:18.738Z",
-      "updatedAt": "2026-09-28T14:17:07.288Z",
-      "occurrenceCount": 6
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 7
+    },
+    {
+      "id": "bug-62c547b5868f685c7d71",
+      "gameId": "daechung-rpg",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":\"908ee42c6baf454773ef46f8180f1761585e8cb8\",\"sourceFingerprint\":\"0281990eec330ffb595444557412aee87acfe25d06c99f71de6799fb88875df6\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:c288566b80bb5eaa7527ce9f0526cd21181dcdf6e38f5055e1d7d177716c1578\",\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":true,\"lastSuccessfulStage\":\"INTERNAL_PLATFORM_RELEASE\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-ec9d9394fa61837a80f2",
+      "gameId": "horror-escape-room",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":2,\"platform\":\"UNITY\",\"sourceRevision\":\"f12b57f8cc46c43f28cf73eab54cf61dc31f9062\",\"sourceRootTreeSha\":\"7d6b42ab32f7ce573799cba35da400372dfd98da\",\"sourceFingerprint\":\"b7f028c2db45449830b92fee8c912162ad90db0b9b38dd97fa5ccaa202b0383a\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:c6652a74053c5b3f8c8e6f4a23fd98a5afb297989d56bd109db1ebc47642bc08\",\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":true,\"lastSuccessfulStage\":\"REGRESSION\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-e3f9e2a35c929add1ca2",
+      "gameId": "village-dungeons",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"F9_RELEASE_REGRESSION\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-54caf5f5c553ea31fd82",
+      "gameId": "village-dungeons",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"F9_RELEASE_REGRESSION\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-588c473227e45eaac19f",
+      "gameId": "amusement-tycoon",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"F9_RELEASE_REGRESSION\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-5dad5f61383219fe106a",
+      "gameId": "amusement-tycoon",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"F9_RELEASE_REGRESSION\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-949c939695c2ae01fd78",
+      "gameId": "bug-defense",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-92fcda3df991f68d82ac",
+      "gameId": "bug-defense",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-d716c4de187a7b6216cf",
+      "gameId": "line-defense",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"F9_RELEASE_REGRESSION\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-1da4ca30993e98d7b46d",
+      "gameId": "line-defense",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"F9_RELEASE_REGRESSION\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-299419424840c9eea338",
+      "gameId": "cozy-island",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":\"34bd3a9cf2f93f1bc32fbd87eb53471fe3fadcd4\",\"sourceFingerprint\":\"7e10ffe1caced8443d2a3b899cef2768db94349ef400c7338c1197780d7d9efe\",\"buildOrPackagePassed\":true,\"artifactIdentity\":\"sha256:b21721d1739dc23981f7c5867a527cf9eb2d978ba1bb232bf5f9db8b743bd827\",\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":true,\"lastSuccessfulStage\":\"INTERNAL_PLATFORM_RELEASE\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-3132999cb950da535510",
+      "gameId": "fantasy-survival",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-c157b350e7171a437b8e",
+      "gameId": "fantasy-survival",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-3d62c1a85af70ece19ab",
+      "gameId": "monster-adventure",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-21fc5d2e06bdb64adeca",
+      "gameId": "monster-adventure",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-c86708572e708df38c11",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"F9_RELEASE_REGRESSION\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-c68ee7d2455aec8ab029",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"F9_RELEASE_REGRESSION\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-3b6c759420b0476447ca",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"F9_RELEASE_REGRESSION\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-b6976b03f3cabc9f98d5",
+      "gameId": "seed-puzzle-chromatic-cascade",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"F9_RELEASE_REGRESSION\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-b76a2d36d38f6d92269f",
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-9212c586bc32cd0ce7f1",
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "surface": "UNITY",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_FINAL_REVIEW_PENDING",
+      "reproduction": "RERUN_EXACT_IMMUTABLE_ARTIFACT_STAGE_AND_CAPTURE_RUNTIME_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "{\"version\":1,\"platform\":\"UNITY\",\"sourceRevision\":null,\"sourceFingerprint\":null,\"buildOrPackagePassed\":false,\"artifactIdentity\":null,\"runtimePassed\":false,\"independentQaPassed\":true,\"regressionPassed\":true,\"exactRevision\":false,\"lastSuccessfulStage\":\"CHEAP_PRECHECK\",\"failureStage\":\"ROBLOX_FINAL_REVIEW_REVALIDATION\",\"failureSignature\":\"ROBLOX_FINAL_REVIEW_PENDING\"}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_RUNTIME",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-09-28T14:37:20.820Z",
+      "updatedAt": "2026-09-28T14:37:20.820Z",
+      "occurrenceCount": 1
     }
   ]
 }
