@@ -6816,6 +6816,9 @@
     "publishBeforeF9Forbidden": true,
     "nextCycleStartsAfterDispatch": true,
     "failureIsolation": "PUBLICATION_FAILURE_REPAIR_RUNS_ALONGSIDE_CONTINUED_GAME_EVOLUTION",
+    "publicationRetryMode": "AUTOMATIC_UNBOUNDED_CAUSAL_REDISPATCH",
+    "publicationRetryMustPreserveExactFailedCycleIdentity": true,
+    "publicationRetryMayNotGateNextEvolution": true,
     "platformBindings": {
       "WEB": {
         "f9Authority": "VIBE2_FAN_IN_REVIEW",
