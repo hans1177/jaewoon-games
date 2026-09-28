@@ -2852,7 +2852,8 @@
       "ROBLOX_CANONICAL_FINAL_PUBLISH=REPAIR_REQUIRED"
     ],
     "nextCycleStartsAfterF9PublishDispatch": true,
-    "publicationOutcomeDiagnosticOnly": true
+    "publicationOutcomeDiagnosticOnly": true,
+    "nextCycleRequiresCanonicalPublishDispatch": true
   },
   "verifiedPlatformCyclePublicationEvidence": {
     "version": 1,
@@ -2879,5 +2880,33 @@
       "WAIT_NEXT_CYCLE_FOR_PUBLISH_SUCCESS",
       "WAIT_NEXT_CYCLE_FOR_PUBLIC_VISIBILITY"
     ]
+  },
+  "platformVerifiedF0F9PublicationEvidence": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.verifiedF0F9PublicationLoop",
+    "requiredCommonMarkers": [
+      "PLATFORM_F9_VERIFIED",
+      "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED",
+      "PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED"
+    ],
+    "platformMarkers": {
+      "WEB": [
+        "WEB_F9_VERIFIED",
+        "WEB_DEPLOY_ATTEMPTED",
+        "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED"
+      ],
+      "ROBLOX": [
+        "ROBLOX_F9_VERIFIED_CANONICAL_PUBLISH_PENDING",
+        "ROBLOX_F9_CANONICAL_PUBLISH_DISPATCHED",
+        "ROBLOX_F9_VIBE_REFILL_DISPATCHED"
+      ],
+      "UNITY": [
+        "UNITY_F9_VERIFIED",
+        "UNITY_F9_DEPLOYED_INTERNAL_OR_CLOSED_BUILD",
+        "UNITY_NEXT_EVOLUTION_CYCLE_DISPATCHED"
+      ]
+    },
+    "publicationFailureMayCoexistWithNextEvolution": true,
+    "publicationVisibilityMayNotBlockNextEvolution": true
   }
 }
