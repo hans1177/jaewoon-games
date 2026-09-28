@@ -995,7 +995,10 @@
     "preF9ValidationTargetIsolationRequired": true,
     "exactSourceRevisionAndArtifactIdentityRequiredAcrossValidationF9AndCanonicalPublish": true,
     "f9MayNotEndEvolution": true,
-    "canonicalPublishSuccessRequiredBeforeNextCycleRefill": true,
-    "failureAction": "REPAIR_REQUIRED_AT_RESPONSIBLE_STAGE_AND_REVALIDATE_EXACT_STAGE"
+    "canonicalPublishSuccessRequiredBeforeNextCycleRefill": false,
+    "failureAction": "PUBLICATION_REPAIR_CONTINUES_IN_PARALLEL_WHILE_NEXT_F0_TO_F9_EVOLUTION_CYCLE_PROCEEDS",
+    "finalPublishDispatchRequiredBeforeNextCycleRefill": true,
+    "publicationFailureBlocksEvolution": false,
+    "publicationVisibilityBlocksEvolution": false
   }
 }
