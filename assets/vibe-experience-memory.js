@@ -6,6 +6,15 @@ const clean = (value) => String(value ?? '').trim();
 const freeze = (value) => Object.freeze(value);
 const unique = (values = []) => [...new Set(values.map(clean).filter(Boolean))];
 const freezeList = (values = []) => freeze(unique(values));
+const VERIFIED_EXTERNAL_APPLICATION_AXES = freeze([
+  'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
+  'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
+  'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
+  'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
+  'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
+  'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
+  'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
+]);
 
 function words(value) {
   return unique(clean(value)
@@ -133,15 +142,25 @@ function normalizeVerifiedExternalLearningApplication(value = null) {
   const applicationCoveragePct = Math.max(0, Math.min(100, Number(value.verifiedExternalLearningCoveragePct ?? value.applicationCoveragePct ?? 0) || 0));
   const verifiedExternalLearningFirst = value.verifiedExternalLearningFirst === true;
   const truncationForbidden = value.retrievedVerifiedExternalLearningTruncationForbidden === true || value.truncationForbidden === true;
-  const fullCoverageVerified = verifiedExternalLearningFirst
+  const sourceAuthority = clean(value.sourceAuthority);
+  const allRequiredAxesPresent = VERIFIED_EXTERNAL_APPLICATION_AXES.every(axis=>axes.includes(axis));
+  const rawCommercialCodeCopy = value.rawCommercialCodeCopy === true;
+  const rawCommercialAssetCopy = value.rawCommercialAssetCopy === true;
+  const distinctiveExpressionClone = value.distinctiveExpressionClone === true;
+  const fullCoverageVerified = sourceAuthority === 'VERIFIED_MEMORY_ONLY'
+    && verifiedExternalLearningFirst
     && ids.length > 0
     && retrievedCount === appliedCount
     && retrievedCount === ids.length
     && applicationCoveragePct === 100
-    && truncationForbidden;
+    && allRequiredAxesPresent
+    && truncationForbidden
+    && !rawCommercialCodeCopy
+    && !rawCommercialAssetCopy
+    && !distinctiveExpressionClone;
   return freeze({
     version: 1,
-    sourceAuthority: clean(value.sourceAuthority) || 'VERIFIED_MEMORY_ONLY',
+    sourceAuthority: sourceAuthority || null,
     verifiedExternalLearningFirst,
     verifiedExternalLearningIds: ids,
     verifiedExternalLearningRetrievedCount: retrievedCount,
@@ -150,10 +169,12 @@ function normalizeVerifiedExternalLearningApplication(value = null) {
     verifiedExternalLearningApplyAxes: axes,
     retrievedVerifiedExternalLearningTruncationForbidden: truncationForbidden,
     verifiedLearningMemorySha: clean(value.verifiedLearningMemorySha) || null,
+    requiredApplyAxes: VERIFIED_EXTERNAL_APPLICATION_AXES,
+    allRequiredAxesPresent,
     fullCoverageVerified,
-    rawCommercialCodeCopy: false,
-    rawCommercialAssetCopy: false,
-    distinctiveExpressionClone: false,
+    rawCommercialCodeCopy,
+    rawCommercialAssetCopy,
+    distinctiveExpressionClone,
     authorityExpanded: false
   });
 }
