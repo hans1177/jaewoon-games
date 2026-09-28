@@ -418,8 +418,6 @@ jobs:
           const selected=candidates[0];
           const universeId=String(selected.target.universeId).trim();
           const placeId=String(selected.target.placeId).trim();
-          const ownerPinnedUniverse=String(ownerPinned.universeId||'').trim();
-          const ownerPinnedPlace=String(ownerPinned.placeId||'').trim();
           const selectedUsesSharedFallback=false;
           let sharedRotation=false;
           if(selectedUsesSharedFallback){
