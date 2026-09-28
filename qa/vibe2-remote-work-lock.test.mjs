@@ -258,3 +258,36 @@ test('continuous worker binds shared lock to the owning Actions run', () => {
   assert.match(acquire, /--run-id="\$\{GITHUB_RUN_ID:-\}"/);
   assert.match(acquire, /--run-attempt="\$\{GITHUB_RUN_ATTEMPT:-\}"/);
 });
+
+
+test('remote acquire falls back to GitHub Actions run identity for older queued workflows', async () => {
+  const previousRun = process.env.GITHUB_RUN_ID;
+  const previousAttempt = process.env.GITHUB_RUN_ATTEMPT;
+  process.env.GITHUB_RUN_ID = '7654321';
+  process.env.GITHUB_RUN_ATTEMPT = '3';
+  try {
+    const fetchImpl = async (_url, options = {}) => {
+      if ((options.method || 'GET') === 'GET') {
+        return jsonResponse(200, { sha: 'fallback-state', content: encodedState([]) });
+      }
+      const body = JSON.parse(options.body);
+      const written = JSON.parse(Buffer.from(body.content, 'base64').toString('utf8'));
+      assert.equal(written.locks[0].runId, '7654321');
+      assert.equal(written.locks[0].runAttempt, '3');
+      return jsonResponse(200, { commit: { sha: 'fallback-commit' } });
+    };
+    const result = await acquireRemoteVibeWorkLock({
+      worker: 'vibe2',
+      task: 'fallback-run-task',
+      game: 'demo',
+      files: 'roblox-games/demo/client/Game.client.luau',
+      'base-sha': 'main-c'
+    }, { context, fetchImpl, delay: noDelay });
+    assert.equal(result.acquired, true);
+  } finally {
+    if (previousRun === undefined) delete process.env.GITHUB_RUN_ID;
+    else process.env.GITHUB_RUN_ID = previousRun;
+    if (previousAttempt === undefined) delete process.env.GITHUB_RUN_ATTEMPT;
+    else process.env.GITHUB_RUN_ATTEMPT = previousAttempt;
+  }
+});

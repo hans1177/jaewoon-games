@@ -124,8 +124,8 @@ export async function acquireRemoteVibeWorkLock(args = {}, options = {}) {
     gameId: clean(args.game) || null,
     files: list(args.files),
     baseSha: clean(args['base-sha']),
-    runId: clean(args['run-id']),
-    runAttempt: clean(args['run-attempt']),
+    runId: clean(args['run-id'] || process.env.GITHUB_RUN_ID),
+    runAttempt: clean(args['run-attempt'] || process.env.GITHUB_RUN_ATTEMPT),
     leaseMinutes: Number(args['lease-minutes'] || 45),
     evidence: list(args.evidence)
   };
