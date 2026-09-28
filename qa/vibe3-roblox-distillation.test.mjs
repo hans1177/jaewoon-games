@@ -142,12 +142,16 @@ test('all portable APK gameplay principles adapt across Roblox puzzle, economy, 
     'id=semantic-gameplay-input-plus-survival; scope=qa-evidence; lesson=process survival; apply=verify Android runtime'
   ]}];
   const playbooks={taskTypes:{roblox:{authority:'verified-task-playbook',reuse},coding:{authority:'verified-task-playbook',reuse}}};
+  const moods=new Set();
   for(const gameId of ['seed-puzzle-chromatic-cascade','amusement-tycoon','survival']){
     const result=createRobloxVibe3LearningContext({gameId,profile:existingRobloxGameLearningProfile(gameId),playbooks});
     assert.equal(result.applied,true,gameId);
     assert.equal(result.gameSpecificSemanticMappings.length,ids.length,gameId);
+    assert.ok(result.semanticMood?.id,gameId);
+    moods.add(result.semanticMood.id);
     assert.equal(result.verifiedExternalValidationOnlyPrincipleCount,1,gameId);
     assert.deepEqual(new Set(result.gameSpecificSemanticMappings.map(row=>row.principleId)),new Set(ids));
     assert.equal(result.allRetrievedPrinciplesHaveExplicitDisposition,true);
   }
+  assert.equal(moods.size,3);
 });
