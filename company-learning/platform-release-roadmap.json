@@ -1,5 +1,5 @@
 {
-  "version": 488,
+  "version": 489,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1968,8 +1968,14 @@
         ],
         "confirmedSecurityBugRoute": "HOTFIX",
         "securityHotfixPreemptsOtherUpdateWork": true,
-        "securityRescanBeforeRedeploy": true,
-        "verifiedSecurityResultReturnsToSecurityLearning": true
+        "securityRescanBeforeRedeploy": false,
+        "verifiedSecurityResultReturnsToSecurityLearning": true,
+        "securityRescanWhen": [
+          "SECURITY_RELEVANT_SOURCE_DELTA",
+          "CONFIRMED_SECURITY_FINDING",
+          "EXPLICIT_OWNER_PUBLIC_RELEASE_VALIDATION_REQUEST"
+        ],
+        "unrelatedSecurityScanMayNotBlockBuildUp": true
       },
       "activationBoundary": "AFTER_INITIAL_SECOND_PLATFORM_ADAPTATION_GATE_AND_PUBLIC_RELEASE",
       "internalPlatformReleaseDoesNotActivatePostReleaseUpdateEngine": true,
@@ -5389,7 +5395,7 @@
         "noDurationExit": true,
         "noElapsedDayOrHourExit": true,
         "noLimitedOrRestrictedPublicTestExit": true,
-        "externalPublicReleaseEvaluationRunsBesideLoop": true,
+        "externalPublicReleaseEvaluationRunsBesideLoop": false,
         "rebuildAfterEveryAcceptedModificationRequired": true,
         "modifiedSourceMayNotReusePriorBuildArtifact": true,
         "modifiedSourceInvalidatesAffectedPlayAndValidationEvidence": true,
@@ -5446,7 +5452,9 @@
         "actualVibePlayMayStartAfterRuntimeFoundationPassBeforeInternalRelease": false,
         "actualVibePlayMayStartAfterExactPrivateCandidateBeforeRuntimeFoundationPass": true,
         "validationEfficiency": "ONE_EXACT_STUDIO_SESSION_COLLECTS_APPLICABLE_F1_TO_F8; F9_FANS_IN_EVIDENCE_ONLY",
-        "externalServerObservationRole": "OPTIONAL_MANUAL_DIAGNOSTIC_ONLY"
+        "externalServerObservationRole": "OPTIONAL_MANUAL_DIAGNOSTIC_ONLY",
+        "externalPublicReleaseEvaluationTrigger": "EXPLICIT_OWNER_PUBLIC_RELEASE_DIRECTIVE_ONLY",
+        "publicReleasePrevalidationMayNotConsumeDevelopmentCycle": true
       },
       "externalPublicReleaseHardGate": {
         "version": 1,
@@ -5537,7 +5545,10 @@
         "passState": "PUBLIC_RELEASE_READY",
         "publicationRequiresExplicitExternalPublicationEvidenceAfterPass": true,
         "publicationSuccessState": "PUBLIC_RELEASE",
-        "failAction": "KEEP_EXTERNAL_EXPOSURE_DISABLED_AND_CONTINUE_INTERNAL_BUILDUP_LOOP"
+        "failAction": "KEEP_EXTERNAL_EXPOSURE_DISABLED_AND_CONTINUE_INTERNAL_BUILDUP_LOOP",
+        "activation": "EXPLICIT_OWNER_PUBLIC_RELEASE_DIRECTIVE_ONLY",
+        "proactiveBackgroundEvaluation": false,
+        "developmentLoopBlockingBeforeOwnerTrigger": false
       }
     },
     "autonomousBottleneckRecovery": {
@@ -5972,7 +5983,12 @@
         "oneExactInternalRuntimeSessionMaySatisfyMultipleApplicableFloors": true,
         "duplicateRuntimeSessionForSameExactCandidateForbidden": true,
         "multiplayerValidationOnlyWhenApplicable": true,
-        "f9MayNotReplayF1ThroughF8WithoutNewFailureOrSourceDelta": true
+        "f9MayNotReplayF1ThroughF8WithoutNewFailureOrSourceDelta": true,
+        "autonomousEvolutionLoopUnchanged": true,
+        "f0ThroughF9StructureUnchanged": true,
+        "proactiveExternalPublicValidationDuringDevelopmentForbidden": true,
+        "fullSecurityRescanEveryCycleForbidden": true,
+        "fullTwoClientMultiplayerEveryCycleForbidden": true
       },
       "layers": [
         {
@@ -6103,7 +6119,15 @@
           "applicability": "MULTIPLAYER_ONLY",
           "nonMultiplayerResult": "NOT_APPLICABLE",
           "singleExactProofPerCycle": true,
-          "duplicateF9OrPublicRecheckForbidden": true
+          "duplicateF9OrPublicRecheckForbidden": true,
+          "routineDevelopmentMode": "STATIC_AUTHORITY_SYNC_CONTRACT_PLUS_VALID_EXACT_INTERNAL_EVIDENCE",
+          "fullTwoClientRuntimeRequiredWhen": [
+            "MULTIPLAYER_AUTHORITY_OR_SYNC_CODE_CHANGED",
+            "REPRODUCED_MULTIPLAYER_FAILURE",
+            "EXPLICIT_OWNER_PUBLIC_RELEASE_VALIDATION_REQUEST"
+          ],
+          "publicReleasePrecomputeDuringDevelopment": false,
+          "unrelatedSourceDeltaMayReuseExactPassingEvidence": true
         },
         {
           "id": "F8",
@@ -6133,7 +6157,10 @@
           "evidenceAuthority": "DETERMINISTIC_QA_PLUS_REUSED_EXACT_INTERNAL_RUNTIME_EVIDENCE",
           "repeatDuplicateCheckForbidden": true,
           "runtimeReplayRequired": false,
-          "mode": "F0_TO_F8_EVIDENCE_FAN_IN_AND_REGRESSION_REVIEW"
+          "mode": "F0_TO_F8_EVIDENCE_FAN_IN_AND_REGRESSION_REVIEW",
+          "externalServerReplayOnRoutineDevelopment": false,
+          "fullSecurityReplayOnUnrelatedDelta": false,
+          "fullTwoClientReplayOnUnrelatedDelta": false
         }
       ],
       "runtimeSentinel": {
@@ -23267,6 +23294,60 @@
         "sourceMutationRequiredBeforeProductQualityRevalidation": true,
         "sourceMutationForbiddenSolelyForTransient429": true
       }
+    },
+    "developmentFocusRuntimeValidation": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
+      "objective": "PRESERVE_THE_EXISTING_AUTONOMOUS_GAME_EVOLUTION_AND_F0_TO_F9_STRUCTURE_WHILE_REMOVING_DUPLICATE_OR_PREMATURE_SECURITY_EXTERNAL_SERVER_AND_MULTIPLAYER_PROCEDURE",
+      "preserveExistingAutonomousEvolutionLoop": true,
+      "preserveExistingF0ThroughF9": true,
+      "preserveExistingBuildUpPlannerAndVibeSourceWorker": true,
+      "defaultPriority": "REAL_GAME_BUILD_UP_AND_CAUSAL_REPAIR",
+      "externalServer": {
+        "automaticDuringDevelopment": false,
+        "internalCompletionPrerequisite": false,
+        "proactivePublicReleaseObservationDuringDevelopment": false,
+        "runOnlyWhen": [
+          "EXPLICIT_OWNER_PUBLIC_RELEASE_VALIDATION_REQUEST",
+          "MANUAL_DIAGNOSTIC_REQUEST"
+        ]
+      },
+      "security": {
+        "fullRescanEveryDevelopmentCycle": false,
+        "exactPassingEvidenceReusableUntilRelevantSecurityDelta": true,
+        "rerunWhen": [
+          "SERVER_AUTHORITY_OR_REMOTE_INPUT_CHANGE",
+          "SAVE_ECONOMY_REWARD_OR_DAMAGE_AUTHORITY_CHANGE",
+          "SECRET_CREDENTIAL_OR_EXTERNAL_TRUST_CHANGE",
+          "CONFIRMED_OR_SUSPECTED_SECURITY_FINDING",
+          "EXPLICIT_OWNER_PUBLIC_RELEASE_VALIDATION_REQUEST"
+        ],
+        "unrelatedGameplayOrPresentationDelta": "REUSE_VALID_SECURITY_EVIDENCE_AND_CONTINUE_BUILD_UP",
+        "nonblockingWhenUnrelated": true
+      },
+      "multiplayer": {
+        "fullTwoClientEveryDevelopmentCycle": false,
+        "staticAuthorityContractAndExistingExactEvidenceReusable": true,
+        "fullTwoClientRunWhen": [
+          "MULTIPLAYER_AUTHORITY_OR_SYNC_CODE_CHANGED",
+          "REPRODUCED_MULTIPLAYER_FAILURE",
+          "EXPLICIT_OWNER_PUBLIC_RELEASE_VALIDATION_REQUEST"
+        ],
+        "nonMultiplayerGame": "NOT_APPLICABLE",
+        "publicReleasePrecomputeDuringDevelopment": false
+      },
+      "f9": {
+        "consumesExistingExactEvidence": true,
+        "replayExternalServerForbiddenWithoutTrigger": true,
+        "replayFullSecurityForbiddenWithoutRelevantDelta": true,
+        "replayFullTwoClientForbiddenWithoutRelevantDeltaOrOwnerPublicReleaseTrigger": true
+      },
+      "publicRelease": {
+        "ownerExplicitApprovalRemainsRequired": true,
+        "publicReleaseValidationRunsAfterOwnerTriggerNotAsDevelopmentBackgroundTax": true
+      },
+      "qualityThresholdLowering": false,
+      "fabricatedPassForbidden": true
     }
   },
   "neuralGatedExecution": {
