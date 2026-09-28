@@ -323,7 +323,7 @@ test('current Roblox Studio asset binding version does not re-enter refresh fore
   try{
     const root=path.join(tmp,'roblox-games',gameId);
     writeCompiledTree(root);
-    const applied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary});
+    const applied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
     assert.equal(applied.studioAssets.bindingVersion,2);
     initGitRepo(tmp);
     const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
@@ -347,7 +347,7 @@ test('existing Roblox source re-enters rebind when client asset binding is still
   try{
     const root=path.join(tmp,'roblox-games',gameId);
     writeLegacyStudioUnboundTree(root);
-    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary});
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
     const clientFile=path.join(root,'client','Game.client.luau');
     const client=fs.readFileSync(clientFile,'utf8').replace(/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/,'STUDIO_ASSET_BINDING_VERSION = 1');
     fs.writeFileSync(clientFile,client);
@@ -407,11 +407,11 @@ test('existing Roblox client Studio asset binding v1 is upgraded in place to v2'
   try{
     const root=path.join(tmp,'roblox-games',gameId);
     writeLegacyStudioUnboundTree(root);
-    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary});
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
     const clientFile=path.join(root,'client','Game.client.luau');
     const v2=fs.readFileSync(clientFile,'utf8');
     fs.writeFileSync(clientFile,v2.replace(/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/,'STUDIO_ASSET_BINDING_VERSION = 1'));
-    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary});
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
     const upgraded=fs.readFileSync(clientFile,'utf8');
     assert.match(upgraded,/STUDIO_ASSET_BINDING_VERSION\s*=\s*2/);
     assert.doesNotMatch(upgraded,/STUDIO_ASSET_BINDING_VERSION\s*=\s*1/);
@@ -427,7 +427,7 @@ test('existing Roblox library rebind preserves gameplay server and updates only 
     writeLegacyStudioUnboundTree(root);
     const serverFile=path.join(root,'server','Game.server.luau');
     const serverBefore=fs.readFileSync(serverFile,'utf8');
-    const applied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary});
+    const applied=applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
     assert.equal(applied.existingSourcePreserved,true);
     assert.equal(applied.gameplayAuthorityChanged,false);
     assert.equal(applied.serverSourceChanged,false);
@@ -441,7 +441,7 @@ test('existing Roblox library rebind preserves gameplay server and updates only 
     assert.match(client,/C\.StudioAssets/);
     assert.match(client,/StudioAssetFramePanel/);
     assert.match(client,/StudioAssetAtoms/);
-    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary});
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
     const configAgain=fs.readFileSync(path.join(root,'shared','GameConfig.luau'),'utf8');
     const clientAgain=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
     assert.equal((configAgain.match(/STUDIO_ASSET_BINDING_BEGIN/g)||[]).length,1);
@@ -489,7 +489,7 @@ test('existing Roblox source is re-queued when current verified APK learning is 
   try{
     const root=path.join(tmp,'roblox-games',gameId);
     writeLegacyStudioUnboundTree(root);
-    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary});
+    applyRobloxStudioAssetBindingToExistingSource({root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning});
     initGitRepo(tmp);
     const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
     const item={...staleItem(),currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxSourceCommit:revision};
@@ -532,14 +532,12 @@ test('existing Roblox source rebind applies all verified APK learning without ch
   }
 });
 
-test('Roblox runtime source lane treats stale verified APK learning as an existing-source maintenance rebind',()=>{
+test('verified APK refresh is owned by one Roblox sweep instead of duplicate per-game source jobs',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
-  assert.match(workflow,/ROBLOX_RECONCILE_VERIFIED_EXTERNAL_LEARNING=READY/);
   assert.match(workflow,/existing-source-verified-external-learning-required/);
-  assert.match(workflow,/existingSourceLearningRebind/);
-  assert.match(workflow,/existingSourceMaintenanceRebind/);
-  assert.match(workflow,/VERIFIED_EXTERNAL_LEARNING_REBIND/);
-  assert.match(workflow,/verifiedExternalLearningAppliedToExistingSource/);
+  assert.match(workflow,/ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND/);
+  assert.match(workflow,/if\(existingSourceLearningRebind\)\{/);
+  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind;/);
 });
 
 
@@ -663,4 +661,15 @@ test('Roblox native binding v5 requires expanded environment and skill VFX signa
     assert.match(bootstrap,new RegExp(signal));
     assert.match(reconcile,new RegExp(signal));
   }
+});
+
+
+test('existing Roblox Studio binding requires verified APK learning unconditionally',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  const fn=source.slice(source.indexOf('export function applyRobloxStudioAssetBindingToExistingSource'),source.indexOf('function sourceBlockers'));
+  assert.match(fn,/const verifiedLearning=requireRobloxVerifiedExternalLearning\(learning\)/);
+  assert.doesNotMatch(fn,/if\(learning\?\.applied===true\)/);
+  assert.match(fn,/afterConfig=replaceOrInsertVerifiedExternalLearningConfig\(afterConfig,verifiedLearning\)/);
+  assert.match(fn,/afterClient=bindExistingClientVerifiedExternalLearning\(afterClient,verifiedLearning\)/);
+  assert.match(fn,/verifiedExternalLearningApplied:true/);
 });

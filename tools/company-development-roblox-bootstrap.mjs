@@ -646,6 +646,7 @@ ${frameVar}:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
 }
 
 export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId='',baseline={},assetLibrary={},foundationRepair=false,learning={}}={}){
+  const verifiedLearning=requireRobloxVerifiedExternalLearning(learning);
   const profile=robloxBuildProfileFromBaseline(baseline);
   const studioAssets=buildRobloxStudioAssetBootstrapPlan({gameId,profile,assetLibrary});
   if(studioAssets.applied!==true)throw new Error('ROBLOX_STUDIO_ASSET_LIBRARY_NOT_READY');
@@ -660,10 +661,8 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   let afterConfig=replaceOrInsertStudioAssetConfig(beforeConfig,studioAssets);
   let afterClient=bindExistingClientStudioAssets(beforeClient);
   let afterServer=beforeServer;
-  if(learning?.applied===true){
-    afterConfig=replaceOrInsertVerifiedExternalLearningConfig(afterConfig,learning);
-    afterClient=bindExistingClientVerifiedExternalLearning(afterClient,learning);
-  }
+  afterConfig=replaceOrInsertVerifiedExternalLearningConfig(afterConfig,verifiedLearning);
+  afterClient=bindExistingClientVerifiedExternalLearning(afterClient,verifiedLearning);
 
   if(foundationRepair===true){
     if(!/MobileFirst\s*=\s*true/.test(afterConfig)){
@@ -745,10 +744,8 @@ task.defer(reportNativeFoundationReady)
   const studioClientVisibleBound=/StudioAssetFramePanel/.test(afterClient)
     ||(/StudioAssetBindingVersion/.test(afterClient)&&/StudioAssetAtoms/.test(afterClient)&&/FRAME_PANEL/.test(afterClient)&&/(hasStudioAssetAtom|hasStudioAtom)/.test(afterClient));
   if(!studioClientConfigBound||!studioClientVisibleBound)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
-  if(learning?.applied===true){
-    if(!/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/.test(afterConfig)||!/CoveragePct\s*=\s*100/.test(afterConfig)||!afterConfig.includes(`MemoryFingerprint = ${luauString(learning.verifiedExternalLearningFingerprint||'')}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CONFIG_VERIFY_FAILED');
-    if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)||!/VerifiedExternalLearningCoveragePct/.test(afterClient)||!/VerifiedExternalLearningPrincipleCount/.test(afterClient)||!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(afterClient)||!/VerifiedLearningColorGrade/.test(afterClient)||!/syncVerifiedLearningCharacterMotion/.test(afterClient)||!/VerifiedLearningSkillImpact/.test(afterClient)||!/FieldOfView/.test(afterClient)||!afterClient.includes(`VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
-  }
+  if(!/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/.test(afterConfig)||!/CoveragePct\s*=\s*100/.test(afterConfig)||!afterConfig.includes(`MemoryFingerprint = ${luauString(verifiedLearning.verifiedExternalLearningFingerprint||'')}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CONFIG_VERIFY_FAILED');
+  if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)||!/VerifiedExternalLearningCoveragePct/.test(afterClient)||!/VerifiedExternalLearningPrincipleCount/.test(afterClient)||!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(afterClient)||!/VerifiedLearningColorGrade/.test(afterClient)||!/syncVerifiedLearningCharacterMotion/.test(afterClient)||!/VerifiedLearningSkillImpact/.test(afterClient)||!/FieldOfView/.test(afterClient)||!afterClient.includes(`VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
   if(foundationRepair===true){
     const combined=afterServer+'\n'+afterClient;
     for(const [token,re] of Object.entries({
@@ -775,9 +772,9 @@ task.defer(reportNativeFoundationReady)
     existingSourcePreserved:true,
     changedFiles:Object.freeze(changedFiles),
     studioAssets,
-    verifiedExternalLearningApplied:learning?.applied===true,
-    verifiedExternalLearningFingerprint:learning?.verifiedExternalLearningFingerprint||null,
-    verifiedExternalLearningIds:Object.freeze([...(learning?.verifiedExternalLearningIds||[])]),
+    verifiedExternalLearningApplied:true,
+    verifiedExternalLearningFingerprint:verifiedLearning.verifiedExternalLearningFingerprint||null,
+    verifiedExternalLearningIds:Object.freeze([...(verifiedLearning.verifiedExternalLearningIds||[])]),
     foundationRepairApplied:foundationRepair===true,
     gameplayAuthorityChanged:false,
     serverSourceChanged:foundationRepair===true&&afterServer!==beforeServer,

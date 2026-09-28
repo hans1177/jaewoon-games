@@ -263,7 +263,11 @@ jobs:
             const reconciliationRow=reconciliationById.get(item.gameId);
             const existingSourceAssetRebind=reconciliationRow?.failure==='existing-source-studio-asset-binding-required';
             const existingSourceLearningRebind=reconciliationRow?.failure==='existing-source-verified-external-learning-required';
-            const existingSourceMaintenanceRebind=existingSourceAssetRebind||existingSourceLearningRebind;
+            if(existingSourceLearningRebind){
+              console.log('ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND='+item.gameId);
+              continue;
+            }
+            const existingSourceMaintenanceRebind=existingSourceAssetRebind;
             const bootstrapFailed=secondaryOwnerFocus?item.ownerFocusRobloxSourceBootstrapFailedAt:item.robloxSourceBootstrapFailedAt;
             const f0FoundationRepair=!secondaryOwnerFocus
               &&item.robloxFoundationF0Passed!==true
