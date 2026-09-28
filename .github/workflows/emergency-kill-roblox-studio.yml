@@ -1,9 +1,6 @@
 name: Emergency Cancel Roblox Studio QA
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/emergency-kill-roblox-studio.yml'
+  workflow_dispatch:
 
 permissions:
   actions: write
