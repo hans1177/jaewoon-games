@@ -2214,6 +2214,8 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
               generation:{
                 attempts:attempt,
                 recoveryUsed:true,
+                verifiedExternalLearningPromptChecks,
+                verifiedExternalLearningPromptAllAttempts:(verifiedExternalLearningContract?.required!==true)||verifiedExternalLearningPromptChecks===attempt,
                 robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,
                 partialTimeoutRecovery:partialRecoveryClass==='TIMEOUT',
                 partialMalformedRecovery:partialRecoveryClass==='MALFORMED_OUTPUT',
