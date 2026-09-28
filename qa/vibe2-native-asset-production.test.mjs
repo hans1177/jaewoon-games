@@ -9,6 +9,24 @@ import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeathe
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
+const VERIFIED_ROBLOX_LEARNING_REUSE=Object.freeze({
+  id:'external-black-box-bootstrap-test',
+  project:'verified-runtime-reference',
+  sourceRevision:'test-fixture',
+  distilledApplicationPrinciples:[
+    'id=compact-tactical-state-with-immediate-feedback;scope=gameplay;lesson=compact tactical state with immediate feedback;apply=compact-tactical-state-with-immediate-feedback'
+  ],
+  distilledAvoidancePrinciples:['do not copy raw source or assets'],
+  distilledLearningUseAllowed:['general gameplay feedback principle'],
+  distilledLearningUseForbidden:['raw source, binaries, or asset expression']
+});
+const verifiedRobloxPlaybooks=()=>({
+  taskTypes:{
+    roblox:{authority:'VERIFIED_PLAYBOOK',checklist:['server authority','mobile input'],reuse:[VERIFIED_ROBLOX_LEARNING_REUSE]},
+    coding:{checklist:['bounded source change'],reuse:[]}
+  }
+});
+
 function writePolicy(root,{pilot='fantasy-survival'}={}){
   fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
   fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
@@ -283,7 +301,7 @@ test('new Roblox bootstrap consumes Studio base materials in real HUD source wit
   assert.equal(studio.runtimeVerificationRequired,true);
 
   const built=compileRobloxSource({
-    gameId:'demo-bootstrap',gameName:'Demo Bootstrap',baseline,artbook:{},playbooks:{},recombination:{},roadmap:{},assetLibrary:registry
+    gameId:'demo-bootstrap',gameName:'Demo Bootstrap',baseline,artbook:{},playbooks:verifiedRobloxPlaybooks(),recombination:{},roadmap:{},assetLibrary:registry
   });
   assert.equal(built.validation.pass,true);
   assert.equal(built.studioAssets.applied,true);
@@ -388,10 +406,7 @@ test('new Roblox bootstrap binds Studio material atoms into generated Luau witho
       }
     }
   };
-  const playbooks={taskTypes:{
-    roblox:{authority:'VERIFIED_PLAYBOOK',checklist:['server authority','mobile input'],reuse:[]},
-    coding:{checklist:['bounded source change'],reuse:[]}
-  }};
+  const playbooks=verifiedRobloxPlaybooks();
   const recombination={recipes:[{
     id:'action-recipe',sourceProjects:['source-a','source-b'],
     transformationOperator:'TRANSFORMATIVE_RECOMBINATION',
