@@ -999,13 +999,13 @@ test('Studio MCP diagnostics expose installed version and available tool invento
 });
 
 
-test('automatic Roblox Studio MCP scans collapse before heavy work while exact-game runs keep separate identities',()=>{
+test('automatic Roblox foundation work keeps only newest same-identity run before heavy work',()=>{
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
-  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}\n\s+cancel-in-progress: \$\{\{ inputs\.game_id == '' \}\}/);
+  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}\n\s+cancel-in-progress: true/);
   assert.match(workflow,/title='Roblox runtime foundation QA · '\+\(game\|\|'scan'\)/);
-  assert.match(workflow,/process\.stdout\.write\(String\(game\?ids\[0\]:ids\[ids\.length-1\]\)\)/);
+  assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
