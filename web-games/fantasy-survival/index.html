@@ -2338,7 +2338,7 @@ function queueDeathAnimation(e,now=performance.now()){
 function serializeWorld(){
  return{
   enemies:state.enemies.filter(e=>e.hp>0&&e.area!=='storylab1'&&e.area!=='storylab2').map(e=>({id:e.netId,typeId:e.type.id,x:Math.round(e.x*10)/10,y:Math.round(e.y*10)/10,hp:Math.max(0,e.hp),maxHp:e.maxHp,area:e.area,hostile:!!e.hostile,emerged:e.emerged!==false,stunnedUntil:e.stunnedUntil||0,rageUntil:e.rageUntil||0,bossState:e.bossState||null,faceX:e.faceX||1,faceY:e.faceY||0,moving:!!e.moving,attacking:performance.now()-(e.attackAt||0)<360,raidId:e.raidId||null,raidTargetId:e.raidTargetId||null,raidChase:!!e.raidChase})),
-  projectiles:state.projectiles.filter(q=>q.area!=='storylab1'&&q.area!=='storylab2').map(q=>({x:q.x,y:q.y,vx:q.vx,vy:q.vy,damage:q.damage,createdAt:q.createdAt,life:q.life,area:q.area,sourceId:q.sourceId||null,ownerId:q.ownerId||null,kind:q.kind||null,arrowId:q.arrowId||null,playerOwned:!!q.playerOwned,homingUntil:q.homingUntil||0,targetId:q.targetId||null,speed:q.speed||0})),
+  projectiles:state.projectiles.filter(q=>q.area!=='storylab1'&&q.area!=='storylab2').map(q=>({x:q.x,y:q.y,vx:q.vx,vy:q.vy,damage:q.damage,createdAt:q.createdAt,life:q.life,area:q.area,sourceId:q.sourceId||null,ownerId:q.ownerId||null,kind:q.kind||null,arrowId:q.arrowId||null,playerOwned:!!q.playerOwned,homingUntil:q.homingUntil||0,targetId:q.targetId||null,speed:q.speed||0,speedRatio:q.speedRatio||0,nextSlowAt:q.nextSlowAt||0,gasBatchId:q.gasBatchId||null,gasPlayerSpeed:q.gasPlayerSpeed||0})),
   sporeClouds:state.sporeClouds.filter(g=>g.area!=='storylab1'&&g.area!=='storylab2').map(g=>({...g})),
   structures:sharedStructureSnapshot(),
   crops:state.crops.map(c=>({...c})),flowerWebs:state.flowerWebs.map(w=>({id:w.id,x:w.x,y:w.y,r:w.r,hits:w.hits})),snowChests:[...state.snowChests],raid:{count:state.raid.count,nextAt:state.raid.nextAt,active:state.raid.active?{...state.raid.active}:null},
@@ -3127,12 +3127,40 @@ function spawnToxicShieldOrbs(e,now){
 function updateSwampSpecial(e,targetP,now,playerD){
  if(e.type.toxicMycelium){
   const engaged=e.hostile&&playerD<enemyDetectRange(e,900);
+
+  if(e.toxicGasVolleyDoneAt){
+   e.toxicGasVolleyDoneAt=0;
+   e.toxicGasStunUntil=now+3000;
+   e.stunnedUntil=Math.max(e.stunnedUntil||0,e.toxicGasStunUntil);
+   e.toxicSelfDamageNext=now+1000;
+   e.toxicGasRecoveryPending=true;
+   showNotice('맹독 균사체 · 가스 소진 · 3초 기절')
+  }
+
+  if(now<(e.toxicGasStunUntil||0)){
+   if(now>=(e.toxicSelfDamageNext||0)){
+    e.toxicSelfDamageNext=now+1000;
+    e.hp=Math.max(0,e.hp-30);
+    e.hitAt=now+110;
+    if(e.hp<=0)queueDeathAnimation(e,now);
+    showNotice('맹독 균사체 · 기절 반동 30 피해')
+   }
+   return{vx:0,vy:0}
+  }
+
+  if(e.toxicGasRecoveryPending){
+   e.toxicGasRecoveryPending=false;
+   state.swampHazards.push({kind:'toxicAura',x:e.x,y:e.y,r:155,until:now+3000,nextTick:now,damage:22,sourceId:e.netId});
+   e.nextGasLaunch=now+3000;
+   showNotice('맹독 균사체 · 회복 가스 3초');
+  }
+
   if(!engaged){
-   e.toxicGasUntil=0;
-   e.toxicGasTick=0;
-   e.toxicCharge=null;
+   e.toxicGasVolleyActive=false;
+   e.toxicGasVolleyRemaining=0;
    return null
   }
+
   if(!e.nextToxicThrow)e.nextToxicThrow=now+3000;
   if(now>=e.nextToxicThrow){
    e.nextToxicThrow=now+3000;
@@ -3147,54 +3175,34 @@ function updateSwampSpecial(e,targetP,now,playerD){
     }
    }
   }
+
   if(!e.nextShieldRoll)e.nextShieldRoll=now+3000;
   if(now>=e.nextShieldRoll){
    e.nextShieldRoll=now+3000;
    if(Math.random()<.40)spawnToxicShieldOrbs(e,now)
   }
-  if(now<(e.toxicGasUntil||0)&&!item(state.player.armor)?.gasImmune&&playerD<155&&now>=(e.toxicGasTick||0)){
-   e.toxicGasTick=now+500;
-   enemyDamageTarget(e,22,true)
-  }
-  const c=e.toxicCharge;
-  if(c&&c.left>0){
-   if(c.phase==='wait'){
-    if(now<(c.waitUntil||0))return{vx:0,vy:0};
-    const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;
-    c.dirX=dx/d;
-    c.dirY=dy/d;
-    c.phase='rush';
-    c.endAt=now+850;
-    c.hit=false
-   }
-   if(now>=c.endAt){
-    c.left--;
-    if(c.left<=0){
-     e.toxicCharge=null;
-     return null
-    }
-    c.phase='wait';
-    c.waitUntil=now+1500;
-    return{vx:0,vy:0}
-   }
-   if(!c.hit&&playerD<e.type.r+28){
-    c.hit=true;
-    enemyDamageTarget(e,60,true);
-    showNotice('가스 돌진 적중 · 60 피해')
-   }
-   const sp=(Number(targetP.speed)||185)*2;
-   return{vx:c.dirX*sp,vy:c.dirY*sp}
-  }
-  if(!e.nextGasRush)e.nextGasRush=now+3000;
-  if(now>=e.nextGasRush){
-   e.nextGasRush=now+3000;
+
+  if(!e.nextGasLaunch)e.nextGasLaunch=now+3000;
+  if(!e.toxicGasVolleyActive&&now>=e.nextGasLaunch){
+   e.nextGasLaunch=now+3000;
    if(Math.random()<.40){
-    const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;
-    e.toxicGasUntil=now+3000;
-    e.toxicGasTick=now;
-    e.toxicCharge={left:3,phase:'rush',dirX:dx/d,dirY:dy/d,endAt:now+850,waitUntil:0,hit:false};
-    showNotice('맹독 균사체 · 가스 돌진 3회');
-    return{vx:dx/d*(targetP.speed||185)*2,vy:dy/d*(targetP.speed||185)*2}
+    const playerSpeed=Number(targetP.speed)||185,batchId=e.netId+':'+Math.floor(now);
+    e.toxicGasVolleyActive=true;
+    e.toxicGasVolleyRemaining=5;
+    e.toxicGasBatchId=batchId;
+    for(let i=0;i<5;i++){
+     const a=i*Math.PI*2/5,r=38;
+     const sx=e.x+Math.cos(a)*r,sy=e.y+Math.sin(a)*r;
+     const dx=targetP.x-sx,dy=targetP.y-sy,d=Math.hypot(dx,dy)||1;
+     const speed=playerSpeed*1.5;
+     state.projectiles.push({
+      kind:'toxicGasShot',x:sx,y:sy,vx:dx/d*speed,vy:dy/d*speed,speed,
+      speedRatio:1.5,nextSlowAt:now+500,damage:22,createdAt:now,life:6500,
+      area:e.area,sourceId:e.netId,targetId:e.playerTargetId||multiplayer.playerId,
+      gasBatchId:batchId,gasPlayerSpeed:playerSpeed,hitLocal:false,hitTargets:{}
+     })
+    }
+    showNotice('맹독 균사체 · 가스 발사 5개')
    }
   }
  }
@@ -3227,7 +3235,15 @@ function updateSwampSpecial(e,targetP,now,playerD){
 }
 function updateSwampHazards(now){
  const p=state.player;
- for(let i=state.swampHazards.length-1;i>=0;i--){const h=state.swampHazards[i];if(now>=h.until){state.swampHazards.splice(i,1);continue}if(dist(p.x,p.y,h.x,h.y)<=h.r&&now>=(h.nextTick||0)){h.nextTick=now+500;damagePlayer(20,true,null)}}
+ for(let i=state.swampHazards.length-1;i>=0;i--){
+  const h=state.swampHazards[i];
+  if(now>=h.until){state.swampHazards.splice(i,1);continue}
+  if(dist(p.x,p.y,h.x,h.y)<=h.r&&now>=(h.nextTick||0)){
+   h.nextTick=now+500;
+   const source=h.sourceId?state.enemies.find(e=>e.netId===h.sourceId)||null:null;
+   damagePlayer(Number(h.damage)||20,true,source)
+  }
+ }
 }
 
 function updateCrocodileSpecial(e,targetP,now,playerD){
@@ -3647,12 +3663,35 @@ function updateProjectiles(dt,now){
  for(let i=state.projectiles.length-1;i>=0;i--){
   const q=state.projectiles[i];
   if(q.kind==='sporeOrb'){const t=state.enemies.find(e=>e.netId===q.targetId&&e.hp>0&&e.area===q.area);if(t){const dx=t.x-q.x,dy=t.y-q.y,d=Math.hypot(dx,dy)||1;q.vx=dx/d*(q.speed||360);q.vy=dy/d*(q.speed||360)}}
+  if(q.kind==='toxicGasShot'&&now>=(q.nextSlowAt||0)){
+   q.nextSlowAt=(q.nextSlowAt||now)+500;
+   q.speedRatio=Math.max(.5,(Number(q.speedRatio)||1.5)-.1);
+   const d=Math.hypot(q.vx,q.vy)||1,speed=(Number(q.gasPlayerSpeed)||185)*q.speedRatio;
+   q.speed=speed;q.vx=q.vx/d*speed;q.vy=q.vy/d*speed;
+   if(q.speedRatio<=.5){
+    const source=state.enemies.find(e=>e.netId===q.sourceId);
+    if(source&&source.toxicGasVolleyActive&&source.toxicGasBatchId===q.gasBatchId){
+     source.toxicGasVolleyRemaining=Math.max(0,(source.toxicGasVolleyRemaining||1)-1);
+     if(source.toxicGasVolleyRemaining<=0){source.toxicGasVolleyActive=false;source.toxicGasVolleyDoneAt=now}
+    }
+    state.projectiles.splice(i,1);continue
+   }
+  }
   if(q.kind==='mud'&&now<(q.homingUntil||0)){
    let t=q.targetId===multiplayer.playerId?p:multiplayer.remote.get(q.targetId);
    if(t&&t.area===q.area){const dx=t.x-q.x,dy=t.y-q.y,d=Math.hypot(dx,dy)||1;q.vx=dx/d*(q.speed||220);q.vy=dy/d*(q.speed||220)}
   }
   q.x+=q.vx*dt;q.y+=q.vy*dt;
-  if(now-q.createdAt>q.life||q.x<0||q.y<0||q.x>WORLD.w||q.y>WORLD.h){state.projectiles.splice(i,1);continue}
+  if(now-q.createdAt>q.life||q.x<0||q.y<0||q.x>WORLD.w||q.y>WORLD.h){
+   if(q.kind==='toxicGasShot'){
+    const source=state.enemies.find(e=>e.netId===q.sourceId);
+    if(source&&source.toxicGasVolleyActive&&source.toxicGasBatchId===q.gasBatchId){
+     source.toxicGasVolleyRemaining=Math.max(0,(source.toxicGasVolleyRemaining||1)-1);
+     if(source.toxicGasVolleyRemaining<=0){source.toxicGasVolleyActive=false;source.toxicGasVolleyDoneAt=now}
+    }
+   }
+   state.projectiles.splice(i,1);continue
+  }
   if(q.playerOwned){
    if(multiplayer.connected&&!multiIsHost())continue;
    let hitEnemy=null;
@@ -3661,7 +3700,16 @@ function updateProjectiles(dt,now){
    continue
   }
   if(q.area===state.area&&dist(q.x,q.y,p.x,p.y)<25){
-   const projectileSource=state.enemies.find(e=>e.netId===q.sourceId)||null;damagePlayer(enemyDifficultyDamage(q.damage*(projectileSource?.raidId?RAID_DIFFICULTY_SCALE:1)),true,projectileSource);
+   const projectileSource=state.enemies.find(e=>e.netId===q.sourceId)||null;
+   if(q.kind==='toxicGasShot'){
+    if(!q.hitLocal){
+     q.hitLocal=true;
+     damagePlayer(enemyDifficultyDamage(q.damage*(projectileSource?.raidId?RAID_DIFFICULTY_SCALE:1)),true,projectileSource);
+     showNotice('맹독 균사체 작은 가스 적중 · 22 피해')
+    }
+    continue
+   }
+   damagePlayer(enemyDifficultyDamage(q.damage*(projectileSource?.raidId?RAID_DIFFICULTY_SCALE:1)),true,projectileSource);
    if(q.kind==='mud'){p.mudSlowUntil=Math.max(p.mudSlowUntil||0,now+3000);showNotice('진흙 포격 적중 · 35 피해 · 3초 둔화')}
    else if(q.kind==='toxicThrow')showNotice('맹독 균사체 독 투척 적중 · 70 피해');
    else if(q.kind==='poisonArrow'){p.templeSlowUntil=Math.max(p.templeSlowUntil||0,now+2000);p.attackBlockedUntil=Math.max(p.attackBlockedUntil||0,now+2000);showNotice('독화살 적중 · 50 피해 · 이동속도 30% 감소 · 2초 공격 불가')}
@@ -3674,7 +3722,13 @@ function updateProjectiles(dt,now){
    for(const [id,r] of multiplayer.remote){
     if(!r||r.area!==q.area||now-(r.seenAt||0)>1500||(Number(r.hp)||0)<=0)continue;
     if(dist(q.x,q.y,Number(r.x)||0,Number(r.y)||0)<25){
-     const projectileSource=state.enemies.find(e=>e.netId===q.sourceId)||null;multiSend('enemy-hit',{targetId:id,damage:enemyDifficultyDamage(q.damage*(projectileSource?.raidId?RAID_DIFFICULTY_SCALE:1)),force:true,sourceId:q.sourceId||null});
+     const projectileSource=state.enemies.find(e=>e.netId===q.sourceId)||null;
+     if(q.kind==='toxicGasShot'){
+      q.hitTargets=q.hitTargets||{};
+      if(!q.hitTargets[id]){q.hitTargets[id]=true;multiSend('enemy-hit',{targetId:id,damage:enemyDifficultyDamage(q.damage*(projectileSource?.raidId?RAID_DIFFICULTY_SCALE:1)),force:true,sourceId:q.sourceId||null})}
+      continue
+     }
+     multiSend('enemy-hit',{targetId:id,damage:enemyDifficultyDamage(q.damage*(projectileSource?.raidId?RAID_DIFFICULTY_SCALE:1)),force:true,sourceId:q.sourceId||null});
      if(q.kind==='mud')multiSend('enemy-effect',{targetId:id,kind:'mudslow',duration:3000,sourceId:q.sourceId||null});
      if(q.kind==='poisonArrow'){multiSend('enemy-effect',{targetId:id,kind:'slow30',duration:2000,sourceId:q.sourceId||null});multiSend('enemy-effect',{targetId:id,kind:'attackblock',duration:2000,sourceId:q.sourceId||null})}
      state.projectiles.splice(i,1);hitRemote=true;break
@@ -4611,6 +4665,7 @@ function drawProjectiles(cx,cy){
   else if(q.kind==='sporeOrb'){ctx.fillStyle='#b786d9';ctx.strokeStyle='#e6c9ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='mud'){ctx.fillStyle='#70583f';ctx.strokeStyle='#ad8c65';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='toxicThrow'){ctx.globalAlpha=.92;ctx.fillStyle='#79d84f';ctx.strokeStyle='#d3ff9d';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,13,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=.35;ctx.fillStyle='#a8ff78';ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill()}
+  else if(q.kind==='toxicGasShot'){ctx.globalAlpha=.82;ctx.fillStyle='#74c84a';ctx.strokeStyle='#c8ff98';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=.24;ctx.fillStyle='#9ef06b';ctx.beginPath();ctx.arc(0,0,15,0,Math.PI*2);ctx.fill()}
   else if(q.kind==='poisonArrow'){ctx.strokeStyle='#8bcf6a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,14);ctx.lineTo(0,-16);ctx.stroke();ctx.fillStyle='#b7f58c';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill()}
   else if(q.kind==='templeSpear'){ctx.strokeStyle='#8f6c43';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(0,18);ctx.lineTo(0,-18);ctx.stroke();ctx.fillStyle='#d6d0b8';ctx.beginPath();ctx.moveTo(0,-25);ctx.lineTo(7,-13);ctx.lineTo(-7,-13);ctx.closePath();ctx.fill()}
   else{ctx.fillStyle='#c5b2ff';ctx.strokeStyle='#f2edff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(8,10);ctx.lineTo(0,6);ctx.lineTo(-8,10);ctx.closePath();ctx.fill();ctx.stroke()}
