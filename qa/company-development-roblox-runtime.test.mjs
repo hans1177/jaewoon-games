@@ -7,6 +7,24 @@ import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline
 import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
 import {createRobloxVibe3LearningContext} from '../tools/vibe3-roblox-learning-context.mjs';
 
+const VERIFIED_ROBLOX_LEARNING_REUSE=Object.freeze({
+  id:'external-black-box-runtime-test',
+  project:'verified-runtime-reference',
+  sourceRevision:'test-fixture',
+  distilledApplicationPrinciples:[
+    'id=compact-tactical-state-with-immediate-feedback;scope=gameplay;lesson=compact tactical state with immediate feedback;apply=compact-tactical-state-with-immediate-feedback'
+  ],
+  distilledAvoidancePrinciples:['do not copy raw source or assets'],
+  distilledLearningUseAllowed:['general gameplay feedback principle'],
+  distilledLearningUseForbidden:['raw source, binaries, or asset expression']
+});
+const verifiedRobloxPlaybooks=()=>({
+  taskTypes:{
+    roblox:{authority:'verified-task-playbook',checklist:['server authority','mobile input'],reuse:[VERIFIED_ROBLOX_LEARNING_REUSE]},
+    coding:{authority:'verified-task-playbook',checklist:['bounded source change'],reuse:[]}
+  }
+});
+
 const platformProfile=()=>({
   platform:'ROBLOX',
   inputModel:'Roblox touch controls with ContextActionService and gamepad fallback',
@@ -175,7 +193,7 @@ test('deterministic Roblox compiler binds approved genre and play mode to genera
       platformProfiles:{ROBLOX:platformProfile()},
     }};
     const inventory=deriveApprovedScopeInventory(locked);
-    const compiled=compileRobloxSource({gameId,gameName:'Compiler Test',baseline:locked,artbook:{}});
+    const compiled=compileRobloxSource({gameId,gameName:'Compiler Test',baseline:locked,artbook:{},playbooks:verifiedRobloxPlaybooks()});
     assert.equal(compiled.generationMode,'DETERMINISTIC_PROFILE_BOUND_FULL_SCOPE_IMPLEMENTATION');
     assert.equal(compiled.modelUsed,false);
     assert.equal(compiled.validation.pass,true,compiled.validation.blockers.join(','));
@@ -209,13 +227,13 @@ test('deterministic Roblox compiler binds approved genre and play mode to genera
 
 test('co-op and competitive profiles require actual synchronized gameplay source',()=>{
   const coop={content:{...baseline.content,robloxBuildProfile:buildProfile('Obby & platformer','Classic Obby','COOP')}};
-  const compiledCoop=compileRobloxSource({gameId:'coop',gameName:'Coop',baseline:coop,artbook:{}});
+  const compiledCoop=compileRobloxSource({gameId:'coop',gameName:'Coop',baseline:coop,artbook:{},playbooks:verifiedRobloxPlaybooks()});
   assert.ok(compiledCoop.result.serverCode.includes('SharedObjective'));
   assert.ok(compiledCoop.result.serverCode.includes('FireAllClients'));
   assert.ok(compiledCoop.result.clientCode.includes('OnClientEvent'));
 
   const competitive={content:{...baseline.content,robloxBuildProfile:buildProfile('Shooter','Deathmatch Shooter','COMPETITIVE')}};
-  const compiledCompetitive=compileRobloxSource({gameId:'pvp',gameName:'PvP',baseline:competitive,artbook:{}});
+  const compiledCompetitive=compileRobloxSource({gameId:'pvp',gameName:'PvP',baseline:competitive,artbook:{},playbooks:verifiedRobloxPlaybooks()});
   assert.ok(compiledCompetitive.result.serverCode.includes('RoundScore'));
   assert.ok(compiledCompetitive.result.serverCode.includes('FireAllClients'));
 });
@@ -345,13 +363,13 @@ test('Roblox bootstrap consumes Vibe3 playbook and transformative learning conte
         reuse:[
           {
             id:'external-black-box-block-blast-run-test',project:'block-blast',sourceRevision:'sha256:'+ 'a'.repeat(64),
-            distilledApplicationPrinciples:['id=menu-entry; scope=menu; lesson=make gameplay entry visibly distinct; apply=reduce menu ambiguity'],
+            distilledApplicationPrinciples:['id=compact-tactical-state-with-immediate-feedback; scope=gameplay; lesson=compact tactical state with immediate feedback; apply=compact-tactical-state-with-immediate-feedback'],
             distilledAvoidancePrinciples:['id=avoid-trade-dress; scope=visual; lesson=do not clone distinctive expression; apply=reauthor with Pocket Foundry identity'],
             distilledLearningUseAllowed:['menu flow','immediate feedback']
           },
           {
             id:'external-black-box-shattered-pixel-dungeon-run-test',project:'shattered-pixel-dungeon',sourceRevision:'sha256:'+ 'b'.repeat(64),
-            distilledApplicationPrinciples:['id=touch-guide; scope=mobile; lesson=teach touch near first playable state; apply=contextual control guidance']
+            distilledApplicationPrinciples:['id=persistent-primary-rpg-navigation; scope=progression; lesson=keep primary progression context visible; apply=persistent-primary-rpg-navigation']
           }
         ]
       },
@@ -360,7 +378,7 @@ test('Roblox bootstrap consumes Vibe3 playbook and transformative learning conte
         checklist:['rank-responsible-source-before-edit','run-syntax-tests-runtime-regression'],
         reuse:[{
           id:'external-black-box-idle-fantasy-run-test',project:'idle-fantasy',sourceRevision:'sha256:'+ 'c'.repeat(64),
-          distilledApplicationPrinciples:['id=core-state; scope=ui; lesson=keep essential state around core view; apply=persistent readable HUD']
+          distilledApplicationPrinciples:['id=persistent-core-state-around-world-view; scope=world; lesson=keep core state readable around the world view; apply=persistent-core-state-around-world-view']
         }]
       }
     }
@@ -387,8 +405,8 @@ test('Roblox bootstrap consumes Vibe3 playbook and transformative learning conte
   assert.equal(learned.learning.verifiedExternalLearningCoveragePct,100);
   assert.equal(learned.learning.verifiedExternalLearningRetrievedCount,3);
   assert.equal(learned.learning.verifiedExternalLearningAppliedCount,3);
-  assert.ok(learned.learning.verifiedExternalLearningPrinciples.includes('id=menu-entry; scope=menu; lesson=make gameplay entry visibly distinct; apply=reduce menu ambiguity'));
-  assert.ok(learned.learning.verifiedExternalLearningPrinciples.includes('id=touch-guide; scope=mobile; lesson=teach touch near first playable state; apply=contextual control guidance'));
+  assert.ok(learned.learning.verifiedExternalLearningPrinciples.includes('id=compact-tactical-state-with-immediate-feedback; scope=gameplay; lesson=compact tactical state with immediate feedback; apply=compact-tactical-state-with-immediate-feedback'));
+  assert.ok(learned.learning.verifiedExternalLearningPrinciples.includes('id=persistent-primary-rpg-navigation; scope=progression; lesson=keep primary progression context visible; apply=persistent-primary-rpg-navigation'));
   assert.ok(learned.learning.verifiedExternalAvoidancePrinciples.includes('id=avoid-trade-dress; scope=visual; lesson=do not clone distinctive expression; apply=reauthor with Pocket Foundry identity'));
   assert.ok(learned.learning.verifiedExternalLearningUseAllowed.includes('immediate feedback'));
   assert.deepEqual(learned.learning.verifiedExternalLearningApplyAxes,[
@@ -493,7 +511,7 @@ test('Roblox source workflow treats every development-confirmed game as the Robl
 
 
 test('Roblox compiler is admitted by native platform design and does not consume Web handoff',()=>{
-  const compiled=compileRobloxSource({gameId:'demo',gameName:'Demo',baseline,artbook:{},webHandoff:{stage:'INVALID_WEB_STAGE'}});
+  const compiled=compileRobloxSource({gameId:'demo',gameName:'Demo',baseline,artbook:{},playbooks:verifiedRobloxPlaybooks(),webHandoff:{stage:'INVALID_WEB_STAGE'}});
   assert.equal(compiled.validation.pass,true);
   assert.equal(compiled.webHandoff,null);
   assert.ok(compiled.result.sharedConfig.includes('DesignBaseline = {'));
@@ -594,7 +612,7 @@ test('Roblox source and package workers avoid full repository history checkout',
   assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
   assert.ok((workflow.match(/fetch-depth:\s*1/g)||[]).length>=6);
   assert.ok((workflow.match(/fetch-tags:\s*false/g)||[]).length>=6);
-  assert.match(workflow,/git fetch --no-tags origin "\$\{\{ matrix\.sourceRevision \}\}"/);
+  assert.match(workflow,/git fetch --no-tags --depth=1 origin "\$\{\{ matrix\.sourceRevision \}\}"/);
 });
 
 
@@ -684,7 +702,8 @@ test('Roblox batch scheduler ignores unrelated main churn and redispatches only 
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.match(workflow,/name: Reject superseded batch scheduler/);
   assert.match(workflow,/if \[ -n "\$REQUESTED_GAME_ID" \]; then/);
-  assert.match(workflow,/ROBLOX_BATCH_FRESHNESS=EXACT_GAME:/);
+  assert.match(workflow,/ROBLOX_RUNTIME_EXACT_DEDUPED_ACTIVE=/);
+  assert.match(workflow,/ROBLOX_BATCH_FRESHNESS=CURRENT:/);
   assert.match(workflow,/ROBLOX_SOURCE_PLAN_CONTRACT_PATHS:/);
   assert.match(workflow,/git diff --quiet "\$GITHUB_SHA" "\$current_main" -- "\$\{contract_paths\[@\]\}"/);
   assert.match(workflow,/ROBLOX_BATCH_UNRELATED_MAIN_ADVANCE_ACCEPTED=/);
@@ -835,7 +854,7 @@ test('Roblox F0 integrity failure reenters the canonical source worker without w
 });
 
 test('new Roblox compiler output contains the F0 foundation contract from first source build',()=>{
-  const compiled=compileRobloxSource({gameId:'foundation-demo',gameName:'Foundation Demo',baseline,artbook:{}});
+  const compiled=compileRobloxSource({gameId:'foundation-demo',gameName:'Foundation Demo',baseline,artbook:{},playbooks:verifiedRobloxPlaybooks()});
   assert.match(compiled.result.serverCode,/native-foundation-sentinel-v1/);
   assert.match(compiled.result.serverCode,/RuntimeFoundationReport/);
   assert.match(compiled.result.serverCode,/SpawnLocation/);
@@ -861,6 +880,7 @@ test('line-defense existing visible Studio binding is accepted during F0 foundat
       baseline,
       assetLibrary,
       foundationRepair:true,
+      learning:createRobloxVibe3LearningContext({gameId:'line-defense',profile:robloxBuildProfileFromBaseline(baseline),artbook:{},playbooks:verifiedRobloxPlaybooks()}),
     });
     const client=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
     const server=fs.readFileSync(path.join(root,'server','Game.server.luau'),'utf8');
@@ -892,7 +912,9 @@ test('known Roblox source repair debt outranks reconciliation pass and canonical
   assert.match(workflow,/const knownSourceRepairDebt=\(Boolean\(bootstrapFailed\)&&!resolvedSourceBindDebt\)\|\|f0FoundationRepair/);
   assert.match(workflow,/ROBLOX_STALE_SOURCE_BIND_DEBT_RESOLVED_BY_EXACT_RECONCILIATION=/);
   assert.match(workflow,/const existingSourceLearningRebind=reconciliationRow\?\.failure==='existing-source-verified-external-learning-required'/);
-  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind\|\|existingSourceLearningRebind/);
+  assert.match(workflow,/ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND=/);
+  assert.match(workflow,/if\(existingSourceLearningRebind\)\{[\s\S]*?continue;/);
+  assert.match(workflow,/const existingSourceMaintenanceRebind=existingSourceAssetRebind/);
   assert.match(workflow,/const repairSupersedesCandidate=existingSourceMaintenanceRebind\|\|knownSourceRepairDebt/);
   assert.match(workflow,/if\(candidateReady&&!repairSupersedesCandidate\)continue/);
   assert.match(workflow,/ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR=/);
