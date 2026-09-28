@@ -1775,7 +1775,7 @@ test('asset production tasks use the dedicated asset-development lane and never 
 });
 
 
-test('asset-development reserves Roblox before Unity when both are ready',()=>{
+test('asset-development reserves only Roblox while any Roblox asset work is ready',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:64,tasks:[
     {
       id:'unity-asset',gameId:'unity-asset',target:'unity',department:'development',type:'implementation',
@@ -1790,9 +1790,30 @@ test('asset-development reserves Roblox before Unity when both are ready',()=>{
       evidence:['asset-production-parallel:v1']
     }
   ]});
-  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:1,lane:'asset-development',reservation:{id:'asset-priority:1',runId:'asset-priority',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
-  assert.equal(batch.tasks.length,1);
-  assert.equal(batch.tasks[0].id,'roblox-asset');
-  assert.equal(batch.matrix[0].taskId,'roblox-asset');
+  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:64,lane:'asset-development',reservation:{id:'asset-priority:1',runId:'asset-priority',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
+  assert.deepEqual(batch.tasks.map(task=>task.id),['roblox-asset']);
+  assert.equal(batch.selection.robloxFirstMode,true);
+  assert.deepEqual(batch.selection.robloxFirstDeferred.map(task=>task.id),['unity-asset']);
   assert.equal(batch.matrix[0].speculativeVariants,1);
+});
+
+test('game-primary does not reserve Unity or Web while Roblox game work is ready',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:256,tasks:[
+    {
+      id:'unity-game',gameId:'unity-game',target:'unity',department:'development',type:'implementation',
+      sourceRoot:'unity-games/unity-game',goal:'unity implementation',status:'queued'
+    },
+    {
+      id:'web-game',gameId:'web-game',target:'web',department:'development',type:'implementation',
+      sourceRoot:'web-games/web-game',goal:'web implementation',status:'queued'
+    },
+    {
+      id:'roblox-game',gameId:'roblox-game',target:'roblox',department:'development',type:'implementation',
+      sourceRoot:'roblox-games/roblox-game',goal:'roblox implementation',status:'queued'
+    }
+  ]});
+  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:256,lane:'game-primary',reservation:{id:'roblox-first:1',runId:'roblox-first',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
+  assert.deepEqual(batch.tasks.map(task=>task.id),['roblox-game']);
+  assert.equal(batch.selection.robloxFirstMode,true);
+  assert.deepEqual(batch.selection.robloxFirstDeferred.map(task=>task.id).sort(),['unity-game','web-game']);
 });
