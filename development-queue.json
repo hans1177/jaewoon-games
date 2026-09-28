@@ -4538,7 +4538,7 @@
       "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
       "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T11:35:27.136Z",
+      "updatedAt": "2026-09-28T11:41:02.519Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -4692,7 +4692,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-runtime-foundation-awaiting-observation"
+        "roblox-studio-internal-validation-pending"
       ],
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "d16adbfc1286b57e20c4166ec870dc48a95adb1a",
@@ -4921,8 +4921,8 @@
       "robloxInternalReleaseReady": false,
       "robloxInternalReleaseAt": null,
       "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
+      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
+      "robloxFailureSignature": "ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING",
       "robloxMultiplayerQaPassed": false,
       "robloxInternalReleaseEvidence": null,
       "robloxReleaseEvidence": null,
@@ -9550,7 +9550,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T11:40:59.196Z",
+  "updatedAt": "2026-09-28T11:41:02.519Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
