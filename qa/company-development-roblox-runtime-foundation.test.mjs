@@ -724,7 +724,27 @@ test('central F0-F9 efficiency contract keeps evolution primary while scoping se
  assert.equal(opt.f9.startsNewRuntimeSession,false);
  assert.equal(opt.f9.startsFullSecurityRescan,false);
  assert.equal(opt.f9.startsDuplicateMultiplayerSession,false);
+ assert.equal(opt.scheduledRecoveryScan.idleScanMode,'STATE_DISCOVERY_ONLY');
+ assert.equal(opt.scheduledRecoveryScan.heavyContractQaOnIdleSchedule,false);
+ assert.equal(opt.scheduledRecoveryScan.noPendingWorkAction,'EXIT_WITHOUT_RUNTIME_SECURITY_OR_MULTIPLAYER_REVALIDATION');
+ assert.equal(opt.security.fullRescanMayNotRunFromIdleSchedule,true);
+ assert.equal(opt.multiplayer.idleScheduleRecheck,false);
  assert.equal(architecture.releaseExposureLifecycle.validationEfficiency.gameEvolutionPipelineUnchanged,true);
  assert.equal(architecture.releaseExposureLifecycle.validationEfficiency.multiplayer.onlyWhenApplicable,true);
+ assert.equal(architecture.releaseExposureLifecycle.validationEfficiency.scheduledRecoveryScan.idleMode,'STATE_DISCOVERY_ONLY');
+ assert.equal(architecture.releaseExposureLifecycle.validationEfficiency.scheduledRecoveryScan.heavyQaWhenIdle,false);
  assert.equal(security.minimumNecessaryDevelopmentSecurity.protections.unrelatedGameplayPresentationOrContentDeltaDoesNotRequireFullSecurityRescan,true);
+});
+
+test('scheduled Roblox recovery scan stays state-only when no exact internal validation work exists',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+ assert.match(workflow,/Classify pending internal validation work/);
+ assert.match(workflow,/ROBLOX_INTERNAL_VALIDATION_PENDING=/);
+ assert.match(workflow,/ROBLOX_IDLE_SCAN=/);
+ assert.match(workflow,/Run deterministic foundation protocol QA\n\s+if: \$\{\{ inputs\.retry_open_cloud_only != true && \(github\.event_name != 'schedule' \|\| steps\.internal_work\.outputs\.count != '0'\) \}\}/);
+ assert.match(workflow,/Read exact runtime sentinel and persist tester QA evidence\n\s+if: \$\{\{ inputs\.retry_open_cloud_only == true \|\| github\.event_name != 'schedule' \|\| steps\.internal_work\.outputs\.count != '0' \}\}/);
+ assert.match(workflow,/Dispatch F9 review for runtime-accepted candidates\n\s+if: \$\{\{ inputs\.retry_open_cloud_only != true && \(github\.event_name != 'schedule' \|\| steps\.internal_work\.outputs\.count != '0'\) \}\}/);
+ assert.match(workflow,/Enforce persistent Open Cloud probe failures after evidence persistence\n\s+if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
+ assert.doesNotMatch(workflow,/const externalRuntimeObservationPending=/);
+ assert.doesNotMatch(workflow,/\|\|externalRuntimeObservationPending\)/);
 });
