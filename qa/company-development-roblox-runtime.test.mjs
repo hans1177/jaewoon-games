@@ -345,11 +345,15 @@ test('Roblox bootstrap consumes Vibe3 playbook and transformative learning conte
           'validate-remotes-and-datastore-boundaries',
           'run-real-roblox-runtime-and-independent-qa'
         ],
-        reuse:[{project:'block-blast'},{project:'shattered-pixel-dungeon'}]
+        reuse:[
+          {id:'external-black-box-block-blast-run-test',project:'block-blast',sourceRevision:'sha256:'+ 'a'.repeat(64)},
+          {id:'external-black-box-shattered-pixel-dungeon-run-test',project:'shattered-pixel-dungeon',sourceRevision:'sha256:'+ 'b'.repeat(64)}
+        ]
       },
       coding:{
+        authority:'verified-task-playbook',
         checklist:['rank-responsible-source-before-edit','run-syntax-tests-runtime-regression'],
-        reuse:[{project:'idle-fantasy'}]
+        reuse:[{id:'external-black-box-idle-fantasy-run-test',project:'idle-fantasy',sourceRevision:'sha256:'+ 'c'.repeat(64)}]
       }
     }
   };
@@ -371,11 +375,17 @@ test('Roblox bootstrap consumes Vibe3 playbook and transformative learning conte
     recombination
   });
   assert.equal(learned.learning.applied,true);
+  assert.equal(learned.learning.verifiedExternalLearningFirst,true);
+  assert.equal(learned.learning.verifiedExternalLearningCoveragePct,100);
+  assert.equal(learned.learning.verifiedExternalLearningRetrievedCount,3);
+  assert.equal(learned.learning.verifiedExternalLearningAppliedCount,3);
   assert.equal(learned.learning.recipeId,'recombine-roblox-test');
   assert.equal(learned.generationMode,'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT');
   assert.ok(learned.actions.some(action=>Boolean(action.learningPattern)));
   assert.ok(learned.result.sharedConfig.includes('LearningContext = {'));
   assert.ok(learned.result.sharedConfig.includes('RecipeId = "recombine-roblox-test"'));
+  assert.ok(learned.result.sharedConfig.includes('VerifiedExternalLearningFirst = true'));
+  assert.ok(learned.result.sharedConfig.includes('CoveragePct = 100'));
   assert.ok(learned.result.serverCode.includes('ActionSequence'));
   assert.ok(learned.result.serverCode.includes('LastLearningPattern'));
   assert.ok(learned.result.clientCode.includes('ContextActionService'));
