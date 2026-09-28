@@ -16403,7 +16403,7 @@
         "gamePrimaryGenerationPolicyUnchanged": true
       },
       "assetDevelopmentSchedulerPlanRunner": "ubuntu-24.04-arm",
-      "assetDevelopmentReserveRunner": "ubuntu-24.04-arm",
+      "assetDevelopmentReserveRunner": "ubuntu-slim",
       "assetDevelopmentModelCacheRunner": "ubuntu-24.04-arm",
       "assetDevelopmentOllamaCacheKey": "vibe2-ollama-v5-${runner.os}-${runner.arch}-qwen3-1.7b",
       "assetDevelopmentArchitectureAwareCache": true,
