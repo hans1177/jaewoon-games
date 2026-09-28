@@ -1508,7 +1508,7 @@
       "runtimeFoundationPassedArtifactAllowedForLocalActualPlay": true,
       "earliestBehaviorFeedbackCheckpoint": "AFTER_EXACT_PRIVATE_RUNTIME_CANDIDATE_AND_EXACT_SOURCE_ARTIFACT_BINDING",
       "actualPlayQualityContract": {
-        "version": 3,
+        "version": 4,
         "status": "ACTIVE_EXECUTABLE_COMMERCIAL_AUDIT_CONTRACT",
         "authority": "OWNER_DIRECTIVE_2026-09-29",
         "objective": "USE_OFFICIAL_STUDIO_MCP_AS_AN_ADAPTIVE_COMMERCIAL_ACTUAL-PLAY AUDIT: DISCOVER AND EXERCISE GAMEPLAY SURFACES, VERIFY UI/WORLD/INTERACTIONS/ACTIONS/MOTION/AI/NPC/COMPANIONS/ITEMS/QUESTS/REWARDS/PROGRESSION/SAVE-RELATED SIGNALS/PERFORMANCE, DETECT REGRESSIONS AGAINST THE LAST VERIFIED BASELINE, AND RETURN ACTIONABLE REPAIR EVIDENCE TO THE F0-F9 BUILD-UP LOOP",
@@ -1541,7 +1541,13 @@
           "NPC_AND_COMPANION_RUNTIME",
           "ITEM_QUEST_REWARD_ECONOMY_PROGRESSION",
           "COMMERCIAL_BASELINE_REGRESSION",
-          "ACTIONABLE_REPAIR_EVIDENCE"
+          "ACTIONABLE_REPAIR_EVIDENCE",
+          "MAP_FLOOR_GRID_AND_PATHFINDING_COVERAGE",
+          "LIVE_COMBAT_TARGET_ACTION_EFFECT",
+          "F9_SAVE_REJOIN_RESTART_PERSISTENCE",
+          "REAL_DEATH_RESPAWN_RECOVERY",
+          "SEMANTIC_CATEGORY_DIVERSITY",
+          "F9_SOAK_MEMORY_AND_INSTANCE_TREND"
         ],
         "commercialAuditRequired": true,
         "adaptiveRuntimeDiscoveryRequired": true,
@@ -1600,7 +1606,16 @@
           "BGM_SFX_GAMEPLAY_AUDIO_SURFACE",
           "RUNTIME_INSTANCE_COUNT_MEMORY_AND_LONG_SESSION_STABILITY",
           "PREVIOUSLY_VERIFIED_FEATURE_DISAPPEARANCE_REGRESSION"
-        ]
+        ],
+        "semanticCoverageDiversityRequired": true,
+        "worldFloorGridSamplingRequired": true,
+        "pathfindingRouteCoverageRequired": true,
+        "liveCombatTargetActionEffectRequired": true,
+        "realDeathRespawnRecoveryRequiredWhenObserved": true,
+        "f9SaveRejoinRestartRequiredWhenSaveDeclared": true,
+        "f9SoakPerformanceTrendRequired": true,
+        "fastDeepMinimumTimelineSamples": 4,
+        "f9SoakMinimumTimelineSamples": 12
       },
       "externalServerBootRequiredForInternalRelease": false,
       "oneExactSessionMaySatisfyApplicableF1ThroughF8": true,
