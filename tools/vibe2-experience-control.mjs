@@ -80,6 +80,7 @@ function validateVerifiedExternalLearningApplication(value = null) {
   const axes=unique(value.verifiedExternalLearningApplyAxes||[]);
   const retrieved=Math.max(0,Number(value.verifiedExternalLearningRetrievedCount||0));
   const applied=Math.max(0,Number(value.verifiedExternalLearningAppliedCount||0));
+  if(clean(value.sourceAuthority)!=='VERIFIED_MEMORY_ONLY')issues.push('verified-external-learning-authority-required');
   if(value.verifiedExternalLearningFirst!==true||!ids.length)issues.push('verified-external-learning-required');
   if(retrieved!==ids.length||applied!==retrieved||Number(value.verifiedExternalLearningCoveragePct||0)!==100)issues.push('verified-external-learning-100-coverage-required');
   if(value.retrievedVerifiedExternalLearningTruncationForbidden!==true)issues.push('verified-external-learning-truncation-forbidden');
