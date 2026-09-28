@@ -1984,16 +1984,16 @@ test('Studio screenshots are captured only as the final Studio audit action',()=
   assert.match(tail,/play-mode-stopped/);
 });
 
-test('final Studio capture releases the owned Studio before evidence persistence',()=>{
-  const closeAt=workflow.indexOf('- name: Close owned Studio immediately after final capture');
+test('final Studio capture stops play and keeps the owned Studio available for manual save',()=>{
+  const releaseAt=workflow.indexOf('- name: Release Studio controls for manual save after final capture');
   const persistAt=workflow.indexOf('- name: Persist exact Studio MCP play evidence');
-  assert.ok(closeAt>=0&&persistAt>closeAt);
-  const block=workflow.slice(closeAt,persistAt);
-  assert.match(block,/ROBLOX_STUDIO_MCP_POST_CAPTURE_PROCESS_REAPED/);
+  assert.ok(releaseAt>=0&&persistAt>releaseAt);
+  const block=workflow.slice(releaseAt,persistAt);
+  assert.match(block,/ROBLOX_STUDIO_MCP_MANUAL_SAVE_READY=YES/);
+  assert.doesNotMatch(block,/Stop-Process/);
   assert.match(helper,/finally\{\s*client\.close\(\)/);
   assert.match(block,/ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES/);
 });
-
 
 test('Studio QA keeps user windows and releases only its exact owned process',()=>{
   const block=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
