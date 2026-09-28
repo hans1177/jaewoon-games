@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1250uhr",
-      "worker": "vibe2",
-      "taskId": "village-dungeons-unity-web-base-implementation-v1",
-      "gameId": "village-dungeons",
-      "files": [
-        "unity-games/village-dungeons/Assets/Scripts/GameCore.cs",
-        "unity-games/village-dungeons/Assets/Scripts/RuntimeBootstrap.cs"
-      ],
-      "baseSha": "289b5b7b5ef74c05205958c1b108812436b72f7f",
-      "acquiredAt": "2026-09-28T08:28:29.236Z",
-      "expiresAt": "2026-09-28T09:13:29.236Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:village-dungeons-unity-web-base-implementation-v1"
-      ]
-    },
-    {
       "id": "wl-1ozx0ph",
       "worker": "vibe2",
       "taskId": "seed-single-defense-strat-celestial-bastion-unity-web-base-implementation-v1",
@@ -580,6 +562,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:fantasy-survival-studio-evolution-unity-web-usability-v1"
+      ]
+    },
+    {
+      "id": "wl-xww4l4",
+      "worker": "vibe2",
+      "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
+      "gameId": "seed-single-defense-strat-celestial-bastion",
+      "files": [
+        "roblox-games/seed-single-defense-strat-celestial-bastion/client/Game.client.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/server/Game.server.luau",
+        "roblox-games/seed-single-defense-strat-celestial-bastion/shared/GameConfig.luau"
+      ],
+      "baseSha": "cfc11b905e17ab35b2a1b0f95704cfb926602550",
+      "acquiredAt": "2026-09-28T09:13:36.685Z",
+      "expiresAt": "2026-09-28T09:58:36.685Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1"
       ]
     }
   ]
