@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope,applyRobloxStudioAssetBindingToExistingSource} from '../tools/company-development-roblox-bootstrap.mjs';
 import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
+import {createRobloxVibe3LearningContext} from '../tools/vibe3-roblox-learning-context.mjs';
 
 const platformProfile=()=>({
   platform:'ROBLOX',
@@ -403,6 +404,46 @@ test('Roblox bootstrap consumes Vibe3 playbook and transformative learning conte
   assert.ok(learned.result.clientCode.includes('BindAction("VibePrimaryAction"'));
   assert.equal(learned.validation.learningApplied,true);
   assert.equal(learned.validation.pass,true,learned.validation.blockers.join(','));
+});
+
+test('Roblox verified external coverage excludes PRACTICE_ONLY black-box advisory records',()=>{
+  const learning=createRobloxVibe3LearningContext({
+    gameId:'verified-learning-separation-test',
+    profile:{genre:'Action',subgenre:'',playMode:'SINGLE'},
+    artbook:{content:{identity:'Verified Learning Separation'}},
+    playbooks:{
+      taskTypes:{
+        roblox:{
+          authority:'verified-task-playbook',
+          checklist:['apply-verified-external-learning'],
+          reuse:[{id:'external-black-box-verified-playbook',project:'verified-reference'}]
+        },
+        coding:{authority:'verified-task-playbook',checklist:[],reuse:[]}
+      }
+    },
+    distillation:{
+      records:[{
+        id:'practice-only-black-box-observation',
+        retrievalEligible:true,
+        engine:'roblox',
+        rawCodeStored:false,
+        rawAssetStored:false,
+        rawBinaryStored:false,
+        sourceKind:'external-roblox-runtime-reference',
+        authority:'PRACTICE_ONLY',
+        observationKind:'BLACK_BOX_RUNTIME_ONLY',
+        patterns:['combat','touch'],
+        principles:['clear-feedback']
+      }]
+    }
+  });
+  assert.deepEqual(learning.verifiedExternalLearningIds,['external-black-box-verified-playbook']);
+  assert.equal(learning.verifiedExternalLearningRetrievedCount,1);
+  assert.equal(learning.verifiedExternalLearningAppliedCount,1);
+  assert.equal(learning.verifiedExternalLearningCoveragePct,100);
+  assert.deepEqual(learning.externalBlackBoxAdvisoryIds,['practice-only-black-box-observation']);
+  assert.equal(learning.externalBlackBoxAdvisoryUsed,true);
+  assert.equal(learning.verifiedExternalLearningIds.includes('practice-only-black-box-observation'),false);
 });
 
 test('Roblox source workflow requires durable Vibe3 learning memory for source generation',()=>{
