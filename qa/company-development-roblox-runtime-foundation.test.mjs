@@ -759,3 +759,11 @@ test('F9 Vibe fan-in shell parses so verified publication never strands the next
  const result=spawnSync('bash',['-n'],{input:script,encoding:'utf8'});
  assert.equal(result.status,0,result.stderr);
 });
+
+test('F9 fan-in reads a shallow Vibe queue and fetches each exact source revision once',()=>{
+ const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+ const fanin=workflow.slice(workflow.indexOf('      - name: Fan verified F9 runtime proof into waiting Vibe Roblox tasks'));
+ assert.match(fanin,/--single-branch --depth 1 --filter=blob:none/);
+ assert.match(fanin,/if ! git -C main cat-file -e "\$source_revision\^\{commit\}" 2>\/dev\/null; then/);
+ assert.match(fanin,/git -C main fetch --no-tags --depth=1 origin "\$source_revision" --quiet/);
+});
