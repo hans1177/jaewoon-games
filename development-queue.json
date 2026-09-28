@@ -2033,10 +2033,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T13:57:21.450Z",
+      "updatedAt": "2026-09-28T14:02:50.104Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2448,7 +2448,7 @@
         "infrastructureFailure": false,
         "failureClass": null,
         "robloxFailureClass": null,
-        "actualPlayEligibility": "INTERNAL_RELEASE_OR_HISTORICAL_REPLAY",
+        "actualPlayEligibility": "PRIVATE_INTERNAL_CANDIDATE_EXACT",
         "studioMcpServerEnablementRequired": false,
         "operatorPrerequisite": null,
         "localPlaceFile": true,
@@ -2617,8 +2617,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": false
         },
-        "testedAt": "2026-09-28T13:43:48.593Z",
-        "workflowRunId": 36426768964,
+        "testedAt": "2026-09-28T14:02:50.104Z",
+        "workflowRunId": 36425620773,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false
       },
@@ -2686,7 +2686,7 @@
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxInternalPlaytestPassed": true,
-      "robloxInternalPlaytestPassedAt": "2026-09-28T13:43:48.593Z",
+      "robloxInternalPlaytestPassedAt": "2026-09-28T14:02:50.104Z",
       "robloxStudioLocalPlayRepairRequired": false,
       "robloxStudioLocalPlayInfrastructurePending": false,
       "robloxQualityBuildUpRequired": false,
@@ -2712,7 +2712,7 @@
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
       "robloxCanonicalPublishPending": false,
-      "robloxQualityBuildUpLastPassedAt": "2026-09-28T13:43:48.593Z",
+      "robloxQualityBuildUpLastPassedAt": "2026-09-28T14:02:50.104Z",
       "robloxF9PendingInParallel": false,
       "robloxCanonicalPublishQueue": [
         {
@@ -13256,7 +13256,7 @@
       "robloxF9PendingInParallel": true
     }
   ],
-  "updatedAt": "2026-09-28T14:00:25.404Z",
+  "updatedAt": "2026-09-28T14:02:50.104Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
