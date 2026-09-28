@@ -277,6 +277,25 @@ end
 verifiedLearningBloom.Intensity = 0.22
 verifiedLearningBloom.Size = 18
 verifiedLearningBloom.Threshold = 1.1
+local verifiedLearningAtmosphere = verifiedLearningLighting:FindFirstChild("VerifiedLearningAtmosphere")
+if not verifiedLearningAtmosphere then
+  verifiedLearningAtmosphere = Instance.new("Atmosphere")
+  verifiedLearningAtmosphere.Name = "VerifiedLearningAtmosphere"
+  verifiedLearningAtmosphere.Parent = verifiedLearningLighting
+end
+verifiedLearningAtmosphere.Density = 0.22
+verifiedLearningAtmosphere.Haze = 1.1
+verifiedLearningAtmosphere.Glare = 0.08
+local verifiedLearningDepth = verifiedLearningLighting:FindFirstChild("VerifiedLearningDepthOfField")
+if not verifiedLearningDepth then
+  verifiedLearningDepth = Instance.new("DepthOfFieldEffect")
+  verifiedLearningDepth.Name = "VerifiedLearningDepthOfField"
+  verifiedLearningDepth.Parent = verifiedLearningLighting
+end
+verifiedLearningDepth.FarIntensity = 0.08
+verifiedLearningDepth.NearIntensity = 0.02
+verifiedLearningDepth.FocusDistance = 28
+verifiedLearningDepth.InFocusRadius = 24
 
 -- Roblox character animation / motion adaptation.
 local function syncVerifiedLearningCharacterMotion(character)
@@ -356,7 +375,28 @@ local function playVerifiedLearningActionFeedback(control)
     sparkles.Name = "VerifiedLearningSkillSparkles"
     sparkles.SparkleColor = Color3.fromRGB(170, 220, 255)
     sparkles.Parent = rootPart
-    task.delay(0.22, function()
+    local impactAttachment = Instance.new("Attachment")
+    impactAttachment.Name = "VerifiedLearningSkillAttachment"
+    impactAttachment.Parent = rootPart
+    local particles = Instance.new("ParticleEmitter")
+    particles.Name = "VerifiedLearningSkillParticles"
+    particles.Rate = 0
+    particles.Lifetime = NumberRange.new(0.18, 0.32)
+    particles.Speed = NumberRange.new(5, 9)
+    particles.SpreadAngle = Vector2.new(45, 45)
+    particles.LightEmission = 0.7
+    particles.Parent = impactAttachment
+    particles:Emit(18)
+    local impactLight = Instance.new("PointLight")
+    impactLight.Name = "VerifiedLearningSkillLight"
+    impactLight.Color = Color3.fromRGB(160, 215, 255)
+    impactLight.Brightness = 2.2
+    impactLight.Range = 10
+    impactLight.Parent = rootPart
+    verifiedLearningTweenService:Create(impactLight, TweenInfo.new(0.18), {Brightness = 0, Range = 4}):Play()
+    task.delay(0.24, function()
+      if impactAttachment then impactAttachment:Destroy() end
+      if impactLight then impactLight:Destroy() end
       if sparkles then sparkles:Destroy() end
       if highlight then highlight:Destroy() end
     end)
@@ -496,9 +536,13 @@ export function applyVerifiedExternalLearningToExistingRobloxSource({root='',lea
     'VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN',
     'ColorCorrectionEffect',
     'BloomEffect',
+    'Atmosphere',
+    'DepthOfFieldEffect',
     'AdjustSpeed',
     'VerifiedLearningSkillImpact',
     'Sparkles',
+    'ParticleEmitter',
+    'PointLight',
     'FieldOfView',
     'UISizeConstraint',
     'VerifiedLearningProgressionRiskCue'
@@ -608,10 +652,11 @@ export function applyRobloxStudioAssetBindingToExistingSource({root='',gameId=''
   const configFile=path.join(root,'shared','GameConfig.luau');
   const clientFile=path.join(root,'client','Game.client.luau');
   const serverFile=path.join(root,'server','Game.server.luau');
-  for(const file of [configFile,clientFile,serverFile])if(!fs.existsSync(file))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(file));
+  for(const file of [configFile,clientFile])if(!fs.existsSync(file))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(file));
+  if(foundationRepair===true&&!fs.existsSync(serverFile))throw new Error('EXISTING_ROBLOX_SOURCE_FILE_MISSING:'+path.basename(serverFile));
   const beforeConfig=fs.readFileSync(configFile,'utf8');
   const beforeClient=fs.readFileSync(clientFile,'utf8');
-  const beforeServer=fs.readFileSync(serverFile,'utf8');
+  const beforeServer=foundationRepair===true?fs.readFileSync(serverFile,'utf8'):'';
   let afterConfig=replaceOrInsertStudioAssetConfig(beforeConfig,studioAssets);
   let afterClient=bindExistingClientStudioAssets(beforeClient);
   let afterServer=beforeServer;
@@ -723,12 +768,9 @@ task.defer(reportNativeFoundationReady)
 
   fs.writeFileSync(configFile,afterConfig,'utf8');
   fs.writeFileSync(clientFile,afterClient,'utf8');
-  fs.writeFileSync(serverFile,afterServer,'utf8');
-  const changedFiles=[configFile,clientFile,serverFile].filter(file=>{
-    if(file===configFile)return afterConfig!==beforeConfig;
-    if(file===clientFile)return afterClient!==beforeClient;
-    return afterServer!==beforeServer;
-  });
+  if(foundationRepair===true&&afterServer!==beforeServer)fs.writeFileSync(serverFile,afterServer,'utf8');
+  const changedFiles=[configFile,clientFile];
+  if(foundationRepair===true&&afterServer!==beforeServer)changedFiles.push(serverFile);
   return Object.freeze({
     existingSourcePreserved:true,
     changedFiles:Object.freeze(changedFiles),
@@ -738,7 +780,7 @@ task.defer(reportNativeFoundationReady)
     verifiedExternalLearningIds:Object.freeze([...(learning?.verifiedExternalLearningIds||[])]),
     foundationRepairApplied:foundationRepair===true,
     gameplayAuthorityChanged:false,
-    serverSourceChanged:afterServer!==beforeServer,
+    serverSourceChanged:foundationRepair===true&&afterServer!==beforeServer,
   });
 }
 function sourceBlockers(text,{kind,saveRequired=false,profile=null}={}){
@@ -818,9 +860,9 @@ export function validateRobloxBootstrap({sharedConfig='',serverCode='',clientCod
       'ROBLOX_RUNTIME_QA_AND_RELIABILITY'
     ])if(!sharedConfig.includes(axis))blockers.push('CONFIG_VERIFIED_EXTERNAL_LEARNING_AXIS_MISSING:'+axis);
     if(!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_ROBLOX_NATIVE_BINDING_REQUIRED');
-    if(!/ColorCorrectionEffect/.test(clientCode)||!/BloomEffect/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_ENVIRONMENT_REQUIRED');
+    if(!/ColorCorrectionEffect/.test(clientCode)||!/BloomEffect/.test(clientCode)||!/Atmosphere/.test(clientCode)||!/DepthOfFieldEffect/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_ENVIRONMENT_REQUIRED');
     if(!/AdjustSpeed/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_ANIMATION_MOTION_REQUIRED');
-    if(!/VerifiedLearningSkillImpact/.test(clientCode)||!/Sparkles/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_SKILL_VFX_REQUIRED');
+    if(!/VerifiedLearningSkillImpact/.test(clientCode)||!/Sparkles/.test(clientCode)||!/ParticleEmitter/.test(clientCode)||!/PointLight/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_SKILL_VFX_REQUIRED');
     if(!/FieldOfView/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_CAMERA_FEEDBACK_REQUIRED');
     if(!/UISizeConstraint/.test(clientCode)||!/ContextActionService/.test(clientCode)||!/BindAction\s*\(/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_TOUCH_CONTROL_REQUIRED');
     if(!/VerifiedLearningProgressionRiskCue/.test(clientCode))blockers.push('CLIENT_VERIFIED_EXTERNAL_GAMEPLAY_PROGRESSION_REQUIRED');

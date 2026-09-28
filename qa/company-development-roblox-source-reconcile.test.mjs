@@ -605,3 +605,51 @@ test('Roblox APK learning gate ignores server instrumentation and requires nativ
   assert.doesNotMatch(workflow,/learningOk[\s\S]{0,1000}gameplayAuthorityChanged/);
   assert.doesNotMatch(workflow,/learningOk[\s\S]{0,1000}serverSourceChanged/);
 });
+
+
+test('visual learning rebind does not require or inspect Roblox server source',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-visual-learning-no-server-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    fs.rmSync(path.join(root,'server','Game.server.luau'),{force:true});
+    const applied=applyRobloxStudioAssetBindingToExistingSource({
+      root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning,foundationRepair:false
+    });
+    assert.equal(applied.serverSourceChanged,false);
+    assert.equal(fs.existsSync(path.join(root,'server','Game.server.luau')),false);
+    const client=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
+    assert.match(client,/Atmosphere/);
+    assert.match(client,/DepthOfFieldEffect/);
+    assert.match(client,/AdjustSpeed/);
+    assert.match(client,/ParticleEmitter/);
+    assert.match(client,/PointLight/);
+    assert.match(client,/VerifiedLearningSkillImpact/);
+    assert.match(client,/FieldOfView/);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('foundation repair still requires Roblox server source',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-foundation-server-required-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeLegacyStudioUnboundTree(root);
+    fs.rmSync(path.join(root,'server','Game.server.luau'),{force:true});
+    assert.throws(()=>applyRobloxStudioAssetBindingToExistingSource({
+      root,gameId,baseline,assetLibrary:companyAssetLibrary,learning:verifiedLearning,foundationRepair:true
+    }),/EXISTING_ROBLOX_SOURCE_FILE_MISSING:Game\.server\.luau/);
+  }finally{
+    fs.rmSync(tmp,{recursive:true,force:true});
+  }
+});
+
+test('verified APK native binding covers Roblox background motion and skill effects beyond UI',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  for(const signal of [
+    'ColorCorrectionEffect','BloomEffect','Atmosphere','DepthOfFieldEffect',
+    'AdjustSpeed','ParticleEmitter','PointLight','VerifiedLearningSkillImpact',
+    'VerifiedLearningSkillParticles','VerifiedLearningSkillLight','FieldOfView'
+  ])assert.match(source,new RegExp(signal));
+});
