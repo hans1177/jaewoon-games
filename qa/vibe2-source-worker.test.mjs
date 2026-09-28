@@ -1088,9 +1088,10 @@ test('deterministic diagnostic repair adds touch-action to the actual interactiv
 
 test('source worker wires deterministic diagnostic before model recovery',()=>{
   const source=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
-  const deterministicAt=source.indexOf('const deterministicDiagnostic=!allowFullRewrite?deterministicDiagnosticCandidate');
+  const deterministicAt=source.indexOf('const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate');
   const modelAt=source.indexOf('if(!generated)generated=await generateCandidateWithRecovery');
   assert.ok(deterministicAt>0&&modelAt>deterministicAt);
+  assert.match(source,/verifiedExternalLearningContract\.required!==true\?deterministicDiagnosticCandidate/);
   assert.match(source,/VIBE2_DETERMINISTIC_DIAGNOSTIC_REPAIR=PASS/);
 });
 test('reproduced interval diagnostic is anchored before incremental QA',()=>{
