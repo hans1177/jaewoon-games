@@ -1744,7 +1744,7 @@ test('Unity bootstrap pair contract keeps timeout recovery multi-file',()=>{
     multiFilePairRequired:true
   });
   assert.match(retry,/at least one (?:exact|real source-changing) edit for EACH Allowed edit path/i);
-  assert.match(retry,/both Assets\/Scripts\/GameCore\.cs and Assets\/Scripts\/RuntimeBootstrap\.cs in the same candidate/i);
+  assert.match(retry,/one for Assets\/Scripts\/GameCore\.cs and one for Assets\/Scripts\/RuntimeBootstrap\.cs in the same candidate/i);
   assert.doesNotMatch(retry,/exactly one edit/i);
 });
 
@@ -3683,7 +3683,7 @@ test('failed source generation still performs post-work shared-context validatio
 
 test('focused replace Ollama requests keep canonical budget and enforce one-key schema',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
-  assert.match(source,/JSON_FOCUSED_REPLACE_TIMEOUT_MS=90000/);
+  assert.match(source,/JSON_FOCUSED_REPLACE_TIMEOUT_MS=Math\.max\(120000,DEFAULT_TIMEOUT_MS\)/);
   assert.match(source,/JSON_FOCUSED_REPLACE_MAX_PREDICT=384/);
   assert.match(source,/JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192/);
   assert.ok(source.includes("focusedReplaceOnly?0.08"));
