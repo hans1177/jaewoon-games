@@ -450,7 +450,11 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       actualPlayEligibility:localF0CandidateExact?'LOCAL_F0_ARTIFACT_EXACT':runtimeFoundationExact?'RUNTIME_FOUNDATION_PASS':exactEngineAwaitingRealServerBoot?'EXACT_ENGINE_VERSION_AWAITING_REAL_SERVER_BOOT':internalReleaseObserved(item,candidate)?'INTERNAL_RELEASE_EXACT':'PRIVATE_INTERNAL_CANDIDATE_EXACT',
       scenarioContractRequired:scenarioContract.required===true,
       scenarioContractVersion:Number(scenarioContract.version||0),
-      scenarioContractFingerprint:scenarioContract.fingerprint
+      scenarioContractFingerprint:scenarioContract.fingerprint,
+      auditProfile:(
+        item?.robloxF9ReleaseRegressionPassed===true
+        ||/FINAL_REVIEW|RELEASE|F9/i.test(clean(item?.currentStep))
+      )?'F9_SOAK':'FAST_DEEP'
     });
   }
 
@@ -1301,7 +1305,7 @@ function mcpCommandArgs(command=''){
 
 export async function runOfficialStudioMcpPlay({
   mcpCommand='',output='',expectedStudioName='',timeoutMs=45000,toolAttempts=5,toolDelayMs=1000,
-  settingState='',settingCandidatePathCount=-1,actualPlayContractPath=''
+  settingState='',settingCandidatePathCount=-1,actualPlayContractPath='',auditProfile='FAST_DEEP'
 }={}){
   const actualPlayLaunch=actualPlayContractPath&&fs.existsSync(actualPlayContractPath)?readJson(actualPlayContractPath):{};
   const actualPlayContract=deriveStudioActualPlayContract(actualPlayLaunch);
@@ -1312,6 +1316,8 @@ export async function runOfficialStudioMcpPlay({
   let studioId='',beforeImages=[],afterImages=[],consoleResult=null,characterMotionRuntime=null,started=false;
   let initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,finalClientProbe=null,finalServerProbe=null,scenarioCoverage=[];
   let authoritativeStateChangeObserved=false,qualityFailureKinds=[],captureQuality=null,scenarioMetrics={};
+  const auditMode=clean(auditProfile).toUpperCase()==='F9_SOAK'?'F9_SOAK':'FAST_DEEP';
+  const timelineProbes=[];
   try{
     await client.connect();
     const requiredTools=['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input','user_mouse_input','character_navigation','execute_luau'];
@@ -1418,6 +1424,22 @@ export async function runOfficialStudioMcpPlay({
     const keyboardActions=actions.filter(x=>x.type==='mcp-keyboard-input');
     checkpoint('mcp-input-dispatched',keyboardActions.length===4&&keyboardActions.every(x=>x.ok));
 
+    if(actualPlayContract?.required===true){
+      const sampleCount=auditMode==='F9_SOAK'?6:3;
+      const sampleDelay=auditMode==='F9_SOAK'?900:450;
+      for(let sample=0;sample<sampleCount;sample++){
+        await wait(sampleDelay);
+        const probe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+        if(probe)timelineProbes.push(probe);
+        if(sample<sampleCount-1){
+          const key=sample%2===0?'W':'D';
+          const result=await client.call('user_keyboard_input',keyboardArgs(keyboardTool.inputSchema||{},studioId,key));
+          actions.push({id:'explore-'+sample+'-'+key.toLowerCase(),type:'mcp-keyboard-input',dispatched:true,ok:result?.isError!==true});
+        }
+      }
+      checkpoint('commercial-audit-timeline-sampled',timelineProbes.length>=sampleCount-1);
+    }
+
     const after=await client.call('screen_capture',captureArgs);
     afterImages=collectImages(after,[]);
     const beforeHashes=beforeImages.map(x=>hash(Buffer.from(x.data,'base64')));
@@ -1426,11 +1448,11 @@ export async function runOfficialStudioMcpPlay({
     checkpoint('viewport-changed-after-input',changed);
 
     if(actualPlayContract?.required===true){
-      finalClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+      finalClientProbe=timelineProbes.at(-1)||await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
       finalServerProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Server');
       checkpoint('actual-play-final-client-probe',finalClientProbe!=null);
       checkpoint('actual-play-final-server-probe',finalServerProbe!=null);
-      const evaluated=evaluateStudioActualPlayContract({contract:actualPlayContract,initialClientProbe,preActionClientProbe,postActionClientProbe,clientProbe:finalClientProbe,serverProbe:finalServerProbe,actions,beforeImages,afterImages});
+      const evaluated=evaluateStudioActualPlayContract({contract:actualPlayContract,initialClientProbe,preActionClientProbe,postActionClientProbe,clientProbe:finalClientProbe,serverProbe:finalServerProbe,actions,beforeImages,afterImages,timelineProbes});
       scenarioCoverage=evaluated.scenarios;
       authoritativeStateChangeObserved=evaluated.authoritativeStateChangeObserved===true;
       qualityFailureKinds=evaluated.qualityFailureKinds;
@@ -1509,6 +1531,8 @@ export async function runOfficialStudioMcpPlay({
         characterMotionRuntime:characterMotionRuntime?.required===true,
         executeLuauRuntimeProbe:actualPlayContract?.required===true
       },
+      auditProfile:auditMode,
+      timelineProbeCount:timelineProbes.length,
       scenarioContractRequired:actualPlayContract?.required===true,
       scenarioContractVersion:Number(actualPlayContract?.version||0),
       scenarioContractFingerprint:actualPlayContract?.required===true?'sha256:'+stableSha256(actualPlayContract):null,
@@ -1957,7 +1981,8 @@ async function main(){
       toolDelayMs:Number(a['tool-delay-ms']||1000),
       settingState:clean(a['setting-state']),
       settingCandidatePathCount:Number(a['setting-candidate-path-count']??-1),
-      actualPlayContractPath:clean(a['actual-play-contract'])
+      actualPlayContractPath:clean(a['actual-play-contract']),
+      auditProfile:clean(a['audit-profile']||'FAST_DEEP')
     });
     const checkpointSummary=(Array.isArray(result?.checkpoints)?result.checkpoints:[])
       .map(row=>clean(row?.id)+':'+(row?.pass===true?'PASS':'FAIL'))
