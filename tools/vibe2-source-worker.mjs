@@ -3056,6 +3056,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     candidateProducedFirstAttempt:Number(generation.attempts||0)===1&&generation.recoveryUsed!==true,
     deterministicDiagnosticRepair:generation.deterministicDiagnosticRepair===true,
     deterministicDiagnosticType:clean(generation.deterministicDiagnosticType)||null,
+    deterministicRobloxBuildUp:generation.deterministicRobloxBuildUp===true,
+    deterministicRobloxBuildStage:Number(generation.deterministicRobloxBuildStage||0),
+    sourceModelCallRequired:generation.deterministicRobloxBuildUp!==true,
     writableScopeExpansionAllowed:false,
     learningAuthorityExpanded:false
   };
