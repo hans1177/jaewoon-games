@@ -3386,7 +3386,11 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
     'TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES',
     'NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER'
   ]);
-  assert.deepEqual([...contract.menuDiversity.surfaces],['MAIN_MENU','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI']);
+  assert.deepEqual([...contract.menuDiversity.surfaces],['MAIN_MENU','LOBBY_OR_HUB','LOADING_TRANSITION','FIRST_PLAY_GUIDANCE','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI']);
+  assert.equal(contract.menuDiversity.executionBoundary,'EXISTING_GAME_UI_AND_MISSING_ENTRY_FLOW_BUILD_UP');
+  assert.ok(contract.menuDiversity.patternFamilies.LOBBY_OR_HUB.includes('SESSION_READY_ROOM'));
+  assert.ok(contract.menuDiversity.patternFamilies.LOADING_TRANSITION.includes('ASSET_READINESS_PROGRESS'));
+  assert.ok(contract.menuDiversity.patternFamilies.FIRST_PLAY_GUIDANCE.includes('ACTION_FIRST_TUTORIAL'));
   assert.equal(contract.menuDiversity.genericOneTemplateForAllGamesForbidden,true);
   assert.equal(contract.menuDiversity.colorOrBackgroundOnlyVariationDoesNotCount,true);
   assert.equal(contract.menuDiversity.projectSpecificPatternAllowed,true);
@@ -3427,7 +3431,7 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
   assert.match(task.goal,/Unity Web 전용 HTML\/CSS\/JS gameplay UI/);
   assert.match(task.goal,/작은 결함은 1~10개/);
   assert.match(task.goal,/응용·재조합/);
-  assert.match(task.goal,/메인메뉴·인벤토리·상점·제작·퀘스트·설정·결과창/);
+  assert.match(task.goal,/메인메뉴·로비\/허브·로딩 전환·첫 플레이 안내·인벤토리·상점·제작·퀘스트·설정·결과창/);
   assert.match(task.goal,/같은 카드\/그리드\/탭 템플릿/);
 });
 

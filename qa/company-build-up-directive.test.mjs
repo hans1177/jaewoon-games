@@ -32,6 +32,23 @@ function design(){
   };
 }
 
+test('existing UI without entry or loading flow becomes a cross-platform build-up gap',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'entry-flow-directive-'));
+  const sourcePath=path.join(root,'roblox-games','puzzle','client','Game.client.luau');
+  fs.mkdirSync(path.dirname(sourcePath),{recursive:true});
+  fs.writeFileSync(sourcePath,'local gui = Instance.new("ScreenGui")\nlocal button = Instance.new("TextButton")\nbutton.Activated:Connect(function() end)\n');
+  const sourceObservation=inspectGameSources({repoRoot:root,sourceRoots:['roblox-games/puzzle']});
+  assert.ok(sourceObservation.signals.ui>0);
+  assert.equal(sourceObservation.signals.entryFlow,0);
+  assert.equal(sourceObservation.signals.loadingFlow,0);
+  assert.ok(sourceObservation.observations.includes('UI_MENU_FLOW_SPARSE'));
+  const directive=buildGameSpecificBuildUpDirective({gameId:'puzzle',gameName:'퍼즐',designRecord:design(),sourceObservation,responsibleFiles:['roblox-games/puzzle/client/Game.client.luau']});
+  const menu=directive.qualityGapMap.find(row=>row.domain==='MENU_FLOW');
+  assert.equal(menu.state,'GAP');
+  assert.match(directive.allDomainImplementationDirectives.find(row=>row.domain==='MENU_FLOW').directive,/로비|허브/);
+  assert.match(directive.allDomainImplementationDirectives.find(row=>row.domain==='MENU_FLOW').directive,/가짜 진행률/);
+});
+
 test('game-specific directive covers the whole game and all visual domains',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'build-up-directive-'));
   fs.mkdirSync(path.join(root,'roblox-games','bug-defense','server'),{recursive:true});

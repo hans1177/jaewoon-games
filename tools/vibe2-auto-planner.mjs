@@ -1070,7 +1070,7 @@ function findWebDiagnosticTask(project,repoRoot,queue){
 const ADAPTIVE_GRAPHICS_REPLACEMENT_SURFACES=Object.freeze([
   'BACKGROUND','TERRAIN','ENVIRONMENT','BUILDING','PROP','LANDMARK',
   'CHARACTER','MONSTER','CREATURE','WEAPON','ITEM','EQUIPMENT','MATERIAL','TEXTURE',
-  'VFX','MOTION','ANIMATION','MENU','MAIN_MENU','HUD','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI','ICON','TYPOGRAPHY',
+  'VFX','MOTION','ANIMATION','MENU','MAIN_MENU','LOBBY_OR_HUB','LOADING_TRANSITION','FIRST_PLAY_GUIDANCE','HUD','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI','ICON','TYPOGRAPHY',
   'CAMERA_PRESENTATION','ENVIRONMENTAL_PRESENTATION','AUDIO_PRESENTATION_WHEN_RELEVANT'
 ]);
 const ADAPTIVE_GRAPHICS_REUSE_MODES=Object.freeze([
@@ -1079,9 +1079,12 @@ const ADAPTIVE_GRAPHICS_REUSE_MODES=Object.freeze([
   'TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES',
   'NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER'
 ]);
-const MENU_EXPERIENCE_SURFACES=Object.freeze(['MAIN_MENU','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI']);
+const MENU_EXPERIENCE_SURFACES=Object.freeze(['MAIN_MENU','LOBBY_OR_HUB','LOADING_TRANSITION','FIRST_PLAY_GUIDANCE','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI']);
 const MENU_EXPERIENCE_PATTERN_FAMILIES=Object.freeze({
   MAIN_MENU:Object.freeze(['CINEMATIC_HERO','WORLD_INTEGRATED_HUB','COMPACT_ACTION','PROJECT_SPECIFIC_HYBRID']),
+  LOBBY_OR_HUB:Object.freeze(['WORLD_SPACE_SOCIAL_LOBBY','SESSION_READY_ROOM','COMPACT_SOLO_HUB','PROJECT_SPECIFIC_HYBRID']),
+  LOADING_TRANSITION:Object.freeze(['ASSET_READINESS_PROGRESS','WORLD_STREAMING_STATUS','SESSION_JOIN_STATUS','PROJECT_SPECIFIC_HYBRID']),
+  FIRST_PLAY_GUIDANCE:Object.freeze(['ACTION_FIRST_TUTORIAL','CONTEXTUAL_HELP','GENRE_SPECIFIC_CONTENT_NOTICE','PROJECT_SPECIFIC_HYBRID']),
   INVENTORY_UI:Object.freeze(['GRID_LOADOUT','CATEGORY_LIST_DETAIL','QUICKSLOT_FIRST','PROJECT_SPECIFIC_HYBRID']),
   SHOP_UI:Object.freeze(['CATALOG_COMPARE','MERCHANT_CONTEXT','UPGRADE_FIRST','PROJECT_SPECIFIC_HYBRID']),
   CRAFT_UI:Object.freeze(['RECIPE_TREE','STATION_CONTEXT','MATERIAL_FIRST','PROJECT_SPECIFIC_HYBRID']),
@@ -1114,8 +1117,8 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
     priorityOrder:Object.freeze(['PLACEHOLDER','LOW_QUALITY','STYLE_MISMATCH','DUPLICATE_OR_OVERREUSED','POOR_READABILITY','WEAK_VFX_OR_MOTION','OTHER_VERIFIED_PRESENTATION_GAP']),
     reuseModes:ADAPTIVE_GRAPHICS_REUSE_MODES,
     menuDiversity:Object.freeze({
-      version:3,
-      executionBoundary:'EXISTING_MENU_AND_UI_BUILD_UP_ONLY',
+      version:4,
+      executionBoundary:'EXISTING_GAME_UI_AND_MISSING_ENTRY_FLOW_BUILD_UP',
       unityWebIsUnityBuildTargetNotIndependentPlatform:true,
       activePlatformBindingProfile:activeMenuBindingProfile,
       activePlatforms:Object.freeze(['WEB','ROBLOX','UNITY']),
@@ -1182,8 +1185,9 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
     'Roblox는 기존 Roblox 네이티브 UI 책임 구조로 구현한다. 기존 generic/legacy Web UI가 있더라도 그것으로 Unity WebGL 구현을 대신하지 않는다. Fortnite UEFN은 OWNER_HOLD/개발보류가 해제되기 전에는 이 자동 표현 작업을 생성하지 않는다.',
     `현재 메뉴 platform binding profile은 ${contract.menuDiversity.activePlatformBindingProfile}이다. Unity Web 작업이 WEB 토큰을 쓰더라도 GENERIC_WEB_OR_LEGACY_VALIDATION_UI_RUNTIME이 아니라 UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE를 사용한다.`,
     '실제 교체 수는 최소 1개, 최대 60개다. 작은 결함은 1~10개, 일반 개선은 대체로 10~30개, 지역/표현 대형 리프레시는 필요할 때 30~60개를 사용할 수 있다.',
-    '대상에는 배경·지형·환경·건물·소품·랜드마크·캐릭터·몬스터·무기·아이템·장비·재질·텍스처·VFX·모션/애니메이션·메뉴·HUD·인벤토리·상점·제작·퀘스트·설정·결과 UI·아이콘·타이포·카메라·환경 연출이 포함된다. 오디오 표현도 관련 있을 때 함께 연결할 수 있다.',
-    '메뉴/UI를 이번 작업에서 건드릴 때는 메인메뉴·인벤토리·상점·제작·퀘스트·설정·결과창 중 실제 게임에 존재하는 화면의 정보구조·탐색·레이아웃·상호작용을 현재 장르와 규칙에 맞게 선택하거나 혼합한다.',
+    '대상에는 배경·지형·환경·건물·소품·랜드마크·캐릭터·몬스터·무기·아이템·장비·재질·텍스처·VFX·모션/애니메이션·메뉴·로비/허브·실제 준비 상태 로딩·첫 플레이 안내·HUD·인벤토리·상점·제작·퀘스트·설정·결과 UI·아이콘·타이포·카메라·환경 연출이 포함된다. 오디오 표현도 관련 있을 때 함께 연결할 수 있다.',
+    '메뉴/UI를 이번 작업에서 건드릴 때는 실제 게임의 메인메뉴·로비/허브·로딩 전환·첫 플레이 안내·인벤토리·상점·제작·퀘스트·설정·결과창을 현재 장르와 규칙에 맞게 선택하거나 혼합한다. 빠진 진입 흐름은 기존 플레이와 연결해 새로 만들되 같은 화면을 중복 생성하지 않는다.',
+    '로비/허브는 세션 시작·파티·목표 선택 등 실제 게임에 있는 행동으로 이어지고, 로딩은 애셋·월드·세션 준비 상태를 반영하며, 시작/뒤로가기/도움말/설정은 실제 동작해야 한다. 주의 문구는 검증된 게임 내용과 접근성 안내만 표시한다. 시간만 흐르는 가짜 진행률이나 장식용 버튼은 완료로 인정하지 않는다.',
     '모든 게임에 같은 카드/그리드/탭 템플릿을 복사한 뒤 색이나 배경만 바꾸는 방식은 메뉴 다양화로 인정하지 않는다. 정해진 장르별 단일 템플릿도 금지하며 Vibe가 기존 UI 책임 구조와 플레이 흐름을 보고 패턴을 선택·응용·혼합하거나 프로젝트 전용 구성을 만든다.',
     '없는 게임플레이 시스템을 메뉴를 채우려고 새로 만들지 않는다. 기존 경제·저장·퀘스트·진행 의미를 보존하고 모바일 44px 터치, safe area, 좁은 화면 잘림 방지, 스크롤 도달성, 엄지 도달성을 지킨다.',
     '우선순위는 placeholder → 저품질 → 컨셉/Style Lock 불일치 → 중복/과다 재사용 → 가독성 저하 → 약한 VFX/모션 → 그 밖의 검증된 표현 gap 순이다.',
@@ -1206,6 +1210,8 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
       'GRAPHICS_REUSE_ADAPT_RECOMBINE_DECISION_RECORDED',
       'GRAPHICS_CONCEPT_STYLE_LOCK_COHERENCE_PRESERVED',
       'MENU_UI_CHANGE_IF_SELECTED_MUST_BE_GAME_GENRE_SPECIFIC',
+      'ENTRY_LOBBY_LOADING_IF_MISSING_MUST_CONNECT_TO_REAL_GAME_STATE',
+      'ENTRY_UI_NO_DUPLICATE_SCREENS_OR_FAKE_PROGRESS',
       'MENU_COLOR_OR_BACKGROUND_ONLY_VARIATION_FORBIDDEN_IF_CHANGED',
       'MENU_MOBILE_FLOW_AND_GAMEPLAY_SEMANTICS_PRESERVED',
       'UNITY_WEB_MENU_SAME_CANONICAL_UNITY_SOURCE_IF_APPLICABLE',
