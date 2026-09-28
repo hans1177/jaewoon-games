@@ -6582,5 +6582,46 @@
     },
     "noNewPipeline": true,
     "noShadowValidationPath": true
+  },
+  "verifiedExternalLearningFirstApplicationTopology": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.machineOnlyProjectContinuation.verifiedLearningMaxUse.externalVerifiedBlackBoxFirstApplication",
+    "flow": [
+      "VIBE2_LEARNING_RUNTIME_VERIFIED_MEMORY",
+      "TASK_RELEVANT_EXTERNAL_BLACK_BOX_RETRIEVAL",
+      "FULL_RETRIEVED_SET_BINDING_NO_TRUNCATION",
+      "PRE_AUTHORING_APPLICATION",
+      "GAME_STYLE_LOCK_AND_PLATFORM_NATIVE_TRANSFORMATION",
+      "ROBLOX_UNITY_WEB_OR_INTERNAL_ASSET_IMPLEMENTATION",
+      "FRESH_RUNTIME_AND_MOBILE_QA",
+      "VERIFIED_OUTCOME_FAN_IN_TO_LEARNING"
+    ],
+    "mandatoryApplicationCoveragePct": 100,
+    "retrievedSetTruncationAllowed": false,
+    "silentIgnoreAllowed": false,
+    "consumers": {
+      "vibeGameWorker": ".github/workflows/vibe2-continuous-core.yml",
+      "assetProduction": "tools/vibe2-asset-production-plan.mjs",
+      "robloxLearningContext": "tools/vibe3-roblox-learning-context.mjs",
+      "robloxSourceBootstrap": "tools/company-development-roblox-bootstrap.mjs",
+      "unityWebSourceBootstrap": "tools/company-unity-web-floor-bootstrap.mjs",
+      "unityWebBootstrapWorkflow": ".github/workflows/unity-web-floor-source-bootstrap.yml"
+    },
+    "applicationAxes": [
+      "MENU_FLOW_AND_INFORMATION_ARCHITECTURE",
+      "UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY",
+      "GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION",
+      "MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION",
+      "ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY",
+      "VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE",
+      "GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"
+    ],
+    "sourceAuthority": "VERIFIED_MEMORY_ONLY",
+    "rawCommercialCodeOrAssetFlow": "FORBIDDEN",
+    "distinctiveExpressionClone": "FORBIDDEN",
+    "transformationBoundary": "REAUTHOR_OR_RECOMPOSE_TO_GAME_STYLE_LOCK_AND_PLATFORM_NATIVE_IMPLEMENTATION",
+    "nativeVerificationStillRequired": true,
+    "authorityExpansion": false,
+    "continuousLearningReturn": true
   }
 }
