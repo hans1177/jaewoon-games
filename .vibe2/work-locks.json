@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1gogzyt",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-studio-evolution-unity-web-presentation-v1",
-      "gameId": "horror-escape-room",
-      "files": [
-        "unity-games/horror-escape-room/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/horror-escape-room/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "7f9333f29c1843b81279bcc82436a572921b2985",
-      "acquiredAt": "2026-09-28T13:21:15.460Z",
-      "expiresAt": "2026-09-28T14:06:15.460Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-studio-evolution-unity-web-presentation-v1"
-      ]
-    },
-    {
       "id": "wl-q8yezf",
       "worker": "vibe2",
       "taskId": "bug-defense-unity-web-base-implementation-v1",
@@ -635,6 +617,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:line-defense-roblox-presentation-asset-adaptation-v1"
+      ]
+    },
+    {
+      "id": "wl-42rxhm",
+      "worker": "vibe2",
+      "taskId": "monster-adventure-studio-evolution-unity-web-presentation-v1",
+      "gameId": "monster-adventure",
+      "files": [
+        "unity-games/monster-adventure/Assets/Editor/UnityWebFloorBuild.cs",
+        "unity-games/monster-adventure/Assets/Scripts/UnityWebFloorGame.cs"
+      ],
+      "baseSha": "a651564022b08efd1273f08381f4b31d3885c670",
+      "acquiredAt": "2026-09-28T14:06:23.397Z",
+      "expiresAt": "2026-09-28T14:51:23.397Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:monster-adventure-studio-evolution-unity-web-presentation-v1"
       ]
     }
   ]
