@@ -741,8 +741,12 @@ test('verified external black-box learning is applied first at full retrieved co
   const logMap=JSON.parse(read('company-learning/company-log-map.json'));
   const robloxLearning=read('tools/vibe3-roblox-learning-context.mjs');
   const robloxBootstrap=read('tools/company-development-roblox-bootstrap.mjs');
+  const robloxReconcile=read('tools/company-development-roblox-source-reconcile.mjs');
+  const robloxNativeWorkflow=read('.github/workflows/company-development-roblox-runtime.yml');
   const unityBootstrap=read('tools/company-unity-web-floor-bootstrap.mjs');
   const unityWorkflow=read('.github/workflows/unity-web-floor-source-bootstrap.yml');
+  const unityNativeBootstrap=read('tools/company-development-unity-bootstrap.mjs');
+  const unityNativeWorkflow=read('.github/workflows/company-development-unity-runtime.yml');
   const assetPlan=read('tools/vibe2-asset-production-plan.mjs');
 
   const policy=roadmap.developmentLifecycleMachine?.machineOnlyProjectContinuation?.verifiedLearningMaxUse?.externalVerifiedBlackBoxFirstApplication||{};
@@ -754,6 +758,10 @@ test('verified external black-box learning is applied first at full retrieved co
   assert.equal(policy.applicationBeforeGameSourceGenerationRequired,true);
   assert.equal(policy.internalAssetProductionMustConsumeVerifiedCommercialDistillationFirst,true);
   assert.equal(policy.unityWebBootstrapWithoutVerifiedExternalLearningForbidden,true);
+  assert.equal(policy.unityNativeSourceGenerationWithoutVerifiedExternalLearningForbidden,true);
+  assert.equal(policy.robloxExistingSourceMaintenanceWithoutVerifiedExternalLearningForbidden,true);
+  assert.equal(policy.nativeSourceReuseMustInvalidateWhenVerifiedExternalLearningChanges,true);
+  assert.equal(policy.actualNativeDevelopmentMustExposeExactAppliedLearningIdsAndFingerprint,true);
   assert.equal(policy.rawCommercialCodeCopyForbidden,true);
   assert.equal(policy.rawCommercialAssetCopyForbidden,true);
   assert.equal(policy.transformativeReauthoringOrRecompositionRequired,true);
@@ -764,12 +772,30 @@ test('verified external black-box learning is applied first at full retrieved co
   assert.equal(topology.retrievedSetTruncationAllowed,false);
   assert.equal(topology.silentIgnoreAllowed,false);
   assert.equal(topology.consumers?.robloxSourceBootstrap,'tools/company-development-roblox-bootstrap.mjs');
+  assert.equal(topology.consumers?.robloxExistingSourceReconcile,'tools/company-development-roblox-source-reconcile.mjs');
+  assert.equal(topology.consumers?.robloxNativeRuntimeWorkflow,'.github/workflows/company-development-roblox-runtime.yml');
+  assert.equal(topology.consumers?.unityNativeSourceBootstrap,'tools/company-development-unity-bootstrap.mjs');
+  assert.equal(topology.consumers?.unityNativeRuntimeWorkflow,'.github/workflows/company-development-unity-runtime.yml');
   assert.equal(topology.consumers?.unityWebSourceBootstrap,'tools/company-unity-web-floor-bootstrap.mjs');
+  assert.equal(topology.nativeSourceReuseInvalidatesOnVerifiedLearningChange,true);
+  assert.equal(topology.existingSourceMaintenanceRebindRequiredWhenLearningChanges,true);
+  assert.equal(topology.exactAppliedIdsAndFingerprintEvidenceRequired,true);
   assert.equal(topology.consumers?.assetProduction,'tools/vibe2-asset-production-plan.mjs');
 
   const evidence=logMap.verifiedExternalLearningFirstApplicationEvidenceContract||{};
   assert.equal(evidence.requiredValues?.applicationCoveragePct,100);
   assert.equal(evidence.requiredValues?.allRetrievedTaskRelevantVerifiedExternalItemsApplied,true);
+  assert.equal(evidence.requiredValues?.nativeSourceReuseInvalidatesWhenVerifiedLearningChanges,true);
+  assert.equal(evidence.requiredValues?.existingSourceMaintenanceRebindsWhenLearningChanges,true);
+  assert.equal(evidence.requiredValues?.exactAppliedIdsAndFingerprintEvidence,true);
+  for(const marker of [
+    'ROBLOX_VERIFIED_EXTERNAL_LEARNING_FINGERPRINT=',
+    'ROBLOX_RECONCILE_VERIFIED_EXTERNAL_LEARNING=READY:',
+    'UNITY_VERIFIED_EXTERNAL_LEARNING_COVERAGE=',
+    'UNITY_VERIFIED_EXTERNAL_LEARNING_COUNT=',
+    'UNITY_VERIFIED_EXTERNAL_LEARNING_IDS=',
+    'UNITY_VERIFIED_EXTERNAL_LEARNING_FINGERPRINT='
+  ])assert.ok(evidence.requiredMarkers.includes(marker),marker);
   assert.equal(evidence.nativeRuntimeOrReleasePassNotImplied,true);
 
   assert.doesNotMatch(robloxLearning,/sort\(\(a,b\)=>b\.score-a\.score\|\|a\.tie\.localeCompare\(b\.tie\)\)\.slice\(0,3\)/);
@@ -783,6 +809,12 @@ test('verified external black-box learning is applied first at full retrieved co
   assert.match(robloxBootstrap,/MemoryFingerprint = \$\{luauString\(learning\.verifiedExternalLearningFingerprint\|\|' '\.trim\(\)\)\}|MemoryFingerprint = \$\{luauString\(learning\.verifiedExternalLearningFingerprint\|\|''\)\}/);
   assert.match(robloxBootstrap,/CoveragePct = \$\{Number\(learning\.verifiedExternalLearningCoveragePct\|\|0\)\}/);
   assert.match(robloxBootstrap,/ROBLOX_EXISTING_SOURCE_VERIFIED_EXTERNAL_LEARNING_REQUIRED/);
+  assert.match(robloxReconcile,/existing-source-verified-external-learning-required/);
+  assert.match(robloxNativeWorkflow,/ROBLOX_RECONCILE_VERIFIED_EXTERNAL_LEARNING=READY/);
+  assert.match(unityNativeBootstrap,/verifiedExternalLearningFromPlaybooks/);
+  assert.match(unityNativeBootstrap,/ApplyVerifiedExternalLearningFeedback/);
+  assert.match(unityNativeWorkflow,/UNITY_VERIFIED_EXTERNAL_LEARNING_MEMORY=READY/);
+  assert.match(unityNativeWorkflow,/UNITY_CURRENT_MAIN_SOURCE_REUSE_INVALIDATED=VERIFIED_EXTERNAL_LEARNING_OR_GENERATOR_STALE/);
   assert.match(unityBootstrap,/UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REQUIRED/);
   assert.match(unityBootstrap,/mandatoryApplicationCoveragePct:100/);
   assert.match(unityWorkflow,/git fetch --no-tags --depth=1 origin vibe2-learning-runtime/);

@@ -1,5 +1,5 @@
 {
-  "version": 489,
+  "version": 490,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -2357,7 +2357,7 @@
         "learningMayExpandAuthority": false,
         "learningMayReplaceNativeVerification": false,
         "externalVerifiedBlackBoxFirstApplication": {
-          "version": 1,
+          "version": 2,
           "authority": "OWNER_DIRECTIVE_2026-09-28",
           "required": true,
           "objective": "APPLY_ALL_TASK_RELEVANT_VERIFIED_EXTERNAL_BLACK_BOX_LEARNING_BEFORE_GAME_DEVELOPMENT_OR_INTERNAL_ASSET_AUTHORING_THEN_TRANSFORM_IT_INTO_GAME_SPECIFIC_IMPLEMENTATION_AND_RETURN_FRESH_RUNTIME_OUTCOMES_TO_LEARNING",
@@ -2414,8 +2414,16 @@
             "tools/company-development-roblox-bootstrap.mjs",
             "tools/company-unity-web-floor-bootstrap.mjs",
             ".github/workflows/vibe2-continuous-core.yml",
-            ".github/workflows/unity-web-floor-source-bootstrap.yml"
-          ]
+            ".github/workflows/unity-web-floor-source-bootstrap.yml",
+            "tools/company-development-unity-bootstrap.mjs",
+            ".github/workflows/company-development-unity-runtime.yml",
+            "tools/company-development-roblox-source-reconcile.mjs",
+            ".github/workflows/company-development-roblox-runtime.yml"
+          ],
+          "unityNativeSourceGenerationWithoutVerifiedExternalLearningForbidden": true,
+          "robloxExistingSourceMaintenanceWithoutVerifiedExternalLearningForbidden": true,
+          "nativeSourceReuseMustInvalidateWhenVerifiedExternalLearningChanges": true,
+          "actualNativeDevelopmentMustExposeExactAppliedLearningIdsAndFingerprint": true
         }
       },
       "unityWebDevelopmentFloor": {
@@ -10403,6 +10411,30 @@
         "unchangedExactEvidence": "REUSE_WITHIN_SAME_SOURCE_ARTIFACT_CANDIDATE_BINDING",
         "developmentPriority": "REAL_GAME_SOURCE_IMPROVEMENT_AND_NEXT_BUILD_UP_DIRECTIVE"
       }
+    },
+    "verifiedExternalNativeDevelopmentBinding20260928": {
+      "id": "VERIFIED_EXTERNAL_NATIVE_DEVELOPMENT_BINDING_2026-09-28",
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
+      "status": "CODE_UPDATED_PENDING_FULL_QA_AND_NATIVE_RUNTIME",
+      "objective": "BIND_ALL_VERIFIED_EXTERNAL_BLACK_BOX_APK_LEARNING_TO_ACTUAL_ROBLOX_AND_UNITY_NATIVE_SOURCE_DEVELOPMENT_WITH_100_PERCENT_COVERAGE_AND_STALE_SOURCE_REBIND",
+      "verifiedExternalLearningCoveragePct": 100,
+      "unityNativeSourceGenerationBound": true,
+      "unityNativeSourceReuseInvalidatedWhenLearningChanges": true,
+      "robloxNewSourceGenerationBound": true,
+      "robloxExistingSourceMaintenanceBound": true,
+      "robloxExistingSourceRequeuedWhenLearningChanges": true,
+      "exactAppliedIdsAndFingerprintEvidenceRequired": true,
+      "rawCommercialCodeOrAssetCopyStillForbidden": true,
+      "existingGameRulesBalanceSaveAndAuthorityPreserved": true,
+      "newQueueOrShadowPipelineCreated": false,
+      "implementationBindings": [
+        "tools/company-development-unity-bootstrap.mjs",
+        ".github/workflows/company-development-unity-runtime.yml",
+        "tools/vibe3-roblox-learning-context.mjs",
+        "tools/company-development-roblox-bootstrap.mjs",
+        "tools/company-development-roblox-source-reconcile.mjs",
+        ".github/workflows/company-development-roblox-runtime.yml"
+      ]
     }
   },
   "vibeExecutionLaneContract": {

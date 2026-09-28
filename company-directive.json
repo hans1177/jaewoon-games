@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 85,
+  "revision": 86,
   "updatedAt": "2026-09-28",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -32,7 +32,12 @@
       "assets/asset-selector.js",
       "assets/asset-manifest.json",
       "company-asset-library.json",
-      "assets/vibe-motion-director.js"
+      "assets/vibe-motion-director.js",
+      "tools/company-development-unity-bootstrap.mjs",
+      ".github/workflows/company-development-unity-runtime.yml",
+      "tools/company-development-roblox-bootstrap.mjs",
+      "tools/company-development-roblox-source-reconcile.mjs",
+      ".github/workflows/company-development-roblox-runtime.yml"
     ]
   },
   "homepageOperations": {

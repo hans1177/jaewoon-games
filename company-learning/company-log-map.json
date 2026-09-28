@@ -1,5 +1,5 @@
 {
-  "version": 152,
+  "version": 153,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -2692,7 +2692,7 @@
     }
   },
   "verifiedExternalLearningFirstApplicationEvidenceContract": {
-    "version": 1,
+    "version": 2,
     "centralContract": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.machineOnlyProjectContinuation.verifiedLearningMaxUse.externalVerifiedBlackBoxFirstApplication",
     "recordKind": "verified-external-learning-application-evidence",
     "requiredFields": [
@@ -2708,7 +2708,9 @@
       "APPLY_AXES",
       "GAME_STYLE_LOCK_OR_PLATFORM_ADAPTATION_REFERENCE",
       "FRESH_QA_RESULT",
-      "VERIFIED_LEARNING_RETURN_REFERENCE"
+      "VERIFIED_LEARNING_RETURN_REFERENCE",
+      "VERIFIED_LEARNING_FINGERPRINT",
+      "SOURCE_REUSE_LEARNING_FINGERPRINT_MATCH"
     ],
     "requiredValues": {
       "sourceAuthority": "VERIFIED_MEMORY_ONLY",
@@ -2716,7 +2718,10 @@
       "allRetrievedTaskRelevantVerifiedExternalItemsApplied": true,
       "rawCommercialCodeCopy": false,
       "rawCommercialAssetCopy": false,
-      "distinctiveExpressionClone": false
+      "distinctiveExpressionClone": false,
+      "nativeSourceReuseInvalidatesWhenVerifiedLearningChanges": true,
+      "existingSourceMaintenanceRebindsWhenLearningChanges": true,
+      "exactAppliedIdsAndFingerprintEvidence": true
     },
     "requiredMarkers": [
       "ROBLOX_VERIFIED_EXTERNAL_LEARNING_FIRST=",
@@ -2725,14 +2730,21 @@
       "UNITY_WEB_VERIFIED_EXTERNAL_LEARNING=PASS",
       "UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_COVERAGE=100",
       "UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_COUNT=",
-      "UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REVISION="
+      "UNITY_WEB_VERIFIED_EXTERNAL_LEARNING_REVISION=",
+      "ROBLOX_VERIFIED_EXTERNAL_LEARNING_FINGERPRINT=",
+      "ROBLOX_RECONCILE_VERIFIED_EXTERNAL_LEARNING=READY:",
+      "UNITY_VERIFIED_EXTERNAL_LEARNING_COVERAGE=",
+      "UNITY_VERIFIED_EXTERNAL_LEARNING_COUNT=",
+      "UNITY_VERIFIED_EXTERNAL_LEARNING_IDS=",
+      "UNITY_VERIFIED_EXTERNAL_LEARNING_FINGERPRINT="
     ],
     "failureStates": [
       "VERIFIED_EXTERNAL_LEARNING_MISSING",
       "VERIFIED_EXTERNAL_LEARNING_PARTIAL_APPLICATION",
       "VERIFIED_EXTERNAL_LEARNING_TRUNCATED",
       "VERIFIED_EXTERNAL_LEARNING_SILENTLY_IGNORED",
-      "RAW_COMMERCIAL_EXPRESSION_COPY_DETECTED"
+      "RAW_COMMERCIAL_EXPRESSION_COPY_DETECTED",
+      "VERIFIED_EXTERNAL_LEARNING_NATIVE_SOURCE_STALE"
     ],
     "failureAction": "REPAIR_REQUIRED_AT_RESPONSIBLE_DEVELOPMENT_OR_ASSET_STAGE",
     "nativeRuntimeOrReleasePassNotImplied": true,

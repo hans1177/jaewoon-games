@@ -1,5 +1,5 @@
 {
-  "version": 299,
+  "version": 300,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6612,7 +6612,7 @@
     "noShadowValidationPath": true
   },
   "verifiedExternalLearningFirstApplicationTopology": {
-    "version": 1,
+    "version": 2,
     "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.machineOnlyProjectContinuation.verifiedLearningMaxUse.externalVerifiedBlackBoxFirstApplication",
     "flow": [
       "VIBE2_LEARNING_RUNTIME_VERIFIED_MEMORY",
@@ -6620,7 +6620,7 @@
       "FULL_RETRIEVED_SET_BINDING_NO_TRUNCATION",
       "PRE_AUTHORING_APPLICATION",
       "GAME_STYLE_LOCK_AND_PLATFORM_NATIVE_TRANSFORMATION",
-      "ROBLOX_UNITY_WEB_OR_INTERNAL_ASSET_IMPLEMENTATION",
+      "ROBLOX_UNITY_NATIVE_UNITY_WEB_OR_INTERNAL_ASSET_IMPLEMENTATION",
       "FRESH_RUNTIME_AND_MOBILE_QA",
       "VERIFIED_OUTCOME_FAN_IN_TO_LEARNING"
     ],
@@ -6633,7 +6633,11 @@
       "robloxLearningContext": "tools/vibe3-roblox-learning-context.mjs",
       "robloxSourceBootstrap": "tools/company-development-roblox-bootstrap.mjs",
       "unityWebSourceBootstrap": "tools/company-unity-web-floor-bootstrap.mjs",
-      "unityWebBootstrapWorkflow": ".github/workflows/unity-web-floor-source-bootstrap.yml"
+      "unityWebBootstrapWorkflow": ".github/workflows/unity-web-floor-source-bootstrap.yml",
+      "robloxExistingSourceReconcile": "tools/company-development-roblox-source-reconcile.mjs",
+      "robloxNativeRuntimeWorkflow": ".github/workflows/company-development-roblox-runtime.yml",
+      "unityNativeSourceBootstrap": "tools/company-development-unity-bootstrap.mjs",
+      "unityNativeRuntimeWorkflow": ".github/workflows/company-development-unity-runtime.yml"
     },
     "applicationAxes": [
       "MENU_FLOW_AND_INFORMATION_ARCHITECTURE",
@@ -6650,6 +6654,9 @@
     "transformationBoundary": "REAUTHOR_OR_RECOMPOSE_TO_GAME_STYLE_LOCK_AND_PLATFORM_NATIVE_IMPLEMENTATION",
     "nativeVerificationStillRequired": true,
     "authorityExpansion": false,
-    "continuousLearningReturn": true
+    "continuousLearningReturn": true,
+    "nativeSourceReuseInvalidatesOnVerifiedLearningChange": true,
+    "existingSourceMaintenanceRebindRequiredWhenLearningChanges": true,
+    "exactAppliedIdsAndFingerprintEvidenceRequired": true
   }
 }
