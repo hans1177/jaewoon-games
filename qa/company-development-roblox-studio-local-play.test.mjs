@@ -1702,10 +1702,21 @@ test('Studio startup probe explicitly checks dead spawn, start buttons, and bloc
   assert.match(helper,/initial-character-playable/);
   assert.match(helper,/ui-start-gate/);
   assert.match(helper,/start\|play\|begin\|continue\|ready\|시작\|플레이\|계속\|준비/);
+  assert.match(helper,/startGateProbe=await collectStudioActualPlayProbe/);
+  assert.match(helper,/clean\(row\?\.text\)!==primaryTextBeforeStart/);
   assert.match(helper,/largeOverlayCount/);
   assert.match(helper,/largeBlockingOverlayCount/);
   assert.match(helper,/largestOverlayCoverage/);
   assert.match(helper,/adaptive-ui-blocking-overlay/);
+});
+
+test('large overlay detection uses actual panel or image opacity and does not treat transparent full-screen text alone as an occluder',()=>{
+  const start=helper.indexOf('local gui={screenGuiPresent=false');
+  const end=helper.indexOf('local root=nil',start);
+  const block=helper.slice(start,end);
+  assert.match(block,/BackgroundTransparency<0\.85/);
+  assert.match(block,/ImageTransparency<0\.85/);
+  assert.doesNotMatch(block,/TextTransparency<0\.85/);
 });
 
 test('commercial Studio evaluator records progression and AI movement deltas',()=>{
