@@ -3184,7 +3184,7 @@ function updateSwampSpecial(e,targetP,now,playerD){
    e.nextGasRush=now+3000;
    if(Math.random()<.40){
     const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1;
-    e.toxicGasUntil=now+10000;
+    e.toxicGasUntil=now+3000;
     e.toxicGasTick=now;
     e.toxicCharge={left:3,dirX:dx/d,dirY:dy/d,endAt:now+850,hit:false};
     showNotice('맹독 균사체 · 가스 돌진 3회');
