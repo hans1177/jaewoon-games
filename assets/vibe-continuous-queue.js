@@ -632,7 +632,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
 
   const queuedEligible = schedulingCandidates.length;
   return freeze({
-    selected: freeze(selected),
+    selected: freeze([...selected].sort((a,b)=>scoreTask(b,0)-scoreTask(a,0)||a.id.localeCompare(b.id))),
     lane: laneMode,
     laneDeferred: freeze([...laneDeferred,...robloxFirstDeferred]),
     robloxFirstMode: robloxCandidateAvailable,
