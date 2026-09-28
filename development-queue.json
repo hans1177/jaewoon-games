@@ -8804,10 +8804,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T21:45:58.478Z",
+      "updatedAt": "2026-09-28T22:40:45.536Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -9824,7 +9824,7 @@
           "scenarioContractRequired": true,
           "scenarioFailureCount": 3,
           "primaryActionDisplacement": 0,
-          "primaryActionVelocity": 344.90960693359375,
+          "primaryActionVelocity": 355.6108093261719,
           "primaryActionFeedbackChanged": false,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
@@ -10126,8 +10126,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-28T21:33:44.941Z",
-        "workflowRunId": 36479878848,
+        "testedAt": "2026-09-28T22:40:45.536Z",
+        "workflowRunId": 36481419448,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -10278,8 +10278,8 @@
           "MAP_ROUTEABILITY"
         ],
         "robloxFailureClass": "ROBLOX_UI_STATE",
-        "testedAt": "2026-09-28T21:33:44.941Z",
-        "workflowRunId": 36479878848,
+        "testedAt": "2026-09-28T22:40:45.536Z",
+        "workflowRunId": 36481419448,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxNativeFailureClass": "ROBLOX_UI_STATE",
@@ -28309,7 +28309,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T22:37:59.187Z",
+  "updatedAt": "2026-09-28T22:40:45.536Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
