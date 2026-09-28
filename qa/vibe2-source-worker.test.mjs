@@ -259,7 +259,7 @@ test('Roblox puzzle visuals accept a coherent environment and HUD motion without
       'boardRock.Parent = workspace',
       'RunService.RenderStepped:Connect(function(dt) boardRock.CFrame = boardRock.CFrame * CFrame.Angles(0, dt * 0.12, 0) end)',
       'panel.BackgroundColor3 = Color3.fromRGB(32,51,76)'
-    ].join('\\n')
+    ].join('\n')
   }]}));
   const result=await runVibe2SourceWorker({cwd,responseFiles:[response]});
   assert.equal(result.generation.attempts,1);
