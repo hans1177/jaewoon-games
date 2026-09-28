@@ -5558,10 +5558,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T05:20:47.216Z",
+      "updatedAt": "2026-09-28T05:45:25.883Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -5757,7 +5757,25 @@
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
-      "robloxRuntimeCandidateEvidence": null,
+      "robloxRuntimeCandidateEvidence": {
+        "version": 1,
+        "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+        "platform": "ROBLOX",
+        "sourceRevision": "ceb568d1dd3ff51e9287668d41d2759e205575ca",
+        "artifactIdentity": "sha256:a771b2d23d2c1e386d9d23ea24428620feb08bd45f5e9c2536d15e69b79f02e6",
+        "artifactRunId": 36381224879,
+        "universeId": "10768075882",
+        "placeId": "134878355589659",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": false,
+        "exposure": "PRIVATE_OR_RESTRICTED_RUNTIME_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 7,
+        "workflowRunId": 36383174487,
+        "publishedAt": "2026-09-28T05:45:25.883Z",
+        "authority": "roblox-open-cloud-private-runtime-candidate"
+      },
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -5787,11 +5805,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -5976,7 +5994,7 @@
         "placeId": "134878355589659",
         "verified": true,
         "verifiedAt": "2026-09-26T03:56:04.661Z",
-        "lastVerifiedAt": "2026-09-28T03:20:09.158Z",
+        "lastVerifiedAt": "2026-09-28T05:45:25.883Z",
         "source": "canonical-dedicated-open-cloud-bootstrap",
         "authority": "roblox-canonical-publication-target",
         "dedicated": true,
@@ -5988,7 +6006,7 @@
       },
       "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
-      "robloxReleaseVersionNumber": 6,
+      "robloxReleaseVersionNumber": 7,
       "robloxPublicRelease": false,
       "robloxInternalVibePlayEvidence": null,
       "robloxGameCompletionEvidence": null,
@@ -9223,7 +9241,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-28T05:45:17.359Z",
+  "updatedAt": "2026-09-28T05:45:25.883Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
