@@ -2044,6 +2044,20 @@ test('Studio evidence push conflicts reapply onto latest company-runtime instead
 });
 
 
+test('Studio retry preserves a verified product failure instead of letting later MCP infrastructure noise overwrite repair routing',()=>{
+  const block=workflow.slice(workflow.indexOf('- name: Run actual local play through official Studio MCP'),workflow.indexOf('- name: Release Studio controls for manual save after final capture'));
+  assert.match(block,/\$productFailureObserved = \$false/);
+  assert.match(block,/ROBLOX_STUDIO_MCP_PRODUCT_FAILURE_PRESERVED=YES/);
+  assert.match(block,/\^studio-product-/);
+  const productThrow=block.indexOf('official Roblox Studio product failure preserved for repair');
+  const timeoutThrow=block.indexOf('official Roblox Studio MCP tool provider timed out after 3 clean Studio sessions');
+  assert.ok(productThrow>=0&&timeoutThrow>productThrow);
+  const preservedAt=block.indexOf('ROBLOX_STUDIO_MCP_PRODUCT_FAILURE_PRESERVED=YES');
+  const restartAt=block.indexOf('ROBLOX_STUDIO_MCP_SESSION_RESTART=$attempt',preservedAt);
+  assert.ok(preservedAt>=0);
+  assert.ok(restartAt<0||block.lastIndexOf('break',restartAt)>preservedAt);
+});
+
 test('Studio screenshots are captured only as the final Studio audit action',()=>{
   assert.doesNotMatch(helper,/viewport-before-captured/);
   assert.doesNotMatch(helper,/checkpoint\('viewport-changed-after-input'/);
