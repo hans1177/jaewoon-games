@@ -3,24 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-lsv1kt",
-      "worker": "vibe2",
-      "taskId": "survival-studio-evolution-unity-web-usability-v1",
-      "gameId": "survival",
-      "files": [
-        "unity-games/survival/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/survival/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "cd17aee877597ab529177f723af0570d48f27ae1",
-      "acquiredAt": "2026-09-28T00:35:33.911Z",
-      "expiresAt": "2026-09-28T01:20:33.911Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:survival-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-chxqc5",
       "worker": "vibe2",
       "taskId": "survival-unity-web-base-implementation-v1",
@@ -668,6 +650,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:village-dungeons-unity-web-base-implementation-v1"
+      ]
+    },
+    {
+      "id": "wl-8z5wzs",
+      "worker": "vibe2",
+      "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
+      "gameId": "cozy-island",
+      "files": [
+        "roblox-games/cozy-island/server/Game.server.luau",
+        "roblox-games/cozy-island/client/Game.client.luau",
+        "roblox-games/cozy-island/shared/GameConfig.luau"
+      ],
+      "baseSha": "04cebe2a71a9a2002e28ba640d3ba562ef9fa496",
+      "acquiredAt": "2026-09-28T01:20:51.427Z",
+      "expiresAt": "2026-09-28T02:05:51.427Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:cozy-island-post-release-focus-12c1a7e2ae6288fd"
       ]
     }
   ]
