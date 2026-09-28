@@ -61,9 +61,11 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
   const checklist=unique([...(roblox.checklist||[]),...(coding.checklist||[])]);
   const reuseRows=[...(roblox.reuse||[]),...(coding.reuse||[])];
   const reuseProjects=unique(reuseRows.map(row=>row?.project));
-  const verifiedExternalPlaybookIds=unique(reuseRows
-    .filter(row=>clean(row?.id).startsWith('external-black-box-'))
-    .map(row=>row?.id));
+  const verifiedExternalReuseRows=reuseRows.filter(row=>clean(row?.id).startsWith('external-black-box-'));
+  const verifiedExternalPlaybookIds=unique(verifiedExternalReuseRows.map(row=>row?.id));
+  const verifiedExternalLearningPrinciples=unique(verifiedExternalReuseRows.flatMap(row=>Array.isArray(row?.distilledApplicationPrinciples)?row.distilledApplicationPrinciples:[]));
+  const verifiedExternalAvoidancePrinciples=unique(verifiedExternalReuseRows.flatMap(row=>Array.isArray(row?.distilledAvoidancePrinciples)?row.distilledAvoidancePrinciples:[]));
+  const verifiedExternalLearningUseAllowed=unique(verifiedExternalReuseRows.flatMap(row=>Array.isArray(row?.distilledLearningUseAllowed)?row.distilledLearningUseAllowed:[]));
   const recipes=(Array.isArray(recombination?.recipes)?recombination.recipes:[])
     .filter(recipe=>Array.isArray(recipe?.sourceProjects)&&new Set(recipe.sourceProjects.map(clean).filter(Boolean)).size>=2)
     .filter(recipe=>!(recipe.sourceProjects||[]).map(clean).includes(clean(gameId)));
@@ -128,6 +130,9 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     verifiedExternalLearningAppliedCount:verifiedExternalLearningIds.length,
     verifiedExternalLearningCoveragePct:verifiedExternalLearningIds.length>0?100:0,
     verifiedExternalLearningApplyAxes,
+    verifiedExternalLearningPrinciples:Object.freeze(verifiedExternalLearningPrinciples),
+    verifiedExternalAvoidancePrinciples:Object.freeze(verifiedExternalAvoidancePrinciples),
+    verifiedExternalLearningUseAllowed:Object.freeze(verifiedExternalLearningUseAllowed),
     verifiedExternalLearningFirst:true,
     verifiedExternalLearningTruncationForbidden:true,
     externalBlackBoxAdvisoryIds:Object.freeze(externalBlackBoxAdvisoryIds),
@@ -144,7 +149,11 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
 }
 
 export function decorateRobloxActionsWithLearning(actions=[],learning={}){
-  const patterns=unique([...(learning?.featureBlend||[]),...(learning?.distilledPatterns||[])]);
+  const patterns=unique([
+    ...(learning?.verifiedExternalLearningPrinciples||[]),
+    ...(learning?.featureBlend||[]),
+    ...(learning?.distilledPatterns||[])
+  ]);
   return actions.map((action,index)=>Object.freeze({
     ...action,
     learningPattern:clean(patterns[index%Math.max(1,patterns.length)])||null
