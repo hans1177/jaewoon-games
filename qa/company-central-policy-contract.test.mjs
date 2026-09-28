@@ -493,7 +493,7 @@ test('Roblox deployment control allows guarded Open Cloud publishing only',()=>{
   ]);
   assert.equal(control.studioUiPublishAllowed,false);
   assert.equal(control.cookiePublishAllowed,false);
-  assert.equal(control.resumeMode,'AUTO_AFTER_EACH_F9_VERIFIED_CANONICAL_PUBLISH');
+  assert.equal(control.resumeMode,'AUTO_AFTER_EACH_F9_FINAL_PUBLISH_DISPATCH');
   assert.equal(control.verifiedCyclePublication.f9Terminal,false);
   assert.equal(control.verifiedCyclePublication.perpetualRepeat,true);
   assert.equal(control.verifiedCyclePublication.canonicalGameTargetPublishBeforeF9Forbidden,true);
@@ -1885,7 +1885,7 @@ test('BUILD_UP grounding stays connected from source proof through exact target 
 
 test('development-focused F0-F9 validation dedupe preserves perpetual game evolution',()=>{
   const policy=roadmap.developmentLifecycleMachine.validationEfficiencyOptimization;
-  assert.deepEqual(policy.appliesTo,['ROBLOX','UNITY']);
+  assert.deepEqual(policy.appliesTo,['WEB','ROBLOX','UNITY']);
   assert.deepEqual(policy.excludedPlatforms,['FORTNITE_UEFN']);
   assert.deepEqual(policy.floors,['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9']);
   assert.equal(policy.floors.includes('F10'),false);
