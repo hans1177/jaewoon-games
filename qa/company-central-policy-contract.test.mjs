@@ -1584,7 +1584,7 @@ test('asset development reuses GRAPHICS_PRODUCTION with a dedicated execution la
   assert.equal(parallel.assetDevelopmentDedicatedRunner,true);
   assert.equal(parallel.assetDevelopmentRunnerLabel,'ubuntu-24.04-arm');
   assert.equal(parallel.assetDevelopmentSchedulerPlanRunner,'ubuntu-24.04-arm');
-  assert.equal(parallel.assetDevelopmentReserveRunner,'ubuntu-24.04-arm');
+  assert.equal(parallel.assetDevelopmentReserveRunner,'ubuntu-slim');
   assert.equal(parallel.assetDevelopmentModelCacheRunner,'ubuntu-24.04-arm');
   assert.equal(parallel.assetDevelopmentArchitectureAwareCache,true);
   assert.equal(parallel.assetDevelopmentOllamaCacheKey,'vibe2-ollama-v5-${runner.os}-${runner.arch}-qwen3-1.7b');
@@ -1781,7 +1781,9 @@ test('menu experience diversity stays inside existing Vibe presentation buildup'
   assert.equal(topology.newStage,false);
   assert.match(vibeAutoPlanner,/MENU_EXPERIENCE_SURFACES/);
   assert.match(vibeAutoPlanner,/menu-experience-diversity:v1/);
-  assert.match(vibeAutoPlanner,/메인메뉴·인벤토리·상점·제작·퀘스트·설정·결과창/);
+  assert.match(vibeAutoPlanner,/LOBBY_OR_HUB/);
+  assert.match(vibeAutoPlanner,/LOADING_TRANSITION/);
+  assert.match(vibeAutoPlanner,/FIRST_PLAY_GUIDANCE/);
   assert.match(vibeAutoPlanner,/SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE/);
   assert.match(vibeAutoPlanner,/menuPlatformBindingProfile/);
   assert.match(vibeAutoPlanner,/UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE/);
