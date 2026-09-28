@@ -218,13 +218,25 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
 }
 
 function verifiedExternalGameDevelopmentProfile(learning={}){
-  const principles=(learning?.verifiedExternalGameDevelopmentPrinciples||[]).map(value=>clean(value).toLowerCase());
-  const text=principles.join(' ');
+  const principles=[...(learning?.verifiedExternalGameDevelopmentPrinciples||[])];
+  const mappings=principles.map(principle=>{
+    const text=clean(principle).toLowerCase();
+    const behaviors=[];
+    if(/immediate visible|visible state|state feedback|movement feedback|spatially anchored|prompt, legible|prompt and unambiguous/.test(text))behaviors.push('IMMEDIATE_VISIBLE_FEEDBACK');
+    if(/onboarding|touch interaction instruction|first playable|first live|game entry|setup milestone|narrative onboarding/.test(text))behaviors.push('CONTEXTUAL_ONBOARDING');
+    if(/persistent primary|persistent core state|context-relevant actions|high-frequency progression|action controls visible|action controls/.test(text))behaviors.push('PERSISTENT_ACTION_CONTROLS');
+    if(/level requirement|level requirements|danger guidance|risk cue|risk cues|before players commit|before commitment/.test(text))behaviors.push('VISIBLE_PROGRESSION_RISK_CUE');
+    if(!behaviors.length)throw new Error('ROBLOX_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED:'+principle);
+    return Object.freeze({principle,behaviors:Object.freeze(behaviors)});
+  });
+  const uses=behavior=>mappings.some(row=>row.behaviors.includes(behavior));
   return Object.freeze({
-    principles:Object.freeze([...(learning?.verifiedExternalGameDevelopmentPrinciples||[])]),
-    immediateVisibleFeedback:/immediate visible|visible state|state feedback|movement feedback|spatially anchored|prompt, legible|prompt and unambiguous/.test(text),
-    contextualOnboarding:/onboarding|touch interaction instruction|first playable|first live|game entry/.test(text),
-    persistentActions:/persistent primary|context-relevant actions|high-frequency progression|action controls visible/.test(text)
+    principles:Object.freeze(principles),
+    mappings:Object.freeze(mappings),
+    immediateVisibleFeedback:uses('IMMEDIATE_VISIBLE_FEEDBACK'),
+    contextualOnboarding:uses('CONTEXTUAL_ONBOARDING'),
+    persistentActions:uses('PERSISTENT_ACTION_CONTROLS'),
+    visibleProgressionRiskCue:uses('VISIBLE_PROGRESSION_RISK_CUE')
   });
 }
 
@@ -310,13 +322,15 @@ ${frameVar}:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verif
     output=output.slice(0,at)+'\n'+runtimeBlock+output.slice(at);
   }
   const profile=verifiedExternalGameDevelopmentProfile(learning);
-  if(profile.immediateVisibleFeedback||profile.contextualOnboarding||profile.persistentActions){
+  if(profile.immediateVisibleFeedback||profile.contextualOnboarding||profile.persistentActions||profile.visibleProgressionRiskCue){
     const behavior=`-- VERIFIED_EXTERNAL_LEARNING_CLIENT_BEHAVIOR_BEGIN
 local verifiedLearningRoot = ${frameVar}
 local verifiedLearningImmediateFeedback = ${profile.immediateVisibleFeedback?'true':'false'}
 local verifiedLearningContextualOnboarding = ${profile.contextualOnboarding?'true':'false'}
 local verifiedLearningPersistentActions = ${profile.persistentActions?'true':'false'}
+local verifiedLearningProgressionRiskCue = ${profile.visibleProgressionRiskCue?'true':'false'}
 local verifiedLearningGuidance = nil
+local verifiedLearningRiskCue = nil
 if verifiedLearningContextualOnboarding then
   verifiedLearningGuidance = Instance.new("TextLabel")
   verifiedLearningGuidance.Name = "VerifiedLearningGuidance"
@@ -327,6 +341,17 @@ if verifiedLearningContextualOnboarding then
   verifiedLearningGuidance.TextScaled = true
   verifiedLearningGuidance.Text = "핵심 조작을 눌러 바로 플레이"
   verifiedLearningGuidance.Parent = verifiedLearningRoot
+end
+if verifiedLearningProgressionRiskCue then
+  verifiedLearningRiskCue = Instance.new("TextLabel")
+  verifiedLearningRiskCue.Name = "VerifiedLearningProgressionRiskCue"
+  verifiedLearningRiskCue.Size = UDim2.new(1, -20, 0, 28)
+  verifiedLearningRiskCue.Position = UDim2.fromOffset(10, 42)
+  verifiedLearningRiskCue.BackgroundTransparency = 1
+  verifiedLearningRiskCue.TextWrapped = true
+  verifiedLearningRiskCue.TextScaled = true
+  verifiedLearningRiskCue.Text = "도전 전 레벨·위험 조건 확인"
+  verifiedLearningRiskCue.Parent = verifiedLearningRoot
 end
 local function bindVerifiedLearningControl(control)
   if not control:IsA("GuiButton") then return end
