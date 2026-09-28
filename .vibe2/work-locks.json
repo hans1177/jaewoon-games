@@ -3,43 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-sokst2",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
-      ],
-      "baseSha": "7f9333f29c1843b81279bcc82436a572921b2985",
-      "acquiredAt": "2026-09-28T13:13:11.006Z",
-      "expiresAt": "2026-09-28T13:58:11.006Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1xcn8d5",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-post-release-focus-b0dce53053629c70",
-      "gameId": "daechung-rpg",
-      "files": [
-        "roblox-games/daechung-rpg/server/Game.server.luau",
-        "roblox-games/daechung-rpg/client/Game.client.luau",
-        "roblox-games/daechung-rpg/shared/GameConfig.luau"
-      ],
-      "baseSha": "7f9333f29c1843b81279bcc82436a572921b2985",
-      "acquiredAt": "2026-09-28T13:14:15.164Z",
-      "expiresAt": "2026-09-28T13:59:15.164Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-post-release-focus-b0dce53053629c70"
-      ]
-    },
-    {
       "id": "wl-1946gp7",
       "worker": "vibe2",
       "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-unity-web-base-implementation-v1",
@@ -697,6 +660,24 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:line-defense-roblox-second-gate-rebuild-v1"
+      ]
+    },
+    {
+      "id": "wl-qd6ehw",
+      "worker": "vibe2",
+      "taskId": "seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "files": [
+        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "a651564022b08efd1273f08381f4b31d3885c670",
+      "acquiredAt": "2026-09-28T13:59:37.985Z",
+      "expiresAt": "2026-09-28T14:44:37.985Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1"
       ]
     }
   ]
