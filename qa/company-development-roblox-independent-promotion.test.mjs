@@ -48,6 +48,16 @@ test('preflight or F0 recovery work uses continuation while fused F0 success dis
   assert.ok(workflow.includes('gh workflow run company-development-roblox-release-promotion.yml'));
 });
 
+test('batch private runtime recovery grace waits then resumes exact-game dispatch',()=>{
+  assert.ok(workflow.includes('const batchRecoveryGraceMs=60_000;'));
+  assert.ok(workflow.includes('const recoveryWaitArray=new Int32Array(new SharedArrayBuffer(4));'));
+  assert.ok(workflow.includes('const elapsedMs=Number.isFinite(f0PassedAt)?Date.now()-f0PassedAt:batchRecoveryGraceMs;'));
+  assert.ok(workflow.includes('ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_WAIT_MS='));
+  assert.ok(workflow.includes('Atomics.wait(recoveryWaitArray,0,0,recoveryWaitMs);'));
+  assert.ok(workflow.includes('ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_RESUMED='));
+  assert.doesNotMatch(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_GRACE_DEFERRED='\+x\.gameId\);\s*continue;/);
+});
+
 test('merged Roblox source stays in the Roblox lane while the central orchestrator reuses both native lanes behind readiness',()=>{
   assert.ok(parentWorkflow.includes('uses: ./.github/workflows/company-development-roblox-runtime.yml'));
   assert.ok(parentWorkflow.includes('uses: ./.github/workflows/company-development-unity-runtime.yml'));

@@ -1600,7 +1600,7 @@ jobs:
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           const valid=t=>/^[1-9][0-9]*$/.test(String(t?.universeId||''))&&/^[1-9][0-9]*$/.test(String(t?.placeId||''));
           const batchRecoveryGraceMs=60_000;
-          const now=Date.now();
+          const recoveryWaitArray=new Int32Array(new SharedArrayBuffer(4));
           let sharedFallbackUsed=false;
           let pendingCount=0;
           for(const x of q.items||[]){
@@ -1632,9 +1632,13 @@ jobs:
             pendingCount++;
             if(!requested){
               const f0PassedAt=Date.parse(String(x.robloxFoundationF0PassedAt||''));
-              if(Number.isFinite(f0PassedAt)&&now-f0PassedAt<batchRecoveryGraceMs){
-                console.error('ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_GRACE_DEFERRED='+x.gameId);
-                continue;
+              const elapsedMs=Number.isFinite(f0PassedAt)?Date.now()-f0PassedAt:batchRecoveryGraceMs;
+              if(elapsedMs<batchRecoveryGraceMs){
+                const recoveryWaitMs=Math.max(1,batchRecoveryGraceMs-elapsedMs);
+                console.error('ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_GRACE_DEFERRED='+x.gameId+':'+recoveryWaitMs);
+                console.error('ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_WAIT_MS='+recoveryWaitMs);
+                Atomics.wait(recoveryWaitArray,0,0,recoveryWaitMs);
+                console.error('ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_RESUMED='+x.gameId);
               }
             }
             const exactTarget=((x.robloxPublicationTarget?.verified===true
