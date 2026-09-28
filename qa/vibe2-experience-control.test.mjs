@@ -141,19 +141,19 @@ test('verified external application rejects incomplete axes unverified authority
   const promote=application=>promoteVibeReviewedExperience(createVibeExperienceMemory(),successfulReview({
     id:'external-hard-gate-fixture',
     verifiedExternalLearningApplication:application
-  })).record.verifiedExternalLearningApplication;
+  }));
 
   const missingMotion=promote({...base,sourceAuthority:'VERIFIED_MEMORY_ONLY',verifiedExternalLearningApplyAxes:fullAxes.filter(axis=>axis!=='MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION')});
-  assert.equal(missingMotion.allRequiredAxesPresent,false);
-  assert.equal(missingMotion.fullCoverageVerified,false);
+  assert.equal(missingMotion.promoted,false);
+  assert(missingMotion.validation.issues.includes('verified-external-learning-axis-required:MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION'));
 
   const wrongAuthority=promote({...base,sourceAuthority:'PRACTICE_ONLY',verifiedExternalLearningApplyAxes:fullAxes});
-  assert.equal(wrongAuthority.allRequiredAxesPresent,true);
-  assert.equal(wrongAuthority.fullCoverageVerified,false);
+  assert.equal(wrongAuthority.promoted,false);
+  assert(wrongAuthority.validation.issues.includes('verified-external-learning-authority-required'));
 
   const rawCopy=promote({...base,sourceAuthority:'VERIFIED_MEMORY_ONLY',verifiedExternalLearningApplyAxes:fullAxes,rawCommercialCodeCopy:true});
-  assert.equal(rawCopy.rawCommercialCodeCopy,true);
-  assert.equal(rawCopy.fullCoverageVerified,false);
+  assert.equal(rawCopy.promoted,false);
+  assert(rawCopy.validation.issues.includes('raw-commercial-expression-copy-forbidden'));
 });
 
 test('batch promotion persists phase 3 capability application evidence without double counting the same application',()=>{

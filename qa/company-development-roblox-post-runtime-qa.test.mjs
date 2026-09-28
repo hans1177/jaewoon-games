@@ -216,7 +216,7 @@ test('transient Open Cloud failures stay inside the bounded runtime-foundation s
   assert.match(workflow,/ROBLOX_OPEN_CLOUD_ENGINE_PROBE_RETRY_IN_CURRENT_SCAN=/);
   assert.match(workflow,/ROBLOX_OPEN_CLOUD_RUNTIME_STATE_RETRY_IN_CURRENT_SCAN=/);
   assert.doesNotMatch(workflow,/gh workflow run company-development-roblox-post-runtime-qa\.yml[\s\S]{0,240}-f retry_open_cloud_only=true/);
-  assert.match(workflow,/Run deterministic foundation protocol QA[\s\S]{0,120}if: \$\{\{ inputs\.retry_open_cloud_only != true \}\}/);
+  assert.match(workflow,/Run deterministic foundation protocol QA[\s\S]{0,220}if: \$\{\{ inputs\.retry_open_cloud_only != true && \(github\.event_name != 'schedule' \|\| steps\.internal_work\.outputs\.count != '0'\) \}\}/);
   assert.match(workflow,/ROBLOX_OPEN_CLOUD_EXACT_GATE_RETRY_PENDING=/);
   assert.match(workflow,/QUALITY_FAILURE_CLASS=INFRASTRUCTURE_OR_EVIDENCE_ONLY/);
   assert.match(workflow,/QUALITY_BUILDUP_AUTO_REQUEUE=NO/);

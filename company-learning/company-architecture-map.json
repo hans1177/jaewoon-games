@@ -1,5 +1,5 @@
 {
-  "version": 298,
+  "version": 300,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3933,6 +3933,60 @@
       "explicitExternalPublicationEvidenceRequiredForPublicRelease": true,
       "staleBuildEvidenceRejected": true,
       "changedSourceRequiresRebuildBeforeGateReevaluation": true
+    },
+    "validationEfficiency": {
+      "centralPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
+      "purpose": "KEEP_EXISTING_GAME_EVOLUTION_LOOP_PRIMARY_AND_REMOVE_DUPLICATE_VALIDATION_WORK",
+      "gameEvolutionPipelineUnchanged": true,
+      "f0ToF9StructureUnchanged": true,
+      "noF10": true,
+      "exactCandidateRuntime": {
+        "oneInternalRuntimeSessionMayCoverApplicableF1ToF8": true,
+        "duplicateSameCandidateSessionForbidden": true,
+        "f9RuntimeReplay": false
+      },
+      "externalServer": {
+        "automaticProbe": false,
+        "role": "OPTIONAL_MANUAL_DIAGNOSTIC_ONLY",
+        "blocksInternalDevelopment": false,
+        "blocksInternalRelease": false,
+        "blocksPublicRelease": false
+      },
+      "security": {
+        "default": "REUSE_UNCHANGED_VERIFIED_SECURITY_EVIDENCE",
+        "fullRescan": "ONLY_SECURITY_RELEVANT_BOUNDARY_OR_PRIOR_FAILURE",
+        "unrelatedGameplayOrPresentationChange": "NO_FULL_RESCAN",
+        "confirmedHighRiskFindingStillFailClosed": true
+      },
+      "multiplayer": {
+        "floor": "F7",
+        "onlyWhenApplicable": true,
+        "rerun": "ONLY_MULTIPLAYER_RELEVANT_DELTA_OR_PRIOR_FAILURE",
+        "exactEvidenceReuseAcrossF9AndReleaseReadiness": true,
+        "duplicateSessionForbidden": true,
+        "nonMultiplayer": "NOT_APPLICABLE",
+        "internalDevelopmentMinimumProof": "EXACT_F0_AUTHORITATIVE_SYNC_CONTRACT_PLUS_EXACT_STUDIO_INTERNAL_SESSION",
+        "automaticTwoParticipantRuntimeCheck": false,
+        "twoParticipantRuntimeEscalation": "CONFIRMED_MULTIPLAYER_FAILURE_OR_EXPLICIT_OWNER_RELEASE_REVIEW_ONLY",
+        "externalServerRequired": false,
+        "normalCycleExtraMultiplayerSession": false
+      },
+      "scheduledRecoveryScan": {
+        "cadencePreserved": true,
+        "idleMode": "STATE_DISCOVERY_ONLY",
+        "heavyQaWhenIdle": false,
+        "runHeavyQaWhen": [
+          "EXACT_PENDING_INTERNAL_WORK",
+          "RELEVANT_POLICY_OR_VALIDATION_CODE_CHANGE",
+          "EXPLICIT_DISPATCH"
+        ],
+        "noPendingWork": "EXIT_NO_DUPLICATE_VALIDATION",
+        "externalServerDiagnostic": "MANUAL_ONLY",
+        "securityRecheck": "IMPACT_ONLY",
+        "multiplayerRecheck": "APPLICABILITY_AND_IMPACT_ONLY"
+      },
+      "next": "RETURN_F9_RESULT_TO_EXISTING_BUILD_UP_LOOP",
+      "validationMayNotConsumeNextBuildUpGenerationWhenIdle": true
     }
   },
   "autonomousBottleneckRecovery": {
