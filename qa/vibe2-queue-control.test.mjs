@@ -934,6 +934,24 @@ test('semantic diff budget failures become contextual negative coding-strategy e
   assert.equal(payload.failureFingerprint,fp);
   assert.equal(payload.infrastructureFailure,false);
 });
+test('asset neuron callback collapses legacy speculative expectation to one result', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'asset-one',gameId:'asset-one',target:'roblox',department:'development',type:'implementation',
+    sourceRoot:'roblox-games/asset-one',goal:'presentation asset adaptation',status:'running',
+    reservationId:'run-1:1',reservationRunId:'run-1',reservationRunAttempt:1,reservedAt:'2026-09-28T17:00:00Z',
+    neuronExpectedVariants:3,neuronResults:[]
+  }]});
+  const row={
+    taskId:'asset-one',reservationId:'run-1:1',variant:'primary',outcome:'FAIL',
+    blocker:'source-candidate-generation-failed'
+  };
+  const result=recordVibeNeuronResult(queue,row,{expectedVariants:1,collapseExpectedVariants:true});
+  assert.equal(result.ready,true);
+  assert.equal(result.expectedVariants,1);
+  assert.equal(result.resultCount,1);
+  assert.equal(result.reason,'TASK_MICRO_FANIN_COMPLETE');
+});
+
 test('fan-in safely reconciles queued task only when reservation identity matches', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'race','race','web',{priority:'critical',estimatedRisk:'high'});
