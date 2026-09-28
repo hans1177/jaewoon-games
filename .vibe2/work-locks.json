@@ -3,25 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-m6sge7",
-      "worker": "vibe2",
-      "taskId": "daechung-rpg-unity-presentation-asset-adaptation-v1",
-      "gameId": "daechung-rpg",
-      "files": [
-        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
-        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs"
-      ],
-      "baseSha": "ad922a9b9535f11f78429289ff3d6a642db3b15a",
-      "acquiredAt": "2026-09-28T11:40:22.052Z",
-      "expiresAt": "2026-09-28T12:25:22.052Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:daechung-rpg-unity-presentation-asset-adaptation-v1"
-      ]
-    },
-    {
       "id": "wl-h3yhe6",
       "worker": "vibe2",
       "taskId": "cozy-island-post-release-focus-12c1a7e2ae6288fd",
@@ -969,6 +950,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-28a2f2747401-v1"
+      ]
+    },
+    {
+      "id": "wl-8mdfkp",
+      "worker": "vibe2",
+      "taskId": "daechung-rpg-unity-web-repair-v1",
+      "gameId": "daechung-rpg",
+      "files": [
+        "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "e08439b6185851e16ca187eb632beefd51b38d82",
+      "acquiredAt": "2026-09-28T12:27:51.951Z",
+      "expiresAt": "2026-09-28T13:12:51.951Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:daechung-rpg-unity-web-repair-v1"
       ]
     }
   ]
