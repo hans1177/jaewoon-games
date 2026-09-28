@@ -5593,10 +5593,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T10:34:59.222Z",
+      "updatedAt": "2026-09-28T11:34:46.742Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -5792,7 +5792,27 @@
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
-      "robloxRuntimeCandidateEvidence": null,
+      "robloxRuntimeCandidateEvidence": {
+        "version": 1,
+        "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+        "platform": "ROBLOX",
+        "sourceRevision": "d16adbfc1286b57e20c4166ec870dc48a95adb1a",
+        "artifactIdentity": "sha256:7eb12aa0e7909efd36387bd3767d773f71cf9f04d730497140c463f50916ff52",
+        "artifactRunId": 36407298943,
+        "universeId": "10768436488",
+        "placeId": "107018847390688",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": false,
+        "canonicalGameTarget": false,
+        "validationOnly": true,
+        "exposure": "PRIVATE_PRE_F9_VALIDATION_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 2,
+        "workflowRunId": 36416299649,
+        "publishedAt": "2026-09-28T11:34:46.742Z",
+        "authority": "roblox-open-cloud-pre-f9-validation-candidate"
+      },
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -5822,11 +5842,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -6021,9 +6041,9 @@
         "publicDiscoveryAllowed": false,
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
-      "robloxSharedTargetCurrent": false,
+      "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
-      "robloxReleaseVersionNumber": 7,
+      "robloxReleaseVersionNumber": 2,
       "robloxPublicRelease": false,
       "robloxInternalVibePlayEvidence": null,
       "robloxGameCompletionEvidence": null,
@@ -6064,13 +6084,13 @@
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxValidationTarget": {
-        "version": 1,
+        "version": 3,
         "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
         "universeId": "10768436488",
         "placeId": "107018847390688",
-        "verified": false,
-        "verifiedAt": null,
-        "lastVerifiedAt": null,
+        "verified": true,
+        "verifiedAt": "2026-09-28T11:34:46.742Z",
+        "lastVerifiedAt": "2026-09-28T11:34:46.742Z",
         "source": "canonical-dedicated-open-cloud-bootstrap",
         "authority": "roblox-pre-f9-validation-target",
         "dedicated": true,
@@ -6078,9 +6098,9 @@
         "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
         "internalOnly": true,
         "publicDiscoveryAllowed": false,
-        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
-        "reservedAt": "2026-09-28T10:34:59.222Z"
-      }
+        "bootstrapState": "PUBLISHED_PRIVATE"
+      },
+      "robloxCanonicalPublishPending": false
     },
     {
       "gameId": "seed-casual-realm-weaver",
@@ -9330,7 +9350,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T11:34:31.792Z",
+  "updatedAt": "2026-09-28T11:34:46.742Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
