@@ -347,14 +347,25 @@ test('Roblox bootstrap consumes Vibe3 playbook and transformative learning conte
           'run-real-roblox-runtime-and-independent-qa'
         ],
         reuse:[
-          {id:'external-black-box-block-blast-run-test',project:'block-blast',sourceRevision:'sha256:'+ 'a'.repeat(64)},
-          {id:'external-black-box-shattered-pixel-dungeon-run-test',project:'shattered-pixel-dungeon',sourceRevision:'sha256:'+ 'b'.repeat(64)}
+          {
+            id:'external-black-box-block-blast-run-test',project:'block-blast',sourceRevision:'sha256:'+ 'a'.repeat(64),
+            distilledApplicationPrinciples:['id=menu-entry; scope=menu; lesson=make gameplay entry visibly distinct; apply=reduce menu ambiguity'],
+            distilledAvoidancePrinciples:['id=avoid-trade-dress; scope=visual; lesson=do not clone distinctive expression; apply=reauthor with Pocket Foundry identity'],
+            distilledLearningUseAllowed:['menu flow','immediate feedback']
+          },
+          {
+            id:'external-black-box-shattered-pixel-dungeon-run-test',project:'shattered-pixel-dungeon',sourceRevision:'sha256:'+ 'b'.repeat(64),
+            distilledApplicationPrinciples:['id=touch-guide; scope=mobile; lesson=teach touch near first playable state; apply=contextual control guidance']
+          }
         ]
       },
       coding:{
         authority:'verified-task-playbook',
         checklist:['rank-responsible-source-before-edit','run-syntax-tests-runtime-regression'],
-        reuse:[{id:'external-black-box-idle-fantasy-run-test',project:'idle-fantasy',sourceRevision:'sha256:'+ 'c'.repeat(64)}]
+        reuse:[{
+          id:'external-black-box-idle-fantasy-run-test',project:'idle-fantasy',sourceRevision:'sha256:'+ 'c'.repeat(64),
+          distilledApplicationPrinciples:['id=core-state; scope=ui; lesson=keep essential state around core view; apply=persistent readable HUD']
+        }]
       }
     }
   };
@@ -380,6 +391,10 @@ test('Roblox bootstrap consumes Vibe3 playbook and transformative learning conte
   assert.equal(learned.learning.verifiedExternalLearningCoveragePct,100);
   assert.equal(learned.learning.verifiedExternalLearningRetrievedCount,3);
   assert.equal(learned.learning.verifiedExternalLearningAppliedCount,3);
+  assert.ok(learned.learning.verifiedExternalLearningPrinciples.includes('id=menu-entry; scope=menu; lesson=make gameplay entry visibly distinct; apply=reduce menu ambiguity'));
+  assert.ok(learned.learning.verifiedExternalLearningPrinciples.includes('id=touch-guide; scope=mobile; lesson=teach touch near first playable state; apply=contextual control guidance'));
+  assert.ok(learned.learning.verifiedExternalAvoidancePrinciples.includes('id=avoid-trade-dress; scope=visual; lesson=do not clone distinctive expression; apply=reauthor with Pocket Foundry identity'));
+  assert.ok(learned.learning.verifiedExternalLearningUseAllowed.includes('immediate feedback'));
   assert.deepEqual(learned.learning.verifiedExternalLearningApplyAxes,[
     'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
     'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
@@ -392,6 +407,7 @@ test('Roblox bootstrap consumes Vibe3 playbook and transformative learning conte
   assert.equal(learned.learning.recipeId,'recombine-roblox-test');
   assert.equal(learned.generationMode,'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT');
   assert.ok(learned.actions.some(action=>Boolean(action.learningPattern)));
+  assert.ok(learned.actions.some(action=>learned.learning.verifiedExternalLearningPrinciples.includes(action.learningPattern)));
   assert.ok(learned.result.sharedConfig.includes('LearningContext = {'));
   assert.ok(learned.result.sharedConfig.includes('RecipeId = "recombine-roblox-test"'));
   assert.ok(learned.result.sharedConfig.includes('VerifiedExternalLearningFirst = true'));
