@@ -676,11 +676,7 @@ jobs:
               priorMultiplayer.passed===true
               &&priorMultiplayer.artifactIdentity===artifactIdentity
             );
-            const exactRuntimeMultiplayerValidation=Boolean(
-              priorRuntime.f7MultiplayerFoundationPassed===true
-              &&priorRuntime.artifactIdentity===artifactIdentity
-            );
-            const exactMultiplayerValidationReusable=exactPriorMultiplayerValidation||exactRuntimeMultiplayerValidation||staticMultiplayerCodePass;
+            const exactMultiplayerValidationReusable=exactPriorMultiplayerValidation||staticMultiplayerCodePass;
             const exactStudioInternalValidation=
               studioPlay.pass===true
               &&studioPlay.actualPlay===true
@@ -1175,7 +1171,7 @@ jobs:
               continue;
             }
             const multiplayerReleasePassed=multiplayer.known===true
-              &&(multiplayer.required!==true||staticMultiplayerCodePass||exactPriorMultiplayerValidation||exactRuntimeMultiplayerValidation||result.f7MultiplayerFoundationPassed===true);
+              &&(multiplayer.required!==true||staticMultiplayerCodePass);
             const runtimeAcceptanceForRelease=result.developmentContinuationPassed===true&&multiplayerReleasePassed;
             const evidence={
               ...result,
@@ -1216,23 +1212,6 @@ jobs:
               };
               item.robloxMultiplayerQaPassedAt=stamp;
               console.log('ROBLOX_F7_MULTIPLAYER_CODE_CONTRACT_PASS='+item.gameId);
-            }else if(result.f7MultiplayerFoundationPassed===true){
-              item.robloxMultiplayerQaEvidence={
-                version:1,
-                gameId:item.gameId,
-                sourceRevision,
-                artifactIdentity,
-                universeId:String(candidate.universeId||''),
-                placeId:String(candidate.placeId||''),
-                candidateVersionNumber:Number(candidate.versionNumber),
-                passed:true,
-                participantCount:Number(sentinel?.checkpoints?.MULTIPLAYER_SYNC?.participantCount||0),
-                authority:'roblox-runtime-foundation-f7-two-client-one-sync',
-                verifiedAt:stamp,
-              };
-              console.log('ROBLOX_F7_MULTIPLAYER_EVIDENCE_PERSISTED='+item.gameId+':version='+candidate.versionNumber);
-            }else if(exactMultiplayerValidationReusable){
-              console.log('ROBLOX_F7_MULTIPLAYER_EVIDENCE_REUSED='+item.gameId+':version='+candidate.versionNumber);
             }
             const studioAssetRuntimeBindingPassed=studioAssetBindingRequired
               &&runtimeAcceptanceForRelease
@@ -1343,52 +1322,22 @@ jobs:
             }else{
               const cp=result.checkpointPass||{};
               const groundFailure=result.exactVersion===true&&cp.CHARACTER_READY===true&&cp.GROUND_CONTACT!==true;
-              const multiplayerOnlyPending=result.developmentContinuationPassed===true&&result.multiplayerPromotionPending===true&&!multiplayerReleasePassed;
-              if(multiplayerOnlyPending){
-                item.robloxIndependentQaPassed=true;
-                item.robloxIndependentQaPassedAt=stamp;
-                item.robloxRegressionPassed=true;
-                item.robloxRegressionPassedAt=stamp;
-                item.robloxParallelMultiplayerValidationPending=true;
-                item.robloxPostRuntimeQaEvidence={
-                  version:3,
-                  gameId:item.gameId,
-                  sourceRevision,
-                  artifactIdentity,
-                  artifactRunId:Number(candidate.artifactRunId||0),
-                  candidateVersionNumber:Number(candidate.versionNumber),
-                  runtimeFoundationEvidence:evidence,
-                  exactRevision:true,
-                  independentQaPassed:true,
-                  regressionPassed:true,
-                  multiplayerQaPassed:false,
-                  multiplayerValidationMode:'PARALLEL_NON_BLOCKING_DEVELOPMENT_RELEASE_BLOCKING_ONLY',
-                  actualRuntimeEvidence:true,
-                  deterministicQa:[
-                    'qa/company-development-roblox-runtime-foundation.test.mjs',
-                    'qa/company-development-roblox-headless-fast-mvp.test.mjs',
-                    'qa/company-tester-debug-intake.test.mjs',
-                  ],
-                  authority:'existing-independent-qa-native-foundation-v3',
-                  verifiedAt:stamp,
-                };
+              const multiplayerCodeContractMissing=multiplayer.required===true&&!multiplayerReleasePassed;
+              if(multiplayerCodeContractMissing){
+                item.robloxParallelMultiplayerValidationPending=false;
                 item.robloxInternalMultiplayerSimplifiedPassed=false;
-                item.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
-                item.canonicalState='ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING';
-                item.robloxLastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
-                item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
-                item.robloxFailureSignature='ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING';
-                item.routingBlockers=['roblox-two-client-one-sync-pending'];
-                item.robloxPromotionBlockers=['roblox-two-client-one-sync-pending'];
+                item.currentStep='TARGET_PLATFORM_TECHNICAL_VALIDATION';
+                item.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED';
+                item.robloxFailureStage='F7_MULTIPLAYER_CODE_CONTRACT';
+                item.robloxFailureSignature='ROBLOX_MULTIPLAYER_CODE_CONTRACT_FAILED';
+                item.routingBlockers=['roblox-multiplayer-code-contract-failed'];
+                item.robloxPromotionBlockers=['roblox-multiplayer-code-contract-failed'];
                 if(item.executionEvidence){
-                  item.executionEvidence.lastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
                   item.executionEvidence.runtimePassed=false;
-                  item.executionEvidence.independentQaPassed=true;
-                  item.executionEvidence.regressionPassed=true;
-                  item.executionEvidence.failureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
-                  item.executionEvidence.failureSignature='ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING';
+                  item.executionEvidence.failureStage='F7_MULTIPLAYER_CODE_CONTRACT';
+                  item.executionEvidence.failureSignature='ROBLOX_MULTIPLAYER_CODE_CONTRACT_FAILED';
                 }
-                console.log('ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING='+item.gameId);
+                console.log('ROBLOX_F7_MULTIPLAYER_CODE_CONTRACT_REPAIR='+item.gameId);
                 pending++;
               }else{
                 item.robloxParallelMultiplayerValidationPending=false;

@@ -574,12 +574,15 @@ test('post-runtime QA keeps exact Studio MCP-passed candidates eligible after St
  assert.match(workflow,/&&\(explicitRuntimeStage\|\|exactStudioPlayPendingRuntime\|\|externalRuntimeObservationPending\)/);
 });
 
-test('post-runtime QA does not wait for live two-client sync when exact source contract passes',()=>{
+test('post-runtime QA never waits for live multiplayer measurement',()=>{
  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
  assert.match(workflow,/staticMultiplayerCodePass/);
  assert.match(workflow,/PASS_CODE_CONTRACT/);
  assert.match(workflow,/PENDING_CODE_CONTRACT/);
- assert.match(workflow,/multiplayerOnlyPending=result\.developmentContinuationPassed===true&&result\.multiplayerPromotionPending===true&&!multiplayerReleasePassed/);
+ assert.match(workflow,/multiplayerCodeContractMissing=multiplayer\.required===true&&!multiplayerReleasePassed/);
+ assert.match(workflow,/ROBLOX_F7_MULTIPLAYER_CODE_CONTRACT_REPAIR=/);
+ assert.doesNotMatch(workflow,/ROBLOX_TWO_CLIENT_ONE_SYNC_PENDING/);
+ assert.doesNotMatch(workflow,/roblox-runtime-foundation-f7-two-client-one-sync/);
 });
 test('F7 multiplayer code proof is exact-source static evidence and remains reusable by artifact identity',()=>{
  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
@@ -591,6 +594,7 @@ test('F7 multiplayer code proof is exact-source static evidence and remains reus
  assert.match(runtime,/authority:'roblox-static-two-client-source-contract'/);
  assert.match(runtime,/runtimeTwoClientExecutionRequired:false/);
  assert.match(runtime,/priorMultiplayer\.artifactIdentity===artifactIdentity/);
+ assert.doesNotMatch(runtime,/priorRuntime\.f7MultiplayerFoundationPassed===true/);
  assert.match(finalReview,/post\.multiplayerValidationPassed===true/);
  assert.doesNotMatch(finalReview,/publishRobloxPlace/);
 });
