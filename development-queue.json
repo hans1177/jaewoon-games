@@ -2086,10 +2086,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "PRE_F9_VALIDATION_CANDIDATE_DEPLOYED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T10:23:28.315Z",
+      "updatedAt": "2026-09-28T11:39:27.169Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -2317,7 +2317,27 @@
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
-      "robloxRuntimeCandidateEvidence": null,
+      "robloxRuntimeCandidateEvidence": {
+        "version": 1,
+        "gameId": "amusement-tycoon",
+        "platform": "ROBLOX",
+        "sourceRevision": "d16adbfc1286b57e20c4166ec870dc48a95adb1a",
+        "artifactIdentity": "sha256:ae8a90f2df02fc1cea9bc06fe1bf6d01957b6be439c14f0b73970803c0e4aac8",
+        "artifactRunId": 36407298943,
+        "universeId": "10768435689",
+        "placeId": "89656367357352",
+        "foundationF0Passed": true,
+        "published": true,
+        "releaseClaim": false,
+        "canonicalGameTarget": false,
+        "validationOnly": true,
+        "exposure": "PRIVATE_PRE_F9_VALIDATION_CANDIDATE",
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "versionNumber": 2,
+        "workflowRunId": 36416211963,
+        "publishedAt": "2026-09-28T11:39:27.169Z",
+        "authority": "roblox-open-cloud-pre-f9-validation-candidate"
+      },
       "robloxRuntimeFoundationPassed": false,
       "robloxRuntimeFoundationEvidence": null,
       "robloxStudioAssetRuntimeBindingPassed": false,
@@ -2347,11 +2367,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxLastSuccessfulStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_FOUNDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-runtime-foundation-awaiting-observation"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -2502,7 +2522,7 @@
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
       },
-      "robloxSharedTargetCurrent": false,
+      "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
       "robloxPublicationTarget": {
         "version": 3,
@@ -2521,7 +2541,7 @@
         "publicDiscoveryAllowed": false,
         "bootstrapState": "PUBLISHED_PRIVATE"
       },
-      "robloxReleaseVersionNumber": 7,
+      "robloxReleaseVersionNumber": 2,
       "robloxPublicRelease": false,
       "robloxInternalVibePlayEvidence": null,
       "robloxDedicatedTargetMigration": {
@@ -2591,13 +2611,13 @@
       },
       "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
       "robloxValidationTarget": {
-        "version": 1,
+        "version": 3,
         "gameId": "amusement-tycoon",
         "universeId": "10768435689",
         "placeId": "89656367357352",
-        "verified": false,
-        "verifiedAt": null,
-        "lastVerifiedAt": null,
+        "verified": true,
+        "verifiedAt": "2026-09-28T11:39:27.169Z",
+        "lastVerifiedAt": "2026-09-28T11:39:27.169Z",
         "source": "canonical-dedicated-open-cloud-bootstrap",
         "authority": "roblox-pre-f9-validation-target",
         "dedicated": true,
@@ -2605,9 +2625,9 @@
         "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
         "internalOnly": true,
         "publicDiscoveryAllowed": false,
-        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
-        "reservedAt": "2026-09-28T10:23:28.315Z"
-      }
+        "bootstrapState": "PUBLISHED_PRIVATE"
+      },
+      "robloxCanonicalPublishPending": false
     },
     {
       "gameId": "bug-defense",
@@ -9470,7 +9490,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T11:39:20.501Z",
+  "updatedAt": "2026-09-28T11:39:27.169Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
