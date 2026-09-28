@@ -2304,7 +2304,7 @@ jobs:
             [ -n "$task_id" ] || continue
             [ -n "$candidate_branch" ] || continue
             echo "PLATFORM_F9_VERIFIED=${target:-unknown}:${game_id:-unknown}:$task_id"
-            echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED=${target:-unknown}:${game_id:-unknown}:$task_id"
+            echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCH_ATTEMPTED=${target:-unknown}:${game_id:-unknown}:$task_id"
             body="$(jq -nc --arg branch "$candidate_branch" '{ref:"main",inputs:{candidate_branch:$branch}}')"
             dispatched=0
             for dispatch_attempt in 1 2 3; do
@@ -2316,6 +2316,7 @@ jobs:
                 "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-candidate-release.yml/dispatches" \
                 --data "$body"; then
                 dispatched=1
+                echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED=${target:-unknown}:${game_id:-unknown}:${task_id}"
                 echo "VIBE2_RELEASE_DISPATCHED=${task_id}:${candidate_branch}"
                 break
               fi
