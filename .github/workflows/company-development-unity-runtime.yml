@@ -20,10 +20,67 @@ on:
       game_id:
         required: false
         type: string
+      publication_retry_only:
+        required: false
+        type: boolean
+        default: false
+      publication_retry_source_revision:
+        required: false
+        type: string
+        default: ''
+      publication_retry_artifact_identity:
+        required: false
+        type: string
+        default: ''
+      publication_retry_build_run_id:
+        required: false
+        type: string
+        default: ''
+      publication_retry_runtime_run_id:
+        required: false
+        type: string
+        default: ''
+      publication_retry_qa_run_id:
+        required: false
+        type: string
+        default: ''
+      publication_retry_regression_run_id:
+        required: false
+        type: string
+        default: ''
   workflow_dispatch:
     inputs:
       game_id:
         description: Optional exact gameId. Empty keeps the existing batch behavior.
+        required: false
+        type: string
+      publication_retry_only:
+        description: Retry only the exact previously F9-verified publication artifact.
+        required: false
+        default: false
+        type: boolean
+      publication_retry_source_revision:
+        description: Exact F9 source revision for publication repair.
+        required: false
+        type: string
+      publication_retry_artifact_identity:
+        description: Exact F9 APK sha256 identity for publication repair.
+        required: false
+        type: string
+      publication_retry_build_run_id:
+        description: Exact build run containing the F9 APK.
+        required: false
+        type: string
+      publication_retry_runtime_run_id:
+        description: Exact runtime evidence run for the failed publication cycle.
+        required: false
+        type: string
+      publication_retry_qa_run_id:
+        description: Exact independent QA run for the failed publication cycle.
+        required: false
+        type: string
+      publication_retry_regression_run_id:
+        description: Exact regression run for the failed publication cycle.
         required: false
         type: string
 
@@ -39,8 +96,197 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  publication-repair:
+    name: retry exact F9 Unity publication
+    if: ${{ inputs.publication_retry_only == true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify exact persisted F9 publication repair identity
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+          SOURCE_REVISION: ${{ inputs.publication_retry_source_revision }}
+          ARTIFACT_ID: ${{ inputs.publication_retry_artifact_identity }}
+          BUILD_RUN_ID: ${{ inputs.publication_retry_build_run_id }}
+          RUNTIME_RUN_ID: ${{ inputs.publication_retry_runtime_run_id }}
+          QA_RUN_ID: ${{ inputs.publication_retry_qa_run_id }}
+          REGRESSION_RUN_ID: ${{ inputs.publication_retry_regression_run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GAME_ID" =~ ^[a-z0-9][a-z0-9-]{1,80}$ ]]
+          [[ "$SOURCE_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$ARTIFACT_ID" =~ ^sha256:[0-9a-f]{64}$ ]]
+          [[ "$BUILD_RUN_ID" =~ ^[0-9]+$ ]]
+          git fetch --no-tags --depth=1 origin company-runtime
+          git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
+          node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const item=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID);
+          if(!item)throw new Error('Unity publication retry game missing');
+          const ev=item.unityInternalReleaseEvidence||{};
+          if(item.unityF9ReleaseRegressionPassed!==true||ev.f0ThroughF9Passed!==true||ev.f9ReleaseRegressionPassed!==true)throw new Error('Unity publication retry requires persisted exact F9 PASS');
+          const exact=
+            String(ev.sourceRevision||'')===process.env.SOURCE_REVISION
+            &&String(ev.artifactIdentity||'')===process.env.ARTIFACT_ID
+            &&String(ev.buildRunId||'')===process.env.BUILD_RUN_ID
+            &&String(ev.runtimeRunId||'')===String(process.env.RUNTIME_RUN_ID||'')
+            &&String(ev.independentQaRunId||'')===String(process.env.QA_RUN_ID||'')
+            &&String(ev.regressionRunId||'')===String(process.env.REGRESSION_RUN_ID||'');
+          if(!exact)throw new Error('Unity publication retry identity drift');
+          console.log('UNITY_F9_PUBLICATION_RETRY_IDENTITY=PASS');
+          NODE
+
+      - name: Retry exact F9 Unity APK publication
+        id: publish
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ inputs.game_id }}
+          SOURCE_REVISION: ${{ inputs.publication_retry_source_revision }}
+          ARTIFACT_ID: ${{ inputs.publication_retry_artifact_identity }}
+          BUILD_RUN_ID: ${{ inputs.publication_retry_build_run_id }}
+          RUNTIME_RUN_ID: ${{ inputs.publication_retry_runtime_run_id }}
+          QA_RUN_ID: ${{ inputs.publication_retry_qa_run_id }}
+          REGRESSION_RUN_ID: ${{ inputs.publication_retry_regression_run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/unity-build /tmp/unity-runtime /tmp/unity-independent /tmp/unity-regression
+          mkdir -p /tmp/unity-build /tmp/unity-runtime /tmp/unity-independent /tmp/unity-regression
+          gh run download "$BUILD_RUN_ID" --repo "$GITHUB_REPOSITORY" -D /tmp/unity-build
+          [[ "$RUNTIME_RUN_ID" =~ ^[0-9]+$ ]] && gh run download "$RUNTIME_RUN_ID" --repo "$GITHUB_REPOSITORY" -D /tmp/unity-runtime || true
+          [[ "$QA_RUN_ID" =~ ^[0-9]+$ ]] && gh run download "$QA_RUN_ID" --repo "$GITHUB_REPOSITORY" -D /tmp/unity-independent || true
+          [[ "$REGRESSION_RUN_ID" =~ ^[0-9]+$ ]] && gh run download "$REGRESSION_RUN_ID" --repo "$GITHUB_REPOSITORY" -D /tmp/unity-regression || true
+          apk="$(find /tmp/unity-build -type f -name '*.apk' -size +0c | head -n1)"
+          info="$(find /tmp/unity-build -type f -name build-info.json -size +0c | head -n1)"
+          test -n "$apk" -a -n "$info"
+          expected="${ARTIFACT_ID#sha256:}"
+          actual="$(sha256sum "$apk" | awk '{print $1}')"
+          [ "$actual" = "$expected" ]
+          info_source="$(node -e "const b=require(process.argv[1]);process.stdout.write(String(b.sourceCommit||''))" "$info")"
+          [ "$info_source" = "$SOURCE_REVISION" ]
+          release_dir="/tmp/unity-f9-repair-$GAME_ID"
+          rm -rf "$release_dir" && mkdir -p "$release_dir"
+          cp "$apk" "$release_dir/$GAME_ID.apk"
+          cp "$info" "$release_dir/build-info.json"
+          printf '%s  %s\n' "$actual" "$GAME_ID.apk" > "$release_dir/$GAME_ID.apk.sha256"
+          for pair in "runtime:/tmp/unity-runtime" "independent:/tmp/unity-independent" "regression:/tmp/unity-regression"; do
+            label="${pair%%:*}"; dir="${pair#*:}"
+            evidence="$(find "$dir" -type f -name evidence.json -size +0c 2>/dev/null | head -n1 || true)"
+            [ -n "$evidence" ] && cp "$evidence" "$release_dir/$label-evidence.json"
+          done
+          tag="unity-f9-$GAME_ID-${SOURCE_REVISION:0:12}-$BUILD_RUN_ID"
+          published=0
+          for publish_attempt in 1 2 3; do
+            if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+              if gh release upload "$tag" "$release_dir"/* --repo "$GITHUB_REPOSITORY" --clobber; then published=1; break; fi
+            else
+              if gh release create "$tag" "$release_dir"/* --repo "$GITHUB_REPOSITORY" --target "$SOURCE_REVISION" --title "$GAME_ID Unity F9 verified build" --notes "Exact F9-verified Unity build publication repair. Source: $SOURCE_REVISION. Artifact: $ARTIFACT_ID." --prerelease; then published=1; break; fi
+            fi
+            sleep "$publish_attempt"
+          done
+          [ "$published" = 1 ] || exit 23
+          echo "release_tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "UNITY_F9_PUBLICATION_REPAIR=PASS:$GAME_ID:$tag"
+
+      - name: Persist exact Unity publication repair outcome
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ inputs.game_id }}
+          SOURCE_REVISION: ${{ inputs.publication_retry_source_revision }}
+          ARTIFACT_ID: ${{ inputs.publication_retry_artifact_identity }}
+          BUILD_RUN_ID: ${{ inputs.publication_retry_build_run_id }}
+          RUNTIME_RUN_ID: ${{ inputs.publication_retry_runtime_run_id }}
+          QA_RUN_ID: ${{ inputs.publication_retry_qa_run_id }}
+          REGRESSION_RUN_ID: ${{ inputs.publication_retry_regression_run_id }}
+          PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+          RELEASE_TAG: ${{ steps.publish.outputs.release_tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-unity-publication-repair'
+          git config user.email 'actions@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags --depth=1 origin company-runtime
+            git checkout --detach origin/company-runtime
+            node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const item=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID);
+          if(!item)throw new Error('Unity publication repair queue item missing');
+          const stamp=new Date().toISOString();
+          const pass=String(process.env.PUBLISH_OUTCOME||'')==='success';
+          const retry={
+            version:1,status:pass?'PUBLISHED':'RETRY_REQUIRED',
+            sourceRevision:process.env.SOURCE_REVISION,
+            artifactIdentity:process.env.ARTIFACT_ID,
+            buildRunId:Number(process.env.BUILD_RUN_ID),
+            runtimeRunId:Number(process.env.RUNTIME_RUN_ID||0)||null,
+            independentQaRunId:Number(process.env.QA_RUN_ID||0)||null,
+            regressionRunId:Number(process.env.REGRESSION_RUN_ID||0)||null,
+            releaseTag:process.env.RELEASE_TAG||null,
+            lastAttemptAt:stamp,
+            workflowRunId:Number(process.env.GITHUB_RUN_ID||0)||null
+          };
+          item.unityCanonicalPublishPending=!pass;
+          item.unityCanonicalPublishRepairRequired=!pass;
+          item.unityCanonicalPublishRetry=retry;
+          if(pass){
+            item.unityCanonicalReleaseEvidence={...retry,published:true,publishedAt:stamp,authority:'unity-f9-exact-publication-repair'};
+          }
+          item.updatedAt=stamp;q.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+            git add development-queue.json
+            if git diff --cached --quiet; then persisted=1; break; fi
+            git commit -m "runtime: persist Unity publication repair $GAME_ID [skip ci]"
+            if git push origin HEAD:company-runtime; then persisted=1; break; fi
+            sleep $((attempt*2))
+          done
+          test "$persisted" = 1
+
+      - name: Re-dispatch exact Unity publication repair until success
+        if: always() && steps.publish.outcome != 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ inputs.game_id }}
+          SOURCE_REVISION: ${{ inputs.publication_retry_source_revision }}
+          ARTIFACT_ID: ${{ inputs.publication_retry_artifact_identity }}
+          BUILD_RUN_ID: ${{ inputs.publication_retry_build_run_id }}
+          RUNTIME_RUN_ID: ${{ inputs.publication_retry_runtime_run_id }}
+          QA_RUN_ID: ${{ inputs.publication_retry_qa_run_id }}
+          REGRESSION_RUN_ID: ${{ inputs.publication_retry_regression_run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            -f game_id="$GAME_ID" \
+            -f publication_retry_only=true \
+            -f publication_retry_source_revision="$SOURCE_REVISION" \
+            -f publication_retry_artifact_identity="$ARTIFACT_ID" \
+            -f publication_retry_build_run_id="$BUILD_RUN_ID" \
+            -f publication_retry_runtime_run_id="$RUNTIME_RUN_ID" \
+            -f publication_retry_qa_run_id="$QA_RUN_ID" \
+            -f publication_retry_regression_run_id="$REGRESSION_RUN_ID"
+          echo "UNITY_F9_PUBLICATION_AUTOMATIC_REDISPATCH=YES:$GAME_ID:$BUILD_RUN_ID"
+          echo 'UNITY_PUBLICATION_RETRY_BLOCKS_NEXT_EVOLUTION=NO'
+
   prepare:
     name: prepare selected-platform Unity queue
+    if: ${{ inputs.publication_retry_only != true }}
     runs-on: ubuntu-slim
     timeout-minutes: 12
     outputs:
