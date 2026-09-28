@@ -385,6 +385,12 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
     const artifactIdentity=currentExact?currentArtifactIdentity:candidateArtifactIdentity;
     const artifactRunId=candidateArtifactRunId;
 
+    const requiredAuditProfile=(
+      item?.robloxF9ReleaseRegressionPassed===true
+      ||/FINAL_REVIEW|RELEASE|F9/i.test(clean(item?.currentStep))
+    )?'F9_SOAK':'FAST_DEEP';
+    const priorAuditProfile=clean(prior?.runtimeSummary?.commercialAudit?.auditProfile||prior?.auditProfile||'FAST_DEEP').toUpperCase();
+    const auditProfileEvidenceExact=priorAuditProfile===requiredAuditProfile;
     const scenarioEvidenceExact=Boolean(
       scenarioContract.required!==true
       ||(
@@ -408,6 +414,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&Number(prior?.versionNumber||0)===Number(candidate?.versionNumber||0)
       &&Boolean(clean(prior?.testedAt))
       &&scenarioEvidenceExact
+      &&auditProfileEvidenceExact
     );
     const alreadyObservedExactLocalArtifact=Boolean(
       localF0CandidateExact
@@ -422,6 +429,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&Number(prior?.runtimeSummary?.consoleErrorCount||0)===0
       &&Boolean(clean(prior?.testedAt))
       &&scenarioEvidenceExact
+      &&auditProfileEvidenceExact
     );
     if(alreadyObservedExactCandidate||alreadyObservedExactLocalArtifact)continue;
 
@@ -440,10 +448,7 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       scenarioContractRequired:scenarioContract.required===true,
       scenarioContractVersion:Number(scenarioContract.version||0),
       scenarioContractFingerprint:scenarioContract.fingerprint,
-      auditProfile:(
-        item?.robloxF9ReleaseRegressionPassed===true
-        ||/FINAL_REVIEW|RELEASE|F9/i.test(clean(item?.currentStep))
-      )?'F9_SOAK':'FAST_DEEP'
+      auditProfile:requiredAuditProfile
     });
   }
 
