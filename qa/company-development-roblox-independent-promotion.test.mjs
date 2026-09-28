@@ -37,25 +37,26 @@ test('shared-model preflight remains a per-game evidence stage without adding a 
   assert.ok(workflow.includes('result.preflightEvidence?.artifactIdentity===result.artifactIdentity'));
 });
 
-test('preflight or F0 recovery work uses continuation while fused F0 success dispatches runtime directly',()=>{
+test('preflight or F0 recovery uses continuation while fused F0 success routes directly to local Studio QA',()=>{
   assert.ok(workflow.includes('let packagePending=0,preflightReady=0,f0Ready=0,externalBlocked=0;'));
   assert.ok(workflow.includes("const f0Passed=secondaryOwnerFocus?false:item.robloxFoundationF0Passed===true;"));
   assert.ok(workflow.includes('f0Ready++;'));
   assert.ok(workflow.includes('ROBLOX_F0_READY_COUNT=$f0_ready'));
   assert.match(workflow,/package_pending.*preflight_ready.*f0_ready/);
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml'));
-  assert.ok(workflow.includes('ROBLOX_PRIVATE_RUNTIME_RETRY_DISPATCH='));
-  assert.ok(workflow.includes('gh workflow run company-development-roblox-release-promotion.yml'));
+  assert.ok(workflow.includes('ROBLOX_LOCAL_F0_QA_DISPATCH='));
+  assert.ok(workflow.includes('gh workflow run company-development-roblox-post-runtime-qa.yml'));
+  assert.ok(workflow.includes('ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED'));
+  assert.doesNotMatch(workflow,/publish_stage=validation/);
 });
 
-test('batch private runtime recovery grace waits then resumes exact-game dispatch',()=>{
-  assert.ok(workflow.includes('const batchRecoveryGraceMs=60_000;'));
-  assert.ok(workflow.includes('const recoveryWaitArray=new Int32Array(new SharedArrayBuffer(4));'));
-  assert.ok(workflow.includes('const elapsedMs=Number.isFinite(f0PassedAt)?Date.now()-f0PassedAt:batchRecoveryGraceMs;'));
-  assert.ok(workflow.includes('ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_WAIT_MS='));
-  assert.ok(workflow.includes('Atomics.wait(recoveryWaitArray,0,0,recoveryWaitMs);'));
-  assert.ok(workflow.includes('ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_RESUMED='));
-  assert.doesNotMatch(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_GRACE_DEFERRED='\+x\.gameId\);\s*continue;/);
+test('batch F0 local QA dispatch dedupes active exact-game QA without server-publish recovery waits',()=>{
+  assert.ok(workflow.includes('actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100'));
+  assert.ok(workflow.includes('ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:'));
+  assert.ok(workflow.includes('ROBLOX_LOCAL_F0_QA_DISPATCH_COUNT='));
+  assert.ok(workflow.includes('ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES'));
+  assert.doesNotMatch(workflow,/batchRecoveryGraceMs/);
+  assert.doesNotMatch(workflow,/ROBLOX_PRIVATE_RUNTIME_BATCH_RECOVERY_WAIT_MS=/);
 });
 
 test('merged Roblox source stays in the Roblox lane while the central orchestrator reuses both native lanes behind readiness',()=>{
