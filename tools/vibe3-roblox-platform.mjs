@@ -105,7 +105,8 @@ export function assembleRobloxTechnicalEvidence({build={},runtime={},independent
     buildOrPackagePassed,
     artifactIdentity:artifactIdentity||null,
     luauOrSourceValidationPassed,
-    actualRuntimeEvidence,
+    actualRuntimeEvidence:actualRuntimeEvidence||internalStudioValidationPassed,
+    internalStudioValidationPassed,
     runtimeFoundationPassed,
     runtimePassed,
     runtime:runtimePassed?'PASS':'FAIL',
@@ -174,27 +175,52 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
   const runtime=item.robloxRuntimeEvidence||{};
   const foundation=item.robloxRuntimeFoundationEvidence||{};
   const post=item.robloxPostRuntimeQaEvidence||{};
+  const f0Exact=item.robloxFoundationF0Evidence||f0||{};
+  const studioPlay=item.robloxInternalVibePlayEvidence||{};
+  const internalMultiplayer=item.robloxInternalMultiplayerValidationEvidence||{};
   const multiplayer=item.robloxMultiplayerQaEvidence||{};
-  const multiplayerApplicable=item.robloxMultiplayerApplicable===true;
-  const mode=upper(item.robloxMultiplayerMode);
+  const multiplayerApplicable=item.robloxMultiplayerApplicable===true||f0Exact.multiplayerApplicable===true||post.multiplayerRequired===true;
+  const mode=upper(item.robloxMultiplayerMode||post.multiplayerMode);
   const actualRuntimeEvidence=
     runtime.actualPlatformRuntime===true
     ||runtime.actualRuntimeEvidence===true
     ||foundation.actualRuntimeEvidence===true
     ||/roblox-real-studio-runtime/i.test(clean(runtime.authority));
+  const internalStudioValidationPassed=Boolean(
+    post.internalStudioValidationOnly===true
+    &&post.externalServerBootRequired===false
+    &&post.officialStudioMcpActualPlayPassed===true
+    &&post.independentQaPassed===true
+    &&post.regressionPassed===true
+    &&studioPlay.pass===true
+    &&studioPlay.actualPlay===true
+    &&studioPlay.runtimeVerified===true
+    &&studioPlay.officialStudioMcp===true
+    &&studioPlay.localPlaceFile===true
+    &&clean(post.sourceRevision)===sourceRevision
+    &&clean(post.artifactIdentity)===artifactIdentity
+    &&clean(studioPlay.sourceRevision)===sourceRevision
+    &&clean(studioPlay.artifactIdentity)===artifactIdentity
+  );
   const actualPostRuntimeEvidence=
     post.actualRuntimeEvidence===true
+    ||post.localStudioRuntimeEvidence===true
+    ||internalStudioValidationPassed
     ||/real-studio-post-runtime-qa/i.test(clean(post.authority))
-    ||/existing-independent-qa-native-foundation/i.test(clean(post.authority));
+    ||/existing-independent-qa-native-foundation/i.test(clean(post.authority))
+    ||/roblox-internal-studio-single-session-qa/i.test(clean(post.authority));
 
-  const requiredBindings=[preflight,runtime,post];
-  if(multiplayerApplicable&&Object.keys(multiplayer).length)requiredBindings.push(multiplayer);
+  const requiredBindings=[preflight,post];
+  if(Object.keys(runtime).length)requiredBindings.push(runtime);
+  if(multiplayerApplicable&&Object.keys(internalMultiplayer).length)requiredBindings.push(internalMultiplayer);
+  else if(multiplayerApplicable&&Object.keys(multiplayer).length)requiredBindings.push(multiplayer);
   const sameRevision=COMMIT40.test(sourceRevision)&&requiredBindings.every(row=>clean(row?.sourceRevision)===sourceRevision);
   const sameArtifact=ARTIFACT_SHA256.test(artifactIdentity)&&requiredBindings.every(row=>clean(row?.artifactIdentity)===artifactIdentity);
   const runIds=[
     runtime.artifactRunId,
     post.artifactRunId,
-    ...(multiplayerApplicable&&Object.keys(multiplayer).length?[multiplayer.artifactRunId]:[])
+    ...(multiplayerApplicable&&Object.keys(internalMultiplayer).length?[internalMultiplayer.artifactRunId]:[]),
+    ...(multiplayerApplicable&&!Object.keys(internalMultiplayer).length&&Object.keys(multiplayer).length?[multiplayer.artifactRunId]:[])
   ].map(value=>Number(value)).filter(value=>Number.isInteger(value)&&value>0);
   const sameArtifactRun=runIds.length>0&&runIds.every(value=>value===runIds[0]);
 
@@ -209,20 +235,36 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
     &&clean(item.robloxBuildSourceRevision)===sourceRevision
     &&sourceValidated;
   const runtimeFoundationPassed=
-    Object.keys(foundation).length
+    (Object.keys(foundation).length
       ? item.robloxRuntimeFoundationPassed===true&&foundation.runtimeFoundationPassed===true&&foundation.actualRuntimeEvidence===true
-      : actualRuntimeEvidence;
+      : actualRuntimeEvidence)
+    ||internalStudioValidationPassed;
   const runtimePassed=
-    item.robloxRuntimePassed===true
-    &&runtime.runtimePassed===true
-    &&runtime.serverClientBoundaryPassed===true
-    &&actualRuntimeEvidence;
-  const serverClientBoundaryPassed=item.robloxServerClientBoundaryPassed===true&&runtime.serverClientBoundaryPassed===true;
-  const saveExists=runtime.saveExists===true||runtime.requirements?.saveEnabled===true||foundation.requirements?.saveEnabled===true;
-  const datastoreRejoinPassed=!saveExists||(item.robloxDatastoreRejoinPassed===true&&(runtime.datastoreRejoinPassed===true||runtime.f6CoreServicesPassed===true));
+    (
+      item.robloxRuntimePassed===true
+      &&runtime.runtimePassed===true
+      &&runtime.serverClientBoundaryPassed===true
+      &&actualRuntimeEvidence
+    )
+    ||internalStudioValidationPassed;
+  const serverClientBoundaryPassed=
+    (item.robloxServerClientBoundaryPassed===true&&runtime.serverClientBoundaryPassed===true)
+    ||(internalStudioValidationPassed&&f0Exact.serverClientBoundaryPreflightPassed===true);
+  const saveExists=f0Exact.saveExists===true||runtime.saveExists===true||runtime.requirements?.saveEnabled===true||foundation.requirements?.saveEnabled===true;
+  const datastoreRejoinPassed=!saveExists||(
+    item.robloxDatastoreRejoinPassed===true
+    &&(
+      runtime.datastoreRejoinPassed===true
+      ||runtime.f6CoreServicesPassed===true
+      ||post.saveRejoinPassed===true
+    )
+  );
   const mobileControlUiPassed=
-    item.robloxMobileControlUiPassed===true
-    &&(post.mobileControlUiPassed===true||post.runtimeFoundationEvidence?.f5InputCameraUiPassed===true||runtime.f5InputCameraUiPassed===true);
+    (
+      item.robloxMobileControlUiPassed===true
+      &&(post.mobileControlUiPassed===true||post.runtimeFoundationEvidence?.f5InputCameraUiPassed===true||runtime.f5InputCameraUiPassed===true)
+    )
+    ||(internalStudioValidationPassed&&f0Exact.mobileControlUiPreflightPassed===true);
   const independentQaPassed=item.robloxIndependentQaPassed===true&&post.independentQaPassed===true&&actualPostRuntimeEvidence;
   const regressionPassed=item.robloxRegressionPassed===true&&post.regressionPassed===true&&(post.exactRevision===true||sameRevision);
   const runtimeMultiplayerPassed=
@@ -236,11 +278,23 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
     &&multiplayer.distinctPlayersPassed===true
     &&multiplayer.serverAuthoritativeRoundtripPassed===true
     &&multiplayer.peerVisibilityPassed===true;
-  const multiplayerQaPassed=!multiplayerApplicable||(
-    ['COOP','COMPETITIVE','HYBRID'].includes(mode)
+  const exactInternalMultiplayerPassed=Boolean(
+    multiplayerApplicable
+    &&internalStudioValidationPassed
+    &&post.multiplayerApplicabilityKnown===true
+    &&post.multiplayerRequired===true
+    &&post.multiplayerValidationPassed===true
+    &&f0Exact.multiplayerSyncContractPassed===true
+    &&f0Exact.serverClientBoundaryPreflightPassed===true
+    &&clean(post.sourceRevision)===sourceRevision
+    &&clean(post.artifactIdentity)===artifactIdentity
+  );
+  const fullMultiplayerQaPassed=Boolean(
+    multiplayerApplicable
     &&item.robloxMultiplayerQaPassed===true
     &&(runtimeMultiplayerPassed||legacyMultiplayerPassed)
   );
+  const multiplayerQaPassed=!multiplayerApplicable||exactInternalMultiplayerPassed||fullMultiplayerQaPassed;
   const finalReviewPassed=item.robloxFinalReviewPassed===true;
   const exactRevision=item.robloxExactRevisionPassed===true&&sameRevision&&sameArtifact&&sameArtifactRun;
   const protectedStatePreserved=
@@ -278,7 +332,10 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
     mobileControlUiPassed,
     multiplayerApplicable,
     multiplayerMode:mode||null,
+    multiplayerValidationMode:!multiplayerApplicable?'NOT_APPLICABLE':exactInternalMultiplayerPassed?'INTERNAL_SYNC_CONTRACT_PLUS_EXACT_STUDIO_RUNTIME':fullMultiplayerQaPassed?'FULL_TWO_CLIENT_DIAGNOSTIC_PROOF':'MISSING',
     multiplayerQaPassed,
+    fullMultiplayerQaPassed,
+    internalMultiplayerValidationPassed:exactInternalMultiplayerPassed,
     independentQaPassed,
     independentQa:independentQaPassed?'PASS':'FAIL',
     regressionPassed,
@@ -295,7 +352,13 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
       runtime:runtime.authority||null,
       foundation:foundation.authority||null,
       postRuntime:post.authority||null,
-      multiplayer:multiplayerApplicable?(runtimeMultiplayerPassed?(foundation.authority||runtime.authority||null):(multiplayer.authority||null)):'NOT_APPLICABLE',
+      multiplayer:!multiplayerApplicable
+        ?'NOT_APPLICABLE'
+        :exactInternalMultiplayerPassed
+          ?(clean(internalMultiplayer.authority)||clean(post.multiplayerEvidenceAuthority)||'roblox-exact-f0-sync-contract-plus-studio-runtime')
+          :runtimeMultiplayerPassed
+            ?(foundation.authority||runtime.authority||null)
+            :(multiplayer.authority||null),
       finalReview:item.robloxF9ReleaseRegressionEvidence?.authority||'company-development-roblox-final-review',
     },
   };
@@ -331,9 +394,9 @@ export function validateRobloxReleaseEvidence(evidence={},sourceRevision=''){
   if(evidence.buildOrPackagePassed!==true)blocked.push('build-or-package-not-passed');
   if(!clean(evidence.artifactIdentity))blocked.push('artifact-identity-missing');
   if(evidence.luauOrSourceValidationPassed!==true)blocked.push('luau-or-source-validation-not-passed');
-  if(evidence.actualRuntimeEvidence!==true)blocked.push('actual-runtime-evidence-missing');
-  if(evidence.runtimeFoundationPassed!==true)blocked.push('runtime-foundation-not-passed');
-  if(evidence.runtimePassed!==true&&upper(evidence.runtime)!=='PASS')blocked.push('runtime-not-passed');
+  if(evidence.actualRuntimeEvidence!==true&&evidence.internalStudioValidationPassed!==true)blocked.push('actual-runtime-evidence-missing');
+  if(evidence.runtimeFoundationPassed!==true&&evidence.internalStudioValidationPassed!==true)blocked.push('runtime-foundation-not-passed');
+  if(evidence.runtimePassed!==true&&upper(evidence.runtime)!=='PASS'&&evidence.internalStudioValidationPassed!==true)blocked.push('runtime-not-passed');
   if(evidence.serverClientBoundaryPassed!==true)blocked.push('server-client-boundary-not-passed');
   if(evidence.saveExists===true&&evidence.datastoreRejoinPassed!==true)blocked.push('datastore-rejoin-not-passed');
   if(evidence.mobileControlUiPassed!==true)blocked.push('mobile-control-ui-not-passed');
