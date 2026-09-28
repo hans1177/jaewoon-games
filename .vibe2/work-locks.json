@@ -3,26 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1cow1g0",
-      "worker": "vibe2",
-      "taskId": "fantasy-survival-studio-evolution-roblox-usability-v1",
-      "gameId": "fantasy-survival",
-      "files": [
-        "roblox-games/fantasy-survival/client/Game.client.luau",
-        "roblox-games/fantasy-survival/server/Game.server.luau"
-      ],
-      "baseSha": "dc3d9c8a1a392e4a8426101bdcfc2cc46cecd0ae",
-      "runId": "36466432484",
-      "runAttempt": "1",
-      "acquiredAt": "2026-09-28T18:54:30.540Z",
-      "expiresAt": "2026-09-28T19:39:30.540Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:fantasy-survival-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-eggzv1",
       "worker": "vibe2",
       "taskId": "cozy-island-studio-evolution-presentation-v1",
@@ -365,6 +345,27 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:amusement-tycoon-roblox-second-gate-rebuild-v1"
+      ]
+    },
+    {
+      "id": "wl-1w9pyk0",
+      "worker": "vibe2",
+      "taskId": "fantasy-survival-roblox-second-gate-rebuild-v1",
+      "gameId": "fantasy-survival",
+      "files": [
+        "roblox-games/fantasy-survival/shared/GameConfig.luau",
+        "roblox-games/fantasy-survival/server/Game.server.luau",
+        "roblox-games/fantasy-survival/client/Game.client.luau"
+      ],
+      "baseSha": "969781bf082affab388b621e6123f47b24ce6507",
+      "runId": "36473428586",
+      "runAttempt": "1",
+      "acquiredAt": "2026-09-28T19:38:56.586Z",
+      "expiresAt": "2026-09-28T20:23:56.586Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:fantasy-survival-roblox-second-gate-rebuild-v1"
       ]
     }
   ]
