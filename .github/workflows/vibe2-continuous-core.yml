@@ -696,7 +696,7 @@ jobs:
           fetch-depth: 1
 
       - name: Checkout verified learning memory
-        if: env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development' || env.VIBE2_EXECUTION_LANE == 'asset-development'
+        if: env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development'
         uses: actions/checkout@v4
         with:
           ref: vibe2-learning-runtime
@@ -707,7 +707,7 @@ jobs:
           sparse-checkout-cone-mode: false
 
       - name: Verify commercial learning memory is reusable
-        if: env.VIBE2_EXECUTION_LANE == 'game-primary'
+        if: env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development'
         shell: bash
         run: |
           set -euo pipefail
