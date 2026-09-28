@@ -3386,7 +3386,11 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
     'TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES',
     'NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER'
   ]);
-  assert.deepEqual([...contract.menuDiversity.surfaces],['MAIN_MENU','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI']);
+  assert.deepEqual([...contract.menuDiversity.surfaces],['MAIN_MENU','LOBBY_OR_HUB','LOADING_TRANSITION','FIRST_PLAY_GUIDANCE','INVENTORY_UI','SHOP_UI','CRAFT_UI','QUEST_UI','SETTINGS_UI','RESULT_UI']);
+  assert.equal(contract.menuDiversity.executionBoundary,'EXISTING_GAME_UI_AND_MISSING_ENTRY_FLOW_BUILD_UP');
+  assert.ok(contract.menuDiversity.patternFamilies.LOBBY_OR_HUB.includes('SESSION_READY_ROOM'));
+  assert.ok(contract.menuDiversity.patternFamilies.LOADING_TRANSITION.includes('ASSET_READINESS_PROGRESS'));
+  assert.ok(contract.menuDiversity.patternFamilies.FIRST_PLAY_GUIDANCE.includes('ACTION_FIRST_TUTORIAL'));
   assert.equal(contract.menuDiversity.genericOneTemplateForAllGamesForbidden,true);
   assert.equal(contract.menuDiversity.colorOrBackgroundOnlyVariationDoesNotCount,true);
   assert.equal(contract.menuDiversity.projectSpecificPatternAllowed,true);
