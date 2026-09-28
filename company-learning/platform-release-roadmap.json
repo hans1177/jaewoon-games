@@ -6101,7 +6101,7 @@
             "CLIENT_MULTIPLAYER_SYNC_HANDLER_CONTRACT"
           ],
           "evidenceAuthority": "INTERNAL_TWO_PARTICIPANT_SYNC_WHEN_APPLICABLE_PLUS_STATIC_AUTHORITY_CONTRACT",
-          "releaseGateMode": "TWO_CLIENT_ONE_SYNC",
+          "releaseGateMode": "IMPACT_SCOPED_INTERNAL_CONTRACT_WITH_EXTENDED_TWO_PARTICIPANT",
           "repeatDuplicateCheckForbidden": true,
           "sameSessionEvidenceAllowed": true,
           "newRuntimeSessionRequired": false,
@@ -6273,8 +6273,9 @@
           "serverAuthorityAndRemoteValidationStillRequired": true,
           "multiplayerRepairFlowMayRequireExtendedLifecycle": true,
           "appliesTo": [
-            "INTERNAL_RELEASE",
-            "PUBLIC_RELEASE"
+            "F7_WHEN_MULTIPLAYER_APPLIES",
+            "F9_EVIDENCE_REUSE",
+            "PUBLIC_READINESS_EVIDENCE_REUSE"
           ],
           "sameProofReusedForInternalAndPublic": true,
           "duplicatePublicMultiplayerCheckRequired": false,
@@ -6292,7 +6293,8 @@
           "routineInternalDevelopmentProof": "EXACT_F0_STATIC_MULTIPLAYER_CONTRACT_PLUS_OFFICIAL_STUDIO_MCP_RUNTIME",
           "extendedTwoParticipantProofRequiredOnlyOnRelevantDeltaOrPriorFailure": true,
           "twoParticipantEveryDevelopmentCycle": false,
-          "twoClientObservationClaimRequiresActualObservation": true
+          "twoClientObservationClaimRequiresActualObservation": true,
+          "minimumParticipantsScope": "EXTENDED_VALIDATION_ONLY"
         },
         "externalServerBootRequiredForInternalRelease": false
       },
