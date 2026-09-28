@@ -57,10 +57,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-      "canonicalState": "ROBLOX_RUNTIME_ACCEPTANCE_PASSED",
+      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
+      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-28T21:20:33.894Z",
+      "updatedAt": "2026-09-28T21:21:02.425Z",
       "robloxSourceCommit": "15d9ebb42466049456bb2e215e5bfa08ae5f8f57",
       "robloxSourceBootstrapPassedAt": "2026-09-28T20:39:44.769Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -281,7 +281,7 @@
       "robloxRegressionPassed": true,
       "robloxRegressionPassedAt": "2026-09-28T20:32:52.829Z",
       "robloxFinalReviewPassed": true,
-      "robloxFinalReviewPassedAt": "2026-09-28T21:14:11.409Z",
+      "robloxFinalReviewPassedAt": "2026-09-28T21:21:02.425Z",
       "robloxF9ReleaseRegressionPassed": true,
       "robloxF9ReleaseRegressionEvidence": {
         "version": 1,
@@ -315,7 +315,7 @@
           "qa/vibe3-roblox-platform.test.mjs"
         ],
         "authority": "deterministic-f9-exact-runtime-candidate-review",
-        "verifiedAt": "2026-09-28T21:14:11.409Z"
+        "verifiedAt": "2026-09-28T21:21:02.425Z"
       },
       "robloxPostRuntimeQaEvidence": {
         "version": 6,
@@ -362,11 +362,9 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F9_RELEASE_REGRESSION",
-      "robloxFailureStage": "ROBLOX_FINAL_REVIEW_REVALIDATION",
-      "robloxFailureSignature": "ROBLOX_FINAL_REVIEW_PENDING",
-      "routingBlockers": [
-        "roblox-final-review-pending"
-      ],
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
+      "routingBlockers": [],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -1137,7 +1135,7 @@
         "canonicalPublishRequired": true,
         "canonicalPublishCompleted": false,
         "authority": "roblox-f9-verified-prepublish-gate",
-        "verifiedAt": "2026-09-28T21:14:11.409Z"
+        "verifiedAt": "2026-09-28T21:21:02.425Z"
       },
       "robloxCanonicalReleaseEvidence": {
         "version": 2,
@@ -24429,7 +24427,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T21:20:33.894Z",
+  "updatedAt": "2026-09-28T21:21:02.425Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
