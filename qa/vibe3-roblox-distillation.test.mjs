@@ -7,7 +7,7 @@ import {
   mergeRobloxDistillationLedger,
   extractRobloxSourcePatterns
 } from '../tools/vibe3-roblox-distillation.mjs';
-import { createRobloxVibe3LearningContext } from '../tools/vibe3-roblox-learning-context.mjs';
+import { createRobloxVibe3LearningContext, existingRobloxGameLearningProfile } from '../tools/vibe3-roblox-learning-context.mjs';
 
 const REV='a'.repeat(40);
 const ART='sha256:'+'b'.repeat(64);
@@ -127,4 +127,27 @@ test('Roblox learning context refuses id-only verified external playbook coverag
   assert.equal(ctx.verifiedExternalLearningAppliedCount,0);
   assert.equal(ctx.verifiedExternalLearningCoveragePct,0);
   assert.equal(ctx.verifiedExternalDistilledContentComplete,false);
+});
+
+test('all portable APK gameplay principles adapt across Roblox puzzle, economy, and survival games',()=>{
+  const ids=[
+    'compact-tactical-state-with-immediate-feedback','persistent-primary-rpg-navigation',
+    'danger-and-level-gating-visible-before-commitment','touch-look-produces-immediate-spatial-feedback',
+    'persistent-core-state-around-world-view','movement-needs-immediate-visible-response',
+    'persistent-contextual-action-controls','immediate-spatially-anchored-input-feedback',
+    'touch-instruction-near-first-play-state'
+  ];
+  const reuse=[{id:'external-black-box-portable',distilledApplicationPrinciples:[
+    ...ids.map(id=>`id=${id}; scope=mobile-gameplay; lesson=visible game state; apply=${id}`),
+    'id=semantic-gameplay-input-plus-survival; scope=qa-evidence; lesson=process survival; apply=verify Android runtime'
+  ]}];
+  const playbooks={taskTypes:{roblox:{authority:'verified-task-playbook',reuse},coding:{authority:'verified-task-playbook',reuse}}};
+  for(const gameId of ['seed-puzzle-chromatic-cascade','amusement-tycoon','survival']){
+    const result=createRobloxVibe3LearningContext({gameId,profile:existingRobloxGameLearningProfile(gameId),playbooks});
+    assert.equal(result.applied,true,gameId);
+    assert.equal(result.gameSpecificSemanticMappings.length,ids.length,gameId);
+    assert.equal(result.verifiedExternalValidationOnlyPrincipleCount,1,gameId);
+    assert.deepEqual(new Set(result.gameSpecificSemanticMappings.map(row=>row.principleId)),new Set(ids));
+    assert.equal(result.allRetrievedPrinciplesHaveExplicitDisposition,true);
+  }
 });
