@@ -1328,6 +1328,14 @@ test('continuous planners overlay company-runtime design evidence before autonom
 });
 
 
+test('distillation ingest preserves active rebuilds and stays off heavy game runners',()=>{
+  const ingest=fs.readFileSync(new URL('../.github/workflows/vibe2-distillation-ingest.yml',import.meta.url),'utf8');
+  assert.match(ingest,/concurrency:\n(?:\s+#.*\n)*\s+group: vibe2-distillation-ingest-pr\n(?:\s+#.*\n)*\s+cancel-in-progress: false/);
+  assert.match(ingest,/\n  ingest:\n[\s\S]{0,220}?runs-on: ubuntu-slim/);
+  assert.doesNotMatch(ingest,/\n  ingest:\n[\s\S]{0,220}?runs-on: ubuntu-latest/);
+  assert.match(ingest,/actions\/setup-python@v5[\s\S]{0,100}?python-version: '3\.12'/);
+});
+
 test('Vibe2 control-plane jobs use slim runners while heavy workers retain full runners',()=>{
   const coreWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   const runnerWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
