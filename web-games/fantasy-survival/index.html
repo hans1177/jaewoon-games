@@ -4339,14 +4339,14 @@ function fantasyCreatureVisualKind(type){
  const id=String(type?.id||'');
  if(['mossboar','crystalboar','crystalboarjunior'].includes(id))return'boar';
  if(id.includes('goblin'))return'goblin';
- if(['golem','ironspirit','crystalironspirit','crystalguardian','crystalfiregolem','firegolemneutral','firegolemaggressive','mudwalker','rootsovereign'].includes(id))return'construct';
+ if(['golem','ironspirit','crystalironspirit','crystalguardian','crystalfiregolem','firegolemneutral','firegolemaggressive','rootsovereign'].includes(id))return'construct';
  if(['ironibex','crystalibex','crystalgoat','sapdeer','crystaldeer','lakebuffalo'].includes(id))return'horned';
  if(['foresthare','polarfox'].includes(id))return'small';
  if(['worldpheasant','lakeheron','fairy','vampirebat'].includes(id))return'winged';
  if(['lakecroc','shark','lakefish','giantleech','anaconda'].includes(id))return'reptile';
  if(['ironhidehound'].includes(id))return'canine';
  if(['gorilla','yetileader','yeticub','polarbear'].includes(id))return'hulking';
- if(['giantburrower','sandwalker'].includes(id))return'armored';
+ if(['giantburrower','sandwalker','mudwalker'].includes(id))return'armored';
  if(['polarwolf'].includes(id))return'canine';
  return'creature'
 }
@@ -4636,6 +4636,19 @@ function drawCreature(e,cx,cy){
  if(e.type.id==='firesnake'||e.type.id==='crystalfiresnake')drawFireSnakeModel(e,x,y,now);
  else if(e.type.id==='worldtreebear'||e.type.id==='crystalbear')drawBearModel(e,x,y,now);
  else if(e.type.id==='sporegiant'){drawThemedCreatureAsset(e,x,y,now);ctx.fillStyle='#a67bc4';ctx.beginPath();ctx.ellipse(x,y-e.type.r*.45,e.type.r*.9,e.type.r*.48,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e8d9c2';ctx.fillRect(x-7,y-e.type.r*.2,14,e.type.r*.95)}
+ else if(e.type.id==='toxicmycelium'){
+  drawThemedCreatureAsset(e,x,y,now);
+  ctx.save();
+  ctx.fillStyle=e.type.color;
+  ctx.strokeStyle='#263421';
+  ctx.lineWidth=4;
+  ctx.beginPath();ctx.ellipse(x,y-e.type.r*.46,e.type.r*.94,e.type.r*.5,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.fillStyle=e.type.color;
+  ctx.beginPath();ctx.roundRect(x-e.type.r*.22,y-e.type.r*.16,e.type.r*.44,e.type.r*1.02,e.type.r*.15);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#d6efad';
+  for(let i=-2;i<=2;i++){ctx.beginPath();ctx.arc(x+i*e.type.r*.28,y-e.type.r*.48+Math.abs(i%2)*5,3.5,0,Math.PI*2);ctx.fill()}
+  ctx.restore()
+ }
  else if(e.type.id==='shadowwolf'||e.type.id==='firewolf'||e.type.id==='shadowwolfleader')drawWolfModel(e,x,y,now);
  else{
   drawThemedCreatureAsset(e,x,y,now);
