@@ -233,6 +233,9 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.maxSignalsPerWave,1);
   assert.match(core,/VIBE2_PRESSURE_REFILL_DISPATCH=WAVE_LEADER_EXISTING_FANIN_REFILL/);
   assert.match(core,/runner-pressure-wave-leader-free-slot-refill/);
+  assert.match(core,/VIBE2_ASSET_NEURON_PRESSURE_BYPASS=IMMEDIATE_MICRO_FANIN/);
+  assert.match(core,/\[ "\$VIBE2_EXECUTION_LANE" != 'asset-development' \]/);
+  assert.match(core,/execution_lane:String\(process\.env\.VIBE2_EXECUTION_LANE\|\|'game-primary'\)/);
 
   const reserveStart=core.indexOf('\n  reserve:\n');
   const reserveOutputs=core.indexOf('    outputs:',reserveStart);
