@@ -16,14 +16,39 @@
   "serverSourceChanged": false,
   "foundationRepairApplied": false,
   "generatedFiles": [
-    "shared/GameConfig.luau"
+    "shared/GameConfig.luau",
+    "client/Game.client.luau"
   ],
   "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
-  "vibe3LearningApplied": false,
-  "recombinationRecipeId": null,
+  "vibe3LearningApplied": true,
+  "recombinationRecipeId": "recombine_08d421f00eeb0948",
+  "verifiedExternalLearningAppliedToExistingSource": true,
+  "verifiedExternalLearningFirst": true,
+  "verifiedExternalLearningCoveragePct": 100,
+  "verifiedExternalLearningRetrievedCount": 7,
+  "verifiedExternalLearningAppliedCount": 7,
+  "verifiedExternalLearningIds": [
+    "external-black-box-block-blast-run-30",
+    "external-black-box-cavern-cravers-run-47",
+    "external-black-box-idle-fantasy-run-42",
+    "external-black-box-luanti-run-10",
+    "external-black-box-revengate-run-59",
+    "external-black-box-sgtpuzzles-run-29",
+    "external-black-box-shattered-pixel-dungeon-run-4"
+  ],
+  "verifiedExternalLearningFingerprint": "hfed4s",
+  "verifiedExternalLearningApplyAxes": [
+    "MENU_FLOW_AND_INFORMATION_ARCHITECTURE",
+    "UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY",
+    "GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION",
+    "MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION",
+    "ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY",
+    "VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE",
+    "GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT"
+  ],
   "studioAssetBinding": {
     "version": 3,
     "bindingVersion": 2,
@@ -170,12 +195,12 @@
     "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
-  "buildUpDirectiveId": "village-dungeons-build-up-g1-b08461449cb3",
+  "buildUpDirectiveId": "village-dungeons-build-up-g1-f1794794d153",
   "buildUpGeneration": 1,
   "buildUpGoal": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "buildUpDirectiveFingerprint": "b08461449cb331f1e3eef008748c5fbe78d56cb8c17776ce771fbd8beaeadef9",
+  "buildUpDirectiveFingerprint": "f1794794d15383ded7c42625443c28ee4ab128b238217b77e4fe43cb3853386e",
   "buildUpDirectiveConsumed": true,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-09-27T09:20:07.325Z"
+  "createdAt": "2026-09-28T02:27:54.463Z"
 }
