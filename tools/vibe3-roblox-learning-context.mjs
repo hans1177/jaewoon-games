@@ -61,11 +61,43 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
   const checklist=unique([...(roblox.checklist||[]),...(coding.checklist||[])]);
   const reuseRows=[...(roblox.reuse||[]),...(coding.reuse||[])];
   const reuseProjects=unique(reuseRows.map(row=>row?.project));
-  const verifiedExternalReuseRows=reuseRows.filter(row=>clean(row?.id).startsWith('external-black-box-'));
-  const verifiedExternalPlaybookIds=unique(verifiedExternalReuseRows.map(row=>row?.id));
-  const verifiedExternalLearningPrinciples=unique(verifiedExternalReuseRows.flatMap(row=>Array.isArray(row?.distilledApplicationPrinciples)?row.distilledApplicationPrinciples:[]));
-  const verifiedExternalAvoidancePrinciples=unique(verifiedExternalReuseRows.flatMap(row=>Array.isArray(row?.distilledAvoidancePrinciples)?row.distilledAvoidancePrinciples:[]));
-  const verifiedExternalLearningUseAllowed=unique(verifiedExternalReuseRows.flatMap(row=>Array.isArray(row?.distilledLearningUseAllowed)?row.distilledLearningUseAllowed:[]));
+  const verifiedExternalById=new Map();
+  for(const row of reuseRows){
+    const id=clean(row?.id);
+    if(!id.startsWith('external-black-box-'))continue;
+    const previous=verifiedExternalById.get(id)||{
+      id,
+      distilledApplicationPrinciples:[],
+      distilledAvoidancePrinciples:[],
+      distilledLearningUseAllowed:[]
+    };
+    previous.distilledApplicationPrinciples=unique([
+      ...previous.distilledApplicationPrinciples,
+      ...(Array.isArray(row?.distilledApplicationPrinciples)?row.distilledApplicationPrinciples:[])
+    ]);
+    previous.distilledAvoidancePrinciples=unique([
+      ...previous.distilledAvoidancePrinciples,
+      ...(Array.isArray(row?.distilledAvoidancePrinciples)?row.distilledAvoidancePrinciples:[])
+    ]);
+    previous.distilledLearningUseAllowed=unique([
+      ...previous.distilledLearningUseAllowed,
+      ...(Array.isArray(row?.distilledLearningUseAllowed)?row.distilledLearningUseAllowed:[])
+    ]);
+    verifiedExternalById.set(id,previous);
+  }
+  const verifiedExternalReuseRows=[...verifiedExternalById.values()];
+  const verifiedExternalPlaybookIds=unique(verifiedExternalReuseRows.map(row=>row.id));
+  const verifiedExternalContentIds=unique(verifiedExternalReuseRows
+    .filter(row=>row.distilledApplicationPrinciples.map(clean).filter(Boolean).length>0)
+    .map(row=>row.id));
+  const verifiedExternalDistilledContentComplete=verifiedExternalPlaybookIds.length>0
+    &&verifiedExternalContentIds.length===verifiedExternalPlaybookIds.length;
+  const verifiedExternalLearningCoveragePct=verifiedExternalPlaybookIds.length>0
+    ?Math.floor((verifiedExternalContentIds.length/verifiedExternalPlaybookIds.length)*100)
+    :0;
+  const verifiedExternalLearningPrinciples=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledApplicationPrinciples||[]));
+  const verifiedExternalAvoidancePrinciples=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledAvoidancePrinciples||[]));
+  const verifiedExternalLearningUseAllowed=unique(verifiedExternalReuseRows.flatMap(row=>row.distilledLearningUseAllowed||[]));
   const recipes=(Array.isArray(recombination?.recipes)?recombination.recipes:[])
     .filter(recipe=>Array.isArray(recipe?.sourceProjects)&&new Set(recipe.sourceProjects.map(clean).filter(Boolean)).size>=2)
     .filter(recipe=>!(recipe.sourceProjects||[]).map(clean).includes(clean(gameId)));
@@ -110,7 +142,10 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
     'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
   ]);
-  const applied=checklist.length>0&&verifiedExternalLearningIds.length>0&&(Boolean(selected)||distilled.patterns.length>0||distilled.principles.length>0||verifiedExternalPlaybookIds.length>0);
+  const applied=checklist.length>0
+    &&verifiedExternalLearningIds.length>0
+    &&verifiedExternalDistilledContentComplete
+    &&(Boolean(selected)||distilled.patterns.length>0||distilled.principles.length>0||verifiedExternalLearningPrinciples.length>0);
 
   return Object.freeze({
     applied,
@@ -127,8 +162,10 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     distilledPrinciples:distilled.principles,
     verifiedExternalLearningIds:Object.freeze(verifiedExternalLearningIds),
     verifiedExternalLearningRetrievedCount:verifiedExternalLearningIds.length,
-    verifiedExternalLearningAppliedCount:verifiedExternalLearningIds.length,
-    verifiedExternalLearningCoveragePct:verifiedExternalLearningIds.length>0?100:0,
+    verifiedExternalLearningAppliedCount:verifiedExternalContentIds.length,
+    verifiedExternalLearningCoveragePct,
+    verifiedExternalDistilledContentIds:Object.freeze(verifiedExternalContentIds),
+    verifiedExternalDistilledContentComplete,
     verifiedExternalLearningApplyAxes,
     verifiedExternalLearningPrinciples:Object.freeze(verifiedExternalLearningPrinciples),
     verifiedExternalAvoidancePrinciples:Object.freeze(verifiedExternalAvoidancePrinciples),
