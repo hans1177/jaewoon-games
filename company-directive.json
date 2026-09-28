@@ -1,7 +1,7 @@
 {
   "version": 2,
   "revision": 86,
-  "updatedAt": "2026-09-28T07:00:50.757Z",
+  "updatedAt": "2026-09-28T07:10:00.363Z",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -1470,6 +1470,7 @@
     "source": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.validationEfficiencyOptimization",
     "mirrorOnly": true,
     "appliesTo": [
+      "WEB",
       "ROBLOX",
       "UNITY"
     ],
@@ -1578,34 +1579,6 @@
     "unverifiedUncivEligible": false,
     "legalBoundary": "BLACK_BOX_OBSERVATION_TO_GENERAL_PRINCIPLES_ONLY_NO_CODE_BINARY_ASSET_OR_HIDDEN_ALGORITHM_COPY",
     "runtimeCompletion": "REQUIRES_EXACT_RUNTIME_EVIDENCE_NOT_SOURCE_ONLY_PASS"
-  },
-  "verifiedPlatformCyclePublication": {
-    "version": 1,
-    "authority": "company-learning/platform-release-roadmap.json#verifiedPlatformCyclePublication",
-    "platforms": [
-      "WEB",
-      "ROBLOX",
-      "UNITY"
-    ],
-    "sequence": [
-      "F0",
-      "F1",
-      "F2",
-      "F3",
-      "F4",
-      "F5",
-      "F6",
-      "F7",
-      "F8",
-      "F9",
-      "PUBLISH_OR_DEPLOY",
-      "NEXT_F0"
-    ],
-    "f9Terminal": false,
-    "perpetualRepeat": true,
-    "publicationOutcomeBlocksNextCycle": false,
-    "internalOrExternalExposureStateBlocksNextCycle": false,
-    "publishFailureRetriesInParallel": true
   },
   "platformVerifiedF0F9PublicationLoop": {
     "authority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.verifiedF0F9PublicationLoop",
