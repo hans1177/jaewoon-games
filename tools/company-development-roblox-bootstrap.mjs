@@ -14,7 +14,7 @@ const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'
 const arg=(name,fallback='')=>process.argv.find(value=>value.startsWith(`--${name}=`))?.slice(name.length+3)??fallback;
 const luauString=value=>`"${String(value??'').replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\r/g,'\\r').replace(/\n/g,'\\n')}"`;
 const MODES=new Set(['SINGLE','COOP','COMPETITIVE','HYBRID']);
-export const ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=5;
+export const ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=6;
 
 const SHA256=/^[a-f0-9]{64}$/i;
 export function validateWebPlatformHandoff({handoff={},roadmap={},gameId=''}={}){
@@ -440,6 +440,7 @@ function verifiedExternalLearningConfigBlock(learning={}){
     MemoryFingerprint = ${luauString(learning.verifiedExternalLearningFingerprint||'')},
     NativeBindingVersion = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION},
     CoveragePct = ${Number(learning.verifiedExternalLearningCoveragePct||0)},
+    ContentComplete = ${learning.verifiedExternalDistilledContentComplete?'true':'false'},
     RetrievedCount = ${Number(learning.verifiedExternalLearningRetrievedCount||0)},
     AppliedCount = ${Number(learning.verifiedExternalLearningAppliedCount||0)},
     TruncationForbidden = true,
@@ -499,6 +500,7 @@ local verifiedExternalGameDevelopmentPrinciples = verifiedExternalLearningContex
   const frameVar=frameMatch[1];
   const runtimeBlock=`-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
 ${frameVar}:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternalLearningContext.CoveragePct or 0)
+${frameVar}:SetAttribute("VerifiedExternalLearningContentComplete", verifiedExternalLearningContext.ContentComplete == true)
 ${frameVar}:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
 ${frameVar}:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
 ${frameVar}:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
@@ -744,8 +746,8 @@ task.defer(reportNativeFoundationReady)
   const studioClientVisibleBound=/StudioAssetFramePanel/.test(afterClient)
     ||(/StudioAssetBindingVersion/.test(afterClient)&&/StudioAssetAtoms/.test(afterClient)&&/FRAME_PANEL/.test(afterClient)&&/(hasStudioAssetAtom|hasStudioAtom)/.test(afterClient));
   if(!studioClientConfigBound||!studioClientVisibleBound)throw new Error('EXISTING_STUDIO_ASSET_CLIENT_VERIFY_FAILED');
-  if(!/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/.test(afterConfig)||!/CoveragePct\s*=\s*100/.test(afterConfig)||!afterConfig.includes(`MemoryFingerprint = ${luauString(verifiedLearning.verifiedExternalLearningFingerprint||'')}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CONFIG_VERIFY_FAILED');
-  if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)||!/VerifiedExternalLearningCoveragePct/.test(afterClient)||!/VerifiedExternalLearningPrincipleCount/.test(afterClient)||!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(afterClient)||!/VerifiedLearningColorGrade/.test(afterClient)||!/syncVerifiedLearningCharacterMotion/.test(afterClient)||!/VerifiedLearningSkillImpact/.test(afterClient)||!/FieldOfView/.test(afterClient)||!afterClient.includes(`VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
+  if(!/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/.test(afterConfig)||!/ContentComplete\s*=\s*true/.test(afterConfig)||!afterConfig.includes(`MemoryFingerprint = ${luauString(verifiedLearning.verifiedExternalLearningFingerprint||'')}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CONFIG_VERIFY_FAILED');
+  if(!/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/.test(afterClient)||!/VerifiedExternalLearningContentComplete/.test(afterClient)||!/VerifiedExternalLearningPrincipleCount/.test(afterClient)||!/VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN/.test(afterClient)||!/VerifiedLearningColorGrade/.test(afterClient)||!/syncVerifiedLearningCharacterMotion/.test(afterClient)||!/VerifiedLearningSkillImpact/.test(afterClient)||!/FieldOfView/.test(afterClient)||!afterClient.includes(`VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = ${ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION}`))throw new Error('EXISTING_VERIFIED_EXTERNAL_LEARNING_CLIENT_VERIFY_FAILED');
   if(foundationRepair===true){
     const combined=afterServer+'\n'+afterClient;
     for(const [token,re] of Object.entries({
@@ -846,7 +848,7 @@ export function validateRobloxBootstrap({sharedConfig='',serverCode='',clientCod
   }
   if(learning?.applied===true){
     if(!/LearningContext\s*=/.test(sharedConfig))blockers.push('CONFIG_VIBE3_LEARNING_CONTEXT_REQUIRED');
-    if(!/VerifiedExternalLearningFirst\s*=\s*true/.test(sharedConfig)||!/CoveragePct\s*=\s*100/.test(sharedConfig))blockers.push('CONFIG_VERIFIED_EXTERNAL_LEARNING_100_REQUIRED');
+    if(!/VerifiedExternalLearningFirst\s*=\s*true/.test(sharedConfig)||!/ContentComplete\s*=\s*true/.test(sharedConfig))blockers.push('CONFIG_VERIFIED_EXTERNAL_LEARNING_CONTENT_REQUIRED');
     for(const axis of [
       'ROBLOX_ENVIRONMENT_BACKGROUND_AND_LIGHTING',
       'ROBLOX_CHARACTER_ANIMATION_AND_MOTION',
@@ -1067,7 +1069,7 @@ async function main(){
     console.log(`ROBLOX_FOUNDATION_REPAIR=${foundationRepair?'APPLIED':'NOT_REQUESTED'}`);
     console.log(`ROBLOX_STUDIO_ASSET_BINDING=${applied.studioAssets.applied?'APPLIED_UNVERIFIED':'NOT_APPLIED'}`);
     console.log(`ROBLOX_STUDIO_ASSET_ATOMS=${applied.studioAssets.selectedAtomCount}`);
-    console.log(`ROBLOX_VERIFIED_EXTERNAL_LEARNING_COVERAGE=${Number(existingLearning.verifiedExternalLearningCoveragePct||0)}`);
+    console.log(`ROBLOX_VERIFIED_EXTERNAL_LEARNING_CONTENT_COMPLETE=${existingLearning.verifiedExternalDistilledContentComplete?'YES':'NO'}`);
     console.log(`ROBLOX_VERIFIED_EXTERNAL_LEARNING_COUNT=${Number(existingLearning.verifiedExternalLearningAppliedCount||0)}`);
     console.log(`ROBLOX_VERIFIED_EXTERNAL_LEARNING_FINGERPRINT=${existingLearning.verifiedExternalLearningFingerprint||'NONE'}`);
     console.log(`ROBLOX_BUILD_UP_DIRECTIVE=${buildUpDirectiveConsumed?buildUpDirective.directiveId:'NONE_BASELINE_ONLY'}`);
@@ -1119,7 +1121,7 @@ async function main(){
   console.log(`ROBLOX_VIBE3_RECIPE=${built.learning.recipeId||'NONE'}`);
   console.log(`ROBLOX_VIBE3_FEATURES=${built.learning.featureBlend.join(',')||'NONE'}`);
   console.log(`ROBLOX_VERIFIED_EXTERNAL_LEARNING_FIRST=${built.learning.verifiedExternalLearningFirst?'YES':'NO'}`);
-  console.log(`ROBLOX_VERIFIED_EXTERNAL_LEARNING_COVERAGE=${Number(built.learning.verifiedExternalLearningCoveragePct||0)}`);
+  console.log(`ROBLOX_VERIFIED_EXTERNAL_LEARNING_CONTENT_COMPLETE=${built.learning.verifiedExternalDistilledContentComplete?'YES':'NO'}`);
   console.log(`ROBLOX_VERIFIED_EXTERNAL_LEARNING_COUNT=${Number(built.learning.verifiedExternalLearningAppliedCount||0)}`);
   console.log(`ROBLOX_VERIFIED_EXTERNAL_LEARNING_AXES=${(built.learning.verifiedExternalLearningApplyAxes||[]).join(',')||'NONE'}`);
   console.log('ROBLOX_WEB_HANDOFF=LEGACY_DISABLED');

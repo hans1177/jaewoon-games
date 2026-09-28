@@ -516,10 +516,10 @@ test('existing Roblox source rebind applies all verified APK learning without ch
     const config=fs.readFileSync(path.join(root,'shared','GameConfig.luau'),'utf8');
     const client=fs.readFileSync(path.join(root,'client','Game.client.luau'),'utf8');
     assert.match(config,/VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN/);
-    assert.match(config,/CoveragePct\s*=\s*100/);
+    assert.match(config,/ContentComplete\s*=\s*true/);
     assert.match(config,/external-black-box-fixture-run-1/);
     assert.match(client,/VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN/);
-    assert.match(client,/VerifiedExternalLearningCoveragePct/);
+    assert.match(client,/VerifiedExternalLearningContentComplete/);
     assert.match(client,/VerifiedExternalLearningPrincipleCount/);
     initGitRepo(tmp);
     const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
@@ -556,10 +556,12 @@ test('verified APK principles drive the full Roblox native stack for new and exi
   assert.match(source,/VerifiedLearningTouchTarget/);
   assert.match(source,/VerifiedLearningProgressionRiskCue/);
   assert.match(source,/VerifiedExternalLearningGameplayState/);
-  assert.match(source,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=5/);
+  assert.match(source,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=6/);
   assert.match(source,/ApplicationPrinciples = \{/);
   assert.match(source,/GameDevelopmentPrinciples = \{/);
   assert.doesNotMatch(source,/ROBLOX_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED/);
+  assert.doesNotMatch(source,/CONFIG_VERIFIED_EXTERNAL_LEARNING_100_REQUIRED/);
+  assert.match(source,/CONFIG_VERIFIED_EXTERNAL_LEARNING_CONTENT_REQUIRED/);
 });
 
 
@@ -655,7 +657,7 @@ test('verified APK native binding covers Roblox background motion and skill effe
 test('Roblox native binding v5 requires expanded environment and skill VFX signals',()=>{
   const bootstrap=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
   const reconcile=fs.readFileSync(new URL('../tools/company-development-roblox-source-reconcile.mjs',import.meta.url),'utf8');
-  assert.match(bootstrap,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=5/);
+  assert.match(bootstrap,/ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=6/);
   for(const signal of ['VerifiedLearningAtmosphere','VerifiedLearningDepthOfField','VerifiedLearningSkillParticles','VerifiedLearningSkillLight']){
     assert.match(bootstrap,new RegExp(signal));
     assert.match(reconcile,new RegExp(signal));

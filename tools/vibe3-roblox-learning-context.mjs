@@ -81,9 +81,9 @@ export function verifiedExternalBlackBoxPlaybookContract(playbooks={}, {required
     for(const taskType of requiredTaskTypes){
       const task=taskTypes?.[taskType]||{};
       const taskIds=unique((task?.reuse||[]).filter(row=>clean(row?.id).startsWith('external-black-box-')).map(row=>row.id)).sort();
-      if(clean(task?.authority)!=='verified-task-playbook'||Number(task?.verifiedExternalBlackBoxCoveragePct||0)!==100||taskIds.length!==ids.length||!ids.every(id=>taskIds.includes(id)))throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_TASK_COVERAGE_INVALID:'+taskType);
+      if(clean(task?.authority)!=='verified-task-playbook'||taskIds.length!==ids.length||!ids.every(id=>taskIds.includes(id)))throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_TASK_SET_INVALID:'+taskType);
     }
-    if(!complete||coveragePct!==100)throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_CONTENT_INCOMPLETE');
+    if(!complete)throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_CONTENT_INCOMPLETE');
   }
   return Object.freeze({
     rows:Object.freeze(rows.map(row=>Object.freeze({...row}))),
@@ -147,7 +147,7 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
   const sourceProjects=unique(selected?.sourceProjects||[]).slice(0,6);
   const distilled=selectDistilled(distillation?.records||[],{gameId,terms,profileText});
   // PRACTICE_ONLY black-box observations remain advisory. Only verified task-playbook
-  // memory may count toward the mandatory 100% verified external learning coverage.
+  // memory must preserve the complete verified external learning set; percentage is compatibility telemetry only.
   const verifiedExternalLearningIds=unique(verifiedExternalPlaybookIds);
   const externalBlackBoxAdvisoryIds=unique(distilled.externalIds||[]);
   const verifiedExternalLearningApplyAxes=Object.freeze([
