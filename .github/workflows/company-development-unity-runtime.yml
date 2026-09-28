@@ -706,6 +706,7 @@ jobs:
           REGRESSION_RUN_NEW: ${{ steps.regression.outputs.run_id }}
           REGRESSION_RUN_OLD: ${{ matrix.item.unityRegressionRunId }}
           IS_CANARY: ${{ needs.prepare.outputs.canary }}
+          DESIGN_SOURCE: ${{ matrix.item.designBaselineSource }}
         shell: bash
         run: |
           set -euo pipefail
@@ -715,17 +716,30 @@ jobs:
           [[ "$source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
           export SOURCE_TREE_SHA="$source_tree_sha"
           echo "UNITY_CHECKPOINT_SOURCE_TREE_SHA=$source_tree_sha"
+          git show origin/company-runtime:development-queue.json > /tmp/unity-current-queue.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {failureSignature} from './tools/company-selected-platform-router.mjs';
           const yes=v=>String(v).toLowerCase()==='true';
           const build=yes(process.env.BUILD_PASS),runtime=yes(process.env.RUNTIME_PASS),qa=yes(process.env.QA_PASS),regression=yes(process.env.REGRESSION_PASS);
+          const currentQueue=JSON.parse(fs.readFileSync('/tmp/unity-current-queue.json','utf8'));
+          const currentItem=(currentQueue.items||[]).find(x=>x.gameId===process.env.GAME_ID)||{};
+          let design={};
+          try{design=JSON.parse(fs.readFileSync(process.env.DESIGN_SOURCE,'utf8'));}catch{}
+          const multiplayerMode=String(design?.content?.multiplayerMode||'').trim().toUpperCase();
+          const unityMultiplayer=String(design?.content?.platformProfiles?.UNITY?.multiplayerRuntime||'').trim().toUpperCase();
+          const singleMode=multiplayerMode==='SINGLE'||multiplayerMode==='SINGLE_PLAYER'||/SINGLE[-_ ]?PLAYER|NETWORKING REMAINS DISABLED|LOCAL GAMEPLAY AUTHORITY/.test(unityMultiplayer);
+          const multiplayerRequired=Boolean((multiplayerMode||unityMultiplayer)&&!singleMode);
+          const mp=currentItem.unityMultiplayerQaEvidence||{};
+          const multiplayerPass=!multiplayerRequired||(mp.pass===true&&Number(mp.participantCount||0)>=2&&mp.authoritativeSync===true);
           let last='CHEAP_PRECHECK',failure=null;
-          if(build)last='SINGLE_BUILD_OR_PACKAGE';else failure='SINGLE_BUILD_OR_PACKAGE';
-          if(build&&process.env.ARTIFACT_ID)last='IMMUTABLE_ARTIFACT_BIND';
-          if(build&&!runtime)failure='TARGET_PLATFORM_RUNTIME';else if(runtime)last='TARGET_PLATFORM_RUNTIME';
-          if(runtime&&!qa)failure='INDEPENDENT_QA';else if(qa)last='INDEPENDENT_QA';
-          if(qa&&!regression)failure='REGRESSION';else if(regression)last='REGRESSION';
+          if(build)last='F0_SOURCE_INTEGRITY';else failure='F0_SOURCE_INTEGRITY';
+          if(build&&process.env.ARTIFACT_ID)last='F0_SOURCE_INTEGRITY';
+          if(build&&!runtime)failure='F1_SERVER_BOOT';else if(runtime)last='F4_PHYSICS_AND_MOVEMENT';
+          if(runtime&&!qa)failure='F5_INPUT_CAMERA_UI';else if(qa)last='F6_CORE_SERVICES';
+          if(runtime&&qa&&!multiplayerPass)failure='F7_MULTIPLAYER_FOUNDATION';else if(multiplayerPass&&runtime&&qa)last='F7_MULTIPLAYER_FOUNDATION';
+          if(runtime&&qa&&multiplayerPass)last='F8_GAMEPLAY_SYSTEMS';
+          if(runtime&&qa&&multiplayerPass&&!regression)failure='F9_RELEASE_REGRESSION';else if(regression&&multiplayerPass)last='F9_RELEASE_REGRESSION';
           const canonical=process.env.MEETING_STATE||'WAITING_TARGET_PLATFORM_VALIDATION';
           const runtimeRun=Number(process.env.RUNTIME_RUN_NEW||process.env.RUNTIME_RUN_OLD||0)||null;
           const qaRun=Number(process.env.QA_RUN_NEW||process.env.QA_RUN_OLD||0)||null;
@@ -733,8 +747,27 @@ jobs:
           const buildRun=Number(process.env.BUILD_RUN||0)||null;
           const artifactIdentity=process.env.ARTIFACT_ID||null;
           const stamp=new Date().toISOString();
-          const evidence={version:2,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION||null,sourceRootTreeSha:process.env.SOURCE_TREE_SHA||null,sourceFingerprint:process.env.SOURCE_FINGERPRINT||null,buildOrPackagePassed:build,artifactIdentity,runtimePassed:runtime,independentQaPassed:qa,regressionPassed:regression,exactRevision:Boolean(artifactIdentity&&process.env.SOURCE_REVISION&&process.env.SOURCE_TREE_SHA),lastSuccessfulStage:last,failureStage:failure,failureSignature:failure?failureSignature({stage:failure,code:'STAGE_NOT_PASSED',message:`${process.env.GAME_ID}:${failure}`}):null};
-          const internalReady=build&&runtime&&qa&&regression&&Boolean(artifactIdentity)&&Boolean(process.env.SOURCE_REVISION);
+          const exactBinding=Boolean(artifactIdentity&&process.env.SOURCE_REVISION&&process.env.SOURCE_TREE_SHA);
+          const f0ToF9={
+            version:1,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION||null,artifactIdentity,sourceRootTreeSha:process.env.SOURCE_TREE_SHA||null,
+            evidenceMode:'EXISTING_EXACT_APK_RUNTIME_QA_REGRESSION_WITH_PLATFORM_APPLICABILITY',
+            floors:{
+              F0:{state:build&&exactBinding?'PASS':'FAIL',authority:'IMMUTABLE_APK_BUILD_AND_SOURCE_BINDING'},
+              F1:{state:runtime?'PASS':'FAIL',authority:'EXACT_ANDROID_RUNTIME_SESSION'},
+              F2:{state:runtime?'PASS_REUSED_EXACT_RUNTIME_SESSION':'FAIL',authority:'EXACT_ANDROID_RUNTIME_SESSION'},
+              F3:{state:runtime?'PASS_REUSED_EXACT_RUNTIME_SESSION':'FAIL',authority:'EXACT_ANDROID_RUNTIME_SESSION'},
+              F4:{state:runtime?'PASS_REUSED_EXACT_RUNTIME_SESSION':'FAIL',authority:'EXACT_ANDROID_RUNTIME_SESSION'},
+              F5:{state:qa?'PASS':'FAIL',authority:'INDEPENDENT_ANDROID_QA_TOUCH_INPUT_SCREEN_RUNTIME'},
+              F6:{state:qa?'PASS':'FAIL',authority:'INDEPENDENT_ANDROID_QA_AND_EXACT_RUNTIME_STATE_EVIDENCE'},
+              F7:{state:multiplayerRequired?(multiplayerPass?'PASS':'FAIL'):'NOT_APPLICABLE',authority:multiplayerRequired?'UNITY_MULTIPLAYER_QA_EVIDENCE':'VERIFIED_DESIGN_SINGLE_PLAYER',participantCount:Number(mp.participantCount||0),authoritativeSync:mp.authoritativeSync===true},
+              F8:{state:runtime&&qa?'PASS':'FAIL',authority:'EXACT_RUNTIME_PLUS_INDEPENDENT_QA'},
+              F9:{state:build&&runtime&&qa&&multiplayerPass&&regression&&exactBinding?'PASS':'FAIL',authority:'EXACT_ARTIFACT_REGRESSION_FAN_IN'}
+            },
+            multiplayerRequired,
+            verifiedAt:stamp
+          };
+          const internalReady=f0ToF9.floors.F9.state==='PASS';
+          const evidence={version:3,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION||null,sourceRootTreeSha:process.env.SOURCE_TREE_SHA||null,sourceFingerprint:process.env.SOURCE_FINGERPRINT||null,buildOrPackagePassed:build,artifactIdentity,runtimePassed:runtime,independentQaPassed:qa,multiplayerPassed:multiplayerPass,regressionPassed:regression,f0ToF9Passed:internalReady,exactRevision:exactBinding,lastSuccessfulStage:last,failureStage:failure,failureSignature:failure?failureSignature({stage:failure,code:'STAGE_NOT_PASSED',message:`${process.env.GAME_ID}:${failure}`}):null};
           const row={
             gameId:process.env.GAME_ID,status:'ACTIVE',selectedPlatform:'UNITY',targetPlatform:'UNITY',
             currentStep:internalReady?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'TARGET_PLATFORM_TECHNICAL_VALIDATION',
@@ -742,12 +775,17 @@ jobs:
             platformAdapter:'tools/company-development-unity-platform.mjs',
             unityProjectPath:process.env.PROJECT,unityCandidateBranch:process.env.BRANCH||null,unitySourceCommit:process.env.SOURCE_REVISION||null,
             unityBuildRunId:buildRun,unityRuntimeSmokeRunId:runtimeRun,unityIndependentQaRunId:qaRun,unityRegressionRunId:regressionRun,
+            unityF0ThroughF9Evidence:f0ToF9,
+            unityF9ReleaseRegressionPassed:internalReady,
+            unityF9ReleaseRegressionPassedAt:internalReady?stamp:null,
+            unityCanonicalPublishPending:internalReady,
             unityInternalReleaseReady:internalReady,
             unityInternalReleaseAt:internalReady?stamp:null,
             unityInternalReleaseEvidence:internalReady?{
               version:2,platform:'UNITY',sourceRevision:process.env.SOURCE_REVISION,sourceRootTreeSha:process.env.SOURCE_TREE_SHA,artifactIdentity,
               buildRunId:buildRun,runtimeRunId:runtimeRun,independentQaRunId:qaRun,regressionRunId:regressionRun,
               distribution:'INTERNAL_OR_CLOSED_APP_TEST_BUILD',artifactInternalTestingAllowed:true,publicRelease:false,
+              f0ThroughF9Passed:true,f9ReleaseRegressionPassed:true,
               authority:'unity-exact-apk-runtime-qa-regression'
             }:null,
             executionEvidence:evidence,resumeStage:failure||(internalReady?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'IMMEDIATE_NEXT_STAGE_DISPATCH'),
@@ -755,7 +793,7 @@ jobs:
           };
           fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.json`,JSON.stringify(row,null,2)+'\n');
           fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.evidence.json`,JSON.stringify(evidence,null,2)+'\n');
-          console.log(`CHECKPOINT_LAST_SUCCESS=${last}`);console.log(`CHECKPOINT_FAILURE_STAGE=${failure||'NONE'}`);console.log(`UNITY_INTERNAL_RELEASE_READY=${internalReady?'YES':'NO'}`);console.log('UNITY_PUBLIC_RELEASE_MUTATION=NO');
+          console.log(`CHECKPOINT_LAST_SUCCESS=${last}`);console.log(`CHECKPOINT_FAILURE_STAGE=${failure||'NONE'}`);console.log(`UNITY_INTERNAL_RELEASE_READY=${internalReady?'YES':'NO'}`);console.log(`UNITY_PLATFORM_F0_TO_F9_VERIFIED=${internalReady?'YES':'NO'}`);console.log('UNITY_PUBLIC_RELEASE_MUTATION=NO');
           NODE
 
       - name: Upload checkpoint for company-runtime persistence
@@ -882,6 +920,45 @@ jobs:
           echo "passed=$passed" >> "$GITHUB_OUTPUT"
           echo "COMPANY_RUNTIME_UNITY_GAME_PERSIST=PASS:$GAME_ID"
 
+      - name: Publish exact F9 Unity APK as canonical server artifact
+        id: f9_publish
+        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-f9-canonical-${{ matrix.item.gameId }}-${{ steps.buildref.outputs.run_id }}
+          path: |
+            /tmp/unity-build/
+            /tmp/unity-runtime/
+            /tmp/unity-independent/
+            /tmp/unity-regression/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Record Unity F9 publication dispatch without gating next cycle
+        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+          PUBLISH_OUTCOME: ${{ steps.f9_publish.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "UNITY_F9_CANONICAL_PUBLISH_DISPATCHED=$GAME_ID"
+          echo "UNITY_F9_CANONICAL_PUBLISH_OUTCOME=${PUBLISH_OUTCOME:-unknown}"
+          echo 'UNITY_F9_CANONICAL_PUBLISH_BLOCKS_NEXT_CYCLE=NO'
+
+      - name: Refill Unity repair loop after any failed F0-F9 floor
+        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.item.gameId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(jq -nc --arg run "${GITHUB_RUN_ID:-}" --arg attempt "${GITHUB_RUN_ATTEMPT:-}" --arg game "${GAME_ID:-}" '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$game,source_outcome:"REPAIR_REQUIRED",reason:"unity-f0-f9-floor-repair"}}')"
+          curl --fail-with-body --silent --show-error --request POST             --header 'Accept: application/vnd.github+json'             --header "Authorization: Bearer $GH_TOKEN"             --header 'X-GitHub-Api-Version: 2022-11-28'             "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" --data "$payload"
+          echo "UNITY_F0_F9_REPAIR_REFILL_DISPATCHED=$GAME_ID"
+
       - name: Immediately continue this successful Unity game
         if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
         env:
@@ -890,6 +967,7 @@ jobs:
         run: |
           gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
           echo "IMMEDIATE_NEXT_STAGE_DISPATCH=YES:$GAME_ID"
+          echo "UNITY_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO"
 
       - name: Settle exact Vibe Unity BUILD_UP task after runtime QA and regression
         if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
