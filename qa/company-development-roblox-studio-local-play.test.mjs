@@ -1755,3 +1755,56 @@ test('runtime-discovered systems activate adaptive gates even when launch text d
   assert.equal(result.scenarios.find(row=>row.id==='adaptive-npc-surface')?.pass,true);
   assert.equal(result.scenarios.find(row=>row.id==='adaptive-remote-surface')?.pass,true);
 });
+
+
+test('F9 planner upgrades a prior FAST_DEEP Studio pass to required F9_SOAK on the same exact artifact',()=>{
+  const candidate=item();
+  candidate.currentStep='FINAL_REVIEW';
+  candidate.robloxInternalVibePlayEvidence={
+    pass:true,actualPlay:true,runtimeVerified:true,officialStudioMcp:true,localPlaceFile:true,
+    onlinePlaceDirectOpen:false,robloxPlayerAutomation:false,
+    sourceRevision:source,artifactIdentity:artifact,artifactRunId:777,universeId:'123',placeId:'456',versionNumber:9,
+    runtimeSummary:{consoleErrorCount:0,commercialAudit:{auditProfile:'FAST_DEEP'}},
+    testedAt:'2026-09-29T00:00:00.000Z'
+  };
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-studio-f9-soak-'));
+  try{
+    const gameRoot=path.join(root,'roblox-games','g1');
+    fs.mkdirSync(gameRoot,{recursive:true});
+    fs.writeFileSync(path.join(gameRoot,'launch-mvp.json'),JSON.stringify({launchCore:['combat','quest'],releaseGates:['F9 regression']}));
+    const planned=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root});
+    assert.equal(planned.include.length,1);
+    assert.equal(planned.include[0].auditProfile,'F9_SOAK');
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+test('commercial world audit rejects broad floor gaps and unreachable semantic gameplay anchors',()=>{
+  const contract=deriveStudioActualPlayContract({launchCore:['large map','NPC quest interaction'],releaseGates:[]});
+  const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
+  const image={type:'image',mimeType:'image/png',data:png.toString('base64')};
+  const probe={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6},
+    camera:{present:true,subjectPresent:true,fieldOfView:70},
+    ui:{visibleButtons:1,visibleObjects:2,offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{
+      boundsFinite:true,collidablePartCount:100,floorBelowPlayer:true,
+      floorSampleCount:9,floorHitCount:2,routeSampleCount:6,routeSuccessCount:1,
+      minSpawnThreatDistance:-1,proximityPromptCount:1,clickDetectorCount:0,
+      mobs:[],npcs:[{name:'QuestNPC'}],companions:[],items:[],environmentModels:2,effectCount:0
+    },
+    runtime:{remoteCount:1,progression:[{scope:'player',name:'QuestProgress',value:'0'}],systemSignals:4,descendantCount:300,memoryMb:180,categories:{quest:1,progression:1,npc:1}},
+    workspace:{},
+    lighting:{brightness:1.2}
+  };
+  const result=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:probe,preActionClientProbe:probe,
+    postActionClientProbe:{...probe,player:{...probe.player,rootX:1}},
+    clientProbe:probe,serverProbe:{runtime:probe.runtime,world:probe.world,workspace:{}},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}],beforeImages:[image],afterImages:[image]
+  });
+  assert.ok(result.qualityFailureKinds.includes('adaptive-world-safety'));
+  assert.equal(result.metrics.worldAudit.floorCoveragePass,false);
+  assert.equal(result.metrics.worldAudit.routeCoveragePass,false);
+});
