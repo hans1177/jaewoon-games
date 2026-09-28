@@ -1655,7 +1655,50 @@ jobs:
           NODE
 
           gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100" > /tmp/roblox-local-f0-active-runs.json
-          candidate_count="$(grep -cve '^
+          candidate_count="$(wc -l < /tmp/roblox-local-f0-qa-ids | tr -d '[:space:]')"
+          candidate_count="${candidate_count:-0}"
+          dispatch_count=0
+          deduped_count=0
+
+          if [ "$candidate_count" -gt 0 ]; then
+            if [ -n "$REQUESTED_GAME_ID" ]; then
+              exact_active="$(REQUESTED_GAME_ID="$REQUESTED_GAME_ID" node -e "
+                const fs=require('fs');
+                const payload=JSON.parse(fs.readFileSync('/tmp/roblox-local-f0-active-runs.json','utf8'));
+                const states=new Set(['queued','pending','in_progress','requested']);
+                const title='Roblox runtime foundation QA · '+String(process.env.REQUESTED_GAME_ID||'').trim();
+                process.stdout.write(String((payload.workflow_runs||[]).filter(run=>states.has(String(run.status||'').toLowerCase())&&String(run.display_title||'')===title).length));
+              ")"
+              if [ "$exact_active" -gt 0 ]; then
+                deduped_count=1
+                echo "ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:$REQUESTED_GAME_ID"
+              else
+                gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
+                dispatch_count=1
+                echo "ROBLOX_LOCAL_F0_QA_DISPATCH=$REQUESTED_GAME_ID"
+              fi
+            else
+              scan_active="$(node -e "
+                const fs=require('fs');
+                const payload=JSON.parse(fs.readFileSync('/tmp/roblox-local-f0-active-runs.json','utf8'));
+                const states=new Set(['queued','pending','in_progress','requested']);
+                const title='Roblox runtime foundation QA · scan';
+                process.stdout.write(String((payload.workflow_runs||[]).filter(run=>states.has(String(run.status||'').toLowerCase())&&String(run.display_title||'')===title).length));
+              ")"
+              if [ "$scan_active" -gt 0 ]; then
+                deduped_count="$candidate_count"
+                echo "ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DEDUPED_ACTIVE:candidates=$candidate_count"
+              else
+                gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main
+                dispatch_count=1
+                echo "ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DISPATCHED:candidates=$candidate_count"
+              fi
+            fi
+          fi
+
+          echo "ROBLOX_LOCAL_F0_QA_CANDIDATE_COUNT=$candidate_count"
+          echo "ROBLOX_LOCAL_F0_QA_DISPATCH_COUNT=$dispatch_count"
+          echo "ROBLOX_LOCAL_F0_QA_DEDUPED_COUNT=$deduped_count"
           echo 'ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED'
           echo 'ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES'
 
