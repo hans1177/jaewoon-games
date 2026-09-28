@@ -1547,7 +1547,7 @@ test('focused replace recovery budget matches the central fast-path contract',()
   const focusedTimeout=Number(source.match(/const JSON_FOCUSED_REPLACE_TIMEOUT_MS=(\d+);/)?.[1]||0);
   const focusedContext=Number(source.match(/const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=(\d+);/)?.[1]||0);
   assert.equal(focusedPredict,384);
-  assert.equal(focusedTimeout,90000);
+  assert.match(source,/const JSON_FOCUSED_REPLACE_TIMEOUT_MS=Math\.max\(120000,DEFAULT_TIMEOUT_MS\);/);
   assert.equal(focusedContext,8192);
 });
 
@@ -2117,7 +2117,7 @@ test('second no-op receives one short focused third retry', async () => {
   assert.equal(result.generation.recoveryUsed,true);
   assert.equal(result.generation.focusedFinalRetry,true);
   assert.equal(result.generation.focusedReplaceOnly,true);
-  assert.equal(result.generation.timeoutMs,90000);
+  assert.equal(result.generation.timeoutMs,240000);
   assert.equal(result.generation.maxPredict,384);
   assert.equal(result.generation.temperature,0.08);
   assert.deepEqual(result.changedFiles,['index.html']);
@@ -2629,7 +2629,7 @@ test('first edit-match failure fast-escalates attempt two to exact replace-only 
   assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
   assert.equal(result.generation.maxPredict,384);
-  assert.equal(result.generation.timeoutMs,90000);
+  assert.equal(result.generation.timeoutMs,240000);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
@@ -3893,4 +3893,45 @@ test('source worker emits auditable APK learning prompt telemetry before generat
   assert.match(workerSource,/VIBE2_VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT=PASS/);
   assert.match(workerSource,/VIBE2_VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_COUNT=/);
   assert.match(workerSource,/VIBE2_VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT_IDS=/);
+});
+
+
+test('model path line locators are stripped before extension validation',()=>{
+  const candidate=normalizeCandidate({
+    edits:[{path:'Assets/Scripts/Player.cs:149',find:'return 1;',replace:'return 2;'}]
+  },{
+    target:'unity',
+    responsibleFiles:['Assets/Scripts/Player.cs'],
+    sourceRootRelative:'unity-games/demo'
+  });
+  assert.equal(candidate.edits[0].path,'Assets/Scripts/Player.cs');
+
+  const hashCandidate=normalizeCandidate({
+    edits:[{path:'Assets/Scripts/Player.cs#L149-L151',find:'return 2;',replace:'return 3;'}]
+  },{
+    target:'unity',
+    responsibleFiles:['Assets/Scripts/Player.cs'],
+    sourceRootRelative:'unity-games/demo'
+  });
+  assert.equal(hashCandidate.edits[0].path,'Assets/Scripts/Player.cs');
+});
+
+test('Unity bootstrap pair retry explicitly forbids empty edits and requires both files',()=>{
+  const retry=buildGenerationRetryPrompt([
+    'Engine: unity',
+    'Goal: bootstrap real Unity Web gameplay',
+    'Allowed edit paths: Assets/Scripts/GameCore.cs, Assets/Scripts/RuntimeBootstrap.cs',
+    '=== FILE Assets/Scripts/GameCore.cs [EDITABLE] ===',
+    'class GameCore {}',
+    '=== FILE Assets/Scripts/RuntimeBootstrap.cs [EDITABLE] ===',
+    'class RuntimeBootstrap {}'
+  ].join('\n'),{
+    error:new Error('후보가 실제 source 변경을 생성하지 않음'),
+    responsibleFiles:['Assets/Scripts/GameCore.cs','Assets/Scripts/RuntimeBootstrap.cs'],
+    attempt:2,
+    multiFilePairRequired:true
+  });
+  assert.match(retry,/edits array MUST NOT be empty/i);
+  assert.match(retry,/at least two edits total/i);
+  assert.match(retry,/Every replace must differ from find/i);
 });

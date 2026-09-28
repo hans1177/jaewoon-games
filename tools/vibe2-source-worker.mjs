@@ -72,7 +72,7 @@ const FOCUSED_WEB_REPAIR_CONTEXT_WINDOW=12288;
 const JSON_FINAL_RETRY_TIMEOUT_MS=150000;
 const JSON_FINAL_RETRY_MAX_PREDICT=768;
 const JSON_FOCUSED_REPLACE_MAX_PREDICT=384;
-const JSON_FOCUSED_REPLACE_TIMEOUT_MS=90000;
+const JSON_FOCUSED_REPLACE_TIMEOUT_MS=Math.max(120000,DEFAULT_TIMEOUT_MS);
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT=768;
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS=120000;
 const ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW=8192;
@@ -140,13 +140,11 @@ function sourceRootBootstrapAllowed(order,target,root,responsibleFiles){
 function normalizeModelPath(value,{target,responsibleFiles=[],sourceRootRelative=''}={}){
   let normalized=posix(value);
   if(normalized.startsWith(`${sourceRootRelative}/`))normalized=normalized.slice(sourceRootRelative.length+1);
+  const locator=normalized.match(/^(.*?)(?::\d+(?::\d+)?|#L\d+(?:-L?\d+)?)$/i);
+  if(locator)normalized=locator[1];
   if(PLACEHOLDER_PATHS.has(normalized.toLowerCase())){
     if(responsibleFiles.length!==1)throw new Error(`모델 예시 경로를 실제 파일로 결정할 수 없음: ${value}`);
     normalized=responsibleFiles[0];
-  }
-  if(responsibleFiles.length){
-    const locator=normalized.match(/^(.*?)(?::\d+(?::\d+)?|#L\d+(?:-L?\d+)?)$/i);
-    if(locator&&responsibleFiles.includes(locator[1]))normalized=locator[1];
   }
   normalized=assertRelativeSourcePath(normalized,target);
   if(responsibleFiles.length&&!responsibleFiles.includes(normalized))throw new Error(`책임 파일 범위 밖 수정 금지: ${normalized}`);
@@ -1857,7 +1855,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
     ?'Return one strict JSON object whose only top-level key is "edits". Use a connected edits[] package with distinct exact anchors as needed; do not collapse the repair to a one-color, static-UI, or one-anchor micro patch. Across the package, cover character/enemy, weapon/equipment, environment/terrain, material/color/style, and mandatory native motion with an actual CFrame/Transform/Position/Orientation mutation. Additional visual domains are allowed without an upper limit. Every path and find must come exactly from the writable context. No newFiles, replaceFiles, markdown, prose, placeholders, or extra keys.'
     :'';
   const multiFilePairInstruction=multiFilePairRequired
-    ?'Return one strict JSON object whose only top-level key is "edits". Include at least one exact edit for EACH Allowed edit path; for Unity Web bootstrap this means both Assets/Scripts/GameCore.cs and Assets/Scripts/RuntimeBootstrap.cs in the same candidate. Copy every path/find exactly from editable FILE blocks. Do not return newFiles, replaceFiles, markdown, prose, placeholders, or extra keys.'
+    ?'Return one strict JSON object whose only top-level key is "edits". The edits array MUST NOT be empty and MUST contain at least one real source-changing edit for EACH Allowed edit path. For Unity Web bootstrap this means at least two edits total: one for Assets/Scripts/GameCore.cs and one for Assets/Scripts/RuntimeBootstrap.cs in the same candidate. Every replace must differ from find. Copy every path/find exactly from editable FILE blocks. Do not return newFiles, replaceFiles, markdown, prose, placeholders, or extra keys.'
     :'';
   const standardRetryInstruction=multiFilePairInstruction||(((attempt>=3||(attempt>=2&&timeoutFailure))&&!studioExpansion&&!systemCausalTestRequired&&!systemSyntaxInvalid&&!systemAtomicPairRequired)
     ?(robloxPresentationTask
