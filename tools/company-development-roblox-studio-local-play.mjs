@@ -310,7 +310,15 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
     const artifactIdentity=currentExact?currentArtifactIdentity:candidateArtifactIdentity;
     const artifactRunId=candidateArtifactRunId;
 
-    const alreadyObserved=Boolean(
+    const scenarioEvidenceExact=Boolean(
+      scenarioContract.required!==true
+      ||(
+        prior?.scenarioContractRequired===true
+        &&Number(prior?.scenarioContractVersion||0)===Number(scenarioContract.version||0)
+        &&clean(prior?.scenarioContractFingerprint)===clean(scenarioContract.fingerprint)
+      )
+    );
+    const alreadyObservedExactCandidate=Boolean(
       prior?.pass===true
       &&prior?.actualPlay===true
       &&prior?.officialStudioMcp===true
@@ -324,16 +332,23 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       &&String(prior?.placeId||'')===String(candidate?.placeId||'')
       &&Number(prior?.versionNumber||0)===Number(candidate?.versionNumber||0)
       &&Boolean(clean(prior?.testedAt))
-      &&(
-        scenarioContract.required!==true
-        ||(
-          prior?.scenarioContractRequired===true
-          &&Number(prior?.scenarioContractVersion||0)===Number(scenarioContract.version||0)
-          &&clean(prior?.scenarioContractFingerprint)===clean(scenarioContract.fingerprint)
-        )
-      )
+      &&scenarioEvidenceExact
     );
-    if(alreadyObserved)continue;
+    const alreadyObservedExactLocalArtifact=Boolean(
+      localF0CandidateExact
+      &&prior?.pass===true
+      &&prior?.actualPlay===true
+      &&prior?.runtimeVerified===true
+      &&prior?.officialStudioMcp===true
+      &&prior?.localPlaceFile===true
+      &&prior?.onlinePlaceDirectOpen===false
+      &&prior?.robloxPlayerAutomation===false
+      &&clean(prior?.artifactIdentity)===artifactIdentity
+      &&Number(prior?.runtimeSummary?.consoleErrorCount||0)===0
+      &&Boolean(clean(prior?.testedAt))
+      &&scenarioEvidenceExact
+    );
+    if(alreadyObservedExactCandidate||alreadyObservedExactLocalArtifact)continue;
 
     include.push({
       gameId:clean(item.gameId),

@@ -321,6 +321,42 @@ test('planner skips only an already verified exact Studio MCP play record',()=>{
   assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()}).include.length,0);
 });
 
+test('planner reuses verified Studio play when local F0 bytes are identical across source metadata revisions',()=>{
+  const candidate=item();
+  const nextSource='c'.repeat(40);
+  candidate.robloxSourceCommit=nextSource;
+  candidate.robloxBuildSourceRevision=nextSource;
+  candidate.robloxRuntimeCandidateEvidence={};
+  candidate.robloxInternalReleasePublished=false;
+  candidate.robloxInternalReleaseEvidence={};
+  candidate.robloxFoundationF0Passed=true;
+  candidate.robloxBuildPreflightPassed=true;
+  candidate.robloxFoundationF0Evidence={
+    sourceRevision:nextSource,
+    artifactIdentity:artifact,
+    artifactRunId:888,
+  };
+  candidate.robloxInternalVibePlayEvidence={
+    pass:true,
+    actualPlay:true,
+    runtimeVerified:true,
+    officialStudioMcp:true,
+    localPlaceFile:true,
+    onlinePlaceDirectOpen:false,
+    robloxPlayerAutomation:false,
+    sourceRevision:source,
+    artifactIdentity:artifact,
+    artifactRunId:777,
+    universeId:'123',
+    placeId:'456',
+    versionNumber:9,
+    runtimeSummary:{consoleErrorCount:0},
+    testedAt:'2026-09-25T09:00:00.000Z'
+  };
+  assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()}).include.length,0);
+});
+
+
 test('planner collapses repeated shared Studio MCP infrastructure failures to one rotating canary',()=>{
   const rows=['g1','g2','g3'].map((gameId,index)=>{
     const candidate=item();

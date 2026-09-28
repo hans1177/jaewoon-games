@@ -546,17 +546,51 @@ jobs:
             const priorRuntime=item.robloxRuntimeFoundationEvidence||{};
             const priorPost=item.robloxPostRuntimeQaEvidence||{};
             const priorMultiplayer=item.robloxMultiplayerQaEvidence||{};
-            const studioPlay=item.robloxInternalVibePlayEvidence||{};
+            let studioPlay=item.robloxInternalVibePlayEvidence||{};
             const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
             const priorStudio=item.robloxStudioAssetRuntimeBindingEvidence||{};
+            const reusableLocalStudioArtifactEvidence=Boolean(
+              localPreF9Candidate
+              &&studioPlay.pass===true
+              &&studioPlay.actualPlay===true
+              &&studioPlay.runtimeVerified===true
+              &&studioPlay.officialStudioMcp===true
+              &&studioPlay.localPlaceFile===true
+              &&studioPlay.onlinePlaceDirectOpen===false
+              &&studioPlay.robloxPlayerAutomation===false
+              &&studioPlay.artifactIdentity===artifactIdentity
+              &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0
+            );
+            if(reusableLocalStudioArtifactEvidence
+              &&(studioPlay.sourceRevision!==sourceRevision||Number(studioPlay.versionNumber)!==Number(candidate.versionNumber))){
+              const historicalSourceRevision=String(studioPlay.sourceRevision||'');
+              const historicalVersionNumber=Number(studioPlay.versionNumber||0);
+              item.robloxInternalVibePlayEvidence={
+                ...studioPlay,
+                sourceRevision,
+                artifactIdentity,
+                artifactRunId:Number(candidate.artifactRunId||0),
+                universeId:String(candidate.universeId||''),
+                placeId:String(candidate.placeId||''),
+                versionNumber:Number(candidate.versionNumber),
+                currentSourceArtifactBinding:true,
+                reusedFromExactArtifactIdentity:true,
+                historicalSourceRevision,
+                historicalVersionNumber,
+                reusedAt:stamp,
+              };
+              studioPlay=item.robloxInternalVibePlayEvidence;
+              item.robloxInternalPlaytestPassed=true;
+              item.robloxInternalPlaytestPassedAt=stamp;
+              changed=true;
+              console.log('ROBLOX_STUDIO_EXACT_ARTIFACT_EVIDENCE_REBOUND='+item.gameId+':version='+candidate.versionNumber);
+            }
             const exactPriorMultiplayerValidation=Boolean(
               priorMultiplayer.passed===true
-              &&priorMultiplayer.sourceRevision===sourceRevision
               &&priorMultiplayer.artifactIdentity===artifactIdentity
             );
             const exactRuntimeMultiplayerValidation=Boolean(
               priorRuntime.f7MultiplayerFoundationPassed===true
-              &&priorRuntime.sourceRevision===sourceRevision
               &&priorRuntime.artifactIdentity===artifactIdentity
             );
             const exactMultiplayerValidationReusable=exactPriorMultiplayerValidation||exactRuntimeMultiplayerValidation;

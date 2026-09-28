@@ -270,20 +270,28 @@ test('same exact Studio internal evidence is reused inside the cycle without fab
 });
 
 
-test('two-client PASS is reusable for the same exact game code artifact even when private candidate place or version changes',()=>{
+test('two-client PASS is reusable for the same exact game artifact across source metadata and candidate changes',()=>{
   const priorAt=workflow.indexOf('const exactPriorMultiplayerValidation=Boolean(');
   const runtimeAt=workflow.indexOf('const exactRuntimeMultiplayerValidation=Boolean(',priorAt);
   assert.ok(priorAt>0&&runtimeAt>priorAt);
   const priorBlock=workflow.slice(priorAt,runtimeAt);
   const runtimeBlock=workflow.slice(runtimeAt,workflow.indexOf('const exactMultiplayerValidationReusable=',runtimeAt));
   assert.match(priorBlock,/priorMultiplayer\.passed===true/);
-  assert.match(priorBlock,/priorMultiplayer\.sourceRevision===sourceRevision/);
   assert.match(priorBlock,/priorMultiplayer\.artifactIdentity===artifactIdentity/);
-  assert.doesNotMatch(priorBlock,/placeId|candidateVersionNumber/);
+  assert.doesNotMatch(priorBlock,/sourceRevision|placeId|candidateVersionNumber/);
   assert.match(runtimeBlock,/priorRuntime\.f7MultiplayerFoundationPassed===true/);
-  assert.match(runtimeBlock,/priorRuntime\.sourceRevision===sourceRevision/);
   assert.match(runtimeBlock,/priorRuntime\.artifactIdentity===artifactIdentity/);
-  assert.doesNotMatch(runtimeBlock,/placeId|candidateVersionNumber/);
+  assert.doesNotMatch(runtimeBlock,/sourceRevision|placeId|candidateVersionNumber/);
   assert.match(workflow,/item\.robloxMultiplayerQaPassed=true/);
   assert.match(workflow,/ROBLOX_F7_MULTIPLAYER_EVIDENCE_REUSED=/);
+});
+
+
+test('exact local F0 artifact rebinds prior Studio evidence instead of replaying identical bytes',()=>{
+  assert.match(workflow,/const reusableLocalStudioArtifactEvidence=Boolean\(/);
+  assert.match(workflow,/studioPlay\.artifactIdentity===artifactIdentity/);
+  assert.match(workflow,/reusedFromExactArtifactIdentity:true/);
+  assert.match(workflow,/historicalSourceRevision/);
+  assert.match(workflow,/historicalVersionNumber/);
+  assert.match(workflow,/ROBLOX_STUDIO_EXACT_ARTIFACT_EVIDENCE_REBOUND=/);
 });
