@@ -147,11 +147,34 @@ jobs:
             const legacyF9Pending=item.currentStep==='ROBLOX_FINAL_REVIEW_REVALIDATION'&&item.robloxFailureSignature==='ROBLOX_FINAL_REVIEW_PENDING';
             const parallelF9Pending=item.robloxF9PendingInParallel===true;
             if(!legacyF9Pending&&!parallelF9Pending)continue;
-            const candidate=item.robloxRuntimeCandidateEvidence||{};
             const runtime=item.robloxRuntimeFoundationEvidence||{};
             const post=item.robloxPostRuntimeQaEvidence||{};
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const persistedCandidate=item.robloxRuntimeCandidateEvidence||{};
+            const f0CandidateEvidence=item.robloxFoundationF0Evidence||{};
+            const localArtifactRunId=Number(f0CandidateEvidence.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||0);
+            const localPreF9CandidateExact=
+              persistedCandidate.published!==true
+              &&item.robloxFoundationF0Passed===true
+              &&item.robloxBuildPreflightPassed===true
+              &&item.robloxBuildOrPackagePassed===true
+              &&item.robloxBuildSourceRevision===sourceRevision
+              &&f0CandidateEvidence.sourceRevision===sourceRevision
+              &&f0CandidateEvidence.artifactIdentity===artifactIdentity
+              &&localArtifactRunId>0;
+            const candidate=localPreF9CandidateExact?{
+              published:false,
+              releaseClaim:false,
+              authority:'roblox-local-f0-pre-f9-artifact',
+              sourceRevision,
+              artifactIdentity,
+              artifactRunId:localArtifactRunId,
+              universeId:'',
+              placeId:'',
+              versionNumber:localArtifactRunId,
+            }:persistedCandidate;
+            const localPreF9Candidate=candidate.authority==='roblox-local-f0-pre-f9-artifact';
             const sharedReleaseRuntimeAcceptance=
               item.robloxRuntimePassed===true
               &&runtime.runtimeAcceptancePassed===true
@@ -250,12 +273,17 @@ jobs:
                 (item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true)
                 ||internalRuntimeFindingDeferred
               )
-              &&candidate.published===true
+              &&(localPreF9Candidate?internalStudioValidationAccepted:candidate.published===true)
               &&candidate.releaseClaim===false
               &&candidate.sourceRevision===sourceRevision
               &&candidate.artifactIdentity===artifactIdentity
-              &&/^[1-9][0-9]*$/.test(String(candidate.universeId||''))
-              &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''))
+              &&(
+                (localPreF9Candidate&&internalStudioValidationAccepted)
+                ||(
+                  /^[1-9][0-9]*$/.test(String(candidate.universeId||''))
+                  &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''))
+                )
+              )
               &&(internalStudioValidationAccepted||exactRuntimeBinding)
               &&post.sourceRevision===sourceRevision
               &&post.artifactIdentity===artifactIdentity
