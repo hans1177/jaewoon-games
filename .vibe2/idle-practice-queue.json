@@ -122,6 +122,37 @@
       "sourceFailure": "fail_17sa11i"
     },
     {
+      "id": "review-fail_1a0dzmj",
+      "kind": "REPRO_DRILL",
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE",
+        "MOBILE_INPUT",
+        "UI_STATE",
+        "DEBUGGING",
+        "WEB_RUNTIME",
+        "ROBLOX_STUDIO",
+        "UNITY_RUNTIME",
+        "ASSET_PRODUCTION",
+        "ANIMATION_FEEL",
+        "QUEST_DESIGN",
+        "COMBAT",
+        "SECURITY",
+        "ASSET_ADAPTATION",
+        "CONCEPT_DIRECTION",
+        "UEFN_RUNTIME",
+        "CHARACTER_ARC",
+        "VFX",
+        "CAMERA_LANGUAGE",
+        "VISUAL_IDENTITY",
+        "STORYTELLING",
+        "PROGRESSION"
+      ],
+      "sourceFailure": "fail_1a0dzmj"
+    },
+    {
       "id": "review-fail_3e38u6",
       "kind": "REPRO_DRILL",
       "priority": "high",
@@ -151,36 +182,6 @@
         "CAMERA_LANGUAGE"
       ],
       "sourceFailure": "fail_3e38u6"
-    },
-    {
-      "id": "review-fail_1a0dzmj",
-      "kind": "REPRO_DRILL",
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STATE_MACHINE",
-        "MOBILE_INPUT",
-        "UI_STATE",
-        "DEBUGGING",
-        "WEB_RUNTIME",
-        "ROBLOX_STUDIO",
-        "UNITY_RUNTIME",
-        "ASSET_PRODUCTION",
-        "ANIMATION_FEEL",
-        "QUEST_DESIGN",
-        "COMBAT",
-        "SECURITY",
-        "ASSET_ADAPTATION",
-        "CONCEPT_DIRECTION",
-        "UEFN_RUNTIME",
-        "CHARACTER_ARC",
-        "VFX",
-        "CAMERA_LANGUAGE",
-        "VISUAL_IDENTITY",
-        "STORYTELLING"
-      ],
-      "sourceFailure": "fail_1a0dzmj"
     },
     {
       "id": "relearn-fail_wu3qnk",
@@ -1889,16 +1890,6 @@
       ]
     },
     {
-      "id": "gap-state_machine-l26",
-      "kind": "MINI_GAME_SYSTEM_DRILL",
-      "priority": "low",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false,
-      "domains": [
-        "STATE_MACHINE"
-      ]
-    },
-    {
       "id": "gap-debugging-l27",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -1906,6 +1897,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "DEBUGGING"
+      ]
+    },
+    {
+      "id": "gap-state_machine-l27",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STATE_MACHINE"
       ]
     }
   ]
