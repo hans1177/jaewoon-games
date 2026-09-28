@@ -3142,7 +3142,10 @@ function updateSwampSpecial(e,targetP,now,playerD){
     e.toxicSelfDamageNext=now+1000;
     e.hp=Math.max(0,e.hp-30);
     e.hitAt=now+110;
-    if(e.hp<=0)queueDeathAnimation(e,now);
+    if(e.hp<=0){
+     queueDeathAnimation(e,now);
+     if(!e.type.summoned&&!e.type.sealSpawn&&!e.noRespawn)state.respawns.push({typeId:e.type.id,packId:e.packId,at:now+enemyRespawnDelay(e.type)})
+    }
     showNotice('맹독 균사체 · 기절 반동 30 피해')
    }
    return{vx:0,vy:0}
@@ -3155,11 +3158,7 @@ function updateSwampSpecial(e,targetP,now,playerD){
    showNotice('맹독 균사체 · 회복 가스 3초');
   }
 
-  if(!engaged){
-   e.toxicGasVolleyActive=false;
-   e.toxicGasVolleyRemaining=0;
-   return null
-  }
+  if(!engaged)return null
 
   if(!e.nextToxicThrow)e.nextToxicThrow=now+3000;
   if(now>=e.nextToxicThrow){
