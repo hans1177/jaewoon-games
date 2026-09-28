@@ -47,23 +47,70 @@ test('technical pass becomes internal-release ready but never public by itself',
   assert.equal(g.publicReleaseReady,false);
 });
 
-test('real-server observation pending keeps Roblox internally ready but blocks public release',()=>{
+test('exact internal Studio evidence replaces external-server and duplicate multiplayer checks for technical public readiness',()=>{
   const item={
     ...technicalBase(),
     robloxRuntimePassed:false,
+    robloxMultiplayerQaPassed:false,
     robloxInternalReleaseReady:true,
     robloxInternalReleasePublished:true,
     robloxPublicReleaseRuntimeObservationPending:true,
-    robloxRuntimeFoundationEvidence:{serverBootObserved:false},
+    robloxFoundationF0Evidence:{
+      sourceRevision:source,artifactIdentity:artifact,saveExists:false,multiplayerApplicable:true,
+      serverClientBoundaryPreflightPassed:true,mobileControlUiPreflightPassed:true,multiplayerSyncContractPassed:true
+    },
+    robloxPostRuntimeQaEvidence:{
+      internalStudioValidationOnly:true,externalServerBootRequired:false,officialStudioMcpActualPlayPassed:true,
+      independentQaPassed:true,regressionPassed:true,multiplayerApplicabilityKnown:true,multiplayerRequired:true,
+      multiplayerValidationPassed:true,sourceRevision:source,artifactIdentity:artifact,candidateVersionNumber:7
+    },
     ...strictRobloxEvidence()
   };
   const r=controlPlatformExposure({developmentQueue:{items:[item]},ticketQueue:{tickets:[]},vibeQueue:{tasks:[]}});
   const p=r.state.games[0].platforms.find(x=>x.platform==='ROBLOX');
   assert.equal(p.internalReleaseReady,true);
-  assert.equal(p.externalExposureState,'INTERNAL_ONLY');
+  assert.equal(p.publicReleaseReady,true);
+  assert.equal(p.publicHardGate.pass,true);
+  assert.equal(p.publicHardGate.checks.externalServerDiagnosticNotRequired,true);
+  assert.equal(p.publicHardGate.checks.multiplayer,true);
+  assert.equal(p.publicHardGate.blockers.some(x=>x.includes('REALSERVER')),false);
+});
+
+test('non-multiplayer Roblox treats F7 as not applicable without separate multiplayer QA',()=>{
+  const item={
+    ...technicalBase(),
+    robloxRuntimePassed:false,
+    robloxMultiplayerQaPassed:false,
+    robloxInternalReleaseReady:true,
+    robloxInternalReleasePublished:true,
+    robloxFoundationF0Evidence:{
+      sourceRevision:source,artifactIdentity:artifact,saveExists:false,multiplayerApplicable:false,
+      serverClientBoundaryPreflightPassed:true,mobileControlUiPreflightPassed:true,multiplayerSyncContractPassed:true
+    },
+    robloxPostRuntimeQaEvidence:{
+      internalStudioValidationOnly:true,externalServerBootRequired:false,officialStudioMcpActualPlayPassed:true,
+      independentQaPassed:true,regressionPassed:true,multiplayerApplicabilityKnown:true,multiplayerRequired:false,
+      multiplayerValidationPassed:true,sourceRevision:source,artifactIdentity:artifact,candidateVersionNumber:7
+    },
+    ...strictRobloxEvidence()
+  };
+  const r=controlPlatformExposure({developmentQueue:{items:[item]},ticketQueue:{tickets:[]},vibeQueue:{tasks:[]}});
+  const p=r.state.games[0].platforms.find(x=>x.platform==='ROBLOX');
+  assert.equal(p.publicHardGate.checks.multiplayer,true);
+  assert.equal(p.publicReleaseReady,true);
+});
+
+test('confirmed release-blocking security evidence still blocks public readiness',()=>{
+  const item={
+    ...technicalBase(),
+    robloxInternalReleasePublished:true,
+    ...strictRobloxEvidence(),
+    robloxSecurityReleaseEvidence:exact({noReleaseBlockingFinding:false})
+  };
+  const r=controlPlatformExposure({developmentQueue:{items:[item]},ticketQueue:{tickets:[]},vibeQueue:{tasks:[]}});
+  const p=r.state.games[0].platforms.find(x=>x.platform==='ROBLOX');
   assert.equal(p.publicReleaseReady,false);
-  assert.ok(p.publicHardGate.blockers.includes('ROBLOX_PUBLIC_HARD_GATE_TECHNICAL'));
-  assert.ok(p.publicHardGate.blockers.includes('ROBLOX_PUBLIC_HARD_GATE_REALSERVERBOOT'));
+  assert.ok(p.publicHardGate.blockers.includes('ROBLOX_PUBLIC_HARD_GATE_SECURITY'));
 });
 
 test('old internal playtest flag cannot bypass actual Vibe play and hard gate',()=>{
