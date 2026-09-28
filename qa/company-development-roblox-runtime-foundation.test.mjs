@@ -662,15 +662,21 @@ test('Roblox post-runtime QA keeps distinct identities parallel while newest sam
 });
 
 
-test('F9 collapses duplicate exact-game and scan runs before deterministic review',()=>{
+test('F9 keeps only newest same-identity run and scan clears stale queued F9 work before deterministic review',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox F9 · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
   assert.doesNotMatch(workflow.slice(0,jobsAt),/\nconcurrency:/);
+  assert.match(workflow,/Cancel stale queued F9 runs before scan/);
+  assert.match(workflow,/const states=new Set\(\['queued','pending','requested'\]\)/);
+  assert.doesNotMatch(workflow.slice(workflow.indexOf('Cancel stale queued F9 runs before scan'),workflow.indexOf('Select newest same-identity F9 run')),/'in_progress'/);
+  assert.match(workflow,/ROBLOX_STALE_F9_RUN_CANCELLED=/);
+  assert.match(workflow,/ROBLOX_STALE_F9_RUN_CANCEL_COUNT=/);
   assert.match(workflow,/ROBLOX_F9_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_F9_EXACT_DEDUPED=/);
   assert.match(workflow,/ROBLOX_F9_SCAN_DEDUPED_NEWER=/);
+  assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
   assert.match(workflow,/final-review:\n\s+needs: dedupe\n\s+if: needs\.dedupe\.outputs\.run == 'true'/);
 });
 
