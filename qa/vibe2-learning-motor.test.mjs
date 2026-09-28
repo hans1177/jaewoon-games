@@ -1344,6 +1344,30 @@ test('verified knowledge outcomes reward first-pass and failure-clear evidence',
   assert.equal(row.primaryDomainMatches,1);
 });
 
+test('verified knowledge outcome attribution preserves the full retrieved set without truncation',()=>{
+  const ids=Array.from({length:64},(_,index)=>'PLAYBOOK_REUSE:external-black-box-bulk-'+index);
+  const task={
+    id:'knowledge-full-set',
+    gameId:'bulk-game',
+    target:'web',
+    goal:'apply complete verified external menu graphics motion learning',
+    evidence:[
+      'role-result:regression:PASS',
+      'role-result:review:PASS',
+      'candidate-identity:PASS',
+      'learning-knowledge-ids:'+encodeURIComponent(JSON.stringify(ids)),
+      'actions-run:full-set-1'
+    ]
+  };
+  const learned=applyVerifiedKnowledgeOutcomes({}, {tasks:[task]});
+  assert.equal(Object.keys(learned.state.knowledgeAttribution.entries).length,64);
+  for(const ref of ids){
+    const at=ref.indexOf(':');
+    const key=ref.slice(0,at)+':'+ref.slice(at+1);
+    assert.equal(learned.state.knowledgeAttribution.entries[key]?.verifiedApplications,1,key);
+  }
+});
+
 test('repeated regression failures retire harmful knowledge and remove it from retrieval',()=>{
   let state={};
   const tasks=[];
