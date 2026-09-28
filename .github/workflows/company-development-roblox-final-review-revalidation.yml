@@ -2,6 +2,13 @@ name: Company DEVELOPMENT_CONFIRMED Roblox F9 Final Review
 run-name: Roblox F9 · ${{ inputs.game_id || 'scan' }}
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-development-roblox-final-review-revalidation.yml'
+      - '.github/workflows/company-development-roblox-release-promotion.yml'
+      - 'qa/company-development-roblox-final-review-revalidation.test.mjs'
+      - 'qa/company-development-roblox-release-promotion.test.mjs'
   workflow_dispatch:
     inputs:
       game_id:
