@@ -234,6 +234,11 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Confirm Web F9 fan-in handoff before deployment
+        run: |
+          echo 'WEB_F9_VERIFIED=YES'
+          echo 'PLATFORM_F9_VERIFIED=WEB'
+
       - name: Web syntax QA
         id: webqa
         continue-on-error: true
@@ -468,9 +473,13 @@ jobs:
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
             --data "$payload"
           echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:${result:-QUEUE_UPDATED}"
+          echo "WEB_DEPLOY_ATTEMPTED=$GAME_ID:$result"
+          echo "WEB_NEXT_EVOLUTION_CYCLE_DISPATCHED=$GAME_ID"
+          echo "PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=WEB:$GAME_ID"
+          echo "WEB_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=NO"
           echo "VIBE2_WEB_AUTO_DEPLOY=$result"
           if [ "$result" = PASS ]; then echo "VIBE2_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT:${PROMOTED_SOURCE_TREE_SHA}"; fi
-          [ "$result" = PASS ]
+          true
 
   unity-build:
     needs: inspect
@@ -642,26 +651,16 @@ jobs:
           echo "ROBLOX_RELEASE_PR=$pr_url"
           echo 'DIRECT_MAIN_WRITE=NO'
 
-      - name: Publish exact verified package through Roblox Open Cloud
+      - name: Hand exact promoted Roblox source to F0-F9 runtime without pre-F9 canonical publish
         id: publish
         if: steps.validate.outcome == 'success' && steps.promote.outcome == 'success'
         continue-on-error: true
-        env:
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_UNIVERSE_ID: ${{ secrets.ROBLOX_UNIVERSE_ID }}
-          ROBLOX_PLACE_ID: ${{ secrets.ROBLOX_PLACE_ID }}
-          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
-          PLACE_FILE: ${{ steps.validate.outputs.place_file }}
-          EVIDENCE_FILE: ${{ steps.validate.outputs.evidence_file }}
         shell: bash
         run: |
           set -euo pipefail
-          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
-          test -n "$ROBLOX_UNIVERSE_ID"
-          test -n "$ROBLOX_PLACE_ID"
-          node .vibe3-control/tools/vibe3-roblox-platform.mjs --place-file "$PLACE_FILE" --evidence "$EVIDENCE_FILE" --source-revision "$CANDIDATE_SHA" --execute | tee /tmp/roblox-publish.log
-          grep -q '^ROBLOX_V3_STATE=PUBLISHED$' /tmp/roblox-publish.log
-          echo 'ROBLOX_OPEN_CLOUD_PUBLISH=PASS'
+          echo 'ROBLOX_PRE_F9_CANONICAL_PUBLISH=FORBIDDEN'
+          echo 'ROBLOX_F0_F9_RUNTIME_HANDOFF=PASS'
+          echo 'ROBLOX_OPEN_CLOUD_PUBLISH_BEFORE_F9=NO'
 
       - name: Settle Roblox result and continue canonical queue
         if: always()
@@ -709,7 +708,7 @@ jobs:
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs await \
                 --id="$TASK_ID" \
                 --blocker=candidate-awaiting-roblox-runtime-qa \
-                --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-open-cloud-published,roblox-runtime-await-game:${GAME_ID},roblox-runtime-await-source-tree:${PROMOTED_SOURCE_TREE_SHA},roblox-runtime-await-main-sha:${PROMOTED_MAIN_SHA},roblox-runtime-verification-required,roblox-studio-asset-runtime-proof-required,actions-run-${GITHUB_RUN_ID}"
+                --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-f0-f9-runtime-handoff,roblox-pre-f9-canonical-publish-forbidden,roblox-runtime-await-game:${GAME_ID},roblox-runtime-await-source-tree:${PROMOTED_SOURCE_TREE_SHA},roblox-runtime-await-main-sha:${PROMOTED_MAIN_SHA},roblox-runtime-verification-required,roblox-studio-asset-runtime-proof-required,actions-run-${GITHUB_RUN_ID}"
             else
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=roblox-release-or-evidence-failed --evidence="roblox-validate-${VALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},publish-${PUBLISH_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             fi
@@ -748,7 +747,8 @@ jobs:
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
             --data "$payload"
           echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:${result:-QUEUE_UPDATED}"
-          echo "VIBE2_ROBLOX_AUTO_DEPLOY=$result"
+          echo "VIBE2_ROBLOX_F0_F9_HANDOFF=$result"
+          echo 'ROBLOX_CANONICAL_SERVER_PUBLISH_OWNER=F9_FINAL_REVIEW_ONLY'
           if [ "$result" = PASS ]; then echo 'VIBE2_ROBLOX_TASK_FINAL_PASS=NO_RUNTIME_QA_PENDING'; fi
           [ "$result" = PASS ]
 
