@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {deriveApprovedScopeInventory} from './company-approved-scope-contract.mjs';
-import {createRobloxVibe3LearningContext,decorateRobloxActionsWithLearning,verifiedExternalBlackBoxPlaybookContract} from './vibe3-roblox-learning-context.mjs';
+import {createRobloxVibe3LearningContext,decorateRobloxActionsWithLearning} from './vibe3-roblox-learning-context.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -218,7 +218,15 @@ export function buildRobloxStudioAssetBootstrapPlan({gameId='',profile={},assetL
   });
 }
 
+function requireRobloxVerifiedExternalLearning(learning={}){
+  const ids=Array.isArray(learning?.verifiedExternalLearningIds)?learning.verifiedExternalLearningIds:[];
+  const principles=Array.isArray(learning?.verifiedExternalLearningPrinciples)?learning.verifiedExternalLearningPrinciples:[];
+  if(learning?.applied!==true||!ids.length||!principles.length)throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_REQUIRED');
+  return learning;
+}
+
 function verifiedExternalGameDevelopmentProfile(learning={}){
+  requireRobloxVerifiedExternalLearning(learning);
   const principles=[...(learning?.verifiedExternalLearningPrinciples||[])];
   if(!principles.length)throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_PRINCIPLES_REQUIRED');
   return Object.freeze({
@@ -310,18 +318,20 @@ verifiedLearningRiskCue.Parent = verifiedLearningRoot
 
 -- Roblox skill VFX / camera / motion feedback.
 local function playVerifiedLearningActionFeedback(control)
-  verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control.Name)
+  verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control and control.Name or "GAMEPLAY_STATE")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputRespondedAt", os.clock())
   verifiedLearningGuidance.Visible = false
 
-  local scale = control:FindFirstChild("VerifiedLearningMotionScale")
-  if not scale then
-    scale = Instance.new("UIScale")
-    scale.Name = "VerifiedLearningMotionScale"
-    scale.Parent = control
+  if control then
+    local scale = control:FindFirstChild("VerifiedLearningMotionScale")
+    if not scale then
+      scale = Instance.new("UIScale")
+      scale.Name = "VerifiedLearningMotionScale"
+      scale.Parent = control
+    end
+    scale.Scale = 0.94
+    verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
   end
-  scale.Scale = 0.94
-  verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
 
   local camera = workspace.CurrentCamera
   if camera then
@@ -353,6 +363,7 @@ local function playVerifiedLearningActionFeedback(control)
   end
 end
 
+local verifiedLearningLastControl = nil
 local function bindVerifiedLearningControl(control)
   if not control:IsA("GuiButton") then return end
   if not control:FindFirstChild("VerifiedLearningTouchTarget") then
@@ -362,6 +373,8 @@ local function bindVerifiedLearningControl(control)
     size.Parent = control
   end
   control.Activated:Connect(function()
+    verifiedLearningLastControl = control
+    verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputSubmittedAt", os.clock())
     playVerifiedLearningActionFeedback(control)
   end)
 end
@@ -369,13 +382,16 @@ for _, descendant in ipairs(verifiedLearningRoot:GetDescendants()) do bindVerifi
 verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
 verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningGameplayState", verifiedLearningPlayer:GetAttribute("LastApprovedScope") or "")
+  verifiedLearningRoot:SetAttribute("VerifiedExternalLearningServerConfirmedAt", os.clock())
+  playVerifiedLearningActionFeedback(verifiedLearningLastControl)
+  verifiedLearningLastControl = nil
 end)
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
 `;
 }
 
 function verifiedExternalLearningConfigBlock(learning={}){
-  if(learning?.applied!==true||Number(learning?.verifiedExternalLearningCoveragePct||0)!==100||Number(learning?.verifiedExternalLearningRetrievedCount||0)<=0||Number(learning?.verifiedExternalLearningRetrievedCount||0)!==Number(learning?.verifiedExternalLearningAppliedCount||0)||learning?.verifiedExternalLearningTruncationForbidden!==true)throw new Error('ROBLOX_EXISTING_SOURCE_VERIFIED_EXTERNAL_LEARNING_REQUIRED');
+  requireRobloxVerifiedExternalLearning(learning);
   const rows=values=>(values||[]).map(value=>`      ${luauString(value)},`).join('\n');
   return `  -- VERIFIED_EXTERNAL_LEARNING_BINDING_BEGIN
   VerifiedExternalLearning = {
@@ -835,18 +851,21 @@ function serverHandlerBody(kind,index){
 
 function serverSource({gameId,saveRequired,actions,profile,learning={}}){
   const multiplayerAfterAction=profile.multiplayerRequired?`\n  local participants = Players:GetPlayers()\n  if Config.CoopRequired then\n    local shared = 0\n    for _, participant in ipairs(participants) do\n      shared += readNumber(participant, "Progress", 0)\n    end\n    for _, participant in ipairs(participants) do participant:SetAttribute("SharedObjective", shared) end\n  end\n  if Config.CompetitiveRequired then\n    setNumber(player, "RoundScore", readNumber(player, "RoundScore", 0) + 1)\n  end\n  local snapshot = {ActorUserId = player.UserId, ParticipantCount = #participants, SharedObjective = readNumber(player, "SharedObjective", 0), RoundScore = readNumber(player, "RoundScore", 0)}\n  remote:FireAllClients("MULTIPLAYER_SYNC", snapshot)\n`:``;
-  const handlers=actions.map((action,index)=>`local function scopeHandler${index+1}(player)\n${serverHandlerBody(action.kind,index)}\n  player:SetAttribute("LastApprovedScope", ${luauString(action.id)})\n${learning.applied?`  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)\n  player:SetAttribute("LastLearningPattern", ${luauString(action.learningPattern||'')})\n`:''}${multiplayerAfterAction}end`).join('\n\n');
+  const handlers=actions.map((action,index)=>`local function scopeHandler${index+1}(player)\n${serverHandlerBody(action.kind,index)}\n  player:SetAttribute("LastApprovedScope", ${luauString(action.id)})\n${`  setNumber(player, "ActionSequence", readNumber(player, "ActionSequence", 0) + 1)\n  player:SetAttribute("LastLearningPattern", ${luauString(action.learningPattern||'')})\n`}${multiplayerAfterAction}end`).join('\n\n');
   const mapRows=actions.map((action,index)=>`  [${luauString(action.id)}] = scopeHandler${index+1},`).join('\n');
   const datastoreHead=saveRequired?`local DataStoreService = game:GetService("DataStoreService")\nlocal store = DataStoreService:GetDataStore(${luauString(`${gameId}-development-v1`)})\n`:'';
   const loadBlock=saveRequired?`  local ok, saved = pcall(function()\n    return store:GetAsync("player:" .. player.UserId)\n  end)\n  if ok and typeof(saved) == "table" then\n    for key, fallback in pairs(Config.InitialState) do\n      local value = saved[key]\n      if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end\n    end\n  else\n    initializePlayer(player)\n  end\n`:`  initializePlayer(player)\n`;
   const saveBlock=saveRequired?`  local snapshot = {}\n  for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end\n  pcall(function()\n    store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)\n  end)\n`:'';
-  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\n${datastoreHead}local Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\n\nlocal remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)\nif remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end\nif not remote then\n  remote = Instance.new("RemoteEvent")\n  remote.Name = Config.RemoteName\n  remote.Parent = ReplicatedStorage\nend\n\n-- native-foundation-sentinel-v1\nlocal foundationRemote = ReplicatedStorage:FindFirstChild("RuntimeFoundationReport")\nif foundationRemote and not foundationRemote:IsA("RemoteEvent") then foundationRemote:Destroy(); foundationRemote = nil end\nif not foundationRemote then\n  foundationRemote = Instance.new("RemoteEvent")\n  foundationRemote.Name = "RuntimeFoundationReport"\n  foundationRemote.Parent = ReplicatedStorage\nend\nlocal foundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")\nif not foundationSpawn then\n  foundationSpawn = Instance.new("SpawnLocation")\n  foundationSpawn.Name = "NativeFoundationSpawn"\n  foundationSpawn.Size = Vector3.new(8, 1, 8)\n  foundationSpawn.Position = Vector3.new(0, 3, 0)\n  foundationSpawn.Neutral = true\n  foundationSpawn.Parent = workspace\nend\nlocal function bindFoundationCharacter(character)\n  local humanoid = character:WaitForChild("Humanoid")\n  local rootPart = character:WaitForChild("HumanoidRootPart")\n  rootPart.Anchored = false\n  humanoid.PlatformStand = false\n  local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0))\n  character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)\n  character:SetAttribute("MOVEMENT_CONFIRMED", true)\nend\nlocal function bindFoundationPlayer(player)\n  if player.Character then task.defer(bindFoundationCharacter, player.Character) end\n  player.CharacterAdded:Connect(bindFoundationCharacter)\nend\nfoundationRemote.OnServerEvent:Connect(function(player, signal)\n  if typeof(signal) ~= "string" then return end\n  player:SetAttribute("NativeFoundationReadyAt", os.time())\nend)\n\nlocal lastAction = {}\nlocal function readNumber(player, name, fallback)\n  local value = player:GetAttribute(name)\n  if typeof(value) ~= "number" then return fallback end\n  return value\nend\nlocal function setNumber(player, name, value)\n  if typeof(value) ~= "number" then return end\n  player:SetAttribute(name, math.floor(value))\nend\nlocal function initializePlayer(player)\n  for key, value in pairs(Config.InitialState) do player:SetAttribute(key, value) end\n  player:SetAttribute("LastApprovedScope", "ready")\n  if Config.LearningContext and Config.LearningContext.Applied then\n    player:SetAttribute("LearningOperator", Config.LearningContext.Operator)\n    player:SetAttribute("LastLearningPattern", "")\n    player:SetAttribute("ActionSequence", 0)\n  end\nend\n\n${handlers}\n\nlocal handlers = {\n${mapRows}\n}\n\nPlayers.PlayerAdded:Connect(function(player)\n  bindFoundationPlayer(player)\n${loadBlock}end)\nfor _, player in ipairs(Players:GetPlayers()) do\n  task.defer(function()\n    bindFoundationPlayer(player)\n    if player:GetAttribute("Score") == nil then initializePlayer(player) end\n  end)\nend\nremote.OnServerEvent:Connect(function(player, actionId)\n  if typeof(actionId) ~= "string" then return end\n  local handler = handlers[actionId]\n  if typeof(handler) ~= "function" then return end\n  local now = os.clock()\n  local previous = lastAction[player] or 0\n  if now - previous < Config.RateLimitSeconds then return end\n  lastAction[player] = now\n  handler(player)\nend)\nPlayers.PlayerRemoving:Connect(function(player)\n${saveBlock}  lastAction[player] = nil\nend)\ngame:BindToClose(function() end)\n`;
+  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\n${datastoreHead}local Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\n\nlocal remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)\nif remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end\nif not remote then\n  remote = Instance.new("RemoteEvent")\n  remote.Name = Config.RemoteName\n  remote.Parent = ReplicatedStorage\nend\n\n-- native-foundation-sentinel-v1\nlocal foundationRemote = ReplicatedStorage:FindFirstChild("RuntimeFoundationReport")\nif foundationRemote and not foundationRemote:IsA("RemoteEvent") then foundationRemote:Destroy(); foundationRemote = nil end\nif not foundationRemote then\n  foundationRemote = Instance.new("RemoteEvent")\n  foundationRemote.Name = "RuntimeFoundationReport"\n  foundationRemote.Parent = ReplicatedStorage\nend\nlocal foundationSpawn = workspace:FindFirstChild("NativeFoundationSpawn")\nif not foundationSpawn then\n  foundationSpawn = Instance.new("SpawnLocation")\n  foundationSpawn.Name = "NativeFoundationSpawn"\n  foundationSpawn.Size = Vector3.new(8, 1, 8)\n  foundationSpawn.Position = Vector3.new(0, 3, 0)\n  foundationSpawn.Neutral = true\n  foundationSpawn.Parent = workspace\nend\nlocal function bindFoundationCharacter(character)\n  local humanoid = character:WaitForChild("Humanoid")\n  local rootPart = character:WaitForChild("HumanoidRootPart")\n  rootPart.Anchored = false\n  humanoid.PlatformStand = false\n  local groundHit = workspace:Raycast(rootPart.Position, Vector3.new(0, -10, 0))\n  character:SetAttribute("GROUND_CONTACT", groundHit ~= nil)\n  character:SetAttribute("MOVEMENT_CONFIRMED", true)\nend\nlocal function bindFoundationPlayer(player)\n  if player.Character then task.defer(bindFoundationCharacter, player.Character) end\n  player.CharacterAdded:Connect(bindFoundationCharacter)\nend\nfoundationRemote.OnServerEvent:Connect(function(player, signal)\n  if typeof(signal) ~= "string" then return end\n  player:SetAttribute("NativeFoundationReadyAt", os.time())\nend)\n\nlocal lastAction = {}\nlocal function readNumber(player, name, fallback)\n  local value = player:GetAttribute(name)\n  if typeof(value) ~= "number" then return fallback end\n  return value\nend\nlocal function setNumber(player, name, value)\n  if typeof(value) ~= "number" then return end\n  player:SetAttribute(name, math.floor(value))\nend\nlocal function initializePlayer(player)\n  for key, value in pairs(Config.InitialState) do player:SetAttribute(key, value) end\n  player:SetAttribute("LastApprovedScope", "ready")\n  player:SetAttribute("LearningOperator", Config.LearningContext.Operator)
+  player:SetAttribute("LastLearningPattern", "")
+  player:SetAttribute("ActionSequence", 0)\nend\n\n${handlers}\n\nlocal handlers = {\n${mapRows}\n}\n\nPlayers.PlayerAdded:Connect(function(player)\n  bindFoundationPlayer(player)\n${loadBlock}end)\nfor _, player in ipairs(Players:GetPlayers()) do\n  task.defer(function()\n    bindFoundationPlayer(player)\n    if player:GetAttribute("Score") == nil then initializePlayer(player) end\n  end)\nend\nremote.OnServerEvent:Connect(function(player, actionId)\n  if typeof(actionId) ~= "string" then return end\n  local handler = handlers[actionId]\n  if typeof(handler) ~= "function" then return end\n  local now = os.clock()\n  local previous = lastAction[player] or 0\n  if now - previous < Config.RateLimitSeconds then return end\n  lastAction[player] = now\n  handler(player)\nend)\nPlayers.PlayerRemoving:Connect(function(player)\n${saveBlock}  lastAction[player] = nil\nend)\ngame:BindToClose(function() end)\n`;
 }
 
 function clientSource({profile,learning={},studioAssets={}}){
-  const nativeLearningRuntime=learning.applied?robloxNativeLearningRuntimeBlock({frameVar:'root',configVar:'Config',learning}):'';
-  const learnedInput=learning.applied?`local ContextActionService = game:GetService("ContextActionService")\n`:``;
-  const learnedBinding=learning.applied?`\nif #Config.Actions > 0 then\n  ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)\n    if inputState == Enum.UserInputState.Begin then remote:FireServer(Config.Actions[1].Id) end\n    return Enum.ContextActionResult.Sink\n  end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)\nend\n`:``;
+  requireRobloxVerifiedExternalLearning(learning);
+  const nativeLearningRuntime=robloxNativeLearningRuntimeBlock({frameVar:'root',configVar:'Config',learning});
+  const learnedInput=`local ContextActionService = game:GetService("ContextActionService")\n`;
+  const learnedBinding=`\nif #Config.Actions > 0 then\n  ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)\n    if inputState == Enum.UserInputState.Begin then remote:FireServer(Config.Actions[1].Id) end\n    return Enum.ContextActionResult.Sink\n  end, false, Enum.KeyCode.Space, Enum.KeyCode.ButtonA)\nend\n`;
   const multiplayerClient=profile.multiplayerRequired?`\nlocal multiplayerStatus = Instance.new("TextLabel")\nmultiplayerStatus.Name = "MultiplayerStatus"\nmultiplayerStatus.Size = UDim2.new(1, -20, 0, 36)\nmultiplayerStatus.Position = UDim2.fromOffset(10, 104)\nmultiplayerStatus.BackgroundTransparency = 1\nmultiplayerStatus.TextColor3 = Color3.fromRGB(180, 230, 255)\nmultiplayerStatus.TextScaled = true\nmultiplayerStatus.Text = "Multiplayer sync ready"\nmultiplayerStatus.Parent = root\nremote.OnClientEvent:Connect(function(kind, payload)\n  if kind ~= "MULTIPLAYER_SYNC" or typeof(payload) ~= "table" then return end\n  multiplayerStatus.Text = string.format("Players %d · Shared %d · Round %d", payload.ParticipantCount or 0, payload.SharedObjective or 0, payload.RoundScore or 0)\nend)\n`:``;
   return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal UserInputService = game:GetService("UserInputService")\n${learnedInput}local STUDIO_ASSET_BINDING_VERSION = 2\nlocal player = Players.LocalPlayer\nlocal Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\nlocal remote = ReplicatedStorage:WaitForChild(Config.RemoteName)\nlocal foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")\nlocal nativeTouchEnabled = UserInputService.TouchEnabled\nlocal nativeFoundationCamera = workspace.CurrentCamera\nlocal function reportNativeFoundationReady()\n  local character = player.Character or player.CharacterAdded:Wait()\n  local humanoid = character:WaitForChild("Humanoid")\n  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then\n    foundationRemote:FireServer("CAMERA_READY")\n  end\n  foundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")\nend\ntask.defer(reportNativeFoundationReady)\n\nlocal gui = Instance.new("ScreenGui")\ngui.Name = "ApprovedScopeHud"\ngui.ResetOnSpawn = false\ngui.Parent = player:WaitForChild("PlayerGui")\nlocal root = Instance.new("Frame")\nroot.Name = "Root"\nroot.AnchorPoint = Vector2.new(0.5, 1)\nroot.Position = UDim2.fromScale(0.5, 0.98)\nroot.Size = UDim2.new(1, -24, 0, 360)\nroot.BackgroundTransparency = 0.15\nlocal studioUi = Config.StudioAssets and Config.StudioAssets.Families and Config.StudioAssets.Families.UI or {}\nlocal function hasStudioAtom(atom)\n  return table.find(studioUi, atom) ~= nil\nend\nroot.BackgroundColor3 = hasStudioAtom("FRAME_PANEL") and Color3.fromRGB(22, 34, 58) or Color3.fromRGB(18, 28, 48)\nroot:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)\nroot:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))\nroot.Parent = gui\nlocal title = Instance.new("TextLabel")\ntitle.Name = "Title"\ntitle.Size = UDim2.new(1, -20, 0, 44)\ntitle.Position = UDim2.fromOffset(10, 8)\ntitle.BackgroundTransparency = 1\ntitle.TextColor3 = Color3.fromRGB(245, 248, 255)\ntitle.TextScaled = true\ntitle.Text = string.format("%s · %s · %s", Config.GameName, Config.Genre, Config.PlayMode)\ntitle.Parent = root\nlocal status = Instance.new("TextLabel")\nstatus.Name = "Status"\nstatus.Size = UDim2.new(1, -20, 0, 48)\nstatus.Position = UDim2.fromOffset(10, 54)\nstatus.BackgroundColor3 = Color3.fromRGB(10, 17, 30)\nstatus.TextColor3 = Color3.fromRGB(220, 232, 250)\nstatus.TextScaled = true\nstatus.Parent = root\n${multiplayerClient}\nlocal list = Instance.new("ScrollingFrame")\nlist.Name = "ApprovedActions"\nlist.Size = UDim2.new(1, -20, 1, -${profile.multiplayerRequired?150:112})\nlist.Position = UDim2.fromOffset(10, ${profile.multiplayerRequired?142:106})\nlist.BackgroundTransparency = 1\nlist.BorderSizePixel = 0\nlist.AutomaticCanvasSize = Enum.AutomaticSize.Y\nlist.CanvasSize = UDim2.new()\nlist.ScrollBarThickness = 6\nlist.Parent = root\nlocal layout = Instance.new("UIListLayout")\nlayout.Padding = UDim.new(0, 8)\nlayout.SortOrder = Enum.SortOrder.LayoutOrder\nlayout.Parent = list\nfor index, action in ipairs(Config.Actions) do\n  local button = Instance.new("TextButton")\n  button.Name = "ScopeAction" .. index\n  button.LayoutOrder = index\n  button.Size = UDim2.new(1, -4, 0, 56)\n  button.BackgroundColor3 = hasStudioAtom("BUTTON_PRIMARY") and Color3.fromRGB(224, 236, 255) or Color3.fromRGB(235, 242, 255)\n  button.TextColor3 = Color3.fromRGB(16, 24, 40)\n  button.TextWrapped = true\n  button.TextScaled = true\n  button.Text = string.format("%d. %s [%s]", index, action.Label, action.Kind)\n  button.Parent = list\n  button.Activated:Connect(function() remote:FireServer(action.Id) end)\nend\nlocal healthTrack = Instance.new("Frame")\nhealthTrack.Name = "StudioHealthTrack"\nhealthTrack.Size = UDim2.new(1, -20, 0, 10)\nhealthTrack.Position = UDim2.fromOffset(10, 98)\nhealthTrack.BackgroundColor3 = Color3.fromRGB(70, 78, 92)\nhealthTrack.BorderSizePixel = 0\nhealthTrack.Visible = hasStudioAtom("BAR_HEALTH")\nhealthTrack.Parent = root\nlocal healthFill = Instance.new("Frame")\nhealthFill.Name = "StudioHealthFill"\nhealthFill.Size = UDim2.fromScale(1, 1)\nhealthFill.BackgroundColor3 = Color3.fromRGB(92, 205, 118)\nhealthFill.BorderSizePixel = 0\nhealthFill.Parent = healthTrack\nlocal watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}\nlocal function render()\n  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)\n  healthFill.Size = UDim2.fromScale(math.clamp((player:GetAttribute("Health") or 100) / 100, 0, 1), 1)\nend\nfor _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end\nrender()\n${nativeLearningRuntime}\n${learnedBinding}`;
 }
@@ -858,7 +877,7 @@ export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={
   const platformProfile=robloxPlatformProfileFromBaseline(baseline);
   const saveRequired=requiresPersistentSave(baseline);
   const handoffValidation=Object.freeze({pass:true,blockers:Object.freeze([]),carryForward:Object.freeze([])});
-  const learning=createRobloxVibe3LearningContext({gameId,profile,artbook,playbooks,recombination});
+  const learning=requireRobloxVerifiedExternalLearning(createRobloxVibe3LearningContext({gameId,profile,artbook,playbooks,recombination}));
   const actions=approvedActions(baseline,profile,learning);
   const studioAssets=buildRobloxStudioAssetBootstrapPlan({gameId,profile,assetLibrary});
   const result={
@@ -879,9 +898,9 @@ export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={
       profile.competitiveImplementationRequired?'competitive source maintains per-player RoundScore and broadcasts it':null,
       'mobile-first ScreenGui exposes approved gameplay actions',
       studioAssets.applied?`Studio base material binding applied: ${studioAssets.selectedAtomCount} semantic atoms; runtime verification still required`:'Studio base material binding unavailable',
-      learning.applied?`Vibe3 Roblox playbook applied: ${learning.checklist.join(', ')}`:'Vibe3 learning context not supplied',
-      learning.applied?'verified APK principles are adapted into Roblox environment/background, character animation/motion, skill VFX, camera feedback, UI/touch controls, gameplay state, and runtime QA':'',
-      learning.applied?`transformative recipe=${learning.recipeId}; operator=${learning.transformationOperator}; features=${learning.featureBlend.join(', ')}`:null,
+      `Vibe3 Roblox playbook applied: ${learning.checklist.join(', ')}`,
+      'verified APK principles are always adapted into Roblox environment/background, character animation/motion, skill VFX, camera feedback, UI/touch controls, gameplay state, and runtime QA',
+      `transformative recipe=${learning.recipeId}; operator=${learning.transformationOperator}; features=${learning.featureBlend.join(', ')}`,
       saveRequired?'persistent player state uses DataStoreService with safe fallback':'no DataStore added because locked baseline does not require persistence',
       clean(buildUpDirective?.thisLoopPrimaryGoal)?`shared BUILD_UP directive pending implementation: ${clean(buildUpDirective.thisLoopPrimaryGoal)}`:null,
       'runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass',
@@ -889,7 +908,7 @@ export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={
   };
   const validation=validateRobloxBootstrap({...result,baseline,profile,learning,studioAssets});
   if(!validation.pass)throw new Error(`ROBLOX_BOOTSTRAP_COMPILER_FAILED: ${validation.blockers.join('|')}`);
-  return {result,validation,actions,profile,platformProfile,learning,studioAssets,webHandoff:null,handoffValidation,generationMode:learning.applied?'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT':'DETERMINISTIC_PROFILE_BOUND_FULL_SCOPE_IMPLEMENTATION',modelUsed:false,attempts:0,failures:[]};
+  return {result,validation,actions,profile,platformProfile,learning,studioAssets,webHandoff:null,handoffValidation,generationMode:'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT',modelUsed:false,attempts:0,failures:[]};
 }
 
 export async function buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,webHandoff,roadmap,assetLibrary,model,buildUpDirective}){
@@ -933,9 +952,7 @@ async function main(){
   const assetLibrary=fs.existsSync(assetLibraryFile)?readJson(assetLibraryFile):{};
   const buildUpDirective=buildUpDirectiveFile&&fs.existsSync(buildUpDirectiveFile)?readJson(buildUpDirectiveFile):null;
   const buildUpDirectiveConsumed=Boolean(clean(buildUpDirective?.directiveId));
-  const verifiedPlaybookContract=verifiedExternalBlackBoxPlaybookContract(playbooks,{required:true,requiredTaskTypes:['roblox','coding']});
-  const existingLearning=createRobloxVibe3LearningContext({gameId,profile:robloxBuildProfileFromBaseline(baseline),artbook,playbooks,recombination});
-  if(existingLearning.applied!==true||Number(existingLearning.verifiedExternalLearningCoveragePct||0)!==100||Number(existingLearning.verifiedExternalLearningRetrievedCount||0)!==verifiedPlaybookContract.retrievedCount||Number(existingLearning.verifiedExternalLearningAppliedCount||0)!==verifiedPlaybookContract.appliedCount||existingLearning.verifiedExternalLearningTruncationForbidden!==true)throw new Error('ROBLOX_VERIFIED_EXTERNAL_LEARNING_100_REQUIRED');
+  const existingLearning=requireRobloxVerifiedExternalLearning(createRobloxVibe3LearningContext({gameId,profile:robloxBuildProfileFromBaseline(baseline),artbook,playbooks,recombination}));
   if(buildUpDirectiveConsumed&&clean(buildUpDirective?.gameId)!==gameId)throw new Error('BUILD_UP_DIRECTIVE_GAME_ID_MISMATCH');
   if(existingSource){
     const applied=applyRobloxStudioAssetBindingToExistingSource({root:outputRoot,gameId,baseline,assetLibrary,foundationRepair,learning:existingLearning});
