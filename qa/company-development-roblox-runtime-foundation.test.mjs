@@ -95,6 +95,7 @@ test('multiplayer F7 passes from exact source code contract without launching tw
  const r=validateRobloxMultiplayerSourceContract({serverSource:server,clientSource:client});
  assert.equal(r.passed,true);
  assert.equal(r.runtimeTwoClientExecutionRequired,false);
+ assert.equal(r.checks.twoParticipantCapablePath,true);
  assert.equal(r.authority,'roblox-static-two-client-source-contract');
 });
 

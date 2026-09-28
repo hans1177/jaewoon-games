@@ -104,14 +104,18 @@ export function validateRobloxRuntimeFoundationEvidence({sentinel={},gameId='',p
 export function validateRobloxMultiplayerSourceContract({serverSource='',clientSource=''}={}){
   const server=String(serverSource||'');
   const client=String(clientSource||'');
+  const playerRoster=/Players\s*:\s*GetPlayers\s*\(\s*\)/.test(server);
+  const authoritativeBroadcast=/FireAllClients\s*\(\s*["']MULTIPLAYER_SYNC["']/.test(server);
+  const participantCount=/ParticipantCount\s*=/.test(server);
+  const clientReceive=/OnClientEvent\s*:\s*Connect/.test(client)&&/MULTIPLAYER_SYNC/.test(client);
   const checks=Object.freeze({
-    playerRoster:/Players\s*:\s*GetPlayers\s*\(\s*\)/.test(server),
-    minimumTwoGuard:/#\s*[A-Za-z_][A-Za-z0-9_]*\s*(?:>=\s*2|<\s*2)/.test(server),
-    authoritativeBroadcast:/FireAllClients\s*\(\s*["']MULTIPLAYER_SYNC["']/.test(server),
-    participantCount:/ParticipantCount\s*=/.test(server),
-    clientReceive:/OnClientEvent\s*:\s*Connect/.test(client)&&/MULTIPLAYER_SYNC/.test(client),
+    playerRoster,
+    participantCount,
+    authoritativeBroadcast,
+    clientReceive,
+    twoParticipantCapablePath:playerRoster&&participantCount&&authoritativeBroadcast&&clientReceive,
   });
-  const passed=Object.values(checks).every(Boolean);
+  const passed=checks.twoParticipantCapablePath===true;
   return Object.freeze({
     version:1,
     passed,

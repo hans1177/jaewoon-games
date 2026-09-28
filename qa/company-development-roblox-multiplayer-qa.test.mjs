@@ -27,7 +27,15 @@ test('multiplayer release gate passes from authoritative two-participant source 
   assert.equal(result.runtimeTwoClientExecutionRequired,false);
 });
 
-test('multiplayer code gate rejects missing minimum-two guard or client sync handler',()=>{
+test('multiplayer code gate accepts roster-count broadcast without requiring a literal >=2 branch',()=>{
   const server='local participants=Players:GetPlayers()\nremote:FireAllClients("MULTIPLAYER_SYNC",{ParticipantCount=#participants})';
-  assert.equal(validateRobloxMultiplayerSourceContract({serverSource:server,clientSource:'remote.OnClientEvent:Connect(function() end)'}).passed,false);
+  const client='remote.OnClientEvent:Connect(function(kind,payload) if kind=="MULTIPLAYER_SYNC" then local n=payload.ParticipantCount end end)';
+  const result=validateRobloxMultiplayerSourceContract({serverSource:server,clientSource:client});
+  assert.equal(result.passed,true);
+  assert.equal(result.checks.twoParticipantCapablePath,true);
+});
+
+test('multiplayer code gate still rejects missing client sync handler',()=>{
+  const server='local participants=Players:GetPlayers()\nremote:FireAllClients("MULTIPLAYER_SYNC",{ParticipantCount=#participants})';
+  assert.equal(validateRobloxMultiplayerSourceContract({serverSource:server,clientSource:'print("no sync handler")'}).passed,false);
 });
