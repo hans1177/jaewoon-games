@@ -1,7 +1,7 @@
 # FAST_MVP_INTERNAL_GATE_V2: exact package -> shared preflight -> core headless QA -> private/restricted publish
 # MANUAL_RELEASE_TRIGGER: final primary-three design-art-title sync
 name: Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment
-run-name: Roblox private runtime · ${{ inputs.game_id || 'push' }}
+run-name: Roblox publish · ${{ inputs.game_id || 'push' }} · ${{ inputs.publish_stage || 'validation' }}
 
 on:
   push:
@@ -14,6 +14,14 @@ on:
         description: Exact DEVELOPMENT_CONFIRMED Roblox gameId to publish as private/restricted internal release after canonical final review
         required: true
         type: string
+      publish_stage:
+        description: validation uses a separate private QA target; final publishes only the exact F9-passed artifact to the canonical game target
+        required: false
+        default: validation
+        type: choice
+        options:
+          - validation
+          - final
       thumbnail_only:
         description: Sync canonical Roblox/homepage thumbnail only; do not republish the place
         required: false
@@ -41,6 +49,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ inputs.game_id }}
+          PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -49,7 +58,7 @@ jobs:
             let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
               const j=JSON.parse(s);
               const states=new Set(['queued','pending','in_progress','requested']);
-              const title='Roblox private runtime · '+String(process.env.GAME_ID||'');
+              const title='Roblox publish · '+String(process.env.GAME_ID||'')+' · '+String(process.env.PUBLISH_STAGE||'validation');
               const ids=(j.workflow_runs||[])
                 .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title)
                 .map(r=>Number(r.id))
@@ -102,8 +111,9 @@ jobs:
           set -euo pipefail
           node --test qa/company-development-roblox-release-promotion.test.mjs qa/vibe3-roblox-platform.test.mjs
 
-      - name: Ensure game-specific private Roblox target
+      - name: Ensure game-specific private Roblox validation target
         id: dedicated_target
+        if: ${{ (inputs.publish_stage || 'validation') != 'final' }}
         continue-on-error: true
         working-directory: main
         env:
@@ -139,7 +149,7 @@ jobs:
             process.exit(0);
           }
           const valid=v=>/^[1-9][0-9]*$/.test(String(v||'').trim());
-          const current=item.robloxPublicationTarget||{};
+          const current=item.robloxValidationTarget||{};
           const dedicated=current.dedicated===true
             &&current.shared!==true
             &&valid(current.universeId)
@@ -156,7 +166,7 @@ jobs:
           await configureRobloxExperience({
             universeId:created.universeId,
             name:String(item.gameName||gameId),
-            description:'Private internal build for '+String(item.gameName||gameId)+'. Managed by the canonical Roblox development flow.',
+            description:'Private pre-F9 validation build for '+String(item.gameName||gameId)+'. Never used as the canonical game server target.',
             apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
             cookie,
           });
@@ -180,7 +190,7 @@ jobs:
           console.log('ROBLOX_DEDICATED_TARGET_CREATED='+gameId+':'+result.universeId+'/'+result.placeId);
           NODE
 
-      - name: Persist dedicated private target reservation
+      - name: Persist dedicated private validation target reservation
         if: steps.dedicated_target.outcome == 'success'
         working-directory: runtime
         shell: bash
@@ -196,8 +206,8 @@ jobs:
           const item=(q.items||[]).find(row=>row.gameId===r.gameId);
           if(!item)throw new Error('dedicated target queue item missing: '+r.gameId);
           const stamp=new Date().toISOString();
-          item.robloxPublicationTarget={
-            version:3,
+          item.robloxValidationTarget={
+            version:1,
             gameId:r.gameId,
             universeId:String(r.universeId),
             placeId:String(r.placeId),
@@ -205,7 +215,7 @@ jobs:
             verifiedAt:null,
             lastVerifiedAt:null,
             source:'canonical-dedicated-open-cloud-bootstrap',
-            authority:'roblox-canonical-publication-target',
+            authority:'roblox-pre-f9-validation-target',
             dedicated:true,
             shared:false,
             visibilityIntent:'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE',
@@ -234,13 +244,14 @@ jobs:
             sleep $((attempt*2))
           done
           test "$pushed" = '1'
-          echo 'ROBLOX_DEDICATED_TARGET_RESERVATION=PERSISTED'
+          echo 'ROBLOX_VALIDATION_TARGET_RESERVATION=PERSISTED'
 
       - name: Resolve exact canonical release target
         id: target
         working-directory: main
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          PUBLISH_STAGE: ${{ inputs.publish_stage || 'validation' }}
           OWNER_SECRET_UNIVERSE_ID: ${{ secrets.ROBLOX_UNIVERSE_ID }}
           OWNER_SECRET_PLACE_ID: ${{ secrets.ROBLOX_PLACE_ID }}
         shell: bash
@@ -252,6 +263,8 @@ jobs:
           import fs from 'node:fs';
           const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
           const requestedGameId=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const publishStage=String(process.env.PUBLISH_STAGE||'validation').trim().toLowerCase();
+          if(!['validation','final'].includes(publishStage))throw new Error('ROBLOX_PUBLISH_STAGE_INVALID:'+publishStage);
           const pending=(q.items||[]).find(row=>
             String(row.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
             &&row.robloxFoundationF0Passed===true
@@ -278,16 +291,25 @@ jobs:
           const f0EvidenceMode=String(item.robloxFoundationF0Evidence?.validationMode||item.robloxHeadlessFastMvpEvidence?.validationMode||'').trim().toUpperCase();
           const headlessMode=canonicalRobloxValidationMode==='HEADLESS_FAST_MVP'&&f0EvidenceMode==='HEADLESS_SOURCE_PREFLIGHT_F0';
           const artifactRunId=Number(item.robloxFoundationF0Evidence?.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||item.robloxRuntimeEvidence?.artifactRunId||0);
-          const publicationTarget=item.robloxPublicationTarget||{};
-          const currentCandidate=item.robloxRuntimeCandidateEvidence?.published===true
+          const publicationTarget=publishStage==='final'?(item.robloxPublicationTarget||{}):(item.robloxValidationTarget||{});
+          const currentValidationCandidate=publishStage==='validation'
+            &&item.robloxRuntimeCandidateEvidence?.published===true
             &&item.robloxRuntimeCandidateEvidence?.sourceRevision===revision
             &&item.robloxRuntimeCandidateEvidence?.artifactIdentity===artifact
             &&Number(item.robloxRuntimeCandidateEvidence?.versionNumber)>0
             &&String(item.robloxRuntimeCandidateEvidence?.universeId||'')===String(publicationTarget.universeId||'')
             &&String(item.robloxRuntimeCandidateEvidence?.placeId||'')===String(publicationTarget.placeId||'');
-          if(currentCandidate){
-            put('skip','true');put('skip_reason','runtime-candidate-already-deployed');
-            console.log(`ROBLOX_RUNTIME_CANDIDATE_ALREADY_DEPLOYED=${gameId}`);
+          const canonicalEvidence=item.robloxCanonicalReleaseEvidence||{};
+          const currentFinalPublish=publishStage==='final'
+            &&canonicalEvidence.published===true
+            &&canonicalEvidence.sourceRevision===revision
+            &&canonicalEvidence.artifactIdentity===artifact
+            &&String(canonicalEvidence.universeId||'')===String(publicationTarget.universeId||'')
+            &&String(canonicalEvidence.placeId||'')===String(publicationTarget.placeId||'');
+          if(currentValidationCandidate||currentFinalPublish){
+            put('skip','true');
+            put('skip_reason',publishStage==='final'?'canonical-final-already-published':'runtime-validation-candidate-already-deployed');
+            console.log((publishStage==='final'?'ROBLOX_CANONICAL_FINAL_ALREADY_PUBLISHED=':'ROBLOX_RUNTIME_VALIDATION_CANDIDATE_ALREADY_DEPLOYED=')+gameId);
             process.exit(0);
           }
           const commonCanonical=
@@ -311,15 +333,32 @@ jobs:
             &&item.robloxFoundationF0Evidence?.runtimeFoundationPassed===false
             &&item.robloxFailureStage==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'
             &&item.robloxFailureSignature==='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING';
-          const canonical=commonCanonical&&headlessCanonical;
+          const validationCanonical=commonCanonical&&headlessCanonical;
+          const validationCandidate=item.robloxRuntimeCandidateEvidence||{};
+          const finalCanonical=
+            publishStage==='final'
+            &&String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
+            &&item.robloxFinalReviewPassed===true
+            &&item.robloxF9ReleaseRegressionPassed===true
+            &&item.robloxCanonicalPublishPending===true
+            &&validationCandidate.published===true
+            &&validationCandidate.sourceRevision===revision
+            &&validationCandidate.artifactIdentity===artifact
+            &&Number(validationCandidate.versionNumber)>0
+            &&/^[0-9a-f]{40}$/i.test(revision)
+            &&/^sha256:[0-9a-f]{64}$/i.test(artifact)
+            &&sourceRoot===`roblox-games/${gameId}`
+            &&Number.isInteger(artifactRunId)&&artifactRunId>0;
+          const canonical=publishStage==='final'?finalCanonical:validationCanonical;
           console.log(`ROBLOX_RELEASE_CANONICAL_VALIDATION_MODE=${canonicalRobloxValidationMode||'MISSING'}`);
           console.log(`ROBLOX_RELEASE_F0_EVIDENCE_MODE=${f0EvidenceMode||'MISSING'}`);
+          console.log(`ROBLOX_PUBLISH_STAGE=${publishStage.toUpperCase()}`);
           console.log(`ROBLOX_RELEASE_COMMON_CANONICAL=${commonCanonical?'YES':'NO'}`);
           console.log(`ROBLOX_RELEASE_HEADLESS_CANONICAL=${headlessCanonical?'YES':'NO'}`);
           if(!canonical)throw new Error(`ROBLOX_RELEASE_CANONICAL_GATE_BLOCKED:${gameId}`);
 
           const validIds=(target)=>/^[1-9][0-9]*$/.test(String(target?.universeId||'').trim())&&/^[1-9][0-9]*$/.test(String(target?.placeId||'').trim());
-          const persistedTarget=item.robloxPublicationTarget||{};
+          const persistedTarget=publishStage==='final'?(item.robloxPublicationTarget||{}):(item.robloxValidationTarget||{});
           const priorPublishedTarget=item.robloxInternalReleaseEvidence?.published===true?item.robloxInternalReleaseEvidence:(item.robloxReleaseEvidence?.published===true?item.robloxReleaseEvidence:{});
           const knownGood=JSON.parse(fs.readFileSync('roblox-games/known-good-runtime-evidence.json','utf8'));
           const targetEvidence=(knownGood.records||[]).find(row=>
@@ -598,7 +637,7 @@ jobs:
           echo 'ROBLOX_INTERNAL_RELEASE_PRIVATE_ENFORCEMENT=PASS'
           echo 'ROBLOX_INTERNAL_RELEASE_PUBLIC_DISCOVERY=NO'
 
-      - name: Publish exact F0-passed package as private runtime candidate
+      - name: Publish exact package to validation target or F9-verified canonical target
         id: publish
         if: steps.target.outputs.skip != 'true'
         working-directory: main
