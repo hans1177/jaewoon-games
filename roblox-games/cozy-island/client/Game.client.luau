@@ -98,7 +98,7 @@ local verifiedLearningPlayer = verifiedLearningPlayers.LocalPlayer
 local verifiedLearningContext = C.VerifiedExternalLearning or C.LearningContext or {}
 local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
-local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 3
+local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 5
 local verifiedLearningRoot = feedbackFlash
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
@@ -124,6 +124,25 @@ end
 verifiedLearningBloom.Intensity = 0.22
 verifiedLearningBloom.Size = 18
 verifiedLearningBloom.Threshold = 1.1
+local verifiedLearningAtmosphere = verifiedLearningLighting:FindFirstChild("VerifiedLearningAtmosphere")
+if not verifiedLearningAtmosphere then
+  verifiedLearningAtmosphere = Instance.new("Atmosphere")
+  verifiedLearningAtmosphere.Name = "VerifiedLearningAtmosphere"
+  verifiedLearningAtmosphere.Parent = verifiedLearningLighting
+end
+verifiedLearningAtmosphere.Density = 0.22
+verifiedLearningAtmosphere.Haze = 1.1
+verifiedLearningAtmosphere.Glare = 0.08
+local verifiedLearningDepth = verifiedLearningLighting:FindFirstChild("VerifiedLearningDepthOfField")
+if not verifiedLearningDepth then
+  verifiedLearningDepth = Instance.new("DepthOfFieldEffect")
+  verifiedLearningDepth.Name = "VerifiedLearningDepthOfField"
+  verifiedLearningDepth.Parent = verifiedLearningLighting
+end
+verifiedLearningDepth.FarIntensity = 0.08
+verifiedLearningDepth.NearIntensity = 0.02
+verifiedLearningDepth.FocusDistance = 28
+verifiedLearningDepth.InFocusRadius = 24
 
 -- Roblox character animation / motion adaptation.
 local function syncVerifiedLearningCharacterMotion(character)
@@ -165,18 +184,20 @@ verifiedLearningRiskCue.Parent = verifiedLearningRoot
 
 -- Roblox skill VFX / camera / motion feedback.
 local function playVerifiedLearningActionFeedback(control)
-  verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control.Name)
+  verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control and control.Name or "GAMEPLAY_STATE")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputRespondedAt", os.clock())
   verifiedLearningGuidance.Visible = false
 
-  local scale = control:FindFirstChild("VerifiedLearningMotionScale")
-  if not scale then
-    scale = Instance.new("UIScale")
-    scale.Name = "VerifiedLearningMotionScale"
-    scale.Parent = control
+  if control then
+    local scale = control:FindFirstChild("VerifiedLearningMotionScale")
+    if not scale then
+      scale = Instance.new("UIScale")
+      scale.Name = "VerifiedLearningMotionScale"
+      scale.Parent = control
+    end
+    scale.Scale = 0.94
+    verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
   end
-  scale.Scale = 0.94
-  verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
 
   local camera = workspace.CurrentCamera
   if camera then
@@ -201,13 +222,35 @@ local function playVerifiedLearningActionFeedback(control)
     sparkles.Name = "VerifiedLearningSkillSparkles"
     sparkles.SparkleColor = Color3.fromRGB(170, 220, 255)
     sparkles.Parent = rootPart
-    task.delay(0.22, function()
+    local impactAttachment = Instance.new("Attachment")
+    impactAttachment.Name = "VerifiedLearningSkillAttachment"
+    impactAttachment.Parent = rootPart
+    local particles = Instance.new("ParticleEmitter")
+    particles.Name = "VerifiedLearningSkillParticles"
+    particles.Rate = 0
+    particles.Lifetime = NumberRange.new(0.18, 0.32)
+    particles.Speed = NumberRange.new(5, 9)
+    particles.SpreadAngle = Vector2.new(45, 45)
+    particles.LightEmission = 0.7
+    particles.Parent = impactAttachment
+    particles:Emit(18)
+    local impactLight = Instance.new("PointLight")
+    impactLight.Name = "VerifiedLearningSkillLight"
+    impactLight.Color = Color3.fromRGB(160, 215, 255)
+    impactLight.Brightness = 2.2
+    impactLight.Range = 10
+    impactLight.Parent = rootPart
+    verifiedLearningTweenService:Create(impactLight, TweenInfo.new(0.18), {Brightness = 0, Range = 4}):Play()
+    task.delay(0.24, function()
+      if impactAttachment then impactAttachment:Destroy() end
+      if impactLight then impactLight:Destroy() end
       if sparkles then sparkles:Destroy() end
       if highlight then highlight:Destroy() end
     end)
   end
 end
 
+local verifiedLearningLastControl = nil
 local function bindVerifiedLearningControl(control)
   if not control:IsA("GuiButton") then return end
   if not control:FindFirstChild("VerifiedLearningTouchTarget") then
@@ -217,6 +260,8 @@ local function bindVerifiedLearningControl(control)
     size.Parent = control
   end
   control.Activated:Connect(function()
+    verifiedLearningLastControl = control
+    verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputSubmittedAt", os.clock())
     playVerifiedLearningActionFeedback(control)
   end)
 end
@@ -224,6 +269,9 @@ for _, descendant in ipairs(verifiedLearningRoot:GetDescendants()) do bindVerifi
 verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
 verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningGameplayState", verifiedLearningPlayer:GetAttribute("LastApprovedScope") or "")
+  verifiedLearningRoot:SetAttribute("VerifiedExternalLearningServerConfirmedAt", os.clock())
+  playVerifiedLearningActionFeedback(verifiedLearningLastControl)
+  verifiedLearningLastControl = nil
 end)
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
 
