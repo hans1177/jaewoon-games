@@ -506,7 +506,11 @@ test('recovery-fast lane runs disjoint system work in parallel while responsible
   assert.equal(bounded.selected.length,3);
   assert.deepEqual(new Set(bounded.selected.map(task=>task.id)),new Set(['sys-a','sys-b','sys-c']));
   assert.ok(bounded.selected.every(task=>task.executionLane==='RECOVERY_FAST'));
-  assert.ok(bounded.deferredConflicts.some(row=>row.task.id==='sys-a-conflict'&&row.reason==='responsible-file-conflict'));
+  const conflict=bounded.deferredConflicts.find(row=>row.task.id==='sys-a-conflict');
+  assert.ok(conflict);
+  assert.equal(conflict.reason,'responsible-file-conflict');
+  assert.equal(conflict.conflictTaskId,'sys-a');
+  assert.equal(conflict.conflictExecutionLane,'RECOVERY_FAST');
 });
 
 test('running nondevelopment lane work does not consume game-primary worker capacity',()=>{
