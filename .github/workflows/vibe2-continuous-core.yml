@@ -1042,6 +1042,8 @@ jobs:
             --game="$LOCK_GAME" \
             --files="$LOCK_FILES" \
             --base-sha="$LOCK_BASE_SHA" \
+            --run-id="${GITHUB_RUN_ID:-}" \
+            --run-attempt="${GITHUB_RUN_ATTEMPT:-}" \
             --evidence="compiled-central-work-contract,change-set:$LOCK_CHANGE_SET" | tee /tmp/vibe2-work-lock-acquire.log
           acquired="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_ACQUIRED=//p' /tmp/vibe2-work-lock-acquire.log | tail -n1)"
           lock_id="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_ID=//p' /tmp/vibe2-work-lock-acquire.log | tail -n1)"
