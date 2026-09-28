@@ -159,9 +159,7 @@ export function createRobloxVibe3LearningContext({gameId='',profile={},artbook={
     'ROBLOX_GAMEPLAY_STATE_AND_PROGRESSION',
     'ROBLOX_RUNTIME_QA_AND_RELIABILITY'
   ]);
-  const applied=verifiedExternalLearningIds.length>0
-    &&verifiedExternalDistilledContentComplete
-    &&verifiedExternalLearningPrinciples.length>0;
+  const applied=verifiedExternalLearningIds.length>0&&verifiedExternalLearningPrinciples.length>0;
 
   return Object.freeze({
     applied,
