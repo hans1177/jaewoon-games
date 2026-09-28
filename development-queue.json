@@ -4146,10 +4146,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
-      "canonicalState": "PRIVATE_RUNTIME_CANDIDATE_DEPLOYED",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-28T00:54:15.467Z",
+      "updatedAt": "2026-09-28T01:02:17.053Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -4782,8 +4782,8 @@
           "authoritativeStateChangeObserved": false,
           "exactScenarioObserved": false
         },
-        "testedAt": "2026-09-28T00:40:55.270Z",
-        "workflowRunId": 36359893833,
+        "testedAt": "2026-09-28T01:02:17.053Z",
+        "workflowRunId": 36360535644,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false
       },
@@ -4879,8 +4879,8 @@
         "failureSignature": "ROBLOX_STUDIO_MCP_RUNTIME_ERROR",
         "qualityFailureKinds": [],
         "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
-        "testedAt": "2026-09-28T00:40:55.270Z",
-        "workflowRunId": 36359893833,
+        "testedAt": "2026-09-28T01:02:17.053Z",
+        "workflowRunId": 36360535644,
         "authority": "roblox-official-studio-mcp-product-quality-failure"
       },
       "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD"
@@ -13201,7 +13201,7 @@
       "contractCanaryPassed": false
     }
   ],
-  "updatedAt": "2026-09-28T00:54:15.467Z",
+  "updatedAt": "2026-09-28T01:02:17.053Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
