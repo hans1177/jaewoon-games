@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local function render()",
+      "replace": "local function render()\n\tlocal idx=p:GetAttribute(\"NextBaseIndex\")or 1\n\tlocal b=C.Bases[idx]\n\tlocal target=b and (b.Name..\" · \"..(b.Enemy or\"수비대\")..\" · 전력 \"..b.Strength)or\"5개 거점 정복 완료\"\n\tresources.Text=string.format(\"나무 %d · 식량 %d · 코인 %d\n병사 %d · 병영 Lv.%d · 점령 %d/5\",\n\t\tp:GetAttribute(\"Wood\")or 0,p:GetAttribute(\"Food\")or 0,p:GetAttribute(\"Coins\")or 0,\n\t\tp:GetAttribute(\"Troops\")or 0,p:GetAttribute(\"BarracksLevel\")or 1,p:GetAttribute(\"CapturedBases\")or 0)\n\tif p:GetAttribute(\"InBattle\")then\n\t\tif bgm.IsPlaying then bgm:Stop()end\n\t\tif not battleBgm.IsPlaying then battleBgm:Play()end\n\telse\n\t\tif battleBgm.IsPlaying then battleBgm:Stop()end\n\t\tif not bgm.IsPlaying then bgm:Play()end\n\tend\n\tlocal captured=p:GetAttribute(\"CapturedBases\")or 0\n\tif captured>lastCaptured then victorySfx.TimePosition=0;victorySfx:Play()end\n\tlastCaptured=captured\nend\n\nfor _,k in ipairs({\"Wood\",\"Food\",\"Coins\",\"Iron\",\"Horses\",\"Stone\",\"Gold\",\"Sulfur\",\"Residents\",\"WoodWorkers\",\"Farmers\",\"BarracksLevel\",\"Troops\",\"CapturedBases\",\"CapturedIslands\",\"NextBaseIndex\",\"BattleProgress\",\"LastActivity\",\"InBattle\"})do\n\t\tp:GetAttributeChangedSignal(k):Connect(render)\n\tend\n\np:GetAttributeChangedSignal(\"FeedbackEvent\"):\n\t\tConnect(function()\n\t\t\tlocal value=tostring(p:GetAttribute(\"FeedbackEvent\")or\"\"\n\t\t\tif value:find(\"^RESOURCE:\\\")then resourceSfx.TimePosition=0;resourceSfx:Play();flash(Color3.fromRGB(120,220,120))\n\t\t\telseif value:find(\"^BUILD:\\\")then buildSfx.TimePosition=0;buildSfx:Play();flash(Color3.fromRGB(240,200,110))\n\t\t\telseif value:find(\"^HIT:\\\")then hitSfx.TimePosition=0;hitSfx:Play();flash(Color3.fromRGB(235,110,90))\n\t\t\telseif value:find(\"^CAPTURE:\\\")then captureSfx.TimePosition=0;captureSfx:Play();flash(Color3.fromRGB(110,210,255))\n\t\t\tend\n\t\tend)\n\nremote.OnClientEvent:Connect(function(kind,snapshot)\n\t\tif kind~=\"MULTIPLAYER_SYNC\"or typeof(snapshot)~=\"table\"then return end\n\t\tp:SetAttribute(\"SyncedParticipants\",tonumber(snapshot.ParticipantCount)or 1)\n\t\tp:SetAttribute(\"SyncedSharedObjective\",tonumber(snapshot.SharedObjective)or 0)\n\tend)\n\nQACamera.install(C,gui,function()\n\t\treturn{\n\t\t\t{label=\"cozy-home-overview\",position=Vector3.new(0,145,170),lookAt=Vector3.new(0,4,0)),\n\t\t\t{label=\"cozy-home-ground\",position=Vector3.new(0,24,98),lookAt=Vector3.new(0,5,0)),\n\t\t\t{label=\"cozy-east-regions\",position=Vector3.new(270,135,5),lookAt=Vector3.new(170,5,0)),\n\t\t\t{label=\"cozy-west-regions\",position=Vector3.new(-270,135,5),lookAt=Vector3.new(-170,5,0)),\n\t\t\t{label=\"cozy-volcano\",position=Vector3.new(0,145,-350),lookAt=Vector3.new(0,12,-232))}\n\t\t}\n\tend)\n\nrender()"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}

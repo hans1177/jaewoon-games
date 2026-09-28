@@ -518,6 +518,56 @@ end
 
 -- 상태 갱신
 local function render()
+	local idx=p:GetAttribute("NextBaseIndex")or 1
+	local b=C.Bases[idx]
+	local target=b and (b.Name.." · "..(b.Enemy or"수비대").." · 전력 "..b.Strength)or"5개 거점 정복 완료"
+	resources.Text=string.format("나무 %d · 식량 %d · 코인 %d
+병사 %d · 병영 Lv.%d · 점령 %d/5",
+		p:GetAttribute("Wood")or 0,p:GetAttribute("Food")or 0,p:GetAttribute("Coins")or 0,
+		p:GetAttribute("Troops")or 0,p:GetAttribute("BarracksLevel")or 1,p:GetAttribute("CapturedBases")or 0)
+	if p:GetAttribute("InBattle")then
+		if bgm.IsPlaying then bgm:Stop()end
+		if not battleBgm.IsPlaying then battleBgm:Play()end
+	else
+		if battleBgm.IsPlaying then battleBgm:Stop()end
+		if not bgm.IsPlaying then bgm:Play()end
+	end
+	local captured=p:GetAttribute("CapturedBases")or 0
+	if captured>lastCaptured then victorySfx.TimePosition=0;victorySfx:Play()end
+	lastCaptured=captured
+end
+
+for _,k in ipairs({"Wood","Food","Coins","Iron","Horses","Stone","Gold","Sulfur","Residents","WoodWorkers","Farmers","BarracksLevel","Troops","CapturedBases","CapturedIslands","NextBaseIndex","BattleProgress","LastActivity","InBattle"})do
+		p:GetAttributeChangedSignal(k):Connect(render)
+	end
+
+p:GetAttributeChangedSignal("FeedbackEvent"):
+		Connect(function()
+			local value=tostring(p:GetAttribute("FeedbackEvent")or""
+			if value:find("^RESOURCE:\")then resourceSfx.TimePosition=0;resourceSfx:Play();flash(Color3.fromRGB(120,220,120))
+			elseif value:find("^BUILD:\")then buildSfx.TimePosition=0;buildSfx:Play();flash(Color3.fromRGB(240,200,110))
+			elseif value:find("^HIT:\")then hitSfx.TimePosition=0;hitSfx:Play();flash(Color3.fromRGB(235,110,90))
+			elseif value:find("^CAPTURE:\")then captureSfx.TimePosition=0;captureSfx:Play();flash(Color3.fromRGB(110,210,255))
+			end
+		end)
+
+remote.OnClientEvent:Connect(function(kind,snapshot)
+		if kind~="MULTIPLAYER_SYNC"or typeof(snapshot)~="table"then return end
+		p:SetAttribute("SyncedParticipants",tonumber(snapshot.ParticipantCount)or 1)
+		p:SetAttribute("SyncedSharedObjective",tonumber(snapshot.SharedObjective)or 0)
+	end)
+
+QACamera.install(C,gui,function()
+		return{
+			{label="cozy-home-overview",position=Vector3.new(0,145,170),lookAt=Vector3.new(0,4,0)),
+			{label="cozy-home-ground",position=Vector3.new(0,24,98),lookAt=Vector3.new(0,5,0)),
+			{label="cozy-east-regions",position=Vector3.new(270,135,5),lookAt=Vector3.new(170,5,0)),
+			{label="cozy-west-regions",position=Vector3.new(-270,135,5),lookAt=Vector3.new(-170,5,0)),
+			{label="cozy-volcano",position=Vector3.new(0,145,-350),lookAt=Vector3.new(0,12,-232))}
+		}
+	end)
+
+render()
  local idx=p:GetAttribute("NextBaseIndex")or 1
  local b=C.Bases[idx]
  local target=b and (b.Name.." · "..(b.Enemy or"수비대").." · 전력 "..b.Strength)or"5개 거점 정복 완료"
