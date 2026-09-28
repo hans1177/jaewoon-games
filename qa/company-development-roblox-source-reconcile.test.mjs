@@ -552,3 +552,13 @@ test('existing Roblox APK-derived principles change actual client UX behavior',(
   assert.match(source,/VerifiedExternalLearningInputRespondedAt/);
   assert.match(source,/control\.Activated:Connect/);
 });
+
+
+test('Roblox game-development APK principles cannot remain unmapped',()=>{
+  const source=fs.readFileSync(new URL('../tools/company-development-roblox-bootstrap.mjs',import.meta.url),'utf8');
+  assert.match(source,/ROBLOX_GAME_DEVELOPMENT_PRINCIPLE_UNMAPPED/);
+  assert.match(source,/VISIBLE_PROGRESSION_RISK_CUE/);
+  assert.match(source,/VerifiedLearningProgressionRiskCue/);
+  assert.match(source,/도전 전 레벨·위험 조건 확인/);
+  assert.match(source,/mappings:Object\.freeze\(mappings\)/);
+});
