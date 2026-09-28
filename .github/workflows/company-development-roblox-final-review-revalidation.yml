@@ -738,7 +738,7 @@ jobs:
           fi
 
           rm -rf /tmp/vibe2-f9-control
-          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-f9-control -- --branch vibe2-unreal-core --single-branch >/dev/null 2>&1
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-f9-control -- --branch vibe2-unreal-core --single-branch --depth 1 --filter=blob:none >/dev/null 2>&1
           git -C /tmp/vibe2-f9-control config user.name 'jaewoon-roblox-f9-fanin'
           git -C /tmp/vibe2-f9-control config user.email 'actions@users.noreply.github.com'
           pushed=0
@@ -749,7 +749,9 @@ jobs:
             git -C /tmp/vibe2-f9-control reset --hard origin/vibe2-unreal-core >/dev/null
             while IFS=$'\t' read -r game_id studio_required source_revision version_number acceptance_mode; do
               [ -n "$game_id" ] || continue
-              git -C main fetch --no-tags origin "$source_revision" --quiet
+              if ! git -C main cat-file -e "$source_revision^{commit}" 2>/dev/null; then
+                git -C main fetch --no-tags --depth=1 origin "$source_revision" --quiet
+              fi
               runtime_source_tree_sha="$(git -C main rev-parse "$source_revision:roblox-games/$game_id")"
               [[ "$runtime_source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
               echo "ROBLOX_F9_RUNTIME_SOURCE_TREE_SHA=$game_id:$runtime_source_tree_sha"
