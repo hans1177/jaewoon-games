@@ -999,6 +999,25 @@
     "failureAction": "PUBLICATION_REPAIR_CONTINUES_IN_PARALLEL_WHILE_NEXT_F0_TO_F9_EVOLUTION_CYCLE_PROCEEDS",
     "finalPublishDispatchRequiredBeforeNextCycleRefill": true,
     "publicationFailureBlocksEvolution": false,
-    "publicationVisibilityBlocksEvolution": false
+    "publicationVisibilityBlocksEvolution": false,
+    "nextCycleStartsAfterF9PublishDispatch": true,
+    "publicationFailureMayNotBlockNextCycle": true
+  },
+  "verifiedPlatformCyclePublicationSecurity": {
+    "version": 1,
+    "authority": "company-learning/platform-release-roadmap.json#verifiedPlatformCyclePublication",
+    "platforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "publishBeforeF9Forbidden": true,
+    "exactF9SourceArtifactRequiredForPublish": true,
+    "f9MayNotEndEvolution": true,
+    "publicationSuccessRequiredBeforeNextCycle": false,
+    "publicVisibilityRequiredBeforeNextCycle": false,
+    "publicationFailureAction": "RETRY_PUBLICATION_ASYNC_WHILE_NEXT_VERIFIED_EVOLUTION_CYCLE_CONTINUES",
+    "publicationFailureMayNotDowngradeVerifiedF9Evidence": true,
+    "publicationFailureMayNotBlockNewSourceMutation": true
   }
 }
