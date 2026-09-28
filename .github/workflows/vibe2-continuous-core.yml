@@ -1113,8 +1113,10 @@ jobs:
 
           if [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
             echo 'VIBE2_ROBLOX_SOURCE_MODE=DETERMINISTIC_LOCAL'
+            echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=DETERMINISTIC_LOCAL'
             echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
           else
+            echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=LOCAL_OLLAMA'
             command -v ollama >/dev/null
             nohup ollama serve > "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
             for i in $(seq 1 30); do
