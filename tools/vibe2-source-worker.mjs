@@ -1194,7 +1194,7 @@ export function buildVerifiedExternalLearningPromptContract(order={}){
     const row=byId.get(id),principles=semantic.rows.filter(item=>item.sourceLearningId===id);
     blocks.push(`[EXTERNAL_LEARNING ${id}]`);
     for(const item of principles){
-      blocks.push(`DISPOSITION=${item.id}:${item.disposition};GAME=${gameId};TARGET=${target};DOMAINS=${item.domains.join('|')||'NONE'}`);
+      blocks.push(`DISPOSITION=${item.id}:${item.disposition};GAME=${gameId};TARGET=${target};DOMAINS=${item.domains.join('|')||'NONE'};GENRE_MOOD=${item.genreMood}`);
       if(item.disposition==='APPLIED_GAME_SOURCE')blocks.push(`APPLY=${item.raw}`);
     }
     for(const value of row.distilledAvoidancePrinciples||[])blocks.push(`AVOID=${clean(value)}`);
