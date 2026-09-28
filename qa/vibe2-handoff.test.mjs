@@ -191,9 +191,9 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   fs.writeFileSync(playbooksFile, JSON.stringify({
     generatedFrom:'VERIFIED_MEMORY_ONLY',
     taskTypes:{
-      web:{authority:'verified-task-playbook',checklist:['apply-verified-external-learning'],reuse:[{id:'external-black-box-e2e-web',project:'e2e-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1}]},
-      coding:{authority:'verified-task-playbook',checklist:['preserve-responsible-source'],reuse:[{id:'external-black-box-e2e-web',project:'e2e-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1}]},
-      general:{authority:'verified-task-playbook',checklist:['fresh-qa-required'],reuse:[{id:'external-black-box-e2e-web',project:'e2e-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1}]}
+      web:{authority:'verified-task-playbook',checklist:['apply-verified-external-learning'],reuse:[{id:'external-black-box-e2e-web',project:'e2e-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1,distilledApplicationPrinciples:['apply verified menu UI graphics motion and feedback principles transformatively'],distilledAvoidancePrinciples:['do not clone distinctive commercial expression'],distilledLearningUseAllowed:['interaction and presentation principles'],distilledLearningUseForbidden:['raw commercial code assets or distinctive expression clone']}]},
+      coding:{authority:'verified-task-playbook',checklist:['preserve-responsible-source'],reuse:[{id:'external-black-box-e2e-web',project:'e2e-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1,distilledApplicationPrinciples:['apply verified menu UI graphics motion and feedback principles transformatively'],distilledAvoidancePrinciples:['do not clone distinctive commercial expression'],distilledLearningUseAllowed:['interaction and presentation principles'],distilledLearningUseForbidden:['raw commercial code assets or distinctive expression clone']}]},
+      general:{authority:'verified-task-playbook',checklist:['fresh-qa-required'],reuse:[{id:'external-black-box-e2e-web',project:'e2e-reference',sourceRevision:'sha256:'+ 'a'.repeat(64),score:1,distilledApplicationPrinciples:['apply verified menu UI graphics motion and feedback principles transformatively'],distilledAvoidancePrinciples:['do not clone distinctive commercial expression'],distilledLearningUseAllowed:['interaction and presentation principles'],distilledLearningUseForbidden:['raw commercial code assets or distinctive expression clone']}]}
     }
   }, null, 2));
 
