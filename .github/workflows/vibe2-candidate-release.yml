@@ -126,18 +126,20 @@ jobs:
           if [ "$candidate_origin" = 'VIBE2_NATIVE' ]; then
             git fetch origin vibe2-unreal-core --quiet
             git show origin/vibe2-unreal-core:.vibe2/queue.json > /tmp/vibe2-current-control-queue.json
-            control_state="$(TASK_ID="$task_id" CANDIDATE_BRANCH="$SUBMITTED_CANDIDATE_BRANCH" node <<'NODE'
+            control_state="$(TASK_ID="$task_id" CANDIDATE_BRANCH="$SUBMITTED_CANDIDATE_BRANCH" TARGET="$decision" node <<'NODE'
           const fs=require('fs');
           const queue=JSON.parse(fs.readFileSync('/tmp/vibe2-current-control-queue.json','utf8'));
           const task=(queue.tasks||[]).find(row=>String(row?.id||'').trim()===String(process.env.TASK_ID||'').trim());
           const evidence=(task?.evidence||[]).map(value=>String(value||'').trim());
           const blocker=String(task?.blocker||'').trim();
+          const target=String(process.env.TARGET||'').trim().toLowerCase();
           const current=Boolean(
             task &&
             task.status==='running' &&
             /candidate-awaiting-qa-and-deployment|awaiting.*qa/i.test(blocker) &&
             evidence.includes(String(process.env.CANDIDATE_BRANCH||'').trim()) &&
-            evidence.includes('package-review:all-required-roles-pass')
+            evidence.includes('package-review:all-required-roles-pass') &&
+            (target!=='web'||(evidence.includes('web-f0-f9-verified')&&evidence.includes('web-f9-verified')))
           );
           process.stdout.write(current?'CURRENT':'STALE');
           NODE
