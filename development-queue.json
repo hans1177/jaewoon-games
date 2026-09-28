@@ -1996,10 +1996,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "POST_F9_CONTINUOUS_EVOLUTION",
-      "canonicalState": "F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-28T21:45:58.478Z",
+      "updatedAt": "2026-09-28T22:19:48.050Z",
       "robloxSourceCommit": "825a26d1b013de94f2086c6d38a9839895abb781",
       "robloxSourceBootstrapPassedAt": "2026-09-28T21:42:16.545Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2425,7 +2425,7 @@
             "id": "map-route-ne",
             "type": "mcp-map-route-audit",
             "dispatched": true,
-            "ok": false
+            "ok": true
           },
           {
             "id": "map-route-sw",
@@ -2745,7 +2745,7 @@
             "id": "scenario-adaptive-map-route-coverage",
             "name": "scenario-adaptive-map-route-coverage",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-adaptive-spawn-safety",
@@ -2948,7 +2948,7 @@
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 9,
+          "scenarioFailureCount": 8,
           "primaryActionDisplacement": 0,
           "primaryActionVelocity": 0,
           "primaryActionFeedbackChanged": false,
@@ -2990,7 +2990,6 @@
           "actual-play-final-client-probe",
           "actual-play-final-server-probe",
           "scenario-character-camera-ready",
-          "scenario-role-selection-interaction",
           "ROBLOX_DATASTORE_SAVE_LOAD"
         ],
         "rawSourceIncluded": false,
@@ -3070,7 +3069,7 @@
           },
           {
             "id": "adaptive-map-route-coverage",
-            "pass": false
+            "pass": true
           },
           {
             "id": "adaptive-spawn-safety",
@@ -3198,7 +3197,6 @@
           "logical-population-eight",
           "adaptive-ui-commercial-quality",
           "adaptive-world-safety",
-          "adaptive-map-route-coverage",
           "adaptive-motion-surface",
           "adaptive-audio-surface",
           "adaptive-retry-loop-surface",
@@ -3214,7 +3212,7 @@
             "observed": {
               "interactionSurfaceCount": 9,
               "progressionSurfaceCount": 11,
-              "combatSurfaceCount": 8,
+              "combatSurfaceCount": 7,
               "npcSurfaceCount": 0,
               "companionSurfaceCount": 0,
               "itemSurfaceCount": 1,
@@ -3249,57 +3247,16 @@
             "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
             "observed": {
               "boundsFinite": true,
-              "collidablePartCount": 104,
+              "collidablePartCount": 96,
               "floorBelowPlayer": true,
               "floorSamples": 9,
               "floorHits": 1,
               "floorCoveragePass": false,
-              "routeSamples": 10,
+              "routeSamples": 9,
               "routeSuccess": 7,
               "routeCoveragePass": true,
-              "spawnThreatDistance": 207.91459054053507,
+              "spawnThreatDistance": 155.79069377580564,
               "spawnOverlapSafe": true
-            }
-          },
-          {
-            "id": "adaptive-map-route-coverage",
-            "repairSurface": "MAP_ROUTEABILITY",
-            "priority": "CRITICAL",
-            "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
-            "observed": {
-              "routeAttemptCount": 4,
-              "routePassCount": 1,
-              "routeRequired": 2,
-              "routes": [
-                {
-                  "id": "map-route-nw",
-                  "ok": true,
-                  "moved": 16.29652057524758,
-                  "fall": 4.644998788833618,
-                  "floorBelow": true
-                },
-                {
-                  "id": "map-route-ne",
-                  "ok": false,
-                  "moved": 0.4979282932785871,
-                  "fall": 0,
-                  "floorBelow": true
-                },
-                {
-                  "id": "map-route-sw",
-                  "ok": false,
-                  "moved": 0,
-                  "fall": 0,
-                  "floorBelow": false
-                },
-                {
-                  "id": "map-route-se",
-                  "ok": false,
-                  "moved": 0,
-                  "fall": 0,
-                  "floorBelow": false
-                }
-              ]
             }
           },
           {
@@ -3310,7 +3267,7 @@
             "observed": {
               "interactionSurfaceCount": 9,
               "progressionSurfaceCount": 11,
-              "combatSurfaceCount": 8,
+              "combatSurfaceCount": 7,
               "npcSurfaceCount": 0,
               "companionSurfaceCount": 0,
               "itemSurfaceCount": 1,
@@ -3333,7 +3290,7 @@
             "observed": {
               "interactionSurfaceCount": 9,
               "progressionSurfaceCount": 11,
-              "combatSurfaceCount": 8,
+              "combatSurfaceCount": 7,
               "npcSurfaceCount": 0,
               "companionSurfaceCount": 0,
               "itemSurfaceCount": 1,
@@ -3356,7 +3313,7 @@
             "observed": {
               "interactionSurfaceCount": 9,
               "progressionSurfaceCount": 11,
-              "combatSurfaceCount": 8,
+              "combatSurfaceCount": 7,
               "npcSurfaceCount": 0,
               "companionSurfaceCount": 0,
               "itemSurfaceCount": 1,
@@ -3409,8 +3366,8 @@
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-28T21:41:55.524Z",
-        "workflowRunId": 36480877741,
+        "testedAt": "2026-09-28T22:19:48.050Z",
+        "workflowRunId": 36481419448,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -28926,7 +28883,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-28T22:11:55.106Z",
+  "updatedAt": "2026-09-28T22:19:48.050Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
