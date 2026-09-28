@@ -532,3 +532,22 @@ test('Unity game-development APK principles cannot remain unmapped',()=>{
   assert.match(source,/도전 전 상태 확인/);
   assert.match(source,/mappings:Object\.freeze\(mappings\)/);
 });
+
+
+test('Unity runs exact F0-F9, deploys the F9 artifact, and starts the next cycle without publication gating',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-unity-runtime.yml',import.meta.url),'utf8');
+  assert.match(workflow,/const f0ToF9=\{/);
+  for(const floor of ['F0','F1','F2','F3','F4','F5','F6','F7','F8','F9']) assert.match(workflow,new RegExp(floor+'\\s*:\\s*\\{'));
+  assert.match(workflow,/unityF0ThroughF9Evidence:f0ToF9/);
+  assert.match(workflow,/unityF9ReleaseRegressionPassed:internalReady/);
+  assert.match(workflow,/Publish exact F9 Unity APK as canonical server artifact/);
+  assert.match(workflow,/UNITY_F9_VERIFIED=/);
+  assert.match(workflow,/PLATFORM_F9_VERIFIED=UNITY:/);
+  assert.match(workflow,/PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED=UNITY:/);
+  assert.match(workflow,/UNITY_F9_CANONICAL_PUBLISH_BLOCKS_NEXT_CYCLE=NO/);
+  assert.match(workflow,/UNITY_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=NO/);
+  assert.match(workflow,/UNITY_NEXT_EVOLUTION_CYCLE_DISPATCHED=/);
+  assert.match(workflow,/PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=UNITY:/);
+  assert.match(workflow,/UNITY_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
+  assert.match(workflow,/unity-f0-f9-verified,unity-f9-pass,unity-f9-nonterminal/);
+});
