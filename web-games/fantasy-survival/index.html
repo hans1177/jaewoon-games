@@ -3138,8 +3138,9 @@ function updateSwampSpecial(e,targetP,now,playerD){
    e.nextToxicThrow=now+3000;
    if(Math.random()<.50){
     if(Math.random()<.5){
-     enemyDamageTarget(e,70,true);
-     showNotice('맹독 균사체 · 독 투척 70 피해')
+     const dx=targetP.x-e.x,dy=targetP.y-e.y,d=Math.hypot(dx,dy)||1,speed=260;
+     state.projectiles.push({kind:'toxicThrow',x:e.x,y:e.y,vx:dx/d*speed,vy:dy/d*speed,speed,damage:70,createdAt:now,life:3000,area:e.area,sourceId:e.netId,targetId:e.playerTargetId||multiplayer.playerId});
+     showNotice('맹독 균사체 · 독 투척')
     }else{
      spawnToxicPools(e,targetP,now);
      showNotice('맹독 균사체 · 독 장판 5개')
@@ -3657,6 +3658,7 @@ function updateProjectiles(dt,now){
   if(q.area===state.area&&dist(q.x,q.y,p.x,p.y)<25){
    const projectileSource=state.enemies.find(e=>e.netId===q.sourceId)||null;damagePlayer(enemyDifficultyDamage(q.damage*(projectileSource?.raidId?RAID_DIFFICULTY_SCALE:1)),true,projectileSource);
    if(q.kind==='mud'){p.mudSlowUntil=Math.max(p.mudSlowUntil||0,now+3000);showNotice('진흙 포격 적중 · 35 피해 · 3초 둔화')}
+   else if(q.kind==='toxicThrow')showNotice('맹독 균사체 독 투척 적중 · 70 피해');
    else if(q.kind==='poisonArrow'){p.templeSlowUntil=Math.max(p.templeSlowUntil||0,now+2000);p.attackBlockedUntil=Math.max(p.attackBlockedUntil||0,now+2000);showNotice('독화살 적중 · 50 피해 · 이동속도 30% 감소 · 2초 공격 불가')}
    else if(q.kind==='templeSpear')showNotice('원시인 창 적중 · 30 피해');
    else showNotice('수정 투척 적중 · 78 데미지');
@@ -4603,6 +4605,7 @@ function drawProjectiles(cx,cy){
   if(q.kind==='playerArrow'){const colors=q.arrowId==='wood-arrow'?['#8b6a43','#d7b37a']:q.arrowId==='iron-arrow'?['#7d878c','#e0e6e8']:q.arrowId==='spider-arrow'?['#8f6fa4','#d9b8ef']:q.arrowId==='firewolf-arrow'?['#c85835','#ffab55']:q.arrowId==='shark-arrow'?['#668da3','#cde7ef']:['#d8e5ed','#ffffff'];ctx.strokeStyle=colors[0];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,16);ctx.lineTo(0,-15);ctx.stroke();ctx.fillStyle=colors[1];ctx.beginPath();ctx.moveTo(0,-21);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill();ctx.strokeStyle='#d8c09d';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-5,12);ctx.lineTo(0,7);ctx.lineTo(5,12);ctx.stroke()}
   else if(q.kind==='sporeOrb'){ctx.fillStyle='#b786d9';ctx.strokeStyle='#e6c9ff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,9,0,Math.PI*2);ctx.fill();ctx.stroke()}
   else if(q.kind==='mud'){ctx.fillStyle='#70583f';ctx.strokeStyle='#ad8c65';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.stroke()}
+  else if(q.kind==='toxicThrow'){ctx.globalAlpha=.92;ctx.fillStyle='#79d84f';ctx.strokeStyle='#d3ff9d';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,13,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=.35;ctx.fillStyle='#a8ff78';ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill()}
   else if(q.kind==='poisonArrow'){ctx.strokeStyle='#8bcf6a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,14);ctx.lineTo(0,-16);ctx.stroke();ctx.fillStyle='#b7f58c';ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(6,-10);ctx.lineTo(-6,-10);ctx.closePath();ctx.fill()}
   else if(q.kind==='templeSpear'){ctx.strokeStyle='#8f6c43';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(0,18);ctx.lineTo(0,-18);ctx.stroke();ctx.fillStyle='#d6d0b8';ctx.beginPath();ctx.moveTo(0,-25);ctx.lineTo(7,-13);ctx.lineTo(-7,-13);ctx.closePath();ctx.fill()}
   else{ctx.fillStyle='#c5b2ff';ctx.strokeStyle='#f2edff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(8,10);ctx.lineTo(0,6);ctx.lineTo(-8,10);ctx.closePath();ctx.fill();ctx.stroke()}
