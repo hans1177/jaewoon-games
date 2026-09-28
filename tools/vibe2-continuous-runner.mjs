@@ -662,7 +662,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     'verifiedExternalLearningApplyAxes='+knowledgeApplicationContract.verifiedExternalLearningApplyAxes.join(','),
     'Before authoring, assign every verified external black-box principle an explicit game-source, validation-only, or not-applicable disposition. Apply game-source principles to the actual affected gameplay or presentation code; keep Android/QA infrastructure principles in validation.',
     'Apply the retrieved source-relevant principles to their mapped gameplay, touch, HUD, world, motion, and camera domains. Only claim graphics or asset changes when the specific principle and actual source diff support them.',
-    'For Roblox, Unity, Web, and asset-development work, transform causally relevant gameplay and presentation principles into the affected game source. Preserve the full disposition trace and never copy commercial source assets.',
+    'For Roblox, Unity, Web, and asset-development work, transform causally relevant gameplay and presentation principles into the affected game source. Preserve the full disposition trace and never copy commercial source assets. Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs.',
     'Only these injected knowledge items may receive credit or blame from this task. Infrastructure failures must not penalize knowledge. Fresh QA/regression/review is required before attribution.'
   ].join('\n'):'';
   if(mandatoryVerifiedKnowledgeApplication&&!externalDisposition.allDisposed){
