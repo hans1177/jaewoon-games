@@ -152,11 +152,7 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     healthyStreak = 0;
     pressureStreak = 0;
     reason = 'RUN_LOCAL_BACKPRESSURE_ACTIVE';
-  } else if (!workerCount || !loaded) {
-    healthyStreak = 0;
-    pressureStreak = 0;
-    reason = workerCount ? 'LOW_LOAD' : 'NO_WORKERS';
-  } else if (strongPressure) {
+  } else if (strongPressure && loaded) {
     next = stepDown(current);
     healthyStreak = 0;
     pressureStreak = 0;
@@ -168,6 +164,16 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     pressureStreak = 0;
     decision = next < current ? 'DOWN' : 'HOLD';
     reason = next < current ? `EXTERNAL_CAPACITY_OBSERVED_${actualPeakConcurrency}` : 'EXTERNAL_CAPACITY_ALREADY_ALIGNED';
+  } else if (!workerCount || !loaded) {
+    healthyStreak = 0;
+    pressureStreak = 0;
+    reason = workerCount ? 'LOW_LOAD' : 'NO_WORKERS';
+  } else if (strongPressure) {
+    next = stepDown(current);
+    healthyStreak = 0;
+    pressureStreak = 0;
+    decision = next < current ? 'DOWN' : 'HOLD';
+    reason = reasons.length ? reasons.join('+') : level;
   } else if (mediumPressure) {
     healthyStreak = 0;
     pressureStreak += 1;
