@@ -195,6 +195,8 @@ test('Roblox full graphics first attempt uses the compact connected package prom
   assert.match(initial,/ROBLOX FULL GRAPHICS RECOVERY PACKAGE/i);
   assert.match(initial,/connected edits\[\] package/i);
   assert.match(initial,/additional visual domains.*no upper limit/i);
+  assert.match(initial,/game-relevant visual domain/i);
+  assert.doesNotMatch(initial,/must cover every required core visual domain/i);
   assert.ok(Buffer.byteLength(initial,'utf8')<Buffer.byteLength(prompt,'utf8'));
   assert.doesNotMatch(initial,/exactly one edit/i);
 });
@@ -234,6 +236,39 @@ test('Roblox full graphics first source-worker attempt completes as a full packa
   assert.match(candidate,/TerrainRockEnvironment/);
   assert.match(candidate,/RenderStepped/);
   assert.match(candidate,/weapon\.Orientation\s*=/);
+});
+
+test('Roblox puzzle visuals accept a coherent environment and HUD motion without invented weapons',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/seed-puzzle-chromatic-cascade';
+  const relative='client/Game.client.luau';
+  const source='panel.BackgroundColor3 = Color3.fromRGB(18,28,48)\n';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${relative}`],taskId:'roblox-puzzle-visual-atomic-progress'});
+  workOrder.goal='[PRESENTATION_PASS:ASSET_ADAPTATION] improve puzzle board atmosphere and motion';
+  workOrder.presentationQuality={required:true,pass:'ASSET_ADAPTATION',authorityExpanded:false};
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const response=path.join(cwd,'puzzle-visual.json');
+  write(response,JSON.stringify({edits:[{
+    path:relative,
+    find:'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)',
+    replace:[
+      'local RunService = game:GetService("RunService")',
+      'local boardRock = Instance.new("Part")',
+      'boardRock.Name = "PuzzleBoardRock"',
+      'boardRock.Color = Color3.fromRGB(65,96,132)',
+      'boardRock.Material = Enum.Material.Slate',
+      'boardRock.Parent = workspace',
+      'RunService.RenderStepped:Connect(function(dt) boardRock.CFrame = boardRock.CFrame * CFrame.Angles(0, dt * 0.12, 0) end)',
+      'panel.BackgroundColor3 = Color3.fromRGB(32,51,76)'
+    ].join('\n')
+  }]}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[response]});
+  assert.equal(result.generation.attempts,1);
+  assert.equal(result.presentationCandidateDelta.pass,true);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/PuzzleBoardRock/);
+  assert.doesNotMatch(candidate,/SwordEquipment|EnemyBody/);
 });
 
 test('asset-development Roblox graphics starts with bounded focused local-model generation',async()=>{
