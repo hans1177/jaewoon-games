@@ -957,9 +957,9 @@ test('Studio MCP planner stays independent from hosted foundation capacity while
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
-  assert.match(studioPlanBlock,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
-  assert.match(studioPlanBlock,/shell: powershell/);
-  assert.match(studioPlanBlock,/ROBLOX_STUDIO_MCP_PLAN_RUNNER=SELF_HOSTED_WINDOWS/);
+  assert.match(studioPlanBlock,/runs-on: ubuntu-slim/);
+  assert.match(studioPlanBlock,/shell: bash/);
+  assert.match(studioPlanBlock,/ROBLOX_STUDIO_MCP_PLAN_RUNNER=UBUNTU_SLIM/);
   assert.doesNotMatch(studioPlanBlock,/needs: runtime-foundation-qa/);
   assert.doesNotMatch(studioPlanBlock,/needs\.runtime-foundation-qa/);
   assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
