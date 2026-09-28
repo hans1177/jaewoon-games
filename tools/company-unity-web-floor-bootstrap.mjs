@@ -52,8 +52,19 @@ for(const item of verifiedPlaybookRows){
   for(const row of Array.isArray(item.row?.reuse)?item.row.reuse:[]){
     const id=String(row?.id||'').trim();
     if(!id.startsWith('external-black-box-'))continue;
-    const previous=externalReuseById.get(id)||{id,project:String(row?.project||'').trim()||null,sourceRevision:String(row?.sourceRevision||'').trim()||null,sourcePlaybooks:[]};
+    const previous=externalReuseById.get(id)||{
+      id,
+      project:String(row?.project||'').trim()||null,
+      sourceRevision:String(row?.sourceRevision||'').trim()||null,
+      sourcePlaybooks:[],
+      distilledApplicationPrinciples:[],
+      distilledAvoidancePrinciples:[],
+      distilledLearningUseAllowed:[]
+    };
     previous.sourcePlaybooks=[...new Set([...previous.sourcePlaybooks,item.key])];
+    previous.distilledApplicationPrinciples=[...new Set([...previous.distilledApplicationPrinciples,...(Array.isArray(row?.distilledApplicationPrinciples)?row.distilledApplicationPrinciples:[]).map(value=>String(value||'').trim()).filter(Boolean)])];
+    previous.distilledAvoidancePrinciples=[...new Set([...previous.distilledAvoidancePrinciples,...(Array.isArray(row?.distilledAvoidancePrinciples)?row.distilledAvoidancePrinciples:[]).map(value=>String(value||'').trim()).filter(Boolean)])];
+    previous.distilledLearningUseAllowed=[...new Set([...previous.distilledLearningUseAllowed,...(Array.isArray(row?.distilledLearningUseAllowed)?row.distilledLearningUseAllowed:[]).map(value=>String(value||'').trim()).filter(Boolean)])];
     externalReuseById.set(id,previous);
   }
 }
@@ -67,6 +78,9 @@ const verifiedLearningApplication=Object.freeze({
   verifiedPlaybooks:verifiedPlaybookRows.map(item=>item.key),
   externalLearningIds:verifiedExternalLearning.map(row=>row.id),
   externalLearning:verifiedExternalLearning,
+  externalApplicationPrinciples:[...new Set(verifiedExternalLearning.flatMap(row=>row.distilledApplicationPrinciples||[]))],
+  externalAvoidancePrinciples:[...new Set(verifiedExternalLearning.flatMap(row=>row.distilledAvoidancePrinciples||[]))],
+  externalLearningUseAllowed:[...new Set(verifiedExternalLearning.flatMap(row=>row.distilledLearningUseAllowed||[]))],
   checklist:verifiedLearningChecklist,
   retrievedCount:verifiedExternalLearning.length,
   appliedCount:verifiedExternalLearning.length,
@@ -89,6 +103,21 @@ for(const dir of [
 fs.writeFileSync(path.join(output,'Packages/manifest.json'),JSON.stringify({dependencies:{'com.unity.modules.imgui':'1.0.0'}},null,2)+'\n');
 fs.writeFileSync(path.join(output,'ProjectSettings/ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\nm_EditorVersionWithRevision: 6000.6.0f1 (f7f8ed4d1e24)\n');
 fs.writeFileSync(path.join(output,'Assets/link.xml'),'<linker><assembly fullname="UnityEngine.CoreModule" preserve="all" /></linker>\n');
+fs.writeFileSync(path.join(output,'Assets/verified-external-learning.json'),JSON.stringify({
+  version:1,
+  gameId,
+  sourceRevision:verifiedLearningApplication.sourceRevision,
+  coveragePct:verifiedLearningApplication.mandatoryApplicationCoveragePct,
+  applyAxes:verifiedLearningApplication.applyAxes,
+  externalLearning:verifiedLearningApplication.externalLearning,
+  externalApplicationPrinciples:verifiedLearningApplication.externalApplicationPrinciples,
+  externalAvoidancePrinciples:verifiedLearningApplication.externalAvoidancePrinciples,
+  externalLearningUseAllowed:verifiedLearningApplication.externalLearningUseAllowed,
+  rawCommercialCodeCopyForbidden:true,
+  rawCommercialAssetCopyForbidden:true,
+  distinctiveExpressionCloneForbidden:true,
+  gameSpecificReauthoringRequired:true
+},null,2)+'\n');
 for(const [dir,value] of Object.entries({
   Art:{domain:'environment-character-enemy-equipment',identity},
   Prefabs:{domain:'runtime-generated-gameplay-objects',category},
