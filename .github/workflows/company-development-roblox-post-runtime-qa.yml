@@ -1905,7 +1905,21 @@ jobs:
             throw 'Roblox Studio already open on shared runner; reschedule isolated Studio QA'
           }
           $exactPlaceStarted = [DateTime]::UtcNow
-          $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($places[0].FullName) -PassThru
+          $previousRunnerTrackingId = $env:RUNNER_TRACKING_ID
+          $env:RUNNER_TRACKING_ID = ''
+          try {
+            $previousRunnerTrackingId = $env:RUNNER_TRACKING_ID
+            $env:RUNNER_TRACKING_ID = ''
+            try {
+              $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($places[0].FullName) -PassThru
+            } finally {
+              $env:RUNNER_TRACKING_ID = $previousRunnerTrackingId
+            }
+            Write-Host "ROBLOX_STUDIO_MANUAL_SAVE_RUNNER_CLEANUP_BYPASS=YES:process=$($placeLaunchProcess.Id):relaunch=YES"
+          } finally {
+            $env:RUNNER_TRACKING_ID = $previousRunnerTrackingId
+          }
+          Write-Host "ROBLOX_STUDIO_MANUAL_SAVE_RUNNER_CLEANUP_BYPASS=YES:process=$($placeLaunchProcess.Id)"
           "VIBE2_STUDIO_PROCESS_ID=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VIBE2_STUDIO_PROCESS_IDS=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "ROBLOX_STUDIO_MCP_EXACT_PLACE_PROCESS_ID=$($placeLaunchProcess.Id)"
@@ -2101,7 +2115,14 @@ jobs:
             Start-Sleep -Seconds 1
 
             $retryExactStarted = [DateTime]::UtcNow
-            $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($env:VIBE2_LOCAL_PLACE_FILE) -PassThru
+            $previousRunnerTrackingId = $env:RUNNER_TRACKING_ID
+            $env:RUNNER_TRACKING_ID = ''
+            try {
+              $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($env:VIBE2_LOCAL_PLACE_FILE) -PassThru
+            } finally {
+              $env:RUNNER_TRACKING_ID = $previousRunnerTrackingId
+            }
+            Write-Host "ROBLOX_STUDIO_MANUAL_SAVE_RUNNER_CLEANUP_BYPASS=YES:process=$($placeLaunchProcess.Id):retry=$attempt"
             "VIBE2_STUDIO_PROCESS_ID=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
             "VIBE2_STUDIO_PROCESS_IDS=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
             Write-Host "ROBLOX_STUDIO_MCP_RETRY_EXACT_PLACE_PROCESS_ID=$($placeLaunchProcess.Id):attempt=$attempt"
@@ -2239,6 +2260,7 @@ jobs:
             }
           }
           Write-Host 'ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES'
+          Write-Host 'ROBLOX_STUDIO_MCP_MANUAL_SAVE_WINDOW_PRESERVED_AFTER_JOB=YES'
 
       - name: Persist exact Studio MCP play evidence
         id: persist
