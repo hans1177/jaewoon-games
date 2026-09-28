@@ -1,5 +1,5 @@
 {
-  "version": 489,
+  "version": 490,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -6100,7 +6100,7 @@
             "ONE_AUTHORITATIVE_SHARED_STATE_BROADCAST",
             "CLIENT_MULTIPLAYER_SYNC_HANDLER_CONTRACT"
           ],
-          "evidenceAuthority": "INTERNAL_TWO_PARTICIPANT_SYNC_WHEN_APPLICABLE_PLUS_STATIC_AUTHORITY_CONTRACT",
+          "evidenceAuthority": "EXACT_F0_AUTHORITATIVE_SYNC_CONTRACT_PLUS_EXACT_INTERNAL_STUDIO_SESSION_FOR_NORMAL_DEVELOPMENT",
           "releaseGateMode": "TWO_CLIENT_ONE_SYNC",
           "repeatDuplicateCheckForbidden": true,
           "sameSessionEvidenceAllowed": true,
@@ -6110,7 +6110,11 @@
           "singleExactProofPerCycle": true,
           "duplicateF9OrPublicRecheckForbidden": true,
           "revalidationTrigger": "MULTIPLAYER_RELEVANT_SOURCE_OR_DESIGN_DELTA_OR_PRIOR_FAILURE",
-          "unrelatedDeltaEvidenceReuse": true
+          "unrelatedDeltaEvidenceReuse": true,
+          "internalDevelopmentMinimumProof": "F0_MULTIPLAYER_SYNC_CONTRACT_PLUS_STUDIO_RUNTIME_NO_ERROR",
+          "automaticTwoParticipantRuntimeRequired": false,
+          "twoParticipantRuntimeEscalation": "ONLY_CONFIRMED_MULTIPLAYER_FAILURE_OR_EXPLICIT_OWNER_RELEASE_REVIEW",
+          "externalServerRequired": false
         },
         {
           "id": "F8",
@@ -6629,7 +6633,7 @@
     },
     "qualityFailureRecoveryPolicySource": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit",
     "validationEfficiencyOptimization": {
-      "version": 3,
+      "version": 4,
       "authority": "OWNER_DIRECTIVE_2026-09-28",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "objective": "PRESERVE_EXISTING_AUTONOMOUS_GAME_EVOLUTION_WHILE REMOVING_DUPLICATE_OR UNRELATED VALIDATION WORK",
@@ -6687,7 +6691,16 @@
         "singleExactProofPerSourceCycle": true,
         "duplicateF9Check": false,
         "duplicatePublicReadinessCheck": false,
-        "idleScheduleRecheck": false
+        "idleScheduleRecheck": false,
+        "internalDevelopmentMinimumProof": "EXACT_F0_AUTHORITATIVE_SYNC_CONTRACT_PLUS_EXACT_STUDIO_INTERNAL_SESSION",
+        "automaticTwoParticipantRuntimeCheck": false,
+        "twoParticipantRuntimeCheckWhen": [
+          "CONFIRMED_MULTIPLAYER_RUNTIME_FAILURE",
+          "MULTIPLAYER_SPECIFIC_REPAIR_REQUIRES_TARGETED_REPRODUCTION",
+          "EXPLICIT_OWNER_PUBLIC_RELEASE_REVIEW_WHEN_REQUESTED"
+        ],
+        "externalPublicServerRequiredForInternalF7": false,
+        "normalGameplayPresentationContentDelta": "USE_EXACT_F0_SYNC_CONTRACT_NO_EXTRA_MULTIPLAYER_SESSION"
       },
       "f9": {
         "mode": "EVIDENCE_FAN_IN_AND_IMPACT_SCOPED_REGRESSION_REVIEW",
@@ -10436,6 +10449,14 @@
       "evolutionLoopChanged": false,
       "floorsChanged": false,
       "f10Created": false
+    },
+    "f7InternalDevelopmentMinimumProof20260928": {
+      "id": "F7_INTERNAL_DEVELOPMENT_MINIMUM_PROOF_2026-09-28",
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
+      "summary": "Keep F7 but stop routine dedicated multiplayer sessions. Normal development uses the exact F0 authoritative sync contract plus the exact Studio internal runtime session; two-participant runtime is escalation-only for confirmed multiplayer failures or explicit owner release review.",
+      "floorsChanged": false,
+      "multiplayerFeatureValidationRemoved": false,
+      "duplicateMultiplayerRuntimeRemoved": true
     }
   },
   "vibeExecutionLaneContract": {
