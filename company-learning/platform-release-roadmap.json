@@ -1,5 +1,5 @@
 {
-  "version": 488,
+  "version": 489,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -5972,7 +5972,12 @@
         "oneExactInternalRuntimeSessionMaySatisfyMultipleApplicableFloors": true,
         "duplicateRuntimeSessionForSameExactCandidateForbidden": true,
         "multiplayerValidationOnlyWhenApplicable": true,
-        "f9MayNotReplayF1ThroughF8WithoutNewFailureOrSourceDelta": true
+        "f9MayNotReplayF1ThroughF8WithoutNewFailureOrSourceDelta": true,
+        "preserveAutonomousEvolutionLoop": true,
+        "duplicateExactValidationWithinCycleForbidden": true,
+        "internalDevelopmentExternalServerObservationRequired": false,
+        "securityChecksImpactScopedAfterExactBaseline": true,
+        "multiplayerChecksApplicabilityAndImpactScoped": true
       },
       "layers": [
         {
@@ -6103,7 +6108,9 @@
           "applicability": "MULTIPLAYER_ONLY",
           "nonMultiplayerResult": "NOT_APPLICABLE",
           "singleExactProofPerCycle": true,
-          "duplicateF9OrPublicRecheckForbidden": true
+          "duplicateF9OrPublicRecheckForbidden": true,
+          "revalidationTrigger": "MULTIPLAYER_RELEVANT_SOURCE_OR_DESIGN_DELTA_OR_PRIOR_FAILURE",
+          "unrelatedDeltaEvidenceReuse": true
         },
         {
           "id": "F8",
@@ -6133,7 +6140,9 @@
           "evidenceAuthority": "DETERMINISTIC_QA_PLUS_REUSED_EXACT_INTERNAL_RUNTIME_EVIDENCE",
           "repeatDuplicateCheckForbidden": true,
           "runtimeReplayRequired": false,
-          "mode": "F0_TO_F8_EVIDENCE_FAN_IN_AND_REGRESSION_REVIEW"
+          "mode": "F0_TO_F8_EVIDENCE_FAN_IN_AND_IMPACT_SCOPED_REGRESSION_REVIEW",
+          "securityFullRescanRequired": false,
+          "multiplayerReplayRequired": false
         }
       ],
       "runtimeSentinel": {
@@ -6620,10 +6629,10 @@
     },
     "qualityFailureRecoveryPolicySource": "company-learning/platform-release-roadmap.json#minimumNecessaryProcedurePolicy.qualityFirstBuildupShortCircuit",
     "validationEfficiencyOptimization": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-28",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
-      "objective": "PRESERVE_EXISTING_AUTONOMOUS_GAME_EVOLUTION_WHILE_REMOVING_DUPLICATE_VALIDATION_WORK",
+      "objective": "PRESERVE_EXISTING_AUTONOMOUS_GAME_EVOLUTION_WHILE REMOVING_DUPLICATE_OR_UNRELATED_VALIDATION WORK",
       "evolutionLoopMustRemainUnchanged": true,
       "floorStructureMustRemainUnchanged": true,
       "floors": [
@@ -6667,10 +6676,20 @@
         "participantRequirement": "TWO_PARTICIPANTS_WHEN_MULTIPLAYER_APPLIES",
         "reuseAcrossF9AndReleaseReadiness": true,
         "duplicatePublicCheck": false,
-        "nonMultiplayerResult": "NOT_APPLICABLE"
+        "nonMultiplayerResult": "NOT_APPLICABLE",
+        "rerunWhen": [
+          "NETWORK_AUTHORITY_CHANGED",
+          "REPLICATION_OR_SYNC_PATH_CHANGED",
+          "SESSION_OR_PARTY_MATCHMAKING_CHANGED",
+          "PRIOR_MULTIPLAYER_EVIDENCE_FAILED_OR_STALE"
+        ],
+        "unrelatedChange": "REUSE_EXACT_VERIFIED_MULTIPLAYER_EVIDENCE",
+        "singleExactProofPerSourceCycle": true,
+        "duplicateF9Check": false,
+        "duplicatePublicReadinessCheck": false
       },
       "f9": {
-        "mode": "EVIDENCE_FAN_IN_AND_REGRESSION_REVIEW",
+        "mode": "EVIDENCE_FAN_IN_AND_IMPACT_SCOPED_REGRESSION_REVIEW",
         "startsNewRuntimeSession": false,
         "reusesExactF0ToF8Evidence": true,
         "verifies": [
@@ -6678,7 +6697,34 @@
           "APPLICABLE_FLOORS_PASS_OR_NOT_APPLICABLE",
           "NO_OPEN_CRITICAL_OR_HIGH_FAILURE"
         ],
-        "nextAction": "RETURN_RESULT_TO_EXISTING_GAME_EVOLUTION_LOOP"
+        "nextAction": "RETURN_RESULT_TO_EXISTING_GAME_EVOLUTION_LOOP",
+        "startsExternalServerObservation": false,
+        "startsFullSecurityRescan": false,
+        "startsDuplicateMultiplayerSession": false
+      },
+      "security": {
+        "defaultDevelopmentMode": "REUSE_VERIFIED_EXACT_OR_UNCHANGED_SECURITY_EVIDENCE",
+        "fullRescanWhen": [
+          "REMOTE_OR_NETWORK_AUTHORITY_CHANGED",
+          "SAVE_OR_ECONOMY_AUTHORITY_CHANGED",
+          "PRIVILEGE_SECRET_EXTERNAL_TRUST_BOUNDARY_CHANGED",
+          "SECURITY_RELEVANT_DEPENDENCY_CHANGED",
+          "PRIOR_SECURITY_EVIDENCE_FAILED_OR_STALE",
+          "CONFIRMED_SECURITY_FINDING_REQUIRES_REVALIDATION"
+        ],
+        "unrelatedGameplayPresentationContentChange": "NO_FULL_SECURITY_RESCAN",
+        "cheapStaticBoundaryCheckAllowed": true,
+        "exactUnchangedEvidenceReusable": true,
+        "highRiskFindingStillFailClosed": true,
+        "publicReleaseRelevantSecurityEvidenceStillRequired": true
+      },
+      "externalServer": {
+        "automaticProbe": false,
+        "internalDevelopmentRequirement": false,
+        "internalReleaseRequirement": false,
+        "publicReleaseRequirement": false,
+        "role": "OPTIONAL_MANUAL_DIAGNOSTIC_ONLY",
+        "mayNotBlockGameEvolution": true
       }
     }
   },
@@ -10364,6 +10410,28 @@
         "unchangedExactEvidence": "REUSE_WITHIN_SAME_SOURCE_ARTIFACT_CANDIDATE_BINDING",
         "developmentPriority": "REAL_GAME_SOURCE_IMPROVEMENT_AND_NEXT_BUILD_UP_DIRECTIVE"
       }
+    },
+    "developmentFocusedValidationMinimization20260928": {
+      "id": "DEVELOPMENT_FOCUSED_VALIDATION_MINIMIZATION_2026-09-28",
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
+      "objective": "PRESERVE_EXISTING_AUTONOMOUS_EVOLUTION_AND_F0_TO_F9_STRUCTURE_WHILE_REMOVING_NON_PRODUCTIVE_DUPLICATE_SECURITY_EXTERNAL_SERVER_AND_MULTIPLAYER_VALIDATION",
+      "preserves": [
+        "CONTINUOUS_GAME_SPECIFIC_BUILD_UP",
+        "VIBE_SOURCE_IMPLEMENTATION",
+        "F0_TO_F9_FLOORS",
+        "CAUSAL_REPAIR",
+        "EXACT_CANDIDATE_BINDING",
+        "RELEASE_SECURITY_WHEN_RELEVANT"
+      ],
+      "minimizes": [
+        "UNRELATED_FULL_SECURITY_RESCAN",
+        "AUTOMATIC_EXTERNAL_SERVER_OBSERVATION",
+        "DUPLICATE_MULTIPLAYER_PROOF",
+        "DUPLICATE_RUNTIME_SESSION",
+        "F9_RUNTIME_REPLAY"
+      ],
+      "developmentPriority": "GAME_EVOLUTION_FIRST_VALIDATION_AS_SUPPORTING_EVIDENCE",
+      "noGateWeakeningForRelevantHighRiskChange": true
     }
   },
   "vibeExecutionLaneContract": {
