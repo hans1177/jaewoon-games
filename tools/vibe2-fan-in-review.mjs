@@ -16,6 +16,30 @@ import { auditVibeRuntimeBeforeAfterComparison } from '../assets/vibe-visual-qua
 
 const clean=value=>String(value??'').trim();
 const REQUIRED_ROLES=Object.freeze(['exploration','implementation','test','performance']);
+const VERIFIED_EXTERNAL_LEARNING_AXES=Object.freeze([
+  'MENU_FLOW_AND_INFORMATION_ARCHITECTURE',
+  'UI_UX_LAYOUT_FEEDBACK_AND_TOUCH_READABILITY',
+  'GRAPHICS_ART_DIRECTION_MATERIAL_LIGHTING_AND_COMPOSITION',
+  'MOTION_ANIMATION_TRANSITIONS_IMPACT_AND_SECONDARY_MOTION',
+  'ENVIRONMENT_WORLD_DENSITY_LANDMARK_AND_READABILITY',
+  'VFX_CAMERA_AUDIO_VISUAL_FEEDBACK_LANGUAGE',
+  'GAMEPLAY_SYSTEM_IMPLEMENTATION_WHEN_CAUSALLY_RELEVANT'
+]);
+
+function verifiedExternalLearningApplicationFailures(row={}){
+  const application=row?.knowledgeApplication&&typeof row.knowledgeApplication==='object'?row.knowledgeApplication:null;
+  if(application?.mandatoryForGameTarget!==true)return[];
+  const failures=[];
+  const ids=[...new Set((application.verifiedExternalLearningIds||[]).map(clean).filter(Boolean))];
+  const axes=[...new Set((application.verifiedExternalLearningApplyAxes||[]).map(clean).filter(Boolean))];
+  const retrieved=Math.max(0,Number(application.verifiedExternalLearningRetrievedCount||0));
+  const applied=Math.max(0,Number(application.verifiedExternalLearningAppliedCount||0));
+  if(application.verifiedExternalLearningFirst!==true||!ids.length)failures.push('VERIFIED_EXTERNAL_LEARNING_MISSING');
+  if(retrieved!==ids.length||applied!==retrieved||Number(application.verifiedExternalLearningCoveragePct||0)!==100)failures.push('VERIFIED_EXTERNAL_LEARNING_PARTIAL_APPLICATION');
+  if(application.retrievedVerifiedExternalLearningTruncationForbidden!==true)failures.push('VERIFIED_EXTERNAL_LEARNING_TRUNCATED');
+  for(const axis of VERIFIED_EXTERNAL_LEARNING_AXES)if(!axes.includes(axis))failures.push('VERIFIED_EXTERNAL_LEARNING_AXIS_MISSING:'+axis);
+  return[...new Set(failures)];
+}
 
 function readJson(file,fallback={}){if(!file||!fs.existsSync(file))return fallback;return JSON.parse(fs.readFileSync(file,'utf8'));}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,`${JSON.stringify(value,null,2)}\n`,'utf8');}
@@ -256,6 +280,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
         missing.push(...studioQualityImplementationFailures(task,selectedResult));
         missing.push(...graphicsReplacementGroundingFailures(selectedResult));
         missing.push(...gameRepairEvidenceFailures(selectedResult));
+        missing.push(...verifiedExternalLearningApplicationFailures(selectedResult));
         presentationRuntimeVisual=presentationRuntimeVisualDecision(task,selectedResult);
         if(presentationRuntimeVisual.required){
           if(presentationRuntimeVisual.deferred){
@@ -309,6 +334,11 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
         evidence.add('graphics-replacement-grounding:PASS');
         evidence.add(`graphics-replacement-grounded-count:${Number(selectedResult?.graphicsReplacementQa?.groundedCount||0)}`);
         evidence.add('graphics-replacement-fan-in-gate:PASS');
+      }
+      if(selectedResult?.knowledgeApplication?.mandatoryForGameTarget===true){
+        evidence.add('verified-external-learning-application:PASS');
+        evidence.add('verified-external-learning-coverage:100');
+        for(const axis of selectedResult?.knowledgeApplication?.verifiedExternalLearningApplyAxes||[])evidence.add(`verified-external-learning-axis:${clean(axis)}`);
       }
       if(selectedResult?.gameRepairQa?.required===true){
         evidence.add('game-repair-source-evidence:PASS');
