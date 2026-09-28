@@ -1364,7 +1364,9 @@
         "nextCycleStartsAfterF9PublishDispatch": true,
         "publicationOutcomeBlocksNextCycle": false,
         "internalOrExternalExposureStateBlocksNextCycle": false,
-        "publishFailureRetriesInParallelWithNextCycle": true
+        "publishFailureRetriesInParallelWithNextCycle": true,
+        "nextCycleStartsAfterPublishDispatch": true,
+        "publicationOutcomeBlocksEvolution": false
       }
     },
     "validationMode": "HEADLESS_FAST_MVP",
@@ -1791,7 +1793,7 @@
       },
       "taskIdentity": "GAME_ID_PLUS_CURRENT_ROBLOX_SOURCE_TREE_SHA",
       "refillCondition": "ONLY_WHEN_EXACT_PUBLISHED_RELEASE_EVIDENCE_MATCHES_CURRENT_RELEASE_SOURCE_AND_NO_EXACT_DUPLICATE_OR_OVERLAPPING_RESPONSIBILITY_FOCUS_TASK_EXISTS",
-      "nextCycleCondition": "F9_PASS_AND_PUBLISH_DISPATCH_THEN_IMMEDIATE_NEXT_F0",
+      "nextCycleCondition": "F9_VERIFIED_PUBLISH_OR_DEPLOY_DISPATCHED_THEN_CREATE_NEXT_FOCUS_CYCLE_WITHOUT_WAITING_FOR_PUBLICATION_OUTCOME",
       "protectedSlotEnforcer": "assets/vibe-continuous-queue.js",
       "protectedSlotCount": null,
       "machinePriorityOrder": [
@@ -6773,6 +6775,7 @@
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "objective": "PRESERVE_EXISTING_AUTONOMOUS_GAME_EVOLUTION_WHILE_REMOVING_DUPLICATE_VALIDATION_WORK",
       "appliesTo": [
+        "WEB",
         "ROBLOX",
         "UNITY"
       ],
@@ -6842,7 +6845,10 @@
         "duplicateRuntimeSessionForSameExactArtifact": false,
         "sameExactArtifactBuildRuntimeQaRegressionEvidenceReusable": true,
         "internalOrPublicReleaseDoesNotTerminateEvolution": true,
-        "existingPublicReleaseStateMayNotBeAutomaticallyDemotedByDevelopmentValidation": true
+        "existingPublicReleaseStateMayNotBeAutomaticallyDemotedByDevelopmentValidation": true,
+        "f9Authority": "EXACT_BUILD_RUNTIME_INDEPENDENT_QA_REGRESSION_FAN_IN",
+        "deployAfterF9": true,
+        "deploymentOutcomeBlocksEvolution": false
       },
       "multiplayer": {
         "floor": "F7",
@@ -6866,6 +6872,73 @@
           "NO_OPEN_CRITICAL_OR_HIGH_FAILURE"
         ],
         "nextAction": "RETURN_RESULT_TO_EXISTING_GAME_EVOLUTION_LOOP"
+      },
+      "publicationOutcomeBlocksEvolution": false,
+      "publicationVisibilityBlocksEvolution": false,
+      "publishOrDeployDispatchAfterF9Required": true,
+      "nextF0CycleStartsAfterPublishOrDeployDispatchWithoutWaitingForOutcome": true,
+      "web": {
+        "f0ThroughF8Authority": "EXISTING_WEB_INCREMENTAL_QA_BROWSER_RUNTIME_AND_SPECIALIZED_VERIFICATION",
+        "f9Authority": "VIBE2_FAN_IN_REVIEW",
+        "deployAfterF9": true,
+        "deploymentOutcomeBlocksEvolution": false
+      }
+    },
+    "verifiedF0F9PublicationLoop": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-28",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "appliesTo": [
+        "WEB",
+        "ROBLOX",
+        "UNITY"
+      ],
+      "objective": "EVERY_GAME_EVOLUTION_DELTA_RUNS_F0_THROUGH_F9_THEN_DISPATCHES_THE_VERIFIED_VERSION_TO_ITS_CONFIGURED_PLATFORM_DEPLOYMENT_TARGET_AND_IMMEDIATELY_STARTS_THE_NEXT_EVOLUTION_CYCLE",
+      "sequence": [
+        "GAME_SOURCE_MUTATION",
+        "F0",
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9",
+        "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCH",
+        "IMMEDIATE_NEXT_EVOLUTION_CYCLE"
+      ],
+      "f9Terminal": false,
+      "f10Forbidden": true,
+      "publishBeforeF9Forbidden": true,
+      "publicationOutcomeBlocksNextEvolution": false,
+      "publicationVisibilityBlocksNextEvolution": false,
+      "internalOrExternalVisibilityIrrelevantToEvolutionLoop": true,
+      "nextCycleTrigger": "F9_VERIFIED_AND_PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED",
+      "publishFailureAction": "KEEP_EVOLUTION_RUNNING_AND_ROUTE_PUBLICATION_FAILURE_TO_EXISTING_CAUSAL_REPAIR_RETRY",
+      "exactVerifiedVersionRequiredForPublishAttempt": true,
+      "terminalDoneStateForbidden": true,
+      "repeat": "UNBOUNDED_UNTIL_OWNER_HOLD_OR_PROJECT_REMOVAL",
+      "platformBindings": {
+        "WEB": {
+          "f9Authority": "VIBE2_FAN_IN_REVIEW",
+          "deployRoute": ".github/workflows/vibe2-candidate-release.yml#web-release",
+          "deploymentTarget": "CLOUDFLARE_PAGES_CONFIGURED_WEB_TARGET",
+          "nextCycleRoute": "vibe2-fanin-refill"
+        },
+        "ROBLOX": {
+          "f9Authority": ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+          "deployRoute": ".github/workflows/company-development-roblox-release-promotion.yml?publish_stage=final",
+          "deploymentTarget": "ROBLOX_CANONICAL_GAME_TARGET_PRESERVE_EXISTING_VISIBILITY",
+          "nextCycleRoute": "vibe2-fanin-refill"
+        },
+        "UNITY": {
+          "f9Authority": ".github/workflows/company-development-unity-runtime.yml#EXACT_BUILD_RUNTIME_INDEPENDENT_QA_REGRESSION",
+          "deployRoute": ".github/workflows/company-development-unity-runtime.yml#INTERNAL_OR_CLOSED_APP_TEST_BUILD",
+          "deploymentTarget": "UNITY_CONFIGURED_INTERNAL_OR_CLOSED_TEST_BUILD",
+          "nextCycleRoute": "vibe2-fanin-refill"
+        }
       }
     }
   },
@@ -7137,7 +7210,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-28T06:58:33.247Z",
+  "updatedAt": "2026-09-28T07:00:50.751Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -25964,8 +26037,7 @@
     "appliesTo": [
       "WEB",
       "ROBLOX",
-      "UNITY",
-      "WEB_VALIDATION_SURFACE_WHEN_IT_IS_THE_ACTIVE_IMPLEMENTATION_SURFACE"
+      "UNITY"
     ],
     "designContext": {
       "requiredForGameplayEvolution": true,
@@ -26877,7 +26949,9 @@
     "everyVerifiedDeltaRunsF0ThroughF9OnEachActivePlatformLane": true,
     "f9PublishThenImmediateNextCycle": true,
     "publicationOutcomeMayNotPauseEvolution": true,
-    "internalOrExternalExposureStateMayNotPauseEvolution": true
+    "internalOrExternalExposureStateMayNotPauseEvolution": true,
+    "platformVerifiedLoop": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.verifiedF0F9PublicationLoop",
+    "terminalCompletionStateForbidden": true
   },
   "robloxNativeCodingQualityContract": {
     "version": 3,
