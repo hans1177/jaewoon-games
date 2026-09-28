@@ -1984,6 +1984,16 @@ test('Studio screenshots are captured only as the final Studio audit action',()=
   assert.match(tail,/play-mode-stopped/);
 });
 
+
+test('complex Studio routes follow path waypoints and verify actual arrival',()=>{
+  assert.match(helper,/pathObj:GetWaypoints\(\)/);
+  assert.match(helper,/waypointCount=math\.max\(0,total-1\)/);
+  assert.match(helper,/for\(const waypoint of waypoints\)/);
+  assert.match(helper,/waypointDistance>6/);
+  assert.match(helper,/arrivalDistance<=6/);
+  assert.match(helper,/no-reachable-anchor/);
+  assert.doesNotMatch(helper,/moved>=1\);\s*actions\.push\(\{id:'map-route-/);
+});
 test('final Studio capture stops play and keeps the owned Studio available for manual save',()=>{
   const releaseAt=workflow.indexOf('- name: Release Studio controls for manual save after final capture');
   const persistAt=workflow.indexOf('- name: Persist exact Studio MCP play evidence');
