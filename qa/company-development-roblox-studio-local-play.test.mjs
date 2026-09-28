@@ -1808,3 +1808,47 @@ test('commercial world audit rejects broad floor gaps and unreachable semantic g
   assert.equal(result.metrics.worldAudit.floorCoveragePass,false);
   assert.equal(result.metrics.worldAudit.routeCoveragePass,false);
 });
+
+
+test('commercial Studio multiplayer gate requires declared multiplayer plus replicated state surface',()=>{
+  const contract=deriveStudioActualPlayContract({
+    launchCore:['4-player co-op dungeon party sync'],
+    releaseGates:['late join and rejoin sync']
+  });
+  const base={
+    player:{characterPresent:true,humanoidPresent:true,rootPresent:true,rootX:0,rootY:5,rootZ:0,animatorPresent:true,motorCount:6,humanCount:0,monsterCount:0},
+    camera:{present:true,subjectPresent:true,fieldOfView:70,occluded:false},
+    ui:{visibleButtons:1,visibleObjects:1,offscreenButtons:0,undersizedTouchButtons:0,textOverflowButtons:0,overlapPairs:0,required:{}},
+    world:{boundsFinite:true,collidablePartCount:40,floorBelowPlayer:true,floorSampleCount:9,floorHitCount:9,routeSampleCount:0,routeSuccessCount:0,minSpawnThreatDistance:-1,proximityPromptCount:0,clickDetectorCount:0,mobs:[],npcs:[],companions:[],items:[],environmentModels:1,effectCount:0},
+    runtime:{remoteCount:1,progression:[],inventory:[],inventoryCount:0,systemSignals:1,descendantCount:100,memoryMb:100,soundCount:0,categories:{}},
+    workspace:{HumanCount:0,MonsterCount:0},
+    lighting:{brightness:1.2}
+  };
+  const fail=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:base,preActionClientProbe:base,
+    postActionClientProbe:{...base,player:{...base.player,rootX:1}},
+    clientProbe:base,serverProbe:{runtime:base.runtime,world:base.world,workspace:base.workspace},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}]
+  });
+  assert.equal(fail.scenarios.find(row=>row.id==='adaptive-multiplayer-sync-surface')?.pass,false);
+
+  const synced=structuredClone(base);
+  synced.player.humanCount=4;
+  synced.workspace.HumanCount=4;
+  synced.runtime.progression=[{scope:'workspace',name:'PlayerCount',value:'4'}];
+  const pass=evaluateStudioActualPlayContract({
+    contract,initialClientProbe:synced,preActionClientProbe:synced,
+    postActionClientProbe:{...synced,player:{...synced.player,rootX:1}},
+    clientProbe:synced,serverProbe:{runtime:synced.runtime,world:synced.world,workspace:synced.workspace},
+    actions:[{id:'keyboard-w',dispatched:true,ok:true}]
+  });
+  assert.equal(pass.scenarios.find(row=>row.id==='adaptive-multiplayer-sync-surface')?.pass,true);
+});
+
+test('commercial contract does not infer multiplayer from generic player or monster words alone',()=>{
+  const contract=deriveStudioActualPlayContract({
+    launchCore:['single player fights one monster'],
+    releaseGates:[]
+  });
+  assert.equal(contract.adaptiveCoverage.signals.multiplayer,false);
+});
