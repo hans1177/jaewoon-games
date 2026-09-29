@@ -458,7 +458,7 @@ jobs:
           candidate_reservation_runs="$(node - "$control_root/.vibe2/queue.json" <<'NODE'
           const fs=require('fs');
           const queue=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
-          const ids=[...new Set((queue.tasks||[])
+          const rows=(queue.tasks||[])
             .filter(task=>
               String(task.status||'').toLowerCase()==='running'
               &&String(task.department||'').toLowerCase()==='development'
@@ -466,7 +466,19 @@ jobs:
               &&!String(task.blocker||'').trim()
               &&/^[0-9]+$/.test(String(task.reservationRunId||'').trim())
             )
-            .map(task=>String(task.reservationRunId).trim()))].slice(0,64);
+            .map(task=>({
+              runId:String(task.reservationRunId).trim(),
+              reservedAt:Date.parse(String(task.reservedAt||''))||Number.MAX_SAFE_INTEGER
+            }))
+            .sort((a,b)=>a.reservedAt-b.reservedAt||Number(a.runId)-Number(b.runId));
+          const ids=[];
+          const seen=new Set();
+          for(const row of rows){
+            if(seen.has(row.runId))continue;
+            seen.add(row.runId);
+            ids.push(row.runId);
+            if(ids.length>=256)break;
+          }
           process.stdout.write(ids.join(','));
           NODE
           )"
