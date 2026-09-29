@@ -1011,9 +1011,14 @@ export function runQueueCommand(args = {}) {
     });
     queue = neuron.queue;
     if (neuron.updated || transientLockRecovery.recovered) writeJson(file, queue);
+    const refillSelection=neuron.reason==='TASK_MICRO_FANIN_COMPLETE'
+      ?selectVibeQueueBatch(queue,{maxConcurrentTasks:reservationMaxConcurrentTasks,lane:executionLane})
+      :null;
     result = {
       command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks,
       reservationMaxConcurrentTasks, adaptiveControl, ...neuron,
+      refillReady:refillSelection?.hasEligibleWork===true,
+      refillStopReason:refillSelection?.stopReason||null,
       summary:summarizeVibeContinuousQueue(queue, { maxConcurrentTasks:reservationMaxConcurrentTasks, lane:executionLane })
     };
   } else if (command === 'fan-in-regression-fail') {
@@ -1112,6 +1117,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_NEURON_TASK_READY=${result.ready===true?'YES':'NO'}`);
     console.log(`VIBE2_NEURON_SLOT_RELEASED=${result.slotReleased===true?'YES':'NO'}`);
     console.log(`VIBE2_NEURON_VARIANTS=${result.resultCount || 0}/${result.expectedVariants || 1}`);
+    console.log(`VIBE2_NEURON_REFILL_READY=${result.refillReady===true?'YES':'NO'}`);
+    console.log(`VIBE2_NEURON_REFILL_STOP_REASON=${result.refillStopReason||'NONE'}`);
     if(result.executionLane==='asset-development')console.log('VIBE2_ASSET_NEURON_EXPECTED_VARIANTS=1');
   }
   console.log(`VIBE2_QUEUE_RECOVERED=${result.recovered ?? 0}`);

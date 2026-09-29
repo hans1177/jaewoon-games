@@ -373,8 +373,14 @@ jobs:
               neuron_reason="$(sed -n 's/^VIBE2_NEURON_RESULT=//p' /tmp/vibe2-neuron-complete.log | tail -n1)"
               case "$neuron_reason" in
                 TASK_MICRO_FANIN_COMPLETE)
-                  neuron_refill=1
-                  echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE'
+                  neuron_refill_ready="$(sed -n 's/^VIBE2_NEURON_REFILL_READY=//p' /tmp/vibe2-neuron-complete.log | tail -n1)"
+                  if [ "$neuron_refill_ready" = 'YES' ]; then
+                    neuron_refill=1
+                    echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE_REFILL_READY'
+                  else
+                    neuron_refill=0
+                    echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE_NO_RUNNABLE_WORK'
+                  fi
                   ;;
                 TASK_ALREADY_MICRO_FANIN_COMPLETE)
                   neuron_refill=0
@@ -619,7 +625,7 @@ jobs:
                 --data "$payload"
               echo 'VIBE2_NEURON_REFILL_DISPATCH=TASK_MICRO_FANIN_COMPLETE'
             else
-              echo 'VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_PENDING_VARIANTS'
+              echo 'VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_NO_RUNNABLE_WORK_OR_PENDING_VARIANTS'
             fi
           fi
 
