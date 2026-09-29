@@ -16,6 +16,11 @@ on:
         description: Optional exact game id to revalidate from current main
         required: false
         type: string
+      restart_from_f0:
+        description: Force current main as canonical source and restart package/preflight/F0 even when source files are unchanged
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -103,6 +108,7 @@ jobs:
         env:
           CHANGED_GAME_IDS: ${{ steps.changed.outputs.game_ids }}
           SOURCE_REVISION: ${{ steps.main.outputs.sha }}
+          FORCE_F0_RESTART: ${{ inputs.restart_from_f0 == true && 'true' || 'false' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -138,12 +144,15 @@ jobs:
             fi
           done < /tmp/roblox-prior-source-revisions
           echo "ROBLOX_SOURCE_SYNC_PRIOR_REVISION_COUNT=$(grep -c . /tmp/roblox-prior-source-revisions || true)"
+          force_args=()
+          if [[ "$FORCE_F0_RESTART" == 'true' ]]; then force_args+=(--force-f0-restart=true); fi
           node tools/company-roblox-source-drift-sync.mjs \
             --queue=/tmp/company-runtime/development-queue.json \
             --repo-root=. \
             --runtime-ref="origin/$COMPANY_RUNTIME_BRANCH" \
             --source-revision="$SOURCE_REVISION" \
             --changed-game-ids="$CHANGED_GAME_IDS" \
+            "${force_args[@]}" \
             --output=/tmp/roblox-source-drift-results.json
           cat /tmp/roblox-source-drift-results.json
 
@@ -167,6 +176,7 @@ jobs:
         env:
           CHANGED_GAME_IDS: ${{ steps.changed.outputs.game_ids }}
           SOURCE_REVISION: ${{ steps.main.outputs.sha }}
+          FORCE_F0_RESTART: ${{ inputs.restart_from_f0 == true && 'true' || 'false' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -187,12 +197,15 @@ jobs:
           regenerate_runtime_state() {
             git -C /tmp/company-runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
             git -C /tmp/company-runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            local force_args=()
+            if [[ "$FORCE_F0_RESTART" == 'true' ]]; then force_args+=(--force-f0-restart=true); fi
             node tools/company-roblox-source-drift-sync.mjs \
               --queue=/tmp/company-runtime/development-queue.json \
               --repo-root=. \
               --runtime-ref="origin/$COMPANY_RUNTIME_BRANCH" \
               --source-revision="$SOURCE_REVISION" \
               --changed-game-ids="$CHANGED_GAME_IDS" \
+              "${force_args[@]}" \
               --output=/tmp/roblox-source-drift-results.json
             cp tools/company-homepage-platform-exposure-sync.mjs /tmp/company-runtime/company-homepage-platform-exposure-sync.mjs
             cp tools/company-shared-context.mjs /tmp/company-runtime/company-shared-context.mjs
