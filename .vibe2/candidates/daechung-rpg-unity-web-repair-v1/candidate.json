@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "find": "            var frames = new Sprite[frameCount];",
+      "replace": "            var frames = new Sprite[frameCount];\n            frames[0] = Sprite.Create(\"enemy_sprite\", SpriteStandardMode.Fill, new Rect(0, 0, 1, 1));"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
