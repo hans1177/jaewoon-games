@@ -1915,6 +1915,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       verifiedExternalLearningBlockFromPrompt(raw),
       buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask,focusedPresentation:presentationTask,selectedPath:spec.path}),
       reason?'Previous failure: '+reason:'',
+      /MODEL_CONTROL_TOKEN/.test(reason)?'SOURCE CONTENT REPAIR: the prior replacement contained model-control text or a Markdown fence. Return executable Luau only inside the replace string. Preserve the existing function body; do not copy reasoning tags, thinking directives, or code fences into source.':'',
       /FUNCTION_HEADER_PREMATURE_END/.test(reason)?'LUA SCOPE REPAIR: the prior edit replaced only a function declaration but closed that function before its retained body. Edit the existing body statement selected below. Do not append an end that closes the enclosing function. For a whole-function rewrite, find must include the original full function body and its matching end.':'',
       'Exact writable path: '+JSON.stringify(spec.path),
       'Exact find anchor already fixed by the worker: '+JSON.stringify(spec.find),
@@ -2876,18 +2877,20 @@ function createCandidateSnapshot(sourceRoot,candidateRoot,candidate,{scaffoldFil
   }
   return[...new Set(changed)];
 }
-function validateSystemCandidateSyntax({candidate,sourceRoot}={}){
+function validateCandidateSyntax({candidate,sourceRoot,target='system',luauCompiler=''}={}){
+  const roblox=target==='roblox';
+  const failurePrefix=roblox?'ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:LUAU_SYNTAX':'SYSTEM_CANDIDATE_SYNTAX_INVALID';
   const touched=unique([
     ...(candidate?.edits||[]).map(row=>row.path),
     ...(candidate?.newFiles||[]).map(row=>row.path),
     ...(candidate?.replaceFiles||[]).map(row=>row.path)
-  ]).filter(file=>/\.(?:mjs|js|cjs)$/i.test(file));
+  ]).filter(file=>(roblox?/\.(?:lua|luau)$/i:/\.(?:mjs|js|cjs)$/i).test(file));
   if(!touched.length)return{pass:true,files:[]};
-  const tempRoot=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-system-syntax-'));
+  const tempRoot=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-source-syntax-'));
   try{
     for(const relative of unique((candidate?.edits||[]).map(row=>row.path))){
       const source=path.join(sourceRoot,relative),target=path.join(tempRoot,relative);
-      if(!fs.existsSync(source)||!fs.statSync(source).isFile())throw new Error('SYSTEM_CANDIDATE_SYNTAX_INVALID:MISSING_SOURCE:'+relative);
+      if(!fs.existsSync(source)||!fs.statSync(source).isFile())throw new Error(failurePrefix+':MISSING_SOURCE:'+relative);
       fs.mkdirSync(path.dirname(target),{recursive:true});
       fs.copyFileSync(source,target);
     }
@@ -2905,13 +2908,14 @@ function validateSystemCandidateSyntax({candidate,sourceRoot}={}){
     for(const relative of touched){
       const target=path.join(tempRoot,relative);
       try{
-        execFileSync(process.execPath,['--check',target],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
+        execFileSync(roblox?luauCompiler:process.execPath,roblox?['--null',target]:['--check',target],{encoding:'utf8',timeout:15000,maxBuffer:262144,stdio:['ignore','pipe','pipe']});
       }catch(error){
-        const detail=clean(error?.stderr||error?.stdout||error?.message||error).replace(/\s+/g,' ').slice(0,360);
-        throw new Error('SYSTEM_CANDIDATE_SYNTAX_INVALID:'+relative+':'+detail);
+        if(roblox&&(error.code==='ENOENT'||error.code==='EACCES'||error.code==='ETIMEDOUT'||!Number.isInteger(error.status)))throw new Error('ROBLOX_LUAU_COMPILER_UNAVAILABLE:'+clean(error.code||error.signal));
+        const detail=clean(error?.stderr||error?.stdout||error?.message||error).replaceAll(tempRoot,'[candidate]').replace(/\s+/g,' ').slice(0,360);
+        throw new Error(failurePrefix+':'+relative+':'+detail);
       }
     }
-    return{pass:true,files:touched};
+    return{pass:true,files:touched,compiler:roblox?'LUAU':'NODE',scope:'SYNTAX_ONLY',runtimeVerified:false};
   }finally{
     fs.rmSync(tempRoot,{recursive:true,force:true});
   }
@@ -2954,7 +2958,7 @@ export function buildSpecializedVerificationRequest(order={}){
 }
 function waitingDesignEvidence(){return{autoPlayer:{status:'WAITING_EVIDENCE',verified:false},telemetry:{status:'WAITING_EVIDENCE',verified:false},designReview:{status:'WAITING_EVIDENCE',verified:false,decision:null},qa:{status:'WAITING_EVIDENCE',verified:false}};}
 
-export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vibe2/work-order.json',outputRoot='.vibe2/candidates',model=DEFAULT_MODEL,responseFile='',responseFiles=[],applySource=false}={}){
+export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vibe2/work-order.json',outputRoot='.vibe2/candidates',model=DEFAULT_MODEL,responseFile='',responseFiles=[],applySource=false,luauCompiler=clean(process.env.VIBE2_LUAU_COMPILER)}={}){
   const order=readJson(path.resolve(cwd,workOrderFile));
   if(!order?.run||order?.workMode!=='source-change-candidate')throw new Error('실행 가능한 source-change work order 필요');
   if(order?.workerPolicy?.directMainWrite!==false)throw new Error('directMainWrite 정책 위반');
@@ -3034,7 +3038,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         if(modelControlToken.test(row.content)){
           throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN:'+row.path);
         }
-        if(row.kind!=='edit')continue;
+        if(row.kind!=='edit'||luauCompiler)continue;
         const find=String(row.find||'').trim();
         const replacement=String(row.content||'').trim();
         const headerOnly=/^(?:local\s+)?function\s+[A-Za-z_][\w.:]*\s*\([^\n]*\)\s*$/.test(find);
@@ -3103,7 +3107,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       const testTouched=systemRegressionFiles.some(file=>touched.has(file));
       if(!sourceTouched||!testTouched)throw new Error('SYSTEM_CAUSAL_TEST_REQUIRED:SOURCE_AND_REGRESSION_TEST_MUST_CHANGE_TOGETHER');
     }
-    if(target==='system')validateSystemCandidateSyntax({candidate,sourceRoot});
+    if(target==='roblox'&&!luauCompiler&&process.env.VIBE2_LUAU_COMPILE_REQUIRED==='true')throw new Error('ROBLOX_LUAU_COMPILER_UNAVAILABLE:NOT_CONFIGURED');
+    const sourceSyntax=target==='system'||(target==='roblox'&&luauCompiler)?validateCandidateSyntax({candidate,sourceRoot,target,luauCompiler}):{pass:null,scope:'NOT_EXECUTED',runtimeVerified:false};
     const result=evaluateSemanticDiffBudget({candidate,editContract,allowFullRewrite,bootstrap,sourceRoot});
     if(!result.pass)throw new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:'+result.violations.join('|'));
     const diagnosticPostcondition=evaluateDiagnosticPostcondition({candidate,exploration});
@@ -3141,7 +3146,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(studioQualityDelta.required&&!studioQualityDelta.pass){
       throw new Error(`STUDIO_QUALITY_DELTA_REQUIRED:${studioQualityDelta.phase}:${studioQualityDelta.sourceDeltaUnits}/${studioQualityDelta.requiredSourceDeltaUnits}:VISUAL:${studioQualityDelta.visualUnits}/${studioQualityDelta.requiredVisualUnits}:${studioQualityDelta.reason}`);
     }
-    return{...result,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta};
+    return{...result,sourceSyntax,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
   const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles}):null;

@@ -1283,6 +1283,18 @@ jobs:
             fi
           fi
 
+          if [ "$TARGET" = 'roblox' ]; then
+            luau_dir="$RUNNER_TEMP/vibe2-source-luau"
+            mkdir -p "$luau_dir"
+            curl -fsSL --retry 3 --retry-delay 2 -o "$luau_dir/luau.zip" https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+            unzip -oq "$luau_dir/luau.zip" -d "$luau_dir"
+            chmod +x "$luau_dir/luau-compile"
+            export VIBE2_LUAU_COMPILER="$luau_dir/luau-compile"
+            export VIBE2_LUAU_COMPILE_REQUIRED=true
+            "$VIBE2_LUAU_COMPILER" --help >/dev/null
+            VIBE2_TEST_LUAU_COMPILER="$VIBE2_LUAU_COMPILER" VIBE2_LUAU_COMPILER= node --test --test-name-pattern='Luau compiler' "$contract_root/qa/vibe2-source-worker.test.mjs"
+          fi
+
           cd "$candidate_dir"
           node --check tools/company-shared-context.mjs
           node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.log"
