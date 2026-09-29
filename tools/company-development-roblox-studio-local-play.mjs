@@ -2191,6 +2191,26 @@ export async function runOfficialStudioMcpPlay({
     }
 
     if(actualPlayContract?.required===true){
+      const spawnProbe=postActionClientProbe||initialClientProbe;
+      const missingCharacter=spawnProbe?.player?.present===true
+        &&spawnProbe?.player?.characterPresent===false
+        &&spawnProbe?.player?.humanoidPresent===false
+        &&spawnProbe?.player?.rootPresent===false;
+      if(missingCharacter){
+        await wait(1500);
+        const spawnConfirm=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+        if(spawnConfirm?.player?.present===true
+          &&spawnConfirm?.player?.characterPresent===false
+          &&spawnConfirm?.player?.humanoidPresent===false
+          &&spawnConfirm?.player?.rootPresent===false){
+          checkpoint('initial-character-spawned',false);
+          actions.push({id:'initial-character-spawned',type:'mcp-start-playability-abort',dispatched:true,ok:false});
+          postActionClientProbe=spawnConfirm;
+          try{await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,false));started=false;}catch{}
+          throw new Error('ROBLOX_STUDIO_MISSING_CHARACTER_ABORT:NO_PLAYABLE_CHARACTER');
+        }
+      }
+      checkpoint('initial-character-spawned',true);
       const overlayProbe=postActionClientProbe||preActionClientProbe;
       const blockingOverlay=Number(overlayProbe?.ui?.largeBlockingOverlayCount||0)>0
         &&Number(overlayProbe?.ui?.largestOverlayCoverage||0)>=0.55;
@@ -2700,10 +2720,22 @@ export async function runOfficialStudioMcpPlay({
       console.log('ROBLOX_STUDIO_MCP_SETTING_HINT=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY');
     }
     const deadStart=signature.startsWith('ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:');
+    const missingCharacter=signature.startsWith('ROBLOX_STUDIO_MISSING_CHARACTER_ABORT:');
     const floatingWorld=signature.startsWith('ROBLOX_STUDIO_FLOATING_CHARACTER_ABORT:');
     const blockingOverlay=signature.startsWith('ROBLOX_STUDIO_BLOCKING_OVERLAY_ABORT:');
     const missingStartAction=signature.startsWith('ROBLOX_STUDIO_START_ACTION_ABORT:');
-    if(deadStart){
+    if(missingCharacter){
+      scenarioCoverage.push({id:'character-camera-ready',pass:false,required:true});
+      qualityFailureKinds.push('character-camera-ready');
+      qualityFailureDetails.push({
+        id:'character-camera-ready',
+        repairSurface:'CHARACTER_BOOT',
+        priority:'CRITICAL',
+        hint:'The local player remained without a character after the start flow and a second spawn probe. Repair CharacterAutoLoads, LoadCharacter timing, spawn location, and character creation before full Studio QA.',
+        observed:{playerPresent:true,characterPresent:false,humanoidPresent:false,rootPresent:false}
+      });
+      errors.push({type:'studio-product-character-spawn-error',actionId:'initial-character-spawned',signature});
+    }else if(deadStart){
       scenarioCoverage.push({id:'adaptive-start-playability',pass:false,required:true});
       qualityFailureKinds.push('adaptive-start-playability');
       qualityFailureDetails.push({
