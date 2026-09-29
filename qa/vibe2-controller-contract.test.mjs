@@ -637,8 +637,11 @@ test('neuron callbacks keep every ingress event and reconcile shared queue state
   const start=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
   const end=workflow.indexOf('  model_cache:',start);
   const reserveBlock=workflow.slice(start,end);
-  assert(reserveBlock.includes('for state_attempt in 1 2 3 4 5; do'));
+  assert(!reserveBlock.includes('for state_attempt in 1 2 3 4 5; do'));
+  assert(reserveBlock.includes("echo 'VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED'"));
+  assert(reserveBlock.includes('while [ "$state_persisted" != 1 ]; do'));
   assert(reserveBlock.includes('VIBE2_CONTROL_OPTIMISTIC_ATTEMPT='));
+  assert(reserveBlock.includes('VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS='));
   assert(reserveBlock.includes('git -C "$control_root" reset --hard origin/vibe2-unreal-core'));
   assert(reserveBlock.includes('git -C "$control_root" push origin HEAD:vibe2-unreal-core'));
   assert(reserveBlock.includes('VIBE2_CONTROL_OPTIMISTIC_RETRY='));
