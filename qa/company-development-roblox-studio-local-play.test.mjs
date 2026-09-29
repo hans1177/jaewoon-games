@@ -1003,7 +1003,7 @@ test('automatic Roblox foundation work keeps only newest same-identity run befor
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
-  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| github\.sha \}\}\n\s+cancel-in-progress: true/);
+  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}\n\s+cancel-in-progress: true/);
   assert.match(workflow,/title='Roblox runtime foundation QA · '\+\(game\|\|'scan'\)/);
   assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
@@ -2099,7 +2099,7 @@ test('mcp-run checks current main head before any Studio MCP play call',()=>{
 
 test('Roblox foundation scan concurrency is stable across main SHAs and force-cancels stale queued Studio runs',()=>{
   assert.match(workflow,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
-  assert.doesNotMatch(workflow,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| github\.sha \}\}/);
+  assert.doesNotMatch(workflow,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
   assert.match(workflow,/actions\/runs\/\$run_id\/force-cancel/);
   assert.match(workflow,/ROBLOX_STALE_FOUNDATION_RUN_FORCE_CANCEL_REQUESTED/);
   assert.match(workflow,/\^\(queued\|pending\|requested\|in_progress\|waiting\)\$/);
