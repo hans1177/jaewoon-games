@@ -2178,6 +2178,12 @@ export async function runOfficialStudioMcpPlay({
         }
         actions.push({id:'ui-primary-action',type:'mcp-mouse-input',dispatched:target!=null,ok});
         checkpoint('primary-action-input-dispatched',ok);
+        if(target?.visible!==true){
+          checkpoint('primary-action-available',false);
+          try{await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,false));started=false;}catch{}
+          throw new Error('ROBLOX_STUDIO_START_ACTION_ABORT:PRIMARY_ACTION_NOT_VISIBLE');
+        }
+        checkpoint('primary-action-available',true);
         await wait(Math.max(200,Number(actualPlayContract.postActionWaitMs||350)));
         postActionClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
         checkpoint('actual-play-post-action-client-probe',postActionClientProbe!=null);
@@ -2696,6 +2702,7 @@ export async function runOfficialStudioMcpPlay({
     const deadStart=signature.startsWith('ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:');
     const floatingWorld=signature.startsWith('ROBLOX_STUDIO_FLOATING_CHARACTER_ABORT:');
     const blockingOverlay=signature.startsWith('ROBLOX_STUDIO_BLOCKING_OVERLAY_ABORT:');
+    const missingStartAction=signature.startsWith('ROBLOX_STUDIO_START_ACTION_ABORT:');
     if(deadStart){
       scenarioCoverage.push({id:'adaptive-start-playability',pass:false,required:true});
       qualityFailureKinds.push('adaptive-start-playability');
@@ -2713,6 +2720,21 @@ export async function runOfficialStudioMcpPlay({
         }
       });
       errors.push({type:'studio-product-start-playability-error',actionId:'initial-character-playable',signature});
+    }else if(missingStartAction){
+      scenarioCoverage.push({id:'adaptive-start-playability',pass:false,required:true});
+      qualityFailureKinds.push('adaptive-start-playability');
+      qualityFailureDetails.push({
+        id:'adaptive-start-playability',
+        repairSurface:Number(preActionClientProbe?.ui?.largeBlockingOverlayCount||0)>0?'MOBILE_UI':'GAME_START',
+        priority:'CRITICAL',
+        hint:'The declared start action never became visible after the start-gate probe window. Restore an actionable start control before full Studio QA.',
+        observed:{
+          requiredButtonText:clean(actualPlayContract.primaryActionButtonText),
+          visibleButtons:Number(preActionClientProbe?.ui?.visibleButtons||0),
+          largeBlockingOverlayCount:Number(preActionClientProbe?.ui?.largeBlockingOverlayCount||0)
+        }
+      });
+      errors.push({type:'studio-product-start-action-error',actionId:'ui-primary-action',signature});
     }else if(blockingOverlay){
       scenarioCoverage.push({id:'adaptive-ui-blocking-overlay',pass:false,required:true});
       qualityFailureKinds.push('adaptive-ui-blocking-overlay');
