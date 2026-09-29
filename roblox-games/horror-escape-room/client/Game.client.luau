@@ -10,6 +10,7 @@ local SoundService=game:GetService("SoundService")
 local RunService=game:GetService("RunService")
 local ContentProvider=game:GetService("ContentProvider")
 local TweenService=game:GetService("TweenService")
+local Debris=game:GetService("Debris")
 
 -- 참조
 local touchEnabled=UserInputService.TouchEnabled
@@ -279,8 +280,16 @@ RunService:BindToRenderStep("MidnightCharacterMotion",Enum.RenderPriority.Charac
    actionPitch=math.rad(-3);rightAction=math.rad(-34);leftAction=math.rad(8)
   elseif motionImpulseKind=="ABILITY"then
    actionPitch=math.rad(-8);rightAction=math.rad(-20);leftAction=math.rad(-20)
+  elseif motionImpulseKind=="INFECT_ATTACK"then
+   actionPitch=math.rad(-7);rightAction=math.rad(-46);leftAction=math.rad(-18)
   elseif motionImpulseKind=="INFECT"then
    actionPitch=math.rad(-7);actionRoll=math.rad(math.sin(os.clock()*34)*5)
+  elseif motionImpulseKind=="CELEBRATE_HUMAN"then
+   actionPitch=math.rad(-5+math.sin(os.clock()*8)*4);rightAction=math.rad(-105);leftAction=math.rad(-105);actionRoll=math.rad(math.sin(os.clock()*7)*5)
+  elseif motionImpulseKind=="CELEBRATE_MONSTER"then
+   actionPitch=math.rad(-12);rightAction=math.rad(-70+math.sin(os.clock()*9)*18);leftAction=math.rad(-70-math.sin(os.clock()*9)*18);actionRoll=math.rad(math.sin(os.clock()*5)*8)
+  elseif motionImpulseKind=="CELEBRATE_DRAW"then
+   actionPitch=math.rad(12);rightAction=math.rad(15);leftAction=math.rad(15)
   end
  elseif motionImpulseKind~=""then
   motionImpulseKind=""
@@ -587,7 +596,7 @@ local hud=Instance.new("Frame")
 hud.Name="MidnightTopHUD"
 hud.AnchorPoint=Vector2.new(.5,0)
 hud.Position=UDim2.new(.5,0,0,8)
-hud.Size=UDim2.fromOffset(330,62)
+hud.Size=UDim2.fromOffset(330,82)
 hud.BackgroundColor3=Color3.fromRGB(34,37,45)
 hud.BackgroundTransparency=.03
 hud.ZIndex=10
@@ -635,6 +644,301 @@ objectiveLine.TextSize=10
 objectiveLine.Font=Enum.Font.GothamBold
 objectiveLine.TextXAlignment=Enum.TextXAlignment.Left
 objectiveLine.Parent=hud
+
+local energyTrack=Instance.new("Frame")
+energyTrack.Name="EnergyTrack"
+energyTrack.Size=UDim2.new(1,-86,0,8)
+energyTrack.Position=UDim2.fromOffset(8,65)
+energyTrack.BackgroundColor3=Color3.fromRGB(50,56,68)
+energyTrack.BorderSizePixel=0
+energyTrack.ZIndex=11
+energyTrack.Parent=hud
+roundify(energyTrack,5)
+
+local energyFill=Instance.new("Frame")
+energyFill.Name="EnergyFill"
+energyFill.Size=UDim2.fromScale(1,1)
+energyFill.BackgroundColor3=Color3.fromRGB(82,183,236)
+energyFill.BorderSizePixel=0
+energyFill.ZIndex=12
+energyFill.Parent=energyTrack
+roundify(energyFill,5)
+
+local energyLabel=Instance.new("TextLabel")
+energyLabel.Name="EnergyLabel"
+energyLabel.Size=UDim2.fromOffset(72,14)
+energyLabel.Position=UDim2.new(1,-78,0,60)
+energyLabel.BackgroundTransparency=1
+energyLabel.TextColor3=Color3.fromRGB(192,224,244)
+energyLabel.TextSize=10
+energyLabel.Font=Enum.Font.GothamBold
+energyLabel.TextXAlignment=Enum.TextXAlignment.Right
+energyLabel.ZIndex=12
+energyLabel.Parent=hud
+
+local pressureLabel=Instance.new("TextLabel")
+pressureLabel.Name="PressurePassive"
+pressureLabel.AnchorPoint=Vector2.new(.5,0)
+pressureLabel.Position=UDim2.new(.5,0,0,88)
+pressureLabel.Size=UDim2.fromOffset(240,26)
+pressureLabel.BackgroundColor3=Color3.fromRGB(35,39,49)
+pressureLabel.BackgroundTransparency=.08
+pressureLabel.TextColor3=Color3.fromRGB(255,218,137)
+pressureLabel.TextSize=12
+pressureLabel.Font=Enum.Font.GothamBold
+pressureLabel.ZIndex=13
+pressureLabel.Visible=false
+pressureLabel.Parent=gui
+roundify(pressureLabel,10)
+
+local mapContentToast=Instance.new("TextLabel")
+mapContentToast.Name="MapContentToast"
+mapContentToast.AnchorPoint=Vector2.new(.5,0)
+mapContentToast.Position=UDim2.new(.5,0,0,118)
+mapContentToast.Size=UDim2.fromOffset(286,34)
+mapContentToast.BackgroundColor3=Color3.fromRGB(23,27,35)
+mapContentToast.BackgroundTransparency=.08
+mapContentToast.TextColor3=Color3.fromRGB(216,228,239)
+mapContentToast.TextSize=12
+mapContentToast.TextWrapped=true
+mapContentToast.Font=Enum.Font.GothamBold
+mapContentToast.ZIndex=14
+mapContentToast.Visible=false
+mapContentToast.Parent=gui
+roundify(mapContentToast,10)
+
+local toastSerial=0
+local function showMapContentToast(text,color,duration)
+ toastSerial+=1
+ local serial=toastSerial
+ mapContentToast.Text=text
+ mapContentToast.TextColor3=color or Color3.fromRGB(216,228,239)
+ mapContentToast.Visible=true
+ task.delay(duration or 2,function()
+  if toastSerial==serial then mapContentToast.Visible=false end
+ end)
+end
+
+-- 구석 놀람/코믹 연출: 로컬에서만 생성되며 경쟁 판정에는 관여하지 않는다.
+local surpriseArena=nil
+local surpriseTriggers={}
+local surpriseSeen={}
+local ghostSightingTriggers={}
+local ghostSightingSeen={}
+local surpriseClock=0
+
+local function localPart(name,size,cframe,color,material,shape)
+ local x=Instance.new("Part")
+ x.Name=name
+ x.Size=size
+ x.CFrame=cframe
+ x.Color=color
+ x.Material=material or Enum.Material.SmoothPlastic
+ x.Anchored=true
+ x.CanCollide=false
+ x.CanTouch=false
+ x.CanQuery=false
+ x.CastShadow=false
+ if shape then x.Shape=shape end
+ x.Parent=workspace
+ return x
+end
+
+local function localText(pos,text,color,duration)
+ local anchorPart=localPart("LocalSurpriseTextAnchor",Vector3.new(.2,.2,.2),CFrame.new(pos),Color3.new(1,1,1),Enum.Material.SmoothPlastic)
+ anchorPart.Transparency=1
+ local bill=Instance.new("BillboardGui")
+ bill.Size=UDim2.fromOffset(260,56)
+ bill.StudsOffset=Vector3.new(0,2.2,0)
+ bill.AlwaysOnTop=true
+ bill.Parent=anchorPart
+ local label=Instance.new("TextLabel")
+ label.Size=UDim2.fromScale(1,1)
+ label.BackgroundColor3=Color3.fromRGB(14,16,22)
+ label.BackgroundTransparency=.18
+ label.TextColor3=color or Color3.fromRGB(235,238,244)
+ label.TextStrokeTransparency=.65
+ label.TextSize=15
+ label.TextWrapped=true
+ label.Font=Enum.Font.GothamBold
+ label.Text=text
+ label.Parent=bill
+ roundify(label,10)
+ Debris:AddItem(anchorPart,duration or 2.2)
+ return anchorPart
+end
+
+local function tweenParts(parts,offset,duration)
+ for _,part in ipairs(parts)do
+  if part and part.Parent then
+   TweenService:Create(part,TweenInfo.new(duration or .65,Enum.EasingStyle.Quad,Enum.EasingDirection.InOut),{CFrame=part.CFrame*CFrame.new(offset)}):Play()
+  end
+ end
+end
+
+local function playSchoolShadow(trigger)
+ local pos=trigger.Position+Vector3.new(-8,1.5,0)
+ local body=localPart("LocalSchoolShadowBody",Vector3.new(2.8,5.4,1.7),CFrame.new(pos),Color3.fromRGB(12,12,16),Enum.Material.SmoothPlastic)
+ local head=localPart("LocalSchoolShadowHead",Vector3.new(2.2,2.2,2.2),CFrame.new(pos+Vector3.new(0,3.6,0)),Color3.fromRGB(10,10,13),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ local eyeL=localPart("LocalSchoolShadowEye",Vector3.new(.22,.22,.18),CFrame.new(pos+Vector3.new(-.35,3.7,-1.08)),Color3.fromRGB(220,64,72),Enum.Material.Neon)
+ local eyeR=localPart("LocalSchoolShadowEye",Vector3.new(.22,.22,.18),CFrame.new(pos+Vector3.new(.35,3.7,-1.08)),Color3.fromRGB(220,64,72),Enum.Material.Neon)
+ local parts={body,head,eyeL,eyeR}
+ tweenParts(parts,Vector3.new(18,0,0),.52)
+ for _,part in ipairs(parts)do Debris:AddItem(part,.72)end
+end
+
+local function playLockerEyes(trigger)
+ local base=trigger.Position+Vector3.new(0,1.1,-2)
+ local face=localPart("LocalLockerFace",Vector3.new(2.2,2.5,.35),CFrame.new(base),Color3.fromRGB(15,15,18),Enum.Material.SmoothPlastic)
+ local eyeL=localPart("LocalLockerEye",Vector3.new(.28,.2,.18),CFrame.new(base+Vector3.new(-.42,.25,-.24)),Color3.fromRGB(236,230,165),Enum.Material.Neon)
+ local eyeR=localPart("LocalLockerEye",Vector3.new(.28,.2,.18),CFrame.new(base+Vector3.new(.42,.25,-.24)),Color3.fromRGB(236,230,165),Enum.Material.Neon)
+ task.delay(.8,function()
+  for _,part in ipairs({face,eyeL,eyeR})do if part.Parent then TweenService:Create(part,TweenInfo.new(.2),{Transparency=1}):Play()end end
+ end)
+ Debris:AddItem(face,1.1);Debris:AddItem(eyeL,1.1);Debris:AddItem(eyeR,1.1)
+end
+
+local function playJanitor(trigger)
+ local pos=trigger.Position+Vector3.new(-7,0,0)
+ local body=localPart("LocalJanitorBody",Vector3.new(2.5,4.8,1.6),CFrame.new(pos+Vector3.new(0,2.4,0)),Color3.fromRGB(72,91,104),Enum.Material.Fabric)
+ local head=localPart("LocalJanitorHead",Vector3.new(2,2,2),CFrame.new(pos+Vector3.new(0,5.7,0)),Color3.fromRGB(204,174,147),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ local broom=localPart("LocalJanitorBroom",Vector3.new(.3,6,.3),CFrame.new(pos+Vector3.new(2,2.6,0))*CFrame.Angles(0,0,math.rad(18)),Color3.fromRGB(108,82,57),Enum.Material.Wood)
+ local parts={body,head,broom}
+ localText(pos+Vector3.new(0,7,0),"청소 중이니까 뛰지 마!",Color3.fromRGB(255,225,150),1.7)
+ tweenParts(parts,Vector3.new(14,0,0),1.15)
+ for _,part in ipairs(parts)do Debris:AddItem(part,1.35)end
+end
+
+local function playGymBall(trigger)
+ local ball=localPart("LocalGymBall",Vector3.new(2.6,2.6,2.6),CFrame.new(trigger.Position+Vector3.new(-6,1,0)),Color3.fromRGB(201,116,67),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ TweenService:Create(ball,TweenInfo.new(.8,Enum.EasingStyle.Bounce,Enum.EasingDirection.Out),{CFrame=ball.CFrame*CFrame.new(13,0,0)*CFrame.Angles(math.rad(270),0,0)}):Play()
+ Debris:AddItem(ball,1)
+end
+
+local function playFloatingProp(trigger,kind,text)
+ local pos=trigger.Position+Vector3.new(0,3,0)
+ local part
+ if kind=="HOSPITAL_WHEELCHAIR"then
+  part=localPart("LocalWheelchair",Vector3.new(3,3,3),CFrame.new(trigger.Position+Vector3.new(-5,1.5,0)),Color3.fromRGB(92,103,108),Enum.Material.Metal)
+  TweenService:Create(part,TweenInfo.new(1.1,Enum.EasingStyle.Sine),{CFrame=part.CFrame+CFrame.new(10,0,0)}):Play()
+ elseif kind=="PARK_CLOWN"then
+  part=localPart("LocalClownHead",Vector3.new(3,3,3),CFrame.new(pos),Color3.fromRGB(218,214,195),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  local nose=localPart("LocalClownNose",Vector3.new(.8,.8,.8),CFrame.new(pos+Vector3.new(0,0,-1.7)),Color3.fromRGB(215,55,62),Enum.Material.Neon,Enum.PartType.Ball)
+  Debris:AddItem(nose,1.4)
+ elseif kind=="PARK_HORSE"then
+  part=localPart("LocalCarouselHorseHead",Vector3.new(3.8,2.4,4.6),CFrame.new(pos),Color3.fromRGB(212,190,153),Enum.Material.SmoothPlastic)
+  TweenService:Create(part,TweenInfo.new(.35,Enum.EasingStyle.Back),{CFrame=part.CFrame*CFrame.Angles(0,math.rad(55),0)}):Play()
+ elseif kind=="HOSPITAL_XRAY"then
+  part=localPart("LocalXrayDuck",Vector3.new(2.2,2.1,.3),CFrame.new(pos),Color3.fromRGB(172,220,231),Enum.Material.Neon)
+  local head=localPart("LocalXrayDuckHead",Vector3.new(1.1,1.1,.3),CFrame.new(pos+Vector3.new(.8,.8,0)),Color3.fromRGB(172,220,231),Enum.Material.Neon,Enum.PartType.Ball)
+  Debris:AddItem(head,1.8)
+ elseif kind=="HOSPITAL_BED"then
+  part=localPart("LocalRunawayBed",Vector3.new(6,1.5,10),CFrame.new(trigger.Position+Vector3.new(-5,1,0)),Color3.fromRGB(161,177,181),Enum.Material.Metal)
+  TweenService:Create(part,TweenInfo.new(.85,Enum.EasingStyle.Sine),{CFrame=part.CFrame+CFrame.new(10,0,0)}):Play()
+ elseif kind=="PARK_ARCADE"then
+  part=localPart("LocalArcadeGhostScreen",Vector3.new(3,2,.25),CFrame.new(pos),Color3.fromRGB(84,221,171),Enum.Material.Neon)
+ elseif kind=="PARK_POPCORN"then
+  part=localPart("LocalPopcorn",Vector3.new(.9,.9,.9),CFrame.new(pos),Color3.fromRGB(245,227,160),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  TweenService:Create(part,TweenInfo.new(.65,Enum.EasingStyle.Bounce),{CFrame=part.CFrame+CFrame.new(0,4,0)}):Play()
+ elseif kind=="SCHOOL_TRAY"then
+  part=localPart("LocalCafeteriaTray",Vector3.new(4,.25,3),CFrame.new(pos),Color3.fromRGB(144,153,156),Enum.Material.Metal)
+  TweenService:Create(part,TweenInfo.new(.45,Enum.EasingStyle.Quad,Enum.EasingDirection.In),{CFrame=part.CFrame+CFrame.new(0,-2.6,0)*CFrame.Angles(math.rad(40),0,math.rad(25))}):Play()
+ else
+  part=localPart("LocalComicProp",Vector3.new(2.8,2.8,2.8),CFrame.new(pos),Color3.fromRGB(132,145,154),Enum.Material.SmoothPlastic)
+ end
+ if part then Debris:AddItem(part,1.4)end
+ if text and text~=""then localText(pos+Vector3.new(0,2.5,0),text,Color3.fromRGB(229,233,240),1.8)end
+end
+
+local function ghostCatalogItem(id)
+ for _,item in ipairs(C.GhostCatalog or{})do if item.Id==id then return item end end
+ return nil
+end
+local function playGhostSighting(trigger)
+ local id=tostring(trigger:GetAttribute("GhostId")or"")
+ local item=ghostCatalogItem(id);if not item then return end
+ local base=trigger.Position+Vector3.new(0,2.8,0)
+ local color=item.Color or Color3.fromRGB(210,218,228)
+ local parts={}
+ local body=localPart("LocalGhostSightingBody",Vector3.new(2.8,5.4,1.4),CFrame.new(base),color,Enum.Material.SmoothPlastic);body.Transparency=.18;table.insert(parts,body)
+ local head=localPart("LocalGhostSightingHead",Vector3.new(2.25,2.25,2.25),CFrame.new(base+Vector3.new(0,3.6,0)),color,Enum.Material.SmoothPlastic,Enum.PartType.Ball);head.Transparency=.12;table.insert(parts,head)
+ if item.Visual=="BLACK_DOG"then
+  body.Size=Vector3.new(5.2,2.4,2.2);body.CFrame=CFrame.new(trigger.Position+Vector3.new(0,1.5,0))
+  head.Size=Vector3.new(2.3,2.3,2.5);head.CFrame=CFrame.new(trigger.Position+Vector3.new(0,2,-2.4))
+ elseif item.Visual=="FLOATING_HEAD"then
+  body.Transparency=1
+  head.CFrame=CFrame.new(trigger.Position+Vector3.new(0,6.5,0))
+ elseif item.Visual=="HEADLESS"then
+  head.Transparency=1
+ end
+ for _,part in ipairs(parts)do
+  TweenService:Create(part,TweenInfo.new(1.35,Enum.EasingStyle.Sine,Enum.EasingDirection.Out),{Transparency=1,CFrame=part.CFrame*CFrame.new(0,.8,0)}):Play()
+  Debris:AddItem(part,1.5)
+ end
+ localText(trigger.Position+Vector3.new(0,7,0),item.Name.." · "..item.Origin,Color3.fromRGB(224,215,255),1.5)
+end
+
+local function playSurprise(trigger)
+ local kind=tostring(trigger:GetAttribute("SurpriseKind")or"")
+ local text=tostring(trigger:GetAttribute("SurpriseText")or"")
+ if kind=="SCHOOL_SHADOW"then playSchoolShadow(trigger)
+ elseif kind=="SCHOOL_LOCKER"then playLockerEyes(trigger);localText(trigger.Position+Vector3.new(0,6,0),text,nil,1.5)
+ elseif kind=="SCHOOL_JANITOR"then playJanitor(trigger)
+ elseif kind=="SCHOOL_BALL"then playGymBall(trigger)
+ elseif kind=="SCHOOL_BOARD"then localText(trigger.Position+Vector3.new(0,5,0),text,Color3.fromRGB(202,235,188),2.4)
+ elseif kind=="SCHOOL_TRAY"then playFloatingProp(trigger,kind,text)
+ elseif kind=="HOSPITAL_WHEELCHAIR"or kind=="PARK_CLOWN"or kind=="PARK_HORSE"or kind=="HOSPITAL_XRAY"or kind=="HOSPITAL_BED"or kind=="PARK_ARCADE"or kind=="PARK_POPCORN"then playFloatingProp(trigger,kind,text)
+ elseif kind=="HOSPITAL_CURTAIN"then localText(trigger.Position+Vector3.new(0,5,0),"커튼 뒤: 비어 있음\n…방금 움직인 건 뭐지?",Color3.fromRGB(214,224,230),2.1)
+ elseif kind=="HOSPITAL_MONITOR"then localText(trigger.Position+Vector3.new(0,5,0),"삐—  배터리 1%\n공포보다 충전기가 급하다",Color3.fromRGB(170,235,207),2.2)
+ elseif kind=="PARK_TICKET"then localText(trigger.Position+Vector3.new(0,5,0),"매표소\n오늘도 무단결근",Color3.fromRGB(255,207,155),2.2)
+ elseif text~=""then localText(trigger.Position+Vector3.new(0,5,0),text,nil,1.8)end
+end
+
+local function refreshSurpriseTriggers()
+ surpriseTriggers={}
+ surpriseSeen={}
+ ghostSightingTriggers={}
+ ghostSightingSeen={}
+ surpriseArena=workspace:FindFirstChild("MidnightArena")
+ if not surpriseArena then return end
+ for _,d in ipairs(surpriseArena:GetDescendants())do
+  if d:IsA("BasePart")and d:GetAttribute("CompetitiveEffect")==false then
+   if string.find(d.Name,"SurpriseTrigger_",1,true)==1 then table.insert(surpriseTriggers,d)
+   elseif string.find(d.Name,"GhostSighting_",1,true)==1 then table.insert(ghostSightingTriggers,d)end
+  end
+ end
+end
+
+RunService.Heartbeat:Connect(function(dt)
+ surpriseClock+=dt
+ if surpriseClock<.22 then return end
+ surpriseClock=0
+ local arenaNow=workspace:FindFirstChild("MidnightArena")
+ if arenaNow~=surpriseArena then refreshSurpriseTriggers()end
+ if p:GetAttribute("RoundState")~="RUNNING"then return end
+ local character=p.Character
+ local root=character and character:FindFirstChild("HumanoidRootPart")
+ if not root then return end
+ for _,trigger in ipairs(surpriseTriggers)do
+  if trigger.Parent and not surpriseSeen[trigger]then
+   local radius=math.max(3,tonumber(trigger:GetAttribute("SurpriseRadius"))or 10)
+   if (root.Position-trigger.Position).Magnitude<=radius then
+    surpriseSeen[trigger]=true
+    playSurprise(trigger)
+   end
+  end
+ end
+ for _,trigger in ipairs(ghostSightingTriggers)do
+  if trigger.Parent and not ghostSightingSeen[trigger]then
+   local radius=math.max(3,tonumber(trigger:GetAttribute("GhostRadius"))or 11)
+   if (root.Position-trigger.Position).Magnitude<=radius then
+    ghostSightingSeen[trigger]=true
+    local ghostId=tostring(trigger:GetAttribute("GhostId")or"")
+    if ghostId~=""then remote:FireServer(C.Actions.GHOST_SIGHTING_FOUND,ghostId);playGhostSighting(trigger)end
+   end
+  end
+ end
+end)
 
 -- 실제 플레이 좌표를 보여주는 소형 미니맵
 local mapPanel=Instance.new("Frame")
@@ -761,7 +1065,7 @@ survivorRule.TextSize=12
 survivorRule.TextWrapped=true
 survivorRule.TextXAlignment=Enum.TextXAlignment.Left
 survivorRule.Font=Enum.Font.GothamBold
-survivorRule.Text="인간  고유 도구로 몬스터를 정화 · 잡히면 몬스터로 감염"
+survivorRule.Text="인간  에너지로 정화·대시 · 단말과 중앙 코어로 충전"
 survivorRule.ZIndex=11
 survivorRule.Parent=ruleCard
 roundify(survivorRule,8)
@@ -776,7 +1080,7 @@ monsterRule.TextSize=11
 monsterRule.TextWrapped=true
 monsterRule.TextXAlignment=Enum.TextXAlignment.Left
 monsterRule.Font=Enum.Font.GothamBold
-monsterRule.Text="몬스터  인간을 잡아 감염시켜라 · 인간 0명이면 승리"
+monsterRule.Text="몬스터  접촉이 아닌 감염 공격 사용 · 인간 0명이면 승리"
 monsterRule.ZIndex=11
 monsterRule.Parent=ruleCard
 roundify(monsterRule,8)
@@ -786,7 +1090,7 @@ local setupPanel=Instance.new("Frame")
 setupPanel.Name="RoleSetup"
 setupPanel.AnchorPoint=Vector2.new(.5,.5)
 setupPanel.Position=UDim2.fromScale(.5,.64)
-setupPanel.Size=UDim2.fromOffset(304,194)
+setupPanel.Size=UDim2.fromOffset(304,238)
 setupPanel.BackgroundColor3=Color3.fromRGB(25,27,35)
 setupPanel.BackgroundTransparency=.04
 setupPanel.ZIndex=10
@@ -828,6 +1132,18 @@ selectionStatus.TextXAlignment=Enum.TextXAlignment.Left
 selectionStatus.ZIndex=11
 selectionStatus.Parent=setupPanel
 
+local loreStatus=Instance.new("TextLabel")
+loreStatus.Name="LoreStatus"
+loreStatus.Size=UDim2.new(1,-18,0,16)
+loreStatus.Position=UDim2.fromOffset(9,182)
+loreStatus.BackgroundTransparency=1
+loreStatus.TextColor3=Color3.fromRGB(169,181,198)
+loreStatus.TextSize=10
+loreStatus.Font=Enum.Font.GothamMedium
+loreStatus.TextXAlignment=Enum.TextXAlignment.Left
+loreStatus.ZIndex=11
+loreStatus.Parent=setupPanel
+
 local setupButtons={
  {C.Actions.PREFER_SURVIVOR,"인간 선호",Color3.fromRGB(50,112,145)},
  {C.Actions.PREFER_MONSTER,"몬스터 선호",Color3.fromRGB(145,48,59)},
@@ -844,6 +1160,9 @@ for i,a in ipairs(setupButtons)do
  end)
 end
 
+local shopOpenButton=makeButton(setupPanel,"코스메틱 상점",Color3.fromRGB(66,72,88))
+shopOpenButton.ZIndex=11;shopOpenButton.Size=UDim2.fromOffset(118,34);shopOpenButton.Position=UDim2.new(.5,-59,0,146)
+
 local humanCycle=makeButton(setupPanel,"인간 변경",Color3.fromRGB(49,91,105))
 humanCycle.ZIndex=11;humanCycle.Size=UDim2.new(.44,0,0,36);humanCycle.Position=UDim2.new(.04,0,1,-42)
 humanCycle.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.NEXT_HUMAN)end)
@@ -851,27 +1170,611 @@ local monsterCycle=makeButton(setupPanel,"몬스터 변경",Color3.fromRGB(76,58
 monsterCycle.ZIndex=11;monsterCycle.Size=UDim2.new(.44,0,0,36);monsterCycle.Position=UDim2.new(.52,0,1,-42)
 monsterCycle.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.NEXT_MONSTER)end)
 
+local roomBrowserPanel=Instance.new("Frame")
+roomBrowserPanel.Name="RoomBrowser"
+roomBrowserPanel.AnchorPoint=Vector2.new(.5,.5)
+roomBrowserPanel.Position=UDim2.fromScale(.5,.52)
+roomBrowserPanel.Size=UDim2.fromOffset(330,330)
+roomBrowserPanel.BackgroundColor3=Color3.fromRGB(21,24,31)
+roomBrowserPanel.BackgroundTransparency=.02
+roomBrowserPanel.ZIndex=20
+roomBrowserPanel.Visible=false
+roomBrowserPanel.Parent=gui
+roundify(roomBrowserPanel,16);outline(roomBrowserPanel,.3)
+
+local roomBrowserTitle=Instance.new("TextLabel")
+roomBrowserTitle.Size=UDim2.new(1,-20,0,34)
+roomBrowserTitle.Position=UDim2.fromOffset(10,10)
+roomBrowserTitle.BackgroundTransparency=1
+roomBrowserTitle.Text="방 만들기 / 참가"
+roomBrowserTitle.TextColor3=Color3.fromRGB(241,244,249)
+roomBrowserTitle.TextSize=21
+roomBrowserTitle.Font=Enum.Font.GothamBold
+roomBrowserTitle.TextXAlignment=Enum.TextXAlignment.Left
+roomBrowserTitle.ZIndex=21
+roomBrowserTitle.Parent=roomBrowserPanel
+
+local roomBrowserInfo=Instance.new("TextLabel")
+roomBrowserInfo.Size=UDim2.new(1,-20,0,34)
+roomBrowserInfo.Position=UDim2.fromOffset(10,44)
+roomBrowserInfo.BackgroundTransparency=1
+roomBrowserInfo.Text="1명부터 시작 가능 · 최대 8명 · 빈자리는 AI"
+roomBrowserInfo.TextColor3=Color3.fromRGB(180,193,209)
+roomBrowserInfo.TextSize=11
+roomBrowserInfo.TextWrapped=true
+roomBrowserInfo.Font=Enum.Font.GothamMedium
+roomBrowserInfo.TextXAlignment=Enum.TextXAlignment.Left
+roomBrowserInfo.ZIndex=21
+roomBrowserInfo.Parent=roomBrowserPanel
+
+local visibilityLabel=Instance.new("TextLabel")
+visibilityLabel.Size=UDim2.new(1,-20,0,20)
+visibilityLabel.Position=UDim2.fromOffset(10,80)
+visibilityLabel.BackgroundTransparency=1
+visibilityLabel.Text="방 공개 범위"
+visibilityLabel.TextColor3=Color3.fromRGB(220,226,235)
+visibilityLabel.TextSize=12
+visibilityLabel.Font=Enum.Font.GothamBold
+visibilityLabel.TextXAlignment=Enum.TextXAlignment.Left
+visibilityLabel.ZIndex=21
+visibilityLabel.Parent=roomBrowserPanel
+
+local selectedRoomVisibility="PUBLIC"
+local visibilityButtons={}
+local visibilitySpecs={
+ {"PUBLIC","공개",Color3.fromRGB(51,104,129)},
+ {"FRIENDS","친구만",Color3.fromRGB(77,91,132)},
+ {"PRIVATE","비공개",Color3.fromRGB(91,72,105)},
+}
+local function refreshVisibilityButtons()
+ for id,button in pairs(visibilityButtons)do
+  button.BackgroundTransparency=id==selectedRoomVisibility and 0 or .32
+  button.Text=(id==selectedRoomVisibility and"✓ "or"")..(id=="PUBLIC"and"공개"or id=="FRIENDS"and"친구만"or"비공개")
+ end
+end
+for i,spec in ipairs(visibilitySpecs)do
+ local b=makeButton(roomBrowserPanel,spec[2],spec[3])
+ b.Size=UDim2.fromOffset(96,38)
+ b.Position=UDim2.fromOffset(10+(i-1)*105,103)
+ b.ZIndex=21
+ visibilityButtons[spec[1]]=b
+ b.Activated:Connect(function()selectedRoomVisibility=spec[1];refreshVisibilityButtons()end)
+end
+refreshVisibilityButtons()
+
+local createRoomButton=makeButton(roomBrowserPanel,"방 만들기",Color3.fromRGB(48,126,104))
+createRoomButton.Size=UDim2.new(1,-20,0,44)
+createRoomButton.Position=UDim2.fromOffset(10,150)
+createRoomButton.ZIndex=21
+createRoomButton.Activated:Connect(function()
+ actionSfx.TimePosition=0;actionSfx:Play()
+ remote:FireServer(C.Actions.CREATE_ROOM,selectedRoomVisibility)
+end)
+
+local quickPublicButton=makeButton(roomBrowserPanel,"공개 방 빠른 참가",Color3.fromRGB(58,92,128))
+quickPublicButton.Size=UDim2.fromOffset(146,38)
+quickPublicButton.Position=UDim2.fromOffset(10,202)
+quickPublicButton.ZIndex=21
+quickPublicButton.Activated:Connect(function()remote:FireServer(C.Actions.QUICK_JOIN_PUBLIC)end)
+
+local quickFriendButton=makeButton(roomBrowserPanel,"친구 방 찾기",Color3.fromRGB(78,75,122))
+quickFriendButton.Size=UDim2.fromOffset(146,38)
+quickFriendButton.Position=UDim2.fromOffset(174,202)
+quickFriendButton.ZIndex=21
+quickFriendButton.Activated:Connect(function()remote:FireServer(C.Actions.QUICK_JOIN_FRIEND)end)
+
+local roomCodeBox=Instance.new("TextBox")
+roomCodeBox.Name="RoomCodeInput"
+roomCodeBox.Size=UDim2.fromOffset(190,40)
+roomCodeBox.Position=UDim2.fromOffset(10,250)
+roomCodeBox.BackgroundColor3=Color3.fromRGB(35,39,48)
+roomCodeBox.TextColor3=Color3.fromRGB(239,242,247)
+roomCodeBox.PlaceholderText="6자리 방 코드"
+roomCodeBox.PlaceholderColor3=Color3.fromRGB(132,143,158)
+roomCodeBox.Text=""
+roomCodeBox.TextSize=16
+roomCodeBox.Font=Enum.Font.GothamBold
+roomCodeBox.ClearTextOnFocus=false
+roomCodeBox.MultiLine=false
+roomCodeBox.ZIndex=21
+roomCodeBox.Parent=roomBrowserPanel
+roundify(roomCodeBox,10);outline(roomCodeBox,.55)
+
+local roomCodeJoin=makeButton(roomBrowserPanel,"코드 참가",Color3.fromRGB(87,79,105))
+roomCodeJoin.Size=UDim2.fromOffset(110,40)
+roomCodeJoin.Position=UDim2.fromOffset(210,250)
+roomCodeJoin.ZIndex=21
+local function submitRoomCode()remote:FireServer(C.Actions.JOIN_ROOM_CODE,roomCodeBox.Text)end
+roomCodeJoin.Activated:Connect(submitRoomCode)
+roomCodeBox.FocusLost:Connect(function(enterPressed)if enterPressed then submitRoomCode()end end)
+
+local roomBrowserFeedback=Instance.new("TextLabel")
+roomBrowserFeedback.Size=UDim2.new(1,-20,0,25)
+roomBrowserFeedback.Position=UDim2.fromOffset(10,296)
+roomBrowserFeedback.BackgroundTransparency=1
+roomBrowserFeedback.Text=""
+roomBrowserFeedback.TextColor3=Color3.fromRGB(187,199,214)
+roomBrowserFeedback.TextSize=11
+roomBrowserFeedback.Font=Enum.Font.GothamMedium
+roomBrowserFeedback.TextXAlignment=Enum.TextXAlignment.Left
+roomBrowserFeedback.ZIndex=21
+roomBrowserFeedback.Parent=roomBrowserPanel
+
+local roomInfoPanel=Instance.new("Frame")
+roomInfoPanel.Name="RoomInfo"
+roomInfoPanel.AnchorPoint=Vector2.new(.5,0)
+roomInfoPanel.Position=UDim2.new(.5,0,0,92)
+roomInfoPanel.Size=UDim2.fromOffset(320,78)
+roomInfoPanel.BackgroundColor3=Color3.fromRGB(23,26,34)
+roomInfoPanel.BackgroundTransparency=.04
+roomInfoPanel.ZIndex=18
+roomInfoPanel.Visible=false
+roomInfoPanel.Parent=gui
+roundify(roomInfoPanel,13);outline(roomInfoPanel,.4)
+
+local roomInfoLabel=Instance.new("TextLabel")
+roomInfoLabel.Size=UDim2.new(1,-142,1,-12)
+roomInfoLabel.Position=UDim2.fromOffset(10,6)
+roomInfoLabel.BackgroundTransparency=1
+roomInfoLabel.TextColor3=Color3.fromRGB(226,232,240)
+roomInfoLabel.TextSize=11
+roomInfoLabel.TextWrapped=true
+roomInfoLabel.Font=Enum.Font.GothamBold
+roomInfoLabel.TextXAlignment=Enum.TextXAlignment.Left
+roomInfoLabel.TextYAlignment=Enum.TextYAlignment.Center
+roomInfoLabel.ZIndex=19
+roomInfoLabel.Parent=roomInfoPanel
+
+local roomStartButton=makeButton(roomInfoPanel,"게임 시작",Color3.fromRGB(45,126,96))
+roomStartButton.Size=UDim2.fromOffset(116,32)
+roomStartButton.Position=UDim2.new(1,-126,0,7)
+roomStartButton.ZIndex=19
+roomStartButton.Activated:Connect(function()remote:FireServer(C.Actions.START_ROOM)end)
+
+local roomLeaveButton=makeButton(roomInfoPanel,"방 나가기",Color3.fromRGB(98,62,71))
+roomLeaveButton.Size=UDim2.fromOffset(116,27)
+roomLeaveButton.Position=UDim2.new(1,-126,0,44)
+roomLeaveButton.ZIndex=19
+roomLeaveButton.Activated:Connect(function()remote:FireServer(C.Actions.LEAVE_ROOM)end)
+
+local resultTitle
+
+-- 코스메틱 상점: 전투 능력치는 바꾸지 않고 프로필 프레임/칭호/결과 화면 색만 바꾼다.
+local shopPanel=Instance.new("Frame")
+shopPanel.Name="CosmeticShop"
+shopPanel.AnchorPoint=Vector2.new(.5,.5)
+shopPanel.Position=UDim2.fromScale(.5,.5)
+shopPanel.Size=UDim2.fromOffset(324,356)
+shopPanel.BackgroundColor3=Color3.fromRGB(20,23,30)
+shopPanel.BackgroundTransparency=.02
+shopPanel.ZIndex=30
+shopPanel.Visible=false
+shopPanel.Parent=gui
+roundify(shopPanel,16);outline(shopPanel,.3)
+
+local shopTitle=Instance.new("TextLabel")
+shopTitle.Size=UDim2.new(1,-88,0,30)
+shopTitle.Position=UDim2.fromOffset(12,10)
+shopTitle.BackgroundTransparency=1
+shopTitle.Text="코스메틱 상점"
+shopTitle.TextColor3=Color3.fromRGB(240,243,248)
+shopTitle.TextSize=20
+shopTitle.Font=Enum.Font.GothamBold
+shopTitle.TextXAlignment=Enum.TextXAlignment.Left
+shopTitle.ZIndex=31
+shopTitle.Parent=shopPanel
+
+local shopCoins=Instance.new("TextLabel")
+shopCoins.Size=UDim2.fromOffset(112,24)
+shopCoins.Position=UDim2.fromOffset(12,42)
+shopCoins.BackgroundTransparency=1
+shopCoins.TextColor3=Color3.fromRGB(255,211,118)
+shopCoins.TextSize=13
+shopCoins.Font=Enum.Font.GothamBold
+shopCoins.TextXAlignment=Enum.TextXAlignment.Left
+shopCoins.ZIndex=31
+shopCoins.Parent=shopPanel
+
+local shopClose=makeButton(shopPanel,"닫기",Color3.fromRGB(72,76,88))
+shopClose.Size=UDim2.fromOffset(64,30)
+shopClose.Position=UDim2.new(1,-76,0,10)
+shopClose.ZIndex=31
+
+local shopFeedback=Instance.new("TextLabel")
+shopFeedback.Size=UDim2.new(1,-24,0,24)
+shopFeedback.Position=UDim2.fromOffset(12,66)
+shopFeedback.BackgroundTransparency=1
+shopFeedback.TextColor3=Color3.fromRGB(184,193,208)
+shopFeedback.TextSize=11
+shopFeedback.Font=Enum.Font.GothamMedium
+shopFeedback.TextXAlignment=Enum.TextXAlignment.Left
+shopFeedback.ZIndex=31
+shopFeedback.Parent=shopPanel
+
+local shopList=Instance.new("ScrollingFrame")
+shopList.Name="CosmeticList"
+shopList.Size=UDim2.new(1,-20,1,-100)
+shopList.Position=UDim2.fromOffset(10,92)
+shopList.BackgroundTransparency=1
+shopList.BorderSizePixel=0
+shopList.ScrollBarThickness=4
+shopList.AutomaticCanvasSize=Enum.AutomaticSize.Y
+shopList.CanvasSize=UDim2.new()
+shopList.ZIndex=31
+shopList.Parent=shopPanel
+
+local shopLayout=Instance.new("UIListLayout")
+shopLayout.Padding=UDim.new(0,7)
+shopLayout.SortOrder=Enum.SortOrder.LayoutOrder
+shopLayout.Parent=shopList
+
+local cosmeticButtons={}
+local function ownedCosmeticSet()
+ local owned={DEFAULT=true}
+ for id in string.gmatch(tostring(p:GetAttribute("OwnedCosmetics")or"DEFAULT"),"[^,]+")do owned[id]=true end
+ return owned
+end
+local function cosmeticItem(id)
+ for _,item in ipairs(C.Cosmetics or{})do if item.Id==id then return item end end
+ return(C.Cosmetics and C.Cosmetics[1])or{Id="DEFAULT",Name="기본 프레임",Price=0,Accent=Color3.fromRGB(170,209,220),Title="신입 참가자"}
+end
+local function loreItem(id)
+ for _,item in ipairs(C.Lore or{})do if item.Id==id then return item end end
+ return nil
+end
+for index,item in ipairs(C.Cosmetics or{})do
+ local row=Instance.new("Frame")
+ row.Name="Cosmetic_"..item.Id
+ row.Size=UDim2.new(1,-4,0,48)
+ row.BackgroundColor3=Color3.fromRGB(31,35,44)
+ row.BackgroundTransparency=.04
+ row.LayoutOrder=index
+ row.ZIndex=31
+ row.Parent=shopList
+ roundify(row,10)
+
+ local accent=Instance.new("Frame")
+ accent.Size=UDim2.fromOffset(5,36)
+ accent.Position=UDim2.fromOffset(7,6)
+ accent.BackgroundColor3=item.Accent
+ accent.BorderSizePixel=0
+ accent.ZIndex=32
+ accent.Parent=row
+ roundify(accent,4)
+
+ local label=Instance.new("TextLabel")
+ label.Size=UDim2.new(1,-128,1,-8)
+ label.Position=UDim2.fromOffset(19,4)
+ label.BackgroundTransparency=1
+ label.Text=string.format("%s\n%s",item.Name,item.Title)
+ label.TextColor3=Color3.fromRGB(230,234,241)
+ label.TextSize=11
+ label.TextWrapped=true
+ label.Font=Enum.Font.GothamBold
+ label.TextXAlignment=Enum.TextXAlignment.Left
+ label.ZIndex=32
+ label.Parent=row
+
+ local action=makeButton(row,"-",Color3.fromRGB(65,74,91))
+ action.Size=UDim2.fromOffset(98,36)
+ action.Position=UDim2.new(1,-105,0,6)
+ action.ZIndex=32
+ cosmeticButtons[item.Id]=action
+ action.Activated:Connect(function()
+  local owned=ownedCosmeticSet()
+  local equipped=tostring(p:GetAttribute("EquippedCosmetic")or"DEFAULT")
+  if equipped==item.Id then return end
+  actionSfx.TimePosition=0;actionSfx:Play()
+  if owned[item.Id]then remote:FireServer(C.Actions.EQUIP_COSMETIC,item.Id)
+  else remote:FireServer(C.Actions.BUY_COSMETIC,item.Id)end
+ end)
+end
+
+local function updateCosmeticUI()
+ local owned=ownedCosmeticSet()
+ local equipped=tostring(p:GetAttribute("EquippedCosmetic")or"DEFAULT")
+ local equippedItem=cosmeticItem(equipped)
+ local accent=equippedItem.Accent or Color3.fromRGB(170,209,220)
+ shopCoins.Text=string.format("보유 %d 코인",tonumber(p:GetAttribute("Coins"))or 0)
+ shopTitle.TextColor3=accent
+ ruleTitle.TextColor3=accent
+ setupTitle.TextColor3=accent
+ if resultTitle then resultTitle.TextColor3=accent end
+ selectionStatus.TextColor3=accent
+ loadingFill.BackgroundColor3=accent
+ for _,item in ipairs(C.Cosmetics or{})do
+  local button=cosmeticButtons[item.Id]
+  if button then
+   if equipped==item.Id then
+    button.Text="장착 중";button.BackgroundColor3=accent
+   elseif owned[item.Id]then
+    button.Text="장착";button.BackgroundColor3=Color3.fromRGB(65,91,82)
+   else
+    button.Text=string.format("%d 코인",item.Price or 0);button.BackgroundColor3=Color3.fromRGB(72,67,85)
+   end
+  end
+ end
+end
+
+shopOpenButton.Activated:Connect(function()
+ shopPanel.Visible=true
+ updateCosmeticUI()
+end)
+shopClose.Activated:Connect(function()shopPanel.Visible=false end)
+
 -- 라운드 행동 버튼: 역할에 따라 딱 필요한 버튼만 노출
 local actionDock=Instance.new("Frame")
 actionDock.Name="RoundActions"
 actionDock.AnchorPoint=Vector2.new(.5,1)
-actionDock.Position=UDim2.new(.5,0,1,-12)
-actionDock.Size=UDim2.fromOffset(194,48)
+actionDock.Position=UDim2.new(.5,0,1,-18)
+actionDock.Size=UDim2.fromOffset(236,58)
 actionDock.BackgroundTransparency=1
 actionDock.ZIndex=10
 actionDock.Parent=gui
 
 local rescueButton=makeButton(actionDock,"정화 공격",Color3.fromRGB(42,126,151))
-rescueButton.Size=UDim2.fromOffset(91,40);rescueButton.Position=UDim2.fromOffset(4,4);rescueButton.ZIndex=11
+rescueButton.Size=UDim2.fromOffset(110,50);rescueButton.Position=UDim2.fromOffset(5,4);rescueButton.ZIndex=11
 rescueButton.Activated:Connect(function()setMotionImpulse("PURIFY",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.PURIFY)end)
 
 local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(58,94,146))
-dashButton.Size=UDim2.fromOffset(91,40);dashButton.Position=UDim2.fromOffset(99,4);dashButton.ZIndex=11
+dashButton.Size=UDim2.fromOffset(110,50);dashButton.Position=UDim2.fromOffset(121,4);dashButton.ZIndex=11
 dashButton.Activated:Connect(function()setMotionImpulse("DASH",.38);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
 
-local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(157,49,65))
-abilityButton.Size=UDim2.fromOffset(112,40);abilityButton.Position=UDim2.fromOffset(41,4);abilityButton.ZIndex=11
+local infectButton=makeButton(actionDock,"감염 공격",Color3.fromRGB(150,52,66))
+infectButton.Size=UDim2.fromOffset(110,50);infectButton.Position=UDim2.fromOffset(5,4);infectButton.ZIndex=11
+infectButton.Activated:Connect(function()setMotionImpulse("INFECT_ATTACK",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.INFECT_ATTACK)end)
+
+local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(112,58,145))
+abilityButton.Size=UDim2.fromOffset(110,50);abilityButton.Position=UDim2.fromOffset(121,4);abilityButton.ZIndex=11
 abilityButton.Activated:Connect(function()setMotionImpulse("ABILITY",.44);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
+
+-- 액션 쿨다운과 에너지 비용은 서버 상태 기준으로 표시한다.
+local cooldownClock=0
+local function updateCooldownButton(button,readyAt,readyText,cooldownText,cost)
+ local left=math.max(0,(tonumber(readyAt)or 0)-workspace:GetServerTimeNow())
+ local energy=tonumber(p:GetAttribute("Energy"))or 0
+ local need=math.max(0,tonumber(cost)or 0)
+ local cooldownReady=left<=0
+ local energyReady=energy+1e-4>=need
+ local ready=cooldownReady and energyReady
+ button.Active=ready
+ button.AutoButtonColor=ready
+ button.BackgroundTransparency=ready and 0 or .28
+ if not cooldownReady then button.Text=string.format("%s %.1f",cooldownText,left)
+ elseif not energyReady then button.Text=string.format("%s %dE",cooldownText,need)
+ else button.Text=readyText end
+end
+RunService.RenderStepped:Connect(function(dt)
+ cooldownClock+=dt
+ if cooldownClock<.08 then return end
+ cooldownClock=0
+ local energy=math.max(0,tonumber(p:GetAttribute("Energy"))or 0)
+ local maxEnergy=math.max(1,tonumber(p:GetAttribute("EnergyMax"))or tonumber(C.Energy and C.Energy.Max)or 100)
+ energyFill.Size=UDim2.fromScale(math.clamp(energy/maxEnergy,0,1),1)
+ energyLabel.Text=string.format("에너지 %d",math.floor(energy+.5))
+ local pressure=tostring(p:GetAttribute("PressurePassive")or"")
+ pressureLabel.Text=pressure~=""and("열세 패시브 · "..pressure)or""
+ pressureLabel.Visible=pressure~=""and p:GetAttribute("RoundState")=="RUNNING"
+
+ updateCooldownButton(rescueButton,p:GetAttribute("PurifyReadyAt"),"정화 공격","정화",C.Energy and C.Energy.PurifyCost or 35)
+ updateCooldownButton(dashButton,p:GetAttribute("DashReadyAt"),"대시","대시",C.Energy and C.Energy.DashCost or 25)
+ updateCooldownButton(infectButton,p:GetAttribute("InfectReadyAt"),"감염 공격","감염",C.Energy and C.Energy.InfectAttackCost or 30)
+ updateCooldownButton(abilityButton,p:GetAttribute("AbilityReadyAt"),"괴물 스킬","스킬",C.Energy and C.Energy.AbilityCost or 45)
+end)
+
+-- 라운드 결과 화면
+local resultPanel=Instance.new("Frame")
+resultPanel.Name="RoundResult"
+resultPanel.AnchorPoint=Vector2.new(.5,.5)
+resultPanel.Position=UDim2.fromScale(.5,.42)
+resultPanel.Size=UDim2.fromOffset(330,292)
+resultPanel.BackgroundColor3=Color3.fromRGB(18,21,27)
+resultPanel.BackgroundTransparency=.03
+resultPanel.ZIndex=20
+resultPanel.Visible=false
+resultPanel.Parent=gui
+roundify(resultPanel,16);outline(resultPanel,.3)
+
+resultTitle=Instance.new("TextLabel")
+resultTitle.Size=UDim2.new(1,-18,0,38)
+resultTitle.Position=UDim2.fromOffset(9,10)
+resultTitle.BackgroundTransparency=1
+resultTitle.TextColor3=Color3.fromRGB(255,229,164)
+resultTitle.TextSize=24
+resultTitle.Font=Enum.Font.GothamBold
+resultTitle.ZIndex=21
+resultTitle.Parent=resultPanel
+
+local resultDetail=Instance.new("TextLabel")
+resultDetail.Size=UDim2.new(1,-20,0,54)
+resultDetail.Position=UDim2.fromOffset(10,50)
+resultDetail.BackgroundTransparency=1
+resultDetail.TextColor3=Color3.fromRGB(219,225,235)
+resultDetail.TextSize=13
+resultDetail.TextWrapped=true
+resultDetail.Font=Enum.Font.GothamMedium
+resultDetail.ZIndex=21
+resultDetail.Parent=resultPanel
+
+local ceremonyJoke=Instance.new("TextLabel")
+ceremonyJoke.Name="CeremonyJoke"
+ceremonyJoke.Size=UDim2.new(1,-20,0,34)
+ceremonyJoke.Position=UDim2.fromOffset(10,108)
+ceremonyJoke.BackgroundColor3=Color3.fromRGB(30,33,42)
+ceremonyJoke.BackgroundTransparency=.12
+ceremonyJoke.TextColor3=Color3.fromRGB(240,230,199)
+ceremonyJoke.TextSize=12
+ceremonyJoke.TextWrapped=true
+ceremonyJoke.Font=Enum.Font.GothamBold
+ceremonyJoke.ZIndex=21
+ceremonyJoke.Parent=resultPanel
+roundify(ceremonyJoke,9)
+
+local ceremonyStage=Instance.new("Frame")
+ceremonyStage.Name="TeamCeremony"
+ceremonyStage.Size=UDim2.new(1,-20,0,122)
+ceremonyStage.Position=UDim2.fromOffset(10,150)
+ceremonyStage.BackgroundColor3=Color3.fromRGB(24,27,34)
+ceremonyStage.BackgroundTransparency=.04
+ceremonyStage.ClipsDescendants=true
+ceremonyStage.ZIndex=21
+ceremonyStage.Parent=resultPanel
+roundify(ceremonyStage,12)
+
+local ceremonyFigures={}
+local ceremonyNames={}
+for i=1,4 do
+ local slot=Instance.new("Frame")
+ slot.Name="CeremonySlot"..i
+ slot.AnchorPoint=Vector2.new(.5,1)
+ slot.Position=UDim2.new((i-.5)/4,0,1,-8)
+ slot.Size=UDim2.fromOffset(64,98)
+ slot.BackgroundTransparency=1
+ slot.ZIndex=22
+ slot.Parent=ceremonyStage
+
+ local body=Instance.new("Frame")
+ body.Name="Body"
+ body.AnchorPoint=Vector2.new(.5,1)
+ body.Position=UDim2.new(.5,0,1,-18)
+ body.Size=UDim2.fromOffset(30,48)
+ body.BackgroundColor3=Color3.fromRGB(93,126,145)
+ body.BorderSizePixel=0
+ body.ZIndex=23
+ body.Parent=slot
+ roundify(body,8)
+
+ local head=Instance.new("Frame")
+ head.Name="Head"
+ head.AnchorPoint=Vector2.new(.5,1)
+ head.Position=UDim2.new(.5,0,1,-63)
+ head.Size=UDim2.fromOffset(26,26)
+ head.BackgroundColor3=Color3.fromRGB(210,184,158)
+ head.BorderSizePixel=0
+ head.ZIndex=24
+ head.Parent=slot
+ roundify(head,20)
+
+ local nameLabel=Instance.new("TextLabel")
+ nameLabel.Name="Name"
+ nameLabel.AnchorPoint=Vector2.new(.5,1)
+ nameLabel.Position=UDim2.new(.5,0,1,0)
+ nameLabel.Size=UDim2.fromOffset(70,17)
+ nameLabel.BackgroundTransparency=1
+ nameLabel.TextColor3=Color3.fromRGB(220,225,233)
+ nameLabel.TextSize=9
+ nameLabel.Font=Enum.Font.GothamBold
+ nameLabel.TextTruncate=Enum.TextTruncate.AtEnd
+ nameLabel.ZIndex=24
+ nameLabel.Parent=slot
+
+ ceremonyFigures[i]={slot=slot,body=body,head=head}
+ ceremonyNames[i]=nameLabel
+end
+
+local ceremonySerial=0
+local confettiSerial=0
+local function playCeremonyConfetti(color)
+ confettiSerial+=1
+ local serial=confettiSerial
+ for i=1,18 do
+  local bit=Instance.new("Frame")
+  bit.Name="CeremonyConfetti"
+  bit.Size=UDim2.fromOffset(6+(i%3)*2,10+(i%2)*4)
+  bit.Position=UDim2.new((i%9)/9,math.random(-8,8),0,-18-math.random(0,40))
+  bit.BackgroundColor3=i%3==0 and Color3.fromRGB(255,220,115)or color
+  bit.BorderSizePixel=0
+  bit.Rotation=math.random(-35,35)
+  bit.ZIndex=25
+  bit.Parent=ceremonyStage
+  local target=UDim2.new(math.clamp(bit.Position.X.Scale+math.random(-12,12)/100,0,1),0,1,25+math.random(0,35))
+  TweenService:Create(bit,TweenInfo.new(.9+math.random()*.7,Enum.EasingStyle.Quad,Enum.EasingDirection.In),{Position=target,Rotation=bit.Rotation+math.random(180,420),BackgroundTransparency=.18}):Play()
+  task.delay(1.8,function()if bit.Parent then bit:Destroy()end end)
+ end
+ task.delay(2,function()if confettiSerial==serial then end end)
+end
+
+local function collectCeremonyNames(winner)
+ local names={}
+ for _,player in ipairs(Players:GetPlayers())do
+  if tostring(player:GetAttribute("LastRoundRole")or"")==winner then table.insert(names,player.DisplayName)end
+ end
+ while #names<4 do table.insert(names,"AI "..tostring(#names+1))end
+ while #names>4 do table.remove(names)end
+ return names
+end
+
+local function playResultCeremony(resultCode)
+ ceremonySerial+=1
+ local serial=ceremonySerial
+ local winner=resultCode=="SURVIVOR"and"SURVIVOR"or resultCode=="MONSTER"and"MONSTER"or"DRAW"
+ local names=winner=="DRAW"and{"인간","몬스터","인간 AI","몬스터 AI"}or collectCeremonyNames(winner)
+ local palette=winner=="SURVIVOR"and Color3.fromRGB(88,165,195)or winner=="MONSTER"and Color3.fromRGB(166,64,82)or Color3.fromRGB(112,117,130)
+ local headColor=winner=="MONSTER"and Color3.fromRGB(92,72,82)or Color3.fromRGB(210,184,158)
+ playCeremonyConfetti(palette)
+ local ceremonyName=tostring(p:GetAttribute("CelebrationName")or"")
+ local ceremonyCaption=tostring(p:GetAttribute("CelebrationCaption")or"")
+ local comic=p:GetAttribute("CelebrationComic")==true
+ ceremonyJoke.Text=(ceremonyName~=""and ceremonyName or"팀 세레머니").." · "..(ceremonyCaption~=""and ceremonyCaption or"다음 판 준비")..(comic and" · 내가 오늘의 사고 담당"or"")
+
+ for i,row in ipairs(ceremonyFigures)do
+  row.body.BackgroundColor3=palette
+  row.head.BackgroundColor3=headColor
+  ceremonyNames[i].Text=names[i]or("AI "..i)
+  row.slot.Rotation=0
+  row.slot.Position=UDim2.new((i-.5)/4,0,1,28)
+  TweenService:Create(row.slot,TweenInfo.new(.38+.06*i,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Position=UDim2.new((i-.5)/4,0,1,-8)}):Play()
+ end
+
+ if winner=="SURVIVOR"then
+  task.delay(.45,function()
+   if ceremonySerial~=serial then return end
+   for i,row in ipairs(ceremonyFigures)do
+    local lift=i==4 and-2 or-10
+    local rot=i==4 and 18 or(i%2==0 and-7 or 7)
+    TweenService:Create(row.slot,TweenInfo.new(.3,Enum.EasingStyle.Back),{Position=UDim2.new((i-.5)/4,0,1,lift),Rotation=rot}):Play()
+   end
+  end)
+  setMotionImpulse("CELEBRATE_HUMAN",2.3)
+ elseif winner=="MONSTER"then
+  task.delay(.4,function()
+   if ceremonySerial~=serial then return end
+   for i,row in ipairs(ceremonyFigures)do
+    local rot=i==3 and 28 or(i%2==0 and-12 or 12)
+    TweenService:Create(row.slot,TweenInfo.new(.36,Enum.EasingStyle.Back),{Rotation=rot}):Play()
+   end
+  end)
+  setMotionImpulse("CELEBRATE_MONSTER",2.3)
+ else
+  for _,row in ipairs(ceremonyFigures)do TweenService:Create(row.slot,TweenInfo.new(.5,Enum.EasingStyle.Quad),{Position=UDim2.new(row.slot.Position.X.Scale,0,1,6),Rotation=8}):Play()end
+  setMotionImpulse("CELEBRATE_DRAW",2.3)
+ end
+end
+
+-- 진행 중 서버 입장자는 다음 라운드까지 관전임을 명확히 보여준다.
+local spectatorPanel=Instance.new("Frame")
+spectatorPanel.Name="SpectatorNotice"
+spectatorPanel.AnchorPoint=Vector2.new(.5,0)
+spectatorPanel.Position=UDim2.new(.5,0,0,82)
+spectatorPanel.Size=UDim2.fromOffset(286,56)
+spectatorPanel.BackgroundColor3=Color3.fromRGB(30,33,42)
+spectatorPanel.BackgroundTransparency=.04
+spectatorPanel.ZIndex=15
+spectatorPanel.Visible=false
+spectatorPanel.Parent=gui
+roundify(spectatorPanel,12);outline(spectatorPanel,.45)
+
+local spectatorText=Instance.new("TextLabel")
+spectatorText.Size=UDim2.new(1,-16,1,-10)
+spectatorText.Position=UDim2.fromOffset(8,5)
+spectatorText.BackgroundTransparency=1
+spectatorText.Text="라운드 진행 중 · 다음 라운드부터 참가"
+spectatorText.TextColor3=Color3.fromRGB(226,231,240)
+spectatorText.TextSize=13
+spectatorText.TextWrapped=true
+spectatorText.Font=Enum.Font.GothamBold
+spectatorText.ZIndex=16
+spectatorText.Parent=spectatorPanel
 
 local function monsterName()
  local id=p:GetAttribute("MonsterForm")or"DRACULA"
@@ -903,15 +1806,16 @@ local function render()
  local mc=p:GetAttribute("MonsterCount")or workspace:GetAttribute("MonsterCount")or 0
  roleLine.Text=string.format("%s · 인간 %d : 몬스터 %d",roleText,hc,mc)
  if role=="MONSTER"then
-  objectiveLine.Text=p:GetAttribute("Infected")==true and"감염 완료 · 이제 인간을 잡아 몬스터로 만들어"or"몬스터 목표 · 인간을 감염시켜 0명으로 만들어"
+  objectiveLine.Text=p:GetAttribute("Infected")==true and"감염 완료 · 에너지를 써서 인간을 감염시켜"or"몬스터 목표 · 감염 공격으로 인간을 0명으로 만들어"
  elseif role=="SURVIVOR"then
-  objectiveLine.Text="인간 목표 · 정화 공격으로 몬스터를 0명으로 만들어"
+  objectiveLine.Text="인간 목표 · 에너지로 정화/대시하며 몬스터를 0명으로 만들어"
  elseif role=="ELIMINATED"then
   objectiveLine.Text="정화되어 이번 라운드에서 탈락"
  else
   objectiveLine.Text="다음 라운드 준비"
  end
- roundLine.Text=running and(string.format("%d초",seconds))or round
+ local resultCode=round:match("^RESULT_(.+)$")
+ roundLine.Text=running and(string.format("%d초",seconds))or round=="SPECTATING"and"관전"or resultCode and"결과"or round
 
  local realPlayers=tonumber(p:GetAttribute("LobbyRealPlayers"))or #Players:GetPlayers()
  local aiFill=tonumber(p:GetAttribute("LobbyAIFill"))or math.max(0,(C.TargetPopulation or 8)-realPlayers)
@@ -920,15 +1824,46 @@ local function render()
  lobbyStatus.Text=string.format("실제 %d명 · AI %d명 충원 예정 · %s",realPlayers,aiFill,phaseText)
  local pref=p:GetAttribute("MonsterPreference")or"ANY"
  local prefText=pref=="MONSTER"and"몬스터 선호"or pref=="SURVIVOR"and"인간 선호"or"자동 배정"
- selectionStatus.Text=string.format("%s · 인간 %s · 몬스터 %s",prefText,humanName(),monsterName())
+ local equippedItem=cosmeticItem(tostring(p:GetAttribute("EquippedCosmetic")or"DEFAULT"))
+ selectionStatus.Text=string.format("%s · 인간 %s · 몬스터 %s · %s",prefText,humanName(),monsterName(),equippedItem.Title or"신입 참가자")
+ loreStatus.Text=string.format("세계 괴담 %d/%d 완성 · 조각 %d · 계약서 %d · %s",tonumber(p:GetAttribute("GhostCompleted"))or 0,tonumber(p:GetAttribute("GhostTotal"))or #(C.GhostCatalog or{}),tonumber(p:GetAttribute("GhostFragments"))or 0,tonumber(p:GetAttribute("GhostContracts"))or 0,tostring(p:GetAttribute("GhostTitle")or"괴담 견습생"))
 
  local selectionConfirmed=p:GetAttribute("LobbySelectionConfirmed")==true
- setupPanel.Visible=not running and not round:find("^RESULT_")
+ local spectating=round=="SPECTATING"
+ local isRoomServer=p:GetAttribute("RoomServer")==true
+ local roomState=tostring(p:GetAttribute("RoomState")or"BROWSER")
+ local browser=not isRoomServer
+ roomBrowserPanel.Visible=browser and not running and not resultCode
+ roomInfoPanel.Visible=isRoomServer and not running and not resultCode and not spectating
+ setupPanel.Visible=isRoomServer and not running and not resultCode and not spectating
  ruleCard.Visible=setupPanel.Visible and not selectionConfirmed
  actionDock.Visible=running
  mapPanel.Visible=running
+ spectatorPanel.Visible=spectating
+ resultPanel.Visible=resultCode~=nil
+ roomStartButton.Visible=roomInfoPanel.Visible and p:GetAttribute("RoomIsHost")==true and roomState=="ROOM_WAITING"
+ roomLeaveButton.Visible=roomInfoPanel.Visible and roomState=="ROOM_WAITING"
+ local roomVis=tostring(p:GetAttribute("RoomVisibility")or"PRIVATE")
+ local visText=roomVis=="PUBLIC"and"공개"or roomVis=="FRIENDS"and"친구만"or"비공개"
+ local roomMembers=tonumber(p:GetAttribute("RoomMemberCount"))or 0
+ local roomMax=tonumber(p:GetAttribute("RoomMaxPlayers"))or 8
+ roomInfoLabel.Text=string.format("방 코드 %s · %s\n실제 %d/%d명 · 빈자리 AI %d명%s",tostring(p:GetAttribute("RoomCode")or"------"),visText,roomMembers,roomMax,math.max(0,(C.TargetPopulation or 8)-roomMembers),p:GetAttribute("RoomIsHost")==true and" · 방장"or"")
+ if browser or running or spectating or resultCode then shopPanel.Visible=false end
+ if resultCode then
+  if round~=lastRoundState then playResultCeremony(resultCode)end
+  resultTitle.Text=resultCode=="SURVIVOR"and"인간 승리"or resultCode=="MONSTER"and"몬스터 승리"or"무승부"
+  local reward=tonumber(p:GetAttribute("LastRoundReward"))or 0
+  local baseReward=tonumber(p:GetAttribute("LastRoundBaseReward"))or 0
+  local winBonus=tonumber(p:GetAttribute("LastRoundWinBonus"))or 0
+  local contribution=tonumber(p:GetAttribute("LastRoundContribution"))or 0
+  local coins=tonumber(p:GetAttribute("Coins"))or 0
+  local lastRole=tostring(p:GetAttribute("LastRoundRole")or"")
+  local roleLabel=lastRole=="SURVIVOR"and"인간"or lastRole=="MONSTER"and"몬스터"or"관전"
+  resultDetail.Text=string.format("최종 진영 %s · 총 +%d 코인\n참가 %d + 승리 %d + 기여 %d · 보유 %d",roleLabel,reward,baseReward,winBonus,contribution,coins)
+ end
  rescueButton.Visible=running and role=="SURVIVOR"
  dashButton.Visible=running and role=="SURVIVOR"
+ infectButton.Visible=running and role=="MONSTER"
  abilityButton.Visible=running and role=="MONSTER"
 
  if running then
@@ -949,9 +1884,81 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed"})do
- p:GetAttributeChangedSignal(k):Connect(render)
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle","GhostSeenCount","GhostCompleted","GhostTotal","GhostTitle","GhostFragments","GhostContracts","RoomServer","RoomCode","RoomHostUserId","RoomHostName","RoomVisibility","RoomState","RoomMemberCount","RoomMaxPlayers","RoomIsHost"})do
+ p:GetAttributeChangedSignal(k):Connect(function()render();updateCosmeticUI()end)
 end
+p:GetAttributeChangedSignal("GhostFeedback"):Connect(function()
+ local raw=tostring(p:GetAttribute("GhostFeedback")or"")
+ local kind,id,value=string.match(raw,"^([^:]+):?([^:]*):?([^:]*)$")
+ local item=ghostCatalogItem(id or"")
+ if kind=="STAGE"and item then
+  local stage=tonumber(value)or 0
+  local stageName=item.Stages and item.Stages[stage]or("목격 "..stage.."단계")
+  showMapContentToast("세계 괴담 목격 · "..item.Name.."\n"..stageName.." ("..stage.."/3)",Color3.fromRGB(221,203,255),2.8)
+ elseif kind=="DUPLICATE"and item then
+  showMapContentToast(item.Name.." 재목격 · 괴담 조각 "..tostring(value),Color3.fromRGB(205,188,241),2)
+ elseif kind=="CONTRACT"then
+  showMapContentToast("괴담 계약서 +"..tostring(value),Color3.fromRGB(255,220,132),2.4)
+ elseif kind=="CATALOG_COMPLETE"then
+  showMapContentToast("초기 세계 괴담 도감 완성 · 계약서 보너스 +"..tostring(value),Color3.fromRGB(255,220,132),3)
+ elseif kind=="ROUND_CAP"then
+  showMapContentToast("이번 판 괴담 목격 기록은 여기까지",Color3.fromRGB(186,194,210),1.6)
+ end
+end)
+
+p:GetAttributeChangedSignal("LoreFeedback"):Connect(function()
+ local raw=tostring(p:GetAttribute("LoreFeedback")or"")
+ local kind,id=string.match(raw,"^([^:]+):([^:]+)")
+ local item=loreItem(id or"")
+ if kind=="FOUND"and item then
+  showMapContentToast("괴담 메모 발견 · "..item.Name.."\n"..item.Text,Color3.fromRGB(235,219,171),3.4)
+ elseif kind=="ALREADY"then
+  showMapContentToast("이미 조사한 괴담 메모야",Color3.fromRGB(184,193,208),1.3)
+ end
+end)
+
+p:GetAttributeChangedSignal("RoomFeedback"):Connect(function()
+ local raw=tostring(p:GetAttribute("RoomFeedback")or"")
+ local kind,message=string.match(raw,"^([^:]+):?(.*)$")
+ if kind=="ERROR"then roomBrowserFeedback.Text="오류 · "..tostring(message)
+ elseif kind=="EMPTY"then roomBrowserFeedback.Text=tostring(message)
+ elseif kind=="TELEPORTING"then roomBrowserFeedback.Text="방으로 이동 중..."
+ elseif kind=="HOST"then showMapContentToast("방장이 되었어",Color3.fromRGB(155,224,192),2)
+ elseif kind=="START"then showMapContentToast("게임 시작 준비",Color3.fromRGB(155,224,192),1.5)
+ else roomBrowserFeedback.Text=tostring(message or"")end
+end)
+
+p:GetAttributeChangedSignal("EnergyFeedback"):Connect(function()
+ local raw=tostring(p:GetAttribute("EnergyFeedback")or"")
+ local kind,a,b=string.match(raw,"^([^:]+):?([^:]*):?([^:]*)$")
+ if kind=="NO_ENERGY"then showMapContentToast("에너지 부족 · "..tostring(a or"액션"),Color3.fromRGB(255,181,118),1.5)
+ elseif kind=="NO_TARGET"then showMapContentToast("사거리 안에 대상이 없어",Color3.fromRGB(214,221,230),1.2)
+ elseif kind=="STATION_RECHARGE"then showMapContentToast("에너지 +"..tostring(a or"0"),Color3.fromRGB(130,218,255),1.5)
+ elseif kind=="STATION_COOLDOWN"then showMapContentToast("단말 재충전 "..tostring(a or"0").."초",Color3.fromRGB(180,196,214),1.4)
+ elseif kind=="ENERGY_FULL"then showMapContentToast("에너지가 이미 가득 찼어",Color3.fromRGB(178,226,255),1.3)
+ elseif kind=="LAST_STAND"then showMapContentToast("최후 저항 · 에너지 +"..tostring(a or"0"),Color3.fromRGB(255,208,118),2)end
+end)
+
+p:GetAttributeChangedSignal("MapContentFeedback"):Connect(function()
+ local raw=tostring(p:GetAttribute("MapContentFeedback")or"")
+ local kind,a,b=string.match(raw,"^([^:]+):?([^:]*):?(.+)$")
+ if kind=="UTILITY"then showMapContentToast(tostring(b or"맵 장치").." 가동",Color3.fromRGB(155,220,255),2)
+ elseif kind=="UTILITY_COOLDOWN"then showMapContentToast(tostring(a or"장치").." · "..tostring(b or"0").."초 후 재사용",Color3.fromRGB(188,202,218),1.7)
+ elseif kind=="CORE"then showMapContentToast("중앙 에너지 코어 확보 · +"..tostring(b or"50"),Color3.fromRGB(113,214,255),2.2)end
+end)
+
+p:GetAttributeChangedSignal("CosmeticFeedback"):Connect(function()
+ local raw=tostring(p:GetAttribute("CosmeticFeedback")or"")
+ local kind,id,price=string.match(raw,"^([^:]+):([^:]+):?(%d*)$")
+ local item=cosmeticItem(id or"DEFAULT")
+ if kind=="PURCHASED"then shopFeedback.Text=item.Name.." 구매 완료"
+ elseif kind=="EQUIPPED"then shopFeedback.Text=item.Name.." 장착 완료"
+ elseif kind=="NEED_COINS"then shopFeedback.Text=string.format("코인 부족 · %s 필요",price~=""and price or tostring(item.Price or 0))
+ elseif kind=="OWNED"then shopFeedback.Text="이미 보유 중"
+ elseif kind=="NOT_OWNED"then shopFeedback.Text="먼저 구매해야 해"
+ else shopFeedback.Text=""end
+ updateCosmeticUI()
+end)
 
 -- 강한 추격곡은 괴물이 실제로 가까울 때만 재생한다.
 local tensionClock=0
@@ -1056,4 +2063,5 @@ QACamera.install(C,gui,function()
 end)
 
 
+updateCosmeticUI()
 render()
