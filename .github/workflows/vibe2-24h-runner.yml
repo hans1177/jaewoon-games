@@ -200,8 +200,11 @@ jobs:
           git config user.name 'jaewoon-vibe2-planner'
           git config user.email 'vibe2-planner@users.noreply.github.com'
 
-          for attempt in 1 2 3 4 5; do
-            echo "VIBE2_AUTOPLAN_ATTEMPT=$attempt/5"
+          attempt=0
+          echo 'VIBE2_AUTOPLAN_OPTIMISTIC_RETRY_POLICY=UNTIL_JOB_TIMEOUT'
+          while true; do
+            attempt=$((attempt+1))
+            echo "VIBE2_AUTOPLAN_ATTEMPT=$attempt"
             git fetch origin '+refs/heads/main:refs/remotes/origin/main' '+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core' '+refs/heads/company-runtime:refs/remotes/origin/company-runtime' --depth=2 --no-tags --quiet
             git fetch origin '+refs/heads/vibe2-learning-runtime:refs/remotes/origin/vibe2-learning-runtime' --depth=2 --no-tags --quiet || true
             git reset --hard origin/vibe2-unreal-core
@@ -592,11 +595,11 @@ jobs:
               exit 0
             fi
             echo "VIBE2_AUTOPLAN_OPTIMISTIC_RETRY=$attempt"
-            sleep $((attempt * 2))
+            retry_sleep=$((attempt * 2))
+            if [ "$retry_sleep" -gt 10 ]; then retry_sleep=10; fi
+            echo "VIBE2_AUTOPLAN_RETRY_BACKOFF_SECONDS=$retry_sleep"
+            sleep "$retry_sleep"
           done
-
-          echo 'VIBE2_AUTOPLAN_PUSH=FAILED' >&2
-          exit 1
 
       - name: Read queue continuation state
         id: queue_state
