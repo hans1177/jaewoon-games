@@ -6137,7 +6137,9 @@
       "coding_negative_1vr72sd",
       "coding_negative_1rp3wxf",
       "coding_negative_14qdyj0",
-      "coding_negative_vuowbp"
+      "coding_negative_vuowbp",
+      "coding_negative_jl6utj",
+      "coding_negative_saw7n7"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16753,7 +16755,7 @@
         "verifiedApplications": 4,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 14,
-        "verifiedFailures": 683,
+        "verifiedFailures": 685,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -16999,7 +17001,7 @@
             "verifiedApplications": 1,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 2,
-            "verifiedFailures": 110,
+            "verifiedFailures": 111,
             "games": {
               "bug-defense": 1
             },
@@ -17012,20 +17014,20 @@
               "seed-idle-growth-rpg-crystal-bloom": 1,
               "seed-story-complete-rpg-chronicles-of-eldoria": 24,
               "village-dungeons": 24,
-              "seed-single-defense-strat-celestial-bastion": 25
+              "seed-single-defense-strat-celestial-bastion": 26
             },
             "failureTargets": {
-              "unity": 110
+              "unity": 111
             },
             "failureClasses": {
               "NO_OP": 4,
               "TIMEOUT": 1,
               "MALFORMED_OUTPUT": 1,
-              "STUDIO_QUALITY_DELTA": 104
+              "STUDIO_QUALITY_DELTA": 105
             },
             "lastEvidence": "coding_jra6qr",
-            "lastFailureEvidence": "coding_negative_1d2a03w",
-            "lastUpdatedAt": "2026-09-29T22:39:22.407Z"
+            "lastFailureEvidence": "coding_negative_saw7n7",
+            "lastUpdatedAt": "2026-09-29T23:03:13.045Z"
           },
           "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -17118,26 +17120,26 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 47,
+            "verifiedFailures": 48,
             "games": {},
             "targets": {},
             "failureGames": {
               "horror-escape-room": 24,
               "fantasy-survival": 20,
-              "line-defense": 3
+              "line-defense": 4
             },
             "failureTargets": {
-              "unity": 47
+              "unity": 48
             },
             "failureClasses": {
               "INVALID_PATH": 19,
-              "TIMEOUT": 20,
+              "TIMEOUT": 21,
               "MALFORMED_OUTPUT": 4,
               "NO_OP": 4
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1sv8tp9",
-            "lastUpdatedAt": "2026-09-29T22:35:23.724Z"
+            "lastFailureEvidence": "coding_negative_jl6utj",
+            "lastUpdatedAt": "2026-09-29T23:03:13.040Z"
           },
           "unity|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -17248,8 +17250,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_1ud2weu",
-        "lastFailureEvidence": "coding_negative_vuowbp",
-        "lastUpdatedAt": "2026-09-29T23:01:52.693Z"
+        "lastFailureEvidence": "coding_negative_saw7n7",
+        "lastUpdatedAt": "2026-09-29T23:03:13.045Z"
       }
     }
   },
@@ -20000,7 +20002,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T23:01:52.775Z",
+    "lastBuiltAt": "2026-09-29T23:03:13.104Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -28101,5 +28103,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T23:01:52.775Z"
+  "updatedAt": "2026-09-29T23:03:13.104Z"
 }
