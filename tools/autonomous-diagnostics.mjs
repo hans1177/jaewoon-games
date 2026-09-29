@@ -201,7 +201,7 @@ export function diagnoseGame(sourcePath,{filesystem=fs,maxIssues=30}={}){
   issues.sort((a,b)=>(SEVERITY_SCORE[b.severity]||0)-(SEVERITY_SCORE[a.severity]||0)||String(a.file).localeCompare(String(b.file))||String(a.type).localeCompare(String(b.type)));
   const limited=issues.slice(0,Math.max(1,maxIssues));
   const counts={critical:0,high:0,medium:0,low:0};for(const row of limited)counts[row.severity]=(counts[row.severity]||0)+1;
-  return {version:2,sourcePath:posix(sourcePath),filesScanned:files.length,issues:limited,counts,topIssue:limited[0]||null,hasActionableIssue:limited.length>0};
+  return {version:2,sourcePath:posix(sourcePath),filesScanned:files.length,scanCoverage:files.map(row=>({file:row.relative,complete:row.size<=MAX_FILE_BYTES})),issues:limited,counts,topIssue:limited[0]||null,hasActionableIssue:limited.length>0};
 }
 
 export function microTaskFromIssue(row){
@@ -217,3 +217,4 @@ async function main(){
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)main().catch(error=>{console.error(error.stack||error.message);process.exitCode=1;});
 
 export { LARGE_FILE_BYTES, SEVERITY_SCORE };
+
