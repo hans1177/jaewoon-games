@@ -2791,6 +2791,21 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   queue=holisticPriorityDeferral.queue;
   const buildUpDirectiveBackfill=synchronizeQueuedBuildUpDirectives(queue,allProjects,repoRoot);
   queue=buildUpDirectiveBackfill.queue;
+  const repairedPresentationTasks=queue.tasks.map(item=>{
+    if(clean(item?.status).toLowerCase()!=='queued'
+      ||clean(item?.target).toLowerCase()!=='roblox'
+      ||clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()!=='PRESENTATION')return item;
+    const responsible=(item.responsibleFiles||[]).map(posix).filter(Boolean);
+    if(responsible.some(file=>/\\/client\\/.*(?:\\.client\\.luau|\\.lua)$/i.test(file)))return item;
+    const clientPath=`roblox-games/${clean(item.gameId)}/client/Game.client.luau`;
+    if(!fs.existsSync(path.join(repoRoot,clientPath)))return item;
+    const remaining=responsible.filter(file=>!/\\/shared\\/QACamera\\.luau$/i.test(file));
+    return{...item,responsibleFiles:[clientPath,...remaining].slice(0,Math.max(1,responsible.length)),
+      evidence:[...new Set([...(item.evidence||[]),'studio-presentation-client-responsibility:REPAIRED'])]};
+  });
+  if(repairedPresentationTasks.some((item,index)=>item!==queue.tasks[index])){
+    queue=createVibeContinuousQueue({tasks:repairedPresentationTasks,maxConcurrentTasks:queue.maxConcurrentTasks});
+  }
   const active=activeTasks(queue);
   const ownerActive=active.filter(item=>item.ownerDirective);
   const runtimeNeuralEvents=[...new Map(allProjects
