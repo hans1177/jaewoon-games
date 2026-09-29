@@ -3454,6 +3454,31 @@ test('Roblox presentation ownership includes gameplay client before QA camera an
   assert.ok(task.responsibleFiles.includes(`roblox-games/${gameId}/client/Game.client.luau`));
 });
 
+test('queued Roblox presentation task repairs stale QA-only ownership before reserve',()=>{
+  const root=tempRepo();
+  const gameId='queued-presentation-owner';
+  const dir=path.join(root,'roblox-games',gameId);
+  for(const file of ['client/Game.client.luau','shared/QACamera.luau','shared/VisualStyle.luau']){
+    const full=path.join(dir,file);
+    fs.mkdirSync(path.dirname(full),{recursive:true});
+    fs.writeFileSync(full,'return {}\\n','utf8');
+  }
+  const project={gameId,name:'Queued Presentation Owner',engine:'roblox',target:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const generated=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION');
+  const queued={...generated,status:'queued',responsibleFiles:[
+    `roblox-games/${gameId}/shared/QACamera.luau`,
+    `roblox-games/${gameId}/shared/VisualStyle.luau`
+  ]};
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},catalog:{games:[]},queue:{maxConcurrentTasks:20,tasks:[queued]},
+    repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0
+  });
+  const repaired=result.queue.tasks.find(row=>row.id===queued.id);
+  assert.equal(repaired.status,'queued');
+  assert.ok(repaired.responsibleFiles.includes(`roblox-games/${gameId}/client/Game.client.luau`));
+  assert.ok(repaired.evidence.includes('studio-presentation-client-responsibility:REPAIRED'));
+});
+
 test('studio PRESENTATION focus receives the same adaptive replacement contract inside existing BUILD_UP',()=>{
   const root=tempRepo();
   const gameId='adaptive-studio-presentation';
