@@ -2140,7 +2140,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     let score=0;
     if(/game|core|runtime|main|controller|player|client|server/.test(value))score+=10;
     if(focusPillar==='PRESENTATION'&&/visual|render|ui|hud|effect|vfx|camera|audio|anim|style|scene/.test(value))score+=18;
-    if(project.engine==='roblox'&&focusPillar==='PRESENTATION'&&/\/client\/.*(?:\.client\.luau|\.lua)$/i.test(file))score+=30;
+    if(project.engine==='roblox'&&focusPillar==='PRESENTATION'&&file.includes('/client/')&&(file.endsWith('.client.luau')||file.endsWith('.lua')))score+=30;
     if(focusPillar==='USABILITY'&&/ui|hud|input|controller|client|menu/.test(value))score+=18;
     if(focusPillar==='PROGRESSION'&&/progress|quest|reward|inventory|economy|save|unlock|goal|wave|content/.test(value))score+=18;
     if(focusPillar==='CORE_FUN'&&/game|combat|enemy|player|world|core|controller|interaction|ability|weapon/.test(value))score+=18;
@@ -2796,10 +2796,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       ||clean(item?.target).toLowerCase()!=='roblox'
       ||clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()!=='PRESENTATION')return item;
     const responsible=(item.responsibleFiles||[]).map(posix).filter(Boolean);
-    if(responsible.some(file=>/\\/client\\/.*(?:\\.client\\.luau|\\.lua)$/i.test(file)))return item;
+    if(responsible.some(file=>file.includes('/client/')&&(file.endsWith('.client.luau')||file.endsWith('.lua'))))return item;
     const clientPath=`roblox-games/${clean(item.gameId)}/client/Game.client.luau`;
     if(!fs.existsSync(path.join(repoRoot,clientPath)))return item;
-    const remaining=responsible.filter(file=>!/\\/shared\\/QACamera\\.luau$/i.test(file));
+    const remaining=responsible.filter(file=>!file.endsWith('/shared/QACamera.luau'));
     return{...item,responsibleFiles:[clientPath,...remaining].slice(0,Math.max(1,responsible.length)),
       evidence:[...new Set([...(item.evidence||[]),'studio-presentation-client-responsibility:REPAIRED'])]};
   });
