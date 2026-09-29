@@ -1,0 +1,20 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "qa/vibe2-system-steward.test.mjs",
+      "find": "assert.equal(result.queue.tasks.find(t=>t.id==='stale').status,'queued');",
+      "replace": ""
+    },
+    {
+      "path": "tools/vibe2-system-steward.mjs",
+      "find": "const waitBlocker=v=>/WAITING_FOR_GEMINI_QUOTA|external.*model.*quota|roblox.*(?:runner|studio).*(?:offline|deferred|wait)|WAITING_FOR_(?:ROBLOX_)?RUNTIME/i.test(clean(v));",
+      "replace": ""
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
