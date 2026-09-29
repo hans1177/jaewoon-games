@@ -201,6 +201,111 @@ local function makeButton(parent,text,color)
  return b
 end
 
+-- 캐릭터 모션: 기본 Animator를 유지하고 Motor6D C0에 작은 보조 움직임만 합성한다.
+local motionHumanoid=nil
+local motionRoot=nil
+local motionJoints={}
+local motionPhase=0
+local motionImpulseKind=""
+local motionImpulseUntil=0
+
+local function setMotionImpulse(kind,duration)
+ motionImpulseKind=kind or""
+ motionImpulseUntil=os.clock()+(duration or .3)
+end
+
+local function findMotionJoint(character,names)
+ for _,d in ipairs(character:GetDescendants())do
+  if d:IsA("Motor6D")and table.find(names,d.Name)then return d end
+ end
+ return nil
+end
+
+local function bindCharacterMotion(character)
+ local humanoid=character:WaitForChild("Humanoid",5)
+ local root=character:WaitForChild("HumanoidRootPart",5)
+ if not humanoid or not root then return end
+ motionHumanoid=humanoid
+ motionRoot=root
+ motionPhase=0
+ motionJoints={}
+ local specs={
+  Body={"Waist","Root","RootJoint"},
+  Neck={"Neck"},
+  LeftShoulder={"LeftShoulder","Left Shoulder"},
+  RightShoulder={"RightShoulder","Right Shoulder"},
+ }
+ for key,names in pairs(specs)do
+  local joint=findMotionJoint(character,names)
+  if joint then motionJoints[key]={joint=joint,baseC0=joint.C0}end
+ end
+end
+
+local function applyMotionJoint(key,offset,alpha)
+ local row=motionJoints[key]
+ if not row or not row.joint or not row.joint.Parent then return end
+ row.joint.C0=row.joint.C0:Lerp(row.baseC0*offset,alpha)
+end
+
+RunService:BindToRenderStep("MidnightCharacterMotion",Enum.RenderPriority.Character.Value+1,function(dt)
+ local humanoid=motionHumanoid
+ local root=motionRoot
+ if not humanoid or not root or not root.Parent or humanoid.Health<=0 then return end
+
+ local running=p:GetAttribute("RoundState")=="RUNNING"
+ local role=p:GetAttribute("Role")or"WAITING"
+ local moveAmount=running and math.clamp(humanoid.MoveDirection.Magnitude,0,1)or 0
+ local localMove=root.CFrame:VectorToObjectSpace(humanoid.MoveDirection)
+ local pace=role=="MONSTER"and 8.4 or 10.5
+ motionPhase+=dt*(moveAmount>.05 and pace or 2.1)
+
+ local breath=math.sin(os.clock()*2.15)
+ local stride=math.sin(motionPhase)
+ local strideOpp=math.sin(motionPhase+math.pi)
+ local monster=role=="MONSTER"
+ local baseLean=monster and math.rad(-4.5)or 0
+ local forwardLean=math.rad((monster and 10 or 6)*math.clamp(localMove.Z,-1,1))*moveAmount
+ local sideLean=math.rad(-4.5*math.clamp(localMove.X,-1,1))*moveAmount
+ local bob=math.abs(math.sin(motionPhase*2))*moveAmount*.025
+
+ local actionPitch=0
+ local actionRoll=0
+ local rightAction=0
+ local leftAction=0
+ if os.clock()<motionImpulseUntil then
+  if motionImpulseKind=="DASH"then
+   actionPitch=math.rad(-11)
+  elseif motionImpulseKind=="PURIFY"then
+   actionPitch=math.rad(-3);rightAction=math.rad(-34);leftAction=math.rad(8)
+  elseif motionImpulseKind=="ABILITY"then
+   actionPitch=math.rad(-8);rightAction=math.rad(-20);leftAction=math.rad(-20)
+  elseif motionImpulseKind=="INFECT"then
+   actionPitch=math.rad(-7);actionRoll=math.rad(math.sin(os.clock()*34)*5)
+  end
+ elseif motionImpulseKind~=""then
+  motionImpulseKind=""
+ end
+
+ local body=CFrame.new(0,bob,0)*CFrame.Angles(baseLean+forwardLean+actionPitch,0,sideLean+actionRoll)
+ local neck=CFrame.Angles(math.rad(breath*.7),0,math.rad(-sideLean*20/math.pi))
+ local armSwing=math.rad(stride*10*moveAmount)
+ if monster then armSwing=math.rad(stride*15*moveAmount-4)end
+ local shoulderBreath=math.rad(breath*.7)
+ local alpha=math.clamp(dt*13,0,1)
+ applyMotionJoint("Body",body,alpha)
+ applyMotionJoint("Neck",neck,alpha)
+ applyMotionJoint("LeftShoulder",CFrame.Angles(armSwing+shoulderBreath+leftAction,0,0),alpha)
+ applyMotionJoint("RightShoulder",CFrame.Angles(-armSwing+shoulderBreath+rightAction,0,0),alpha)
+
+ if moveAmount<=.05 and motionImpulseKind==""then
+  local idleBody=CFrame.Angles(baseLean+math.rad(breath*.8),0,0)
+  applyMotionJoint("Body",idleBody,math.clamp(dt*5,0,1))
+ end
+end)
+
+if p.Character then task.defer(bindCharacterMotion,p.Character)end
+p.CharacterAdded:Connect(bindCharacterMotion)
+
 local chaseTint=Instance.new("Frame")
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
 local verifiedLearningPlayers = game:GetService("Players")
@@ -758,15 +863,15 @@ actionDock.Parent=gui
 
 local rescueButton=makeButton(actionDock,"정화 공격",Color3.fromRGB(42,126,151))
 rescueButton.Size=UDim2.fromOffset(91,40);rescueButton.Position=UDim2.fromOffset(4,4);rescueButton.ZIndex=11
-rescueButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.PURIFY)end)
+rescueButton.Activated:Connect(function()setMotionImpulse("PURIFY",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.PURIFY)end)
 
 local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(58,94,146))
 dashButton.Size=UDim2.fromOffset(91,40);dashButton.Position=UDim2.fromOffset(99,4);dashButton.ZIndex=11
-dashButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
+dashButton.Activated:Connect(function()setMotionImpulse("DASH",.38);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
 
 local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(157,49,65))
 abilityButton.Size=UDim2.fromOffset(112,40);abilityButton.Position=UDim2.fromOffset(41,4);abilityButton.ZIndex=11
-abilityButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
+abilityButton.Activated:Connect(function()setMotionImpulse("ABILITY",.44);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
 
 local function monsterName()
  local id=p:GetAttribute("MonsterForm")or"DRACULA"
@@ -912,8 +1017,8 @@ p.CharacterAdded:Connect(bindFootsteps)
 
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local value=tostring(p:GetAttribute("FeedbackEvent")or"")
- if value:find("^INFECT:")then warningSfx.TimePosition=0;warningSfx:Play();chaseTint.BackgroundTransparency=.72
- elseif value:find("^PURIFY")then rescueSfx.TimePosition=0;rescueSfx:Play();chaseTint.BackgroundTransparency=.9
+ if value:find("^INFECT:")then setMotionImpulse("INFECT",.72);warningSfx.TimePosition=0;warningSfx:Play();chaseTint.BackgroundTransparency=.72
+ elseif value:find("^PURIFY")then setMotionImpulse("PURIFY",.3);rescueSfx.TimePosition=0;rescueSfx:Play();chaseTint.BackgroundTransparency=.9
  elseif value:find("^RESULT:")then resultSfx.TimePosition=0;resultSfx:Play()end
 end)
 
