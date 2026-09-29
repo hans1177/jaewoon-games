@@ -925,7 +925,7 @@ test('Studio MCP opens the exact local Place as the single Studio before MCP and
   assert.equal((bindBlock.match(/Start-Process -FilePath/g)||[]).length,1);
   assert.match(bindBlock,/ROBLOX_STUDIO_MCP_PRE_MCP_PROCESS_READY_COUNT=/);
   assert.match(bindBlock,/without provable ownership; preserve all other Studio windows/);
-  assert.match(bindBlock,/for \(\$processProbe = 1; \$processProbe -le 60; \$processProbe\+\+\)/);
+  assert.match(bindBlock,/for \(\$processProbe = 1; \$processProbe -le 180; \$processProbe\+\+\)/);
   assert.doesNotMatch(bindBlock,/Roblox Studio exited before exact local Place MCP probe/);
   assert.match(bindBlock,/AssistantVersion:\|Running plugin sabuiltin_Assistant\\\.rbxm/);
   assert.doesNotMatch(bindBlock,/Roblox Studio Assistant did not finish loading in exact local Place/);
@@ -938,7 +938,7 @@ test('Studio MCP opens the exact local Place as the single Studio before MCP and
   assert.match(helper,/ROBLOX_STUDIO_PLACE_LOADING_WAIT=/);
   assert.match(helper,/const studioAttachAttempts=60/);
   assert.match(studioMcpBlock,/Wait-Process -Id.*-Timeout 60/);
-  assert.match(studioMcpBlock,/foreach \(\$ownedId in \$ownedIds\)/);
+  assert.match(studioMcpBlock,/foreach \(\$record in \$ownedRecords\)/);
   assert.doesNotMatch(studioMcpBlock,/AutoHotkey|pyautogui|SendKeys|mouse_event|keybd_event/i);
 });
 
@@ -2348,7 +2348,8 @@ test('automated Studio close workflow contains one clean close step and one refi
   const closeAt=workflow.indexOf('- name: Close owned Studio after evidence persistence');
   const refillAt=workflow.indexOf('- name: Refill existing 24H development loop after verified play');
   const block=workflow.slice(closeAt,refillAt);
-  assert.match(block,/\^\[0-9\]\+\$/);
+  assert.match(block,/CommandLine -match \$exactPlacePattern/);
+  assert.match(block,/StartTime\.ToUniversalTime\(\) - \$record\.CreationDate\.ToUniversalTime\(\)/);
   assert.doesNotMatch(block,/event_type = 'vibe2-fanin-refill'/);
   assert.doesNotMatch(block,/GH_TOKEN:/);
 });
@@ -2364,7 +2365,7 @@ test('final Studio capture requires no user save and closes only after evidence 
   assert.match(finalizeBlock,/ROBLOX_STUDIO_PLAYTEST_SOURCE_MUTATION_PERSIST=NO/);
   assert.doesNotMatch(finalizeBlock,/Stop-Process/);
   const closeBlock=workflow.slice(closeAt,refillAt);
-  assert.match(closeBlock,/Stop-Process -Id \(\[int\]\$ownedId\)/);
+  assert.match(closeBlock,/Stop-Process -Id \$ownedStudio\.Id/);
   assert.match(closeBlock,/ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES/);
   assert.match(helper,/finally\{\s*client\.close\(\)/);
   assert.match(finalizeBlock,/ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES/);
@@ -2377,6 +2378,30 @@ test('Studio QA keeps user windows and releases only its exact owned process',()
   assert.match(block,/\$ownedStudioIds = @\(\[string\]\$studioProcess\.Id\)/);
   assert.equal((block.match(/- name: Persist exact Studio MCP play evidence/g)||[]).length,1);
   assert.equal((block.match(/- name: Refill existing 24H development loop/g)||[]).length,1);
+});
+
+test('Studio launcher handoff remains bound to one isolated Place and cleanup rediscovers its live process',()=>{
+  const block=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  const launch=block.indexOf('$placeLaunchProcess = Start-Process');
+  assert.ok(block.indexOf('VIBE2_STUDIO_LAUNCH_STARTED=$')<launch);
+  assert.ok(block.indexOf('VIBE2_LOCAL_PLACE_FILE=$')<launch);
+  const retry=block.slice(block.indexOf('# The official launcher may hand'),block.indexOf('if (-not $sessionCompleted)'));
+  assert.match(retry,/CreationDate\.ToUniversalTime\(\) -ge \$launchStarted\.AddSeconds\(-2\)/);
+  assert.match(retry,/\$ownedRecords\.Count -eq 1/);
+  assert.match(retry,/ROBLOX_STUDIO_MCP_OWNED_PROCESS_HANDOFF=/);
+  assert.doesNotMatch(retry,/Start-Process|Stop-Process/);
+  const close=block.slice(block.indexOf('- name: Close owned Studio after evidence persistence'),block.indexOf('- name: Refill existing 24H development loop'));
+  assert.match(close,/Get-CimInstance Win32_Process/);
+  assert.match(close,/\$remainingOwned\.Count\) \{ throw/);
+  assert.doesNotMatch(close,/VIBE2_STUDIO_PROCESS_IDS|Stop-Process -Name/);
+
+  // Execute the workflow's actual path-boundary expression against unrelated windows.
+  const expression=close.match(/\$exactPlacePattern = '([^']+)' \+ \[regex\]::Escape\(\$env:VIBE2_LOCAL_PLACE_FILE\) \+ '([^']+)'/);
+  assert.ok(expression);
+  const place=String.raw`C:\runner temp\studio-qa\run-123\bug-defense.rbxlx`;
+  const pattern=new RegExp(expression[1].replace('(?i)','')+place.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+expression[2],'i');
+  for(const command of ['"Studio.exe" "'+place+'"','Studio.exe '+place,'Studio.exe "'+place.toUpperCase()+'" --ready'])assert.equal(pattern.test(command),true,command);
+  for(const command of ['Studio.exe "'+place+'.backup"','Studio.exe "'+place.replace('run-123','run-456')+'"','Studio.exe "'+place.replace('studio-qa','user-work')+'"','Studio.exe "prefix'+place+'"'])assert.equal(pattern.test(command),false,command);
 });
 
 
