@@ -320,3 +320,4 @@ local Config = {
 }
 
 return table.freeze(Config)
+    task.delay(0.09, function()
