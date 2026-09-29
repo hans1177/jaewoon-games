@@ -5376,7 +5376,8 @@
       "coding_negative_1ybgxpf",
       "coding_negative_3ns0xp",
       "coding_negative_a13y71",
-      "coding_negative_1x6aekr"
+      "coding_negative_1x6aekr",
+      "coding_negative_nbz78j"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -14825,7 +14826,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 18,
+        "verifiedFailures": 19,
         "games": {
           "fantasy-survival": 1
         },
@@ -14950,7 +14951,7 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 7,
+            "verifiedFailures": 8,
             "games": {},
             "targets": {},
             "failureGames": {
@@ -14960,18 +14961,19 @@
               "bug-defense": 1,
               "line-defense": 1,
               "village-dungeons": 1,
-              "horror-escape-room": 1
+              "horror-escape-room": 1,
+              "survival": 1
             },
             "failureTargets": {
-              "unity": 7
+              "unity": 8
             },
             "failureClasses": {
-              "TIMEOUT": 2,
+              "TIMEOUT": 3,
               "INVALID_PATH": 5
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_3ns0xp",
-            "lastUpdatedAt": "2026-09-29T06:59:30.633Z"
+            "lastFailureEvidence": "coding_negative_nbz78j",
+            "lastUpdatedAt": "2026-09-29T07:04:21.246Z"
           },
           "unity|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -15060,8 +15062,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_1cxqzik",
-        "lastFailureEvidence": "coding_negative_1x6aekr",
-        "lastUpdatedAt": "2026-09-29T06:59:30.634Z"
+        "lastFailureEvidence": "coding_negative_nbz78j",
+        "lastUpdatedAt": "2026-09-29T07:04:21.246Z"
       },
       "RESPONSIBILITY_SPLIT_FANIN": {
         "verifiedApplications": 0,
@@ -18106,7 +18108,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T07:00:22.522Z",
+    "lastBuiltAt": "2026-09-29T07:04:21.310Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -24930,5 +24932,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T07:00:22.522Z"
+  "updatedAt": "2026-09-29T07:04:21.310Z"
 }
