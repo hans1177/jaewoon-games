@@ -1009,6 +1009,8 @@ export function buildGameSpecificBuildUpDirective({
     `우선 책임 소스 앵커 ${exactAnchorLabel}에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.`,
     `${anchor}를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.`,
     `${secondary}가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.`,
+    ...design.coreLoop.map((step,index)=>`기획 루프 ${index+1} "${step}": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.`),
+    ...design.signatureSystems.map(system=>`고유 시스템 "${system.name||system.purpose}": 플레이어 선택 "${system.playerChoice||system.purpose}"이 실제 결과를 달리 만드는지 두 선택의 결과를 비교한다. 코드 키워드·설명·자체 PASS 로그는 증거가 아니며, 실측하지 못하면 미확인으로 남기고 완료/효과 확인에 포함하지 않는다.`),
     systemNames.length?`고유 시스템 ${systemNames.join(', ')} 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다.`:'현재 핵심 루프의 가장 얕은 책임 시스템을 기존 코드에서 직접 심화한다.',
     focus==='CORE_FUN'?'주요 적/대상/상호작용이 행동·타이밍·카운터플레이 중 최소 두 축에서 구별되게 한다.':'핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다.'
   ];

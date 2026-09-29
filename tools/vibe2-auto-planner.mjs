@@ -1975,18 +1975,30 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     clean(project?.queueRobloxFailureSignature),
     ...(project?.queueRoutingBlockers||[])
   ].map(clean).filter(Boolean);
+  // 플랫폼별 실측 결과만 보강 효과 판정에 사용한다. 공통 기획은 통과 증거를 공유하지 않는다.
+  const platform=buildUpPlatformToken(project,platformLane);
+  const evidencePlatform=clean(project?.queueRuntimeEvidencePlatform).toUpperCase();
+  const samePlatform=!evidencePlatform||evidencePlatform===platform
+    ||(platform==='WEB'&&evidencePlatform==='UNITY_WEB');
+  const roblox=platform==='ROBLOX';
+  const qualityFailure=roblox&&project?.queueRobloxQualityBuildUpRequired===true;
   const runtimeEvidence={
-    studioQualityFailure:project.queueRobloxQualityBuildUpEvidence||null,
-    failureStage:clean(project?.queueRuntimeFailureStage||project?.queueRobloxFailureStage),
-    failureSignature:clean(project?.queueRuntimeFailureSignature||project?.queueRobloxFailureSignature),
+    platform,
+    studioQualityFailure:qualityFailure?project.queueRobloxQualityBuildUpEvidence||null:null,
+    failureStage:clean((samePlatform?project?.queueRuntimeFailureStage:'')||(roblox?project?.queueRobloxFailureStage:'')),
+    failureSignature:clean((samePlatform?project?.queueRuntimeFailureSignature:'')||(roblox?project?.queueRobloxFailureSignature:'')),
     blockers:[
-      ...(project?.queueRoutingBlockers||[]),
-      ...(project?.queueRobloxQualityFailureKinds||[])
+      ...(samePlatform?project?.queueRoutingBlockers||[]:[]),
+      ...(qualityFailure?project?.queueRobloxQualityFailureKinds||[]:[])
     ].map(clean).filter(Boolean),
-    runtimeObserved:project?.queueRuntimeObserved===true||project?.queueRobloxQualityBuildUpRequired===true,
-    runtimePassed:project?.queueRuntimePassed===true&&project?.queueRobloxQualityBuildUpRequired!==true,
-    independentQaPassed:project?.queueRuntimeIndependentQaPassed===true,
-    regressionPassed:project?.queueRuntimeRegressionPassed===true
+    runtimeObserved:(samePlatform&&project?.queueRuntimeObserved===true)
+      ||(roblox&&project?.queueRobloxRuntimeObserved===true)||qualityFailure,
+    runtimePassed:!qualityFailure&&((samePlatform&&project?.queueRuntimePassed===true)
+      ||(roblox&&project?.queueRobloxRuntimePassed===true)),
+    independentQaPassed:(samePlatform&&project?.queueRuntimeIndependentQaPassed===true)
+      ||(roblox&&project?.queueRobloxIndependentQaPassed===true),
+    regressionPassed:(samePlatform&&project?.queueRuntimeRegressionPassed===true)
+      ||(roblox&&project?.queueRobloxRegressionPassed===true)
   };
   const sourceRoots=[project.projectPath]
     .map(posix).filter((value,index,array)=>value&&array.indexOf(value)===index&&fs.existsSync(sourceFile(repoRoot,value)));
