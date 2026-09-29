@@ -9,6 +9,42 @@ import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeathe
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
+test('motion planning reuses company clips per state and does not invent coverage or runtime proof',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-reuse-'));
+  try{
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({assets:[{
+      id:'owned-motion',category:'MOTION',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
+      license:'company-owned',platforms:['roblox'],states:['idle','attack'],rigType:'R15'
+    }]}));
+    const plan=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',task:{gameId:'demo',goal:'공격 모션'},presetCatalog:{presets:[]},manifest:{assets:[
+      {id:'external-motion',types:['animation'],license:'CC0',platforms:['roblox'],sourceUrl:'https://example.invalid/clips',downloaded:false,animations:['attack','move']},
+      {id:'unknown-clips',types:['animation'],license:'project-original',platforms:['roblox'],path:'roblox-games/demo/clips.json'},
+      {id:'reference-motion',referenceOnly:true,types:['animation'],license:'project-original',platforms:['roblox'],states:['death']},
+      {id:'wrong-platform',types:['animation'],license:'CC0',platforms:['unity'],states:['death']},
+      {id:'blocked-license',types:['animation'],license:'CC-BY-NC',platforms:['roblox'],states:['skill']}
+    ]}});
+    const motion=plan.decisions.find(row=>row.type==='animation');
+    assert.equal(motion.decisionOrder[1],'REUSE_VERIFIED_COMPANY_ASSET');
+    assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='attack').candidateIds,['owned-motion','external-motion']);
+    assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='move').candidateIds,['external-motion']);
+    assert.deepEqual(motion.motionReusePlan.unresolvedStates,['hit','skill','death']);
+    assert.deepEqual(motion.motionReusePlan.coverageUnknownCandidateIds,['unknown-clips']);
+    assert.equal(motion.motionReusePlan.runtimeVerified,false);
+    assert.ok(motion.motionReusePlan.stateBindings.every(row=>row.runtimeVerified===false));
+    assert.equal(motion.companyCandidates[0].rigType,'R15');
+    assert.equal(motion.decisionOrder[0],'COMPARE_TARGET_GAME_QUALITY');
+    assert.equal(motion.qualitySelection.selectedAssetId,null);
+    assert.equal(motion.qualitySelection.selectionState,'TARGET_GAME_REVIEW_REQUIRED');
+    assert.ok(motion.qualitySelection.compareCandidateIds.includes('external-motion'));
+    assert.ok(!motion.qualitySelection.compareCandidateIds.includes('reference-motion'));
+    const guidance=assetProductionGuidance(plan);
+    assert.match(guidance,/attack=owned-motion\|external-motion/);
+    assert.match(guidance,/Asset ID를 지어내지/);
+    assert.match(guidance,/MULTIPLAYER_SYNC/);
+    assert.match(guidance,/기존 공격 판정/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 const VERIFIED_ROBLOX_LEARNING_REUSE=Object.freeze({
   id:'external-black-box-bootstrap-test',
   project:'verified-runtime-reference',
@@ -188,7 +224,7 @@ test('Roblox planner reuses source-bound same-game assets before cross-game libr
     assert.ok(plan.summary.discoveredSameGameRobloxAssets>=4);
     assert.ok(plan.summary.sameGameRobloxCandidateTypes>0);
     assert.ok(plan.decisions.some(row=>row.sameGameCandidates.some(asset=>asset.robloxAssetId==='6933438443')));
-    assert.ok(plan.decisions.some(row=>row.decisionOrder[0]==='REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET'));
+    assert.ok(plan.decisions.some(row=>row.decisionOrder[1]==='REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET'));
     assert.equal(plan.policy.sameGameRobloxAssetIsCandidateOnlyUntilRuntimeVerified,true);
     assert.equal(plan.policy.unverifiedSameGameRobloxAssetDoesNotOutrankVerifiedCompanyAsset,true);
     const guidance=assetProductionGuidance(plan);
@@ -205,7 +241,7 @@ test('Roblox planner reuses source-bound same-game assets before cross-game libr
     });
     const background=withCompany.decisions.find(row=>row.type==='background');
     assert.ok(background);
-    assert.equal(background.decisionOrder[0],'REUSE_VERIFIED_COMPANY_ASSET');
+    assert.equal(background.decisionOrder[1],'REUSE_VERIFIED_COMPANY_ASSET');
     assert.equal(background.reuseCandidates[0].id,'verified-company-nature');
 
     const other=buildVibeAssetProductionPlan({
@@ -500,7 +536,7 @@ test('native asset plan prefers verified company library then repository then ex
     assert.deepEqual(row.repositoryCandidates.map(item=>item.id),['repo-ui']);
     assert.deepEqual(row.externalCandidates.map(item=>item.id),['external-ui']);
     assert.deepEqual(row.reuseCandidates.map(item=>item.id),['company-ui','repo-ui']);
-    assert.deepEqual(row.decisionOrder.slice(0,3),[
+    assert.deepEqual(row.decisionOrder.slice(1,4),[
       'REUSE_VERIFIED_COMPANY_ASSET',
       'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET',
       'ACQUIRE_LICENSE_VERIFIED_EXTERNAL_ASSET'
