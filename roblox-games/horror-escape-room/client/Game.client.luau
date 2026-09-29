@@ -761,7 +761,7 @@ end
 local function tweenParts(parts,offset,duration)
  for _,part in ipairs(parts)do
   if part and part.Parent then
-   TweenService:Create(part,TweenInfo.new(duration or .65,Enum.EasingStyle.Quad,Enum.EasingDirection.InOut),{CFrame=part.CFrame+CFrame.new(offset)}):Play()
+   TweenService:Create(part,TweenInfo.new(duration or .65,Enum.EasingStyle.Quad,Enum.EasingDirection.InOut),{CFrame=part.CFrame*CFrame.new(offset)}):Play()
   end
  end
 end
@@ -801,7 +801,7 @@ end
 
 local function playGymBall(trigger)
  local ball=localPart("LocalGymBall",Vector3.new(2.6,2.6,2.6),CFrame.new(trigger.Position+Vector3.new(-6,1,0)),Color3.fromRGB(201,116,67),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
- TweenService:Create(ball,TweenInfo.new(.8,Enum.EasingStyle.Bounce,Enum.EasingDirection.Out),{CFrame=ball.CFrame+CFrame.new(13,0,0)*CFrame.Angles(math.rad(270),0,0)}):Play()
+ TweenService:Create(ball,TweenInfo.new(.8,Enum.EasingStyle.Bounce,Enum.EasingDirection.Out),{CFrame=ball.CFrame*CFrame.new(13,0,0)*CFrame.Angles(math.rad(270),0,0)}):Play()
  Debris:AddItem(ball,1)
 end
 
