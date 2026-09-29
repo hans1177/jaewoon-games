@@ -20,6 +20,7 @@ import {
   deriveStudioActualPlayContract,
   assertCurrentStudioWorkflowHead,
   runStudioMultiplayerAudit,
+  runOfficialStudioMcpPlay,
   stopOwnedStudioMultiplayerTests,
   evaluateStudioSaveRejoin
 } from '../tools/company-development-roblox-studio-local-play.mjs';
@@ -1748,6 +1749,56 @@ test('dead-start Studio product evidence enters repair-required instead of infra
   assert.equal(applied.item.currentStep,'REPAIR_REQUIRED');
   assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
   assert.ok(applied.item.robloxQualityBuildUpEvidence.repairSurfaces.includes('GAME_START'));
+});
+
+test('dead-start failure captures the live viewport before stopping and preserves observed world evidence',{skip:process.platform==='win32'},async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'studio-failure-capture-'));
+  const executable=path.join(dir,'mcp.cjs');
+  const events=path.join(dir,'events.jsonl');
+  const output=path.join(dir,'runtime.json');
+  const contractFile=path.join(dir,'launch.json');
+  fs.writeFileSync(contractFile,JSON.stringify({studioActualPlayContract:{required:true}}));
+  fs.writeFileSync(executable,`#!/usr/bin/env node
+const fs=require('node:fs');
+const readline=require('node:readline');
+const names=['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input','user_mouse_input','character_navigation','execute_luau'];
+let playing=false;
+readline.createInterface({input:process.stdin}).on('line',line=>{
+ const req=JSON.parse(line);if(req.id==null)return;
+ let result={};
+ if(req.method==='initialize')result={protocolVersion:'2024-11-05',capabilities:{},serverInfo:{name:'test'}};
+ if(req.method==='tools/list')result={tools:names.map(name=>({name,inputSchema:{type:'object',properties:{studio_id:{type:'string'},...(name==='start_stop_play'?{action:{type:'string',enum:['start','stop']}}:{}),...(name==='execute_luau'?{code:{type:'string'},data_model_type:{type:'string',enum:['Client','Server','Edit']}}:{})}}}))};
+ if(req.method==='tools/call'){
+  const {name,arguments:args}=req.params;
+  fs.appendFileSync(${JSON.stringify(events)},JSON.stringify({name,action:args.action,playing})+'\\n');
+  if(name==='list_roblox_studios')result={studios:[{studio_id:'test-studio',name:'test'}]};
+  if(name==='start_stop_play')playing=args.action==='start';
+  if(name==='execute_luau'){
+   const marker=args.code.match(/ROBLOX_STUDIO_ACTUAL_PLAY_(?:CORE|WORLD|RUNTIME)=/)[0];
+   const data=marker.includes('CORE')?{player:{characterPresent:true,humanoidPresent:true,health:0,maxHealth:100,humanoidState:'Dead',rootY:-500}}:marker.includes('WORLD')?{world:{floorBelowPlayer:false,collidablePartCount:0}}:{};
+   result={content:[{type:'text',text:marker+JSON.stringify(data)}]};
+  }
+  if(name==='screen_capture')result=playing?{content:[{type:'image',mimeType:'image/png',data:'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII='}]}:{isError:true,content:[{type:'text',text:'viewport already stopped'}]};
+ }
+ process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:req.id,result})+'\\n');
+});
+`);
+  fs.chmodSync(executable,0o755);
+  try{
+    await assert.rejects(runOfficialStudioMcpPlay({mcpCommand:executable,output,expectedStudioName:'test',actualPlayContractPath:contractFile,timeoutMs:5000}),/ROBLOX_STUDIO_DEAD_CHARACTER_ABORT/);
+    const report=JSON.parse(fs.readFileSync(output,'utf8'));
+    const calls=fs.readFileSync(events,'utf8').trim().split('\n').map(JSON.parse);
+    const capture=calls.findIndex(x=>x.name==='screen_capture');
+    const stop=calls.findIndex(x=>x.name==='start_stop_play'&&x.action==='stop');
+    assert.ok(capture>=0&&stop>capture);
+    assert.equal(calls[capture].playing,true);
+    assert.equal(report.runtimeVerified,false);
+    assert.equal(report.captureFiles.length,1);
+    assert.ok(fs.statSync(report.captureFiles[0].path).size>0);
+    assert.equal(report.runtimeProbes.initialClient.player.rootY,-500);
+    assert.equal(report.runtimeProbes.initialClient.world.floorBelowPlayer,false);
+    assert.equal(report.errors.some(x=>x.type==='studio-capture-evidence-error'),false);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
 test('missing local character aborts before movement and routes to exact-source spawn repair',()=>{

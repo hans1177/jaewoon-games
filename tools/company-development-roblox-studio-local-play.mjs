@@ -2332,7 +2332,6 @@ export async function runOfficialStudioMcpPlay({
         if(deadConfirmed){
           checkpoint('initial-character-playable',false);
           actions.push({id:'initial-character-playable',type:'mcp-start-playability-abort',dispatched:true,ok:false});
-          try{await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,false));started=false;}catch{}
           throw new Error('ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:INITIAL_CHARACTER_NOT_PLAYABLE');
         }
       }
@@ -2353,7 +2352,6 @@ export async function runOfficialStudioMcpPlay({
         if(floatingConfirmed){
           checkpoint('floating-character-map-readiness',false);
           actions.push({id:'floating-character-map-readiness',type:'mcp-world-safety-abort',dispatched:true,ok:false});
-          try{await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,false));started=false;}catch{}
           throw new Error('ROBLOX_STUDIO_FLOATING_CHARACTER_ABORT:NO_WALKABLE_WORLD');
         }
       }
@@ -2417,7 +2415,6 @@ export async function runOfficialStudioMcpPlay({
         checkpoint('primary-action-input-dispatched',ok);
         if(target?.visible!==true){
           checkpoint('primary-action-available',false);
-          try{await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,false));started=false;}catch{}
           throw new Error('ROBLOX_STUDIO_START_ACTION_ABORT:PRIMARY_ACTION_NOT_VISIBLE');
         }
         checkpoint('primary-action-available',true);
@@ -2443,7 +2440,6 @@ export async function runOfficialStudioMcpPlay({
           checkpoint('initial-character-spawned',false);
           actions.push({id:'initial-character-spawned',type:'mcp-start-playability-abort',dispatched:true,ok:false});
           postActionClientProbe=spawnConfirm;
-          try{await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,false));started=false;}catch{}
           throw new Error('ROBLOX_STUDIO_MISSING_CHARACTER_ABORT:NO_PLAYABLE_CHARACTER');
         }
       }
@@ -2459,7 +2455,6 @@ export async function runOfficialStudioMcpPlay({
           checkpoint('initial-ui-playability',false);
           actions.push({id:'initial-ui-playability',type:'mcp-start-ui-abort',dispatched:true,ok:false});
           postActionClientProbe=overlayConfirm;
-          try{await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,false));started=false;}catch{}
           throw new Error('ROBLOX_STUDIO_BLOCKING_OVERLAY_ABORT:START_INPUT_OBSCURED');
         }
       }
@@ -3060,6 +3055,7 @@ export async function runOfficialStudioMcpPlay({
       scenarioContractVersion:Number(actualPlayContract?.version||0),
       scenarioContractFingerprint:actualPlayContract?.required===true?'sha256:'+stableSha256(actualPlayContract):null,
       scenarioCoverage,authoritativeStateChangeObserved,qualityFailureKinds,qualityFailureDetails,
+      runtimeProbes:{initialClient:initialClientProbe,preActionClient:preActionClientProbe,postActionClient:postActionClientProbe,finalClient:finalClientProbe,finalServer:finalServerProbe,rejoinClient:rejoinClientProbe},
       actions,checkpoints,errors,
       captureFiles:[...beforeImages,...afterImages].map(({path,sha256,bytes,mimeType})=>({path,sha256,bytes,mimeType})),
       metrics:{beforeFrameCount:beforeImages.length,afterFrameCount:afterImages.length,distinctFrameChange:false,consoleErrorCount:errors.length},
