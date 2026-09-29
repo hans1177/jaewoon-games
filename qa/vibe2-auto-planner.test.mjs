@@ -3562,3 +3562,22 @@ test('Studio repair diagnostics reject stale source and artifact and bound repea
     }
   }
 });
+
+test('Unity development floor preserves existing Roblox repair observations without admitting an unbuilt target',()=>{
+  const root=tempRepo(),gameId='parallel-native-repair';
+  fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
+    unityWebFirstStage:{status:'OWNER_DIRECT_LOCKED',scope:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',developmentAdmissionAuthority:true,validationSurfaceOnly:false}
+  }));
+  const source='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const game={id:gameId,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'};
+  const item={gameId,status:'ACTIVE',selectedPlatform:'UNITY',robloxProjectPath:'roblox-games/'+gameId,
+    robloxSourceCommit:source,robloxBuildArtifactIdentity:artifact,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:source,
+    robloxQualityBuildUpEvidence:{sourceRevision:source,artifactIdentity:artifact,authority:'roblox-official-studio-mcp-product-quality-failure',qualityFailureDetails:[{id:'floor',observed:{floorHits:0}}]}};
+  for(const built of [false,true]){
+    const projects=collectProjects({projects:[]},{games:[game]},root,{items:[{...item,robloxBuildOrPackagePassed:built}]});
+    assert.equal(projects.filter(p=>p.engine==='unity').length,1);
+    const roblox=projects.find(p=>p.engine==='roblox');
+    assert.equal(Boolean(roblox),built);
+    if(built)assert.equal(roblox.queueRobloxQualityBuildUpEvidence.qualityFailureDetails[0].observed,'{"floorHits":0}');
+  }
+});

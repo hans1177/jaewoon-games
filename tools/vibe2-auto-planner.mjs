@@ -223,9 +223,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     };
     if(existingUnity){
       Object.assign(existingUnity,queuePatch,{projectPath:root,releaseState:'development-confirmed'});
-      continue;
-    }
-    rows.push({
+    }else rows.push({
       gameId:id,
       name:clean(item?.gameName||game?.name||id),
       engine:'unity',
@@ -240,7 +238,12 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       developmentValidation:latestDevelopmentValidationStatus(id,repoRoot),
       ...queuePatch
     });
-    continue;
+    // 유니티 선행 개발은 유지하되 이미 실행된 로블록스의 복구 증거를 잃지 않는다.
+    const existingRobloxRuntime=item?.robloxBuildOrPackagePassed===true
+      &&/^[0-9a-f]{40}$/i.test(clean(item?.robloxSourceCommit))
+      &&/^sha256:[0-9a-f]{64}$/i.test(clean(item?.robloxBuildArtifactIdentity))
+      &&/^roblox-games\//.test(posix(item?.robloxProjectPath));
+    if(!existingRobloxRuntime)continue;
   }
 
   const queueTarget=clean(item?.selectedPlatform||item?.targetPlatform).toUpperCase();
