@@ -1916,7 +1916,15 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     :[];
   const activeDirectiveTask=[...latestDirectiveTasks].reverse().find(item=>!inactiveDirectiveStatuses.has(clean(item.status).toLowerCase()));
   if(activeDirectiveTask?.buildUpDirective){
-    const directive={...activeDirectiveTask.buildUpDirective,playtestRuntimeFindings:{...activeDirectiveTask.buildUpDirective.playtestRuntimeFindings,studioQualityFailure:project.queueRobloxQualityBuildUpEvidence||null}};
+    const repairRequired=platformLane==='roblox'&&project.queueRobloxQualityBuildUpRequired===true;
+    const directive={
+      ...activeDirectiveTask.buildUpDirective,
+      playtestRuntimeFindings:{...activeDirectiveTask.buildUpDirective.playtestRuntimeFindings,
+        studioQualityFailure:platformLane==='roblox'?project.queueRobloxQualityBuildUpEvidence||null:null,
+        ...(repairRequired?{runtimeObserved:true,runtimePassed:false}:{} )},
+      ...(repairRequired?{nextActionDecision:{action:'CAUSAL_REPAIR',reason:'current source Studio product-quality failure requires source repair before another observation'},
+        effectivenessMeasurement:{...activeDirectiveTask.buildUpDirective.effectivenessMeasurement,previousGeneration:{classification:'REGRESSION',reason:'current source Studio product-quality failure',runtimeObserved:true}}}:{} )
+    };
     return{
       ...taskInput,
       goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
@@ -2479,10 +2487,16 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     // 최신 소스·빌드의 실측 실패를 대기 작업에도 갱신하고 이전 소스 증거는 제거한다.
     if(candidate?.buildUpDirective&&lane==='roblox'){
       const studioQualityFailure=project.queueRobloxQualityBuildUpEvidence||null;
-      if(JSON.stringify(candidate.buildUpDirective.playtestRuntimeFindings?.studioQualityFailure??null)!==JSON.stringify(studioQualityFailure)){
+      const repairRequired=project.queueRobloxQualityBuildUpRequired===true;
+      const staleDecision=repairRequired&&(candidate.buildUpDirective.nextActionDecision?.action!=='CAUSAL_REPAIR'
+        ||candidate.buildUpDirective.effectivenessMeasurement?.previousGeneration?.classification!=='REGRESSION');
+      if(staleDecision||JSON.stringify(candidate.buildUpDirective.playtestRuntimeFindings?.studioQualityFailure??null)!==JSON.stringify(studioQualityFailure)){
         candidate=bindSharedBuildUpDirective(candidate,{
           ...candidate.buildUpDirective,
-          playtestRuntimeFindings:{...candidate.buildUpDirective.playtestRuntimeFindings,studioQualityFailure}
+          playtestRuntimeFindings:{...candidate.buildUpDirective.playtestRuntimeFindings,studioQualityFailure,
+            ...(repairRequired?{runtimeObserved:true,runtimePassed:false}:{} )},
+          ...(repairRequired?{nextActionDecision:{action:'CAUSAL_REPAIR',reason:'current source Studio product-quality failure requires source repair before another observation'},
+            effectivenessMeasurement:{...candidate.buildUpDirective.effectivenessMeasurement,previousGeneration:{classification:'REGRESSION',reason:'current source Studio product-quality failure',runtimeObserved:true}}}:{} )
         });
         changed+=1;
       }
