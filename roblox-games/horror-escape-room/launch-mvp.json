@@ -1,5 +1,5 @@
 {
-  "version": 21,
+  "version": 22,
   "gameId": "horror-escape-room",
   "gameName": "심야 감염전 [4대4]",
   "releaseStrategy": "FAST_MVP",
@@ -120,7 +120,10 @@
     "room host is visibly identified in the eight-slot lobby",
     "world ghost compendium displays all twelve initial ghosts with three-stage progress",
     "ghost compendium visibly reports fragments contracts and completion title",
-    "ghost compendium UI never changes competitive combat statistics"
+    "ghost compendium UI never changes competitive combat statistics",
+    "invisible FoundationSpawn is non-collidable non-touchable and non-queryable",
+    "player teleport root height is grounded to arena floor instead of an invisible spawn platform",
+    "energy meter displays current and maximum energy in lobby and gameplay"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
