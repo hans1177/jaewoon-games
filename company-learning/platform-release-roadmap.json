@@ -10850,6 +10850,8 @@
       "singleGameTaskImmediateCompletionRequired": true,
       "singleGameTaskFullReviewBeforeCohortCompletion": true,
       "singleGameTaskReviewUsesExistingRegressionAndReleaseGates": true,
+      "fanInMayReuseSuccessfulExactCommitCoreRegression": true,
+      "idleLearningRequiresEmptyDevelopmentAssetAndRecoveryQueues": true,
       "coalescedResultArtifactRequired": true,
       "coalescedResultConsumedByExistingCohortFanIn": true,
       "coalescedResultMayNotBeDroppedOrTreatedAsFailure": true,

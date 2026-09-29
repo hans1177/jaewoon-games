@@ -2236,6 +2236,38 @@ jobs:
           if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
           # Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.
           if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+            export VIBE2_FANIN_CONTRACT_SHA="$contract_sha"
+            core_qa_reuse=0
+            if curl --fail-with-body --silent --show-error \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${VIBE2_FANIN_CONTRACT_SHA}&per_page=100" \
+              --output /tmp/vibe2-fanin-core-qa-runs.json; then
+              core_qa_reuse="$(node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-fanin-core-qa-runs.json','utf8'));
+          const sha=String(process.env.VIBE2_FANIN_CONTRACT_SHA||'');
+          const pass=(payload.workflow_runs||[]).some(row=>
+            String(row.name||'')==='Vibe2 Core QA' &&
+            String(row.head_sha||'')===sha &&
+            String(row.status||'')==='completed' &&
+            String(row.conclusion||'')==='success'
+          );
+          process.stdout.write(pass?'1':'0');
+          NODE
+              )"
+              echo 'VIBE2_FANIN_CORE_QA_REUSE_OBSERVATION=PASS'
+            else
+              core_qa_reuse=0
+              echo 'VIBE2_FANIN_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION'
+            fi
+
+            if [ "$core_qa_reuse" = '1' ]; then
+              regression_rc=0
+              echo 'VIBE2_FAN_IN_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'
+            else
+              echo 'VIBE2_FAN_IN_REGRESSION_SOURCE=LOCAL_FULL_REGRESSION'
             set +e
             (cd "$contract_root" && node --test --test-concurrency=4 \
             qa/vibe2-auto-planner.test.mjs \
@@ -2266,6 +2298,7 @@ jobs:
             qa/vibe2-practice-distillation.test.mjs)
           regression_rc=$?
           set -e
+            fi
           if [ "$regression_rc" -ne 0 ]; then
             pushed=0
             attempt=0

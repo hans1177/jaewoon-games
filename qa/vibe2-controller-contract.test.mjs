@@ -708,6 +708,23 @@ test('complete single-task callbacks reuse full regression and release review wi
   assert.match(ready,/task_review_required=true/);
 });
 
+test('fan-in reuses only successful exact-commit engine regression and retains all candidate gates',()=>{
+  const fanIn=workflow.slice(workflow.indexOf('  fan_in:'));
+  assert.match(fanIn,/VIBE2_FAN_IN_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
+  assert.match(fanIn,/VIBE2_FAN_IN_REGRESSION_SOURCE=LOCAL_FULL_REGRESSION/);
+  assert.match(fanIn,/String\(row.head_sha\|\|''\)===sha/);
+  assert.match(fanIn,/String\(row.conclusion\|\|''\)==='success'/);
+  for(const file of new Set(fanIn.match(/qa\/[\w.-]+\.test\.mjs/g)))assert.ok(coreQaWorkflow.includes(file),file);
+  assert.match(fanIn,/tools\/vibe2-fan-in-review.mjs/);
+});
+
+test('idle learning cannot take runners while game development or recovery work remains',()=>{
+  const idle=safetyNetWorkflow.slice(safetyNetWorkflow.indexOf('  learning_idle:'),safetyNetWorkflow.indexOf('  game_study:'));
+  for(const output of ['game_primary_queued','active_worker_reservations','asset_development_queued','asset_development_active','recovery_fast_queued']){
+    assert.ok(idle.includes(`needs.plan.outputs.${output} == '0'`),output);
+  }
+});
+
 test('workers signal atomic completion and task micro-fan-in refills capacity without a cohort barrier',()=>{
   const reserveStart=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
   const reserveEnd=workflow.indexOf('  model_cache:',reserveStart);
