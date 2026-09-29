@@ -375,35 +375,40 @@ local function makeArena(map)
 
  if map.Id=="SCHOOL"then
   -- 초보용 학교: 중앙 복도 + 교실 + 급식실 + 체육관. 시야가 길고 우회로가 단순하다.
-   -- 실제 실내 구역 천장만 사용하고 전체 맵을 덮는 단일 지붕판은 두지 않는다.
+  -- 학교는 답답한 저천장을 피하고, 교실/복도는 약 18스터드 높이로 통일한다.
+  local schoolWallHeight=18
+  local schoolWallY=9
+  local schoolCeilingY=18.4
+  local schoolLightY=16.4
+  -- 실제 실내 구역 천장만 사용하고 전체 맵을 덮는 단일 지붕판은 두지 않는다.
    for i,spec in ipairs({
-    {Vector3.new(0,13.8,-163),Vector3.new(336,1,10)},
-    {Vector3.new(0,13.8,163),Vector3.new(336,1,10)},
-    {Vector3.new(-163,13.8,0),Vector3.new(10,1,336)},
-    {Vector3.new(163,13.8,0),Vector3.new(10,1,336)}
+    {Vector3.new(0,19.4,-163),Vector3.new(336,1,10)},
+    {Vector3.new(0,19.4,163),Vector3.new(336,1,10)},
+    {Vector3.new(-163,19.4,0),Vector3.new(10,1,336)},
+    {Vector3.new(163,19.4,0),Vector3.new(10,1,336)}
    })do
     arenaPart(f,"SchoolRoofRim"..i,spec[2],spec[1],Color3.fromRGB(72,76,84),Enum.Material.Concrete)
    end
    for _,roofZ in ipairs({-144,-120,-96,-72,-48,-24,0,24,48,72,96,120,144})do
-    local hallLamp=arenaPart(f,"CeilingLight",Vector3.new(11,.45,2),Vector3.new(0,12.3,roofZ),Style.SafeLight,Enum.Material.Neon)
+    local hallLamp=arenaPart(f,"CeilingLight",Vector3.new(11,.45,2),Vector3.new(0,schoolLightY,roofZ),Style.SafeLight,Enum.Material.Neon)
     hallLamp.CanCollide=false;hallLamp.Transparency=.08;glow(hallLamp,Style.SafeLight,17,.58)
    end
   zoneFloor(f,"SchoolHallFloor",Vector3.new(32,.35,124),Vector3.new(0,.68,0),Color3.fromRGB(133,136,139),Enum.Material.Marble)
   zoneFloor(f,"SchoolCafeteriaFloor",Vector3.new(54,.35,48),Vector3.new(-51,.68,43),Color3.fromRGB(111,101,91),Enum.Material.Concrete)
   zoneFloor(f,"SchoolGymZone",Vector3.new(52,.35,46),Vector3.new(50,.68,48),Color3.fromRGB(136,95,67),Enum.Material.WoodPlanks)
   local exitLight=arenaPart(f,"SchoolExitLight",Vector3.new(8,2,.7),Vector3.new(0,7,-67),Color3.fromRGB(91,231,158),Enum.Material.Neon);glow(exitLight,exitLight.Color,18,1.8)
-  arenaPart(f,"MainHallLeft",Vector3.new(3,12,112),Vector3.new(-18,6,0),Style.Wall,Enum.Material.Concrete)
-  arenaPart(f,"MainHallRight",Vector3.new(3,12,112),Vector3.new(18,6,0),Style.Wall,Enum.Material.Concrete)
-  arenaPart(f,"MainHallCeiling",Vector3.new(39,1,126),Vector3.new(0,12.2,0),Color3.fromRGB(104,109,118),Enum.Material.Concrete)
-  arenaPart(f,"ClassWingCeilingL",Vector3.new(58,1,84),Vector3.new(-48,12.2,-6),Color3.fromRGB(108,111,117),Enum.Material.Concrete)
-  arenaPart(f,"ClassWingCeilingR",Vector3.new(58,1,84),Vector3.new(48,12.2,-6),Color3.fromRGB(108,111,117),Enum.Material.Concrete)
-  arenaPart(f,"CafeteriaCeiling",Vector3.new(58,1,52),Vector3.new(-51,12.2,43),Color3.fromRGB(104,101,98),Enum.Material.Concrete)
-  arenaPart(f,"GymCeiling",Vector3.new(56,1,50),Vector3.new(50,12.2,48),Color3.fromRGB(102,101,105),Enum.Material.Concrete)
+  arenaPart(f,"MainHallLeft",Vector3.new(3,schoolWallHeight,112),Vector3.new(-18,schoolWallY,0),Style.Wall,Enum.Material.Concrete)
+  arenaPart(f,"MainHallRight",Vector3.new(3,schoolWallHeight,112),Vector3.new(18,schoolWallY,0),Style.Wall,Enum.Material.Concrete)
+  arenaPart(f,"MainHallCeiling",Vector3.new(39,1,126),Vector3.new(0,schoolCeilingY,0),Color3.fromRGB(104,109,118),Enum.Material.Concrete)
+  arenaPart(f,"ClassWingCeilingL",Vector3.new(58,1,84),Vector3.new(-48,schoolCeilingY,-6),Color3.fromRGB(108,111,117),Enum.Material.Concrete)
+  arenaPart(f,"ClassWingCeilingR",Vector3.new(58,1,84),Vector3.new(48,schoolCeilingY,-6),Color3.fromRGB(108,111,117),Enum.Material.Concrete)
+  arenaPart(f,"CafeteriaCeiling",Vector3.new(58,1,52),Vector3.new(-51,schoolCeilingY,43),Color3.fromRGB(104,101,98),Enum.Material.Concrete)
+  arenaPart(f,"GymCeiling",Vector3.new(56,1,50),Vector3.new(50,schoolCeilingY,48),Color3.fromRGB(102,101,105),Enum.Material.Concrete)
   for _,z in ipairs({-40,-12,16})do
    for _,side in ipairs({-1,1})do
     local x=side*48
-    arenaPart(f,"ClassroomWall",Vector3.new(56,12,3),Vector3.new(x,6,z),Style.Wall,Enum.Material.Concrete)
-    arenaPart(f,"ClassroomBack",Vector3.new(3,12,27),Vector3.new(side*76,6,z+13),Style.Wall,Enum.Material.Concrete)
+    arenaPart(f,"ClassroomWall",Vector3.new(56,schoolWallHeight,3),Vector3.new(x,schoolWallY,z),Style.Wall,Enum.Material.Concrete)
+    arenaPart(f,"ClassroomBack",Vector3.new(3,schoolWallHeight,27),Vector3.new(side*76,schoolWallY,z+13),Style.Wall,Enum.Material.Concrete)
     for desk=1,4 do
      arenaPart(f,"ClassDesk",Vector3.new(7,2,4),Vector3.new(side*(31+(desk%2)*12),1.5,z+6+math.floor((desk-1)/2)*9),Color3.fromRGB(121,91,67),Enum.Material.WoodPlanks)
     end
@@ -417,7 +422,7 @@ local function makeArena(map)
       local window=arenaPart(f,"ClassWindow",Vector3.new(7,3.5,.28),Vector3.new(side*75,7,z+wz),Color3.fromRGB(148,188,202),Enum.Material.Glass);window.CanCollide=false;window.Transparency=.32
      end
     end
-    local lamp=arenaPart(f,"CeilingLight",Vector3.new(12,.5,2),Vector3.new(0,10,z+7),Style.SafeLight,Enum.Material.Neon);lamp.Transparency=.12;glow(lamp,Style.SafeLight,18,.72)
+    local lamp=arenaPart(f,"CeilingLight",Vector3.new(12,.5,2),Vector3.new(0,schoolLightY,z+7),Style.SafeLight,Enum.Material.Neon);lamp.Transparency=.12;glow(lamp,Style.SafeLight,18,.72)
   end
   -- 급식실
   arenaPart(f,"CafeteriaSign",Vector3.new(22,8,2),Vector3.new(-52,4,48),Style.Locker,Enum.Material.Metal)
@@ -436,14 +441,46 @@ local function makeArena(map)
    local strip=arenaPart(f,"HallGuideStrip",Vector3.new(12,.18,1.2),Vector3.new(0,.78,z),Color3.fromRGB(87,210,224),Enum.Material.Neon);strip.CanCollide=false
   end
   for i,spec in ipairs({
-   {Vector3.new(-118,10.8,-70),Vector3.new(14,.45,3)},{Vector3.new(118,10.8,-70),Vector3.new(14,.45,3)},
-   {Vector3.new(-51,10.8,43),Vector3.new(14,.45,3)},{Vector3.new(50,10.8,48),Vector3.new(14,.45,3)},
-   {Vector3.new(108,10.8,104),Vector3.new(14,.45,3)}
+   {Vector3.new(-118,schoolLightY,-70),Vector3.new(14,.45,3)},{Vector3.new(118,schoolLightY,-70),Vector3.new(14,.45,3)},
+   {Vector3.new(-51,schoolLightY,43),Vector3.new(14,.45,3)},{Vector3.new(50,schoolLightY,48),Vector3.new(14,.45,3)},
+   {Vector3.new(108,schoolLightY,104),Vector3.new(14,.45,3)}
   })do
    local roomLight=arenaPart(f,"SchoolRoomLight"..i,spec[2],spec[1],Style.SafeLight,Enum.Material.Neon);roomLight.CanCollide=false;roomLight.Transparency=.18;glow(roomLight,Style.SafeLight,16,.58)
   end
-  arenaPart(f,"SchoolNoticeBoard",Vector3.new(12,6,.8),Vector3.new(-16,5,-28),Color3.fromRGB(126,89,54),Enum.Material.WoodPlanks)
-  arenaPart(f,"SchoolClock",Vector3.new(4,4,.6),Vector3.new(16,7,-6),Color3.fromRGB(215,220,222),Enum.Material.SmoothPlastic)
+  arenaPart(f,"SchoolNoticeBoard",Vector3.new(12,6,.8),Vector3.new(-16,6.2,-28),Color3.fromRGB(126,89,54),Enum.Material.WoodPlanks)
+  arenaPart(f,"SchoolClock",Vector3.new(4,4,.6),Vector3.new(16,9.4,-6),Color3.fromRGB(215,220,222),Enum.Material.SmoothPlastic)
+
+  -- 학교 구조 디테일: 높은 천장을 비어 보이지 않게 기둥/몰딩/천장 프레임/안내물을 배치한다.
+  for _,z in ipairs({-48,-24,0,24,48})do
+   for _,x in ipairs({-16.1,16.1})do
+    arenaPart(f,"SchoolHallColumn",Vector3.new(1.3,schoolWallHeight,1.3),Vector3.new(x,schoolWallY,z),Color3.fromRGB(104,109,117),Enum.Material.Concrete)
+   end
+   arenaPart(f,"SchoolCeilingBeam",Vector3.new(37,.65,1.1),Vector3.new(0,17.65,z),Color3.fromRGB(82,87,95),Enum.Material.Metal)
+  end
+  for _,x in ipairs({-16.25,16.25})do
+   arenaPart(f,"SchoolWallBaseTrim",Vector3.new(.38,1.1,112),Vector3.new(x,1.25,0),Color3.fromRGB(68,76,84),Enum.Material.Metal)
+   arenaPart(f,"SchoolWallTopTrim",Vector3.new(.42,.55,112),Vector3.new(x,16.7,0),Color3.fromRGB(78,84,92),Enum.Material.Metal)
+  end
+  for _,z in ipairs({-40,-12,16})do
+   for _,side in ipairs({-1,1})do
+    local classCenter=side*48
+    arenaPart(f,"ClassDoorFrameL",Vector3.new(.45,10,.7),Vector3.new(classCenter-4.2,5,z-1.72),Color3.fromRGB(76,82,88),Enum.Material.Metal)
+    arenaPart(f,"ClassDoorFrameR",Vector3.new(.45,10,.7),Vector3.new(classCenter+4.2,5,z-1.72),Color3.fromRGB(76,82,88),Enum.Material.Metal)
+    arenaPart(f,"ClassDoorFrameTop",Vector3.new(8.8,.45,.7),Vector3.new(classCenter,10,z-1.72),Color3.fromRGB(76,82,88),Enum.Material.Metal)
+    arenaPart(f,"ClassRoomNumber",Vector3.new(3.4,1.2,.25),Vector3.new(classCenter+(side>0 and-5.7 or 5.7),10.3,z-1.75),Color3.fromRGB(195,204,208),Enum.Material.SmoothPlastic).CanCollide=false
+   end
+  end
+  for _,spec in ipairs({
+   {Vector3.new(-15.8,7.2,42),"SchoolFireCabinet"},
+   {Vector3.new(15.8,7.2,-42),"SchoolFireCabinet"},
+  })do
+   local cabinet=arenaPart(f,spec[2],Vector3.new(.7,5,3.2),spec[1],Color3.fromRGB(146,45,45),Enum.Material.Metal);cabinet.CanCollide=false
+  end
+  arenaPart(f,"SchoolTrophyCase",Vector3.new(10,6,1.6),Vector3.new(16.1,5.2,30),Color3.fromRGB(77,91,104),Enum.Material.Glass).Transparency=.38
+  arenaPart(f,"SchoolVendingMachine",Vector3.new(4,8,3),Vector3.new(-14,4.3,55),Color3.fromRGB(72,99,123),Enum.Material.Metal)
+  local gymBackboard=arenaPart(f,"GymBackboard",Vector3.new(9,5,.4),Vector3.new(50,11.5,25.5),Color3.fromRGB(222,224,220),Enum.Material.SmoothPlastic);gymBackboard.CanCollide=false
+  local gymRim=arenaPart(f,"GymRim",Vector3.new(4,.35,4),Vector3.new(50,9.2,23.6),Color3.fromRGB(199,75,49),Enum.Material.Metal);gymRim.CanCollide=false
+
   -- 확장 구역: 도서관 / 과학동 / 운동장 / 강당
   zoneFloor(f,"LibraryWing",Vector3.new(78,.35,72),Vector3.new(-118,.68,-70),Color3.fromRGB(105,99,92),Enum.Material.WoodPlanks)
   zoneFloor(f,"ScienceWing",Vector3.new(78,.35,72),Vector3.new(118,.68,-70),Color3.fromRGB(103,112,118),Enum.Material.Concrete)
@@ -452,13 +489,13 @@ local function makeArena(map)
   zoneFloor(f,"SchoolWestConnector",Vector3.new(94,.35,16),Vector3.new(-72,.7,-28),Color3.fromRGB(128,130,132),Enum.Material.Marble)
   zoneFloor(f,"SchoolEastConnector",Vector3.new(94,.35,16),Vector3.new(72,.7,-28),Color3.fromRGB(128,130,132),Enum.Material.Marble)
   zoneFloor(f,"SchoolSouthConnector",Vector3.new(16,.35,92),Vector3.new(0,.7,108),Color3.fromRGB(128,130,132),Enum.Material.Marble)
-  arenaPart(f,"LibraryCeiling",Vector3.new(80,1,74),Vector3.new(-118,12.2,-70),Color3.fromRGB(96,92,89),Enum.Material.Concrete)
-  arenaPart(f,"ScienceCeiling",Vector3.new(80,1,74),Vector3.new(118,12.2,-70),Color3.fromRGB(98,106,112),Enum.Material.Concrete)
-  arenaPart(f,"AuditoriumCeiling",Vector3.new(94,1,80),Vector3.new(108,12.2,104),Color3.fromRGB(90,76,77),Enum.Material.Concrete)
+  arenaPart(f,"LibraryCeiling",Vector3.new(80,1,74),Vector3.new(-118,schoolCeilingY,-70),Color3.fromRGB(96,92,89),Enum.Material.Concrete)
+  arenaPart(f,"ScienceCeiling",Vector3.new(80,1,74),Vector3.new(118,schoolCeilingY,-70),Color3.fromRGB(98,106,112),Enum.Material.Concrete)
+  arenaPart(f,"AuditoriumCeiling",Vector3.new(94,1,80),Vector3.new(108,schoolCeilingY,104),Color3.fromRGB(90,76,77),Enum.Material.Concrete)
   for _,spec in ipairs({
-   {Vector3.new(-157,6,-70),Vector3.new(3,12,72)},{Vector3.new(-118,6,-106),Vector3.new(78,12,3)},
-   {Vector3.new(157,6,-70),Vector3.new(3,12,72)},{Vector3.new(118,6,-106),Vector3.new(78,12,3)},
-   {Vector3.new(154,6,104),Vector3.new(3,12,78)},{Vector3.new(108,6,143),Vector3.new(92,12,3)}
+   {Vector3.new(-157,schoolWallY,-70),Vector3.new(3,schoolWallHeight,72)},{Vector3.new(-118,schoolWallY,-106),Vector3.new(78,schoolWallHeight,3)},
+   {Vector3.new(157,schoolWallY,-70),Vector3.new(3,schoolWallHeight,72)},{Vector3.new(118,schoolWallY,-106),Vector3.new(78,schoolWallHeight,3)},
+   {Vector3.new(154,schoolWallY,104),Vector3.new(3,schoolWallHeight,78)},{Vector3.new(108,schoolWallY,143),Vector3.new(92,schoolWallHeight,3)}
   })do arenaPart(f,"SchoolWingWall",spec[2],spec[1],Style.Wall,Enum.Material.Concrete)end
   for i=1,8 do
    arenaPart(f,"LibraryShelf",Vector3.new(12,7,3),Vector3.new(-146+(i%4)*18,3.5,-92+math.floor((i-1)/4)*32),Color3.fromRGB(94,72,54),Enum.Material.WoodPlanks)
@@ -673,7 +710,7 @@ local function decorateClassicMonster(anchor,id)
  local style=Style.Monsters[id]or Style.Monsters.DRACULA
  anchor.Color=style.Color;anchor.Transparency=.15
  local visuals={}
- local function add(name,size,offset,color,material,shape)local x=botVisualPart(anchor,name,size,offset,color,material,shape);table.insert(visuals,{part=x,offset=offset});return x end
+ local function add(name,size,offset,color,material,shape)local x=botVisualPart(anchor,name,size,offset,color,material,shape);table.insert(visuals,{part=x,offset=offset,rotation=CFrame.identity});return x end
  if id=="DRACULA"then
   add("Cape",Vector3.new(5.5,6,.45),Vector3.new(0,0,1.7),Color3.fromRGB(28,16,23),Enum.Material.Fabric)
   add("Collar",Vector3.new(5.8,1.2,1),Vector3.new(0,2.2,.4),Color3.fromRGB(102,18,35),Enum.Material.Fabric)
@@ -701,7 +738,7 @@ local function decorateClassicMonster(anchor,id)
   add("Hood",Vector3.new(3.7,3.7,3.7),Vector3.new(0,3.6,0),Color3.fromRGB(24,20,30),Enum.Material.Fabric,Enum.PartType.Ball)
   add("FaceVoid",Vector3.new(2.2,2.1,.5),Vector3.new(0,3.45,-1.75),Color3.fromRGB(6,6,8),Enum.Material.Neon)
   add("ScytheStaff",Vector3.new(.45,7,.45),Vector3.new(3,0,0),Color3.fromRGB(72,64,59),Enum.Material.Wood)
-  local blade=add("ScytheBlade",Vector3.new(.5,3.8,2.5),Vector3.new(3,3.3,-1.2),Color3.fromRGB(184,190,198),Enum.Material.Metal);blade.Orientation=Vector3.new(0,0,60)
+  local blade=add("ScytheBlade",Vector3.new(.5,3.8,2.5),Vector3.new(3,3.3,-1.2),Color3.fromRGB(184,190,198),Enum.Material.Metal);visuals[#visuals].rotation=CFrame.Angles(0,0,math.rad(60));blade.CFrame=anchor.CFrame*CFrame.new(visuals[#visuals].offset)*visuals[#visuals].rotation
  end
  return visuals
 end
@@ -713,7 +750,7 @@ local function bot(role,pos)
   visuals=decorateClassicMonster(p,"DRACULA")
  else
   local function add(name,size,offset,color,material,shape)
-   local x=botVisualPart(p,name,size,offset,color,material,shape);table.insert(visuals,{part=x,offset=offset});return x
+   local x=botVisualPart(p,name,size,offset,color,material,shape);table.insert(visuals,{part=x,offset=offset,rotation=CFrame.identity});return x
   end
   add("AIHumanHead",Vector3.new(2.05,2.05,1.9),Vector3.new(0,2.8,0),Color3.fromRGB(211,181,153),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
   add("AIHumanHair",Vector3.new(2.12,.55,1.95),Vector3.new(0,3.65,.05),Color3.fromRGB(47,38,36),Enum.Material.Fabric)
@@ -723,7 +760,7 @@ local function bot(role,pos)
   add("AIHumanLegR",Vector3.new(.78,2.85,.9),Vector3.new(.64,-3.1,0),Color3.fromRGB(42,47,54),Enum.Material.Fabric)
   add("AIHumanTool",Vector3.new(.42,1.9,.42),Vector3.new(1.9,-.1,-.65),Color3.fromRGB(91,205,220),Enum.Material.Neon)
  end
- local b={part=p,role=role,speed=role=="MONSTER"and 18 or 14,monsterId="DRACULA",visuals=visuals,infectReadyAt=0,purifyReadyAt=0}
+ local b={part=p,role=role,speed=role=="MONSTER"and 18 or 14,monsterId="DRACULA",visuals=visuals,infectReadyAt=0,purifyReadyAt=0,motionClock=math.random()*6.28}
  table.insert(bots,b);return b
 end
 local function weightPick(list)
@@ -1168,7 +1205,23 @@ end)
 RunService.Heartbeat:Connect(function(dt)
  if state=="RUNNING"then
   for _,b in ipairs(bots)do
-   if b.visuals then for _,v in ipairs(b.visuals)do if v.part and v.part.Parent then v.part.CFrame=b.part.CFrame*CFrame.new(v.offset)end end end
+   b.motionClock=(b.motionClock or 0)+dt*(b.role=="MONSTER"and 7.5 or 9)
+   if b.visuals then
+    local bob=math.sin(b.motionClock*2)*.08
+    local stride=math.sin(b.motionClock)
+    for _,v in ipairs(b.visuals)do
+     if v.part and v.part.Parent then
+      local name=v.part.Name
+      local pitch=0
+      if string.find(name,"Arm")or string.find(name,"Claw")then pitch=math.rad(stride*18)
+      elseif string.find(name,"LegL")then pitch=math.rad(stride*16)
+      elseif string.find(name,"LegR")then pitch=math.rad(-stride*16)
+      elseif name=="Cape"or name=="Cloak"then pitch=math.rad(4+stride*3)end
+      local roleLean=b.role=="MONSTER"and math.rad(-5)or math.rad(-2)
+      v.part.CFrame=b.part.CFrame*CFrame.new(v.offset+Vector3.new(0,bob,0))*CFrame.Angles(roleLean+pitch,0,0)*(v.rotation or CFrame.identity)
+     end
+    end
+   end
    if b.role=="MONSTER"then
     local best,bd=nil,math.huge
     for _,a in ipairs(active())do
