@@ -958,9 +958,9 @@ test('Studio MCP planner stays independent from hosted foundation capacity while
   const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
-  assert.match(studioPlanBlock,/runs-on: ubuntu-slim/);
-  assert.match(studioPlanBlock,/shell: bash/);
-  assert.match(studioPlanBlock,/ROBLOX_STUDIO_MCP_PLAN_RUNNER=UBUNTU_SLIM/);
+  assert.match(studioPlanBlock,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  assert.match(studioPlanBlock,/shell: powershell/);
+  assert.match(studioPlanBlock,/ROBLOX_STUDIO_MCP_PLAN_RUNNER=LOCAL_STUDIO_HOST/);
   assert.doesNotMatch(studioPlanBlock,/needs: runtime-foundation-qa/);
   assert.doesNotMatch(studioPlanBlock,/needs\.runtime-foundation-qa/);
   assert.doesNotMatch(studioPlanBlock,/needs: dedupe/);
@@ -1004,7 +1004,7 @@ test('automatic Roblox foundation work keeps only newest same-identity run befor
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
-  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}\n\s+cancel-in-progress: true/);
+  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ github\.run_id \}\}\n\s+cancel-in-progress: false/);
   assert.match(workflow,/title='Roblox runtime foundation QA · '\+\(game\|\|'scan'\)/);
   assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
@@ -2295,7 +2295,7 @@ test('mcp-run checks current main head before any Studio MCP play call',()=>{
 });
 
 test('Roblox foundation scan concurrency is stable across main SHAs and force-cancels stale queued Studio runs',()=>{
-  assert.match(workflow,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
+  assert.match(workflow,/group: roblox-runtime-foundation-\$\{\{ github\.run_id \}\}/);
   assert.doesNotMatch(workflow,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| github\.sha \}\}/);
   assert.match(workflow,/actions\/runs\/\$run_id\/force-cancel/);
   assert.match(workflow,/ROBLOX_STALE_FOUNDATION_RUN_FORCE_CANCEL_REQUESTED/);
@@ -2432,4 +2432,13 @@ test('zero-floor Studio abort routes exact artifact to WORLD_GEOMETRY repair',()
   assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
   assert.equal(applied.item.robloxFailureSignature,'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED');
   assert.ok(applied.item.robloxQualityBuildUpEvidence.repairSurfaces.includes('WORLD_GEOMETRY'));
+});
+
+
+test('active Studio runs survive new requests and only duplicate immutable artifacts share a slot',()=>{
+  assert.match(workflow,/group: roblox-studio-artifact-\$\{\{ matrix\.gameId \}\}-\$\{\{ matrix\.sourceRevision \}\}-\$\{\{ matrix\.artifactIdentity \}\}/);
+  const preserve=workflow.indexOf('ROBLOX_ACTIVE_STUDIO_RUN_PRESERVED=');
+  const cancel=workflow.indexOf('actions/runs/$run_id/cancel');
+  assert.ok(preserve>0&&preserve<cancel);
+  assert.match(workflow,/const states=new Set\(\['queued','pending','requested'\]\)/);
 });

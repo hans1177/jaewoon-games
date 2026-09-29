@@ -1966,3 +1966,17 @@ test('commercial Studio deep audit execution rules stay locked',()=>{
     'F9_SOAK_MEMORY_AND_INSTANCE_TREND'
   ])assert.ok(contract.requiredAxes.includes(axis),axis);
 });
+
+test('central document has a bounded current-policy budget and archives historical records in git',()=>{
+  const file='company-learning/platform-release-roadmap.json';
+  const current=JSON.parse(fs.readFileSync(file,'utf8'));
+  const policy=current.centralDocumentRetention;
+  assert.equal(policy.maxUtf8Bytes,1100000);
+  assert.ok(Object.keys(current.changeRecord).length<=policy.maxChangeRecordEntries);
+  assert.ok(fs.statSync(file).size<=policy.maxUtf8Bytes,'Archive obsolete run history before expanding the central document');
+  assert.equal(policy.historicalExecutionLogsAuthority,'GIT_HISTORY');
+  assert.match(policy.archivedChangeRecordCommit,/^[0-9a-f]{40}$/);
+  assert.equal(policy.currentOwnerRulesMustRemain,true);
+  assert.equal(policy.f0ThroughF9MustRemain,true);
+  assert.equal(policy.publicationApprovalMustRemain,true);
+});
