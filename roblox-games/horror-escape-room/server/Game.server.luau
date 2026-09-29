@@ -1134,7 +1134,9 @@ local function startRound()
   local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
   if role=="MONSTER"then teleport(p,monsterSpawn+Vector3.new((mi-1)*6,0,0));mi+=1 else teleport(p,survivorSpawns[((si-1)%#survivorSpawns)+1]);si+=1 end
  end
- configure(h);state="RUNNING";timeLeft=C.RoundSeconds;syncLobbyState("RUNNING");return true
+ configure(h)
+ local startHumans,startMonsters=teamCounts();pressureLastCounts.SURVIVOR=startHumans;pressureLastCounts.MONSTER=startMonsters
+ state="RUNNING";timeLeft=C.RoundSeconds;syncLobbyState("RUNNING");return true
 end
 local function endRound(winner)
  if state~="RUNNING"then return end;state="RESULT";syncLobbyState("RESULT")
@@ -1455,14 +1457,44 @@ task.spawn(function()
    end
    if startRound()then
     while state=="RUNNING"and timeLeft>0 do
-     local regen=math.max(0,tonumber(C.Energy and C.Energy.RegenPerSecond)or 10)*.25
-     for _,p in ipairs(Players:GetPlayers())do
-      local role=p:GetAttribute("Role")
-      if role=="SURVIVOR"or role=="MONSTER"then setEnergy(p,energyOf(p)+regen)end
-     end
      local humans,monsters=teamCounts();workspace:SetAttribute("HumanCount",humans);workspace:SetAttribute("MonsterCount",monsters)
      if humans==0 then endRound("MONSTER");break end
      if monsters==0 then endRound("SURVIVOR");break end
+
+     local baseRegen=math.max(0,tonumber(C.Energy and C.Energy.RegenPerSecond)or 10)*.25
+     for _,p in ipairs(Players:GetPlayers())do
+      local role=p:GetAttribute("Role")
+      if role=="SURVIVOR"or role=="MONSTER"then
+       local pressure=pressurePassiveFor(role,humans,monsters)
+       local mult=math.max(1,tonumber(pressure and pressure.RegenMultiplier)or 1)
+       setEnergy(p,energyOf(p)+baseRegen*mult)
+       p:SetAttribute("PressurePassive",pressure and tostring(pressure.Label or"열세 보정")or"")
+      else
+       p:SetAttribute("PressurePassive","")
+      end
+     end
+     for _,b in ipairs(bots)do
+      local pressure=pressurePassiveFor(b.role,humans,monsters)
+      local mult=math.max(1,tonumber(pressure and pressure.RegenMultiplier)or 1)
+      b.energy=math.clamp((tonumber(b.energy)or energyMax())+baseRegen*mult,0,energyMax())
+     end
+
+     if humans==1 and pressureLastCounts.SURVIVOR>1 then
+      local row=pressurePassiveFor("SURVIVOR",humans,monsters);local bonus=math.max(0,tonumber(row and row.LastStandEnergy)or 0)
+      if bonus>0 then
+       for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="SURVIVOR"then setEnergy(p,energyOf(p)+bonus);p:SetAttribute("EnergyFeedback","LAST_STAND:"..tostring(math.floor(bonus)))end end
+       for _,b in ipairs(bots)do if b.role=="SURVIVOR"then b.energy=math.min(energyMax(),(b.energy or 0)+bonus)end end
+      end
+     end
+     if monsters==1 and pressureLastCounts.MONSTER>1 then
+      local row=pressurePassiveFor("MONSTER",humans,monsters);local bonus=math.max(0,tonumber(row and row.LastStandEnergy)or 0)
+      if bonus>0 then
+       for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="MONSTER"then setEnergy(p,energyOf(p)+bonus);p:SetAttribute("EnergyFeedback","LAST_STAND:"..tostring(math.floor(bonus)))end end
+       for _,b in ipairs(bots)do if b.role=="MONSTER"then b.energy=math.min(energyMax(),(b.energy or 0)+bonus)end end
+      end
+     end
+     pressureLastCounts.SURVIVOR=humans;pressureLastCounts.MONSTER=monsters
+
      for _,p in ipairs(Players:GetPlayers())do p:SetAttribute("TimeLeft",math.ceil(timeLeft));p:SetAttribute("HumanCount",humans);p:SetAttribute("MonsterCount",monsters);p:SetAttribute("AliveCount",humans)end
      task.wait(.25);timeLeft-=.25
     end
