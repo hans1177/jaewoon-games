@@ -674,6 +674,7 @@ energyLabel.TextSize=10
 energyLabel.Font=Enum.Font.GothamBold
 energyLabel.TextXAlignment=Enum.TextXAlignment.Right
 energyLabel.ZIndex=12
+energyLabel.Text="에너지 100/100"
 energyLabel.Parent=hud
 
 local pressureLabel=Instance.new("TextLabel")
@@ -1737,7 +1738,7 @@ RunService.RenderStepped:Connect(function(dt)
  local energy=math.max(0,tonumber(p:GetAttribute("Energy"))or 0)
  local maxEnergy=math.max(1,tonumber(p:GetAttribute("EnergyMax"))or tonumber(C.Energy and C.Energy.Max)or 100)
  energyFill.Size=UDim2.fromScale(math.clamp(energy/maxEnergy,0,1),1)
- energyLabel.Text=string.format("에너지 %d",math.floor(energy+.5))
+ energyLabel.Text=string.format("에너지 %d/%d",math.floor(energy+.5),math.floor(maxEnergy+.5))
  local pressure=tostring(p:GetAttribute("PressurePassive")or"")
  pressureLabel.Text=pressure~=""and("열세 패시브 · "..pressure)or""
  pressureLabel.Visible=pressure~=""and p:GetAttribute("RoundState")=="RUNNING"
@@ -2026,6 +2027,9 @@ local function render()
  if roomSlotsPanel.Visible then refreshRoomSlots()end
  ruleCard.Visible=setupPanel.Visible and not selectionConfirmed
  actionDock.Visible=running
+ energyTrack.Visible=true
+ energyFill.Visible=true
+ energyLabel.Visible=true
  mapPanel.Visible=running
  spectatorPanel.Visible=spectating
  resultPanel.Visible=resultCode~=nil
