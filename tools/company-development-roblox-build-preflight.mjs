@@ -1,3 +1,4 @@
+// 파일명: tools/company-development-roblox-build-preflight.mjs
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -38,7 +39,7 @@ export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwner
   const sourceRevision=clean(secondary?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit);
   const buildSourceRevision=clean(secondary?item.ownerFocusRobloxBuildSourceRevision:item.robloxBuildSourceRevision);
   const artifactIdentity=clean(secondary?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity);
-  if(upper(item.productionClass)!=='DEVELOPMENT_CONFIRMED')blockers.push('development-confirmed-required');
+  if(!['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(upper(item.productionClass)))blockers.push('confirmed-production-class-required');
   if(!secondary&&!robloxLaneEligible)blockers.push('roblox-platform-required');
   if(!buildOrPackagePassed)blockers.push('build-package-not-passed');
   if(!COMMIT.test(sourceRevision))blockers.push('source-revision-invalid');

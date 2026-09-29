@@ -1,3 +1,4 @@
+// 파일명: tools/company-development-roblox-studio-local-play.mjs
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -3434,7 +3435,7 @@ async function main(){
     return;
   }
   if(mode==='mcp-run'){
-    const headGuard=assertCurrentStudioWorkflowHead();
+    const headGuard=assertCurrentStudioWorkflowHead({workflowSha:clean(a['control-revision'])||clean(process.env.GITHUB_SHA)});
     console.log('ROBLOX_STUDIO_WORKFLOW_HEAD_FRESH=YES:'+headGuard.checkoutSha);
     const result=await runOfficialStudioMcpPlay({
       mcpCommand:clean(a['mcp-command']),

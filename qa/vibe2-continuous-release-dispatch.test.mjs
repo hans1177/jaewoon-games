@@ -1,3 +1,4 @@
+// 파일명: qa/vibe2-continuous-release-dispatch.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -157,14 +158,15 @@ test('Vibe2 runtime design overlay never runs git inside the archived main snaps
   assert.equal(workflow.split('git -C /tmp/vibe2-main').length-1,0);
 });
 
-test('platform release dispatch is emitted only after fan-in F9 selection',()=>{
+test('platform review cannot claim native runtime F9 before platform verification',()=>{
   const fanInReview=fs.readFileSync('tools/vibe2-fan-in-review.mjs','utf8');
-  assert.match(fanInReview,/releaseCandidates\.push\(\{taskId:clean\(task\.id\),candidateBranch,target:platformTarget,gameId:clean\(task\.gameId\),f0ToF9Verified:platformTarget==='web'\?true:undefined,f9Verified:true\}\)/);
+  assert.match(fanInReview,/releaseCandidates\.push\(\{taskId:clean\(task\.id\),candidateBranch,target:platformTarget,gameId:clean\(task\.gameId\),f0ToF9Verified:platformTarget==='web',f9Verified:platformTarget==='web'\}\)/);
   const dispatch=workflow.slice(
     workflow.indexOf('      - name: Dispatch reviewed winner candidates to release gate'),
     workflow.indexOf('      - name: Dispatch verified system architecture candidates')
   );
-  assert.match(dispatch,/PLATFORM_F9_VERIFIED=/);
+  assert.match(dispatch,/if \[ \"\$target\" = web \]; then/);
+  assert.match(dispatch,/PLATFORM_RUNTIME_VERIFICATION_REQUIRED=/);
   assert.match(dispatch,/PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED=/);
 });
 
@@ -196,4 +198,25 @@ test('Roblox generic candidate release cannot publish canonical Open Cloud befor
   assert.match(section,/ROBLOX_CANONICAL_SERVER_PUBLISH_OWNER=F9_FINAL_REVIEW_ONLY/);
   assert.doesNotMatch(section,/vibe3-roblox-platform\.mjs[^\n]*--execute/);
   assert.doesNotMatch(section,/roblox-open-cloud-published/);
+});
+
+
+test('Roblox candidate build and Studio verification precede promotion without publishing candidate state',()=>{
+  const native=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
+  const packageStart=releaseWorkflow.indexOf('  roblox-package:');
+  const studioStart=releaseWorkflow.indexOf('  roblox-studio:');
+  const promoteStart=releaseWorkflow.indexOf('  roblox-release:');
+  assert.ok(packageStart>0&&packageStart<studioStart&&studioStart<promoteStart);
+  const build=releaseWorkflow.slice(packageStart,studioStart);
+  assert.match(build,/company-development-roblox-package\.mjs/);
+  assert.match(build,/company-development-roblox-build-preflight\.mjs/);
+  assert.match(build,/company-development-roblox-headless-fast-mvp\.mjs/);
+  assert.doesNotMatch(build,/gh pr merge|git push/);
+  assert.match(releaseWorkflow.slice(promoteStart),/needs: \[inspect, roblox-package, roblox-studio\]/);
+  assert.match(releaseWorkflow.slice(promoteStart),/stage:'SOURCE_PROMOTION'/);
+  assert.match(native,/candidate must schedule exactly one Studio playtest/);
+  assert.match(native,/ROBLOX_CANDIDATE_STUDIO_CANONICAL_WRITE=NO'[\s\S]*?exit 0[\s\S]*?git -C runtime config/);
+  assert.match(native,/candidate_context == '' && steps\.studio_play/);
+  const followup=native.slice(native.indexOf('      - name: Dispatch exact Studio MCP follow-up'),native.indexOf('      - name: Enforce persistent Open Cloud probe failures'));
+  assert.doesNotMatch(followup,/if: \$\{\{ false \}\}/);
 });

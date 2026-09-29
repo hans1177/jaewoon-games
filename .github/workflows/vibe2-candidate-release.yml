@@ -1,3 +1,4 @@
+# 파일명: .github/workflows/vibe2-candidate-release.yml
 name: Vibe2 Candidate Release Gate
 
 on:
@@ -28,6 +29,7 @@ jobs:
     timeout-minutes: 6
     outputs:
       decision: ${{ steps.gate.outputs.decision }}
+      control_sha: ${{ steps.gate.outputs.control_sha }}
       reason: ${{ steps.gate.outputs.reason }}
       task_id: ${{ steps.gate.outputs.task_id }}
       game_id: ${{ steps.gate.outputs.game_id }}
@@ -56,6 +58,7 @@ jobs:
         run: |
           set -euo pipefail
           git fetch origin main --quiet
+          echo "control_sha=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
           candidate_sha="$(git rev-parse HEAD)"
           echo "candidate_sha=$candidate_sha" >> "$GITHUB_OUTPUT"
           echo "candidate_branch=$SUBMITTED_CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
@@ -582,9 +585,132 @@ jobs:
           echo "VIBE2_EVENT_DRIVEN_DEPENDENCY_REFILL=${TASK_ID:-NONE}:${result:-QUEUE_UPDATED}"
           exit 1
 
-  roblox-release:
+  roblox-package:
     needs: inspect
     if: needs.inspect.outputs.decision == 'roblox'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GAME_ID: ${{ needs.inspect.outputs.game_id }}
+      SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
+      CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+      PRODUCTION_CLASS: ${{ needs.inspect.outputs.production_class }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.inspect.outputs.control_sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare isolated candidate build inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GAME_ID" =~ ^[a-zA-Z0-9_-]+$ ]]
+          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$SOURCE_ROOT" = "roblox-games/$GAME_ID"
+          git fetch origin "$CANDIDATE_SHA" company-runtime:refs/remotes/origin/company-runtime --quiet
+          mkdir -p /tmp/roblox-candidate/context /tmp/roblox-candidate/package/packages /tmp/roblox-candidate/package/results
+          git show origin/company-runtime:development-queue.json > /tmp/roblox-candidate/runtime.json
+          node <<'NODE'
+          const fs=require('fs'),cp=require('child_process');
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-candidate/runtime.json','utf8'));
+          const old=q.items.find(x=>x.gameId===process.env.GAME_ID);
+          if(!old)throw Error('candidate game missing from canonical queue');
+          const baselinePath=String(old.designBaselineSource||'');
+          if(!baselinePath||baselinePath.includes('..'))throw Error('canonical design baseline missing');
+          const baseline=JSON.parse(cp.execFileSync('git',['show','origin/company-runtime:'+baselinePath],{encoding:'utf8'}));
+          fs.writeFileSync('/tmp/roblox-candidate/baseline.json',JSON.stringify(baseline));
+          const item={gameId:old.gameId,status:'ACTIVE',productionClass:process.env.PRODUCTION_CLASS,selectedPlatform:old.selectedPlatform,targetPlatform:old.targetPlatform,platformExecutionMode:old.platformExecutionMode,concurrentTargetPlatforms:old.concurrentTargetPlatforms,designBaselineSource:baselinePath,robloxSourceCommit:process.env.CANDIDATE_SHA,robloxProjectPath:process.env.SOURCE_ROOT,robloxInternalVibePlayEvidence:old.robloxInternalVibePlayEvidence||null};
+          fs.writeFileSync('/tmp/roblox-candidate/context/development-queue.json',JSON.stringify({items:[item]}));
+          let launch;
+          try{launch=JSON.parse(cp.execFileSync('git',['show',process.env.CANDIDATE_SHA+':'+process.env.SOURCE_ROOT+'/launch-mvp.json'],{encoding:'utf8',stdio:['ignore','pipe','ignore']}));}
+          catch{launch={launchCore:[JSON.stringify(baseline)]};}
+          launch.launchCore=[...(Array.isArray(launch.launchCore)?launch.launchCore:[]),'mobile UI, loading, lobby, tutorial, objective, retry, multiplayer sync, late join'];
+          fs.writeFileSync('/tmp/roblox-candidate/context/launch-mvp.json',JSON.stringify(launch));
+          NODE
+      - name: Install pinned build and source validation tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rojo-bin /tmp/luau-bin
+          curl -fsSL --retry 3 -o /tmp/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
+          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
+          curl -fsSL --retry 3 -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+          echo '8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247  /tmp/luau.zip' | sha256sum -c -
+          unzip -q /tmp/luau.zip -d /tmp/luau-bin
+          chmod +x /tmp/rojo-bin/rojo /tmp/luau-bin/luau-compile
+      - name: Build candidate package before runtime verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-development-roblox-package.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_ROOT" --source-revision="$CANDIDATE_SHA" --baseline=/tmp/roblox-candidate/baseline.json --rojo=/tmp/rojo-bin/rojo --output-dir=/tmp/roblox-candidate/package/packages --evidence=/tmp/roblox-candidate/package/results/build.json
+          node <<'NODE'
+          const fs=require('fs');const file='/tmp/roblox-candidate/context/development-queue.json';
+          const q=JSON.parse(fs.readFileSync(file)),build=JSON.parse(fs.readFileSync('/tmp/roblox-candidate/package/results/build.json'));
+          if(build.buildOrPackagePassed!==true||build.sourceRevision!==process.env.CANDIDATE_SHA)throw Error('candidate package invalid');
+          Object.assign(q.items[0],{robloxBuildOrPackagePassed:true,robloxBuildSourceRevision:build.sourceRevision,robloxBuildArtifactIdentity:build.artifactIdentity});
+          fs.writeFileSync(file,JSON.stringify(q));
+          NODE
+      - uses: ./.github/actions/prepare-ollama
+        with:
+          model: 'llama3.2:1b'
+          version: '0.33.3'
+          pull-model: 'true'
+          department-role: development
+          cache-model: 'true'
+      - name: Verify candidate package with existing preflight and full Luau compilation
+        shell: bash
+        run: |
+          set -euo pipefail
+          model="$(node -e "const d=require('./company-directive.json');console.log(d.ai.robloxPreflightModel||d.ai.departmentLeadModels?.development||'llama3.2:1b')")"
+          ollama pull "$model"
+          node tools/company-development-roblox-build-preflight.mjs --game-id="$GAME_ID" --queue=/tmp/roblox-candidate/context/development-queue.json --directive=company-directive.json --output=/tmp/roblox-candidate/package/results/preflight.json
+          mkdir -p /tmp/roblox-candidate/source
+          git archive "$CANDIDATE_SHA" "$SOURCE_ROOT" | tar -x -C /tmp/roblox-candidate/source
+          mapfile -d '' scripts < <(find "/tmp/roblox-candidate/source/$SOURCE_ROOT" -type f \( -name '*.luau' -o -name '*.lua' \) -print0)
+          [ "${#scripts[@]}" -gt 0 ]
+          for file in "${scripts[@]}"; do /tmp/luau-bin/luau-compile "$file" >/dev/null; done
+          identity="$(node -e "console.log(require('/tmp/roblox-candidate/package/results/build.json').artifactIdentity)")"
+          node tools/company-development-roblox-headless-fast-mvp.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_ROOT" --source-revision="$CANDIDATE_SHA" --artifact-identity="$identity" --rebuilt-artifact-identity="$identity" --artifact-run-id="$GITHUB_RUN_ID" --native-language-compile-passed=true --native-compiler-version=0.739 --output=/tmp/roblox-candidate/package/results/f0.json
+          node <<'NODE'
+          const fs=require('fs');const file='/tmp/roblox-candidate/context/development-queue.json';
+          const q=JSON.parse(fs.readFileSync(file)),i=q.items[0],read=name=>JSON.parse(fs.readFileSync('/tmp/roblox-candidate/package/results/'+name+'.json'));
+          const pre=read('preflight'),f0=read('f0');
+          for(const e of [pre,f0])if(e.pass!==true||e.sourceRevision!==i.robloxSourceCommit||e.artifactIdentity!==i.robloxBuildArtifactIdentity)throw Error('candidate preflight identity mismatch');
+          Object.assign(i,{currentStep:'CANDIDATE_F9_STUDIO_REVIEW',robloxBuildPreflightPassed:true,robloxBuildPreflightEvidence:pre,robloxFoundationF0Passed:true,robloxFoundationF0Evidence:f0});
+          const launchFile='/tmp/roblox-candidate/context/launch-mvp.json',launch=JSON.parse(fs.readFileSync(launchFile));
+          if(f0.saveExists===true)launch.launchCore.push('save and rejoin persistence');
+          fs.writeFileSync(launchFile,JSON.stringify(launch));fs.writeFileSync(file,JSON.stringify(q));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: development-roblox-package-${{ needs.inspect.outputs.game_id }}
+          path: /tmp/roblox-candidate/package
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: roblox-candidate-context-${{ needs.inspect.outputs.game_id }}
+          path: /tmp/roblox-candidate/context
+          if-no-files-found: error
+          retention-days: 7
+
+  roblox-studio:
+    needs: [inspect, roblox-package]
+    if: needs.inspect.outputs.decision == 'roblox'
+    uses: ./.github/workflows/company-development-roblox-post-runtime-qa.yml
+    with:
+      game_id: ${{ needs.inspect.outputs.game_id }}
+      candidate_revision: ${{ needs.inspect.outputs.candidate_sha }}
+      control_revision: ${{ needs.inspect.outputs.control_sha }}
+      candidate_context: roblox-candidate-context-${{ needs.inspect.outputs.game_id }}
+
+  roblox-release:
+    needs: [inspect, roblox-package, roblox-studio]
+    if: always() && needs.inspect.outputs.decision == 'roblox'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -600,29 +726,41 @@ jobs:
       - name: Checkout trusted V3 control plane
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ needs.inspect.outputs.control_sha }}
           path: .vibe3-control
           fetch-depth: 1
+
+      - name: Download exact candidate Studio result
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: roblox-candidate-studio-${{ needs.inspect.outputs.game_id }}
+          path: /tmp/roblox-candidate-studio
 
       - name: Validate exact Roblox release evidence
         id: validate
         continue-on-error: true
         env:
-          SOURCE_ROOT: ${{ needs.inspect.outputs.source_root }}
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
           CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+          PACKAGE_RESULT: ${{ needs.roblox-package.result }}
+          STUDIO_RESULT: ${{ needs.roblox-studio.result }}
         shell: bash
         run: |
           set -euo pipefail
-          evidence="$SOURCE_ROOT/roblox-technical-validation.json"
-          test -f "$evidence"
-          mapfile -t place_files < <(find "$SOURCE_ROOT" -type f \( -name '*.rbxl' -o -name '*.rbxlx' \) | sort)
-          [ "${#place_files[@]}" -eq 1 ]
-          place_file="${place_files[0]}"
-          node .vibe3-control/tools/vibe3-roblox-platform.mjs --place-file "$place_file" --evidence "$evidence" --source-revision "$CANDIDATE_SHA" | tee /tmp/roblox-release-plan.log
-          grep -q '^ROBLOX_V3_STATE=READY$' /tmp/roblox-release-plan.log
-          echo "place_file=$place_file" >> "$GITHUB_OUTPUT"
-          echo "evidence_file=$evidence" >> "$GITHUB_OUTPUT"
-          echo 'ROBLOX_EXACT_RELEASE_EVIDENCE=PASS'
+          test "$PACKAGE_RESULT" = success
+          test "$STUDIO_RESULT" = success
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {validateRobloxReleaseEvidence} from './.vibe3-control/tools/vibe3-roblox-platform.mjs';
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-candidate-studio/development-queue.json','utf8'));
+          const item=q.items?.[0];
+          if(q.items?.length!==1||item.gameId!==process.env.GAME_ID)throw Error('candidate result game mismatch');
+          const gate=validateRobloxReleaseEvidence(item,process.env.CANDIDATE_SHA,{stage:'SOURCE_PROMOTION'});
+          if(!gate.pass)throw Error(gate.blockedReasons.join('|'));
+          console.log('ROBLOX_EXACT_CANDIDATE_STUDIO_EVIDENCE=PASS');
+          console.log('ROBLOX_FINAL_PUBLICATION_CLAIM=NO');
+          NODE
 
       - name: Promote verified Roblox source root through reviewed PR
         id: promote

@@ -1,3 +1,4 @@
+// 파일명: qa/company-development-roblox-studio-local-play.test.mjs
 import crypto from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -2259,7 +2260,7 @@ test('stale Studio workflow runs abort before opening Studio',()=>{
 
 test('mcp-run checks current main head before any Studio MCP play call',()=>{
   const mainAt=helper.indexOf("if(mode==='mcp-run')");
-  const guardAt=helper.indexOf('assertCurrentStudioWorkflowHead()',mainAt);
+  const guardAt=helper.indexOf('assertCurrentStudioWorkflowHead({workflowSha:',mainAt);
   const playAt=helper.indexOf('runOfficialStudioMcpPlay({',mainAt);
   assert.ok(mainAt>=0&&guardAt>mainAt&&playAt>guardAt);
   assert.match(helper,/ROBLOX_STUDIO_WORKFLOW_HEAD_FRESH=YES/);

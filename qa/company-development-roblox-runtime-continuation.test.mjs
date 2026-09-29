@@ -1,3 +1,4 @@
+// 파일명: qa/company-development-roblox-runtime-continuation.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -40,6 +41,8 @@ test('shared preflight requires exact immutable build and one shared model',()=>
   assert.equal(result.pass,true,result.blockers.join(','));
   assert.equal(result.distinctLeadCount,1);
   assert.equal(result.sharedModel,'llama3.2:1b');
+  assert.equal(inspectRobloxBuildPreflight({item:{...item,productionClass:'RELEASE_CONFIRMED'},directive}).pass,true);
+  assert.equal(inspectRobloxBuildPreflight({item:{...item,productionClass:'DESIGN_ONLY'},directive}).pass,false);
 });
 
 test('shared preflight admits canonical Roblox Unity concurrent lane without changing selected platform',()=>{
