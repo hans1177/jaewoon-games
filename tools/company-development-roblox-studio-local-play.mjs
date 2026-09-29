@@ -420,7 +420,8 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
     const artifactRunId=candidateArtifactRunId;
 
     const requiredAuditProfile=(
-      item?.robloxF9ReleaseRegressionPassed===true
+      scenarioContract.multiplayerRequired===true
+      ||item?.robloxF9ReleaseRegressionPassed===true
       ||/FINAL_REVIEW|RELEASE|F9/i.test(clean(item?.currentStep))
     )?'F9_SOAK':'FAST_DEEP';
     const priorAuditProfile=clean(prior?.runtimeSummary?.commercialAudit?.auditProfile||prior?.auditProfile||'FAST_DEEP').toUpperCase();
@@ -1757,6 +1758,7 @@ class McpStdioClient{
   }
   async connect(){
     this.child=spawn(this.command,this.args,{stdio:['pipe','pipe','pipe'],windowsHide:true,env:this.env,shell:false});
+    console.log('ROBLOX_STUDIO_MCP_TRANSPORT_PROCESS='+JSON.stringify({processId:this.child.pid,parentProcessId:process.pid,startedAt:new Date().toISOString()}));
     this.child.stderr.setEncoding('utf8');
     this.child.stderr.on('data',chunk=>{
       const value=String(chunk||'');
