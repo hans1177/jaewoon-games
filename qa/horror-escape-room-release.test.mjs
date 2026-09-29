@@ -329,13 +329,15 @@ test('중도 입장과 이탈은 다음 라운드 관전 및 AI 보충으로 복
 });
 
 
-test('승리 결과는 팀 세레머니와 맵별 코믹 문구로 확실하게 마무리된다',()=>{
+test('승리 결과는 서버가 확정한 코믹 팀 세레머니로 마무리된다',()=>{
  assert.match(client,/Name="TeamCeremony"/);
  assert.match(client,/local function playResultCeremony\(resultCode\)/);
  assert.match(client,/CELEBRATE_HUMAN/);
  assert.match(client,/CELEBRATE_MONSTER/);
  assert.match(client,/CELEBRATE_DRAW/);
- for(const marker of ['야자 탈출 성공','진료 결과: 감염 확정','오늘의 마지막 손님까지 감염 완료'])assert.ok(client.includes(marker),marker);
+ assert.match(server,/local function chooseCelebration\(winner\)/);
+ assert.match(server,/CelebrationName/);
+ assert.match(server,/CelebrationCaption/);
  assert.doesNotMatch(client,/playResultCeremony\([\s\S]{0,600}FireServer/);
 });
 
@@ -381,16 +383,22 @@ test('승리 세레머니는 결과 단계 전용이며 서버가 팀과 랜덤 
 });
 
 
-test('맵 목격 도감은 실제 근접 검증 후 저장하고 경쟁 보상을 주지 않는다',()=>{
- assert.match(config,/Discoveries=\{/);
- assert.match(config,/DISCOVERY_FOUND="DISCOVERY_FOUND"/);
- assert.match(server,/local function reportDiscovery\(p,id\)/);
- assert.match(server,/SurpriseTrigger_"\.\.id/);
+test('초기 세계 괴담 도감은 12종 3단계이며 서버 근접 검증을 사용한다',()=>{
+ const catalog=config.slice(config.indexOf('GhostCatalog={'),config.indexOf('GhostTitles={'));
+ const ids=[...catalog.matchAll(/\{Id="([^"]+)"/g)].map(x=>x[1]);
+ assert.equal(ids.length,12);
+ assert.match(config,/MaxStage=3/);
+ assert.match(config,/MaxSightingsPerRound=2/);
+ assert.match(config,/GHOST_SIGHTING_FOUND="GHOST_SIGHTING_FOUND"/);
+ assert.match(server,/local function reportGhostSighting\(p,id\)/);
+ assert.match(server,/GhostSighting_"\.\.id/);
  assert.match(server,/Magnitude>radius then return/);
- assert.match(server,/DiscoveredSurprises=discoveredList/);
- assert.match(client,/FireServer\(C\.Actions\.DISCOVERY_FOUND,discoveryId\)/);
- const reportBlock=server.slice(server.indexOf('local function reportDiscovery'),server.indexOf('local function validRemoteAction'));
- assert.doesNotMatch(reportBlock,/Coins|Energy|WalkSpeed|Damage|RoundScore/);
+ assert.match(server,/GhostProgress=ghostProgressSave/);
+ assert.match(client,/FireServer\(C\.Actions\.GHOST_SIGHTING_FOUND,ghostId\)/);
+ for(const marker of ['YUREI','BANSHEE','DULLAHAN','BLACK_SHUCK'])assert.ok(catalog.includes('Id="'+marker+'"'),marker);
+ assert.match(catalog,/Playable=false/);
+ const reportBlock=server.slice(server.indexOf('local function reportGhostSighting'),server.indexOf('local function validRemoteAction'));
+ assert.doesNotMatch(reportBlock,/WalkSpeed|Damage|RoundScore/);
 });
 
 test('괴담 메모는 읽는 수집품이며 칭호 외 경쟁 보상이 없다',()=>{
@@ -400,4 +408,39 @@ test('괴담 메모는 읽는 수집품이며 칭호 외 경쟁 보상이 없다
  assert.match(client,/괴담 메모 발견/);
  const loreBlock=server.slice(server.indexOf('local function addLoreCollectible'),server.indexOf('local function addObjectiveStation'));
  assert.doesNotMatch(loreBlock,/Coins|Energy|WalkSpeed|Damage|RoundScore/);
+});
+
+
+test('1인 방 생성과 방장 시작은 8인 AI 충원 계약을 유지한다',()=>{
+ assert.match(config,/MinimumParticipants=1/);
+ assert.match(config,/Room=\{MaxPlayers=8/);
+ for(const action of ['CREATE_ROOM','JOIN_ROOM_CODE','QUICK_JOIN_PUBLIC','QUICK_JOIN_FRIEND','START_ROOM','LEAVE_ROOM'])assert.ok(config.includes(action+'="'+action+'"'),action);
+ assert.match(server,/local function createReservedRoom\(p,visibility\)/);
+ assert.match(server,/local function startRoomMatch\(p\)/);
+ assert.match(server,/#Players:GetPlayers\(\)<math\.max\(1,tonumber\(C\.MinimumParticipants\)or 1\)/);
+ assert.match(server,/configure\(h\)/);
+ assert.match(client,/Name="RoomBrowser"/);
+ assert.match(client,/1명부터 시작 가능 · 최대 8명 · 빈자리는 AI/);
+});
+
+test('예약 방은 공개 친구만 비공개를 서버가 검증하고 예약 코드를 클라이언트에 노출하지 않는다',()=>{
+ for(const visibility of ['PUBLIC','FRIENDS','PRIVATE'])assert.ok(config.includes('"'+visibility+'"'),visibility);
+ assert.match(server,/TeleportService:ReserveServerAsync\(game\.PlaceId\)/);
+ assert.match(server,/options\.ReservedServerAccessCode=record\.accessCode/);
+ assert.match(server,/p:IsFriendsWithAsync/);
+ assert.match(server,/visibility=="PRIVATE"and explicitCode~=true/);
+ assert.doesNotMatch(client,/ReservedServerAccessCode|accessCode/);
+});
+
+test('방장 이탈은 대기방에서 다음 실제 유저에게 승계된다',()=>{
+ assert.match(server,/local leavingWasHost=roomServer and p\.UserId==roomHostUserId/);
+ assert.match(server,/table\.sort\(remaining/);
+ assert.match(server,/roomHostUserId=nextHost\.UserId/);
+ assert.match(server,/RoomIsHost/);
+});
+
+test('Studio 방 검증은 TeleportService 대신 로컬 fallback을 사용한다',()=>{
+ assert.match(server,/local studioRoomFallback=RunService:IsStudio\(\)/);
+ assert.match(server,/workspace:SetAttribute\("StudioRoomFallback",true\)/);
+ assert.match(server,/roomCode="000001"/);
 });
