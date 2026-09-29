@@ -10,6 +10,7 @@ local SoundService=game:GetService("SoundService")
 local RunService=game:GetService("RunService")
 local ContentProvider=game:GetService("ContentProvider")
 local TweenService=game:GetService("TweenService")
+local Debris=game:GetService("Debris")
 
 -- 참조
 local touchEnabled=UserInputService.TouchEnabled
@@ -635,6 +636,172 @@ objectiveLine.TextSize=10
 objectiveLine.Font=Enum.Font.GothamBold
 objectiveLine.TextXAlignment=Enum.TextXAlignment.Left
 objectiveLine.Parent=hud
+
+-- 구석 놀람/코믹 연출: 로컬에서만 생성되며 경쟁 판정에는 관여하지 않는다.
+local surpriseArena=nil
+local surpriseTriggers={}
+local surpriseSeen={}
+local surpriseClock=0
+
+local function localPart(name,size,cframe,color,material,shape)
+ local x=Instance.new("Part")
+ x.Name=name
+ x.Size=size
+ x.CFrame=cframe
+ x.Color=color
+ x.Material=material or Enum.Material.SmoothPlastic
+ x.Anchored=true
+ x.CanCollide=false
+ x.CanTouch=false
+ x.CanQuery=false
+ x.CastShadow=false
+ if shape then x.Shape=shape end
+ x.Parent=workspace
+ return x
+end
+
+local function localText(pos,text,color,duration)
+ local anchorPart=localPart("LocalSurpriseTextAnchor",Vector3.new(.2,.2,.2),CFrame.new(pos),Color3.new(1,1,1),Enum.Material.SmoothPlastic)
+ anchorPart.Transparency=1
+ local bill=Instance.new("BillboardGui")
+ bill.Size=UDim2.fromOffset(260,56)
+ bill.StudsOffset=Vector3.new(0,2.2,0)
+ bill.AlwaysOnTop=true
+ bill.Parent=anchorPart
+ local label=Instance.new("TextLabel")
+ label.Size=UDim2.fromScale(1,1)
+ label.BackgroundColor3=Color3.fromRGB(14,16,22)
+ label.BackgroundTransparency=.18
+ label.TextColor3=color or Color3.fromRGB(235,238,244)
+ label.TextStrokeTransparency=.65
+ label.TextSize=15
+ label.TextWrapped=true
+ label.Font=Enum.Font.GothamBold
+ label.Text=text
+ label.Parent=bill
+ roundify(label,10)
+ Debris:AddItem(anchorPart,duration or 2.2)
+ return anchorPart
+end
+
+local function tweenParts(parts,offset,duration)
+ for _,part in ipairs(parts)do
+  if part and part.Parent then
+   TweenService:Create(part,TweenInfo.new(duration or .65,Enum.EasingStyle.Quad,Enum.EasingDirection.InOut),{CFrame=part.CFrame+CFrame.new(offset)}):Play()
+  end
+ end
+end
+
+local function playSchoolShadow(trigger)
+ local pos=trigger.Position+Vector3.new(-8,1.5,0)
+ local body=localPart("LocalSchoolShadowBody",Vector3.new(2.8,5.4,1.7),CFrame.new(pos),Color3.fromRGB(12,12,16),Enum.Material.SmoothPlastic)
+ local head=localPart("LocalSchoolShadowHead",Vector3.new(2.2,2.2,2.2),CFrame.new(pos+Vector3.new(0,3.6,0)),Color3.fromRGB(10,10,13),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ local eyeL=localPart("LocalSchoolShadowEye",Vector3.new(.22,.22,.18),CFrame.new(pos+Vector3.new(-.35,3.7,-1.08)),Color3.fromRGB(220,64,72),Enum.Material.Neon)
+ local eyeR=localPart("LocalSchoolShadowEye",Vector3.new(.22,.22,.18),CFrame.new(pos+Vector3.new(.35,3.7,-1.08)),Color3.fromRGB(220,64,72),Enum.Material.Neon)
+ local parts={body,head,eyeL,eyeR}
+ tweenParts(parts,Vector3.new(18,0,0),.52)
+ for _,part in ipairs(parts)do Debris:AddItem(part,.72)end
+end
+
+local function playLockerEyes(trigger)
+ local base=trigger.Position+Vector3.new(0,1.1,-2)
+ local face=localPart("LocalLockerFace",Vector3.new(2.2,2.5,.35),CFrame.new(base),Color3.fromRGB(15,15,18),Enum.Material.SmoothPlastic)
+ local eyeL=localPart("LocalLockerEye",Vector3.new(.28,.2,.18),CFrame.new(base+Vector3.new(-.42,.25,-.24)),Color3.fromRGB(236,230,165),Enum.Material.Neon)
+ local eyeR=localPart("LocalLockerEye",Vector3.new(.28,.2,.18),CFrame.new(base+Vector3.new(.42,.25,-.24)),Color3.fromRGB(236,230,165),Enum.Material.Neon)
+ task.delay(.8,function()
+  for _,part in ipairs({face,eyeL,eyeR})do if part.Parent then TweenService:Create(part,TweenInfo.new(.2),{Transparency=1}):Play()end end
+ end)
+ Debris:AddItem(face,1.1);Debris:AddItem(eyeL,1.1);Debris:AddItem(eyeR,1.1)
+end
+
+local function playJanitor(trigger)
+ local pos=trigger.Position+Vector3.new(-7,0,0)
+ local body=localPart("LocalJanitorBody",Vector3.new(2.5,4.8,1.6),CFrame.new(pos+Vector3.new(0,2.4,0)),Color3.fromRGB(72,91,104),Enum.Material.Fabric)
+ local head=localPart("LocalJanitorHead",Vector3.new(2,2,2),CFrame.new(pos+Vector3.new(0,5.7,0)),Color3.fromRGB(204,174,147),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ local broom=localPart("LocalJanitorBroom",Vector3.new(.3,6,.3),CFrame.new(pos+Vector3.new(2,2.6,0))*CFrame.Angles(0,0,math.rad(18)),Color3.fromRGB(108,82,57),Enum.Material.Wood)
+ local parts={body,head,broom}
+ localText(pos+Vector3.new(0,7,0),"청소 중이니까 뛰지 마!",Color3.fromRGB(255,225,150),1.7)
+ tweenParts(parts,Vector3.new(14,0,0),1.15)
+ for _,part in ipairs(parts)do Debris:AddItem(part,1.35)end
+end
+
+local function playGymBall(trigger)
+ local ball=localPart("LocalGymBall",Vector3.new(2.6,2.6,2.6),CFrame.new(trigger.Position+Vector3.new(-6,1,0)),Color3.fromRGB(201,116,67),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ TweenService:Create(ball,TweenInfo.new(.8,Enum.EasingStyle.Bounce,Enum.EasingDirection.Out),{CFrame=ball.CFrame+CFrame.new(13,0,0)*CFrame.Angles(math.rad(270),0,0)}):Play()
+ Debris:AddItem(ball,1)
+end
+
+local function playFloatingProp(trigger,kind,text)
+ local pos=trigger.Position+Vector3.new(0,3,0)
+ local part
+ if kind=="HOSPITAL_WHEELCHAIR"then
+  part=localPart("LocalWheelchair",Vector3.new(3,3,3),CFrame.new(trigger.Position+Vector3.new(-5,1.5,0)),Color3.fromRGB(92,103,108),Enum.Material.Metal)
+  TweenService:Create(part,TweenInfo.new(1.1,Enum.EasingStyle.Sine),{CFrame=part.CFrame+CFrame.new(10,0,0)}):Play()
+ elseif kind=="PARK_CLOWN"then
+  part=localPart("LocalClownHead",Vector3.new(3,3,3),CFrame.new(pos),Color3.fromRGB(218,214,195),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  local nose=localPart("LocalClownNose",Vector3.new(.8,.8,.8),CFrame.new(pos+Vector3.new(0,0,-1.7)),Color3.fromRGB(215,55,62),Enum.Material.Neon,Enum.PartType.Ball)
+  Debris:AddItem(nose,1.4)
+ elseif kind=="PARK_HORSE"then
+  part=localPart("LocalCarouselHorseHead",Vector3.new(3.8,2.4,4.6),CFrame.new(pos),Color3.fromRGB(212,190,153),Enum.Material.SmoothPlastic)
+  TweenService:Create(part,TweenInfo.new(.35,Enum.EasingStyle.Back),{CFrame=part.CFrame*CFrame.Angles(0,math.rad(55),0)}):Play()
+ elseif kind=="SCHOOL_TRAY"then
+  part=localPart("LocalCafeteriaTray",Vector3.new(4,.25,3),CFrame.new(pos),Color3.fromRGB(144,153,156),Enum.Material.Metal)
+  TweenService:Create(part,TweenInfo.new(.45,Enum.EasingStyle.Quad,Enum.EasingDirection.In),{CFrame=part.CFrame+CFrame.new(0,-2.6,0)*CFrame.Angles(math.rad(40),0,math.rad(25))}):Play()
+ else
+  part=localPart("LocalComicProp",Vector3.new(2.8,2.8,2.8),CFrame.new(pos),Color3.fromRGB(132,145,154),Enum.Material.SmoothPlastic)
+ end
+ if part then Debris:AddItem(part,1.4)end
+ if text and text~=""then localText(pos+Vector3.new(0,2.5,0),text,Color3.fromRGB(229,233,240),1.8)end
+end
+
+local function playSurprise(trigger)
+ local kind=tostring(trigger:GetAttribute("SurpriseKind")or"")
+ local text=tostring(trigger:GetAttribute("SurpriseText")or"")
+ if kind=="SCHOOL_SHADOW"then playSchoolShadow(trigger)
+ elseif kind=="SCHOOL_LOCKER"then playLockerEyes(trigger);localText(trigger.Position+Vector3.new(0,6,0),text,nil,1.5)
+ elseif kind=="SCHOOL_JANITOR"then playJanitor(trigger)
+ elseif kind=="SCHOOL_BALL"then playGymBall(trigger)
+ elseif kind=="SCHOOL_BOARD"then localText(trigger.Position+Vector3.new(0,5,0),text,Color3.fromRGB(202,235,188),2.4)
+ elseif kind=="SCHOOL_TRAY"then playFloatingProp(trigger,kind,text)
+ elseif kind=="HOSPITAL_WHEELCHAIR"or kind=="PARK_CLOWN"or kind=="PARK_HORSE"then playFloatingProp(trigger,kind,text)
+ elseif kind=="HOSPITAL_CURTAIN"then localText(trigger.Position+Vector3.new(0,5,0),"커튼 뒤: 비어 있음\n…방금 움직인 건 뭐지?",Color3.fromRGB(214,224,230),2.1)
+ elseif kind=="HOSPITAL_MONITOR"then localText(trigger.Position+Vector3.new(0,5,0),"삐—  배터리 1%\n공포보다 충전기가 급하다",Color3.fromRGB(170,235,207),2.2)
+ elseif kind=="PARK_TICKET"then localText(trigger.Position+Vector3.new(0,5,0),"매표소\n오늘도 무단결근",Color3.fromRGB(255,207,155),2.2)
+ elseif text~=""then localText(trigger.Position+Vector3.new(0,5,0),text,nil,1.8)end
+end
+
+local function refreshSurpriseTriggers()
+ surpriseTriggers={}
+ surpriseSeen={}
+ surpriseArena=workspace:FindFirstChild("MidnightArena")
+ if not surpriseArena then return end
+ for _,d in ipairs(surpriseArena:GetDescendants())do
+  if d:IsA("BasePart")and string.find(d.Name,"SurpriseTrigger_",1,true)==1 and d:GetAttribute("CompetitiveEffect")==false then
+   table.insert(surpriseTriggers,d)
+  end
+ end
+end
+
+RunService.Heartbeat:Connect(function(dt)
+ surpriseClock+=dt
+ if surpriseClock<.22 then return end
+ surpriseClock=0
+ local arenaNow=workspace:FindFirstChild("MidnightArena")
+ if arenaNow~=surpriseArena then refreshSurpriseTriggers()end
+ if p:GetAttribute("RoundState")~="RUNNING"then return end
+ local character=p.Character
+ local root=character and character:FindFirstChild("HumanoidRootPart")
+ if not root then return end
+ for _,trigger in ipairs(surpriseTriggers)do
+  if trigger.Parent and not surpriseSeen[trigger]then
+   local radius=math.max(3,tonumber(trigger:GetAttribute("SurpriseRadius"))or 10)
+   if (root.Position-trigger.Position).Magnitude<=radius then
+    surpriseSeen[trigger]=true
+    playSurprise(trigger)
+   end
+  end
+ end
+end)
 
 -- 실제 플레이 좌표를 보여주는 소형 미니맵
 local mapPanel=Instance.new("Frame")
