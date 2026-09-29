@@ -1429,6 +1429,7 @@ function idleDrillKindForDomain(domain=''){
 }
 function practiceInstructionForDrill(drill={}){
   const kind=upper(drill.kind);
+  if(kind==='ROBLOX_CODE_REPAIR')return'제공된 Luau 오류 함수를 기존 책임 안에서 직접 수정하고 숨겨진 변형 검사를 통과한다. 독립 Luau 논리 검사는 Roblox Studio 플레이 증거가 아니다.';
   if(kind==='ASSET_ADAPTATION_DRILL')return'원본 에셋을 보존하면서 색감·재질·외곽선·비율·파츠·텍스처를 게임 Style Lock에 맞게 변형하는 방법과 라이선스/모바일 비용 검증을 분석한다.';
   if(kind==='CHARACTER_ARCHETYPE_LIBRARY_DRILL')return'회사 공용 캐릭터 베이스를 준비한다. 실루엣·체형·머리·장비 결합 규칙을 다양화하고 HUMANOID_LIGHT/STANDARD/HEAVY를 포함해 같은 외형의 단순 색상 변형으로 수를 채우지 않는다. 지정 platformProfile에 맞는 Unity/Roblox 리그 차이를 명시하고 게임별 Style Lock 변형 여지를 남긴다.';
   if(kind==='CREATURE_RIG_LIBRARY_DRILL')return'4족·곤충·파충류·비행형·골렘·비정형·대형 보스 리그/관절/부착 규칙을 공용 capability로 준비하는 방법을 설계한다. 종별 실루엣과 이동 방식이 달라야 하고 Unity/Roblox 네이티브 리그 제약을 분리한다.';
@@ -1581,10 +1582,13 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={}){
     domains:row.domains,sourceFailure:sig
   }));
   const libraryDrills=companyGraphicsLibraryDrills();
+  const robloxCurriculum=JSON.parse(fs.readFileSync(new URL('../company-learning/roblox-practice.json',import.meta.url),'utf8'));
+  const robloxDrills=robloxCurriculum.drills.map(row=>({id:'roblox-'+row.id,kind:'ROBLOX_CODE_REPAIR',robloxCodePractice:true,robloxPracticeDrill:row.id,level:row.level,sourceFailure:row.failure,domains:row.domains,priority:'high',productionPreemptible:true,countsAsProductionPass:false}));
   const drills=[
     ...repeatedFailureDrills,
     ...relearningDrills,
     ...phase4Drills,
+    ...robloxDrills,
     ...libraryDrills,
     ...hypothesisDrills,
     ...gaps.map(([domain,row])=>({id:`gap-${lower(domain)}-l${row.level}`,kind:idleDrillKindForDomain(domain),priority:'low',productionPreemptible:true,countsAsProductionPass:false,domains:[domain]}))
@@ -1687,14 +1691,16 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
   const {drill,next}=candidates[0];
   const id=idlePracticeTaskId(drill,next.generation);
   const phase4=drill?.phase4Benchmark===true;
-  const artifactPractice=!phase4&&(drill?.domains||[]).some(domain=>['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','CONCEPT_DIRECTION','WORLD_GENERATION','LEVEL_DESIGN','ROUTE_DESIGN','STREAMING_OPTIMIZATION','MAIN_STORY_GENERATION','QUEST_GRAPH','FORESHADOWING_PAYOFF','TWIST_EVIDENCE_CHAIN','CHARACTER_VOICE','CHARACTER_RELATIONSHIP_MEMORY','CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY','WORLD_NARRATIVE_BINDING','WEB_RUNTIME'].includes(upper(domain)));
+  const robloxCodePractice=drill?.robloxCodePractice===true;
+  const artifactPractice=!robloxCodePractice&&!phase4&&(drill?.domains||[]).some(domain=>['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','CONCEPT_DIRECTION','WORLD_GENERATION','LEVEL_DESIGN','ROUTE_DESIGN','STREAMING_OPTIMIZATION','MAIN_STORY_GENERATION','QUEST_GRAPH','FORESHADOWING_PAYOFF','TWIST_EVIDENCE_CHAIN','CHARACTER_VOICE','CHARACTER_RELATIONSHIP_MEMORY','CHARACTER_BEHAVIOR','COMPANION_BEHAVIOR','NPC_BEHAVIOR','MONSTER_BEHAVIOR_PERSONALITY','WORLD_NARRATIVE_BINDING','WEB_RUNTIME'].includes(upper(domain)));
   const goal=[
     '[VIBE_LEARNING_PRACTICE]',
     `kind=${clean(drill.kind)}`,
     `domains=${(drill.domains||[]).join(',')||'GENERAL'}`,
     `practiceGeneration=${next.generation}`,
     next.previousScore!==null?`previousArtifactScore=${next.previousScore}`:'',
-    artifactPractice?'practiceMode=WEB_ARTIFACT':'practiceMode=ANALYSIS',
+    robloxCodePractice?'practiceMode=ROBLOX_CODE':artifactPractice?'practiceMode=WEB_ARTIFACT':'practiceMode=ANALYSIS',
+    robloxCodePractice?'robloxPracticeDrill='+clean(drill.robloxPracticeDrill):'',
     clean(drill.sourceFailure)?`sourceFailure=${clean(drill.sourceFailure)}`:'',
     phase4?`phase4CapabilityId=${clean(drill.phase4CapabilityId)}`:'',
     phase4?`phase4BenchmarkCaseId=${clean(drill.phase4BenchmarkCaseId)}`:'',
@@ -1720,13 +1726,13 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
     'phase4-strong-generalization-evidence:NO'
   ]:[];
   const task={
-    id,gameId:phase4?(clean(drill.holdoutGameId)||null):null,target:phase4?(lower(drill.targetEngine)||'web'):'web',department:'learning',type:'research',goal,
-    responsibleFiles:[],dependencies:[],priority:'low',releaseState:'other',status:'queued',
+    id,gameId:phase4?(clean(drill.holdoutGameId)||null):null,target:robloxCodePractice?'roblox':phase4?(lower(drill.targetEngine)||'web'):'web',robloxPracticeDrill:robloxCodePractice?clean(drill.robloxPracticeDrill):null,department:'learning',type:'research',goal,
+    responsibleFiles:[],dependencies:[],priority:robloxCodePractice?'high':'low',releaseState:'other',status:'queued',
     retries:0,maxRetries:1,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
     paidResourceRequired:false,sourceRoot:`learning-practice:${clean(drill.id)}`,
     speculativeEligible:false,estimatedRisk:'low',
     evidence:['learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,`practice-generation:${next.generation}`,artifactPractice?'learning-web-artifact-practice':'learning-analysis-practice',...(drill?.companyGraphicsLibrary===true?['company-graphics-library-24h','company-graphics-library-prepared-not-promoted',`company-graphics-platform:${upper(drill.platformProfile)}`]:[]),...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`),...phase4Evidence].filter(Boolean),
-    completionCriteria:[artifactPractice?'PRACTICE_WEB_ARTIFACT_VERIFIED':'PRACTICE_ANALYSIS_COMPLETED','REPOSITORY_SOURCE_WRITE_ZERO','PRODUCTION_PASS_NO',...(phase4?['PHASE4_SCREEN_ONLY_NO_GENERALIZATION_PROMOTION']:[])]
+    completionCriteria:[robloxCodePractice?'PRACTICE_LUAU_VARIANTS_EXECUTED':artifactPractice?'PRACTICE_WEB_ARTIFACT_VERIFIED':'PRACTICE_ANALYSIS_COMPLETED','REPOSITORY_SOURCE_WRITE_ZERO','PRODUCTION_PASS_NO',...(phase4?['PHASE4_SCREEN_ONLY_NO_GENERALIZATION_PROMOTION']:[])]
   };
   return {queue:{...queueInput,tasks:[...tasks,task]},added:true,changed:true,deduped:deduped.removed,reason:'PRACTICE_SIGNAL_ENQUEUED',task,practiceGeneration:next.generation,previousArtifactScore:next.previousScore,artifactPractice};
 }

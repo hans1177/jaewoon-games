@@ -79,3 +79,52 @@ test('Web practice generation with a previous score fails unless the artifact st
   assert.equal(result.evaluation,'FAIL');
   assert.equal(result.nextPracticeSignal,'RETRY_CAUSAL_VARIATION');
 });
+
+// 실제 Luau 실행은 독립 논리 검증이며 Studio 실행 증거와 구분한다.
+const robloxCurriculum=JSON.parse(fs.readFileSync(new URL('../company-learning/roblox-practice.json',import.meta.url),'utf8'));
+const practiceAnswer={diagnosis:'기존 책임 함수의 실패 경로와 상태 변경 순서를 재현했다.',strategy:'기존 함수 안에서 원인을 수정하고 변형 입력으로 검증한다.',tests:['기존 오류 재현','변형 입력 확인','기존 상태 보존'],avoidPatterns:['검증되지 않은 성공 주장']};
+test('Roblox code prompt withholds reference answers and hidden checks',()=>{
+  const drill=robloxCurriculum.drills[1];
+  const prompt=buildPracticePrompt({executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] code repair'},{drill});
+  assert.ok(prompt.includes(drill.scenario));
+  assert.ok(prompt.includes(JSON.stringify(drill.broken).slice(1,-1)));
+  assert.ok(!prompt.includes(drill.reference));
+  assert.ok(!prompt.includes(drill.tests[1]));
+});
+test('Roblox code practice cannot pass on prose or a missing executor',()=>{
+  const drill=robloxCurriculum.drills[0];
+  assert.equal(evaluatePracticeAnswer(practiceAnswer,{drill}).pass,false);
+  const result=evaluatePracticeAnswer({...practiceAnswer,code:drill.reference},{drill,luauBinary:'/missing/luau'});
+  assert.equal(result.pass,false);
+  assert.equal(result.codeVerification.reason,'LUAU_EXECUTOR_UNAVAILABLE');
+});
+for(const drill of robloxCurriculum.drills){
+  test('Luau regression and variants: '+drill.id,{skip:!process.env.VIBE2_LUAU_BINARY},()=>{
+    const fixed=evaluatePracticeAnswer({...practiceAnswer,code:drill.reference},{drill});
+    assert.equal(fixed.pass,true);
+    assert.equal(fixed.codeVerification.baselineRejected,true);
+    assert.equal(fixed.codeVerification.referencePassed,true);
+    assert.equal(fixed.codeVerification.passedTests,drill.tests.length);
+    assert.equal(fixed.codeVerification.nativeRuntimeVerified,false);
+    assert.equal(fixed.codeVerification.productionPromotionAllowed,false);
+    const broken=evaluatePracticeAnswer({...practiceAnswer,code:drill.broken},{drill});
+    assert.equal(broken.pass,false);
+  });
+}
+test('executed Roblox drill remains untrusted practice and writes no production source',{skip:!process.env.VIBE2_LUAU_BINARY},async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-roblox-practice-'));
+  try{
+    const drill=robloxCurriculum.drills[3];
+    fs.writeFileSync(path.join(dir,'order.json'),JSON.stringify({taskId:'roblox-save',target:'roblox',selectedTask:{robloxPracticeDrill:drill.id},executionRoute:'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] save repair'}));
+    fs.writeFileSync(path.join(dir,'response.json'),JSON.stringify({...practiceAnswer,code:drill.reference}));
+    const result=await runLearningPractice({workOrderFile:path.join(dir,'order.json'),responseFile:path.join(dir,'response.json'),outputFile:path.join(dir,'result.json')});
+    assert.equal(result.practiceMode,'ROBLOX_CODE');
+    assert.equal(result.codeVerification.pass,true);
+    assert.equal(result.nativeRuntimeVerified,false);
+    assert.equal(result.productionPass,false);
+    assert.equal(result.masteryCreditEligible,false);
+    assert.equal(result.canonicalTrainingEligible,false);
+    assert.equal(result.sourceWrite,false);
+    assert.equal(result.rawModelOutputStored,false);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});

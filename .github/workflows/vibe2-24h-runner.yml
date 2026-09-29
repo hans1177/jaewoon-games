@@ -857,12 +857,12 @@ jobs:
 
   learning_idle:
     needs: plan
-    # Preserve one learning worker under production/runner pressure; use four when idle.
+    # Reserve exactly one learning worker, including when production is idle.
     if: ${{ needs.plan.outputs.learning_idle_queued != '0' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: learning-idle
-      lane_max: ${{ (needs.plan.outputs.runner_pressure == 'YES' || needs.plan.outputs.game_primary_queued != '0' || needs.plan.outputs.active_worker_reservations != '0' || needs.plan.outputs.asset_development_queued != '0' || needs.plan.outputs.asset_development_active != '0' || needs.plan.outputs.recovery_fast_queued != '0') && '1' || '4' }}
+      lane_max: '1'
     permissions:
       contents: write
       actions: write

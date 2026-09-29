@@ -13,8 +13,8 @@ const TASK_TYPES = Object.freeze(['coding', 'bugfix', 'unity', 'roblox', 'fortni
 const DIFFICULTY_ORDER = Object.freeze(['simple', 'bug', 'regression', 'unity-build', 'roblox-release', 'uefn-release']);
 const FAILURE_TAXONOMY = Object.freeze(['BUILD', 'SIGNING', 'NULL', 'SAVE', 'UI', 'COMBAT_LOGIC', 'ROUTING', 'MODEL_RUNTIME', 'OTHER']);
 const RULE_PRIORITY = Object.freeze(['LATEST_USER', 'AGENTS', 'PROJECT_RULES', 'VERIFIED_LEARNING', 'BASE_MODEL']);
-const DIFFICULT_TEACHER_TASKS = new Set(['bugfix', 'unity', 'qa']);
-const DIFFICULT_LEVELS = new Set(['bug', 'regression', 'unity-build']);
+const DIFFICULT_TEACHER_TASKS = new Set(['bugfix', 'unity', 'roblox', 'qa']);
+const DIFFICULT_LEVELS = new Set(['bug', 'regression', 'unity-build', 'roblox-release']);
 
 function stableStringify(value) {
   if (value === null || typeof value !== 'object') return JSON.stringify(value);
@@ -56,7 +56,7 @@ function normalizeQa(record) {
 
 export function isVerifiedPass(record) {
   const qa=normalizeQa(record); const taskType=inferTaskType(record); const sourceKind=sourceKindOf(record);
-  return qaEvidencePasses({ taskType, independentQa:qa.independentQa, browserQa:qa.browserQa, runtime:qa.runtime || 'PASS', sourceKind });
+  return qaEvidencePasses({ taskType, independentQa:qa.independentQa, browserQa:qa.browserQa, runtime:qa.runtime, sourceKind });
 }
 
 export function qualityScore(record) {

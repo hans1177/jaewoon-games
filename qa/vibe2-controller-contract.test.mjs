@@ -718,11 +718,10 @@ test('fan-in reuses only successful exact-commit engine regression and retains a
   assert.match(fanIn,/tools\/vibe2-fan-in-review.mjs/);
 });
 
-test('idle learning retains a minimum worker while game development or recovery work remains',()=>{
+test('idle learning fixes one worker regardless of game pressure',()=>{
   const idle=safetyNetWorkflow.slice(safetyNetWorkflow.indexOf('  learning_idle:'),safetyNetWorkflow.indexOf('  game_study:'));
-  for(const output of ['game_primary_queued','active_worker_reservations','asset_development_queued','asset_development_active','recovery_fast_queued']){
-    assert.ok(idle.includes(`needs.plan.outputs.${output} != '0'`),output);
-  }
+  assert.match(idle,/lane_max: '1'/);
+  assert.ok(workflow.includes("!= 'asset-development' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'learning-idle'"));
 });
 
 test('candidate formatting whitespace does not abort development but conflict markers still fail',()=>{
@@ -930,7 +929,8 @@ test('continuous core and 24H runner isolate game-primary and learning-idle exec
   assert(safetyNetWorkflow.includes('learning_idle_queued: ${{ steps.queue_state.outputs.learning_idle_queued }}'));
   assert(safetyNetWorkflow.includes('  learning_idle:'));
   assert(safetyNetWorkflow.includes('execution_lane: learning-idle'));
-  assert(safetyNetWorkflow.includes("&& '1' || '4'"));
+  assert(safetyNetWorkflow.includes("lane_max: '1'"));
+  assert(workflow.includes("'vibe2-learning-single-worker'"));
   assert(safetyNetWorkflow.includes("needs.plan.outputs.game_primary_queued == '0'"));
 });
 
