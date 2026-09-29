@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "                if (Player.gold < 0)",
+      "replace": "public void Save()\n{\n    var data = new GameSaveData { player = Player };\n    PlayerPrefs.SetString(SaveKey, JsonUtility.ToJson(data));\n    PlayerPrefs.Save();\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
