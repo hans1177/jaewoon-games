@@ -4426,6 +4426,28 @@ test('local model output limit triggers bounded adaptive retry without external 
 });
 
 
+test('Luau presentation anchors exclude open callbacks and QA camera instrumentation',()=>{
+  const source=[
+    'QACamera.install(C,gui,function()',
+    ' return shots',
+    'end)',
+    'QACamera.install(C,gui,function() return shots end)',
+    'if camera.CameraSubject==h then foundationRemote:FireServer("CAMERA_READY");break end',
+    'button.Activated:Connect(function()',
+    ' label.Text = "ready"',
+    'end)',
+    'if hasStudioAssetAtom("FRAME_PANEL") then',
+    'panel.BackgroundColor3 = Color3.fromRGB(20, 40, 60)',
+    'end'
+  ].join('\n');
+  const prompt='Engine: roblox\nGoal: presentation\nAllowed edit paths: client/Game.client.luau\n=== FILE client/Game.client.luau [EDITABLE] ===\n'+source;
+  const anchors=exactRetryAnchorSuggestions(prompt,{max:5,responsibleFiles:['client/Game.client.luau']});
+  assert.ok(anchors.includes('panel.BackgroundColor3 = Color3.fromRGB(20, 40, 60)'));
+  assert.ok(anchors.every(anchor=>!anchor.includes('QACamera')&&!anchor.includes('foundationRemote')&&!anchor.includes('Connect(function()')&&!anchor.startsWith('if hasStudioAssetAtom')));
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{responsibleFiles:['client/Game.client.luau']});
+  assert.equal(focused.spec.find,'panel.BackgroundColor3 = Color3.fromRGB(20, 40, 60)');
+});
+
 test('Luau focused retry uses a body statement instead of an incomplete function declaration',()=>{
   const prompt=['Engine: roblox','Goal: repair rendering','Allowed edit paths: client/Game.client.luau',
     '=== FILE client/Game.client.luau [EDITABLE] ===','local function render()',
