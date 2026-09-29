@@ -2948,9 +2948,9 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-29T23:40:28.301Z",
+      "updatedAt": "2026-09-29T23:41:29.136Z",
       "robloxSourceCommit": "2610ece38c316b6f6d0676a5a8dc42d3b8e93743",
-      "robloxSourceBootstrapPassedAt": "2026-09-29T23:40:28.301Z",
+      "robloxSourceBootstrapPassedAt": "2026-09-29T23:41:29.136Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -3121,9 +3121,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_F0_RESTART_BUILD_PACKAGE_PENDING",
       "routingBlockers": [
-        "roblox-build-package-revalidation-pending"
+        "roblox-f0-restart-build-package-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -4577,11 +4577,7 @@
       "failureCount": 0,
       "contractCanaryPassed": false,
       "robloxHeadlessPassedAt": null,
-      "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "5ba5e483942790731e57f9592bdcb11141659224",
-        "newSourceRevision": "2610ece38c316b6f6d0676a5a8dc42d3b8e93743",
-        "invalidatedAt": "2026-09-29T23:40:28.301Z"
-      },
+      "robloxEvidenceInvalidatedBySourceChange": null,
       "robloxMetadataOnlySourceRecoveryEvidence": {
         "version": 1,
         "previousSourceRevision": "34c6936734a700fbaa1f5d93d9a57767d5a5ff3a",
@@ -5069,6 +5065,13 @@
         "f9RuntimeReplay": true,
         "internalStudioValidationOnly": true,
         "authority": "roblox-open-cloud-f9-verified-canonical-publish"
+      },
+      "robloxEvidenceInvalidatedByF0Restart": {
+        "sourceRevision": "2610ece38c316b6f6d0676a5a8dc42d3b8e93743",
+        "previousSourceRevision": "2610ece38c316b6f6d0676a5a8dc42d3b8e93743",
+        "previousArtifactIdentity": null,
+        "restartedAt": "2026-09-29T23:41:29.136Z",
+        "authority": "canonical-main-f0-restart"
       }
     },
     {
@@ -28849,7 +28852,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-29T23:40:28.301Z",
+  "updatedAt": "2026-09-29T23:41:29.136Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
