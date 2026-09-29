@@ -681,7 +681,7 @@ local setupPanel=Instance.new("Frame")
 setupPanel.Name="RoleSetup"
 setupPanel.AnchorPoint=Vector2.new(.5,.5)
 setupPanel.Position=UDim2.fromScale(.5,.64)
-setupPanel.Size=UDim2.fromOffset(304,172)
+setupPanel.Size=UDim2.fromOffset(304,194)
 setupPanel.BackgroundColor3=Color3.fromRGB(25,27,35)
 setupPanel.BackgroundTransparency=.04
 setupPanel.ZIndex=10
@@ -714,7 +714,7 @@ lobbyStatus.Parent=setupPanel
 local selectionStatus=Instance.new("TextLabel")
 selectionStatus.Name="SelectionStatus"
 selectionStatus.Size=UDim2.new(1,-18,0,22)
-selectionStatus.Position=UDim2.fromOffset(9,108)
+selectionStatus.Position=UDim2.fromOffset(9,114)
 selectionStatus.BackgroundTransparency=1
 selectionStatus.TextColor3=Color3.fromRGB(220,225,235)
 selectionStatus.TextSize=11
@@ -723,7 +723,6 @@ selectionStatus.TextXAlignment=Enum.TextXAlignment.Left
 selectionStatus.ZIndex=11
 selectionStatus.Parent=setupPanel
 
-local setupChosen=false
 local setupButtons={
  {C.Actions.PREFER_SURVIVOR,"인간 선호",Color3.fromRGB(50,112,145)},
  {C.Actions.PREFER_MONSTER,"몬스터 선호",Color3.fromRGB(145,48,59)},
@@ -732,20 +731,19 @@ for i,a in ipairs(setupButtons)do
  local b=makeButton(setupPanel,a[2],a[3])
  b.ZIndex=11
  local col=(i-1)%2
- b.Size=UDim2.new(.465,0,0,42)
+ b.Size=UDim2.new(.465,0,0,48)
  b.Position=UDim2.new(.025+col*.485,0,0,58)
  b.Activated:Connect(function()
   actionSfx.TimePosition=0;actionSfx:Play()
   remote:FireServer(a[1])
-  setupChosen=true
  end)
 end
 
 local humanCycle=makeButton(setupPanel,"인간 변경",Color3.fromRGB(49,91,105))
-humanCycle.ZIndex=11;humanCycle.Size=UDim2.new(.44,0,0,28);humanCycle.Position=UDim2.new(.04,0,1,-36)
+humanCycle.ZIndex=11;humanCycle.Size=UDim2.new(.44,0,0,36);humanCycle.Position=UDim2.new(.04,0,1,-42)
 humanCycle.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.NEXT_HUMAN)end)
 local monsterCycle=makeButton(setupPanel,"몬스터 변경",Color3.fromRGB(76,58,96))
-monsterCycle.ZIndex=11;monsterCycle.Size=UDim2.new(.44,0,0,28);monsterCycle.Position=UDim2.new(.52,0,1,-36)
+monsterCycle.ZIndex=11;monsterCycle.Size=UDim2.new(.44,0,0,36);monsterCycle.Position=UDim2.new(.52,0,1,-42)
 monsterCycle.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.NEXT_MONSTER)end)
 
 -- 라운드 행동 버튼: 역할에 따라 딱 필요한 버튼만 노출
@@ -819,9 +817,9 @@ local function render()
  local prefText=pref=="MONSTER"and"몬스터 선호"or pref=="SURVIVOR"and"인간 선호"or"자동 배정"
  selectionStatus.Text=string.format("%s · 인간 %s · 몬스터 %s",prefText,humanName(),monsterName())
 
- if round:find("^RESULT_") then setupChosen=false end
+ local selectionConfirmed=p:GetAttribute("LobbySelectionConfirmed")==true
  setupPanel.Visible=not running and not round:find("^RESULT_")
- ruleCard.Visible=setupPanel.Visible and not setupChosen
+ ruleCard.Visible=setupPanel.Visible and not selectionConfirmed
  actionDock.Visible=running
  mapPanel.Visible=running
  rescueButton.Visible=running and role=="SURVIVOR"
@@ -846,7 +844,7 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed"})do
  p:GetAttributeChangedSignal(k):Connect(render)
 end
 
