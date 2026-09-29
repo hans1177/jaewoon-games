@@ -408,6 +408,25 @@ local function addEnergyCore(f,mapId,pos)
  end)
  return core
 end
+local function addSurpriseTrigger(f,id,kind,pos,radius,text)
+ local trigger=Instance.new("Part")
+ trigger.Name="SurpriseTrigger_"..id
+ trigger.Size=Vector3.new(2,2,2)
+ trigger.Position=pos
+ trigger.Anchored=true
+ trigger.CanCollide=false
+ trigger.CanTouch=false
+ trigger.CanQuery=false
+ trigger.Transparency=1
+ trigger:SetAttribute("SurpriseId",id)
+ trigger:SetAttribute("SurpriseKind",kind)
+ trigger:SetAttribute("SurpriseRadius",radius or 10)
+ trigger:SetAttribute("SurpriseText",text or"")
+ trigger:SetAttribute("CompetitiveEffect",false)
+ trigger.Parent=f
+ return trigger
+end
+
 local function decorateArenaWithOfficialAssets(f,map)
  task.spawn(function()
   task.wait(.1);if not f.Parent then return end
@@ -660,6 +679,14 @@ local function makeArena(map)
   addObjectiveStation(f,"강당 비상패널",Vector3.new(108,3,104),4)
   addMapUtility(f,"SCHOOL_BROADCAST","비상 방송실",Vector3.new(0,3,-42))
   addEnergyCore(f,map.Id,Vector3.new(0,4,0))
+
+  -- 학교 구석 놀람/코믹 연출. 로컬 클라이언트에서만 보이며 경쟁 판정에는 영향이 없다.
+  addSurpriseTrigger(f,"SCHOOL_HALL_SHADOW","SCHOOL_SHADOW",Vector3.new(0,4,24),12,"방금 뭐가 지나갔지?")
+  addSurpriseTrigger(f,"SCHOOL_LOCKER_EYES","SCHOOL_LOCKER",Vector3.new(0,4,-58),10,"사물함 안에서 누가 보고 있다")
+  addSurpriseTrigger(f,"SCHOOL_JANITOR","SCHOOL_JANITOR",Vector3.new(2,4,51),12,"청소 중이니까 뛰지 마!")
+  addSurpriseTrigger(f,"SCHOOL_GYM_BALL","SCHOOL_BALL",Vector3.new(50,3,50),11,"체육관 공이 혼자 굴러간다")
+  addSurpriseTrigger(f,"SCHOOL_BOARD_GAG","SCHOOL_BOARD",Vector3.new(-66,5,-28),10,"오늘의 숙제: 살아서 집 가기")
+  addSurpriseTrigger(f,"SCHOOL_CAFETERIA","SCHOOL_TRAY",Vector3.new(-51,3,39),10,"급식 당번이 아직 남아 있다…")
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  elseif map.Id=="HOSPITAL"then
   -- 폐병원: 좁은 중앙 복도와 병실, 수술실, 지하실 느낌의 저천장 구역.
@@ -709,6 +736,9 @@ local function makeArena(map)
   addObjectiveStation(f,"하역장 셔터",Vector3.new(118,3,108),4)
   addMapUtility(f,"HOSPITAL_SURGERY_LIGHT","수술실 전력장치",Vector3.new(-48,3,40))
   addEnergyCore(f,map.Id,Vector3.new(0,4,0))
+  addSurpriseTrigger(f,"HOSPITAL_WHEELCHAIR","HOSPITAL_WHEELCHAIR",Vector3.new(8,3,26),11,"휠체어가 혼자 움직였다")
+  addSurpriseTrigger(f,"HOSPITAL_CURTAIN","HOSPITAL_CURTAIN",Vector3.new(-45,4,53),10,"커튼 뒤에는 아무도… 없나?")
+  addSurpriseTrigger(f,"HOSPITAL_MONITOR","HOSPITAL_MONITOR",Vector3.new(43,4,57),10,"삐— 배터리 1%")
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  elseif map.Id=="THEME_PARK"then
   -- 폐놀이공원: 넓은 야외, 내부 공간, 매표소, 숨는 부스와 복잡한 우회 동선.
@@ -764,6 +794,9 @@ local function makeArena(map)
   addObjectiveStation(f,"정비실 발전기",Vector3.new(118,3,108),4)
   addMapUtility(f,"PARK_CAROUSEL_POWER","회전목마 전원",Vector3.new(-32,3,30))
   addEnergyCore(f,map.Id,Vector3.new(0,4,-12))
+  addSurpriseTrigger(f,"PARK_CLOWN","PARK_CLOWN",Vector3.new(34,4,38),11,"광대가 방금 고개를 돌린 것 같은데")
+  addSurpriseTrigger(f,"PARK_TICKET","PARK_TICKET",Vector3.new(0,4,-38),10,"매표소: 오늘도 무단결근")
+  addSurpriseTrigger(f,"PARK_HORSE","PARK_HORSE",Vector3.new(-32,4,8),12,"회전목마 말이 나만 본다")
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  end
 
