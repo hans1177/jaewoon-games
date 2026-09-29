@@ -12,6 +12,7 @@ import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neur
 import { buildNeuralShadowAudit, neuralShadowAuditEvidence, summarizeDurableNeuralShadowAudit } from './vibe2-neural-shadow-audit.mjs';
 import { evaluatePhase2Readiness } from './vibe2-neural-phase2-readiness.mjs';
 import { summarizeNeuralWorkGraphEvidence } from './vibe2-neural-work-graph.mjs';
+import { classifyVerifiedExternalBlackBoxPrinciples } from './vibe2-learning-motor.mjs';
 import { auditVibeRuntimeBeforeAfterComparison } from '../assets/vibe-visual-quality-gate.js';
 
 const clean=value=>String(value??'').trim();
@@ -37,7 +38,34 @@ function verifiedExternalLearningApplicationFailures(row={}){
   if(application.verifiedExternalLearningFirst!==true||!ids.length)failures.push('VERIFIED_EXTERNAL_LEARNING_MISSING');
   if(retrieved!==ids.length||applied!==retrieved||Number(application.verifiedExternalLearningCoveragePct||0)!==100)failures.push('VERIFIED_EXTERNAL_LEARNING_PARTIAL_APPLICATION');
   if(application.retrievedVerifiedExternalLearningTruncationForbidden!==true)failures.push('VERIFIED_EXTERNAL_LEARNING_TRUNCATED');
-  for(const axis of VERIFIED_EXTERNAL_LEARNING_AXES)if(!axes.includes(axis))failures.push('VERIFIED_EXTERNAL_LEARNING_AXIS_MISSING:'+axis);
+  // 버전 3은 조회된 원칙의 실제 분류를 재계산한다. 구형 전체 표현 축을 억지로 추가하지 않는다.
+  if(application.version===3){
+    const dispositions=Array.isArray(application.verifiedExternalLearningDispositions)?application.verifiedExternalLearningDispositions:[];
+    try{
+      if(application.allRetrievedPrinciplesHaveExplicitDisposition!==true||!dispositions.length)throw new Error('missing dispositions');
+      if(dispositions.some(item=>!ids.includes(clean(item?.sourceLearningId))))throw new Error('unknown learning id');
+      const rows=ids.map(id=>({id,distilledApplicationPrinciples:dispositions.filter(item=>clean(item?.sourceLearningId)===id).map(item=>item.raw)}));
+      if(rows.some(item=>!item.distilledApplicationPrinciples.length))throw new Error('missing learning content');
+      const semantic=classifyVerifiedExternalBlackBoxPrinciples(rows,{gameId:row?.candidateIdentity?.gameId,target:row?.candidateIdentity?.target});
+      if(!semantic.allDisposed||semantic.rows.length!==dispositions.length)throw new Error('unmapped principles');
+      const actual=new Map(dispositions.map(item=>[clean(item.sourceLearningId)+'|'+clean(item.id),item]));
+      if(actual.size!==dispositions.length)throw new Error('duplicate principles');
+      for(const expected of semantic.rows){
+        const declared=actual.get(expected.sourceLearningId+'|'+expected.id);
+        if(!declared||declared.disposition!==expected.disposition
+          ||JSON.stringify([...(declared.domains||[])].sort())!==JSON.stringify([...expected.domains].sort()))throw new Error('classification drift');
+      }
+      const expectedAxes=[...new Set(semantic.sourceRows.flatMap(item=>item.domains))];
+      for(const axis of expectedAxes)if(!axes.includes(axis))failures.push('VERIFIED_EXTERNAL_LEARNING_AXIS_MISSING:'+axis);
+      if(axes.some(axis=>!expectedAxes.includes(axis)))failures.push('VERIFIED_EXTERNAL_LEARNING_AXIS_UNGROUNDED');
+      if(application.verifiedExternalGameSourcePrincipleCount!==semantic.sourceRows.length
+        ||application.verifiedExternalValidationOnlyPrincipleCount!==semantic.validationRows.length)throw new Error('principle count drift');
+    }catch{
+      failures.push('VERIFIED_EXTERNAL_LEARNING_DISPOSITION_INVALID');
+    }
+  }else{
+    for(const axis of VERIFIED_EXTERNAL_LEARNING_AXES)if(!axes.includes(axis))failures.push('VERIFIED_EXTERNAL_LEARNING_AXIS_MISSING:'+axis);
+  }
   return[...new Set(failures)];
 }
 
