@@ -359,3 +359,39 @@ test('all candidate settlement clones configure existing GitHub token for git pu
     assert.match(step,/set -euo pipefail/);
   }
 });
+
+test('shallow Roblox promotion preserves exact candidate, main drift guard and merged tree comparison',()=>{
+  const section=releaseWorkflow.slice(releaseWorkflow.indexOf('  roblox-release:'));
+  assert.match(section,/ref: \$\{\{ needs\.inspect\.outputs\.candidate_sha \}\}\n          fetch-depth: 1/);
+  const promote=section.slice(section.indexOf('      - name: Promote verified Roblox'),section.indexOf('      - name: Hand exact'));
+  const fetches=[...promote.matchAll(/^          (git fetch [^\n]+)$/gm)].map(x=>x[1]);
+  assert.equal(fetches.length,4);
+  assert.ok(fetches.every(x=>x.includes('--depth=1')));
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-promotion-'));
+  const upstream=path.join(temp,'upstream'),checkout=path.join(temp,'checkout'),worktree=path.join(temp,'promote');
+  fs.mkdirSync(upstream);
+  const git=(cwd,...args)=>execFileSync('git',args,{cwd,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+  try{
+    git(upstream,'init','-b','main');git(upstream,'config','user.name','QA');git(upstream,'config','user.email','qa@example.invalid');
+    fs.mkdirSync(path.join(upstream,'game'));fs.writeFileSync(path.join(upstream,'game/source'),'base');
+    git(upstream,'add','.');git(upstream,'commit','-m','base');const base=git(upstream,'rev-parse','HEAD');
+    git(upstream,'checkout','-b','candidate');fs.writeFileSync(path.join(upstream,'game/source'),'verified');git(upstream,'commit','-am','candidate');
+    const candidate=git(upstream,'rev-parse','HEAD');
+    git(temp,'clone','--single-branch','--depth=1','--no-tags','--branch','candidate',`file://${upstream}`,checkout);
+    assert.equal(git(checkout,'rev-list','--count','HEAD'),'1');
+    fs.writeFileSync(path.join(upstream,'game/source'),'later unverified');git(upstream,'commit','-am','candidate moved');
+    git(upstream,'checkout','main');fs.writeFileSync(path.join(upstream,'unrelated'),'main update');git(upstream,'add','.');git(upstream,'commit','-m','unrelated');
+    const fetch=cmd=>execFileSync('bash',['-e','-c',cmd],{cwd:checkout,env:{...process.env,BASE_SHA:base},stdio:'pipe'});
+    fetch(fetches[0]);fetch(fetches[1]);
+    assert.equal(git(checkout,'diff','--name-only',base,'origin/main','--','game'),'');
+    git(checkout,'worktree','add','-b','release',worktree,'origin/main');
+    git(worktree,'config','user.name','QA');git(worktree,'config','user.email','qa@example.invalid');
+    git(worktree,'checkout',candidate,'--','game');assert.equal(fs.readFileSync(path.join(worktree,'game/source'),'utf8'),'verified');
+    git(worktree,'commit','-am','promote');const release=git(worktree,'rev-parse','HEAD');
+    fs.writeFileSync(path.join(upstream,'game/source'),'concurrent game edit');git(upstream,'commit','-am','drift');fetch(fetches[2]);
+    assert.equal(git(checkout,'diff','--name-only',base,'origin/main','--','game'),'game/source');
+    fs.writeFileSync(path.join(upstream,'game/source'),'verified');git(upstream,'commit','-am','equivalent squash result');fetch(fetches[3]);
+    assert.equal(git(checkout,'diff','--name-only',release,'origin/main','--','game'),'');
+    assert.equal(git(checkout,'rev-parse',release+':game'),git(checkout,'rev-parse','origin/main:game'));
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
