@@ -304,8 +304,10 @@ test('24h planner retries concurrent control-state writes from the latest branch
   const end=safetyNetWorkflow.indexOf('- name: Read queue continuation state',start);
   assert.ok(start>=0&&end>start);
   const block=safetyNetWorkflow.slice(start,end);
-  assert.match(block,/for attempt in 1 2 3 4 5; do/);
-  assert.match(block,/VIBE2_AUTOPLAN_ATTEMPT=\$attempt\/5/);
+  assert.match(block,/while true; do/);
+  assert.match(block,/VIBE2_AUTOPLAN_ATTEMPT=\$attempt/);
+  assert.match(block,/VIBE2_AUTOPLAN_OPTIMISTIC_RETRY_POLICY=UNTIL_JOB_TIMEOUT/);
+  assert.match(block,/VIBE2_AUTOPLAN_RETRY_BACKOFF_SECONDS=\$retry_sleep/);
   assert.match(block,/git reset --hard origin\/vibe2-unreal-core/);
   assert.match(block,/git push origin HEAD:vibe2-unreal-core/);
   assert.match(block,/VIBE2_AUTOPLAN_OPTIMISTIC_RETRY=\$attempt/);
@@ -816,7 +818,7 @@ test('24H cycle preserves continuity without multiplying independent scheduler c
   assert(planStart>=0 && recoveryStart>planStart);
   const planBlock=safetyNetWorkflow.slice(planStart,recoveryStart);
   assert(!planBlock.includes('group: vibe2-control-state-vibe2-unreal-core'));
-  assert(planBlock.includes('VIBE2_AUTOPLAN_ATTEMPT=$attempt/5'));
+  assert(planBlock.includes('VIBE2_AUTOPLAN_ATTEMPT=$attempt'));
   assert(planBlock.includes('git reset --hard origin/vibe2-unreal-core'));
   assert(planBlock.includes('if git push origin HEAD:vibe2-unreal-core; then'));
   const gameStudyStart=safetyNetWorkflow.indexOf('  game_study:');
