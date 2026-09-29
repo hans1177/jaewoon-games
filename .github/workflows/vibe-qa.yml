@@ -1,0 +1,281 @@
+name: Vibe QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/**'
+      - 'game-catalog.json'
+      - 'roblox-games/**'
+      - 'web-games/horror-escape-room/**'
+      - 'tools/vibe2-artbook-story-*.mjs'
+      - 'tools/game-catalog-normalization.mjs'
+      - 'tools/company-roblox-source-drift-sync.mjs'
+      - 'tools/company-development-roblox-source-reconcile.mjs'
+      - 'qa/vibe-regression.mjs'
+      - 'qa/vibe-*.mjs'
+      - 'qa/vibe-*.test.mjs'
+      - 'qa/vibe2-artbook-story-core.test.mjs'
+      - 'qa/horror-escape-room-release.test.mjs'
+      - 'qa/company-roblox-source-drift-sync.test.mjs'
+      - 'qa/company-development-roblox-source-reconcile.test.mjs'
+      - 'qa/external-mobile-free-game-playtest-workflow.test.mjs'
+      - 'qa/game-catalog-normalization.test.mjs'
+      - 'qa/vibe2-google-play-catalog-coverage.test.mjs'
+      - '.github/workflows/vibe-qa.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'assets/**'
+      - 'game-catalog.json'
+      - 'roblox-games/**'
+      - 'web-games/horror-escape-room/**'
+      - 'tools/vibe2-artbook-story-*.mjs'
+      - 'tools/game-catalog-normalization.mjs'
+      - 'tools/company-roblox-source-drift-sync.mjs'
+      - 'tools/company-development-roblox-source-reconcile.mjs'
+      - 'qa/vibe-regression.mjs'
+      - 'qa/vibe-*.mjs'
+      - 'qa/vibe-*.test.mjs'
+      - 'qa/vibe2-artbook-story-core.test.mjs'
+      - 'qa/horror-escape-room-release.test.mjs'
+      - 'qa/company-roblox-source-drift-sync.test.mjs'
+      - 'qa/company-development-roblox-source-reconcile.test.mjs'
+      - 'qa/external-mobile-free-game-playtest-workflow.test.mjs'
+      - 'qa/game-catalog-normalization.test.mjs'
+      - 'qa/vibe2-google-play-catalog-coverage.test.mjs'
+      - '.github/workflows/vibe-qa.yml'
+
+concurrency:
+  group: vibe-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate asset manifest
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('assets/asset-manifest.json').read_text(encoding='utf-8'))
+          assert data.get('version') in {1, 2, 3, 4, 5}
+          assert isinstance(data.get('approvedSources'), list)
+          assert isinstance(data.get('assets'), list)
+          assert {'NC', 'unknown'}.issubset(set(data.get('policy', {}).get('blocked', [])))
+          print('PASS asset manifest')
+          PY
+
+      - name: Check all JavaScript syntax
+        run: |
+          for file in assets/*.js; do
+            node --input-type=module --check < "$file"
+          done
+          node --input-type=module --check < qa/vibe-regression.mjs
+          node --check tools/vibe2-artbook-story-core.mjs
+          node --check tools/vibe2-artbook-story-engine.mjs
+          echo 'PASS JavaScript syntax'
+
+      - name: Test art asset rights gate
+        run: |
+          node --input-type=module <<'NODE'
+          import { createVibeAssetReconstructionContract } from './assets/vibe-art-pipeline.js';
+          const cc0 = createVibeAssetReconstructionContract({ asset: { id:'cc0', source:'source', license:'CC0' } });
+          if (!cc0.derivativesAllowed || cc0.attributionRequired) throw new Error('CC0 rights failed');
+          const by = createVibeAssetReconstructionContract({ asset: { id:'by', source:'source', license:'CC-BY-4.0' } });
+          if (!by.derivativesAllowed || !by.attributionRequired) throw new Error('CC BY rights failed');
+          const sa = createVibeAssetReconstructionContract({ asset: { id:'sa', source:'source', license:'CC-BY-SA-4.0' } });
+          if (!sa.derivativesAllowed || !sa.shareAlikeRequired) throw new Error('CC-BY-SA rights failed');
+          const nd = createVibeAssetReconstructionContract({ asset: { id:'nd', source:'source', license:'CC-BY-ND-4.0' } });
+          if (nd.derivativesAllowed || nd.blockedReason !== 'derivatives-explicitly-forbidden') throw new Error('CC-BY-ND block failed');
+          const nc = createVibeAssetReconstructionContract({ asset: { id:'nc', source:'source', license:'CC-BY-NC-4.0' } });
+          if (!nc.derivativesAllowed || nc.commercialUseAllowed) throw new Error('CC-BY-NC commercial gate failed');
+          const mit = createVibeAssetReconstructionContract({ asset: { id:'mit', source:'source', license:'MIT' } });
+          if (mit.derivativesAllowed || mit.blockedReason !== 'derivative-permission-unverified') throw new Error('software license must not imply art derivative rights');
+          const explicit = createVibeAssetReconstructionContract({ asset: { id:'explicit', source:'source', license:'custom', derivativesAllowed:true } });
+          if (!explicit.derivativesAllowed) throw new Error('explicit derivative permission failed');
+          console.log('PASS art asset rights gate');
+          NODE
+
+      - name: Validate Vibe runtime visual quality contract
+        run: node --test qa/vibe-visual-runtime-quality.test.mjs
+
+      - name: Validate composable motion director
+        run: node --test qa/vibe-motion-director.test.mjs
+
+      - name: Validate studio asset universe
+        run: node --test qa/vibe-studio-asset-universe.test.mjs
+
+      - name: Validate narrative story quest persona and memory
+        run: node --test qa/vibe2-artbook-story-core.test.mjs
+
+      - name: Test gameplay quantitative analysis
+        run: |
+          node --input-type=module <<'NODE'
+          import { analyzeGameplayCostPowerRisk, createGameplayStatBudget, createGameplayEncounterBudget, createGameplayEconomyGraph, createGameplayProgressionCurve } from './assets/game-content.js';
+          const cpr = analyzeGameplayCostPowerRisk({ cost:5, power:40, risk:.5, cooldown:2, exposure:.5 });
+          if (cpr.authority !== 'analysis-only' || cpr.burden !== 17 || Math.abs(cpr.efficiency - 40/17) > 1e-12 || cpr.classification !== 'high-efficiency') throw new Error('cost-power-risk analysis failed');
+          const stats = createGameplayStatBudget({ stats:{damage:10,hp:100}, weights:{damage:2,hp:.1}, budget:35 });
+          if (stats.authority !== 'analysis-only' || stats.spent !== 30 || stats.remaining !== 5 || !stats.withinBudget || stats.entries.map(e=>e.key).join(',') !== 'damage,hp') throw new Error('stat budget failed');
+          const encounter = createGameplayEncounterBudget({ enemies:[{id:'goblin',count:2,hp:25,damage:10}], duration:10, playerPower:5 });
+          if (encounter.authority !== 'analysis-only' || encounter.totalPressure !== 150 || encounter.pressurePerSecond !== 15 || encounter.pressureRatio !== 3 || encounter.band !== 'overwhelming') throw new Error('encounter budget failed');
+          const economy = createGameplayEconomyGraph({ sources:{kills:30,quests:10}, sinks:{shop:25}, starting:5 });
+          if (economy.authority !== 'analysis-only' || economy.totalIncome !== 40 || economy.totalExpense !== 25 || economy.net !== 15 || economy.direction !== 'inflationary') throw new Error('economy graph failed');
+          const curve = createGameplayProgressionCurve({ levels:3, base:100, growth:1.5, mode:'compound' });
+          if (curve.authority !== 'analysis-only' || curve.points.map(p=>p.value).join(',') !== '100,150,225') throw new Error('compound progression failed');
+          const linear = createGameplayProgressionCurve({ levels:3, base:100, growth:.5, mode:'linear' });
+          if (linear.points.map(p=>p.value).join(',') !== '100,150,200') throw new Error('linear progression failed');
+          console.log('PASS gameplay quantitative analysis');
+          NODE
+
+      - name: Test recursive development AI protection
+        run: |
+          node --input-type=module <<'NODE'
+          import { validateVibeDevelopmentAICandidate } from './assets/vibe-development-ai.js';
+          const safe = validateVibeDevelopmentAICandidate({ presentation:{ animation:'walk', vfx:{ hit:'spark' } }, notes:['visual-only'] });
+          if (!safe.valid || safe.touched.length !== 0 || !safe.recursive) throw new Error('safe development AI candidate rejected');
+          const nested = validateVibeDevelopmentAICandidate({ patch:{ player:{ stats:{ hp:999, damage:88 } }, loot:{ dropRates:{ rare:.9 } } } });
+          if (nested.valid || nested.touched.join(',') !== 'damage,dropRates,hp' || nested.decision !== 'reject-authoritative-ai-output') throw new Error('nested protected fields not rejected');
+          const aliases = validateVibeDevelopmentAICandidate({ proposal:{ drops:{ rare:.8 }, encounter:{ 'spawn-count':99 }, save:{ 'save-meaning':'replace' }, flow:{ 'gameplay-flow':['skip'] } } });
+          if (aliases.valid || aliases.touched.join(',') !== 'countPerSpawn,dropRates,gameplayFlow,saveMeaning') throw new Error('protected aliases not normalized');
+          const deepArray = validateVibeDevelopmentAICandidate({ candidates:[{ visual:'ok' },{ nested:[{ progression:{ level:99 } }] }] });
+          if (deepArray.valid || !deepArray.touched.includes('progression')) throw new Error('array recursion protection failed');
+          console.log('PASS recursive development AI protection');
+          NODE
+
+      - name: Test core and common systems
+        run: |
+          node --input-type=module <<'NODE'
+          import { JaewoonD20Rules } from './assets/d20-rules.js';
+          import { JaewoonCharacterProgression } from './assets/character-progression.js';
+          import { JaewoonInventoryEquipment } from './assets/inventory-equipment.js';
+          import { JaewoonCraftingRecipes } from './assets/crafting-recipes.js';
+          import { JaewoonAchievementsUnlocks } from './assets/achievements-unlocks.js';
+          import { JaewoonStatModifiers } from './assets/stat-modifiers.js';
+          import { JaewoonWaveSpawner } from './assets/wave-spawner.js';
+          import { JaewoonDayNightCycle } from './assets/day-night-cycle.js';
+          import { JaewoonResourceGathering } from './assets/resource-gathering.js';
+          import { JaewoonStatusEffects } from './assets/status-effects.js';
+          import { JaewoonCombatVitals } from './assets/combat-vitals.js';
+          import { JaewoonTargetingSystem } from './assets/targeting-system.js';
+          import { JaewoonCombatActions } from './assets/combat-actions.js';
+          import { JaewoonProjectiles } from './assets/projectiles.js';
+          const rules = new JaewoonD20Rules({ rng: () => 0.5 });
+          if (rules.abilityModifier(18) !== 4) throw new Error('d20 failed');
+          const progression = new JaewoonCharacterProgression({ maxLevel: 10, xpForLevel: (level) => (level - 1) * 100 });
+          const hero = progression.createCharacter({ id: 'hero' });
+          progression.addXp(hero, 250);
+          if (hero.level !== 3) throw new Error('progression failed');
+          const inventory = new JaewoonInventoryEquipment({ capacity: 5 });
+          const inv = inventory.createState({ items: [{ id: 'wood', quantity: 3 }] });
+          const crafting = new JaewoonCraftingRecipes({ inventory, recipes: [{ id: 'club', inputs: [{ id: 'wood', quantity: 3 }], outputs: [{ id: 'club', stackable: false }] }] });
+          if (!crafting.craft(crafting.createState(), inv, 'club').ok || inventory.countItem(inv, 'club') !== 1) throw new Error('crafting failed');
+          const statsMod = new JaewoonStatModifiers();
+          const statState = statsMod.createState({ base: { hp: 100 } });
+          statsMod.addModifier(statState, 'hp', { id: 'armor', flat: 50 });
+          if (statsMod.calculate(statState, 'hp') !== 150) throw new Error('stat modifiers failed');
+          const achievements = new JaewoonAchievementsUnlocks({ definitions: [{ id: 'first-kill', requirements: [{ key: 'kills', target: 1 }], rewards: { gold: 10 } }] });
+          const achievementState = achievements.createState();
+          if (!achievements.increment(achievementState, 'kills', 1).includes('first-kill')) throw new Error('achievement unlock failed');
+          if (achievements.claimReward(achievementState, 'first-kill')?.gold !== 10) throw new Error('achievement reward failed');
+          const waves = new JaewoonWaveSpawner({ waves: [{ id: 'w1', maxAlive: 1, groups: [{ enemyId: 'slime', count: 2, interval: 1 }] }] });
+          waves.start(0);
+          if (waves.update(0).length !== 1 || waves.progress().alive !== 1) throw new Error('wave spawn failed');
+          const cycle = new JaewoonDayNightCycle({ dayDuration: 10, nightDuration: 5, startDay: 2 });
+          cycle.update(10);
+          if (!cycle.isNight() || cycle.status().day !== 2) throw new Error('day night failed');
+          const gathering = new JaewoonResourceGathering({ rng: () => 0.5, nodes: [{ id: 'branch', resourceId: 'wood', minAmount: 1, maxAmount: 3, maxCharges: 2, respawnDelay: 5, phases: ['day'] }] });
+          if (gathering.gather('branch', { day: 1, phase: 'day' }).quantity !== 2) throw new Error('resource gather failed');
+          const effects = new JaewoonStatusEffects();
+          effects.apply('hero', { id: 'poison', duration: 3, tickInterval: 1, magnitude: 5, stackMode: 'stack', maxStacks: 3 });
+          if (!effects.update(1).some((e) => e.type === 'effect-tick')) throw new Error('status effects failed');
+          const combat = new JaewoonCombatVitals({ entities: [{ id: 'hero', hp: 100, maxHp: 100, shield: 20, maxShield: 20 }, { id: 'near', hp: 50, maxHp: 50 }] });
+          if (combat.damage('hero', 30).hpDamage !== 10) throw new Error('combat failed');
+          const targeting = new JaewoonTargetingSystem({ entities: [{ id: 'tower', team: 'ally', x: 0, y: 0 }, { id: 'near', team: 'enemy', x: 3, y: 4, hp: 50, maxHp: 100, threat: 2 }] });
+          if (targeting.select('tower', { teams: ['enemy'], range: 6, strategy: 'nearest' })?.id !== 'near') throw new Error('targeting failed');
+          const actions = new JaewoonCombatActions({ targeting, combatVitals: combat, statusEffects: effects, rng: () => 0 });
+          actions.register({ id: 'strike', damage: 10, range: 6, cooldown: 2, criticalChance: 1, criticalMultiplier: 2 });
+          if (!actions.use('hero', 'strike', 'near').critical) throw new Error('combat action failed');
+          const projectiles = new JaewoonProjectiles();
+          projectiles.spawn({ id: 'p', position: { x: 0, y: 0 }, velocity: { x: 10, y: 0 }, lifetime: 2 });
+          projectiles.update(0.5);
+          if (projectiles.get('p')?.position.x !== 5) throw new Error('projectile failed');
+          console.log('PASS core/common systems');
+          NODE
+
+      - name: Test game kit and session restore
+        run: |
+          node --input-type=module <<'NODE'
+          import { createGameKit } from './assets/game-kit.js';
+          import { buildGameBlueprint } from './assets/game-blueprint.js';
+          import { createGameSession } from './assets/game-session.js';
+          const config = { gameId: 'qa-game', inventoryEquipment: true, achievementsUnlocks: { definitions: [{ id: 'collector', requirements: [{ key: 'items', target: 2 }] }] }, versionedSave: { currentVersion: 2 } };
+          const kit = createGameKit(config);
+          kit.get('achievements').increment(kit.state.achievements, 'items', 2);
+          const wrapped = kit.wrapSave();
+          const restored = createGameKit(config);
+          restored.restoreState(wrapped);
+          if (!restored.get('achievements').isUnlocked(restored.state.achievements, 'collector')) throw new Error('achievement restore failed');
+          for (const [genre, required] of [['survival', ['day-night-cycle','resource-gathering','combat-vitals','combat-actions']], ['defense', ['targeting-system','combat-actions']]]) {
+            const blueprint = buildGameBlueprint({ gameId: `qa-${genre}`, genre });
+            for (const system of required) if (!blueprint.systems.includes(system)) throw new Error(`${genre} system missing: ${system}`);
+          }
+          const storage = new Map();
+          globalThis.localStorage = { getItem: (k) => storage.has(k) ? storage.get(k) : null, setItem: (k,v) => storage.set(k, String(v)), removeItem: (k) => storage.delete(k) };
+          const options = { gameId: 'qa-session', genre: 'survival', autoRestore: false, dayNightOptions: { dayDuration: 10, nightDuration: 5 }, resourceOptions: { nodes: [{ id: 'stone', resourceId: 'stone', amount: 1, maxCharges: 1, respawnDelay: 4, phases: ['day'] }] }, combatActionOptions: { actions: [{ id: 'bite', damage: 5, range: 3, cooldown: 2 }] } };
+          const session = createGameSession(options);
+          session.registerCombatEntity({ id: 'player', hp: 50, maxHp: 50 });
+          session.save();
+          const restoredSession = createGameSession({ ...options, autoRestore: true });
+          if (restoredSession.combatVitals.get('player').hp !== 50) throw new Error('session restore failed');
+          session.destroy();
+          restoredSession.destroy();
+          console.log('PASS game kit/session restore');
+          NODE
+
+      - name: Validate canonical game catalog and homepage normalization
+        run: |
+          node --check tools/game-catalog-normalization.mjs
+          node qa/game-catalog-normalization.test.mjs
+
+      - name: Validate Google Play rotation workflow structure
+        run: |
+          node qa/external-mobile-free-game-playtest-workflow.test.mjs
+          node qa/vibe2-google-play-catalog-coverage.test.mjs
+      - name: Validate horror escape room release gates
+        run: node --test qa/horror-escape-room-release.test.mjs
+
+      - name: Validate changed Roblox source synchronization
+        run: |
+          node --check tools/company-roblox-source-drift-sync.mjs
+          node --check tools/company-development-roblox-source-reconcile.mjs
+          node --test qa/company-roblox-source-drift-sync.test.mjs qa/company-development-roblox-source-reconcile.test.mjs
+
+      - name: Run integrated regression
+        run: node qa/vibe-regression.mjs
+
+      - name: Check Godot common toolkit structure
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('godot-games/common-game-systems.gd').read_text(encoding='utf-8')
+          for token in ['class_name JaewoonCommonGameSystems','create_inventory','start_quest','can_use_skill','roll_loot','migrate_save']:
+            assert token in text, token
+          print('PASS Godot common toolkit structure')
+          PY
+
+      - name: Repository hygiene
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          limit = 100 * 1024 * 1024
+          bad = [(str(p), p.stat().st_size) for p in Path('.').rglob('*') if p.is_file() and '.git' not in p.parts and p.stat().st_size >= limit]
+          if bad: raise SystemExit('\n'.join(f'{p}: {s}' for p, s in bad))
+          print('PASS repository hygiene')
+          PY

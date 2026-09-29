@@ -1,0 +1,107 @@
+diff --git a/ashmem/ashmem.c b/ashmem/ashmem.c
+index 21e6c04..07c1b69 100644
+--- a/ashmem/ashmem.c
++++ b/ashmem/ashmem.c
+@@ -25,6 +25,7 @@
+ #include <linux/bitops.h>
+ #include <linux/mutex.h>
+ #include <linux/shmem_fs.h>
++#include <linux/sched/mm.h>
+ #include "ashmem.h"
+ #include "deps.h"
+ 
+@@ -368,12 +369,19 @@ static int ashmem_vmfile_mmap(struct file *file, struct vm_area_struct *vma)
+ 	return -EPERM;
+ }
+ 
++static const struct file_operations *ashmem_vmfile_orig_fops;
++
+ static unsigned long
+ ashmem_vmfile_get_unmapped_area(struct file *file, unsigned long addr,
+ 				unsigned long len, unsigned long pgoff,
+ 				unsigned long flags)
+ {
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)
++	return mm_get_unmapped_area(current->mm, file, addr, len, pgoff,
++				    flags);
++#else
+ 	return current->mm->get_unmapped_area(file, addr, len, pgoff, flags);
++#endif
+ }
+ 
+ static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
+@@ -429,33 +437,58 @@ static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
+ 		 * as well to prevent VM_BUG_ON check for f_ops modification.
+ 		 */
+ 		if (!vmfile_fops.mmap) {
+-			vmfile_fops = *vmfile->f_op;
++			ashmem_vmfile_orig_fops = vmfile->f_op;
++			vmfile_fops = *ashmem_vmfile_orig_fops;
+ 			vmfile_fops.mmap = ashmem_vmfile_mmap;
+ 			vmfile_fops.get_unmapped_area =
+ 					ashmem_vmfile_get_unmapped_area;
+ 		}
+ 		vmfile->f_op = &vmfile_fops;
+ 	}
+-	get_file(asma->file);
+-
+-	/*
+-	 * XXX - Reworked to use shmem_zero_setup() instead of
+-	 * shmem_set_file while we're in staging. -jstultz
+-	 */
+ 	if (vma->vm_flags & VM_SHARED) {
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
++		const struct file_operations *saved_fops = asma->file->f_op;
++
++		get_file(asma->file);
++		if (vma->vm_file)
++			fput(vma->vm_file);
++		vma->vm_file = asma->file;
++
++		/*
++		 * Use the original shmem mmap hook for the initial ashmem-backed
++		 * mapping, then restore the guarded fops to block later remaps of
++		 * the backing file that would bypass ashmem permission checks.
++		 */
++		asma->file->f_op = ashmem_vmfile_orig_fops;
++		ret = vfs_mmap(vma->vm_file, vma);
++		asma->file->f_op = saved_fops;
++		if (ret)
++			goto out;
++#else
++		get_file(asma->file);
++
++		/*
++		 * XXX - Reworked to use shmem_zero_setup() instead of
++		 * shmem_set_file while we're in staging. -jstultz
++		 */
+ 		ret = shmem_zero_setup(vma);
+ 		if (ret) {
+ 			fput(asma->file);
+ 			goto out;
+ 		}
++
++		if (vma->vm_file)
++			fput(vma->vm_file);
++		vma->vm_file = asma->file;
++#endif
+ 	} else {
++		get_file(asma->file);
+ 		vma_set_anonymous(vma);
++		if (vma->vm_file)
++			fput(vma->vm_file);
++		vma->vm_file = asma->file;
+ 	}
+ 
+-	if (vma->vm_file)
+-		fput(vma->vm_file);
+-	vma->vm_file = asma->file;
+-
+ out:
+ 	mutex_unlock(&ashmem_mutex);
+ 	return ret;
+@@ -1009,4 +1042,3 @@ module_init(ashmem_init);
+ module_exit(ashmem_exit);
+ //device_initcall(ashmem_init);
+ MODULE_LICENSE("GPL v2");
+-

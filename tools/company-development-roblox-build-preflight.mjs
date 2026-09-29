@@ -1,0 +1,147 @@
+// 파일명: tools/company-development-roblox-build-preflight.mjs
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {hasVerifiedVibe2SourceHandoff} from './company-development-roblox-source-reconcile.mjs';
+
+const ROLES=Object.freeze(['planning','graphics','development','qa','balance']);
+const SHA256=/^sha256:[0-9a-f]{64}$/i;
+const COMMIT=/^[0-9a-f]{40}$/i;
+const clean=value=>String(value??'').trim();
+const upper=value=>clean(value).toUpperCase();
+const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
+
+function configuredLeads(directive={}){
+  const ai=directive.ai||{};
+  const sharedModel=clean(ai.robloxPreflightModel||ai.departmentLeadModels?.development||ai.modelPool?.[0]);
+  const leads=Object.fromEntries(ROLES.map(role=>[role,sharedModel]));
+  const distinct=sharedModel?[sharedModel]:[];
+  const minDistinct=Math.max(1,Number(ai.minDistinctLeadModelsAcrossDepartments)||1);
+  return {leads,distinct,pool:new Set((ai.modelPool||[]).map(clean).filter(Boolean)),sharedModel,minDistinct};
+}
+
+export function inspectRobloxBuildPreflight({item={},directive={},secondaryOwnerFocus=false}={}){
+  const blockers=[];
+  const {leads,distinct,pool,sharedModel,minDistinct}=configuredLeads(directive);
+  const secondary=secondaryOwnerFocus===true;
+  const directRoblox=upper(item.selectedPlatform||item.targetPlatform)==='ROBLOX';
+  const concurrentRoblox=upper(item.platformExecutionMode)==='ROBLOX_UNITY_CONCURRENT_SAME_GAME'
+    &&Array.isArray(item.concurrentTargetPlatforms)
+    &&item.concurrentTargetPlatforms.some(platform=>upper(platform)==='ROBLOX');
+  const robloxLaneEligible=directRoblox||concurrentRoblox;
+  const verifiedVibe2Handoff=!secondary&&hasVerifiedVibe2SourceHandoff(item);
+  const nativeWebValidationPassed=Boolean(item.webValidationPassedAt);
+  const nativeMusicValidationPassed=item.musicValidationPassed===true;
+  const webValidationPassed=nativeWebValidationPassed||verifiedVibe2Handoff;
+  const musicValidationPassed=nativeMusicValidationPassed||verifiedVibe2Handoff;
+  const sourceValidationPassed=secondary?Boolean(item.ownerFocusRobloxSourceBootstrapPassedAt):Boolean(item.robloxSourceBootstrapPassedAt);
+  const buildOrPackagePassed=secondary?item.ownerFocusRobloxBuildOrPackagePassed===true:item.robloxBuildOrPackagePassed===true;
+  const sourceRevision=clean(secondary?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit);
+  const buildSourceRevision=clean(secondary?item.ownerFocusRobloxBuildSourceRevision:item.robloxBuildSourceRevision);
+  const artifactIdentity=clean(secondary?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity);
+  if(!['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(upper(item.productionClass)))blockers.push('confirmed-production-class-required');
+  if(!secondary&&!robloxLaneEligible)blockers.push('roblox-platform-required');
+  if(!buildOrPackagePassed)blockers.push('build-package-not-passed');
+  if(!COMMIT.test(sourceRevision))blockers.push('source-revision-invalid');
+  if(buildSourceRevision!==sourceRevision)blockers.push('source-revision-mismatch');
+  if(!SHA256.test(artifactIdentity))blockers.push('artifact-identity-invalid');
+  if(distinct.length<minDistinct)blockers.push('shared-review-model-missing');
+  if(!sharedModel)blockers.push('shared-review-model-missing');
+  else if(!pool.has(sharedModel))blockers.push('shared-review-model-not-in-model-pool');
+  return Object.freeze({
+    pass:blockers.length===0,
+    blockers:Object.freeze([...new Set(blockers)]),
+    leads:Object.freeze({...leads}),
+    sharedModel,
+    distinctLeadCount:distinct.length,
+    secondaryOwnerFocus:secondary,
+    robloxLaneEligible,
+    directRoblox,
+    concurrentRoblox,
+    build:Object.freeze({
+      sourceRevision:sourceRevision||null,
+      artifactIdentity:artifactIdentity||null,
+      webValidationPassed,
+      musicValidationPassed,
+      nativeWebValidationPassed,
+      nativeMusicValidationPassed,
+      sourceEligibilityAuthority:buildOrPackagePassed?'exact-immutable-roblox-package':secondary?'owner-focused-secondary-roblox':verifiedVibe2Handoff?'verified-vibe2-source-handoff':'source-bootstrap',
+      sourceValidationPassed:sourceValidationPassed||buildOrPackagePassed,
+      buildOrPackagePassed,
+    }),
+  });
+}
+
+async function callLead(model,role,facts,{fetchImpl=globalThis.fetch}={}){
+  const schema={
+    type:'object',
+    required:['decision','blockers','note'],
+    properties:{
+      decision:{type:'string',enum:['PASS','BLOCK']},
+      blockers:{type:'array',maxItems:6,items:{type:'string',maxLength:120}},
+      note:{type:'string',maxLength:240},
+    },
+    additionalProperties:false,
+  };
+  const evidence=JSON.stringify(facts.build);
+  let last=null;
+  for(let attempt=1;attempt<=2;attempt++){
+    try{
+      const response=await fetchImpl('http://127.0.0.1:11434/api/chat',{
+        method:'POST',headers:{'content-type':'application/json'},
+        body:JSON.stringify({
+          model,stream:false,think:false,format:schema,
+          messages:[
+            {role:'system',content:`You are the single shared Roblox preflight reviewer working with Vibe. This gate only decides whether the already-built immutable package may START real runtime testing. Do not demand runtime, independent QA, regression, final review, or release evidence at this stage. A BLOCK decision must name a concrete contradiction visible in BUILD_EVIDENCE. Never invent facts.`},
+            {role:'user',content:`BUILD_EVIDENCE=${evidence}\nAll deterministic policy checks passed before this review. Return PASS when no concrete build-stage blocker is present.`},
+          ],
+          options:{temperature:0,num_ctx:4096,num_predict:300},
+        }),
+      });
+      if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
+      const body=await response.json();
+      const parsed=JSON.parse(clean(body?.message?.content));
+      if(!['PASS','BLOCK'].includes(parsed.decision)||!Array.isArray(parsed.blockers))throw new Error('invalid lead response');
+      return {role,model,decision:parsed.decision,blockers:parsed.blockers.map(clean).filter(Boolean),note:clean(parsed.note)};
+    }catch(error){last=error;if(attempt===1)console.log(`ROBLOX_PREFLIGHT_LEAD_RETRY=${role}:${model}`);}
+  }
+  throw new Error(`ROBLOX_PREFLIGHT_LEAD_FAILED ${role}:${model}: ${clean(last?.message)}`);
+}
+
+export async function evaluateRobloxBuildPreflight({item={},directive={},fetchImpl=globalThis.fetch,secondaryOwnerFocus=false}={}){
+  const facts=inspectRobloxBuildPreflight({item,directive,secondaryOwnerFocus});
+  if(!facts.pass)return Object.freeze({version:2,gameId:item.gameId||null,pass:false,state:'BLOCKED',checkedAt:new Date().toISOString(),facts,leadReviews:[],blockers:[...facts.blockers],authority:'roblox-vibe-shared-model-build-preflight'});
+  const leadReviews=[await callLead(facts.sharedModel,'shared-review',facts,{fetchImpl})];
+  const blockers=[];
+  for(const review of leadReviews){if(review.decision!=='PASS')blockers.push(`lead-block:${review.role}:${review.blockers.join('|')||'unspecified'}`);}
+  return Object.freeze({
+    version:2,gameId:item.gameId||null,pass:blockers.length===0,state:blockers.length?'BLOCKED':'PASS',checkedAt:new Date().toISOString(),
+    sourceRevision:facts.build.sourceRevision,artifactIdentity:facts.build.artifactIdentity,secondaryOwnerFocus:facts.secondaryOwnerFocus===true,facts,
+    leadReviews:Object.freeze(leadReviews),blockers:Object.freeze(blockers),
+    authority:'roblox-vibe-shared-model-build-preflight',
+  });
+}
+
+function parseArgs(argv){const out={};for(let i=0;i<argv.length;i++){const arg=argv[i];if(!arg.startsWith('--'))continue;const [key,inline]=arg.slice(2).split('=',2);out[key]=inline??argv[++i];}return out;}
+
+async function main(){
+  const args=parseArgs(process.argv.slice(2));
+  const queue=readJson(clean(args.queue));
+  const directive=readJson(clean(args.directive)||'company-directive.json');
+  const gameId=clean(args['game-id']);
+  const output=clean(args.output);
+  if(!gameId||!output)throw new Error('game-id and output are required');
+  const item=(queue.items||[]).find(row=>row.gameId===gameId);
+  if(!item)throw new Error(`queue item missing: ${gameId}`);
+  const secondaryOwnerFocus=clean(args['secondary-owner-focus']).toLowerCase()==='true';
+  const result=await evaluateRobloxBuildPreflight({item,directive,secondaryOwnerFocus});
+  fs.mkdirSync(path.dirname(output),{recursive:true});
+  fs.writeFileSync(output,`${JSON.stringify(result,null,2)}\n`);
+  console.log(`ROBLOX_BUILD_PREFLIGHT_GAME=${gameId}`);
+  console.log(`ROBLOX_BUILD_PREFLIGHT_LEAD_COUNT=${result.leadReviews?.length||0}`);
+  console.log(`ROBLOX_BUILD_PREFLIGHT_PASS=${result.pass?'YES':'NO'}`);
+  if(!result.pass)process.exitCode=2;
+}
+
+const isMain=process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url);
+if(isMain)main().catch(error=>{console.error(error.stack||error.message);process.exitCode=1;});

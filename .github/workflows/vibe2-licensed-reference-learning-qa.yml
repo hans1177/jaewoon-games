@@ -1,0 +1,56 @@
+name: Vibe2 Licensed Unity Reference QA
+
+on:
+  pull_request:
+    paths:
+      - 'company-learning/unity-teacher-materials/licensed-reference-drills.json'
+      - 'tools/vibe2-licensed-reference-samples.mjs'
+      - 'tools/vibe2-practice-dataset.mjs'
+      - 'tools/vibe2-practice-train.py'
+      - 'qa/vibe2-licensed-reference-learning.test.mjs'
+      - '.github/workflows/vibe2-practice-cpu-fallback.yml'
+      - '.github/workflows/vibe2-licensed-reference-learning-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'company-learning/unity-teacher-materials/licensed-reference-drills.json'
+      - 'tools/vibe2-licensed-reference-samples.mjs'
+      - 'tools/vibe2-practice-dataset.mjs'
+      - 'tools/vibe2-practice-train.py'
+      - 'qa/vibe2-licensed-reference-learning.test.mjs'
+      - '.github/workflows/vibe2-practice-cpu-fallback.yml'
+      - '.github/workflows/vibe2-licensed-reference-learning-qa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  licensed-reference-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check learning tools
+        run: |
+          set -euo pipefail
+          node --check tools/vibe2-licensed-reference-samples.mjs
+          node --check tools/vibe2-practice-dataset.mjs
+          python -m py_compile tools/vibe2-practice-train.py
+      - name: Verify source-backed licensed learning contract
+        run: node --test qa/vibe2-licensed-reference-learning.test.mjs
+      - name: Verify no production promotion authority
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const doc=JSON.parse(fs.readFileSync('company-learning/unity-teacher-materials/licensed-reference-drills.json','utf8'));
+          if(doc.authority!=='PRACTICE_ONLY'||doc.runtimePromotionAllowed!==false||doc.synthetic!==false||doc.sourceKind!=='licensed-reference') throw new Error('licensed reference authority drift');
+          for(const source of doc.sources){
+            if(source.licenseSpdx!=='MIT') throw new Error('unexpected license in first licensed reference batch');
+            if(!/^[0-9a-f]{40}$/i.test(source.commit)) throw new Error('unpinned external source');
+          }
+          console.log('LICENSED_REFERENCE_PRODUCTION_PROMOTION=NO');
+          NODE

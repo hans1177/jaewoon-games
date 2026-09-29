@@ -1,0 +1,438 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-10T19:05:41.162Z",
+  "policy": {
+    "dedupeBySignature": true,
+    "retainResolvedPatterns": true,
+    "verifiedRootCauseRequiredForLearningXp": true,
+    "repeatFailureWithoutNewLearningGetsNoXp": true,
+    "reuseBeforeNewInvestigation": true
+  },
+  "bugs": [
+    {
+      "id": "unity-cloud-license-20110",
+      "signature": "unity-license-20110-serial-invalid",
+      "scope": "build-infrastructure",
+      "gameId": "daechung-rpg",
+      "severity": "HIGH",
+      "status": "open",
+      "symptom": "Unity Cloud Android Test reaches Unity login/entitlement activation, then fails repeatedly with Code 20110: serial invalid before compilation and APK packaging.",
+      "firstSeen": "2026-09-08",
+      "lastSeen": "2026-09-08",
+      "occurrences": [
+        {
+          "workflow": "Unity Cloud Android Test",
+          "runId": 34163120304,
+          "jobId": 101868809566,
+          "headSha": "23f7ff4dcac28eee75d6b690faff4c0cf5fd6258"
+        }
+      ],
+      "rootCause": null,
+      "fix": null,
+      "prevention": null,
+      "learningVerified": false,
+      "xpAwarded": false,
+      "notes": [
+        "UNITY_EMAIL/UNITY_PASSWORD login succeeds.",
+        "Entitlement activation reports success before the serial-invalid failure.",
+        "Do not misclassify this as a C# compile failure because compilation was never reached."
+      ]
+    },
+    {
+      "id": "public-bug-defense-console-d630f9ee85c77765",
+      "signature": "public-bug-defense-console-d630f9ee85c77765",
+      "scope": "public-game-runtime",
+      "gameId": "bug-defense",
+      "severity": "MEDIUM",
+      "status": "open",
+      "symptom": "Failed to load resource: the server responded with a status of # (File not found)",
+      "firstSeen": "2026-09-07",
+      "lastSeen": "2026-09-09",
+      "occurrences": [
+        {
+          "checkedAt": "2026-09-07T22:30:07.614Z",
+          "runId": "34166845570",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-08T04:36:26.781Z",
+          "runId": "34187557226",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:32:56.900Z",
+          "runId": "34311359728",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:42:27.017Z",
+          "runId": "34311981250",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        }
+      ],
+      "rootCause": null,
+      "fix": null,
+      "prevention": null,
+      "learningVerified": false,
+      "xpAwarded": false,
+      "notes": [
+        "Detected by public game smoke-play monitor: console"
+      ]
+    },
+    {
+      "id": "public-bug-defense-requestfailed-bbc3c87c3a3cc7e2",
+      "signature": "public-bug-defense-requestfailed-bbc3c87c3a3cc7e2",
+      "scope": "public-game-runtime",
+      "gameId": "bug-defense",
+      "severity": "MEDIUM",
+      "status": "open",
+      "symptom": "http://#.#.#.#:#/assets/framework-DjPHiq#u.js net::ERR_ABORTED",
+      "firstSeen": "2026-09-07",
+      "lastSeen": "2026-09-09",
+      "occurrences": [
+        {
+          "checkedAt": "2026-09-07T22:30:07.614Z",
+          "runId": "34166845570",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-07T22:30:07.614Z",
+          "runId": "34166845570",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-08T04:36:26.781Z",
+          "runId": "34187557226",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-08T04:36:26.781Z",
+          "runId": "34187557226",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:32:56.900Z",
+          "runId": "34311359728",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:32:56.900Z",
+          "runId": "34311359728",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:42:27.017Z",
+          "runId": "34311981250",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:42:27.017Z",
+          "runId": "34311981250",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        }
+      ],
+      "rootCause": null,
+      "fix": null,
+      "prevention": null,
+      "learningVerified": false,
+      "xpAwarded": false,
+      "notes": [
+        "Detected by public game smoke-play monitor: requestfailed"
+      ]
+    },
+    {
+      "id": "public-bug-defense-requestfailed-083d43a0d3f49515",
+      "signature": "public-bug-defense-requestfailed-083d43a0d3f49515",
+      "scope": "public-game-runtime",
+      "gameId": "bug-defense",
+      "severity": "MEDIUM",
+      "status": "open",
+      "symptom": "http://#.#.#.#:#/assets/layout-segment-context-B#l#MHMQ.js net::ERR_ABORTED",
+      "firstSeen": "2026-09-07",
+      "lastSeen": "2026-09-09",
+      "occurrences": [
+        {
+          "checkedAt": "2026-09-07T22:30:07.614Z",
+          "runId": "34166845570",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-07T22:30:07.614Z",
+          "runId": "34166845570",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-08T04:36:26.781Z",
+          "runId": "34187557226",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-08T04:36:26.781Z",
+          "runId": "34187557226",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:32:56.900Z",
+          "runId": "34311359728",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:32:56.900Z",
+          "runId": "34311359728",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:42:27.017Z",
+          "runId": "34311981250",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:42:27.017Z",
+          "runId": "34311981250",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        }
+      ],
+      "rootCause": null,
+      "fix": null,
+      "prevention": null,
+      "learningVerified": false,
+      "xpAwarded": false,
+      "notes": [
+        "Detected by public game smoke-play monitor: requestfailed"
+      ]
+    },
+    {
+      "id": "public-bug-defense-requestfailed-6f0875d12061fe3d",
+      "signature": "public-bug-defense-requestfailed-6f0875d12061fe3d",
+      "scope": "public-game-runtime",
+      "gameId": "bug-defense",
+      "severity": "MEDIUM",
+      "status": "open",
+      "symptom": "http://#.#.#.#:#/assets/page-CgY#ZelV.js net::ERR_ABORTED",
+      "firstSeen": "2026-09-07",
+      "lastSeen": "2026-09-09",
+      "occurrences": [
+        {
+          "checkedAt": "2026-09-07T22:30:07.614Z",
+          "runId": "34166845570",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-07T22:30:07.614Z",
+          "runId": "34166845570",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-08T04:36:26.781Z",
+          "runId": "34187557226",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-08T04:36:26.781Z",
+          "runId": "34187557226",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:32:56.900Z",
+          "runId": "34311359728",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:32:56.900Z",
+          "runId": "34311359728",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:42:27.017Z",
+          "runId": "34311981250",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:42:27.017Z",
+          "runId": "34311981250",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        }
+      ],
+      "rootCause": null,
+      "fix": null,
+      "prevention": null,
+      "learningVerified": false,
+      "xpAwarded": false,
+      "notes": [
+        "Detected by public game smoke-play monitor: requestfailed"
+      ]
+    },
+    {
+      "id": "public-bug-defense-requestfailed-32d70929a2b0397d",
+      "signature": "public-bug-defense-requestfailed-32d70929a2b0397d",
+      "scope": "public-game-runtime",
+      "gameId": "bug-defense",
+      "severity": "MEDIUM",
+      "status": "open",
+      "symptom": "http://#.#.#.#:#/assets/rolldown-runtime-S-ySWqyJ.js net::ERR_ABORTED",
+      "firstSeen": "2026-09-07",
+      "lastSeen": "2026-09-09",
+      "occurrences": [
+        {
+          "checkedAt": "2026-09-07T22:30:07.614Z",
+          "runId": "34166845570",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-07T22:30:07.614Z",
+          "runId": "34166845570",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-08T04:36:26.781Z",
+          "runId": "34187557226",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-08T04:36:26.781Z",
+          "runId": "34187557226",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:32:56.900Z",
+          "runId": "34311359728",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:32:56.900Z",
+          "runId": "34311359728",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:42:27.017Z",
+          "runId": "34311981250",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:42:27.017Z",
+          "runId": "34311981250",
+          "url": "http://127.0.0.1:4173/web-games/bug-defense/"
+        }
+      ],
+      "rootCause": null,
+      "fix": null,
+      "prevention": null,
+      "learningVerified": false,
+      "xpAwarded": false,
+      "notes": [
+        "Detected by public game smoke-play monitor: requestfailed"
+      ]
+    },
+    {
+      "id": "public-human-go-console-594125a647b61875",
+      "signature": "public-human-go-console-594125a647b61875",
+      "scope": "public-game-runtime",
+      "gameId": "human-go",
+      "severity": "MEDIUM",
+      "status": "open",
+      "symptom": "Failed to load resource: net::ERR_INVALID_URL",
+      "firstSeen": "2026-09-07",
+      "lastSeen": "2026-09-10",
+      "occurrences": [
+        {
+          "checkedAt": "2026-09-07T22:30:07.614Z",
+          "runId": "34166845570",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-08T04:36:26.781Z",
+          "runId": "34187557226",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:32:56.900Z",
+          "runId": "34311359728",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-09T04:42:27.017Z",
+          "runId": "34311981250",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-09T20:36:04.904Z",
+          "runId": "34401932264",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-09T21:40:45.178Z",
+          "runId": "34408180925",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-10T04:43:29.021Z",
+          "runId": "34438226080",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-10T14:44:48.566Z",
+          "runId": "34491019891",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-10T14:53:24.779Z",
+          "runId": "34491960167",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-10T15:00:41.032Z",
+          "runId": "34492751327",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-10T15:09:17.241Z",
+          "runId": "34493677517",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-10T16:24:44.945Z",
+          "runId": "34501852793",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-10T17:00:44.725Z",
+          "runId": "34505518499",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-10T17:14:48.061Z",
+          "runId": "34506934104",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-10T17:21:14.630Z",
+          "runId": "34507627282",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-10T17:28:23.797Z",
+          "runId": "34508367955",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-10T17:56:40.163Z",
+          "runId": "34511230876",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        },
+        {
+          "checkedAt": "2026-09-10T19:05:41.162Z",
+          "runId": "34518269999",
+          "url": "http://127.0.0.1:4173/web-games/human-go/"
+        }
+      ],
+      "rootCause": null,
+      "fix": null,
+      "prevention": null,
+      "learningVerified": false,
+      "xpAwarded": false,
+      "notes": [
+        "Detected by public game smoke-play monitor: console"
+      ]
+    }
+  ]
+}

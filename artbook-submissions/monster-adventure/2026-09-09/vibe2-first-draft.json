@@ -1,0 +1,659 @@
+{
+  "recommendedPages": 18,
+  "playerMotivation": "몬스터 어드벤처",
+  "centralConflict": "몬스터 트레이너 도감",
+  "causalitySummary": "OPENING:몬스터 트레이너 도감→몬스터 트레이너 도감 1/9 승리 / EARLY:포획볼→포획볼 ${save.balls} / MID:몬스터 어드벤처→몬스터 어드벤처 / LATE:몬스터 어드벤처→몬스터 어드벤처 / FINAL_BOSS:몬스터 어드벤처→몬스터 어드벤처 / ENDING:몬스터 어드벤처→몬스터 어드벤처",
+  "storySpine": {
+    "opening": "몬스터 어드벤처 — 몬스터 트레이너 도감 1/9 승리",
+    "early": "몬스터 어드벤처 — 포획볼 ${save.balls}",
+    "mid": "몬스터 어드벤처 — 몬스터 어드벤처",
+    "late": "몬스터 어드벤처 — 몬스터 어드벤처",
+    "finalBoss": "몬스터 어드벤처 — 몬스터 어드벤처",
+    "ending": "몬스터 어드벤처 — 몬스터 어드벤처"
+  },
+  "phasePlans": [
+    {
+      "stage": "OPENING",
+      "region": "top",
+      "quest": "몬스터 어드벤처",
+      "cause": "몬스터 트레이너 도감",
+      "playerAction": "몬스터 어드벤처",
+      "result": "몬스터 트레이너 도감 1/9 승리",
+      "nextHook": "world에서 몬스터 어드벤처"
+    },
+    {
+      "stage": "EARLY",
+      "region": "world",
+      "quest": "몬스터 어드벤처",
+      "cause": "포획볼",
+      "playerAction": "포획볼",
+      "result": "포획볼 ${save.balls}",
+      "nextHook": "playerPanel에서 몬스터 어드벤처"
+    },
+    {
+      "stage": "MID",
+      "region": "playerPanel",
+      "quest": "몬스터 어드벤처",
+      "cause": "몬스터 어드벤처",
+      "playerAction": "몬스터 어드벤처",
+      "result": "몬스터 어드벤처",
+      "nextHook": "fieldMap에서 몬스터 어드벤처"
+    },
+    {
+      "stage": "LATE",
+      "region": "fieldMap",
+      "quest": "몬스터 어드벤처",
+      "cause": "몬스터 어드벤처",
+      "playerAction": "몬스터 어드벤처",
+      "result": "몬스터 어드벤처",
+      "nextHook": "battleField에서 몬스터 어드벤처"
+    },
+    {
+      "stage": "FINAL_BOSS",
+      "region": "battleField",
+      "quest": "몬스터 어드벤처",
+      "cause": "몬스터 어드벤처",
+      "playerAction": "몬스터 어드벤처",
+      "result": "몬스터 어드벤처",
+      "nextHook": "bottom에서 몬스터 어드벤처"
+    },
+    {
+      "stage": "ENDING",
+      "region": "bottom",
+      "quest": "몬스터 어드벤처",
+      "cause": "몬스터 어드벤처",
+      "playerAction": "몬스터 어드벤처",
+      "result": "몬스터 어드벤처",
+      "nextHook": "몬스터 어드벤처"
+    }
+  ],
+  "regions": [
+    "top",
+    "world",
+    "playerPanel",
+    "fieldMap",
+    "battleField",
+    "bottom"
+  ],
+  "regionTransitions": [
+    {
+      "from": "top",
+      "to": "world",
+      "cause": "몬스터 트레이너 도감 1/9 승리",
+      "unlock": "몬스터 어드벤처"
+    },
+    {
+      "from": "world",
+      "to": "playerPanel",
+      "cause": "포획볼 ${save.balls}",
+      "unlock": "몬스터 어드벤처"
+    },
+    {
+      "from": "playerPanel",
+      "to": "fieldMap",
+      "cause": "몬스터 어드벤처",
+      "unlock": "몬스터 어드벤처"
+    },
+    {
+      "from": "fieldMap",
+      "to": "battleField",
+      "cause": "몬스터 어드벤처",
+      "unlock": "몬스터 어드벤처"
+    },
+    {
+      "from": "battleField",
+      "to": "bottom",
+      "cause": "몬스터 어드벤처",
+      "unlock": "몬스터 어드벤처"
+    }
+  ],
+  "mainQuestChain": [
+    {
+      "id": "MAIN-01",
+      "stage": "OPENING",
+      "region": "top",
+      "quest": "몬스터 어드벤처",
+      "cause": "몬스터 트레이너 도감",
+      "playerAction": "몬스터 어드벤처",
+      "result": "몬스터 트레이너 도감 1/9 승리",
+      "nextHook": "world에서 몬스터 어드벤처"
+    },
+    {
+      "id": "MAIN-02",
+      "stage": "EARLY",
+      "region": "world",
+      "quest": "몬스터 어드벤처",
+      "cause": "포획볼",
+      "playerAction": "포획볼",
+      "result": "포획볼 ${save.balls}",
+      "nextHook": "playerPanel에서 몬스터 어드벤처"
+    },
+    {
+      "id": "MAIN-03",
+      "stage": "MID",
+      "region": "playerPanel",
+      "quest": "몬스터 어드벤처",
+      "cause": "몬스터 어드벤처",
+      "playerAction": "몬스터 어드벤처",
+      "result": "몬스터 어드벤처",
+      "nextHook": "fieldMap에서 몬스터 어드벤처"
+    },
+    {
+      "id": "MAIN-04",
+      "stage": "LATE",
+      "region": "fieldMap",
+      "quest": "몬스터 어드벤처",
+      "cause": "몬스터 어드벤처",
+      "playerAction": "몬스터 어드벤처",
+      "result": "몬스터 어드벤처",
+      "nextHook": "battleField에서 몬스터 어드벤처"
+    },
+    {
+      "id": "MAIN-05",
+      "stage": "FINAL_BOSS",
+      "region": "battleField",
+      "quest": "몬스터 어드벤처",
+      "cause": "몬스터 어드벤처",
+      "playerAction": "몬스터 어드벤처",
+      "result": "몬스터 어드벤처",
+      "nextHook": "bottom에서 몬스터 어드벤처"
+    },
+    {
+      "id": "MAIN-06",
+      "stage": "ENDING",
+      "region": "bottom",
+      "quest": "몬스터 어드벤처",
+      "cause": "몬스터 어드벤처",
+      "playerAction": "몬스터 어드벤처",
+      "result": "몬스터 어드벤처",
+      "nextHook": "몬스터 어드벤처"
+    }
+  ],
+  "sideQuestHooks": [
+    "몬스터 어드벤처의 목표(몬스터 어드벤처)와 플레이어 진행을 연결하는 선택형 과제"
+  ],
+  "npcMotivations": [
+    {
+      "name": "몬스터 어드벤처",
+      "goal": "몬스터 어드벤처",
+      "conflict": "몬스터 어드벤처",
+      "relationshipToPlayer": "몬스터 어드벤처"
+    }
+  ],
+  "majorBosses": [
+    "몬스터 어드벤처"
+  ],
+  "bossCausality": [
+    {
+      "boss": "몬스터 어드벤처",
+      "trigger": "몬스터 어드벤처",
+      "whyNow": "몬스터 어드벤처",
+      "winConsequence": "몬스터 어드벤처"
+    }
+  ],
+  "gaps": [],
+  "proposalAdditions": [
+    "OPENING: top / 몬스터 어드벤처",
+    "EARLY: world / 몬스터 어드벤처",
+    "MID: playerPanel / 몬스터 어드벤처",
+    "LATE: fieldMap / 몬스터 어드벤처",
+    "FINAL_BOSS: battleField / 몬스터 어드벤처",
+    "ENDING: bottom / 몬스터 어드벤처"
+  ],
+  "conflictEscalation": "몬스터 트레이너 도감 → 포획볼 → 몬스터 어드벤처 → 몬스터 어드벤처 → 몬스터 어드벤처 → 몬스터 어드벤처",
+  "twist": "포획볼",
+  "finalRegion": "battleField",
+  "endgame": "몬스터 어드벤처",
+  "postgame": "몬스터 어드벤처",
+  "progressionBridge": "top→world:몬스터 어드벤처 / world→playerPanel:몬스터 어드벤처 / playerPanel→fieldMap:몬스터 어드벤처 / fieldMap→battleField:몬스터 어드벤처 / battleField→bottom:몬스터 어드벤처",
+  "technicalContaminationRemoved": [],
+  "generationMode": "COMPACT_MODEL_PLUS_DETERMINISTIC_EXPANSION",
+  "fallbackReason": null,
+  "runner": {
+    "type": "vibe2-local-open-model-compact-first-draft",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "modelAttempts": 2,
+    "stageLabelsNormalized": false,
+    "originalStageLabels": [
+      "OPENING",
+      "EARLY",
+      "MID",
+      "LATE",
+      "FINAL_BOSS",
+      "ENDING"
+    ],
+    "stages": [
+      "DETERMINISTIC_GAME_FACT_PACK",
+      "COMPACT_CAUSALITY_SEED",
+      "DETERMINISTIC_STAGE_LABEL_NORMALIZATION",
+      "DETERMINISTIC_EXPANSION",
+      "SEMANTIC_GROUNDING_GATE",
+      "TECHNICAL_NARRATIVE_FILTER"
+    ]
+  },
+  "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+  "evidenceFiles": [
+    "web-games/monster-adventure/index.html"
+  ],
+  "evidenceSnippets": [
+    "### web-games/monster-adventure/index.html <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,vi",
+    "ta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no\"> 몬스터 어드벤처 | 재운게임즈 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;font-family:system-ui,",
+    "ight:900;color:#334c68}.starter img{display:block;width:72px;height:72px;margin:0 auto 4px}.starter small{display:block;font-size:11px;color:#718399}.world{display:grid;gap:10px}.playerPanel{display:flex;align-items:center;gap:10px}.avatar{width:58px;height:5…",
+    "4 54%);margin-bottom:10px}.platform{position:absolute;width:175px;height:46px;background:#7dbf65;border-radius:50%;box-shadow:inset 0 -9px 0 #5e9e4c}.enemyPlat{right:8px;top:123px}.myPlat{left:2px;bottom:24px}.monster{position:absolute;width:112px;height:112p…",
+    "175px;height:46px;background:#7dbf65;border-radius:50%;box-shadow:inset 0 -9px 0 #5e9e4c}.enemyPlat{right:8px;top:123px}.myPlat{left:2px;bottom:24px}.monster{position:absolute;width:112px;height:112px;object-fit:contain;filter:drop-shadow(0 7px 3px rgba(0,0,0…",
+    "m:24px}.monster{position:absolute;width:112px;height:112px;object-fit:contain;filter:drop-shadow(0 7px 3px rgba(0,0,0,.18));transition:transform .2s}.enemyMon{right:39px;top:38px}.myMon{left:38px;bottom:38px;transform:scaleX(-1)}.enemyBox,.myBox{position:abso…",
+    "lter:drop-shadow(0 7px 3px rgba(0,0,0,.18));transition:transform .2s}.enemyMon{right:39px;top:38px}.myMon{left:38px;bottom:38px;transform:scaleX(-1)}.enemyBox,.myBox{position:absolute;width:185px;background:rgba(255,255,255,.94);border:2px solid #526b84;borde…",
+    "m:scaleX(-1)}.enemyBox,.myBox{position:absolute;width:185px;background:rgba(255,255,255,.94);border:2px solid #526b84;border-radius:13px;padding:7px}.enemyBox{left:8px;top:12px}.myBox{right:8px;bottom:8px}.boxTop{display:flex;justify-content:space-between;fon…",
+    "-template-columns:1fr 1fr;gap:8px}.action{min-height:54px;border:3px solid #4d6b88;border-radius:14px;background:#fff;font-weight:1000;color:#29455f}.attack{background:#ffdd82;border-color:#c98521}.skill{background:#ff9c83;border-color:#c95b45}.capture{backgr…",
+    "ight:54px;border:3px solid #4d6b88;border-radius:14px;background:#fff;font-weight:1000;color:#29455f}.attack{background:#ffdd82;border-color:#c98521}.skill{background:#ff9c83;border-color:#c95b45}.capture{background:#a9ddff;border-color:#4c8fbe}.heal{backgrou…",
+    "45}.bottom{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,760px);height:92px;padding:8px 10px max(8px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:rgba(247,252,255,.97)…",
+    "border-color:#246cae}@media(max-width:430px){.starter img{width:58px;height:58px}.starter{font-size:13px}.map{height:230px}.battleField{height:285px}.monster{width:94px;height:94px}.enemyMon{right:35px}.myMon{left:32px}.enemyBox,.myBox{width:160px}.title{font…",
+    "width:430px){.starter img{width:58px;height:58px}.starter{font-size:13px}.map{height:230px}.battleField{height:285px}.monster{width:94px;height:94px}.enemyMon{right:35px}.myMon{left:32px}.enemyBox,.myBox{width:160px}.title{font-size:24px}.switchGrid{grid-temp…",
+    "eight:58px}.starter{font-size:13px}.map{height:230px}.battleField{height:285px}.monster{width:94px;height:94px}.enemyMon{right:35px}.myMon{left:32px}.enemyBox,.myBox{width:160px}.title{font-size:24px}.switchGrid{grid-template-columns:1fr}.chip{min-width:96px}…",
+    "x}.switchGrid{grid-template-columns:1fr}.chip{min-width:96px}} ← 대문 몬스터 어드벤처 포획볼 5 첫 몬",
+    "터 어드벤처 포획볼 5 첫 몬스터를 골라! 함께 모험할 파트너를 선택하세요. <img src=\"https://cdn.jsdelivr",
+    "=\"https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9a6.svg\" alt=\"물방울수달\">물방울수달 물 타입 🧢 몬스터 트레이너 <span i",
+    "livr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9a6.svg\" alt=\"물방울수달\">물방울수달 물 타입 🧢 몬스터 트레이너 도감 1/9",
+    "on> 🧢 몬스터 트레이너 도감 1/9 승리 0 </d",
+    "2\"> 🌿 평원 탐험 🌾 들판지역 🏠 집가기 먼저 평원에서 야생 몬스터를 만나보세요. <",
+    "2\" id=\"fieldMapBtn\" disabled>🌾 들판지역 🏠 집가기 먼저 평원에서 야생 몬스터를 만나보세요. 내 몬스터 <div class=\"b",
+    "tton> 🏠 집가기 먼저 평원에서 야생 몬스터를 만나보세요. 내 몬스터 <div class=\"platform enemyPl",
+    "b>내 몬스터 야생 몬스터 Lv.1</sp",
+    "야생 몬스터 Lv.1 <div clas",
+    "ttleField\"> 야생 몬스터 Lv.1 <img id=\"ene",
+    "s=\"platform enemyPlat\"> 야생 몬스터 Lv.1 <img id=\"enemyImg\" class=\"monster",
+    "myPlat\"> 야생 몬스터 Lv.1 <img id=\"myImg\" class=\"mons",
+    "=\"boxTop\"> 야생 몬스터 Lv.1 <div",
+    "d=\"enemyLv\">Lv.1 <span id=\"my",
+    "div class=\"hpText\" id=\"enemyHpText\"> <div class=\"",
+    "/span> 야생 몬스터가 나타났다! 기본 공격 특수 기술",
+    "class=\"hpText\" id=\"myHpText\"> 야생 몬스터가 나타났다! 기본 공격 특수 기술 포획볼 <bu"
+  ],
+  "gameFactPack": {
+    "version": 1,
+    "gameId": "monster-adventure",
+    "gameName": "몬스터 어드벤처",
+    "genreText": "몬스터 턴제 모험",
+    "evidencePolicy": {
+      "sourcePriority": [
+        "EXECUTION_LOGIC",
+        "GAME_DATA_CONSTANTS",
+        "SAVE_STRUCTURE",
+        "VISIBLE_UI_TEXT",
+        "COMMENTS_OR_DOCS",
+        "IDENTIFIER_ONLY"
+      ],
+      "technicalImplementationExcluded": true,
+      "unsupportedLoreBecomesProposal": true
+    },
+    "categories": {
+      "GOAL": [
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "playerPanel\"> 🧢 몬스터 트레이너 도감 1/9 승리 0 </",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "rbCount').textContent=`포획볼 ${save.balls}`;$('#dexStat').textContent=`도감 ${save.dex.length}/${Object.keys(species).length}`;$('#winStat').textContent=`승리 ${save.wins}`;$('#fieldMapBtn').disabled=!save.fieldUnlocked;$('#guide').textContent=save.fieldUnlocked?'평…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "e(){const m=activeMon(),e=battle.enemy;save.wins++;if(!save.dex.includes(e.id))save.dex.push(e.id);const levels=gainXp(m,50);persist();showResult('전투 승리!',`${species[e.id].name}을 쓰러뜨렸다! 경험치 +50${levels?` · ${species[m.id].name} ${levels}레벨 상승 (HP +${30*levels…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "CORE_LOOP": [
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "8399}.world{display:grid;gap:10px}.playerPanel{display:flex;align-items:center;gap:10px}.avatar{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#fff3ae;border:3px solid #e8a936;font-size:31px}.playerInfo{flex:1}.playerInfo …",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "ck;font-size:10px}.chip.active{border-color:#287fd0;background:#dff1ff;box-shadow:inset 0 0 0 1px #287fd0}.chip.dead{opacity:.45;filter:grayscale(1)}.battleField{position:relative;height:305px;border:3px solid #4d7eab;border-radius:20px;overflow:hidden;backgr…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "height:100%;background:#45b966;width:100%;transition:width .25s}.hpText{font-size:10px;text-align:right;color:#556778;margin-top:2px;font-weight:900}.battleText{min-height:61px;background:#fff;border:3px solid #4d6b88;border-radius:15px;padding:10px 12px;font…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "COMBAT": [
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "-template-columns:1fr 1fr;gap:8px}.action{min-height:54px;border:3px solid #4d6b88;border-radius:14px;background:#fff;font-weight:1000;color:#29455f}.attack{background:#ffdd82;border-color:#c98521}.skill{background:#ff9c83;border-color:#c95b45}.capture{backgr…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "class=\"hpText\" id=\"myHpText\"> 야생 몬스터가 나타났다! 기본 공격 특수 기술 포획볼 <bu",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "xt\" id=\"myHpText\"> 야생 몬스터가 나타났다! 기본 공격 특수 기술 포획볼 <button class=\"",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "ENEMIES": [
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "ta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no\"> 몬스터 어드벤처 | 재운게임즈 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;font-family:system-ui,",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "4 54%);margin-bottom:10px}.platform{position:absolute;width:175px;height:46px;background:#7dbf65;border-radius:50%;box-shadow:inset 0 -9px 0 #5e9e4c}.enemyPlat{right:8px;top:123px}.myPlat{left:2px;bottom:24px}.monster{position:absolute;width:112px;height:112p…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "175px;height:46px;background:#7dbf65;border-radius:50%;box-shadow:inset 0 -9px 0 #5e9e4c}.enemyPlat{right:8px;top:123px}.myPlat{left:2px;bottom:24px}.monster{position:absolute;width:112px;height:112px;object-fit:contain;filter:drop-shadow(0 7px 3px rgba(0,0,0…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "BOSSES": [],
+      "PROGRESSION": [
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "ormeagle'],min:3,max:5}}; const key='jaewoon-monster-adventure-v1';let save={starter:null,party:[],dex:[],wins:0,balls:5,potions:3,activeIndex:0,fieldUnlocked:false};let battle=null,locked=false; const $=s=>document.querySelector(s),$$=s=>[...document.querySe…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "[...document.querySelectorAll(s)]; function statsFor(id,lv){const s=species[id];return{maxHp:s.baseHp+(lv-1)*30,atk:s.atk+(lv-1)*30}} function xpNeed(level){return 100*Math.pow(2,Math.max(0,level-1))} function syncMon(m,heal=false){if(!m||!species[m.id])retur…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "ion statsFor(id,lv){const s=species[id];return{maxHp:s.baseHp+(lv-1)*30,atk:s.atk+(lv-1)*30}} function xpNeed(level){return 100*Math.pow(2,Math.max(0,level-1))} function syncMon(m,heal=false){if(!m||!species[m.id])return;m.lv=Math.max(1,Number(m.lv)||1);m.xp=…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "RESOURCES": [
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "ht:900;text-decoration:none;background:#eef7ff;border:2px solid #91bce4;border-radius:12px;padding:7px 10px}.top strong{font-size:19px;color:#245995}.money{font-size:14px;font-weight:1000;color:#d88a17}.screen{padding:12px 12px 110px}.card{background:rgba(255…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "lumns:1fr}.chip{min-width:96px}} ← 대문 몬스터 어드벤처 포획볼 5 첫 몬스터를 골라! 함께 모험",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "terotter:{name:'물방울수달',type:'물',img:A+'1f9a6.svg',baseHp:76,atk:14,skill:'물결타'},boar:{name:'풀숲멧돼지',type:'땅',img:A+'1f417.svg',baseHp:68,atk:11,skill:'돌진'},bat:{name:'밤날개',type:'어둠',img:A+'1f987.svg',baseHp:60,atk:13,skill:'초음파'},bird:{name:'바람새',type:'바람',img…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "EQUIPMENT": [
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "n(100%,760px);min-height:100dvh;margin:auto;background:linear-gradient(#8ed9ff 0 32%,#dff8c7 32%);overflow:hidden}.top{height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:rgba(255,255,255,.94);border-bottom:3px …",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": ";height:72px;margin:0 auto 4px}.starter small{display:block;font-size:11px;color:#718399}.world{display:grid;gap:10px}.playerPanel{display:flex;align-items:center;gap:10px}.avatar{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;backgr…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "world{display:grid;gap:10px}.playerPanel{display:flex;align-items:center;gap:10px}.avatar{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#fff3ae;border:3px solid #e8a936;font-size:31px}.playerInfo{flex:1}.playerInfo b{disp…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "REGIONS": [
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "layerInfo{flex:1}.playerInfo b{display:block;font-size:17px}.stats{display:flex;gap:10px;font-size:12px;font-weight:900;color:#5c6c7b;margin-top:4px}.map{height:250px;position:relative;overflow:hidden;background:linear-gradient(#83cfff 0 46%,#9cdb74 46%);bord…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "45}.bottom{position:fixed;z-index:10;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,760px);height:92px;padding:8px 10px max(8px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:rgba(247,252,255,.97)…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "0}.nav.active{background:#408ed2;color:#fff;border-color:#246cae}@media(max-width:430px){.starter img{width:58px;height:58px}.starter{font-size:13px}.map{height:230px}.battleField{height:285px}.monster{width:94px;height:94px}.enemyMon{right:35px}.myMon{left:3…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "SPECIAL_MECHANICS": [
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "ight:54px;border:3px solid #4d6b88;border-radius:14px;background:#fff;font-weight:1000;color:#29455f}.attack{background:#ffdd82;border-color:#c98521}.skill{background:#ff9c83;border-color:#c95b45}.capture{background:#a9ddff;border-color:#4c8fbe}.heal{backgrou…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "\"battleText\" id=\"battleText\">야생 몬스터가 나타났다! 기본 공격 특수 기술 포획볼 회복약 ×3 </div",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "\" id=\"battleText\">야생 몬스터가 나타났다! 기본 공격 특수 기술 포획볼 회복약 ×3 <div class",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "SAVE_RULES": [
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "'bird','bat'],min:1,max:3},field:{label:'들판지역',pool:['hornbull','rockgator','stormeagle'],min:3,max:5}}; const key='jaewoon-monster-adventure-v1';let save={starter:null,party:[],dex:[],wins:0,balls:5,potions:3,activeIndex:0,fieldUnlocked:false};let battle=nul…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "||0)+amount;while(m.xp>=xpNeed(m.lv)){m.xp-=xpNeed(m.lv);m.lv++;m.maxHp+=30;m.atk+=30;m.hp=Math.min(m.maxHp,m.hp+30);levels++}return levels} function load(){try{const v=JSON.parse(localStorage.getItem(key)||'null');if(v&&Array.isArray(v.party))save={...save,.…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "(m.lv)){m.xp-=xpNeed(m.lv);m.lv++;m.maxHp+=30;m.atk+=30;m.hp=Math.min(m.maxHp,m.hp+30);levels++}return levels} function load(){try{const v=JSON.parse(localStorage.getItem(key)||'null');if(v&&Array.isArray(v.party))save={...save,...v}}catch(e){}save.party=(sav…",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ],
+      "STORY_FACTS": [
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "ight:900;color:#334c68}.starter img{display:block;width:72px;height:72px;margin:0 auto 4px}.starter small{display:block;font-size:11px;color:#718399}.world{display:grid;gap:10px}.playerPanel{display:flex;align-items:center;gap:10px}.avatar{width:58px;height:5…",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "=\"https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9a6.svg\" alt=\"물방울수달\">물방울수달 물 타입 🧢 몬스터 트레이너 <span i",
+          "confidence": "SOURCE_EVIDENCE"
+        },
+        {
+          "source": "web-games/monster-adventure/index.html",
+          "statement": "livr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f9a6.svg\" alt=\"물방울수달\">물방울수달 물 타입 🧢 몬스터 트레이너 도감 1/9",
+          "confidence": "SOURCE_EVIDENCE"
+        }
+      ]
+    },
+    "gameSpecificTerms": [
+      "몬스터 어드벤처",
+      "ko",
+      "utf-8",
+      "Noto Sans KR",
+      "app",
+      "top",
+      "money",
+      "orbCount",
+      "screen",
+      "startView",
+      "card",
+      "title",
+      "sub",
+      "starterGrid",
+      "starter",
+      "flamefox",
+      "leafturtle",
+      "waterotter",
+      "worldView",
+      "world hidden",
+      "card playerPanel",
+      "avatar",
+      "playerInfo",
+      "stats"
+    ],
+    "unknownAreas": [
+      "BOSSES"
+    ],
+    "stats": {
+      "sourceFiles": 1,
+      "totalEvidence": 33,
+      "categoriesWithEvidence": 11,
+      "gameSpecificTerms": 24
+    }
+  },
+  "semanticQuality": {
+    "pass": true,
+    "problems": [],
+    "gameSpecificTermsUsed": [
+      "몬스터 어드벤처",
+      "ko",
+      "utf-8",
+      "Noto Sans KR",
+      "app",
+      "top",
+      "money",
+      "orbCount",
+      "screen",
+      "startView",
+      "card",
+      "title",
+      "sub",
+      "starterGrid",
+      "starter",
+      "flamefox"
+    ]
+  },
+  "validationStatus": "PASS",
+  "version": 4,
+  "gameId": "monster-adventure",
+  "date": "2026-09-09",
+  "status": "FIRST_DRAFT_READY",
+  "author": "vibe2",
+  "proposalOnly": true,
+  "requiredStoryStages": [
+    "OPENING",
+    "EARLY",
+    "MID",
+    "LATE",
+    "FINAL_BOSS",
+    "ENDING"
+  ],
+  "qualityContract": {
+    "phasePlans": 6,
+    "minMainQuests": 6,
+    "causalityRequired": true,
+    "evidenceProposalSeparation": true,
+    "compactGeneration": true,
+    "technicalNarrativeFilter": true,
+    "gameFactPackRequired": true,
+    "semanticDistinctnessRequired": true,
+    "gameSpecificGroundingRequired": true
+  },
+  "visualPages": [
+    {
+      "no": 1,
+      "title": "오프닝",
+      "body": "몬스터 어드벤처 — 몬스터 트레이너 도감 1/9 승리 · top: 몬스터 트레이너 도감 → 몬스터 어드벤처 → 몬스터 트레이너 도감 1/9 승리 → world에서 몬스터 어드벤처",
+      "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/vibe2-draft-1.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 2,
+      "title": "초반",
+      "body": "몬스터 어드벤처 — 포획볼 ${save.balls} · world: 포획볼 → 포획볼 → 포획볼 ${save.balls} → playerPanel에서 몬스터 어드벤처",
+      "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/vibe2-draft-2.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 3,
+      "title": "중반",
+      "body": "몬스터 어드벤처 — 몬스터 어드벤처 · playerPanel: 몬스터 어드벤처 → 몬스터 어드벤처 → 몬스터 어드벤처 → fieldMap에서 몬스터 어드벤처",
+      "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/vibe2-draft-3.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 4,
+      "title": "후반",
+      "body": "몬스터 어드벤처 — 몬스터 어드벤처 · fieldMap: 몬스터 어드벤처 → 몬스터 어드벤처 → 몬스터 어드벤처 → battleField에서 몬스터 어드벤처",
+      "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/vibe2-draft-4.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 5,
+      "title": "최종보스",
+      "body": "몬스터 어드벤처 — 몬스터 어드벤처 · battleField: 몬스터 어드벤처 → 몬스터 어드벤처 → 몬스터 어드벤처 → bottom에서 몬스터 어드벤처 · 몬스터 어드벤처: 몬스터 어드벤처 → 몬스터 어드벤처 → 승리 결과 몬스터 어드벤처",
+      "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/vibe2-draft-5.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 6,
+      "title": "엔딩",
+      "body": "몬스터 어드벤처 — 몬스터 어드벤처 · bottom: 몬스터 어드벤처 → 몬스터 어드벤처 → 몬스터 어드벤처 → 몬스터 어드벤처 · 몬스터 어드벤처 · 몬스터 어드벤처",
+      "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/vibe2-draft-6.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 7,
+      "title": "지역 흐름",
+      "body": "top → world → playerPanel → fieldMap → battleField → bottom · top → world: 몬스터 트레이너 도감 1/9 승리 / 해금 몬스터 어드벤처 · world → playerPanel: 포획볼 ${save.balls} / 해금 몬스터 어드벤처 · playerPanel → fieldMap: 몬스터 어드벤처 / 해금 몬스터 어드벤처",
+      "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/vibe2-draft-7.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    },
+    {
+      "no": 8,
+      "title": "메인 퀘스트",
+      "body": "OPENING/top: 몬스터 어드벤처 · 몬스터 트레이너 도감 → 몬스터 어드벤처 → 몬스터 트레이너 도감 1/9 승리 → world에서 몬스터 어드벤처 · EARLY/world: 몬스터 어드벤처 · 포획볼 → 포획볼 → 포획볼 ${save.balls} → playerPanel에서 몬스터 어드벤처 · MID/playerPanel: 몬스터 어드벤처 · 몬스터 어드벤처 → 몬스터 어드벤처 → 몬스터 어드벤처 → fieldMap에서 몬스터 어드벤처 · LATE/f…",
+      "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/vibe2-draft-8.svg",
+      "sourceDepartment": "vibe2",
+      "pageType": "vibe2-first-draft",
+      "vibe2Authored": true,
+      "assistantAuthored": false,
+      "proposal": true
+    }
+  ],
+  "visualPageCount": 8,
+  "targetArtbookPages": 18,
+  "sourceOfTruth": "proposal-before-planning-review"
+}

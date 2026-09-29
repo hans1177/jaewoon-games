@@ -1,0 +1,192 @@
+{
+  "version": 6,
+  "gameId": "monster-adventure",
+  "date": "2026-09-09",
+  "department": "planning",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false,
+    "modelAttempts": 1,
+    "planningFallbackUsed": false,
+    "planningFallbackReason": null
+  },
+  "headline": "몬스터 어드벤처",
+  "evidence": [
+    {
+      "source": "web-games/monster-adventure/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-monster-adventure.json",
+      "usage": "department-work-order"
+    },
+    {
+      "source": "artbook-submissions/monster-adventure/2026-09-09/vibe2-first-draft.json",
+      "usage": "vibe2-first-draft-proposal-reviewed-by-planning"
+    }
+  ],
+  "section": {
+    "worldEvidence": "몬스터 어드벤처의 지역 생태와 사건 속에서 존재하고, 포획·성장이 여행 목적과 관계 형성으로 이어져야 한다.",
+    "protagonistMotivationEvidence": "몬스터 어드벤처의 포획 이유와 진화/성장 과정을 통해 여행 목적과 관계 형성.",
+    "regionCausality": "몬스터 어드벤처의 지역 생태를 통해 포획 과정을 유도하고, 지역적 사건을 통해 성장 과정을 유도.",
+    "storyGameplayConnection": "몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정을 유도하고, 지역적 사건을 통해 성장 과정을 유도.",
+    "gaps": "몬스터 어드벤처의 지역 생태와 사건 속에서 포획·성장 과정과 진화/성장 과정을 구체적으로 지적해.",
+    "handoffs": "몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 유도하고, 지역적 사건을 통해 성장 과정을 유도."
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "몬스터 어드벤처의 지역 생태를 통해 포획·성장 과정을 유도하고, 지역적 사건을 통해 성장 과정을 유도.",
+      "몬스터 어드벤처의 지역 생태와 사건 속에서 포획·성장 과정과 진화/성장 과정을 구체적으로 지적해.",
+      "몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 유도하고, 지역적 사건을 통해 성장 과정을 유도."
+    ],
+    "implementationPlan": [
+      "몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 유도하고, 지역적 사건을 통해 성장 과정을 유도.",
+      "몬스터 어드벤처의 지역 생태와 사건 속에서 포획·성장 과정과 진화/성장 과정을 구체적으로 지적해.",
+      "몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 유도하고, 지역적 사건을 통해 성장 과정을 유도."
+    ],
+    "demoValidation": [
+      "몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 유도하고, 지역적 사건을 통해 성장 과정을 유도.",
+      "몬스터 어드벤처의 지역 생태와 사건 속에서 포획·성장 과정과 진화/성장 과정을 구체적으로 지적해."
+    ]
+  },
+  "unverified": [
+    "몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 유도하고, 지역적 사건을 통해 성장 과정을 유도.",
+    "몬스터 어드벤처의 지역 생태와 사건 속에서 포획·성장 과정과 진화/성장 과정을 구체적으로 지적해."
+  ],
+  "cuts": [
+    {
+      "kind": "planning",
+      "title": "몬스터 어드벤처",
+      "body": "몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 유도하고, 지역적 사건을 통해 성장 과정을 유도. · 몬스터 어드벤처의 지역 생태와 사건 속에서 포획·성장 과정과 진화/성장 과정을 구체적으로 지적해.",
+      "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/planning.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "WEB_ARCHIVE_READ_ONLY",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "vibe2FirstDraftReviewed": true,
+    "planningSemanticQuality": true,
+    "planningFallbackUsed": false,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "planning",
+        "ownerName": "기획",
+        "pageSlot": 1,
+        "visualType": "world-map",
+        "title": "몬스터 어드벤처",
+        "focus": "몬스터 어드벤처의 지역 생태와 사건 속에서 포획·…",
+        "caption": "몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 …",
+        "elements": [
+          {
+            "label": "world-map",
+            "note": "몬스터 어드벤처의 지역 생태와 사건…",
+            "kind": ""
+          },
+          {
+            "label": "story-flow",
+            "note": "몬스터 어드벤처의 지역 생태와 사건…",
+            "kind": ""
+          },
+          {
+            "label": "protagonist…",
+            "note": "몬스터 어드벤처의 포획 이유와 진화…",
+            "kind": ""
+          },
+          {
+            "label": "region-caus…",
+            "note": "몬스터 어드벤처의 지역 생태를 통해…",
+            "kind": ""
+          },
+          {
+            "label": "story-gamep…",
+            "note": "몬스터 어드벤처의 지역 생태와 사건…",
+            "kind": ""
+          },
+          {
+            "label": "gaps",
+            "note": "몬스터 어드벤처의 지역 생태와 사건…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/planning-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "planning"
+      },
+      {
+        "owner": "planning",
+        "ownerName": "기획",
+        "pageSlot": 2,
+        "visualType": "story-flow",
+        "title": "몬스터 어드벤처의 지역 생태와 …",
+        "focus": "포획·성장 과정과 진화/성장 과정을 구체적으로 지…",
+        "caption": "몬스터 어드벤처의 지역 생태와 사건 속에서 포획·성장 과정과 진화/성장 과정을 …",
+        "elements": [
+          {
+            "label": "world-map",
+            "note": "몬스터 어드벤처의 지역 생태와 사건…",
+            "kind": ""
+          },
+          {
+            "label": "story-flow",
+            "note": "몬스터 어드벤처의 지역 생태와 사건…",
+            "kind": ""
+          },
+          {
+            "label": "protagonist…",
+            "note": "몬스터 어드벤처의 포획 이유와 진화…",
+            "kind": ""
+          },
+          {
+            "label": "region-caus…",
+            "note": "몬스터 어드벤처의 지역 생태를 통해…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/monster-adventure/2026-09-09/visuals/planning-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "planning"
+      }
+    ],
+    "generatedBy": {
+      "department": "planning",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

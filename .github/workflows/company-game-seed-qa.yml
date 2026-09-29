@@ -1,0 +1,122 @@
+name: Company GAME_SEED Production QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'COMPANY_FLOW.md'
+      - 'company-directive.json'
+      - 'game-seed-state.json'
+      - 'game-seed-market-evidence.json'
+      - 'tools/game-seed-state.mjs'
+      - 'tools/company-game-seed-bootstrap.mjs'
+      - 'tools/company-game-seed-semantic-normalize.mjs'
+      - 'tools/company-game-seed-quality-gate.mjs'
+      - 'tools/company-design-cycle.mjs'
+      - 'tools/company-design-artbook.mjs'
+      - 'tools/company-baseline-gate.mjs'
+      - 'tools/company-development-disposition-gate.mjs'
+      - 'tools/artbook-production-pipeline.mjs'
+      - 'tools/autonomous-portfolio-continuation.mjs'
+      - '.github/workflows/company-game-seed-bootstrap.yml'
+      - '.github/workflows/company-game-seed-qa.yml'
+      - 'qa/company-game-seed-flow.test.mjs'
+      - 'qa/company-game-seed-state-file.test.mjs'
+      - 'qa/seed-material-dynamic-composition.test.mjs'
+      - 'qa/autonomous-portfolio-continuation.test.mjs'
+      - 'qa/artbook-production-pipeline.test.mjs'
+      - 'qa/company-central-policy-contract.test.mjs'
+      - 'qa/company-central-pipeline-only.test.mjs'
+  pull_request:
+    paths:
+      - 'COMPANY_FLOW.md'
+      - 'company-directive.json'
+      - 'game-seed-state.json'
+      - 'game-seed-market-evidence.json'
+      - 'tools/game-seed-state.mjs'
+      - 'tools/company-game-seed-bootstrap.mjs'
+      - 'tools/company-game-seed-semantic-normalize.mjs'
+      - 'tools/company-game-seed-quality-gate.mjs'
+      - 'tools/company-design-cycle.mjs'
+      - 'tools/company-design-artbook.mjs'
+      - 'tools/company-baseline-gate.mjs'
+      - 'tools/company-development-disposition-gate.mjs'
+      - 'tools/artbook-production-pipeline.mjs'
+      - 'tools/autonomous-portfolio-continuation.mjs'
+      - '.github/workflows/company-game-seed-bootstrap.yml'
+      - '.github/workflows/company-game-seed-qa.yml'
+      - 'qa/company-game-seed-flow.test.mjs'
+      - 'qa/company-game-seed-state-file.test.mjs'
+      - 'qa/seed-material-dynamic-composition.test.mjs'
+      - 'qa/autonomous-portfolio-continuation.test.mjs'
+      - 'qa/artbook-production-pipeline.test.mjs'
+      - 'qa/company-central-policy-contract.test.mjs'
+      - 'qa/company-central-pipeline-only.test.mjs'
+  workflow_dispatch:
+
+concurrency:
+  group: company-game-seed-production-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-slim
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static syntax checks
+        run: |
+          set -euo pipefail
+          node -e "const d=require('./company-directive.json'); if(d.gameSeed.marketEvidence.targetMarketScope!=='GLOBAL') process.exit(1); const e=require('./game-seed-market-evidence.json'); if(e.targetMarketScope!=='GLOBAL') process.exit(1)"
+          for file in \
+            tools/game-seed-state.mjs \
+            tools/company-game-seed-bootstrap.mjs \
+            tools/company-game-seed-semantic-normalize.mjs \
+            tools/company-game-seed-quality-gate.mjs \
+            tools/company-design-cycle.mjs \
+            tools/company-design-artbook.mjs \
+            tools/company-baseline-gate.mjs \
+            tools/company-development-disposition-gate.mjs \
+            tools/artbook-production-pipeline.mjs \
+            tools/autonomous-portfolio-continuation.mjs; do
+            node --check "$file"
+          done
+          git diff --check HEAD^ HEAD || git diff --check
+      - name: GAME_SEED and production-flow tests
+        run: |
+          set -euo pipefail
+          node --test qa/company-game-seed-flow.test.mjs
+          node --test qa/company-game-seed-state-file.test.mjs
+          node --test qa/seed-material-dynamic-composition.test.mjs
+          node --test qa/autonomous-portfolio-continuation.test.mjs
+          node --test qa/artbook-production-pipeline.test.mjs
+          node --test qa/company-central-policy-contract.test.mjs
+          node --test qa/company-central-pipeline-only.test.mjs
+      - name: Ensure obsolete 3-class new-game entrypoints stay deleted
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in \
+            tools/autonomous-new-game-incubator.mjs \
+            tools/autonomous-prototype-worker.mjs \
+            .github/workflows/autonomous-new-game-incubator.yml \
+            .github/workflows/autonomous-prototype-worker.yml \
+            qa/autonomous-new-game-incubator.test.mjs \
+            qa/autonomous-prototype-worker.test.mjs \
+            qa/autonomous-new-game-closed-loop.test.mjs; do
+            if [ -e "$file" ]; then
+              echo "obsolete 3-class entrypoint still exists: $file" >&2
+              exit 1
+            fi
+          done
+          echo 'OBSOLETE_FREE_CONCEPT_PATHS=REMOVED'
+          echo 'DESIGN_ONLY_VIBE2=FORBIDDEN'
+          echo 'GAME_SEED_TARGET_MARKET=GLOBAL'
+          echo 'GAME_SEED_SEMANTIC_NORMALIZATION=REQUIRED'
+          echo 'PAID_API=NO'

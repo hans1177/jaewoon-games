@@ -1,0 +1,79 @@
+name: Owner Web Edit Platform Propagation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'web-games/**'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: owner-web-edit-platform-propagation
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
+jobs:
+  propagate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Bind current runtime queue
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
+      - name: Detect owner Web semantic changes
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          node tools/company-owner-web-edit-propagation.mjs \
+            --before="$BEFORE_SHA" \
+            --after="$AFTER_SHA" \
+            --queue=/tmp/development-queue.json \
+            --roadmap=company-learning/platform-release-roadmap.json \
+            --output=/tmp/owner-web-edit-propagation.json
+      - name: Persist propagation request
+        run: |
+          set -euo pipefail
+          git checkout -B owner-web-edit-runtime "origin/$COMPANY_RUNTIME_BRANCH"
+          cp /tmp/development-queue.json development-queue.json
+          mkdir -p company-learning/owner-web-edit-propagation
+          cp /tmp/owner-web-edit-propagation.json company-learning/owner-web-edit-propagation/latest.json
+          git config user.name 'jaewoon-owner-web-propagation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json company-learning/owner-web-edit-propagation/latest.json
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'runtime: persist owner Web edit platform propagation [skip ci]'
+            git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
+          fi
+      - name: Wake affected platform caretakers
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          targets="$(node -p "const x=require('/tmp/owner-web-edit-propagation.json');[...new Set(x.manifests.flatMap(m=>m.platformTargets))].join(',')")"
+          if [[ ",$targets," == *",UNITY,"* ]]; then
+            gh workflow run company-development-unity-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'OWNER_WEB_EDIT_UNITY_DISPATCH=YES'
+          fi
+          if [[ ",$targets," == *",ROBLOX,"* ]]; then
+            gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'OWNER_WEB_EDIT_ROBLOX_DISPATCH=YES'
+          fi
+          echo 'OWNER_WEB_EDIT_LITERAL_CODE_COPY=FORBIDDEN'
+          echo 'OWNER_WEB_EDIT_PROPAGATION=SEMANTIC_INTENT'

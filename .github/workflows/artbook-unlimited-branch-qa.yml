@@ -1,0 +1,29 @@
+name: Artbook Unlimited Branch QA
+
+on:
+  pull_request:
+    paths:
+      - 'tools/artbook-prepare-daily.mjs'
+      - 'tools/artbook-assemble.mjs'
+      - 'qa/artbook-daily-limit-preflight.test.mjs'
+      - 'qa/artbook-unlimited-chain-contract.test.mjs'
+      - '.github/workflows/artbook-initial-backfill-chain.yml'
+      - 'ARTBOOK_POLICY.md'
+      - 'ARTBOOK_LIFECYCLE.md'
+      - 'ARTBOOK_OPERATIONS.md'
+
+permissions:
+  contents: read
+
+jobs:
+  unlimited:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --check tools/artbook-prepare-daily.mjs
+      - run: node --check tools/artbook-assemble.mjs
+      - run: node --test qa/artbook-daily-limit-preflight.test.mjs
+      - run: node --test qa/artbook-unlimited-chain-contract.test.mjs

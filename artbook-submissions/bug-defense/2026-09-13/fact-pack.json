@@ -1,0 +1,39 @@
+{
+  "version": 3,
+  "gameId": "bug-defense",
+  "date": "2026-09-13",
+  "generatedBy": "deterministic-source-scan",
+  "paidApi": false,
+  "sourceMode": "METADATA_ONLY",
+  "sourceFiles": [],
+  "decodedSources": [],
+  "topics": {
+    "gameplayLoop": [],
+    "input": [],
+    "combat": [],
+    "progression": [],
+    "persistence": [],
+    "uiArt": [],
+    "risk": []
+  },
+  "missingEvidence": [
+    "gameplayLoop",
+    "input",
+    "combat",
+    "progression",
+    "persistence",
+    "uiArt",
+    "risk"
+  ],
+  "contracts": {
+    "factsAreEvidenceOnly": true,
+    "proposalsForbidden": true,
+    "numericChangesForbidden": true,
+    "approvedBaselineOverwriteForbidden": true,
+    "packedSourceDecodeBounded": true,
+    "packedSourceExecuted": false,
+    "packedLiteralMasked": true,
+    "persistenceRequiresStorageEvidence": true,
+    "multipleMatchesPerLine": true
+  }
+}

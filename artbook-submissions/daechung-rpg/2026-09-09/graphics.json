@@ -1,0 +1,202 @@
+{
+  "version": 5,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-09",
+  "department": "graphics",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false
+  },
+  "headline": "대충 RPG Unity 재개발 아트북",
+  "evidence": [
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-core18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v15.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v16.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v17.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18-reaper.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/rpg.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-daechung-rpg.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentVisualEvidence": "Unity 코어 파일 및 애니메이션 스프라이트",
+    "identityDirection": "판타지 세계 설정 + 모험 연대기",
+    "characterMonsterEnvironmentLogic": "주인공의 목적 + 지역/몬스터/보스/전투/성장",
+    "mobileReadability": "Unity 코어 및 애니메이션 스프라이트",
+    "assetConstraints": "Unity 코어 + 애니메이션 스프라이트",
+    "gaps": "Unity 코어 및 애니메이션 스프라이트",
+    "handoffs": "Unity 코어 및 애니메이션 스프라이트"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "### 캐릭터·몬스터·보스·배경·UI·인트로 컨셉: 2장 이미지 중심\n140자 이하로 설명",
+      "### 캐릭터: 전투·성장·모험 연대기 중심\n140자 이하로 설명",
+      "### 지역별 사건: 10개 이상의 지역별 사건\n140자 이하로 설명"
+    ],
+    "implementationPlan": [
+      "### 캐릭터: Unity 코어 파일 및 애니메이션 스프라이트\n140자 이하로 설명",
+      "### 지역별 사건: Unity 코어 파일 및 애니메이션 스프라이트\n140자 이하로 설명"
+    ],
+    "demoValidation": [
+      "### 시연 증거: Unity 코어 및 애니메이션 스프라이트\n140자 이하로 설명"
+    ]
+  },
+  "unverified": [
+    "### 캐릭터·몬스터·보스·배경·UI·인트로 컨셉: 2장 이미지 중심",
+    "### 캐릭터: Unity 코어 파일 및 애니메이션 스프라이트",
+    "### 지역별 사건: Unity 코어 파일 및 애니메이션 스프라이트"
+  ],
+  "cuts": [
+    {
+      "kind": "graphics",
+      "title": "대충 RPG Unity 재개발 아트북",
+      "body": "### 캐릭터·몬스터·보스·배경·UI·인트로 컨셉: 2장 이미지 중심 · ### 캐릭터: Unity 코어 파일 및 애니메이션 스프라이트 · ### 지역별 사건: Unity 코어 파일 및 애니메이션 스프라이트",
+      "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/graphics.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "UNITY_PLUS_WEB_ARCHIVE",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 1,
+        "visualType": "concept-board",
+        "title": "대충 RPG Unity 재개발 …",
+        "focus": "Unity 코어 및 애니메이션 스프라이트",
+        "caption": "대충 RPG Unity 코어 및 애니메이션 스프라이트",
+        "elements": [
+          {
+            "label": "캐릭터·몬스터·보스·…",
+            "note": "2장 이미지 중심",
+            "kind": ""
+          },
+          {
+            "label": "캐릭터",
+            "note": "Unity 코어 파일 및 애니메이션…",
+            "kind": ""
+          },
+          {
+            "label": "지역별 사건",
+            "note": "Unity 코어 파일 및 애니메이션…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/graphics-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      },
+      {
+        "owner": "graphics",
+        "ownerName": "그래픽",
+        "pageSlot": 2,
+        "visualType": "style-board",
+        "title": "Unity 코어 및 애니메이션 …",
+        "focus": "Unity 코어 및 애니메이션 스프라이트",
+        "caption": "Unity 코어 및 애니메이션 스프라이트",
+        "elements": [
+          {
+            "label": "Unity 코어",
+            "note": "Unity 코어 및 애니메이션 스프…",
+            "kind": ""
+          },
+          {
+            "label": "애니메이션 스프라이트",
+            "note": "Unity 코어 및 애니메이션 스프…",
+            "kind": ""
+          },
+          {
+            "label": "손님",
+            "note": "Unity 코어 및 애니메이션 스프…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/graphics-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "graphics"
+      }
+    ],
+    "generatedBy": {
+      "department": "graphics",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

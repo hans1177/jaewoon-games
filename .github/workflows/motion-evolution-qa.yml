@@ -1,0 +1,44 @@
+name: Motion Evolution QA
+
+on:
+  push:
+    branches: [main, autonomous-dev]
+    paths:
+      - 'assets/jaewoon-motion-engine.js'
+      - 'assets/jaewoon-motion-evolution.js'
+      - 'qa/jaewoon-motion-engine.test.cjs'
+      - 'qa/jaewoon-motion-evolution.test.cjs'
+      - '.github/workflows/motion-evolution-qa.yml'
+  pull_request:
+    paths:
+      - 'assets/jaewoon-motion-engine.js'
+      - 'assets/jaewoon-motion-evolution.js'
+      - 'qa/jaewoon-motion-engine.test.cjs'
+      - 'qa/jaewoon-motion-evolution.test.cjs'
+      - '.github/workflows/motion-evolution-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  motion-evolution:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check assets/jaewoon-motion-engine.js
+      - run: node --check assets/jaewoon-motion-evolution.js
+      - run: node --test qa/jaewoon-motion-engine.test.cjs qa/jaewoon-motion-evolution.test.cjs
+      - name: Authority and self-promotion guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq "jayDecisionRequiredForCompanyStandard: true" assets/jaewoon-motion-evolution.js
+          grep -Fq "selfPromote: false" assets/jaewoon-motion-evolution.js
+          grep -Fq "GAMEPLAY_AUTHORITY_TOUCHED" assets/jaewoon-motion-evolution.js
+          grep -Fq "distinctGames" assets/jaewoon-motion-evolution.js
+          echo 'MOTION_EVOLUTION_AUTHORITY=PASS'

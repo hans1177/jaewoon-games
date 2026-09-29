@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ko" data-homepage-version="SAMPLE_FRONT_DOOR_V1" data-homepage-build="2026-09-21-sample-exact">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/assets/pwa-icon.svg" type="image/svg+xml">
+<title>재운게임즈</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--ink:#121b27;--muted:#718096;--line:#e7ecf1;--blue:#1677ff;--bg:#f6f8fb}
+html{scroll-behavior:smooth}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+body{padding-bottom:env(safe-area-inset-bottom)}
+button,a{font:inherit}
+.shell{width:min(1180px,100%);margin:auto;padding:18px 20px 50px}
+.topbar{height:64px;display:flex;align-items:center;gap:24px}
+.brand{font-size:22px;font-weight:1000;letter-spacing:-.7px;text-decoration:none;color:#111927;white-space:nowrap}
+.brand span{color:var(--blue)}
+.mainNav{display:flex;gap:4px;margin-left:auto}
+.mainNav a{padding:10px 13px;border-radius:10px;color:#425466;text-decoration:none;font-size:13px;font-weight:800}
+.mainNav a:hover{background:#eef4fb;color:#0f6bdc}
+.installMini{border:0;border-radius:10px;background:#101820;color:white;padding:10px 13px;font-size:12px;font-weight:900}
+.installState{display:none}
+
+.hero{position:relative;min-height:390px;margin-top:8px;border-radius:22px;overflow:hidden;background:#142636;color:#fff;box-shadow:0 16px 40px rgba(18,35,52,.14);isolation:isolate}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,14,24,.92) 0%,rgba(5,14,24,.68) 48%,rgba(5,14,24,.18) 78%),var(--focus-bg,url('/assets/page-bg-v4.webp')) center/cover no-repeat;z-index:-1}
+.homeFocusInner{min-height:390px;padding:46px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end}
+.homeFocusInner h1{margin:0 0 9px;font-size:48px;line-height:1.03;letter-spacing:-1.8px}
+.homeFocusInner p{max-width:560px;margin:0 0 15px;font-size:15px;line-height:1.55;font-weight:650;color:#f3f7fb}
+
+
+.homeFocusBtn{margin-top:16px;display:inline-flex;min-height:48px;align-items:center;justify-content:center;padding:0 18px;border-radius:11px;background:#fff;color:#122233;text-decoration:none;font-size:13px;font-weight:1000}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0 30px}
+.stat{min-height:96px;padding:17px;border:1px solid var(--line);border-radius:16px;background:#fff;text-align:center}
+.stat b{display:block;font-size:28px}.stat span{display:block;margin-top:4px;color:var(--muted);font-size:11px;font-weight:850}
+.opsLead{display:none}.opsSecondary{display:none}
+
+.section{margin-top:30px}
+.sectionTitle{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:12px}
+.sectionTitle h2{margin:0;font-size:24px;letter-spacing:-.8px}.sectionTitle span{font-size:11px;color:var(--muted);font-weight:750}
+#gameHub{min-height:140px}
+#gameGrid,.sectionHead,.catalogIntro,.tools,.filters,.sortRow{display:none!important}
+.homeGameShelf{margin:0 0 30px}.gameShelfHead{display:flex;align-items:end;justify-content:space-between;margin-bottom:12px}.gameShelfHead h2{margin:0;font-size:24px;letter-spacing:-.8px}.gameShelfHead p{margin:4px 0 0;font-size:11px;color:var(--muted);font-weight:750}.gameShelfCount{font-size:11px;color:var(--muted);font-weight:850}
+.gameShelfGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.foldGameCard{overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 5px 18px rgba(20,40,60,.05)}
+.foldGameArt{height:145px;position:relative;background:#dce4eb;overflow:hidden}.foldGameArt img{width:100%;height:100%;object-fit:cover}
+.foldGameBody{padding:14px}.foldGameBody h3{margin:0 0 7px;font-size:16px;letter-spacing:-.4px}
+.foldGameBody p{min-height:36px;margin:0 0 8px;font-size:10px;line-height:1.5;color:#576b7d}.foldGameMeta{font-size:9px;line-height:1.5;color:#789}.foldGameActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}.foldGameBtn{display:flex;min-height:38px;align-items:center;justify-content:center;padding:0 5px;border-radius:9px;background:#1677ff;color:white;text-decoration:none;font-size:9px;font-weight:900;text-align:center}.foldGameBtn.webAction{background:#1677ff}.foldGameBtn.robloxAction{background:#17202a}.foldGameBtn.unityAction{background:#334155}.foldGameBtn.uefnAction{background:#475569}.foldGameBtn.secondary{background:#edf5ff;color:#1264c4}.foldGameBtn.platformAction{background:#17202a}.foldGameBtn.off{background:#edf1f4;color:#9aa7b2;pointer-events:none}.releaseTag{display:none}
+
+.pipeline{margin-top:32px;padding:22px;border:1px solid var(--line);border-radius:18px;background:#fff}
+.pipelineTop{display:flex;align-items:end;justify-content:space-between;margin-bottom:18px}.pipelineTop h2{margin:0;font-size:24px}.pipelineTop span{font-size:11px;color:var(--muted)}
+.pipelineLead{margin-bottom:14px;font-size:11px;color:#526678;font-weight:750}.pipelineLead b{color:#156fd1}
+.pipelineGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.pipelineStep{position:relative;padding:13px;border-radius:12px;background:#f7f9fb}.pipelineStep b{display:block;font-size:11px}.pipelineStep span{display:block;margin-top:4px;color:#718096;font-size:9px;line-height:1.4}.pipelineStep strong{display:inline-block;margin-top:8px;font-size:8px;color:#1677ff}
+.portfolioBoard{display:none!important}
+
+.recentUpdates{margin-top:24px;padding:14px;border:1px solid var(--line);border-radius:18px;background:#fff}
+.recentUpdatesHead{display:flex;align-items:end;justify-content:space-between;gap:8px;margin-bottom:8px}.recentUpdatesHead h2{margin:0;font-size:20px}.recentUpdatesHead span{font-size:11px;color:var(--muted)}
+.recentUpdateList{display:grid;gap:5px}.recentUpdateItem{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:12px;background:#f7f9fb}.recentUpdateItem div{min-width:0}.recentUpdateItem b{display:block;font-size:11px}.recentUpdateItem span{display:block;margin-top:2px;color:#5f7182;font-size:9px;line-height:1.3}.recentUpdateItem small{flex:0 0 auto;color:#75879a;font-size:8px;font-weight:850}.recentUpdateEmpty{padding:18px;text-align:center;color:#8090a0;font-size:10px}
+.footer{margin:38px 0 8px;text-align:center;color:#8492a0;font-size:10px}
+.mobileDock{display:none}
+
+@media(max-width:700px){
+  .shell{padding:10px 10px 82px}.topbar{height:54px}.brand{font-size:19px}.mainNav{display:none}.installMini{padding:9px 11px;font-size:10px}
+  .hero{min-height:310px;margin-top:4px;border-radius:17px}.hero:before{background:linear-gradient(0deg,rgba(5,14,24,.94),rgba(5,14,24,.55) 70%,rgba(5,14,24,.18)),var(--focus-bg,url('/assets/page-bg-v4.webp')) center/cover no-repeat}
+  .homeFocusInner{min-height:310px;padding:22px 18px}.homeFocusInner h1{font-size:34px}.homeFocusInner p{font-size:13px}.homeFocusBtn{width:100%;min-height:46px}
+  .stats{gap:7px;margin:10px 0 24px}.stat{min-height:72px;padding:11px 5px}.stat b{font-size:23px}.stat span{font-size:9px}
+  .gameShelfHead h2{font-size:21px}.gameShelfHead p{font-size:10px}
+  .gameShelfGrid{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:0 1px 4px}.gameShelfGrid::-webkit-scrollbar{display:none}.foldGameCard{flex:0 0 78vw;max-width:320px;scroll-snap-align:start}.foldGameArt{height:170px}.foldGameActions{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .recentUpdates{padding:10px 8px}.recentUpdatesHead h2{font-size:18px}.recentUpdatesHead span{display:none}.recentUpdateItem{align-items:flex-start;flex-direction:column}.recentUpdateItem small{align-self:flex-end}
+  .mobileDock{position:fixed;left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));z-index:50;display:grid;grid-template-columns:repeat(4,1fr);padding:6px;border:1px solid #e2e8ee;border-radius:16px;background:rgba(255,255,255,.96);box-shadow:0 10px 30px rgba(20,35,50,.16);backdrop-filter:blur(12px)}
+  .mobileDock a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px;border-radius:10px;color:#718096;text-decoration:none;font-size:9px;font-weight:900}.mobileDock a:first-child{background:#edf5ff;color:#1677ff}.mobileDock b{font-size:17px}
+}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="topbar">
+  <a class="brand" href="#top" id="top">JAEWOON <span>GAMES</span></a>
+  <nav class="mainNav" aria-label="주요 메뉴"><a href="#gameHub">게임</a><a href="/asset-library.html">게임 개발</a><a href="#recentUpdates">최근 수정</a><a href="/command.html?from=chatgpt-shortcut" data-chatgpt-launch>ChatGPT</a></nav>
+  <div id="appInstallBar"><button class="installMini" id="appInstallBtn" type="button">앱 설치</button><span class="installState" id="appInstallState"></span></div>
+</header>
+
+<section class="hero" id="hero" aria-label="대표 게임">
+  <div class="homeFocusInner"><h1>재운게임즈</h1><p>대표 게임을 불러오는 중</p><a class="homeFocusBtn" href="#gameHub">게임 보기</a></div>
+</section>
+
+<section class="stats opsBar" aria-label="게임 요약">
+  <div class="stat"><b id="metricPlayable">-</b><span>게임 가능</span></div>
+  <div class="stat"><b id="metricDevelopment">-</b><span>개발 중</span></div>
+  <div class="stat"><b id="metricRecent">-</b><span>최근 수정</span></div>
+</section>
+
+<section class="section" id="gameHub" aria-label="게임">
+  <div id="gameGrid"></div>
+  <section class="homeGameShelf" id="homeInternalReleaseFallback" data-runtime-fallback="internal-releases">
+    <div class="gameShelfHead"><div><h2>내부 출시 게임</h2><p>내부 출시된 Roblox 게임을 바로 실행할 수 있어.</p></div><span class="gameShelfCount">3개</span></div>
+    <div class="gameShelfGrid">
+      <article class="foldGameCard" data-game-id="cozy-island">
+        <div class="foldGameArt"><img src="/assets/title-cozy-island.svg" alt="포근섬: 작은 왕국 키우기"></div>
+        <div class="foldGameBody"><h3>포근섬: 작은 왕국 키우기</h3><p>직접 채집해 주민과 병영을 키우고 5개 전략 거점을 정복하는 협동 섬 개척 게임</p><div class="foldGameMeta">ROBLOX 내부출시 / UNITY 개발중</div><div class="foldGameActions"><a class="foldGameBtn platformAction robloxAction" href="https://www.roblox.com/games/116850096561713">Roblox · 내부출시</a><span class="foldGameBtn off">Unity 앱 · 개발중</span></div></div>
+      </article>
+      <article class="foldGameCard" data-game-id="daechung-rpg">
+        <div class="foldGameArt"><img src="/assets/fantasy-rpg-v2.webp" alt="5포탈 RPG: 던전 파티"></div>
+        <div class="foldGameBody"><h3>5포탈 RPG: 던전 파티</h3><p>마을에서 장비와 퀘스트를 준비하고 AI 동료와 5개 포탈 지역을 정복하는 3D 파티 RPG</p><div class="foldGameMeta">ROBLOX 내부출시 / UNITY 개발중</div><div class="foldGameActions"><a class="foldGameBtn platformAction robloxAction" href="https://www.roblox.com/games/126302702438348">Roblox · 내부출시</a><span class="foldGameBtn off">Unity 앱 · 개발중</span></div></div>
+      </article>
+      <article class="foldGameCard" data-game-id="horror-escape-room">
+        <div class="foldGameArt"><img src="/assets/page-bg-v4.webp" alt="심야 감염전 [4대4]"></div>
+        <div class="foldGameBody"><h3>심야 감염전 [4대4]</h3><p>8명 4대4로 시작해 잡힌 인간이 몬스터로 전환되는 AI 충원형 감염 추격전</p><div class="foldGameMeta">ROBLOX 내부출시 / UNITY 개발중</div><div class="foldGameActions"><a class="foldGameBtn platformAction robloxAction" href="https://www.roblox.com/games/98222620265768">Roblox · 내부출시</a><span class="foldGameBtn off">Unity 앱 · 개발중</span></div></div>
+      </article>
+    </div>
+  </section>
+</section>
+
+<section class="recentUpdates" id="recentUpdates" aria-label="최근 수정 반영">
+  <div class="recentUpdatesHead"><h2>최근 수정 반영</h2><span>최근 지시가 게임에 반영됐는지 간단히 확인</span></div>
+  <div class="recentUpdateList" id="recentUpdateList"><div class="recentUpdateEmpty">최근 수정 기록을 불러오는 중</div></div>
+</section>
+
+<footer class="footer">© 2026 JAEWOON GAMES</footer>
+<nav class="mobileDock" aria-label="모바일 메뉴"><a href="#top"><b>⌂</b><span>홈</span></a><a href="#gameHub"><b>🎮</b><span>게임</span></a><a href="/asset-library.html"><b>▥</b><span>게임 개발</span></a><a href="/command.html?from=chatgpt-shortcut" data-chatgpt-launch><b>GPT</b><span>ChatGPT</span></a></nav>
+</main>
+
+<script>
+const appInstallBtn=document.getElementById('appInstallBtn');
+const appInstallState=document.getElementById('appInstallState');
+let deferredAppInstall=null;
+const appStandalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+function setAppInstallState(text){if(appInstallState)appInstallState.textContent=text}
+async function registerHomepagePwa(){if(!('serviceWorker' in navigator))return;try{const registration=await navigator.serviceWorker.register('/sw.js',{scope:'/'});registration.update().catch(()=>{})}catch(error){console.warn('PWA service worker registration failed',error)}}
+async function requestHomepageInstall(){
+  if(appStandalone){appInstallBtn.disabled=true;appInstallBtn.textContent='설치됨';return}
+  if(!deferredAppInstall){setAppInstallState('브라우저 설치 메뉴에서도 설치할 수 있어.');return}
+  const prompt=deferredAppInstall;deferredAppInstall=null;await prompt.prompt();await prompt.userChoice;
+}
+window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredAppInstall=event;appInstallBtn.disabled=false});
+window.addEventListener('appinstalled',()=>{deferredAppInstall=null;appInstallBtn.disabled=true;appInstallBtn.textContent='설치됨'});
+appInstallBtn.addEventListener('click',requestHomepageInstall);
+function openChatGpt(){
+  const fast='/command.html?from=chatgpt-shortcut';
+  if(/Android/i.test(navigator.userAgent)){
+    const fallback=encodeURIComponent(new URL(fast,location.href).href);
+    location.href='intent://chatgpt.com/#Intent;scheme=https;package=com.openai.chatgpt;S.browser_fallback_url='+fallback+';end';
+    return;
+  }
+  location.href='https://chatgpt.com/';
+}
+document.querySelectorAll('[data-chatgpt-launch]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();openChatGpt();}));
+function prefetchVisibleGames(){
+  const links=[...document.querySelectorAll('a[href^="/web-games/"]')].slice(0,6);
+  for(const link of links){
+    const href=link.getAttribute('href');
+    if(!href||document.head.querySelector(`link[data-game-prefetch="${CSS.escape(href)}"]`))continue;
+    const p=document.createElement('link');p.rel='prefetch';p.href=href;p.as='document';p.dataset.gamePrefetch=href;document.head.appendChild(p);
+  }
+}
+(window.requestIdleCallback||((fn)=>setTimeout(fn,600)))(()=>{
+  prefetchVisibleGames();
+  const p=document.createElement('link');p.rel='prefetch';p.href='/command.html?from=chatgpt-shortcut';p.as='document';document.head.appendChild(p);
+});
+registerHomepagePwa();
+</script>
+<script type="module" src="/assets/homepage-enhancements.js"></script>
+</body>
+</html>

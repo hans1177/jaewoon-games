@@ -1,0 +1,169 @@
+name: Vibe Integrated Regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/common-ai.js'
+      - 'assets/ai-party.js'
+      - 'assets/animation-state.js'
+      - 'assets/jaewoon-motion-engine.js'
+      - 'assets/asset-selector.js'
+      - 'assets/game-content.js'
+      - 'assets/game-kit.js'
+      - 'assets/godot-game-generator.js'
+      - 'assets/godot-project-qa.js'
+      - 'assets/vibe-*.js'
+      - 'tools/company-vibe2-*.mjs'
+      - 'qa/company-vibe2-*.test.mjs'
+      - 'qa/company-design-multiplayer-mode-contract.test.mjs'
+      - 'qa/vibe-*.mjs'
+      - 'qa/vibe-*.test.mjs'
+      - 'qa/pwa-chat-flow.test.mjs'
+      - 'qa/jaewoon-motion-engine.test.cjs'
+      - 'index.html'
+      - 'manifest.webmanifest'
+      - 'install.html'
+      - 'sw.js'
+      - 'command.html'
+      - '.github/workflows/vibe-regression.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'assets/common-ai.js'
+      - 'assets/ai-party.js'
+      - 'assets/animation-state.js'
+      - 'assets/jaewoon-motion-engine.js'
+      - 'assets/asset-selector.js'
+      - 'assets/game-content.js'
+      - 'assets/game-kit.js'
+      - 'assets/godot-game-generator.js'
+      - 'assets/godot-project-qa.js'
+      - 'assets/vibe-*.js'
+      - 'tools/company-vibe2-*.mjs'
+      - 'qa/company-vibe2-*.test.mjs'
+      - 'qa/company-design-multiplayer-mode-contract.test.mjs'
+      - 'qa/vibe-*.mjs'
+      - 'qa/vibe-*.test.mjs'
+      - 'qa/pwa-chat-flow.test.mjs'
+      - 'qa/jaewoon-motion-engine.test.cjs'
+      - 'index.html'
+      - 'manifest.webmanifest'
+      - 'install.html'
+      - 'sw.js'
+      - 'command.html'
+      - '.github/workflows/vibe-regression.yml'
+
+concurrency:
+  group: vibe-integrated-regression-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            assets/common-ai.js
+            assets/ai-party.js
+            assets/animation-state.js
+            assets/jaewoon-motion-engine.js
+            assets/asset-selector.js
+            assets/game-content.js
+            assets/game-kit.js
+            assets/godot-game-generator.js
+            assets/godot-project-qa.js
+            assets/vibe-build-plan.js
+            assets/vibe-project.js
+            assets/vibe-workbench.js
+            assets/vibe-rebuild-planner.js
+            assets/vibe-rebuild-engine.js
+            assets/vibe-development-ai.js
+            assets/vibe-quality-intelligence.js
+            assets/vibe-presentation-director.js
+            assets/vibe-motion-effects-director.js
+            assets/vibe-company-development-flow.js
+            assets/vibe-company-experiment.js
+            assets/vibe-v2-playability.js
+            assets/vibe-v2-runtime.js
+            tools/company-vibe2-game-flow-architect.mjs
+            tools/company-vibe2-coding-architecture.mjs
+            tools/company-vibe2-expert-development.mjs
+            tools/company-vibe2-gameplay-intelligence.mjs
+            qa/company-vibe2-gameplay-intelligence.test.mjs
+            qa/company-vibe2-coding-architecture.test.mjs
+            qa/company-vibe2-expert-development.test.mjs
+            qa/company-design-multiplayer-mode-contract.test.mjs
+            qa/vibe-regression.mjs
+            qa/vibe-agent-causality.mjs
+            qa/vibe-presentation-causality.mjs
+            qa/vibe-world-macro-causality.mjs
+            qa/vibe-development-ai-evidence.mjs
+            qa/vibe-auto-repair-causality.mjs
+            qa/vibe-v2-playability.mjs
+            qa/vibe-v2-e2e.mjs
+            qa/vibe-company-experiment.test.mjs
+            qa/vibe-company-flow-v2.test.mjs
+            qa/pwa-chat-flow.test.mjs
+          )
+          for file in "${files[@]}"; do
+            node --input-type=module --check < "$file"
+          done
+          node --check qa/jaewoon-motion-engine.test.cjs
+          echo 'PASS JavaScript syntax'
+
+      - name: Test Jaewoon Motion Engine
+        run: node qa/jaewoon-motion-engine.test.cjs
+
+      - name: Test Vibe2 company experiment engine
+        run: node qa/vibe-company-experiment.test.mjs
+
+      - name: Test Vibe2 company authority flow
+        run: node qa/vibe-company-flow-v2.test.mjs
+
+      - name: Test PWA ChatGPT-style chat flow
+        run: node --test qa/pwa-chat-flow.test.mjs
+
+      - name: Test Vibe2 gameplay intelligence contracts
+        run: node --test qa/company-vibe2-gameplay-intelligence.test.mjs
+
+      - name: Test Vibe2 coding architecture and development modes
+        run: node --test qa/company-vibe2-coding-architecture.test.mjs
+
+      - name: Test Vibe2 expert responsibility, causal debugging and senior review
+        run: node --test qa/company-vibe2-expert-development.test.mjs
+
+      - name: Test game-design multiplayer mode contract
+        run: node --test qa/company-design-multiplayer-mode-contract.test.mjs
+
+      - name: Run integrated regression suite
+        run: node qa/vibe-regression.mjs
+
+      - name: Test agent causality determinism
+        run: node qa/vibe-agent-causality.mjs
+
+      - name: Test presentation causality contract
+        run: node qa/vibe-presentation-causality.mjs
+
+      - name: Test world macro causality contract
+        run: node qa/vibe-world-macro-causality.mjs
+
+      - name: Test development AI evidence gate
+        run: node qa/vibe-development-ai-evidence.mjs
+
+      - name: Test replay regression auto repair contract
+        run: node qa/vibe-auto-repair-causality.mjs
+
+      - name: Test Vibe V2 gameplay playability gate
+        run: node qa/vibe-v2-playability.mjs
+
+      - name: Test Vibe V2 end to end execution loop
+        run: node qa/vibe-v2-e2e.mjs

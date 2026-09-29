@@ -1,0 +1,118 @@
+{
+  "version": 3,
+  "gameId": "cavern-cravers",
+  "packageId": "com.game.caverncravers",
+  "sourceType": "EXTERNAL_OPEN_SOURCE_BLACK_BOX_RUNTIME_EVIDENCE",
+  "authority": "PRACTICE_ONLY_MIXED_EVIDENCE",
+  "observedThrough": "2026-09-17",
+  "runtimePromotionAllowed": true,
+  "gameplayBehaviorPromotionAllowed": true,
+  "partialObservableDistillationAllowed": true,
+  "codeExtractionAllowed": false,
+  "binaryRedistributionAllowed": false,
+  "positiveTrainingSample": true,
+  "verifiedRuntimePass": true,
+  "stablePlaytestVerified": true,
+  "stablePlaytestBoundary": "CAPTURED_BLACK_BOX_VALIDATION_WINDOW_ONLY",
+  "gameEntryObserved": true,
+  "gameEntryEvidenceAuthority": "CORRELATED_GITHUB_ACTIONS_BLACK_BOX_EVIDENCE",
+  "gameEntryObservationRecordedAt": "2026-09-17",
+  "verifiedObservedStages": [
+    "APP_LAUNCH",
+    "GAME_ENTRY",
+    "INPUT_EXERCISE",
+    "VISUAL_STATE_CHANGE",
+    "PROCESS_SURVIVAL",
+    "NO_FATAL_CRASH_OR_ANR"
+  ],
+  "sourceEvidence": {
+    "privateRepository": "hans1177/jaewoon-ai-company",
+    "workflowPath": ".github/workflows/vibe2-open-source-apk-blackbox.yml",
+    "latestCompletedRun": 35131811028,
+    "latestRunNumber": 47,
+    "latestArtifactId": 10461064024,
+    "latestArtifactDigest": "sha256:53702f0b724d8b6d329b6ac10f0a142eb43fcdc713c14b8950e5b6abaa801d77",
+    "latestResult": "PASS",
+    "latestFailure": null,
+    "runtimeType": "REDROID_NATIVE_ARM64_DIRECT_EXEC",
+    "hostArch": "aarch64",
+    "guestAndroid": "14",
+    "guestAbi": "arm64-v8a",
+    "redroidImage": "redroid/redroid:14.0.0_64only-latest",
+    "apkSha256": "51d9bd104c253d98a852a2c5ca610b245da8bb17996f242a8dda6eaa3fcb54c4",
+    "apkSource": "OFFICIAL_GITHUB_RELEASE"
+  },
+  "verifiedObservedFacts": [
+    {
+      "id": "actual-game-entry-correlated",
+      "evidenceAuthority": "RUN_47_ARTIFACT",
+      "fact": "After the visible first-run fullscreen notice, main menu and How to Play screen were traversed through visible input, the captured run reached the live Cavern Cravers dungeon board with gameplay resources and a populated tactical card grid visible.",
+      "boundary": "This proves actual game entry only for the captured validation window."
+    },
+    {
+      "id": "input-caused-visible-state-change",
+      "evidenceAuthority": "RUN_47_ARTIFACT",
+      "fact": "A bounded tap on a visible gameplay card changed the captured board composition, producing a clearly observable before/after state transition while remaining in the live dungeon screen.",
+      "boundary": "Only the directly observed board-state transition is promoted; hidden card resolution, combat, economy and procedural-generation rules are not inferred."
+    },
+    {
+      "id": "runtime-survived-observed-input",
+      "evidenceAuthority": "RUN_47_ARTIFACT",
+      "fact": "The package remained alive and foreground after tutorial and gameplay inputs, with no captured FATAL EXCEPTION, SIGABRT, SIGSEGV or ANR marker in the validation window.",
+      "boundary": "This proves the captured validation window and does not claim indefinite long-run stability."
+    }
+  ],
+  "distilledPositiveRuntimePatterns": [
+    {
+      "id": "tutorial-separated-from-game-entry",
+      "scope": "mobile-rpg-onboarding",
+      "evidence": [47],
+      "lesson": "A first-run tutorial or How to Play screen is a distinct pre-game state and should not be counted as live gameplay entry until the interactive dungeon state is visible.",
+      "reuseRule": "For RPG QA, preserve separate milestones for tutorial presentation, tutorial exit and first live interactive gameplay state."
+    },
+    {
+      "id": "compact-tactical-state-with-immediate-feedback",
+      "scope": "mobile-rpg-interaction",
+      "evidence": [47],
+      "lesson": "The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.",
+      "reuseRule": "For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view."
+    },
+    {
+      "id": "semantic-gameplay-input-plus-survival",
+      "scope": "qa-evidence",
+      "evidence": [47],
+      "lesson": "A gameplay input becomes useful evidence when the before/after frames show a meaningful game-state change and the target process remains foreground and crash-free.",
+      "reuseRule": "Bind RPG interaction evidence to semantic before/after frames plus process, focus and crash checks."
+    }
+  ],
+  "distilledFailurePatterns": [
+    {
+      "id": "missed-coordinate-is-not-game-failure",
+      "scope": "black-box-input-automation",
+      "evidence": [46],
+      "lesson": "A prior probe reached live gameplay but tapped just outside an actionable card and therefore produced no visible change; unchanged output did not prove that the game or interaction system was broken.",
+      "reuseRule": "When game entry is visually verified but an input produces no change, distinguish an automation-target miss from a product failure and re-target a directly visible control before judging the game."
+    }
+  ],
+  "routeDecisions": {
+    "githubHostedArm64Redroid": "VERIFIED_WORKING_ANDROID14_NATIVE_ARM64_RUN47",
+    "sourceOrAssetExtraction": "NOT_USED_FOR_THIS_BLACK_BOX_FLOW",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "learningUse": {
+    "allowed": [
+      "mobile RPG tutorial-to-gameplay stage separation",
+      "compact tactical choice presentation",
+      "immediate visible feedback after a bounded gameplay action",
+      "input-to-visible-state evidence binding",
+      "foreground/process/crash correlation",
+      "portable RPG interaction lessons that may inform later Roblox-specific implementation and verification"
+    ],
+    "stillForbidden": [
+      "treating Android evidence as Roblox runtime evidence",
+      "inferring hidden card, combat, economy, procedural-generation or progression formulas",
+      "copying game artwork, UI trade dress, names, text or implementation details into a Roblox game",
+      "claims about long-run progression, balance or economy not measured by the captured validation window"
+    ]
+  }
+}

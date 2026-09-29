@@ -1,0 +1,98 @@
+// 파일명: tools/artbook-production-pipeline.mjs
+// 역할: 중앙 정책 COMPANY_FLOW.md에 따라 productionClass별 제작 파이프라인을 라우팅한다.
+import fs from 'node:fs';
+import path from 'node:path';
+import {spawn} from 'node:child_process';
+import {PRODUCTION_CLASSES,productionClassOf} from './production-classification.mjs';
+import {loadSeedState,activeSeedForGame,saveSeedState} from './game-seed-state.mjs';
+import {ensureOwnerDesignResetSeed} from './owner-design-reset.mjs';
+
+const gameId=String(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||'').trim();
+const date=String(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||'').trim();
+if(!gameId)throw new Error('ARTBOOK_GAME_ID or GAME_ID is required');
+const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+const game=(catalog.games||[]).find(x=>x.id===gameId)||null;
+const seedState=loadSeedState();
+let seed=activeSeedForGame(seedState,gameId);
+if(!seed){
+  const reset=ensureOwnerDesignResetSeed(seedState,gameId);
+  if(reset.changed)saveSeedState(seedState);
+  seed=activeSeedForGame(seedState,gameId);
+  if(reset.seed)console.log(`OWNER_DESIGN_RESET_SEED=MATERIALIZED:${gameId}`);
+}
+if(!game&&!seed)throw new Error(`Unknown game or active GAME_SEED: ${gameId}`);
+const productionClass=game?productionClassOf({},game,{numericLabels:directive.production?.numericLabels||{}}):PRODUCTION_CLASSES.DESIGN_ONLY;
+
+function run(script,{captureFailureOutput=false}={}){return new Promise((resolve,reject)=>{const failureOutput=[];const child=spawn(process.execPath,[script],{stdio:captureFailureOutput?['inherit','pipe','pipe']:'inherit',env:{...process.env,ARTBOOK_GAME_ID:gameId,GAME_ID:gameId,...(date?{ARTBOOK_DATE:date,DESIGN_DATE:date}:{})}});if(captureFailureOutput){const forward=(stream,target)=>stream?.on('data',chunk=>{target.write(chunk);failureOutput.push(String(chunk));if(failureOutput.length>200)failureOutput.splice(0,failureOutput.length-200);});forward(child.stdout,process.stdout);forward(child.stderr,process.stderr);}const attachOutput=error=>{if(captureFailureOutput)error.stageOutput=failureOutput.join('').slice(-24000);return error;};child.on('error',error=>reject(attachOutput(error)));child.on('close',code=>code===0?resolve():reject(attachOutput(new Error(`${script} exited ${code}`))));});}
+function designSchemaRetryable(error){
+  const output=String(error?.stageOutput||'');
+  const terminalDesignFailure=/(?:DESIGN_PRE_GATE_BLOCKED|DESIGN_BASELINE_BLOCKED|GAME_SEED_REQUIRED|GEMINI_API_KEY_REQUIRED|GEMINI_LEAD_MODEL_GATE|GEMINI_DISTINCT_LEAD_GATE|GEMINI_NO_AVAILABLE_MODELS)/i.test(output);
+  if(terminalDesignFailure)return false;
+  const schemaOrJsonFailure=/(?:schema required missing|schema object mismatch|schema enum mismatch|schema additional property|schema array mismatch|schema minItems mismatch|schema maxItems mismatch|schema string mismatch|schema maxLength mismatch|model response is not a JSON object|empty model response|unexpected token|unexpected end of json input|expected ['\",]|unterminated string|unterminated array|unterminated object|bad control character|json at position)/i.test(output);
+  const transientModelFailure=/(?:aborted due to timeout|timed out|AbortError|TimeoutError)/i.test(output);
+  return schemaOrJsonFailure||transientModelFailure;
+}
+async function runWithRetry(script,{attempts='UNLIMITED',label='PIPELINE_STAGE',retryWhen=()=>true}={}){
+  let lastError=null;
+  const unlimited=String(attempts).toUpperCase()==='UNLIMITED';
+  const limit=unlimited?Number.POSITIVE_INFINITY:Math.max(1,Number(attempts)||1);
+  let attempt=0;
+  while(attempt<limit){
+    attempt+=1;
+    const totalLabel=unlimited?'UNLIMITED':String(limit);
+    try{
+      await run(script,{captureFailureOutput:true});
+      if(attempt>1)console.log(`${label}_RECOVERED=YES|attempt=${attempt}/${totalLabel}`);
+      return;
+    }catch(error){
+      lastError=error;
+      console.log(`${label}_ATTEMPT_FAILED=${attempt}/${totalLabel}|reason=${String(error?.message||error).replace(/\s+/g,' ').trim()}`);
+      if(!retryWhen(error)){
+        console.log(`${label}_RETRY=NO|reason=NON_RETRYABLE_FAILURE`);
+        throw error;
+      }
+      if(!unlimited&&attempt>=limit)break;
+      console.log(`${label}_RETRY=YES|next_attempt=${attempt+1}/${totalLabel}`);
+      await new Promise(resolve=>setTimeout(resolve,Math.min(5000,1000*attempt)));
+    }
+  }
+  throw lastError;
+}
+function kstDate(){const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const g=t=>p.find(x=>x.type===t)?.value||'';return`${g('year')}-${g('month')}-${g('day')}`;}
+function readCycleStatus(){const d=date||kstDate();try{return JSON.parse(fs.readFileSync(path.join('design',gameId,d,'cycle-status.json'),'utf8'));}catch{return null;}}
+function canReuseCompletedDesign(status){
+  if(status?.status!=='COMPLETE')return false;
+  if(String(status?.disposition?.state||'').toUpperCase()!=='REDESIGN')return false;
+  if(Number(status?.meeting?.conflictCount||0)!==0||Number(status?.meeting?.holdCount||0)!==0)return false;
+  if(status?.disposition?.unanimousFatalDiscard===true)return false;
+  const blockers=Array.isArray(status?.baselineGate?.blockers)?status.baselineGate.blockers:[];
+  if(!blockers.length||blockers.some(blocker=>!String(blocker).startsWith('design-disposition:')))return false;
+  const d=date||kstDate();
+  return fs.existsSync(path.join('design',gameId,d,'design-revised.json'));
+}
+
+console.log(`ARTBOOK_PIPELINE_GAME=${gameId}`);console.log(`PRODUCTION_CLASS=${productionClass}`);console.log('POLICY_DOCUMENT=COMPANY_FLOW.md');
+await run('tools/artbook-fact-pack.mjs');
+if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
+  console.log('DEVELOPMENT_EXECUTION_MODE=UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_DUAL_PLATFORM');
+  console.log('DEVELOPMENT_RUNTIME_DELEGATED=YES');
+  console.log('DEVELOPMENT_RUNTIME_OWNER=.github/workflows/company-development-confirmed-runtime.yml');
+  console.log('DEVELOPMENT_QUEUE_AUTHORITY=company-runtime:development-queue.json');
+  console.log('UNITY_WEB_UPPER_PLATFORM_FLOOR=REQUIRED_FOR_NEW_NATIVE_START');
+  console.log('DEVELOPMENT_ARTBOOK_PIPELINE_SOURCE_MUTATION=NO');
+}else if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
+  await run('tools/company-release-production-cycle.mjs');await run('tools/company-release-stale-artifact-guard.mjs');
+  console.log('RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION');console.log('RELEASE_VIBE2_PRIMARY_DEVELOPER=YES');console.log('RELEASE_CURRENT_BUILD_EVIDENCE_BINDING=REQUIRED');console.log('RELEASE_STALE_FINAL_ARTIFACT_GUARD=ENABLED');console.log('RELEASE_FINAL_ARTBOOK_ONLY_AFTER_READY=YES');
+}else{
+  const existingStatus=readCycleStatus();
+  if(canReuseCompletedDesign(existingStatus))console.log('DESIGN_CYCLE_REUSED=YES');
+  else{await runWithRetry('tools/company-design-cycle.mjs',{attempts:'UNLIMITED',label:'DESIGN_MODEL_SCHEMA',retryWhen:designSchemaRetryable});console.log('DESIGN_CYCLE_REUSED=NO');}
+  await run('tools/company-baseline-gate.mjs');
+  const status=readCycleStatus();
+  if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true)console.log('DESIGN_ONLY_ARTBOOK_SKIPPED=WAIT_FOR_PROMOTION');
+  else console.log(`DESIGN_ONLY_ARTBOOK_SKIPPED=${status?.baselineGate?.state||'BASELINE_NOT_READY'}`);
+  console.log('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
+  console.log('DESIGN_ONLY_VIBE2_USED=NO');
+}
+console.log('ARTBOOK_PIPELINE_COMPLETE=YES');console.log('DEPARTMENT_MODE=CLASS_SCOPED_CURRENT_RUNTIME');console.log('DEPARTMENT_REPRESENTATIVE_OWNER=DEPARTMENT_LEAD_MODEL');console.log('DEPARTMENT_REBUTTAL_OWNER=DEPARTMENT_LEAD_MODEL');console.log('ARTBOOK_AUTHOR=ONE_ARTBOOK_EDITOR_AI_AFTER_PROMOTION');console.log('DEPARTMENT_ARTBOOK_AUTHORSHIP=NO');console.log('BASELINE_APPROVAL=REAL_EVIDENCE_GATE_SEPARATE_FROM_AI_REVIEW');console.log('PAID_API=NO');

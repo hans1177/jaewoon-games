@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>50일</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#09130d;color:#eef7ef;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}button{font:inherit}#game{position:relative;width:100%;height:100%;background:#102519;touch-action:none}canvas{display:block;width:100%;height:100%;touch-action:none}.hud{position:absolute;left:0;right:0;top:0;padding:calc(8px + env(safe-area-inset-top)) 10px 8px;pointer-events:none}.bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.pill{background:#102019dd;border:1px solid #35563f;border-radius:12px;padding:7px 9px;font-size:12px;backdrop-filter:blur(8px)}.pill b{font-size:14px}.hp{min-width:116px}.hpTrack{width:100%;height:6px;background:#3a2f2f;border-radius:8px;overflow:hidden;margin-top:4px}.hpTrack span{display:block;height:100%;background:#ef6c6c}.notice{margin-top:7px;max-width:min(94vw,560px);background:#102019dd;border:1px solid #35563f;border-radius:12px;padding:7px 9px;font-size:12px;line-height:1.35;opacity:0;transition:opacity .15s}.notice.show{opacity:1}.side{position:absolute;top:92px;right:8px;display:flex;flex-direction:column;gap:7px}.uiBtn{border:1px solid #48644e;background:#173322e8;color:#f1f7f2;border-radius:13px;padding:10px 12px;font-weight:750;box-shadow:0 4px 14px #0005}.uiBtn:disabled{opacity:.45}.bottom{position:absolute;left:0;right:0;bottom:0;padding:8px 10px calc(10px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none}.joystick{position:relative;width:122px;height:122px;border-radius:50%;border:2px solid #ffffff38;background:#08110a88;pointer-events:auto;touch-action:none}.stick{position:absolute;width:52px;height:52px;border-radius:50%;left:33px;top:33px;background:#d9e9d9aa;border:2px solid #fff7;transform:translate(0,0)}.actions{display:grid;grid-template-columns:76px 76px;gap:9px;pointer-events:auto}.act{width:76px;height:76px;border-radius:50%;border:2px solid #ffffff55;background:#244c2ddd;color:#fff;font-weight:850;font-size:13px}.act.attack{background:#6b2c2cdd}.act.interact{background:#2b526add}.modalWrap{position:absolute;inset:0;background:#030806bf;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.modalWrap.show{display:flex}.modal{width:min(94vw,460px);max-height:84vh;overflow:auto;background:#11251a;border:1px solid #46654f;border-radius:20px;padding:16px;box-shadow:0 20px 50px #0009}.modal h2{margin:0 0 10px}.modal p{font-size:13px;line-height:1.5;color:#d0ded3}.rows{display:grid;gap:7px}.row{display:flex;justify-content:space-between;gap:10px;padding:9px 10px;background:#0b1811;border-radius:12px;font-size:13px}.row small{opacity:.7}.close{width:100%;margin-top:12px;border:0;border-radius:12px;padding:12px;background:#e6f3e9;color:#102016;font-weight:800}.lootTitle{font-weight:900;font-size:18px;margin:8px 0}.legend{font-size:11px;color:#bdd1c0;line-height:1.5}.gameover{text-align:center}.gameover h1{font-size:32px;margin:2px 0 8px}@media(min-width:760px){.joystick{width:132px;height:132px}.stick{left:38px;top:38px}.actions{grid-template-columns:84px 84px}.act{width:84px;height:84px}.hud{padding-left:16px;padding-right:16px}}
+</style>
+</head>
+<body>
+<div id="game">
+<canvas id="cv"></canvas>
+<div class="hud">
+  <div class="bar">
+    <div class="pill"><b id="day">1일</b> <span id="phase">낮</span></div>
+    <div class="pill"><b id="campLv">캠프 Lv.1</b></div>
+    <div class="pill hp">HP <b id="hpText">100/100</b><div class="hpTrack"><span id="hpBar" style="width:100%"></span></div></div>
+    <div class="pill">🪵 <b id="wood">0</b>　🪨 <b id="stone">0</b></div>
+  </div>
+  <div id="notice" class="notice"></div>
+</div>
+<div class="side">
+  <button id="inventoryBtn" class="uiBtn">가방</button>
+  <button id="campBtn" class="uiBtn">캠프 강화</button>
+  <button id="saveBtn" class="uiBtn">저장</button>
+</div>
+<div class="bottom">
+  <div id="joystick" class="joystick"><div id="stick" class="stick"></div></div>
+  <div class="actions">
+    <button id="attackBtn" class="act attack">공격</button>
+    <button id="interactBtn" class="act interact">상호작용</button>
+  </div>
+</div>
+<div id="inventoryModal" class="modalWrap"><div class="modal"><h2>가방</h2><div class="legend">상자를 열면 아이템 1개를 얻고 효과가 즉시 적용돼. 같은 아이템도 다시 나올 수 있어.</div><div id="inventoryRows" class="rows" style="margin-top:10px"></div><button class="close" data-close>닫기</button></div></div>
+<div id="lootModal" class="modalWrap"><div class="modal"><div id="lootGrade"></div><div id="lootName" class="lootTitle"></div><p id="lootEffect"></p><button class="close" data-close>확인</button></div></div>
+<div id="endModal" class="modalWrap"><div class="modal gameover"><h1 id="endTitle">50일 생존 성공</h1><p id="endText"></p><button id="restartBtn" class="close">처음부터</button></div></div>
+</div>
+<script>
+// 파일명: web-games/fifty-days/index.html
+// 메인: 50일 생존, 캠프 1~6, 상자 5등급, 캠프 레벨별 생물 등장
+(() => {
+'use strict';
+const canvas=document.getElementById('cv'),ctx=canvas.getContext('2d');
+const $=id=>document.getElementById(id);
+const WORLD=1800, DAY_LENGTH=50, SAVE_KEY='jaewoon_fifty_days_v1';
+const camp={x:WORLD/2,y:WORLD/2,r:95};
+const campCosts={2:{wood:8,stone:4},3:{wood:14,stone:8},4:{wood:22,stone:14},5:{wood:30,stone:22},6:{wood:42,stone:32}};
+const chestPools={
+  normal:[
+    ['붕대','체력 20 회복'],['말린 고기','체력 10 회복 + 최대체력 2 증가'],['나무 꾸러미','나무 +8'],['돌 꾸러미','돌 +7'],['조잡한 칼','공격력 +3']
+  ],
+  good:[
+    ['붕대','체력 20 회복'],['말린 고기','체력 10 회복 + 최대체력 2 증가'],['나무 꾸러미','나무 +8'],['돌 꾸러미','돌 +7'],['조잡한 칼','공격력 +3'],['회복 물약','체력 40 회복'],['사냥 활','공격력 +5, 공격 사거리 +15']
+  ],
+  iron:[
+    ['철 도끼','공격력 +6'],['철 창','공격력 +7, 공격 사거리 +10'],['철 갑옷','최대체력 +15'],['철제 식량통','체력 완전 회복'],['철괴','공격력 +2, 돌 +8']
+  ],
+  steel:[
+    ['철 도끼','공격력 +6'],['철 창','공격력 +7, 공격 사거리 +10'],['철 갑옷','최대체력 +15'],['강철 검','공격력 +10'],['강철 갑옷','최대체력 +25'],['강한 약','체력 완전 회복 + 최대체력 5 증가'],['캠프 공구','나무 +16, 돌 +16']
+  ],
+  gold:[
+    ['황금 칼날','공격력 +14'],['거인 방패','최대체력 +35'],['불사조 약','체력 완전 회복 + 최대체력 10 증가'],['추적 나침반','이동속도 +18'],['태양 랜턴','밤에 받는 피해 25% 감소']
+  ]
+};
+const gradeMeta={normal:['상자','#9a6c43'],good:['좋은 상자','#4ca36d'],iron:['철상자','#9aa4ad'],steel:['강철상자','#cbd6dd'],gold:['금상자','#f4c542']};
+const species={
+  rabbit:{name:'토끼',levels:[1],temper:'harmless',hp:22,dmg:0,speed:46,color:'#dfd6c8',size:13},
+  wolf:{name:'늑대',levels:[2,3,4],temper:'aggressive',hp:55,dmg:11,speed:72,color:'#7d8790',size:17},
+  boar:{name:'멧돼지',levels:[3,4,5],temper:'aggressive',hp:80,dmg:15,speed:58,color:'#6b4c38',size:20},
+  deer:{name:'사슴',levels:[3,4],temper:'harmless',hp:48,dmg:0,speed:64,color:'#b78b5f',size:18},
+  bear:{name:'곰',levels:[4,5,6],temper:'aggressive',hp:130,dmg:21,speed:50,color:'#4a352d',size:25},
+  golem:{name:'골렘',levels:[5,6],temper:'neutral',hp:190,dmg:26,speed:36,color:'#7b8078',size:29}
+};
+const state={day:1,time:0,campLevel:1,wood:0,stone:0,hp:100,maxHp:100,attack:12,range:58,speed:150,nightReduce:0,inventory:{},opened:[],dead:false,victory:false,lastAttack:0};
+const player={x:camp.x,y:camp.y+135,r:16,dirX:1,dirY:0,hitFlash:0};
+const camera={x:0,y:0};
+let keys={},joy={x:0,y:0,active:false,pid:null},last=performance.now(),noticeTimer=0,creatures=[],chests=[],nodes=[];
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function rnd(a,b){return a+Math.random()*(b-a)}
+function resize(){const dpr=Math.min(2,devicePixelRatio||1);canvas.width=Math.floor(innerWidth*dpr);canvas.height=Math.floor(innerHeight*dpr);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';ctx.setTransform(dpr,0,0,dpr,0,0)}
+addEventListener('resize',resize);resize();
+function toast(msg,sec=2){const n=$('notice');n.textContent=msg;n.classList.add('show');noticeTimer=sec}
+function safePoint(minR=150){let x,y;do{x=rnd(70,WORLD-70);y=rnd(70,WORLD-70)}while(Math.hypot(x-camp.x,y-camp.y)<minR);return{x,y}}
+function buildWorld(){
+  nodes=[];for(let i=0;i<70;i++){const p=safePoint(120);nodes.push({...p,type:i%3===0?'rock':'tree',alive:true,respawn:0})}
+  chests=[];const defs=[['normal',18,210],['good',12,330],['iron',8,480],['steel',6,610],['gold',4,760]];let id=0;
+  for(const [grade,count,minR] of defs)for(let i=0;i<count;i++){const p=safePoint(minR);chests.push({...p,id:id++,grade,opened:state.opened.includes(id-1)})}
+  refreshCreatures();
+}
+function refreshCreatures(){
+  const allowed=Object.keys(species).filter(k=>species[k].levels.includes(state.campLevel));creatures=[];
+  allowed.forEach(k=>{const sp=species[k];const count=k==='rabbit'?14:k==='deer'?9:k==='golem'?5:k==='bear'?6:10;for(let i=0;i<count;i++){const p=safePoint(180);creatures.push({...p,type:k,hp:sp.hp,maxHp:sp.hp,ang:rnd(0,Math.PI*2),turn:rnd(.5,2),aggro:false,hit:0,attackCd:rnd(0,.8)})}})
+  toast(`캠프 Lv.${state.campLevel} 생물 분포가 바뀌었어`);
+}
+function save(show=true){
+  const data={...state,opened:chests.filter(c=>c.opened).map(c=>c.id),player:{x:player.x,y:player.y}};localStorage.setItem(SAVE_KEY,JSON.stringify(data));if(show)toast('저장했어')
+}
+function load(){try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!d)return;Object.assign(state,d);if(d.player){player.x=d.player.x;player.y=d.player.y}}catch(e){}}
+function clearSave(){localStorage.removeItem(SAVE_KEY)}
+function updateHud(){
+  $('day').textContent=state.day+'일';$('phase').textContent=state.time/DAY_LENGTH>.68?'밤':'낮';$('campLv').textContent='캠프 Lv.'+state.campLevel;$('wood').textContent=state.wood;$('stone').textContent=state.stone;$('hpText').textContent=Math.ceil(state.hp)+'/'+state.maxHp;$('hpBar').style.width=clamp(state.hp/state.maxHp*100,0,100)+'%';
+  const cost=campCosts[state.campLevel+1];$('campBtn').textContent=cost?`캠프 강화 🪵${cost.wood} 🪨${cost.stone}`:'캠프 최고레벨';$('campBtn').disabled=!cost;
+}
+function applyLoot(name){
+  state.inventory[name]=(state.inventory[name]||0)+1;
+  switch(name){
+    case'붕대':state.hp=Math.min(state.maxHp,state.hp+20);break;case'말린 고기':state.maxHp+=2;state.hp=Math.min(state.maxHp,state.hp+10);break;case'나무 꾸러미':state.wood+=8;break;case'돌 꾸러미':state.stone+=7;break;case'조잡한 칼':state.attack+=3;break;case'회복 물약':state.hp=Math.min(state.maxHp,state.hp+40);break;case'사냥 활':state.attack+=5;state.range+=15;break;
+    case'철 도끼':state.attack+=6;break;case'철 창':state.attack+=7;state.range+=10;break;case'철 갑옷':state.maxHp+=15;state.hp+=15;break;case'철제 식량통':state.hp=state.maxHp;break;case'철괴':state.attack+=2;state.stone+=8;break;
+    case'강철 검':state.attack+=10;break;case'강철 갑옷':state.maxHp+=25;state.hp+=25;break;case'강한 약':state.maxHp+=5;state.hp=state.maxHp;break;case'캠프 공구':state.wood+=16;state.stone+=16;break;
+    case'황금 칼날':state.attack+=14;break;case'거인 방패':state.maxHp+=35;state.hp+=35;break;case'불사조 약':state.maxHp+=10;state.hp=state.maxHp;break;case'추적 나침반':state.speed+=18;break;case'태양 랜턴':state.nightReduce=.25;break;
+  }
+  state.hp=Math.min(state.hp,state.maxHp);updateHud();
+}
+function openChest(c){if(c.opened)return;const pool=chestPools[c.grade],pick=pool[Math.floor(Math.random()*pool.length)];c.opened=true;state.opened.push(c.id);applyLoot(pick[0]);$('lootGrade').textContent=gradeMeta[c.grade][0];$('lootGrade').style.color=gradeMeta[c.grade][1];$('lootName').textContent=pick[0];$('lootEffect').textContent=pick[1];$('lootModal').classList.add('show');save(false)}
+function interact(){
+  if(state.dead||state.victory)return;
+  let best=null,bd=72;for(const c of chests){if(c.opened)continue;const d=dist(player,c);if(d<bd){bd=d;best={kind:'chest',obj:c}}}
+  for(const n of nodes){if(!n.alive)continue;const d=dist(player,n);if(d<bd){bd=d;best={kind:'node',obj:n}}}
+  if(best?.kind==='chest'){openChest(best.obj);return}
+  if(best?.kind==='node'){const n=best.obj;n.alive=false;n.respawn=18;if(n.type==='tree'){state.wood+=3;toast('나무 +3')}else{state.stone+=3;toast('돌 +3')}updateHud();return}
+  if(dist(player,camp)<130){upgradeCamp();return}
+  toast('가까이에 상호작용할 대상이 없어',1.2)
+}
+function upgradeCamp(){const next=state.campLevel+1,c=campCosts[next];if(!c){toast('캠프는 이미 최고 레벨이야');return}if(state.wood<c.wood||state.stone<c.stone){toast(`필요 자원: 나무 ${c.wood}, 돌 ${c.stone}`);return}state.wood-=c.wood;state.stone-=c.stone;state.campLevel=next;state.hp=state.maxHp;refreshCreatures();updateHud();save(false)}
+function attack(){
+  const now=performance.now()/1000;if(now-state.lastAttack<.38||state.dead||state.victory)return;state.lastAttack=now;
+  let target=null,bd=state.range;for(const m of creatures){if(m.hp<=0)continue;const d=dist(player,m);if(d<bd){const vx=(m.x-player.x)/d,vy=(m.y-player.y)/d,dot=vx*player.dirX+vy*player.dirY;if(dot>.15){bd=d;target=m}}}
+  if(target){target.hp-=state.attack;target.hit=.15;if(species[target.type].temper==='neutral')target.aggro=true;if(target.hp<=0){state.wood+=target.type==='rabbit'||target.type==='deer'?1:0;state.stone+=target.type==='golem'?6:target.type==='bear'?2:0;toast(`${species[target.type].name} 처치`)}updateHud()}
+}
+function damage(amount){const night=state.time/DAY_LENGTH>.68;const reduced=night?amount*(1-state.nightReduce):amount;state.hp-=reduced;player.hitFlash=.18;if(state.hp<=0){state.hp=0;state.dead=true;$('endTitle').textContent='생존 실패';$('endText').textContent=`${state.day}일째에 쓰러졌어. 캠프 Lv.${state.campLevel}`;$('endModal').classList.add('show')}updateHud()}
+function update(dt){
+  if(state.dead||state.victory)return;
+  state.time+=dt;if(state.time>=DAY_LENGTH){state.time-=DAY_LENGTH;state.day++;state.hp=Math.min(state.maxHp,state.hp+15);save(false);toast(`${state.day}일째가 시작됐어`);if(state.day>50){state.victory=true;$('endTitle').textContent='50일 생존 성공';$('endText').textContent=`캠프 Lv.${state.campLevel} · 공격력 ${state.attack} · 최대체력 ${state.maxHp}`;$('endModal').classList.add('show');save(false);return}}
+  let mx=(keys.ArrowRight||keys.d?1:0)-(keys.ArrowLeft||keys.a?1:0),my=(keys.ArrowDown||keys.s?1:0)-(keys.ArrowUp||keys.w?1:0);if(joy.active){mx=joy.x;my=joy.y}const len=Math.hypot(mx,my);if(len>.05){mx/=Math.max(1,len);my/=Math.max(1,len);player.dirX=mx;player.dirY=my;player.x=clamp(player.x+mx*state.speed*dt,25,WORLD-25);player.y=clamp(player.y+my*state.speed*dt,25,WORLD-25)}
+  player.hitFlash=Math.max(0,player.hitFlash-dt);for(const n of nodes)if(!n.alive){n.respawn-=dt;if(n.respawn<=0)n.alive=true}
+  const isNight=state.time/DAY_LENGTH>.68;
+  for(const m of creatures){if(m.hp<=0)continue;const sp=species[m.type];m.hit=Math.max(0,m.hit-dt);m.attackCd-=dt;const d=dist(player,m);if(sp.temper==='aggressive'&&d<(isNight?300:220))m.aggro=true;if(sp.temper==='harmless'&&d<95){const dx=(m.x-player.x)/Math.max(1,d),dy=(m.y-player.y)/Math.max(1,d);m.x+=dx*sp.speed*1.3*dt;m.y+=dy*sp.speed*1.3*dt;continue}if(m.aggro){const dx=(player.x-m.x)/Math.max(1,d),dy=(player.y-m.y)/Math.max(1,d);m.x+=dx*sp.speed*(isNight?1.12:1)*dt;m.y+=dy*sp.speed*(isNight?1.12:1)*dt;if(d<player.r+sp.size+6&&m.attackCd<=0){m.attackCd=1.05;damage(sp.dmg*(isNight?1.15:1))}if(d>420&&sp.temper!=='neutral')m.aggro=false}else{m.turn-=dt;if(m.turn<=0){m.turn=rnd(.7,2.4);m.ang+=rnd(-1.5,1.5)}m.x=clamp(m.x+Math.cos(m.ang)*sp.speed*.22*dt,30,WORLD-30);m.y=clamp(m.y+Math.sin(m.ang)*sp.speed*.22*dt,30,WORLD-30)}}
+  camera.x=clamp(player.x-innerWidth/2,0,Math.max(0,WORLD-innerWidth));camera.y=clamp(player.y-innerHeight/2,0,Math.max(0,WORLD-innerHeight));if(noticeTimer>0){noticeTimer-=dt;if(noticeTimer<=0)$('notice').classList.remove('show')}updateHud()
+}
+function worldToScreen(o){return{x:o.x-camera.x,y:o.y-camera.y}}
+function draw(){
+  const w=innerWidth,h=innerHeight,night=state.time/DAY_LENGTH>.68;ctx.clearRect(0,0,w,h);ctx.fillStyle=night?'#0a1811':'#183c25';ctx.fillRect(0,0,w,h);
+  ctx.save();ctx.translate(-camera.x,-camera.y);
+  ctx.strokeStyle=night?'#163523':'#2b5735';ctx.lineWidth=1;for(let x=0;x<WORLD;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,WORLD);ctx.stroke()}for(let y=0;y<WORLD;y+=80){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(WORLD,y);ctx.stroke()}
+  ctx.fillStyle=night?'#3c2f19':'#6d512a';ctx.beginPath();ctx.arc(camp.x,camp.y,camp.r,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e97f32';ctx.beginPath();ctx.arc(camp.x,camp.y,18,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffcf63';ctx.beginPath();ctx.arc(camp.x,camp.y,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='700 14px system-ui';ctx.textAlign='center';ctx.fillText(`캠프 Lv.${state.campLevel}`,camp.x,camp.y-34);
+  for(const n of nodes){if(!n.alive)continue;if(n.type==='tree'){ctx.fillStyle='#234f2f';ctx.beginPath();ctx.arc(n.x,n.y,18,0,Math.PI*2);ctx.fill();ctx.fillStyle='#5d4027';ctx.fillRect(n.x-4,n.y+8,8,18)}else{ctx.fillStyle='#758078';ctx.beginPath();ctx.arc(n.x,n.y,15,0,Math.PI*2);ctx.fill()}}
+  for(const c of chests){if(c.opened)continue;const meta=gradeMeta[c.grade];ctx.fillStyle=meta[1];ctx.fillRect(c.x-15,c.y-11,30,22);ctx.strokeStyle='#2a2114';ctx.lineWidth=3;ctx.strokeRect(c.x-15,c.y-11,30,22);ctx.fillStyle='#f7f3e7';ctx.font='10px system-ui';ctx.fillText(meta[0],c.x,c.y-17)}
+  for(const m of creatures){if(m.hp<=0)continue;const sp=species[m.type];ctx.fillStyle=m.hit>0?'#fff':sp.color;ctx.beginPath();ctx.arc(m.x,m.y,sp.size,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='11px system-ui';ctx.fillText(sp.name,m.x,m.y-sp.size-8);ctx.fillStyle='#401e1e';ctx.fillRect(m.x-18,m.y+sp.size+5,36,4);ctx.fillStyle='#d75d5d';ctx.fillRect(m.x-18,m.y+sp.size+5,36*(m.hp/m.maxHp),4);if(sp.temper==='neutral'){ctx.fillStyle='#d7d2a2';ctx.font='9px system-ui';ctx.fillText(m.aggro?'적대':'중립',m.x,m.y+sp.size+17)}}
+  ctx.fillStyle=player.hitFlash>0?'#ff8787':'#dbeafe';ctx.beginPath();ctx.arc(player.x,player.y,player.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#66a3ff';ctx.lineWidth=3;ctx.stroke();ctx.beginPath();ctx.moveTo(player.x,player.y);ctx.lineTo(player.x+player.dirX*28,player.y+player.dirY*28);ctx.stroke();
+  ctx.restore();if(night){ctx.fillStyle='#02050b88';ctx.fillRect(0,0,w,h);const p=worldToScreen(player);const g=ctx.createRadialGradient(p.x,p.y,30,p.x,p.y,170);g.addColorStop(0,'#fff0');g.addColorStop(1,'#000b');ctx.fillStyle=g;ctx.fillRect(0,0,w,h)}
+  const pct=state.time/DAY_LENGTH;ctx.fillStyle='#ffffff22';ctx.fillRect(10,h-6,Math.max(0,w-20),3);ctx.fillStyle=night?'#889cff':'#ffd36b';ctx.fillRect(10,h-6,(w-20)*pct,3)
+}
+function loop(t){const dt=Math.min(.04,(t-last)/1000);last=t;update(dt);draw();requestAnimationFrame(loop)}
+function showInventory(){const rows=Object.entries(state.inventory).sort((a,b)=>b[1]-a[1]);$('inventoryRows').innerHTML=rows.length?rows.map(([n,c])=>`<div class="row"><b>${n}</b><span>x${c}</span></div>`).join(''):'<div class="row"><small>아직 아이템이 없어.</small></div>';$('inventoryModal').classList.add('show')}
+function joystickUpdate(e){const r=$('joystick').getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,max=r.width*.34,l=Math.hypot(dx,dy),s=l>max?max/l:1,px=dx*s,py=dy*s;joy.x=px/max;joy.y=py/max;$('stick').style.transform=`translate(${px}px,${py}px)`}
+$('joystick').addEventListener('pointerdown',e=>{joy.active=true;joy.pid=e.pointerId;$('joystick').setPointerCapture(e.pointerId);joystickUpdate(e)});$('joystick').addEventListener('pointermove',e=>{if(joy.active&&e.pointerId===joy.pid)joystickUpdate(e)});function joyEnd(e){if(e.pointerId!==joy.pid)return;joy.active=false;joy.x=joy.y=0;joy.pid=null;$('stick').style.transform='translate(0,0)'}$('joystick').addEventListener('pointerup',joyEnd);$('joystick').addEventListener('pointercancel',joyEnd);
+addEventListener('keydown',e=>{keys[e.key]=true;if(e.code==='Space'){e.preventDefault();attack()}if(e.key==='e'||e.key==='E')interact()});addEventListener('keyup',e=>keys[e.key]=false);
+$('attackBtn').addEventListener('pointerdown',e=>{e.preventDefault();attack()});$('interactBtn').addEventListener('pointerdown',e=>{e.preventDefault();interact()});$('inventoryBtn').onclick=showInventory;$('campBtn').onclick=upgradeCamp;$('saveBtn').onclick=()=>save(true);document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('.modalWrap').classList.remove('show'));
+$('restartBtn').onclick=()=>{clearSave();location.reload()};
+load();buildWorld();updateHud();toast('50일 동안 살아남아. 상자는 맵 곳곳에 있어.',3);requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

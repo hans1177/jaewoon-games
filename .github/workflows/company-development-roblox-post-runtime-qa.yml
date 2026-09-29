@@ -1,0 +1,2467 @@
+# 파일명: .github/workflows/company-development-roblox-post-runtime-qa.yml
+name: Company DEVELOPMENT_CONFIRMED Roblox Runtime Foundation QA
+run-name: Roblox runtime foundation QA · ${{ inputs.game_id || 'scan' }}
+
+on:
+  workflow_call:
+    secrets:
+      ROBLOX_OPEN_CLOUD_API_KEY:
+        required: false
+    inputs:
+      retry_open_cloud_only:
+        type: boolean
+        default: false
+      game_id:
+        required: true
+        type: string
+      candidate_revision:
+        required: true
+        type: string
+      control_revision:
+        required: true
+        type: string
+      candidate_context:
+        required: true
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-development-roblox-post-runtime-qa.yml'
+      - '.github/workflows/company-development-roblox-release-promotion.yml'
+      - 'tools/company-development-roblox-runtime-foundation.mjs'
+      - 'tools/company-development-roblox-studio-local-play.mjs'
+      - 'qa/fixtures/company-roblox-studio-local-play-scenario.json'
+      - 'qa/company-tester-debug-intake.test.mjs'
+      - 'qa/company-development-roblox-studio-local-play.test.mjs'
+      - 'qa/company-development-roblox-headless-fast-mvp.test.mjs'
+      - 'qa/company-development-roblox-runtime-foundation.test.mjs'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/canonical-learning-pipeline.json'
+      - 'roblox-games/.company-runtime-trigger'
+  workflow_dispatch:
+    inputs:
+      game_id:
+        description: Optional exact gameId. Empty means all pending Roblox runtime candidates.
+        required: false
+        type: string
+      retry_open_cloud_only:
+        description: Optional manual Open Cloud/server diagnostic for game_id. Never required for internal development.
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  actions: write
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
+# Only duplicate jobs for the same immutable artifact share a slot below.
+concurrency:
+  group: roblox-runtime-foundation-${{ github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  dedupe:
+    if: inputs.candidate_context == ''
+    name: collapse duplicate runtime foundation scans
+    runs-on: ubuntu-slim
+    timeout-minutes: 3
+    outputs:
+      run: ${{ steps.guard.outputs.run }}
+    steps:
+      - name: Cancel stale queued foundation runs before batch scan
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.game_id == '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100")"
+          printf '%s' "$payload" | CURRENT_RUN_ID="$GITHUB_RUN_ID" CURRENT_SHA="$GITHUB_SHA" node -e "
+            let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+              const j=JSON.parse(s);
+              const states=new Set(['queued','pending','requested']);
+              const prefix='Roblox runtime foundation QA · ';
+              for(const r of j.workflow_runs||[]){
+                const title=String(r.display_title||'');
+                if(!states.has(String(r.status||'').toLowerCase()))continue;
+                if(String(r.id)===String(process.env.CURRENT_RUN_ID||''))continue;
+                if(!title.startsWith(prefix))continue;
+                if(String(r.head_sha||'')===String(process.env.CURRENT_SHA||''))continue;
+                process.stdout.write(String(r.id)+'\n');
+              }
+            });
+          " > /tmp/roblox-stale-foundation-run-ids
+          cancelled=0
+          while read -r run_id; do
+            [ -n "$run_id" ] || continue
+            run_status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.status' 2>/dev/null || true)"
+            if [ "$run_status" = 'in_progress' ]; then
+              echo "ROBLOX_ACTIVE_STUDIO_RUN_PRESERVED=$run_id"
+              continue
+            fi
+            gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null 2>&1 || true
+            run_status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.status' 2>/dev/null || true)"
+            if [[ "$run_status" =~ ^(queued|pending|requested|waiting)$ ]]; then
+              gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/force-cancel" >/dev/null 2>&1 || true
+              echo "ROBLOX_STALE_FOUNDATION_RUN_FORCE_CANCEL_REQUESTED=$run_id:$run_status"
+            elif [ "$run_status" = 'in_progress' ]; then
+              echo "ROBLOX_STALE_FOUNDATION_RUN_NORMAL_CANCEL_CLEANUP_PENDING=$run_id"
+            fi
+            cancelled=$((cancelled+1))
+            echo "ROBLOX_STALE_FOUNDATION_RUN_CANCELLED=$run_id"
+          done < /tmp/roblox-stale-foundation-run-ids
+          echo "ROBLOX_STALE_FOUNDATION_RUN_CANCEL_COUNT=$cancelled"
+
+      - name: Select newest same-identity runtime foundation run
+        id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100")"
+          winner="$(printf '%s' "$payload" | GAME_ID="$GAME_ID" node -e "
+            let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+              const j=JSON.parse(s);
+              const states=new Set(['queued','pending','in_progress','requested']);
+              const game=String(process.env.GAME_ID||'').trim();
+              const title='Roblox runtime foundation QA · '+(game||'scan');
+              const ids=(j.workflow_runs||[])
+                .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title)
+                .map(r=>Number(r.id))
+                .filter(Number.isFinite)
+                .sort((a,b)=>a-b);
+              if(!ids.length){process.stdout.write('');return;}
+              process.stdout.write(String(ids[ids.length-1]));
+            });
+          ")"
+          echo "ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=${winner:-NONE}"
+          if [ -n "$winner" ] && [ "$winner" != "$GITHUB_RUN_ID" ]; then
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+            if [ -n "$GAME_ID" ]; then
+              echo "ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=$GAME_ID:$GITHUB_RUN_ID:$winner"
+            else
+              echo "ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=$GITHUB_RUN_ID:$winner"
+            fi
+          else
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_RUNTIME_FOUNDATION_QA_DEDUPE_PASS=${GAME_ID:-SCAN}:$GITHUB_RUN_ID"
+          fi
+
+  runtime-foundation-qa:
+    needs: dedupe
+    if: needs.dedupe.outputs.run == 'true'
+    name: existing game tester and QA validate exact Roblox runtime candidate
+    # Remote Open Cloud probe + deterministic Node QA only. Studio execution remains on authenticated self-hosted Windows jobs.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout current canonical implementation
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Checkout canonical runtime state
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+          fetch-tags: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Classify transient Open Cloud retry scope
+        if: ${{ inputs.retry_open_cloud_only == true }}
+        id: transient_retry
+        working-directory: main
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const transientStatuses=new Set([408,429,500,502,503,504]);
+          const rows=(q.items||[]).filter(item=>{
+            if(requested&&item.gameId!==requested)return false;
+            const evidence=item.robloxRuntimeFoundationEvidence||{};
+            const candidate=item.robloxRuntimeCandidateEvidence||{};
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            return evidence.authority==='roblox-open-cloud-engine-probe-failure'
+              &&transientStatuses.has(Number(evidence.httpStatus||0))
+              &&evidence.sourceRevision===sourceRevision
+              &&evidence.artifactIdentity===artifactIdentity
+              &&Number(evidence.candidateVersionNumber||0)===Number(candidate.versionNumber||0);
+          });
+          const ids=[...new Set(rows.map(item=>String(item.gameId||'').trim()).filter(Boolean))];
+          fs.writeFileSync('/tmp/roblox-open-cloud-transient-retry-ids',ids.join('\n')+(ids.length?'\n':''));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'count='+ids.length+'\n');
+          console.log('ROBLOX_OPEN_CLOUD_TRANSIENT_RETRY_CANDIDATES='+(ids.join(',')||'NONE'));
+          NODE
+
+      - name: Synchronize worker with constitution central policy and compiled architecture
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --output=/tmp/roblox-foundation-worker-context.json
+          node -e "const x=require('/tmp/roblox-foundation-worker-context.json');if(x.pass!==true||x.architectureProjection?.valid!==true)process.exit(1)"
+          echo 'ROBLOX_FOUNDATION_SHARED_CONTEXT=PASS'
+
+      - name: Keep transient Open Cloud retries inside bounded scan
+        if: ${{ inputs.retry_open_cloud_only == true && inputs.game_id == '' && steps.transient_retry.outputs.count != '0' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "ROBLOX_OPEN_CLOUD_TRANSIENT_RETRY_MODE=IN_SCAN_BOUNDED"
+          cat /tmp/roblox-open-cloud-transient-retry-ids
+
+      - name: Run deterministic foundation protocol QA
+        if: ${{ inputs.retry_open_cloud_only != true }}
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test \
+            qa/company-development-roblox-runtime-foundation.test.mjs \
+            qa/company-development-roblox-headless-fast-mvp.test.mjs \
+            qa/company-development-roblox-studio-local-play.test.mjs \
+            qa/company-tester-debug-intake.test.mjs
+          echo 'ROBLOX_FOUNDATION_DETERMINISTIC_QA=PASS'
+
+      - name: Probe exact Roblox Open Cloud engine execution
+        if: ${{ inputs.retry_open_cloud_only == true }}
+        working-directory: main
+        continue-on-error: true
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          RETRY_OPEN_CLOUD_ONLY: ${{ inputs.retry_open_cloud_only || false }}
+          EVENT_NAME: ${{ github.event_name }}
+          TRIGGER_CHANGED: ${{ github.event_name == 'push' && (contains(toJSON(github.event.head_commit.modified), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.added), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.removed), 'roblox-games/.company-runtime-trigger')) }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
+          git -C ../runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {probeRobloxOpenCloudEngine} from './tools/company-development-roblox-runtime-foundation.mjs';
+          let requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const retryOpenCloudOnly=String(process.env.RETRY_OPEN_CLOUD_ONLY||'').toLowerCase()==='true';
+          if(!requested&&process.env.EVENT_NAME==='push'&&String(process.env.TRIGGER_CHANGED||'').toLowerCase()==='true'){
+            const triggerPath='roblox-games/.company-runtime-trigger';
+            if(fs.existsSync(triggerPath))requested=String(fs.readFileSync(triggerPath,'utf8').match(/^gameId:\s*([^\s]+)\s*$/m)?.[1]||'').trim();
+          }
+          const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const transientRetryPath='/tmp/roblox-open-cloud-transient-retry-ids';
+          const transientRetryIds=new Set(fs.existsSync(transientRetryPath)?fs.readFileSync(transientRetryPath,'utf8').split(/\r?\n/).map(v=>v.trim()).filter(Boolean):[]);
+          const transientRetryStatuses=new Set([408,429,500,502,503,504]);
+          const sharedTarget=roadmap?.roblox?.deploymentControl?.ownerPinnedPublicationTarget||{};
+          const sharedUniverse=String(sharedTarget.universeId||'').trim();
+          const sharedPlace=String(sharedTarget.placeId||'').trim();
+          const sharedRotationEnabled=sharedTarget.enabled===true&&sharedTarget.sharedFastMvpRotationAllowed===true;
+          const candidateForItem=item=>{
+            const persisted=item.robloxRuntimeCandidateEvidence||{};
+            if(persisted.published===true)return persisted;
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const f0=item.robloxFoundationF0Evidence||{};
+            const artifactRunId=Number(f0.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||0);
+            const localExact=
+              item.robloxFoundationF0Passed===true
+              &&item.robloxBuildPreflightPassed===true
+              &&item.robloxBuildOrPackagePassed===true
+              &&item.robloxBuildSourceRevision===sourceRevision
+              &&f0.sourceRevision===sourceRevision
+              &&f0.artifactIdentity===artifactIdentity
+              &&artifactRunId>0;
+            return localExact?{
+              published:false,
+              releaseClaim:false,
+              authority:'roblox-local-f0-pre-f9-artifact',
+              sourceRevision,
+              artifactIdentity,
+              artifactRunId,
+              universeId:'',
+              placeId:'',
+              versionNumber:artifactRunId,
+            }:persisted;
+          };
+          const candidates=(q.items||[]).filter(item=>{
+            if(requested&&item.gameId!==requested)return false;
+            if(!requested&&transientRetryIds.has(item.gameId)){
+              console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_RETRY_IN_CURRENT_SCAN='+item.gameId);
+            }
+            const c=item.robloxRuntimeCandidateEvidence||{};
+            if(sharedRotationEnabled
+              &&String(c.universeId||'').trim()===sharedUniverse
+              &&String(c.placeId||'').trim()===sharedPlace
+              &&item.robloxSharedTargetCurrent===false)return false;
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            if(retryOpenCloudOnly&&requested){
+              const transientEvidence=item.robloxRuntimeFoundationEvidence||{};
+              const exactRetryStillCurrent=
+                c.sourceRevision===sourceRevision
+                &&c.artifactIdentity===artifactIdentity
+                &&transientEvidence.authority==='roblox-open-cloud-engine-probe-failure'
+                &&transientRetryStatuses.has(Number(transientEvidence.httpStatus||0))
+                &&transientEvidence.sourceRevision===sourceRevision
+                &&transientEvidence.artifactIdentity===artifactIdentity
+                &&Number(transientEvidence.candidateVersionNumber||0)===Number(c.versionNumber||0);
+              if(!exactRetryStillCurrent){
+                console.log('ROBLOX_OPEN_CLOUD_EXACT_GATE_RETRY_SUPERSEDED_BY_CURRENT_SOURCE='+item.gameId+':resume='+(item.currentStep||'TARGET_PLATFORM_SOURCE_BIND'));
+                return false;
+              }
+            }
+            const activeQualityBuildUp=
+              item.robloxQualityBuildUpRequired===true
+              &&String(item.robloxQualityBuildUpSourceRevision||'').trim()===sourceRevision;
+            if(activeQualityBuildUp){
+              console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_ACTIVE_QUALITY_BUILDUP='+item.gameId);
+              console.log('QUALITY_FIRST_BUILDUP_SHORT_CIRCUIT=ACTIVE');
+              console.log('QUALITY_FAILURE_CLASS=PRODUCT');
+              console.log('QUALITY_BUILDUP_AUTO_REQUEUE=YES');
+              console.log('EXTERNAL_RELEASE_PROBE_SUPPRESSED=YES');
+              console.log('RESUME_STAGE=REPAIR_REQUIRED');
+              return false;
+            }
+            const runtime=item.robloxRuntimeFoundationEvidence||{};
+            const post=item.robloxPostRuntimeQaEvidence||{};
+            const studioRequired=item.robloxStudioAssetBindingApplied===true;
+            const studio=item.robloxStudioAssetRuntimeBindingEvidence||{};
+            const exactReusable=
+              c.published===true
+              &&Number(c.versionNumber)>0&&c.universeId&&c.placeId
+              &&item.robloxRuntimeFoundationPassed===true
+              &&item.robloxRuntimePassed===true
+              &&item.robloxIndependentQaPassed===true
+              &&item.robloxRegressionPassed===true
+              &&runtime.sourceRevision===sourceRevision
+              &&runtime.artifactIdentity===artifactIdentity
+              &&String(runtime.placeId||'')===String(c.placeId||'')
+              &&Number(runtime.candidateVersionNumber)===Number(c.versionNumber)
+              &&runtime.runtimeFoundationPassed===true
+              &&runtime.runtimeAcceptancePassed===true
+              &&post.sourceRevision===sourceRevision
+              &&post.artifactIdentity===artifactIdentity
+              &&Number(post.candidateVersionNumber)===Number(c.versionNumber)
+              &&(!studioRequired||(
+                item.robloxStudioAssetRuntimeBindingPassed===true
+                &&studio.sourceRevision===sourceRevision
+                &&studio.artifactIdentity===artifactIdentity
+                &&Number(studio.candidateVersionNumber)===Number(c.versionNumber)
+              ));
+            if(exactReusable){
+              console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_SKIPPED_EXACT_EVIDENCE_REUSE='+item.gameId);
+              return false;
+            }
+            return c.published===true&&Number(c.versionNumber)>0&&c.universeId&&c.placeId;
+          });
+          const probes=new Array(candidates.length);
+          const throttlePressure=candidates.some(item=>{
+            const evidence=item.robloxRuntimeFoundationEvidence||{};
+            return item.robloxFailureSignature==='ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE'
+              &&Number(evidence.httpStatus||0)===429;
+          });
+          const probeConcurrency=Math.max(1,Math.min(requested?1:(throttlePressure?1:2),candidates.length||1));
+          console.log('ROBLOX_OPEN_CLOUD_THROTTLE_PRESSURE='+(throttlePressure?'ACTIVE_SERIAL':'CLEAR_PARALLEL'));
+          let probeCursor=0;
+          const runProbeWorker=async()=>{
+            while(true){
+              const index=probeCursor++;
+              if(index>=candidates.length)return;
+              const item=candidates[index];
+              const c=item.robloxRuntimeCandidateEvidence;
+              try{
+                const result=await probeRobloxOpenCloudEngine({
+                  universeId:String(c.universeId),placeId:String(c.placeId),versionNumber:Number(c.versionNumber),
+                  apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,pollIntervalMs:1000,maxPolls:45,
+                  networkRetryAttempts:6,networkRetryDelayMs:1000,
+                  expectedStudioAssetBinding:item.robloxStudioAssetBindingApplied===true?item.robloxStudioAssetBinding:null,
+                });
+                const probe={gameId:item.gameId,versionNumber:Number(c.versionNumber),...result};
+                console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE='+JSON.stringify(probe));
+                probes[index]=probe;
+              }catch(error){
+                const message=String(error?.message||error);
+                const status=Number(message.match(/_HTTP_(\d+)/)?.[1]||0);
+                const probe={
+                  gameId:item.gameId,
+                  versionNumber:Number(c.versionNumber),
+                  available:false,
+                  permissionDenied:false,
+                  persistentFailure:true,
+                  status,
+                  engineExecuted:false,
+                  exactPlace:false,
+                  exactVersion:false,
+                  failureStage:'PROBE',
+                  error:message.slice(0,500),
+                };
+                console.log('ROBLOX_OPEN_CLOUD_ENGINE_PROBE_FAILURE='+JSON.stringify(probe));
+                probes[index]=probe;
+              }
+            }
+          };
+          await Promise.all(Array.from({length:probeConcurrency},()=>runProbeWorker()));
+          console.log('ROBLOX_RUNTIME_FOUNDATION_QA_PARALLEL_COUNT='+probeConcurrency);
+          console.log('ROBLOX_RUNTIME_FOUNDATION_QA_PROBE_COUNT='+probes.length);
+          fs.writeFileSync('/tmp/roblox-open-cloud-engine-probes.json',JSON.stringify(probes,null,2)+'\n');
+          NODE
+
+      - name: Read exact runtime sentinel and persist tester QA evidence
+        working-directory: main
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          EVENT_NAME: ${{ github.event_name }}
+          TRIGGER_CHANGED: ${{ github.event_name == 'push' && (contains(toJSON(github.event.head_commit.modified), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.added), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.removed), 'roblox-games/.company-runtime-trigger')) }}
+          SERVER_DIAGNOSTIC_ENABLED: ${{ inputs.retry_open_cloud_only || false }}
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C ../runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {
+            fetchRobloxRuntimeFoundationEvidence,
+            validateRobloxRuntimeFoundationEvidence,
+            validateRobloxMultiplayerSourceContract,
+          } from './tools/company-development-roblox-runtime-foundation.mjs';
+          import {planLocalStudioCandidates} from './tools/company-development-roblox-studio-local-play.mjs';
+
+          let requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          if(!requested&&process.env.EVENT_NAME==='push'&&String(process.env.TRIGGER_CHANGED||'').toLowerCase()==='true'){
+            const triggerPath='roblox-games/.company-runtime-trigger';
+            if(fs.existsSync(triggerPath)){
+              requested=String(fs.readFileSync(triggerPath,'utf8').match(/^gameId:\s*([^\s]+)\s*$/m)?.[1]||'').trim();
+            }
+          }
+          if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_FOUNDATION_REQUESTED_GAME_ID_INVALID:'+requested);
+          console.log('ROBLOX_FOUNDATION_REQUESTED_GAME_ID='+(requested||'ALL_PENDING'));
+          const queuePath='../runtime/development-queue.json';
+          const q=JSON.parse(fs.readFileSync(queuePath,'utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const serverDiagnosticEnabled=String(process.env.SERVER_DIAGNOSTIC_ENABLED||'').toLowerCase()==='true';
+          const sharedTarget=roadmap?.roblox?.deploymentControl?.ownerPinnedPublicationTarget||{};
+          const sharedUniverse=String(sharedTarget.universeId||'').trim();
+          const sharedPlace=String(sharedTarget.placeId||'').trim();
+          const sharedRotationEnabled=sharedTarget.enabled===true
+            &&sharedTarget.sharedFastMvpRotationAllowed===true
+            &&/^[1-9][0-9]*$/.test(sharedUniverse)
+            &&/^[1-9][0-9]*$/.test(sharedPlace);
+          const isSharedCandidate=(candidate={})=>sharedRotationEnabled
+            &&String(candidate.universeId||'').trim()===sharedUniverse
+            &&String(candidate.placeId||'').trim()===sharedPlace;
+          const candidateForItem=item=>{
+            const persisted=item.robloxRuntimeCandidateEvidence||{};
+            if(persisted.published===true)return persisted;
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const f0=item.robloxFoundationF0Evidence||{};
+            const artifactRunId=Number(f0.artifactRunId||item.robloxHeadlessFastMvpEvidence?.artifactRunId||0);
+            const localExact=
+              item.robloxFoundationF0Passed===true
+              &&item.robloxBuildPreflightPassed===true
+              &&item.robloxBuildOrPackagePassed===true
+              &&item.robloxBuildSourceRevision===sourceRevision
+              &&f0.sourceRevision===sourceRevision
+              &&f0.artifactIdentity===artifactIdentity
+              &&artifactRunId>0;
+            return localExact?{
+              published:false,
+              releaseClaim:false,
+              authority:'roblox-local-f0-pre-f9-artifact',
+              sourceRevision,
+              artifactIdentity,
+              artifactRunId,
+              universeId:'',
+              placeId:'',
+              versionNumber:artifactRunId,
+            }:persisted;
+          };
+          let changed=false,passed=0,pending=0,failed=0;
+          if(sharedRotationEnabled){
+            const sharedCurrent=(q.items||[])
+              .filter(item=>item.robloxSharedTargetCurrent!==false&&item.robloxRuntimeCandidateEvidence?.published===true&&isSharedCandidate(item.robloxRuntimeCandidateEvidence))
+              .sort((a,b)=>Number(b.robloxRuntimeCandidateEvidence?.versionNumber||0)-Number(a.robloxRuntimeCandidateEvidence?.versionNumber||0)
+                ||String(b.robloxRuntimeCandidateEvidence?.publishedAt||'').localeCompare(String(a.robloxRuntimeCandidateEvidence?.publishedAt||'')));
+            const actualCurrent=sharedCurrent[0]||null;
+            for(const item of sharedCurrent.slice(1)){
+              item.robloxSharedTargetCurrent=false;
+              item.robloxFastMvpSupersededBy=actualCurrent?.gameId||null;
+              if(item.robloxRuntimeCandidateEvidence&&typeof item.robloxRuntimeCandidateEvidence==='object'){
+                item.robloxRuntimeCandidateEvidence={
+                  ...item.robloxRuntimeCandidateEvidence,
+                  current:false,
+                  supersededAt:new Date().toISOString(),
+                  supersededBy:actualCurrent?.gameId||null,
+                };
+              }
+              if(item.robloxRuntimePassed!==true&&item.robloxFinalReviewPassed!==true){
+                item.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+                item.canonicalState='F0_SOURCE_PREFLIGHT_PASSED';
+                item.robloxFailureStage='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+                item.robloxFailureSignature='ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING';
+                item.routingBlockers=['roblox-shared-runtime-target-capacity-republish-required'];
+              }
+              item.updatedAt=new Date().toISOString();
+              changed=true;
+              console.log('ROBLOX_SHARED_TARGET_SUPERSEDED='+item.gameId+':current='+(actualCurrent?.gameId||'NONE'));
+            }
+            if(actualCurrent&&actualCurrent.robloxSharedTargetCurrent!==true){
+              actualCurrent.robloxSharedTargetCurrent=true;
+              actualCurrent.robloxFastMvpSupersededBy=null;
+              actualCurrent.updatedAt=new Date().toISOString();
+              changed=true;
+            }
+          }
+          const probePath='/tmp/roblox-open-cloud-engine-probes.json';
+          const probeRows=fs.existsSync(probePath)?JSON.parse(fs.readFileSync(probePath,'utf8')):[];
+          const transientProbeStatuses=new Set([408,429,500,502,503,504]);
+          const transientProbeFailure=row=>Boolean(
+            row?.persistentFailure===true
+            &&(
+              transientProbeStatuses.has(Number(row?.status||0))
+              ||(Number(row?.status||0)===0&&/EAI_AGAIN|ENOTFOUND|ECONNRESET|ETIMEDOUT|ECONNREFUSED|UND_ERR_CONNECT_TIMEOUT|UND_ERR_SOCKET|fetch failed|network/i.test(String(row?.error||'')))
+            )
+          );
+          const persistentProbeFailures=(Array.isArray(probeRows)?probeRows:[]).filter(row=>row?.persistentFailure===true);
+          const transientProbeFailures=persistentProbeFailures.filter(transientProbeFailure);
+          const blockingProbeFailures=persistentProbeFailures.filter(row=>!transientProbeFailure(row));
+          const transientRetryPath='/tmp/roblox-open-cloud-transient-retry-ids';
+          const transientRetryIds=new Set(fs.existsSync(transientRetryPath)?fs.readFileSync(transientRetryPath,'utf8').split(/\r?\n/).map(v=>v.trim()).filter(Boolean):[]);
+          const engineProbeByGame=new Map((Array.isArray(probeRows)?probeRows:[]).map(row=>[String(row?.gameId||''),row]));
+          const candidates=(q.items||[]).filter(item=>{
+            if(requested&&item.gameId!==requested)return false;
+            if(!requested&&transientRetryIds.has(item.gameId)){
+              console.log('ROBLOX_OPEN_CLOUD_RUNTIME_STATE_RETRY_IN_CURRENT_SCAN='+item.gameId);
+            }
+            const candidate=candidateForItem(item);
+            if(isSharedCandidate(candidate)&&item.robloxSharedTargetCurrent===false)return false;
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const activeQualityBuildUp=
+              item.robloxQualityBuildUpRequired===true
+              &&String(item.robloxQualityBuildUpSourceRevision||'').trim()===sourceRevision;
+            if(activeQualityBuildUp){
+              console.log('ROBLOX_FOUNDATION_PROCESSING_SKIPPED_ACTIVE_QUALITY_BUILDUP='+item.gameId);
+              return false;
+            }
+            const studioPlay=item.robloxInternalVibePlayEvidence||{};
+            const explicitRuntimeStage=['VIBE_INTERNAL_PLAY','PRIVATE_RUNTIME_CANDIDATE_DEPLOY','TARGET_PLATFORM_RUNTIME_FOUNDATION','TARGET_PLATFORM_RUNTIME_ACCEPTANCE'].includes(String(item.robloxFailureStage||''));
+            const exactStudioPlayPendingRuntime=
+              studioPlay.pass===true
+              &&studioPlay.actualPlay===true
+              &&studioPlay.officialStudioMcp===true
+              &&studioPlay.localPlaceFile===true
+              &&studioPlay.sourceRevision===sourceRevision
+              &&studioPlay.artifactIdentity===artifactIdentity
+              &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
+              &&(
+                item.robloxRuntimeFoundationPassed!==true
+                ||item.robloxRuntimePassed!==true
+                ||item.robloxIndependentQaPassed!==true
+                ||item.robloxRegressionPassed!==true
+              );
+            const externalRuntimeObservationPending=item.robloxPublicReleaseRuntimeObservationPending===true;
+            return (candidate.published===true||candidate.authority==='roblox-local-f0-pre-f9-artifact')
+              &&item.robloxFoundationF0Passed===true
+              &&item.robloxPublicRelease!==true
+              &&(item.robloxInternalReleaseReady!==true||externalRuntimeObservationPending)
+              &&(explicitRuntimeStage||exactStudioPlayPendingRuntime||externalRuntimeObservationPending);
+          });
+          const f9Ids=[];
+          const studioFollowupIds=[];
+          const initialStudioCandidates=new Map(candidates.map(item=>[
+            item.gameId,JSON.stringify(planLocalStudioCandidates({queue:{items:[item]},roadmap,requestedGameId:String(item.gameId||''),repoRoot:process.cwd()}).include||[])
+          ]));
+          const stamp=new Date().toISOString();
+          const multiplayerRequirementFor=item=>{
+            const rel=String(item.designBaselineSource||'').trim();
+            const file=rel?'../runtime/'+rel:'';
+            if(!file||!fs.existsSync(file))return{known:false,required:null,mode:'UNKNOWN'};
+            try{
+              const design=JSON.parse(fs.readFileSync(file,'utf8'));
+              const mode=String(design?.content?.multiplayerMode||design?.content?.platformProfiles?.ROBLOX?.multiplayerRuntime||'').trim().toUpperCase();
+              if(!mode)return{known:false,required:null,mode:'UNKNOWN'};
+              const solo=/^(SINGLE|SINGLE_PLAYER|SINGLEPLAYER|SOLO|NONE|NOT_APPLICABLE|N\/A)$/.test(mode);
+              return{known:true,required:!solo,mode};
+            }catch{return{known:false,required:null,mode:'UNKNOWN'};}
+          };
+          const readLuauTree=root=>{
+            const chunks=[];
+            const walk=dir=>{
+              if(!fs.existsSync(dir))return;
+              for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+                const p=dir+'/'+entry.name;
+                if(entry.isDirectory())walk(p);
+                else if(entry.isFile()&&/\.lua[u]?$/.test(entry.name))chunks.push(fs.readFileSync(p,'utf8'));
+              }
+            };
+            walk(root);
+            return chunks.join('\n');
+          };
+          const multiplayerSourceContractFor=item=>{
+            const root=String(item.robloxProjectPath||item.targetSourcePath||('roblox-games/'+item.gameId)).trim();
+            return validateRobloxMultiplayerSourceContract({
+              serverSource:readLuauTree(root+'/server'),
+              clientSource:readLuauTree(root+'/client'),
+            });
+          };
+          const queueStudioFollowupIfEligible=item=>{
+            const matrix=planLocalStudioCandidates({
+              queue:{items:[item]},
+              roadmap,
+              requestedGameId:String(item.gameId||''),
+              repoRoot:process.cwd(),
+            });
+            if((matrix.include||[]).some(row=>row.gameId===item.gameId)
+              &&JSON.stringify(matrix.include||[])!==initialStudioCandidates.get(item.gameId))studioFollowupIds.push(item.gameId);
+          };
+
+          for(const item of candidates){
+            const candidate=candidateForItem(item);
+            const sourceRevision=String(item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
+            const localPreF9Candidate=candidate.authority==='roblox-local-f0-pre-f9-artifact';
+            const exactCandidate=
+              candidate.sourceRevision===sourceRevision
+              &&candidate.artifactIdentity===artifactIdentity
+              &&Number(candidate.versionNumber)>0
+              &&(
+                localPreF9Candidate
+                ||(
+                  /^[1-9][0-9]*$/.test(String(candidate.universeId||''))
+                  &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''))
+                )
+              );
+            if(!exactCandidate){
+              item.robloxRuntimeFoundationPassed=false;
+              item.robloxRuntimePassed=false;
+              item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureSignature='ROBLOX_RUNTIME_CANDIDATE_IDENTITY_MISMATCH';
+              item.routingBlockers=['roblox-runtime-candidate-identity-mismatch'];
+              item.updatedAt=stamp;changed=true;failed++;
+              continue;
+            }
+
+            const priorRuntime=item.robloxRuntimeFoundationEvidence||{};
+            const priorPost=item.robloxPostRuntimeQaEvidence||{};
+            const priorMultiplayer=item.robloxMultiplayerQaEvidence||{};
+            const multiplayer=multiplayerRequirementFor(item);
+            const multiplayerSourceContract=multiplayer.required===true
+              ?multiplayerSourceContractFor(item)
+              :{passed:multiplayer.known===true,checks:{},authority:'not-applicable'};
+            const staticMultiplayerCodePass=multiplayer.required===true&&multiplayerSourceContract.passed===true;
+            let studioPlay=item.robloxInternalVibePlayEvidence||{};
+            const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
+            const priorStudio=item.robloxStudioAssetRuntimeBindingEvidence||{};
+            const reusableLocalStudioArtifactEvidence=Boolean(
+              localPreF9Candidate
+              &&studioPlay.pass===true
+              &&studioPlay.actualPlay===true
+              &&studioPlay.runtimeVerified===true
+              &&studioPlay.officialStudioMcp===true
+              &&studioPlay.localPlaceFile===true
+              &&studioPlay.onlinePlaceDirectOpen===false
+              &&studioPlay.robloxPlayerAutomation===false
+              &&studioPlay.artifactIdentity===artifactIdentity
+              &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0
+            );
+            if(reusableLocalStudioArtifactEvidence
+              &&(studioPlay.sourceRevision!==sourceRevision||Number(studioPlay.versionNumber)!==Number(candidate.versionNumber))){
+              const historicalSourceRevision=String(studioPlay.sourceRevision||'');
+              const historicalVersionNumber=Number(studioPlay.versionNumber||0);
+              item.robloxInternalVibePlayEvidence={
+                ...studioPlay,
+                sourceRevision,
+                artifactIdentity,
+                artifactRunId:Number(candidate.artifactRunId||0),
+                universeId:String(candidate.universeId||''),
+                placeId:String(candidate.placeId||''),
+                versionNumber:Number(candidate.versionNumber),
+                currentSourceArtifactBinding:true,
+                reusedFromExactArtifactIdentity:true,
+                historicalSourceRevision,
+                historicalVersionNumber,
+                reusedAt:stamp,
+              };
+              studioPlay=item.robloxInternalVibePlayEvidence;
+              item.robloxInternalPlaytestPassed=true;
+              item.robloxInternalPlaytestPassedAt=stamp;
+              changed=true;
+              console.log('ROBLOX_STUDIO_EXACT_ARTIFACT_EVIDENCE_REBOUND='+item.gameId+':version='+candidate.versionNumber);
+            }
+            const exactPriorMultiplayerValidation=Boolean(
+              priorMultiplayer.passed===true
+              &&priorMultiplayer.artifactIdentity===artifactIdentity
+            );
+            const exactMultiplayerValidationReusable=exactPriorMultiplayerValidation||staticMultiplayerCodePass;
+            const exactStudioInternalValidation=
+              studioPlay.pass===true
+              &&studioPlay.actualPlay===true
+              &&studioPlay.runtimeVerified===true
+              &&studioPlay.officialStudioMcp===true
+              &&studioPlay.localPlaceFile===true
+              &&studioPlay.onlinePlaceDirectOpen===false
+              &&studioPlay.robloxPlayerAutomation===false
+              &&studioPlay.sourceRevision===sourceRevision
+              &&studioPlay.artifactIdentity===artifactIdentity
+              &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
+              &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0;
+            const exactExternalRuntimeEvidenceReusable=
+              item.robloxRuntimeFoundationPassed===true
+              &&item.robloxRuntimePassed===true
+              &&item.robloxIndependentQaPassed===true
+              &&item.robloxRegressionPassed===true
+              &&priorRuntime.sourceRevision===sourceRevision
+              &&priorRuntime.artifactIdentity===artifactIdentity
+              &&String(priorRuntime.placeId||'')===String(candidate.placeId||'')
+              &&Number(priorRuntime.candidateVersionNumber)===Number(candidate.versionNumber)
+              &&priorRuntime.runtimeFoundationPassed===true
+              &&priorRuntime.runtimeAcceptancePassed===true
+              &&priorPost.sourceRevision===sourceRevision
+              &&priorPost.artifactIdentity===artifactIdentity
+              &&Number(priorPost.candidateVersionNumber)===Number(candidate.versionNumber)
+              &&(!studioAssetBindingRequired||(
+                item.robloxStudioAssetRuntimeBindingPassed===true
+                &&priorStudio.sourceRevision===sourceRevision
+                &&priorStudio.artifactIdentity===artifactIdentity
+                &&Number(priorStudio.candidateVersionNumber)===Number(candidate.versionNumber)
+              ));
+            const exactStudioRuntimeEvidenceReusable=
+              exactStudioInternalValidation
+              &&item.robloxIndependentQaPassed===true
+              &&item.robloxRegressionPassed===true
+              &&priorPost.internalStudioValidationOnly===true
+              &&priorPost.externalServerBootRequired===false
+              &&priorPost.independentQaPassed===true
+              &&priorPost.regressionPassed===true
+              &&priorPost.multiplayerValidationPassed===true
+              &&priorPost.sourceRevision===sourceRevision
+              &&priorPost.artifactIdentity===artifactIdentity
+              &&Number(priorPost.candidateVersionNumber)===Number(candidate.versionNumber);
+            const exactRuntimeEvidenceReusable=exactExternalRuntimeEvidenceReusable||exactStudioRuntimeEvidenceReusable;
+            if(exactRuntimeEvidenceReusable){
+              item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.canonicalState='ROBLOX_RUNTIME_ACCEPTANCE_PASSED';
+              item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+              item.routingBlockers=['roblox-final-review-pending'];
+              item.robloxRuntimeEvidenceReuse={
+                sourceRevision,
+                artifactIdentity,
+                candidateVersionNumber:Number(candidate.versionNumber),
+                reusedAt:stamp,
+                reusedServerBootEvidence:exactExternalRuntimeEvidenceReusable,
+                reusedStudioInternalEvidence:exactStudioRuntimeEvidenceReusable,
+                reason:exactStudioRuntimeEvidenceReusable
+                  ?'EXACT_SOURCE_ARTIFACT_VERSION_STUDIO_INTERNAL_EVIDENCE_ALREADY_VERIFIED'
+                  :'EXACT_SOURCE_ARTIFACT_PLACE_VERSION_ALREADY_VERIFIED',
+              };
+              item.updatedAt=stamp;
+              changed=true;
+              f9Ids.push(item.gameId);
+              passed++;
+              queueStudioFollowupIfEligible(item);
+              console.log('ROBLOX_RUNTIME_EVIDENCE_REUSED='+item.gameId+':version='+candidate.versionNumber);
+              continue;
+            }
+
+            if(!serverDiagnosticEnabled){
+              if(!exactStudioInternalValidation){
+                queueStudioFollowupIfEligible(item);
+                item.robloxRuntimeFoundationPassed=false;
+                item.robloxRuntimePassed=false;
+                item.robloxFailureStage='VIBE_INTERNAL_PLAY';
+                item.robloxFailureSignature='ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING';
+                item.routingBlockers=['roblox-studio-internal-validation-pending'];
+                item.updatedAt=stamp;
+                changed=true;
+                pending++;
+                console.log('ROBLOX_INTERNAL_VALIDATION_WAITING_FOR_STUDIO='+item.gameId);
+                continue;
+              }
+
+              const multiplayerValidationPassed=multiplayer.known===true
+                &&(multiplayer.required!==true||item.robloxMultiplayerQaPassed===true||exactMultiplayerValidationReusable);
+              if(multiplayer.required===true&&staticMultiplayerCodePass){
+                item.robloxMultiplayerQaPassed=true;
+                item.robloxMultiplayerQaPassedAt=stamp;
+                item.robloxMultiplayerQaEvidence={
+                  version:2,
+                  gameId:item.gameId,
+                  sourceRevision,
+                  artifactIdentity,
+                  candidateVersionNumber:Number(candidate.versionNumber),
+                  passed:true,
+                  codeContractPassed:true,
+                  checks:multiplayerSourceContract.checks,
+                  runtimeTwoClientExecutionRequired:false,
+                  authority:'roblox-static-two-client-source-contract',
+                  verifiedAt:stamp,
+                };
+                console.log('ROBLOX_F7_MULTIPLAYER_CODE_CONTRACT_PASS='+item.gameId);
+              }else if(multiplayer.required===true&&exactMultiplayerValidationReusable){
+                item.robloxMultiplayerQaPassed=true;
+                console.log('ROBLOX_F7_MULTIPLAYER_EVIDENCE_REUSED='+item.gameId+':version='+candidate.versionNumber);
+              }
+              const studioAssetBindingRequired=item.robloxStudioAssetBindingApplied===true;
+              const studioAssetRuntimeBindingPassed=!studioAssetBindingRequired||exactStudioInternalValidation;
+              item.robloxStudioAssetRuntimeBindingPassed=studioAssetRuntimeBindingPassed;
+              item.robloxStudioAssetRuntimeBindingEvidence=studioAssetBindingRequired?{
+                version:2,
+                gameId:item.gameId,
+                sourceRevision,
+                artifactIdentity,
+                candidateVersionNumber:Number(candidate.versionNumber),
+                localStudioRuntime:true,
+                officialStudioMcp:true,
+                marker:'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS',
+                authority:'roblox-studio-local-exact-build-asset-binding',
+                verifiedAt:stamp,
+              }:null;
+              item.robloxRuntimeFoundationPassed=false;
+              item.robloxRuntimePassed=false;
+              item.robloxIndependentQaPassed=true;
+              item.robloxIndependentQaPassedAt=stamp;
+              item.robloxRegressionPassed=true;
+              item.robloxRegressionPassedAt=stamp;
+              item.robloxPostRuntimeQaEvidence={
+                version:6,
+                gameId:item.gameId,
+                sourceRevision,
+                artifactIdentity,
+                artifactRunId:Number(candidate.artifactRunId||0),
+                candidateVersionNumber:Number(candidate.versionNumber),
+                exactRevision:true,
+                independentQaPassed:true,
+                regressionPassed:true,
+                actualRuntimeEvidence:false,
+                localStudioRuntimeEvidence:true,
+                internalStudioValidationOnly:true,
+                externalServerBootRequired:false,
+                officialStudioMcpActualPlayPassed:true,
+                multiplayerMode:multiplayer.mode,
+                multiplayerRequired:multiplayer.required,
+                multiplayerApplicabilityKnown:multiplayer.known,
+                multiplayerValidationPassed,
+                f7Status:multiplayer.known!==true?'APPLICABILITY_UNKNOWN':multiplayer.required===true?(multiplayerValidationPassed?(staticMultiplayerCodePass?'PASS_CODE_CONTRACT':'PASS_REUSED'):'PENDING_CODE_CONTRACT'):'NOT_APPLICABLE',
+                studioAssetBindingRequired,
+                studioAssetRuntimeBindingPassed,
+                studioAssetRuntimeBindingEvidence:item.robloxStudioAssetRuntimeBindingEvidence,
+                authority:'roblox-internal-studio-single-session-qa',
+                verifiedAt:stamp,
+              };
+              if(!multiplayerValidationPassed){
+                item.currentStep='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
+                item.canonicalState='ROBLOX_INTERNAL_STUDIO_VALIDATION_PASSED_F7_PENDING';
+                item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
+                item.robloxFailureSignature=multiplayer.known===true?'ROBLOX_F7_MULTIPLAYER_VALIDATION_PENDING':'ROBLOX_F7_MULTIPLAYER_APPLICABILITY_UNKNOWN';
+                item.routingBlockers=[multiplayer.known===true?'roblox-f7-multiplayer-single-check-pending':'roblox-f7-multiplayer-applicability-unknown'];
+                item.updatedAt=stamp;
+                changed=true;
+                pending++;
+                console.log('ROBLOX_INTERNAL_STUDIO_PASS_F7_PENDING='+item.gameId+':mode='+multiplayer.mode);
+                continue;
+              }
+              item.robloxF9PendingInParallel=true;
+              item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.canonicalState='ROBLOX_INTERNAL_STUDIO_VALIDATION_PASSED';
+              item.robloxLastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
+              item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+              item.routingBlockers=['roblox-final-review-pending'];
+              if(item.executionEvidence){
+                item.executionEvidence.runtimePassed=false;
+                item.executionEvidence.independentQaPassed=true;
+                item.executionEvidence.regressionPassed=true;
+                item.executionEvidence.failureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+                item.executionEvidence.failureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+              }
+              item.updatedAt=stamp;
+              changed=true;
+              f9Ids.push(item.gameId);
+              passed++;
+              console.log('ROBLOX_INTERNAL_STUDIO_SINGLE_SESSION_PASS='+item.gameId+':F1_F8=COLLECTED:F9=FAN_IN_ONLY');
+              continue;
+            }
+
+            if(!process.env.ROBLOX_OPEN_CLOUD_API_KEY)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY_REQUIRED_FOR_MANUAL_SERVER_DIAGNOSTIC');
+            const engineProbe=engineProbeByGame.get(item.gameId);
+            if(engineProbe?.persistentFailure===true){
+              const infrastructureOnly=transientProbeFailure(engineProbe);
+              const failureSignature=infrastructureOnly
+                ?'ROBLOX_OPEN_CLOUD_ENGINE_PROBE_TRANSIENT_FAILURE'
+                :'ROBLOX_OPEN_CLOUD_ENGINE_PROBE_PERSISTENT_FAILURE';
+              const sameProbeFailure=
+                item.robloxFailureSignature===failureSignature
+                &&item.robloxRuntimeFoundationEvidence?.authority==='roblox-open-cloud-engine-probe-failure'
+                &&Number(item.robloxRuntimeFoundationEvidence?.candidateVersionNumber||0)===Number(candidate.versionNumber)
+                &&Number(item.robloxRuntimeFoundationEvidence?.httpStatus||0)===Number(engineProbe.status||0)
+                &&String(item.robloxRuntimeFoundationEvidence?.error||'')===String(engineProbe.error||'');
+              item.robloxRuntimeFoundationPassed=false;
+              item.robloxRuntimePassed=false;
+              item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureSignature=failureSignature;
+              item.routingBlockers=infrastructureOnly
+                ?['roblox-open-cloud-engine-probe-transient-retry']
+                :['roblox-open-cloud-engine-probe-persistent-failure','roblox-runtime-foundation-awaiting-observation'];
+              if(!sameProbeFailure){
+                item.robloxRuntimeFoundationEvidence={
+                  version:1,
+                  gameId:item.gameId,
+                  sourceRevision,
+                  artifactIdentity,
+                  artifactRunId:Number(candidate.artifactRunId||0),
+                  universeId:String(candidate.universeId),
+                  placeId:String(candidate.placeId),
+                  candidateVersionNumber:Number(candidate.versionNumber),
+                  httpStatus:Number(engineProbe.status||0),
+                  failureStage:String(engineProbe.failureStage||'PROBE'),
+                  failureClass:infrastructureOnly?'INFRASTRUCTURE_OR_EVIDENCE_ONLY':'EXTERNAL_PROBE_BLOCKING_FAILURE',
+                  error:String(engineProbe.error||'').slice(0,500),
+                  observedAt:stamp,
+                  workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
+                  authority:'roblox-open-cloud-engine-probe-failure',
+                };
+                item.updatedAt=stamp;
+                changed=true;
+              }
+              if(infrastructureOnly){
+                console.log('QUALITY_FIRST_BUILDUP_SHORT_CIRCUIT=ACTIVE');
+                console.log('QUALITY_FAILURE_CLASS=INFRASTRUCTURE_OR_EVIDENCE_ONLY');
+                console.log('QUALITY_BUILDUP_AUTO_REQUEUE=NO');
+                console.log('EXTERNAL_RELEASE_PROBE_SUPPRESSED=NO');
+                console.log('RESUME_STAGE=TARGET_PLATFORM_RUNTIME_FOUNDATION');
+                console.log('ROBLOX_OPEN_CLOUD_EXACT_GATE_RETRY_PENDING='+item.gameId+':HTTP_'+Number(engineProbe.status||0));
+              }else{
+                console.log('ROBLOX_FOUNDATION_OPEN_CLOUD_PROBE_PERSISTENT_FAILURE='+item.gameId+':HTTP_'+Number(engineProbe.status||0));
+              }
+              pending++;
+              continue;
+            }
+            if(engineProbe?.permissionDenied===true){
+              const requiredScope=String(engineProbe.requiredScope||'universe.place.luau-execution-session:write');
+              const failureSignature='ROBLOX_OPEN_CLOUD_LUAU_EXECUTION_PERMISSION_DENIED';
+              const priorRetryCount=Math.max(0,Number(item.robloxRuntimeRetryCount||0));
+              const samePermissionBlock=
+                item.robloxFailureSignature===failureSignature
+                &&item.robloxRuntimeFoundationEvidence?.authority==='roblox-open-cloud-engine-permission-evidence'
+                &&item.robloxRuntimeFoundationEvidence?.requiredScope===requiredScope
+                &&Number(item.robloxRuntimeFoundationEvidence?.httpStatus)===Number(engineProbe.status)
+                &&priorRetryCount===0;
+              item.robloxRuntimeFoundationPassed=false;
+              item.robloxRuntimePassed=false;
+              item.robloxRuntimeRetryCount=0;
+              item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+              item.robloxFailureSignature=failureSignature;
+              item.routingBlockers=['roblox-open-cloud-luau-execution-scope-missing','roblox-runtime-foundation-awaiting-observation'];
+              if(!samePermissionBlock){
+                item.robloxRuntimeFoundationEvidence={
+                  version:1,
+                  gameId:item.gameId,
+                  sourceRevision,
+                  artifactIdentity,
+                  universeId:String(candidate.universeId),
+                  placeId:String(candidate.placeId),
+                  expectedVersionNumber:Number(candidate.versionNumber),
+                  requiredScope,
+                  httpStatus:Number(engineProbe.status)||0,
+                  errorCode:String(engineProbe.errorCode||'PERMISSION_DENIED'),
+                  failureStage:String(engineProbe.failureStage||'CREATE'),
+                  observedAt:stamp,
+                  authority:'roblox-open-cloud-engine-permission-evidence',
+                };
+                item.updatedAt=stamp;
+                changed=true;
+              }
+              console.log(`ROBLOX_FOUNDATION_PERMISSION_BLOCKED=${item.gameId}:requiredScope=${requiredScope}:HTTP_${Number(engineProbe.status)||0}`);
+              pending++;
+              continue;
+            }
+
+            let sentinel;
+            try{
+              sentinel=await fetchRobloxRuntimeFoundationEvidence({
+                universeId:String(candidate.universeId),
+                apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY,
+              });
+            }catch(error){
+              const message=String(error?.message||error);
+              if(/HTTP_404/.test(message)){
+                const attempts=Math.max(0,Number(item.robloxRuntimeRetryCount||0))+1;
+                const exactEnginePrebootFromProbe=
+                  engineProbe?.engineExecuted===true
+                  &&engineProbe?.exactPlace===true
+                  &&engineProbe?.exactVersion===true
+                  &&engineProbe?.serverBootObserved!==true;
+                item.robloxRuntimeRetryCount=attempts;
+                item.robloxRuntimeLastObservationAttemptAt=stamp;
+                item.robloxRuntimeFoundationPassed=false;
+                item.robloxRuntimePassed=false;
+                item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+                if(exactEnginePrebootFromProbe){
+                  item.robloxRuntimeFoundationEvidence={
+                    version:2,
+                    gameId:item.gameId,
+                    sourceRevision,
+                    artifactIdentity,
+                    artifactRunId:Number(candidate.artifactRunId||0),
+                    universeId:String(candidate.universeId),
+                    placeId:String(candidate.placeId),
+                    candidateVersionNumber:Number(candidate.versionNumber),
+                    expectedVersionNumber:Number(candidate.versionNumber),
+                    observedVersionNumber:null,
+                    exactGame:true,
+                    exactPlace:true,
+                    exactVersion:false,
+                    exactEngineVersion:true,
+                    engineExecuted:true,
+                    simulationRunning:engineProbe?.simulationRunning===true,
+                    serverBootObserved:false,
+                    blockers:['runtime-sentinel-unavailable'],
+                    observedAt:stamp,
+                    workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
+                    authority:'exact-engine-version-awaiting-real-server-boot',
+                  };
+                  item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT';
+                  item.routingBlockers=['roblox-runtime-foundation-awaiting-real-server-boot'];
+                  item.updatedAt=stamp;
+                  changed=true;
+                  queueStudioFollowupIfEligible(item);
+                  console.log(`ROBLOX_FOUNDATION_EXACT_ENGINE_PREBOOT_STUDIO_FOLLOWUP=${item.gameId}:attempt=${attempts}:engineVersion=${Number(candidate.versionNumber)}:sentinel=HTTP_404`);
+                }else{
+                  item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
+                  item.routingBlockers=['roblox-runtime-foundation-awaiting-observation'];
+                  console.log(`ROBLOX_FOUNDATION_AWAITING_FIRST_RUNTIME=${item.gameId}:attempt=${attempts}:retry=UNLIMITED_CAUSAL_REPAIR`);
+                  item.updatedAt=stamp;
+                  changed=true;
+                }
+                pending++;
+                continue;
+              }
+              throw error;
+            }
+
+            const result=validateRobloxRuntimeFoundationEvidence({
+              sentinel,
+              gameId:item.gameId,
+              placeId:String(candidate.placeId),
+              versionNumber:Number(candidate.versionNumber),
+            });
+            console.log('ROBLOX_FOUNDATION_RESULT='+JSON.stringify({
+              gameId:item.gameId,
+              exactGame:result.exactGame,
+              exactPlace:result.exactPlace,
+              exactVersion:result.exactVersion,
+              requiredCheckpoints:result.requiredCheckpoints,
+              checkpointPass:result.checkpointPass,
+              checkpointOrderPassed:result.checkpointOrderPassed,
+              runtimeFoundationPassed:result.runtimeFoundationPassed,
+              developmentContinuationPassed:result.developmentContinuationPassed,
+              runtimeAcceptancePassed:result.runtimeAcceptancePassed,
+              multiplayerPromotionPending:result.multiplayerPromotionPending,
+              blockers:result.blockers,
+            }));
+            const exactEngineVersionAwaitingRealServerBoot=
+              engineProbe?.engineExecuted===true
+              &&engineProbe?.exactPlace===true
+              &&engineProbe?.exactVersion===true
+              &&engineProbe?.serverBootObserved!==true;
+            if(
+              result.exactGame===true
+              &&result.exactPlace===true
+              &&(
+                result.exactVersion!==true
+                ||(result.runtimeFoundationPassed!==true&&exactEngineVersionAwaitingRealServerBoot)
+              )
+            ){
+              const attempts=Math.max(0,Number(item.robloxRuntimeRetryCount||0))+1;
+              item.robloxRuntimeRetryCount=attempts;
+              item.robloxRuntimeLastObservationAttemptAt=stamp;
+              item.robloxRuntimeFoundationPassed=false;
+              item.robloxRuntimePassed=false;
+              item.robloxRuntimeFoundationEvidence={
+                version:2,
+                gameId:item.gameId,
+                sourceRevision,
+                artifactIdentity,
+                artifactRunId:Number(candidate.artifactRunId||0),
+                universeId:String(candidate.universeId),
+                placeId:String(candidate.placeId),
+                candidateVersionNumber:Number(candidate.versionNumber),
+                expectedVersionNumber:Number(candidate.versionNumber),
+                observedVersionNumber:Number(sentinel.placeVersion||0),
+                exactGame:result.exactGame,
+                exactPlace:result.exactPlace,
+                exactVersion:result.exactVersion===true,
+                exactEngineVersion:engineProbe?.exactVersion===true,
+                engineExecuted:engineProbe?.engineExecuted===true,
+                simulationRunning:engineProbe?.simulationRunning===true,
+                serverBootObserved:engineProbe?.serverBootObserved===true,
+                blockers:result.blockers,
+                observedAt:stamp,
+                workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
+                authority:exactEngineVersionAwaitingRealServerBoot
+                  ?'exact-engine-version-awaiting-real-server-boot'
+                  :'stale-runtime-sentinel-observation',
+              };
+              if(exactEngineVersionAwaitingRealServerBoot){
+                const studioPlay=item.robloxInternalVibePlayEvidence||{};
+                const exactStudioPlay=
+                  studioPlay.pass===true
+                  &&studioPlay.actualPlay===true
+                  &&studioPlay.runtimeVerified===true
+                  &&studioPlay.officialStudioMcp===true
+                  &&studioPlay.localPlaceFile===true
+                  &&studioPlay.sourceRevision===sourceRevision
+                  &&studioPlay.artifactIdentity===artifactIdentity
+                  &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
+                  &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0;
+                if(!exactStudioPlay){
+                  item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+                  item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_AWAITING_REAL_SERVER_BOOT';
+                  item.routingBlockers=['roblox-runtime-foundation-awaiting-real-server-boot'];
+                  console.log(`ROBLOX_FOUNDATION_AWAITING_REAL_SERVER_BOOT=${item.gameId}:attempt=${attempts}:engineVersion=${Number(candidate.versionNumber)}:sentinelVersion=${Number(sentinel.placeVersion||0)}:studioExact=NO`);
+                  pending++;
+                  item.updatedAt=stamp;
+                  changed=true;
+                  queueStudioFollowupIfEligible(item);
+                  continue;
+                }
+
+                item.robloxRuntimeFoundationInternalReleaseException=true;
+                item.robloxPublicReleaseRuntimeObservationPending=true;
+                item.robloxPublicReleaseFailureSignature='ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT';
+                item.robloxPublicReleaseBlockers=['roblox-public-release-awaiting-real-server-boot'];
+                item.robloxIndependentQaPassed=true;
+                item.robloxIndependentQaPassedAt=stamp;
+                item.robloxRegressionPassed=true;
+                item.robloxRegressionPassedAt=stamp;
+                item.robloxPostRuntimeQaEvidence={
+                  version:4,
+                  gameId:item.gameId,
+                  sourceRevision,
+                  artifactIdentity,
+                  artifactRunId:Number(candidate.artifactRunId||0),
+                  candidateVersionNumber:Number(candidate.versionNumber),
+                  runtimeFoundationEvidence:item.robloxRuntimeFoundationEvidence,
+                  exactRevision:true,
+                  independentQaPassed:true,
+                  regressionPassed:true,
+                  actualRuntimeEvidence:false,
+                  internalRuntimeObservationDeferred:true,
+                  exactEngineExecutionEvidence:true,
+                  officialStudioMcpActualPlayPassed:true,
+                  publicReleaseRuntimeObservationPending:true,
+                  studioAssetBindingRequired:item.robloxStudioAssetBindingApplied===true,
+                  studioAssetRuntimeBindingPassed:false,
+                  studioAssetEngineBindingMatched:engineProbe?.studioAssetSelectionMatched===true,
+                  authority:'roblox-internal-qa-external-real-server-observation-deferred',
+                  verifiedAt:stamp,
+                };
+                item.robloxInternalReleaseReady=true;
+                item.robloxInternalReleasePublished=true;
+                item.robloxF9PendingInParallel=true;
+                item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+                item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+                item.robloxFailureStage='PUBLIC_RELEASE_RUNTIME_OBSERVATION';
+                item.robloxFailureSignature='ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT';
+                item.routingBlockers=[];
+                if(item.executionEvidence){
+                  item.executionEvidence.runtimePassed=false;
+                  item.executionEvidence.independentQaPassed=true;
+                  item.executionEvidence.regressionPassed=true;
+                  item.executionEvidence.failureStage='PUBLIC_RELEASE_RUNTIME_OBSERVATION';
+                  item.executionEvidence.failureSignature='ROBLOX_PUBLIC_RELEASE_AWAITING_REAL_SERVER_BOOT';
+                }
+                f9Ids.push(item.gameId);
+                console.log(`ROBLOX_INTERNAL_FLOW_PASS_EXTERNAL_SERVER_BOOT_PENDING=${item.gameId}:attempt=${attempts}:engineVersion=${Number(candidate.versionNumber)}:sentinelVersion=${Number(sentinel.placeVersion||0)}`);
+                pending++;
+              }else{
+                item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+                item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
+                item.routingBlockers=['roblox-runtime-foundation-stale-version'];
+                console.log(`ROBLOX_FOUNDATION_STALE_RUNTIME=${item.gameId}:attempt=${attempts}:staleVersion=${Number(sentinel.placeVersion||0)}:expectedVersion=${Number(candidate.versionNumber)}:retry=UNLIMITED_CAUSAL_REPAIR`);
+                pending++;
+              }
+              item.updatedAt=stamp;
+              changed=true;
+              continue;
+            }
+            const multiplayerReleasePassed=multiplayer.known===true
+              &&(multiplayer.required!==true||staticMultiplayerCodePass);
+            const runtimeAcceptanceForRelease=result.developmentContinuationPassed===true&&multiplayerReleasePassed;
+            const evidence={
+              ...result,
+              releaseRuntimeAcceptancePassed:runtimeAcceptanceForRelease,
+              f7MultiplayerSourceContractPassed:staticMultiplayerCodePass,
+              multiplayerSourceContract,
+              sourceRevision,
+              artifactIdentity,
+              artifactRunId:Number(candidate.artifactRunId||0),
+              universeId:String(candidate.universeId),
+              candidateVersionNumber:Number(candidate.versionNumber),
+              observedAt:stamp,
+              workflowRunId:Number(process.env.GITHUB_RUN_ID||0),
+              authority:'existing-game-tester-roblox-runtime-foundation-v1',
+            };
+            item.robloxRuntimeFoundationEvidence=evidence;
+            item.robloxRuntimeFoundationPassed=result.runtimeFoundationPassed===true;
+            item.robloxRuntimePassed=runtimeAcceptanceForRelease;
+            item.robloxServerClientBoundaryPassed=result.f6CoreServicesPassed===true;
+            item.robloxDatastoreRejoinPassed=result.f6CoreServicesPassed===true;
+            item.robloxMobileControlUiPassed=result.f5InputCameraUiPassed===true;
+            item.robloxMultiplayerQaPassed=multiplayerReleasePassed;
+            if(staticMultiplayerCodePass){
+              item.robloxMultiplayerQaEvidence={
+                version:2,
+                gameId:item.gameId,
+                sourceRevision,
+                artifactIdentity,
+                universeId:String(candidate.universeId||''),
+                placeId:String(candidate.placeId||''),
+                candidateVersionNumber:Number(candidate.versionNumber),
+                passed:true,
+                codeContractPassed:true,
+                checks:multiplayerSourceContract.checks,
+                runtimeTwoClientExecutionRequired:false,
+                authority:'roblox-static-two-client-source-contract',
+                verifiedAt:stamp,
+              };
+              item.robloxMultiplayerQaPassedAt=stamp;
+              console.log('ROBLOX_F7_MULTIPLAYER_CODE_CONTRACT_PASS='+item.gameId);
+            }
+            const studioAssetRuntimeBindingPassed=studioAssetBindingRequired
+              &&runtimeAcceptanceForRelease
+              &&result.f5InputCameraUiPassed===true
+              &&result.f8GameplaySystemsPassed===true
+              &&engineProbe?.engineExecuted===true
+              &&engineProbe?.exactPlace===true
+              &&engineProbe?.exactVersion===true
+              &&engineProbe?.studioAssetSelectionMatched===true;
+            item.robloxStudioAssetRuntimeBindingPassed=studioAssetRuntimeBindingPassed;
+            item.robloxStudioAssetRuntimeBindingEvidence=studioAssetBindingRequired?{
+              version:1,
+              gameId:item.gameId,
+              sourceRevision,
+              artifactIdentity,
+              candidateVersionNumber:Number(candidate.versionNumber),
+              uiAndInputRuntimePassed:result.f5InputCameraUiPassed===true,
+              coreLoopRuntimePassed:result.f8GameplaySystemsPassed===true,
+              runtimeAcceptancePassed:runtimeAcceptanceForRelease,
+              exactRevision:true,
+              targetEngineExecuted:engineProbe?.engineExecuted===true,
+              targetEngineExactPlace:engineProbe?.exactPlace===true,
+              targetEngineExactVersion:engineProbe?.exactVersion===true,
+              targetEngineStudioAssetApplied:engineProbe?.studioAssetApplied===true,
+              targetEngineStudioAssetBindingVersion:Number(engineProbe?.studioAssetBindingVersion||0),
+              targetEngineSelectionMatched:engineProbe?.studioAssetSelectionMatched===true,
+              expectedStudioAssetAtoms:engineProbe?.expectedStudioAssetAtoms||[],
+              observedStudioAssetAtoms:engineProbe?.observedStudioAssetAtoms||[],
+              actualPlatformRuntime:true,
+              marker:studioAssetRuntimeBindingPassed?'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS':'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PENDING',
+              authority:'roblox-exact-runtime-studio-asset-binding-v1',
+              verifiedAt:studioAssetRuntimeBindingPassed?stamp:null,
+            }:null;
+            item.robloxRuntimeEvidence={
+              ...evidence,
+              runtimePassed:runtimeAcceptanceForRelease,
+              serverClientBoundaryPassed:result.f6CoreServicesPassed===true,
+              datastoreRejoinPassed:result.f6CoreServicesPassed===true,
+              mobileControlUiPassed:result.f5InputCameraUiPassed===true,
+              multiplayerQaPassed:multiplayerReleasePassed,
+              studioAssetBindingRequired,
+              studioAssetRuntimeBindingPassed,
+              studioAssetRuntimeBindingMarker:studioAssetRuntimeBindingPassed?'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS':studioAssetBindingRequired?'ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PENDING':'NOT_REQUIRED',
+              actualPlatformRuntime:true,
+              authority:'roblox-actual-runtime-foundation-and-core-acceptance',
+            };
+
+            if(runtimeAcceptanceForRelease){
+              item.robloxRuntimeFoundationInternalReleaseException=false;
+              item.robloxRuntimeFailureExternalReleaseOnly=false;
+              item.robloxInternalQaContinuationAllowed=false;
+              item.robloxInternalRegressionContinuationAllowed=false;
+              item.robloxPublicReleaseRuntimeObservationPending=false;
+              item.robloxPublicReleaseFailureSignature=null;
+              item.robloxPublicReleaseBlockers=(Array.isArray(item.robloxPublicReleaseBlockers)?item.robloxPublicReleaseBlockers:[]).filter(value=>
+                value!=='roblox-public-release-awaiting-real-server-boot'
+                &&!String(value||'').startsWith('roblox-public-release-runtime-finding:')
+              );
+              item.robloxRuntimePassedAt=stamp;
+              item.robloxRuntimeFailedAt=null;
+              item.robloxIndependentQaPassed=true;
+              item.robloxIndependentQaPassedAt=stamp;
+              item.robloxRegressionPassed=true;
+              item.robloxRegressionPassedAt=stamp;
+              item.robloxPostRuntimeQaEvidence={
+                version:2,
+                gameId:item.gameId,
+                sourceRevision,
+                artifactIdentity,
+                artifactRunId:Number(candidate.artifactRunId||0),
+                candidateVersionNumber:Number(candidate.versionNumber),
+                runtimeFoundationEvidence:evidence,
+                exactRevision:true,
+                independentQaPassed:true,
+                regressionPassed:true,
+                actualRuntimeEvidence:true,
+                studioAssetBindingRequired,
+                studioAssetRuntimeBindingPassed,
+                studioAssetRuntimeBindingEvidence:item.robloxStudioAssetRuntimeBindingEvidence,
+                deterministicQa:[
+                  'qa/company-development-roblox-runtime-foundation.test.mjs',
+                  'qa/company-development-roblox-headless-fast-mvp.test.mjs',
+                  'qa/company-tester-debug-intake.test.mjs',
+                ],
+                authority:'existing-independent-qa-native-foundation-v2',
+                verifiedAt:stamp,
+              };
+              item.currentStep='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.canonicalState='ROBLOX_RUNTIME_ACCEPTANCE_PASSED';
+              item.robloxLastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
+              item.robloxFailureStage='ROBLOX_FINAL_REVIEW_REVALIDATION';
+              item.robloxFailureSignature='ROBLOX_FINAL_REVIEW_PENDING';
+              item.routingBlockers=['roblox-final-review-pending'];
+              if(studioAssetBindingRequired&&!studioAssetRuntimeBindingPassed){
+                throw new Error('ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_EXPECTED_AFTER_ACCEPTANCE:'+item.gameId);
+              }
+              if(studioAssetRuntimeBindingPassed)console.log('ROBLOX_STUDIO_ASSET_RUNTIME_BINDING_PASS='+item.gameId+':'+sourceRevision+':'+candidate.versionNumber);
+              if(item.executionEvidence){
+                item.executionEvidence.lastSuccessfulStage='TARGET_PLATFORM_REGRESSION';
+                item.executionEvidence.runtimePassed=true;
+                item.executionEvidence.independentQaPassed=true;
+                item.executionEvidence.regressionPassed=true;
+                item.executionEvidence.failureStage=null;
+                item.executionEvidence.failureSignature=null;
+              }
+              f9Ids.push(item.gameId);
+              passed++;
+            }else{
+              const cp=result.checkpointPass||{};
+              const groundFailure=result.exactVersion===true&&cp.CHARACTER_READY===true&&cp.GROUND_CONTACT!==true;
+              const multiplayerCodeContractMissing=multiplayer.required===true&&!multiplayerReleasePassed;
+              if(multiplayerCodeContractMissing){
+                item.robloxParallelMultiplayerValidationPending=false;
+                item.robloxInternalMultiplayerSimplifiedPassed=false;
+                item.currentStep='TARGET_PLATFORM_TECHNICAL_VALIDATION';
+                item.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED';
+                item.robloxFailureStage='F7_MULTIPLAYER_CODE_CONTRACT';
+                item.robloxFailureSignature='ROBLOX_MULTIPLAYER_CODE_CONTRACT_FAILED';
+                item.routingBlockers=['roblox-multiplayer-code-contract-failed'];
+                item.robloxPromotionBlockers=['roblox-multiplayer-code-contract-failed'];
+                if(item.executionEvidence){
+                  item.executionEvidence.runtimePassed=false;
+                  item.executionEvidence.failureStage='F7_MULTIPLAYER_CODE_CONTRACT';
+                  item.executionEvidence.failureSignature='ROBLOX_MULTIPLAYER_CODE_CONTRACT_FAILED';
+                }
+                console.log('ROBLOX_F7_MULTIPLAYER_CODE_CONTRACT_REPAIR='+item.gameId);
+                pending++;
+              }else{
+                item.robloxParallelMultiplayerValidationPending=false;
+                const studioPlay=item.robloxInternalVibePlayEvidence||{};
+                const exactStudioPlay=
+                  studioPlay.pass===true
+                  &&studioPlay.actualPlay===true
+                  &&studioPlay.runtimeVerified===true
+                  &&studioPlay.officialStudioMcp===true
+                  &&studioPlay.localPlaceFile===true
+                  &&studioPlay.sourceRevision===sourceRevision
+                  &&studioPlay.artifactIdentity===artifactIdentity
+                  &&Number(studioPlay.versionNumber)===Number(candidate.versionNumber)
+                  &&Number(studioPlay.runtimeSummary?.consoleErrorCount||0)===0;
+                if(exactStudioPlay)item.robloxNativeFailureClass=null;
+                const exactPrivateRuntimeFinding=
+                  result.exactGame===true
+                  &&result.exactPlace===true
+                  &&result.exactVersion===true
+                  &&result.actualRuntimeEvidence===true
+                  &&exactStudioPlay;
+                if(exactPrivateRuntimeFinding){
+                  const runtimeSignature=groundFailure
+                    ?'GROUND_CONTACT_FAILURE'
+                    :(result.runtimeFoundationPassed===true?'ROBLOX_RUNTIME_ACCEPTANCE_PENDING':'ROBLOX_RUNTIME_FOUNDATION_PENDING');
+                  item.robloxIndependentQaPassed=false;
+                  item.robloxRegressionPassed=false;
+                  item.robloxInternalQaContinuationAllowed=true;
+                  item.robloxInternalRegressionContinuationAllowed=true;
+                  item.robloxRuntimeFailureExternalReleaseOnly=true;
+                  item.robloxPublicReleaseRuntimeObservationPending=true;
+                  item.robloxPublicReleaseFailureSignature=runtimeSignature;
+                  item.robloxPublicReleaseBlockers=[...new Set([
+                    ...(Array.isArray(item.robloxPublicReleaseBlockers)?item.robloxPublicReleaseBlockers:[]),
+                    'roblox-public-release-runtime-finding:'+runtimeSignature.toLowerCase(),
+                  ])];
+                  item.robloxPostRuntimeQaEvidence={
+                    version:5,
+                    gameId:item.gameId,
+                    sourceRevision,
+                    artifactIdentity,
+                    artifactRunId:Number(candidate.artifactRunId||0),
+                    candidateVersionNumber:Number(candidate.versionNumber),
+                    runtimeFoundationEvidence:evidence,
+                    exactRevision:true,
+                    independentQaPassed:false,
+                    regressionPassed:false,
+                    internalQaContinuationAllowed:true,
+                    internalRegressionContinuationAllowed:true,
+                    runtimeFailureExternalReleaseOnly:true,
+                    publicReleaseRuntimeObservationPending:true,
+                    runtimeFailureSignature:runtimeSignature,
+                    actualRuntimeEvidence:true,
+                    officialStudioMcpActualPlayPassed:true,
+                    studioAssetBindingRequired,
+                    studioAssetRuntimeBindingPassed,
+                    studioAssetRuntimeBindingEvidence:item.robloxStudioAssetRuntimeBindingEvidence,
+                    authority:'roblox-internal-flow-runtime-finding-external-release-only',
+                    verifiedAt:stamp,
+                  };
+                  item.robloxInternalReleaseReady=true;
+                  item.robloxInternalReleasePublished=true;
+                  item.robloxF9PendingInParallel=true;
+                  item.currentStep='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+                  item.canonicalState='INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG';
+                  item.robloxFailureStage='PUBLIC_RELEASE_RUNTIME_FINDING';
+                  item.robloxFailureSignature=runtimeSignature;
+                  item.routingBlockers=[];
+                  item.robloxPromotionBlockers=[...new Set([
+                    ...(Array.isArray(item.robloxPromotionBlockers)?item.robloxPromotionBlockers:[]),
+                    'roblox-public-release-runtime-finding:'+runtimeSignature.toLowerCase(),
+                  ])];
+                  if(item.executionEvidence){
+                    item.executionEvidence.runtimePassed=false;
+                    item.executionEvidence.independentQaPassed=false;
+                    item.executionEvidence.regressionPassed=false;
+                    item.executionEvidence.failureStage='PUBLIC_RELEASE_RUNTIME_FINDING';
+                    item.executionEvidence.failureSignature=runtimeSignature;
+                  }
+                  f9Ids.push(item.gameId);
+                  console.log('ROBLOX_INTERNAL_FLOW_CONTINUES_RUNTIME_FINDING_EXTERNAL_ONLY='+item.gameId+':'+runtimeSignature);
+                  pending++;
+                }else if(groundFailure){
+                  item.robloxIndependentQaPassed=false;
+                  item.robloxRegressionPassed=false;
+                  item.robloxInternalQaContinuationAllowed=false;
+                  item.robloxInternalRegressionContinuationAllowed=false;
+                  item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+                  item.robloxFailureSignature='GROUND_CONTACT_FAILURE';
+                  item.routingBlockers=['roblox-ground-contact-failure'];
+                  failed++;
+                }else if(result.runtimeFoundationPassed===true){
+                  item.robloxIndependentQaPassed=false;
+                  item.robloxRegressionPassed=false;
+                  item.robloxInternalQaContinuationAllowed=false;
+                  item.robloxInternalRegressionContinuationAllowed=false;
+                  item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_ACCEPTANCE';
+                  item.robloxFailureSignature='ROBLOX_RUNTIME_ACCEPTANCE_PENDING';
+                  item.routingBlockers=['roblox-runtime-acceptance-awaiting-tester-actions'];
+                  pending++;
+                }else{
+                  item.robloxIndependentQaPassed=false;
+                  item.robloxRegressionPassed=false;
+                  item.robloxInternalQaContinuationAllowed=false;
+                  item.robloxInternalRegressionContinuationAllowed=false;
+                  item.robloxFailureStage='TARGET_PLATFORM_RUNTIME_FOUNDATION';
+                  item.robloxFailureSignature='ROBLOX_RUNTIME_FOUNDATION_PENDING';
+                  item.routingBlockers=['roblox-runtime-foundation-awaiting-observation'];
+                  pending++;
+                }
+              }
+            }
+            queueStudioFollowupIfEligible(item);
+            item.updatedAt=stamp;changed=true;
+          }
+
+          if(changed){
+            q.updatedAt=stamp;
+            fs.writeFileSync(queuePath,JSON.stringify(q,null,2)+'\n');
+          }
+          console.log(`ROBLOX_FOUNDATION_CANDIDATES=${candidates.length}`);
+          console.log(`ROBLOX_FOUNDATION_RUNTIME_PASS=${passed}`);
+          console.log(`ROBLOX_FOUNDATION_RUNTIME_PENDING=${pending}`);
+          fs.writeFileSync('/tmp/roblox-f9-ids',f9Ids.join('\n')+(f9Ids.length?'\n':''));
+          fs.writeFileSync('/tmp/roblox-studio-followup-ids',[...new Set(studioFollowupIds)].join('\n')+(studioFollowupIds.length?'\n':''));
+          fs.writeFileSync('/tmp/roblox-open-cloud-transient-probe-failures',transientProbeFailures.map(row=>String(row?.gameId||'')+':HTTP_'+Number(row?.status||0)).filter(Boolean).join('\n')+(transientProbeFailures.length?'\n':''));
+          fs.writeFileSync('/tmp/roblox-open-cloud-blocking-probe-failures',blockingProbeFailures.map(row=>String(row?.gameId||'')+':HTTP_'+Number(row?.status||0)).filter(Boolean).join('\n')+(blockingProbeFailures.length?'\n':''));
+          console.log(`ROBLOX_STUDIO_MCP_POST_FOUNDATION_READY_COUNT=${new Set(studioFollowupIds).size}`);
+          console.log(`ROBLOX_OPEN_CLOUD_PERSISTENT_PROBE_FAILURE_COUNT=${persistentProbeFailures.length}`);
+          console.log(`ROBLOX_OPEN_CLOUD_TRANSIENT_PROBE_FAILURE_COUNT=${transientProbeFailures.length}`);
+          console.log(`ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE_COUNT=${blockingProbeFailures.length}`);
+          console.log(`ROBLOX_FOUNDATION_RUNTIME_FAILURE=${failed}`);
+          NODE
+
+      - name: Persist runtime tester and QA evidence
+        working-directory: runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-roblox-tester-qa'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=NO'
+            exit 0
+          fi
+          git commit -m 'runtime: persist Roblox foundation tester QA [skip ci]'
+          pushed=0
+          for attempt in 1 2 3; do
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            if ! git rebase "origin/$COMPANY_RUNTIME_BRANCH"; then
+              git rebase --abort || true
+              echo 'ROBLOX_FOUNDATION_RUNTIME_WRITE_CONFLICT=DEFERRED_TO_NEXT_CYCLE'
+              exit 0
+            fi
+            sleep $((attempt*2))
+          done
+          test "$pushed" = '1'
+          echo 'ROBLOX_FOUNDATION_RUNTIME_STATE_CHANGE=YES'
+
+      - name: Dispatch one F9 scan for all runtime-accepted candidates
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/roblox-f9-ids || exit 0
+          candidate_count="$(wc -l < /tmp/roblox-f9-ids | tr -d '[:space:]')"
+          candidate_count="${candidate_count:-0}"
+          [ "$candidate_count" -gt 0 ] || exit 0
+          gh workflow run company-development-roblox-final-review-revalidation.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo "ROBLOX_F9_SCAN_DISPATCHED=candidates=$candidate_count"
+
+      - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
+        if: ${{ inputs.retry_open_cloud_only != true }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/roblox-studio-followup-ids || exit 0
+          dispatch_count=0
+          while read -r id; do
+            [ -n "$id" ] || continue
+            gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            dispatch_count=$((dispatch_count+1))
+            echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH=$id"
+          done < /tmp/roblox-studio-followup-ids
+          echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH_COUNT=$dispatch_count"
+
+      - name: Enforce persistent Open Cloud probe failures after evidence persistence
+        shell: bash
+        run: |
+          set -euo pipefail
+          transient_file=/tmp/roblox-open-cloud-transient-probe-failures
+          blocking_file=/tmp/roblox-open-cloud-blocking-probe-failures
+          if [ -s "$transient_file" ]; then
+            cat "$transient_file"
+            echo 'QUALITY_FIRST_BUILDUP_SHORT_CIRCUIT=ACTIVE'
+            echo 'QUALITY_FAILURE_CLASS=INFRASTRUCTURE_OR_EVIDENCE_ONLY'
+            echo 'QUALITY_BUILDUP_AUTO_REQUEUE=NO'
+            echo 'EXTERNAL_RELEASE_PROBE_SUPPRESSED=NO'
+            echo 'RESUME_STAGE=TARGET_PLATFORM_RUNTIME_FOUNDATION'
+            echo 'ROBLOX_OPEN_CLOUD_TRANSIENT_PROBE_RETRY=IN_SCAN_BOUNDED'
+          fi
+          if [ -s "$blocking_file" ]; then
+            cat "$blocking_file"
+            echo 'ROBLOX_OPEN_CLOUD_PERSISTENT_PROBE_FAILURE=YES'
+            echo 'ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE=YES'
+            exit 1
+          fi
+          echo 'ROBLOX_OPEN_CLOUD_PERSISTENT_PROBE_FAILURE=NO'
+          echo 'ROBLOX_OPEN_CLOUD_BLOCKING_PROBE_FAILURE=NO'
+
+  studio-local-plan:
+    if: ${{ inputs.retry_open_cloud_only != true }}
+    # Resolve work on the available Studio host instead of waiting for hosted control capacity.
+    name: plan exact local Studio MCP playtests for earliest eligible artifacts
+    concurrency:
+      group: roblox-studio-mcp-plan-${{ inputs.game_id || github.sha }}
+      cancel-in-progress: true
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 5
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      count: ${{ steps.plan.outputs.count }}
+    steps:
+      - name: Checkout current canonical implementation
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.control_revision || 'main' }}
+          path: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Checkout latest canonical runtime state
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+          fetch-tags: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download isolated candidate context
+        if: inputs.candidate_context != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.candidate_context }}
+          path: candidate-context
+
+      - name: Bind isolated candidate context without canonical state mutation
+        if: inputs.candidate_context != ''
+        shell: powershell
+        env:
+          CANDIDATE_REVISION: ${{ inputs.candidate_revision }}
+          CANDIDATE_GAME: ${{ inputs.game_id }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('candidate-context/development-queue.json','utf8'));const i=q.items?.[0];if(q.items?.length!==1||i.gameId!==process.env.CANDIDATE_GAME||i.robloxSourceCommit!==process.env.CANDIDATE_REVISION||!/^[0-9a-f]{40}$/.test(i.robloxSourceCommit)||!/^[-a-zA-Z0-9_]+$/.test(i.gameId))throw Error('candidate context identity mismatch');fs.copyFileSync('candidate-context/development-queue.json','runtime/development-queue.json');fs.mkdirSync('main/roblox-games/'+i.gameId,{recursive:true});fs.copyFileSync('candidate-context/launch-mvp.json','main/roblox-games/'+i.gameId+'/launch-mvp.json');"
+          if ($LASTEXITCODE -ne 0) { throw 'isolated candidate context rejected' }
+
+      - name: Select exact runtime-foundation or internal-release artifacts needing official Studio MCP play
+        id: plan
+        working-directory: main
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          EVENT_NAME: ${{ github.event_name }}
+          TRIGGER_CHANGED: ${{ github.event_name == 'push' && (contains(toJSON(github.event.head_commit.modified), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.added), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.removed), 'roblox-games/.company-runtime-trigger')) }}
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ('${{ inputs.candidate_context }}' -eq '') {
+            & git -C ../runtime fetch --no-tags origin company-runtime
+            if ($LASTEXITCODE -ne 0) { throw 'runtime fetch failed' }
+            & git -C ../runtime reset --hard origin/company-runtime
+            if ($LASTEXITCODE -ne 0) { throw 'runtime refresh failed' }
+          }
+          $requested = [string]$env:REQUESTED_GAME_ID
+          if (-not $requested -and $env:EVENT_NAME -eq 'push' -and $env:TRIGGER_CHANGED -eq 'true') {
+            $triggerPath = 'roblox-games/.company-runtime-trigger'
+            if (Test-Path $triggerPath) {
+              $line = Get-Content $triggerPath | Where-Object { $_ -match '^gameId:\s*' } | Select-Object -First 1
+              if ($line) { $requested = ($line -replace '^gameId:\s*', '').Trim() }
+            }
+          }
+          $planOutput = Join-Path $env:RUNNER_TEMP 'roblox-studio-mcp-matrix.json'
+          & node tools/company-development-roblox-studio-local-play.mjs --mode=plan --queue=../runtime/development-queue.json --roadmap=company-learning/platform-release-roadmap.json --repo-root=. "--game-id=$requested" "--output=$planOutput"
+          if ($LASTEXITCODE -ne 0) { throw 'Studio candidate planning failed' }
+          $plan = Get-Content $planOutput -Raw | ConvertFrom-Json
+          $include = @($plan.include)
+          if ('${{ inputs.candidate_context }}' -ne '' -and $include.Count -ne 1) { throw 'candidate must schedule exactly one Studio playtest' }
+          $matrix = @{ include = $include } | ConvertTo-Json -Compress -Depth 12
+          "matrix=$matrix" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "count=$($include.Count)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          Write-Host "ROBLOX_STUDIO_MCP_PLAN_COUNT=$($include.Count)"
+          Write-Host 'ROBLOX_STUDIO_MCP_PLAN_RUNNER=LOCAL_STUDIO_HOST'
+
+  studio-mcp-auto-play:
+    name: Official Studio MCP actual play ${{ matrix.gameId }}
+    concurrency:
+      group: roblox-studio-artifact-${{ matrix.gameId }}-${{ matrix.sourceRevision }}-${{ matrix.artifactIdentity }}
+      cancel-in-progress: false
+    needs: studio-local-plan
+    if: always() && needs.studio-local-plan.result == 'success' && needs.studio-local-plan.outputs.count != '0'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.studio-local-plan.outputs.matrix) }}
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 15
+    steps:
+      - name: Checkout central policy and helper
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.control_revision || 'main' }}
+          path: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Checkout canonical runtime state
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+          fetch-tags: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download isolated candidate context
+        if: inputs.candidate_context != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.candidate_context }}
+          path: candidate-context
+
+      - name: Bind isolated candidate context without canonical state mutation
+        if: inputs.candidate_context != ''
+        shell: powershell
+        env:
+          CANDIDATE_REVISION: ${{ inputs.candidate_revision }}
+          CANDIDATE_GAME: ${{ inputs.game_id }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('candidate-context/development-queue.json','utf8'));const i=q.items?.[0];if(q.items?.length!==1||i.gameId!==process.env.CANDIDATE_GAME||i.robloxSourceCommit!==process.env.CANDIDATE_REVISION||!/^[0-9a-f]{40}$/.test(i.robloxSourceCommit)||!/^[-a-zA-Z0-9_]+$/.test(i.gameId))throw Error('candidate context identity mismatch');fs.copyFileSync('candidate-context/development-queue.json','runtime/development-queue.json');fs.mkdirSync('main/roblox-games/'+i.gameId,{recursive:true});fs.copyFileSync('candidate-context/launch-mvp.json','main/roblox-games/'+i.gameId+'/launch-mvp.json');"
+          if ($LASTEXITCODE -ne 0) { throw 'isolated candidate context rejected' }
+
+      - name: Verify official Studio MCP policy and runner
+        id: mcp_preflight
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('main/company-learning/platform-release-roadmap.json','utf8').replace(/^\\uFEFF/,''));const s=r?.roblox?.studioExecution||{};const ok=s.officialStudioMcpOnly===true&&s.robloxPlayerAutomationForbidden===true&&s.undocumentedStudioCliAutomationForbidden===true&&s.externalGuiAutomationForbidden===true&&s.localPlaceFileRequired===true;if(!ok){console.error('ROBLOX_STUDIO_MCP_POLICY_MISMATCH');process.exit(1)}console.log('ROBLOX_STUDIO_MCP_POLICY=PASS')"
+          if ($LASTEXITCODE -ne 0) { throw 'official Studio MCP policy validation failed' }
+          if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio MCP runner must be Windows' }
+          $studio = Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\Versions') -Directory -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTime -Descending |
+            ForEach-Object { Join-Path $_.FullName 'RobloxStudioBeta.exe' } |
+            Where-Object { Test-Path $_ } |
+            Select-Object -First 1
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
+
+          $mcpBat = Join-Path $env:LOCALAPPDATA 'Roblox\mcp.bat'
+          $studioDir = Split-Path -Parent $studio
+          $mcpExe = Join-Path $studioDir 'StudioMCP.exe'
+          if (-not (Test-Path $mcpExe)) {
+            $mcpExe = Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\Versions') -Recurse -File -Filter 'StudioMCP.exe' -ErrorAction SilentlyContinue |
+              Sort-Object LastWriteTime -Descending |
+              Select-Object -ExpandProperty FullName -First 1
+          }
+          if (-not (Test-Path $mcpBat) -and -not ($mcpExe -and (Test-Path $mcpExe))) {
+            throw 'Official Roblox Studio MCP launcher and StudioMCP.exe not found'
+          }
+
+          $mcpFallbackCommand = ''
+          $mcpBatchHealth = 'MISSING'
+          if (Test-Path $mcpBat) {
+            $batchText = Get-Content $mcpBat -Raw -ErrorAction SilentlyContinue
+            $knownBrokenBatch = ($batchText -match '(?im)^\s*else\b') -or ($batchText -match '(?i)%B[/\\]\.\.[/\\]StudioMCP\.exe') -or ($batchText -match '(?m)\)\s*\r?\n\s*else\s*\(')
+            if ($knownBrokenBatch) {
+              if (-not ($mcpExe -and (Test-Path $mcpExe))) {
+                throw 'Documented Roblox mcp.bat is malformed and official StudioMCP.exe fallback is unavailable'
+              }
+              $mcpCommand = $mcpExe
+              $mcpFallbackCommand = $mcpExe
+              $mcpLaunchKind = 'OFFICIAL_STUDIOMCP_EXE_FALLBACK_BROKEN_DOCUMENTED_BATCH'
+              $mcpBatchHealth = 'BROKEN_USE_OFFICIAL_EXE'
+            } else {
+              $mcpCommand = $mcpBat
+              $mcpLaunchKind = 'ROBLOX_DOCUMENTED_MCP_BATCH'
+              $mcpBatchHealth = 'READY'
+              if ($mcpExe -and (Test-Path $mcpExe)) {
+                $mcpFallbackCommand = $mcpExe
+              }
+            }
+          } elseif ($mcpExe -and (Test-Path $mcpExe)) {
+            $mcpCommand = $mcpExe
+            $mcpFallbackCommand = $mcpExe
+            $mcpLaunchKind = 'OFFICIAL_STUDIOMCP_EXE_FALLBACK_BATCH_MISSING'
+          } else {
+            throw 'Official Roblox Studio MCP launcher unavailable'
+          }
+          Write-Host "ROBLOX_STUDIO_MCP_BATCH_HEALTH=$mcpBatchHealth"
+
+          if (Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue) {
+            throw 'Runner has an existing Roblox Studio process; refusing ambiguous MCP attachment'
+          }
+
+          $officialVersionsRoot = Join-Path $env:LOCALAPPDATA 'Roblox\Versions'
+          Write-Host 'ROBLOX_STUDIO_MCP_OTHER_PROCESS_PRESERVED=YES'
+
+          $settingsRoot = Join-Path $env:LOCALAPPDATA 'Roblox\AssistantSettings'
+          $settingDiag = Join-Path $env:RUNNER_TEMP 'roblox-studio-mcp-setting-diagnostic.json'
+          $diagArgs = @(
+            '--mode=diagnose-setting',
+            "--settings-root=$settingsRoot",
+            "--output=$settingDiag"
+          )
+          & node 'main/tools/company-development-roblox-studio-local-play.mjs' @diagArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Studio MCP read-only setting diagnostic failed' }
+          $diag = Get-Content $settingDiag -Raw | ConvertFrom-Json
+          $settingState = [string]$diag.state
+          $settingsFileCount = [int]$diag.fileCount
+          $enabledCount = [int]$diag.enabledCount
+          $disabledCount = [int]$diag.disabledCount
+          $parseErrorCount = [int]$diag.parseErrorCount
+          $candidatePathCount = [int]$diag.candidatePathCount
+          $candidatePaths = @($diag.candidatePaths) -join ','
+          "VIBE2_ROBLOX_STUDIO_MCP_SETTING_ENABLED=$settingState" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "ROBLOX_STUDIO_MCP_SETTING_ENABLED=$settingState"
+          Write-Host "ROBLOX_STUDIO_MCP_SETTING_FILE_COUNT=$settingsFileCount"
+          Write-Host "ROBLOX_STUDIO_MCP_SETTING_ENABLED_COUNT=$enabledCount"
+          Write-Host "ROBLOX_STUDIO_MCP_SETTING_DISABLED_COUNT=$disabledCount"
+          Write-Host "ROBLOX_STUDIO_MCP_SETTING_PARSE_ERROR_COUNT=$parseErrorCount"
+          Write-Host "ROBLOX_STUDIO_MCP_SETTING_CANDIDATE_PATH_COUNT=$candidatePathCount"
+          Write-Host "ROBLOX_STUDIO_MCP_SETTING_CANDIDATE_PATHS=$candidatePaths"
+          Write-Host 'ROBLOX_STUDIO_MCP_SETTING_MUTATION=NO'
+
+          $settingConfirmed = $settingState -eq 'YES'
+          $settingExplicitlyDisabled = $settingState -eq 'NO'
+          $settingProbeRequired = -not $settingConfirmed -and -not $settingExplicitlyDisabled
+          $settingBlocked = $settingExplicitlyDisabled
+          "setting_confirmed=$($settingConfirmed.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "setting_probe_required=$($settingProbeRequired.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "setting_blocked=$($settingBlocked.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          if ($settingBlocked) {
+            $blockedResult = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-mcp-runtime.json'
+            $settingSignature = "ROBLOX_STUDIO_MCP_SETTING_ENABLE_REQUIRED:$settingState"
+            @{
+              version = 1
+              authority = 'roblox-official-studio-mcp-runtime'
+              runtimeVerified = $false
+              capabilities = @{
+                officialStudioMcp = $false
+                playMode = $false
+                mcpInput = $false
+                screenCapture = $false
+                consoleCapture = $false
+              }
+              actions = @()
+              checkpoints = @()
+              errors = @(@{
+                type = 'studio-mcp-infrastructure-or-runtime-error'
+                actionId = $null
+                signature = $settingSignature
+              })
+              metrics = @{
+                distinctFrameChange = $false
+                consoleErrorCount = 1
+              }
+              rawSourceIncluded = $false
+              rawGameplayValuesIncluded = $false
+              rawViewportIncluded = $false
+            } | ConvertTo-Json -Depth 8 | Out-File -FilePath $blockedResult -Encoding utf8
+            "VIBE2_STUDIO_RUNTIME_RESULT=$blockedResult" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            Write-Host "ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_IN_STUDIO_ASSISTANT_UI:$settingState"
+            Write-Host 'ROBLOX_STUDIO_MCP_AUTOMATIC_SETTING_MUTATION=NO'
+            Write-Host 'ROBLOX_STUDIO_MCP_PLAY_ATTEMPT=SKIPPED_EXPLICITLY_DISABLED'
+          } elseif ($settingProbeRequired) {
+            Write-Host "ROBLOX_STUDIO_MCP_SETTING_DIAGNOSTIC_ADVISORY=$settingState"
+            Write-Host 'ROBLOX_STUDIO_MCP_ENABLEMENT_AUTHORITY=OFFICIAL_REQUIRED_TOOL_HANDSHAKE'
+            Write-Host 'ROBLOX_STUDIO_MCP_PLAY_ATTEMPT=PROBE_OFFICIAL_TOOL_HANDSHAKE'
+          } else {
+            Write-Host 'ROBLOX_STUDIO_MCP_SETTING_DIAGNOSTIC=CONFIRMED_ENABLED'
+          }
+
+          "VIBE2_ROBLOX_STUDIO_MCP_SETTINGS_ROOT=$settingsRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_ROBLOX_STUDIO_PATH=$studio" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_ROBLOX_STUDIO_MCP_COMMAND=$mcpCommand" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND=$mcpFallbackCommand" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_ROBLOX_STUDIO_MCP_LAUNCH_KIND=$mcpLaunchKind" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $studioVersion = (Get-Item $studio).VersionInfo.ProductVersion
+          $mcpVersion = if ($mcpExe -and (Test-Path $mcpExe)) { (Get-Item $mcpExe).VersionInfo.ProductVersion } else { 'NONE' }
+          Write-Host "ROBLOX_STUDIO_PRODUCT_VERSION=$studioVersion"
+          Write-Host "ROBLOX_STUDIO_MCP_PRODUCT_VERSION=$mcpVersion"
+          Write-Host "ROBLOX_STUDIO_MCP_LAUNCH_KIND=$mcpLaunchKind"
+          Write-Host 'ROBLOX_STUDIO_MCP_BATCH_REWRITE=NO'
+          Write-Host 'ROBLOX_STUDIO_MCP_THIRD_PARTY_BRIDGE=NO'
+          Write-Host 'ROBLOX_STUDIO_MCP_RUNNER=PASS'
+          Write-Host 'ROBLOX_PLAYER_AUTOMATION=NO'
+          Write-Host 'ROBLOX_UNDOCUMENTED_STUDIO_CLI_AUTOMATION=NO'
+
+      - name: Download exact immutable Roblox build artifact
+        id: artifact_download
+        continue-on-error: true
+        if: steps.mcp_preflight.outputs.setting_blocked != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: development-roblox-package-${{ matrix.gameId }}
+          path: ${{ runner.temp }}/company-roblox-studio-package
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ matrix.artifactRunId }}
+
+      - name: Rebuild byte-identical exact artifact when GitHub artifact API is unavailable
+        if: inputs.candidate_context == '' && steps.mcp_preflight.outputs.setting_blocked != 'true' && steps.artifact_download.outcome != 'success'
+        shell: powershell
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          EXPECTED_ARTIFACT: ${{ matrix.artifactIdentity }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-package'
+          Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue
+          $packageDir = Join-Path $root 'packages'
+          $evidenceDir = Join-Path $root 'results'
+          New-Item -ItemType Directory -Force -Path $packageDir,$evidenceDir | Out-Null
+
+          $metadataJson = & node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync(process.argv[1],'utf8').replace(/^\\uFEFF/,''));const row=(q.items||[]).find(x=>x.gameId===process.argv[2]);if(!row)process.exit(2);const sourcePath=row.robloxProjectPath||row.targetSourcePath||('roblox-games/'+row.gameId);const baselineSource=row.designBaselineSource||'';process.stdout.write(JSON.stringify({sourcePath,baselineSource}));" 'runtime/development-queue.json' $env:GAME_ID
+          if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($metadataJson)) { throw 'Studio MCP exact rebuild metadata lookup failed' }
+          $metadata = $metadataJson | ConvertFrom-Json
+          $sourcePath = [string]$metadata.sourcePath
+          $baselineSource = [string]$metadata.baselineSource
+          if ([string]::IsNullOrWhiteSpace($sourcePath) -or [string]::IsNullOrWhiteSpace($baselineSource)) {
+            throw 'Studio MCP exact rebuild source or baseline metadata missing'
+          }
+
+          git -C main fetch --no-tags origin $env:SOURCE_REVISION
+          if ($LASTEXITCODE -ne 0) { throw 'Studio MCP exact source revision fetch failed' }
+
+          $baseline = Join-Path (Resolve-Path 'runtime').Path $baselineSource
+          if (-not (Test-Path $baseline)) { throw "Studio MCP exact rebuild baseline missing: $baselineSource" }
+
+          $rojoZip = Join-Path $env:RUNNER_TEMP 'rojo-7.7.0-windows-x86_64.zip'
+          $rojoDir = Join-Path $env:RUNNER_TEMP 'rojo-7.7.0-windows-x86_64'
+          Remove-Item -Recurse -Force $rojoDir -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path $rojoDir | Out-Null
+          & curl.exe -fL --retry 3 --retry-delay 2 -o $rojoZip 'https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip'
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned Windows Rojo download failed' }
+          $rojoZipHash = (Get-FileHash -Path $rojoZip -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($rojoZipHash -ne '2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949') {
+            throw "Pinned Windows Rojo SHA256 mismatch: $rojoZipHash"
+          }
+          Expand-Archive -Path $rojoZip -DestinationPath $rojoDir -Force
+          $rojo = Get-ChildItem -Path $rojoDir -Recurse -File -Filter 'rojo.exe' | Select-Object -ExpandProperty FullName -First 1
+          if (-not $rojo) { throw 'Pinned Windows Rojo executable missing after extraction' }
+
+          $buildEvidence = Join-Path $evidenceDir 'build.json'
+          $buildArgs = @(
+            '--repo-root=main',
+            "--game-id=$env:GAME_ID",
+            "--source-path=$sourcePath",
+            "--source-revision=$env:SOURCE_REVISION",
+            "--baseline=$baseline",
+            "--rojo=$rojo",
+            "--output-dir=$packageDir",
+            "--evidence=$buildEvidence"
+          )
+          & node 'main/tools/company-development-roblox-package.mjs' @buildArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Studio MCP exact artifact deterministic rebuild failed' }
+
+          $rebuilt = (& node -e "const e=require(process.argv[1]);process.stdout.write(String(e.artifactIdentity||''));" $buildEvidence).Trim().ToLowerInvariant()
+          $expected = ([string]$env:EXPECTED_ARTIFACT).Trim().ToLowerInvariant()
+          if ($rebuilt -ne $expected) { throw "Studio MCP exact rebuild identity mismatch: $rebuilt != $expected" }
+
+          Write-Host "ROBLOX_STUDIO_MCP_ARTIFACT_REBUILD=PASS:$rebuilt"
+          Write-Host 'ROBLOX_STUDIO_MCP_ARTIFACT_SOURCE=DETERMINISTIC_EXACT_HASH_MATCH'
+          Write-Host 'ROBLOX_STUDIO_MCP_ARTIFACT_API_FALLBACK=NO_GAMEPLAY_OR_RUNTIME_BYPASS'
+
+      - name: Bind and open exact local Place artifact
+        if: steps.mcp_preflight.outputs.setting_blocked != 'true'
+        shell: powershell
+        env:
+          EXPECTED_ARTIFACT: ${{ matrix.artifactIdentity }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-package'
+          $places = @(Get-ChildItem -Path $root -Recurse -File | Where-Object { $_.Extension -in @('.rbxl','.rbxlx') })
+          if ($places.Count -ne 1) { throw "Expected exactly one local Place artifact, found $($places.Count)" }
+          $hash = (Get-FileHash -Path $places[0].FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          $expected = ([string]$env:EXPECTED_ARTIFACT).ToLowerInvariant()
+          if ("sha256:$hash" -ne $expected) { throw "Local Place SHA256 mismatch: sha256:$hash != $expected" }
+
+          $existingStudio = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue)
+          if ($existingStudio.Count) {
+            Write-Host "ROBLOX_STUDIO_USER_SESSION_PRESERVED=YES:existing=$($existingStudio.Count)"
+            throw 'Roblox Studio already open on shared runner; reschedule isolated Studio QA'
+          }
+          $exactPlaceStarted = [DateTime]::UtcNow
+          $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($places[0].FullName) -PassThru
+          "VIBE2_STUDIO_PROCESS_ID=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_STUDIO_PROCESS_IDS=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "ROBLOX_STUDIO_MCP_EXACT_PLACE_PROCESS_ID=$($placeLaunchProcess.Id)"
+          try {
+            if ($placeLaunchProcess.WaitForInputIdle(30000)) {
+              Write-Host 'ROBLOX_STUDIO_GUI_READY=YES'
+            } else {
+              Write-Host 'ROBLOX_STUDIO_GUI_READY=TIMEOUT_CONTINUE_MCP_PROBE'
+            }
+          } catch {
+            Write-Host 'ROBLOX_STUDIO_GUI_READY=UNAVAILABLE_CONTINUE_MCP_PROBE'
+          }
+          Start-Sleep -Seconds 1
+
+          $ownedStudioProcesses = @()
+          for ($processProbe = 1; $processProbe -le 12; $processProbe++) {
+            $ownedStudioProcesses = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Where-Object { $_.StartTime.ToUniversalTime() -ge $exactPlaceStarted.AddSeconds(-2) -and $_.Id -eq $placeLaunchProcess.Id } | Sort-Object StartTime)
+            if ($ownedStudioProcesses.Count) { break }
+            Start-Sleep -Seconds 1
+          }
+          if (-not $ownedStudioProcesses.Count) {
+            Write-Host 'ROBLOX_STUDIO_MCP_PRE_MCP_RELAUNCH=YES'
+            Start-Sleep -Seconds 1
+            $exactPlaceStarted = [DateTime]::UtcNow
+            $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($places[0].FullName) -PassThru
+            "VIBE2_STUDIO_PROCESS_ID=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "VIBE2_STUDIO_PROCESS_IDS=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            Write-Host "ROBLOX_STUDIO_MCP_PRE_MCP_RELAUNCH_PROCESS_ID=$($placeLaunchProcess.Id)"
+            try { $null = $placeLaunchProcess.WaitForInputIdle(30000) } catch {}
+            for ($processProbe = 1; $processProbe -le 12; $processProbe++) {
+              $ownedStudioProcesses = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Where-Object { $_.StartTime.ToUniversalTime() -ge $exactPlaceStarted.AddSeconds(-2) -and $_.Id -eq $placeLaunchProcess.Id } | Sort-Object StartTime)
+              if ($ownedStudioProcesses.Count) { break }
+              Start-Sleep -Seconds 1
+            }
+          }
+          if (-not $ownedStudioProcesses.Count) { throw 'Roblox Studio unavailable after bounded exact local Place relaunch' }
+          Write-Host "ROBLOX_STUDIO_MCP_PRE_MCP_PROCESS_READY_COUNT=$($ownedStudioProcesses.Count)"
+          $studioProcess = $ownedStudioProcesses | Where-Object { $_.Id -eq $placeLaunchProcess.Id } | Select-Object -First 1
+          if (-not $studioProcess) {
+            throw 'Exact Studio process handed off without provable ownership; preserve all other Studio windows'
+          }
+          $ownedStudioIds = @([string]$studioProcess.Id)
+          $env:VIBE2_STUDIO_PROCESS_ID = [string]$studioProcess.Id
+          $env:VIBE2_STUDIO_PROCESS_IDS = $ownedStudioIds -join ','
+
+          $assistantReady = $false
+          for ($probe = 1; $probe -le 8; $probe++) {
+            $recentStudioLogs = @(Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\logs') -File -Filter '*.log' -ErrorAction SilentlyContinue |
+              Where-Object { $_.LastWriteTimeUtc -ge $exactPlaceStarted.AddSeconds(-2) } |
+              Sort-Object LastWriteTimeUtc -Descending |
+              Select-Object -First 4)
+            foreach ($logFile in $recentStudioLogs) {
+              if (Select-String -Path $logFile.FullName -Pattern 'AssistantVersion:|Running plugin sabuiltin_Assistant\.rbxm' -Quiet -ErrorAction SilentlyContinue) {
+                $assistantReady = $true
+                break
+              }
+            }
+            if ($assistantReady) { break }
+            Start-Sleep -Seconds 1
+          }
+          if ($assistantReady) {
+            Write-Host 'ROBLOX_STUDIO_MCP_EXACT_ASSISTANT_LOG_READY=YES'
+          } else {
+            Write-Host 'ROBLOX_STUDIO_MCP_EXACT_ASSISTANT_LOG_READY=UNKNOWN_CONTINUE_OFFICIAL_HANDSHAKE'
+          }
+          Write-Host 'ROBLOX_STUDIO_MCP_ASSISTANT_LOG_GATE=ADVISORY_ONLY'
+
+          "VIBE2_LOCAL_PLACE_FILE=$($places[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_STUDIO_PROCESS_ID=$($studioProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_STUDIO_PROCESS_IDS=$($ownedStudioIds -join ',')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_STUDIO_EXPECTED_NAME=$($places[0].BaseName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "ROBLOX_STUDIO_LOCAL_ARTIFACT_BIND=PASS:$hash"
+          Write-Host "ROBLOX_STUDIO_PROCESS_ID=$($studioProcess.Id)"
+          Write-Host "ROBLOX_STUDIO_MCP_OWNED_PROCESS_IDS=$($ownedStudioIds -join ',')"
+          Write-Host 'ROBLOX_STUDIO_MCP_SINGLE_EXACT_STUDIO=YES'
+          Start-Sleep -Seconds 3
+
+          $postLaunchDiag = Join-Path $env:RUNNER_TEMP 'roblox-studio-mcp-setting-post-launch.json'
+          $postLaunchArgs = @(
+            '--mode=diagnose-setting',
+            "--settings-root=$env:VIBE2_ROBLOX_STUDIO_MCP_SETTINGS_ROOT",
+            "--output=$postLaunchDiag"
+          )
+          & node 'main/tools/company-development-roblox-studio-local-play.mjs' @postLaunchArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Studio MCP post-launch read-only setting diagnostic failed' }
+          $postLaunch = Get-Content $postLaunchDiag -Raw | ConvertFrom-Json
+          Write-Host "ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_ENABLED=$([string]$postLaunch.state)"
+          Write-Host "ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_ENABLED_COUNT=$([int]$postLaunch.enabledCount)"
+          Write-Host "ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_DISABLED_COUNT=$([int]$postLaunch.disabledCount)"
+          Write-Host "ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_CANDIDATE_PATHS=$(@($postLaunch.candidatePaths) -join ',')"
+          "VIBE2_ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_ENABLED=$([string]$postLaunch.state)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_CANDIDATE_PATH_COUNT=$([int]$postLaunch.candidatePathCount)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_CANDIDATE_PATH_COUNT=$([int]$postLaunch.candidatePathCount)"
+          Write-Host 'ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_MUTATION=NO'
+
+      - name: Run actual local play through official Studio MCP
+        id: studio_play
+        if: steps.mcp_preflight.outputs.setting_blocked != 'true'
+        shell: powershell
+        continue-on-error: true
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $result = Join-Path $env:RUNNER_TEMP 'company-roblox-studio-mcp-runtime.json'
+          "VIBE2_STUDIO_RUNTIME_RESULT=$result" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $maxSessionAttempts = 3
+          $sessionCompleted = $false
+          $runtimeVerified = $false
+          $enablementRequired = $false
+          $toolProviderTimeoutObserved = $false
+          $studioAttachmentFailureObserved = $false
+          $productFailureObserved = $false
+          $productFailureSignature = ''
+
+          for ($attempt = 1; $attempt -le $maxSessionAttempts; $attempt++) {
+            if (Test-Path $result) { Remove-Item $result -Force -ErrorAction SilentlyContinue }
+            $mcpCommandForAttempt = $env:VIBE2_ROBLOX_STUDIO_MCP_COMMAND
+            if ($attempt -gt 1 -and $env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND) {
+              $mcpCommandForAttempt = $env:VIBE2_ROBLOX_STUDIO_MCP_FALLBACK_COMMAND
+              Write-Host "ROBLOX_STUDIO_MCP_TRANSPORT_FALLBACK=OFFICIAL_STUDIOMCP_EXE:attempt=$attempt"
+            }
+            Write-Host "ROBLOX_STUDIO_MCP_SESSION_ATTEMPT=$attempt/$maxSessionAttempts"
+            $runnerArgs = @(
+              '--mode=mcp-run',
+              "--control-revision=${{ inputs.control_revision || github.sha }}",
+              "--mcp-command=$mcpCommandForAttempt",
+              "--studio-name=$env:VIBE2_STUDIO_EXPECTED_NAME",
+              "--output=$result",
+              '--timeout=15000',
+              '--tool-attempts=5',
+              '--tool-delay-ms=1000',
+              "--setting-state=$env:VIBE2_ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_ENABLED",
+              "--setting-candidate-path-count=$env:VIBE2_ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_CANDIDATE_PATH_COUNT",
+              "--actual-play-contract=main/roblox-games/${{ matrix.gameId }}/launch-mvp.json",
+              "--audit-profile=${{ matrix.auditProfile || 'FAST_DEEP' }}"
+            )
+            & node 'main/tools/company-development-roblox-studio-local-play.mjs' @runnerArgs
+            if ($LASTEXITCODE -eq 0) {
+              $sessionCompleted = $true
+              $runtimeState = (& node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8').replace(/^\\uFEFF/,''));process.stdout.write(r?.runtimeVerified===true?'PASS':'FAIL')" $result).Trim()
+              if ($LASTEXITCODE -ne 0) { throw 'Studio MCP completed-session runtime evidence parse failed' }
+              $runtimeVerified = $runtimeState -eq 'PASS'
+              Write-Host "ROBLOX_STUDIO_MCP_SESSION_COMPLETED=YES:attempt=$attempt"
+              Write-Host "ROBLOX_STUDIO_MCP_RUNTIME_VERIFIED=$runtimeState"
+              break
+            }
+
+            if (Test-Path $result) {
+              Write-Host "ROBLOX_STUDIO_MCP_FAILURE_EVIDENCE_PRESERVED=$result"
+              $failureSignature = (& node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8').replace(/^\\uFEFF/,''));process.stdout.write(String(r?.errors?.[0]?.signature||''))" $result).Trim()
+              if ($LASTEXITCODE -ne 0) { throw 'Studio MCP failure evidence parse failed' }
+              $productFailureState = (& node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8').replace(/^\\uFEFF/,''));const q=Array.isArray(r?.qualityFailureKinds)?r.qualityFailureKinds.filter(Boolean):[];const e=Array.isArray(r?.errors)?r.errors:[];process.stdout.write(q.length>0||e.some(x=>/^studio-product-/i.test(String(x?.type||'')))?'PRODUCT':'NO')" $result).Trim()
+              if ($LASTEXITCODE -ne 0) { throw 'Studio MCP product failure evidence parse failed' }
+              if ($productFailureState -eq 'PRODUCT') {
+                $productFailureObserved = $true
+                $productFailureSignature = $failureSignature
+                Write-Host "ROBLOX_STUDIO_MCP_PRODUCT_FAILURE_PRESERVED=YES:attempt=$attempt:signature=$productFailureSignature"
+                break
+              }
+              $requiredToolsEmpty = ($failureSignature -match 'ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY') -and ($failureSignature -match 'available=:')
+              $mcpServerNotEnabled = $failureSignature -match 'stderrHint=MCP_SERVER_NOT_ENABLED'
+              $emptyAssistantSettingsAfterReady = $failureSignature -match 'settingHint=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY'
+              $toolProviderTimeout = $failureSignature -match 'stderrHint=STUDIO_TOOL_PROVIDER_TIMEOUT'
+              $studioAttachmentFailure = $failureSignature -match 'ROBLOX_STUDIO_MCP_NO_STUDIO_AFTER_ATTACH_WAIT'
+              if ($studioAttachmentFailure) {
+                $studioAttachmentFailureObserved = $true
+                Write-Host "ROBLOX_STUDIO_MCP_STUDIO_ATTACHMENT_PENDING=attempt=$attempt"
+              }
+              if ($requiredToolsEmpty -and $toolProviderTimeout) {
+                $toolProviderTimeoutObserved = $true
+                Write-Host "ROBLOX_STUDIO_MCP_TOOL_PROVIDER_TIMEOUT=attempt=$attempt"
+              }
+              if ($requiredToolsEmpty -and ($mcpServerNotEnabled -or $emptyAssistantSettingsAfterReady)) {
+                $enablementRequired = $true
+                Write-Host 'ROBLOX_STUDIO_MCP_PREREQUISITE=ENABLE_STUDIO_AS_MCP_SERVER_IN_ASSISTANT'
+                if ($emptyAssistantSettingsAfterReady) {
+                  Write-Host 'ROBLOX_STUDIO_MCP_PREREQUISITE_EVIDENCE=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY'
+                }
+                Write-Host 'ROBLOX_STUDIO_MCP_AUTOMATIC_SETTING_MUTATION=NO'
+                break
+              }
+            }
+            if ($attempt -ge $maxSessionAttempts) { break }
+
+            Write-Host "ROBLOX_STUDIO_MCP_SESSION_RESTART=$attempt"
+            $ownedIds = @(([string]$env:VIBE2_STUDIO_PROCESS_IDS).Split(',') | Where-Object { $_ -match '^[0-9]+$' } | Select-Object -Unique)
+            foreach ($ownedId in $ownedIds) {
+              Stop-Process -Id ([int]$ownedId) -Force -ErrorAction SilentlyContinue
+            }
+            Start-Sleep -Seconds 2
+            if (-not (Test-Path $env:VIBE2_LOCAL_PLACE_FILE)) { throw 'Exact local Place artifact disappeared before MCP recovery restart' }
+
+            $officialVersionsRoot = Join-Path $env:LOCALAPPDATA 'Roblox\Versions'
+            Write-Host "ROBLOX_STUDIO_MCP_RETRY_OTHER_PROCESS_PRESERVED=YES:attempt=$attempt"
+            Start-Sleep -Seconds 1
+
+            $retryExactStarted = [DateTime]::UtcNow
+            $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($env:VIBE2_LOCAL_PLACE_FILE) -PassThru
+            "VIBE2_STUDIO_PROCESS_ID=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "VIBE2_STUDIO_PROCESS_IDS=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            Write-Host "ROBLOX_STUDIO_MCP_RETRY_EXACT_PLACE_PROCESS_ID=$($placeLaunchProcess.Id):attempt=$attempt"
+            try {
+              if ($placeLaunchProcess.WaitForInputIdle(30000)) {
+                Write-Host "ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=YES:attempt=$attempt"
+              } else {
+                Write-Host "ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=TIMEOUT_CONTINUE_MCP_PROBE:attempt=$attempt"
+              }
+            } catch {
+              Write-Host "ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=UNAVAILABLE_CONTINUE_MCP_PROBE:attempt=$attempt"
+            }
+            Start-Sleep -Seconds 1
+
+            $ownedStudioProcesses = @()
+            for ($processProbe = 1; $processProbe -le 12; $processProbe++) {
+              $ownedStudioProcesses = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Where-Object { $_.StartTime.ToUniversalTime() -ge $retryExactStarted.AddSeconds(-2) -and $_.Id -eq $placeLaunchProcess.Id } | Sort-Object StartTime)
+              if ($ownedStudioProcesses.Count) { break }
+              Start-Sleep -Seconds 1
+            }
+            if (-not $ownedStudioProcesses.Count) {
+              Write-Host "ROBLOX_STUDIO_MCP_RETRY_PROCESS_NOT_READY=attempt=$attempt"
+              $env:VIBE2_STUDIO_PROCESS_ID = ''
+              $env:VIBE2_STUDIO_PROCESS_IDS = ''
+              continue
+            }
+            $studioProcess = $ownedStudioProcesses | Where-Object { $_.Id -eq $placeLaunchProcess.Id } | Select-Object -First 1
+            if (-not $studioProcess) {
+              throw 'Retry Studio process handed off without provable ownership; preserve other Studio windows'
+            }
+            $ownedStudioIds = @([string]$studioProcess.Id)
+            $env:VIBE2_STUDIO_PROCESS_ID = [string]$studioProcess.Id
+            $env:VIBE2_STUDIO_PROCESS_IDS = $ownedStudioIds -join ','
+            "VIBE2_STUDIO_PROCESS_ID=$($studioProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "VIBE2_STUDIO_PROCESS_IDS=$($ownedStudioIds -join ',')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+            $retryAssistantReady = $false
+            for ($probe = 1; $probe -le 8; $probe++) {
+              $recentStudioLogs = @(Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\logs') -File -Filter '*.log' -ErrorAction SilentlyContinue |
+                Where-Object { $_.LastWriteTimeUtc -ge $retryExactStarted.AddSeconds(-2) } |
+                Sort-Object LastWriteTimeUtc -Descending |
+                Select-Object -First 4)
+              foreach ($logFile in $recentStudioLogs) {
+                if (Select-String -Path $logFile.FullName -Pattern 'AssistantVersion:|Running plugin sabuiltin_Assistant\.rbxm' -Quiet -ErrorAction SilentlyContinue) {
+                  $retryAssistantReady = $true
+                  break
+                }
+              }
+              if ($retryAssistantReady) { break }
+              Start-Sleep -Seconds 1
+            }
+            if ($retryAssistantReady) {
+              Write-Host "ROBLOX_STUDIO_MCP_RETRY_EXACT_ASSISTANT_LOG_READY=YES:attempt=$attempt"
+            } else {
+              Write-Host "ROBLOX_STUDIO_MCP_RETRY_EXACT_ASSISTANT_LOG_READY=UNKNOWN_CONTINUE_OFFICIAL_HANDSHAKE:attempt=$attempt"
+            }
+            Write-Host "ROBLOX_STUDIO_MCP_RETRY_ASSISTANT_LOG_GATE=ADVISORY_ONLY:attempt=$attempt"
+            Write-Host "ROBLOX_STUDIO_MCP_STUDIO_RELAUNCHED=$($studioProcess.Id)"
+            Write-Host "ROBLOX_STUDIO_MCP_RETRY_OWNED_PROCESS_IDS=$($ownedStudioIds -join ','):attempt=$attempt"
+            Write-Host 'ROBLOX_STUDIO_MCP_RETRY_SINGLE_EXACT_STUDIO=YES'
+
+            $retryDiag = Join-Path $env:RUNNER_TEMP "roblox-studio-mcp-setting-retry-$attempt.json"
+            $retryDiagArgs = @(
+              '--mode=diagnose-setting',
+              "--settings-root=$env:VIBE2_ROBLOX_STUDIO_MCP_SETTINGS_ROOT",
+              "--output=$retryDiag"
+            )
+            & node 'main/tools/company-development-roblox-studio-local-play.mjs' @retryDiagArgs
+            if ($LASTEXITCODE -ne 0) { throw 'Studio MCP retry read-only setting diagnostic failed' }
+            $retrySetting = Get-Content $retryDiag -Raw | ConvertFrom-Json
+            Write-Host "ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED=$([string]$retrySetting.state):attempt=$attempt"
+            Write-Host "ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED_COUNT=$([int]$retrySetting.enabledCount):attempt=$attempt"
+            Write-Host 'ROBLOX_STUDIO_MCP_RETRY_SETTING_MUTATION=NO'
+            Start-Sleep -Seconds 3
+          }
+
+          if (-not $sessionCompleted) {
+            Write-Host "ROBLOX_STUDIO_MCP_SETTING_DIAGNOSTIC=$env:VIBE2_ROBLOX_STUDIO_MCP_SETTING_ENABLED"
+            if ($toolProviderTimeoutObserved -or $studioAttachmentFailureObserved) {
+              $studioLogsRoot = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
+              $latestStudioLog = Get-ChildItem $studioLogsRoot -File -Filter '*.log' -ErrorAction SilentlyContinue |
+                Sort-Object LastWriteTime -Descending |
+                Select-Object -First 1
+              if ($latestStudioLog) {
+                $diagnosticLines = @(Get-Content $latestStudioLog.FullName -Tail 5000 -ErrorAction SilentlyContinue |
+                  Select-String -Pattern 'MCP|Assistant|StudioMCP|tool provider|RBX_STUDIO_NS|named pipe|connection|connected client' |
+                  Select-Object -Last 60)
+                Write-Host "ROBLOX_STUDIO_MCP_STUDIO_LOG_MATCH_COUNT=$($diagnosticLines.Count)"
+                foreach ($match in $diagnosticLines) {
+                  $safeLine = [string]$match.Line
+                  if ($env:USERPROFILE) { $safeLine = $safeLine.Replace($env:USERPROFILE,'%USERPROFILE%') }
+                  if ($safeLine.Length -gt 700) { $safeLine = $safeLine.Substring(0,700) }
+                  Write-Host "ROBLOX_STUDIO_MCP_STUDIO_LOG=$safeLine"
+                }
+              } else {
+                Write-Host 'ROBLOX_STUDIO_MCP_STUDIO_LOG=NOT_FOUND'
+              }
+            }
+            if ($productFailureObserved) {
+              throw "official Roblox Studio product failure preserved for repair: $productFailureSignature"
+            }
+            if ($enablementRequired) {
+              throw 'official Roblox Studio MCP tools unavailable; enable Studio as MCP server in Assistant'
+            }
+            if ($toolProviderTimeoutObserved) {
+              throw 'official Roblox Studio MCP tool provider timed out after 3 clean Studio sessions'
+            }
+            if ($studioAttachmentFailureObserved) {
+              throw 'official Roblox Studio MCP client connected but Studio instance registration remained empty after 3 exact Studio sessions'
+            }
+            throw 'official Roblox Studio MCP play failed after 3 official restart sessions'
+          }
+          if ($runtimeVerified) {
+            Write-Host 'ROBLOX_STUDIO_MCP_ACTUAL_PLAY=PASS'
+          } else {
+            Write-Host 'ROBLOX_STUDIO_MCP_ACTUAL_PLAY=RUNTIME_FAIL'
+            Write-Host 'ROBLOX_STUDIO_MCP_RUNTIME_FAILURE_RETRY=SKIPPED_SESSION_HEALTHY'
+          }
+
+      - name: Finalize Studio session after final capture
+        if: always()
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Continue'
+          Write-Host 'ROBLOX_STUDIO_POST_CAPTURE_FINALIZE=AUTOMATED'
+          Write-Host 'ROBLOX_STUDIO_MANUAL_SAVE_REQUIRED=NO'
+          Write-Host 'ROBLOX_STUDIO_PLAYTEST_SOURCE_MUTATION_PERSIST=NO'
+          Write-Host 'ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES'
+
+      - name: Persist exact Studio MCP play evidence
+        id: persist
+        if: always()
+        shell: powershell
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          ARTIFACT_IDENTITY: ${{ matrix.artifactIdentity }}
+          ARTIFACT_RUN_ID: ${{ matrix.artifactRunId }}
+          UNIVERSE_ID: ${{ matrix.universeId }}
+          PLACE_ID: ${{ matrix.placeId }}
+          VERSION_NUMBER: ${{ matrix.versionNumber }}
+          STUDIO_STEP_SUCCEEDED: ${{ steps.studio_play.outcome == 'success' }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not $env:VIBE2_STUDIO_RUNTIME_RESULT -or -not (Test-Path $env:VIBE2_STUDIO_RUNTIME_RESULT)) {
+            Write-Host 'ROBLOX_STUDIO_MCP_EVIDENCE_PERSIST=SKIPPED_NO_MCP_RUNTIME_EVIDENCE'
+            Write-Host 'ROBLOX_STUDIO_MCP_EXISTING_EVIDENCE_PRESERVED=YES'
+            exit 0
+          }
+
+          if ('${{ inputs.candidate_context }}' -eq '') {
+            git -C runtime fetch --no-tags origin company-runtime
+            if ($LASTEXITCODE -ne 0) { throw 'company-runtime refresh failed' }
+            git -C runtime reset --hard origin/company-runtime
+            if ($LASTEXITCODE -ne 0) { throw 'company-runtime reset failed' }
+          }
+
+          $persistArgs = @(
+            '--mode=persist',
+            '--queue=runtime/development-queue.json',
+            "--runtime=$env:VIBE2_STUDIO_RUNTIME_RESULT",
+            "--game-id=$env:GAME_ID",
+            "--source-revision=$env:SOURCE_REVISION",
+            "--artifact-identity=$env:ARTIFACT_IDENTITY",
+            "--artifact-run-id=$env:ARTIFACT_RUN_ID",
+            "--universe-id=$env:UNIVERSE_ID",
+            "--place-id=$env:PLACE_ID",
+            "--version-number=$env:VERSION_NUMBER",
+            "--workflow-run-id=${{ github.run_id }}",
+            "--studio-step-succeeded=$env:STUDIO_STEP_SUCCEEDED"
+          )
+          & node 'main/tools/company-development-roblox-studio-local-play.mjs' @persistArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Studio MCP play evidence validation failed' }
+
+          if ('${{ inputs.candidate_context }}' -ne '') {
+            New-Item -ItemType Directory -Force -Path candidate-result | Out-Null
+            Copy-Item runtime/development-queue.json candidate-result/development-queue.json
+            Copy-Item $env:VIBE2_STUDIO_RUNTIME_RESULT candidate-result/studio-runtime.json
+            Write-Host 'ROBLOX_CANDIDATE_STUDIO_CANONICAL_WRITE=NO'
+            exit 0
+          }
+
+          git -C runtime config user.name 'jaewoon-roblox-studio-mcp'
+          git -C runtime config user.email 'actions@users.noreply.github.com'
+          $pushed = $false
+          for ($attempt=1; $attempt -le 5; $attempt++) {
+            git -C runtime add development-queue.json
+            git -C runtime diff --cached --check
+            if ($LASTEXITCODE -ne 0) { throw 'runtime evidence diff check failed' }
+
+            git -C runtime diff --cached --quiet
+            if ($LASTEXITCODE -eq 0) {
+              Write-Host "ROBLOX_STUDIO_MCP_RUNTIME_STATE_CHANGE=NO_OR_ALREADY_CONVERGED:attempt=$attempt"
+              $pushed = $true
+              break
+            }
+
+            git -C runtime commit -m 'runtime: persist official Studio MCP actual play [skip ci]'
+            if ($LASTEXITCODE -ne 0) { throw 'runtime evidence commit failed' }
+            git -C runtime push origin HEAD:company-runtime
+            if ($LASTEXITCODE -eq 0) {
+              Write-Host "ROBLOX_STUDIO_MCP_RUNTIME_PUSH=PASS:attempt=$attempt"
+              $pushed = $true
+              break
+            }
+
+            Write-Host "ROBLOX_STUDIO_MCP_RUNTIME_PUSH_CONFLICT=REAPPLY_LATEST:attempt=$attempt"
+            git -C runtime fetch --no-tags origin company-runtime
+            if ($LASTEXITCODE -ne 0) { throw 'runtime refresh after push conflict failed' }
+            git -C runtime reset --hard origin/company-runtime
+            if ($LASTEXITCODE -ne 0) { throw 'runtime reset after push conflict failed' }
+
+            & node 'main/tools/company-development-roblox-studio-local-play.mjs' @persistArgs
+            if ($LASTEXITCODE -ne 0) { throw 'Studio MCP evidence reapply on latest runtime failed' }
+            Start-Sleep -Seconds ($attempt * 2)
+          }
+          if (-not $pushed) { throw 'runtime evidence push failed after latest-state reapply retries' }
+
+          $state = (& node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));const row=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);if(!row){console.error('ROBLOX_STUDIO_MCP_QUEUE_ITEM_MISSING:'+process.env.GAME_ID);process.exit(2)}const e=row.robloxInternalVibePlayEvidence||{};if(e.pass===true){process.stdout.write('PASS')}else if(e.infrastructureFailure===true){process.stdout.write('INFRA')}else{process.stdout.write('FAIL')}" ).Trim()
+          if ($LASTEXITCODE -eq 2) { throw "ROBLOX_STUDIO_MCP_QUEUE_ITEM_MISSING:$env:GAME_ID" }
+          if ($LASTEXITCODE -ne 0) { throw 'Studio MCP persisted-state verification failed' }
+          if ($state -eq 'PASS') {
+            Write-Host "ROBLOX_STUDIO_MCP_PLAY_PASS=$env:GAME_ID"
+          } elseif ($state -eq 'INFRA') {
+            Write-Host "ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING=$env:GAME_ID"
+          } else {
+            throw "ROBLOX_STUDIO_MCP_PLAY_FAILED:$env:GAME_ID"
+          }
+
+      - name: Upload isolated candidate Studio evidence
+        if: always() && inputs.candidate_context != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-candidate-studio-${{ matrix.gameId }}
+          path: candidate-result
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Close owned Studio after evidence persistence
+        if: always()
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $ownedIds = @(([string]$env:VIBE2_STUDIO_PROCESS_IDS).Split(',') | Where-Object { $_ -match '^[0-9]+$' } | Select-Object -Unique)
+          if (-not $ownedIds.Count -and $env:VIBE2_STUDIO_PROCESS_ID -match '^[0-9]+$') {
+            $ownedIds = @([string]$env:VIBE2_STUDIO_PROCESS_ID)
+          }
+          foreach ($ownedId in $ownedIds) {
+            $ownedStudio = Get-Process -Id ([int]$ownedId) -ErrorAction SilentlyContinue
+            if ($ownedStudio) {
+              Stop-Process -Id ([int]$ownedId) -Force -ErrorAction SilentlyContinue
+              Write-Host "ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES:process=$ownedId"
+            } else {
+              Write-Host "ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=ALREADY_CLOSED:process=$ownedId"
+            }
+          }
+
+      - name: Refill existing 24H development loop after verified play
+        if: inputs.candidate_context == '' && steps.studio_play.outcome == 'success' && steps.persist.outcome == 'success'
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.gameId }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $headers = @{
+            Accept = 'application/vnd.github+json'
+            Authorization = "Bearer $env:GH_TOKEN"
+            'X-GitHub-Api-Version' = '2022-11-28'
+          }
+          $body = @{
+            event_type = 'vibe2-fanin-refill'
+            client_payload = @{
+              source_run = "${{ github.run_id }}"
+              source_attempt = "${{ github.run_attempt }}"
+              source_task = "$env:GAME_ID"
+              source_outcome = 'VERIFIED'
+              reason = 'roblox-official-studio-mcp-actual-play'
+            }
+          } | ConvertTo-Json -Depth 5
+          Invoke-RestMethod -Method Post -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/dispatches" -Headers $headers -Body $body -ContentType 'application/json'
+          Write-Host "ROBLOX_STUDIO_MCP_VIBE_REFILL_DISPATCHED=$env:GAME_ID"
+

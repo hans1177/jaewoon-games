@@ -1,0 +1,353 @@
+{
+  "version": 6,
+  "authority": "ASSISTANT_VIBE_COAUTHORING_TRACE",
+  "status": "ACTIVE",
+  "recordedAt": "2026-09-26",
+  "purpose": "Record every assistant-led Vibe Web coauthoring decision, source change, review, QA result, bottleneck repair, and production lesson as traceable learning evidence without bypassing the existing verified experience and canonical training gates.",
+  "policy": {
+    "everyAssistantCoauthoringActionMustBeRecorded": true,
+    "requiredActionTypes": [
+      "SOURCE_REVIEW",
+      "DESIGN_TO_SOURCE_GAP_ANALYSIS",
+      "SOURCE_CHANGE",
+      "PIPELINE_BOTTLENECK_REPAIR",
+      "QA_OR_REGRESSION_RESULT",
+      "SUPERVISOR_PASS_REVISE_DROP",
+      "RELEASE_OR_PROMOTION_DECISION"
+    ],
+    "minimumFields": [
+      "id",
+      "date",
+      "gameId",
+      "actionType",
+      "problem",
+      "decision",
+      "change",
+      "evidence",
+      "learningState"
+    ],
+    "rawTraceAuthority": "PROVENANCE_ONLY",
+    "rawTraceMayAutoPromote": false,
+    "verifiedPositivePromotion": "EXISTING_SUPERVISION_REVIEW_TO_VIBE_EXPERIENCE_MEMORY_ONLY",
+    "verifiedNegativePromotion": "EXISTING_SUPERVISION_REVIEW_TO_VIBE_EXPERIENCE_MEMORY_ONLY",
+    "experienceStore": ".vibe2/experience.json",
+    "canonicalTrainingPipeline": "company-learning/canonical-learning-pipeline.json",
+    "positiveLearningRequiresVerifiedPass": true,
+    "negativeLearningRequiresVerifiedFailureCause": true,
+    "candidateGenerationAloneIsNotLearning": true,
+    "qaGateWeakeningForbidden": true,
+    "authorityExpansionForbidden": true,
+    "protectedGameplayMutationRequiresOwnerAuthorization": true,
+    "documentationSelfReferenceRule": "TRACE_MAINTENANCE_AND_POLICY_SYNC_MAY_BE_SUMMARIZED_ONCE_PER_WORK_SESSION_TO_AVOID_INFINITE_SELF_LOGGING"
+  },
+  "reusableFields": {
+    "reusablePatterns": "Patterns verified safe and useful for future same-game/same-engine retrieval.",
+    "avoidPatterns": "Patterns verified harmful, fake, no-op, corrupting, or regression-prone.",
+    "qa": "Exact QA, regression, fan-in, runtime, or source-backed checks.",
+    "evidence": "Commit SHA, PR, run ID, candidate identity, file path, or verified source finding.",
+    "learningState": [
+      "TRACE_ONLY",
+      "VERIFIED_NEGATIVE_READY_FOR_EXPERIENCE",
+      "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE",
+      "PROMOTED_TO_EXPERIENCE"
+    ]
+  },
+  "records": [
+    {
+      "id": "assistant_source_generation_recovery_20260920",
+      "date": "2026-09-20",
+      "gameId": "MULTI_GAME_WEB",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "SOURCE_CANDIDATE_GENERATION was the dominant bottleneck; prior baseline candidate success rate was 25 percent with repeated TIMEOUT and EDIT_MATCH failures.",
+      "decision": "Preserve responsibility-selected first attempt, use causal worker-owned replace-only recovery after TIMEOUT/EDIT_MATCH, remove duplicate reserve full regression, and verify on a clean parallel wave.",
+      "change": "Source generation recovery path, telemetry, reserve QA policy, and regression alignment were repaired without lowering QA or full-Web size gates.",
+      "evidence": [
+        "run:35476177742",
+        "observed-success-rate:80-percent",
+        "parallel-peak:20",
+        "cache-hit-rate:100-percent",
+        "source-generation-final-failures:MALFORMED_OUTPUT:4",
+        "fan-in:PASS",
+        "regression:PASS",
+        "commit:8de42ed22bead6feae8ffee915968b2264d15fd7",
+        "commit:cd1274152c27d5e858cbfbc674322ae73217b378"
+      ],
+      "reusablePatterns": [
+        "KEEP_FIRST_ATTEMPT_TARGET_SELECTION_CAUSAL",
+        "ESCALATE_TIMEOUT_OR_EDIT_MATCH_TO_WORKER_PINNED_REPLACE_ONLY",
+        "DO_NOT_DUPLICATE_FULL_REGRESSION_BEFORE_RESERVE",
+        "MEASURE_EFFECTIVENESS_ON_CLEAN_PARALLEL_WAVE"
+      ],
+      "avoidPatterns": [
+        "FORCING_UNRELATED_GENERIC_ANCHOR_ON_FIRST_ATTEMPT",
+        "USING_STALE_RUNS_TO_CLAIM_NEW_CODE_EFFECTIVENESS",
+        "DUPLICATE_EXPENSIVE_REGRESSION_BEFORE_WORKER_RESERVE"
+      ],
+      "qa": [
+        "Vibe2 Core QA run 35476535607 PASS",
+        "fan-in regression PASS in run 35476177742"
+      ],
+      "learningState": "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE"
+    },
+    {
+      "id": "assistant_focused_first_edit_early_stop_20260920",
+      "date": "2026-09-20",
+      "gameId": "MULTI_GAME_WEB",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "Most passing focused Web repair candidates still spent the full 240 second first-generation window before causal recovery, causing long package cycles.",
+      "decision": "Keep the timeout budget and model-owned target choice, but end streaming as soon as the first complete exact edit object is available.",
+      "change": "Added focused first-complete-edit early stop, telemetry, regression coverage, and placeholder rejection.",
+      "evidence": [
+        "source-commit:9e07112fb9a49bad49328981a00a01d8eaddf845",
+        "test-commit:179d4de63a0759c864db39d3099c20ecbae2ae80",
+        "telemetry-commit:72e35fb9ff24d4e91f7bd1a72e813d22f932a7e1",
+        "test-alignment-commit:a066a13071bbefbc195edcde6e2b39c834330ddd",
+        "placeholder-guard-commit:e2f44a6d9340e9626f35e4a1de55b9cce180f8e1",
+        "qa-run:35476535607:PASS"
+      ],
+      "reusablePatterns": [
+        "EARLY_STOP_ONLY_AFTER_COMPLETE_PARSEABLE_EDIT",
+        "PRESERVE_MODEL_TARGET_SELECTION_ON_FIRST_ATTEMPT",
+        "REJECT_PLACEHOLDER_REPLACEMENT_SOURCE"
+      ],
+      "avoidPatterns": [
+        "SHORTENING_TIMEOUT_WITHOUT_MEASUREMENT",
+        "TREATING_PARTIAL_OR_PLACEHOLDER_TEXT_AS_SOURCE"
+      ],
+      "qa": [
+        "focused first-edit regression coverage",
+        "placeholder rejection regression coverage",
+        "Vibe2 Core QA PASS"
+      ],
+      "learningState": "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE"
+    },
+    {
+      "id": "assistant_bug_defense_supervisor_revise_20260920",
+      "date": "2026-09-20",
+      "gameId": "bug-defense",
+      "actionType": "SUPERVISOR_PASS_REVISE_DROP",
+      "problem": "The generated candidate source was identical to main and remained a validation harness rather than a playable insect defense game.",
+      "decision": "REVISE",
+      "change": "Rejected automatic promotion and requeued the same game under supervised Vibe coauthoring.",
+      "evidence": [
+        "candidate:b90fe9c4045635244c320698b90ba869af72b947",
+        "main-source-blob:9716ae95462eb60c1706bfce059a70f0d08531f0",
+        "candidate-source-blob:9716ae95462eb60c1706bfce059a70f0d08531f0",
+        "experience-id:supervised_bug-defense_35476177742_revise",
+        "roadmap-commit:eb853f4f8e5301165958c378559eae2fa524551e"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "VALIDATION_HARNESS_AS_GAMEPLAY",
+        "UNCHANGED_SOURCE_CANDIDATE_PROMOTION",
+        "BUTTON_ONLY_SCOPE_COVERAGE",
+        "NO_SPATIAL_ENEMY_LOOP",
+        "NO_REACHABLE_WIN_OR_LOSS",
+        "DUPLICATE_EVENT_HANDLER_IMPLEMENTATION"
+      ],
+      "qa": [
+        "source blob identity comparison",
+        "design-to-source gap review"
+      ],
+      "learningState": "PROMOTED_TO_EXPERIENCE"
+    },
+    {
+      "id": "assistant_bug_defense_playable_candidate_v1_20260920",
+      "date": "2026-09-20",
+      "gameId": "bug-defense",
+      "actionType": "SOURCE_CHANGE",
+      "problem": "Approved strict design required real wave preview, spatial placement, habitat adaptation, ecological counters, economy/evolution, enemy movement, status effects, win/loss, retry, persistence, and mobile one-hand play; main source had none of these as real gameplay.",
+      "decision": "Continue isolated supervised repair; runtime PASS is not yet verified.",
+      "change": "Candidate advanced through exact runtime-driven repairs: approved route analysis now exposes spatial route input, runtime randomness was removed for deterministic replay, and hidden retry UI was disabled outside terminal state so the canonical validator can continue the real gameplay loop. A separate validator fix correctly classifies bug-defense as tower defense instead of requiring fake avatar movement.",
+      "evidence": [
+        "branch:assistant/supervised-bug-defense-v1",
+        "draft-pr:1743",
+        "candidate-commit:098135434c96e6396b7f20be52763789cc6b3531",
+        "candidate-prior-commit:0755547e740bd22e91f080682ebfa8b5d1c428cd",
+        "validator-fix-branch:assistant/bug-defense-validator-fix-v1",
+        "validator-fix-pr:1758",
+        "validator-fix-commit:b56efabce27f9dd0c2e0e089ab1f89317b0b2c48",
+        "runtime-v1:35478451968:FAIL",
+        "runtime-v1-blocker:BUG_DEFENSE_AVATAR_MOVEMENT_MISCLASSIFICATION_AND_SCOPE_SPATIAL_INPUT",
+        "runtime-v2:35478752746:FAIL",
+        "runtime-v2-primary-blocker:COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED",
+        "runtime-v2-preplatform:PASS",
+        "runtime-v2-save-restore:PASS",
+        "runtime-v3:35479492190:IN_PROGRESS",
+        "roadmap-sync-commit:eeacff66134acdd8efcb654af6f3d64b55ed2e50"
+      ],
+      "reusablePatterns": [
+        "ISOLATED_SUPERVISED_BRANCH_BEFORE_MAIN_PROMOTION",
+        "DESIGN_TRACEABILITY_TO_REAL_RUNTIME_MECHANICS",
+        "FIX_VALIDATOR_RESPONSIBILITY_IN_VALIDATOR_NOT_WITH_FAKE_GAMEPLAY",
+        "USE_RUNTIME_BLOCKERS_TO_DRIVE_DIRECT_RESPONSIBLE_FUNCTION_REPAIR"
+      ],
+      "avoidPatterns": [
+        "DIRECT_MAIN_PROMOTION_BEFORE_RUNTIME_QA",
+        "CLAIMING_PLAYABILITY_FROM_STATIC_SOURCE_CHECKS_ONLY",
+        "ADDING_FAKE_AVATAR_MOVEMENT_TO_SATISFY_MISCLASSIFIED_TOWER_DEFENSE_VALIDATION",
+        "TREATING_GENERAL_CI_GREEN_AS_SUPERVISOR_PASS"
+      ],
+      "qa": [
+        "Vibe QA latest candidate PASS: run 35478799283",
+        "Vibe3 Engine Contract latest candidate PASS: run 35478799222",
+        "Security Immune System latest candidate PASS: run 35478799169",
+        "Integrated Regression latest candidate PASS: run 35478799263",
+        "Company Evolution QA latest candidate FAIL: run 35478799287",
+        "Canonical runtime v1 FAIL: run 35478451968",
+        "Canonical runtime v2 FAIL with only COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED remaining: run 35478752746",
+        "Canonical runtime v3 IN_PROGRESS: run 35479492190",
+        "Supervisor final decision PENDING"
+      ],
+      "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_coauthoring_trace_contract_20260920",
+      "date": "2026-09-20",
+      "gameId": "SYSTEM",
+      "actionType": "RELEASE_OR_PROMOTION_DECISION",
+      "problem": "Assistant-led coauthoring work could be lost as ephemeral chat context unless every review, source change, QA result, and decision is persisted in a learnable evidence contract.",
+      "decision": "Require a same-session coauthoring trace for every assistant action category and bind verified outcomes to the existing Vibe Experience Memory and canonical training pipeline only.",
+      "change": "Added the assistant coauthoring trace store, central roadmap contract, and Vibe learning motor binding. Raw trace is provenance only; verified PASS/REVISE/DROP is required before reusable learning.",
+      "evidence": [
+        "trace-store-commit:9f59d01e09ed9ad8e67aec5cb0565b679e0605ec",
+        "roadmap-v161-commit:251cb67ee064ab8fd9a1d4b6813e4e5801e0af44",
+        "learning-motor-v4-commit:519315bf9ea0321212e8d7b4917df8127d0e50cd"
+      ],
+      "reusablePatterns": [
+        "DOCUMENT_ASSISTANT_ACTIONS_IN_SAME_WORK_SESSION",
+        "PROMOTE_ONLY_VERIFIED_SUPERVISION_OUTCOMES",
+        "REUSE_EXISTING_EXPERIENCE_AND_CANONICAL_TRAINING_PIPELINE"
+      ],
+      "avoidPatterns": [
+        "EPHEMERAL_CHAT_ONLY_LEARNING",
+        "RAW_TRACE_DIRECT_RETRIEVAL",
+        "SHADOW_LEARNING_PIPELINE",
+        "UNVERIFIED_ACTION_AS_POSITIVE_MASTERY"
+      ],
+      "qa": [
+        "policy paths and promotion gates are explicit",
+        "raw trace authority remains provenance-only"
+      ],
+      "learningState": "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE"
+    },
+    {
+      "id": "assistant_central_vibe_document_sync_20260926",
+      "date": "2026-09-26",
+      "gameId": "SYSTEM",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "The non-authoritative AI execution guide and next-session handoff had drifted from the current central Vibe policy: legacy WEB_FIRST semantics remained, the handoff referenced stale main/workflow context, and the canonical four-document shared-context order was not explicit in the guide.",
+      "decision": "Keep platform-release-roadmap.json as the only policy authority. Synchronize the non-authoritative guide, its QA contract, and the durable handoff to the current roadmap/log/architecture/security context without adding execution authority or changing gameplay/release gates.",
+      "change": "Bound the guide to roadmap -> log map -> architecture map -> security load order; redefined legacy webFirst as a deprecated compatibility alias for the Unity Web development floor; bound UPPER_PLATFORM_DEVELOPMENT_READY to concurrent Roblox and Unity development; refreshed the handoff snapshot and current bottleneck context.",
+      "evidence": [
+        "roadmap:v414:1ac083288aa5839fbb769d17bd1cd2abbdd4b4f9",
+        "log-map:v89:58b8cadb3b22d9c35e7cc52ac3c537ee4fd6a267",
+        "architecture:v223:fa9dc1cba8b09dc318e0b457dc69cf4c33546961",
+        "security:v59:03ff2774f8f6e231864935cc547124baad7b42de",
+        "directive-sync-commit:56d93004ad48712600faefbdfcc88d5195a75ead",
+        "directive-qa-commit:30b31877ce6078bbea764d6a567c3d96923f7e33",
+        "handoff-sync-commit:35bf11f6a9bb1d574190e3a5f218ecaa5b98c2cd"
+      ],
+      "reusablePatterns": [
+        "ROADMAP_FIRST_FAIL_CLOSED",
+        "KEEP_NON_AUTHORITATIVE_GUIDES_AS_REFERENCES_NOT_POLICY",
+        "CANONICAL_FOUR_DOCUMENT_LOAD_ORDER_BEFORE_AND_AFTER_WORK",
+        "PRESERVE_COMPATIBILITY_KEYS_WHILE_REBINDING_THEIR_MEANING_TO_CURRENT_CANONICAL_POLICY",
+        "REFRESH_HANDOFF_LIVE_CONTEXT_INSTEAD_OF_TREATING_OLD_WORKFLOW_SNAPSHOTS_AS_CURRENT"
+      ],
+      "avoidPatterns": [
+        "LEGACY_WEB_FIRST_AS_INDEPENDENT_WEB_GAME_POLICY",
+        "STALE_HANDOFF_HEAD_AS_CURRENT_STATE",
+        "MANUAL_POLICY_SEMANTIC_DUPLICATION_IN_NON_AUTHORITATIVE_DOCS",
+        "RUNTIME_STATE_CREATING_POLICY"
+      ],
+      "qa": [
+        "all modified JSON documents reparsed successfully from main",
+        "directive requiredReads first four exactly match architecture.sharedContextLoadOrder",
+        "directive sharedContext load order exactly matches architecture.sharedContextLoadOrder",
+        "directive QA now asserts Unity Web floor and concurrent Roblox/Unity upper-platform semantics"
+      ],
+      "learningState": "TRACE_ONLY"
+    },
+    {
+      "id": "assistant_roblox_stale_reconcile_asset_binding_repair_20260926",
+      "date": "2026-09-26",
+      "gameId": "MULTI_GAME_ROBLOX",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "Roblox Studio MCP itself had recent verified successful connections, but current Roblox development was blocked earlier. A 16-game source reconciliation detected ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED, then main advanced before persistence and every reconciliation result was discarded by full-main-SHA stale comparison, yielding zero source targets and preventing asset rebind from reaching later Studio MCP runtime.",
+      "decision": "Preserve official Studio MCP and all native QA/release gates. Repair only the existing Roblox source reconciliation path: requeue stale reconciliation and bind freshness to the exact per-game Roblox source-tree identity so unrelated main commits do not invalidate valid game-source work.",
+      "change": "Added stale reconciliation redispatch, exact game_id preservation on redispatch, per-game sourceTreeSha in reconciliation evidence, pre-worker live source-tree verification, and persistence comparison against origin/main:<game-source-path> with full-main-SHA fallback only when no source-tree identity exists.",
+      "evidence": [
+        "live-run:36237552295:ROBLOX_SOURCE_RECONCILIATION_FAIL=16",
+        "live-run:36237552295:ROBLOX_SOURCE_TARGET_COUNT=0",
+        "live-run:36237552295:ROBLOX_SOURCE_RECONCILIATION_STALE_IGNORED_16",
+        "company-runtime:cozy-island:official-studio-mcp-connected=PASS",
+        "company-runtime:horror-escape-room:official-studio-mcp-connected=PASS_RUNTIME_ERROR_DOWNSTREAM",
+        "commit:01cd59d0ef40efc730016701bcb38377b90a9159",
+        "commit:410c7599b1bf657027eddbf12a7574644b35bbf7",
+        "commit:add3b8bb522a5981997938e7f28f5c176202178a",
+        "commit:bcdbaab42312d6f92504b13911f74a46bc248174",
+        "commit:c8c299aeb5442c8a2ff546a34a178ae773d5843d",
+        "qa:Company Evolution QA:36237983849:PASS",
+        "qa:Vibe3 Engine Contract:36237983894:PASS",
+        "qa:Vibe QA:36237983884:PASS",
+        "live-verification:ROBLOX_RUNTIME_QUEUED_RUN_36238035097"
+      ],
+      "reusablePatterns": [
+        "USE_EXACT_GAME_SOURCE_TREE_IDENTITY_FOR_SOURCE_FRESHNESS",
+        "UNRELATED_MAIN_COMMIT_MUST_NOT_INVALIDATE_UNCHANGED_GAME_SOURCE",
+        "REQUEUE_EXACT_STAGE_WHEN_GAME_SOURCE_TREE_ACTUALLY_CHANGES",
+        "PRESERVE_EXACT_GAME_ID_ON_RECOVERY_REDISPATCH",
+        "DISTINGUISH_STUDIO_MCP_INFRASTRUCTURE_FROM_PRE_MCP_SOURCE_PIPELINE_BLOCKERS"
+      ],
+      "avoidPatterns": [
+        "FULL_MAIN_SHA_AS_GAME_SOURCE_STALE_SIGNAL",
+        "SILENT_STALE_RESULT_DROP_WITHOUT_REDISPATCH",
+        "MISCLASSIFYING_PRE_MCP_SOURCE_BLOCKER_AS_MCP_FAILURE",
+        "WEAKENING_STUDIO_MCP_OR_NATIVE_RUNTIME_GATES_TO_HIDE_PIPELINE_DELAY"
+      ],
+      "qa": [
+        "company-development-roblox-runtime stale redispatch regression PASS",
+        "source-tree reconciliation regression PASS",
+        "Company Evolution QA PASS",
+        "Vibe3 Engine Contract PASS",
+        "Vibe QA PASS"
+      ],
+      "learningState": "VERIFIED_POSITIVE_READY_FOR_EXPERIENCE",
+      "liveState": "CODE_AND_QA_VERIFIED_LIVE_ROBLOX_RUNTIME_PENDING"
+    },
+    {
+      "id": "assistant_roblox_stale_candidate_asset_rebind_unblock_20260926",
+      "date": "2026-09-26",
+      "gameId": "MULTI_GAME_ROBLOX",
+      "actionType": "PIPELINE_CAUSAL_REPAIR",
+      "problem": "Sixteen DEVELOPMENT_CONFIRMED Roblox games had current Studio asset-binding refresh debt, but older source candidate branch pointers from earlier runs were still marked ready. The source planner checked candidateReady before current repair debt and skipped every game, producing ROBLOX_SOURCE_TARGET_COUNT=0 despite sixteen reconciliation failures.",
+      "rootCause": "STALE_SOURCE_CANDIDATE_STATE_OUTRANKED_NEWER_CAUSAL_SOURCE_REPAIR",
+      "repair": [
+        "Moved current reconciliation and repair-debt classification ahead of candidateReady suppression.",
+        "Added repairSupersedesCandidate so Studio asset rebind or known source repair debt bypasses stale candidate state.",
+        "Cleared sixteen demonstrably stale runtime candidate pointers whose candidateReadyAt preceded the newer asset-binding failure timestamp.",
+        "Removed dedicated QA-only runtime/source-reconcile test files from full Roblox Runtime push triggers while preserving their Vibe3/Vibe QA coverage."
+      ],
+      "evidence": [
+        "company-runtime:development-queue:16 stale candidates cleared at runtime commit 58784d24ef3cc17849fec13d69cd1c00b37ed5a6",
+        "main:fix b688c86bf0da7f2540038c8bb7bbce9d83db9c62",
+        "main:test 1e2e3149e1544b270a21ab9f4d16c4dc0ad3549b",
+        "main:trigger isolation 38a6d49f929b88daded29ebfcacfd68a95bfdfe1",
+        "main:trigger test 0c96a2dd883f4d9d833375dbcb84fa4f954f84d4",
+        "live:QA-only commit 0c96a2dd created Company Evolution QA and Vibe3 Engine Contract but no Roblox Runtime run"
+      ],
+      "reusablePatterns": [
+        "NEWER_CAUSAL_REPAIR_DEBT_SUPERSEDES_OLDER_PENDING_SOURCE_CANDIDATE",
+        "CANDIDATE_POINTER_FRESHNESS_MUST_BE_COMPARED_TO_NEWER_FAILURE_EVIDENCE",
+        "DEDICATED_QA_ONLY_CHANGES_SHOULD_NOT_LAUNCH_HEAVY_RUNTIME_WHEN_COVERED_BY_SEPARATE_QA"
+      ],
+      "avoidPatterns": [
+        "CANDIDATE_READY_EARLY_CONTINUE_BEFORE_CURRENT_REPAIR_CLASSIFICATION",
+        "STALE_CANDIDATE_POINTER_BLOCKS_REBIND",
+        "QA_ONLY_EDIT_SPAWNS_FULL_NATIVE_RUNTIME"
+      ],
+      "liveState": "CODE_AND_RUNTIME_STATE_REPAIRED; EXISTING_GITHUB_ACTIONS_QUEUE_DRAIN_PENDING; NO_MCP_GATE_WEAKENING"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "version": 9,
+  "policyDocument": "COMPANY_FLOW.md",
+  "officialCardRegistrationRequiresPromotionPass": true,
+  "canonicalLifecycleRequired": true,
+  "homepageTestShelf": {
+    "limit": 30,
+    "minimumScore": 80,
+    "minimumValidationSchema": 15,
+    "order": "STRICT_IMPLEMENTATION_SCORE_DESC",
+    "requiresScore": true,
+    "requiresWebGame": true,
+    "requiresRealPlayableGame": true,
+    "requiresRealGameSubstance": true,
+    "requiredWebArtifactType": "REAL_PLAYABLE_GAME",
+    "requiresArtbook": true,
+    "requiresFreshSourceHash": true,
+    "requiresFreshDesignBaselineHash": true,
+    "requiresFinal30MinuteContentDepth": true,
+    "requiredContentDepthValidationMode": "REAL_ELAPSED_GAMEPLAY",
+    "hardGatesRequired": true,
+    "officialCard": false,
+    "promotionRequiredForOfficialCard": true,
+    "allowedLifecycleStates": [
+      "ACTIVE",
+      "REBUILD"
+    ],
+    "cutlineScore": null,
+    "replacementPolicy": "STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE;TIE_PRESERVES_VALID_INCUMBENT",
+    "tieBreak": [
+      "EXISTING_TOP30_RANK",
+      "PROMOTION_REVALIDATION_PASS",
+      "LATEST_VALIDATION",
+      "GAME_ID"
+    ]
+  },
+  "candidates": [],
+  "updatedAt": "2026-09-18T14:49:22.670Z"
+}

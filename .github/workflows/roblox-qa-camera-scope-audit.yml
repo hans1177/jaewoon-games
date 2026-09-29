@@ -1,0 +1,33 @@
+name: Roblox QA Camera Scope Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/roblox-qa-camera-scope-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Inspect safe Roblox Open Cloud scope metadata
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          node --input-type=module <<'NODE'
+          import {introspectRobloxApiKey} from './tools/company-roblox-dedicated-experience.mjs';
+          const info=await introspectRobloxApiKey();
+          const names=info.scopes.map(x=>x.name).filter(Boolean);
+          const datastoreRead=names.some(x=>String(x).includes('universe-datastores.objects:read'));
+          console.log('ROBLOX_API_KEY_ENABLED='+info.enabled);
+          console.log('ROBLOX_API_KEY_EXPIRED='+info.expired);
+          console.log('ROBLOX_API_KEY_SCOPE_NAMES='+JSON.stringify(names));
+          console.log('ROBLOX_QA_DATASTORE_READ='+datastoreRead);
+          NODE

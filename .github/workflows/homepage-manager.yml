@@ -1,0 +1,627 @@
+name: Homepage Manager
+
+on:
+  workflow_run:
+    workflows:
+      - Company Status Sync
+      - Company DEVELOPMENT_CONFIRMED Runtime
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - 'COMPANY_FLOW.md'
+      - 'company-directive.json'
+      - 'REMOTE_AUTOMATION.md'
+      - '.github/agents/homepage.agent.md'
+      - '.github/agents/director.agent.md'
+      - 'index.html'
+      - 'company.html'
+      - 'game-catalog.json'
+      - 'company-status.json'
+      - 'homepage-portfolio-status.json'
+      - 'test-game-candidates.json'
+      - 'public-release-baselines.json'
+      - 'game-artbooks.json'
+      - 'artbook-viewer.html'
+      - 'artbook-submissions/**'
+      - 'web-games/**'
+      - 'roblox-games/**/default.project.json'
+      - 'assets/**'
+      - 'manifest.webmanifest'
+      - 'install.html'
+      - 'sw.js'
+      - 'offline.html'
+      - 'command.html'
+      - '_headers'
+      - 'tools/homepage-manager.mjs'
+      - 'tools/autonomous-queue-state.mjs'
+      - 'qa/autonomous-queue-state.test.mjs'
+      - 'tools/autonomous-work-planner.mjs'
+      - 'qa/autonomous-work-planner.test.mjs'
+      - 'tools/company-homepage-platform-exposure-sync.mjs'
+      - 'tools/homepage-portfolio-snapshot.mjs'
+      - 'tools/homepage-test-candidate-sync.mjs'
+      - 'tools/game-catalog-normalization.mjs'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'qa/game-catalog-normalization.test.mjs'
+      - 'qa/homepage-manager-publication-order.test.mjs'
+      - 'qa/company-homepage-runtime-propagation.test.mjs'
+      - '.github/workflows/homepage-manager.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'COMPANY_FLOW.md'
+      - 'company-directive.json'
+      - 'REMOTE_AUTOMATION.md'
+      - '.github/agents/homepage.agent.md'
+      - '.github/agents/director.agent.md'
+      - 'index.html'
+      - 'company.html'
+      - 'game-catalog.json'
+      - 'company-status.json'
+      - 'homepage-portfolio-status.json'
+      - 'test-game-candidates.json'
+      - 'public-release-baselines.json'
+      - 'game-artbooks.json'
+      - 'artbook-viewer.html'
+      - 'artbook-submissions/**'
+      - 'web-games/**'
+      - 'roblox-games/**/default.project.json'
+      - 'assets/**'
+      - 'manifest.webmanifest'
+      - 'install.html'
+      - 'sw.js'
+      - 'offline.html'
+      - 'command.html'
+      - '_headers'
+      - 'tools/homepage-manager.mjs'
+      - 'tools/autonomous-queue-state.mjs'
+      - 'qa/autonomous-queue-state.test.mjs'
+      - 'tools/autonomous-work-planner.mjs'
+      - 'qa/autonomous-work-planner.test.mjs'
+      - 'tools/homepage-portfolio-snapshot.mjs'
+      - 'tools/homepage-test-candidate-sync.mjs'
+      - 'tools/game-catalog-normalization.mjs'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'qa/game-catalog-normalization.test.mjs'
+      - 'qa/homepage-manager-publication-order.test.mjs'
+      - 'qa/company-homepage-runtime-propagation.test.mjs'
+      - '.github/workflows/homepage-manager.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# A self-QA candidate reaches one Director review-and-publish stage; duplicate publication jobs are forbidden.
+# Failed upstream workflow_run events are isolated so they cannot interrupt a valid run.
+concurrency:
+  group: homepage-manager-${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'success' && github.run_id || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+  CONTROL_BRANCH: vibe2-unreal-core
+
+jobs:
+  pr-fast-qa:
+    name: Homepage PR Fast QA
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-slim
+    timeout-minutes: 4
+    steps:
+      - name: Checkout PR impact surface
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/workflows/homepage-manager.yml
+            /.github/workflows/company-development-confirmed-runtime.yml
+            /.github/workflows/company-status-sync.yml
+            /company-directive.json
+            /company-learning/platform-release-roadmap.json
+            /company-learning/catalog-homepage-normalization.json
+            /tools/
+            /assets/homepage-enhancements.js
+            /assets/artbook-viewer.js
+            /qa/homepage-manager-publication-order.test.mjs
+            /qa/company-homepage-runtime-propagation.test.mjs
+            /qa/game-catalog-normalization.test.mjs
+            /index.html
+            /sw.js
+            /asset-library.html
+            /company-asset-library.json
+            /game-catalog.json
+            /homepage-platform-exposure.json
+            /roblox-games/*/default.project.json
+
+      - name: Run impact-scoped homepage QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tools/homepage-manager.mjs
+          node --check tools/company-homepage-platform-exposure-sync.mjs
+          node --check tools/game-catalog-normalization.mjs
+          node --test qa/homepage-manager-publication-order.test.mjs
+          node --input-type=module -e "await import('./tools/company-status-sync.mjs')"
+          node --test qa/company-homepage-runtime-propagation.test.mjs
+          node qa/game-catalog-normalization.test.mjs
+          echo 'HOMEPAGE_PR_FAST_QA=PASS'
+
+  manage-and-self-qa:
+    name: Homepage Manager Self-QA
+    if: github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
+    outputs:
+      base_sha: ${{ steps.capture.outputs.base_sha }}
+      candidate_changed: ${{ steps.capture.outputs.candidate_changed }}
+      patch_sha256: ${{ steps.capture.outputs.patch_sha256 }}
+    steps:
+      - name: Checkout tested revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
+          fetch-depth: 1
+
+      - name: Synchronize central roadmap context (homepage)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --require-homepage-policy=true --output=/tmp/worker-shared-context.json
+          node <<'NODE'
+          const fs=require('fs');
+          const ctx=JSON.parse(fs.readFileSync('/tmp/worker-shared-context.json','utf8'));
+          if(ctx.homepage?.valid!==true||!ctx.homepage?.fingerprint)throw new Error('HOMEPAGE_CENTRAL_POLICY_CONTEXT_INVALID');
+          fs.appendFileSync(process.env.GITHUB_ENV,`HOMEPAGE_POLICY_SHA256=${ctx.homepage.fingerprint}\nHOMEPAGE_SUPPORTED_PLATFORMS_JSON=${JSON.stringify(ctx.homepage.supportedPlatforms)}\n`);
+          console.log('HOMEPAGE_CENTRAL_POLICY_SYNC=PASS');
+          console.log('HOMEPAGE_CENTRAL_POLICY_SHA256='+ctx.homepage.fingerprint);
+          console.log('HOMEPAGE_CENTRAL_PLATFORMS='+ctx.homepage.supportedPlatforms.join(','));
+          NODE
+
+      - name: Bind synchronized server runtime snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'HOMEPAGE_PUBLIC_STATUS_SYNC=NO' >> "$GITHUB_ENV"
+          if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
+            echo "HOMEPAGE_CATALOG_PATH=game-catalog.json" >> "$GITHUB_ENV"
+            echo "HOMEPAGE_STATUS_PATH=company-status.json" >> "$GITHUB_ENV"
+            echo 'HOMEPAGE_RUNTIME_SOURCE=PR_REVISION'
+          elif git fetch --depth=1 --no-tags origin "$COMPANY_RUNTIME_BRANCH"; then
+            mkdir -p /tmp/homepage-runtime
+            git show "origin/$COMPANY_RUNTIME_BRANCH:game-catalog.json" > /tmp/homepage-runtime/runtime-game-catalog.json
+            git show "origin/$COMPANY_RUNTIME_BRANCH:company-status.json" > /tmp/homepage-runtime/company-status.json
+            git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/homepage-runtime/development-queue.json
+            if ! git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > /tmp/homepage-runtime/game-seed-state.json 2>/dev/null; then
+              printf '%s\n' '{"seeds":[]}' > /tmp/homepage-runtime/game-seed-state.json
+            fi
+            node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            import { applyHomepageRuntimeInfo, mergeRuntimeCatalogMissingGames, syncProductionClasses } from './tools/company-status-sync.mjs';
+            import { validateNormalizedCatalog } from './tools/game-catalog-normalization.mjs';
+            const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+            const runtimeCatalog=JSON.parse(fs.readFileSync('/tmp/homepage-runtime/runtime-game-catalog.json','utf8'));
+            const developmentQueue=JSON.parse(fs.readFileSync('/tmp/homepage-runtime/development-queue.json','utf8'));
+            const seedState=JSON.parse(fs.readFileSync('/tmp/homepage-runtime/game-seed-state.json','utf8'));
+            const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
+            const artbooks=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
+            mergeRuntimeCatalogMissingGames({catalog,runtimeCatalog,developmentQueue});
+            syncProductionClasses({portfolio,catalog,artbooks,developmentQueue,seedState,filesystem:fs});
+            applyHomepageRuntimeInfo({catalog,developmentQueue,seedState});
+            const validation=validateNormalizedCatalog(catalog);
+            if(!validation.pass)throw new Error('HOMEPAGE_RUNTIME_CATALOG_RECONCILE_FAILED:'+validation.errors.join(','));
+            fs.writeFileSync('/tmp/homepage-runtime/game-catalog.json',JSON.stringify(catalog,null,2)+'\n');
+            console.log('HOMEPAGE_RUNTIME_CATALOG_RECONCILE=PASS');
+          NODE
+            node -e "JSON.parse(require('fs').readFileSync('/tmp/homepage-runtime/game-catalog.json','utf8'));JSON.parse(require('fs').readFileSync('/tmp/homepage-runtime/company-status.json','utf8'))"
+            echo "HOMEPAGE_CATALOG_PATH=/tmp/homepage-runtime/game-catalog.json" >> "$GITHUB_ENV"
+            echo "HOMEPAGE_STATUS_PATH=/tmp/homepage-runtime/company-status.json" >> "$GITHUB_ENV"
+            echo 'HOMEPAGE_RUNTIME_SOURCE=COMPANY_RUNTIME'
+            echo 'HOMEPAGE_PUBLIC_STATUS_SYNC=YES' >> "$GITHUB_ENV"
+            if [[ "${{ github.event_name }}" == 'workflow_run' ]]; then
+              echo "HOMEPAGE_STATUS_SYNC_TRIGGER=${{ github.event.workflow_run.name }}_SUCCESS"
+            else
+              echo "HOMEPAGE_STATUS_SYNC_TRIGGER=${{ github.event_name }}_COMPANY_RUNTIME"
+            fi
+          else
+            if [[ "${{ github.event_name }}" == 'workflow_run' ]]; then
+              echo "Successful runtime workflow could not bind company-runtime: ${{ github.event.workflow_run.name }}" >&2
+              exit 1
+            fi
+            echo "HOMEPAGE_CATALOG_PATH=game-catalog.json" >> "$GITHUB_ENV"
+            echo "HOMEPAGE_STATUS_PATH=company-status.json" >> "$GITHUB_ENV"
+            echo 'HOMEPAGE_RUNTIME_SOURCE=MAIN_FALLBACK'
+          fi
+
+      - name: Build sanitized portfolio homepage snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/homepage-control
+          if git fetch --depth=1 --no-tags origin "$CONTROL_BRANCH" --quiet && git show "origin/$CONTROL_BRANCH:.vibe2/portfolio-decisions.json" > /tmp/homepage-control/portfolio-decisions.json 2>/dev/null; then
+            echo 'HOMEPAGE_PORTFOLIO_SOURCE=CONTROL_BRANCH'
+          else
+            printf '%s\n' '{"version":1,"decisions":[]}' > /tmp/homepage-control/portfolio-decisions.json
+            echo 'HOMEPAGE_PORTFOLIO_SOURCE=PENDING_AUTOMATION'
+          fi
+          node --check tools/homepage-portfolio-snapshot.mjs
+          node tools/homepage-portfolio-snapshot.mjs \
+            --portfolio=/tmp/homepage-control/portfolio-decisions.json \
+            --catalog="$HOMEPAGE_CATALOG_PATH" \
+            --output=homepage-portfolio-status.json
+          node -e "const x=require('./homepage-portfolio-status.json');if(x.publicSafe!==true||!Array.isArray(x.games))process.exit(1)"
+
+      - name: Bind company-runtime platform exposure homepage snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --depth=1 --no-tags origin "$COMPANY_RUNTIME_BRANCH" main --quiet
+          valid_runtime_exposure=false
+          if [[ "${{ github.event_name }}" == 'pull_request' ]] && git show "origin/$COMPANY_RUNTIME_BRANCH:homepage-platform-exposure.json" > homepage-platform-exposure.json 2>/dev/null; then
+            if node -e "const fs=require('fs'),x=require('./homepage-platform-exposure.json'),ctx=JSON.parse(fs.readFileSync('/tmp/worker-shared-context.json','utf8'));process.exit(x.version===3&&x.authority==='company-runtime'&&x.internalCompanySurface===true&&x.centralPolicyFingerprint===ctx.homepage.fingerprint&&JSON.stringify(x.supportedPlatforms)===JSON.stringify(ctx.homepage.supportedPlatforms)&&Array.isArray(x.games)?0:1)"; then
+              valid_runtime_exposure=true
+              echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=COMPANY_RUNTIME'
+            else
+              echo 'HOMEPAGE_PLATFORM_EXPOSURE_MIGRATION=STALE_RUNTIME_SNAPSHOT_REBUILD'
+            fi
+          fi
+          if [[ "$valid_runtime_exposure" != 'true' ]]; then
+            git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/homepage-development-queue.json
+            cp /tmp/homepage-runtime/game-catalog.json /tmp/homepage-game-catalog.json
+            node tools/company-homepage-platform-exposure-sync.mjs /tmp/homepage-development-queue.json /tmp/homepage-game-catalog.json homepage-platform-exposure.json company-learning/platform-release-roadmap.json
+            if [[ "${{ github.event_name }}" == 'pull_request' ]]; then
+              echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=COMPANY_RUNTIME_DERIVED'
+            else
+              echo 'HOMEPAGE_PLATFORM_EXPOSURE_SOURCE=COMPANY_RUNTIME_DERIVED_FRESH'
+            fi
+          fi
+          node -e "const fs=require('fs'),x=require('./homepage-platform-exposure.json'),ctx=JSON.parse(fs.readFileSync('/tmp/worker-shared-context.json','utf8'));if(x.version!==3||x.authority!=='company-runtime'||x.internalCompanySurface!==true||x.centralPolicyFingerprint!==ctx.homepage.fingerprint||JSON.stringify(x.supportedPlatforms)!==JSON.stringify(ctx.homepage.supportedPlatforms)||!Array.isArray(x.games))process.exit(1)"
+
+      - name: Persist platform exposure to company runtime
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-homepage-runtime'
+          git config user.email 'homepage-runtime@users.noreply.github.com'
+          persisted=false
+          for attempt in 1 2 3 4; do
+            git fetch --depth=1 --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+            wt="/tmp/homepage-runtime-write-$attempt"
+            rm -rf "$wt"
+            git worktree add --detach "$wt" "origin/$COMPANY_RUNTIME_BRANCH"
+            cp homepage-platform-exposure.json "$wt/homepage-platform-exposure.json"
+            git -C "$wt" add -- homepage-platform-exposure.json
+            if git -C "$wt" diff --cached --quiet; then
+              persisted=true
+              git worktree remove --force "$wt"
+              break
+            fi
+            git -C "$wt" commit -m 'runtime: sync homepage platform exposure [skip ci]'
+            if git -C "$wt" push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              persisted=true
+              git worktree remove --force "$wt"
+              break
+            fi
+            git worktree remove --force "$wt"
+            sleep $((attempt * 2))
+          done
+          test "$persisted" = true
+          git worktree prune
+          echo 'HOMEPAGE_PLATFORM_EXPOSURE_RUNTIME_SYNC=PASS'
+
+      - name: Prepare verified runtime status/catalog candidate
+        if: env.HOMEPAGE_PUBLIC_STATUS_SYNC == 'YES'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/homepage-runtime/game-catalog.json game-catalog.json
+          cp /tmp/homepage-runtime/company-status.json company-status.json
+          node qa/game-catalog-normalization.test.mjs
+          node -e "JSON.parse(require('fs').readFileSync('game-catalog.json','utf8'));JSON.parse(require('fs').readFileSync('company-status.json','utf8'))"
+          echo "HOMEPAGE_CATALOG_PATH=game-catalog.json" >> "$GITHUB_ENV"
+          echo "HOMEPAGE_STATUS_PATH=company-status.json" >> "$GITHUB_ENV"
+          echo 'HOMEPAGE_VERIFIED_PUBLIC_STATUS_CANDIDATE=READY'
+
+      - name: Sync validation evidence candidates
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git show-ref --verify --quiet "refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"; then
+            node --check tools/homepage-test-candidate-sync.mjs
+            COMPANY_RUNTIME_REF="origin/$COMPANY_RUNTIME_BRANCH" node tools/homepage-test-candidate-sync.mjs
+          else
+            echo 'HOMEPAGE_TEST_SYNC=NO_RUNTIME_BRANCH'
+          fi
+
+      - name: Run homepage manager contract
+        run: node tools/homepage-manager.mjs
+
+      - name: Validate homepage live files, official routes and top30 test shelf
+        run: |
+          set -euo pipefail
+          for file in \
+            index.html company.html game-catalog.json company-status.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json \
+            public-release-baselines.json game-artbooks.json artbook-viewer.html \
+            assets/homepage-enhancements.js assets/artbook-viewer.js manifest.webmanifest install.html sw.js offline.html command.html \
+            company-directive.json company-learning/platform-release-roadmap.json _headers; do
+            test -f "$file"
+          done
+          node -e "for (const file of ['game-catalog.json','company-status.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','company-directive.json','company-learning/platform-release-roadmap.json','company-learning/company-architecture-map.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
+          node --check assets/homepage-enhancements.js
+          node --check assets/artbook-viewer.js
+          node --check tools/homepage-manager.mjs
+          node --check tools/homepage-test-candidate-sync.mjs
+          node --check tools/game-catalog-normalization.mjs
+          node --check tools/company-status-sync.mjs
+          node qa/game-catalog-normalization.test.mjs
+          node --test qa/homepage-manager-publication-order.test.mjs
+          node --test qa/company-homepage-runtime-propagation.test.mjs
+          grep -Fq '/assets/homepage-enhancements.js' index.html
+          grep -Fq 'data-homepage-version="SAMPLE_FRONT_DOOR_V1"' index.html
+          grep -Fq 'data-homepage-build="2026-09-21-sample-exact"' index.html
+          grep -Fq 'https://chatgpt.com/' index.html
+          grep -Fq 'const SYNC_INTERVAL_MS=30000;' assets/homepage-enhancements.js
+          grep -Fq "catalog?.runtimeInfoAuthority!=='company-runtime'" assets/homepage-enhancements.js
+          grep -Fq "status?.runtimeAuthority!=='company-runtime'" assets/homepage-enhancements.js
+          grep -Fq "getJson('/homepage-portfolio-status.json')" assets/homepage-enhancements.js
+          grep -Fq "getJson('/homepage-platform-exposure.json')" assets/homepage-enhancements.js
+          grep -Fq "function buildPortfolioBoard()" assets/homepage-enhancements.js
+          grep -Fq "runtimeInfoAuthority='company-runtime'" tools/company-status-sync.mjs
+          node <<'NODE'
+          const fs=require('fs');
+          const catalog=JSON.parse(fs.readFileSync(process.env.HOMEPAGE_CATALOG_PATH||'game-catalog.json','utf8'));
+          const tests=JSON.parse(fs.readFileSync('test-game-candidates.json','utf8'));
+          const failures=[];
+          for(const game of catalog.games||[]){
+            const official=game.homepageOfficialCard===true||String(game.productionClass||'').toUpperCase()==='RELEASE_CONFIRMED';
+            if(!official||game.homepageWebPlayable!==true)continue;
+            const webPath=String(game.webPath||'').replace(/^\/+|\/+$/g,'');
+            const expected=`web-games/${game.id}`;
+            const index=webPath?`${webPath}/index.html`:'';
+            if(webPath!==expected||!index||!fs.existsSync(index)||fs.statSync(index).size<512)failures.push(`official:${game.id}`);
+          }
+          const rows=tests.candidates||[];
+          if(rows.length>30)failures.push(`test-overflow:${rows.length}`);
+          for(let i=0;i<rows.length;i++){
+            const row=rows[i],score=Number(row.strictScore??row.reviewScore??row.totalScore??row.score);
+            const hard=Array.isArray(row.strictReviewHardFailures)?row.strictReviewHardFailures:['MISSING'];
+            if(row.homepageTestCandidate!==true||row.homepageOfficialCard!==false||row.homepageTestVerdict!=='PASS'||!Number.isFinite(score)||score<80||hard.length!==0)failures.push(`test-contract:${row.gameId||row.id}`);
+            if(i&&score>Number(rows[i-1].strictScore??rows[i-1].score))failures.push('test-score-order');
+            const web=String(row.webPath||row.testUrl||'').replace(/^\/+|\/+$/g,'');
+            if(!web||!fs.existsSync(`${web}/index.html`)||fs.statSync(`${web}/index.html`).size<512)failures.push(`test-web:${row.gameId||row.id}`);
+            if(!row.artbookSource||!fs.existsSync(row.artbookSource))failures.push(`test-artbook:${row.gameId||row.id}`);
+          }
+          if(failures.length)throw new Error(`homepage route/test failures: ${failures.join(',')}`);
+          console.log(`HOMEPAGE_TEST_SHELF_QA=PASS COUNT=${rows.length}/30 MIN_SCORE=80`);
+          console.log('HOMEPAGE_OFFICIAL_CARD_BOUNDARY=PASS');
+          NODE
+          node <<'NODE'
+          const fs=require('fs');
+          const catalog=JSON.parse(fs.readFileSync(process.env.HOMEPAGE_CATALOG_PATH||'game-catalog.json','utf8'));
+          const registry=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
+          const tests=JSON.parse(fs.readFileSync('test-game-candidates.json','utf8'));
+          const games=new Set((catalog.games||[]).map(game=>String(game.id||'').trim()).filter(Boolean));
+          const testGameIds=new Set((tests.candidates||[]).filter(row=>row.homepageTestCandidate===true).map(row=>String(row.gameId||row.id||'').trim()).filter(Boolean));
+          const visible=(registry.artbooks||[]).filter(book=>book.published===true||book.homepageVisible===true);
+          const failures=[];
+          for(const book of visible){
+            const gameId=String(book.gameId||'').trim();
+            const currentTestArtbook=book.homepageTestCandidate===true&&testGameIds.has(gameId);
+            if(!games.has(gameId)&&!currentTestArtbook){failures.push(`${book.id}:catalog`);continue;}
+            const source=String(book.sourceFile||'').replace(/^\/+/, '');
+            if(!source||!fs.existsSync(source)){failures.push(`${book.id}:source`);continue;}
+            if(source.endsWith('.json')){try{JSON.parse(fs.readFileSync(source,'utf8'));}catch{failures.push(`${book.id}:json`);}}
+          }
+          const entry=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+          const candidateSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
+          const viewer=fs.readFileSync('assets/artbook-viewer.js','utf8');
+          if(entry.includes('아트북 보기')||entry.includes('foldGameArtbookBtn')||entry.includes('homepageArtbookPath'))failures.push('homepage:artbook-button-must-be-hidden');
+          if(!candidateSync.includes('const limit=30')||!candidateSync.includes('const minimumScore=WEB_HOMEPAGE_MINIMUM')||!candidateSync.includes('STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE'))failures.push('homepage:test-shelf-contract');
+          if(!viewer.includes("loadJson('/game-artbooks.json'"))failures.push('viewer:registry-contract');
+          if(failures.length)throw new Error(`homepage artbook failures: ${failures.join(',')}`);
+          console.log(`HOMEPAGE_ARTBOOK_QA=PASS COUNT=${visible.length}`);
+          NODE
+          node <<'NODE'
+          const fs=require('fs');
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const homepage=roadmap.serverHomepageIntegration||{};
+          const manager=homepage.managerContract||{};
+          const testing=homepage.testingContract||{};
+          const sync=homepage.documentationSyncContract||{};
+          if(manager.mode!=='SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR')throw new Error('HOMEPAGE_MANAGER_MODE_POLICY_MISMATCH');
+          if(testing.maxVisibleTestCandidates!==30)throw new Error('HOMEPAGE_TEST_LIMIT_POLICY_MISMATCH');
+          if(testing.minimumWebStrictScore!==80)throw new Error('HOMEPAGE_TEST_SCORE_POLICY_MISMATCH');
+          if(!Array.isArray(manager.fixedFunctionProtection?.protectedFunctions)||!manager.fixedFunctionProtection.protectedFunctions.includes('PWA_COMMAND_CHAT_WINDOW'))throw new Error('HOMEPAGE_PWA_CHAT_POLICY_MISSING');
+          if(sync.centralPolicyPath!=='company-learning/platform-release-roadmap.json'||sync.humanPolicyMirrorRequired!==false||sync.workDocumentsCannotOverrideCentralPolicy!==true)throw new Error('HOMEPAGE_DOCUMENTATION_SYNC_POLICY_MISMATCH');
+          console.log('HOMEPAGE_CENTRAL_POLICY_DIRECT_VALIDATION=PASS');
+          NODE
+          grep -Fq '홈페이지 단일 사후 감독' .github/agents/director.agent.md
+          grep -Fxq '/*.json' _headers
+          grep -Fxq '/assets/*' _headers
+          echo 'HOMEPAGE_RUNTIME_DATA_SYNC=PASS'
+          echo 'HOMEPAGE_LIVE_SYNC=PASS'
+          echo 'HOMEPAGE_MANAGER_SELF_QA=PASS'
+
+      - name: Capture exact self-QA candidate
+        id: capture
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate_dir='.homepage-candidate'
+          rm -rf "$candidate_dir"
+          mkdir -p "$candidate_dir"
+          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json game-artbooks.json web-games artbook-submissions)
+          base_sha="$(git rev-parse HEAD)"
+          git add -- "${published_paths[@]}"
+          git diff --cached --binary HEAD -- "${published_paths[@]}" > "$candidate_dir/homepage-candidate.patch"
+          candidate_changed=false
+          if [[ -s "$candidate_dir/homepage-candidate.patch" ]]; then candidate_changed=true; fi
+          patch_sha256="$(sha256sum "$candidate_dir/homepage-candidate.patch" | awk '{print $1}')"
+          BASE_SHA="$base_sha" PATCH_SHA256="$patch_sha256" CANDIDATE_CHANGED="$candidate_changed" node <<'NODE'
+          const fs=require('fs');
+          fs.writeFileSync('.homepage-candidate/homepage-candidate.json',JSON.stringify({
+            version:1,
+            baseSha:process.env.BASE_SHA,
+            patchSha256:process.env.PATCH_SHA256,
+            changed:process.env.CANDIDATE_CHANGED==='true',
+            policyFingerprint:process.env.HOMEPAGE_POLICY_SHA256,
+            supportedPlatforms:JSON.parse(process.env.HOMEPAGE_SUPPORTED_PLATFORMS_JSON||'[]'),
+            paths:['company-status.json','game-catalog.json','homepage-portfolio-status.json','homepage-platform-exposure.json','test-game-candidates.json','game-artbooks.json','web-games','artbook-submissions'],
+          },null,2)+'\n');
+          NODE
+          git reset --quiet
+          echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
+          echo "candidate_changed=$candidate_changed" >> "$GITHUB_OUTPUT"
+          echo "patch_sha256=$patch_sha256" >> "$GITHUB_OUTPUT"
+          echo "HOMEPAGE_CANDIDATE_BASE=$base_sha"
+          echo "HOMEPAGE_CANDIDATE_CHANGED=$candidate_changed"
+          echo "HOMEPAGE_CANDIDATE_PATCH_SHA256=$patch_sha256"
+
+      - name: Upload exact self-QA candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: homepage-candidate-${{ github.run_id }}
+          path: .homepage-candidate/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
+
+  director-supervision:
+    name: Director Review and Publish
+    needs: manage-and-self-qa
+    if: github.event_name != 'pull_request' && needs.manage-and-self-qa.result == 'success'
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - name: Checkout supervised base revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.manage-and-self-qa.outputs.base_sha }}
+          fetch-depth: 1
+
+      - name: Synchronize central roadmap context (homepage)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --require-homepage-policy=true --output=/tmp/worker-shared-context.json
+          node <<'NODE'
+          const fs=require('fs');
+          const ctx=JSON.parse(fs.readFileSync('/tmp/worker-shared-context.json','utf8'));
+          if(ctx.homepage?.valid!==true||!ctx.homepage?.fingerprint)throw new Error('HOMEPAGE_CENTRAL_POLICY_CONTEXT_INVALID');
+          fs.appendFileSync(process.env.GITHUB_ENV,`HOMEPAGE_POLICY_SHA256=${ctx.homepage.fingerprint}\nHOMEPAGE_SUPPORTED_PLATFORMS_JSON=${JSON.stringify(ctx.homepage.supportedPlatforms)}\n`);
+          console.log('HOMEPAGE_CENTRAL_POLICY_SYNC=PASS');
+          console.log('HOMEPAGE_CENTRAL_POLICY_SHA256='+ctx.homepage.fingerprint);
+          console.log('HOMEPAGE_CENTRAL_PLATFORMS='+ctx.homepage.supportedPlatforms.join(','));
+          NODE
+
+      - name: Download exact self-QA candidate
+        uses: actions/download-artifact@v4
+        with:
+          name: homepage-candidate-${{ github.run_id }}
+          path: .homepage-candidate
+
+      - name: Verify and apply exact self-QA candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          meta='.homepage-candidate/homepage-candidate.json'
+          patch='.homepage-candidate/homepage-candidate.patch'
+          test -f "$meta" && test -f "$patch"
+          base_sha="$(node -p "JSON.parse(require('fs').readFileSync('$meta','utf8')).baseSha")"
+          patch_sha="$(node -p "JSON.parse(require('fs').readFileSync('$meta','utf8')).patchSha256")"
+          changed="$(node -p "JSON.parse(require('fs').readFileSync('$meta','utf8')).changed")"
+          policy_sha="$(node -p "JSON.parse(require('fs').readFileSync('$meta','utf8')).policyFingerprint")"
+          test "$base_sha" = "$(git rev-parse HEAD)"
+          test "$base_sha" = "${{ needs.manage-and-self-qa.outputs.base_sha }}"
+          test "$patch_sha" = "${{ needs.manage-and-self-qa.outputs.patch_sha256 }}"
+          test "$patch_sha" = "$(sha256sum "$patch" | awk '{print $1}')"
+          test "$policy_sha" = "$HOMEPAGE_POLICY_SHA256"
+          if [[ "$changed" == 'true' ]]; then
+            git apply --check --binary "$patch"
+            git apply --binary "$patch"
+          else
+            test ! -s "$patch"
+          fi
+          echo 'DIRECTOR_EXACT_HOMEPAGE_CANDIDATE=BOUND'
+
+      - name: Verify single manager and supervisor policy
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+          const h=d.homepageOperations;
+          if(!h) throw new Error('homepageOperations missing');
+          if(h.manager!=='HOMEPAGE'||h.supervisor!=='DIRECTOR') throw new Error('homepage roles mismatch');
+          if(h.managerCount!==1||h.supervisorCount!==1) throw new Error('homepage role count mismatch');
+          if(h.secondHomepageManagerForbidden!==true||h.secondHomepageSupervisorForbidden!==true) throw new Error('duplicate manager/supervisor not forbidden');
+          if(h.fixedFunctionProtection?.ownerLocked!==true) throw new Error('fixed-function owner lock missing');
+          const tests=JSON.parse(fs.readFileSync('test-game-candidates.json','utf8'));
+          const rows=tests.candidates||[];
+          if(rows.length>30)throw new Error('DIRECTOR_TEST_SHELF_OVER_30');
+          if(rows.some(x=>x.homepageOfficialCard!==false||x.homepageTestCandidate!==true||x.homepageTestVerdict!=='PASS'||Number(x.strictScore??x.score)<80||!Array.isArray(x.strictReviewHardFailures)||x.strictReviewHardFailures.length))throw new Error('DIRECTOR_INVALID_TEST_CANDIDATE');
+          NODE
+
+      - name: Recheck owner-fixed PWA and chat contract
+        run: |
+          set -euo pipefail
+          grep -Fq '"id": "/command.html"' manifest.webmanifest
+          grep -Fq '"start_url": "/command.html"' manifest.webmanifest
+          grep -Fq "navigator.serviceWorker.register('/sw.js'" install.html
+          grep -Fq "navigator.serviceWorker.register('/sw.js')" command.html
+          grep -Fq "'/offline.html'" sw.js
+          grep -Fq 'id="attachBtn"' command.html
+          grep -Fq 'id="sendBtn"' command.html
+          grep -Fq 'id="claimBtn"' command.html
+          echo 'DIRECTOR_HOMEPAGE_SUPERVISION=PASS'
+          echo 'DIRECTOR_TEST_SHELF_SUPERVISION=PASS'
+          echo 'OWNER_FIXED_PWA_CHAT_REGRESSION=PASS'
+
+      - name: Revalidate central homepage policy before publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --require-homepage-policy=true --output=/tmp/worker-shared-context-final.json
+          expected="$(node -p "JSON.parse(require('fs').readFileSync('.homepage-candidate/homepage-candidate.json','utf8')).policyFingerprint")"
+          current="$(node -p "JSON.parse(require('fs').readFileSync('/tmp/worker-shared-context-final.json','utf8')).homepage.fingerprint")"
+          test -n "$expected"
+          test "$expected" = "$current"
+          echo 'HOMEPAGE_CENTRAL_POLICY_FINAL_SYNC=PASS'
+
+      - name: Publish Director-approved homepage candidate
+        if: github.event_name != 'pull_request' && needs.manage-and-self-qa.outputs.candidate_changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-homepage-manager'
+          git config user.email 'homepage-manager@users.noreply.github.com'
+          published_paths=(company-status.json game-catalog.json homepage-portfolio-status.json homepage-platform-exposure.json test-game-candidates.json game-artbooks.json web-games artbook-submissions)
+          git add -- "${published_paths[@]}"
+          if git diff --cached --quiet; then
+            echo 'HOMEPAGE_PUBLICATION=NO_CHANGES_AFTER_DIRECTOR'
+            exit 0
+          fi
+          branch="automation/homepage-runtime-sync-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$branch"
+          git commit -m 'homepage: publish Director-approved runtime mirror'
+          git push origin "HEAD:refs/heads/$branch"
+          if pr_url="$(gh pr create --base main --head "$branch" --title 'homepage: publish Director-approved runtime mirror' --body 'Homepage Manager self-QA and Director supervision both passed on the exact same hashed candidate. Publishes verified company-status/game-catalog differences plus synchronized Roblox/Unity internal and public release state. No pre-promotion official cards.' 2>/tmp/homepage-pr-error.log)"; then
+            echo "HOMEPAGE_PUBLICATION_PR=$pr_url"
+            gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash
+            git push origin --delete "$branch" >/dev/null 2>&1 || true
+            echo 'HOMEPAGE_PUBLICATION=PR_VALIDATED_AND_MERGED_AFTER_DIRECTOR'
+          else
+            cat /tmp/homepage-pr-error.log >&2 || true
+            echo "HOMEPAGE_PUBLICATION_BRANCH_READY=$branch"
+            echo 'HOMEPAGE_PUBLICATION=BLOCKED_PR_PERMISSION_REQUIRED'
+            exit 1
+          fi

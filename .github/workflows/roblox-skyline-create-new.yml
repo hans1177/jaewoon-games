@@ -1,0 +1,198 @@
+name: One-shot Skyline Rush New Roblox Experience
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/roblox-skyline-create-new.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  create-and-publish:
+    name: create fresh Skyline Rush target and publish immutable artifact
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GAME_ID: seed-roblox-obby-party-minigam-tower-of-hell
+      ARTIFACT_RUN_ID: '35110903876'
+      EXPECTED_ARTIFACT: sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc
+      ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+      ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+      ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Resolve exact immutable Skyline package
+        id: package
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/skyline-new-experience-package"
+          rm -rf "$root"
+          mkdir -p "$root"
+          gh run download "$ARTIFACT_RUN_ID" --repo "$GITHUB_REPOSITORY" -n "development-roblox-package-$GAME_ID" -D "$root"
+          mapfile -t places < <(find "$root" -type f \( -name '*.rbxl' -o -name '*.rbxlx' \) | sort)
+          [ "${#places[@]}" -eq 1 ]
+          place="${places[0]}"
+          hash="$(sha256sum "$place" | awk '{print tolower($1)}')"
+          expected="$(printf '%s' "$EXPECTED_ARTIFACT" | tr '[:upper:]' '[:lower:]')"
+          [ "sha256:$hash" = "$expected" ]
+          printf 'place_file=%s\n' "$place" >> "$GITHUB_OUTPUT"
+          echo 'ROBLOX_NEW_EXPERIENCE_IMMUTABLE_ARTIFACT_BIND=PASS'
+
+      - name: Create a fresh Roblox experience
+        id: create
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const endpoint='https://apis.roblox.com/universes/v1/universes/create';
+          const apiKey=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
+          const rawCookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
+          const cookie=rawCookie ? (rawCookie.includes('.ROBLOSECURITY=') ? rawCookie : `.ROBLOSECURITY=${rawCookie};`) : '';
+          const payload=JSON.stringify({templatePlaceId:95206881});
+
+          async function attempt(headers){
+            const r=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json',...headers},body:payload});
+            const text=await r.text();
+            return {status:r.status,ok:r.ok,text,headers:r.headers};
+          }
+
+          let result=null;
+          let auth='';
+          if(apiKey){
+            const r=await attempt({'x-api-key':apiKey});
+            console.log(`ROBLOX_NEW_EXPERIENCE_API_KEY_CREATE_HTTP=${r.status}`);
+            if(r.ok){result=r;auth='api-key';}
+          }
+
+          if(!result && cookie){
+            let r=await attempt({'cookie':cookie});
+            let csrf=r.headers.get('x-csrf-token')||'';
+            if(r.status===403 && csrf){
+              r=await attempt({'cookie':cookie,'x-csrf-token':csrf});
+            }
+            console.log(`ROBLOX_NEW_EXPERIENCE_COOKIE_CREATE_HTTP=${r.status}`);
+            if(r.ok){result=r;auth='cookie';}
+          }
+
+          if(!result){
+            console.log(`ROBLOX_NEW_EXPERIENCE_COOKIE_AVAILABLE=${cookie?'YES':'NO'}`);
+            throw new Error('ROBLOX_NEW_EXPERIENCE_CREATE_FAILED');
+          }
+
+          let data={};
+          try{data=JSON.parse(result.text);}catch{}
+          const universeId=String(data.universeId??data.id??'').trim();
+          const placeId=String(data.rootPlaceId??data.placeId??data.rootPlace?.id??'').trim();
+          if(!/^[1-9][0-9]*$/.test(universeId)||!/^[1-9][0-9]*$/.test(placeId)){
+            console.log(`ROBLOX_NEW_EXPERIENCE_CREATE_RESPONSE_KEYS=${Object.keys(data).sort().join(',')}`);
+            throw new Error('ROBLOX_NEW_EXPERIENCE_CREATE_RETURNED_INVALID_IDS');
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`universe_id=${universeId}\nplace_id=${placeId}\nauth=${auth}\n`);
+          console.log(`ROBLOX_NEW_EXPERIENCE_UNIVERSE_ID=${universeId}`);
+          console.log(`ROBLOX_NEW_EXPERIENCE_PLACE_ID=${placeId}`);
+          console.log(`ROBLOX_NEW_EXPERIENCE_CREATE_AUTH=${auth}`);
+          console.log('ROBLOX_NEW_EXPERIENCE_CREATE=PASS');
+          NODE
+
+      - name: Rename new experience to Skyline Rush when authenticated cookie is available
+        if: steps.create.outputs.universe_id != ''
+        continue-on-error: true
+        env:
+          UNIVERSE_ID: ${{ steps.create.outputs.universe_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          const universeId=process.env.UNIVERSE_ID;
+          const raw=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
+          if(!raw){console.log('ROBLOX_NEW_EXPERIENCE_RENAME=SKIPPED_NO_COOKIE');process.exit(0)}
+          const cookie=raw.includes('.ROBLOSECURITY=')?raw:`.ROBLOSECURITY=${raw};`;
+          const url=`https://develop.roblox.com/v2/universes/${universeId}/configuration`;
+          const body=JSON.stringify({name:'Skyline Rush'});
+          let r=await fetch(url,{method:'PATCH',headers:{cookie,'content-type':'application/json'},body});
+          const csrf=r.headers.get('x-csrf-token')||'';
+          if(r.status===403&&csrf){r=await fetch(url,{method:'PATCH',headers:{cookie,'x-csrf-token':csrf,'content-type':'application/json'},body});}
+          console.log(`ROBLOX_NEW_EXPERIENCE_RENAME_HTTP=${r.status}`);
+          if(!r.ok)throw new Error('ROBLOX_NEW_EXPERIENCE_RENAME_FAILED');
+          console.log('ROBLOX_NEW_EXPERIENCE_RENAME=PASS');
+          NODE
+
+      - name: Publish exact Skyline artifact to fresh root place
+        id: publish
+        env:
+          UNIVERSE_ID: ${{ steps.create.outputs.universe_id }}
+          PLACE_ID: ${{ steps.create.outputs.place_id }}
+          PLACE_FILE: ${{ steps.package.outputs.place_file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const universeId=process.env.UNIVERSE_ID;
+          const placeId=process.env.PLACE_ID;
+          const apiKey=String(process.env.ROBLOX_OPEN_CLOUD_API_KEY||'').trim();
+          const rawCookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
+          const cookie=rawCookie ? (rawCookie.includes('.ROBLOSECURITY=')?rawCookie:`.ROBLOSECURITY=${rawCookie};`) : '';
+          const file=process.env.PLACE_FILE;
+          const body=fs.readFileSync(file);
+          const contentType=file.toLowerCase().endsWith('.rbxlx')?'application/xml':'application/octet-stream';
+          const url=`https://apis.roblox.com/universes/v1/${universeId}/places/${placeId}/versions?versionType=Published`;
+
+          async function send(headers){
+            const r=await fetch(url,{method:'POST',headers:{'content-type':contentType,...headers},body});
+            const text=await r.text();
+            return {r,text};
+          }
+
+          let chosen=null;
+          if(apiKey){
+            const x=await send({'x-api-key':apiKey});
+            console.log(`ROBLOX_NEW_EXPERIENCE_PUBLISH_API_KEY_HTTP=${x.r.status}`);
+            if(x.r.ok)chosen=x;
+          }
+          if(!chosen&&cookie){
+            let x=await send({cookie});
+            const csrf=x.r.headers.get('x-csrf-token')||'';
+            if(x.r.status===403&&csrf)x=await send({cookie,'x-csrf-token':csrf});
+            console.log(`ROBLOX_NEW_EXPERIENCE_PUBLISH_COOKIE_HTTP=${x.r.status}`);
+            if(x.r.ok)chosen=x;
+          }
+          if(!chosen)throw new Error('ROBLOX_NEW_EXPERIENCE_PUBLISH_FAILED');
+          let data={};try{data=JSON.parse(chosen.text)}catch{}
+          const version=Number(data.versionNumber||0);
+          if(!Number.isInteger(version)||version<=0)throw new Error('ROBLOX_NEW_EXPERIENCE_PUBLISH_MISSING_VERSION');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`version_number=${version}\n`);
+          console.log('ROBLOX_V3_STATE=PUBLISHED');
+          console.log(`ROBLOX_PUBLISHED_VERSION_NUMBER=${version}`);
+          console.log('ROBLOX_NEW_EXPERIENCE_OPEN_CLOUD_PUBLISH=PASS');
+          NODE
+
+      - name: Final evidence
+        if: always()
+        env:
+          UNIVERSE_ID: ${{ steps.create.outputs.universe_id }}
+          PLACE_ID: ${{ steps.create.outputs.place_id }}
+          VERSION_NUMBER: ${{ steps.publish.outputs.version_number }}
+        shell: bash
+        run: |
+          echo "ROBLOX_FINAL_UNIVERSE_ID=$UNIVERSE_ID"
+          echo "ROBLOX_FINAL_PLACE_ID=$PLACE_ID"
+          echo "ROBLOX_FINAL_VERSION_NUMBER=$VERSION_NUMBER"
+          if [[ "$UNIVERSE_ID" =~ ^[1-9][0-9]*$ && "$PLACE_ID" =~ ^[1-9][0-9]*$ && "$VERSION_NUMBER" =~ ^[1-9][0-9]*$ ]]; then
+            echo 'ROBLOX_FINAL_STATE=PUBLISHED'
+          else
+            echo 'ROBLOX_FINAL_STATE=NOT_PUBLISHED'
+          fi

@@ -1,0 +1,175 @@
+{
+  "version": 5,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-09",
+  "department": "balance",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false
+  },
+  "headline": "RPG 밸런스 부서 1차 독립 아트북",
+  "evidence": [
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-core18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v15.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v16.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v17.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18-reaper.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/rpg.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-daechung-rpg.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentNumbers": "1-200",
+    "progressionCurve": "initial-artbook-assembled-awaiting-owner-decision",
+    "combatFeel": "pass",
+    "economyRewards": "pass",
+    "difficultyTransitions": "pass",
+    "testMeasurements": "pass",
+    "handoffs": "pass"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "1. 전투 체감을 중심으로 '전투 레벨'을 1장으로 설계",
+      "2. 보상 시스템을 '전투 성취도'로 전환",
+      "3. 지역별 사건을 '역사 캐릭터'로 연결"
+    ],
+    "implementationPlan": [
+      "1. 전투 레벨을 1장으로 구축",
+      "2. 보상 시스템을 '전투 성취도'로 전환",
+      "3. 지역별 사건을 '역사 캐릭터'로 연결"
+    ],
+    "demoValidation": [
+      "1. 전투 레벨을 시연 증거로 검증",
+      "2. 보상 시스템을 시연 증거로 검증",
+      "3. 지역별 사건을 시연 증거로 검증"
+    ]
+  },
+  "unverified": [
+    "1. 전투 레벨을 1장으로 설계",
+    "2. 보상 시스템을 '전투 성취도'로 전환",
+    "3. 지역별 사건을 '역사 캐릭터'로 연결"
+  ],
+  "cuts": [
+    {
+      "kind": "balance",
+      "title": "RPG 밸런스 부서 1차 독립 아트북",
+      "body": "1. 전투 레벨을 1장으로 구축 · 2. 보상 시스템을 '전투 성취도'로 전환 · 3. 지역별 사건을 '역사 캐릭터'로 연결",
+      "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/balance.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "UNITY_PLUS_WEB_ARCHIVE",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 1,
+    "pages": [
+      {
+        "owner": "balance",
+        "ownerName": "밸런스",
+        "pageSlot": 1,
+        "visualType": "balance-curve",
+        "title": "RPG 밸런스 부서 1차 독립 …",
+        "focus": "RPG 밸런스 부서 1차 독립 아트북",
+        "caption": "RPG 밸런스 부서 1차 독립 아트북",
+        "elements": [
+          {
+            "label": "체력",
+            "note": "1장으로 전투 레벨 설정",
+            "kind": ""
+          },
+          {
+            "label": "공격",
+            "note": "전투 성취도로 전환",
+            "kind": ""
+          },
+          {
+            "label": "보상",
+            "note": "역사 캐릭터 연결",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/balance-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "balance"
+      }
+    ],
+    "generatedBy": {
+      "department": "balance",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

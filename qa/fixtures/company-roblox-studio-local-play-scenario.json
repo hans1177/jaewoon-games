@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "engine": "roblox",
+  "timeoutMs": 90000,
+  "actions": [
+    {"id":"settle","type":"wait","ms":1200},
+    {"id":"loaded","type":"expect","name":"game-loaded","expression":"game-loaded"},
+    {"id":"player","type":"expect","name":"player-present","expression":"player-present"},
+    {"id":"gui","type":"expect","name":"ui-visible-elements","expression":"ui-visible-elements"},
+    {"id":"ui-text","type":"expect","name":"ui-text-fits","expression":"ui-text-fits","required":false},
+    {"id":"move-forward","type":"key","key":"W","holdMs":500},
+    {"id":"jump","type":"key","key":"Space","holdMs":120},
+    {"id":"post-input-settle","type":"wait","ms":600},
+    {"id":"player-after-input","type":"expect","name":"player-after-input","expression":"player-present"}
+  ]
+}

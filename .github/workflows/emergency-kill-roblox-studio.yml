@@ -1,0 +1,35 @@
+name: Emergency Cancel Roblox Studio QA
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cancel:
+    runs-on: ubuntu-slim
+    timeout-minutes: 3
+    steps:
+      - name: Cancel every active Roblox runtime foundation run without closing user Studio
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow_id=357224927
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow_id/runs?per_page=100" > /tmp/runs.json
+          node - <<'NODE' > /tmp/cancel-ids
+          const fs=require('fs');
+          const j=JSON.parse(fs.readFileSync('/tmp/runs.json','utf8'));
+          const active=new Set(['queued','pending','requested','in_progress','waiting']);
+          for(const r of j.workflow_runs||[]){
+            if(active.has(String(r.status||'').toLowerCase())) process.stdout.write(String(r.id)+'\n');
+          }
+          NODE
+          while read -r run_id; do
+            [ -n "$run_id" ] || continue
+            gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null || true
+            echo "EMERGENCY_ROBLOX_STUDIO_RUN_CANCELLED=$run_id"
+          done < /tmp/cancel-ids
+

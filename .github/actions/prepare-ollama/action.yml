@@ -1,0 +1,256 @@
+name: Prepare cached local Ollama runtime
+description: Build or restore a pinned CPU-only Ollama runtime cache, start the local server only when needed, and optionally pull the model.
+inputs:
+  model:
+    description: Ollama model name to make available locally.
+    required: true
+  version:
+    description: Pinned Ollama version without the leading v.
+    required: false
+    default: '0.33.3'
+  pull-model:
+    description: Whether this caller needs a runnable Ollama server and the requested model. false is cache-warm mode only.
+    required: false
+    default: 'true'
+  department-role:
+    description: Optional autonomous department role. FAST lanes only need development and qa model reviews.
+    required: false
+    default: ''
+  cache-model:
+    description: Opt in to the shared GitHub Actions cache for the requested Ollama model store. Default false preserves callers with their own model cache.
+    required: false
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - name: Detect no-model path
+      id: model-need
+      shell: bash
+      run: |
+        set -euo pipefail
+        skip=false
+        reason=''
+        role='${{ inputs.department-role }}'
+
+        if [ "${{ inputs.pull-model }}" = 'true' ] && [ -n "$role" ] && [ -s .autonomous/work-order.json ]; then
+          lane="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('.autonomous/work-order.json','utf8'));process.stdout.write(String(o.workLane||'FULL').trim().toUpperCase())")"
+          if [ "$lane" = 'FAST' ] && [ "$role" != 'development' ] && [ "$role" != 'qa' ]; then
+            skip=true
+            reason='FAST_INACTIVE_DEPARTMENT'
+            echo "FAST_DEPARTMENT_MODEL_RUNTIME=$role:SKIPPED"
+          fi
+        fi
+
+        if [ "$skip" != 'true' ] && [ "${{ inputs.pull-model }}" = 'true' ] && [ "${GITHUB_JOB:-}" = 'planning_final' ] && [ -s .autonomous/work-order.json ] && [ -d department-results ]; then
+          if node --input-type=module <<'NODE'
+        import fs from 'node:fs';
+        import path from 'node:path';
+        import { canUseDeterministicFinalization } from './tools/autonomous-department-cycle.mjs';
+        const roles=['planning','development','graphics','qa','balance'];
+        const order=JSON.parse(fs.readFileSync('.autonomous/work-order.json','utf8'));
+        const packages=roles.map(role=>JSON.parse(fs.readFileSync(path.join('department-results',`${role}.json`),'utf8')));
+        const results=packages.map(item=>item.result);
+        const vibeCore=packages[0]?.vibeCore||{};
+        const fast=String(order.workLane||'FULL').trim().toUpperCase()==='FAST';
+        const deterministic=fast||canUseDeterministicFinalization({vibeCore,results});
+        console.log(`PLANNING_FINAL_MODEL_RUNTIME=${deterministic?'SKIPPED_DETERMINISTIC':'REQUIRED_AI'}`);
+        process.exit(deterministic?0:1);
+        NODE
+          then
+            skip=true
+            reason='DETERMINISTIC_PLANNING_FINAL'
+          else
+            echo 'PLANNING_FINAL_MODEL_RUNTIME=REQUIRED_AI_OR_PROBE_FAILED'
+          fi
+        fi
+
+        echo "skip=$skip" >> "$GITHUB_OUTPUT"
+        echo "reason=$reason" >> "$GITHUB_OUTPUT"
+
+    - name: No-model runtime summary
+      if: steps.model-need.outputs.skip == 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        echo "OLLAMA_RUNTIME=SKIPPED_${{ steps.model-need.outputs.reason }}"
+        echo "OLLAMA_MODEL_PULL=SKIPPED_${{ steps.model-need.outputs.reason }}"
+        echo 'PAID_API=NO'
+
+    - name: Probe or restore pinned CPU-only Ollama runtime archive
+      id: runtime-cache
+      if: steps.model-need.outputs.skip != 'true'
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/jaewoon-ollama/ollama-linux-*-cpu-${{ inputs.version }}.tar.zst
+        key: jaewoon-ollama-cpu-runtime-v2-${{ runner.os }}-${{ runner.arch }}-${{ inputs.version }}
+        lookup-only: ${{ inputs.pull-model == 'false' }}
+
+    - name: Resolve requested Ollama model cache key
+      id: model-cache-key
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true' && inputs.cache-model == 'true'
+      shell: bash
+      env:
+        MODEL: ${{ inputs.model }}
+      run: |
+        set -euo pipefail
+        safe_model="$(printf '%s' "$MODEL" | sed -E 's/[^A-Za-z0-9._-]+/-/g; s/^-+|-+$//g')"
+        test -n "$safe_model"
+        key="jaewoon-ollama-model-v1-${{ runner.os }}-${{ runner.arch }}-$safe_model"
+        echo "key=$key" >> "$GITHUB_OUTPUT"
+        echo "OLLAMA_SHARED_MODEL_CACHE_KEY=$key"
+
+    - name: Restore requested Ollama model cache
+      id: model-cache
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true' && inputs.cache-model == 'true'
+      uses: actions/cache/restore@v4
+      with:
+        path: ~/.ollama/models
+        key: ${{ steps.model-cache-key.outputs.key }}
+
+    - name: Report requested model cache decision
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true' && inputs.cache-model == 'true'
+      shell: bash
+      run: |
+        echo "OLLAMA_SHARED_MODEL_CACHE_HIT=${{ steps.model-cache.outputs.cache-hit }}"
+        echo "OLLAMA_SHARED_MODEL_CACHE_MODEL=${{ inputs.model }}"
+
+    - name: Build slim CPU runtime on cache miss
+      if: steps.model-need.outputs.skip != 'true' && steps.runtime-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        case "${{ runner.arch }}" in
+          X64) ollama_arch=amd64 ;;
+          ARM64) ollama_arch=arm64 ;;
+          *) echo "OLLAMA_UNSUPPORTED_RUNNER_ARCH=${{ runner.arch }}" >&2; exit 1 ;;
+        esac
+        cache_dir="$HOME/.cache/jaewoon-ollama"
+        slim="$cache_dir/ollama-linux-${ollama_arch}-cpu-${{ inputs.version }}.tar.zst"
+        upstream="$RUNNER_TEMP/ollama-linux-${ollama_arch}-${{ inputs.version }}.tar.zst"
+        stage="$RUNNER_TEMP/ollama-cpu-${{ inputs.version }}"
+        manifest="$RUNNER_TEMP/ollama-cpu-files-${{ inputs.version }}.txt"
+        mkdir -p "$cache_dir" "$stage"
+        echo "OLLAMA_RUNTIME_ARCH=${ollama_arch}"
+        downloaded=0
+        for attempt in 1 2 3; do
+          echo "OLLAMA_UPSTREAM_DOWNLOAD_ATTEMPT=$attempt/3"
+          if curl -fL --retry 3 --retry-all-errors --connect-timeout 15 \
+            "https://ollama.com/download/ollama-linux-${ollama_arch}.tar.zst?version=${{ inputs.version }}" \
+            -o "$upstream"; then
+            downloaded=1
+            break
+          fi
+          sleep $((attempt * 4))
+        done
+        test "$downloaded" = 1
+        test -s "$upstream"
+
+        # GitHub-hosted ubuntu runners have no production GPU workload here. Keep the
+        # Ollama executable and root CPU runtime libraries, while excluding the very
+        # large CUDA/ROCm/MLX payload directories bundled in the 1GB+ upstream archive.
+        tar --zstd -tf "$upstream" | awk '
+          $0 == "bin/ollama" || $0 ~ /^lib\/ollama\/[^/]+$/ { print }
+        ' > "$manifest"
+        grep -qx 'bin/ollama' "$manifest"
+        grep -qx 'lib/ollama/llama-server' "$manifest"
+        tar --zstd -xf "$upstream" -C "$stage" -T "$manifest"
+        test -x "$stage/bin/ollama"
+        test -x "$stage/lib/ollama/llama-server"
+        tar --zstd -cf "$slim" -C "$stage" bin lib
+        test -s "$slim"
+        full_bytes="$(stat -c %s "$upstream")"
+        slim_bytes="$(stat -c %s "$slim")"
+        test "$slim_bytes" -lt "$full_bytes"
+        echo "OLLAMA_UPSTREAM_BYTES=$full_bytes"
+        echo "OLLAMA_CPU_SLIM_BYTES=$slim_bytes"
+        echo 'OLLAMA_GPU_PAYLOAD_EXCLUDED=YES'
+        rm -rf "$upstream" "$stage" "$manifest"
+
+    - name: Cache warmup fast-path summary
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'false'
+      shell: bash
+      run: |
+        set -euo pipefail
+        cache_hit="${{ steps.runtime-cache.outputs.cache-hit }}"
+        echo 'OLLAMA_RUNTIME_CACHE_LOOKUP_ONLY=YES'
+        echo "OLLAMA_CPU_RUNTIME_CACHE_HIT=$cache_hit"
+        if [ "$cache_hit" = 'true' ]; then
+          echo 'OLLAMA_CPU_RUNTIME_RESTORE=SKIPPED_CACHE_HIT'
+        else
+          case "${{ runner.arch }}" in
+            X64) ollama_arch=amd64 ;;
+            ARM64) ollama_arch=arm64 ;;
+            *) echo "OLLAMA_UNSUPPORTED_RUNNER_ARCH=${{ runner.arch }}" >&2; exit 1 ;;
+          esac
+          slim="$HOME/.cache/jaewoon-ollama/ollama-linux-${ollama_arch}-cpu-${{ inputs.version }}.tar.zst"
+          test -s "$slim"
+          echo "OLLAMA_CPU_SLIM_BYTES=$(stat -c %s "$slim")"
+          echo 'OLLAMA_CPU_RUNTIME_REBUILT=YES'
+        fi
+        echo 'OLLAMA_CPU_SLIM_RUNTIME=YES'
+        echo 'OLLAMA_RUNTIME_EXTRACTION=SKIPPED_FOR_WARMUP'
+        echo 'OLLAMA_SERVER_START=SKIPPED_FOR_WARMUP'
+
+    - name: Install slim CPU runtime and start local server
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        case "${{ runner.arch }}" in
+          X64) ollama_arch=amd64 ;;
+          ARM64) ollama_arch=arm64 ;;
+          *) echo "OLLAMA_UNSUPPORTED_RUNNER_ARCH=${{ runner.arch }}" >&2; exit 1 ;;
+        esac
+        slim="$HOME/.cache/jaewoon-ollama/ollama-linux-${ollama_arch}-cpu-${{ inputs.version }}.tar.zst"
+        test -s "$slim"
+        command -v zstd >/dev/null
+        sudo tar --zstd -xf "$slim" -C /usr
+        command -v ollama >/dev/null
+        test -x /usr/lib/ollama/llama-server
+        nohup ollama serve > /tmp/ollama-autonomous.log 2>&1 &
+        for i in $(seq 1 30); do
+          if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
+            echo "OLLAMA_CPU_RUNTIME_CACHE_HIT=${{ steps.runtime-cache.outputs.cache-hit }}"
+            echo 'OLLAMA_CPU_SLIM_RUNTIME=YES'
+            echo 'OLLAMA_SYSTEM_SERVICE_SETUP=SKIPPED'
+            exit 0
+          fi
+          sleep 2
+        done
+        cat /tmp/ollama-autonomous.log || true
+        exit 1
+
+    - name: Ensure requested local model
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        model="${{ inputs.model }}"
+        if ollama list | awk 'NR>1 {print $1}' | grep -Fxq "$model"; then
+          echo "OLLAMA_MODEL_CACHE_HIT=$model"
+          echo 'OLLAMA_MODEL_PULL_SKIPPED=YES'
+          echo 'PAID_API=NO'
+          exit 0
+        fi
+        echo "OLLAMA_MODEL_CACHE_MISS=$model"
+        pulled=0
+        for attempt in 1 2 3 4 5; do
+          echo "OLLAMA_MODEL_PULL_ATTEMPT=$attempt/5"
+          if ollama pull "$model"; then
+            pulled=1
+            break
+          fi
+          sleep $((attempt * 5))
+        done
+        test "$pulled" = 1
+        ollama list | awk 'NR>1 {print $1}' | grep -Fxq "$model"
+        echo 'OLLAMA_MODEL_PULL_RETRY_TRANSIENT=YES'
+        echo 'PAID_API=NO'
+
+    - name: Save requested Ollama model cache immediately
+      if: steps.model-need.outputs.skip != 'true' && inputs.pull-model == 'true' && inputs.cache-model == 'true' && steps.model-cache.outputs.cache-hit != 'true'
+      continue-on-error: true
+      uses: actions/cache/save@v4
+      with:
+        path: ~/.ollama/models
+        key: ${{ steps.model-cache-key.outputs.key }}

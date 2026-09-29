@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "representativeModel": "qwen3:0.6b",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "the main idea of the game"
+    ],
+    "fix": [
+      "the target audience of the game"
+    ],
+    "add": [
+      "the core gameplay mechanic of the game"
+    ],
+    "risks": [
+      "the main idea of the game"
+    ],
+    "evidence": [
+      "the target audience of the game"
+    ],
+    "questions": [
+      "the main idea of the game"
+    ]
+  }
+}

@@ -1,0 +1,74 @@
+name: Company Bridge Export
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'autonomous-portfolio.json'
+      - 'public-game-health.json'
+      - 'company-learning/company-dna.json'
+      - 'game-artbooks.json'
+      - 'tools/company-bridge-export.mjs'
+      - 'qa/company-bridge-export.test.mjs'
+      - '.github/workflows/company-bridge-export.yml'
+  workflow_run:
+    workflows: ['Autonomous Candidate Promotion']
+    types: [completed]
+  workflow_dispatch:
+  schedule:
+    - cron: '30 12 * * *' # 21:30 KST safety refresh
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: company-bridge-export-pr
+  cancel-in-progress: true
+
+jobs:
+  export:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check tools/company-bridge-export.mjs
+      - run: node --test qa/company-bridge-export.test.mjs
+      - run: node tools/company-bridge-export.mjs
+      - name: Propose safe snapshot through PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "jaewoon-company-bridge"
+          git config user.email "actions@users.noreply.github.com"
+          git add -f company-bridge/games-status.json
+          if git diff --cached --quiet; then
+            echo 'BRIDGE_CHANGE=NO'
+            exit 0
+          fi
+
+          branch="automation/company-bridge-${GITHUB_RUN_ID}"
+          git checkout -b "$branch"
+          git commit -m "bridge: refresh safe games status [skip ci]"
+          git push origin "HEAD:refs/heads/$branch"
+
+          pr_url="$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$branch" \
+            --title 'bridge: refresh safe games status' \
+            --body "Safe company bridge snapshot refresh.\n\n- workflow run: ${GITHUB_RUN_ID}\n- bridge secrets: NO\n- public game code write: NO\n- direct main write: NO")"
+
+          echo "COMPANY_BRIDGE_PR=$pr_url"
+          echo 'BRIDGE_SECRETS=NO'
+          echo 'PUBLIC_GAME_CODE_WRITE=NO'
+          echo 'PUBLIC_MAIN_WRITE=NO'

@@ -1,0 +1,81 @@
+name: Finalize Roblox Runtime Harness V8
+
+# migration revision: 4
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/roblox-runtime-v8-finalize.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: roblox-runtime-v8-finalize
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply canonical v8 migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/company-finalize-roblox-runtime-v8.py
+          python3 tools/company-finalize-roblox-runtime-v8.py
+          node --check tools/company-development-roblox-runtime-persist.mjs
+          node --test qa/company-development-roblox-runtime-continuation.test.mjs qa/company-development-roblox-runtime.test.mjs
+          git diff --check
+          grep -Fq "ROBLOX_RUNTIME_HARNESS_VERSION: '8'" .github/workflows/company-development-roblox-runtime.yml
+          grep -Fq "ROBLOX_RUNTIME_HARNESS_VERSION: '8'" .github/workflows/company-development-roblox-runtime-continuation.yml
+          echo 'ROBLOX_RUNTIME_V8_FINALIZE_TEST=PASS'
+      - name: Export verified v8 files
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-runtime-v8-verified
+          if-no-files-found: error
+          retention-days: 1
+          path: |
+            .github/workflows/company-development-roblox-runtime.yml
+            .github/workflows/company-development-roblox-runtime-continuation.yml
+            qa/company-development-roblox-runtime.test.mjs
+            qa/company-development-roblox-runtime-continuation.test.mjs
+            tools/company-development-roblox-runtime-persist.mjs
+      - name: Commit canonical v8 runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-roblox-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git add .github/workflows/company-development-roblox-runtime.yml \
+            .github/workflows/company-development-roblox-runtime-continuation.yml \
+            qa/company-development-roblox-runtime.test.mjs \
+            qa/company-development-roblox-runtime-continuation.test.mjs \
+            tools/company-development-roblox-runtime-persist.mjs
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'fix: finalize Roblox runtime harness v8'
+            git fetch --no-tags origin main
+            git rebase origin/main
+            git push origin HEAD:main
+          fi
+      - name: Dispatch canonical v8 continuation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'ROBLOX_RUNTIME_V8_CONTINUATION_DISPATCH=YES'

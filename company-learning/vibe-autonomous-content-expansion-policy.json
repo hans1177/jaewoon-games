@@ -1,0 +1,524 @@
+{
+  "version": 12,
+  "kind": "VIBE_AUTONOMOUS_CONTENT_EXPANSION_BUILD_UP_CONTRACT",
+  "status": "ACTIVE",
+  "authority": "OWNER_DIRECTIVE_2026-09-27",
+  "sourceOfTruth": "company-learning/vibe-autonomous-content-expansion-policy.json",
+  "objective": "Make every eligible Vibe BUILD_UP iteration improve the existing game toward a more complete coherent product while autonomously expanding content depth, variety, world logic, progression, story, rules, and presentation without creating a new workflow or approval stage.",
+  "scope": {
+    "lifecycle": "EXISTING_BUILD_UP_ONLY",
+    "newWorkflowForbidden": true,
+    "newStageForbidden": true,
+    "newApprovalGateForbidden": true,
+    "separateIdeaProposalStageForbidden": true,
+    "platforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "platformRule": "SAME_AUTONOMOUS_EXPANSION_CONTRACT_PLATFORM_NATIVE_IMPLEMENTATION_FOR_ACTIVE_PLATFORMS_ONLY",
+    "pausedPlatforms": [
+      "FORTNITE_UEFN"
+    ],
+    "pausedPlatformStatus": {
+      "FORTNITE_UEFN": "개발보류"
+    }
+  },
+  "autonomy": {
+    "decisionOwner": "VIBE",
+    "assistantManualIdeaDependencyForbidden": true,
+    "ownerPromptPerExpansionForbidden": true,
+    "chooseHighestValueCoherentGapFromCurrentGame": true,
+    "inputs": [
+      "APPROVED_GAME_DESIGN_AND_IDENTITY",
+      "CURRENT_GAME_SOURCE",
+      "CURRENT_IMPLEMENTED_CONTENT",
+      "VERIFIED_BUILD_UP_HISTORY",
+      "VALID_QUALITY_AND_RUNTIME_EVIDENCE",
+      "CURRENT_PROGRESSION_AND_WORLD_FLOW"
+    ],
+    "selectionRule": "Prefer the highest-value missing, shallow, repetitive, disconnected, or underdeveloped area that can be improved without breaking the approved game identity or existing progression logic."
+  },
+  "completenessEvolution": {
+    "target": "CONTINUOUSLY_MORE_COMPLETE_GAME",
+    "eachIterationMustCheckExistingContentToo": true,
+    "quantityOnlyExpansionForbidden": true,
+    "cosmeticRenameOnlyVariationForbidden": true,
+    "statOnlyCloneVariationForbidden": true,
+    "disconnectedContentDumpForbidden": true,
+    "preserveCoherence": true,
+    "preserveCausality": true,
+    "preserveProgressionFlow": true,
+    "preserveWorldLogic": true,
+    "preserveEstablishedIdentity": true,
+    "improveWeakExistingContentWhenHigherValueThanAddingNewContent": true,
+    "expectedDirection": [
+      "MORE_COMPLETE",
+      "MORE_CONNECTED",
+      "MORE_DISTINCT",
+      "MORE_PLAYABLE",
+      "MORE_READABLE",
+      "MORE_MEANINGFUL",
+      "MORE_COHERENT"
+    ]
+  },
+  "expansionDomains": [
+    "WORLD_BACKGROUND_AND_ENVIRONMENT",
+    "REGIONS_BIOMES_AND_MAP_STRUCTURE",
+    "LANDMARKS_AND_DISCOVERY",
+    "MONSTERS_AND_ENEMY_ECOLOGY",
+    "ELITES_AND_BOSSES",
+    "ENEMY_BEHAVIOR_AND_ATTACK_RULES",
+    "ITEMS_RESOURCES_AND_LOOT",
+    "WEAPONS_ARMOR_EQUIPMENT_AND_SKILLS",
+    "CRAFTING_AND_RECIPES",
+    "NPCS_AND_SOCIAL_ROLES",
+    "QUESTS_OBJECTIVES_AND_EVENTS",
+    "STORY_LORE_AND_WORLD_CAUSALITY",
+    "PROGRESSION_REWARDS_AND_UNLOCKS",
+    "GAMEPLAY_RULES_AND_SYSTEM_INTERACTIONS",
+    "DIFFICULTY_PACING",
+    "MULTIPLAYER_COOP_OR_COMPETITIVE_INTERACTIONS",
+    "AUDIO_VISUAL_PRESENTATION",
+    "UI_FEEDBACK_AND_DISCOVERABILITY",
+    "MID_LATE_GAME_AND_ENDGAME_DEPTH",
+    "REPLAYABILITY_AND_VARIATION"
+  ],
+  "coherentBundleRule": {
+    "enabled": true,
+    "description": "When expanding a major content surface, prefer a connected gameplay bundle over isolated additions.",
+    "exampleBundleComponents": [
+      "PLACE_OR_CONTEXT",
+      "NEW_PLAYER_GOAL",
+      "DISTINCT_ENCOUNTER_OR_INTERACTION",
+      "DISTINCT_REWARD_OR_RESOURCE",
+      "PROGRESSION_OR_UNLOCK_CONNECTION",
+      "STORY_OR_WORLD_REASON_WHEN_RELEVANT",
+      "RULE_OR_SYSTEM_CONNECTION",
+      "PRESENTATION_AND_FEEDBACK"
+    ],
+    "allComponentsNotAlwaysRequired": true,
+    "requirement": "Enough components must be connected that the addition changes real player decisions, progression, discovery, or experience rather than only increasing object count."
+  },
+  "differentiationContract": {
+    "compareAgainstExistingContentBeforeAdding": true,
+    "repeatedTemplateExpansionForbidden": true,
+    "newMonsterShouldDifferentiateBy": [
+      "ROLE",
+      "BEHAVIOR",
+      "THREAT_PATTERN",
+      "COUNTERPLAY",
+      "ECOLOGICAL_OR_WORLD_FUNCTION"
+    ],
+    "newItemShouldDifferentiateBy": [
+      "USE_CASE",
+      "DECISION_VALUE",
+      "SOURCE",
+      "SYNERGY",
+      "PROGRESSION_ROLE"
+    ],
+    "newQuestShouldDifferentiateBy": [
+      "OBJECTIVE_STRUCTURE",
+      "PLAYER_DECISION",
+      "WORLD_CHANGE_OR_INFORMATION",
+      "REWARD_PURPOSE",
+      "FOLLOWUP_CONNECTION"
+    ],
+    "newRegionShouldDifferentiateBy": [
+      "VISUAL_IDENTITY",
+      "NAVIGATION",
+      "HAZARD_OR_RULE",
+      "CONTENT_ECOLOGY",
+      "PROGRESSION_PURPOSE"
+    ],
+    "newBossShouldDifferentiateBy": [
+      "PHASE_OR_PATTERN",
+      "PLAYER_RESPONSE",
+      "ARENA_OR_WORLD_CONTEXT",
+      "REWARD_OR_UNLOCK_PURPOSE"
+    ],
+    "duplicateNamesWithChangedNumbersDoNotCountAsExpansion": true
+  },
+  "continuityAndCausality": {
+    "required": true,
+    "newContentMustAnswerWhenRelevant": [
+      "WHY_IT_EXISTS_IN_THIS_GAME",
+      "WHY_IT_EXISTS_IN_THIS_WORLD_OR_LOCATION",
+      "WHY_THE_PLAYER_ENCOUNTERS_IT_NOW",
+      "WHAT_IT_CONNECTS_TO_BEFORE",
+      "WHAT_IT_ENABLES_OR_CHANGES_AFTER",
+      "HOW_ITS_RULES_INTERACT_WITH_EXISTING_SYSTEMS"
+    ],
+    "abruptProgressionJumpForbidden": true,
+    "loreContradictionForbidden": true,
+    "rewardWithoutGameplayPurposeDiscouraged": true,
+    "regionWithoutProgressionOrDiscoveryPurposeDiscouraged": true,
+    "coreIdentityRewriteForbiddenUnlessApprovedDesignChanged": true
+  },
+  "ruleEvolution": {
+    "autonomousDerivedRuleExpansionAllowed": true,
+    "constraints": [
+      "MUST_REINFORCE_APPROVED_GAME_IDENTITY",
+      "MUST_NOT_CONTRADICT_CANONICAL_RULES",
+      "MUST_CONNECT_TO_EXISTING_OR_NEW_PLAYER_DECISIONS",
+      "MUST_BE_IMPLEMENTED_IN_REAL_GAME_SOURCE",
+      "MUST_BE_VALIDATED_BY_EXISTING_RELEVANT_QA"
+    ],
+    "examples": [
+      "ENVIRONMENTAL_RULES",
+      "ENEMY_RELATIONSHIP_RULES",
+      "BOSS_PHASE_RULES",
+      "ITEM_SYNERGY_RULES",
+      "QUEST_STATE_RULES",
+      "REGION_ACCESS_RULES",
+      "MULTIPLAYER_INTERACTION_RULES"
+    ]
+  },
+  "implementationBinding": {
+    "planner": "tools/vibe2-auto-planner.mjs",
+    "directiveGenerator": "tools/company-build-up-directive.mjs",
+    "implementationOwner": "EXISTING_VIBE_SOURCE_WORKER",
+    "sourceChangeRequiredForImplementedExpansion": true,
+    "placeholderOnlyOrDocumentationOnlyExpansionForbidden": true,
+    "existingIncrementalQaReused": true,
+    "changedResponsibilityQaOnlyByDefault": true,
+    "unchangedVerifiedEvidenceReusable": true,
+    "causalRepairStillPreemptsUnrelatedExpansionWhenProductFailureExists": true,
+    "transientInfrastructureFailureMustNotTriggerGameContentRewrite": true
+  },
+  "iterationBehavior": {
+    "withinExistingBuildUp": [
+      "READ_CURRENT_GAME_AND_VERIFIED_HISTORY",
+      "REASSESS_EXISTING_COMPLETENESS_AND_CONNECTIONS",
+      "SELECT_HIGHEST_VALUE_COHERENT_GAP_OR_WEAK_EXISTING_AREA",
+      "IMPLEMENT_DISTINCT_CONNECTED_GAME_CONTENT_OR_IMPROVEMENT",
+      "USE_EXISTING_INCREMENTAL_QA_AND_REGRESSION_SCOPE",
+      "PERSIST_EFFECT_FOR_NEXT_BUILD_UP_ITERATION"
+    ],
+    "note": "These are responsibilities inside the existing BUILD_UP task, not new pipeline stages.",
+    "breadthCyclePersistence": [
+      "READ_PRIOR_THEME_COVERAGE_LEDGER",
+      "KEEP_CAUSAL_REPAIR_ON_THE_SAME_THEME_WHEN_REQUIRED",
+      "AFTER_VERIFIED_EFFECT_PRIORITIZE_AN_UNCOVERED_OR_LEAST_COVERED_THEME",
+      "PERSIST_THEME_COVERAGE_FOR_THE_NEXT_EXISTING_BUILD_UP_ITERATION"
+    ]
+  },
+  "acceptance": {
+    "expansionCountsOnlyWhen": [
+      "REAL_GAME_SOURCE_CHANGED",
+      "PLAYER_FACING_OR_GAMEPLAY_SYSTEM_EFFECT_EXISTS",
+      "CONTENT_OR_RULE_IS_DISTINCT_FROM_EXISTING_VARIANTS",
+      "CONNECTION_TO_GAME_FLOW_IS_EXPLICIT_OR_IMPLEMENTED",
+      "RELEVANT_EXISTING_QA_PASSES"
+    ],
+    "completionDirectionRequired": true,
+    "regressionsRouteToExistingCausalRepair": true
+  },
+  "breadthCycle": {
+    "enabled": true,
+    "executionBoundary": "EXISTING_BUILD_UP_ONLY",
+    "requiredThemes": [
+      "WORLD_ECOLOGY_STORY_CHAIN",
+      "ENEMY_BOSS_COMBAT_ECOLOGY",
+      "QUEST_STORY_PROGRESSION_CHAIN",
+      "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+      "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+      "MID_LATE_ENDGAME_COMPLETION",
+      "PRESENTATION_WORLD_COHESION"
+    ],
+    "successfulGenerationRule": "PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEME_BEFORE_REPEATING_A_THEME",
+    "causalFailureException": "VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME_UNTIL_THE_FAILURE_IS_RESOLVED",
+    "repetitionGuard": "DO_NOT_REPEAT_THE_SAME_CONTENT_SHAPE_WHILE_OTHER_MAJOR_GAME_CONTENT_THEMES_REMAIN_UNCOVERED",
+    "crossSurfaceExpectation": {
+      "majorExpansionMinimumConnectedImprovements": 3,
+      "examples": [
+        "BACKGROUND_OR_REGION_PLUS_DISTINCT_ENCOUNTER_PLUS_REWARD_OR_ITEM",
+        "QUEST_OR_STORY_PLUS_WORLD_STATE_CHANGE_PLUS_UNLOCK_OR_RULE",
+        "ENEMY_OR_BOSS_PLUS_COUNTERPLAY_PLUS_REGION_OR_REWARD_CONNECTION",
+        "ITEM_OR_EQUIPMENT_PLUS_SOURCE_PLUS_SYNERGY_OR_PROGRESSION_PURPOSE",
+        "GAMEPLAY_RULE_PLUS_TRIGGER_PLUS_PLAYER_DECISION_PLUS_SYSTEM_CONSEQUENCE"
+      ]
+    },
+    "completionMeaning": "A breadth cycle means the game has received meaningful connected improvements across world/background, enemies/bosses, quests/story, items/equipment, gameplay rules/events, mid-late/endgame depth, and presentation. It does not mean cloning one feature into seven names."
+  },
+  "presentationEvolution": {
+    "status": "ACTIVE",
+    "executionBoundary": "EXISTING_BUILD_UP_AND_PRESENTATION_ONLY",
+    "platforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "decisionOwner": "VIBE",
+    "adaptiveReplacementCount": {
+      "minimumActual": 1,
+      "maximumActual": 60,
+      "fixedQuotaForbidden": true,
+      "bands": {
+        "micro": [
+          1,
+          10
+        ],
+        "normal": [
+          10,
+          30
+        ],
+        "major": [
+          30,
+          60
+        ]
+      },
+      "rule": "REPLACE_ONLY_WHAT_ACTUALLY_NEEDS_IMPROVEMENT; SMALL_GAPS_MAY_USE_1_TO_10; NORMAL_REFRESHES_USUALLY_10_TO_30; LARGE_COHERENT_REFRESHES_MAY_USE_30_TO_60"
+    },
+    "includedSurfaces": [
+      "BACKGROUND",
+      "TERRAIN",
+      "ENVIRONMENT",
+      "BUILDING",
+      "PROP",
+      "LANDMARK",
+      "CHARACTER",
+      "MONSTER",
+      "CREATURE",
+      "WEAPON",
+      "ITEM",
+      "EQUIPMENT",
+      "MATERIAL",
+      "TEXTURE",
+      "VFX",
+      "MOTION",
+      "ANIMATION",
+      "MENU",
+      "HUD",
+      "INVENTORY_UI",
+      "SHOP_UI",
+      "CRAFT_UI",
+      "QUEST_UI",
+      "ICON",
+      "TYPOGRAPHY",
+      "CAMERA_PRESENTATION",
+      "ENVIRONMENTAL_PRESENTATION",
+      "AUDIO_PRESENTATION_WHEN_RELEVANT",
+      "MAIN_MENU",
+      "SETTINGS_UI",
+      "RESULT_UI"
+    ],
+    "candidateUseModes": [
+      "DIRECT_REUSE_WHEN_ALREADY_CONCEPT_MATCHED",
+      "ADAPT_RESTYLE_AND_RETARGET",
+      "TRANSFORMATIVE_RECOMBINATION_FROM_MULTIPLE_COMPATIBLE_REFERENCES",
+      "NEW_PROJECT_SPECIFIC_EXPRESSION_WHEN_REUSE_WOULD_BE_WEAKER"
+    ],
+    "selectionPriority": [
+      "PLACEHOLDER",
+      "LOW_QUALITY",
+      "STYLE_MISMATCH",
+      "DUPLICATE_OR_OVERREUSED",
+      "POOR_READABILITY",
+      "WEAK_VFX_OR_MOTION",
+      "OTHER_VERIFIED_PRESENTATION_GAP"
+    ],
+    "coherence": {
+      "styleLockRequired": true,
+      "worldAndRegionContextRequired": true,
+      "rawAssetPackMashupForbidden": true,
+      "recombinationMustNormalizeIntoOneGameSpecificVisualLanguage": true,
+      "foreignRawSourceAssetBytesOrProtectedIdentifiersForbidden": true
+    },
+    "completion": {
+      "actualSourceOrBindingDeltaRequired": true,
+      "selectionOnlyDoesNotCount": true,
+      "markerOnlyDoesNotCount": true,
+      "actualReplacementCountMustBeRecorded": true,
+      "changedSurfacesMustBeRecorded": true,
+      "reuseModesUsedMustBeRecorded": true,
+      "zeroActualReplacementCannotPass": true,
+      "beforeAfterEvidenceRequired": true,
+      "perReplacementSourceEvidenceRequired": true,
+      "actualReplacementCountMustEqualGroundedEvidenceCount": true,
+      "replacementEvidenceMustReferenceTouchedSourcePath": true,
+      "replacementEvidenceSnippetMustExistInChangedSource": true,
+      "duplicateReplacementEvidenceCannotInflateCount": true,
+      "selfReportedCountWithoutGroundedSourceEvidenceCannotPass": true,
+      "groundedEvidenceMustPersistThroughCandidateManifest": true,
+      "incrementalQaMustRevalidateGroundedEvidenceAgainstCandidateSource": true,
+      "fanInMustRequireGroundedGraphicsEvidence": true,
+      "targetRuntimeEvidenceMustBindExactBuildUpSourceIdentity": true,
+      "robloxF9SettlementRequiresExactPromotedSourceTree": true,
+      "unityRuntimeIndependentQaRegressionRequiredBeforeBuildUpPass": true,
+      "webBuildUpPassRequiresCandidateRuntimeBeforeAfterAndDeploymentPreview": true,
+      "webPromotedSourceTreeMustBeRecordedBeforeSettlement": true,
+      "webReleaseMustNotDispatchAnotherPlatformRuntime": true
+    },
+    "menuExperienceDiversity": {
+      "status": "ACTIVE",
+      "executionBoundary": "EXISTING_MENU_AND_UI_BUILD_UP_ONLY",
+      "runtimePlatforms": [
+        "WEB",
+        "ROBLOX",
+        "UNITY"
+      ],
+      "surfaces": [
+        "MAIN_MENU",
+        "INVENTORY_UI",
+        "SHOP_UI",
+        "CRAFT_UI",
+        "QUEST_UI",
+        "SETTINGS_UI",
+        "RESULT_UI"
+      ],
+      "genericOneTemplateForAllGamesForbidden": true,
+      "colorOrBackgroundOnlyVariationDoesNotCount": true,
+      "gameAndGenreContextRequired": true,
+      "chooseAdaptOrHybridizePatternFamilies": true,
+      "projectSpecificPatternAllowed": true,
+      "patternFamilies": {
+        "MAIN_MENU": [
+          "CINEMATIC_HERO",
+          "WORLD_INTEGRATED_HUB",
+          "COMPACT_ACTION",
+          "PROJECT_SPECIFIC_HYBRID"
+        ],
+        "INVENTORY_UI": [
+          "GRID_LOADOUT",
+          "CATEGORY_LIST_DETAIL",
+          "QUICKSLOT_FIRST",
+          "PROJECT_SPECIFIC_HYBRID"
+        ],
+        "SHOP_UI": [
+          "CATALOG_COMPARE",
+          "MERCHANT_CONTEXT",
+          "UPGRADE_FIRST",
+          "PROJECT_SPECIFIC_HYBRID"
+        ],
+        "CRAFT_UI": [
+          "RECIPE_TREE",
+          "STATION_CONTEXT",
+          "MATERIAL_FIRST",
+          "PROJECT_SPECIFIC_HYBRID"
+        ],
+        "QUEST_UI": [
+          "TRACKER_BOARD",
+          "JOURNAL_CHAIN",
+          "WORLD_OBJECTIVE",
+          "PROJECT_SPECIFIC_HYBRID"
+        ],
+        "SETTINGS_UI": [
+          "TAB_PANEL",
+          "QUICK_OVERLAY",
+          "ACCESSIBILITY_FIRST",
+          "PROJECT_SPECIFIC_HYBRID"
+        ],
+        "RESULT_UI": [
+          "RUN_SUMMARY",
+          "REWARD_BREAKDOWN",
+          "NEXT_OBJECTIVE",
+          "PROJECT_SPECIFIC_HYBRID"
+        ]
+      },
+      "selectionRule": "DO_NOT_ASSIGN_ONE_FIXED_TEMPLATE_PER_GENRE; VIBE_CHOOSES_OR_HYBRIDIZES_INFORMATION_HIERARCHY_NAVIGATION_LAYOUT_AND_INTERACTION_FROM_ACTUAL_GAME_RULES_GENRE_SESSION_FLOW_AND_EXISTING_UI_RESPONSIBILITY",
+      "mobileFirst": {
+        "touchTargetMinimumPx": 44,
+        "safeAreaRequired": true,
+        "narrowScreenNoClipping": true,
+        "scrollReachabilityRequired": true,
+        "thumbReachabilityRequired": true
+      },
+      "preservation": {
+        "reuseExistingUiSystemAndResponsibleFiles": true,
+        "inventMissingGameplaySystemOnlyToFillMenuForbidden": true,
+        "gameplayEconomySaveQuestAndProgressionMeaningUnchanged": true,
+        "sameGameStyleLockRequired": true
+      },
+      "version": 3,
+      "unityWebIsUnityBuildTargetNotIndependentPlatform": true,
+      "implementationSeparation": {
+        "version": 1,
+        "sharedExperienceLayer": {
+          "reusableAcrossPlatforms": true,
+          "includes": [
+            "GAME_STYLE_LOCK",
+            "INFORMATION_HIERARCHY_INTENT",
+            "MENU_PATTERN_FAMILY",
+            "ICON_AND_TEXTURE_SOURCE_IDENTITY",
+            "UI_MOTION_LANGUAGE",
+            "PLAYER_FLOW_SEMANTICS"
+          ],
+          "runtimeCodeSharingNotImplied": true
+        },
+        "ROBLOX": {
+          "runtimeImplementation": "ROBLOX_NATIVE_EXISTING_UI_SYSTEM",
+          "directUnityRuntimeCodeReuseForbidden": true,
+          "sharedSourceAssetReuseRequiresExplicitCompatibility": true
+        },
+        "UNITY_APP_AND_WEBGL": {
+          "runtimeImplementation": "SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE",
+          "canonicalSourceRoot": "unity-games/<gameId>/",
+          "unityAppAndWebglUiSourceSharedByDefault": true,
+          "separateHtmlCssJsGameplayUiForbidden": true,
+          "webglCompatibilityAdaptationAllowedInsideCanonicalUnityProject": true,
+          "gameplayUiSemanticForkForbidden": true,
+          "requiredUnityWebPlannerProfile": "UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE"
+        },
+        "GENERIC_WEB_OR_LEGACY_VALIDATION": {
+          "runtimeImplementation": "EXISTING_WEB_UI_SYSTEM_ONLY",
+          "mayRemainForExistingWebProjects": true,
+          "cannotSubstituteForUnityWebglGameplayUi": true
+        },
+        "FORTNITE_UEFN": {
+          "runtimeImplementation": "PAUSED_OWNER_HOLD_NO_BUILD_UP",
+          "directUnityOrRobloxRuntimeCodeReuseForbidden": true,
+          "resumeRuntimeImplementation": "UEFN_NATIVE_UI_SYSTEM",
+          "ownerExplicitResumeRequired": true
+        }
+      },
+      "pausedPlatforms": [
+        "FORTNITE_UEFN"
+      ],
+      "pausedPlatformStatus": {
+        "FORTNITE_UEFN": "개발보류"
+      },
+      "plannerActiveBindingProfileRequired": true,
+      "unityWebMustNotUseGenericWebBindingProfile": true
+    },
+    "pausedPlatforms": [
+      "FORTNITE_UEFN"
+    ],
+    "pausedPlatformRule": "FORTNITE_UEFN_OWNER_HOLD_NO_AUTONOMOUS_BUILD_UP_UNTIL_EXPLICIT_RESUME"
+  },
+  "buildUpRuntimeClosure": {
+    "version": 2,
+    "activePlatforms": [
+      "WEB",
+      "ROBLOX",
+      "UNITY"
+    ],
+    "pausedPlatforms": [
+      "FORTNITE_UEFN"
+    ],
+    "sourceIdentity": "SOURCE_ROOT_TREE_SHA",
+    "robloxSameGameDifferentSourceMayNotSettle": true,
+    "noNewWorkflowOrShadowPipeline": true,
+    "unity": {
+      "waitingTaskMustRecordPromotedSourceTreeSha": true,
+      "runtimeSettlementMustMatchWaitingSourceTreeSha": true,
+      "incrementalApkBuildAndMainPromotionAloneMayNotSettleBuildUpTask": true,
+      "runtimeIndependentQaRegressionRequiredBeforeVibePass": true,
+      "sameGameDifferentSourceMayNotSettle": true
+    },
+    "nativeVerificationCallbackMonotonicity": {
+      "laterStageWaitOrVerifiedStateMayNotRegress": true,
+      "candidateVerificationMayMergeEvidenceWithoutRewinding": true
+    },
+    "web": {
+      "candidateRuntimeBeforeAfterRequired": true,
+      "releaseDeploymentTarget": "CLOUDFLARE_PAGES",
+      "releaseDeploymentPreviewMustPass": true,
+      "reviewedMainPromotionRequired": true,
+      "promotedSourceTreeShaRequired": true,
+      "finalSettlementRequiresExactPromotedSourceTree": true,
+      "crossPlatformRuntimeDispatchForbidden": true,
+      "robloxRuntimeMayNotSubstituteForWebRuntime": true
+    }
+  }
+}

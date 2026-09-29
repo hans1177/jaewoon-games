@@ -1,0 +1,183 @@
+{
+  "version": 5,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-09",
+  "department": "qa",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false
+  },
+  "headline": "RPG QA 부서 1차 독립 아트북 작업",
+  "evidence": [
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-core18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v15.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v16.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v17.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18-reaper.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/rpg.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-daechung-rpg.json",
+      "usage": "department-work-order"
+    }
+  ],
+  "section": {
+    "currentPlayableFlow": "initial-artbook-assembled-awaiting-owner-decision",
+    "verifiedEvidence": "Unity + Web Archive",
+    "problemScenes": "플레이 흐름·문제 장면·테스트 동선",
+    "mobileSaveErrorRisks": "no-blocking-smoke-errors",
+    "testScenarios": "demo-validation-required",
+    "unverified": "noOtherDepartmentSubmissionReading",
+    "handoffs": "creativeIdeasAreProposals"
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "주인공의 왜 이 지역으로 가는지 설명",
+      "전투·성장과 이야기 구조",
+      "플레이 시연 증거 제시"
+    ],
+    "implementationPlan": [
+      "Unity 코어 클래스 구조",
+      "Prototype Visuals 코스트",
+      "Runtime Bootstrap 코스트"
+    ],
+    "demoValidation": [
+      "시연 증거 검증",
+      "플레이 흐름 테스트"
+    ]
+  },
+  "unverified": [
+    "noOtherDepartmentSubmissionReading",
+    "noScores"
+  ],
+  "cuts": [
+    {
+      "kind": "qa",
+      "title": "RPG QA 부서 1차 독립 아트북 작업",
+      "body": "Unity + Web Archive · 1장 이미지 중심 · 140자 이하 각 항목",
+      "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/qa.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "UNITY_PLUS_WEB_ARCHIVE",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 1,
+    "pages": [
+      {
+        "owner": "qa",
+        "ownerName": "QA",
+        "pageSlot": 1,
+        "visualType": "test-journey",
+        "title": "RPG QA 부서 1차 독립 아…",
+        "focus": "RPG QA 부서 1차 독립 아트북 작업",
+        "caption": "RPG QA 부서 1차 독립 아트북 작업",
+        "elements": [
+          {
+            "label": "test-journey",
+            "note": "test-journey",
+            "kind": ""
+          },
+          {
+            "label": "problemScen…",
+            "note": "problemScenes",
+            "kind": ""
+          },
+          {
+            "label": "verifiedEvi…",
+            "note": "Unity + Web Archive",
+            "kind": ""
+          },
+          {
+            "label": "unverified",
+            "note": "noOtherDepartmentSu…",
+            "kind": ""
+          },
+          {
+            "label": "handoffs",
+            "note": "creativeIdeasArePro…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/qa-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "qa"
+      }
+    ],
+    "generatedBy": {
+      "department": "qa",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

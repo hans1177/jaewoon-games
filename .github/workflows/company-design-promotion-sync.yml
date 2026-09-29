@@ -1,0 +1,178 @@
+name: Company DESIGN_ONLY Promotion Sync
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Company Seed DESIGN_ONLY Runtime
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-design-promotion-sync.yml'
+      - 'tools/design-only-promotion-sync.mjs'
+      - 'tools/company-minimum-design-contract.mjs'
+      - 'tools/company-direct-native-design-migration.mjs'
+      - 'tools/company-homepage-platform-exposure-sync.mjs'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'qa/design-only-promotion-sync.test.mjs'
+      - 'qa/design-promotion-workflow-contract.test.mjs'
+      - 'company-directive.json'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: company-design-promotion-runtime
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
+jobs:
+  promote:
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'workflow_run' && (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'))
+    runs-on: ubuntu-slim
+    timeout-minutes: 12
+    steps:
+      - name: Checkout current engine source
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 2
+
+      - name: Overlay latest company runtime design evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH" --depth=2 --no-tags --quiet
+          for runtime_path in game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json roblox-dedicated-targets.json; do
+            if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then
+              git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"
+            fi
+          done
+          git reset -- game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json roblox-dedicated-targets.json >/dev/null 2>&1 || true
+          test -f game-seed-state.json
+          echo 'DESIGN_PROMOTION_RUNTIME_OVERLAY=YES'
+          echo 'DEVELOPMENT_ADMISSION_GATE=MINIMUM_DUAL_PLATFORM_DESIGN_READY'
+          echo 'STRICT_DESIGN_REVIEW=PARALLEL_NON_ADMISSION_GATE'
+          echo 'HUMAN_POLICY_DOCUMENT_REQUIRED=NO'
+          echo 'PUBLIC_MAIN_WRITE=NO'
+
+      - name: Validate promotion contract
+        run: |
+          node --check tools/design-only-promotion-sync.mjs
+          node --check tools/company-minimum-design-contract.mjs
+          node --check tools/company-direct-native-design-migration.mjs
+          node --check tools/company-homepage-platform-exposure-sync.mjs
+          node --check tools/company-direct-native-design-migration.mjs
+          node --test qa/company-minimum-design-contract.test.mjs
+          node --test qa/design-only-promotion-sync.test.mjs qa/design-promotion-workflow-contract.test.mjs
+
+      - name: Migrate legacy DEVELOPMENT_CONFIRMED designs to direct native profiles
+        run: node tools/company-direct-native-design-migration.mjs
+
+      - name: Promote minimum dual-platform design directly to native development
+        run: node tools/design-only-promotion-sync.mjs
+
+      - name: Verify confirmed-seed dual-native queue invariant
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
+          const byGame=new Map((queue.items||[]).map(item=>[item.gameId,item]));
+          let confirmed=0;
+          for(const seed of state.seeds||[]){
+            if(String(seed.status||'').toUpperCase()!=='ACTIVE')continue;
+            if(String(seed.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            confirmed++;
+            const item=byGame.get(seed.gameId);
+            if(!item)throw new Error(`development queue missing: ${seed.gameId}`);
+            if(item.minimumDesignContract?.pass!==true)throw new Error(`minimum design contract missing: ${seed.gameId}`);
+            const targets=new Set(item.concurrentTargetPlatforms||[]);
+            if(!targets.has('ROBLOX')||!targets.has('UNITY'))throw new Error(`dual native target pair missing: ${seed.gameId}`);
+            if(item.platformDesignProfiles?.ROBLOX?.jsonPointer!=='/content/platformProfiles/ROBLOX')throw new Error(`Roblox platform profile missing: ${seed.gameId}`);
+            if(item.platformDesignProfiles?.UNITY?.jsonPointer!=='/content/platformProfiles/UNITY')throw new Error(`Unity platform profile missing: ${seed.gameId}`);
+            if(Object.hasOwn(item,'webValidationRequired')||Object.hasOwn(item,'musicValidationRequired'))throw new Error(`legacy Web gate key still present: ${seed.gameId}`);
+            const currentStep=String(item.currentStep||'').trim().toUpperCase();
+            if(!currentStep||/^WEB_|^WAITING_WEB/.test(currentStep))throw new Error(`direct-native progress invalid: ${seed.gameId}:${currentStep||'MISSING'}`);
+            const project=(portfolio.projects||[]).find(row=>row.slug===seed.gameId);
+            if(project?.mode!=='ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT')throw new Error(`portfolio dual native mode missing: ${seed.gameId}`);
+          }
+          console.log(`ACTIVE_DEVELOPMENT_CONFIRMED_SEED_COUNT=${confirmed}`);
+          console.log('DEVELOPMENT_ADMISSION_GATE=MINIMUM_DUAL_PLATFORM_DESIGN_READY');
+          console.log('STRICT_DESIGN_REVIEW=PARALLEL_NON_ADMISSION_GATE');
+          console.log('UNITY_WEB_GATE=DISABLED');
+          console.log('DUAL_NATIVE_QUEUE_INVARIANT=PASS');
+          NODE
+
+      - name: Persist promoted state to company runtime branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-design-promotion'
+          git config user.email 'design-promotion@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3; do
+            echo "DESIGN_PROMOTION_RUNTIME_PERSIST_ATTEMPT=${attempt}/3"
+            git fetch origin "+refs/heads/main:refs/remotes/origin/main" "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH" --depth=2 --no-tags --quiet
+
+            # The earlier evidence overlay and promotion calculation intentionally dirty the main worktree.
+            # Discard only this ephemeral checkout state before switching to the canonical runtime branch;
+            # promotion is recalculated from the newest runtime state below.
+            git reset --hard HEAD
+            git clean -fd
+            git checkout -B design-promotion-persist "origin/$COMPANY_RUNTIME_BRANCH"
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            git clean -fd
+
+            # Re-run the canonical promotion calculation against the newest runtime state.
+            # Overlay only machine policy and the responsible runtime tools from main.
+            # Runtime JSON remains branch-owned; policy/tool files are never persisted to company-runtime.
+            git checkout origin/main -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-minimum-design-contract.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs tools/company-homepage-platform-exposure-sync.mjs tools/company-shared-context.mjs tools/company-direct-native-design-migration.mjs
+            git reset -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-minimum-design-contract.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs tools/company-homepage-platform-exposure-sync.mjs tools/company-shared-context.mjs tools/company-direct-native-design-migration.mjs >/dev/null 2>&1 || true
+            node tools/company-direct-native-design-migration.mjs
+            node tools/design-only-promotion-sync.mjs
+            node tools/company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
+
+            git add -- game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json homepage-platform-exposure.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=NO'
+              persisted=1
+              break
+            fi
+            git commit -m 'runtime: reconcile confirmed seeds into development queue [skip ci]'
+            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
+              echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=PERSISTED'
+              persisted=1
+              break
+            fi
+            echo 'DESIGN_PROMOTION_RUNTIME_PERSIST_CONFLICT=RETRY_LATEST_RUNTIME'
+          done
+          if [ "$persisted" -ne 1 ]; then
+            echo 'DESIGN_PROMOTION_RUNTIME_PERSIST=FAILED_AFTER_3_ATTEMPTS' >&2
+            exit 1
+          fi
+          echo 'PUBLIC_MAIN_WRITE=NO'
+
+      - name: Dispatch native development and immediate Vibe planner refill
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f trigger_source=DESIGN_PROMOTION
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'DIRECT_NATIVE_DUAL_DISPATCH=CENTRAL_EXACT_FANOUT'
+          echo 'DIRECT_NATIVE_BATCH_DISPATCH=FORBIDDEN'
+          echo 'VERIFIED_DESIGN_VIBE_REFILL_DISPATCH=YES'
+          echo 'VERIFIED_DESIGN_VIBE_REFILL_SCHEDULER=vibe2-24h-runner.yml'
+          echo 'VERIFIED_DESIGN_VIBE_REFILL_AFTER_RUNTIME_PERSIST=YES'
+          echo 'UNITY_WEB_PROMOTION_GATE=NO'
+          echo 'ONE_PLATFORM_REQUEST_STARTS_BOTH=YES'

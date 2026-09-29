@@ -1,0 +1,233 @@
+{
+  "version": 5,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-09",
+  "department": "planning",
+  "status": "SUBMITTED",
+  "departmentReadiness": "READY",
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "apiKeyRequired": false,
+    "independentInvocation": true,
+    "readsOtherDepartmentSubmissions": false,
+    "structuredOutput": true,
+    "think": false
+  },
+  "headline": "대충 RPG 1차 독립 아트북",
+  "evidence": [
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/index.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-core18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v15.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v16.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v17.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18-reaper.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/patch-v18.js",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "web-games/daechung-rpg/rpg.html",
+      "usage": "role-scoped-read-only-evidence"
+    },
+    {
+      "source": "artbook-work-orders/2026-09-09-daechung-rpg.json",
+      "usage": "department-work-order"
+    },
+    {
+      "source": "artbook-submissions/daechung-rpg/2026-09-09/vibe2-first-draft.json",
+      "usage": "vibe2-first-draft-proposal-reviewed-by-planning"
+    }
+  ],
+  "section": {
+    "worldEvidence": "대충 RPG는 2026년 9월 9일 기준, 1차 아트북을 기준으로 진행 중입니다.",
+    "protagonistMotivationEvidence": "주인공의 목적은 다음 지역으로 가는 자연스러운 사건이며, 지역·몬스터·보스·장비·전직의 사건이 자연스럽게 이어진다.",
+    "regionCausality": "지역별 사건은 주인공의 행동과 사건의 결과로 자연스럽게 이어진다.",
+    "storyGameplayConnection": "몬스터/보스 존재 이유는 전투·성장과 이야기에 기반하고, 플레이 시연 증거는 촌장에게 50G 보상으로 이어진다.",
+    "gaps": "f10, f11은 추가로 검증할 수 있는 사건이 있습니다.",
+    "handoffs": "리더십과 협업을 통해 기획을 완료하고, 촌장에게 50G 보상으로 완료됩니다."
+  },
+  "conceptPlan": {
+    "creativeIdeas": [
+      "세계관 한 장: 마을과 산 등반길의 관계를 통해 전략적 배경을 설정합니다.",
+      "주인공 동기: 전투와 성장의 결과로 자연스럽게 이어진 총 동기 설정.",
+      "지역별 사건: 각 지역의 사건이 주인공의 행동과 자연스럽게 이어진다."
+    ],
+    "implementationPlan": [
+      "리더십과 협업을 통해 기획을 완료하고, 촌장에게 50G 보상으로 완료됩니다."
+    ],
+    "demoValidation": [
+      "플레이 시연 증거는 촌장에게 50G 보상으로 이어진다."
+    ]
+  },
+  "unverified": [
+    "f10, f11은 추가로 검증할 수 있는 사건이 있습니다."
+  ],
+  "cuts": [
+    {
+      "kind": "planning",
+      "title": "대충 RPG 1차 독립 아트북",
+      "body": "리더십과 협업을 통해 기획을 완료하고, 촌장에게 50G 보상으로 완료됩니다.",
+      "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/planning.svg"
+    }
+  ],
+  "verification": {
+    "evidenceOnly": true,
+    "sourceMode": "UNITY_PLUS_WEB_ARCHIVE",
+    "webArchiveReadOnly": true,
+    "otherDepartmentSubmissionsRead": false,
+    "productionApproval": false,
+    "numericQualityScoreUsed": false,
+    "sectionOutputNormalized": true,
+    "structuredOutputSchema": true,
+    "thinkDisabled": true,
+    "conceptPlanRequired": true,
+    "creativeIdeasAreProposals": true,
+    "implementationPlanRequired": true,
+    "demoValidationRequired": true,
+    "vibe2FirstDraftReviewed": true,
+    "policyBlocks": []
+  },
+  "presentation": {
+    "version": 1,
+    "mode": "VISUAL_FIRST_EMPLOYEE_AUTHORED",
+    "pageCount": 2,
+    "pages": [
+      {
+        "owner": "planning",
+        "ownerName": "기획",
+        "pageSlot": 1,
+        "visualType": "world-map",
+        "title": "대충 RPG 1차 독립 아트북",
+        "focus": "대충 RPG는 2026년 9월 9일 기준, 1차 …",
+        "caption": "대충 RPG는 2026년 9월 9일 기준, 1차 아트북을 기준으로 진행 중입니다.",
+        "elements": [
+          {
+            "label": "worldEviden…",
+            "note": "대충 RPG는 2026년 9월 9일…",
+            "kind": ""
+          },
+          {
+            "label": "protagonist…",
+            "note": "주인공의 목적은 다음 지역으로 가는…",
+            "kind": ""
+          },
+          {
+            "label": "regionCausa…",
+            "note": "지역별 사건은 주인공의 행동과 사건…",
+            "kind": ""
+          },
+          {
+            "label": "storyGamepl…",
+            "note": "몬스터/보스 존재 이유는 전투·성장…",
+            "kind": ""
+          },
+          {
+            "label": "gaps",
+            "note": "f10, f11은 추가로 검증할 수…",
+            "kind": ""
+          },
+          {
+            "label": "handoffs",
+            "note": "리더십과 협업을 통해 기획을 완료하…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/planning-1.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "planning"
+      },
+      {
+        "owner": "planning",
+        "ownerName": "기획",
+        "pageSlot": 2,
+        "visualType": "story-flow",
+        "title": "대충 RPG 2차 독립 아트북",
+        "focus": "2026년 9월 9일 기준, 2차 아트북을 기준으…",
+        "caption": "2026년 9월 9일 기준, 2차 아트북을 기준으로 진행 중입니다.",
+        "elements": [
+          {
+            "label": "worldEviden…",
+            "note": "대충 RPG는 2026년 9월 9일…",
+            "kind": ""
+          },
+          {
+            "label": "protagonist…",
+            "note": "주인공의 목적은 다음 지역으로 가는…",
+            "kind": ""
+          },
+          {
+            "label": "regionCausa…",
+            "note": "지역별 사건은 주인공의 행동과 사건…",
+            "kind": ""
+          },
+          {
+            "label": "storyGamepl…",
+            "note": "몬스터/보스 존재 이유는 전투·성장…",
+            "kind": ""
+          },
+          {
+            "label": "gaps",
+            "note": "f10, f11은 추가로 검증할 수…",
+            "kind": ""
+          },
+          {
+            "label": "handoffs",
+            "note": "리더십과 협업을 통해 기획을 완료하…",
+            "kind": ""
+          }
+        ],
+        "callouts": [],
+        "image": "artbook-submissions/daechung-rpg/2026-09-09/visuals/planning-2.svg",
+        "employeeAuthored": true,
+        "sourceDepartment": "planning"
+      }
+    ],
+    "generatedBy": {
+      "department": "planning",
+      "model": "qwen3:0.6b",
+      "localInference": true,
+      "assistantAuthored": false
+    },
+    "rules": {
+      "imageFirst": true,
+      "shortText": true,
+      "koreanFirst": true,
+      "newClaimsForbidden": true,
+      "otherDepartmentsUnread": true
+    }
+  }
+}

@@ -1,0 +1,108 @@
+name: One-shot Skyline Studio Publish UI Probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/roblox-skyline-studio-ui-probe.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  probe:
+    name: inspect authenticated Studio publish UI without creating anything
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Resolve immutable Skyline package
+        id: package
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: seed-roblox-obby-party-minigam-tower-of-hell
+          ARTIFACT_RUN_ID: '35110903876'
+          EXPECTED_ARTIFACT: sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:RUNNER_TEMP 'skyline-studio-ui-probe-package'
+          Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path $root | Out-Null
+          gh run download $env:ARTIFACT_RUN_ID --repo $env:GITHUB_REPOSITORY -n "development-roblox-package-$env:GAME_ID" -D $root
+          $places = @(Get-ChildItem -Path $root -Recurse -File | Where-Object { $_.Extension -in @('.rbxl','.rbxlx') })
+          if ($places.Count -ne 1) { throw "Expected exactly one Roblox place package; found $($places.Count)" }
+          $place = $places[0]
+          $hash = (Get-FileHash -Algorithm SHA256 $place.FullName).Hash.ToLowerInvariant()
+          if ("sha256:$hash" -ne $env:EXPECTED_ARTIFACT.ToLowerInvariant()) { throw 'Immutable Skyline package SHA256 mismatch' }
+          "place_file=$($place.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host 'ROBLOX_STUDIO_UI_PROBE_ARTIFACT_BIND=PASS'
+
+      - name: Open authenticated Studio and inspect publish UI
+        env:
+          PLACE_FILE: ${{ steps.package.outputs.place_file }}
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Add-Type -AssemblyName UIAutomationClient
+          Add-Type -AssemblyName UIAutomationTypes
+          Add-Type -AssemblyName System.Windows.Forms
+
+          $studio = Get-ChildItem "$env:LOCALAPPDATA\Roblox\Versions" -Recurse -File -Filter RobloxStudioBeta.exe -ErrorAction Stop | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
+          Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+
+          $argLine = "--task EditFile --localPlaceFile `"$env:PLACE_FILE`""
+          $p = Start-Process -FilePath $studio.FullName -ArgumentList $argLine -PassThru
+          $deadline = (Get-Date).AddSeconds(90)
+          do {
+            Start-Sleep -Milliseconds 500
+            $p.Refresh()
+            $hwnd = $p.MainWindowHandle
+          } while ($hwnd -eq 0 -and (Get-Date) -lt $deadline)
+          if ($hwnd -eq 0) { throw 'Studio main window did not become available' }
+
+          $root = [System.Windows.Automation.AutomationElement]::FromHandle($hwnd)
+          if (-not $root) { throw 'Failed to bind Studio main window to UI Automation' }
+          Write-Host "ROBLOX_STUDIO_WINDOW_TITLE=$($root.Current.Name)"
+
+          function Dump-UiTree([System.Windows.Automation.AutomationElement]$element, [int]$depth, [int]$maxDepth) {
+            if (-not $element -or $depth -gt $maxDepth) { return }
+            try {
+              $name = [string]$element.Current.Name
+              $type = [string]$element.Current.ControlType.ProgrammaticName
+              $aid = [string]$element.Current.AutomationId
+              $cls = [string]$element.Current.ClassName
+              if ($name -or $aid -or $type -match 'Menu|Button|Edit|Window|Pane') {
+                Write-Host ("UI|DEPTH={0}|TYPE={1}|NAME={2}|AID={3}|CLASS={4}" -f $depth,$type,$name,$aid,$cls)
+              }
+              $walker = [System.Windows.Automation.TreeWalker]::RawViewWalker
+              $child = $walker.GetFirstChild($element)
+              while ($child) {
+                Dump-UiTree $child ($depth + 1) $maxDepth
+                $child = $walker.GetNextSibling($child)
+              }
+            } catch {}
+          }
+
+          Write-Host 'ROBLOX_STUDIO_UI_TREE_MAIN_BEGIN'
+          Dump-UiTree $root 0 5
+          Write-Host 'ROBLOX_STUDIO_UI_TREE_MAIN_END'
+
+          [System.Windows.Forms.SendKeys]::SendWait('%f')
+          Start-Sleep -Seconds 2
+          Write-Host 'ROBLOX_STUDIO_UI_TREE_FILE_MENU_BEGIN'
+          Dump-UiTree $root 0 7
+          Write-Host 'ROBLOX_STUDIO_UI_TREE_FILE_MENU_END'
+
+          [System.Windows.Forms.SendKeys]::SendWait('{ESC}')
+          Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+          Write-Host 'ROBLOX_STUDIO_UI_PROBE=PASS'
+          Write-Host 'ROBLOX_PUBLISH_ATTEMPTED=NO'
+          Write-Host 'ROBLOX_RELEASE_CLAIM=NO'

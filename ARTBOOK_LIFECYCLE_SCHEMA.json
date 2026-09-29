@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "description": "Living artbook lifecycle contract. Artbooks are versioned design documents, not terminal deliverables.",
+  "states": [
+    "DRAFT",
+    "REVISION_CANDIDATE",
+    "DESIGN_BASELINE",
+    "DEVELOPMENT_BASELINE",
+    "RELEASE_BASELINE",
+    "SUPERSEDED"
+  ],
+  "milestones": {
+    "v0": "VIBE2_FIRST_DRAFT",
+    "v1": "AI_INTEGRATED_DESIGN_BASELINE",
+    "v2": "DEVELOPMENT_CONFIRMED_UPGRADE",
+    "v3": "RELEASE_CONFIRMED_UPGRADE"
+  },
+  "revisionTriggers": [
+    "OWNER_DIRECTIVE",
+    "DEVELOPMENT_CONFIRMED",
+    "RELEASE_CONFIRMED",
+    "PLAYTEST_EVIDENCE",
+    "QA_DESIGN_FINDING",
+    "BALANCE_FINDING",
+    "STORY_OR_QUEST_CAUSALITY_GAP",
+    "ART_OR_UX_DIRECTION_CHANGE",
+    "TECHNICAL_CONSTRAINT",
+    "IMPLEMENTATION_DRIFT",
+    "CONTENT_CHANGE",
+    "POST_RELEASE_UPDATE"
+  ],
+  "rules": {
+    "overwriteApprovedVersion": false,
+    "deleteSupersededVersion": false,
+    "latestApprovedVersionIsImplementationBaseline": true,
+    "unapprovedRevisionMayChangeImplementationBaseline": false,
+    "revisionRequestRequiredForLockedConceptChange": true,
+    "directorMayGhostwriteMissingDepartmentContent": false
+  }
+}

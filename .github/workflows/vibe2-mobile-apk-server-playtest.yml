@@ -1,0 +1,240 @@
+name: Vibe2 Mobile APK Server Playtest
+
+on:
+  workflow_dispatch:
+    inputs:
+      apk_bundle_url:
+        description: 'Temporary URL for user-exported official Google Play split APK bundle ZIP'
+        required: true
+        type: string
+      apk_bundle_sha256:
+        description: 'Expected SHA256 of the ZIP bundle'
+        required: true
+        type: string
+      package_id:
+        description: 'Android package id'
+        required: false
+        default: 'com.block.juggle'
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: vibe2-mobile-apk-server-playtest
+  cancel-in-progress: false
+
+env:
+  REFERENCE_AUTHORITY: EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE
+  SOURCE_PROVENANCE: OFFICIAL_GOOGLE_PLAY_USER_DEVICE_EXPORT
+  RUNTIME_PROMOTION_ALLOWED: 'NO'
+  CODE_EXTRACTION_ALLOWED: 'NO'
+  BINARY_REDISTRIBUTION_ALLOWED: 'NO'
+  LOCAL_RUNNER_USED: 'NO'
+
+jobs:
+  playtest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Enforce external reference policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('company-learning/external-game-playtest/mobile-free-seed-games.json')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          assert d['authority'] == 'EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE'
+          assert d['practiceOnly'] is True
+          assert d['runtimePromotionAllowed'] is False
+          assert d['codeExtractionAllowed'] is False
+          assert d['binaryRedistributionAllowed'] is False
+          assert d['installPolicy'] == 'OFFICIAL_GOOGLE_PLAY_ONLY'
+          block = next(g for g in d['games'] if g['id'] == 'block-blast')
+          assert 'com.block.juggle' in block['packageIds']
+          print('REFERENCE_POLICY=PASS')
+          print('CODE_EXTRACTION_ALLOWED=NO')
+          print('BINARY_REDISTRIBUTION_ALLOWED=NO')
+          PY
+
+      - name: Download ephemeral APK bundle
+        shell: bash
+        env:
+          APK_URL: ${{ inputs.apk_bundle_url }}
+          EXPECTED_SHA256: ${{ inputs.apk_bundle_sha256 }}
+        run: |
+          set -euo pipefail
+          echo "::add-mask::$APK_URL"
+          bundle="$RUNNER_TEMP/reference-apks.zip"
+          apkdir="$RUNNER_TEMP/reference-apks"
+          mkdir -p "$apkdir"
+          curl --fail --location --retry 3 --retry-delay 2 --output "$bundle" "$APK_URL"
+          actual="$(sha256sum "$bundle" | awk '{print $1}')"
+          [[ "${actual,,}" == "${EXPECTED_SHA256,,}" ]] || { echo "APK_BUNDLE_SHA256_MISMATCH actual=$actual"; exit 1; }
+          python3 - "$bundle" "$apkdir" <<'PY'
+          import sys, zipfile
+          from pathlib import Path
+          src, dst = Path(sys.argv[1]), Path(sys.argv[2])
+          with zipfile.ZipFile(src) as z:
+              names = [x.filename for x in z.infolist() if not x.is_dir()]
+              if not names or any('/' in n or '\\' in n or not n.endswith('.apk') for n in names):
+                  raise SystemExit('APK_BUNDLE_LAYOUT_REJECTED')
+              if 'base.apk' not in names:
+                  raise SystemExit('BASE_APK_MISSING')
+              z.extractall(dst)
+              print('APK_COUNT=' + str(len(names)))
+              print('APK_NAMES=' + ','.join(sorted(names)))
+          PY
+          echo "APK_BUNDLE_SHA256=$actual"
+          echo "APK_BUNDLE_VERIFIED=PASS"
+          echo "APK_BUNDLE_PATH=$bundle" >> "$GITHUB_ENV"
+          echo "APK_DIR=$apkdir" >> "$GITHUB_ENV"
+
+      - name: Prepare Android emulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ -n "${ANDROID_SDK_ROOT:-}" ]] || { echo 'ANDROID_SDK_ROOT_MISSING'; exit 1; }
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager 'platform-tools' 'emulator' 'system-images;android-35;google_apis;x86_64'
+          echo no | avdmanager create avd --force --name vibe2-server --package 'system-images;android-35;google_apis;x86_64' --device pixel_6
+          if [[ -e /dev/kvm ]]; then sudo chmod 666 /dev/kvm; fi
+          nohup emulator -avd vibe2-server -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -accel auto -memory 4096 >"$RUNNER_TEMP/emulator.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/emulator.pid"
+          deadline=$((SECONDS+720))
+          until adb wait-for-device shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' | grep -qx '1'; do
+            if (( SECONDS >= deadline )); then
+              tail -100 "$RUNNER_TEMP/emulator.log" || true
+              echo 'EMULATOR_BOOT_TIMEOUT'
+              exit 1
+            fi
+            sleep 5
+          done
+          adb shell settings put global window_animation_scale 0
+          adb shell settings put global transition_animation_scale 0
+          adb shell settings put global animator_duration_scale 0
+          echo "ANDROID_SERIAL=$(adb get-serialno)"
+          echo "ANDROID_API=$(adb shell getprop ro.build.version.sdk | tr -d '\r')"
+          echo "ANDROID_ABI=$(adb shell getprop ro.product.cpu.abi | tr -d '\r')"
+          echo "ANDROID_ABILIST=$(adb shell getprop ro.product.cpu.abilist | tr -d '\r')"
+          echo "ANDROID_NATIVE_BRIDGE=$(adb shell getprop ro.dalvik.vm.native.bridge | tr -d '\r')"
+          echo 'GITHUB_HOSTED_ANDROID=READY'
+
+      - name: Install split APK bundle with ARM64 translation
+        id: install
+        shell: bash
+        env:
+          PACKAGE_ID: ${{ inputs.package_id }}
+        run: |
+          set -euo pipefail
+          mapfile -t apks < <(find "$APK_DIR" -maxdepth 1 -type f -name '*.apk' -print | sort)
+          (( ${#apks[@]} >= 1 )) || { echo 'NO_APKS_FOUND'; exit 1; }
+          adb install-multiple --abi arm64-v8a -r "${apks[@]}" | tee "$RUNNER_TEMP/install.log"
+          adb shell pm path "$PACKAGE_ID" | grep -q '^package:'
+          echo 'PACKAGE_INSTALL_DETECTED=YES'
+          echo 'INSTALL_SOURCE=OFFICIAL_GOOGLE_PLAY_USER_DEVICE_EXPORT'
+
+      - name: Launch and collect black-box runtime evidence
+        id: runtime
+        shell: bash
+        env:
+          PACKAGE_ID: ${{ inputs.package_id }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/vibe2-mobile-apk-evidence"
+          mkdir -p "$out"
+          adb logcat -c || true
+          adb shell monkey -p "$PACKAGE_ID" -c android.intent.category.LAUNCHER 1 | tee "$out/launch.txt"
+          sleep 15
+          pid="$(adb shell pidof "$PACKAGE_ID" | tr -d '\r' || true)"
+          [[ -n "$pid" ]] || { echo 'GAME_PROCESS_NOT_RUNNING'; adb logcat -d > "$out/logcat.txt"; exit 1; }
+          adb exec-out screencap -p > "$out/launch.png"
+          adb shell uiautomator dump /sdcard/vibe2-window.xml >/dev/null 2>&1 || true
+          adb pull /sdcard/vibe2-window.xml "$out/window.xml" >/dev/null 2>&1 || true
+          adb shell dumpsys window > "$out/window.txt"
+          adb shell dumpsys activity activities > "$out/activities.txt"
+          adb shell wm size > "$out/wm-size.txt"
+          focus="$(adb shell dumpsys window | grep -E 'mCurrentFocus|mFocusedApp' | tail -n 2 || true)"
+          printf '%s\n' "$focus" > "$out/focus.txt"
+          foreground=no
+          if printf '%s' "$focus" | grep -Fq "$PACKAGE_ID"; then foreground=yes; fi
+          crash=no
+          adb logcat -d > "$out/logcat.txt" || true
+          if grep -Eiq "FATAL EXCEPTION|ANR in ${PACKAGE_ID//./\\.}" "$out/logcat.txt"; then crash=yes; fi
+          PACKAGE_ID="$PACKAGE_ID" PID="$pid" FOREGROUND="$foreground" CRASH="$crash" APK_SHA='${{ inputs.apk_bundle_sha256 }}' OUT="$out" python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          payload = {
+              'version': 1,
+              'gameId': 'block-blast',
+              'packageId': os.environ['PACKAGE_ID'],
+              'authority': 'EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE',
+              'sourceProvenance': 'OFFICIAL_GOOGLE_PLAY_USER_DEVICE_EXPORT',
+              'runner': 'GITHUB_HOSTED_UBUNTU',
+              'localRunnerUsed': False,
+              'apkBundleSha256': os.environ['APK_SHA'].lower(),
+              'installPass': True,
+              'launchPass': bool(os.environ['PID']),
+              'foregroundPass': os.environ['FOREGROUND'] == 'yes',
+              'processAliveAfter': bool(os.environ['PID']),
+              'noCrash': os.environ['CRASH'] == 'no',
+              'codeExtractionAllowed': False,
+              'binaryRedistributionAllowed': False,
+              'runtimePromotionAllowed': False,
+              'observedAt': datetime.now(timezone.utc).isoformat(),
+          }
+          out = Path(os.environ['OUT'])
+          (out / 'summary.json').write_text(json.dumps(payload, indent=2) + '\n', encoding='utf-8')
+          print(json.dumps(payload))
+          PY
+          [[ "$foreground" == yes ]] || { echo 'GAME_FOREGROUND_PASS=NO'; exit 1; }
+          [[ "$crash" == no ]] || { echo 'GAME_NO_CRASH=NO'; exit 1; }
+          echo 'GAME_LAUNCH_PASS=YES'
+          echo 'GAME_FOREGROUND_PASS=YES'
+          echo 'GAME_NO_CRASH=YES'
+          echo "EVIDENCE_DIR=$out" >> "$GITHUB_ENV"
+
+      - name: Remove commercial APK bytes before artifact upload
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          rm -rf "$APK_DIR" "$APK_BUNDLE_PATH"
+          if [[ -n "${EVIDENCE_DIR:-}" ]]; then
+            if find "$EVIDENCE_DIR" -type f \( -name '*.apk' -o -name '*.zip' -o -name '*.aab' \) | grep -q .; then
+              echo 'BINARY_REDISTRIBUTION_GUARD=FAILED'
+              exit 1
+            fi
+          fi
+          echo 'COMMERCIAL_APK_BYTES_REMOVED=YES'
+          echo 'BINARY_REDISTRIBUTION_ALLOWED=NO'
+
+      - name: Upload black-box evidence only
+        if: always() && env.EVIDENCE_DIR != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-block-blast-server-evidence
+          path: ${{ env.EVIDENCE_DIR }}
+          retention-days: 1
+          if-no-files-found: warn
+
+      - name: Enforce runtime gate
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ '${{ steps.install.outcome }}' == 'success' ]] || { echo 'SERVER_APK_INSTALL=FAILED'; exit 1; }
+          [[ '${{ steps.runtime.outcome }}' == 'success' ]] || { echo 'SERVER_RUNTIME_PLAYTEST=FAILED'; exit 1; }
+          echo 'VIBE2_SERVER_APK_PLAYTEST=PASS'
+          echo 'LOCAL_RUNNER_USED=NO'
+          echo 'CODE_EXTRACTION_ALLOWED=NO'
+          echo 'BINARY_REDISTRIBUTION_ALLOWED=NO'

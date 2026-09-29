@@ -1,0 +1,2760 @@
+# 파일명: .github/workflows/vibe2-continuous-core.yml
+name: Vibe2 Continuous Core
+
+on:
+  workflow_call:
+    inputs:
+      execution_lane:
+        required: false
+        type: string
+        default: game-primary
+      lane_max:
+        required: false
+        type: string
+        default: ''
+  workflow_dispatch:
+    inputs:
+      execution_lane:
+        required: false
+        type: choice
+        default: game-primary
+        options:
+          - game-primary
+          - asset-development
+          - learning-idle
+          - control-fast
+      lane_max:
+        required: false
+        type: string
+        default: ''
+  repository_dispatch:
+    types: [vibe2-neuron-complete, vibe2-fanin-refill]
+  # Independent game reserve safety net while the 24H singleton waits on slow workers.
+  schedule:
+    - cron: '*/5 * * * *'
+  # GAME_PRIMARY_MAIN_PUSH_WAKE: main churn must not starve queued game work behind
+  # the singleton planner. This enters the existing canonical reserve path only.
+  push:
+    branches:
+      - main
+      - 'vibe2/refill/fanin/**'
+    # Wake only when executable/runtime authority can change queued game work.
+    # QA-only and descriptive architecture/log-map commits must not churn the runner queue.
+    paths:
+      - '.vibe2/**'
+      - '.github/workflows/vibe2-*.yml'
+      - '.github/actions/prepare-ollama/**'
+      - 'vibe2-runtime.json'
+      - 'company-directive.json'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/security-immune-system.json'
+      - 'company-learning/vibe2-learning-motor.json'
+      - 'tools/vibe2-*.mjs'
+      - 'tools/company-shared-context.mjs'
+      - 'tools/company-constitution-enforcer.mjs'
+      - 'tools/company-build-up-directive.mjs'
+      - 'tools/company-recovery-*.mjs'
+      - 'assets/vibe-*.js'
+      - 'assets/asset-selector.js'
+      - 'assets/asset-manifest.json'
+      - 'company-asset-library.json'
+      - 'roblox-games/**'
+      - 'unity-games/**'
+      - 'web-games/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+      - 'yarn.lock'
+
+permissions:
+  contents: write
+  actions: write
+
+# Coalesce duplicate refill control events only within the same execution lane.
+# GAME_PRIMARY must never wait behind recovery-fast, learning-idle or control-fast refill work.
+concurrency:
+  # Only a direct main push without an explicit lane uses the disposable main-wake singleton.
+  # Learning uses one shared execution group; other explicit lanes remain run-scoped.
+  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
+  cancel-in-progress: false
+
+env:
+  VIBE2_LOCAL_MODEL: qwen3:1.7b
+  VIBE2_MODEL_MAX_PREDICT: '3072'
+  VIBE2_MODEL_TIMEOUT_MS: '240000'
+  VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
+  VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
+  VIBE2_GAME_PRIMARY_BASELINE_TARGET: '256'
+  VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '30'
+  OLLAMA_HOST: 127.0.0.1:11434
+  VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
+  VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA
+  VIBE2_ROBLOX_DETERMINISTIC_SOURCE: 'true'
+  VIBE2_CODEX_ROLE: SYSTEM_TOOLING_CI_TEST_INFRA_ONLY
+  VIBE2_CODEX_GAME_SOURCE_WRITE: FORBIDDEN
+  VIBE2_OPENAI_PAID_API_ALLOWED: 'false'
+  VIBE2_SHARED_CONTEXT_REQUIRED: 'true'
+  VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}
+  VIBE2_LANE_MAX: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '1' || inputs.lane_max || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || '256' }}
+
+jobs:
+  reserve:
+    # Lightweight reserve stays on slim for every lane; pressure-driven fan-in refill keeps the ARM bypass.
+    # Heavy game workers remain on their existing execution pools.
+    runs-on: ${{ (github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && 'ubuntu-24.04-arm' || 'ubuntu-slim') }}
+    timeout-minutes: 7
+    # 같은 레인의 상태 없는 보충 요청만 예약 단계에서 합친다.
+    # 완료 결과 전달과 게임 작업은 실행별로 독립 진행한다.
+    concurrency:
+      group: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-refill-reserve-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-reserve-{0}', github.run_id) }}
+      cancel-in-progress: false
+    outputs:
+      worker_matrix: ${{ steps.batch.outputs.worker_matrix }}
+      worker_count: ${{ steps.batch.outputs.worker_count }}
+      task_count: ${{ steps.batch.outputs.task_count }}
+      reserved_at: ${{ steps.batch.outputs.reserved_at }}
+      effective_max: ${{ steps.batch.outputs.effective_max }}
+      contract_sha: ${{ steps.contract.outputs.sha }}
+      task_review_required: ${{ steps.batch.outputs.task_review_required }}
+      stranded_review_run: ${{ steps.stranded_review.outputs.source_run }}
+      model_cache_hit: ${{ steps.ollama_cache_probe.outputs.cache-hit }}
+    steps:
+      - name: Checkout Vibe2 control line
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Drop stale reserve wake before reserve work
+        id: main_wake
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VIBE2_DISPATCH_ACTION: ${{ github.event.action || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          proceed=true
+          freshness_required=false
+          if [[ "${GITHUB_EVENT_NAME:-}" == 'push' && "${GITHUB_REF_NAME:-}" == 'main' ]]; then
+            freshness_required=true
+          elif [[ "${GITHUB_EVENT_NAME:-}" == 'repository_dispatch' && "${VIBE2_DISPATCH_ACTION:-}" == 'vibe2-fanin-refill' ]]; then
+            freshness_required=true
+          fi
+
+          if [ "$freshness_required" = true ]; then
+            latest_main="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha')"
+            echo "VIBE2_RESERVE_WAKE_EVENT_SHA=$GITHUB_SHA"
+            echo "VIBE2_RESERVE_WAKE_LATEST_SHA=$latest_main"
+            if [[ "$GITHUB_SHA" != "$latest_main" ]]; then
+              proceed=false
+              if [[ "${GITHUB_EVENT_NAME:-}" == 'repository_dispatch' ]]; then
+                echo "VIBE2_FANIN_WAKE_STALE_DROPPED=$GITHUB_SHA:$latest_main"
+              else
+                echo "VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED=$GITHUB_SHA:$latest_main"
+              fi
+            else
+              echo "VIBE2_RESERVE_WAKE_FRESH=$GITHUB_SHA"
+            fi
+          elif [[ "${GITHUB_EVENT_NAME:-}" == 'repository_dispatch' && "${VIBE2_DISPATCH_ACTION:-}" == 'vibe2-neuron-complete' ]]; then
+            echo "VIBE2_RESERVE_WAKE_FRESHNESS=NEURON_CALLBACK_ALWAYS_INGEST"
+          else
+            echo "VIBE2_RESERVE_WAKE_FRESHNESS=BYPASS_NON_RESERVE_WAKE"
+          fi
+          echo "proceed=$proceed" >> "$GITHUB_OUTPUT"
+
+      - name: Download atomic neuron completion result
+        if: github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-neuron-complete'
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ github.event.client_payload.artifact_name }}
+          path: /tmp/vibe2-neuron-result
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.client_payload.source_run }}
+
+      - name: Prepare latest main machine contract
+        id: contract
+        if: steps.main_wake.outputs.proceed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          requested_contract_sha=''
+          if [ "${GITHUB_EVENT_NAME:-}" = 'repository_dispatch' ]; then
+            dispatch_type="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(e.action||''))")"
+            if [ "$dispatch_type" = 'vibe2-neuron-complete' ]; then
+              requested_contract_sha="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(e.client_payload?.contract_sha||''))")"
+            fi
+          fi
+          if [ -n "$requested_contract_sha" ]; then
+            git fetch --depth=1 --no-tags origin "$requested_contract_sha" --quiet
+          else
+            git fetch --depth=1 --no-tags origin main --quiet
+          fi
+          contract_sha="$(git rev-parse FETCH_HEAD)"
+          rm -rf /tmp/vibe2-main
+          mkdir -p /tmp/vibe2-main
+          git archive "$contract_sha" | tar -x -C /tmp/vibe2-main
+          test -f /tmp/vibe2-main/vibe2-runtime.json
+          echo "sha=$contract_sha" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_CONTINUOUS_CONTRACT_SHA=$contract_sha"
+          echo 'VIBE2_MAIN_CONTRACT_SNAPSHOT=ARCHIVE'
+
+      - name: Fast scheduler preflight
+        if: steps.main_wake.outputs.proceed == 'true' && (github.event_name != 'repository_dispatch' || github.event.action != 'vibe2-neuron-complete')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VIBE2_PREFLIGHT_CONTRACT_SHA: ${{ steps.contract.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          control_root="$GITHUB_WORKSPACE"
+          for file in \
+            assets/vibe-continuous-queue.js \
+            tools/vibe2-auto-planner.mjs \
+            tools/company-build-up-directive.mjs \
+            tools/vibe2-learning-motor.mjs \
+            tools/vibe2-continuous-runner.mjs \
+            tools/vibe2-asset-production-plan.mjs \
+            tools/vibe2-central-work-contract.mjs \
+            tools/vibe2-neural-diagnosis.mjs \
+            tools/vibe2-neural-feedback.mjs \
+            tools/vibe2-neural-critic.mjs \
+            tools/vibe2-neural-root-cause.mjs \
+            tools/vibe2-neural-event-router.mjs \
+            tools/vibe2-neural-shadow-audit.mjs \
+            tools/vibe2-neural-event-telemetry.mjs \
+            tools/vibe2-neural-phase2-readiness.mjs \
+            tools/vibe2-neural-expansion-readiness.mjs \
+            tools/vibe2-exploration-worker.mjs \
+            tools/vibe2-source-worker.mjs \
+            tools/vibe2-capability-distillation.mjs \
+            tools/vibe2-performance-sanity.mjs \
+            tools/vibe2-fan-in-review.mjs \
+            tools/vibe2-queue-control.mjs \
+            tools/vibe2-work-package.mjs \
+            tools/vibe2-incremental-qa.mjs \
+            tools/vibe2-parallelism-telemetry.mjs \
+            tools/vibe2-adaptive-backpressure.mjs \
+            tools/vibe2-handoff.mjs \
+            tools/vibe2-system-steward.mjs; do
+            node --check "/tmp/vibe2-main/$file"
+          done
+          node /tmp/vibe2-main/tools/vibe2-neural-expansion-readiness.mjs \
+            --root=/tmp/vibe2-main \
+            --output=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-neural-expansion-readiness.log
+          node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-reserve-preflight-steward.log
+          echo 'VIBE2_RESERVE_PREFLIGHT_STEWARD=PASS'
+          node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
+            --runtime=/tmp/vibe2-main/vibe2-runtime.json \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --experience="$control_root/.vibe2/experience.json" \
+            --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
+            --output=/tmp/vibe2-handoff-preflight.json >/tmp/vibe2-handoff-preflight.log
+
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+            core_qa_reuse=0
+            if curl --fail-with-body --silent --show-error \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${VIBE2_PREFLIGHT_CONTRACT_SHA}&per_page=100" \
+              --output /tmp/vibe2-reserve-core-qa-runs.json; then
+              core_qa_reuse="$(node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-reserve-core-qa-runs.json','utf8'));
+          const sha=String(process.env.VIBE2_PREFLIGHT_CONTRACT_SHA||'');
+          const pass=(payload.workflow_runs||[]).some(row=>
+            String(row.name||'')==='Vibe2 Core QA' &&
+            String(row.head_sha||'')===sha &&
+            String(row.status||'')==='completed' &&
+            String(row.conclusion||'')==='success'
+          );
+          process.stdout.write(pass?'1':'0');
+          NODE
+              )"
+              echo 'VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=PASS'
+            else
+              core_qa_reuse=0
+              echo 'VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION'
+            fi
+
+            if [ "$core_qa_reuse" = '1' ]; then
+              echo 'VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'
+            else
+              echo 'VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE'
+            (cd /tmp/vibe2-main && node --test --test-concurrency=4 \
+            qa/vibe2-auto-planner.test.mjs \
+            qa/vibe2-native-asset-production.test.mjs \
+            qa/vibe2-neural-diagnosis.test.mjs \
+            qa/vibe2-neural-feedback.test.mjs \
+            qa/vibe2-neural-critic.test.mjs \
+            qa/vibe2-neural-root-cause.test.mjs \
+            qa/vibe2-neural-event-router.test.mjs \
+            qa/vibe2-neural-shadow-audit.test.mjs \
+            qa/vibe2-neural-event-telemetry.test.mjs \
+            qa/vibe2-neural-phase2-readiness.test.mjs \
+            qa/vibe2-neural-fanin-root-cause.test.mjs \
+            qa/vibe2-core-engine-motion.test.mjs \
+            qa/vibe2-source-worker.test.mjs \
+            qa/vibe2-capability-distillation.test.mjs \
+            qa/vibe2-central-work-contract.test.mjs \
+            qa/vibe2-exploration-worker.test.mjs \
+            qa/vibe2-queue-control.test.mjs \
+            qa/vibe2-work-package.test.mjs \
+            qa/vibe2-incremental-qa.test.mjs \
+            qa/vibe2-parallelism-telemetry.test.mjs \
+            qa/vibe2-adaptive-backpressure.test.mjs \
+            qa/vibe2-candidate-reconcile.test.mjs \
+            qa/vibe2-experience-control.test.mjs \
+            qa/vibe2-learning-closed-loop.test.mjs \
+            qa/vibe2-handoff.test.mjs \
+            qa/vibe2-practice-distillation.test.mjs)
+            fi
+            echo 'VIBE2_RESERVE_CONTRACT_REGRESSION=PASS'
+          else
+            echo "VIBE2_RESERVE_CONTRACT_REGRESSION=SKIPPED_AUXILIARY_LANE:$VIBE2_EXECUTION_LANE"
+          fi
+          echo 'VIBE2_RESERVE_PREFLIGHT=MAIN_CONTRACT_CONTROL_STATE'
+
+      - name: Reserve conflict-free DAG batch
+        id: batch
+        if: steps.main_wake.outputs.proceed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          control_root="$GITHUB_WORKSPACE"
+          test -d "$control_root/.git"
+          git -C "$control_root" config user.name 'jaewoon-vibe2-scheduler'
+          git -C "$control_root" config user.email 'vibe2-scheduler@users.noreply.github.com'
+          echo "VIBE2_CONTROL_ROOT=$control_root"
+
+          callback_ref="${GITHUB_REF_NAME:-}"
+          callback_kind='none'
+          callback_cleanup='no'
+          dispatch_type=''
+          if [ "${GITHUB_EVENT_NAME:-}" = 'repository_dispatch' ]; then
+            dispatch_type="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(e.action||''))")"
+          fi
+          if [ "${GITHUB_EVENT_NAME:-}" = 'repository_dispatch' ] && [ "$dispatch_type" = 'vibe2-neuron-complete' ]; then
+            callback_kind='neuron'
+            echo 'VIBE2_ATOMIC_NEURON_CALLBACK=YES'
+          elif [ "${GITHUB_EVENT_NAME:-}" = 'repository_dispatch' ] && [ "$dispatch_type" = 'vibe2-fanin-refill' ]; then
+            callback_kind='fanin'
+            echo 'VIBE2_SLOT_CALLBACK_FANIN=YES'
+          elif [ "${GITHUB_EVENT_NAME:-}" = 'push' ] && [[ "$callback_ref" == vibe2/refill/fanin/* ]]; then
+            callback_kind='fanin'
+            callback_cleanup='yes'
+            echo 'VIBE2_SLOT_CALLBACK_FANIN=YES'
+          fi
+
+          state_persisted=0
+          state_write='NO'
+          neuron_refill=0
+          state_attempt=0
+          echo 'VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED'
+          while [ "$state_persisted" != 1 ]; do
+            state_attempt=$((state_attempt+1))
+            echo "VIBE2_CONTROL_OPTIMISTIC_ATTEMPT=$state_attempt"
+            git -C "$control_root" fetch origin vibe2-unreal-core --quiet
+            git -C "$control_root" reset --hard origin/vibe2-unreal-core
+
+            if [ "$callback_kind" = 'neuron' ]; then
+              neuron_result_file="$(find /tmp/vibe2-neuron-result -type f -name '*.json' -print -quit)"
+              test -n "$neuron_result_file"
+              expected_variants="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(Math.max(1,Math.min(5,Number(e.client_payload?.expected_variants)||1))))")"
+              node /tmp/vibe2-main/tools/vibe2-queue-control.mjs neuron-complete \
+                --queue="$control_root/.vibe2/queue.json" \
+                --control="$control_root/.vibe2/parallelism-control.json" \
+                --lane="$VIBE2_EXECUTION_LANE" \
+                --max="$VIBE2_LANE_MAX" \
+                --min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN" \
+                --expected-variants="$expected_variants" \
+                --input="$neuron_result_file" | tee /tmp/vibe2-neuron-complete.log
+              neuron_reason="$(sed -n 's/^VIBE2_NEURON_RESULT=//p' /tmp/vibe2-neuron-complete.log | tail -n1)"
+              case "$neuron_reason" in
+                TASK_MICRO_FANIN_COMPLETE)
+                  # A complete single-candidate game can enter the existing full review now.
+                  # Failed results only refill; partial variant sets never bypass their join.
+                  if [[ "$VIBE2_EXECUTION_LANE" == 'game-primary' || "$VIBE2_EXECUTION_LANE" == 'asset-development' ]] && [ "$expected_variants" = '1' ] && node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.exit(r.outcome==='PASS'?0:1)" "$neuron_result_file"; then
+                    echo 'task_review_required=true' >> "$GITHUB_OUTPUT"
+                    echo 'VIBE2_TASK_REVIEW_READY=COMPLETE_SINGLE_GAME_RESULT'
+                  fi
+                  neuron_refill_ready="$(sed -n 's/^VIBE2_NEURON_REFILL_READY=//p' /tmp/vibe2-neuron-complete.log | tail -n1)"
+                  if [ "$neuron_refill_ready" = 'YES' ]; then
+                    neuron_refill=1
+                    echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE_REFILL_READY'
+                  else
+                    neuron_refill=0
+                    echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE_NO_RUNNABLE_WORK'
+                  fi
+                  ;;
+                TASK_ALREADY_MICRO_FANIN_COMPLETE)
+                  neuron_refill=0
+                  echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=ALREADY_COMPLETE_DEDUP_NO_REFILL'
+                  ;;
+                AWAITING_VARIANTS)
+                  echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING'
+                  ;;
+                DUPLICATE_VARIANT)
+                  echo 'VIBE2_ATOMIC_NEURON_MICRO_FANIN=DUPLICATE_VARIANT_NOOP'
+                  ;;
+                *)
+                  echo "VIBE2_ATOMIC_NEURON_MICRO_FANIN=NOOP:${neuron_reason:-UNKNOWN}"
+                  ;;
+              esac
+
+              git -C "$control_root" add .vibe2/queue.json .vibe2/parallelism-control.json
+              if git -C "$control_root" diff --cached --quiet; then
+                state_persisted=1
+                state_write='NO'
+                break
+              fi
+              git -C "$control_root" commit -m "vibe2: persist atomic neuron result [skip ci]"
+              if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then
+                state_persisted=1
+                state_write='YES'
+                break
+              fi
+              echo "VIBE2_NEURON_INGRESS_OPTIMISTIC_RETRY=$state_attempt"
+              # 저장 충돌 재시도 시점을 분산해 같은 작업들이 다시 동시에 쓰지 않게 한다.
+              retry_window_ms=$((state_attempt * 2000))
+              if [ "$retry_window_ms" -gt 10000 ]; then retry_window_ms=10000; fi
+              retry_floor_ms=$((retry_window_ms / 2))
+              retry_delay_ms=$((retry_floor_ms + RANDOM % (retry_window_ms - retry_floor_ms + 1)))
+              printf -v retry_sleep '%d.%03d' "$((retry_delay_ms / 1000))" "$((retry_delay_ms % 1000))"
+              echo "VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=$retry_sleep"
+              sleep "$retry_sleep"
+              continue
+            fi
+
+            node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --neural-readiness=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-reserve-steward.log
+            echo 'VIBE2_RESERVE_STEWARD=PASS'
+
+            # Every non-neuron reserve ingress must synchronize from the current company runtime
+            # before planning or reserving. Otherwise an empty/stale control queue can remain idle
+            # until a later fan-in callback even though company-runtime already has actionable work.
+            git -C "$control_root" fetch origin company-runtime --quiet
+            git -C "$control_root" show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
+            for runtime_design_path in design game-seed-state.json; do
+              if git -C "$control_root" cat-file -e "origin/company-runtime:$runtime_design_path" 2>/dev/null; then
+                rm -rf "/tmp/vibe2-main/$runtime_design_path"
+                git -C "$control_root" archive "origin/company-runtime" "$runtime_design_path" | tar -x -C /tmp/vibe2-main
+              fi
+            done
+            echo 'VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state.json'
+            echo "VIBE2_RESERVE_RUNTIME_SYNC_SOURCE=company-runtime:$callback_kind"
+
+            # Released Roblox caretakers and active repair work are refilled from the same canonical
+            # company-runtime snapshot on manual, callable, refill and fan-in reserve ingress.
+            node --check /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs
+            node /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs \
+              --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
+              --company-runtime-queue=/tmp/vibe2-company-runtime-queue.json \
+              --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --exposure="$control_root/.vibe2/platform-exposure-state.json" \
+              --root=/tmp/vibe2-main | tee /tmp/vibe2-reserve-post-release-focus.log
+            echo 'VIBE2_RESERVE_FOCUSED_CARETAKER_REFILL=PASS'
+
+            node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
+              --runtime=/tmp/vibe2-main/vibe2-runtime.json \
+              --status=/tmp/vibe2-main/company-status.json \
+              --catalog=/tmp/vibe2-main/game-catalog.json \
+              --development-queue=/tmp/vibe2-company-runtime-queue.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --experience="$control_root/.vibe2/experience.json" \
+              --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
+              --root=/tmp/vibe2-main \
+              --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-reserve-autoplan.log
+            node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
+              --state="$control_root/.vibe2/learning-motor-state.json" \
+              --experience="$control_root/.vibe2/experience.json" \
+              --code-patterns="$control_root/.vibe2/code-pattern-library.json" \
+              --company-queue=/tmp/vibe2-company-runtime-queue.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
+              --benchmark="$control_root/.vibe2/benchmark-ladder.json" \
+              --practice="$control_root/.vibe2/idle-practice-queue.json" \
+              --handoff="$control_root/.vibe2/web-roblox-handoffs.json" | tee /tmp/vibe2-self-signal-mesh.log
+            echo 'VIBE2_SELF_SIGNAL_MESH=PASS'
+            echo "VIBE2_RESERVE_RUNTIME_SYNC=PASS:$callback_kind"
+
+          node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
+            --runtime=/tmp/vibe2-main/vibe2-runtime.json \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --experience="$control_root/.vibe2/experience.json" \
+            --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
+            --output=/tmp/vibe2-handoff-before-reserve.json >/tmp/vibe2-handoff-before-reserve.log
+          completed_reservation_runs=''
+          candidate_reservation_runs="$(node - "$control_root/.vibe2/queue.json" <<'NODE'
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const rows=(queue.tasks||[])
+            .filter(task=>
+              String(task.status||'').toLowerCase()==='running'
+              &&String(task.department||'').toLowerCase()==='development'
+              &&String(task.type||'implementation').toLowerCase()==='implementation'
+              &&!String(task.blocker||'').trim()
+              &&/^[0-9]+$/.test(String(task.reservationRunId||'').trim())
+            )
+            .map(task=>({
+              runId:String(task.reservationRunId).trim(),
+              reservedAt:Date.parse(String(task.reservedAt||''))||Number.MAX_SAFE_INTEGER
+            }))
+            .sort((a,b)=>a.reservedAt-b.reservedAt||Number(a.runId)-Number(b.runId));
+          const ids=[];
+          const seen=new Set();
+          for(const row of rows){
+            if(seen.has(row.runId))continue;
+            seen.add(row.runId);
+            ids.push(row.runId);
+            if(ids.length>=256)break;
+          }
+          process.stdout.write(ids.join(','));
+          NODE
+          )"
+          completed_probe_failures=0
+          if [ -n "$candidate_reservation_runs" ]; then
+            IFS=',' read -r -a reservation_run_ids <<< "$candidate_reservation_runs"
+            completed_ids=()
+            for reservation_run_id in "${reservation_run_ids[@]}"; do
+              [ -n "$reservation_run_id" ] || continue
+              reservation_run_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${reservation_run_id}" --jq '.status' 2>/dev/null || true)"
+              if [ "$reservation_run_status" = 'completed' ]; then
+                completed_ids+=("$reservation_run_id")
+              elif [ -z "$reservation_run_status" ]; then
+                completed_probe_failures=$((completed_probe_failures+1))
+              fi
+            done
+            if [ "${#completed_ids[@]}" -gt 0 ]; then
+              completed_reservation_runs="$(IFS=,; echo "${completed_ids[*]}")"
+            fi
+          fi
+          if [ "$completed_probe_failures" -eq 0 ]; then
+            echo 'VIBE2_COMPLETED_RESERVATION_RUN_OBSERVATION=PASS'
+          else
+            echo "VIBE2_COMPLETED_RESERVATION_RUN_OBSERVATION=PARTIAL_FAIL_OPEN:${completed_probe_failures}"
+          fi
+          echo "VIBE2_COMPLETED_RESERVATION_RUN_CANDIDATES=${candidate_reservation_runs:-NONE}"
+          echo "VIBE2_COMPLETED_RESERVATION_RUN_MATCHES=${completed_reservation_runs:-NONE}"
+          if [ -n "$completed_reservation_runs" ]; then
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs recover-completed-reservations \
+              --queue="$control_root/.vibe2/queue.json" \
+              --completed-runs="$completed_reservation_runs" | tee /tmp/vibe2-completed-reservation-recovery.log
+          fi
+
+          active_worker_reservations="$(node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const requested=String(process.env.VIBE2_EXECUTION_LANE||'game-primary').toUpperCase().replaceAll('-','_');const lane=t=>{const status=String(t.status||'').toLowerCase(),blocker=String(t.blocker||''),dep=String(t.department||'').toLowerCase(),type=String(t.type||'implementation').toLowerCase(),ev=(t.evidence||[]).map(String);if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';if(t.assetProductionLane===true||ev.includes('asset-production-parallel:v1'))return'ASSET_DEVELOPMENT';if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';if(t.systemSteward===true)return'RECOVERY_FAST';return'CONTROL_FAST';};const rows=(q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)===requested);process.stdout.write(String(rows.length))" "$control_root/.vibe2/queue.json")"
+          echo "VIBE2_EXECUTION_LANE=$VIBE2_EXECUTION_LANE"
+          echo "VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE=${active_worker_reservations:-0}"
+          reservation_id="${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
+          reserved_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          lane_min='1'
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
+          if [ "${active_worker_reservations:-0}" -gt 0 ]; then
+            echo 'VIBE2_RESERVE_MODE=FREE_SLOT_REFILL_DURING_ACTIVE_WORK'
+          else
+            echo 'VIBE2_RESERVE_MODE=NEW_WAVE_OR_IDLE_REFILL'
+          fi
+          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --lane="$VIBE2_EXECUTION_LANE" \
+            --max="$VIBE2_LANE_MAX" \
+            --min="$lane_min" \
+            --reservation-id="$reservation_id" \
+            --reservation-run="$GITHUB_RUN_ID" \
+            --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
+            --reserved-at="$reserved_at" \
+            --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
+          node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
+            --runtime=/tmp/vibe2-main/vibe2-runtime.json \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --experience="$control_root/.vibe2/experience.json" \
+            --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
+            --output=/tmp/vibe2-handoff-after-reserve.json >/tmp/vibe2-handoff-after-reserve.log
+
+            state_paths=(
+              .vibe2/queue.json
+              .vibe2/parallelism-control.json
+              .vibe2/learning-motor-state.json
+              .vibe2/benchmark-ladder.json
+              .vibe2/idle-practice-queue.json
+              .vibe2/web-roblox-handoffs.json
+            )
+            if [ -d "$control_root/.vibe2/build-up-directives" ]; then
+              state_paths+=(.vibe2/build-up-directives)
+            fi
+            if git -C "$control_root" diff --quiet -- "${state_paths[@]}"; then
+              state_persisted=1
+              state_write='NO'
+              break
+            fi
+
+            git -C "$control_root" add "${state_paths[@]}"
+            git -C "$control_root" commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"
+            if git -C "$control_root" push origin HEAD:vibe2-unreal-core; then
+              state_persisted=1
+              state_write='YES'
+              break
+            fi
+
+            echo "VIBE2_CONTROL_OPTIMISTIC_RETRY=$state_attempt"
+            # 저장 충돌 재시도 시점을 분산해 같은 작업들이 다시 동시에 쓰지 않게 한다.
+            retry_window_ms=$((state_attempt * 2000))
+            if [ "$retry_window_ms" -gt 10000 ]; then retry_window_ms=10000; fi
+            retry_floor_ms=$((retry_window_ms / 2))
+            retry_delay_ms=$((retry_floor_ms + RANDOM % (retry_window_ms - retry_floor_ms + 1)))
+            printf -v retry_sleep '%d.%03d' "$((retry_delay_ms / 1000))" "$((retry_delay_ms % 1000))"
+            echo "VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=$retry_sleep"
+            sleep "$retry_sleep"
+          done
+          test "$state_persisted" = 1
+          echo "VIBE2_BATCH_RESERVATION_WRITE=$state_write"
+
+          if [ "$callback_kind" = 'neuron' ]; then
+            node <<'NODE'
+          const fs=require('fs');
+          const payload={
+            version:1,
+            createdAt:new Date().toISOString(),
+            matrix:[],
+            scheduler:{requestedMaxConcurrentTasks:0,effectiveMaxConcurrentTasks:0,longWorkProtectedSlotUsed:false}
+          };
+          fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(payload,null,2)+'\n');
+          NODE
+            if [ "$neuron_refill" = '1' ]; then
+              payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary',reason:'atomic-task-micro-fanin-complete'}}))")"
+              curl --fail-with-body --silent --show-error \
+                --request POST \
+                --header 'Accept: application/vnd.github+json' \
+                --header "Authorization: Bearer $GH_TOKEN" \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+                --data "$payload"
+              echo 'VIBE2_NEURON_REFILL_DISPATCH=TASK_MICRO_FANIN_COMPLETE'
+            else
+              echo 'VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_NO_RUNNABLE_WORK_OR_PENDING_VARIANTS'
+            fi
+          fi
+
+          if [ "$callback_cleanup" = 'yes' ]; then
+            git -C "$control_root" push origin --delete "$callback_ref" >/dev/null 2>&1 || true
+            echo "VIBE2_SLOT_CALLBACK_CLEANUP=$callback_ref"
+          fi
+
+          node <<'NODE'
+          const fs=require('fs');
+          const out=process.env.GITHUB_OUTPUT;
+          const batch=JSON.parse(fs.readFileSync('/tmp/vibe2-batch.json','utf8'));
+          const workers=[];
+          const safe=value=>String(value||'task').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'task';
+          const pressureRefillEligible=String(process.env.VIBE2_EXECUTION_LANE||'').toLowerCase()==='game-primary';
+          let pressureRefillLeaderAssigned=false;
+          let suppressedSpeculativeWorkers=0;
+          const assetLane=String(process.env.VIBE2_EXECUTION_LANE||'').toLowerCase()==='asset-development';
+          const robloxLeaderTaskId=pressureRefillEligible?(batch.matrix||[]).find(row=>row.target==='roblox'&&Number(row.speculativeVariants||1)===1)?.taskId||'':'';
+          for(const row of batch.matrix||[]){
+            const safeTask=safe(row.taskId);
+            const requestedVariantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
+            const variantCount=assetLane?1:requestedVariantCount;
+            if(assetLane)suppressedSpeculativeWorkers+=Math.max(0,requestedVariantCount-1);
+            const shared={taskId:row.taskId,target:row.target||'',safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256),expectedVariants:variantCount};
+            const pressureRefillLeader=pressureRefillEligible&&!pressureRefillLeaderAssigned&&(!robloxLeaderTaskId||row.taskId===robloxLeaderTaskId);
+            workers.push({...shared,variant:'primary',pressureRefillLeader});
+            if(pressureRefillLeader)pressureRefillLeaderAssigned=true;
+            for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`,pressureRefillLeader:false});
+          }
+          fs.appendFileSync(out,`worker_matrix=${JSON.stringify({include:workers})}\n`);
+          fs.appendFileSync(out,`worker_count=${workers.length}\n`);
+          fs.appendFileSync(out,`task_count=${(batch.matrix||[]).length}\n`);
+          fs.appendFileSync(out,`reserved_at=${batch.createdAt||''}\n`);
+          fs.appendFileSync(out,`effective_max=${Number(batch.scheduler?.effectiveMaxConcurrentTasks||256)}\n`);
+          console.log(`VIBE2_HIERARCHICAL_FAN_OUT=${workers.length}`);
+          console.log(`VIBE2_RESERVED_TASK_COUNT=${(batch.matrix||[]).length}`);
+          console.log(`VIBE2_PRIMARY_TASK_COUNT=${Number(batch.scheduler?.primaryTaskCount||(batch.matrix||[]).length)}`);
+          console.log(`VIBE2_SPECULATIVE_WORKER_COUNT=${Math.max(0,workers.length-Number(batch.scheduler?.primaryTaskCount||(batch.matrix||[]).length))}`);
+          console.log(`VIBE2_ASSET_SPECULATIVE_VARIANTS_SUPPRESSED=${assetLane?'YES':'NO'}`);
+          console.log(`VIBE2_ASSET_SPECULATIVE_WORKERS_AVOIDED=${suppressedSpeculativeWorkers}`);
+          console.log(`VIBE2_SPECULATIVE_EXPANSION=${assetLane?'SUPPRESSED_ASSET_OLLAMA_DUPLICATION':(batch.scheduler?.speculativeExpansionAllowed===false?'SUPPRESSED_RUNNER_PRESSURE':'ENABLED')}`);
+          console.log(`VIBE2_SPECULATIVE_EXPANSION_REASON=${String(batch.scheduler?.speculativeExpansionReason||'AVAILABLE')}`);
+          console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
+          NODE
+
+      - name: Probe shared Ollama cache from reserve runner
+        id: ollama_cache_probe
+        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.ollama/models
+            ~/.cache/vibe2-ollama/bin/ollama
+            ~/.cache/vibe2-ollama/lib/ollama
+          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
+          lookup-only: true
+
+      - name: Record reserve model cache decision
+        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE != 'asset-development'
+        shell: bash
+        run: |
+          echo 'VIBE2_MODEL_CACHE_RESERVE_PROBE_LOOKUP_ONLY=YES'
+          echo "VIBE2_MODEL_CACHE_RESERVE_PROBE_HIT=${{ steps.ollama_cache_probe.outputs.cache-hit }}"
+          if [ "${{ steps.ollama_cache_probe.outputs.cache-hit }}" = 'true' ]; then
+            echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_CACHE_HIT'
+          else
+            echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=RUN_CACHE_MISS'
+          fi
+
+      - name: Record asset no-model cache bypass
+        if: steps.batch.outputs.worker_count != '0' && env.VIBE2_EXECUTION_LANE == 'asset-development'
+        shell: bash
+        run: |
+          echo 'VIBE2_MODEL_CACHE_RESERVE_PROBE=SKIPPED_ASSET_LANE'
+          echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_ASSET_WORKER_LOCAL_DECISION'
+
+      - name: Resume stranded asset candidate review from completed immutable results
+        id: stranded_review
+        continue-on-error: true
+        if: steps.main_wake.outputs.proceed != 'false' && (env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE' > /tmp/vibe2-stranded-review-runs.txt
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          const runs=new Set();
+          for(const task of queue.tasks||[]){
+            if(task.assetProductionLane!==true || task.status!=='running' || task.blocker!=='candidate-awaiting-qa-and-deployment')continue;
+            if((task.evidence||[]).includes('role-result:review:PASS'))continue;
+            const run=String(task.reservationRunId||'');
+            if(/^\d+$/.test(run))runs.add(run);
+          }
+          process.stdout.write([...runs].slice(0,3).join('\n'));
+          NODE
+          while IFS= read -r source_run || [ -n "$source_run" ]; do
+            [ -n "$source_run" ] || continue
+            status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run" --jq '.status')"
+            if [ "$status" = 'completed' ]; then
+              available="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run/artifacts?per_page=100" --jq '[.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-")))] | length')"
+              [ "$available" -gt 0 ] || continue
+              echo "source_run=$source_run" >> "$GITHUB_OUTPUT"
+              echo "VIBE2_STRANDED_ASSET_REVIEW_RESUME=$source_run"
+              break
+            fi
+          done < /tmp/vibe2-stranded-review-runs.txt
+
+  model_cache:
+    needs: reserve
+    if: needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_cache_hit != 'true' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'asset-development' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'learning-idle'
+    runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    timeout-minutes: 12
+    continue-on-error: true
+    steps:
+      - name: Recheck or persist shared Ollama runtime cache
+        id: ollama_cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.ollama/models
+            ~/.cache/vibe2-ollama/bin/ollama
+            ~/.cache/vibe2-ollama/lib/ollama
+          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
+          lookup-only: false
+
+      - name: Record model cache probe
+        shell: bash
+        run: |
+          echo 'VIBE2_MODEL_CACHE_WARMUP_LOOKUP_ONLY=NO'
+          echo 'VIBE2_MODEL_CACHE_WARMUP_PERSIST_ON_MISS=YES'
+          echo "VIBE2_MODEL_CACHE_WARMUP_HIT=${{ steps.ollama_cache.outputs.cache-hit }}"
+          echo 'VIBE2_MODEL_CACHE_WARMUP_JOB=RUN_CACHE_MISS'
+
+      - name: Warm local coding model once on cache miss
+        if: steps.ollama_cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          installed=0
+          for attempt in 1 2 3; do
+            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+            sleep $((attempt * 4))
+          done
+          test "$installed" = 1
+          mkdir -p "$HOME/.cache/vibe2-ollama/bin" "$HOME/.cache/vibe2-ollama/lib/ollama"
+          cp "$(command -v ollama)" "$HOME/.cache/vibe2-ollama/bin/ollama"
+          chmod +x "$HOME/.cache/vibe2-ollama/bin/ollama"
+          runtime_lib=""
+          for candidate in /usr/local/lib/ollama /usr/lib/ollama; do
+            if [ -d "$candidate" ] && find "$candidate" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
+              runtime_lib="$candidate"
+              break
+            fi
+          done
+          test -n "$runtime_lib"
+          cp -a "$runtime_lib/." "$HOME/.cache/vibe2-ollama/lib/ollama/"
+          find "$HOME/.cache/vibe2-ollama/lib/ollama" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .
+          nohup ollama serve > /tmp/ollama-prewarm.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
+            if [ "$i" = 30 ]; then cat /tmp/ollama-prewarm.log || true; exit 1; fi
+            sleep 2
+          done
+          ollama pull "$VIBE2_LOCAL_MODEL"
+          echo 'VIBE2_MODEL_PREWARM=PASS'
+
+  worker:
+    needs: [reserve, model_cache]
+    if: always() && needs.reserve.outputs.worker_count != '0'
+    # Roblox deterministic asset work does not need the ARM model pool; Unity asset work keeps the ARM lane.
+    runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && matrix.target == 'roblox' && 'ubuntu-latest' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest') }}
+    timeout-minutes: 22
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}
+    steps:
+      - name: Mark worker start
+        shell: bash
+        run: echo "$(date +%s%3N)" > /tmp/vibe2-worker-start-ms
+
+      - name: Checkout Vibe2 control line
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 1
+          sparse-checkout: |
+            .vibe2
+
+      - name: Checkout pinned main contract
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.reserve.outputs.contract_sha }}
+          path: vibe2-contract
+          fetch-depth: 1
+
+      - name: Checkout verified learning memory
+        if: env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development'
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-learning-runtime
+          path: vibe2-learning-memory
+          fetch-depth: 1
+          sparse-checkout: |
+            company-learning/vibe3-task-playbooks.json
+          sparse-checkout-cone-mode: false
+
+      - name: Verify commercial learning memory is reusable
+        if: env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development'
+        shell: bash
+        run: |
+          set -euo pipefail
+          learning_root="$GITHUB_WORKSPACE/vibe2-learning-memory"
+          playbooks="$learning_root/company-learning/vibe3-task-playbooks.json"
+          test -s "$playbooks"
+          node - "$playbooks" <<'NODE'
+          const fs=require('fs');
+          const file=process.argv[2];
+          const data=JSON.parse(fs.readFileSync(file,'utf8'));
+          if(String(data.generatedFrom||'')!=='VERIFIED_MEMORY_ONLY')throw new Error('VERIFIED_PLAYBOOK_SOURCE_REQUIRED');
+          const taskTypes=data.taskTypes&&typeof data.taskTypes==='object'?data.taskTypes:{};
+          if(!Object.keys(taskTypes).length)throw new Error('VERIFIED_PLAYBOOK_TASK_TYPES_REQUIRED');
+          for(const [kind,row] of Object.entries(taskTypes)){
+            if(String(row?.authority||'')!=='verified-task-playbook')throw new Error('VERIFIED_PLAYBOOK_AUTHORITY_REQUIRED:'+kind);
+            if(!Array.isArray(row?.reuse))throw new Error('VERIFIED_PLAYBOOK_REUSE_ARRAY_REQUIRED:'+kind);
+            for(const item of row.reuse){
+              const id=String(item?.id||'').trim();
+              if(!id)throw new Error('VERIFIED_PLAYBOOK_REUSE_ID_REQUIRED:'+kind);
+              if(id.startsWith('external-black-box-')){
+                const principles=Array.isArray(item?.distilledApplicationPrinciples)
+                  ?item.distilledApplicationPrinciples.map(value=>String(value||'').trim()).filter(Boolean)
+                  :[];
+                if(!principles.length)throw new Error('VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED:'+kind+':'+id);
+              }
+            }
+          }
+          console.log('VIBE2_VERIFIED_COMMERCIAL_PLAYBOOK=PASS');
+          NODE
+          echo "VIBE2_VERIFIED_LEARNING_MEMORY_SHA=$(git -C "$learning_root" rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Measure worker checkout
+        id: checkout_metrics
+        shell: bash
+        run: |
+          now="$(date +%s%3N)"
+          start="$(cat /tmp/vibe2-worker-start-ms)"
+          echo "ms=$((now-start))" >> "$GITHUB_OUTPUT"
+          echo 'VIBE2_CONTROL_CHECKOUT_SCOPE=STATE_ONLY'
+          echo 'VIBE2_WORKER_EXECUTABLE_CODE_SOURCE=PINNED_MAIN_CONTRACT'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Synchronize worker with Vibe before work
+        env:
+          TASK_ID: ${{ matrix.taskId }}
+          RESERVATION_ID: ${{ matrix.reservationId }}
+          RESERVATION_RUN_ID: ${{ matrix.reservationRunId }}
+          RESERVATION_RUN_ATTEMPT: ${{ matrix.reservationRunAttempt }}
+          RESERVED_AT: ${{ matrix.reservedAt }}
+          CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          test -n "$CONTRACT_SHA"
+          test "$(git -C "$contract_root" rev-parse HEAD)" = "$CONTRACT_SHA"
+          (
+            cd "$contract_root"
+            node tools/company-shared-context.mjs --output=/tmp/vibe2-worker-shared-context.json | tee /tmp/vibe2-worker-shared-context.log
+          )
+          grep -q '^WORKER_CONTEXT_SYNC=PASS$' /tmp/vibe2-worker-shared-context.log
+          node "$contract_root/tools/vibe2-queue-control.mjs" verify-worker-sync             --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"             --id="$TASK_ID"             --reservation-id="$RESERVATION_ID"             --reservation-run="$RESERVATION_RUN_ID"             --reservation-attempt="$RESERVATION_RUN_ATTEMPT"             --reserved-at="$RESERVED_AT" | tee /tmp/vibe2-worker-sync.log
+          grep -q '^VIBE2_WORKER_SYNC=PASS$' /tmp/vibe2-worker-sync.log
+          echo "VIBE2_WORKER_CONTRACT_SHA=$CONTRACT_SHA"
+          echo 'VIBE2_WORKER_PREFLIGHT_SYNC=PASS'
+
+      - name: Enforce canonical constitution before source write
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          cd "$contract_root"
+          node --check tools/company-constitution-enforcer.mjs
+          node tools/company-constitution-enforcer.mjs --phase=worker-before-source-write
+
+      - name: Build reserved task work order
+        id: order
+        env:
+          TASK_ID: ${{ matrix.taskId }}
+          VARIANT: ${{ matrix.variant }}
+          SAFE_TASK: ${{ matrix.safeTask }}
+          VIBE2_BASE_MAIN_SHA: ${{ needs.reserve.outputs.contract_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          node "$contract_root/tools/vibe2-continuous-runner.mjs" \
+            --runtime="$contract_root/vibe2-runtime.json" \
+            --queue="$GITHUB_WORKSPACE/.vibe2/queue.json" \
+            --control="$GITHUB_WORKSPACE/.vibe2/parallelism-control.json" \
+            --experience="$GITHUB_WORKSPACE/.vibe2/experience.json" \
+            --learning-motor-state="$GITHUB_WORKSPACE/.vibe2/learning-motor-state.json" \
+            --code-patterns="$GITHUB_WORKSPACE/.vibe2/code-pattern-library.json" \
+            --practice-distilled="$GITHUB_WORKSPACE/.vibe2/practice-distilled-knowledge.json" \
+            --external-ai-distilled="$GITHUB_WORKSPACE/.vibe2/external-ai-distilled-knowledge.json" \
+            --playbooks="$GITHUB_WORKSPACE/vibe2-learning-memory/company-learning/vibe3-task-playbooks.json" \
+            --project-lifecycle="$GITHUB_WORKSPACE/.vibe2/web-roblox-handoffs.json" \
+            --task-id="$TASK_ID" \
+            --variant="$VARIANT" \
+            --output=/tmp/vibe2-work-order.json | tee /tmp/vibe2-order.log
+          node <<'NODE'
+          const fs=require('fs');
+          const order=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
+          const out=process.env.GITHUB_OUTPUT;
+          const put=(k,v)=>fs.appendFileSync(out,`${k}=${String(v??'').replaceAll('\n',' ')}\n`);
+          put('run',order.run?'true':'false');
+          put('reason',order.reason||'');
+          put('task_id',order.taskId||process.env.TASK_ID||'');
+          put('safe_task',process.env.SAFE_TASK||'');
+          put('game_id',order.gameId||'');
+          put('target',order.target||'');
+          put('route',order.executionRoute||'');
+          const presentationPass=String(order?.presentationQuality?.pass||'').toUpperCase();
+          const deterministicRoblox=String(order.target||'').toLowerCase()==='roblox'
+            && order?.presentationQuality?.required===true
+            && presentationPass==='ASSET_ADAPTATION';
+          put('deterministic_source',deterministicRoblox?'true':'false');
+          put('source_root',order.source?.root||'');
+          put('work_lock_required',order.compiledWorkContract?.workLock?.requiredBeforeSourceWrite===true?'true':'false');
+          put('work_lock_base_sha',order.compiledWorkContract?.workLock?.baseSha||'');
+          put('release_state',order.releaseState||'other');
+          put('cache_namespace',order.incrementalQa?.cacheNamespace||`${order.target||'unknown'}:${order.gameId||'global'}`);
+          put('variant',process.env.VARIANT||'primary');
+          NODE
+
+      - name: Decide worker local model requirement
+        id: model_need
+        env:
+          ORDER_RUN: ${{ steps.order.outputs.run }}
+          ROUTE: ${{ steps.order.outputs.route }}
+          TARGET: ${{ steps.order.outputs.target }}
+          DETERMINISTIC_SOURCE: ${{ steps.order.outputs.deterministic_source }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          required='false'
+          reason='ROUTE_NO_LOCAL_MODEL'
+          if [ "$ORDER_RUN" != 'true' ]; then
+            reason='WORK_ORDER_NOT_RUNNABLE'
+          elif [ "$ROUTE" = 'analysis-only' ] || [ "$ROUTE" = 'learning-web-artifact' ]; then
+            required='true'
+            reason='LEARNING_ROUTE'
+          elif [ "$ROUTE" = 'text-source-worker' ] && [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
+            required='false'
+            reason='ROBLOX_DETERMINISTIC_SOURCE'
+          elif [ "$ROUTE" = 'text-source-worker' ]; then
+            required='true'
+            reason='TEXT_SOURCE_ROUTE'
+          fi
+          echo "required=$required" >> "$GITHUB_OUTPUT"
+          echo "reason=$reason" >> "$GITHUB_OUTPUT"
+          if [ "$required" = 'true' ]; then
+            echo 'VIBE2_WORKER_MODEL_CACHE_REQUIRED=YES'
+          else
+            echo 'VIBE2_WORKER_MODEL_CACHE_REQUIRED=NO'
+          fi
+          echo "VIBE2_WORKER_MODEL_CACHE_REASON=$reason"
+
+      - name: Restore shared Ollama runtime cache
+        id: worker_ollama_cache
+        if: steps.model_need.outputs.required == 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/.ollama/models
+            ~/.cache/vibe2-ollama/bin/ollama
+            ~/.cache/vibe2-ollama/lib/ollama
+          key: vibe2-ollama-v5-${{ runner.os }}-${{ runner.arch }}-qwen3-1.7b
+
+      - name: Mark worker Ollama preparation start
+        id: worker_ollama_prepare_start
+        if: steps.model_need.outputs.required == 'true'
+        shell: bash
+        run: echo "ms=$(date +%s%3N)" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare cached Ollama runtime
+        id: worker_ollama_runtime
+        if: steps.model_need.outputs.required == 'true'
+        uses: ./vibe2-contract/.github/actions/prepare-ollama
+        with:
+          model: ${{ env.VIBE2_LOCAL_MODEL }}
+          pull-model: 'true'
+
+      - name: Measure worker Ollama preparation
+        id: worker_ollama_metrics
+        if: steps.model_need.outputs.required == 'true'
+        env:
+          START_MS: ${{ steps.worker_ollama_prepare_start.outputs.ms }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          finished="$(date +%s%3N)"
+          start="${START_MS:-$finished}"
+          echo "duration_ms=$((finished-start))" >> "$GITHUB_OUTPUT"
+          echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=SHARED_PREPARE_OLLAMA'
+
+      - name: Run isolated learning practice
+        id: practice
+        if: steps.order.outputs.run == 'true' && (steps.order.outputs.route == 'analysis-only' || steps.order.outputs.route == 'learning-web-artifact')
+        continue-on-error: true
+        env:
+          SAFE_TASK: ${{ matrix.safeTask }}
+          VARIANT: ${{ matrix.variant }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          command -v ollama >/dev/null
+          nohup ollama serve > "/tmp/ollama-practice-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
+            if [ "$i" = 30 ]; then cat "/tmp/ollama-practice-${SAFE_TASK}-${VARIANT}.log" || true; exit 1; fi
+            sleep 2
+          done
+          if ! ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"; then
+            ollama pull "$VIBE2_LOCAL_MODEL"
+          fi
+          practice_route="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.executionRoute||''))")"
+          if node -e "const o=require('/tmp/vibe2-work-order.json');process.exit(o.selectedTask?.robloxPracticeDrill?0:1)"; then
+            luau_dir="$RUNNER_TEMP/vibe2-luau-practice"
+            mkdir -p "$luau_dir"
+            curl -fsSL --retry 3 --retry-delay 2 -o "$luau_dir/luau.zip" https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+            unzip -oq "$luau_dir/luau.zip" -d "$luau_dir"
+            chmod +x "$luau_dir/luau"
+            export VIBE2_LUAU_BINARY="$luau_dir/luau"
+            node --test "$contract_root/qa/vibe2-learning-practice-worker.test.mjs"
+          fi
+          if [ "$practice_route" = 'learning-web-artifact' ]; then
+            practice_deps="$RUNNER_TEMP/vibe2-practice-browser"
+            npm install --prefix "$practice_deps" --no-audit --no-fund playwright@1.58.2
+            node "$practice_deps/node_modules/playwright/cli.js" install --with-deps chromium
+            export VIBE2_PLAYWRIGHT_MODULE="$practice_deps/node_modules/playwright/index.mjs"
+          fi
+          if node -e "const o=require('/tmp/vibe2-work-order.json');process.exit(o.selectedTask?.codingPracticeDrill==='unity-lifecycle'?0:1)"; then
+            docker pull mcr.microsoft.com/dotnet/sdk:8.0
+          fi
+          artifact_dir="/tmp/vibe2-practice-web-${SAFE_TASK}-${VARIANT}"
+          node "$contract_root/tools/vibe2-learning-practice-worker.mjs" \
+            --order=/tmp/vibe2-work-order.json \
+            --output=/tmp/vibe2-learning-practice-result.json \
+            --artifact-dir="$artifact_dir"
+          test -f /tmp/vibe2-learning-practice-result.json
+          if [ "$practice_route" = 'learning-web-artifact' ]; then
+            test -s "$artifact_dir/index.html"
+          fi
+          node "$contract_root/tools/vibe2-practice-distillation.mjs" \
+            --result=/tmp/vibe2-learning-practice-result.json \
+            --order=/tmp/vibe2-work-order.json \
+            --experience=.vibe2/experience.json \
+            --patterns=.vibe2/code-pattern-library.json \
+            --knowledge=.vibe2/game-study-knowledge.json \
+            --output=/tmp/vibe2-practice-distillation.json
+          test -f /tmp/vibe2-practice-distillation.json
+          echo 'VIBE2_ANALYSIS_WORKER=PRACTICE_ONLY'
+          echo 'VIBE2_PRACTICE_PRODUCTION_PASS=NO'
+          echo 'VIBE2_PRACTICE_CANONICAL_CANDIDATE_PERSISTED=NO'
+          if [ "$practice_route" = 'learning-web-artifact' ]; then
+            echo 'VIBE2_PRACTICE_EPHEMERAL_WEB_ARTIFACT=YES'
+          else
+            echo 'VIBE2_PRACTICE_EPHEMERAL_WEB_ARTIFACT=NO'
+          fi
+
+      - name: Upload ephemeral Web practice artifact
+        if: always() && steps.order.outputs.route == 'learning-web-artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-practice-web-${{ matrix.safeTask }}-${{ matrix.variant }}
+          path: |
+            /tmp/vibe2-practice-web-${{ matrix.safeTask }}-${{ matrix.variant }}/index.html
+            /tmp/vibe2-learning-practice-result.json
+          if-no-files-found: warn
+          retention-days: 1
+
+      - name: Build task-local exploration handoff
+        id: local_exploration
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
+        env:
+          TASK_ID: ${{ steps.order.outputs.task_id }}
+          SAFE_TASK: ${{ matrix.safeTask }}
+          CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          base_sha="$CONTRACT_SHA"
+          test -n "$base_sha"
+          test "$(git -C "$contract_root" rev-parse HEAD)" = "$base_sha"
+          explore_dir="/tmp/vibe2-worker-explore-${SAFE_TASK}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git -C "$contract_root" worktree add --detach "$explore_dir" "$base_sha"
+          mkdir -p "$explore_dir/.vibe2" /tmp/vibe2-exploration
+          cp /tmp/vibe2-work-order.json "$explore_dir/.vibe2/work-order.json"
+          cd "$explore_dir"
+          export VIBE2_BASE_MAIN_SHA="$base_sha"
+          node "$contract_root/tools/vibe2-exploration-worker.mjs" \
+            --order=.vibe2/work-order.json \
+            --output=/tmp/vibe2-exploration/vibe2-exploration.json | tee /tmp/vibe2-exploration.log
+          test -s /tmp/vibe2-exploration/vibe2-exploration.json
+          echo 'VIBE2_TASK_LOCAL_EXPLORATION=PASS'
+          echo "VIBE2_BASE_MAIN_SHA=$base_sha"
+
+      - name: Verify free execution budget
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          target="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.target||''))")"
+          model_calls=1
+          deterministic_source="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));const p=String(o?.presentationQuality?.pass||'').toUpperCase();process.stdout.write(String(String(o.target||'').toLowerCase()==='roblox'&&o?.presentationQuality?.required===true&&p==='ASSET_ADAPTATION'))")"
+          if [ "$deterministic_source" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then model_calls=0; fi
+          node "$contract_root/tools/free-budget-telemetry.mjs" \
+            --verify-public-repo=true \
+            --runner=ubuntu-latest \
+            --model-calls="$model_calls" \
+            --runner-minutes=22 \
+            --output=/tmp/vibe2-free-budget.json
+          echo "VIBE2_GAME_SOURCE_MODEL_CALLS=$model_calls"
+          echo 'VIBE2_PAID_API=NO'
+          echo 'VIBE2_PAID_RUNNER=NO'
+          echo 'VIBE2_PARALLELISM_POLICY=UNBOUNDED_BY_POLICY'
+          echo "VIBE2_EXTERNAL_MATRIX_BATCH_MAX=$VIBE2_EXTERNAL_MATRIX_BATCH_MAX"
+          echo 'VIBE2_FREE_AI_SCALE=ONE_WORKER_PER_INDEPENDENT_TASK'
+          test "$VIBE2_GAME_DEVELOPMENT_OWNER" = "VIBE2_VIBE3"
+          test "$VIBE2_GAME_SOURCE_PROVIDER" = "LOCAL_OLLAMA"
+          test "$VIBE2_CODEX_ROLE" = "SYSTEM_TOOLING_CI_TEST_INFRA_ONLY"
+          test "$VIBE2_CODEX_GAME_SOURCE_WRITE" = "FORBIDDEN"
+          test "$VIBE2_OPENAI_PAID_API_ALLOWED" = "false"
+          echo 'VIBE2_GAME_SOURCE_AUTHORITY=PASS'
+          echo 'VIBE2_CODEX_ROLE=SYSTEM_TOOLING_CI_TEST_INFRA_ONLY'
+
+      - name: Acquire shared Work Lock before source write
+        id: work_lock
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          node <<'NODE' > /tmp/vibe2-work-lock-request.env
+          const fs=require('fs');
+          const order=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
+          const lock=order?.compiledWorkContract?.workLock||{};
+          if(lock.requiredBeforeSourceWrite!==true)throw new Error('WORK_LOCK_REQUIRED_CONTRACT_MISSING');
+          if(!lock.taskId||!lock.baseSha||!Array.isArray(lock.files)||!lock.files.length)throw new Error('WORK_LOCK_IDENTITY_INCOMPLETE');
+          const emit=(key,value)=>process.stdout.write(key+'='+JSON.stringify(String(value??''))+'\n');
+          emit('LOCK_TASK',lock.taskId);
+          emit('LOCK_GAME',lock.gameId||order.gameId||'');
+          emit('LOCK_FILES',lock.files.join(','));
+          emit('LOCK_BASE_SHA',lock.baseSha);
+          emit('LOCK_CHANGE_SET',order?.compiledWorkContract?.changeSet?.id||lock.taskId);
+          NODE
+          source /tmp/vibe2-work-lock-request.env
+          test -n "$LOCK_TASK"
+          test -n "$LOCK_FILES"
+          test -n "$LOCK_BASE_SHA"
+          test "$LOCK_BASE_SHA" = "$CONTRACT_SHA"
+          node "$contract_root/tools/vibe2-remote-work-lock.mjs" acquire \
+            --worker=vibe2 \
+            --task="$LOCK_TASK" \
+            --game="$LOCK_GAME" \
+            --files="$LOCK_FILES" \
+            --base-sha="$LOCK_BASE_SHA" \
+            --run-id="${GITHUB_RUN_ID:-}" \
+            --run-attempt="${GITHUB_RUN_ATTEMPT:-}" \
+            --evidence="compiled-central-work-contract,change-set:$LOCK_CHANGE_SET" | tee /tmp/vibe2-work-lock-acquire.log
+          acquired="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_ACQUIRED=//p' /tmp/vibe2-work-lock-acquire.log | tail -n1)"
+          lock_id="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_ID=//p' /tmp/vibe2-work-lock-acquire.log | tail -n1)"
+          reason="$(sed -n 's/^VIBE_REMOTE_WORK_LOCK_REASON=//p' /tmp/vibe2-work-lock-acquire.log | tail -n1)"
+          if [ "$acquired" = 'YES' ]; then
+            echo 'acquired=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'acquired=false' >> "$GITHUB_OUTPUT"
+          fi
+          echo "lock_id=$lock_id" >> "$GITHUB_OUTPUT"
+          echo "reason=$reason" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_SHARED_WORK_LOCK_ACQUIRED=${acquired:-NO}"
+          echo "VIBE2_SHARED_WORK_LOCK_REASON=${reason:-UNKNOWN}"
+          echo 'VIBE2_WORK_LOCK_ACQUIRE_TIMING=POST_MODEL_PREP_READ_ONLY_EXPLORATION_PRE_SOURCE_WRITE'
+
+      - name: Generate isolated candidate from pinned main contract
+        id: candidate
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.work_lock.outputs.acquired == 'true'
+        continue-on-error: true
+        env:
+          TASK_ID: ${{ steps.order.outputs.task_id }}
+          SAFE_TASK: ${{ matrix.safeTask }}
+          SOURCE_ROOT: ${{ steps.order.outputs.source_root }}
+          TARGET: ${{ steps.order.outputs.target }}
+          DETERMINISTIC_SOURCE: ${{ steps.order.outputs.deterministic_source }}
+          VARIANT: ${{ matrix.variant }}
+          CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate_started="$(date +%s%3N)"
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          base_sha="$CONTRACT_SHA"
+          test -n "$base_sha"
+          test "$(git -C "$contract_root" rev-parse HEAD)" = "$base_sha"
+          candidate_branch="vibe2/candidate/${SAFE_TASK}-${VARIANT}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          candidate_dir="/tmp/vibe2-candidate-${SAFE_TASK}-${VARIANT}-${GITHUB_RUN_ID}"
+          git -C "$contract_root" worktree add -b "$candidate_branch" "$candidate_dir" "$base_sha"
+          mkdir -p "$candidate_dir/.vibe2"
+          cp /tmp/vibe2-work-order.json "$candidate_dir/.vibe2/work-order.json"
+          cp /tmp/vibe2-exploration/vibe2-exploration.json "$candidate_dir/.vibe2/exploration.json"
+
+          test "$VIBE2_GAME_DEVELOPMENT_OWNER" = "VIBE2_VIBE3" || { echo "GAME_DEVELOPMENT_OWNER_INVALID=$VIBE2_GAME_DEVELOPMENT_OWNER" >&2; exit 1; }
+          test "$VIBE2_GAME_SOURCE_PROVIDER" = "LOCAL_OLLAMA" || { echo "GAME_SOURCE_PROVIDER_INVALID=$VIBE2_GAME_SOURCE_PROVIDER" >&2; exit 1; }
+          test "$VIBE2_CODEX_GAME_SOURCE_WRITE" = "FORBIDDEN" || { echo "CODEX_GAME_SOURCE_WRITE_FORBIDDEN=$VIBE2_CODEX_GAME_SOURCE_WRITE" >&2; exit 1; }
+          test "$VIBE2_OPENAI_PAID_API_ALLOWED" = "false" || { echo "OPENAI_PAID_API_GAME_SOURCE_FORBIDDEN=$VIBE2_OPENAI_PAID_API_ALLOWED" >&2; exit 1; }
+          echo 'VIBE2_GAME_DEVELOPMENT_OWNER=VIBE2_VIBE3'
+          echo 'VIBE2_GAME_SOURCE_PROVIDER=LOCAL_OLLAMA'
+          echo 'VIBE2_CODEX_GAME_SOURCE_WRITE=FORBIDDEN'
+
+          if [ "$DETERMINISTIC_SOURCE" = 'true' ] && [ "$VIBE2_ROBLOX_DETERMINISTIC_SOURCE" = 'true' ]; then
+            echo 'VIBE2_ROBLOX_SOURCE_MODE=DETERMINISTIC_LOCAL'
+            echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=DETERMINISTIC_LOCAL'
+            echo 'VIBE2_LOCAL_MODEL_REQUIRED=NO'
+          else
+            echo 'VIBE2_ACTIVE_SOURCE_PROVIDER=LOCAL_OLLAMA'
+            command -v ollama >/dev/null
+            nohup ollama serve > "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
+            for i in $(seq 1 30); do
+              curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
+              if [ "$i" = 30 ]; then cat "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" || true; exit 1; fi
+              sleep 2
+            done
+            if ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"; then
+              echo 'VIBE2_LOCAL_MODEL_SOURCE=CACHE'
+            else
+              echo 'VIBE2_LOCAL_MODEL_SOURCE=FALLBACK_PULL'
+              ollama pull "$VIBE2_LOCAL_MODEL"
+            fi
+          fi
+
+          if [ "$TARGET" = 'roblox' ]; then
+            luau_dir="$RUNNER_TEMP/vibe2-source-luau"
+            mkdir -p "$luau_dir"
+            curl -fsSL --retry 3 --retry-delay 2 -o "$luau_dir/luau.zip" https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+            unzip -oq "$luau_dir/luau.zip" -d "$luau_dir"
+            chmod +x "$luau_dir/luau-compile"
+            export VIBE2_LUAU_COMPILER="$luau_dir/luau-compile"
+            export VIBE2_LUAU_COMPILE_REQUIRED=true
+            "$VIBE2_LUAU_COMPILER" --help >/dev/null
+            VIBE2_TEST_LUAU_COMPILER="$VIBE2_LUAU_COMPILER" VIBE2_LUAU_COMPILER= node --test --test-name-pattern='Luau compiler' "$contract_root/qa/vibe2-source-worker.test.mjs"
+          fi
+
+          cd "$candidate_dir"
+          node --check tools/company-shared-context.mjs
+          node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.log"
+          export VIBE2_BASE_MAIN_SHA="$base_sha"
+          export VIBE2_SPECULATIVE_VARIANT="$VARIANT"
+          export VIBE2_EXPLORATION_FILE=.vibe2/exploration.json
+          source_worker_log="/tmp/vibe2-source-worker-${SAFE_TASK}-${VARIANT}.log"
+          echo "candidate_dir=$candidate_dir" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
+          set +e
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-source-worker.mjs" --apply-source=true 2>&1 | tee "$source_worker_log"
+          worker_rc=${PIPESTATUS[0]}
+          set -e
+          candidate_finished="$(date +%s%3N)"
+          echo "duration_ms=$((candidate_finished-candidate_started))" >> "$GITHUB_OUTPUT"
+          failure_class="$(sed -n 's/^VIBE2_SOURCE_WORKER_FAILURE_CLASS=//p' "$source_worker_log" | tail -n1)"
+          failure_message="$(sed -n 's/^VIBE2_SOURCE_WORKER_FAILURE_MESSAGE=//p' "$source_worker_log" | tail -n1)"
+          echo "failure_class=$failure_class" >> "$GITHUB_OUTPUT"
+          echo "failure_message=$failure_message" >> "$GITHUB_OUTPUT"
+          node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.log"
+          if [ "$worker_rc" -ne 0 ]; then exit "$worker_rc"; fi
+          candidate_manifest_rel="$(sed -n 's/^VIBE2_CANDIDATE_MANIFEST=//p' "$source_worker_log" | tail -n1)"
+          test -n "$candidate_manifest_rel"
+          candidate_manifest="$candidate_dir/$candidate_manifest_rel"
+          test -f "$candidate_manifest"
+          echo "candidate_manifest=$candidate_manifest" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_CANDIDATE_MANIFEST=$candidate_manifest_rel"
+          # Formatting whitespace is not a gameplay failure; conflict markers still fail.
+          git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check
+          security_sensitive="$(node --input-type=module - "$candidate_manifest" <<'NODE'
+          import fs from 'node:fs';
+          const manifest=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const files=(manifest.changedFiles||[]).map(value=>String(value).replaceAll('\\','/'));
+          const sensitive=files.some(file=>
+            /^(?:\.github\/(?:workflows|actions)\/)/.test(file) ||
+            /^tools\/company-security-/.test(file) ||
+            /^qa\/company-security-/.test(file) ||
+            /^(?:tools\/(?:company-shared-context|company-constitution-enforcer|vibe2-central-work-contract|vibe2-system-steward|vibe2-system-architecture-contract)\.mjs|company-learning\/(?:security-immune-system|platform-release-roadmap|company-log-map|company-architecture-map)\.json|company-directive\.json|package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock)$/.test(file)
+          );
+          process.stdout.write(sensitive?'YES':'NO');
+          NODE
+          )"
+          if [ "$security_sensitive" = 'YES' ]; then
+            node --check tools/company-security-steward.mjs
+            node tools/company-security-steward.mjs --output="/tmp/vibe2-security-${SAFE_TASK}-${VARIANT}.json"
+            echo 'VIBE2_SECURITY_IMMUNE_SCAN=PASS'
+          else
+            echo 'VIBE2_SECURITY_IMMUNE_SCAN=SKIPPED_NON_SECURITY_CHANGE'
+          fi
+
+          candidate_target="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.target||''))")"
+          if [ "$candidate_target" = 'system' ]; then
+            node --input-type=module - "$candidate_manifest" <<'NODE' > /tmp/vibe2-system-candidate-files.txt
+            import fs from 'node:fs';
+            import { isAllowedSystemArchitecturePath } from './tools/vibe2-system-architecture-contract.mjs';
+            const m=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+            const responsible=new Set(m?.compiledWorkContract?.writableScope?.exactResponsibleFiles||[]);
+            for(const file of m.changedFiles||[]){
+              if(!isAllowedSystemArchitecturePath(file)||!responsible.has(file))throw new Error('SYSTEM_CANDIDATE_PATH_FORBIDDEN:'+file);
+              console.log(file);
+            }
+          NODE
+            mapfile -t system_files < /tmp/vibe2-system-candidate-files.txt
+            [ "${#system_files[@]}" -gt 0 ]
+            git add -- "${system_files[@]}" .vibe2/candidates
+            git diff --cached --quiet && { echo 'candidate has no system diff' >&2; exit 1; }
+            mapfile -t changed < <(git diff --cached --name-only)
+            for file in "${changed[@]}"; do
+              case "$file" in
+                .vibe2/candidates/*) ;;
+                *) printf '%s\n' "${system_files[@]}" | grep -Fxq "$file" || { echo "system candidate escaped exact boundary: $file" >&2; exit 1; } ;;
+              esac
+            done
+            changed_file_count="${#system_files[@]}"
+            read -r added_line_count deleted_line_count < <(git diff --cached --numstat -- "${system_files[@]}" | awk '{if($1~/^[0-9]+$/)a+=$1;if($2~/^[0-9]+$/)d+=$2}END{print a+0,d+0}')
+          else
+            git add "$SOURCE_ROOT" .vibe2/candidates
+            git diff --cached --quiet && { echo 'candidate has no source diff' >&2; exit 1; }
+            mapfile -t changed < <(git diff --cached --name-only)
+            for file in "${changed[@]}"; do
+              case "$file" in
+                "$SOURCE_ROOT"/*|.vibe2/candidates/*) ;;
+                *) echo "candidate escaped approved boundary: $file" >&2; exit 1 ;;
+              esac
+            done
+            changed_file_count="$(git diff --cached --name-only -- "$SOURCE_ROOT" | sed '/^$/d' | wc -l | tr -d ' ')"
+            read -r added_line_count deleted_line_count < <(git diff --cached --numstat -- "$SOURCE_ROOT" | awk '{if($1~/^[0-9]+$/)a+=$1;if($2~/^[0-9]+$/)d+=$2}END{print a+0,d+0}')
+          fi
+          echo "changed_file_count=${changed_file_count:-0}" >> "$GITHUB_OUTPUT"
+          echo "added_line_count=${added_line_count:-0}" >> "$GITHUB_OUTPUT"
+          echo "deleted_line_count=${deleted_line_count:-0}" >> "$GITHUB_OUTPUT"
+
+          git config user.name 'jaewoon-vibe2-worker'
+          git config user.email 'vibe2-worker@users.noreply.github.com'
+          git commit -m "vibe2: candidate ${TASK_ID} ${VARIANT}"
+          candidate_sha="$(git rev-parse HEAD)"
+
+          # Create the remote candidate ref at the already-authorized pinned base first.
+          # The following push then contains only this task's approved source/candidate diff,
+          # so untouched workflow files in the base history do not require workflow-write authority.
+          candidate_ref_payload="$(jq -nc --arg ref "refs/heads/$candidate_branch" --arg sha "$base_sha" '{ref:$ref,sha:$sha}')"
+          if ! curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs" \
+            --data "$candidate_ref_payload"; then
+            echo "failure_class=CANDIDATE_BRANCH_PUBLISH" >> "$GITHUB_OUTPUT"
+            echo "failure_message=remote candidate ref creation failed at pinned base" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+          if ! git push origin "HEAD:$candidate_branch"; then
+            echo "failure_class=CANDIDATE_BRANCH_PUBLISH" >> "$GITHUB_OUTPUT"
+            echo "failure_message=remote candidate commit push failed after ref creation" >> "$GITHUB_OUTPUT"
+            curl --fail-with-body --silent --show-error \
+              --request DELETE \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/heads/$candidate_branch" >/dev/null 2>&1 || true
+            exit 1
+          fi
+
+          echo "candidate_branch=$candidate_branch" >> "$GITHUB_OUTPUT"
+          echo "candidate_sha=$candidate_sha" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_CANDIDATE_BRANCH=$candidate_branch"
+          echo "VIBE2_CANDIDATE_SHA=$candidate_sha"
+          echo "VIBE2_BASE_MAIN_SHA=$base_sha"
+          echo "VIBE2_CHANGED_FILE_COUNT=${changed_file_count:-0}"
+          echo "VIBE2_CHANGED_LINE_COUNT=$(( ${added_line_count:-0} + ${deleted_line_count:-0} ))"
+
+      - name: Restore incremental QA content-hash cache
+        if: steps.candidate.outcome == 'success'
+        uses: actions/cache@v4
+        with:
+          path: /tmp/vibe2-qa-cache
+          key: vibe2-iqa-v2-${{ runner.os }}-${{ steps.order.outputs.game_id }}-${{ github.run_id }}-${{ matrix.variant }}
+          restore-keys: |
+            vibe2-iqa-v2-${{ runner.os }}-${{ steps.order.outputs.game_id }}-
+
+      - name: Run impact-first incremental QA role
+        id: incremental_qa
+        if: steps.candidate.outcome == 'success'
+        continue-on-error: true
+        env:
+          CANDIDATE_DIR: ${{ steps.candidate.outputs.candidate_dir }}
+          CANDIDATE_MANIFEST: ${{ steps.candidate.outputs.candidate_manifest }}
+          CACHE_NAMESPACE: ${{ steps.order.outputs.cache_namespace }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          qa_started="$(date +%s%3N)"
+          mkdir -p /tmp/vibe2-qa-cache
+          manifest="$CANDIDATE_MANIFEST"
+          test -f "$manifest"
+          set +e
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-incremental-qa.mjs" \
+            --root="$CANDIDATE_DIR" \
+            --manifest="$manifest" \
+            --cache=/tmp/vibe2-qa-cache/cache.json \
+            --namespace="$CACHE_NAMESPACE" \
+            --output=/tmp/vibe2-incremental-qa.json 2>&1 | tee /tmp/vibe2-incremental-qa.log
+          qa_rc=${PIPESTATUS[0]}
+          set -e
+          hash="$(sed -n 's/^VIBE2_INCREMENTAL_QA_HASH=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          cache="$(sed -n 's/^VIBE2_INCREMENTAL_QA_CACHE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          replay_status="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_STATUS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          replay_executed="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_EXECUTED=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          replay_prepatch_reproduced="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_PREPATCH_REPRODUCED=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          replay_verified_responsible_system="$(sed -n 's/^VIBE2_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          drift_status="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_STATUS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          drift_risk="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_RISK=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          drift_score="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_SCORE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          drift_signals="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_SIGNALS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          presentation_status="$(sed -n 's/^VIBE2_PRESENTATION_QA_STATUS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          presentation_pass="$(sed -n 's/^VIBE2_PRESENTATION_QA_PASS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          presentation_runtime_required="$(sed -n 's/^VIBE2_PRESENTATION_RUNTIME_REQUIRED=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          failure_signature="$(sed -n 's/^VIBE2_INCREMENTAL_QA_FAILURE_SIGNATURE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          failure_message="$(sed -n 's/^VIBE2_INCREMENTAL_QA_FAILURE_MESSAGE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          echo "hash=$hash" >> "$GITHUB_OUTPUT"
+          echo "cache=$cache" >> "$GITHUB_OUTPUT"
+          echo "causal_replay_status=$replay_status" >> "$GITHUB_OUTPUT"
+          echo "causal_replay_executed=$replay_executed" >> "$GITHUB_OUTPUT"
+          echo "causal_replay_prepatch_reproduced=$replay_prepatch_reproduced" >> "$GITHUB_OUTPUT"
+          echo "causal_replay_verified_responsible_system=$replay_verified_responsible_system" >> "$GITHUB_OUTPUT"
+          echo "architecture_drift_status=$drift_status" >> "$GITHUB_OUTPUT"
+          echo "architecture_drift_risk=$drift_risk" >> "$GITHUB_OUTPUT"
+          echo "architecture_drift_score=$drift_score" >> "$GITHUB_OUTPUT"
+          echo "architecture_drift_signals=$drift_signals" >> "$GITHUB_OUTPUT"
+          echo "presentation_status=$presentation_status" >> "$GITHUB_OUTPUT"
+          echo "presentation_pass=$presentation_pass" >> "$GITHUB_OUTPUT"
+          echo "presentation_runtime_required=$presentation_runtime_required" >> "$GITHUB_OUTPUT"
+          echo "failure_signature=$failure_signature" >> "$GITHUB_OUTPUT"
+          echo "failure_message=$failure_message" >> "$GITHUB_OUTPUT"
+          qa_finished="$(date +%s%3N)"
+          echo "duration_ms=$((qa_finished-qa_started))" >> "$GITHUB_OUTPUT"
+          if [ "$qa_rc" -ne 0 ]; then
+            echo 'VIBE2_TEST_ROLE=FAIL'
+            echo 'VIBE2_TEST_ROLE_SOURCE_WRITE=NO'
+            exit "$qa_rc"
+          fi
+          echo 'VIBE2_TEST_ROLE=PASS'
+          echo 'VIBE2_TEST_ROLE_SOURCE_WRITE=NO'
+
+      - name: Run read-only performance sanity role
+        id: performance
+        if: steps.candidate.outcome == 'success' && steps.incremental_qa.outcome == 'success'
+        continue-on-error: true
+        env:
+          CANDIDATE_DIR: ${{ steps.candidate.outputs.candidate_dir }}
+          CANDIDATE_MANIFEST: ${{ steps.candidate.outputs.candidate_manifest }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest="$CANDIDATE_MANIFEST"
+          test -f "$manifest"
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-performance-sanity.mjs" \
+            --root="$CANDIDATE_DIR" \
+            --manifest="$manifest" \
+            --output=/tmp/vibe2-performance.json | tee /tmp/vibe2-performance.log
+          echo 'VIBE2_PERFORMANCE_ROLE=PASS'
+          echo 'VIBE2_PERFORMANCE_ROLE_SOURCE_WRITE=NO'
+
+      - name: Capture actual Web presentation runtime before and after
+        id: runtime_visual
+        if: steps.candidate.outcome == 'success' && steps.incremental_qa.outcome == 'success' && steps.performance.outcome == 'success' && steps.order.outputs.target == 'web' && steps.incremental_qa.outputs.presentation_runtime_required == 'YES'
+        env:
+          SAFE_TASK: ${{ matrix.safeTask }}
+          VARIANT: ${{ matrix.variant }}
+          SOURCE_ROOT: ${{ steps.order.outputs.source_root }}
+          BASE_SHA: ${{ steps.candidate.outputs.base_sha }}
+          CANDIDATE_SHA: ${{ steps.candidate.outputs.candidate_sha }}
+          CANDIDATE_DIR: ${{ steps.candidate.outputs.candidate_dir }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          baseline_root="$contract_root/$SOURCE_ROOT"
+          candidate_root="$CANDIDATE_DIR/$SOURCE_ROOT"
+          capture_dir="/tmp/vibe2-runtime-visual-$SAFE_TASK-$VARIANT"
+          result_file="/tmp/vibe2-runtime-visual-comparison.json"
+          artifact_name="vibe2-visual-$SAFE_TASK-$VARIANT-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$capture_dir"
+          browser="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          status=READY
+          before_stable=false
+          after_stable=false
+          visible_delta=false
+          before_sha=''
+          after_sha=''
+          before_bytes=0
+          after_bytes=0
+          before_entry=''
+          after_entry=''
+          resolve_entry() {
+            local root="$1"
+            if [ -f "$root/index.html" ]; then printf '%s' 'index.html'; return 0; fi
+            find "$root" -maxdepth 1 -type f \( -iname '*.html' -o -iname '*.htm' \) -printf '%f\n' | sort | head -n1
+          }
+          before_entry="$(resolve_entry "$baseline_root" || true)"
+          after_entry="$(resolve_entry "$candidate_root" || true)"
+          if [ -z "$browser" ]; then status=BROWSER_UNAVAILABLE; fi
+          if [ -z "$before_entry" ] || [ -z "$after_entry" ]; then status=RUNTIME_ENTRY_MISSING; fi
+          pids=()
+          cleanup() { for pid in "${pids[@]:-}"; do kill "$pid" >/dev/null 2>&1 || true; done; }
+          trap cleanup EXIT
+          if [ "$status" = READY ]; then
+            python3 -m http.server 41731 --bind 127.0.0.1 --directory "$baseline_root" >"$capture_dir/before-server.log" 2>&1 & pids+=("$!")
+            python3 -m http.server 41732 --bind 127.0.0.1 --directory "$candidate_root" >"$capture_dir/after-server.log" 2>&1 & pids+=("$!")
+            ready=0
+            for i in $(seq 1 20); do
+              if curl -fsS "http://127.0.0.1:41731/" >/dev/null && curl -fsS "http://127.0.0.1:41732/" >/dev/null; then ready=1; break; fi
+              sleep 0.25
+            done
+            if [ "$ready" != 1 ]; then status=RUNTIME_SERVER_UNAVAILABLE; fi
+          fi
+          if [ "$status" = READY ]; then
+            before_url="http://127.0.0.1:41731/$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$before_entry")"
+            after_url="http://127.0.0.1:41732/$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$after_entry")"
+            capture() {
+              local url="$1" out="$2"
+              "$browser" --headless=new --disable-gpu --no-sandbox --hide-scrollbars --window-size=390,844 --virtual-time-budget=2500 --screenshot="$out" "$url" >/dev/null 2>&1
+              test -s "$out"
+            }
+            if ! capture "$before_url" "$capture_dir/before-1.png" || ! capture "$before_url" "$capture_dir/before-2.png" || ! capture "$after_url" "$capture_dir/after-1.png" || ! capture "$after_url" "$capture_dir/after-2.png"; then
+              status=RUNTIME_CAPTURE_FAILED
+            fi
+          fi
+          if [ "$status" = READY ]; then
+            before_sha="$(sha256sum "$capture_dir/before-1.png" | awk '{print $1}')"
+            before_sha_2="$(sha256sum "$capture_dir/before-2.png" | awk '{print $1}')"
+            after_sha="$(sha256sum "$capture_dir/after-1.png" | awk '{print $1}')"
+            after_sha_2="$(sha256sum "$capture_dir/after-2.png" | awk '{print $1}')"
+            before_bytes="$(stat -c%s "$capture_dir/before-1.png")"
+            after_bytes="$(stat -c%s "$capture_dir/after-1.png")"
+            [ "$before_sha" = "$before_sha_2" ] && before_stable=true
+            [ "$after_sha" = "$after_sha_2" ] && after_stable=true
+            [ "$before_sha" != "$after_sha" ] && visible_delta=true
+            if [ "$before_stable" != true ] || [ "$after_stable" != true ]; then status=RUNTIME_CAPTURE_NONDETERMINISTIC; fi
+            if [ "$visible_delta" != true ]; then status=NO_VISIBLE_RENDER_DELTA; fi
+          fi
+          STATUS="$status" BEFORE_STABLE="$before_stable" AFTER_STABLE="$after_stable" VISIBLE_DELTA="$visible_delta" \
+          BEFORE_SHA="$before_sha" AFTER_SHA="$after_sha" BEFORE_BYTES="$before_bytes" AFTER_BYTES="$after_bytes" \
+          BEFORE_ENTRY="$before_entry" AFTER_ENTRY="$after_entry" ARTIFACT_NAME="$artifact_name" RESULT_FILE="$result_file" node <<'NODE'
+          const fs=require('fs');
+          const yes=value=>String(value||'').toLowerCase()==='true';
+          const status=String(process.env.STATUS||'UNKNOWN');
+          const pass=status==='READY'&&yes(process.env.BEFORE_STABLE)&&yes(process.env.AFTER_STABLE)&&yes(process.env.VISIBLE_DELTA);
+          const base=String(process.env.BASE_SHA||'').trim();
+          const candidate=String(process.env.CANDIDATE_SHA||'').trim();
+          const artifact=String(process.env.ARTIFACT_NAME||'').trim();
+          const result={
+            version:1,baselineRevision:base,candidateRevision:candidate,
+            before:{source:'runtime-capture',artifactId:`actions-artifact:${artifact}:before-1.png`,candidateRevision:base,observed:status!=='BROWSER_UNAVAILABLE'&&status!=='RUNTIME_ENTRY_MISSING',reviewed:true,markerOnly:false,entry:String(process.env.BEFORE_ENTRY||''),sha256:String(process.env.BEFORE_SHA||''),bytes:Number(process.env.BEFORE_BYTES||0)},
+            after:{source:'runtime-capture',artifactId:`actions-artifact:${artifact}:after-1.png`,candidateRevision:candidate,observed:status!=='BROWSER_UNAVAILABLE'&&status!=='RUNTIME_ENTRY_MISSING',reviewed:true,markerOnly:false,entry:String(process.env.AFTER_ENTRY||''),sha256:String(process.env.AFTER_SHA||''),bytes:Number(process.env.AFTER_BYTES||0)},
+            comparison:{pass,visibleRenderDelta:yes(process.env.VISIBLE_DELTA),beforeStable:yes(process.env.BEFORE_STABLE),afterStable:yes(process.env.AFTER_STABLE),observed:true,reviewed:true,method:'dual-headless-browser-sha256-v1',status},
+            markerOnly:false,authority:'github-actions-actual-web-runtime-before-after'
+          };
+          fs.writeFileSync(process.env.RESULT_FILE,JSON.stringify(result,null,2)+'\n');
+          console.log('VIBE2_RUNTIME_VISUAL_COMPARISON='+status);
+          console.log('VIBE2_RUNTIME_VISUAL_COMPARISON_PASS='+(pass?'YES':'NO'));
+          NODE
+          echo 'created=true' >> "$GITHUB_OUTPUT"
+          if [ -s "$capture_dir/before-1.png" ] && [ -s "$capture_dir/after-1.png" ]; then echo 'captures_created=true' >> "$GITHUB_OUTPUT"; else echo 'captures_created=false' >> "$GITHUB_OUTPUT"; fi
+
+      - name: Upload actual Web presentation before-after captures
+        if: steps.runtime_visual.outputs.captures_created == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-visual-${{ matrix.safeTask }}-${{ matrix.variant }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: /tmp/vibe2-runtime-visual-${{ matrix.safeTask }}-${{ matrix.variant }}/
+          retention-days: 2
+
+      - name: Enforce canonical constitution after worker execution
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          cd "$contract_root"
+          node tools/company-constitution-enforcer.mjs --phase=worker-after-execution
+
+      - name: Build immutable worker result
+        id: result
+        if: always()
+        env:
+          TASK_ID: ${{ matrix.taskId }}
+          VARIANT: ${{ matrix.variant }}
+          ORDER_RUN: ${{ steps.order.outputs.run }}
+          ORDER_REASON: ${{ steps.order.outputs.reason }}
+          ROUTE: ${{ steps.order.outputs.route }}
+          WORK_LOCK_REQUIRED: ${{ steps.order.outputs.work_lock_required }}
+          WORK_LOCK_ACQUIRED: ${{ steps.work_lock.outputs.acquired }}
+          WORK_LOCK_ID: ${{ steps.work_lock.outputs.lock_id }}
+          WORK_LOCK_REASON: ${{ steps.work_lock.outputs.reason }}
+          CANDIDATE_OUTCOME: ${{ steps.candidate.outcome }}
+          CANDIDATE_BRANCH: ${{ steps.candidate.outputs.candidate_branch }}
+          CANDIDATE_SHA: ${{ steps.candidate.outputs.candidate_sha }}
+          CANDIDATE_DIR: ${{ steps.candidate.outputs.candidate_dir }}
+          CANDIDATE_MANIFEST: ${{ steps.candidate.outputs.candidate_manifest }}
+          CANDIDATE_FAILURE_CLASS: ${{ steps.candidate.outputs.failure_class }}
+          CANDIDATE_FAILURE_MESSAGE: ${{ steps.candidate.outputs.failure_message }}
+          EXPLORATION_FILE: /tmp/vibe2-exploration/vibe2-exploration.json
+          BASE_SHA: ${{ steps.candidate.outputs.base_sha }}
+          CHANGED_FILE_COUNT: ${{ steps.candidate.outputs.changed_file_count }}
+          ADDED_LINE_COUNT: ${{ steps.candidate.outputs.added_line_count }}
+          DELETED_LINE_COUNT: ${{ steps.candidate.outputs.deleted_line_count }}
+          IQA_OUTCOME: ${{ steps.incremental_qa.outcome }}
+          IQA_HASH: ${{ steps.incremental_qa.outputs.hash }}
+          IQA_CACHE: ${{ steps.incremental_qa.outputs.cache }}
+          IQA_FAILURE_SIGNATURE: ${{ steps.incremental_qa.outputs.failure_signature }}
+          IQA_CAUSAL_REPLAY_STATUS: ${{ steps.incremental_qa.outputs.causal_replay_status }}
+          IQA_CAUSAL_REPLAY_EXECUTED: ${{ steps.incremental_qa.outputs.causal_replay_executed }}
+          IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED: ${{ steps.incremental_qa.outputs.causal_replay_prepatch_reproduced }}
+          IQA_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM: ${{ steps.incremental_qa.outputs.causal_replay_verified_responsible_system }}
+          IQA_ARCHITECTURE_DRIFT_STATUS: ${{ steps.incremental_qa.outputs.architecture_drift_status }}
+          IQA_ARCHITECTURE_DRIFT_RISK: ${{ steps.incremental_qa.outputs.architecture_drift_risk }}
+          IQA_ARCHITECTURE_DRIFT_SCORE: ${{ steps.incremental_qa.outputs.architecture_drift_score }}
+          IQA_ARCHITECTURE_DRIFT_SIGNALS: ${{ steps.incremental_qa.outputs.architecture_drift_signals }}
+          IQA_PRESENTATION_STATUS: ${{ steps.incremental_qa.outputs.presentation_status }}
+          IQA_PRESENTATION_PASS: ${{ steps.incremental_qa.outputs.presentation_pass }}
+          IQA_PRESENTATION_RUNTIME_REQUIRED: ${{ steps.incremental_qa.outputs.presentation_runtime_required }}
+          RUNTIME_VISUAL_COMPARISON_FILE: /tmp/vibe2-runtime-visual-comparison.json
+          PERFORMANCE_OUTCOME: ${{ steps.performance.outcome }}
+          PRACTICE_OUTCOME: ${{ steps.practice.outcome }}
+          SAFE_TASK: ${{ matrix.safeTask }}
+          RESERVATION_ID: ${{ matrix.reservationId }}
+          RESERVED_AT: ${{ matrix.reservedAt }}
+          REQUESTED_MAX: ${{ matrix.requestedMax }}
+          EFFECTIVE_MAX: ${{ matrix.effectiveMax }}
+          WORKER_STARTED_AT_FILE: /tmp/vibe2-worker-start-ms
+          CHECKOUT_MS: ${{ steps.checkout_metrics.outputs.ms }}
+          MODEL_CACHE_REQUIRED: ${{ steps.model_need.outputs.required }}
+          MODEL_CACHE_REASON: ${{ steps.model_need.outputs.reason }}
+          MODEL_PREP_MS: ${{ steps.worker_ollama_metrics.outputs.duration_ms }}
+          OLLAMA_CACHE_HIT: ${{ steps.worker_ollama_cache.outputs.cache-hit }}
+          OLLAMA_RUNTIME_SOURCE: ${{ steps.model_need.outputs.required == 'true' && 'SHARED_PREPARE_OLLAMA' || '' }}
+          SHARED_CONTEXT_FILE: /tmp/vibe2-shared-context-${{ matrix.safeTask }}-${{ matrix.variant }}-after.json
+          CANDIDATE_MS: ${{ steps.candidate.outputs.duration_ms }}
+          QA_MS: ${{ steps.incremental_qa.outputs.duration_ms }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/vibe2-result
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const clean=v=>String(v??'').trim();
+          const route=clean(process.env.ROUTE);
+          const candidateOk=process.env.CANDIDATE_OUTCOME==='success';
+          const testOk=process.env.IQA_OUTCOME==='success';
+          const performanceOk=process.env.PERFORMANCE_OUTCOME==='success';
+          const workLockRequired=process.env.WORK_LOCK_REQUIRED==='true';
+          const workLockAcquired=!workLockRequired||process.env.WORK_LOCK_ACQUIRED==='true';
+          let outcome='BLOCKED', blocker=clean(process.env.ORDER_REASON)||'work-order-not-runnable';
+          if(process.env.ORDER_RUN==='true' && route==='text-source-worker'){
+            if(!workLockAcquired){outcome='BLOCKED';blocker='work-lock-conflict:'+clean(process.env.WORK_LOCK_REASON||'not-acquired');}
+            else if(candidateOk&&testOk&&performanceOk){outcome='PASS';blocker='candidate-awaiting-qa-and-deployment';}
+            else if(!candidateOk){outcome='FAIL';blocker='source-candidate-generation-failed';}
+            else if(!testOk){outcome='FAIL';blocker='incremental-qa-failed';}
+            else{outcome='FAIL';blocker='performance-sanity-failed';}
+          }else if(process.env.ORDER_RUN==='true' && route==='engine-editor') blocker='engine-editor-worker-not-connected';
+          else if(process.env.ORDER_RUN==='true' && ['analysis-only','learning-web-artifact'].includes(route)){
+            if(process.env.PRACTICE_OUTCOME==='success'){outcome='PASS';blocker=route==='learning-web-artifact'?'learning-web-artifact-practice-complete':'learning-practice-complete';}
+            else{outcome='FAIL';blocker=route==='learning-web-artifact'?'learning-web-artifact-practice-failed':'learning-practice-worker-failed';}
+          }
+
+          let manifest={};
+          const candidateManifest=clean(process.env.CANDIDATE_MANIFEST);
+          if(candidateManifest&&fs.existsSync(candidateManifest))manifest=JSON.parse(fs.readFileSync(candidateManifest,'utf8'));
+          let incrementalQaReport={};
+          if(fs.existsSync('/tmp/vibe2-incremental-qa.json'))incrementalQaReport=JSON.parse(fs.readFileSync('/tmp/vibe2-incremental-qa.json','utf8'));
+          const gameRepairQa=incrementalQaReport?.gameRepairQa&&typeof incrementalQaReport.gameRepairQa==='object'?incrementalQaReport.gameRepairQa:null;
+          const specializedVerificationRequest=manifest?.specializedVerificationRequest&&typeof manifest.specializedVerificationRequest==='object'?manifest.specializedVerificationRequest:{required:false,requestedMarkers:[],nativeRuntimeRequired:false};
+          const specializedVerificationQa=incrementalQaReport?.specializedVerificationQa&&typeof incrementalQaReport.specializedVerificationQa==='object'?incrementalQaReport.specializedVerificationQa:{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY'};
+          let workOrder={};
+          if(fs.existsSync('/tmp/vibe2-work-order.json'))workOrder=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
+          const explorationFile=clean(process.env.EXPLORATION_FILE);
+          const exploration=manifest.exploration||(explorationFile&&fs.existsSync(explorationFile)?JSON.parse(fs.readFileSync(explorationFile,'utf8')):null);
+          const sourceGenerationAttempted=process.env.ORDER_RUN==='true' && route==='text-source-worker' && workLockAcquired;
+          const expectedExternalLearningIds=[...new Set((workOrder?.knowledgeApplicationContract?.verifiedExternalLearningIds||[]).map(clean).filter(Boolean))];
+          const sourcePromptExternalLearningIds=[...new Set((manifest?.codingMethod?.verifiedExternalLearningSourcePromptIds||[]).map(clean).filter(Boolean))];
+          const sameExternalLearningIds=expectedExternalLearningIds.length===sourcePromptExternalLearningIds.length
+            &&expectedExternalLearningIds.every(id=>sourcePromptExternalLearningIds.includes(id));
+          const sourcePromptLearningRequired=workOrder?.knowledgeApplicationContract?.mandatoryForGameTarget===true;
+          const promptLearningProof=manifest?.codingMethod?.verifiedExternalLearningSourcePromptRequired===true
+            &&Number(manifest?.codingMethod?.verifiedExternalLearningSourcePromptCoveragePct||0)===100
+            &&Number(manifest?.codingMethod?.verifiedExternalLearningSourcePromptCount||0)===expectedExternalLearningIds.length
+            &&manifest?.codingMethod?.verifiedExternalLearningSourcePromptTruncationForbidden===true
+            &&manifest?.codingMethod?.verifiedExternalLearningRuntimePromptAllAttempts===true
+            &&Number(manifest?.codingMethod?.verifiedExternalLearningRuntimePromptChecks||0)>=1
+            &&sameExternalLearningIds;
+          const deterministicLearningIds=[...new Set((manifest?.codingMethod?.verifiedExternalLearningDeterministicIds||[]).map(clean).filter(Boolean))];
+          const sameDeterministicLearningIds=expectedExternalLearningIds.length===deterministicLearningIds.length
+            &&expectedExternalLearningIds.every(id=>deterministicLearningIds.includes(id));
+          const deterministicLearningProof=manifest?.codingMethod?.verifiedExternalLearningDeterministicApplied===true
+            &&manifest?.codingMethod?.verifiedExternalLearningDeterministicContractConsumed===true
+            &&Number(manifest?.codingMethod?.verifiedExternalLearningDeterministicCoveragePct||0)===100
+            &&sameDeterministicLearningIds;
+          const sourcePromptLearningOk=!sourcePromptLearningRequired||promptLearningProof||deterministicLearningProof;
+          const effectiveCandidateOk=candidateOk&&sourcePromptLearningOk;
+          const sourcePromptLearningFailed=sourceGenerationAttempted&&candidateOk&&sourcePromptLearningRequired&&!sourcePromptLearningOk;
+          if(sourcePromptLearningFailed){
+            outcome='FAIL';
+            blocker='verified-external-learning-source-prompt-unproven';
+          }
+          const capabilityApplicationIds=[...new Set((workOrder?.capabilityApplicationContract?.exactInjectedCapabilityIds||[]).map(clean).filter(Boolean))].slice(0,8);
+          const capabilityApplication={
+            version:1,
+            layer:'verifiedCapabilityMemory',
+            injected:sourceGenerationAttempted&&workOrder?.verifiedCapabilityMemoryAppliedToWorkerGoal===true&&capabilityApplicationIds.length>0,
+            exactInjectedCapabilityIds:capabilityApplicationIds,
+            coAppliedCapabilityIds:capabilityApplicationIds,
+            workKey:clean(workOrder?.compiledWorkContract?.workKey)||null,
+            binding:clean(workOrder?.capabilityApplicationContract?.binding)||'SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA',
+            onlyActuallyInjectedCapabilitiesEligible:true,
+            freshTaskQaRequired:true,
+            rawCodeStored:false,
+            rawModelOutputStored:false,
+            hiddenChainOfThoughtStored:false,
+            authorityExpanded:false
+          };
+          const candidateFailureClass=sourceGenerationAttempted&&!effectiveCandidateOk
+            ?(sourcePromptLearningFailed?'VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT':(clean(process.env.CANDIDATE_FAILURE_CLASS)||null))
+            :null;
+          const candidateFailureMessage=sourceGenerationAttempted&&!effectiveCandidateOk
+            ?(sourcePromptLearningFailed?'verified external APK black-box learning was not proven in the actual source-generation prompt':(clean(process.env.CANDIDATE_FAILURE_MESSAGE)||null))
+            :null;
+          const fallbackCodingMethod=clean(workOrder?.candidateStrategyRole?.strategy)?{
+            version:2,
+            strategy:clean(workOrder.candidateStrategyRole.strategy),
+            candidateVariant:clean(workOrder?.candidateStrategyRole?.variant)||clean(process.env.VARIANT)||'primary',
+            responsibilityConfidence:clean(exploration?.editContract?.responsibilityConfidence)||'LOW',
+            primaryTargets:Array.isArray(exploration?.editContract?.primaryTargets)?exploration.editContract.primaryTargets.slice(0,8):[],
+            primarySystems:Array.isArray(exploration?.editContract?.primarySystems)?exploration.editContract.primarySystems.slice(0,12):[],
+            dependentSystems:Array.isArray(exploration?.editContract?.dependentSystems)?exploration.editContract.dependentSystems.slice(0,12):[],
+            ownedState:Array.isArray(exploration?.editContract?.ownedState)?exploration.editContract.ownedState.slice(0,24):[],
+            semanticDiffBudget:exploration?.editContract?.semanticDiffBudget||null,
+            semanticDiffEnforcement:null,
+            causalReplay:exploration?.editContract?.causalReplay||null,
+            failureFingerprint:clean(workOrder?.unifiedLearning?.failureFingerprint)||null,
+            patchRecipeMode:clean(exploration?.editContract?.patchRecipe?.mode)||null,
+            verifiedFailureLocalMemoryCount:Number(exploration?.editContract?.patchRecipe?.verifiedMemoryCount||0),
+            verifiedFailureLocalMemoryIds:Array.isArray(exploration?.editContract?.patchRecipe?.verifiedMemoryIds)?exploration.editContract.patchRecipe.verifiedMemoryIds.slice(0,8):[],
+            generationAttempts:0,
+            candidateProducedFirstAttempt:false,
+            writableScopeExpansionAllowed:false,
+            learningAuthorityExpanded:false
+          }:null;
+          const baseCodingMethod=manifest?.codingMethod||fallbackCodingMethod;
+          const runtimeQaRequired=clean(process.env.IQA_PRESENTATION_RUNTIME_REQUIRED).toUpperCase()==='YES';
+          const runtimeVisualFile=clean(process.env.RUNTIME_VISUAL_COMPARISON_FILE);
+          const runtimeVisualComparison=runtimeVisualFile&&fs.existsSync(runtimeVisualFile)?JSON.parse(fs.readFileSync(runtimeVisualFile,'utf8')):null;
+          const presentationContract=manifest?.presentationQuality&&typeof manifest.presentationQuality==='object'?manifest.presentationQuality:null;
+          const presentationQuality=presentationContract||runtimeQaRequired||runtimeVisualComparison?{
+            ...(presentationContract||{}),
+            staticQaStatus:clean(process.env.IQA_PRESENTATION_STATUS)||'NOT_REQUIRED',
+            staticQaPass:clean(process.env.IQA_PRESENTATION_PASS)||null,
+            runtimeQaRequired,
+            runtimeVisualComparison,
+            authorityExpanded:false
+          }:null;
+          const graphicsReplacementReport=manifest?.graphicsReplacementReport&&typeof manifest.graphicsReplacementReport==='object'?manifest.graphicsReplacementReport:null;
+          const graphicsReplacementValidation=manifest?.graphicsReplacementValidation&&typeof manifest.graphicsReplacementValidation==='object'?manifest.graphicsReplacementValidation:null;
+          const graphicsReplacementQa=incrementalQaReport?.graphicsReplacementQa&&typeof incrementalQaReport.graphicsReplacementQa==='object'?incrementalQaReport.graphicsReplacementQa:{status:'NOT_REQUIRED',required:false,actualCount:0,groundedCount:0,checks:[],authorityExpanded:false};
+          const roleResults={
+            exploration:exploration?.reuseKey?'PASS':'FAIL',
+            implementation:effectiveCandidateOk?'PASS':'FAIL',
+            test:testOk?'PASS':'FAIL',
+            performance:performanceOk?'PASS':'FAIL',
+            regression:'WAITING_FAN_IN',
+            review:'WAITING_FAN_IN'
+          };
+          const evidence=[
+            clean(process.env.CANDIDATE_BRANCH),
+            clean(process.env.CANDIDATE_SHA)&&`candidate-sha:${clean(process.env.CANDIDATE_SHA)}`,
+            clean(process.env.BASE_SHA)&&`base-main:${clean(process.env.BASE_SHA)}`,
+            clean(process.env.IQA_HASH)&&`incremental-qa-hash:${clean(process.env.IQA_HASH)}`,
+            clean(process.env.IQA_CACHE)&&`incremental-qa-cache:${clean(process.env.IQA_CACHE)}`,
+            clean(process.env.IQA_FAILURE_SIGNATURE)&&`incremental-qa-failure-signature:${clean(process.env.IQA_FAILURE_SIGNATURE)}`,
+            clean(process.env.IQA_CAUSAL_REPLAY_STATUS)&&`causal-replay-status:${clean(process.env.IQA_CAUSAL_REPLAY_STATUS)}`,
+            clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)&&`causal-replay-executed:${clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)}`,
+            clean(process.env.IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED)&&`causal-replay-prepatch-reproduced:${clean(process.env.IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED)}`,
+            clean(process.env.IQA_CAUSAL_REPLAY_STATUS)==='EXECUTED_PASS'&&clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED).toUpperCase()==='YES'&&clean(process.env.IQA_CAUSAL_REPLAY_PREPATCH_REPRODUCED).toUpperCase()==='YES'&&clean(process.env.IQA_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM)&&clean(process.env.IQA_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM).toUpperCase()!=='NONE'&&`independent-qa-verified-responsible-system:${clean(process.env.IQA_CAUSAL_REPLAY_VERIFIED_RESPONSIBLE_SYSTEM).toUpperCase()}`,
+            gameRepairQa?.required===true?'game-repair-required:YES':'',
+            gameRepairQa?.required===true&&clean(gameRepairQa.failureStage)&&`game-repair-failure-stage:${clean(gameRepairQa.failureStage)}`,
+            gameRepairQa?.required===true&&clean(gameRepairQa.failureSignature)&&`game-repair-failure-signature:${clean(gameRepairQa.failureSignature)}`,
+            gameRepairQa?.required===true?`game-repair-prepatch-reproduced:${gameRepairQa.prePatchReproduced===true?'YES':'NO'}`:'',
+            gameRepairQa?.required===true&&clean(gameRepairQa.responsibleSystem)&&`game-repair-responsible-system:${clean(gameRepairQa.responsibleSystem)}`,
+            gameRepairQa?.required===true?`game-repair-original-scenario:${clean(gameRepairQa.originalScenarioReplay)||'UNVERIFIED'}`:'',
+            gameRepairQa?.required===true?`game-repair-invariants:${clean(gameRepairQa.invariants)||'UNVERIFIED'}`:'',
+            gameRepairQa?.required===true?`game-repair-save-migration:${clean(gameRepairQa.saveMigration)||'UNVERIFIED'}`:'',
+            gameRepairQa?.required===true?`game-repair-multiplayer-lifecycle:${clean(gameRepairQa.multiplayerLifecycle)||'UNVERIFIED'}`:'',
+            gameRepairQa?.required===true?`game-repair-ready-for-fan-in:${gameRepairQa.readyForFanIn===true?'YES':'NO'}`:'',
+            gameRepairQa?.required===true?'game-repair-user-assistance-required:NO':'',
+            gameRepairQa?.required===true&&clean(gameRepairQa.repairMode)&&`game-repair-mode:${clean(gameRepairQa.repairMode)}`,
+            gameRepairQa?.required===true?`game-repair-repeat-count:${Number(gameRepairQa.repeatCount||0)}`:'',
+            clean(process.env.IQA_ARCHITECTURE_DRIFT_STATUS)&&`architecture-drift-status:${clean(process.env.IQA_ARCHITECTURE_DRIFT_STATUS)}`,
+            clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK)&&`architecture-drift-risk:${clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK)}`,
+            clean(process.env.IQA_ARCHITECTURE_DRIFT_SCORE)&&`architecture-drift-score:${clean(process.env.IQA_ARCHITECTURE_DRIFT_SCORE)}`,
+            clean(process.env.IQA_ARCHITECTURE_DRIFT_SIGNALS)&&`architecture-drift-signals:${clean(process.env.IQA_ARCHITECTURE_DRIFT_SIGNALS)}`,
+            clean(process.env.IQA_PRESENTATION_STATUS)&&`presentation-static-qa-status:${clean(process.env.IQA_PRESENTATION_STATUS)}`,
+            clean(process.env.IQA_PRESENTATION_PASS)&&clean(process.env.IQA_PRESENTATION_PASS)!=='NONE'&&`presentation-pass-verified:${clean(process.env.IQA_PRESENTATION_PASS)}`,
+            graphicsReplacementQa?.required===true&&graphicsReplacementQa?.status==='GROUNDED_PASS'?`graphics-replacement-grounding:PASS:${Number(graphicsReplacementQa.groundedCount||0)}`:'',
+            graphicsReplacementValidation?.required===true&&graphicsReplacementValidation?.pass===true?'graphics-replacement-source-worker-validation:PASS':'',
+            clean(process.env.IQA_PRESENTATION_RUNTIME_REQUIRED).toUpperCase()==='YES'?'presentation-runtime-qa-required:YES':'',
+            ['MEDIUM','HIGH'].includes(clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK).toUpperCase())?'architecture-drift-focused-review-required:YES':'',
+            ...Object.entries(roleResults).map(([role,status])=>`role-result:${role}:${status}`),
+            candidateFailureClass&&`source-generation-failure:${candidateFailureClass}`,
+            sourcePromptLearningRequired?`verified-external-learning-source-prompt:${sourcePromptLearningOk?'PASS':'FAIL'}`:'',
+            sourcePromptLearningOk&&sourcePromptLearningRequired?`verified-external-learning-source-prompt-count:${sourcePromptExternalLearningIds.length}`:'',
+            clean(baseCodingMethod?.strategy)&&`coding-strategy:${clean(baseCodingMethod.strategy)}`,
+            clean(baseCodingMethod?.responsibilityConfidence)&&`coding-responsibility-confidence:${clean(baseCodingMethod.responsibilityConfidence)}`,
+            Number(baseCodingMethod?.generationAttempts)>0&&`coding-generation-attempts:${Number(baseCodingMethod.generationAttempts)}`,
+            Number(baseCodingMethod?.generationAttemptBudget)>0&&`coding-generation-attempt-budget:${Number(baseCodingMethod.generationAttemptBudget)}`,
+            baseCodingMethod?.speculativeAttemptBudgetApplied===true?'coding-speculative-attempt-budget:YES':'',
+            baseCodingMethod?.fullWebInitialSeedStrategy===true?'coding-full-web-initial-seed:YES':'',
+            Array.isArray(baseCodingMethod?.fullWebInitialSeedTargetBytes)&&baseCodingMethod.fullWebInitialSeedTargetBytes.length===2&&`coding-full-web-initial-seed-target:${baseCodingMethod.fullWebInitialSeedTargetBytes.join('-')}`,
+            baseCodingMethod?.partialTimeoutRecovery===true?'coding-timeout-partial-recovery:YES':'',
+            baseCodingMethod?.robloxZeroOutputTimeoutFocusedRecovery===true?'coding-roblox-zero-timeout-focused-recovery:YES':'',
+            baseCodingMethod?.robloxTimeoutRecoveryEscalatedFullGraphics===true?'coding-roblox-timeout-recovery-escalated-full-graphics:YES':'',
+            baseCodingMethod?.partialMalformedRecovery===true?'coding-malformed-partial-recovery:YES':'',
+            baseCodingMethod?.streamedPartialEditRecovery===true?'coding-streamed-partial-edit-recovery:YES':'',
+            baseCodingMethod?.focusedFirstEditEarlyStop===true?'coding-focused-first-edit-early-stop:YES':'',
+            baseCodingMethod?.focusedFinalRetry===true?'coding-focused-final-retry:YES':'',
+            baseCodingMethod?.focusedReplaceOnly===true?'coding-focused-replace-only:YES':'',
+            baseCodingMethod?.focusedReplaceStringRecovery===true?'coding-focused-replace-string-recovery:YES':'',
+            baseCodingMethod?.focusedFirstAttemptFastPath===true?'coding-focused-first-attempt-fast-path:YES':'',
+            baseCodingMethod?.focusedMinimalJsonContract===true?'coding-focused-minimal-json:YES':'',
+            clean(baseCodingMethod?.contextMode)&&`coding-context-mode:${clean(baseCodingMethod.contextMode)}`,
+            Number(baseCodingMethod?.contextBytes)>0&&`coding-context-bytes:${Number(baseCodingMethod.contextBytes)}`,
+            Number(baseCodingMethod?.focusedSymbolCount)>0&&`coding-focused-symbol-count:${Number(baseCodingMethod.focusedSymbolCount)}`,
+            Number(baseCodingMethod?.fullWebExpansionStages)>0&&`coding-full-web-expansion-stages:${Number(baseCodingMethod.fullWebExpansionStages)}`,
+            Number(baseCodingMethod?.fullWebExpansionDocumentSeedRecoveries)>0&&`coding-full-web-expansion-document-seed-recoveries:${Number(baseCodingMethod.fullWebExpansionDocumentSeedRecoveries)}`,
+            baseCodingMethod?.fullWebClosedHtmlEarlyStop===true?'coding-full-web-closed-html-early-stop:YES':'',
+            baseCodingMethod?.fullWebFinalAdditiveExpansion===true?'coding-full-web-final-additive-expansion:YES':'',
+            Number(baseCodingMethod?.fullWebFallbackBestPartialBytes)>0&&`coding-full-web-fallback-best-partial-bytes:${Number(baseCodingMethod.fullWebFallbackBestPartialBytes)}`,
+            baseCodingMethod?.fullWebRetryPromptCompacted===true?'coding-full-web-retry-prompt-compacted:YES':'',
+            Number(baseCodingMethod?.fullWebRetryPromptBytes)>0&&`coding-full-web-retry-prompt-bytes:${Number(baseCodingMethod.fullWebRetryPromptBytes)}`,
+            Number(baseCodingMethod?.intermediateGrowthTotalBytes)>0&&`coding-intermediate-growth-total:${Number(baseCodingMethod.intermediateGrowthTotalBytes)}`,
+            Number(baseCodingMethod?.repeatedIntermediateOutputs)>0&&`coding-repeated-intermediate:${Number(baseCodingMethod.repeatedIntermediateOutputs)}`,
+            Array.isArray(baseCodingMethod?.expansionStageTargets)&&baseCodingMethod.expansionStageTargets.length&&`coding-expansion-stage-targets:${encodeURIComponent(JSON.stringify(baseCodingMethod.expansionStageTargets.slice(0,8)))}`,
+            baseCodingMethod?.candidateProducedFirstAttempt===true?'coding-candidate-first-attempt:YES':baseCodingMethod?'coding-candidate-first-attempt:NO':'',
+            Number(baseCodingMethod?.primaryTargets?.length||0)>0&&`coding-primary-target-count:${Number(baseCodingMethod.primaryTargets.length)}`,
+            Number(baseCodingMethod?.primaryTargets?.length||0)>0&&`coding-primary-targets:${encodeURIComponent(JSON.stringify(baseCodingMethod.primaryTargets.slice(0,8)))}`,
+            Number(baseCodingMethod?.primarySystems?.length||0)>0&&`coding-primary-systems:${encodeURIComponent(JSON.stringify(baseCodingMethod.primarySystems.slice(0,12)))}`,
+            Number(baseCodingMethod?.dependentSystems?.length||0)>0&&`coding-dependent-systems:${encodeURIComponent(JSON.stringify(baseCodingMethod.dependentSystems.slice(0,12)))}`,
+            Number(baseCodingMethod?.semanticDiffBudget?.allowedSystems?.length||0)>0&&`coding-semantic-system-budget:${Number(baseCodingMethod.semanticDiffBudget.allowedSystems.length)}`,
+            clean(baseCodingMethod?.semanticDiffEnforcement?.mode)&&`coding-semantic-diff-mode:${clean(baseCodingMethod.semanticDiffEnforcement.mode)}`,
+            baseCodingMethod?.semanticDiffEnforcement?.pass===true?'coding-semantic-diff-pass:YES':baseCodingMethod?.semanticDiffEnforcement?'coding-semantic-diff-pass:NO':'',
+            clean(baseCodingMethod?.failureFingerprint)&&`coding-failure-fingerprint:${clean(baseCodingMethod.failureFingerprint)}`,
+            clean(baseCodingMethod?.patchRecipeMode)&&`coding-patch-recipe:${clean(baseCodingMethod.patchRecipeMode)}`,
+            Number(baseCodingMethod?.verifiedFailureLocalMemoryCount||0)>0&&`coding-verified-failure-memory-count:${Number(baseCodingMethod.verifiedFailureLocalMemoryCount)}`,
+            Array.isArray(workOrder?.knowledgeApplicationContract?.exactInjectedKnowledgeIds)&&workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds.length>0&&`learning-knowledge-ids:${encodeURIComponent(JSON.stringify(workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds))}`,
+            Array.isArray(workOrder?.knowledgeApplicationContract?.verifiedExternalLearningIds)&&workOrder.knowledgeApplicationContract.verifiedExternalLearningIds.length>0&&`verified-external-learning-ids:${encodeURIComponent(JSON.stringify(workOrder.knowledgeApplicationContract.verifiedExternalLearningIds))}`,
+            Array.isArray(workOrder?.knowledgeApplicationContract?.verifiedExternalLearningApplyAxes)&&workOrder.knowledgeApplicationContract.verifiedExternalLearningApplyAxes.length>0&&`verified-external-learning-apply-axes:${encodeURIComponent(JSON.stringify(workOrder.knowledgeApplicationContract.verifiedExternalLearningApplyAxes))}`,
+            Number(workOrder?.knowledgeApplicationContract?.verifiedExternalLearningCoveragePct||0)>0&&`verified-external-learning-coverage:${Number(workOrder.knowledgeApplicationContract.verifiedExternalLearningCoveragePct||0)}`,
+            Array.isArray(workOrder?.knowledgeApplicationContract?.primaryDomains)&&workOrder.knowledgeApplicationContract.primaryDomains.length>0&&`learning-primary-domains:${encodeURIComponent(JSON.stringify(workOrder.knowledgeApplicationContract.primaryDomains.slice(0,8)))}`,
+            Array.isArray(workOrder?.knowledgeApplicationContract?.secondaryDomains)&&workOrder.knowledgeApplicationContract.secondaryDomains.length>0&&`learning-secondary-domains:${encodeURIComponent(JSON.stringify(workOrder.knowledgeApplicationContract.secondaryDomains.slice(0,12)))}`,
+            Array.isArray(workOrder?.unifiedLearning?.externalAiDistilled)&&workOrder.unifiedLearning.externalAiDistilled.length>0&&`learning-external-ai-distilled-count:${workOrder.unifiedLearning.externalAiDistilled.length}`,
+            `actions-run:${process.env.GITHUB_RUN_ID}`,
+            clean(process.env.MODEL_CACHE_REQUIRED)&&`model-cache-required:${clean(process.env.MODEL_CACHE_REQUIRED).toUpperCase()}`,
+            clean(process.env.MODEL_CACHE_REASON)&&`model-cache-reason:${clean(process.env.MODEL_CACHE_REASON)}`,
+            clean(process.env.RESERVATION_ID)&&`reservation-id:${clean(process.env.RESERVATION_ID)}`,
+            `variant:${clean(process.env.VARIANT)||'primary'}`,
+            ...(fs.existsSync(clean(process.env.SHARED_CONTEXT_FILE))?(()=>{
+              const c=JSON.parse(fs.readFileSync(clean(process.env.SHARED_CONTEXT_FILE),'utf8'));
+              return[
+                `shared-context-policy:${clean(c?.hashes?.policySha256)}`,
+                `shared-context-log-map:${clean(c?.hashes?.logMapSha256)}`,
+                `shared-context-architecture:${clean(c?.hashes?.architectureSha256)}`,
+                `shared-context-security:${clean(c?.hashes?.securityPolicySha256)}`,
+                'shared-context-sync:PASS'
+              ];
+            })():['shared-context-sync:MISSING']),
+            ...(['analysis-only','learning-web-artifact'].includes(route)?['learning-practice-only','production-pass:NO','source-write:NO']:[ ]),
+            ...(route==='learning-web-artifact'&&fs.existsSync('/tmp/vibe2-learning-practice-result.json')?(()=>{
+              const p=JSON.parse(fs.readFileSync('/tmp/vibe2-learning-practice-result.json','utf8'));
+              return[
+                'learning-web-artifact-practice',
+                `practice-artifact-score:${Number(p?.artifact?.score||0)}`,
+                `practice-artifact-improved:${p?.artifact?.improved===true?'YES':'NO'}`,
+                `practice-artifact-sha256:${clean(p?.artifact?.sha256)}`,
+                `practice-next-signal:${clean(p?.nextPracticeSignal)||'RETRY_CAUSAL_VARIATION'}`
+              ];
+            })():[])
+          ].filter(Boolean);
+          const workerStartedAt=Number(fs.readFileSync(process.env.WORKER_STARTED_AT_FILE,'utf8'))||Date.now();
+          const workerFinishedAt=Date.now();
+          const cacheRaw=clean(process.env.OLLAMA_CACHE_HIT).toLowerCase();
+          const metrics={
+            requestedMax:Number(process.env.REQUESTED_MAX||256),effectiveMax:Number(process.env.EFFECTIVE_MAX||256),reservationId:clean(process.env.RESERVATION_ID),reservedAt:clean(process.env.RESERVED_AT),
+            workerStartedAt,workerFinishedAt,checkoutMs:Number(process.env.CHECKOUT_MS||0),modelPrepMs:Number(process.env.MODEL_PREP_MS||0),
+            candidateMs:Number(process.env.CANDIDATE_MS||0),qaMs:Number(process.env.QA_MS||0),workerTotalMs:Math.max(0,workerFinishedAt-workerStartedAt),
+            changedFileCount:Number(process.env.CHANGED_FILE_COUNT||0),addedLineCount:Number(process.env.ADDED_LINE_COUNT||0),deletedLineCount:Number(process.env.DELETED_LINE_COUNT||0),
+            modelCacheRequired:clean(process.env.MODEL_CACHE_REQUIRED).toLowerCase()==='true',modelCacheReason:clean(process.env.MODEL_CACHE_REASON)||null,
+            ollamaCacheHit:cacheRaw==='true'?true:cacheRaw==='false'?false:null,ollamaRuntimeSource:clean(process.env.OLLAMA_RUNTIME_SOURCE)||null
+          };
+          let practiceDistillation=null;
+          if(['analysis-only','learning-web-artifact'].includes(route)&&fs.existsSync('/tmp/vibe2-practice-distillation.json')){
+            const distilled=JSON.parse(fs.readFileSync('/tmp/vibe2-practice-distillation.json','utf8'));
+            practiceDistillation={
+              version:Number(distilled.version||1),
+              kind:clean(distilled.kind),
+              accepted:Array.isArray(distilled.accepted)?distilled.accepted:[],
+              rejected:Array.isArray(distilled.rejected)?distilled.rejected:[],
+              rawCandidateStored:false,
+              authorityExpanded:false
+            };
+          }
+          let practiceArtifact=null;
+          if(route==='learning-web-artifact'&&fs.existsSync('/tmp/vibe2-learning-practice-result.json')){
+            const practice=JSON.parse(fs.readFileSync('/tmp/vibe2-learning-practice-result.json','utf8'));
+            if(practice?.artifact){
+              practiceArtifact={
+                kind:clean(practice.artifact.kind),ephemeral:true,repositorySourceWrite:false,productionPromotionAllowed:false,
+                sha256:clean(practice.artifact.sha256),score:Number(practice.artifact.score||0),
+                previousScore:practice.artifact.previousScore===null?null:Number(practice.artifact.previousScore||0),
+                improved:practice.artifact.improved===true,nextPracticeSignal:clean(practice.nextPracticeSignal)||null,
+                validation:practice.artifact.validation||null
+              };
+            }
+          }
+          const candidateBranch=clean(process.env.CANDIDATE_BRANCH)||null;
+          const baseMainSha=clean(process.env.BASE_SHA)||null;
+          const candidateIdentity=effectiveCandidateOk?{
+            taskId:clean(manifest.taskId)||null,
+            gameId:clean(manifest.gameId)||null,
+            target:clean(manifest.target).toLowerCase()||null,
+            sourceRoot:clean(manifest.sourceRoot).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'')||null,
+            baseMainSha:clean(manifest.baseMainSha)||null,
+            manifestPath:candidateManifest||null
+          }:null;
+          const candidateFailure=sourceGenerationAttempted&&!effectiveCandidateOk?{class:candidateFailureClass||'OTHER',message:candidateFailureMessage}:null;
+          const codingMethod=baseCodingMethod?{
+            ...baseCodingMethod,
+            implementationPass:effectiveCandidateOk,
+            incrementalQaPass:testOk,
+            performanceSanityPass:performanceOk,
+            firstCandidatePass:Boolean(effectiveCandidateOk&&testOk&&performanceOk&&baseCodingMethod.candidateProducedFirstAttempt===true),
+            fullRegressionVerified:false,
+            reviewVerified:false,
+            causalReplayStatus:clean(process.env.IQA_CAUSAL_REPLAY_STATUS)||clean(baseCodingMethod?.causalReplay?.status)||'NOT_REQUIRED',
+            causalReplayExecuted:clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED).toUpperCase()==='YES',
+            architectureDrift:{
+              status:clean(process.env.IQA_ARCHITECTURE_DRIFT_STATUS)||'NOT_AVAILABLE',
+              riskLevel:clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK)||'LOW',
+              score:Number(process.env.IQA_ARCHITECTURE_DRIFT_SCORE||0),
+              signals:clean(process.env.IQA_ARCHITECTURE_DRIFT_SIGNALS).split(',').map(clean).filter(value=>value&&value!=='NONE'),
+              hardReject:false,
+              focusedReviewRequired:['MEDIUM','HIGH'].includes(clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK).toUpperCase())
+            },
+            telemetrySource:manifest?.codingMethod?'CANDIDATE_MANIFEST':'WORK_ORDER_FALLBACK'
+          }:null;
+          const neuralDiagnosis=workOrder?.neuralDiagnosis&&typeof workOrder.neuralDiagnosis==='object'?workOrder.neuralDiagnosis:null;
+          const phase4BenchmarkVerification=workOrder?.phase4BenchmarkVerification?.active===true?{
+            version:1,active:true,role:clean(workOrder.phase4BenchmarkVerification.role),capabilityId:clean(workOrder.phase4BenchmarkVerification.capabilityId),
+            caseId:clean(workOrder.phase4BenchmarkVerification.caseId),pairId:clean(workOrder.phase4BenchmarkVerification.pairId),
+            gameId:clean(workOrder.phase4BenchmarkVerification.gameId),engine:clean(workOrder.phase4BenchmarkVerification.engine),
+            unseenGame:workOrder.phase4BenchmarkVerification.unseenGame===true,
+            unseenProblemFingerprint:clean(workOrder.phase4BenchmarkVerification.unseenProblemFingerprint),
+            fixedContextFingerprint:clean(workOrder.phase4BenchmarkVerification.fixedContextFingerprint),
+            nonTargetContextFixed:workOrder.phase4BenchmarkVerification.nonTargetContextFixed===true,
+            writableScopeFixed:workOrder.phase4BenchmarkVerification.writableScopeFixed===true,
+            modelBudgetFixed:workOrder.phase4BenchmarkVerification.modelBudgetFixed===true,
+            qaContractFixed:workOrder.phase4BenchmarkVerification.qaContractFixed===true,
+            nativeRuntimeRequired:workOrder.phase4BenchmarkVerification.nativeRuntimeRequired===true,
+            naturalProductionOverlay:true,screenOnly:false,authorityExpanded:false
+          }:null;
+          const knowledgeApplication=workOrder?.knowledgeApplicationContract&&typeof workOrder.knowledgeApplicationContract==='object'?{
+            version:Number(workOrder.knowledgeApplicationContract.version||1),
+            exactInjectedKnowledgeIds:Array.isArray(workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds)?workOrder.knowledgeApplicationContract.exactInjectedKnowledgeIds:[],
+            mandatoryForGameTarget:workOrder.knowledgeApplicationContract.mandatoryForGameTarget===true,
+            retrievedKnowledgeCount:Number(workOrder.knowledgeApplicationContract.retrievedKnowledgeCount||0),
+            appliedKnowledgeCount:Number(workOrder.knowledgeApplicationContract.appliedKnowledgeCount||0),
+            applicationCoveragePct:Number(workOrder.knowledgeApplicationContract.applicationCoveragePct||0),
+            allRetrievedKnowledgeApplied:workOrder.knowledgeApplicationContract.allRetrievedKnowledgeApplied===true,
+            verifiedPlaybookReuseCount:Number(workOrder.knowledgeApplicationContract.verifiedPlaybookReuseCount||0),
+            verifiedExternalLearningFirst:workOrder.knowledgeApplicationContract.verifiedExternalLearningFirst===true,
+            verifiedExternalLearningIds:Array.isArray(workOrder.knowledgeApplicationContract.verifiedExternalLearningIds)?workOrder.knowledgeApplicationContract.verifiedExternalLearningIds:[],
+            verifiedExternalLearningRetrievedCount:Number(workOrder.knowledgeApplicationContract.verifiedExternalLearningRetrievedCount||0),
+            verifiedExternalLearningAppliedCount:Number(workOrder.knowledgeApplicationContract.verifiedExternalLearningAppliedCount||0),
+            verifiedExternalLearningCoveragePct:Number(workOrder.knowledgeApplicationContract.verifiedExternalLearningCoveragePct||0),
+            verifiedExternalLearningApplyAxes:Array.isArray(workOrder.knowledgeApplicationContract.verifiedExternalLearningApplyAxes)?workOrder.knowledgeApplicationContract.verifiedExternalLearningApplyAxes:[],
+            verifiedExternalLearningDispositions:Array.isArray(workOrder.knowledgeApplicationContract.verifiedExternalLearningDispositions)?workOrder.knowledgeApplicationContract.verifiedExternalLearningDispositions:[],
+            allRetrievedPrinciplesHaveExplicitDisposition:workOrder.knowledgeApplicationContract.allRetrievedPrinciplesHaveExplicitDisposition===true,
+            verifiedExternalGameSourcePrincipleCount:Number(workOrder.knowledgeApplicationContract.verifiedExternalGameSourcePrincipleCount||0),
+            verifiedExternalValidationOnlyPrincipleCount:Number(workOrder.knowledgeApplicationContract.verifiedExternalValidationOnlyPrincipleCount||0),
+            retrievedVerifiedExternalLearningTruncationForbidden:workOrder.knowledgeApplicationContract.retrievedVerifiedExternalLearningTruncationForbidden===true,
+            actualSourcePromptVerified:promptLearningProof,
+            actualSourcePromptVerifiedExternalLearningIds:sourcePromptExternalLearningIds,
+            actualSourcePromptCoveragePct:promptLearningProof&&sourcePromptLearningRequired?100:0,
+            actualRuntimePromptChecks:Number(manifest?.codingMethod?.verifiedExternalLearningRuntimePromptChecks||0),
+            actualRuntimePromptAllAttempts:manifest?.codingMethod?.verifiedExternalLearningRuntimePromptAllAttempts===true,
+            actualSourceGenerationLearningVerified:sourcePromptLearningOk,
+            actualSourceGenerationLearningMode:deterministicLearningProof?'DETERMINISTIC_CONTRACT':promptLearningProof?'MODEL_PROMPT':'UNPROVEN',
+            actualDeterministicLearningIds:deterministicLearningIds,
+            actualDeterministicLearningCoveragePct:deterministicLearningProof?100:0,
+            verifiedLearningMemorySha:clean(workOrder.knowledgeApplicationContract.verifiedLearningMemorySha)||clean(process.env.VIBE2_VERIFIED_LEARNING_MEMORY_SHA)||null,
+            freshIndependentQaRequired:true,
+            infrastructureFailurePenalizesKnowledge:false,
+            authorityExpanded:false
+          }:null;
+          const workLock={required:workLockRequired,acquired:process.env.WORK_LOCK_ACQUIRED==='true',id:clean(process.env.WORK_LOCK_ID)||null,reason:clean(process.env.WORK_LOCK_REASON)||null,worker:'vibe2',baseSha:clean(workOrder?.compiledWorkContract?.workLock?.baseSha)||clean(process.env.BASE_SHA)||null,files:Array.isArray(workOrder?.compiledWorkContract?.workLock?.files)?workOrder.compiledWorkContract.workLock.files:[],releaseRule:clean(workOrder?.compiledWorkContract?.workLock?.releaseRule)||null};
+          const result={version:17,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,graphicsReplacementReport,graphicsReplacementValidation,graphicsReplacementQa,gameRepairQa,specializedVerificationRequest,specializedVerificationQa,roleResults,practiceDistillation,practiceArtifact,neuralDiagnosis,capabilityApplication,phase4BenchmarkVerification,durationMs:metrics.workerTotalMs,knowledgeApplication,workLock,metrics};
+          const safe=clean(process.env.SAFE_TASK)||'task';
+          const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
+          fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`file=${file}\n`);
+          console.log(`VIBE2_WORKER_RESULT=${outcome}`);
+          console.log(`VIBE2_IMPLEMENTATION_ROLE=${roleResults.implementation}`);
+          console.log(`VIBE2_TEST_ROLE=${roleResults.test}`);
+          console.log(`VIBE2_PERFORMANCE_ROLE=${roleResults.performance}`);
+          NODE
+
+      - name: Upload worker result for fan-in
+        id: worker_result_upload
+        if: always() && steps.result.outputs.file != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-result-${{ matrix.safeTask }}-${{ matrix.variant }}
+          path: ${{ steps.result.outputs.file }}
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Release failed worker Work Lock after immutable result upload
+        if: always() && steps.worker_result_upload.outcome == 'success' && steps.work_lock.outputs.acquired == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT_FILE: ${{ steps.result.outputs.file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          readarray -t result_fields < <(node - "$RESULT_FILE" <<'NODE'
+          const fs=require('fs');
+          const row=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          process.stdout.write(String(row.outcome||'')+'\n'+String(row.workLock?.id||'')+'\n');
+          NODE
+          )
+          if [ "${result_fields[0]}" = 'PASS' ]; then
+            echo 'VIBE2_FAILED_WORK_LOCK_EARLY_RELEASE=HELD_FOR_FAN_IN'
+            exit 0
+          fi
+          lock_id="${result_fields[1]:-}"
+          test -n "$lock_id"
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-remote-work-lock.mjs" release --worker=vibe2 --id="$lock_id" | tee /tmp/vibe2-failed-work-lock-release.log
+          grep -Eq '^VIBE_REMOTE_WORK_LOCK_RELEASED=YES$|^VIBE_REMOTE_WORK_LOCK_REASON=lock-not-found$' /tmp/vibe2-failed-work-lock-release.log
+          echo "VIBE2_FAILED_WORK_LOCK_EARLY_RELEASE=$lock_id"
+
+      - name: Dispatch or coalesce atomic neuron completion
+        if: steps.result.outputs.file != '' && env.VIBE2_EXECUTION_LANE != 'learning-idle'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VIBE2_NEURON_ARTIFACT: vibe2-result-${{ matrix.safeTask }}-${{ matrix.variant }}
+          VIBE2_NEURON_EXPECTED_VARIANTS: ${{ matrix.expectedVariants }}
+          VIBE2_NEURON_TASK_ID: ${{ matrix.taskId }}
+          VIBE2_NEURON_RESERVATION_ID: ${{ matrix.reservationId }}
+          VIBE2_NEURON_CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
+          VIBE2_PRESSURE_REFILL_LEADER: ${{ matrix.pressureRefillLeader }}
+          VIBE2_NEURON_TARGET: ${{ matrix.target }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Live runner pressure is read-only. When GitHub Actions already has queued/pending/requested
+          # work, keep this immutable worker result artifact and let the existing cohort fan-in consume
+          # it instead of creating another repository_dispatch workflow. Observation failure is fail-open
+          # to the pre-existing immediate callback behavior so result delivery never depends on telemetry.
+          queue_pressure=0
+          if curl --fail-with-body --silent --show-error \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" \
+            --output /tmp/vibe2-live-actions-runs.json; then
+            queue_pressure="$(node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-live-actions-runs.json','utf8'));
+          const currentRun=String(process.env.GITHUB_RUN_ID||'');
+          const pressureStates=new Set(['queued','pending','requested']);
+          const pressure=(payload.workflow_runs||[]).filter(row=>
+            String(row.id||'')!==currentRun &&
+            pressureStates.has(String(row.status||'').toLowerCase())
+          ).length;
+          process.stdout.write(String(pressure));
+          NODE
+            )"
+            echo 'VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=PASS'
+          else
+            echo 'VIBE2_ATOMIC_NEURON_PRESSURE_OBSERVATION=FAIL_OPEN'
+            queue_pressure=0
+          fi
+          echo "VIBE2_LIVE_RUNNER_QUEUE_PRESSURE=${queue_pressure:-0}"
+
+          game_micro_fanin=false
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_NEURON_EXPECTED_VARIANTS:-1}" = '1' ]; then
+            game_micro_fanin=true
+          fi
+          if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" != 'asset-development' ] && [ "$game_micro_fanin" != 'true' ]; then
+            echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'
+            if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_PRESSURE_REFILL_LEADER:-false}" = 'true' ]; then
+              refill_payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:'game-primary',reason:'runner-pressure-wave-leader-free-slot-refill'}}))")"
+              curl --fail-with-body --silent --show-error \
+                --request POST \
+                --header 'Accept: application/vnd.github+json' \
+                --header "Authorization: Bearer $GH_TOKEN" \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+                --data "$refill_payload"
+              echo 'VIBE2_PRESSURE_REFILL_DISPATCH=WAVE_LEADER_EXISTING_FANIN_REFILL'
+            else
+              echo 'VIBE2_PRESSURE_REFILL_DISPATCH=SKIPPED_NON_LEADER_OR_NON_GAME_PRIMARY'
+            fi
+            echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'
+            exit 0
+          fi
+          if [ "$game_micro_fanin" = 'true' ]; then
+            echo 'VIBE2_GAME_PRESSURE_MICRO_FANIN=EVERY_COMPLETE_SINGLE_TASK'
+          fi
+          if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" = 'asset-development' ]; then
+            echo 'VIBE2_ASSET_NEURON_PRESSURE_BYPASS=IMMEDIATE_MICRO_FANIN'
+            echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT_AND_CALLBACK'
+          fi
+
+          payload="$(node <<'NODE'
+          const payload={
+            event_type:'vibe2-neuron-complete',
+            client_payload:{
+              source_run:String(process.env.GITHUB_RUN_ID||''),
+              artifact_name:String(process.env.VIBE2_NEURON_ARTIFACT||''),
+              expected_variants:String(process.env.VIBE2_NEURON_EXPECTED_VARIANTS||'1'),
+              task_id:String(process.env.VIBE2_NEURON_TASK_ID||''),
+              reservation_id:String(process.env.VIBE2_NEURON_RESERVATION_ID||''),
+              contract_sha:String(process.env.VIBE2_NEURON_CONTRACT_SHA||''),
+              execution_lane:String(process.env.VIBE2_EXECUTION_LANE||'game-primary')
+            }
+          };
+          process.stdout.write(JSON.stringify(payload));
+          NODE
+          )"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=PASS'
+
+  fan_in:
+    needs: [reserve, worker]
+    if: always() && (needs.reserve.outputs.task_review_required == 'true' || needs.reserve.outputs.worker_count != '0' || needs.reserve.outputs.stranded_review_run != '')
+    # State fan-in stays on the game-control pool; heavy workers remain ubuntu-latest.
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 8
+    concurrency:
+      # Fan-in jobs must not share one pending GitHub concurrency slot.
+      # Every fan-in reconciles control state with optimistic fetch/reset/push retries below.
+      group: ${{ format('vibe2-control-state-fanin-{0}-{1}', github.run_id, github.run_attempt) }}
+      cancel-in-progress: false
+    outputs:
+      refill: ${{ steps.persist.outputs.refill }}
+    steps:
+      - name: Mark fan-in start
+        shell: bash
+        run: echo "$(date +%s%3N)" > /tmp/vibe2-fan-in-start-ms
+
+      - name: Checkout latest Vibe2 control line
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 1
+
+      - name: Checkout pinned main contract
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.reserve.outputs.contract_sha }}
+          path: vibe2-contract
+          fetch-depth: 1
+
+      - name: Measure fan-in checkout
+        id: fan_checkout_metrics
+        shell: bash
+        run: |
+          now="$(date +%s%3N)"
+          start="$(cat /tmp/vibe2-fan-in-start-ms)"
+          echo "ms=$((now-start))" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download all parallel worker results
+        if: needs.reserve.outputs.task_review_required != 'true' && needs.reserve.outputs.worker_count != '0'
+        uses: actions/download-artifact@v4
+        with:
+          pattern: vibe2-result-*
+          path: /tmp/vibe2-results
+          merge-multiple: true
+
+      - name: Download completed task result for immediate full review
+        if: needs.reserve.outputs.task_review_required == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ github.event.client_payload.artifact_name }}
+          path: /tmp/vibe2-results
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.client_payload.source_run }}
+
+      - name: Download stranded asset results for existing full review
+        if: needs.reserve.outputs.stranded_review_run != ''
+        uses: actions/download-artifact@v4
+        with:
+          pattern: vibe2-result-*
+          path: /tmp/vibe2-stranded-results
+          merge-multiple: true
+          github-token: ${{ github.token }}
+          run-id: ${{ needs.reserve.outputs.stranded_review_run }}
+
+      - name: Aggregate immutable results
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const dirs=['/tmp/vibe2-results','/tmp/vibe2-stranded-results'].filter(dir=>fs.existsSync(dir));
+          const results=dirs.flatMap(dir=>fs.readdirSync(dir).filter(f=>f.endsWith('.json')).sort().map(f=>JSON.parse(fs.readFileSync(path.join(dir,f),'utf8'))));
+          const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          fs.writeFileSync('/tmp/vibe2-fan-in.json',JSON.stringify({version:3,results,tasks:queue.tasks||[]},null,2)+'\n');
+          console.log(`VIBE2_FAN_IN_RESULT_COUNT=${results.length}`);
+          NODE
+
+      - name: Merge outcomes run regression and package review
+        id: persist
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-fan-in'
+          git config user.email 'vibe2-fan-in@users.noreply.github.com'
+          git fetch origin vibe2-unreal-core --quiet
+          git reset --hard origin/vibe2-unreal-core
+          control_root="$GITHUB_WORKSPACE"
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          contract_sha="${{ needs.reserve.outputs.contract_sha }}"
+          test -n "$contract_sha"
+          test "$(git -C "$contract_root" rev-parse HEAD)" = "$contract_sha"
+
+          lane_min='1'
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
+          # Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.
+          if [[ "$VIBE2_EXECUTION_LANE" == 'game-primary' || "$VIBE2_EXECUTION_LANE" == 'asset-development' ]]; then
+            export VIBE2_FANIN_CONTRACT_SHA="$contract_sha"
+            core_qa_reuse=0
+            if curl --fail-with-body --silent --show-error \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${VIBE2_FANIN_CONTRACT_SHA}&per_page=100" \
+              --output /tmp/vibe2-fanin-core-qa-runs.json; then
+              core_qa_reuse="$(node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-fanin-core-qa-runs.json','utf8'));
+          const sha=String(process.env.VIBE2_FANIN_CONTRACT_SHA||'');
+          const pass=(payload.workflow_runs||[]).some(row=>
+            String(row.name||'')==='Vibe2 Core QA' &&
+            String(row.head_sha||'')===sha &&
+            String(row.status||'')==='completed' &&
+            String(row.conclusion||'')==='success'
+          );
+          process.stdout.write(pass?'1':'0');
+          NODE
+              )"
+              echo 'VIBE2_FANIN_CORE_QA_REUSE_OBSERVATION=PASS'
+            else
+              core_qa_reuse=0
+              echo 'VIBE2_FANIN_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION'
+            fi
+
+            if [ "$core_qa_reuse" = '1' ]; then
+              regression_rc=0
+              echo 'VIBE2_FAN_IN_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'
+            else
+              echo 'VIBE2_FAN_IN_REGRESSION_SOURCE=LOCAL_FULL_REGRESSION'
+            set +e
+            (cd "$contract_root" && node --test --test-concurrency=4 \
+            qa/vibe2-auto-planner.test.mjs \
+            qa/vibe2-native-asset-production.test.mjs \
+            qa/vibe2-neural-diagnosis.test.mjs \
+            qa/vibe2-neural-feedback.test.mjs \
+            qa/vibe2-neural-critic.test.mjs \
+            qa/vibe2-neural-root-cause.test.mjs \
+            qa/vibe2-neural-event-router.test.mjs \
+            qa/vibe2-neural-shadow-audit.test.mjs \
+            qa/vibe2-neural-event-telemetry.test.mjs \
+            qa/vibe2-neural-phase2-readiness.test.mjs \
+            qa/vibe2-neural-fanin-root-cause.test.mjs \
+            qa/vibe2-core-engine-motion.test.mjs \
+            qa/vibe2-source-worker.test.mjs \
+            qa/vibe2-capability-distillation.test.mjs \
+            qa/vibe2-central-work-contract.test.mjs \
+            qa/vibe2-exploration-worker.test.mjs \
+            qa/vibe2-queue-control.test.mjs \
+            qa/vibe2-work-package.test.mjs \
+            qa/vibe2-incremental-qa.test.mjs \
+            qa/vibe2-parallelism-telemetry.test.mjs \
+            qa/vibe2-adaptive-backpressure.test.mjs \
+            qa/vibe2-candidate-reconcile.test.mjs \
+            qa/vibe2-experience-control.test.mjs \
+            qa/vibe2-learning-closed-loop.test.mjs \
+            qa/vibe2-handoff.test.mjs \
+            qa/vibe2-practice-distillation.test.mjs)
+          regression_rc=$?
+          set -e
+            fi
+          if [ "$regression_rc" -ne 0 ]; then
+            pushed=0
+            attempt=0
+            echo 'VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_RETRY_UNBOUNDED=YES'
+            while [ "$pushed" != 1 ]; do
+              attempt=$((attempt+1))
+              echo "VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_ATTEMPT=$attempt"
+              git fetch origin vibe2-unreal-core --quiet
+              git reset --hard origin/vibe2-unreal-core
+              node "$contract_root/tools/vibe2-queue-control.mjs" fan-in \
+                --queue="$control_root/.vibe2/queue.json" \
+                --control="$control_root/.vibe2/parallelism-control.json" \
+                --lane="$VIBE2_EXECUTION_LANE" \
+                --min="$lane_min" \
+                --input=/tmp/vibe2-fan-in.json > /tmp/vibe2-fan-in-regression-replay.log
+              node "$contract_root/tools/vibe2-queue-control.mjs" fan-in-regression-fail \
+                --queue="$control_root/.vibe2/queue.json" \
+                --control="$control_root/.vibe2/parallelism-control.json" \
+                --input=/tmp/vibe2-fan-in.json \
+                --blocker=fan-in-regression-failed
+              git add .vibe2/queue.json .vibe2/parallelism-control.json
+              if git diff --cached --quiet; then
+                pushed=1
+                echo 'VIBE2_FAN_IN_REGRESSION_STATE_ALREADY_APPLIED=YES'
+                break
+              fi
+              git commit -m "vibe2: requeue after fan-in regression failure [skip ci]"
+              if git push origin HEAD:vibe2-unreal-core; then
+                pushed=1
+                break
+              fi
+              echo "VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_RETRY=$attempt"
+              # 저장 충돌 재시도 시점을 분산해 같은 작업들이 다시 동시에 쓰지 않게 한다.
+              retry_window_ms=$((attempt * 2000))
+              if [ "$retry_window_ms" -gt 10000 ]; then retry_window_ms=10000; fi
+              retry_floor_ms=$((retry_window_ms / 2))
+              retry_delay_ms=$((retry_floor_ms + RANDOM % (retry_window_ms - retry_floor_ms + 1)))
+              printf -v retry_sleep '%d.%03d' "$((retry_delay_ms / 1000))" "$((retry_delay_ms % 1000))"
+              echo "VIBE2_FAN_IN_REGRESSION_RETRY_BACKOFF_SECONDS=$retry_sleep"
+              sleep "$retry_sleep"
+            done
+            test "$pushed" = 1
+            echo 'VIBE2_REGRESSION_ROLE=FAIL_REQUEUED'
+            echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
+
+            latest_main="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq '.sha' 2>/dev/null || true)"
+            echo "VIBE2_FAN_IN_REGRESSION_LATEST_MAIN=${latest_main:-UNKNOWN}"
+            if [ -n "${latest_main:-}" ] && [ "$latest_main" != "$contract_sha" ]; then
+              refill_payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:'game-primary',reason:'fan-in-regression-failed-requeued-newer-main'}}))")"
+              if curl --fail-with-body --silent --show-error \
+                --request POST \
+                --header 'Accept: application/vnd.github+json' \
+                --header "Authorization: Bearer $GH_TOKEN" \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+                --data "$refill_payload"; then
+                echo "VIBE2_FAN_IN_REGRESSION_REFILL=DISPATCHED_NEWER_MAIN:$contract_sha:$latest_main"
+              else
+                echo "VIBE2_FAN_IN_REGRESSION_REFILL=DISPATCH_FAILED_FAIL_OPEN:$contract_sha:${latest_main:-UNKNOWN}" >&2
+              fi
+            else
+              echo "VIBE2_FAN_IN_REGRESSION_REFILL=SKIPPED_NO_NEWER_MAIN:$contract_sha:${latest_main:-UNKNOWN}"
+            fi
+            exit "$regression_rc"
+          fi
+            echo 'VIBE2_REGRESSION_ROLE=PASS'
+            echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
+          else
+            echo "VIBE2_REGRESSION_ROLE=SKIPPED_AUXILIARY_LANE:$VIBE2_EXECUTION_LANE"
+            echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
+          fi
+
+          git fetch origin company-runtime --quiet
+          git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
+          for runtime_design_path in design game-seed-state.json; do
+            if git -C "$GITHUB_WORKSPACE" cat-file -e "origin/company-runtime:$runtime_design_path" 2>/dev/null; then
+              rm -rf "$contract_root/$runtime_design_path"
+              git -C "$GITHUB_WORKSPACE" archive "origin/company-runtime" "$runtime_design_path" | tar -x -C "$contract_root"
+            fi
+          done
+          echo 'VIBE2_RUNTIME_DESIGN_OVERLAY=company-runtime:design,game-seed-state.json'
+          pushed=0
+          state_write='NO'
+          attempt=0
+          echo 'VIBE2_FAN_IN_OPTIMISTIC_RETRY_UNBOUNDED=YES'
+          while [ "$pushed" != 1 ]; do
+            attempt=$((attempt+1))
+            echo "VIBE2_FAN_IN_OPTIMISTIC_ATTEMPT=$attempt"
+            git fetch origin vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+
+            node "$contract_root/tools/vibe2-queue-control.mjs" fan-in \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --lane="$VIBE2_EXECUTION_LANE" \
+              --min="$lane_min" \
+              --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
+
+            node "$contract_root/tools/vibe2-practice-distillation.mjs" \
+              --fanin=/tmp/vibe2-fan-in.json \
+              --store="$control_root/.vibe2/practice-distilled-knowledge.json" | tee /tmp/vibe2-practice-distillation-fanin.log
+
+            if [[ "$VIBE2_EXECUTION_LANE" == 'game-primary' || "$VIBE2_EXECUTION_LANE" == 'asset-development' ]]; then
+              node "$contract_root/tools/vibe2-fan-in-review.mjs" \
+                --queue="$control_root/.vibe2/queue.json" \
+                --input=/tmp/vibe2-fan-in.json \
+                --output=/tmp/vibe2-package-review.json \
+                --trace-ledger="$control_root/.vibe2/coding-trace-ledger.json" | tee /tmp/vibe2-package-review.log
+              node "$contract_root/tools/vibe2-experience-control.mjs" \
+                --memory="$control_root/.vibe2/experience.json" \
+                --batch-review=/tmp/vibe2-package-review.json | tee /tmp/vibe2-supervised-experience.log
+            else
+              printf '%s\n' '{"version":1,"releaseCandidates":[],"experienceReviews":[],"decision":"AUXILIARY_LANE_NO_RELEASE"}' > /tmp/vibe2-package-review.json
+              echo "VIBE2_REVIEW_ROLE=AUXILIARY_NO_RELEASE:$VIBE2_EXECUTION_LANE" | tee /tmp/vibe2-package-review.log
+            fi
+            echo 'VIBE2_REVIEW_ROLE_SOURCE_WRITE=NO'
+
+            node "$contract_root/tools/vibe2-learning-motor.mjs" \
+              --state="$control_root/.vibe2/learning-motor-state.json" \
+              --experience="$control_root/.vibe2/experience.json" \
+              --code-patterns="$control_root/.vibe2/code-pattern-library.json" \
+              --company-queue=/tmp/vibe2-company-runtime-queue.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --roadmap="$contract_root/company-learning/platform-release-roadmap.json" \
+              --benchmark="$control_root/.vibe2/benchmark-ladder.json" \
+              --practice="$control_root/.vibe2/idle-practice-queue.json" \
+              --handoff="$control_root/.vibe2/web-roblox-handoffs.json" | tee /tmp/vibe2-self-signal-fanin.log
+            echo "VIBE2_SELF_SIGNAL_AFTER_FANIN=PASS:$VIBE2_EXECUTION_LANE"
+
+            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json \
+              .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json
+            test ! -d .vibe2/build-up-directives || git add .vibe2/build-up-directives
+            test ! -f .vibe2/coding-trace-ledger.json || git add .vibe2/coding-trace-ledger.json
+            if git diff --cached --quiet; then
+              pushed=1
+              state_write='NO'
+              echo 'VIBE2_FAN_IN_STATE_ALREADY_APPLIED=YES'
+              break
+            fi
+
+            git commit -m "vibe2: fan in parallel worker results [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then
+              pushed=1
+              state_write='YES'
+              break
+            fi
+
+            echo "VIBE2_FAN_IN_OPTIMISTIC_RETRY=$attempt"
+            # 저장 충돌 재시도 시점을 분산해 같은 작업들이 다시 동시에 쓰지 않게 한다.
+            retry_window_ms=$((attempt * 2000))
+            if [ "$retry_window_ms" -gt 10000 ]; then retry_window_ms=10000; fi
+            retry_floor_ms=$((retry_window_ms / 2))
+            retry_delay_ms=$((retry_floor_ms + RANDOM % (retry_window_ms - retry_floor_ms + 1)))
+            printf -v retry_sleep '%d.%03d' "$((retry_delay_ms / 1000))" "$((retry_delay_ms % 1000))"
+            echo "VIBE2_FAN_IN_RETRY_BACKOFF_SECONDS=$retry_sleep"
+            sleep "$retry_sleep"
+          done
+          test "$pushed" = 1
+          echo "VIBE2_FAN_IN_QUEUE_WRITE=$state_write"
+
+          node "$contract_root/tools/vibe2-handoff.mjs" --check \
+            --runtime="$contract_root/vibe2-runtime.json" \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --experience="$control_root/.vibe2/experience.json" \
+            --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
+            --output=/tmp/vibe2-handoff-after-fanin.json >/tmp/vibe2-handoff-after-fanin.log
+          node "$contract_root/tools/vibe2-queue-control.mjs" summary \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --lane="$VIBE2_EXECUTION_LANE" \
+            --max="$VIBE2_LANE_MAX" \
+            --min="$lane_min" | tee /tmp/vibe2-summary.log
+          continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-summary.log | tail -n1)"
+          if [ "${continue_required:-NO}" = 'YES' ]; then
+            echo 'refill=1' >> "$GITHUB_OUTPUT"
+          else
+            echo 'refill=0' >> "$GITHUB_OUTPUT"
+          fi
+          echo "VIBE2_HIERARCHICAL_FAN_IN=PASS:$VIBE2_EXECUTION_LANE"
+
+      - name: Release shared Work Locks after fan-in or abort
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          results_dir="/tmp/vibe2-results"
+          [ -d "$results_dir" ] || { echo 'VIBE2_SHARED_WORK_LOCK_RELEASED=NONE'; exit 0; }
+          node <<'NODE' > /tmp/vibe2-work-lock-release-ids.txt
+          const fs=require('fs'),path=require('path');
+          const dir='/tmp/vibe2-results';
+          const ids=new Set();
+          for(const name of fs.readdirSync(dir).filter(name=>name.endsWith('.json'))){
+            const row=JSON.parse(fs.readFileSync(path.join(dir,name),'utf8'));
+            if(row?.workLock?.acquired===true&&row?.workLock?.id)ids.add(String(row.workLock.id));
+          }
+          for(const id of ids)process.stdout.write(id+'\n');
+          NODE
+          released=0
+          while IFS= read -r lock_id; do
+            [ -n "$lock_id" ] || continue
+            node "$contract_root/tools/vibe2-remote-work-lock.mjs" release --worker=vibe2 --id="$lock_id" | tee "/tmp/vibe2-work-lock-release-$released.log"
+            grep -Eq '^VIBE_REMOTE_WORK_LOCK_RELEASED=YES$|^VIBE_REMOTE_WORK_LOCK_REASON=lock-not-found$' "/tmp/vibe2-work-lock-release-$released.log"
+            released=$((released+1))
+          done < /tmp/vibe2-work-lock-release-ids.txt
+          echo "VIBE2_SHARED_WORK_LOCK_RELEASED=$released"
+
+      - name: Dispatch reviewed winner candidates to release gate
+        if: env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/vibe2-package-review.json
+          node - <<'NODE' > /tmp/vibe2-release-candidates.tsv
+          const fs=require('fs');
+          const review=JSON.parse(fs.readFileSync('/tmp/vibe2-package-review.json','utf8'));
+          for(const row of [...(review.releaseCandidates||[]),...(review.verificationCandidates||[])]){
+            const taskId=String(row?.taskId||'').trim();
+            const candidateBranch=String(row?.candidateBranch||'').trim();
+            const target=String(row?.target||'').trim().toLowerCase();
+            const gameId=String(row?.gameId||'').trim();
+            if(taskId&&candidateBranch)process.stdout.write([taskId,candidateBranch,target,gameId,row.evidenceOnly===true?'true':'false'].join('|')+'\n');
+          }
+          NODE
+          count="$(wc -l < /tmp/vibe2-release-candidates.tsv | tr -d ' ')"
+          echo "VIBE2_RELEASE_CANDIDATE_COUNT=${count:-0}"
+          while IFS='|' read -r task_id candidate_branch target game_id evidence_only; do
+            [ -n "$task_id" ] || continue
+            [ -n "$candidate_branch" ] || continue
+            if [ "$target" = web ]; then
+              echo "PLATFORM_F9_VERIFIED=web:${game_id:-unknown}:$task_id"
+            else
+              echo "PLATFORM_RUNTIME_VERIFICATION_REQUIRED=${target:-unknown}:${game_id:-unknown}:$task_id"
+            fi
+            if [ "$evidence_only" = true ]; then
+              echo "PLATFORM_RUNTIME_EVIDENCE_ONLY_DISPATCH_ATTEMPTED=${task_id}"
+            else
+              echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCH_ATTEMPTED=${target:-unknown}:${game_id:-unknown}:$task_id"
+            fi
+            body="$(jq -nc --arg branch "$candidate_branch" --arg evidence_only "$evidence_only" '{ref:"main",inputs:{candidate_branch:$branch,evidence_only:$evidence_only}}')"
+            dispatched=0
+            for dispatch_attempt in 1 2 3; do
+              if curl --fail-with-body --silent --show-error \
+                --request POST \
+                --header 'Accept: application/vnd.github+json' \
+                --header "Authorization: Bearer $GH_TOKEN" \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-candidate-release.yml/dispatches" \
+                --data "$body"; then
+                dispatched=1
+                if [ "$evidence_only" = true ]; then
+                  echo "PLATFORM_RUNTIME_EVIDENCE_ONLY_DISPATCHED=${task_id}"
+                else
+                  echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED=${target:-unknown}:${game_id:-unknown}:${task_id}"
+                fi
+                echo "VIBE2_RELEASE_DISPATCHED=${task_id}:${candidate_branch}"
+                break
+              fi
+              echo "VIBE2_RELEASE_DISPATCH_RETRY=${task_id}:${dispatch_attempt}" >&2
+              sleep "$dispatch_attempt"
+            done
+            if [ "$dispatched" != 1 ]; then
+              echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCH_REPAIR_REQUIRED=${target:-unknown}:${game_id:-unknown}:${task_id}" >&2
+              echo "PLATFORM_PUBLISH_DISPATCH_FAILURE_BLOCKS_NEXT_EVOLUTION=NO"
+            fi
+          done < /tmp/vibe2-release-candidates.tsv
+
+      - name: Dispatch verified system architecture candidates
+        if: env.VIBE2_EXECUTION_LANE == 'recovery-fast'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE' > /tmp/vibe2-system-release-candidates.tsv
+          const fs=require('fs');
+          const fan=JSON.parse(fs.readFileSync('/tmp/vibe2-fan-in.json','utf8'));
+          const tasks=new Map((fan.tasks||[]).map(t=>[String(t.id||''),t]));
+          for(const r of fan.results||[]){
+            const t=tasks.get(String(r.taskId||''));
+            if(!t||String(t.target||'').toLowerCase()!=='system'||String(t.department||'').toLowerCase()!=='system-architecture')continue;
+            if(String(r.outcome||'').toUpperCase()!=='PASS')continue;
+            const branch=String(r.candidateBranch||'').trim();
+            if(branch)process.stdout.write(String(r.taskId)+'\t'+branch+'\n');
+          }
+          NODE
+          while IFS=$'\t' read -r task_id candidate_branch; do
+            [ -n "$task_id" ] || continue
+            [ -n "$candidate_branch" ] || continue
+            body="$(jq -nc --arg branch "$candidate_branch" --arg task "$task_id" '{ref:"main",inputs:{candidate_branch:$branch,task_id:$task}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-system-evolution-release.yml/dispatches" \
+              --data "$body"
+            echo "VIBE2_SYSTEM_EVOLUTION_RELEASE_DISPATCHED=$task_id:$candidate_branch"
+          done < /tmp/vibe2-system-release-candidates.tsv
+
+      - name: Upload generated machine handoff and role review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-machine-handoff-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-handoff-after-fanin.json
+            /tmp/vibe2-handoff-after-fanin.log
+            /tmp/vibe2-package-review.json
+            /tmp/vibe2-package-review.log
+            /tmp/vibe2-practice-distillation-fanin.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Aggregate Vibe2 parallelism telemetry
+        if: always()
+        continue-on-error: true
+        env:
+          REQUESTED_MAX: ${{ inputs.lane_max || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '4') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || '256' }}
+          EFFECTIVE_MAX: ${{ needs.reserve.outputs.effective_max }}
+          TASK_COUNT: ${{ needs.reserve.outputs.task_count }}
+          FAN_CHECKOUT_MS: ${{ steps.fan_checkout_metrics.outputs.ms }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f /tmp/vibe2-fan-in.json || exit 0
+          fan_end="$(date +%s%3N)"
+          fan_start="$(cat /tmp/vibe2-fan-in-start-ms)"
+          fallback_effective="$VIBE2_LANE_MAX"
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then fallback_effective="$VIBE2_GAME_PRIMARY_BASELINE_TARGET"; fi
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-parallelism-telemetry.mjs" --input=/tmp/vibe2-fan-in.json --requested="$REQUESTED_MAX" --effective="${EFFECTIVE_MAX:-$fallback_effective}" --task-count="${TASK_COUNT:-0}" --output=/tmp/vibe2-parallelism-telemetry.json | tee /tmp/vibe2-parallelism-telemetry.log
+          node - "$FAN_CHECKOUT_MS" "$((fan_end-fan_start))" <<'NODE2'
+          const fs=require('fs');const [checkout,total]=process.argv.slice(2).map(Number);const file='/tmp/vibe2-parallelism-telemetry.json';const x=JSON.parse(fs.readFileSync(file,'utf8'));x.fanIn={checkoutMs:checkout||0,totalMs:total||0};fs.writeFileSync(file,JSON.stringify(x,null,2)+'\n');
+          NODE2
+
+      - name: Upload Vibe2 parallelism telemetry
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-parallelism-telemetry-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-parallelism-telemetry.json
+            /tmp/vibe2-parallelism-telemetry.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Event-driven fan-in refill fallback
+        if: steps.persist.outputs.refill == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:process.env.VIBE2_EXECUTION_LANE||'game-primary'}}))")"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo 'VIBE2_EVENT_DRIVEN_REFILL=FANIN_REPOSITORY_DISPATCH'

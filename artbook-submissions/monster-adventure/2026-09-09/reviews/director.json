@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "gameId": "monster-adventure",
+  "date": "2026-09-09",
+  "reviewer": "director",
+  "status": "REVIEWED",
+  "protocol": "DIRECTOR_IMPROVEMENT_STAR_5",
+  "reviewScope": "ALL_FIVE_DEPARTMENT_RESULTS",
+  "reviewedDepartments": [
+    "planning",
+    "graphics",
+    "development",
+    "qa",
+    "balance"
+  ],
+  "ratingScale": {
+    "type": "STARS",
+    "min": 1,
+    "max": 5
+  },
+  "ratings": [
+    {
+      "targetDepartment": "planning",
+      "improvement": "몬스터 어드벤처의 지역 생태와 사건을 통해 포획·성장 과정과 진화/성장 과정을 구체적으로 지적해.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "graphics",
+      "improvement": "부족한 점: 캐릭터, 몬스터, 보스, 배경, UI, 인트로 컨셉의 구조적 연계를 강화해 보자.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "development",
+      "improvement": "부서 결과물의 개선점은 'prototypeLimits'의 100보다 낮은 수준을 유지할 수 있도록 조정할 수 있습니다.",
+      "stars": 4
+    },
+    {
+      "targetDepartment": "qa",
+      "improvement": "부서 결과물의 품질점수가 높은 점을 강조하고, 보완점으로 '플레이 흐름'을 추가합니다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "balance",
+      "improvement": "부서 결과물의 내용을 명확히 하며, 보완점은 '부서 결과물의 내용이 측면에서 부족하다'를 정확히 1개 문장으로 쓴다.",
+      "stars": 5
+    }
+  ],
+  "runner": {
+    "type": "vibe2-local-open-model-director-review",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "oneDepartmentPerGeneration": true
+  },
+  "guard": {
+    "mayRewriteDepartmentResults": false,
+    "productionApproval": false,
+    "starRatingIsProductionApproval": false
+  }
+}

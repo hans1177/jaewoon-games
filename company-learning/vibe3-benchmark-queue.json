@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "generation": "V3-PUMP",
+  "state": "READY",
+  "hourlyRefresh": true,
+  "executionAuthority": "EXISTING_VIBE_DEVELOPMENT_PIPELINE_ONLY",
+  "localWeightTrainingRequired": false,
+  "countsAsTrainingSample": false,
+  "cases": [
+    {
+      "id": "bench-replay-external-black-box-block-blast-run-30",
+      "taskType": "qa",
+      "source": "VERIFIED_REPLAY",
+      "project": "block-blast",
+      "objective": "검증된 black-box 성공 판정 패턴을 독립 후보 경쟁과 동일한 증거 게이트로 재현",
+      "memoryRef": "external-black-box-block-blast-run-30",
+      "state": "READY_FOR_CANDIDATE_EXECUTION",
+      "candidateCount": 5,
+      "maxRepairAttempts": 3,
+      "countsAsTrainingSample": false,
+      "requiredVerification": ["RESPONSIBLE_SOURCE", "CHECKPOINT", "SYNTAX", "TESTS", "RUNTIME", "INDEPENDENT_QA", "REGRESSION", "EXACT_REVISION"],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    }
+  ],
+  "policy": {
+    "noAutoSuccess": true,
+    "noFabricatedEvidence": true,
+    "noParallelPipeline": true,
+    "noPaidApi": true,
+    "noGitHubHostedModelTraining": true
+  }
+}

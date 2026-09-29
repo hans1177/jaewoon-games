@@ -1,0 +1,32 @@
+name: Graphics Engine QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "assets/jaewoon-graphics-engine.js"
+      - "qa/jaewoon-graphics-engine.test.cjs"
+      - ".github/workflows/graphics-engine-qa.yml"
+  pull_request:
+    paths:
+      - "assets/jaewoon-graphics-engine.js"
+      - "qa/jaewoon-graphics-engine.test.cjs"
+      - ".github/workflows/graphics-engine-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  graphics-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax
+        run: node --check assets/jaewoon-graphics-engine.js
+      - name: Graphics evolution safety tests
+        run: node --test qa/jaewoon-graphics-engine.test.cjs

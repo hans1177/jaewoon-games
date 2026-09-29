@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "recordId": "fantasy-survival-web-commercial-review-2026-09-20",
+  "recordType": "graphics-review",
+  "domain": "graphics",
+  "scope": {
+    "type": "GAME",
+    "id": "fantasy-survival",
+    "gameId": "fantasy-survival",
+    "platform": "WEB"
+  },
+  "timestamps": {
+    "createdAt": "2026-09-20T19:28:00Z",
+    "observedAt": "2026-09-20T19:28:00Z"
+  },
+  "provenance": {
+    "producer": "VIBE_GRAPHICS_REVIEW",
+    "authority": "OWNER_DIRECTIVE_2026-09-21",
+    "sourceRevision": "dc2ed634a609f8ff53a99586490913844830cde1",
+    "artifactIdentity": "",
+    "sourceRefs": [
+      "web-games/fantasy-survival/index.html",
+      "qa/fantasy-survival-visual-presentation.test.mjs",
+      "company-learning/platform-release-roadmap.json"
+    ]
+  },
+  "status": "VERIFIED",
+  "retentionClass": "CANONICAL",
+  "data": {
+    "reviewKind": "COMMERCIAL_WEB_PRESENTATION_REVIEW",
+    "implementationReadiness": "STATIC_PRESENTATION_FOUNDATION_VERIFIED",
+    "commercialReadinessDecision": "RUNTIME_REVIEW_REQUIRED",
+    "runtimeVisualEvidenceAvailable": false,
+    "commercialPassGranted": false,
+    "verifiedFacts": [
+      "AUTHORED_ACTOR_ASSET_BINDING_PRESENT",
+      "DEDICATED_WOLF_BEAR_FIRE_SNAKE_RENDERERS_PRESENT",
+      "REGION_MATERIAL_PATTERN_BINDING_PRESENT",
+      "WORLD_RESOURCE_AND_STRUCTURE_ASSET_BINDING_PRESENT",
+      "IDLE_MOVE_ATTACK_HIT_DEATH_PRESENTATION_SIGNALS_PRESENT",
+      "AUTHORITATIVE_ATTACK_HIT_TIMING_BOUND_TO_PRESENTATION",
+      "BOUNDED_COMBAT_VFX_PRESENT",
+      "MOBILE_BOUNDED_CAMERA_RESPONSE_PRESENT",
+      "WEATHER_PRESENTATION_PRESENT",
+      "AUTO_GATHER_MOBILE_CONTROL_PRESENT"
+    ],
+    "runtimeReviewRequiredAxes": [
+      "MONSTER_SILHOUETTE_AND_ROLE_READABILITY",
+      "IDLE_MOVE_ATTACK_HIT_DEATH_MOTION_QUALITY",
+      "HIT_IMPACT_AND_DEATH_READABILITY",
+      "ENVIRONMENT_DEPTH_AND_COMPOSITION",
+      "VFX_CLARITY_WITHOUT_OCCLUSION",
+      "MOBILE_UI_STACKING_AND_TOUCH_READABILITY",
+      "LIGHTING_AND_CONTRAST",
+      "WEATHER_VISIBILITY_AND_PERFORMANCE",
+      "REGION_VISUAL_DISTINCTION",
+      "LOW_END_MOBILE_FRAME_STABILITY"
+    ],
+    "blockingReasons": [
+      "ACTUAL_WEB_RUNTIME_VISUAL_EVIDENCE_NOT_BOUND",
+      "MOBILE_RUNTIME_FRAME_CAPTURE_NOT_BOUND"
+    ],
+    "nextGate": "CAPTURE_ACTUAL_WEB_RUNTIME_ON_MOBILE_AND_REVIEW_ALL_AXES",
+    "invariantProtection": {
+      "gameplayBalanceChangeAllowed": false,
+      "saveMeaningChangeAllowed": false,
+      "multiplayerMeaningChangeAllowed": false
+    }
+  },
+  "evidenceRefs": [
+    "PR:2118",
+    "PR:2121",
+    "PR:2135",
+    "PR:2138",
+    "PR:2142",
+    "PR:2145",
+    "PR:2148",
+    "PR:2222"
+  ],
+  "relatedFiles": [
+    "web-games/fantasy-survival/index.html",
+    "qa/fantasy-survival-visual-presentation.test.mjs",
+    "company-learning/platform-release-roadmap.json"
+  ],
+  "supersedes": [],
+  "tags": [
+    "fantasy-survival",
+    "web",
+    "graphics",
+    "commercial-readiness",
+    "runtime-review-required"
+  ]
+}

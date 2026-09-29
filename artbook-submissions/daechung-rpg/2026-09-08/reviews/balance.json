@@ -1,0 +1,57 @@
+{
+  "version": 6,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-08",
+  "department": "balance",
+  "status": "REVIEWED",
+  "round": 2,
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "independentFirstRoundCompleted": true,
+    "onePeerPerGeneration": true
+  },
+  "protocol": "PEER_IMPROVEMENT_STAR_5",
+  "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+  "reviewedDepartments": [
+    "planning",
+    "graphics",
+    "development",
+    "qa"
+  ],
+  "ratingScale": {
+    "type": "STARS",
+    "min": 1,
+    "max": 5
+  },
+  "peerReviews": [
+    {
+      "targetDepartment": "planning",
+      "improvement": "The review highlights the need for more clarity on region causality and verification of story elements to enhance the reliability of the content.",
+      "stars": 4
+    },
+    {
+      "targetDepartment": "graphics",
+      "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "development",
+      "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "qa",
+      "improvement": "The section highlights the importance of validating cause-effect relationships in storytelling, which is a key component of RPG development. This improvement shows the department's",
+      "stars": 5
+    }
+  ],
+  "guard": {
+    "mayRewriteOtherDepartments": false,
+    "mayEvaluateOwnDepartment": false,
+    "productionApproval": false,
+    "starRatingIsProductionApproval": false
+  }
+}

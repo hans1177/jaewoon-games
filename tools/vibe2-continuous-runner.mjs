@@ -1,0 +1,978 @@
+// 파일명: tools/vibe2-continuous-runner.mjs
+// 역할: Vibe2 병렬 큐에서 예약된 작업별 안전 작업주문을 생성한다.
+// 원칙: 사용자 지시 > 출시확정 > 개발확정, DAG/source lock 예약 후 격리 후보 브랜치만 수정, 검증 전 main 반영 금지.
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { planVibeCoreTask } from '../assets/vibe-core-runtime.js';
+import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
+import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
+import { generateVibe2Handoff } from './vibe2-handoff.mjs';
+import { buildVibeDesignIntelligence } from './vibe2-design-intelligence.mjs';
+import { classifyVerifiedExternalBlackBoxPrinciples, retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candidateTournamentPolicy, preferredCodingStrategyForTask, codingStrategyGuidance, responsibilityCalibrationForTask, regressionHotspotRiskForTask, codingRiskGuidance, architectureDriftRiskForTask, architectureDriftGuidance, codingConstitutionRuleForTask, codingConstitutionGuidance } from './vibe2-learning-motor.mjs';
+import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
+import { loadCentralPolicySnapshot, compileVibeCentralWorkContract, compiledWorkContractGuidance } from './vibe2-central-work-contract.mjs';
+import { buildNeuralDiagnosis, neuralDiagnosisGuidance } from './vibe2-neural-diagnosis.mjs';
+import { assertSystemArchitectureTask, systemArchitectureGuidance } from './vibe2-system-architecture-contract.mjs';
+import { retrieveVerifiedCapabilities, verifiedCapabilityGuidance, buildPassiveCapabilityBenchmarkContract } from './vibe2-capability-distillation.mjs';
+
+const clean = (value) => String(value ?? '').trim();
+const posix = (value) => clean(value).replaceAll('\\', '/');
+const freeze = (value) => Object.freeze(value);
+const freezeList = (values = []) => freeze([...new Set((values || []).map(clean).filter(Boolean))]);
+const EDITOR_BINARY_EXTENSIONS = new Set(['.rbxl', '.rbxlx', '.uasset', '.umap', '.controller', '.anim', '.avatar']);
+const AUTO_DEPLOY_STATES = new Set(['release-confirmed', 'development-confirmed']);
+const PRESENTATION_PASSES = new Set(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE']);
+
+function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
+function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`); }
+function parseArgs(argv = process.argv.slice(2)) {
+  const args = {};
+  for (const raw of argv) {
+    if (!raw.startsWith('--')) continue;
+    const body = raw.slice(2);
+    const at = body.indexOf('=');
+    if (at < 0) args[body] = true;
+    else args[body.slice(0, at)] = body.slice(at + 1);
+  }
+  return args;
+}
+function writableTargetAllowed(runtime, target) {
+  const allowed = Array.isArray(runtime?.safety?.allowedWritableTargets) ? runtime.safety.allowedWritableTargets.map((value) => clean(value).toLowerCase()) : ['roblox', 'web', 'unity', 'unreal', 'godot'];
+  const resolved = clean(target).toLowerCase();
+  if (resolved === 'web' && runtime?.safety?.existingWebMaintenanceAllowed !== true) return false;
+  return allowed.includes(resolved);
+}
+function taskRequiresWrite(task) { return !['inspect', 'research', 'qa'].includes(clean(task?.type).toLowerCase()); }
+function normalizeResponsibleFile(task) {
+  const files = Array.isArray(task?.responsibleFiles) ? task.responsibleFiles.map(posix).filter(Boolean) : [];
+  return files[0] || null;
+}
+function requestMentionsEditorOnlyCapability(target, request) {
+  const text = clean(request).toLowerCase();
+  if (target === 'roblox') return ['studio place','place package','.rbxl','.rbxlx','terrain editor','ro블록스 스튜디오','로블록스 스튜디오'].some((word) => text.includes(word));
+  if (target === 'unreal') return ['blueprint','블루프린트','animation blueprint','anim blueprint','애님 블루프린트','montage','몽타주','blend space','블렌드 스페이스','control rig','컨트롤 릭','ik retargeter','리타게터','ik rig'].some((word) => text.includes(word));
+  if (target === 'unity') return ['animator controller','애니메이터 컨트롤러','animationclip asset','animation clip asset','애니메이션 클립 에셋','avatar asset'].some((word) => text.includes(word));
+  return false;
+}
+function responsibleFilesRequireEditor(task) { return (task?.responsibleFiles || []).some((file) => EDITOR_BINARY_EXTENSIONS.has(path.extname(posix(file)).toLowerCase())); }
+function buildLearningGuidance(learning = {}) {
+  const records = Array.isArray(learning?.records) ? learning.records.slice(0, 5) : [];
+  if (!records.length) return '';
+  const lines = ['[VERIFIED EXPERIENCE MEMORY - advisory only]','다음 기록은 검증된 과거 경험이다. 관련될 때만 패치 전략/회피 패턴으로 참고하고 승인 권한, 보호 규칙, 게임 수치를 자동 변경하지 않는다.'];
+  for (const record of records) {
+    const parts = [
+      `경험 ${clean(record.id)}`, `결과=${clean(record.outcome)}`,
+      clean(record.problem) ? `문제=${clean(record.problem).slice(0, 240)}` : '',
+      clean(record.change) ? `검증변경=${clean(record.change).slice(0, 240)}` : '',
+      clean(record.failureCause) ? `검증실패원인=${clean(record.failureCause).slice(0, 240)}` : '',
+      (record.reusablePatterns || []).length ? `재사용=${record.reusablePatterns.join(' | ').slice(0, 300)}` : '',
+      (record.avoidPatterns || []).length ? `회피=${record.avoidPatterns.join(' | ').slice(0, 300)}` : ''
+    ].filter(Boolean);
+    lines.push(`- ${parts.join('; ')}`);
+  }
+  return lines.join('\n');
+}
+function reusableContextsForTask(handoff = {}, task = {}) {
+  const contexts = Array.isArray(handoff?.workState?.reusableContexts) ? handoff.workState.reusableContexts : [];
+  const packageId = clean(task.packageId);
+  return contexts.filter((row) => clean(row.taskId) === clean(task.id) || (packageId && clean(row.packageId) === packageId)).slice(-8);
+}
+function buildReusableHandoffGuidance(contexts = []) {
+  if (!contexts.length) return '';
+  const lines = ['[REUSABLE MACHINE HANDOFF - do not rediscover already known facts]'];
+  for (const row of contexts) {
+    const parts = [
+      `task=${clean(row.taskId)}`,
+      clean(row.packageId) ? `package=${clean(row.packageId)}` : '',
+      (row.responsibleFiles || []).length ? `files=${row.responsibleFiles.join(',')}` : '',
+      (row.reusableEvidence || []).length ? `evidence=${row.reusableEvidence.join(' | ')}` : '',
+      clean(row.blocker) ? `lastBlocker=${clean(row.blocker)}` : '',
+      clean(row.lastOutcome) ? `lastOutcome=${clean(row.lastOutcome)}` : ''
+    ].filter(Boolean);
+    lines.push(`- ${parts.join('; ')}`);
+  }
+  return lines.join('\n');
+}
+export function classifyVibeExecutionRoute({ target = '', task = {}, adapter = {} } = {}) {
+  const normalizedTarget = clean(target).toLowerCase();
+  const evidence=(task?.evidence||[]).map(clean);
+  if(normalizedTarget==='web'&&evidence.includes('learning-web-artifact-practice')){
+    return freeze({route:'learning-web-artifact',requiresEditor:false,reason:'isolated-web-practice-artifact',repositorySourceWrite:false,artifactWrite:true});
+  }
+  if (!taskRequiresWrite(task)) return freeze({ route: 'analysis-only', requiresEditor: false, reason: 'non-write-task' });
+  const binary = responsibleFilesRequireEditor(task);
+  const requested = requestMentionsEditorOnlyCapability(normalizedTarget, task.goal);
+  if (binary || requested) return freeze({ route:'engine-editor', requiresEditor:true, reason:binary?'responsible-binary-asset':'editor-only-capability-requested', editorRuntime:adapter?.execution?.editorRuntime || null, directBinaryTextEditForbidden:true });
+  return freeze({ route:'text-source-worker', requiresEditor:false, reason:'text-source-capability' });
+}
+function resolveTask(queue, taskId = '') {
+  const id = clean(taskId);
+  if (id) {
+    const task = queue.tasks.find((row) => row.id === id);
+    if (!task) return { task:null, reason:'TASK_NOT_FOUND' };
+    if (!['queued','running'].includes(task.status)) return { task:null, reason:`TASK_NOT_RUNNABLE:${task.status}` };
+    if (task.status === 'queued') {
+      const selection = selectVibeQueueBatch(queue);
+      if (!selection.selected.some((row) => row.id === id)) return { task:null, reason:`TASK_NOT_RESERVED_OR_ELIGIBLE:${selection.stopReason || 'conflict'}` };
+    }
+    return { task, reason:null };
+  }
+  const selection = selectVibeQueueBatch(queue);
+  return { task:selection.selected[0] || null, reason:selection.stopReason || 'NO_ELIGIBLE_WORK' };
+}
+function presentationPassFromTask(task = {}) {
+  const evidence=(task?.evidence||[]).map(clean);
+  const marker=evidence.find(value=>value.startsWith('presentation-pass:'));
+  const fromEvidence=marker?marker.slice('presentation-pass:'.length).toUpperCase():'';
+  if(PRESENTATION_PASSES.has(fromEvidence))return fromEvidence;
+  const match=/\[PRESENTATION_PASS:([A-Z_]+)\]/i.exec(clean(task?.goal));
+  const fromGoal=clean(match?.[1]).toUpperCase();
+  return PRESENTATION_PASSES.has(fromGoal)?fromGoal:null;
+}
+export function expandPresentationResponsibleFiles({task={},target='',repoRoot=process.cwd(),fallbackRoot=''}={}){
+  const base=freezeList(task.responsibleFiles||[]);
+  const pass=presentationPassFromTask(task);
+  if(!pass)return base;
+  const root=posix(task.sourceRoot||fallbackRoot);
+  if(!root)return base;
+  const resolvedTarget=clean(target||task.target).toLowerCase();
+  const candidates=resolvedTarget==='roblox'
+    ?[`${root}/client/Game.client.luau`,`${root}/server/Game.server.luau`,`${root}/shared/GameConfig.luau`,`${root}/shared/VisualStyle.luau`,`${root}/client/BattleVisual.luau`]
+    :resolvedTarget==='unity'
+      ?[`${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,`${root}/Assets/Scripts/RuntimeBootstrap.cs`,`${root}/Assets/Scripts/GameCore.cs`]
+      :resolvedTarget==='web'
+        ?[`${root}/index.html`,`${root}/style.css`,`${root}/game.js`]
+        :['fortnite-uefn','uefn','unreal'].includes(resolvedTarget)
+          ?[`${root}/Game.verse`,`${root}/Island.verse`,`${root}/Main.verse`,`${root}/Presentation.verse`,`${root}/UI.verse`,`${root}/Verse/Presentation.verse`,`${root}/Verse/UI.verse`]
+          :[];
+  const discovered=candidates.filter(relative=>{
+    try{return fs.existsSync(path.resolve(repoRoot,relative))&&fs.statSync(path.resolve(repoRoot,relative)).isFile();}
+    catch{return false;}
+  });
+  if(['fortnite-uefn','uefn','unreal'].includes(resolvedTarget)){
+    const rootDir=path.resolve(repoRoot,root),verse=[];
+    if(fs.existsSync(rootDir)){
+      const stack=[rootDir];
+      while(stack.length&&verse.length<12){
+        const current=stack.pop();
+        let entries=[];
+        try{entries=fs.readdirSync(current,{withFileTypes:true});}catch{continue;}
+        for(const entry of entries.sort((a,b)=>a.name.localeCompare(b.name))){
+          if(['Binaries','Intermediate','Saved','DerivedDataCache','.git'].includes(entry.name))continue;
+          const full=path.join(current,entry.name);
+          if(entry.isDirectory()){stack.push(full);continue;}
+          if(!/\.verse$/i.test(entry.name))continue;
+          verse.push(posix(path.relative(repoRoot,full)));
+          if(verse.length>=12)break;
+        }
+      }
+    }
+    return freezeList([...base,...discovered,...verse]).slice(0,6);
+  }
+  return freezeList([...base,...discovered]).slice(0,6);
+}
+
+function presentationTaskType(task = {}) {
+  const pass=presentationPassFromTask(task);
+  if(pass==='ASSET_ADAPTATION')return'graphics';
+  if(pass==='LIVING_MOTION'||pass==='ANIMATION_FEEL')return'motion';
+  if(pass==='VFX')return'vfx';
+  if(pass==='AUDIO_FEEL')return'audio';
+  if(pass==='POLISH_MOBILE')return'ui';
+  if(pass)return'presentation';
+  return clean(task?.type)||'coding';
+}
+function buildPresentationQualityContract(task = {}, target = '') {
+  const pass=presentationPassFromTask(task);
+  if(!pass)return freeze({required:false,pass:null,authorityExpanded:false});
+  const replacementInput=task?.graphicsReplacementContract&&typeof task.graphicsReplacementContract==='object'
+    ?task.graphicsReplacementContract
+    :null;
+  const graphicsReplacement=replacementInput?freeze({
+    required:true,
+    version:Number(replacementInput.version||1),
+    decisionOwner:clean(replacementInput.decisionOwner)||'VIBE',
+    platforms:freezeList(replacementInput.platforms||['WEB','ROBLOX','UNITY']),
+    platform:clean(replacementInput.platform)||null,
+    adaptiveCount:freeze({
+      minimumActual:Math.max(1,Number(replacementInput?.adaptiveCount?.minimumActual||1)),
+      maximumActual:Math.min(60,Math.max(1,Number(replacementInput?.adaptiveCount?.maximumActual||60))),
+      fixedQuotaForbidden:replacementInput?.adaptiveCount?.fixedQuotaForbidden!==false,
+      chooseOnlyWhatActuallyNeedsImprovement:replacementInput?.adaptiveCount?.chooseOnlyWhatActuallyNeedsImprovement!==false,
+      bands:replacementInput?.adaptiveCount?.bands||{micro:[1,10],normal:[10,30],major:[30,60]}
+    }),
+    surfaces:freezeList(replacementInput.surfaces||[]),
+    priorityOrder:freezeList(replacementInput.priorityOrder||[]),
+    reuseModes:freezeList(replacementInput.reuseModes||[]),
+    compositionRule:clean(replacementInput.compositionRule)||null,
+    conceptRule:clean(replacementInput.conceptRule)||null,
+    antiMashupRule:clean(replacementInput.antiMashupRule)||null,
+    copyRule:clean(replacementInput.copyRule)||null,
+    actualSourceOrBindingDeltaRequired:replacementInput?.implementation?.actualSourceOrBindingDeltaRequired!==false,
+    actualReplacementCountMustBeRecorded:replacementInput?.implementation?.actualReplacementCountMustBeRecorded!==false,
+    changedSurfacesMustBeRecorded:replacementInput?.implementation?.changedSurfacesMustBeRecorded!==false,
+    reuseModesUsedMustBeRecorded:replacementInput?.implementation?.reuseModesUsedMustBeRecorded!==false,
+    perReplacementSourceEvidenceRequired:replacementInput?.implementation?.perReplacementSourceEvidenceRequired!==false,
+    actualReplacementCountMustEqualGroundedEvidenceCount:replacementInput?.implementation?.actualReplacementCountMustEqualGroundedEvidenceCount!==false,
+    replacementEvidenceMustReferenceTouchedSourcePath:replacementInput?.implementation?.replacementEvidenceMustReferenceTouchedSourcePath!==false,
+    replacementEvidenceSnippetMustExistInChangedSource:replacementInput?.implementation?.replacementEvidenceSnippetMustExistInChangedSource!==false,
+    duplicateReplacementEvidenceCannotInflateCount:replacementInput?.implementation?.duplicateReplacementEvidenceCannotInflateCount!==false,
+    selfReportedCountWithoutGroundedSourceEvidenceCannotPass:replacementInput?.implementation?.selfReportedCountWithoutGroundedSourceEvidenceCannotPass!==false,
+    zeroActualReplacementCannotPass:replacementInput?.implementation?.zeroActualReplacementCannotPass!==false,
+    beforeAfterEvidenceRequired:replacementInput?.implementation?.beforeAfterEvidenceRequired!==false
+  }):freeze({required:false,version:1});
+  const checks={
+    ASSET_ADAPTATION:['style-lock-consistency','reuse-existing-assets-first','context-matched-background','non-placeholder-character-enemy-models','runtime-render-binding','no-duplicate-render-pipeline','gameplay-semantics-unchanged'],
+    LIVING_MOTION:['idle-alive-motion','locomotion-blend-or-equivalent','acceleration-deceleration','turn-smoothing','secondary-motion','state-driven-motion-not-decorative-only','gameplay-speed-unchanged'],
+    ANIMATION_FEEL:['anticipation','impact-sync','attack-hit-death-state-coverage','hit-stop-presentation-only','recoil-recovery','authoritative-hit-event-preserved'],
+    VFX:['impact-feedback','effect-budget','mobile-readability','bounded-particles-or-transients','gameplay-readability-preserved'],
+    AUDIO_FEEL:['first-gesture-audio-web','mute-volume','no-duplicate-resume-playback','state-transition-audio','impact-audio-sync'],
+    CAMERA_LANGUAGE:['subtle-normal-response','strong-action-response','hero-moment-control','runtime-camera-binding','mobile-readability','no-critical-input-obscure'],
+    POLISH_MOBILE:['animation-pop-removal','vfx-clutter-check','audio-transition-check','touch-during-effects','frame-stability','actual-runtime-presentation-hardgate','save-gameplay-semantics-unchanged']
+  };
+  const runtimeChecks={
+    ASSET_ADAPTATION:['same-scene-before-after-readability'],
+    LIVING_MOTION:['idle-walk-run-or-equivalent-runtime-continuity','turn-runtime-continuity'],
+    ANIMATION_FEEL:['impact-event-runtime-sync','input-not-blocked-by-hit-stop'],
+    VFX:['combat-clutter-runtime-check','mobile-touch-under-effects'],
+    AUDIO_FEEL:['audio-unlock-runtime','music-transition-runtime','background-resume-runtime'],
+    CAMERA_LANGUAGE:['camera-motion-runtime-readability','touch-aim-or-control-runtime'],
+    POLISH_MOBILE:['mobile-frame-stability','long-session-presentation-stability']
+  };
+  return freeze({
+    required:true,
+    version:3,
+    pass,
+    graphicsReplacement,
+    policyRefs:freezeList(['company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract','company-learning/platform-release-roadmap.json#audioMusicQualityContract']),
+    preserve:freezeList(['GAMEPLAY_BALANCE','SAVE_MEANING','PROGRESSION','HIT_SEMANTICS','NETWORK_AUTHORITY']),
+    staticChecks:freezeList([
+      ...(checks[pass]||[]),
+      ...(graphicsReplacement.required?[
+        'adaptive-graphics-replacement-contract-present',
+        'actual-source-or-binding-delta-required',
+        'actual-replacement-count-recorded',
+        'changed-surfaces-recorded',
+        'reuse-adapt-recombine-mode-recorded',
+        'zero-replacement-pass-forbidden',
+        'concept-style-lock-coherence'
+      ]:[])
+    ]),
+    runtimeChecks:freezeList([
+      ...(runtimeChecks[pass]||[]),
+      ...(graphicsReplacement.required?['replacement-before-after-runtime-evidence','replacement-result-visible-in-target-runtime']:[])
+    ]),
+    target:clean(target).toLowerCase()||null,
+    realImplementation:freeze({
+      backgroundAndEnvironmentMustRender:true,
+      contextMatchedVisualDirectionRequired:true,
+      placeholderPrimitiveCompletionForbidden:true,
+      characterAndMonsterModelDetailRequired:true,
+      actionStateCoverage:freezeList(['IDLE','MOVE','ATTACK','HIT','DEATH']),
+      vfxMustBindToGameplayEvents:true,
+      cameraMustBindToRuntimeState:true,
+      mobileTouchAndFrameEvidenceRequired:true,
+      markerOnlyOrStaticDescriptionCannotPass:true
+    }),
+    atomicNeuron:freeze({
+      mode:'PER_TASK_MICRO_FANIN',
+      completionEvent:'vibe2-neuron-complete',
+      speculativeCandidates:true,
+      maxVariants:3,
+      isolatedCandidateBranchesRequired:true,
+      globalBarrierForbidden:true,
+      sourceAndFileLocksPreserved:true,
+      qaReleaseGatesPreserved:true
+    }),
+    wrapperOrShadowPipelineForbidden:true,
+    directResponsibleSystemModificationPreferred:true,
+    authorityExpanded:false
+  });
+}
+function presentationQualityGuidance(contract = {}) {
+  if(contract?.required!==true)return'';
+  return [
+    '[VIBE PRESENTATION QUALITY CONTRACT]',
+    `pass=${contract.pass}`,
+    `preserve=${(contract.preserve||[]).join(',')}`,
+    `static-checks=${(contract.staticChecks||[]).join(',')}`,
+    `runtime-checks=${(contract.runtimeChecks||[]).join(',')}`,
+    ...(contract.graphicsReplacement?.required?[
+      `adaptive-graphics-replacement=required; actual-range=${contract.graphicsReplacement.adaptiveCount?.minimumActual||1}-${contract.graphicsReplacement.adaptiveCount?.maximumActual||60}; fixed-quota=forbidden`,
+      `replacement-surfaces=${(contract.graphicsReplacement.surfaces||[]).join(',')}`,
+      `candidate-use-modes=${(contract.graphicsReplacement.reuseModes||[]).join(',')}`,
+      '교체 개수는 Vibe가 실제 결함에 맞춰 정한다. 1~10개만 고쳐야 하면 그만큼만 고치고, 일반 개선은 대체로 10~30개, 큰 일관된 리프레시는 필요할 때 30~60개까지 가능하다. 개수 채우기를 위해 멀쩡한 표현을 바꾸면 안 된다.',
+      '완성 자산 그대로 사용에만 묶이지 않는다. 현재 컨셉에 정확히 맞으면 재사용하고, 필요하면 재질·비율·색·모션·VFX·레이아웃을 응용하며, 여러 호환 후보의 장점을 재조합해 하나의 게임 전용 표현으로 만든다. 무가공 에셋팩 짬뽕은 금지한다.',
+      '완료 결과에는 실제 교체 개수, 변경한 표현 계열, 사용한 재사용/변형/재조합 방식을 기록해야 한다. actualCount의 각 1개는 touched source path + bindingKey + 그 변경 소스에 실제 존재하는 sourceEvidence로 개별 근거가 있어야 하며, 근거 없는 숫자 부풀리기는 PASS가 아니다. 실제 source/binding 교체가 0개면 이 그래픽/presentation 작업은 PASS가 아니다.'
+    ]:[]),
+    '실제 대상 플랫폼 플레이 화면에 컨셉에 맞는 배경/환경, 임시 primitive가 아닌 캐릭터·몬스터 표현, 상태 기반 idle/move/attack/hit/death, gameplay event에 연결된 VFX·카메라, 모바일 터치/프레임 근거가 있어야 PASS다.',
+    '마커·설명문·정적 CSS 장식만 추가하거나 컨셉 불일치 배경/모형 몹을 남긴 상태는 presentation 완료로 인정하지 않는다.',
+    `atomic-neuron=${contract.atomicNeuron?.mode||'NONE'}; max-variants=${contract.atomicNeuron?.maxVariants||1}; task-micro-fanin=required`,
+    '후보는 격리 브랜치에서 생성하고 같은 task 안에서 micro-fan-in으로 하나만 선택한다. 전역 wave 완료를 기다리지 않는다.',
+    '기존 책임 시스템을 직접 수정하고 wrapper/shadow 표현 파이프라인을 만들지 않는다.',
+    '표현 품질 수정은 게임 밸런스·저장·진행·판정·네트워크 권한을 바꾸지 않는다.',
+    '정적 QA 통과만으로 완료가 아니며 실제 runtime/mobile 검증이 최종 근거다.'
+  ].join('\n');
+}
+
+function buildWeatherPresentationContract(task = {}, target = '') {
+  const evidence=new Set((task?.evidence||[]).map(clean));
+  const required=evidence.has('weather-presentation:v1')||/\[WEATHER_PRESENTATION\]/i.test(clean(task?.goal));
+  if(!required)return freeze({required:false,version:1,authorityExpanded:false});
+  return freeze({
+    required:true,
+    version:1,
+    policyRef:'company-learning/platform-release-roadmap.json#weatherPresentationContract',
+    target:clean(target).toLowerCase()||null,
+    states:freezeList(['CLEAR','RAIN','FOG','SNOW','STORM']),
+    regionalExtensions:freezeList(['VOLCANIC_ASH','HEAT_HAZE']),
+    presentationOnly:true,
+    preserve:freezeList(['ATTACK','HEALTH','MOVEMENT_SPEED','DROP_RATE','ECONOMY','PROGRESSION','SAVE_MEANING','NETWORK_AUTHORITY']),
+    multiplayer:freeze({
+      authoritativeState:true,
+      clientsShareSemanticState:true,
+      joinInProgressReceivesCurrentState:true,
+      localDensityMayVaryOnlyForPerformance:true
+    }),
+    runtimeChecks:freezeList([
+      'weather-state-transitions',
+      'rain-fog-snow-storm-visuals',
+      'storm-lightning',
+      'ambient-weather-audio-when-present',
+      'multiplayer-weather-sync',
+      'join-in-progress-weather-sync',
+      'mobile-effect-density-adaptation',
+      'critical-input-and-hazard-readability',
+      'gameplay-semantics-unchanged'
+    ]),
+    sourceMarker:'WEATHER_PRESENTATION_VERSION=1',
+    webAssetDirectNativeReuseForbidden:true,
+    authorityExpanded:false
+  });
+}
+function weatherPresentationGuidance(contract = {}) {
+  if(contract?.required!==true)return'';
+  const native=contract.target==='unity'
+    ?'Unity 네이티브 Particle System/Fog/Lighting/Material/Audio를 사용한다.'
+    :contract.target==='roblox'
+      ?'Roblox 네이티브 ParticleEmitter/Atmosphere/Lighting/ColorCorrection/Sound를 사용한다.'
+      :contract.target==='fortnite-uefn'||contract.target==='unreal'||contract.target==='uefn'
+        ?'Fortnite UEFN 네이티브 Verse/device/VFX/audio/lighting 표현 책임을 사용한다.'
+        :'기존 Web Canvas/DOM/CSS/WebAudio 렌더 책임 시스템을 직접 사용한다.';
+  return [
+    '[WEATHER PRESENTATION CONTRACT]',
+    `states=${(contract.states||[]).join(',')}`,
+    `regional=${(contract.regionalExtensions||[]).join(',')}`,
+    `preserve=${(contract.preserve||[]).join(',')}`,
+    native,
+    '날씨는 표현 전용이다. 공격력·체력·이동속도·드랍률·경제·진행·저장 의미를 바꾸지 않는다.',
+    '멀티는 authoritative weather state 하나를 공유하고 join-in-progress도 현재 날씨를 받아야 한다.',
+    '저사양에서는 파티클/후처리 밀도만 줄이고 날씨 의미는 바꾸지 않는다.',
+    'Web 렌더 자산을 Unity/Roblox에 그대로 복사하지 않는다.',
+    '완료 소스에는 WEATHER_PRESENTATION_VERSION=1 또는 언어 등가 마커가 있어야 한다.',
+    '정적 문구만 추가하는 것은 완료가 아니며 실제 runtime visual/audio evidence가 필요하다.'
+  ].join('\n');
+}
+
+function incrementalQaPlan(task, target, responsibleFiles, speculativeVariants = 1) {
+  const files = freezeList(responsibleFiles || []);
+  return freeze({
+    mode:'impact-first-content-hash',
+    changedScope:files,
+    cacheNamespace:`${clean(target)}:${clean(task.gameId) || 'global'}`,
+    deterministicChecks:freezeList(['git-diff-check','conflict-marker-scan','text-sanity','js-syntax-when-applicable','json-parse-when-applicable']),
+    fullRegressionAtFanIn:true,
+    contentHashCache:true,
+    speculativeVariants:Math.max(1,Math.min(5,Number(speculativeVariants)||1))
+  });
+}
+
+function failedCandidateStrategies(task={}){
+  const prefix='coding-strategy-negative:',rows=[];
+  for(const raw of Array.isArray(task?.evidence)?task.evidence:[]){
+    const value=clean(raw);
+    if(!value.startsWith(prefix))continue;
+    try{
+      const parsed=JSON.parse(decodeURIComponent(value.slice(prefix.length)));
+      const strategy=clean(parsed?.strategy);
+      if(!strategy||parsed?.infrastructureFailure===true||rows.includes(strategy))continue;
+      rows.push(strategy);
+    }catch{}
+  }
+  return freezeList(rows);
+}
+function candidateVariantRank(variant='primary'){
+  const normalized=clean(variant)||'primary';
+  if(normalized==='primary')return 0;
+  const match=/^speculative-(\d+)$/.exec(normalized);
+  return match?Math.max(1,Number(match[1])||1):0;
+}
+export function candidateStrategyRole(variant='primary',preference={},task={}){
+  const normalized=clean(variant)||'primary';
+  const failed=failedCandidateStrategies(task),failedSet=new Set(failed);
+  const preferred=clean(preference?.strategy);
+  const catalog=[
+    {strategy:'PRIMARY_RESPONSIBILITY_MINIMAL',directive:'Start at the compiled primary responsibility and make the minimum coherent change that produces the required observable result.'},
+    {strategy:'DEPENDENCY_SAFE_COHERENT_PATCH',directive:'Patch the primary responsibility plus only the directly required dependent symbols. Prefer a coherent dependency-safe change over an ultra-local patch that leaves the behavior chain broken.'},
+    ...(preferred?[{strategy:preferred,directive:'Use the verified preferred coding strategy only inside this exact compiled edit contract; do not expand writable scope, protected semantics, or QA.'}]:[]),
+    {strategy:'CAUSAL_TRACE_CROSSCHECK',directive:'Cross-check the full causal chain from input or failure evidence to owned state and observable result before choosing the bounded edit.'},
+    {strategy:'INVARIANT_PRESERVING_ALTERNATIVE',directive:'Produce a genuinely different invariant-preserving implementation approach inside the exact same writable scope. Do not widen files or bypass the compiled edit contract.'},
+    {strategy:'PATH_VERIFIED_ANCHOR_FIRST',directive:'Re-read the exact responsible files and verify the target path and edit anchor before changing source. Use a different exact anchor or symbol path from prior failed edits while preserving the same writable scope.'},
+    {strategy:'OBSERVABLE_DELTA_FIRST',directive:'Start from the required observable runtime or presentation delta, trace backward to the smallest responsible source change, and reject no-op or marker-only edits.'},
+    {strategy:'BOUNDED_OUTPUT_COMMIT_FIRST',directive:'Produce the smallest complete valid output envelope and one coherent bounded source delta first, then add only directly required dependent edits. Avoid oversized or malformed model output.'},
+    {strategy:'SOURCE_RESCAN_REBIND',directive:'Rescan the approved responsible files, rebind the task to the currently existing symbols, and implement through those live symbols instead of repeating stale edit matches.'},
+    {strategy:'RESPONSIBILITY_SPLIT_FANIN',directive:'Split the same approved responsibility into independently coherent source deltas and fan them back into one bounded candidate without adding files, systems, or authority.'}
+  ].filter((row,index,all)=>row.strategy&&!all.slice(0,index).some(other=>other.strategy===row.strategy));
+  const available=catalog.filter(row=>!failedSet.has(row.strategy));
+  const rank=candidateVariantRank(normalized);
+  const selected=available.length
+    ?available[rank%available.length]
+    :{strategy:'CAUSAL_EVIDENCE_REFRESH_REQUIRED',directive:'All recorded implementation strategies for this task have failed. Do not repeat a known failed patch. Refresh exact causal evidence inside the same approved scope and form a materially different implementation hypothesis before source mutation.'};
+  return freeze({
+    variant:normalized,
+    strategy:selected.strategy,
+    directive:selected.directive,
+    avoidedFailedStrategies:failed,
+    repeatedFailedStrategyBlocked:failed.length>0&&selected.strategy!=='CAUSAL_EVIDENCE_REFRESH_REQUIRED'
+  });
+}
+
+function buildSystemArchitectureWorkOrder({base,task,centralPolicy,centralPolicyLiveRef='',runtime={},variant='primary'}={}){
+  const system=assertSystemArchitectureTask(task);
+  const responsibleFiles=freezeList(system.responsibleFiles);
+  const route=freeze({route:'text-source-worker',requiresEditor:false,reason:'vibe-system-architecture-evolution',repositorySourceWrite:true});
+  const plan=freeze({target:'system',qa:freezeList(['system-architecture-contract','same-failure-recheck','related-regression','full-regression','security-verification','before-after-metric-comparison','authority-and-gate-invariance'])});
+  const compiledWorkContract=compileVibeCentralWorkContract({
+    snapshot:centralPolicy,task,plan,route,responsibleFiles,presentationQuality:{required:false,preserve:[]},
+    mainSha:clean(process.env.VIBE2_BASE_MAIN_SHA)||clean(process.env.GITHUB_SHA)||'',livePolicyRef:clean(centralPolicyLiveRef)
+  });
+  const contractGuidance=compiledWorkContractGuidance(compiledWorkContract);
+  const strategy=candidateStrategyRole(variant,{strategy:'STRUCTURAL_CAUSE_FIRST'},task);
+  const goal=[
+    systemArchitectureGuidance(task),task.goal,contractGuidance,
+    '[SYSTEM EVOLUTION IMPLEMENTATION METHOD]',
+    '1) reproduce/confirm the structural bottleneck from evidence; 2) compare two or more alternatives; 3) change the smallest direct responsibility;',
+    '4) retain all existing authority/security/quality gates; 5) record a measurable before/after expectation; 6) rollback or reject if evidence does not improve.',
+    `candidate-variant=${strategy.variant}; strategy=${strategy.strategy}`
+  ].join('\n\n');
+  const qa=freezeList(plan.qa);
+  const maxWorkMinutes=Math.max(1,Math.min(60,Math.floor(Number(runtime?.continuous?.maxWorkMinutes)||20)));
+  return freeze({
+    ...base,run:true,reason:'SYSTEM_ARCHITECTURE_WORK_READY',selectedTask:task,taskId:task.id,gameId:task.gameId,
+    target:'system',shard:task.shard,sourceRootLock:'.',workMode:'source-change-candidate',executionRoute:'text-source-worker',
+    route,goal,originalGoal:task.goal,department:task.department,priority:task.priority,releaseState:'other',maxWorkMinutes,
+    source:freeze({root:'.',writable:true,maintenanceOnly:false,candidateFiles:responsibleFiles,textWritablePatterns:responsibleFiles,editorRequiredPatterns:freezeList([]),ignoredPaths:freezeList(['.git','node_modules']),responsibleFiles}),
+    qa,incrementalQa:incrementalQaPlan(task,'system',responsibleFiles,1),
+    supervisionContract:null,compiledWorkContract,neuralDiagnosis:null,
+    workPackage:freeze({id:null,goal:null,role:'system-architecture',owner:'VIBE2_VIBE3',taskWorkUnits:1,packageWorkUnits:1,packageSize:1,longWorkProtected:true,sharedContext:null,completionCriteria:freezeList(task.completionCriteria||[]),rolePlan:freeze({exploration:'read-only',implementation:'vibe-system-source-worker',test:'incremental-qa',performance:'before-after-and-sanity',regression:'full-system-regression',review:'security-and-policy-invariance'})}),
+    designIntelligence:freeze({required:false,version:1,pipeline:freezeList(['STRUCTURAL_DIAGNOSIS','ALTERNATIVE_COMPARISON','IMPLEMENTATION','SAME_FAILURE_RECHECK','REGRESSION','SECURITY','BEFORE_AFTER_COMPARISON']),implementationGate:freeze({allowed:true,blockers:freezeList([])}),guidance:'SYSTEM_ARCHITECTURE_CONTRACT_REPLACES_GAME_DESIGN_PIPELINE',authorityExpanded:false}),
+    phase4BenchmarkVerification:null,verifiedCapabilityMemory:freeze({records:freezeList([])}),
+    unifiedLearning:null,knowledgeApplicationContract:freeze({version:1,exactInjectedKnowledgeIds:freezeList([]),freshIndependentQaRequired:true,infrastructureFailurePenalizesKnowledge:false,singleSuccessGeneralizationProof:false,rawExternalAiOutputIncluded:false,authorityExpanded:false}),
+    assetProduction:freeze({required:false}),presentationQuality:freeze({required:false,pass:null,authorityExpanded:false}),weatherPresentation:freeze({required:false,authorityExpanded:false}),
+    candidateTournament:freeze({candidateCount:1,reason:'SYSTEM_ARCHITECTURE_ATOMIC_DEFAULT'}),candidateStrategyRole:strategy,
+    learning:null,learningAppliedToWorkerGoal:false,verifiedCapabilityMemoryAppliedToWorkerGoal:false,motion:null,executionGate:freeze({mayExecute:true,reasons:freezeList([]),authority:'existing-vibe-system-steward-contract'}),
+    deployment:freeze({automaticEligible:false,requiresVerifiedQA:true,requiresBuild:false,promoteSourceRootOnly:false,mainDirectWriteByWorker:false,publicStoreReleaseAutomatic:false,systemArchitecturePromotion:true}),
+    editor:freeze({required:false,runtime:null,dispatchConfigured:true,workflow:null,runnerLabel:null}),
+    workerPolicy:freeze({isolatedCandidateBranch:true,directMainWrite:false,verifiedCommitRequired:true,retryLimit:null,paidAIAllowed:false,paidRunnerAllowed:false,engineMustResolveGameplayResults:false,protectedGameplayMutationAutomatic:false,binaryAssetsDirectTextEditForbidden:true,textWorkerAllowed:true,isolatedPracticeArtifactAllowed:false,practiceArtifactRepositorySourceWrite:false,practiceArtifactProductionPromotion:false,explorationRequired:true,explorationWorker:'tools/vibe2-exploration-worker.mjs',explorationSourceWrite:false,centralPolicyFreshnessRequired:compiledWorkContract.required===true,centralPolicyMismatchAction:compiledWorkContract.freshness?.mismatchAction||null,sourceRootBootstrapAllowed:false,roleSeparation:true,sameFileParallelWrite:false,systemArchitectureEvolution:true,systemConstructionAllowed:system.systemConstructionAllowed,neuralExpansionPhase:system.neuralExpansionPhase,neuralExpansionMode:system.neuralExpansionMode,neuralExpansionReadiness:system.neuralExpansionReadiness,neuralExpansionAllowed:system.neuralExpansionAllowed,neuralExecutionAuthorityExpansionAllowed:false,authorityExpansionAllowed:false,gateWeakeningAllowed:false,speculativeParallelism:false,speculativeVariants:1})
+  });
+}
+
+export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {}, handoff = null, taskId = '', variant = 'primary', learningMotorState = {}, codePatterns = {}, playbooks = {}, practiceDistilled = {}, externalAiDistilled = {}, centralPolicySnapshot = null, centralPolicyLiveRef = '' } = {}) {
+  const normalizedQueue = createVibeContinuousQueue(queue);
+  const resolved = resolveTask(normalizedQueue, taskId);
+  const base = {
+    version:6, generatedAt:new Date().toISOString(), run:false, reason:null, mode:'vibe2-parallel-work-order',
+    machineHandoff:freeze({ used:Boolean(handoff?.kind), kind:handoff?.kind || null, sourceOfTruth:handoff?.sourceOfTruth || null, consistency:handoff?.consistency || {ok:true,errors:[]}, currentPersistentMax:Number(handoff?.parallelism?.currentPersistentMax || runtime?.continuous?.maxConcurrentGameTasks || 20), lastDecision:handoff?.parallelism?.lastDecision || null, ownerDirectiveOpenCount:Number(handoff?.workState?.ownerDirectiveOpenCount || 0), reusableContextCount:Number(handoff?.workState?.reusableContexts?.length || 0) }),
+    scheduler:freeze({ hierarchicalParallelism:true, dag:true, shardAware:true, workStealing:true, sourceRootLock:true, eventDriven:true, dynamicBackpressure:true, longWorkProtectedSlot:true, roleSeparated:true }),
+    safety:freeze({
+      directMainWrite:false,
+      existingWebMaintenanceAllowed:runtime?.safety?.existingWebMaintenanceAllowed === true,
+      newWebGameAutomatic:runtime?.safety?.newWebGameAutomatic === true,
+      paidAIAllowed:runtime?.safety?.paidAIAllowed === true,
+      paidRunnerAllowed:runtime?.safety?.paidRunnerAllowed === true,
+      binaryAssetsDirectTextEditForbidden:true,
+      sameFileParallelWrite:false
+    })
+  };
+  if (handoff?.kind && handoff.consistency?.ok !== true) return freeze({ ...base, reason:`MACHINE_STATE_INCONSISTENT:${(handoff.consistency?.errors || []).join('|') || 'UNKNOWN'}` });
+  if (runtime?.continuous?.enabled === false) return freeze({ ...base, reason:'CONTINUOUS_DISABLED' });
+  if (!resolved.task) return freeze({ ...base, reason:resolved.reason || 'NO_ELIGIBLE_WORK' });
+  const task = resolved.task;
+  const centralPolicy = centralPolicySnapshot || loadCentralPolicySnapshot({ repoRoot:process.cwd(), required:true });
+  if (centralPolicy.required === true && centralPolicy.valid !== true) return freeze({ ...base, reason:`CENTRAL_POLICY_INVALID:${(centralPolicy.errors || []).join('|') || 'UNKNOWN'}`, selectedTask:task, centralPolicy });
+  if(clean(task.target).toLowerCase()==='system'&&task.systemSteward===true&&clean(task.department).toLowerCase()==='system-architecture'){
+    return buildSystemArchitectureWorkOrder({base,task,centralPolicy,centralPolicyLiveRef,runtime,variant});
+  }
+  const neuralDiagnosis = task?.neuralDiagnosis || buildNeuralDiagnosis({task});
+  const neuralGuidance = neuralDiagnosisGuidance(neuralDiagnosis);
+  const requiresWrite = taskRequiresWrite(task);
+  if (requiresWrite && !writableTargetAllowed(runtime, task.target)) return freeze({ ...base, reason:`WRITABLE_TARGET_FORBIDDEN:${task.target}`, selectedTask:task });
+
+  const fullExperienceMemory=createVibeExperienceMemory(experience);
+  const genericLearningExperience=createVibeExperienceMemory({
+    records:(fullExperienceMemory.records||[]).filter(record=>clean(record?.taskType)!=='coding-capability-distillation')
+  });
+  const capabilityRecordsExcludedFromGenericLearning=Math.max(0,(fullExperienceMemory.records||[]).length-(genericLearningExperience.records||[]).length);
+  const plan = planVibeCoreTask({
+    request:task.goal, target:task.target, gameId:task.gameId, file:normalizeResponsibleFile(task),
+    experienceMemory:genericLearningExperience, departments:task.department?[task.department]:[], ownerDirective:task.ownerDirective
+  });
+  const gateReasons = [...(plan.executionGate?.reasons || [])];
+  const analysisOnlyRead = !requiresWrite && gateReasons.length === 1 && gateReasons[0] === 'source-read-only';
+  const mayRun = plan.executionGate?.mayExecute === true || analysisOnlyRead;
+  if (!mayRun) return freeze({ ...base, reason:`EXECUTION_GATE_BLOCKED:${gateReasons.join(',') || 'unknown'}`, selectedTask:task, gate:plan.executionGate });
+
+  const designIntelligence = buildVibeDesignIntelligence({ task, plan, experience:genericLearningExperience });
+  if (requiresWrite && designIntelligence.implementationGate.allowed !== true) {
+    return freeze({
+      ...base,
+      reason:`DESIGN_INTELLIGENCE_BLOCKED:${designIntelligence.implementationGate.blockers.join(',') || 'unknown'}`,
+      selectedTask:task,
+      gate:plan.executionGate,
+      designIntelligence
+    });
+  }
+
+  const adapter = plan.engineAdapter;
+  const route = classifyVibeExecutionRoute({ target:plan.target, task, adapter });
+  const maxWorkMinutes = Math.max(1, Math.min(60, Math.floor(Number(runtime?.continuous?.maxWorkMinutes) || 20)));
+  const editorConfig = runtime?.engineEditors?.[plan.target] || {};
+  const releaseState = clean(task.releaseState) || 'other';
+  const supervisedByEvidence=(task?.evidence||[]).map(clean).includes('supervised-web-build:required');
+  const supervisionContract=task?.supervisionContract?.required===true
+    ?freeze({...task.supervisionContract,approved:task.supervisionApproved===true})
+    :supervisedByEvidence
+      ?freeze({
+        version:1,mode:'ASSISTANT_SUPERVISED_VIBE_COAUTHORING',required:true,status:'REVIEW_REQUIRED',
+        candidateGenerationAllowed:true,automaticPromotionAllowed:false,approvalField:'supervisionApproved',
+        stages:freezeList(['SOURCE_AND_DESIGN_READ','GAMEPLAY_LOOP_DECOMPOSITION','SAVE_INPUT_CORE_LOOP_INVARIANT_LOCK','VIBE_IMPLEMENTATION_CANDIDATE','SUPERVISOR_DIFF_AND_PLAYABILITY_REVIEW','MOBILE_AND_RUNTIME_QA','SUPERVISED_PROMOTION']),
+        protectedSemantics:freezeList(['GAME_IDENTITY','SAVE_KEY_AND_SAVE_MEANING','CORE_LOOP','PROGRESSION','MOBILE_INPUT','EXISTING_VALID_FEATURES']),
+        hardReject:freezeList(['PLACEHOLDER_SOURCE','FAKE_GAMEPLAY','VALIDATION_ONLY_PATCH','UNRELATED_FULL_REWRITE','SAVE_RESET_WITHOUT_MIGRATION','BUTTON_OR_LABEL_ONLY_PASS_CHEAT','BROKEN_MOBILE_INPUT']),
+        approved:false,recoveredFromEvidence:true
+      })
+      :null;
+  const supervisionApproved=supervisionContract?task.supervisionApproved===true:true;
+  const automaticDeploymentEligible = AUTO_DEPLOY_STATES.has(releaseState)
+    && ['roblox','web','unity'].includes(plan.target)
+    && task.requiresOwnerDecision !== true
+    && task.protectedChange !== true
+    && supervisionApproved;
+  const learningGuidance = buildLearningGuidance(plan.learning);
+  const tournament = candidateTournamentPolicy({ task:{...task,target:plan.target}, masteryInput:learningMotorState });
+  const normalVerifiedCapabilityMemory=retrieveVerifiedCapabilities({experienceInput:fullExperienceMemory,task:{...task,target:plan.target},limit:5});
+  const phase4BenchmarkVerification=buildPassiveCapabilityBenchmarkContract({
+    experienceInput:fullExperienceMemory,
+    task:{...task,target:plan.target},
+    retrieval:normalVerifiedCapabilityMemory,
+    variant,
+    candidateCount:tournament.candidateCount,
+    executionRoute:route.route
+  });
+  const phase4RetrievalTask=phase4BenchmarkVerification.active===true
+    ?{
+      ...task,
+      target:plan.target,
+      evidence:[
+        ...(task.evidence||[]),
+        'phase4-benchmark-verification',
+        `phase4-capability-id:${phase4BenchmarkVerification.capabilityId}`,
+        `phase4-benchmark-case:${phase4BenchmarkVerification.caseId}`,
+        `phase4-benchmark-pair:${phase4BenchmarkVerification.pairId}`,
+        `phase4-benchmark-role:${phase4BenchmarkVerification.role}`,
+        `phase4-unseen-game:${phase4BenchmarkVerification.gameId}`,
+        `phase4-unseen-problem-fingerprint:${phase4BenchmarkVerification.unseenProblemFingerprint}`
+      ]
+    }
+    :{...task,target:plan.target};
+  const verifiedCapabilityMemory=phase4BenchmarkVerification.active===true
+    ?retrieveVerifiedCapabilities({experienceInput:fullExperienceMemory,task:phase4RetrievalTask,limit:5})
+    :normalVerifiedCapabilityMemory;
+  const verifiedCapabilityMemoryGuidance=verifiedCapabilityGuidance(verifiedCapabilityMemory);
+  const unifiedLearning = retrieveUnifiedLearning({
+    task:{ ...task, target:plan.target, taskType:presentationTaskType(task) },
+    experienceInput:genericLearningExperience,
+    codePatternsInput:codePatterns,
+    playbooksInput:playbooks,
+    practiceDistilledInput:practiceDistilled,
+    externalAiDistilledInput:externalAiDistilled,
+    masteryInput:learningMotorState
+  });
+  const unifiedLearningGuidance = buildMotorGuidance(unifiedLearning);
+  const exactInjectedKnowledgeIds=freezeList([
+    ...(unifiedLearning?.exactKnowledgeIds||[]),
+    ...(verifiedCapabilityMemory?.records||[]).map(record=>'VERIFIED_CAPABILITY:'+clean(record?.id))
+  ]);
+  const assetDevelopmentLearning=clean(process.env.VIBE2_EXECUTION_LANE).toLowerCase()==='asset-development';
+  const mandatoryVerifiedKnowledgeApplication=['roblox','unity','web'].includes(plan.target)||assetDevelopmentLearning;
+  const verifiedExternalPlaybookRows=freeze([...(unifiedLearning?.playbookReuse||[])
+    .filter(row=>row?.verified===true&&clean(row?.authority)==='verified-task-playbook'&&clean(row?.id).startsWith('external-black-box-'))]);
+  const verifiedExternalPlaybookReuse=freezeList(verifiedExternalPlaybookRows.map(row=>row.id));
+  const verifiedExternalDistilledContentIds=freezeList(verifiedExternalPlaybookRows
+    .filter(row=>Array.isArray(row?.distilledApplicationPrinciples)&&row.distilledApplicationPrinciples.map(clean).filter(Boolean).length>0)
+    .map(row=>row.id));
+  const verifiedExternalDistilledContentComplete=verifiedExternalPlaybookReuse.length>0
+    &&verifiedExternalDistilledContentIds.length===verifiedExternalPlaybookReuse.length;
+  const verifiedExternalLearningCoveragePct=verifiedExternalPlaybookReuse.length>0
+    ?Math.floor((verifiedExternalDistilledContentIds.length/verifiedExternalPlaybookReuse.length)*100)
+    :0;
+  const externalDisposition=classifyVerifiedExternalBlackBoxPrinciples(verifiedExternalPlaybookRows,{gameId:task.gameId,target:plan.target});
+  const externalDispositionRows=freeze([...externalDisposition.rows]);
+  const externalGameSourceRows=freeze([...externalDisposition.sourceRows]);
+  const verifiedExternalLearningApplyAxes=freezeList(externalGameSourceRows.flatMap(row=>row.domains));
+  const knowledgeApplicationContract=freeze({
+    version:3,
+    exactInjectedKnowledgeIds,
+    primaryDomains:freezeList(unifiedLearning?.domainClassification?.primary||[]),
+    secondaryDomains:freezeList(unifiedLearning?.domainClassification?.secondary||[]),
+    mandatoryForGameTarget:mandatoryVerifiedKnowledgeApplication,
+    retrievedKnowledgeCount:exactInjectedKnowledgeIds.length,
+    appliedKnowledgeCount:exactInjectedKnowledgeIds.length,
+    applicationCoveragePct:100,
+    allRetrievedKnowledgeApplied:!mandatoryVerifiedKnowledgeApplication||externalDisposition.allDisposed,
+    verifiedPlaybookReuseCount:Number(unifiedLearning?.playbookReuse?.length||0),
+    verifiedExternalLearningFirst:true,
+    verifiedExternalLearningIds:verifiedExternalPlaybookReuse,
+    verifiedExternalLearningRetrievedCount:verifiedExternalPlaybookReuse.length,
+    verifiedExternalLearningAppliedCount:verifiedExternalDistilledContentIds.length,
+    verifiedExternalLearningCoveragePct,
+    verifiedExternalDistilledContentIds,
+    verifiedExternalDistilledContentCount:verifiedExternalDistilledContentIds.length,
+    verifiedExternalDistilledContentComplete,
+    verifiedExternalLearningApplyAxes,
+    verifiedExternalLearningDispositions:externalDispositionRows,
+    verifiedExternalGameSourcePrincipleCount:externalGameSourceRows.length,
+    verifiedExternalValidationOnlyPrincipleCount:externalDisposition.validationRows.length,
+    allRetrievedPrinciplesHaveExplicitDisposition:externalDisposition.allDisposed,
+    retrievedVerifiedExternalLearningTruncationForbidden:true,
+    verifiedLearningMemorySha:clean(process.env.VIBE2_VERIFIED_LEARNING_MEMORY_SHA)||null,
+    freshIndependentQaRequired:true,
+    infrastructureFailurePenalizesKnowledge:false,
+    singleSuccessGeneralizationProof:false,
+    rawExternalAiOutputIncluded:false,
+    authorityExpanded:false
+  });
+  const knowledgeApplicationGuidance=knowledgeApplicationContract.exactInjectedKnowledgeIds.length?[
+    '[LEARNING KNOWLEDGE APPLICATION TRACE]',
+    'exactKnowledgeIds='+knowledgeApplicationContract.exactInjectedKnowledgeIds.join(','),
+    'verifiedLearningApplicationCoverage=100%',
+    'verifiedExternalLearningFirst=true',
+    'verifiedExternalLearningIds='+knowledgeApplicationContract.verifiedExternalLearningIds.join(','),
+    'verifiedExternalLearningApplyAxes='+knowledgeApplicationContract.verifiedExternalLearningApplyAxes.join(','),
+    'Before authoring, assign every verified external black-box principle an explicit game-source, validation-only, or not-applicable disposition. Apply game-source principles to the actual affected gameplay or presentation code; keep Android/QA infrastructure principles in validation.',
+    'Apply the retrieved source-relevant principles to their mapped gameplay, touch, HUD, world, motion, and camera domains. Only claim graphics or asset changes when the specific principle and actual source diff support them.',
+    'For Roblox, Unity, Web, and asset-development work, transform causally relevant gameplay and presentation principles into the affected game source. Preserve the full disposition trace and never copy commercial source assets. Internal assets must be newly authored, recomposed, adapted, or transformed from allowed inputs.',
+    'Only these injected knowledge items may receive credit or blame from this task. Infrastructure failures must not penalize knowledge. Fresh QA/regression/review is required before attribution.'
+  ].join('\n'):'';
+  if(mandatoryVerifiedKnowledgeApplication&&!externalDisposition.allDisposed){
+    return freeze({...base,reason:'VERIFIED_EXTERNAL_PRINCIPLE_SEMANTIC_MAPPING_REQUIRED',selectedTask:task,unifiedLearning,knowledgeApplicationContract});
+  }
+  if(mandatoryVerifiedKnowledgeApplication&&verifiedExternalPlaybookReuse.length===0){
+    return freeze({
+      ...base,
+      reason:'VERIFIED_EXTERNAL_BLACK_BOX_LEARNING_REQUIRED_BEFORE_GAME_OR_ASSET_WORK',
+      selectedTask:task,
+      unifiedLearning,
+      knowledgeApplicationContract
+    });
+  }
+  if(mandatoryVerifiedKnowledgeApplication&&!verifiedExternalDistilledContentComplete){
+    return freeze({
+      ...base,
+      reason:'VERIFIED_EXTERNAL_DISTILLED_CONTENT_REQUIRED_BEFORE_GAME_OR_ASSET_WORK',
+      selectedTask:task,
+      unifiedLearning,
+      knowledgeApplicationContract
+    });
+  }
+  const assetProduction = buildVibeAssetProductionPlan({
+    task,
+    target:plan.target,
+    repoRoot:process.cwd(),
+    verifiedLearning:unifiedLearning,
+    executionLane:process.env.VIBE2_EXECUTION_LANE||'game-primary'
+  });
+  if(assetProduction?.commercialDistillation?.required===true&&assetProduction.commercialDistillation.ready!==true){
+    return freeze({
+      ...base,
+      reason:'VERIFIED_COMMERCIAL_BLACK_BOX_DISTILLATION_REQUIRED_FOR_INTERNAL_ASSET_PRODUCTION',
+      selectedTask:task,
+      unifiedLearning,
+      knowledgeApplicationContract,
+      assetProduction
+    });
+  }
+  const assetGuidance = assetProductionGuidance(assetProduction);
+  const presentationQuality = buildPresentationQualityContract(task,plan.target);
+  const presentationGuidance = presentationQualityGuidance(presentationQuality);
+  const weatherPresentation = buildWeatherPresentationContract(task,plan.target);
+  const weatherGuidance = weatherPresentationGuidance(weatherPresentation);
+  const codingStrategyPreference=preferredCodingStrategyForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
+  const verifiedCodingStrategyGuidance=codingStrategyGuidance(codingStrategyPreference);
+  const responsibilityCalibration=responsibilityCalibrationForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
+  const regressionHotspotRisk=regressionHotspotRiskForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
+  const verifiedCodingRiskGuidance=codingRiskGuidance({calibration:responsibilityCalibration,hotspot:regressionHotspotRisk});
+  const architectureDriftRisk=architectureDriftRiskForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
+  const verifiedArchitectureDriftGuidance=architectureDriftGuidance(architectureDriftRisk);
+  const codingConstitutionRule=codingConstitutionRuleForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
+  const verifiedCodingConstitutionGuidance=codingConstitutionGuidance(codingConstitutionRule);
+  const baseCandidateStrategy=candidateStrategyRole(variant,codingStrategyPreference,task);
+  const candidateStrategy=phase4BenchmarkVerification.active===true
+    ?freeze({
+      variant:'phase4-controlled',
+      strategy:phase4BenchmarkVerification.fixedCandidateStrategy,
+      directive:'Use the original task responsibility and the same bounded implementation strategy for this controlled pair. Do not widen scope, QA, context selection, or model budget.'
+    })
+    :baseCandidateStrategy;
+  const candidateStrategyGuidance=[
+    '[CANDIDATE STRATEGY ROLE]',
+    `variant=${candidateStrategy.variant}`,
+    `strategy=${candidateStrategy.strategy}`,
+    candidateStrategy.directive,
+    'This role may change implementation approach only. The task-local compiled edit contract, responsible files, protected semantics, and QA remain authoritative.'
+  ].join('\n');
+  const phase4BenchmarkGuidance=phase4BenchmarkVerification.active===true?[
+    '[PHASE4 PASSIVE CONTROLLED BENCHMARK]',
+    'This remains the existing production task and existing candidate tournament; no extra worker, queue priority, writable scope, or QA authority is created.',
+    'Keep non-target context, writable scope, model budget, and QA contract fixed. The only intended A/B difference is the designated verified capability memory layer.',
+    'Benchmark observation never bypasses normal candidate selection, fresh QA, fan-in regression, release, or native runtime gates.'
+  ].join('\n'):'';
+  const reusedContexts = reusableContextsForTask(handoff || {}, task);
+  const reusedGuidance = buildReusableHandoffGuidance(reusedContexts);
+  const workPackage=freeze({
+    id:clean(task.packageId)||null,
+    goal:clean(task.packageGoal)||null,
+    role:clean(task.packageRole)||null,
+    owner:clean(task.packageOwner)||null,
+    taskWorkUnits:Number(task.taskWorkUnits||0),
+    packageWorkUnits:Number(task.packageWorkUnits||0),
+    packageSize:Number(task.packageSize||0),
+    longWorkProtected:task.packageLongWorkProtected===true,
+    sharedContext:task.packageContext||null,
+    completionCriteria:freezeList(task.completionCriteria||[]),
+    rolePlan:freeze({
+      exploration:'read-only-exploration-worker',
+      implementation:'source-worker-exclusive-write',
+      test:'incremental-qa-worker-read-only',
+      performance:'performance-sanity-worker-read-only',
+      regression:'single-fan-in-regression-worker-read-only',
+      review:'fan-in-package-review-worker-read-only'
+    })
+  });
+  const packageGuidance=workPackage.id?[
+    `[WORK PACKAGE ${workPackage.id}]`,
+    workPackage.goal||'',
+    `역할=${workPackage.role||'implementation'}; taskWorkUnits=${workPackage.taskWorkUnits}; packageWorkUnits=${workPackage.packageWorkUnits}`,
+    workPackage.sharedContext?.responsibleFiles?.length?`공유 준비 범위=${workPackage.sharedContext.responsibleFiles.join(', ')}`:'',
+    `역할 분리=${Object.entries(workPackage.rolePlan).map(([k,v])=>`${k}:${v}`).join(' | ')}`,
+    workPackage.completionCriteria.length?`완료 기준=${workPackage.completionCriteria.join(' | ')}`:''
+  ].filter(Boolean).join('\n'):'';
+  const supervisionGuidance=supervisionContract?[
+    '[SUPERVISED WEB GAME COAUTHORING]',
+    'This is a supervised major Web build. Generate a real implementation candidate, but do not assume it is approved for promotion.',
+    'Preserve: '+(supervisionContract.protectedSemantics||[]).join(', '),
+    'Hard reject conditions: '+(supervisionContract.hardReject||[]).join(', '),
+    'The candidate must be independently playable and reviewable; validation-only patches, placeholder source, and unrelated rewrites are forbidden.',
+    supervisionApproved?'Supervised approval is already recorded.':'Supervised approval is NOT recorded; automatic promotion must remain blocked.'
+  ].join('\n'):'';
+  const responsibleFiles = expandPresentationResponsibleFiles({task,target:plan.target,repoRoot:process.cwd(),fallbackRoot:adapter.source.root});
+  const compiledWorkContract = compileVibeCentralWorkContract({
+    snapshot:centralPolicy,
+    task:{...task,supervisionApproved},
+    plan,
+    route,
+    responsibleFiles,
+    presentationQuality,
+    supervisionContract,
+    mainSha:clean(process.env.VIBE2_BASE_MAIN_SHA)||clean(process.env.GITHUB_SHA)||'',
+    livePolicyRef:clean(centralPolicyLiveRef)
+  });
+  const centralWorkContractGuidance = compiledWorkContractGuidance(compiledWorkContract);
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, centralWorkContractGuidance, neuralGuidance, supervisionGuidance, presentationGuidance, weatherGuidance, candidateStrategyGuidance, phase4BenchmarkGuidance, designIntelligence.guidance, learningGuidance, verifiedCapabilityMemoryGuidance, unifiedLearningGuidance, knowledgeApplicationGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  const taskEvidence=new Set((task.evidence||[]).map(clean));
+  const webSourceRootBootstrapAllowed=plan.target==='web'
+    &&taskEvidence.has('source-root-bootstrap-required')
+    &&/SOURCE_ROOT_BOOTSTRAP_ALLOWED/.test(clean(task.goal))
+    &&responsibleFiles.length===1
+    &&/\/index\.html$/i.test(clean(responsibleFiles[0]));
+  const unityWebSourceRootBootstrapAllowed=plan.target==='unity'
+    &&taskEvidence.has('source-root-bootstrap-required')
+    &&taskEvidence.has('unity-web-source-root-bootstrap-required')
+    &&/UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED/.test(clean(task.goal))
+    &&responsibleFiles.length===2
+    &&responsibleFiles.some(file=>/\/Assets\/Scripts\/GameCore\.cs$/i.test(clean(file)))
+    &&responsibleFiles.some(file=>/\/Assets\/Scripts\/RuntimeBootstrap\.cs$/i.test(clean(file)));
+  const sourceRootBootstrapAllowed=webSourceRootBootstrapAllowed||unityWebSourceRootBootstrapAllowed;
+  const qa = freezeList([
+    ...(plan.qa || []),
+    'design-intelligence-contract',
+    'verified-learning-motor-contract',
+    'asset-production-plan-contract',
+    'verified-commercial-distillation-internal-asset-contract',
+    'asset-runtime-visual-qa-required',
+    ...(presentationQuality.required?['presentation-quality-static-check','presentation-quality-runtime-check','presentation-gameplay-semantics-preservation']:[]),
+    ...(weatherPresentation.required?['weather-presentation-static-check','weather-presentation-runtime-check','weather-multiplayer-sync-check','weather-gameplay-semantics-preservation']:[]),
+    ...(supervisionContract?['supervised-web-build-contract','supervised-promotion-approval-required']:[]),
+    'exploration-handoff-required-before-implementation',
+    'auto-player-evidence-after-implementation',
+    'telemetry-evidence-after-implementation',
+    'performance-sanity-after-implementation',
+    'fan-in-regression-before-package-review',
+    'design-review-before-experience-promotion'
+  ]);
+
+  return freeze({
+    ...base, run:true, reason:'WORK_READY', selectedTask:task, taskId:task.id, gameId:task.gameId,
+    target:plan.target, shard:task.shard, sourceRootLock:task.sourceRoot || adapter.source.root,
+    workMode:route.route==='analysis-only'?'analysis-only':route.route==='learning-web-artifact'?'learning-web-artifact':route.route==='engine-editor'?'engine-editor-task':'source-change-candidate',
+    executionRoute:route.route, route, goal:executionGoal, originalGoal:task.goal, department:task.department, priority:task.priority, releaseState, maxWorkMinutes,
+    source:freeze({
+      root:adapter.source.root, writable:adapter.mayWriteSource, maintenanceOnly:adapter.source.maintenanceOnly === true,
+      candidateFiles:freezeList(adapter.source.candidateFiles), textWritablePatterns:freezeList(adapter.source.textWritablePatterns || []),
+      editorRequiredPatterns:freezeList(adapter.source.editorRequiredPatterns || []), ignoredPaths:freezeList(adapter.source.ignoredPaths), responsibleFiles
+    }),
+    qa, incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles, tournament.candidateCount),
+    supervisionContract,
+    compiledWorkContract,
+    neuralDiagnosis,
+    workPackage,
+    reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
+    designIntelligence,
+    phase4BenchmarkVerification:phase4BenchmarkVerification.active===true?phase4BenchmarkVerification:null,
+    verifiedCapabilityMemory,
+    capabilityApplicationContract:freeze({
+      version:1,
+      layer:'verifiedCapabilityMemory',
+      exactInjectedCapabilityIds:freezeList((verifiedCapabilityMemory?.records||[]).map(record=>record?.id)),
+      binding:'SOURCE_WORKER_RESULT_TO_FAN_IN_FRESH_QA',
+      onlyActuallyInjectedCapabilitiesEligible:true,
+      freshTaskQaRequired:true,
+      singleSuccessCausalProof:false,
+      taskFailureAlonePenalizesCapability:false,
+      rawCodeStored:false,
+      rawModelOutputStored:false,
+      hiddenChainOfThoughtStored:false,
+      authorityExpanded:false
+    }),
+    capabilityMemoryPartition:freeze({
+      distinctLayer:'verifiedCapabilityMemory',
+      genericLearningExcludesTaskType:'coding-capability-distillation',
+      excludedRecordCount:capabilityRecordsExcludedFromGenericLearning,
+      duplicateInjectionAllowed:false
+    }),
+    unifiedLearning,
+    knowledgeApplicationContract,
+    assetProduction,
+    presentationQuality,
+    weatherPresentation,
+    candidateTournament:tournament,
+    candidateStrategyRole:candidateStrategy,
+    codingStrategyPreference,
+    responsibilityCalibration,
+    regressionHotspotRisk,
+    architectureDriftRisk,
+    codingConstitutionRule,
+    learning:plan.learning, learningAppliedToWorkerGoal:Boolean(learningGuidance||verifiedCapabilityMemoryGuidance||unifiedLearningGuidance), verifiedCapabilityMemoryAppliedToWorkerGoal:Boolean(verifiedCapabilityMemoryGuidance), motion:plan.motion, executionGate:plan.executionGate,
+    deployment:freeze({ automaticEligible:automaticDeploymentEligible, requiresVerifiedQA:true, requiresBuild:['roblox','unity'].includes(plan.target), promoteSourceRootOnly:true, mainDirectWriteByWorker:false, publicStoreReleaseAutomatic:false }),
+    editor:freeze({ required:route.requiresEditor, runtime:route.editorRuntime || adapter?.execution?.editorRuntime || null, dispatchConfigured:route.route!=='engine-editor' || Boolean(clean(editorConfig.workflow)||clean(editorConfig.runnerLabel)), workflow:clean(editorConfig.workflow)||null, runnerLabel:clean(editorConfig.runnerLabel)||null }),
+    workerPolicy:freeze({
+      isolatedCandidateBranch:true, directMainWrite:false, verifiedCommitRequired:true, retryLimit:task.maxRetries,
+      paidAIAllowed:false, paidRunnerAllowed:false, engineMustResolveGameplayResults:true, protectedGameplayMutationAutomatic:false,
+      binaryAssetsDirectTextEditForbidden:true, textWorkerAllowed:route.route==='text-source-worker',
+      isolatedPracticeArtifactAllowed:route.route==='learning-web-artifact',
+      practiceArtifactRepositorySourceWrite:false,
+      practiceArtifactProductionPromotion:false,
+      vibeOwnsAssetProductionDecision:true,
+      webDirectAssetAuthoringAllowed:plan.target==='web',
+      companyAssetReuseCandidateOnly:true,
+      authoringGeneratorRequestAllowed:true,
+      authoringGeneratorRequestIsNotCompletion:true,
+      explorationRequired:true, explorationWorker:'tools/vibe2-exploration-worker.mjs', explorationSourceWrite:false,
+      centralPolicyFreshnessRequired:compiledWorkContract.required===true,
+      centralPolicyMismatchAction:compiledWorkContract.freshness?.mismatchAction||null,
+      sourceRootBootstrapAllowed,
+      roleSeparation:true, sameFileParallelWrite:false,
+      neuralDiagnosisMode:'PHASE1_SHADOW_ADVISORY', neuralDiagnosisMayReorderWave:false, neuralDiagnosisMayCreateWorker:false,
+      speculativeParallelism:tournament.candidateCount>1, speculativeVariants:tournament.candidateCount
+    })
+  });
+}
+
+export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='', controlFile='', experienceFile='', projectLifecycleFile='', outputFile='', taskId='', variant='primary', learningMotorStateFile='', codePatternsFile='', playbooksFile='', practiceDistilledFile='', externalAiDistilledFile='', centralPolicyLiveRef='' } = {}) {
+  const runtime = readJson(runtimeFile, {});
+  const resolvedQueueFile = clean(queueFile) || clean(runtime?.sources?.queue) || '.vibe2/queue.json';
+  const resolvedControlFile = clean(controlFile) || clean(runtime?.sources?.parallelism) || clean(runtime?.adaptiveBackpressure?.stateFile) || '.vibe2/parallelism-control.json';
+  const resolvedExperienceFile = clean(experienceFile) || clean(runtime?.sources?.experience) || '.vibe2/experience.json';
+  const resolvedOutputFile = clean(outputFile) || clean(runtime?.sources?.workOrder) || '.vibe2/work-order.json';
+  const handoff = generateVibe2Handoff({ runtimeFile, queueFile:resolvedQueueFile, controlFile:resolvedControlFile, experienceFile:resolvedExperienceFile, projectLifecycleFile:clean(projectLifecycleFile) });
+  const learningMotorState = readJson(clean(learningMotorStateFile)||'.vibe2/learning-motor-state.json', {});
+  const codePatterns = readJson(clean(codePatternsFile)||'.vibe2/code-pattern-library.json', readJson('company-learning/vibe2-code-pattern-library.json',{patterns:[]}));
+  const playbooks = readJson(clean(playbooksFile)||'company-learning/vibe3-task-playbooks.json', {taskTypes:{}});
+  const resolvedPracticeDistilledFile=clean(practiceDistilledFile)||clean(runtime?.sources?.practiceDistilledKnowledge)||'.vibe2/practice-distilled-knowledge.json';
+  const practiceDistilled=readJson(resolvedPracticeDistilledFile,{entries:[]});
+  const resolvedExternalAiDistilledFile=clean(externalAiDistilledFile)||clean(runtime?.sources?.externalAiDistilledKnowledge)||'.vibe2/external-ai-distilled-knowledge.json';
+  const externalAiDistilled=readJson(resolvedExternalAiDistilledFile,{entries:[]});
+  const centralPolicySnapshot=loadCentralPolicySnapshot({repoRoot:path.dirname(path.resolve(runtimeFile)),required:true});
+  const resolvedCentralPolicyLiveRef=clean(centralPolicyLiveRef)||clean(process.env.VIBE2_CENTRAL_POLICY_LIVE_REF)||'origin/main';
+  const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, variant, learningMotorState, codePatterns, playbooks, practiceDistilled, externalAiDistilled, centralPolicySnapshot, centralPolicyLiveRef:resolvedCentralPolicyLiveRef });
+  writeJson(resolvedOutputFile, order);
+  return order;
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const args = parseArgs();
+  const order = runVibeContinuousRunner({
+    runtimeFile:clean(args.runtime)||'vibe2-runtime.json', queueFile:clean(args.queue), controlFile:clean(args.control), experienceFile:clean(args.experience), projectLifecycleFile:clean(args['project-lifecycle']), outputFile:clean(args.output), taskId:clean(args['task-id']), variant:clean(args.variant)||'primary',
+    learningMotorStateFile:clean(args['learning-motor-state']), codePatternsFile:clean(args['code-patterns']), playbooksFile:clean(args.playbooks), practiceDistilledFile:clean(args['practice-distilled']), externalAiDistilledFile:clean(args['external-ai-distilled']), centralPolicyLiveRef:clean(args['central-policy-live-ref'])
+  });
+  console.log(`VIBE2_CONTINUOUS_RUN=${order.run?'YES':'NO'}`);
+  console.log(`VIBE2_CONTINUOUS_REASON=${order.reason}`);
+  console.log(`VIBE2_MACHINE_HANDOFF=${order.machineHandoff?.used?'USED':'NOT_USED'}`);
+  console.log(`VIBE2_MACHINE_STATE=${order.machineHandoff?.consistency?.ok?'CONSISTENT':'INCONSISTENT'}`);
+  console.log(`VIBE2_MACHINE_PERSISTENT_MAX=${order.machineHandoff?.currentPersistentMax||0}`);
+  if (order.designIntelligence) {
+    console.log(`VIBE2_DESIGN_INTELLIGENCE=ENABLED`);
+    console.log(`VIBE2_DESIGN_IMPLEMENTATION_GATE=${order.designIntelligence.implementationGate.allowed?'PASS':'BLOCKED'}`);
+  }
+  if (order.run) {
+    console.log(`VIBE2_TASK_ID=${order.taskId}`);
+    console.log(`VIBE2_TARGET=${order.target}`);
+    console.log(`VIBE2_SHARD=${order.shard}`);
+    console.log(`VIBE2_RELEASE_STATE=${order.releaseState}`);
+    console.log(`VIBE2_AUTO_DEPLOY_ELIGIBLE=${order.deployment.automaticEligible?'YES':'NO'}`);
+    console.log(`VIBE2_EXECUTION_ROUTE=${order.executionRoute}`);
+    console.log(`VIBE2_SOURCE_ROOT=${order.source.root}`);
+    console.log(`VIBE2_KNOWLEDGE_APPLICATION_IDS=${order.knowledgeApplicationContract?.exactInjectedKnowledgeIds?.length||0}`);
+    console.log(`VIBE2_COMMERCIAL_BLACK_BOX_INTERNAL_ASSET_DISTILLATION=${order.assetProduction?.commercialDistillation?.required?(order.assetProduction.commercialDistillation.ready?'PASS':'FAIL'):'NOT_REQUIRED'}`);
+    console.log(`VIBE2_COMMERCIAL_BLACK_BOX_REUSE_COUNT=${order.assetProduction?.commercialDistillation?.verifiedReuseCount||0}`);
+    console.log(`VIBE2_INTERNAL_ASSET_EVOLUTION_MODE=${order.assetProduction?.commercialDistillation?.applicationMode||'NONE'}`);
+    console.log(`VIBE2_EXTERNAL_AI_DISTILLED_INJECTED=${order.unifiedLearning?.externalAiDistilled?.length||0}`);
+    console.log(`VIBE2_INCREMENTAL_QA=YES`);
+    console.log(`VIBE2_SPECULATIVE_VARIANTS=${order.incrementalQa.speculativeVariants}`);
+    console.log(`VIBE2_CANDIDATE_TOURNAMENT_VARIANTS=${order.candidateTournament?.candidateCount||1}`);
+    console.log(`VIBE2_UNIFIED_EXPERIENCE_COUNT=${order.unifiedLearning?.experience?.length||0}`);
+    console.log(`VIBE2_VERIFIED_CAPABILITY_COUNT=${order.verifiedCapabilityMemory?.count||0}`);
+    console.log(`VIBE2_VERIFIED_CAPABILITY_APPLIED=${order.verifiedCapabilityMemoryAppliedToWorkerGoal?'YES':'NO'}`);
+    console.log(`VIBE2_CAPABILITY_APPLICATION_IDS=${(order.capabilityApplicationContract?.exactInjectedCapabilityIds||[]).join(',')||'NONE'}`);
+    console.log(`VIBE2_CAPABILITY_APPLICATION_BINDING=${order.capabilityApplicationContract?.binding||'NONE'}`);
+    console.log(`VIBE2_PHASE4_BENCHMARK_ROLE=${order.phase4BenchmarkVerification?.role||'NONE'}`);
+    console.log(`VIBE2_PHASE4_BENCHMARK_PAIR=${order.phase4BenchmarkVerification?.pairId||'NONE'}`);
+    console.log(`VIBE2_CAPABILITY_GENERIC_PARTITION_EXCLUDED=${order.capabilityMemoryPartition?.excludedRecordCount||0}`);
+    console.log(`VIBE2_SAME_GAME_EXPERIENCE_COUNT=${(order.unifiedLearning?.experience||[]).filter(x=>(x.reasons||[]).includes('same-game')).length}`);
+    console.log(`VIBE2_VERIFIED_CODE_PATTERN_COUNT=${order.unifiedLearning?.codePatterns?.length||0}`);
+    console.log(`VIBE2_VERIFIED_PRACTICE_DISTILLED_COUNT=${order.unifiedLearning?.practiceDistilled?.length||0}`);
+    console.log(`VIBE2_CANDIDATE_STRATEGY_ROLE=${order.candidateStrategyRole?.strategy||'NONE'}`);
+    console.log(`VIBE2_RESPONSIBILITY_CALIBRATION=${order.responsibilityCalibration?.recommendation||'NONE'}`);
+    console.log(`VIBE2_REGRESSION_HOTSPOT_RISK=${order.regressionHotspotRisk?.riskLevel||'LOW'}`);
+    console.log(`VIBE2_ARCHITECTURE_DRIFT_MEMORY_RISK=${order.architectureDriftRisk?.riskLevel||'LOW'}`);
+    console.log(`VIBE2_CODING_CONSTITUTION_RULE=${order.codingConstitutionRule?.matched===true?order.codingConstitutionRule.id:'NONE'}`);
+    console.log(`VIBE2_CODING_STRATEGY_PREFERENCE=${order.codingStrategyPreference?.strategy||'NONE'}`);
+    console.log(`VIBE2_CODING_STRATEGY_PREFERENCE_STATE=${order.codingStrategyPreference?.state||'NONE'}`);
+    console.log(`VIBE2_ASSET_DECISION_COUNT=${order.assetProduction?.decisions?.length||0}`);
+    console.log(`VIBE2_EXPERIENCE_CONTEXT_APPLIED=${order.learningAppliedToWorkerGoal?'YES':'NO'}`);
+    console.log(`VIBE2_REUSABLE_HANDOFF_CONTEXT=${order.reusedMachineContext?.used?'YES':'NO'}`);
+    console.log(`VIBE2_ROLE_SEPARATION=${order.workerPolicy?.roleSeparation?'YES':'NO'}`);
+    console.log(`VIBE2_CENTRAL_POLICY_LIVE_REF=${order.compiledWorkContract?.freshness?.liveMainRef||'NONE'}`);
+  }
+}

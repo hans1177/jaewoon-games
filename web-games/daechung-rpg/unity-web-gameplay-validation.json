@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "engine": "UNITY_WEB",
+  "gameId": "daechung-rpg",
+  "sourcePath": "web-games/daechung-rpg",
+  "pass": true,
+  "boot": {
+    "pass": true
+  },
+  "input": {
+    "pass": true,
+    "qaMode": "REAL_GAME_FUNCTION_INPUT"
+  },
+  "gameplay": {
+    "pass": true,
+    "gameplayStartObserved": true,
+    "coreActionObserved": true,
+    "coreActionCount": 10,
+    "progressObserved": true,
+    "safeReturnOrResetObserved": true
+  },
+  "coreFun": {
+    "pass": true,
+    "evidence": "REAL_START_ACTION_PROGRESS_LOOP"
+  },
+  "saveRestore": {
+    "pass": true,
+    "persistentChangedKeys": [
+      "exp",
+      "gold"
+    ],
+    "restoredKeys": [
+      "exp",
+      "gold"
+    ]
+  },
+  "mobile": {
+    "pass": true,
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "touch": true
+  },
+  "performance": {
+    "pass": true,
+    "bootMilliseconds": 4161,
+    "fatalRuntimeErrorCount": 0
+  },
+  "noCriticalRuntimeError": true,
+  "markers": [
+    "JAEWOON_UNITY_WEB_QA BOOT game=daechung-rpg status=PASS\n",
+    "JAEWOON_UNITY_WEB_QA STATE game=daechung-rpg region=town level=1 hp=100 maxHp=100 exp=0 gold=0 enemy=none enemyHp=0\n",
+    "JAEWOON_UNITY_WEB_QA REGION game=daechung-rpg region=field-1\n",
+    "JAEWOON_UNITY_WEB_QA STATE game=daechung-rpg region=field-1 level=1 hp=100 maxHp=100 exp=0 gold=0 enemy=green-slime enemyHp=30\n",
+    "JAEWOON_UNITY_WEB_QA ATTACK game=daechung-rpg damage=3 enemy=green-slime enemyHp=27\n",
+    "JAEWOON_UNITY_WEB_QA ATTACK game=daechung-rpg damage=3 enemy=green-slime enemyHp=24\n",
+    "JAEWOON_UNITY_WEB_QA ATTACK game=daechung-rpg damage=3 enemy=green-slime enemyHp=21\n",
+    "JAEWOON_UNITY_WEB_QA STATE game=daechung-rpg region=field-1 level=1 hp=88 maxHp=100 exp=0 gold=0 enemy=green-slime enemyHp=21\n",
+    "JAEWOON_UNITY_WEB_QA ATTACK game=daechung-rpg damage=3 enemy=green-slime enemyHp=18\n",
+    "JAEWOON_UNITY_WEB_QA ATTACK game=daechung-rpg damage=3 enemy=green-slime enemyHp=15\n",
+    "JAEWOON_UNITY_WEB_QA ATTACK game=daechung-rpg damage=3 enemy=green-slime enemyHp=12\n",
+    "JAEWOON_UNITY_WEB_QA ATTACK game=daechung-rpg damage=3 enemy=green-slime enemyHp=9\n",
+    "JAEWOON_UNITY_WEB_QA ATTACK game=daechung-rpg damage=3 enemy=green-slime enemyHp=6\n",
+    "JAEWOON_UNITY_WEB_QA ATTACK game=daechung-rpg damage=3 enemy=green-slime enemyHp=3\n",
+    "JAEWOON_UNITY_WEB_QA ATTACK game=daechung-rpg damage=3 enemy=green-slime enemyHp=0\n",
+    "JAEWOON_UNITY_WEB_QA REWARD game=daechung-rpg enemy=green-slime exp=6 gold=3 level=1\n",
+    "JAEWOON_UNITY_WEB_QA STATE game=daechung-rpg region=field-1 level=1 hp=64 maxHp=100 exp=6 gold=3 enemy=green-slime enemyHp=30\n",
+    "JAEWOON_UNITY_WEB_QA REGION game=daechung-rpg region=town\n",
+    "JAEWOON_UNITY_WEB_QA STATE game=daechung-rpg region=town level=1 hp=64 maxHp=100 exp=6 gold=3 enemy=none enemyHp=0\n",
+    "JAEWOON_UNITY_WEB_QA BOOT game=daechung-rpg status=PASS\n",
+    "JAEWOON_UNITY_WEB_QA STATE game=daechung-rpg region=town level=1 hp=64 maxHp=100 exp=6 gold=3 enemy=none enemyHp=0\n"
+  ],
+  "generatedAt": "2026-09-21T13:51:25.541Z"
+}

@@ -1,0 +1,1852 @@
+# source-plan exact revalidation contract resync: 2026-09-27 wake-aligned epoch-v3
+# PRE_F9_SERVER_PUBLISH_DISABLED: F0 -> local Studio QA -> F9 -> one final canonical publish.
+# fast-mvp launch kick: preflight-direct 2026-09-22T02:47+09:00
+# fast-mvp release kick: primary-three runtime-contract-retry 2026-09-22
+name: Company DEVELOPMENT_CONFIRMED Roblox Runtime
+run-name: Roblox runtime · ${{ inputs.game_id || 'batch' }}
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-development-roblox-runtime.yml'
+      - '.github/workflows/company-development-roblox-runtime-continuation.yml'
+      - '.github/workflows/company-development-roblox-headless-fast-mvp.yml'
+      - '.github/workflows/company-roblox-source-drift-sync.yml'
+      - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-development-roblox-source-reconcile.mjs'
+      - 'tools/vibe3-roblox-learning-context.mjs'
+      - 'tools/company-selected-platform-router.mjs'
+      - 'tools/company-upper-platform-admission.mjs'
+      - 'company-asset-library.json'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'tools/company-roblox-source-drift-sync.mjs'
+      - 'qa/company-roblox-source-drift-sync.test.mjs'
+      - 'tools/company-development-roblox-build-preflight.mjs'
+      - 'tools/company-development-roblox-runtime-smoke.luau'
+  workflow_call:
+    inputs:
+      game_id:
+        required: false
+        type: string
+  workflow_dispatch:
+    inputs:
+      game_id:
+        description: Optional exact gameId. Empty keeps the existing batch behavior.
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: roblox-native-exact-${{ inputs.game_id || (github.event_name == 'push' && 'batch-push') || github.run_id }}
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+  VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime
+  ROBLOX_RUNTIME_HARNESS_VERSION: '8'
+  ROBLOX_SOURCE_PLAN_CONTRACT_PATHS: >-
+    .github/workflows/company-development-roblox-runtime.yml
+    tools/company-development-roblox-bootstrap.mjs
+    tools/company-development-roblox-source-reconcile.mjs
+    tools/vibe3-roblox-learning-context.mjs
+    qa/company-development-roblox-source-reconcile.test.mjs
+    tools/company-selected-platform-router.mjs
+    tools/company-upper-platform-admission.mjs
+    company-asset-library.json
+    company-learning/platform-release-roadmap.json
+
+jobs:
+  source-plan:
+    name: resolve Roblox source work
+    # Exact-game ingress uses the ARM game-control pool; batch push ingress stays on fixed 24.04.
+    # This spreads control work without consuming heavy ubuntu-latest game capacity.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    outputs:
+      count: ${{ steps.targets.outputs.count || '0' }}
+      matrix: ${{ steps.targets.outputs.matrix || '{"include":[]}' }}
+      targets_json: ${{ steps.targets.outputs.targets_json || '[]' }}
+      reconciliation_count: ${{ steps.reconcile.outputs.count || '0' }}
+      reconciliation_json: ${{ steps.reconcile.outputs.results_json || '[]' }}
+      contract_fingerprint: ${{ steps.contract.outputs.fingerprint || '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Reject superseded batch scheduler
+        id: freshness
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          active_payload="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100")"
+          winner="$(printf '%s' "$active_payload" | REQUESTED_GAME_ID="$REQUESTED_GAME_ID" CURRENT_RUN_ID="$GITHUB_RUN_ID" node -e "
+            let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+              const j=JSON.parse(s);
+              const states=new Set(['queued','pending','in_progress','requested']);
+              const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+              const title='Roblox runtime · '+(requested||'batch');
+              const ids=(j.workflow_runs||[])
+                .filter(r=>states.has(String(r.status||'').toLowerCase())&&String(r.display_title||'')===title)
+                .map(r=>Number(r.id))
+                .filter(Number.isFinite)
+                .sort((a,b)=>a-b);
+              if(!ids.length){process.stdout.write('');return;}
+              process.stdout.write(String(ids[ids.length-1]));
+            });
+          ")"
+          echo "ROBLOX_RUNTIME_ACTIVE_WINNER=${winner:-NONE}"
+          if [ -n "$winner" ] && [ "$winner" != "$GITHUB_RUN_ID" ]; then
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+            if [ -n "$REQUESTED_GAME_ID" ]; then
+              echo "ROBLOX_RUNTIME_EXACT_DEDUPED_ACTIVE=$REQUESTED_GAME_ID:$GITHUB_RUN_ID:$winner"
+            else
+              echo "ROBLOX_RUNTIME_BATCH_DEDUPED_NEWER_ACTIVE=$GITHUB_RUN_ID:$winner"
+            fi
+            exit 0
+          fi
+          git fetch --no-tags --depth=1 origin main
+          current_main="$(git rev-parse origin/main)"
+          if [ -n "$REQUESTED_GAME_ID" ]; then
+            echo "ROBLOX_BATCH_FRESHNESS=EXACT_GAME:$REQUESTED_GAME_ID:$current_main"
+          fi
+          read -r -a contract_paths <<< "$ROBLOX_SOURCE_PLAN_CONTRACT_PATHS"
+          if git diff --quiet "$GITHUB_SHA" "$current_main" -- "${contract_paths[@]}"; then
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+            if [ "$current_main" = "$GITHUB_SHA" ]; then
+              echo "ROBLOX_BATCH_FRESHNESS=CURRENT:$current_main"
+            else
+              echo "ROBLOX_BATCH_UNRELATED_MAIN_ADVANCE_ACCEPTED=$GITHUB_SHA:$current_main"
+            fi
+          else
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_BATCH_CONTRACT_SUPERSEDED=$GITHUB_SHA:$current_main"
+            TARGET_SHA="$current_main"
+            if [ -n "$REQUESTED_GAME_ID" ]; then
+              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
+              echo "ROBLOX_EXACT_CONTRACT_SUPERSEDED_REDISPATCH=YES:$REQUESTED_GAME_ID:$current_main"
+            else
+              active_same_sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" | TARGET_SHA="$TARGET_SHA" CURRENT_RUN_ID="$GITHUB_RUN_ID" node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const states=new Set(['queued','pending','in_progress','requested']);const n=(j.workflow_runs||[]).filter(r=>String(r.id)!==String(process.env.CURRENT_RUN_ID||'')&&states.has(String(r.status||'').toLowerCase())&&String(r.head_sha||'')===String(process.env.TARGET_SHA||'')).length;process.stdout.write(String(n));})")"
+              echo "ROBLOX_BATCH_SAME_SHA_ACTIVE_RUNS=$active_same_sha"
+              if [ "$active_same_sha" -gt 0 ]; then
+                echo "ROBLOX_BATCH_CONTRACT_SUPERSEDED_REDISPATCH=DEDUPED_EXISTING_RUN:$current_main"
+              else
+                gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+                echo "ROBLOX_BATCH_CONTRACT_SUPERSEDED_REDISPATCH=YES:$current_main"
+              fi
+            fi
+          fi
+
+      - name: Cancel stale exact-game runtime runs after contract change
+        if: github.event_name == 'push' && steps.freshness.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" > /tmp/roblox-runtime-contract-runs.json
+          node <<'NODE' > /tmp/roblox-runtime-stale-run-ids
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-contract-runs.json','utf8'));
+          const states=new Set(['queued','pending','in_progress','requested']);
+          const currentRun=Number(process.env.GITHUB_RUN_ID||0);
+          const currentSha=String(process.env.GITHUB_SHA||'');
+          for(const run of payload.workflow_runs||[]){
+            if(Number(run.id)===currentRun)continue;
+            if(!states.has(String(run.status||'').toLowerCase()))continue;
+            const title=String(run.display_title||'');
+            if(!title.startsWith('Roblox runtime · ')||title==='Roblox runtime · batch')continue;
+            if(String(run.head_sha||'')===currentSha)continue;
+            console.log(run.id);
+          }
+          NODE
+          cancelled=0
+          while read -r run_id; do
+            [ -n "$run_id" ] || continue
+            if gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null 2>&1; then
+              cancelled=$((cancelled+1))
+              echo "ROBLOX_STALE_EXACT_RUNTIME_CANCELLED=$run_id"
+            fi
+          done < /tmp/roblox-runtime-stale-run-ids
+          echo "ROBLOX_STALE_EXACT_RUNTIME_CANCEL_COUNT=$cancelled"
+
+      - name: Bind Roblox source-plan contract fingerprint
+        id: contract
+        if: steps.freshness.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          fingerprint="$(node - <<'NODE'
+          const {execFileSync}=require('child_process');
+          const crypto=require('crypto');
+          const paths=String(process.env.ROBLOX_SOURCE_PLAN_CONTRACT_PATHS||'').trim().split(/\s+/).filter(Boolean);
+          if(!paths.length)throw new Error('ROBLOX_SOURCE_PLAN_CONTRACT_PATHS_MISSING');
+          const rows=paths.map(path=>path+':'+execFileSync('git',['rev-parse',`HEAD:${path}`],{encoding:'utf8'}).trim());
+          process.stdout.write(crypto.createHash('sha256').update(rows.join('\n')).digest('hex'));
+          NODE
+          )"
+          echo "fingerprint=$fingerprint" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_SOURCE_PLAN_CONTRACT_FINGERPRINT=$fingerprint"
+
+      - name: Verify Roblox development contracts
+        if: steps.freshness.outputs.run == 'true'
+        run: |
+          set -euo pipefail
+          node --check tools/company-shared-context.mjs
+          node tools/company-shared-context.mjs --output=/tmp/company-shared-context-roblox-plan.json
+          node --check tools/company-development-roblox-bootstrap.mjs
+          node --check tools/company-development-roblox-source-reconcile.mjs
+          node --check tools/company-development-roblox-package.mjs
+          node --check tools/company-selected-platform-router.mjs
+          node --check tools/company-upper-platform-admission.mjs
+          node --check tools/vibe3-roblox-platform.mjs
+          node --check tools/vibe3-roblox-learning-context.mjs
+          node --test qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs qa/company-upper-platform-admission.test.mjs
+
+      - name: Fetch current company runtime and verified Vibe learning
+        if: steps.freshness.outputs.run == 'true'
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+          git fetch --no-tags --depth=1 origin "+refs/heads/$VIBE2_LEARNING_RUNTIME_BRANCH:refs/remotes/origin/$VIBE2_LEARNING_RUNTIME_BRANCH"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
+          git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-task-playbooks.json" > /tmp/vibe3-task-playbooks.json
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('/tmp/vibe3-task-playbooks.json'));const r=p.taskTypes?.roblox||{};const rows=(r.reuse||[]).filter(x=>String(x.id||'').startsWith('external-black-box-'));if(p.policy?.verifiedExternalBlackBoxTruncationForbidden!==true||Number(r.verifiedExternalBlackBoxCoveragePct||0)!==100||!rows.length)process.exit(2);console.log('ROBLOX_RECONCILE_VERIFIED_EXTERNAL_LEARNING=READY:'+rows.length)"
+          node - <<'NODE' > /tmp/roblox-bound-source-revisions
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const revisions=[...new Set((q.items||[]).map(x=>String(x.robloxSourceCommit||'').trim()).filter(x=>/^[0-9a-f]{40}$/i.test(x)))];
+          for(const revision of revisions)console.log(revision);
+          NODE
+          while read -r revision; do
+            [ -n "$revision" ] || continue
+            if ! git cat-file -e "$revision^{commit}" 2>/dev/null; then
+              git fetch --no-tags --depth=1 origin "$revision"
+            fi
+          done < /tmp/roblox-bound-source-revisions
+          echo "ROBLOX_RECONCILE_BOUND_REVISION_COUNT=$(wc -l < /tmp/roblox-bound-source-revisions | tr -d ' ')"
+
+      - name: Revalidate exact-main Roblox source already merged
+        if: steps.freshness.outputs.run == 'true'
+        id: reconcile
+        env:
+          SOURCE_REVISION: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-development-roblox-source-reconcile.mjs \
+            --queue=/tmp/development-queue.json \
+            --runtime-ref="origin/$COMPANY_RUNTIME_BRANCH" \
+            --repo-root=. \
+            --source-revision="$SOURCE_REVISION" \
+            --playbooks=/tmp/vibe3-task-playbooks.json \
+            --results=/tmp/roblox-source-reconciliation.json
+
+      - name: Resolve next Roblox source execution slice from unbounded native queue
+        if: steps.freshness.outputs.run == 'true'
+        id: targets
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow,ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
+          import {classifyUpperPlatformAdmission} from './tools/company-upper-platform-admission.mjs';
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_REQUESTED_GAME_ID_INVALID:'+requested);
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const grandfatherGameIds=roadmap?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[];
+          const reconciliation=JSON.parse(fs.readFileSync('/tmp/roblox-source-reconciliation.json','utf8'));
+          const reconciliationById=new Map((reconciliation||[]).map(row=>[row.gameId,row]));
+          const reconciledPass=new Set((reconciliation||[]).filter(row=>row?.pass===true).map(row=>row.gameId));
+          const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
+          const windowIds=new Set(globalWindow.map(item=>item.gameId));
+          const EXECUTION_BATCH_MAX=256;
+          const rows=[];
+          const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxSourceBootstrapFailedAt))-Number(Boolean(b.robloxSourceBootstrapFailedAt)));
+          for(const item of candidates){
+            if(rows.length>=EXECUTION_BATCH_MAX)break;
+            if(requested&&item.gameId!==requested)continue;
+            if(!windowIds.has(item.gameId))continue;
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            const admission=classifyUpperPlatformAdmission(item,{repoRoot:process.cwd(),grandfatherGameIds});
+            if(admission.state!=='UPPER_PLATFORM'){
+              console.log('ROBLOX_NATIVE_ADMISSION_BLOCKED='+item.gameId+':'+admission.state+':'+admission.reason);
+              continue;
+            }
+            const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
+            const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(!concurrentDefault&&!secondaryOwnerFocus)continue;
+            const state=String(item.canonicalState||'').toUpperCase();
+            if(state==='DEVELOPMENT_BLOCKED')continue;
+            const target=`roblox-games/${item.gameId}`;
+            const reconciliationRow=reconciliationById.get(item.gameId);
+            const existingSourceAssetRebind=reconciliationRow?.failure==='existing-source-studio-asset-binding-required';
+            const existingSourceLearningRebind=reconciliationRow?.failure==='existing-source-verified-external-learning-required';
+            if(existingSourceLearningRebind){
+              console.log('ROBLOX_VERIFIED_LEARNING_SWEEP_OWNS_REBIND='+item.gameId);
+              continue;
+            }
+            const existingSourceMaintenanceRebind=existingSourceAssetRebind;
+            const bootstrapFailed=secondaryOwnerFocus?item.ownerFocusRobloxSourceBootstrapFailedAt:item.robloxSourceBootstrapFailedAt;
+            const f0FoundationRepair=!secondaryOwnerFocus
+              &&item.robloxFoundationF0Passed!==true
+              &&String(item.robloxFailureStage||'').toUpperCase()==='F0_SOURCE_INTEGRITY'
+              &&String(item.robloxFailureSignature||'').toUpperCase()==='ROBLOX_F0_SOURCE_PREFLIGHT_FAILED';
+            const currentReconciliationPass=reconciledPass.has(item.gameId);
+            const resolvedSourceBindDebt=!secondaryOwnerFocus
+              &&currentReconciliationPass
+              &&String(item.currentStep||'').toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND'
+              &&String(item.robloxFailureStage||'').toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND';
+            const knownSourceRepairDebt=(Boolean(bootstrapFailed)&&!resolvedSourceBindDebt)||f0FoundationRepair;
+            if(resolvedSourceBindDebt)console.log('ROBLOX_STALE_SOURCE_BIND_DEBT_RESOLVED_BY_EXACT_RECONCILIATION='+item.gameId);
+            const candidateReady=secondaryOwnerFocus
+              ?Boolean(item.ownerFocusRobloxSourceCandidateReadyAt)&&String(item.ownerFocusRobloxSourceCandidateBranch||'').trim()
+              :Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim();
+            const repairSupersedesCandidate=existingSourceMaintenanceRebind||knownSourceRepairDebt;
+            if(candidateReady&&!repairSupersedesCandidate)continue;
+            if(candidateReady&&repairSupersedesCandidate){
+              console.log('ROBLOX_STALE_SOURCE_CANDIDATE_BYPASSED_FOR_REPAIR='+item.gameId+':'+(existingSourceLearningRebind?'VERIFIED_EXTERNAL_LEARNING_REBIND':existingSourceAssetRebind?'STUDIO_ASSET_REBIND':'KNOWN_SOURCE_REPAIR_DEBT'));
+            }
+            if(!secondaryOwnerFocus&&reconciledPass.has(item.gameId)&&!knownSourceRepairDebt)continue;
+            if(fs.existsSync(target)&&!knownSourceRepairDebt&&!existingSourceMaintenanceRebind)continue;
+            rows.push({
+              gameId:item.gameId,
+              gameName:item.gameName||item.gameId,
+              baseline:item.designBaselineSource,
+              artbook:item.artbookSource||`artbook-submissions/${item.gameId}/current.json`,
+              designProfile:item.platformDesignProfiles?.ROBLOX||null,
+              target,
+              secondaryOwnerFocus,
+              existingSourceAssetRebind,
+              existingSourceLearningRebind,
+              reconciliationSourceTreeSha:String(reconciliationRow?.sourceTreeSha||''),
+              foundationRepair:f0FoundationRepair,
+              knownSourceRepairDebt,
+            });
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
+          console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
+          console.log(`ROBLOX_EXECUTION_BATCH_CAPACITY=${EXECUTION_BATCH_MAX}`);
+          console.log(`DEVELOPMENT_GAME_WIP_WINDOW_IDS=${globalWindow.map(x=>x.gameId).join(',')||'NONE'}`);
+          console.log(`ROBLOX_REQUESTED_GAME_ID=${requested||'BATCH'}`);
+          console.log(`ROBLOX_SOURCE_TARGET_COUNT=${rows.length}`);
+          console.log(`ROBLOX_SOURCE_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
+          console.log('ROBLOX_PER_GAME_PROMOTION=YES');
+          console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
+          console.log('ROBLOX_RUNNER_PARALLEL_CAPACITY=EXTERNAL_PROVIDER_MANAGED');
+          NODE
+
+  source-worker:
+    name: Roblox source ${{ matrix.gameId }}
+    needs: source-plan
+    if: needs.source-plan.outputs.count != '0'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.source-plan.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Fetch current company runtime, Vibe learning, and shared build-up directive
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
+          git fetch --no-tags --depth=1 origin "+refs/heads/$VIBE2_LEARNING_RUNTIME_BRANCH:refs/remotes/origin/$VIBE2_LEARNING_RUNTIME_BRANCH"
+          git fetch --no-tags --depth=1 origin "+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core"
+          directive="/tmp/build-up-directive-${GAME_ID}.json"
+          if git cat-file -e "origin/vibe2-unreal-core:.vibe2/build-up-directives/${GAME_ID}/current.json" 2>/dev/null; then
+            git show "origin/vibe2-unreal-core:.vibe2/build-up-directives/${GAME_ID}/current.json" > "$directive"
+            echo "ROBLOX_BUILD_UP_DIRECTIVE_SOURCE=VIBE_RUNTIME:${GAME_ID}"
+          else
+            rm -f "$directive"
+            echo "ROBLOX_BUILD_UP_DIRECTIVE_SOURCE=BASELINE_ONLY_NO_VIBE_DIRECTIVE:${GAME_ID}"
+          fi
+          git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-task-playbooks.json" > /tmp/vibe3-task-playbooks.json
+          git show "origin/$VIBE2_LEARNING_RUNTIME_BRANCH:company-learning/vibe3-recombination-memory.json" > /tmp/vibe3-recombination-memory.json
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('/tmp/vibe3-task-playbooks.json'));const r=JSON.parse(fs.readFileSync('/tmp/vibe3-recombination-memory.json'));if(!p.taskTypes?.roblox||!r.recipes?.length)process.exit(2);console.log('ROBLOX_VIBE3_LEARNING_MEMORY=READY');console.log('ROBLOX_VIBE3_RECIPE_COUNT='+r.recipes.length)"
+
+      - name: Compile isolated Roblox source candidate
+        id: generate
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          GAME_NAME: ${{ matrix.gameName }}
+          BASELINE_SOURCE: ${{ matrix.baseline }}
+          ARTBOOK_SOURCE: ${{ matrix.artbook }}
+          TARGET_SOURCE: ${{ matrix.target }}
+          FOUNDATION_REPAIR: ${{ matrix.foundationRepair || false }}
+          BUILD_UP_DIRECTIVE: /tmp/build-up-directive-${{ matrix.gameId }}.json
+          RECONCILIATION_SOURCE_TREE_SHA: ${{ matrix.reconciliationSourceTreeSha || '' }}
+          SOURCE_PLAN_CONTRACT_FINGERPRINT: ${{ needs.source-plan.outputs.contract_fingerprint }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-60)"
+          root="/tmp/roblox-input/$safe"
+          mkdir -p "$root" /tmp/roblox-worker/results
+          baseline="$root/baseline.json"
+          artbook="$root/artbook.json"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:$BASELINE_SOURCE" > "$baseline"
+          if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$ARTBOOK_SOURCE" 2>/dev/null; then
+            git show "origin/$COMPANY_RUNTIME_BRANCH:$ARTBOOK_SOURCE" > "$artbook"
+            echo 'ROBLOX_ARTBOOK_INPUT=BOUND'
+          else
+            printf '{"version":1,"gameId":"%s","nativeDevelopmentNonBlocking":true,"source":"MISSING_PARALLEL_ARTBOOK_FALLBACK"}\n' "$GAME_ID" > "$artbook"
+            echo 'ROBLOX_ARTBOOK_INPUT=NONBLOCKING_FALLBACK'
+          fi
+          node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const p=d?.content?.platformProfiles?.ROBLOX;if(!p||p.platform!=='ROBLOX')process.exit(2);console.log('ROBLOX_PLATFORM_PROFILE_INPUT=READY')" "$baseline"
+          live_contract_fingerprint="$(node - <<'NODE'
+          const {execFileSync}=require('child_process');
+          const crypto=require('crypto');
+          const paths=String(process.env.ROBLOX_SOURCE_PLAN_CONTRACT_PATHS||'').trim().split(/\s+/).filter(Boolean);
+          if(!paths.length)throw new Error('ROBLOX_SOURCE_PLAN_CONTRACT_PATHS_MISSING');
+          const rows=paths.map(path=>path+':'+execFileSync('git',['rev-parse','origin/main:'+path],{encoding:'utf8'}).trim());
+          process.stdout.write(crypto.createHash('sha256').update(rows.join('\n')).digest('hex'));
+          NODE
+          )"
+          if [ -z "$SOURCE_PLAN_CONTRACT_FINGERPRINT" ] || [ "$live_contract_fingerprint" != "$SOURCE_PLAN_CONTRACT_FINGERPRINT" ]; then
+            echo "superseded=true" >> "$GITHUB_OUTPUT"
+            echo "ROBLOX_SOURCE_PLAN_CONTRACT_STALE_BEFORE_WORKER=$GAME_ID:${SOURCE_PLAN_CONTRACT_FINGERPRINT:-MISSING}:$live_contract_fingerprint"
+            exit 0
+          fi
+          echo "ROBLOX_SOURCE_PLAN_CONTRACT_CURRENT=$GAME_ID:$live_contract_fingerprint"
+          if [ -n "$RECONCILIATION_SOURCE_TREE_SHA" ]; then
+            live_tree="$(git rev-parse "origin/main:$TARGET_SOURCE" 2>/dev/null || true)"
+            if [ "$live_tree" != "$RECONCILIATION_SOURCE_TREE_SHA" ]; then
+              echo "ROBLOX_SOURCE_TREE_STALE_BEFORE_WORKER=$GAME_ID:$RECONCILIATION_SOURCE_TREE_SHA:${live_tree:-MISSING}" >&2
+              exit 75
+            fi
+            echo "ROBLOX_SOURCE_TREE_IDENTITY_CURRENT=$GAME_ID:$live_tree"
+          fi
+          branch="development/roblox-${safe}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          evidence="/tmp/roblox-source-bootstrap-${safe}.json"
+          git config user.name 'jaewoon-roblox-development'
+          git config user.email 'actions@users.noreply.github.com'
+          git checkout -B "$branch" origin/main
+          echo "ROBLOX_SOURCE_BRANCH_BASE=$GAME_ID:$(git rev-parse HEAD)"
+          directive_args=()
+          if [ -f "$BUILD_UP_DIRECTIVE" ]; then directive_args+=(--build-up-directive="$BUILD_UP_DIRECTIVE"); fi
+          timeout 2m node tools/company-development-roblox-bootstrap.mjs \
+            --game-id="$GAME_ID" \
+            --game-name="$GAME_NAME" \
+            --baseline="$baseline" \
+            --artbook="$artbook" \
+            --playbooks=/tmp/vibe3-task-playbooks.json \
+            --recombination=/tmp/vibe3-recombination-memory.json \
+            --roadmap=company-learning/platform-release-roadmap.json \
+            --output-root="$TARGET_SOURCE" \
+            --foundation-repair="$FOUNDATION_REPAIR" \
+            --evidence="$evidence" \
+            "${directive_args[@]}"
+          node --test qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs
+          git diff --check
+          git add "$TARGET_SOURCE"
+          git diff --cached --quiet && { echo "no Roblox source change: $GAME_ID" >&2; exit 1; }
+          git commit -m "development: bootstrap Roblox ${GAME_ID}"
+          git push origin "HEAD:$branch"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          echo "safe=$safe" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_SOURCE_CANDIDATE=PASS:$GAME_ID"
+          echo 'ROBLOX_SOURCE_MODEL_USED=NO'
+          node -e "const e=require(process.argv[1]);const assetRebind=e.existingSourcePreserved===true&&e.generationMode==='EXISTING_SOURCE_STUDIO_ASSET_REBIND';const foundationRepair=e.existingSourcePreserved===true&&e.generationMode==='EXISTING_SOURCE_FOUNDATION_REPAIR';const learningOk=e.vibe3LearningApplied===true&&e.verifiedExternalLearningFirst===true&&Number(e.verifiedExternalLearningCoveragePct||0)===100&&Number(e.verifiedExternalLearningRetrievedCount||0)>0&&Number(e.verifiedExternalLearningRetrievedCount||0)===Number(e.verifiedExternalLearningAppliedCount||0)&&Array.isArray(e.verifiedExternalLearningIds)&&e.verifiedExternalLearningIds.length===Number(e.verifiedExternalLearningAppliedCount||0)&&String(e.verifiedExternalLearningFingerprint||'').length>0;if(!learningOk)process.exit(3);if(foundationRepair){if(e.studioAssetBindingApplied!==true||e.foundationRepairApplied!==true||e.verifiedExternalLearningAppliedToExistingSource!==true)process.exit(2);console.log('ROBLOX_EXISTING_SOURCE_FOUNDATION_REPAIR_EVIDENCE=PASS');}else if(assetRebind){if(e.studioAssetBindingApplied!==true||e.verifiedExternalLearningAppliedToExistingSource!==true)process.exit(2);console.log('ROBLOX_EXISTING_SOURCE_ASSET_REBIND_EVIDENCE=PASS');}else{console.log('ROBLOX_VIBE3_LEARNING_EVIDENCE=PASS');}" "$evidence"
+
+      - name: Attempt validated Roblox source promotion through PR
+        id: merge
+        if: steps.generate.outcome == 'success' && steps.generate.outputs.superseded != 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ matrix.gameId }}
+          TARGET_SOURCE: ${{ matrix.target }}
+          SOURCE_BRANCH: ${{ steps.generate.outputs.branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$SOURCE_BRANCH" --title "development: bootstrap Roblox ${GAME_ID}" --body "DEVELOPMENT_CONFIRMED Roblox source candidate. Static source contract: PASS. Roblox runtime/independent QA/regression: NOT YET CLAIMED. Policy: COMPANY_FLOW.md.")"
+          echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            echo "ROBLOX_SOURCE_PROMOTION_ATTEMPT=$GAME_ID:$attempt"
+            if gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch; then
+              break
+            fi
+            state="$(gh pr view "$pr_url" --repo "$GITHUB_REPOSITORY" --json state --jq '.state' 2>/dev/null || true)"
+            if [ "$state" = 'MERGED' ]; then
+              echo "ROBLOX_SOURCE_PROMOTION_ALREADY_MERGED=$GAME_ID:$attempt"
+              break
+            fi
+            echo "ROBLOX_SOURCE_PROMOTION_BASE_ADVANCED_REBASE=$GAME_ID:$attempt"
+            git fetch --no-tags --depth=1 origin main "+refs/heads/$SOURCE_BRANCH:refs/remotes/origin/$SOURCE_BRANCH"
+            git checkout "$SOURCE_BRANCH"
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "ROBLOX_SOURCE_PROMOTION_REBASE_CONFLICT=$GAME_ID:$attempt" >&2
+              exit 75
+            fi
+            git push --force-with-lease origin "HEAD:$SOURCE_BRANCH"
+            sleep 1
+          done
+          merge_sha="$(gh pr view "$pr_url" --repo "$GITHUB_REPOSITORY" --json mergeCommit --jq '.mergeCommit.oid')"
+          [[ "$merge_sha" =~ ^[0-9a-f]{40}$ ]] || { echo 'Roblox source merge revision missing' >&2; exit 2; }
+          echo "source_revision=$merge_sha" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_SOURCE_MERGED=$GAME_ID:$merge_sha"
+
+      - name: Record isolated Roblox worker result
+        if: always()
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          TARGET_SOURCE: ${{ matrix.target }}
+          SOURCE_BRANCH: ${{ steps.generate.outputs.branch }}
+          GENERATE_OUTCOME: ${{ steps.generate.outcome }}
+          MERGE_OUTCOME: ${{ steps.merge.outcome }}
+          PR_URL: ${{ steps.merge.outputs.pr_url }}
+          SOURCE_REVISION: ${{ steps.merge.outputs.source_revision }}
+          SUPERSEDED: ${{ steps.generate.outputs.superseded }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/roblox-worker/results
+          node <<'NODE'
+          const fs=require('fs');
+          const path=require('path');
+          const id=process.env.GAME_ID;
+          const safe=String(id).replace(/[^a-zA-Z0-9._-]+/g,'-');
+          const superseded=process.env.SUPERSEDED==='true';
+          const generated=!superseded&&process.env.GENERATE_OUTCOME==='success';
+          const promoted=generated&&process.env.MERGE_OUTCOME==='success';
+          const candidateReady=generated&&Boolean(String(process.env.SOURCE_BRANCH||'').trim());
+          const failure=superseded?'source-plan-contract-superseded':!generated?'source-generation-failed':!promoted?'source-promotion-pending':null;
+          const bootstrapEvidencePath=path.join('/tmp',`roblox-source-bootstrap-${safe}.json`);
+          const bootstrapEvidence=fs.existsSync(bootstrapEvidencePath)?JSON.parse(fs.readFileSync(bootstrapEvidencePath,'utf8')):{};
+          const result={
+            gameId:id,
+            pass:promoted,
+            superseded,
+            candidateReady,
+            candidateBranch:process.env.SOURCE_BRANCH||null,
+            sourcePath:process.env.TARGET_SOURCE,
+            sourceRevision:/^[0-9a-f]{40}$/i.test(String(process.env.SOURCE_REVISION||''))?String(process.env.SOURCE_REVISION):null,
+            pr:process.env.PR_URL||null,
+            studioAssetBindingApplied:bootstrapEvidence.studioAssetBindingApplied===true,
+            studioAssetBinding:bootstrapEvidence.studioAssetBinding||null,
+            studioAssetRuntimeVerified:false,
+            studioAssetPromotionEligible:false,
+            failure,
+          };
+          fs.writeFileSync(path.join('/tmp/roblox-worker/results',`${safe}.json`),JSON.stringify(result,null,2)+'\n');
+          console.log(`ROBLOX_WORKER_RESULT=${id}:${superseded?'SUPERSEDED':promoted?'MERGED':candidateReady?'PROMOTION_PENDING':'FAIL'}`);
+          NODE
+
+      - name: Upload isolated Roblox worker result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-roblox-result-${{ matrix.gameId }}
+          path: /tmp/roblox-worker
+          if-no-files-found: error
+          retention-days: 1
+
+  source-bootstrap:
+    name: persist Roblox source-bind results
+    needs: [source-plan, source-worker]
+    if: always() && needs.source-plan.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Download parallel Roblox worker results
+        if: needs.source-plan.outputs.count != '0'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: development-roblox-result-*
+          path: /tmp/roblox-batch
+          merge-multiple: true
+
+      - name: Fetch current company runtime
+        run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+
+      - name: Revalidate shared worker context before Roblox persistence
+        run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-roblox-persist.json
+
+      - name: Persist Roblox source-bind state to company runtime
+        id: persist_state
+        if: needs.source-plan.outputs.count != '0' || needs.source-plan.outputs.reconciliation_count != '0'
+        env:
+          EXPECTED_TARGETS_JSON: ${{ needs.source-plan.outputs.targets_json }}
+          RECONCILIATION_RESULTS_JSON: ${{ needs.source-plan.outputs.reconciliation_json }}
+          SOURCE_PLAN_CONTRACT_FINGERPRINT: ${{ needs.source-plan.outputs.contract_fingerprint }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+            git checkout -B roblox-runtime-persist "origin/$COMPANY_RUNTIME_BRANCH"
+            echo "ROBLOX_SOURCE_PERSIST_ATTEMPT=$attempt"
+            node <<'NODE'
+          const fs=require('fs');
+          const path=require('path');
+          const {execFileSync}=require('child_process');
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const currentMainRevision=execFileSync('git',['rev-parse','origin/main'],{encoding:'utf8'}).trim();
+          const contractPaths=String(process.env.ROBLOX_SOURCE_PLAN_CONTRACT_PATHS||'').trim().split(/\s+/).filter(Boolean);
+          if(!contractPaths.length)throw new Error('ROBLOX_SOURCE_PLAN_CONTRACT_PATHS_MISSING');
+          const crypto=require('crypto');
+          const liveContractRows=contractPaths.map(path=>path+':'+execFileSync('git',['rev-parse',`origin/main:${path}`],{encoding:'utf8'}).trim());
+          const liveContractFingerprint=crypto.createHash('sha256').update(liveContractRows.join('\n')).digest('hex');
+          const plannedContractFingerprint=String(process.env.SOURCE_PLAN_CONTRACT_FINGERPRINT||'').trim();
+          const sourcePlanContractStale=Boolean(plannedContractFingerprint&&plannedContractFingerprint!==liveContractFingerprint);
+          const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
+          const expectedById=new Map(expected.map(target=>[target.gameId,target]));
+          const reconciliation=JSON.parse(process.env.RECONCILIATION_RESULTS_JSON||'[]');
+          const resultDir='/tmp/roblox-batch/results';
+          const results=[];
+          if(fs.existsSync(resultDir)){
+            for(const name of fs.readdirSync(resultDir).filter(x=>x.endsWith('.json')).sort()){
+              results.push(JSON.parse(fs.readFileSync(path.join(resultDir,name),'utf8')));
+            }
+          }
+          const byId=new Map(results.map(x=>[x.gameId,x]));
+          for(const target of expected){
+            if(!byId.has(target.gameId))results.push({gameId:target.gameId,pass:false,candidateReady:false,sourcePath:target.target,failure:'worker-result-missing'});
+          }
+          const stamp=new Date().toISOString();
+          const robloxSelectionPatch=item=>{
+            const selected=String(item?.selectedPlatform||item?.targetPlatform||'').toUpperCase();
+            const concurrentRoblox=selected!=='ROBLOX'
+              &&Array.isArray(item?.concurrentTargetPlatforms)
+              &&item.concurrentTargetPlatforms.some(value=>String(value||'').toUpperCase()==='ROBLOX');
+            return concurrentRoblox?{}:{selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX'};
+          };
+          let reconciliationPass=0,reconciliationFail=0,staleReconciliationCount=0;
+          const supersededWorkerCount=results.filter(result=>result?.superseded===true).length;
+          if(sourcePlanContractStale){
+            staleReconciliationCount=Math.max(reconciliation.length,expected.length,1);
+            console.log(`ROBLOX_SOURCE_PLAN_CONTRACT_STALE=${plannedContractFingerprint}:${liveContractFingerprint}`);
+          }else{
+            staleReconciliationCount+=supersededWorkerCount;
+          }
+          console.log(`ROBLOX_SOURCE_WORKER_SUPERSEDED_COUNT=${supersededWorkerCount}`);
+          for(const result of sourcePlanContractStale?[]:reconciliation){
+            const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
+            if(!item)throw new Error(`queue item missing during reconciliation: ${result.gameId}`);
+            const reconciliationRevision=String(result.sourceRevision||'').trim();
+            const reconciliationTreeSha=String(result.sourceTreeSha||'').trim();
+            let liveSourceTreeSha='';
+            if(reconciliationTreeSha&&result.sourcePath){
+              try{liveSourceTreeSha=execFileSync('git',['rev-parse',`origin/main:${result.sourcePath}`],{encoding:'utf8'}).trim();}catch{}
+            }
+            const sourceIdentityStale=reconciliationTreeSha
+              ?(!liveSourceTreeSha||liveSourceTreeSha!==reconciliationTreeSha)
+              :reconciliationRevision!==currentMainRevision;
+            if(sourceIdentityStale){
+              staleReconciliationCount++;
+              console.log(`ROBLOX_SOURCE_RECONCILIATION_STALE_REQUEUE=${result.gameId}:tree=${reconciliationTreeSha||'MISSING'}->${liveSourceTreeSha||'MISSING'}:main=${reconciliationRevision||'MISSING'}->${currentMainRevision}`);
+              continue;
+            }
+            if(reconciliationRevision!==currentMainRevision){
+              console.log(`ROBLOX_SOURCE_RECONCILIATION_UNRELATED_MAIN_ADVANCE_ACCEPTED=${result.gameId}:${reconciliationRevision}:${currentMainRevision}:tree=${reconciliationTreeSha}`);
+            }
+            if(result.pass===true&&result.preserveDownstreamEvidence===true){
+              const studioPass=item.robloxInternalVibePlayEvidence?.pass===true
+                &&item.robloxInternalVibePlayEvidence?.artifactIdentity===item.robloxBuildArtifactIdentity;
+              const f9Pass=item.robloxF9ReleaseRegressionPassed===true;
+              const f0Pass=item.robloxFoundationF0Passed===true;
+              const nextStep=f9Pass?'POST_F9_CONTINUOUS_EVOLUTION':studioPass?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':f0Pass?'VIBE_INTERNAL_PLAY':'TARGET_PLATFORM_TECHNICAL_VALIDATION';
+              const nextState=f9Pass?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION':studioPass?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':f0Pass?'F0_SOURCE_PREFLIGHT_PASSED':'TARGET_PLATFORM_REPAIR_REQUIRED';
+              Object.assign(item,robloxSelectionPatch(item),{
+                status:'ACTIVE',
+                currentStep:nextStep,
+                canonicalState:nextState,
+                sourcePath:result.sourcePath,
+                targetSourcePath:result.sourcePath,
+                robloxProjectPath:result.sourcePath,
+                robloxSourceBootstrapPassedAt:stamp,
+                robloxSourceBootstrapFailedAt:null,
+                robloxSourceCandidateBranch:null,
+                robloxSourceCandidateReadyAt:null,
+                updatedAt:stamp,
+              });
+              reconciliationPass++;
+              console.log('ROBLOX_UNCHANGED_SOURCE_DOWNSTREAM_EVIDENCE_PRESERVED='+item.gameId+':'+item.robloxBuildArtifactIdentity);
+              continue;
+            }
+            if(result.pass===true){
+              Object.assign(item,robloxSelectionPatch(item),{
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+                sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
+                robloxProjectPath:result.sourcePath,robloxSourceCommit:result.sourceRevision,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
+                robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
+                robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:null,robloxBuildArtifactIdentity:null,robloxBuildPassedAt:null,robloxBuildFailedAt:null,
+                robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:null,
+                robloxFoundationF0Passed:false,robloxFoundationF0PassedAt:null,robloxFoundationF0Evidence:null,
+                robloxHeadlessFastMvpPassed:false,robloxHeadlessFastMvpEvidence:null,robloxHeadlessFinalReviewPassed:false,
+                robloxRuntimeCandidateEvidence:null,robloxRuntimeFoundationPassed:false,robloxRuntimeFoundationEvidence:null,
+                robloxStudioAssetRuntimeBindingPassed:false,robloxStudioAssetRuntimeBindingEvidence:null,
+                robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
+                robloxServerClientBoundaryPassed:false,robloxDatastoreRejoinPassed:false,robloxMobileControlUiPassed:false,robloxMultiplayerQaPassed:false,
+                robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
+                robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
+                robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,robloxInternalReleaseEvidence:null,robloxReleaseEvidence:null,
+                robloxPublicReleaseReady:false,robloxReleaseClaim:false,robloxReleasePublishedAt:null,
+                robloxLastSuccessfulStage:'TARGET_PLATFORM_SOURCE_BIND',robloxFailureStage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',
+                robloxFailureSignature:'ROBLOX_BUILD_PACKAGE_PENDING',routingBlockers:['roblox-build-package-pending'],updatedAt:stamp,
+              });
+              reconciliationPass++;
+            }else{
+              const detail=Array.isArray(result.blockers)&&result.blockers.length?`:${result.blockers.join('|')}`:'';
+              Object.assign(item,robloxSelectionPatch(item),{
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+                robloxSourceBootstrapFailedAt:stamp,
+                robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
+                robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:null,robloxBuildArtifactIdentity:null,robloxBuildPassedAt:null,
+                robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:null,
+                robloxFoundationF0Passed:false,robloxFoundationF0PassedAt:null,robloxFoundationF0Evidence:null,
+                robloxHeadlessFastMvpPassed:false,robloxHeadlessFastMvpEvidence:null,robloxHeadlessFinalReviewPassed:false,
+                robloxRuntimeCandidateEvidence:null,robloxRuntimeFoundationPassed:false,robloxRuntimeFoundationEvidence:null,
+                robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,
+                robloxServerClientBoundaryPassed:false,robloxDatastoreRejoinPassed:false,robloxMobileControlUiPassed:false,robloxMultiplayerQaPassed:false,
+                robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
+                robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
+                robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,robloxInternalReleaseEvidence:null,robloxReleaseEvidence:null,
+                robloxPublicReleaseReady:false,robloxReleaseClaim:false,robloxReleasePublishedAt:null,
+                robloxFailureStage:'TARGET_PLATFORM_SOURCE_BIND',robloxFailureSignature:result.failure||'ROBLOX_SOURCE_REVALIDATION_FAILED',
+                routingBlockers:[`roblox-source-bootstrap:${result.failure||'existing-source-revalidation-failed'}${detail}`],updatedAt:stamp,
+              });
+              reconciliationFail++;
+            }
+          }
+          let passCount=0,candidateCount=0,failCount=0;
+          for(const result of sourcePlanContractStale?[]:results.filter(result=>result?.superseded!==true)){
+            const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
+            if(!item)throw new Error(`queue item missing: ${result.gameId}`);
+            const target=expectedById.get(result.gameId)||{};
+            const secondaryOwnerFocus=target.secondaryOwnerFocus===true;
+            if(secondaryOwnerFocus){
+              if(result.pass===true){
+                Object.assign(item,{
+                  robloxProjectPath:result.sourcePath,
+                  ownerFocusRobloxSourcePath:result.sourcePath,
+                  ownerFocusRobloxSourceCommit:result.sourceRevision,
+                  ownerFocusRobloxSourceBoundAt:stamp,
+                  ownerFocusRobloxSourceBootstrapPassedAt:stamp,
+                  ownerFocusRobloxSourceBootstrapFailedAt:null,
+                  ownerFocusRobloxSourceCandidateBranch:null,
+                  ownerFocusRobloxSourceCandidateReadyAt:null,
+                  ownerFocusRobloxAssetPipelineState:'SOURCE_READY',
+                  ownerFocusRobloxStudioAssetBindingApplied:result.studioAssetBindingApplied===true,
+                  ownerFocusRobloxStudioAssetBinding:result.studioAssetBinding||null,
+                  ownerFocusRobloxStudioAssetRuntimeBindingPassed:false,
+                  ownerFocusRobloxStudioAssetRuntimeBindingEvidence:null,
+                  updatedAt:stamp,
+                });
+                passCount++;
+              }else if(result.candidateReady===true&&String(result.candidateBranch||'').trim()){
+                Object.assign(item,{
+                  ownerFocusRobloxSourceCandidateBranch:result.candidateBranch,
+                  ownerFocusRobloxSourceCandidateReadyAt:stamp,
+                  ownerFocusRobloxSourceBootstrapFailedAt:null,
+                  ownerFocusRobloxAssetPipelineState:'SOURCE_PROMOTION_PENDING',
+                  updatedAt:stamp,
+                });
+                candidateCount++;
+              }else{
+                Object.assign(item,{
+                  ownerFocusRobloxSourceBootstrapFailedAt:stamp,
+                  ownerFocusRobloxSourceCandidateBranch:null,
+                  ownerFocusRobloxSourceCandidateReadyAt:null,
+                  ownerFocusRobloxAssetPipelineState:'SOURCE_REPAIR_REQUIRED',
+                  ownerFocusRobloxSourceFailure:result.failure||'unknown-failure',
+                  updatedAt:stamp,
+                });
+                failCount++;
+              }
+              continue;
+            }
+            if(result.pass===true){
+              Object.assign(item,robloxSelectionPatch(item),{
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+                sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
+                robloxProjectPath:result.sourcePath,robloxSourceCommit:result.sourceRevision,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
+                robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
+                robloxStudioAssetBindingApplied:result.studioAssetBindingApplied===true,
+                robloxStudioAssetBinding:result.studioAssetBinding||null,
+                robloxStudioAssetRuntimeBindingPassed:false,
+                robloxStudioAssetRuntimeBindingEvidence:null,
+                robloxRuntimePassed:false,routingBlockers:['roblox-runtime-evidence-pending'],updatedAt:stamp,
+              });
+              passCount++;
+            }else if(result.candidateReady===true&&String(result.candidateBranch||'').trim()){
+              Object.assign(item,robloxSelectionPatch(item),{
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+                robloxSourceCandidateBranch:result.candidateBranch,robloxSourceCandidateReadyAt:stamp,robloxSourceBootstrapFailedAt:null,
+                robloxRuntimePassed:false,routingBlockers:['roblox-source-promotion-pending'],updatedAt:stamp,
+              });
+              candidateCount++;
+            }else{
+              Object.assign(item,robloxSelectionPatch(item),{
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+                robloxSourceBootstrapFailedAt:stamp,
+                robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
+                robloxRuntimePassed:false,routingBlockers:[`roblox-source-bootstrap:${result.failure||'unknown-failure'}`],updatedAt:stamp,
+              });
+              failCount++;
+            }
+          }
+          queue.robloxSourceParallelism=null;
+          queue.developmentGameWipMax=null;
+          queue.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          fs.writeFileSync('/tmp/roblox-source-persist-meta.json',JSON.stringify({staleReconciliationCount,currentMainRevision},null,2)+'\n');
+          console.log(`ROBLOX_SOURCE_RECONCILIATION_PASS=${reconciliationPass}`);
+          console.log(`ROBLOX_SOURCE_RECONCILIATION_FAIL=${reconciliationFail}`);
+          console.log(`ROBLOX_SOURCE_PASS_COUNT=${passCount}`);
+          console.log(`ROBLOX_SOURCE_PROMOTION_PENDING_COUNT=${candidateCount}`);
+          console.log(`ROBLOX_SOURCE_FAIL_COUNT=${failCount}`);
+          console.log(`ROBLOX_OWNER_FOCUS_SECONDARY_COUNT=${expected.filter(x=>x.secondaryOwnerFocus===true).length}`);
+          console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
+          console.log('ROBLOX_PER_GAME_PROMOTION=YES');
+          console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
+          NODE
+          rm -rf /tmp/roblox-homepage-sync
+          mkdir -p /tmp/roblox-homepage-sync/tools /tmp/roblox-homepage-sync/company-learning
+          git show "origin/main:tools/company-homepage-platform-exposure-sync.mjs" > /tmp/roblox-homepage-sync/tools/company-homepage-platform-exposure-sync.mjs
+          git show "origin/main:tools/company-shared-context.mjs" > /tmp/roblox-homepage-sync/tools/company-shared-context.mjs
+          git show "origin/main:company-learning/platform-release-roadmap.json" > /tmp/roblox-homepage-sync/company-learning/platform-release-roadmap.json
+          node /tmp/roblox-homepage-sync/tools/company-homepage-platform-exposure-sync.mjs \
+            "$PWD/development-queue.json" \
+            "$PWD/game-catalog.json" \
+            "$PWD/homepage-platform-exposure.json" \
+            /tmp/roblox-homepage-sync/company-learning/platform-release-roadmap.json
+            git config user.name 'jaewoon-roblox-development'
+            git config user.email 'actions@users.noreply.github.com'
+            git add development-queue.json homepage-platform-exposure.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'ROBLOX_SOURCE_PERSIST_NO_CHANGE=YES'
+              break
+            fi
+            git commit -m 'runtime: reconcile and bind Roblox DEVELOPMENT source [skip ci]'
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              echo "ROBLOX_SOURCE_PERSIST_PUSH=PASS:$attempt"
+              break
+            fi
+            echo "ROBLOX_SOURCE_PERSIST_CONFLICT_RETRY=$attempt"
+            sleep 2
+          done
+          stale_reconciliation_count="$(node -e "const fs=require('fs');const p='/tmp/roblox-source-persist-meta.json';const m=fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):{};process.stdout.write(String(Number(m.staleReconciliationCount||0)))")"
+          echo "stale_reconciliation_count=$stale_reconciliation_count" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_SOURCE_RECONCILIATION_STALE_COUNT=$stale_reconciliation_count"
+          echo 'ROBLOX_SOURCE_BIND_PERSIST=PASS'
+          echo 'ROBLOX_RUNTIME_PASS=NO'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
+
+      - name: Record isolated source failures without blocking other games
+        if: needs.source-plan.outputs.count != '0' && needs.source-worker.result != 'success'
+        run: |
+          echo 'ROBLOX_SOURCE_FAILURE_ISOLATED=YES'
+          echo 'ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO'
+          echo 'ROBLOX_SOURCE_REPAIR_UNLIMITED=YES'
+
+      - name: Dispatch next Roblox source execution slice when other eligible work remains
+        if: needs.source-plan.outputs.count != '0' || steps.persist_state.outputs.stale_reconciliation_count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURRENT_TARGETS_JSON: ${{ needs.source-plan.outputs.targets_json }}
+          STALE_RECONCILIATION_COUNT: ${{ steps.persist_state.outputs.stale_reconciliation_count || '0' }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main main
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-next-queue.json
+          mkdir -p /tmp/roblox-runtime-tools
+          git show "origin/main:tools/company-selected-platform-router.mjs" > /tmp/roblox-runtime-tools/company-selected-platform-router.mjs
+          git show "origin/main:tools/company-web-validation-evidence-contract.mjs" > /tmp/roblox-runtime-tools/company-web-validation-evidence-contract.mjs
+          remaining="$(node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          import {platformDevelopmentEligible} from 'file:///tmp/roblox-runtime-tools/company-selected-platform-router.mjs';
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-next-queue.json','utf8'));
+          const current=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').map(x=>x.gameId));
+          let count=0;
+          for(const item of q.items||[]){
+            if(current.has(item.gameId))continue;
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            if(!platformDevelopmentEligible(item,'ROBLOX'))continue;
+            const state=String(item.canonicalState||'').toUpperCase();
+            if(state==='DEVELOPMENT_BLOCKED')continue;
+            if(Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim())continue;
+            try{execFileSync('git',['cat-file','-e',`origin/main:roblox-games/${item.gameId}`],{stdio:'ignore'});if(!item.robloxSourceBootstrapFailedAt)continue;}catch{}
+            count++;
+          }
+          process.stdout.write(String(count));
+          NODE
+          )"
+          echo "ROBLOX_REMAINING_OTHER_TARGETS=$remaining"
+          echo "ROBLOX_STALE_RECONCILIATION_COUNT=${STALE_RECONCILIATION_COUNT:-0}"
+          redispatch='false'
+          if [[ "${STALE_RECONCILIATION_COUNT:-0}" =~ ^[1-9][0-9]*$ ]]; then
+            redispatch='true'
+            echo 'ROBLOX_FRESH_MAIN_RECONCILIATION_REQUIRED=YES'
+          elif [[ "$remaining" =~ ^[1-9][0-9]*$ ]]; then
+            redispatch='true'
+          fi
+          if [[ "$redispatch" == 'true' ]]; then
+            if [[ -n "$REQUESTED_GAME_ID" ]]; then
+              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
+            else
+              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            fi
+            echo 'ROBLOX_NEXT_BATCH_DISPATCH=YES'
+          else
+            echo 'ROBLOX_NEXT_BATCH_DISPATCH=NO'
+          fi
+
+      - name: Empty queue summary
+        if: needs.source-plan.outputs.count == '0'
+        env:
+          RECONCILIATION_COUNT: ${{ needs.source-plan.outputs.reconciliation_count }}
+        run: |
+          echo 'ROBLOX_SOURCE_TARGETS=NONE'
+          echo "ROBLOX_SOURCE_RECONCILIATION_COUNT=$RECONCILIATION_COUNT"
+          echo 'DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'
+          echo 'ROBLOX_RUNNER_PARALLEL_CAPACITY=EXTERNAL_PROVIDER_MANAGED'
+          echo 'ROBLOX_PER_GAME_PROMOTION=YES'
+          echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
+          echo 'ROBLOX_RUNTIME_PASS=NO'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
+
+  technical-plan:
+    name: resolve Roblox technical package work
+    needs: source-bootstrap
+    if: always() && needs.source-bootstrap.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    outputs:
+      count: ${{ steps.targets.outputs.count }}
+      matrix: ${{ steps.targets.outputs.matrix }}
+      targets_json: ${{ steps.targets.outputs.targets_json }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          fetch-tags: false
+      - name: Fetch current company runtime
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
+      - name: Resolve next exact-source Roblox technical execution slice from unbounded native queue
+        id: targets
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {DEVELOPMENT_GAME_WIP_MAX,selectTargetPlatformDevelopmentWindow,ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_REQUESTED_GAME_ID_INVALID:'+requested);
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
+          const windowIds=new Set(globalWindow.map(item=>item.gameId));
+          const rows=[];
+          const isOrchestrationMissing=item=>String(item.robloxFailureSignature||'')==='roblox-package-result-missing';
+          const candidates=[...(q.items||[])].sort((a,b)=>Number(Boolean(a.robloxBuildFailedAt)&&!isOrchestrationMissing(a))-Number(Boolean(b.robloxBuildFailedAt)&&!isOrchestrationMissing(b)));
+          for(const item of candidates){
+            if(rows.length>=DEVELOPMENT_GAME_WIP_MAX)break;
+            if(requested&&item.gameId!==requested)continue;
+            if(!windowIds.has(item.gameId))continue;
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
+            const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(!concurrentDefault&&!secondaryOwnerFocus)continue;
+            if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
+            if(secondaryOwnerFocus){
+              const lane=String(item.ownerFocusRobloxAssetPipelineState||'').toUpperCase();
+              if(!['SOURCE_READY','BUILD_REPAIR_REQUIRED'].includes(lane))continue;
+            }else{
+              if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
+              const canonicalState=String(item.canonicalState||'').toUpperCase();
+              const buildRevalidationPending=String(item.robloxFailureStage||'').toUpperCase()==='TARGET_PLATFORM_BUILD_OR_PACKAGE'
+                &&String(item.robloxFailureSignature||'').toUpperCase()==='ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING';
+              const technicalStateEligible=canonicalState==='TARGET_PLATFORM_REPAIR_REQUIRED'
+                ||(canonicalState==='WAITING_TARGET_PLATFORM_VALIDATION'&&buildRevalidationPending);
+              if(!technicalStateEligible)continue;
+            }
+            const sourcePath=String(secondaryOwnerFocus?item.ownerFocusRobloxSourcePath:(item.robloxProjectPath||item.targetSourcePath||item.sourcePath)||`roblox-games/${item.gameId}`).trim();
+            const sourceRevision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
+            const artifactIdentity=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
+            const exactBuild=secondaryOwnerFocus
+              ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:')
+              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===sourceRevision&&artifactIdentity.startsWith('sha256:');
+            if(!/^[0-9a-f]{40}$/i.test(sourceRevision))continue;
+            if(exactBuild)continue;
+            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,baseline:item.designBaselineSource,sourcePath,sourceRevision,secondaryOwnerFocus});
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
+          console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
+          console.log(`DEVELOPMENT_GAME_WIP_WINDOW_IDS=${globalWindow.map(x=>x.gameId).join(',')||'NONE'}`);
+          console.log(`ROBLOX_REQUESTED_TECHNICAL_GAME_ID=${requested||'BATCH'}`);
+          console.log(`ROBLOX_TECHNICAL_TARGET_COUNT=${rows.length}`);
+          console.log(`ROBLOX_TECHNICAL_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
+          console.log('ROBLOX_PER_GAME_PROMOTION=YES');
+          console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
+          console.log('ROBLOX_RUNNER_PARALLEL_CAPACITY=EXTERNAL_PROVIDER_MANAGED');
+          NODE
+
+  technical-worker:
+    name: Roblox package + preflight + F0 ${{ matrix.gameId }}
+    needs: technical-plan
+    if: always() && needs.technical-plan.result == 'success' && needs.technical-plan.outputs.count != '0'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.technical-plan.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fetch exact source and current company runtime
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH" main
+          git fetch --no-tags --depth=1 origin "${{ matrix.sourceRevision }}"
+
+      - name: Drop superseded Roblox technical work before heavy execution
+        id: freshness
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_PATH: ${{ matrix.sourcePath }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-technical-current-queue.json
+          current_revision="$(GAME_ID="$GAME_ID" SECONDARY_OWNER_FOCUS="$SECONDARY_OWNER_FOCUS" node - <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-technical-current-queue.json','utf8'));
+          const item=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);
+          if(!item)process.exit(2);
+          const secondary=String(process.env.SECONDARY_OWNER_FOCUS||'').toLowerCase()==='true';
+          process.stdout.write(String(secondary?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||''));
+          NODE
+          )"
+          current_binding_version="$(git show origin/main:tools/company-development-roblox-bootstrap.mjs | sed -nE 's/^export const ROBLOX_VERIFIED_EXTERNAL_NATIVE_BINDING_VERSION=([0-9]+);/\1/p' | head -n1)"
+          source_binding_version="$(git show "$SOURCE_REVISION:$SOURCE_PATH/shared/GameConfig.luau" 2>/dev/null | sed -nE 's/^[[:space:]]*NativeBindingVersion[[:space:]]*=[[:space:]]*([0-9]+),?/\1/p' | head -n1 || true)"
+          superseded=false
+          reason=NONE
+          if [ -z "$current_revision" ] || [ "$current_revision" != "$SOURCE_REVISION" ]; then
+            superseded=true
+            reason=SOURCE_REVISION_MOVED
+          elif [ -z "$current_binding_version" ] || [ -z "$source_binding_version" ] || [ "$source_binding_version" != "$current_binding_version" ]; then
+            superseded=true
+            reason=VERIFIED_LEARNING_BINDING_STALE
+          fi
+          echo "superseded=$superseded" >> "$GITHUB_OUTPUT"
+          echo "reason=$reason" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_TECHNICAL_CURRENT_SOURCE_REVISION=${current_revision:-MISSING}"
+          echo "ROBLOX_TECHNICAL_SOURCE_BINDING_VERSION=${source_binding_version:-MISSING}"
+          echo "ROBLOX_TECHNICAL_CURRENT_BINDING_VERSION=${current_binding_version:-MISSING}"
+          echo "ROBLOX_TECHNICAL_SUPERSEDED=$superseded:$reason"
+      - name: Install pinned Rojo package tool
+        if: steps.freshness.outputs.superseded != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rojo-bin
+          curl -fsSL --retry 3 --retry-delay 2 \
+            -o /tmp/rojo.zip \
+            https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
+          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
+          test -f /tmp/rojo-bin/rojo
+          chmod +x /tmp/rojo-bin/rojo
+          /tmp/rojo-bin/rojo --version
+      - name: Build exact-revision Roblox package
+        id: package
+        if: steps.freshness.outputs.superseded != 'true'
+        continue-on-error: true
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          BASELINE_SOURCE: ${{ matrix.baseline }}
+          SOURCE_PATH: ${{ matrix.sourcePath }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-80)"
+          mkdir -p "/tmp/roblox-technical/results" "/tmp/roblox-technical/packages" "/tmp/roblox-technical/input/$safe"
+          baseline="/tmp/roblox-technical/input/$safe/baseline.json"
+          evidence="/tmp/roblox-technical/results/${safe}.build.json"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:$BASELINE_SOURCE" > "$baseline"
+          node tools/company-development-roblox-package.mjs \
+            --repo-root=. \
+            --game-id="$GAME_ID" \
+            --source-path="$SOURCE_PATH" \
+            --source-revision="$SOURCE_REVISION" \
+            --baseline="$baseline" \
+            --rojo=/tmp/rojo-bin/rojo \
+            --output-dir=/tmp/roblox-technical/packages \
+            --evidence="$evidence"
+          identity="$(node -e "const e=require(process.argv[1]);process.stdout.write(e.artifactIdentity)" "$evidence")"
+          echo "artifact_identity=$identity" >> "$GITHUB_OUTPUT"
+          echo "build_evidence=$evidence" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare shared local review model in package worker
+        if: steps.package.outcome == 'success' && matrix.secondaryOwnerFocus != true
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: 'llama3.2:1b'
+          version: '0.33.3'
+          pull-model: 'true'
+          department-role: development
+          cache-model: 'true'
+
+      - name: Ensure fused shared preflight model is local
+        if: steps.package.outcome == 'success' && matrix.secondaryOwnerFocus != true
+        shell: bash
+        run: |
+          set -euo pipefail
+          model="$(node -e "const d=require('./company-directive.json');console.log(d.ai.robloxPreflightModel||d.ai.departmentLeadModels?.development||'llama3.2:1b')")"
+          have="$(ollama list | awk 'NR>1{print $1}')"
+          grep -Fxq "$model" <<<"$have" || ollama pull "$model"
+          echo "ROBLOX_PREFLIGHT_SHARED_MODEL=$model"
+          echo 'ROBLOX_PACKAGE_PREFLIGHT_FUSION=ENABLED'
+
+      - name: Run fused shared-model build preflight
+        id: fused_preflight
+        if: steps.package.outcome == 'success' && matrix.secondaryOwnerFocus != true
+        continue-on-error: true
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
+          BUILD_EVIDENCE: ${{ steps.package.outputs.build_evidence }}
+          SUPERSEDED: ${{ steps.freshness.outputs.superseded }}
+          SUPERSEDE_REASON: ${{ steps.freshness.outputs.reason }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
+          artifact_identity="$(node -e "const e=require(process.argv[1]);process.stdout.write(e.artifactIdentity)" "$BUILD_EVIDENCE")"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-technical/preflight-queue.json
+          GAME_ID="$GAME_ID" SOURCE_REVISION="$SOURCE_REVISION" ARTIFACT_IDENTITY="$artifact_identity" SECONDARY_OWNER_FOCUS="$SECONDARY_OWNER_FOCUS" node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-technical/preflight-queue.json','utf8'));
+          const item=(q.items||[]).find(x=>x.gameId===process.env.GAME_ID);
+          if(!item)throw new Error('queue item missing: '+process.env.GAME_ID);
+          const secondary=String(process.env.SECONDARY_OWNER_FOCUS||'').toLowerCase()==='true';
+          if(secondary){
+            item.ownerFocusRobloxBuildOrPackagePassed=true;
+            item.ownerFocusRobloxBuildSourceRevision=process.env.SOURCE_REVISION;
+            item.ownerFocusRobloxBuildArtifactIdentity=process.env.ARTIFACT_IDENTITY;
+          }else{
+            item.robloxBuildOrPackagePassed=true;
+            item.robloxBuildSourceRevision=process.env.SOURCE_REVISION;
+            item.robloxBuildArtifactIdentity=process.env.ARTIFACT_IDENTITY;
+          }
+          fs.writeFileSync('/tmp/roblox-technical/preflight-queue.json',JSON.stringify(q,null,2)+'\n');
+          NODE
+          node tools/company-development-roblox-build-preflight.mjs \
+            --game-id="$GAME_ID" \
+            --queue=/tmp/roblox-technical/preflight-queue.json \
+            --directive=company-directive.json \
+            --secondary-owner-focus="$SECONDARY_OWNER_FOCUS" \
+            --output="/tmp/roblox-technical/results/${safe}.preflight.json"
+
+      - name: Install pinned official Luau compiler for fused F0
+        if: steps.package.outcome == 'success' && steps.fused_preflight.outcome == 'success' && matrix.secondaryOwnerFocus != true
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/luau-bin /tmp/luau.zip
+          mkdir -p /tmp/luau-bin
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/luau.zip https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+          echo '8a9b4b381021722c82d6e6cda0964b5c9e7f354ec1035fcd8b657acc22e49247  /tmp/luau.zip' | sha256sum -c -
+          unzip -q /tmp/luau.zip -d /tmp/luau-bin
+          test -x /tmp/luau-bin/luau-compile || chmod +x /tmp/luau-bin/luau-compile
+          test -x /tmp/luau-bin/luau-compile
+
+      - name: Run fused F0 from the same exact package
+        id: fused_f0
+        if: steps.package.outcome == 'success' && steps.fused_preflight.outcome == 'success' && matrix.secondaryOwnerFocus != true
+        continue-on-error: true
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_PATH: ${{ matrix.sourcePath }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          BUILD_EVIDENCE: ${{ steps.package.outputs.build_evidence }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
+          artifact_identity="$(node -e "const e=require(process.argv[1]);process.stdout.write(e.artifactIdentity)" "$BUILD_EVIDENCE")"
+          rm -rf /tmp/luau-exact-source
+          mkdir -p /tmp/luau-exact-source
+          git archive "$SOURCE_REVISION" "$SOURCE_PATH" | tar -x -C /tmp/luau-exact-source
+          mapfile -d '' luau_files < <(find "/tmp/luau-exact-source/$SOURCE_PATH" -type f -name '*.luau' -print0 | sort -z)
+          [ "${#luau_files[@]}" -gt 0 ]
+          for file in "${luau_files[@]}"; do
+            /tmp/luau-bin/luau-compile "$file" >/dev/null
+          done
+          echo "ROBLOX_F0_LUAU_COMPILE_PASS=${#luau_files[@]}"
+          node tools/company-development-roblox-headless-fast-mvp.mjs \
+            --repo-root=. \
+            --game-id="$GAME_ID" \
+            --source-path="$SOURCE_PATH" \
+            --source-revision="$SOURCE_REVISION" \
+            --artifact-identity="$artifact_identity" \
+            --rebuilt-artifact-identity="$artifact_identity" \
+            --artifact-run-id="$GITHUB_RUN_ID" \
+            --native-language-compile-passed=true \
+            --native-compiler-version=0.739 \
+            --output="/tmp/roblox-technical/results/${safe}.headless.json"
+          echo 'ROBLOX_F0_BUILD_REUSE=SAME_WORKER_EXACT_PACKAGE'
+      - name: Record Roblox technical package result
+        if: always()
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_PATH: ${{ matrix.sourcePath }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          PACKAGE_OUTCOME: ${{ steps.package.outcome }}
+          PREFLIGHT_OUTCOME: ${{ steps.fused_preflight.outcome }}
+          F0_OUTCOME: ${{ steps.fused_f0.outcome }}
+          SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
+          BUILD_EVIDENCE: ${{ steps.package.outputs.build_evidence }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/roblox-technical/results
+          node <<'NODE'
+          const fs=require('fs');
+          const path=require('path');
+          const id=process.env.GAME_ID;
+          const safe=String(id).replace(/[^a-zA-Z0-9._-]+/g,'-');
+          const superseded=String(process.env.SUPERSEDED||'').toLowerCase()==='true';
+          const packagePassed=!superseded&&process.env.PACKAGE_OUTCOME==='success';
+          const secondary=String(process.env.SECONDARY_OWNER_FOCUS||'').toLowerCase()==='true';
+          let evidence=null;
+          if(packagePassed&&process.env.BUILD_EVIDENCE&&fs.existsSync(process.env.BUILD_EVIDENCE))evidence=JSON.parse(fs.readFileSync(process.env.BUILD_EVIDENCE,'utf8'));
+          const preflightPath=path.join('/tmp/roblox-technical/results',safe+'.preflight.json');
+          const f0Path=path.join('/tmp/roblox-technical/results',safe+'.headless.json');
+          const preflightEvidence=fs.existsSync(preflightPath)?JSON.parse(fs.readFileSync(preflightPath,'utf8')):null;
+          const f0Evidence=fs.existsSync(f0Path)?JSON.parse(fs.readFileSync(f0Path,'utf8')):null;
+          const preflightPass=secondary?null:(process.env.PREFLIGHT_OUTCOME==='success'&&preflightEvidence?.pass===true);
+          const f0Pass=secondary?null:(process.env.F0_OUTCOME==='success'&&f0Evidence?.pass===true);
+          const result={
+            gameId:id,
+            superseded,
+            supersedeReason:superseded?(process.env.SUPERSEDE_REASON||'ROBLOX_TECHNICAL_SUPERSEDED'):null,
+            pass:!superseded&&packagePassed&&evidence?.buildOrPackagePassed===true,
+            preflightPass,
+            f0Pass,
+            preflightEvidence,
+            f0Evidence,
+            secondaryOwnerFocus:secondary,
+            sourcePath:process.env.SOURCE_PATH,
+            sourceRevision:process.env.SOURCE_REVISION,
+            artifactIdentity:evidence?.artifactIdentity||null,
+            saveRequired:evidence?.saveRequired===true,
+            failure:superseded?'roblox-technical-superseded':!packagePassed?'roblox-build-package-failed':secondary?null:!preflightPass?'roblox-build-preflight-blocked':(!f0Pass?'roblox-f0-source-preflight-failed':null),
+          };
+          fs.writeFileSync(path.join('/tmp/roblox-technical/results',`${safe}.result.json`),JSON.stringify(result,null,2)+'\n');
+          console.log(`ROBLOX_TECHNICAL_PACKAGE_RESULT=${id}:${superseded?'SUPERSEDED':result.pass?'PASS':'FAIL'}`);
+          console.log(`ROBLOX_FUSED_PREFLIGHT_RESULT=${id}:${result.preflightPass===null?'N/A':result.preflightPass?'PASS':'FAIL'}`);
+          console.log(`ROBLOX_FUSED_F0_RESULT=${id}:${result.f0Pass===null?'N/A':result.f0Pass?'PASS':'FAIL'}`);
+          console.log(`ROBLOX_BUILD_PREFLIGHT_PASS=${result.preflightPass?'YES':'NO'}`);
+          console.log('ROBLOX_RUNTIME_PASS=NO');
+          console.log('ROBLOX_INDEPENDENT_QA_PASS=NO');
+          console.log('ROBLOX_REGRESSION_PASS=NO');
+          console.log('ROBLOX_FINAL_REVIEW_PASS=NO');
+          NODE
+      - name: Upload immutable Roblox package checkpoint
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: development-roblox-package-${{ matrix.gameId }}
+          path: /tmp/roblox-technical
+          if-no-files-found: error
+          retention-days: 3
+      - name: Enforce fused package preflight and F0 result after checkpoint capture
+        if: always()
+        env:
+          PACKAGE_OUTCOME: ${{ steps.package.outcome }}
+          PREFLIGHT_OUTCOME: ${{ steps.fused_preflight.outcome }}
+          F0_OUTCOME: ${{ steps.fused_f0.outcome }}
+          SECONDARY_OWNER_FOCUS: ${{ matrix.secondaryOwnerFocus }}
+          SUPERSEDED: ${{ steps.freshness.outputs.superseded }}
+          SUPERSEDE_REASON: ${{ steps.freshness.outputs.reason }}
+        run: |
+          if [ "$SUPERSEDED" = 'true' ]; then
+            echo "ROBLOX_TECHNICAL_WORK=SUPERSEDED:${SUPERSEDE_REASON:-UNKNOWN}"
+            exit 0
+          fi
+          if [ "$PACKAGE_OUTCOME" != 'success' ]; then
+            echo 'ROBLOX_BUILD_PACKAGE=FAIL'
+            exit 1
+          fi
+          if [ "$SECONDARY_OWNER_FOCUS" != 'true' ] && [ "$PREFLIGHT_OUTCOME" != 'success' ]; then
+            echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
+            exit 1
+          fi
+          if [ "$SECONDARY_OWNER_FOCUS" != 'true' ] && [ "$F0_OUTCOME" != 'success' ]; then
+            echo 'ROBLOX_F0_SOURCE_PREFLIGHT=FAIL'
+            exit 1
+          fi
+          echo 'ROBLOX_BUILD_PACKAGE=PASS'
+          if [ "$SECONDARY_OWNER_FOCUS" = 'true' ]; then
+            echo 'ROBLOX_BUILD_PREFLIGHT_PASS=DEFER_EXISTING_CONTINUATION'
+            echo 'ROBLOX_F0_SOURCE_PREFLIGHT=DEFER_SECONDARY_OWNER_FOCUS'
+          else
+            echo 'ROBLOX_BUILD_PREFLIGHT_PASS=YES'
+            echo 'ROBLOX_F0_SOURCE_PREFLIGHT=PASS'
+          fi
+          echo 'ROBLOX_RUNTIME_PASS=NO'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
+
+  technical-persist:
+    name: persist Roblox package checkpoints
+    needs: [technical-plan, technical-worker]
+    if: always() && needs.technical-plan.result == 'success'
+    concurrency:
+      group: roblox-private-runtime-dispatch-${{ inputs.game_id || github.run_id }}
+      cancel-in-progress: false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          fetch-tags: false
+      - name: Download Roblox package checkpoints
+        if: needs.technical-plan.outputs.count != '0'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: development-roblox-package-*
+          path: /tmp/roblox-technical-batch
+          merge-multiple: true
+      - name: Fetch current company runtime
+        run: git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+      - name: Persist exact Roblox build package evidence
+        if: needs.technical-plan.outputs.count != '0'
+        env:
+          EXPECTED_TARGETS_JSON: ${{ needs.technical-plan.outputs.targets_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+            git checkout -B roblox-technical-persist "origin/$COMPANY_RUNTIME_BRANCH"
+            echo "ROBLOX_TECHNICAL_PERSIST_ATTEMPT=$attempt"
+            node <<'NODE'
+          const fs=require('fs');
+          const path=require('path');
+          const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
+          const root='/tmp/roblox-technical-batch/results';
+          const results=[];
+          if(fs.existsSync(root)){
+            for(const name of fs.readdirSync(root).filter(x=>x.endsWith('.result.json')).sort())results.push(JSON.parse(fs.readFileSync(path.join(root,name),'utf8')));
+          }
+          const byId=new Map(results.map(x=>[x.gameId,x]));
+          for(const target of expected){
+            if(!byId.has(target.gameId))results.push({gameId:target.gameId,pass:false,sourcePath:target.sourcePath,sourceRevision:target.sourceRevision,failure:'roblox-package-result-missing'});
+          }
+          const stamp=new Date().toISOString();
+          let passCount=0,failCount=0;
+          const expectedById=new Map(expected.map(target=>[target.gameId,target]));
+          for(const result of results){
+            const item=(queue.items||[]).find(x=>x.gameId===result.gameId);
+            if(!item)throw new Error(`queue item missing during Roblox package persist: ${result.gameId}`);
+            if(result.superseded===true){
+              console.log(`ROBLOX_PACKAGE_SUPERSEDED_RESULT_IGNORED=${result.gameId}:${result.supersedeReason||'UNKNOWN'}`);
+              continue;
+            }
+            const secondaryOwnerFocus=expectedById.get(result.gameId)?.secondaryOwnerFocus===true;
+            const boundSourceRevision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
+            const resultSourceRevision=String(result.sourceRevision||'').trim();
+            if(boundSourceRevision!==resultSourceRevision){
+              console.log(`ROBLOX_PACKAGE_STALE_RESULT_IGNORED=${result.gameId}:${resultSourceRevision||'MISSING'}:${boundSourceRevision||'MISSING'}`);
+              continue;
+            }
+            if(secondaryOwnerFocus){
+              if(result.pass===true&&String(result.artifactIdentity||'').startsWith('sha256:')){
+                Object.assign(item,{
+                  ownerFocusRobloxBuildOrPackagePassed:true,ownerFocusRobloxBuildSourceRevision:result.sourceRevision,
+                  ownerFocusRobloxBuildArtifactIdentity:result.artifactIdentity,ownerFocusRobloxBuildPassedAt:stamp,ownerFocusRobloxBuildFailedAt:null,
+                  ownerFocusRobloxBuildPreflightPassed:false,ownerFocusRobloxBuildPreflightPassedAt:null,ownerFocusRobloxBuildPreflightFailedAt:null,
+                  ownerFocusRobloxRuntimePassed:false,ownerFocusRobloxRuntimePassedAt:null,ownerFocusRobloxRuntimeFailedAt:null,
+                  ownerFocusRobloxAssetPipelineState:'BUILD_READY',updatedAt:stamp,
+                });
+                passCount++;
+              }else{
+                Object.assign(item,{
+                  ownerFocusRobloxBuildOrPackagePassed:false,ownerFocusRobloxBuildSourceRevision:result.sourceRevision,
+                  ownerFocusRobloxBuildFailedAt:stamp,ownerFocusRobloxBuildPreflightPassed:false,
+                  ownerFocusRobloxRuntimePassed:false,ownerFocusRobloxAssetPipelineState:'BUILD_REPAIR_REQUIRED',
+                  ownerFocusRobloxBuildFailure:result.failure||'ROBLOX_BUILD_PACKAGE_FAILED',updatedAt:stamp,
+                });
+                failCount++;
+              }
+              continue;
+            }
+            if(result.pass===true&&String(result.artifactIdentity||'').startsWith('sha256:')){
+              const preflightExact=result.preflightPass===true
+                &&result.preflightEvidence?.sourceRevision===result.sourceRevision
+                &&result.preflightEvidence?.artifactIdentity===result.artifactIdentity;
+              const f0Exact=preflightExact&&result.f0Pass===true
+                &&result.f0Evidence?.sourceRevision===result.sourceRevision
+                &&result.f0Evidence?.artifactIdentity===result.artifactIdentity;
+              Object.assign(item,{
+                status:'ACTIVE',
+                currentStep:f0Exact?'VIBE_INTERNAL_PLAY':preflightExact?'ROBLOX_F0_SOURCE_PREFLIGHT':'TARGET_PLATFORM_TECHNICAL_VALIDATION',
+                canonicalState:f0Exact?'F0_SOURCE_PREFLIGHT_PASSED':preflightExact?'F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED':'TARGET_PLATFORM_REPAIR_REQUIRED',
+                robloxBuildOrPackagePassed:true,robloxBuildSourceRevision:result.sourceRevision,robloxBuildArtifactIdentity:result.artifactIdentity,
+                robloxBuildPassedAt:stamp,robloxBuildFailedAt:null,
+                robloxBuildPreflightPassed:preflightExact,robloxBuildPreflightPassedAt:preflightExact?stamp:null,robloxBuildPreflightFailedAt:preflightExact?null:stamp,robloxBuildPreflightEvidence:result.preflightEvidence||null,
+                robloxFoundationF0Passed:f0Exact,robloxFoundationF0PassedAt:f0Exact?stamp:null,robloxFoundationF0Evidence:f0Exact?result.f0Evidence:null,
+                robloxHeadlessFastMvpPassed:f0Exact,robloxHeadlessFastMvpEvidence:f0Exact?result.f0Evidence:null,robloxHeadlessFinalReviewPassed:false,
+                robloxExactRevisionPassed:f0Exact,
+                robloxRuntimeCandidateEvidence:null,robloxRuntimeFoundationPassed:false,robloxRuntimeFoundationEvidence:null,
+                robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
+                robloxServerClientBoundaryPassed:false,robloxDatastoreRejoinPassed:false,robloxMobileControlUiPassed:false,
+                robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
+                robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
+                robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,
+                robloxLastSuccessfulStage:f0Exact?'F0_SOURCE_PREFLIGHT':preflightExact?'VIBE_SHARED_MODEL_BUILD_PREFLIGHT':'TARGET_PLATFORM_BUILD_OR_PACKAGE',
+                robloxFailureStage:f0Exact?'VIBE_INTERNAL_PLAY':preflightExact?'F0_SOURCE_INTEGRITY':'VIBE_SHARED_MODEL_BUILD_PREFLIGHT',
+                robloxFailureSignature:f0Exact?'ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING':preflightExact?'ROBLOX_F0_SOURCE_PREFLIGHT_FAILED':'ROBLOX_BUILD_PREFLIGHT_BLOCKED',
+                routingBlockers:[f0Exact?'roblox-studio-internal-validation-pending':preflightExact?'roblox-f0-source-preflight-failed':'roblox-build-preflight-blocked'],
+                updatedAt:stamp,
+              });
+              passCount++;
+            }else{
+              Object.assign(item,{
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+                robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:result.sourceRevision,robloxBuildFailedAt:stamp,
+                robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:null,
+                robloxFoundationF0Passed:false,robloxFoundationF0PassedAt:null,robloxFoundationF0Evidence:null,
+                robloxHeadlessFastMvpPassed:false,robloxHeadlessFastMvpEvidence:null,robloxHeadlessFinalReviewPassed:false,
+                robloxRuntimeCandidateEvidence:null,robloxRuntimeFoundationPassed:false,robloxRuntimeFoundationEvidence:null,
+                robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
+                robloxServerClientBoundaryPassed:false,robloxDatastoreRejoinPassed:false,robloxMobileControlUiPassed:false,
+                robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
+                robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
+                robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,
+                robloxFailureStage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',robloxFailureSignature:result.failure||'ROBLOX_BUILD_PACKAGE_FAILED',
+                routingBlockers:[`roblox-build-package:${result.failure||'ROBLOX_BUILD_PACKAGE_FAILED'}`],updatedAt:stamp,
+              });
+              failCount++;
+            }
+          }
+          queue.robloxTechnicalParallelism=null;
+          queue.developmentGameWipMax=null;
+          queue.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
+          console.log(`ROBLOX_BUILD_PACKAGE_PASS_COUNT=${passCount}`);
+          console.log(`ROBLOX_BUILD_PACKAGE_FAIL_COUNT=${failCount}`);
+          console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
+          console.log('ROBLOX_PER_GAME_PROMOTION=YES');
+          console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
+          console.log('ROBLOX_BUILD_PREFLIGHT_PASS=NO');
+          console.log('ROBLOX_RUNTIME_PASS=NO');
+          console.log('ROBLOX_INDEPENDENT_QA_PASS=NO');
+          console.log('ROBLOX_REGRESSION_PASS=NO');
+          console.log('ROBLOX_FINAL_REVIEW_PASS=NO');
+          console.log('ROBLOX_RELEASE_CLAIM=NO');
+          NODE
+            git config user.name 'jaewoon-roblox-development'
+            git config user.email 'actions@users.noreply.github.com'
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'ROBLOX_TECHNICAL_PERSIST_NO_CHANGE=YES'
+              break
+            fi
+            git commit -m 'runtime: persist Roblox package checkpoint [skip ci]'
+            if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then
+              echo "ROBLOX_TECHNICAL_PERSIST_PUSH=PASS:$attempt"
+              break
+            fi
+            echo "ROBLOX_TECHNICAL_PERSIST_CONFLICT_RETRY=$attempt"
+            sleep 2
+          done
+      - name: Record isolated package failures without blocking other games
+        if: needs.technical-plan.outputs.count != '0' && needs.technical-worker.result != 'success'
+        run: |
+          echo 'ROBLOX_PACKAGE_FAILURE_ISOLATED=YES'
+          echo 'ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO'
+          echo 'ROBLOX_TECHNICAL_REPAIR_UNLIMITED=YES'
+      - name: Dispatch F0 source repair after exact blocker persist
+        if: needs.technical-plan.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURRENT_TARGETS_JSON: ${{ needs.technical-plan.outputs.targets_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-f0-repair-queue.json
+          repair_count="$(node - <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-f0-repair-queue.json','utf8'));
+          const ids=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').filter(x=>x.secondaryOwnerFocus!==true).map(x=>x.gameId));
+          let count=0;
+          for(const item of q.items||[]){
+            if(!ids.has(item.gameId))continue;
+            if(String(item.canonicalState||'').toUpperCase()!=='F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED')continue;
+            if(String(item.robloxFailureStage||'').toUpperCase()!=='F0_SOURCE_INTEGRITY')continue;
+            if(String(item.robloxFailureSignature||'').toUpperCase()!=='ROBLOX_F0_SOURCE_PREFLIGHT_FAILED')continue;
+            count++;
+          }
+          process.stdout.write(String(count));
+          NODE
+          )"
+          echo "ROBLOX_F0_SOURCE_REPAIR_COUNT=$repair_count"
+          if [[ "$repair_count" =~ ^[1-9][0-9]*$ ]]; then
+            git fetch --no-tags --depth=1 origin main
+            TARGET_SHA="$(git rev-parse origin/main)"
+            active_same_sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" | TARGET_SHA="$TARGET_SHA" CURRENT_RUN_ID="$GITHUB_RUN_ID" node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const states=new Set(['queued','pending','in_progress','requested']);const n=(j.workflow_runs||[]).filter(r=>String(r.id)!==String(process.env.CURRENT_RUN_ID||'')&&states.has(String(r.status||'').toLowerCase())&&String(r.head_sha||'')===String(process.env.TARGET_SHA||'')).length;process.stdout.write(String(n));})")"
+            echo "ROBLOX_F0_SOURCE_REPAIR_SAME_SHA_ACTIVE_RUNS=$active_same_sha"
+            if [ "$active_same_sha" -gt 0 ]; then
+              echo "ROBLOX_F0_SOURCE_REPAIR_DISPATCH=DEDUPED_EXISTING_RUN:$TARGET_SHA"
+            else
+              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+              echo 'ROBLOX_F0_SOURCE_REPAIR_DISPATCH=YES'
+            fi
+          else
+            echo 'ROBLOX_F0_SOURCE_REPAIR_DISPATCH=NO'
+          fi
+
+      - name: Dispatch next Roblox technical execution slice when other exact-source work remains
+        if: needs.technical-plan.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURRENT_TARGETS_JSON: ${{ needs.technical-plan.outputs.targets_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git checkout --detach origin/main
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-next-technical-queue.json
+          remaining="$(node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-next-technical-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const current=new Set(JSON.parse(process.env.CURRENT_TARGETS_JSON||'[]').map(x=>x.gameId));
+          let count=0;
+          for(const item of q.items||[]){
+            if(current.has(item.gameId))continue;
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
+            const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(!concurrentDefault&&!secondaryOwnerFocus)continue;
+            if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
+            if(!secondaryOwnerFocus){
+              if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
+              if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
+            }
+            const revision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
+            const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
+            const exactBuild=secondaryOwnerFocus
+              ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
+              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
+            if(exactBuild)continue;
+            if(secondaryOwnerFocus&&!['SOURCE_READY','BUILD_REPAIR_REQUIRED'].includes(String(item.ownerFocusRobloxAssetPipelineState||'').toUpperCase()))continue;
+            count++;
+          }
+          process.stdout.write(String(count));
+          NODE
+          )"
+          echo "ROBLOX_REMAINING_TECHNICAL_TARGETS=$remaining"
+          if [[ "$remaining" =~ ^[1-9][0-9]*$ ]]; then
+            git fetch --no-tags --depth=1 origin main
+            TARGET_SHA="$(git rev-parse origin/main)"
+            active_same_sha="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime.yml/runs?per_page=100" | TARGET_SHA="$TARGET_SHA" CURRENT_RUN_ID="$GITHUB_RUN_ID" node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const states=new Set(['queued','pending','in_progress','requested']);const n=(j.workflow_runs||[]).filter(r=>String(r.id)!==String(process.env.CURRENT_RUN_ID||'')&&states.has(String(r.status||'').toLowerCase())&&String(r.head_sha||'')===String(process.env.TARGET_SHA||'')).length;process.stdout.write(String(n));})")"
+            echo "ROBLOX_NEXT_TECHNICAL_SAME_SHA_ACTIVE_RUNS=$active_same_sha"
+            if [ "$active_same_sha" -gt 0 ]; then
+              echo "ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=DEDUPED_EXISTING_RUN:$TARGET_SHA"
+            else
+              gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+              echo 'ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=YES'
+            fi
+          else
+            echo 'ROBLOX_NEXT_TECHNICAL_BATCH_DISPATCH=NO'
+          fi
+      - name: Technical queue summary
+        if: needs.technical-plan.outputs.count == '0'
+        run: |
+          echo 'ROBLOX_TECHNICAL_TARGETS=NONE'
+          echo 'DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE'
+          echo 'ROBLOX_RUNNER_PARALLEL_CAPACITY=EXTERNAL_PROVIDER_MANAGED'
+          echo 'ROBLOX_PER_GAME_PROMOTION=YES'
+          echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
+          echo 'ROBLOX_BUILD_PREFLIGHT_PASS=NO'
+          echo 'ROBLOX_RUNTIME_PASS=NO'
+          echo 'ROBLOX_INDEPENDENT_QA_PASS=NO'
+          echo 'ROBLOX_REGRESSION_PASS=NO'
+          echo 'ROBLOX_FINAL_REVIEW_PASS=NO'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
+      - name: Route F0-passed artifacts to internal Studio QA without pre-F9 server publish
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git checkout --detach origin/main
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-local-f0-dispatch-queue.json
+          node - <<'NODE' > /tmp/roblox-local-f0-qa-ids
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-local-f0-dispatch-queue.json','utf8'));
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          for(const x of q.items||[]){
+            if(requested&&x.gameId!==requested)continue;
+            const revision=String(x.robloxSourceCommit||'').trim();
+            const artifact=String(x.robloxBuildArtifactIdentity||'').trim();
+            // 같은 소스의 제품 수리는 바이브가 처리하고, 새 소스가 생긴 뒤 실플레이를 재개한다.
+            if(x.robloxQualityBuildUpRequired===true&&String(x.robloxQualityBuildUpSourceRevision||'').trim()===revision){
+              console.error('ROBLOX_LOCAL_F0_QA_DEFERRED_SOURCE_REPAIR='+x.gameId);
+              continue;
+            }
+            const f0=x.robloxFoundationF0Evidence||{};
+            const exactF0=
+              String(x.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
+              &&x.robloxFoundationF0Passed===true
+              &&x.robloxBuildPreflightPassed===true
+              &&x.robloxBuildOrPackagePassed===true
+              &&x.robloxBuildSourceRevision===revision
+              &&f0.sourceRevision===revision
+              &&f0.artifactIdentity===artifact
+              &&Number(f0.artifactRunId||0)>0;
+            const stage=String(x.robloxFailureStage||'').toUpperCase();
+            const pendingStage=stage==='VIBE_INTERNAL_PLAY'||stage==='PRIVATE_RUNTIME_CANDIDATE_DEPLOY';
+            if(exactF0&&pendingStage)console.log(x.gameId);
+          }
+          NODE
+
+          candidate_count="$(wc -l < /tmp/roblox-local-f0-qa-ids | tr -d '[:space:]')"
+          candidate_count="${candidate_count:-0}"
+          dispatch_count=0
+          deduped_count=0
+
+          if [ "$candidate_count" -gt 0 ]; then
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100" > /tmp/roblox-local-f0-active-runs.json
+            if [ -n "$REQUESTED_GAME_ID" ]; then
+              exact_active="$(REQUESTED_GAME_ID="$REQUESTED_GAME_ID" node -e "
+                const fs=require('fs');
+                const payload=JSON.parse(fs.readFileSync('/tmp/roblox-local-f0-active-runs.json','utf8'));
+                const states=new Set(['queued','pending','in_progress','requested']);
+                const title='Roblox runtime foundation QA · '+String(process.env.REQUESTED_GAME_ID||'').trim();
+                process.stdout.write(String((payload.workflow_runs||[]).filter(run=>states.has(String(run.status||'').toLowerCase())&&String(run.display_title||'')===title).length));
+              ")"
+              if [ "$exact_active" -gt 0 ]; then
+                deduped_count=1
+                echo "ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:$REQUESTED_GAME_ID"
+              else
+                gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
+                dispatch_count=1
+                echo "ROBLOX_LOCAL_F0_QA_DISPATCH=$REQUESTED_GAME_ID"
+              fi
+            else
+              scan_active="$(node -e "
+                const fs=require('fs');
+                const payload=JSON.parse(fs.readFileSync('/tmp/roblox-local-f0-active-runs.json','utf8'));
+                const states=new Set(['queued','pending','in_progress','requested']);
+                const title='Roblox runtime foundation QA · scan';
+                process.stdout.write(String((payload.workflow_runs||[]).filter(run=>states.has(String(run.status||'').toLowerCase())&&String(run.display_title||'')===title).length));
+              ")"
+              if [ "$scan_active" -gt 0 ]; then
+                deduped_count="$candidate_count"
+                echo "ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DEDUPED_ACTIVE:candidates=$candidate_count"
+              else
+                gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main
+                dispatch_count=1
+                echo "ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DISPATCHED:candidates=$candidate_count"
+              fi
+            fi
+          fi
+
+          echo "ROBLOX_LOCAL_F0_QA_CANDIDATE_COUNT=$candidate_count"
+          echo "ROBLOX_LOCAL_F0_QA_DISPATCH_COUNT=$dispatch_count"
+          echo "ROBLOX_LOCAL_F0_QA_DEDUPED_COUNT=$deduped_count"
+          echo 'ROBLOX_PRE_F9_SERVER_PUBLISH=DISABLED'
+          echo 'ROBLOX_ONLY_FINAL_F9_SERVER_PUBLISH=YES'
+
+      - name: Dispatch Roblox HEADLESS FAST_MVP continuation
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH" main
+          git checkout --detach origin/main
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-continuation-dispatch-queue.json
+          state="$(node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {ownerFocusedSecondaryPlatformEligible,platformDevelopmentEligible} from './tools/company-selected-platform-router.mjs';
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-dispatch-queue.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');
+          let packagePending=0,preflightReady=0,f0Ready=0,externalBlocked=0;
+          const readyIds=new Set();
+          for(const item of q.items||[]){
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
+            const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
+            if(!concurrentDefault&&!secondaryOwnerFocus)continue;
+            if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
+            const revision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
+            const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
+            const exactBuild=secondaryOwnerFocus
+              ?item.ownerFocusRobloxBuildOrPackagePassed===true&&item.ownerFocusRobloxBuildSourceRevision===revision&&artifact.startsWith('sha256:')
+              :item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&artifact.startsWith('sha256:');
+            if(exactBuild){
+              const preflightPassed=secondaryOwnerFocus?item.ownerFocusRobloxBuildPreflightPassed:item.robloxBuildPreflightPassed;
+              const runtimePassed=secondaryOwnerFocus?item.ownerFocusRobloxRuntimePassed:item.robloxRuntimePassed;
+              const runtimeHarness=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeHarnessVersion:item.robloxRuntimeHarnessVersion;
+              const runtimeEvidence=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeEvidence:item.robloxRuntimeEvidence;
+              const securityHoldFlag=secondaryOwnerFocus?item.ownerFocusRobloxRuntimeSecurityHold:item.robloxRuntimeSecurityHold;
+              const f0Passed=secondaryOwnerFocus?false:item.robloxFoundationF0Passed===true;
+              const f0RepairRequired=!secondaryOwnerFocus
+                &&String(item.canonicalState||'').toUpperCase()==='F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED'
+                &&String(item.robloxFailureStage||'').toUpperCase()==='F0_SOURCE_INTEGRITY'
+                &&String(item.robloxFailureSignature||'').toUpperCase()==='ROBLOX_F0_SOURCE_PREFLIGHT_FAILED';
+              if(preflightPassed!==true){
+                preflightReady++;
+                readyIds.add(item.gameId);
+              }else if(!secondaryOwnerFocus&&f0Passed!==true&&!f0RepairRequired){
+                f0Ready++;
+                readyIds.add(item.gameId);
+              }else if(runtimePassed!==true||String(runtimeHarness||'')!==harnessVersion){
+                const securityBlocked=securityHoldFlag===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(runtimeEvidence?.failure);
+                if(securityBlocked)externalBlocked++;
+              }
+              continue;
+            }
+            if(secondaryOwnerFocus){
+              if(['SOURCE_READY','BUILD_REPAIR_REQUIRED'].includes(String(item.ownerFocusRobloxAssetPipelineState||'').toUpperCase()))packagePending++;
+              continue;
+            }
+            if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
+            if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
+            packagePending++;
+          }
+          fs.writeFileSync('/tmp/roblox-continuation-ready-ids',[...readyIds].filter(Boolean).sort().join('\n')+([...readyIds].length?'\n':''));
+          process.stdout.write(`${packagePending} ${preflightReady} ${f0Ready} ${externalBlocked}`);
+          NODE
+          )"
+          read -r package_pending preflight_ready f0_ready external_blocked <<<"$state"
+          echo "ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION=$package_pending"
+          echo "ROBLOX_PREFLIGHT_READY_COUNT=$preflight_ready"
+          echo "ROBLOX_F0_READY_COUNT=$f0_ready"
+          echo "ROBLOX_EXTERNAL_BLOCKED_COUNT=$external_blocked"
+          echo "ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION"
+          echo 'ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED_CAUSAL_REPAIR'
+          echo 'ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0'
+          echo 'ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED'
+          echo 'ROBLOX_HEADLESS_FAST_MVP_AUTODISPATCH=ENABLED'
+          echo 'ROBLOX_STUDIO_RUNTIME_REQUIRED=NO'
+          echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=DISABLED_HEADLESS_PATH'
+          echo 'ROBLOX_GLOBAL_PACKAGE_BARRIER=DISABLED'
+
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=100" > /tmp/roblox-continuation-active-runs.json
+          node <<'NODE' > /tmp/roblox-continuation-active-ids
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-active-runs.json','utf8'));
+          const states=new Set(['queued','pending','in_progress','requested']);
+          const prefix='Roblox shared preflight · ';
+          const ids=new Set();
+          for(const run of payload.workflow_runs||[]){
+            if(!states.has(String(run.status||'').toLowerCase()))continue;
+            const title=String(run.display_title||'');
+            if(!title.startsWith(prefix))continue;
+            const id=title.slice(prefix.length).trim();
+            if(/^[a-z0-9][a-z0-9-]{1,48}$/.test(id))ids.add(id);
+          }
+          for(const id of [...ids].sort())console.log(id);
+          NODE
+
+          active_continuations="$(grep -c . /tmp/roblox-continuation-active-ids || true)"
+          echo "ROBLOX_ACTIVE_CONTINUATIONS=$active_continuations"
+          echo "ROBLOX_ACTIVE_CONTINUATION_IDS=$(paste -sd, /tmp/roblox-continuation-active-ids 2>/dev/null || true)"
+
+          dispatch_count=0
+          deduped_count=0
+          while read -r id; do
+            [ -n "$id" ] || continue
+            if grep -Fxq "$id" /tmp/roblox-continuation-active-ids; then
+              deduped_count=$((deduped_count+1))
+              echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=DEDUPED_ACTIVE:$id"
+              continue
+            fi
+            gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            printf '%s\n' "$id" >> /tmp/roblox-continuation-active-ids
+            dispatch_count=$((dispatch_count+1))
+            echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES:$id"
+          done < /tmp/roblox-continuation-ready-ids
+
+          if [ "$dispatch_count" -eq 0 ] && [ "$deduped_count" -eq 0 ]; then
+            echo 'ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=NO'
+          fi
+          echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH_COUNT=$dispatch_count"
+          echo "ROBLOX_POST_PACKAGE_CONTINUATION_DEDUPED_COUNT=$deduped_count"

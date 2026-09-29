@@ -1,0 +1,154 @@
+name: PWA Command Bridge
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pwa-command-bridge.yml'
+      - 'tools/pwa-command-vibe2-task.mjs'
+      - 'qa/pwa-command-vibe2-task.test.mjs'
+      - 'command.html'
+      - 'manifest.webmanifest'
+      - 'sw.js'
+      - 'install.html'
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+  id-token: write
+
+concurrency:
+  group: pwa-command-bridge
+  cancel-in-progress: false
+
+env:
+  COMPANY_BRIDGE_URL: https://njpexgqvituaxrjpnqsi.supabase.co/functions/v1/company-bridge
+  VIBE2_BRANCH: vibe2-unreal-core
+
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate PWA bridge contract
+        run: |
+          set -euo pipefail
+          node --check tools/pwa-command-vibe2-task.mjs
+          node --test qa/pwa-command-vibe2-task.test.mjs
+
+      - name: Get short-lived GitHub OIDC token
+        shell: bash
+        run: |
+          set -euo pipefail
+          sep='?'
+          [[ "$ACTIONS_ID_TOKEN_REQUEST_URL" == *'?'* ]] && sep='&'
+          token="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}${sep}audience=jaewoon-company" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>process.stdout.write(JSON.parse(s).value||''))")"
+          test -n "$token"
+          echo "::add-mask::$token"
+          echo "COMPANY_OIDC_TOKEN=$token" >> "$GITHUB_ENV"
+
+      - name: Sync existing Vibe2 task states to PWA chat
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "$VIBE2_BRANCH" --quiet
+          git show "origin/$VIBE2_BRANCH:.vibe2/queue.json" > /tmp/vibe2-queue.json || printf '{"version":3,"tasks":[]}\n' > /tmp/vibe2-queue.json
+          node tools/pwa-command-vibe2-task.mjs sync --queue=/tmp/vibe2-queue.json --output=/tmp/pwa-sync.json
+          curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
+            -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
+            -H 'Content-Type: application/json' \
+            --data-binary @/tmp/pwa-sync.json > /tmp/pwa-sync-result.json
+          cat /tmp/pwa-sync-result.json
+
+      - name: Claim next PWA owner instruction
+        id: next
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '{"action":"next"}\n' > /tmp/pwa-next-request.json
+          curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
+            -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
+            -H 'Content-Type: application/json' \
+            --data-binary @/tmp/pwa-next-request.json > /tmp/pwa-next.json
+          node <<'NODE'
+          const fs=require('fs');
+          const data=JSON.parse(fs.readFileSync('/tmp/pwa-next.json','utf8'));
+          if(data.ok!==true)throw new Error(data.error||'PWA bridge returned failure');
+          const out=process.env.GITHUB_OUTPUT;
+          fs.appendFileSync(out,`has_work=${data.task?'true':'false'}\n`);
+          fs.appendFileSync(out,`task_id=${data.task?.id||''}\n`);
+          console.log(`PWA_COMMAND=${data.task?'CLAIMED':'IDLE'}`);
+          NODE
+
+      - name: Add owner instruction to Vibe2 control queue
+        if: steps.next.outputs.has_work == 'true'
+        id: ingest
+        env:
+          TASK_ID: ${{ steps.next.outputs.task_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-pwa-vibe-bridge'
+          git config user.email 'pwa-vibe-bridge@users.noreply.github.com'
+          success=0
+          for attempt in 1 2 3; do
+            git fetch origin "$VIBE2_BRANCH" main --quiet
+            work="/tmp/pwa-vibe2-${GITHUB_RUN_ID}-${attempt}"
+            rm -rf "$work"
+            git worktree prune
+            git worktree add --detach "$work" "origin/$VIBE2_BRANCH" >/dev/null
+            if ! node "$GITHUB_WORKSPACE/tools/pwa-command-vibe2-task.mjs" ingest \
+              --task=/tmp/pwa-next.json \
+              --queue="$work/.vibe2/queue.json" \
+              --catalog="$GITHUB_WORKSPACE/game-catalog.json" \
+              --status="$GITHUB_WORKSPACE/company-status.json" \
+              --root="$GITHUB_WORKSPACE" \
+              --output="$work/.vibe2/queue.json"; then
+              git worktree remove --force "$work" >/dev/null 2>&1 || true
+              break
+            fi
+            cd "$work"
+            git add .vibe2/queue.json
+            if git diff --cached --quiet; then
+              success=1
+            else
+              git commit -m "vibe2: enqueue PWA owner directive ${TASK_ID} [skip ci]"
+              if git push origin "HEAD:$VIBE2_BRANCH"; then success=1; fi
+            fi
+            cd "$GITHUB_WORKSPACE"
+            git worktree remove --force "$work" >/dev/null 2>&1 || true
+            [ "$success" = 1 ] && break
+            sleep $((attempt * 2))
+          done
+          if [ "$success" != 1 ]; then
+            printf '{"action":"sync","updates":[{"taskId":"%s","status":"needs_input","blocker":"Vibe2 큐 연결 실패. 다음 브리지 실행에서 다시 확인 필요."}]}\n' "$TASK_ID" > /tmp/pwa-ingest-fail.json
+            curl -fsS -X POST "$COMPANY_BRIDGE_URL" \
+              -H "Authorization: Bearer $COMPANY_OIDC_TOKEN" \
+              -H 'Content-Type: application/json' \
+              --data-binary @/tmp/pwa-ingest-fail.json || true
+            exit 1
+          fi
+          echo 'queued=true' >> "$GITHUB_OUTPUT"
+          echo 'PWA_VIBE_QUEUE_WRITE=PASS'
+
+      - name: Start existing Vibe2 worker immediately
+        if: steps.ingest.outputs.queued == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'PWA_VIBE2_DISPATCH=PASS'

@@ -1,0 +1,304 @@
+name: Company Evolution QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'company-directive.json'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'game-catalog.json'
+      - 'company-status.json'
+      - 'development-queue.json'
+      - 'assets/artbook-runtime.js'
+      - 'assets/homepage-enhancements.js'
+      - 'assets/homepage-layout-v2.js'
+      - 'assets/company-quality-bar.js'
+      - 'assets/vibe-company-orchestration-bridge.js'
+      - 'tools/homepage-manager.mjs'
+      - 'tools/production-classification.mjs'
+      - 'tools/artbook-*.mjs'
+      - 'tools/company-*.mjs'
+      - 'tools/vibe2-auto-planner.mjs'
+      - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-source-worker.mjs'
+      - 'tools/vibe2-incremental-qa.mjs'
+      - 'tools/vibe2-learning-motor.mjs'
+      - 'tools/vibe2-practice-distillation.mjs'
+      - 'tools/vibe2-release-baseline-queue.mjs'
+      - 'qa/artbook-*.test.mjs'
+      - 'qa/company-*.test.mjs'
+      - 'qa/design-pipeline-no-artbook-regression.test.mjs'
+      - 'qa/production-diversity.test.mjs'
+      - 'qa/release-stale-artifact-guard.test.mjs'
+      - 'qa/tier1-development-baseline-gate.test.mjs'
+      - 'qa/vibe2-auto-planner.test.mjs'
+      - 'qa/vibe2-experience-control.test.mjs'
+      - 'qa/vibe2-incremental-qa.test.mjs'
+      - 'qa/vibe2-learning-motor.test.mjs'
+      - 'qa/vibe2-practice-distillation.test.mjs'
+      - 'qa/vibe2-release-dispatch-recovery.test.mjs'
+      - 'qa/vibe2-source-worker.test.mjs'
+      - 'design/**/android-runtime-validation.json'
+      - 'design/**/independent-release-qa.json'
+      - 'design/**/unity-android-build.json'
+      - 'design/**/vibe2-release-implementation.json'
+      - '.github/workflows/vibe2-24h-runner.yml'
+      - '.github/workflows/vibe2-candidate-release.yml'
+      - '.github/workflows/vibe2-unity-release-result.yml'
+      - '.github/workflows/company-system-ai-workers.yml'
+      - '.github/workflows/company-evolution-qa.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'company-directive.json'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'game-catalog.json'
+      - 'company-status.json'
+      - 'development-queue.json'
+      - 'assets/artbook-runtime.js'
+      - 'assets/homepage-enhancements.js'
+      - 'assets/homepage-layout-v2.js'
+      - 'assets/company-quality-bar.js'
+      - 'assets/vibe-company-orchestration-bridge.js'
+      - 'tools/homepage-manager.mjs'
+      - 'tools/production-classification.mjs'
+      - 'tools/artbook-*.mjs'
+      - 'tools/company-*.mjs'
+      - 'tools/vibe2-auto-planner.mjs'
+      - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-source-worker.mjs'
+      - 'tools/vibe2-incremental-qa.mjs'
+      - 'tools/vibe2-learning-motor.mjs'
+      - 'tools/vibe2-practice-distillation.mjs'
+      - 'tools/vibe2-release-baseline-queue.mjs'
+      - 'qa/artbook-*.test.mjs'
+      - 'qa/company-*.test.mjs'
+      - 'qa/design-pipeline-no-artbook-regression.test.mjs'
+      - 'qa/production-diversity.test.mjs'
+      - 'qa/release-stale-artifact-guard.test.mjs'
+      - 'qa/tier1-development-baseline-gate.test.mjs'
+      - 'qa/vibe2-auto-planner.test.mjs'
+      - 'qa/vibe2-experience-control.test.mjs'
+      - 'qa/vibe2-incremental-qa.test.mjs'
+      - 'qa/vibe2-learning-motor.test.mjs'
+      - 'qa/vibe2-practice-distillation.test.mjs'
+      - 'qa/vibe2-release-dispatch-recovery.test.mjs'
+      - 'qa/vibe2-source-worker.test.mjs'
+      - 'design/**/android-runtime-validation.json'
+      - 'design/**/independent-release-qa.json'
+      - 'design/**/unity-android-build.json'
+      - 'design/**/vibe2-release-implementation.json'
+      - '.github/workflows/vibe2-24h-runner.yml'
+      - '.github/workflows/vibe2-candidate-release.yml'
+      - '.github/workflows/vibe2-unity-release-result.yml'
+      - '.github/workflows/company-system-ai-workers.yml'
+      - '.github/workflows/company-evolution-qa.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check active JavaScript syntax
+        run: |
+          set -euo pipefail
+          node --input-type=module --check < assets/artbook-runtime.js
+          node --input-type=module --check < assets/homepage-enhancements.js
+          node --input-type=module --check < assets/homepage-layout-v2.js
+          node --input-type=module --check < assets/company-quality-bar.js
+          node --input-type=module --check < assets/vibe-company-orchestration-bridge.js
+          node --check tools/homepage-manager.mjs
+          node --check tools/production-classification.mjs
+          node --check tools/artbook-fact-pack.mjs
+          node --check tools/company-design-cycle.mjs
+          node --check tools/company-release-production-cycle.mjs
+          node --check tools/company-release-stale-artifact-guard.mjs
+          node --check tools/company-development-web-gameplay-validation.mjs
+          node --check tools/vibe2-auto-planner.mjs
+          node --check tools/vibe2-continuous-runner.mjs
+          node --check tools/vibe2-source-worker.mjs
+          node --check tools/vibe2-incremental-qa.mjs
+          node --check tools/vibe2-learning-motor.mjs
+          node --check tools/vibe2-practice-distillation.mjs
+          node --check tools/company-baseline-gate.mjs
+          node --check tools/artbook-production-pipeline.mjs
+          node --check qa/company-release-production-cycle.test.mjs
+          node --check qa/release-stale-artifact-guard.test.mjs
+          node --check qa/company-design-pre-gate-resume.test.mjs
+          node --check qa/tier1-development-baseline-gate.test.mjs
+
+      - name: Validate centralized production policy contract
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+          const machineSource='company-learning/platform-release-roadmap.json';
+          const policy=JSON.parse(fs.readFileSync(machineSource,'utf8'));
+          if(directive.policyDocument!==machineSource||directive.machineSourceOfTruth!==machineSource)throw new Error('machine settings must point to canonical platform release roadmap');
+          if(directive.authority!=='MACHINE_EXECUTION_CONTRACT')throw new Error('company directive machine authority missing');
+          if(policy.authority!=='MACHINE_EXECUTION_CONTRACT'||policy.machineSourceOfTruth!==machineSource||policy.humanDocumentRequired!==false)throw new Error('canonical machine policy authority invalid');
+          const lifecycle=policy.developmentLifecycleMachine?.stages||[];
+          for(const stage of ['MINIMUM_DESIGN_CONTRACT_READY','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','PUBLIC_RELEASE_READY','PUBLIC_RELEASE']){
+            if(!lifecycle.includes(stage))throw new Error(`canonical lifecycle stage missing: ${stage}`);
+          }
+          const roles=['planning','graphics','development','qa','audio'];
+          const pool=[...new Set(directive.ai?.modelPool||[])];
+          const reviewCount=Number(directive.ai?.departmentReviewModelCount||1);
+          const leads=roles.map(role=>directive.ai?.departmentLeadModels?.[role]).filter(Boolean);
+          const distinctLeads=[...new Set(leads)];
+          if(reviewCount!==1||pool.length<1)throw new Error('direct lead review contract missing');
+          if(directive.ai?.departmentLeadModelsMustBeDistinct!==false||directive.ai?.departmentLeadAssignmentRemappable!==true||Number(directive.ai?.minDistinctLeadModelsAcrossDepartments||1)!==1)throw new Error('lead distinctness efficiency contract missing');
+          if(leads.some(model=>!pool.includes(model)))throw new Error('department lead model must be in modelPool');
+          if(directive.ai?.departmentRepresentativeAuthoredByLead!==false||directive.ai?.departmentRebuttalAuthoredByLead!==false||directive.ai?.meeting?.designOnlyMeetingRequired!==false||Number(directive.ai?.meeting?.crossDepartmentRebuttalRounds||0)!==0)throw new Error('direct lead no-meeting contract missing');
+          if(directive.production?.canonicalField!=='productionClass')throw new Error('productionClass must remain canonical');
+          if(directive.production?.fixedClassCounts!==false)throw new Error('production class counts must remain dynamic');
+          if(directive.production?.numericLabelsAreAliasesOnly!==true||directive.production?.numericLabelsOwnerRemappable!==true)throw new Error('numeric labels must remain remappable aliases only');
+          const dev=directive.classes?.DEVELOPMENT_CONFIRMED||{};
+          if(dev.executionMode!=='UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_DUAL_PLATFORM'||dev.resumeFromLatestEvidence!==true||dev.aiMayInventValidationPass!==false||dev.admissionAuthority!=='MINIMUM_DUAL_PLATFORM_DESIGN_READY'||dev.upperPlatformAdmissionAuthority!=='UPPER_PLATFORM_DEVELOPMENT_READY'||dev.strictDesignScoreRequiredForAdmission!==false||dev.strictDesignReviewRunsInParallel!==true||dev.targetPlatformMayRunImmediately!==false||dev.unityWebDevelopmentMayRunImmediately!==true||dev.platformSpecificValidationRequired!==true||dev.materialChangeRequiresTargetedRevalidation!==true||dev.unityWebValidationSurface?.nativeGateAuthority!==true)throw new Error('DEVELOPMENT_CONFIRMED Unity Web upper-platform settings missing');
+          const release=directive.classes?.RELEASE_CONFIRMED||{};
+          if(release.executionMode!=='GATED_DIRECT_RELEASE_PRODUCTION'||release.resumeFromLatestEvidence!==true||release.target!=='PROJECT_SELECTED_PLATFORM'||release.targetPlatformProjectRequired!==true||release.vibe2PrimaryDeveloper!==true||release.coreDesignLock!==true)throw new Error('RELEASE_CONFIRMED selected-platform gated direct settings missing');
+          if(release.aiMayInventBuildPass!==false||release.aiMayInventDeviceValidationPass!==false||release.aiMayInventIndependentQaPass!==false)throw new Error('release anti-fake evidence settings missing');
+          if(release.sourceTreeBindingRequired!==true||release.currentBuildEvidenceBindingRequired!==true||release.sourceChangeInvalidatesOldBuildValidation!==true||release.buildPreflightIsNotFinalApproval!==true||release.finalReviewMustReadSameCurrentBuildRuntimeQaEvidence!==true||release.independentQaSeparatedFromVibe2SelfCheck!==true||release.finalArtbookOnlyAfterReleaseReady!==true)throw new Error('release target-platform source/build/runtime/QA binding or artbook gate missing');
+          const releaseFlow=release.requiredFlow||[];
+          const sourceBind=releaseFlow.indexOf('BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE');
+          const build=releaseFlow.indexOf('TARGET_PLATFORM_BUILD_OR_PACKAGE');
+          const runtime=releaseFlow.indexOf('TARGET_PLATFORM_RUNTIME_VALIDATION');
+          const independentQa=releaseFlow.indexOf('INDEPENDENT_QA_AND_REGRESSION');
+          const finalReview=releaseFlow.indexOf('FINAL_RELEASE_REVIEW');
+          if(!(sourceBind>=0&&build>sourceBind&&runtime>build&&independentQa>runtime&&finalReview>independentQa))throw new Error('selected-platform direct-native release review order invalid');
+          for(const state of ['BUILDING','WAITING_BUILD','WAITING_RUNTIME_VALIDATION'])if(!(release.waitingStates||[]).includes(state))throw new Error(`release waiting state missing: ${state}`);
+          for(const state of ['FIX_AND_REVERIFY','RELEASE_BLOCKED','RELEASE_READY'])if(!(release.releaseStates||[]).includes(state))throw new Error(`release state missing: ${state}`);
+          console.log('CENTRAL_POLICY=PASS');
+          console.log(`DEPARTMENT_LEAD_DISTINCTNESS_REQUIRED=NO`);
+          console.log(`CONFIGURED_DISTINCT_DEPARTMENT_LEADS=${distinctLeads.length}`);
+          console.log('DEVELOPMENT_DIRECT_NATIVE_POLICY=PASS');
+          console.log('RELEASE_GATED_DIRECT_POLICY=PASS');
+          console.log('RELEASE_SELECTED_PLATFORM_REVIEW_POLICY=PASS');
+          NODE
+
+      - name: Validate production pipeline contracts
+        run: |
+          set -euo pipefail
+          grep -Fq 'Pull configured free department models' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'DEPARTMENT_LEAD_PREFLIGHT=PASS' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'tools/company-release-production-cycle.mjs' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'design/**/vibe2-release-implementation.json' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'design/**/unity-android-build.json' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'design/**/android-runtime-validation.json' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'design/**/independent-release-qa.json' .github/workflows/artbook-free-department-bots.yml
+          grep -Fq "'unity-games/**'" .github/workflows/artbook-free-department-bots.yml
+          grep -Fq 'DEVELOPMENT_EXECUTION_MODE=UNITY_WEB_FLOOR_THEN_DIRECT_NATIVE_DUAL_PLATFORM' tools/artbook-production-pipeline.mjs
+          grep -Fq 'RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION' tools/artbook-production-pipeline.mjs
+          grep -Fq 'RELEASE_CURRENT_BUILD_EVIDENCE_BINDING=REQUIRED' tools/artbook-production-pipeline.mjs
+          grep -Fq 'currentUnitySourceTreeSha' tools/company-release-production-cycle.mjs
+          grep -Fq 'boundToCurrentSource' tools/company-release-production-cycle.mjs
+          grep -Fq 'boundToImplementation' tools/company-release-production-cycle.mjs
+          grep -Fq 'BUILDING' tools/company-release-production-cycle.mjs
+          grep -Fq 'WAITING_BUILD' tools/company-release-production-cycle.mjs
+          grep -Fq 'WAITING_DEVICE_VALIDATION' tools/company-release-production-cycle.mjs
+          grep -Fq 'FIX_AND_REVERIFY' tools/company-release-production-cycle.mjs
+          grep -Fq 'RELEASE_BLOCKED' tools/company-release-production-cycle.mjs
+          grep -Fq 'RELEASE_READY' tools/company-release-production-cycle.mjs
+          grep -Fq 'vibe2PrimaryDeveloper:true' tools/company-release-production-cycle.mjs
+          grep -Fq 'currentBuildEvidenceBindingRequired:true' tools/company-release-production-cycle.mjs
+          grep -Fq 'finalDepartmentRiskWatchUsesBuildRuntimeQaEvidence:true' tools/company-release-production-cycle.mjs
+          grep -Fq 'FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_RUNTIME_PASS' tools/company-release-production-cycle.mjs
+          grep -Fq 'FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_INDEPENDENT_QA_PASS' tools/company-release-production-cycle.mjs
+          grep -Fq 'SOURCE_TO_BUILD_BINDING=PASS' tools/company-release-production-cycle.mjs
+          grep -Fq 'FINAL_DEPARTMENT_REVIEW_BUILD_RUNTIME_QA_BINDING=PASS' tools/company-release-production-cycle.mjs
+          grep -Fq 'FINAL_ARTBOOK_REVISION=CREATED_AFTER_RELEASE_READY' tools/company-release-production-cycle.mjs
+          node --test qa/artbook-editorial-role-contract.test.mjs
+          node --test qa/company-release-production-cycle.test.mjs
+          node --test qa/release-stale-artifact-guard.test.mjs
+          node --test qa/tier1-development-baseline-gate.test.mjs
+          node --test qa/company-design-pre-gate-resume.test.mjs
+          if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/company-design-cycle.mjs tools/company-release-production-cycle.mjs tools/company-baseline-gate.mjs tools/artbook-production-pipeline.mjs; then
+            echo 'paid/external AI key leaked into free multimodel path' >&2
+            exit 1
+          fi
+          echo 'PRODUCTION_PIPELINE_CONTRACT=PASS'
+
+      - name: Validate DEVELOPMENT_CONFIRMED evidence cannot be faked
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const gate=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
+          for(const token of ['minimum-dual-platform-design-required','upper-platform-development-ready-required','upperPlatformReadiness','targetEvidenceFile','development-revalidation.json','selected-native-platform-required-for-technical-validation','False DEVELOPMENT_BASELINE_READY','supportingOnly:true'])if(!gate.includes(token))throw new Error(`development gate missing: ${token}`);
+          if(gate.includes("webGameplay:{required:true"))throw new Error('legacy generic Web gameplay may not become upper-platform admission authority');
+          console.log('DEVELOPMENT_BASELINE_EVIDENCE_CONTRACT=PASS');
+          console.log('DEVELOPMENT_ADMISSION=MINIMUM_DESIGN_PLUS_UNITY_WEB_READINESS_PLUS_NATIVE_EVIDENCE');
+          console.log('UNITY_WEB_UPPER_PLATFORM_ADMISSION_AUTHORITY=UPPER_PLATFORM_DEVELOPMENT_READY');
+          NODE
+
+      - name: Validate RELEASE_CONFIRMED evidence and Vibe2 handoff cannot be faked
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const cycle=fs.readFileSync('tools/company-release-production-cycle.mjs','utf8');
+          const candidate=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+          const unityResult=fs.readFileSync('.github/workflows/vibe2-unity-release-result.yml','utf8');
+          const vibeRunner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+          for(const token of ['design-development-baseline.json','vibe2-release-implementation.json','unity-android-build.json','android-runtime-validation.json','independent-release-qa.json','buildIdentity','evidenceForBuild','core-design-lock-violation','RELEASE_ARTBOOK_PROVENANCE_GATE'])if(!cycle.includes(token))throw new Error(`release evidence contract missing: ${token}`);
+          for(const token of ['aiMayInventBuildPass:false','aiMayInventDeviceValidationPass:false','aiMayInventIndependentQaPass:false','currentSourceTreeBindingRequired:true','currentBuildEvidenceBindingRequired:true','sourceChangeInvalidatesOldBuildValidation:true','finalDepartmentRiskWatchUsesBuildRuntimeQaEvidence:true','finalArtbookOnlyAfterReleaseReady:true'])if(!cycle.includes(token))throw new Error(`release safety contract missing: ${token}`);
+          for(const token of ['FINAL_RELEASE_REVIEW','FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_RUNTIME_PASS','FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_INDEPENDENT_QA_PASS','release-risk-watch-preflight.json','release-risk-watch.json','FINAL_DEPARTMENT_REVIEW_BUILD_RUNTIME_QA_BINDING=PASS'])if(!cycle.includes(token))throw new Error(`release final department review contract missing: ${token}`);
+          for(const token of ['productionClass','DEVELOPMENT_BASELINE_READY','development-baseline-required'])if(!candidate.includes(token))throw new Error(`candidate release baseline guard missing: ${token}`);
+          for(const token of ['PARTIAL_BUILD_VERIFIED','developmentBaselineImplemented:false','INDEPENDENT_RELEASE_QA=NOT_ASSERTED','DEVICE_VALIDATION=NOT_ASSERTED','gh run download','apk_sha256'])if(!unityResult.includes(token))throw new Error(`Unity result evidence separation missing: ${token}`);
+          if(unityResult.includes('--independent-qa=PASS'))throw new Error('APK build workflow must not claim independent release QA PASS');
+          const baselineExec=vibeRunner.indexOf('node /tmp/vibe2-main/tools/vibe2-release-baseline-queue.mjs');
+          const genericExec=vibeRunner.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs');
+          if(baselineExec<0||genericExec<=baselineExec)throw new Error('Vibe2 release-baseline queue execution must run before generic autoplan execution');
+          if(!vibeRunner.includes("'unity-games/**'"))throw new Error('Vibe2 runner must resume after Unity source changes');
+          const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+          const release=directive.classes?.RELEASE_CONFIRMED||{};
+          if(release.developmentBaselineRequired!==true||release.target!=='PROJECT_SELECTED_PLATFORM'||release.targetPlatformProjectRequired!==true||release.sourceTreeBindingRequired!==true||release.currentBuildEvidenceBindingRequired!==true||release.sourceChangeInvalidatesOldBuildValidation!==true||release.buildPreflightIsNotFinalApproval!==true||release.finalReviewMustReadSameCurrentBuildRuntimeQaEvidence!==true||release.independentQaSeparatedFromVibe2SelfCheck!==true)throw new Error('release directive selected-platform evidence gate incomplete');
+          console.log('RELEASE_BASELINE_EVIDENCE_CONTRACT=PASS');
+          console.log('RELEASE_FINAL_DEPARTMENT_REVIEW_BINDING=PASS');
+          console.log('VIBE2_RELEASE_HANDOFF_CONTRACT=PASS');
+          NODE
+
+      - name: Validate homepage manager contract
+        run: |
+          set -euo pipefail
+          node qa/game-catalog-normalization.test.mjs
+          node --test qa/homepage-manager-publication-order.test.mjs
+
+      - name: Validate current artbook safety
+        run: |
+          set -euo pipefail
+          node --test qa/artbook-production-pipeline.test.mjs
+          node --test qa/company-development-queue-reconcile.test.mjs
+          node --test qa/production-diversity.test.mjs
+          node --test qa/company-status-sync-direct-native.test.mjs qa/design-pipeline-no-artbook-regression.test.mjs
+
+      - name: Validate learning and deterministic recovery contracts
+        run: |
+          set -euo pipefail
+          node --test qa/company-recovery-learning.test.mjs qa/vibe2-experience-control.test.mjs
+          node --test qa/company-design-checkpoint-recovery.test.mjs qa/vibe2-release-dispatch-recovery.test.mjs
+          node --test qa/company-system-ai-evolution.test.mjs qa/company-system-ai-supervision-loop.test.mjs
+
+      - name: Validate Vibe presentation pipeline and runtime contract
+        run: |
+          set -euo pipefail
+          node --test qa/company-development-roblox-headless-fast-mvp.test.mjs
+          node --test qa/vibe2-auto-planner.test.mjs
+          node --test qa/vibe2-source-worker.test.mjs
+          node --test qa/vibe2-incremental-qa.test.mjs
+          node --test qa/vibe2-learning-motor.test.mjs
+          node --test qa/vibe2-practice-distillation.test.mjs
+          echo 'VIBE_PRESENTATION_PIPELINE_QA=PASS'
+
+      - name: Validate experience quality-bar integration
+        run: |
+          set -euo pipefail
+          node --test qa/company-strict-learning-delta-contract.test.mjs qa/company-platform-score-learning-contract.test.mjs qa/company-native-learning-real-evidence-contract.test.mjs

@@ -1,0 +1,59 @@
+name: One Shot Schema15 Runtime Worker Fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/one-shot-schema15-runtime-worker-fix.yml
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Bind DEVELOPMENT runtime to canonical Web schema
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file='.github/workflows/company-development-confirmed-runtime.yml';
+          let text=fs.readFileSync(file,'utf8');
+          const replacements=[
+            ["- name: Resolve DEVELOPMENT_CONFIRMED games missing fresh schema13 Web 80-point evidence","- name: Resolve DEVELOPMENT_CONFIRMED games missing fresh current-schema Web 80-point evidence"],
+            ["import {evaluateWebValidationEvidence,sha256Text,WEB_HOMEPAGE_MINIMUM} from './tools/company-web-validation-evidence-contract.mjs';","import {evaluateWebValidationEvidence,sha256Text,WEB_HOMEPAGE_MINIMUM,WEB_VALIDATION_SCHEMA_VERSION} from './tools/company-web-validation-evidence-contract.mjs';"],
+            ["console.log('WEB_VALIDATION_SCHEMA_MINIMUM=13');","console.log(`WEB_VALIDATION_SCHEMA_MINIMUM=${WEB_VALIDATION_SCHEMA_VERSION}`);"],
+            ["import {execFileSync} from 'node:child_process';\n          const item={","import {execFileSync} from 'node:child_process';\n          import {WEB_VALIDATION_SCHEMA_VERSION} from './tools/company-web-validation-evidence-contract.mjs';\n          const item={"],
+            ["Number(initialReport.validationSchemaVersion||initialReport.version)!==13","Number(initialReport.validationSchemaVersion||initialReport.version)!==WEB_VALIDATION_SCHEMA_VERSION"],
+            ["item.webInitialCycleValidationSchemaVersion!==13","item.webInitialCycleValidationSchemaVersion!==WEB_VALIDATION_SCHEMA_VERSION"],
+            ["WEB_FINAL_REQUIRES_VALID_INITIAL_SCHEMA13_AND_MUSIC_PASS","WEB_FINAL_REQUIRES_VALID_INITIAL_CURRENT_SCHEMA_AND_MUSIC_PASS"],
+            ["Number(persistedInitial.validationSchemaVersion||persistedInitial.version)!==13","Number(persistedInitial.validationSchemaVersion||persistedInitial.version)!==WEB_VALIDATION_SCHEMA_VERSION"],
+            ["Number(report.validationSchemaVersion||report.version)!==13","Number(report.validationSchemaVersion||report.version)!==WEB_VALIDATION_SCHEMA_VERSION"],
+          ];
+          for(const [from,to] of replacements){
+            const count=text.split(from).length-1;
+            if(count!==1)throw new Error(`EXPECTED_EXACTLY_ONE_MATCH:${count}:${from}`);
+            text=text.replace(from,to);
+          }
+          if(/validationSchemaVersion\|\|initialReport\.version\)!==13/.test(text)||/webInitialCycleValidationSchemaVersion!==13/.test(text)||/validationSchemaVersion\|\|persistedInitial\.version\)!==13/.test(text)||/validationSchemaVersion\|\|report\.version\)!==13/.test(text))throw new Error('STALE_SCHEMA13_RUNTIME_CHECK_REMAINS');
+          fs.writeFileSync(file,text);
+          NODE
+          rm '.github/workflows/one-shot-schema15-runtime-worker-fix.yml'
+          node --check tools/company-web-validation-evidence-contract.mjs
+          git diff --check
+          git config user.name 'jaewoon-company-ai'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -- .github/workflows/company-development-confirmed-runtime.yml .github/workflows/one-shot-schema15-runtime-worker-fix.yml
+          git commit -m 'fix: bind DEVELOPMENT runtime to canonical Web schema'
+          git pull --rebase origin main
+          git push origin HEAD:main
+          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main

@@ -1,0 +1,57 @@
+{
+  "version": 6,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-09",
+  "department": "planning",
+  "status": "REVIEWED",
+  "round": 2,
+  "runner": {
+    "type": "vibe2-local-open-model-department-bot",
+    "model": "qwen3:0.6b",
+    "localInference": true,
+    "paidApi": false,
+    "independentFirstRoundCompleted": true,
+    "onePeerPerGeneration": true
+  },
+  "protocol": "PEER_IMPROVEMENT_STAR_5",
+  "reviewScope": "OTHER_DEPARTMENTS_ONLY",
+  "reviewedDepartments": [
+    "graphics",
+    "development",
+    "qa",
+    "balance"
+  ],
+  "ratingScale": {
+    "type": "STARS",
+    "min": 1,
+    "max": 5
+  },
+  "peerReviews": [
+    {
+      "targetDepartment": "graphics",
+      "improvement": "본부 결과물의 개선점은 'Unity 코어 및 애니메이션 스프라이트'를 추가로 설명하여 재미있는 내용을 더해 줍니다.",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "development",
+      "improvement": "본개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "qa",
+      "improvement": "본 개발/출시 승인이나 게임 전체 품질점수가 아니라 해당 부서 결과물의 이번 검토 점수",
+      "stars": 5
+    },
+    {
+      "targetDepartment": "balance",
+      "improvement": "본 결과물은 RPG 밸런스 부서 1차 독립 아트북의 전략적 구성 요소를 명확히 지분하고 있으며, 다만 '전투 성취도'와 '역사 캐릭터'의 구현 방식을 개선할 수 있다.",
+      "stars": 5
+    }
+  ],
+  "guard": {
+    "mayRewriteOtherDepartments": false,
+    "mayEvaluateOwnDepartment": false,
+    "productionApproval": false,
+    "starRatingIsProductionApproval": false
+  }
+}

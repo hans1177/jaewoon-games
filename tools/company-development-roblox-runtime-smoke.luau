@@ -1,0 +1,170 @@
+-- Actual Roblox Studio runtime smoke driven from Studio --task RunScript.
+-- The command script injects one server probe and one client probe, then launches
+-- a real one-server/one-client StudioTestService multiplayer session.
+-- PASS sentinels are assembled at runtime so Studio echoing this source cannot
+-- be mistaken for successful execution by the outer workflow.
+
+local StudioTestService = game:GetService("StudioTestService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+local StarterPlayer = game:GetService("StarterPlayer")
+
+local PROBE = "__JaewoonCompanyRuntimeProbe"
+local rootThread = coroutine.running()
+local completed = false
+
+-- Never let a broken StudioTestService teardown occupy the continuation queue
+-- until the outer workflow timeout. If ExecuteMultiplayerTestAsync stays yielded,
+-- cancel this RunScript root coroutine so --quitAfterExecution can close Studio.
+task.delay(90, function()
+    if completed then
+        return
+    end
+    completed = true
+    print("ROBLOX_RUNTIME_SMOKE=FAIL")
+    print("ROBLOX_RUNTIME_ERROR=EDIT_MODEL_WATCHDOG_TIMEOUT")
+    task.wait(0.5)
+    task.cancel(rootThread)
+end)
+
+for _, container in ipairs({ReplicatedStorage, ServerScriptService, StarterPlayer.StarterPlayerScripts}) do
+    local old = container:FindFirstChild(PROBE)
+    if old then
+        old:Destroy()
+    end
+end
+
+local remote = Instance.new("RemoteEvent")
+remote.Name = PROBE
+remote.Parent = ReplicatedStorage
+
+local serverProbe = Instance.new("Script")
+serverProbe.Name = PROBE
+serverProbe.Source = [==[
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StudioTestService = game:GetService("StudioTestService")
+
+local remote = ReplicatedStorage:WaitForChild("__JaewoonCompanyRuntimeProbe", 10)
+if not remote then
+    StudioTestService:EndTest("FAIL:REMOTE_MISSING")
+    return
+end
+
+local clientReady = false
+local characterReady = false
+local serverAckSent = false
+local clientAckReceived = false
+local finished = false
+
+local function finish(result)
+    if finished then
+        return
+    end
+    finished = true
+    StudioTestService:EndTest(result)
+end
+
+local function maybeFinish()
+    if clientReady and characterReady and serverAckSent and clientAckReceived then
+        finish("PASS:PLAYER_CHARACTER_CLIENT_SERVER_ROUNDTRIP")
+    end
+end
+
+remote.OnServerEvent:Connect(function(player, message)
+    if message == "CLIENT_READY" then
+        clientReady = true
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character and (character:FindFirstChildOfClass("Humanoid") or character:WaitForChild("Humanoid", 10))
+        characterReady = humanoid ~= nil
+        remote:FireClient(player, "SERVER_ACK")
+        serverAckSent = true
+        maybeFinish()
+        return
+    end
+    if message == "CLIENT_ACK_RECEIVED" then
+        clientAckReceived = true
+        maybeFinish()
+    end
+end)
+
+task.spawn(function()
+    local deadline = os.clock() + 45
+    while os.clock() < deadline do
+        if clientReady and characterReady and serverAckSent and clientAckReceived then
+            finish("PASS:PLAYER_CHARACTER_CLIENT_SERVER_ROUNDTRIP")
+            return
+        end
+        task.wait(0.1)
+    end
+    finish(("FAIL:TIMEOUT:players=%d:client=%s:character=%s:ackSent=%s:ackReceived=%s"):format(
+        #Players:GetPlayers(), tostring(clientReady), tostring(characterReady), tostring(serverAckSent), tostring(clientAckReceived)
+    ))
+end)
+]==]
+serverProbe.Parent = ServerScriptService
+
+local clientProbe = Instance.new("LocalScript")
+clientProbe.Name = PROBE
+clientProbe.Source = [==[
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+local remote = ReplicatedStorage:WaitForChild("__JaewoonCompanyRuntimeProbe", 10)
+if not remote then
+    return
+end
+
+local ack = false
+remote.OnClientEvent:Connect(function(message)
+    if message == "SERVER_ACK" then
+        ack = true
+        remote:FireServer("CLIENT_ACK_RECEIVED")
+    end
+end)
+
+for _ = 1, 40 do
+    remote:FireServer("CLIENT_READY")
+    if ack then
+        break
+    end
+    task.wait(0.25)
+end
+]==]
+clientProbe.Parent = StarterPlayer.StarterPlayerScripts
+
+local ok, result = pcall(function()
+    return StudioTestService:ExecuteMultiplayerTestAsync(1, "JAEWOON_COMPANY_RUNTIME_SMOKE_V5")
+end)
+
+if completed then
+    return
+end
+completed = true
+
+serverProbe:Destroy()
+clientProbe:Destroy()
+remote:Destroy()
+
+if not ok then
+    print("ROBLOX_RUNTIME_SMOKE=FAIL")
+    print("ROBLOX_RUNTIME_ERROR=" .. tostring(result))
+    return
+end
+
+local text = tostring(result)
+print("ROBLOX_RUNTIME_RESULT=" .. text)
+if string.sub(text, 1, 5) ~= "PASS:" then
+    print("ROBLOX_RUNTIME_SMOKE=FAIL")
+    print("ROBLOX_RUNTIME_ERROR=runtime smoke failed: " .. text)
+    return
+end
+
+print("ROBLOX_RUNTIME_REAL_STUDIO=YES")
+print("ROBLOX_RUNTIME_MULTIPLAYER_CLIENTS=1")
+print("ROBLOX_SERVER_CLIENT_BOUNDARY_PASS" .. "=YES")
+print("ROBLOX_PLAYER_CHARACTER_PASS=YES")
+print("ROBLOX_RUNTIME_SMOKE" .. "=PASS")

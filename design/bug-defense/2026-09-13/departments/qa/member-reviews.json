@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-13",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "playerFantasy"
+        ],
+        "fix": [
+          "coreFun"
+        ],
+        "add": [
+          "signatureSystems"
+        ],
+        "risks": [
+          "validationQuestions"
+        ],
+        "evidence": [
+          "MARKET_EVIDENCE_SUMMARY"
+        ],
+        "questions": [
+          "progressionDirection"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "place or adjust defenders and spend limited resources on the highest-value counter."
+        ],
+        "fix": [
+          "place or adjust defenders and spend limited resources on the highest-value counter."
+        ],
+        "add": [
+          "place or adjust defenders and spend limited resources on the highest-value counter."
+        ],
+        "risks": [
+          "survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+        ],
+        "evidence": [
+          "place or adjust defenders and spend limited resources on the highest-value counter."
+        ],
+        "questions": [
+          "what is the target audience of the game?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "the main idea of the game"
+        ],
+        "fix": [
+          "the target audience of the game"
+        ],
+        "add": [
+          "the core gameplay mechanic of the game"
+        ],
+        "risks": [
+          "the main idea of the game"
+        ],
+        "evidence": [
+          "the target audience of the game"
+        ],
+        "questions": [
+          "the main idea of the game"
+        ]
+      }
+    }
+  ]
+}

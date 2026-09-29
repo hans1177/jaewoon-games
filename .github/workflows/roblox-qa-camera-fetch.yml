@@ -1,0 +1,74 @@
+name: Roblox QA Camera Fetch
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/roblox-qa-camera-fetch.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read QA camera capture records
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        run: |
+          node --input-type=module <<'NODE'
+          const key=process.env.ROBLOX_OPEN_CLOUD_API_KEY||'';
+          if(!key)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY missing');
+
+          const introspect=await fetch('https://apis.roblox.com/api-keys/v1/introspect',{
+            method:'POST',
+            headers:{'content-type':'application/json'},
+            body:JSON.stringify({apiKey:key}),
+          });
+          if(!introspect.ok)throw new Error('introspect failed '+introspect.status);
+          const info=await introspect.json();
+          const hasRead=(info.scopes||[]).some(s =>
+            s?.name==='universe-datastores.objects' &&
+            Array.isArray(s.operations) &&
+            s.operations.includes('read')
+          );
+          console.log('ROBLOX_QA_DATASTORE_READ='+hasRead);
+          if(!hasRead)throw new Error('ROBLOX_QA_DATASTORE_READ_SCOPE_REQUIRED');
+
+          const targets=[
+            ['cozy-island','10767445741'],
+            ['daechung-rpg','10767445769'],
+            ['horror-escape-room','10767445796'],
+          ];
+          const out={fetchedAt:new Date().toISOString(),games:{}};
+
+          for(const [gameId,universeId] of targets){
+            const url=new URL('https://apis.roblox.com/datastores/v1/universes/'+universeId+'/standard-datastores/datastore/entries/entry');
+            url.searchParams.set('datastoreName','qa-camera-captures-v1');
+            url.searchParams.set('entryKey','latest');
+            const r=await fetch(url,{headers:{'x-api-key':key}});
+            const body=await r.text();
+            if(r.status===404){
+              out.games[gameId]={universeId,status:'NO_CAPTURE_YET',captures:[]};
+              console.log('QA_CAPTURE_'+gameId+'=NO_CAPTURE_YET');
+              continue;
+            }
+            if(!r.ok)throw new Error(gameId+' datastore read failed '+r.status+': '+body.slice(0,300));
+            let data={};
+            try{data=JSON.parse(body)}catch{}
+            out.games[gameId]={universeId,status:'OK',captures:Array.isArray(data.captures)?data.captures:[]};
+            console.log('QA_CAPTURE_'+gameId+'='+JSON.stringify(out.games[gameId].captures));
+          }
+          await import('node:fs/promises').then(fs=>fs.writeFile('qa-camera-captures.json',JSON.stringify(out,null,2)));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: qa-camera-captures
+          path: qa-camera-captures.json
+          if-no-files-found: error
