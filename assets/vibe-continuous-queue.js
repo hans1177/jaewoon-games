@@ -13,20 +13,29 @@ function normalizeEvidence(values=[]){
   const hadLegacy=rows.includes(LEGACY_POLICY_EVIDENCE);
   const filtered=rows.filter(value=>value!==LEGACY_POLICY_EVIDENCE);
   if(hadLegacy&&!filtered.includes(CANONICAL_POLICY_EVIDENCE))filtered.unshift(CANONICAL_POLICY_EVIDENCE);
-  // Shadow telemetry is advisory. Keep its baseline and latest sample in the queue;
-  // authoritative QA, failure, source, and release evidence stays intact.
+  // 반복된 비권위 진단만 최초·최신으로 축약한다. 검증·학습·배포 증거는 보존한다.
   const shadowPrefixes=['neural-work-graph-shadow:','neural-event-shadow:','neural-shadow-feedback:'];
   const first=new Map(),last=new Map();
-  filtered.forEach((value,index)=>{
-    const prefix=shadowPrefixes.find(item=>value.startsWith(item));
-    if(!prefix)return;
-    if(!first.has(prefix))first.set(prefix,index);
-    last.set(prefix,index);
+  const keys=filtered.map((value,index)=>{
+    let key=shadowPrefixes.find(item=>value.startsWith(item))||null;
+    const prefix=['neural-root-cause:','neural-atomic-transaction:'].find(item=>value.startsWith(item));
+    if(prefix){
+      try{
+        const payload=JSON.parse(decodeURIComponent(value.slice(prefix.length)));
+        const unresolved=prefix==='neural-root-cause:'
+          ?payload.version===2&&payload.state==='UNRESOLVED'
+            &&['causalRepairVerified','independentConfirmation','responsibleSystemVerified','rootCauseVerified','learningEligible','actionFiringAllowed','phase2AuthorityEligible'].every(field=>payload[field]===false)
+          :payload.version===1&&payload.feedback==='UNKNOWN'&&payload.critic==='UNRESOLVED'&&payload.rootCause==='UNRESOLVED'&&payload.route==='REQUEST_EVIDENCE';
+        if(unresolved&&typeof payload.sampleId==='string'&&payload.sampleId){
+          const {sampleId,...diagnosis}=payload;
+          key=prefix+JSON.stringify(diagnosis);
+        }
+      }catch{/* 알 수 없거나 손상된 증거는 축약하지 않는다. */}
+    }
+    if(key){if(!first.has(key))first.set(key,index);last.set(key,index);}
+    return key;
   });
-  return filtered.filter((value,index)=>{
-    const prefix=shadowPrefixes.find(item=>value.startsWith(item));
-    return !prefix||index===first.get(prefix)||index===last.get(prefix);
-  });
+  return filtered.filter((value,index)=>!keys[index]||index===first.get(keys[index])||index===last.get(keys[index]));
 }
 const clampInt = (value, min = 0, max = Number.MAX_SAFE_INTEGER) => Math.max(min, Math.min(max, Math.floor(Number(value) || 0)));
 const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/+$/, '');
