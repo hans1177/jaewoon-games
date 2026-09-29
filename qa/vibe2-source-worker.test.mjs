@@ -2250,6 +2250,38 @@ test('Roblox source worker retries when a function-header anchor prematurely clo
   assert.doesNotMatch(candidate,/status\.TextWrapped = true\s*\nend\s*\n\s*status\.Text = "ok"/);
 });
 
+test('Roblox source worker accepts balanced nested blocks after a function-header anchor',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const relative='client/Game.client.luau';
+  const source=[
+    'local status = Instance.new("TextLabel")',
+    'local function render()',
+    '  status.Text = "ok"',
+    'end',
+    'render()'
+  ].join('\n');
+  write(path.join(cwd,root,relative),source);
+  const workOrder=order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'roblox-structural-nested-block'});
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const response=path.join(cwd,'roblox-nested-block.json');
+  write(response,JSON.stringify({edits:[{
+    path:relative,
+    find:'local function render()',
+    replace:[
+      'local function render()',
+      '  if status.Visible then',
+      '    status.TextWrapped = true',
+      '  end'
+    ].join('\n')
+  }]}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[response]});
+  assert.equal(result.generation.attempts,1);
+  assert.deepEqual(result.changedFiles,[relative]);
+  const candidate=fs.readFileSync(path.join(cwd,'.vibe2/candidates',workOrder.taskId,'files',relative),'utf8');
+  assert.match(candidate,/if status\.Visible then[\s\S]*status\.TextWrapped = true[\s\S]*end[\s\S]*status\.Text = "ok"/);
+});
+
 test('Roblox source worker retries when model control tokens leak into Luau source',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/demo';
