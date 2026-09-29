@@ -2292,7 +2292,7 @@ function applyRemoteEnemyEffect(payload){
  else if(payload.kind==='coldburst'){p.coldBurstUntil=Math.max(p.coldBurstUntil||0,now+duration);showNotice('추위 상승속도 3배 · 5초')}
  else if(payload.kind==='slow30'){p.templeSlowUntil=Math.max(p.templeSlowUntil||0,now+duration);showNotice('독화살 · 이동속도 30% 감소')}
  else if(payload.kind==='attackblock'){p.attackBlockedUntil=Math.max(p.attackBlockedUntil||0,now+duration);showNotice('공격 불가 · '+Math.max(1,Math.round(duration/1000))+'초')}
- else if(payload.kind==='heavy'){showNotice((payload.sourceName||'적')+' · 특수 공격 강타')}
+ else if(payload.kind==='special'){showNotice((payload.sourceName||'적')+' · '+(payload.skillName||'특수 공격'))}
  else if(payload.kind==='grab'){p.grabbedUntil=Math.max(p.grabbedUntil||0,now+duration);p.grabbedBy=payload.sourceId||null;p.vulnerableUntil=Math.max(p.vulnerableUntil||0,now+duration);showNotice('적에게 붙잡혔다')}
  state.dirty=true;updateHud()
 }
@@ -3078,24 +3078,62 @@ function markEnemyAttack(e,now){
  else if(!enemyFastAttackException(e.type))e.nextAttackAt=now+rand(3000,4000)
 }
 function enemyHasBuiltInSpecial(type){
- return!!type&&!!(type.boss||type.labBoss||type.guardian||type.crystalSpecial||type.caveLeader||type.vampireBat||type.flame||type.burrower||type.crocodile||type.sharkSpecial||type.leechLife||type.gorillaSpecial||type.anacondaSpecial||type.mudSpecial||type.yetiBoss||type.polarBearSpecial||type.polarWolfSpecial||type.templeSpearman||type.templeArcher||type.templeGuardian||type.mushroomGas)
+ if(!type)return false;
+ if(type.boss||type.labBoss||type.guardian||type.crystalSpecial||type.caveLeader||type.vampireBat||type.flame||type.burrower||type.crocodile||type.sharkSpecial||type.leechLife||type.gorillaSpecial||type.anacondaSpecial||type.mudSpecial||type.yetiBoss||type.polarBearSpecial||type.polarWolfSpecial||type.templeSpearman||type.templeArcher||type.templeGuardian||type.mushroomGas||type.toxicMycelium||type.swampHarden||type.fearSpecial||type.tigerTear||type.squidInk||type.anglerLure)return true;
+ return type.id==='flowergoblin'||type.id==='giantbee'
 }
 function enemyCanUseCommonSpecial(e){
- return!!e&&e.type.mood!=='harmless'&&!enemyHasBuiltInSpecial(e.type)&&e.type.id!=='crystalboarjunior'&&!['flowergoblin','giantbee'].includes(e.type.id)
+ return!!e&&e.type.mood!=='harmless'&&Number(e.type.dmg)>0&&!enemyHasBuiltInSpecial(e.type)&&!e.type.sporeShieldOrb
 }
-function showCommonEnemySpecial(e){
- if(e.playerTargetId&&e.playerTargetId!==multiplayer.playerId&&multiplayer.connected&&multiIsHost())multiSend('enemy-effect',{targetId:e.playerTargetId,kind:'heavy',sourceName:e.type.name});
- else showNotice(e.type.name+' · 특수 공격 강타')
+function commonEnemySpecialProfile(type){
+ const id=String(type?.id||''),kind=fantasyCreatureVisualKind(type);
+ if(['worldtreebear','crystalbear'].includes(id))return{name:'앞발 내려찍기',mult:1.45,effect:'stun',duration:900};
+ if(['mossboar','crystalboarjunior'].includes(id))return{name:'엄니 돌진',mult:1.4,effect:'stun',duration:700};
+ if(['golem','ironspirit','crystalironspirit','firegolemneutral','firegolemaggressive','icegolem'].includes(id))return{name:'충격파',mult:1.35,effect:'stun',duration:1000};
+ if(['goblin','crystalgoblin'].includes(id))return{name:'기습 3연타',mult:.55,hits:3};
+ if(['shadowwolf','thornhound','ironhidehound'].includes(id))return{name:'도약 물기',mult:1.35,effect:'attackblock',duration:800};
+ if(['ironibex','crystalibex','crystalgoat','foreststag','sapdeer','crystaldeer'].includes(id))return{name:'뿔 돌진',mult:1.4,effect:'stun',duration:800};
+ if(id==='lakebuffalo')return{name:'폭주 들이받기',mult:1.5,effect:'stun',duration:900};
+ if(id==='sandwalker')return{name:'갑각 회전',mult:1.35,effect:'slow30',duration:1600};
+ if(id==='thornmantis')return{name:'쌍낫 베기',mult:.78,hits:2};
+ if(id==='giantspider'||id==='giantspiderling')return{name:'독니 물기',mult:1.15,effect:'poison',duration:3000};
+ if(id==='yeticub')return{name:'설인 몸통박치기',mult:1.35,effect:'stun',duration:700};
+ if(kind==='boar')return{name:'돌진 들이받기',mult:1.35,effect:'stun',duration:650};
+ if(kind==='goblin')return{name:'빠른 연속 찌르기',mult:.72,hits:2};
+ if(kind==='construct')return{name:'지면 충격파',mult:1.35,effect:'stun',duration:900};
+ if(kind==='horned')return{name:'뿔받기',mult:1.35,effect:'stun',duration:700};
+ if(kind==='canine')return{name:'도약 할퀴기',mult:1.3,effect:'attackblock',duration:700};
+ if(kind==='hulking')return{name:'몸통 내려찍기',mult:1.45,effect:'stun',duration:1000};
+ if(kind==='armored')return{name:'갑각 밀치기',mult:1.35,effect:'slow30',duration:1400};
+ if(kind==='winged')return{name:'급강하',mult:1.3,effect:'slow30',duration:1200};
+ if(kind==='reptile')return{name:'꼬리 휩쓸기',mult:1.3,effect:'stun',duration:600};
+ if(kind==='small')return{name:'도약 물기',mult:1.25,effect:'attackblock',duration:600};
+ return{name:'연속 맹습',mult:.72,hits:2}
+}
+function showCommonEnemySpecial(e,profile){
+ const skill=profile?.name||'특수 공격';
+ if(e.playerTargetId&&e.playerTargetId!==multiplayer.playerId&&multiplayer.connected&&multiIsHost())multiSend('enemy-effect',{targetId:e.playerTargetId,kind:'special',sourceName:e.type.name,skillName:skill});
+ else showNotice(e.type.name+' · '+skill)
 }
 function commonEnemySpecialHit(e,targetP,now,baseDamage){
- markEnemyAttack(e,now);enemyDamageTarget(e,baseDamage*1.5,true);showCommonEnemySpecial(e)
+ const profile=commonEnemySpecialProfile(e.type),hits=Math.max(1,profile.hits||1);
+ markEnemyAttack(e,now);
+ for(let i=0;i<hits;i++)enemyDamageTarget(e,baseDamage*profile.mult,true);
+ if(profile.effect&&profile.duration)applyEnemyEffectTarget(e,targetP,profile.effect,profile.duration);
+ showCommonEnemySpecial(e,profile)
+}
+function commonEnemySpecialHitMonster(e,target,now,damageMult=1){
+ const profile=commonEnemySpecialProfile(e.type),hits=Math.max(1,profile.hits||1);
+ markEnemyAttack(e,now);
+ for(let i=0;i<hits&&target.hp>0;i++)damageMonster(target,e.type.dmg*profile.mult*damageMult,e,now);
+ if(profile.effect==='stun'||profile.effect==='attackblock'||profile.effect==='slow30')target.stunnedUntil=Math.max(target.stunnedUntil||0,now+Math.min(1200,profile.duration||700))
 }
 function tryTimedCommonEnemySpecial(e,targetP,now,playerD){
  if(!enemyCanUseCommonSpecial(e)||!e.hostile)return false;
  if(!e.nextCommonSpecialAt)e.nextCommonSpecialAt=now+3000;
  if(now<e.nextCommonSpecialAt)return false;
  e.nextCommonSpecialAt=now+3000;
- const meleeRange=e.type.r+25;
+ const meleeRange=e.type.r+30;
  if(playerD<=meleeRange&&Math.random()<.40){commonEnemySpecialHit(e,targetP,now,e.type.dmg);return true}
  return false
 }
@@ -3462,7 +3500,6 @@ function performEnemyBasicAttack(e,targetP,now){
  if(e.type.id==='giantSquid'){enemyDamageTarget(e,66,false);return}
  if(e.type.id==='deepAngler'){enemyDamageTarget(e,60,false);return}
  if(e.type.id==='shark'&&Math.random()<.30){e.sharkCombo={index:0,nextHit:now};showNotice('상어 · 3연타');return}
- if(enemyCanUseCommonSpecial(e)&&Math.random()<.30){enemyDamageTarget(e,e.type.dmg*1.5,true);showCommonEnemySpecial(e);return}
  if(e.type.flame&&Math.random()<.30){enemyDamageTarget(e,e.type.dmg*2,false);applyEnemyEffectTarget(e,targetP,'burn',4000);return}
  enemyDamageTarget(e,e.type.dmg,false)
 }
@@ -3505,7 +3542,7 @@ function performMonsterVsMonsterAttack(e,target,now,damageMult=1){
     hit(e.type.dmg*2);return
   }
   if(enemyCanUseCommonSpecial(e)&&Math.random()<.30){
-    hit(e.type.dmg*1.5);return
+    commonEnemySpecialHitMonster(e,target,now,damageMult);return
   }
   hit(e.type.dmg)
 }
@@ -4376,7 +4413,27 @@ function fantasyCreatureSvg(type){
  else if(kind==='armored')art='<ellipse cx="-4" cy="3" rx="38" ry="25" fill="'+body+'" '+common+'/><path d="M-35-12 Q-19-30-4-18 Q12-31 30-13" fill="none" stroke="'+accent+'" stroke-width="8"/><ellipse cx="35" cy="0" rx="16" ry="14" fill="'+body+'" '+common+'/><circle cx="40" cy="-5" r="3" fill="'+eye+'"/><path d="M-28 19 L-46 34 M-12 24 L-22 42 M10 23 L20 42 M27 17 L45 32" '+common+' fill="none"/>';
  else if(kind==='canine')art='<path d="M-43 8 Q-38-20-10-24 Q22-25 37-5 Q40 18 8 26 Q-25 28-43 8Z" fill="'+body+'" '+common+'/><path d="M18-19 L23-39 L34-18 M2-23 L4-42 L15-23" fill="'+accent+'" '+common+'/><path d="M-42 4 Q-56-15-61-5 Q-58 11-42 14" fill="'+body+'" '+common+'/><ellipse cx="38" cy="1" rx="17" ry="13" fill="'+body+'" '+common+'/><circle cx="43" cy="-5" r="3.2" fill="'+eye+'"/><path d="M-26 23 L-29 39 M-3 25 L-1 40 M20 21 L25 37" '+common+' fill="none"/>';
  else art='<path d="M-40 18 Q-45-10-21-29 Q8-40 34-19 Q49 2 34 25 Q3 40-40 18Z" fill="'+body+'" '+common+'/><path d="M-21-23 L-7-37 L4-24 M12-25 L25-35 L30-18" fill="'+accent+'" '+common+'/><circle cx="26" cy="-7" r="4" fill="'+eye+'"/><path d="M-24 26 L-29 41 M6 31 L8 44 M28 22 L35 35" '+common+' fill="none"/>';
- return'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="96" viewBox="-64 -48 128 96"><g>'+art+'</g></svg>'
+ const id=String(type?.id||'');
+ let detail='';
+ if(kind==='boar')detail+='<path d="M35 7 l13 5 M33 12 l12 8" stroke="#f4e1b7" stroke-width="3" stroke-linecap="round"/><path d="M-18-28 l8-8 M3-29 l9-9" stroke="'+accent+'" stroke-width="4"/>';
+ else if(kind==='goblin')detail+='<path d="M-4 2 Q8 10 22 2" fill="none" stroke="#39271f" stroke-width="3"/><path d="M-34 16 l-9 7 M37 18 l9 8" stroke="'+accent+'" stroke-width="4"/>';
+ else if(kind==='construct')detail+='<path d="M-28-6 L-9 5 L5-10 L24 2" fill="none" stroke="'+accent+'" stroke-width="4" opacity=".9"/><circle cx="-20" cy="15" r="4" fill="'+accent+'"/>';
+ else if(kind==='horned')detail+='<path d="M-20-20 Q-4-31 15-22" fill="none" stroke="'+accent+'" stroke-width="4"/><path d="M-26 26 l-5 10 M18 25 l6 10" stroke="#e8ddc0" stroke-width="3"/>';
+ else if(kind==='small')detail+='<path d="M-12 2 Q3 12 20 3" fill="none" stroke="'+accent+'" stroke-width="3"/><circle cx="23" cy="6" r="2.4" fill="#251b17"/>';
+ else if(kind==='winged')detail+='<path d="M-40-9 l14 6 M40-9 l-14 6" stroke="#f3f1cf" stroke-width="3" opacity=".72"/><path d="M-4 25 l4 12 l6-12" fill="'+accent+'"/>';
+ else if(kind==='reptile')detail+='<path d="M-34 2 l8-7 l8 8 l9-8 l9 8 l9-7 l9 7" fill="none" stroke="'+accent+'" stroke-width="4"/><path d="M47 5 l10 3" stroke="#efe2c8" stroke-width="3"/>';
+ else if(kind==='hulking')detail+='<path d="M-26-6 Q0 11 28-6" fill="none" stroke="'+accent+'" stroke-width="5"/><path d="M-45 15 l-10 10 M44 15 l10 10" stroke="#efe3ce" stroke-width="4"/>';
+ else if(kind==='armored')detail+='<path d="M-30-12 L-18 4 L-6-14 L7 4 L20-13 L31 2" fill="none" stroke="'+accent+'" stroke-width="5"/><path d="M-27 22 l8 8 M5 24 l9 8" stroke="#efe2c6" stroke-width="3"/>';
+ else if(kind==='canine')detail+='<path d="M-19-20 l7-10 l7 9 M4-22 l7-10 l7 11" fill="'+accent+'"/><path d="M27 8 Q38 14 48 7" fill="none" stroke="#e5d8bd" stroke-width="3"/>';
+ else detail+='<path d="M-23-20 l8-9 l7 9 M3-23 l9-8 l7 10" fill="'+accent+'"/><path d="M-20 20 Q0 29 22 19" fill="none" stroke="'+accent+'" stroke-width="3"/>';
+ if(id.includes('crystal')||type?.crystalZone||type?.crystalVariant)detail+='<path d="M-16-30 l7-14 l7 15 M5-28 l8-13 l5 16 M20-20 l9-10 l2 13" fill="#cbb8ff" stroke="#66539c" stroke-width="2"/>';
+ if(type?.flame||type?.volcanoZone)detail+='<path d="M-25-24 q7-17 14 0 q8-20 15 1 q8-16 14 1" fill="#f57b39" opacity=".78"/>';
+ if(type?.swamp)detail+='<circle cx="-24" cy="8" r="5" fill="#91a86f" opacity=".72"/><circle cx="7" cy="-15" r="4" fill="#a5bb76" opacity=".7"/><path d="M-33 14 q10 8 19 2" stroke="#384a31" stroke-width="4" fill="none"/>';
+ if(type?.snow)detail+='<path d="M-32-17 q9-9 17 0 M-5-26 q9-10 18 0 M17-17 q9-8 16 1" fill="none" stroke="#e8f6ff" stroke-width="5" opacity=".82"/>';
+ if(type?.jungle)detail+='<path d="M-21-25 q7-11 15-2 M8-24 q8-10 15-1" stroke="#4f8f50" stroke-width="5" fill="none"/>';
+ if(type?.flowerZone)detail+='<circle cx="-17" cy="-24" r="5" fill="#eab6d8"/><circle cx="12" cy="-25" r="5" fill="#f2d377"/>';
+ if(type?.underwater||type?.lakeZone)detail+='<path d="M-20 18 q8 10 16 0 M7 17 q8 10 16 0" stroke="#93d9e8" stroke-width="3" fill="none"/>';
+ return'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="96" viewBox="-64 -48 128 96"><g>'+art+detail+'</g></svg>'
 }
 function fantasyCreatureVisualAsset(type){
  const key='creature:'+String(type?.id||'unknown');
@@ -4410,7 +4467,9 @@ function drawFantasyCreatureVectorFallback(type,r){
  const accent=fantasyVisualAccent(type),body=type?.color||'#698164';
  ctx.fillStyle=body;ctx.strokeStyle=FANTASY_VISUAL_STYLE_LOCK.outline;ctx.lineWidth=4;
  ctx.beginPath();ctx.moveTo(-r*1.35,0);ctx.quadraticCurveTo(-r*.7,-r,0,-r*.85);ctx.quadraticCurveTo(r*1.25,-r*.55,r*1.45,0);ctx.quadraticCurveTo(r*.7,r,0,r*.85);ctx.quadraticCurveTo(-r*.8,r,-r*1.35,0);ctx.closePath();ctx.fill();ctx.stroke();
- ctx.fillStyle=accent;ctx.beginPath();ctx.moveTo(-r*.35,-r*.72);ctx.lineTo(0,-r*1.18);ctx.lineTo(r*.35,-r*.72);ctx.closePath();ctx.fill()
+ ctx.fillStyle=accent;ctx.beginPath();ctx.moveTo(-r*.35,-r*.72);ctx.lineTo(0,-r*1.18);ctx.lineTo(r*.35,-r*.72);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#f4df9b';ctx.beginPath();ctx.arc(r*.62,-r*.22,Math.max(2,r*.11),0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle=accent;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(r*.55,r*.18);ctx.lineTo(r*.98,r*.28);ctx.moveTo(-r*.72,r*.55);ctx.lineTo(-r*.92,r*.78);ctx.stroke()
 }
 const fantasyLivingMotionState=new WeakMap();
 function fantasyLivingMotion(actor,now,targetAngle,moving){
