@@ -3470,7 +3470,8 @@ test('queued Roblox presentation task repairs stale QA-only ownership before res
     `roblox-games/${gameId}/shared/VisualStyle.luau`
   ]};
   const result=planVibe2AutonomousTasks({
-    status:{projects:[]},catalog:{games:[]},queue:{maxConcurrentTasks:20,tasks:[queued]},
+    status:{projects:[{gameId,ownerDecision:'PASS',target:'roblox',projectPath:`roblox-games/${gameId}`,progress:80}]},
+    catalog:{games:[{id:gameId,name:project.name,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},queue:{maxConcurrentTasks:20,tasks:[queued]},
     repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:1,planningBacklogMinimum:0
   });
   const repaired=result.queue.tasks.find(row=>row.id===queued.id);
