@@ -427,6 +427,141 @@ local function addSurpriseTrigger(f,id,kind,pos,radius,text)
  return trigger
 end
 
+local function ambientPart(f,name,size,pos,color,material,shape)
+ local x=arenaPart(f,name,size,pos,color,material)
+ x.CanCollide=false;x.CanTouch=false;x.CanQuery=false;x:SetAttribute("AmbientDecorativeOnly",true)
+ if shape then x.Shape=shape end
+ return x
+end
+local function setAmbientVisible(parts,visible)
+ for _,part in ipairs(parts)do
+  if part and part.Parent then
+   part.Transparency=visible and(part:GetAttribute("AmbientBaseTransparency")or 0)or 1
+  end
+ end
+end
+local function ambientGroupPart(parts,part,baseTransparency)
+ part:SetAttribute("AmbientBaseTransparency",baseTransparency or 0)
+ part.Transparency=1
+ table.insert(parts,part)
+ return part
+end
+local function addAmbientSurprises(f,map)
+ local surprises={}
+ local function addSurprise(id,parts,run)
+  for _,part in ipairs(parts)do part:SetAttribute("AmbientSurpriseId",id)end
+  setAmbientVisible(parts,false)
+  table.insert(surprises,{id=id,parts=parts,run=run})
+ end
+
+ if map.Id=="SCHOOL"then
+  -- 괴담 몬스터: 복도/창문 구석에 잠깐 보이는 시각 연출 전용 실루엣.
+  local watcher={}
+  ambientGroupPart(watcher,ambientPart(f,"SchoolHallWatcherBody",Vector3.new(2.8,5.6,1.4),Vector3.new(73,4.1,-18),Color3.fromRGB(28,30,34),Enum.Material.Fabric),.08)
+  ambientGroupPart(watcher,ambientPart(f,"SchoolHallWatcherHead",Vector3.new(2.4,2.4,2.4),Vector3.new(73,7.8,-18),Color3.fromRGB(35,36,39),Enum.Material.SmoothPlastic,Enum.PartType.Ball),.03)
+  ambientGroupPart(watcher,ambientPart(f,"SchoolHallWatcherEyeL",Vector3.new(.28,.28,.18),Vector3.new(72.55,8,-18.75),Color3.fromRGB(214,59,66),Enum.Material.Neon,Enum.PartType.Ball),0)
+  ambientGroupPart(watcher,ambientPart(f,"SchoolHallWatcherEyeR",Vector3.new(.28,.28,.18),Vector3.new(73.45,8,-18.75),Color3.fromRGB(214,59,66),Enum.Material.Neon,Enum.PartType.Ball),0)
+  addSurprise("SCHOOL_WATCHER",watcher,function(parts)
+   setAmbientVisible(parts,true);task.wait(2.6);setAmbientVisible(parts,false)
+  end)
+
+  -- 사물함 고무오리: 공포 뒤에 한 번 웃길 수 있는 발견 요소.
+  local duck={}
+  ambientGroupPart(duck,ambientPart(f,"LockerDuckBody",Vector3.new(1.5,1.3,1.7),Vector3.new(11,5.2,-64.2),Color3.fromRGB(246,207,61),Enum.Material.SmoothPlastic,Enum.PartType.Ball),0)
+  ambientGroupPart(duck,ambientPart(f,"LockerDuckHead",Vector3.new(1.05,1.05,1.05),Vector3.new(11,6.15,-64.5),Color3.fromRGB(250,219,71),Enum.Material.SmoothPlastic,Enum.PartType.Ball),0)
+  ambientGroupPart(duck,ambientPart(f,"LockerDuckBeak",Vector3.new(.75,.3,.55),Vector3.new(11,6.05,-65.2),Color3.fromRGB(237,129,38),Enum.Material.SmoothPlastic),0)
+  addSurprise("SCHOOL_LOCKER_DUCK",duck,function(parts)
+   setAmbientVisible(parts,true)
+   for n=1,8 do
+    for _,p in ipairs(parts)do if p.Parent then p.CFrame=p.CFrame*CFrame.Angles(0,math.rad(n%2==0 and 8 or-8),0)end end
+    task.wait(.09)
+   end
+   task.wait(2);setAmbientVisible(parts,false)
+  end)
+
+  -- 칠판 눈: 교실 구석을 확인하면 잠깐 마주치는 요소.
+  local chalk={}
+  ambientGroupPart(chalk,ambientPart(f,"ChalkEyeL",Vector3.new(1.3,.55,.2),Vector3.new(-73.2,7,-2.15),Color3.fromRGB(224,233,222),Enum.Material.Neon),.08)
+  ambientGroupPart(chalk,ambientPart(f,"ChalkEyeR",Vector3.new(1.3,.55,.2),Vector3.new(-70.8,7,-2.15),Color3.fromRGB(224,233,222),Enum.Material.Neon),.08)
+  ambientGroupPart(chalk,ambientPart(f,"ChalkSmile",Vector3.new(3.6,.22,.2),Vector3.new(-72,5.8,-2.15),Color3.fromRGB(224,233,222),Enum.Material.Neon),.12)
+  addSurprise("SCHOOL_CHALK_FACE",chalk,function(parts)
+   setAmbientVisible(parts,true);task.wait(3.2);setAmbientVisible(parts,false)
+  end)
+
+  -- 자판기 캔: 혼자 튀어나와 바닥에서 짧게 굴러가는 코믹 장면.
+  local can=ambientGroupPart({},ambientPart(f,"VendingRunawayCan",Vector3.new(.65,1.1,.65),Vector3.new(-14,1.25,53),Color3.fromRGB(204,67,72),Enum.Material.Metal,Enum.PartType.Cylinder),0)
+  local canParts={can};can:SetAttribute("AmbientBaseTransparency",0)
+  addSurprise("SCHOOL_VENDING_CAN",canParts,function(parts)
+   local p=parts[1];if not p.Parent then return end
+   local start=CFrame.new(-14,1.25,53)*CFrame.Angles(0,0,math.rad(90));p.CFrame=start;setAmbientVisible(parts,true)
+   for i=1,18 do if not p.Parent then return end;p.CFrame=start*CFrame.new(0,0,-i*.32)*CFrame.Angles(0,math.rad(i*24),0);task.wait(.045)end
+   task.wait(1.2);setAmbientVisible(parts,false)
+  end)
+ elseif map.Id=="HOSPITAL"then
+  local patient={}
+  ambientGroupPart(patient,ambientPart(f,"MorguePeekHead",Vector3.new(2.1,2.1,2.1),Vector3.new(-117,5.1,121),Color3.fromRGB(177,185,180),Enum.Material.SmoothPlastic,Enum.PartType.Ball),.06)
+  ambientGroupPart(patient,ambientPart(f,"MorguePeekEyes",Vector3.new(1.1,.22,.18),Vector3.new(-117,5.2,119.95),Color3.fromRGB(177,220,204),Enum.Material.Neon),0)
+  addSurprise("HOSPITAL_MORGUE_PEEK",patient,function(parts) setAmbientVisible(parts,true);task.wait(2.4);setAmbientVisible(parts,false)end)
+
+  local slipper={}
+  ambientGroupPart(slipper,ambientPart(f,"RunawaySlipperL",Vector3.new(1.4,.35,2.6),Vector3.new(-4,1.05,12),Color3.fromRGB(151,190,183),Enum.Material.Fabric),0)
+  ambientGroupPart(slipper,ambientPart(f,"RunawaySlipperR",Vector3.new(1.4,.35,2.6),Vector3.new(4,1.05,9),Color3.fromRGB(151,190,183),Enum.Material.Fabric),0)
+  addSurprise("HOSPITAL_RUNAWAY_SLIPPERS",slipper,function(parts)
+   setAmbientVisible(parts,true)
+   for i=1,14 do
+    for n,p in ipairs(parts)do if p.Parent then p.CFrame=p.CFrame*CFrame.new((n==1 and-.12 or.12),0,-.28)end end
+    task.wait(.07)
+   end
+   task.wait(1);setAmbientVisible(parts,false)
+  end)
+
+  local iv={}
+  local pole=ambientGroupPart(iv,ambientPart(f,"GhostIVPole",Vector3.new(.25,5,.25),Vector3.new(9,3.2,-34),Color3.fromRGB(160,170,174),Enum.Material.Metal),.08)
+  ambientGroupPart(iv,ambientPart(f,"GhostIVBag",Vector3.new(1.1,1.6,.4),Vector3.new(9,5.4,-34),Color3.fromRGB(179,218,211),Enum.Material.Glass),.28)
+  addSurprise("HOSPITAL_IV_WALK",iv,function(parts)
+   local origins={};for i,p in ipairs(parts)do origins[i]=p.CFrame end;setAmbientVisible(parts,true)
+   for step=1,20 do for i,p in ipairs(parts)do if p.Parent then p.CFrame=origins[i]*CFrame.new(0,0,-step*.35)end end;task.wait(.06)end
+   task.wait(.8);setAmbientVisible(parts,false);for i,p in ipairs(parts)do if p.Parent then p.CFrame=origins[i]end end
+  end)
+ elseif map.Id=="THEME_PARK"then
+  local clown={}
+  ambientGroupPart(clown,ambientPart(f,"BoothClownHead",Vector3.new(2.7,2.7,2.7),Vector3.new(48,7,-39),Color3.fromRGB(226,219,199),Enum.Material.SmoothPlastic,Enum.PartType.Ball),.04)
+  ambientGroupPart(clown,ambientPart(f,"BoothClownNose",Vector3.new(.7,.7,.7),Vector3.new(48,6.8,-40.3),Color3.fromRGB(222,54,73),Enum.Material.Neon,Enum.PartType.Ball),0)
+  addSurprise("PARK_CLOWN_PEEK",clown,function(parts) setAmbientVisible(parts,true);task.wait(2.2);setAmbientVisible(parts,false)end)
+
+  local balloon={}
+  ambientGroupPart(balloon,ambientPart(f,"LonelyBalloon",Vector3.new(2.6,3,2.6),Vector3.new(-70,8,36),Color3.fromRGB(218,75,151),Enum.Material.SmoothPlastic,Enum.PartType.Ball),.08)
+  ambientGroupPart(balloon,ambientPart(f,"BalloonString",Vector3.new(.08,5,.08),Vector3.new(-70,4,36),Color3.fromRGB(201,201,205),Enum.Material.SmoothPlastic),.25)
+  addSurprise("PARK_LONELY_BALLOON",balloon,function(parts)
+   setAmbientVisible(parts,true)
+   for i=1,18 do for _,p in ipairs(parts)do if p.Parent then p.CFrame=p.CFrame*CFrame.new(math.sin(i*.7)*.03,.04,0)end end;task.wait(.07)end
+   task.wait(.8);setAmbientVisible(parts,false)
+  end)
+
+  local car={}
+  ambientGroupPart(car,ambientPart(f,"DriverlessBumperCar",Vector3.new(6,2.2,8),Vector3.new(103,2,-91),Color3.fromRGB(80,151,199),Enum.Material.Metal),.06)
+  addSurprise("PARK_DRIVERLESS_CAR",car,function(parts)
+   local p=parts[1];if not p.Parent then return end;local start=p.CFrame;setAmbientVisible(parts,true)
+   for i=1,24 do if p.Parent then p.CFrame=start*CFrame.new(math.sin(i*.25)*5,0,-i*.18)*CFrame.Angles(0,math.rad(i*7),0)end;task.wait(.055)end
+   task.wait(.8);setAmbientVisible(parts,false);if p.Parent then p.CFrame=start end
+  end)
+ end
+
+ if #surprises==0 then return end
+ task.spawn(function()
+  task.wait(6+math.random()*5)
+  while f.Parent do
+   if state=="RUNNING"then
+    local chosen=surprises[math.random(1,#surprises)]
+    workspace:SetAttribute("AmbientSurprise",chosen.id)
+    chosen.run(chosen.parts)
+    workspace:SetAttribute("AmbientSurprise","")
+   end
+   task.wait(15+math.random()*13)
+  end
+ end)
+end
+
 local function decorateArenaWithOfficialAssets(f,map)
  task.spawn(function()
   task.wait(.1);if not f.Parent then return end
@@ -799,6 +934,8 @@ local function makeArena(map)
   addSurpriseTrigger(f,"PARK_HORSE","PARK_HORSE",Vector3.new(-32,4,8),12,"회전목마 말이 나만 본다")
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  end
+
+ addAmbientSurprises(f,map)
 
  local events=map.Events or {}
  local event=events[math.random(1,math.max(1,#events))]or{Id="NONE",Name="평온"}
