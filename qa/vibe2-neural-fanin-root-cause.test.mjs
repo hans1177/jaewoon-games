@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { classifyVerifiedExternalBlackBoxPrinciples } from '../tools/vibe2-learning-motor.mjs';
 import { finalizeVibe2FanInReview, finalizePostNativeSpecializedReview } from '../tools/vibe2-fan-in-review.mjs';
 
 function baseTask(extraEvidence=[]){
@@ -411,4 +412,53 @@ test('web studio presentation fan-in approves actual stable runtime before-after
   const evidence=result.queue.tasks[0].evidence;
   assert.ok(evidence.includes('graphics-evolution-before-after-comparison:PASS'));
   assert.ok(evidence.includes('presentation-runtime-before-after-audit:PASS'));
+});
+
+
+test('fan-in verifies version 3 learning dispositions instead of obsolete universal axes',()=>{
+  const semantic=classifyVerifiedExternalBlackBoxPrinciples([{
+    id:'external-black-box-fixture',
+    distilledApplicationPrinciples:[
+      'id=compact-tactical-state-with-immediate-feedback; principle=visible tactical state',
+      'id=semantic-input-plus-runtime-survival; principle=observe real input'
+    ]
+  }],{gameId:'demo',target:'web'});
+  const application={
+    version:3,mandatoryForGameTarget:true,verifiedExternalLearningFirst:true,
+    verifiedExternalLearningIds:['external-black-box-fixture'],
+    verifiedExternalLearningRetrievedCount:1,verifiedExternalLearningAppliedCount:1,
+    verifiedExternalLearningCoveragePct:100,retrievedVerifiedExternalLearningTruncationForbidden:true,
+    allRetrievedPrinciplesHaveExplicitDisposition:true,
+    verifiedExternalLearningDispositions:semantic.rows,
+    verifiedExternalLearningApplyAxes:semantic.sourceRows.flatMap(row=>row.domains),
+    verifiedExternalGameSourcePrincipleCount:1,verifiedExternalValidationOnlyPrincipleCount:1
+  };
+  const review=value=>finalizeVibe2FanInReview({queue:{tasks:[baseTask()]},results:[{...baseResult(),knowledgeApplication:value}]}).reviewed[0];
+  assert.equal(review(application).pass,true);
+  // 실행 워크플로의 직렬화 본문을 실행해 분류 증거가 후속 검토까지 전달되는지 확인한다.
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const serialization=workflow.slice(workflow.indexOf('const knowledgeApplication=workOrder?'),workflow.indexOf('const workLock={required:workLockRequired'));
+  const serialized=Function('workOrder',`const clean=value=>String(value??'').trim();
+    const promptLearningProof=true,sourcePromptExternalLearningIds=[],sourcePromptLearningRequired=true,manifest={},sourcePromptLearningOk=true,deterministicLearningProof=false,deterministicLearningIds=[];
+    ${serialization} return knowledgeApplication;`)({knowledgeApplicationContract:application});
+  assert.deepEqual(serialized.verifiedExternalLearningDispositions,application.verifiedExternalLearningDispositions);
+  assert.equal(review(serialized).pass,true);
+  for(const mutate of [
+    value=>{value.verifiedExternalLearningApplyAxes.pop();},
+    value=>{value.verifiedExternalLearningApplyAxes.push('INVENTED_AXIS');},
+    value=>{value.verifiedExternalLearningDispositions.pop();},
+    value=>{value.verifiedExternalLearningDispositions[0].disposition='VALIDATION_ONLY';},
+    value=>{value.verifiedExternalLearningDispositions[0].domains=[];},
+    value=>{value.verifiedExternalLearningDispositions[0].raw='id=unknown-principle';},
+    value=>{value.verifiedExternalLearningDispositions[0].sourceLearningId='unretrieved';},
+    value=>{value.verifiedExternalGameSourcePrincipleCount=0;},
+    value=>{value.verifiedExternalLearningDispositions.push(value.verifiedExternalLearningDispositions[0]);},
+    value=>{value.verifiedExternalLearningAppliedCount=0;}
+  ]){
+    const invalid=structuredClone(application);mutate(invalid);
+    assert.equal(review(invalid).pass,false);
+  }
+  const pending=finalizeVibe2FanInReview({queue:{tasks:[baseTask()]},results:[{...baseResult(),knowledgeApplication:application,gameRepairQa:{required:true}}]});
+  assert.ok(pending.reviewed[0].missing.includes('game-repair-prepatch-reproduction'));
+  assert.equal(pending.releaseCandidates.length,0);
 });
