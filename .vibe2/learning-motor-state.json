@@ -5284,7 +5284,8 @@
       "coding_negative_18e237s",
       "coding_negative_1ux9lvq",
       "coding_negative_15pn40d",
-      "coding_negative_1cd6z5d"
+      "coding_negative_1cd6z5d",
+      "coding_negative_1eju0tx"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -13504,7 +13505,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 21,
+        "verifiedFailures": 22,
         "games": {
           "fantasy-survival": 1
         },
@@ -13772,23 +13773,24 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 3,
+            "verifiedFailures": 4,
             "games": {},
             "targets": {},
             "failureGames": {
               "village-dungeons": 1,
               "survival": 1,
-              "horror-escape-room": 1
+              "horror-escape-room": 1,
+              "seed-action-survival-rogu-echoes-of-the-lost-star": 1
             },
             "failureTargets": {
-              "unity": 3
+              "unity": 4
             },
             "failureClasses": {
-              "INVALID_PATH": 3
+              "INVALID_PATH": 4
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1ux9lvq",
-            "lastUpdatedAt": "2026-09-29T05:16:02.636Z"
+            "lastFailureEvidence": "coding_negative_1eju0tx",
+            "lastUpdatedAt": "2026-09-29T05:25:17.197Z"
           },
           "roblox|NO_OP|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -13833,8 +13835,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_1t9d22s",
-        "lastFailureEvidence": "coding_negative_1cd6z5d",
-        "lastUpdatedAt": "2026-09-29T05:19:57.007Z"
+        "lastFailureEvidence": "coding_negative_1eju0tx",
+        "lastUpdatedAt": "2026-09-29T05:25:17.197Z"
       },
       "OBSERVABLE_DELTA_FIRST": {
         "verifiedApplications": 0,
@@ -17262,7 +17264,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T05:22:24.080Z",
+    "lastBuiltAt": "2026-09-29T05:25:17.270Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -24086,5 +24088,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T05:22:24.080Z"
+  "updatedAt": "2026-09-29T05:25:17.270Z"
 }
