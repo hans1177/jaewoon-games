@@ -1,5 +1,5 @@
 {
-  "version": 19,
+  "version": 20,
   "gameId": "horror-escape-room",
   "gameName": "심야 감염전 [4대4]",
   "releaseStrategy": "FAST_MVP",
@@ -105,7 +105,17 @@
     "initial lore catalog is intentionally capped near 12 instead of shipping 100 at once",
     "lore expands gradually through staged sightings and periodic content updates",
     "playable ghosts are promoted slowly and remain separate from lore collection",
-    "future ghost monetization remains non-pay-to-win"
+    "future ghost monetization remains non-pay-to-win",
+    "one-player room creation and host start",
+    "room maximum eight real players with AI filling empty logical slots",
+    "public friends-only and private room visibility",
+    "server-side friend validation and private code joining",
+    "room host transfer when the host leaves before the match",
+    "reserved server access code is never replicated to clients",
+    "Studio room flow uses local fallback without TeleportService publishing",
+    "initial world-ghost compendium contains exactly twelve non-playable ghosts",
+    "world-ghost compendium uses three sighting stages and two accepted sightings per round",
+    "completed ghost duplicates convert into contract fragments without combat bonuses"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -214,5 +224,27 @@
     "longTermLoreTarget": 100,
     "playableGhostReleasePace": "0-1 per update",
     "monetization": "NON_PAY_TO_WIN"
+  },
+  "roomSystem": {
+    "minPlayers": 1,
+    "maxPlayers": 8,
+    "aiFill": true,
+    "visibility": [
+      "PUBLIC",
+      "FRIENDS",
+      "PRIVATE"
+    ],
+    "hostStartRequired": true,
+    "friendValidation": "SERVER_AUTHORITATIVE",
+    "reservation": "ROBLOX_RESERVED_SERVER",
+    "studioFallback": "LOCAL_ROOM_ONLY"
+  },
+  "ghostCompendium": {
+    "initialGhosts": 12,
+    "maxStage": 3,
+    "maxSightingsPerRound": 2,
+    "fragmentsPerContract": 24,
+    "playableAtLaunch": false,
+    "gradualPlayablePromotion": true
   }
 }
