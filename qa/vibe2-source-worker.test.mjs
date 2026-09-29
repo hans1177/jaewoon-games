@@ -2695,7 +2695,7 @@ test('zero-output timeout keeps focused recovery enabled for studio build-up',()
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/const zeroOutputTimeoutRecovery=!allowFullRewrite/);
   assert.match(workerSource,/&&\s*!zeroOutputTimeoutRecovery\b/);
-  assert.match(workerSource,/\(!studioExpansion\|\|zeroOutputTimeoutRecovery\|\|unityStudioTimeoutFocusedRecovery\|\|robloxZeroOutputTimeoutFocusedRecoveryActive\|\|assetDevelopmentFocusedGraphics\)/);
+  assert.match(workerSource,/\(!studioExpansion\|\|studioFocusedSourceRepair\|\|zeroOutputTimeoutRecovery\|\|unityStudioTimeoutFocusedRecovery\|\|robloxZeroOutputTimeoutFocusedRecoveryActive\|\|assetDevelopmentFocusedGraphics\)/);
   assert.match(workerSource,/VIBE2_ZERO_OUTPUT_TIMEOUT_FOCUSED_RECOVERY/);
 });
 
@@ -4738,6 +4738,33 @@ test('final Roblox control-token failure reaches its corrective prompt once and 
   await assert.rejects(runVibe2SourceWorker({cwd,applySource:true}),/ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:MODEL_CONTROL_TOKEN/);
   assert.equal(requests.length,4);
   assert.match(requests[3].prompt,/SOURCE CONTENT REPAIR/);
+  assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
+});
+
+test('Roblox studio timeout recovery keeps compact source repair after malformed control output',async(t)=>{
+  const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
+  const source='local status = {Text = "ready"}\nstatus.Text = "ready"\n';
+  write(path.join(cwd,root,relative),source);
+  const work=order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'studio-compact-repair'});
+  work.goal='[STUDIO_QUALITY_EVOLUTION]\nRepair the existing usability flow.\n'+('Existing approved context. '.repeat(4000));
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(work));
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));
+      if(requests.length===3){res.writeHead(503);res.end('end probe');return;}
+      res.writeHead(200,{'content-type':'application/x-ndjson'});
+      res.end(JSON.stringify(requests.length===1?{error:'prediction aborted'}:{response:JSON.stringify({replace:'<think>invalid</think>'}),done:true})+'\n');
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  await assert.rejects(runVibe2SourceWorker({cwd,applySource:true}),/Ollama HTTP 503/);
+  assert.equal(requests.length,3);
+  assert.equal(requests[0].format,'json');
+  assert.match(requests[0].prompt,/3-6 connected edits/);
+  for(const request of requests.slice(1))assert.deepEqual(request.format.required,['replace']);
+  assert.match(requests[2].prompt,/SOURCE CONTENT REPAIR/);
+  assert.ok(Buffer.byteLength(requests[2].prompt)<Buffer.byteLength(requests[1].prompt)+2000);
   assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
 });
 
