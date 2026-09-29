@@ -1453,7 +1453,7 @@ test('fan-in refill reserve runs are run-scoped and never serialize same-lane re
   assert.match(workflow,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(workflow,/format\('vibe2-fanin-refill-\{0\}'/);
   assert.doesNotMatch(workflow,/vibe2-fanin-refill-singleton/);
-  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'RUN_SCOPED_PARALLEL_RESERVE');
+  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'LANE_SCOPED_STATELESS_REFILL_COALESCING');
   assert.equal(runtime.continuous.atomicNeuronStream.sameLaneFanInRefillSerialization,false);
   assert.equal(runtime.continuous.atomicNeuronStream.globalFanInRefillSingletonForbidden,true);
   assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);

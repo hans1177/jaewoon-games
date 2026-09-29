@@ -234,7 +234,7 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(learning.minimumActiveWorkersUnderPressure,1);
   assert.equal(learning.productionMayNotWaitForLearningReserve,true);
   assert.equal(runtime.continuous.auxiliaryLaneFanIn.recoveryFastCausalGameRefillAllowed,true);
-  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'RUN_SCOPED_PARALLEL_RESERVE');
+  assert.equal(runtime.continuous.atomicNeuronStream.fanInRefillConcurrencyScope,'LANE_SCOPED_STATELESS_REFILL_COALESCING');
   assert.equal(runtime.continuous.atomicNeuronStream.globalFanInRefillSingletonForbidden,true);
   assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingIndependentFreeSlotRefillPreserved,true);
   assert.equal(runtime.continuous.callbackCoalescing.capacityRefillMayProceedWhileResultCoalesced,true);
@@ -264,7 +264,14 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   const reserveStart=core.indexOf('\n  reserve:\n');
   const reserveOutputs=core.indexOf('    outputs:',reserveStart);
   assert.ok(reserveStart>=0&&reserveOutputs>reserveStart);
-  assert.doesNotMatch(core.slice(reserveStart,reserveOutputs),/\n    concurrency:/);
+  const reserveHeader=core.slice(reserveStart,reserveOutputs);
+  assert.match(reserveHeader,/github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-refill-reserve-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\) \|\| format\('vibe2-reserve-\{0\}', github\.run_id\)/);
+  assert.match(reserveHeader,/cancel-in-progress: false/);
+  assert.equal(reserve.statelessRefillCoalescing,'ONE_RUNNING_AND_LATEST_PENDING_PER_LANE');
+  assert.equal(runtime.continuous.reserveConcurrency.statelessRefillCoalescing,reserve.statelessRefillCoalescing);
+  const workerHeader=core.slice(core.indexOf('\n  worker:'),core.indexOf('\n    steps:',core.indexOf('\n  worker:')));
+  assert.ok(workerHeader.length>0);
+  assert.doesNotMatch(workerHeader,/\n    concurrency:/);
   assert.doesNotMatch(core,/format\('vibe2-control-state-\{0\}', inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.match(core,/format\('vibe2-continuous-\{0\}-\{1\}', github\.run_id, inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary'\)/);
   assert.doesNotMatch(core,/format\('vibe2-continuous-\{0\}', github\.run_id\)/);
