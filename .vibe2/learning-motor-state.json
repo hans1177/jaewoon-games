@@ -5285,7 +5285,8 @@
       "coding_negative_1ux9lvq",
       "coding_negative_15pn40d",
       "coding_negative_1cd6z5d",
-      "coding_negative_1eju0tx"
+      "coding_negative_1eju0tx",
+      "coding_negative_gezx9u"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -13505,7 +13506,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 22,
+        "verifiedFailures": 23,
         "games": {
           "fantasy-survival": 1
         },
@@ -13831,12 +13832,32 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_1cd6z5d",
             "lastUpdatedAt": "2026-09-29T05:19:57.007Z"
+          },
+          "unity|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "line-defense": 1
+            },
+            "failureTargets": {
+              "unity": 1
+            },
+            "failureClasses": {
+              "STUDIO_QUALITY_DELTA": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_gezx9u",
+            "lastUpdatedAt": "2026-09-29T05:29:15.287Z"
           }
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_1t9d22s",
-        "lastFailureEvidence": "coding_negative_1eju0tx",
-        "lastUpdatedAt": "2026-09-29T05:25:17.197Z"
+        "lastFailureEvidence": "coding_negative_gezx9u",
+        "lastUpdatedAt": "2026-09-29T05:29:15.287Z"
       },
       "OBSERVABLE_DELTA_FIRST": {
         "verifiedApplications": 0,
@@ -17264,7 +17285,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T05:28:27.347Z",
+    "lastBuiltAt": "2026-09-29T05:29:15.350Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -24088,5 +24109,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T05:28:27.347Z"
+  "updatedAt": "2026-09-29T05:29:15.350Z"
 }
