@@ -1,4 +1,5 @@
 name: Roblox Changed Source Runtime Sync
+run-name: Roblox source sync · ${{ inputs.game_id || 'changed-source' }} · ${{ inputs.restart_from_f0 == true && 'F0 restart' || 'normal' }}
 
 on:
   push:
