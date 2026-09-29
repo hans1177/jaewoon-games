@@ -1090,6 +1090,15 @@ jobs:
             export VIBE2_LUAU_BINARY="$luau_dir/luau"
             node --test "$contract_root/qa/vibe2-learning-practice-worker.test.mjs"
           fi
+          if [ "$practice_route" = 'learning-web-artifact' ]; then
+            practice_deps="$RUNNER_TEMP/vibe2-practice-browser"
+            npm install --prefix "$practice_deps" --no-audit --no-fund playwright@1.58.2
+            node "$practice_deps/node_modules/playwright/cli.js" install --with-deps chromium
+            export VIBE2_PLAYWRIGHT_MODULE="$practice_deps/node_modules/playwright/index.mjs"
+          fi
+          if node -e "const o=require('/tmp/vibe2-work-order.json');process.exit(o.selectedTask?.codingPracticeDrill==='unity-lifecycle'?0:1)"; then
+            docker pull mcr.microsoft.com/dotnet/sdk:8.0
+          fi
           artifact_dir="/tmp/vibe2-practice-web-${SAFE_TASK}-${VARIANT}"
           node "$contract_root/tools/vibe2-learning-practice-worker.mjs" \
             --order=/tmp/vibe2-work-order.json \

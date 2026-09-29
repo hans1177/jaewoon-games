@@ -60,6 +60,8 @@ on:
       - 'tools/vibe2-external-ai-distillation.mjs'
       - 'tools/vibe2-practice-distillation.mjs'
       - 'tools/vibe2-learning-motor.mjs'
+      - 'tools/vibe2-learning-practice-worker.mjs'
+      - 'company-learning/roblox-practice.json'
       - '.vibe2/practice-distilled-knowledge.json'
       - 'tools/vibe2-multisource-learning-collector.mjs'
       - 'company-learning/platform-release-roadmap.json'
@@ -157,6 +159,8 @@ on:
       - 'tools/vibe2-external-ai-distillation.mjs'
       - 'tools/vibe2-practice-distillation.mjs'
       - 'tools/vibe2-learning-motor.mjs'
+      - 'tools/vibe2-learning-practice-worker.mjs'
+      - 'company-learning/roblox-practice.json'
       - '.vibe2/practice-distilled-knowledge.json'
       - 'tools/vibe2-multisource-learning-collector.mjs'
       - 'company-learning/platform-release-roadmap.json'
@@ -366,3 +370,31 @@ jobs:
           set -euo pipefail
           node qa/vibe2-development-web-browser-smoke.mjs
 
+
+
+  practice-runtime:
+    name: Practice fault cards runtime
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare isolated practice executors
+        run: |
+          set -euo pipefail
+          practice_deps="$RUNNER_TEMP/vibe2-practice-browser"
+          npm install --prefix "$practice_deps" --no-audit --no-fund playwright@1.58.2
+          node "$practice_deps/node_modules/playwright/cli.js" install --with-deps chromium
+          echo "VIBE2_PLAYWRIGHT_MODULE=$practice_deps/node_modules/playwright/index.mjs" >> "$GITHUB_ENV"
+          docker pull mcr.microsoft.com/dotnet/sdk:8.0
+          echo 'VIBE2_TEST_CSHARP_RUNTIME=1' >> "$GITHUB_ENV"
+          luau_dir="$RUNNER_TEMP/vibe2-practice-luau"
+          mkdir -p "$luau_dir"
+          curl -fsSL --retry 3 -o "$luau_dir/luau.zip" https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+          unzip -oq "$luau_dir/luau.zip" -d "$luau_dir"
+          chmod +x "$luau_dir/luau"
+          echo "VIBE2_LUAU_BINARY=$luau_dir/luau" >> "$GITHUB_ENV"
+      - name: Execute baseline repair and hidden variants
+        run: node --test qa/vibe2-learning-practice-worker.test.mjs

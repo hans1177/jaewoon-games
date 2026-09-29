@@ -1,3 +1,5 @@
+// 파일명: qa/vibe2-learning-practice-worker.test.mjs
+// 검수: 고장 재현, 수정, 변형 실행 및 연습 결과 경계.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -37,13 +39,13 @@ test('weak practice answer fails evaluation',()=>{
 });
 
 
-test('Web practice creates a runnable isolated artifact and measures improvement without production promotion',async()=>{
+test('Web practice creates a runnable isolated artifact and measures improvement without production promotion',{skip:!process.env.VIBE2_PLAYWRIGHT_MODULE},async()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-web-practice-'));
   const order=path.join(dir,'order.json'),response=path.join(dir,'response.json'),out=path.join(dir,'out.json'),artifactDir=path.join(dir,'artifact');
   const html='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{max-width:720px;margin:auto;padding:16px}button{font-size:20px}@media(max-width:600px){body{padding:8px}}</style></head><body><h1>Practice</h1><p id="score" aria-live="polite">Score 0</p><button id="hit">Hit</button><script>let score=0;const out=document.getElementById("score");document.getElementById("hit").addEventListener("click",()=>{score+=1;out.textContent="Score "+score;document.body.classList.toggle("active");});</script></body></html>'+('<!-- practice -->'.repeat(20));
   fs.writeFileSync(order,JSON.stringify({taskId:'web-g2',executionRoute:'learning-web-artifact',goal:'[VIBE_LEARNING_PRACTICE]\npracticeMode=WEB_ARTIFACT\npracticeGeneration=2\npreviousArtifactScore=70\ndomains=WEB_RUNTIME,CORE_LOOP'}));
   fs.writeFileSync(response,JSON.stringify({diagnosis:'The prior Web artifact needs stronger interactive state feedback.',strategy:'Build a self-contained mobile interaction with visible state mutation and deterministic feedback.',tests:['button mutates state','visible score changes','mobile viewport remains usable'],avoidPatterns:['external network dependency'],reusablePatterns:['local state with direct feedback'],artifactHtml:html}));
-  const staticEval=evaluateWebPracticeArtifact(html,70);
+  const staticEval=await evaluateWebPracticeArtifact(html,70);
   assert.equal(staticEval.pass,true);
   assert.equal(staticEval.improved,true);
   assert.ok(staticEval.score>70);
@@ -68,7 +70,7 @@ test('Web practice generation with a previous score fails unless the artifact st
   const output=path.join(root,'result.json');
   const artifactDir=path.join(root,'artifact');
   const html='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{max-width:720px;margin:auto;padding:16px}button{font-size:20px}@media(max-width:600px){body{padding:8px}}</style></head><body><h1>Practice</h1><p id="score" aria-live="polite">Score 0</p><button id="hit">Hit</button><script>let score=0;const out=document.getElementById("score");document.getElementById("hit").addEventListener("click",()=>{score+=1;out.textContent="Score "+score;document.body.classList.toggle("active");});</script></body></html>'+('<!-- practice -->'.repeat(20));
-  const baseline=evaluateWebPracticeArtifact(html,null).score;
+  const baseline=(await evaluateWebPracticeArtifact(html,null)).score;
   fs.writeFileSync(order,JSON.stringify({taskId:'web-no-improve',executionRoute:'learning-web-artifact',goal:`[VIBE_LEARNING_PRACTICE]\npracticeMode=WEB_ARTIFACT\npracticeGeneration=2\npreviousArtifactScore=${baseline}\ndomains=WEB_RUNTIME,CORE_LOOP`}));
   fs.writeFileSync(response,JSON.stringify({diagnosis:'The previous artifact already satisfies the same static checks.',strategy:'Return the same quality artifact so strict improvement must reject it.',tests:['button mutates state','visible score changes','mobile viewport remains usable'],avoidPatterns:['external network dependency'],reusablePatterns:['local state with direct feedback'],artifactHtml:html}));
   await assert.rejects(()=>runLearningPractice({workOrderFile:order,outputFile:output,artifactDir,responseFile:response}),/web practice artifact evaluation failed/);
@@ -127,4 +129,54 @@ test('executed Roblox drill remains untrusted practice and writes no production 
     assert.equal(result.sourceWrite,false);
     assert.equal(result.rawModelOutputStored,false);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+
+test('Web runtime is required even when static markup scores perfectly',async()=>{
+  const drill=robloxCurriculum.platformDrills.find(row=>row.platform==='web');
+  const result=await evaluateWebPracticeArtifact(drill.reference,null,{browserModule:'/missing/playwright.mjs'});
+  assert.equal(result.pass,false);
+  assert.equal(result.runtime.executed,false);
+  assert.equal(result.runtime.reason,'BROWSER_EXECUTOR_UNAVAILABLE');
+});
+
+test('platform fault cards hide references and executable variants from model',()=>{
+  for(const drill of robloxCurriculum.platformDrills){
+    const prompt=buildPracticePrompt({executionRoute:drill.platform==='web'?'learning-web-artifact':'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] repair'},{drill});
+    assert(prompt.includes(drill.scenario));
+    assert(!prompt.includes(JSON.stringify(drill.reference).slice(1,-1)));
+    for(const body of drill.tests||[])assert(!prompt.includes(body));
+    const replay=buildPracticePrompt({executionRoute:drill.platform==='web'?'learning-web-artifact':'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] previousArtifactScore=100'},{drill});
+    assert.match(replay,/fresh hidden input and lifecycle variants/);
+    assert(!replay.includes('Improve the artifact beyond this score'));
+  }
+});
+
+test('Web fault card executes tap rotation restore and hidden seeded variants',{skip:!process.env.VIBE2_PLAYWRIGHT_MODULE},async()=>{
+  const drill=robloxCurriculum.platformDrills.find(row=>row.platform==='web');
+  const fixed=await evaluateWebPracticeArtifact(drill.reference,null,{drill});
+  assert.equal(fixed.pass,true,JSON.stringify(fixed.runtime));
+  assert.equal(fixed.runtime.baselineRejected,true);
+  assert.equal(fixed.runtime.referencePassed,true);
+  assert.equal(fixed.runtime.variants.length,2);
+  for(const html of [drill.broken,drill.reference.replace('count+=1','count+=2'),drill.reference.replace("count+=1;",'return;')]){
+    const bad=await evaluateWebPracticeArtifact(html,null,{drill});
+    assert.equal(bad.pass,false);
+    assert.equal(bad.runtime.executed,true);
+  }
+});
+
+test('Unity fault card runs independent C# lifecycle state in an isolated container',{skip:!process.env.VIBE2_TEST_CSHARP_RUNTIME},()=>{
+  const drill=robloxCurriculum.platformDrills.find(row=>row.platform==='unity');
+  const fixed=evaluatePracticeAnswer({...practiceAnswer,code:drill.reference},{drill});
+  assert.equal(fixed.pass,true,JSON.stringify(fixed.codeVerification));
+  assert.equal(fixed.codeVerification.scope,'STANDALONE_CSHARP_LOGIC_ONLY');
+  assert.equal(fixed.codeVerification.nativeRuntimeVerified,false);
+  assert.equal(evaluatePracticeAnswer({...practiceAnswer,code:drill.broken},{drill}).pass,false);
+});
+
+test('Unity prose and unsafe API source cannot pass a code drill',()=>{
+  const drill=robloxCurriculum.platformDrills.find(row=>row.platform==='unity');
+  assert.equal(evaluatePracticeAnswer(practiceAnswer,{drill}).pass,false);
+  assert.equal(evaluatePracticeAnswer({...practiceAnswer,code:'System.Environment.Exit(0);'},{drill}).pass,false);
 });
