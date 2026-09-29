@@ -16,7 +16,7 @@ test('8명 4대4 시작과 AI 채움',()=>{
 });
 
 test('인간 감염과 양 진영 0명 승리조건',()=>{
- assert.match(server,/local function infectPlayer\(p\)/);assert.match(server,/local function infectBot\(b\)/);
+ assert.match(server,/local function infectPlayer\(p,sourcePlayer\)/);assert.match(server,/local function infectBot\(b,sourcePlayer\)/);
  assert.match(server,/setRole\(p,"MONSTER"\)/);assert.match(server,/FeedbackEvent","INFECT:/);
  assert.match(server,/if humans==0 then endRound\("MONSTER"\)/);assert.match(server,/if monsters==0 then endRound\("SURVIVOR"\)/);
  assert.match(server,/endRound\("DRAW"\)/);
@@ -169,4 +169,278 @@ test('플레이어와 AI 추격 모션은 기존 Animator 위에 레이어로 �
 test('AI 추격 이동은 진행 방향을 바라본다',()=>{
  assert.match(server,/CFrame\.lookAt\(nextPos,nextPos\+dir\)/);
  assert.match(server,/local dir=d\.Unit/);
+});
+
+
+test('보상은 기존 기본값을 유지하면서 실제 기여도만 제한적으로 추가한다',()=>{
+ assert.match(config,/ParticipationCoins=12/);
+ assert.match(config,/WinBonusCoins=18/);
+ assert.match(config,/ContributionCapCoins=12/);
+ assert.match(config,/PurifyPlayerCoins=4/);
+ assert.match(config,/PurifyAICoins=1/);
+ assert.match(config,/InfectPlayerCoins=4/);
+ assert.match(config,/InfectAICoins=1/);
+ assert.match(server,/local function awardContribution\(player,amount\)/);
+ assert.match(server,/RoundContributionCoins/);
+ assert.match(server,/local reward=baseReward\+winBonus\+contribution/);
+ assert.match(client,/참가 %d \+ 승리 %d \+ 기여 %d/);
+});
+
+test('정화 탈락자도 참가 보상과 팀 결과를 잃지 않는다',()=>{
+ assert.match(server,/RoundParticipant",true/);
+ assert.match(server,/RoundTeam/);
+ assert.match(server,/local participated=p:GetAttribute\("RoundParticipant"\)==true/);
+ assert.match(server,/local team=p:GetAttribute\("RoundTeam"\)or role/);
+});
+
+test('실제 플레이어 기여 보상은 AI 기여보다 크고 상한이 있다',()=>{
+ const rewardBlock=config.slice(config.indexOf('Reward={'),config.indexOf('Audio={'));
+ assert.ok(rewardBlock.includes('PurifyPlayerCoins=4'));
+ assert.ok(rewardBlock.includes('PurifyAICoins=1'));
+ assert.ok(rewardBlock.includes('InfectPlayerCoins=4'));
+ assert.ok(rewardBlock.includes('InfectAICoins=1'));
+ assert.match(server,/math\.min\(cap,current\+math\.max/);
+});
+
+
+test('코스메틱 상점은 서버 권한 구매와 장착만 허용한다',()=>{
+ assert.match(config,/Cosmetics=\{/);
+ for(const id of ['DEFAULT','MIDNIGHT_RED','MOON_BLUE','TOXIC_GREEN','VOID_PURPLE'])assert.ok(config.includes('Id="'+id+'"'),id);
+ assert.match(config,/BUY_COSMETIC="BUY_COSMETIC"/);
+ assert.match(config,/EQUIP_COSMETIC="EQUIP_COSMETIC"/);
+ assert.match(server,/local function buyCosmetic\(p,id\)/);
+ assert.match(server,/local function equipCosmetic\(p,id\)/);
+ assert.match(server,/local item=cosmeticById\[id\];if not item then return end/);
+ assert.match(server,/if coins<price then/);
+ assert.match(server,/if not owned\[id\]then/);
+ assert.match(client,/remote:FireServer\(C\.Actions\.BUY_COSMETIC,item\.Id\)/);
+ assert.match(client,/remote:FireServer\(C\.Actions\.EQUIP_COSMETIC,item\.Id\)/);
+});
+
+test('코스메틱 저장은 기존 세이브를 깨지 않는 추가 필드다',()=>{
+ assert.match(server,/local owned=\{DEFAULT=true\}/);
+ assert.match(server,/OwnedCosmetics=ownedCosmeticsList\(owned\)/);
+ assert.match(server,/EquippedCosmetic=equipped/);
+ assert.match(server,/typeof\(d\.EquippedCosmetic\)=="string"/);
+ assert.match(server,/if not owned\[equipped\]or not cosmeticById\[equipped\]then equipped="DEFAULT"end/);
+ assert.ok(server.includes('DSS:GetDataStore("midnight-tag-v3")'));
+});
+
+test('코스메틱은 UI 테마와 칭호 전용이며 전투 수치에 연결되지 않는다',()=>{
+ const cosmeticBlock=config.slice(config.indexOf('Cosmetics={'),config.indexOf('Audio={'));
+ for(const forbidden of ['WalkSpeed','Damage','PurifyDistance','Cooldown','DashPower','TagDistance'])assert.ok(!cosmeticBlock.includes(forbidden),forbidden);
+ assert.match(client,/resultTitle\.TextColor3=accent/);
+ assert.match(client,/selectionStatus\.TextColor3=accent/);
+ assert.match(client,/equippedItem\.Title/);
+ assert.doesNotMatch(server,/EquippedCosmetic[^\n]{0,120}(WalkSpeed|Damage|PurifyDistance|Cooldown|DashPower|TagDistance)/);
+});
+
+test('진행중 이탈은 같은 역할 AI로 즉시 채우고 중도입장은 관전한다',()=>{
+ assert.match(server,/bot\(leavingRole,leavingPos\)/);
+ assert.match(server,/RoundState","SPECTATING"/);
+ assert.match(server,/Spectating",true/);
+ assert.match(client,/Name="SpectatorNotice"/);
+});
+
+test('액션 쿨다운과 결과 보상은 서버 시간과 서버 속성을 사용한다',()=>{
+ for(const key of ['PurifyReadyAt','DashReadyAt','AbilityReadyAt'])assert.ok(server.includes('"'+key+'"'),key);
+ assert.match(client,/workspace:GetServerTimeNow\(\)/);
+ assert.match(client,/Name="RoundResult"/);
+ assert.match(client,/LastRoundBaseReward/);
+ assert.match(client,/LastRoundWinBonus/);
+ assert.match(client,/LastRoundContribution/);
+});
+
+
+test('감염은 자동 접촉이 아니라 서버 에너지 공격으로만 발생한다',()=>{
+ assert.match(config,/INFECT_ATTACK="INFECT_ATTACK"/);
+ assert.match(config,/InfectAttackCost=30/);
+ assert.match(config,/InfectRange=8/);
+ assert.match(server,/local function infectAttack\(p\)/);
+ assert.match(server,/spendEnergy\(p,C\.Energy and C\.Energy\.InfectAttackCost or 30,"INFECT"\)/);
+ assert.match(server,/elseif a==C\.Actions\.INFECT_ATTACK then infectAttack\(p\)/);
+ assert.doesNotMatch(server,/nearestMonsterDistance\(r\.Position\)<=C\.TagDistance/);
+ assert.match(client,/remote:FireServer\(C\.Actions\.INFECT_ATTACK\)/);
+});
+
+test('인간과 몬스터 주요 행동은 같은 에너지 규칙을 사용한다',()=>{
+ for(const marker of ['Max=100','RegenPerSecond=10','PurifyCost=35','DashCost=25','AbilityCost=45'])assert.ok(config.includes(marker),marker);
+ assert.match(server,/spendEnergy\(p,C\.Energy and C\.Energy\.PurifyCost or 35,"PURIFY"\)/);
+ assert.match(server,/spendEnergy\(p,C\.Energy and C\.Energy\.DashCost or 25,"DASH"\)/);
+ assert.match(server,/spendEnergy\(p,C\.Energy and C\.Energy\.AbilityCost or 45,"ABILITY"\)/);
+ assert.match(client,/Name="EnergyTrack"/);
+ assert.match(client,/EnergyLabel/);
+});
+
+test('5대3 6대2 7대1 열세 패시브는 양 진영 공통 에너지 보정만 제공한다',()=>{
+ assert.match(config,/Minority=3,Majority=5,RegenMultiplier=1\.25/);
+ assert.match(config,/Minority=2,Majority=6,RegenMultiplier=1\.50,StationBonus=10/);
+ assert.match(config,/Minority=1,Majority=7,RegenMultiplier=1\.80,StationBonus=20,LastStandEnergy=35/);
+ assert.match(server,/local function pressurePassiveFor\(role,humans,monsters\)/);
+ assert.match(server,/role=="SURVIVOR"and humans or role=="MONSTER"and monsters/);
+ assert.doesNotMatch(config,/PressurePassives=[\s\S]{0,500}(WalkSpeed|Damage|RangeBonus|PurifyRange)/);
+ assert.match(client,/열세 패시브/);
+});
+
+test('기존 단말은 에너지 충전 거점으로 동작하고 탈출 승리 흔적은 제거된다',()=>{
+ assert.match(server,/Name="EnergyPrompt"/);
+ assert.match(server,/StationRecharge/);
+ assert.match(server,/StationCooldown/);
+ assert.match(server,/Name="EnergyCorePrompt"/);
+ assert.match(server,/EnergyCoreState/);
+ assert.doesNotMatch(server,/Name="EscapePrompt"/);
+ assert.doesNotMatch(server,/ActionText="탈출"/);
+});
+
+test('세 맵에는 각자 다른 상호작용 콘텐츠가 있다',()=>{
+ assert.match(server,/SCHOOL_BROADCAST/);
+ assert.match(server,/HOSPITAL_SURGERY_LIGHT/);
+ assert.match(server,/PARK_CAROUSEL_POWER/);
+ assert.match(server,/addEnergyCore/);
+ for(const marker of ['비상 방송실','수술실 전력장치','회전목마 전원','중앙 에너지 코어'])assert.ok(server.includes(marker),marker);
+});
+
+test('코믹 놀람 요소는 로컬 전용이며 경쟁 판정과 분리된다',()=>{
+ assert.match(server,/CompetitiveEffect",false/);
+ for(const marker of ['SCHOOL_HALL_SHADOW','SCHOOL_LOCKER_EYES','SCHOOL_JANITOR','SCHOOL_GYM_BALL','SCHOOL_BOARD_GAG','HOSPITAL_WHEELCHAIR','PARK_CLOWN'])assert.ok(server.includes(marker),marker);
+ assert.match(client,/local function playSurprise\(trigger\)/);
+ assert.match(client,/CanCollide=false/);
+ assert.match(client,/CanTouch=false/);
+ assert.match(client,/CanQuery=false/);
+ assert.doesNotMatch(client,/playSurprise\([\s\S]{0,200}FireServer/);
+});
+
+test('코인 상점은 UI 코스메틱만 구매 장착하며 서버가 가격과 보유를 검증한다',()=>{
+ assert.match(config,/Cosmetics=\{/);
+ assert.match(config,/BUY_COSMETIC="BUY_COSMETIC"/);
+ assert.match(config,/EQUIP_COSMETIC="EQUIP_COSMETIC"/);
+ assert.match(server,/local function buyCosmetic\(p,id\)/);
+ assert.match(server,/local function equipCosmetic\(p,id\)/);
+ assert.match(server,/OwnedCosmetics=ownedCosmeticsList/);
+ assert.match(client,/Name="CosmeticShop"/);
+ assert.doesNotMatch(config,/Cosmetics=[\s\S]{0,900}(WalkSpeed|Damage|PurifyRangeBonus|DashPowerBonus|AbilityCooldown)/);
+});
+
+test('중도 입장과 이탈은 다음 라운드 관전 및 AI 보충으로 복구한다',()=>{
+ assert.match(server,/RoundState","SPECTATING"/);
+ assert.match(server,/bot\(leavingRole,leavingPos\)/);
+ assert.match(client,/Name="SpectatorNotice"/);
+ assert.match(client,/다음 라운드부터 참가/);
+});
+
+
+test('승리 결과는 서버가 확정한 코믹 팀 세레머니로 마무리된다',()=>{
+ assert.match(client,/Name="TeamCeremony"/);
+ assert.match(client,/local function playResultCeremony\(resultCode\)/);
+ assert.match(client,/CELEBRATE_HUMAN/);
+ assert.match(client,/CELEBRATE_MONSTER/);
+ assert.match(client,/CELEBRATE_DRAW/);
+ assert.match(server,/local function chooseCelebration\(winner\)/);
+ assert.match(server,/CelebrationName/);
+ assert.match(server,/CelebrationCaption/);
+ assert.doesNotMatch(client,/playResultCeremony\([\s\S]{0,600}FireServer/);
+});
+
+
+test('맵 놀람 요소는 경쟁 판정과 레이캐스트에서 완전히 제외된다',()=>{
+ assert.match(server,/AmbientDecorativeOnly/);
+ assert.match(server,/CompetitiveEffect",false/);
+ assert.match(server,/CanCollide=false/);
+ assert.match(server,/CanTouch=false/);
+ assert.match(server,/CanQuery=false/);
+ for(const marker of [
+  'SCHOOL_WATCHER','SCHOOL_LOCKER_DUCK','SCHOOL_CHALK_FACE','SCHOOL_VENDING_CAN',
+  'HOSPITAL_MORGUE_PEEK','HOSPITAL_RUNAWAY_SLIPPERS','HOSPITAL_IV_WALK','HOSPITAL_XRAY','HOSPITAL_BED',
+  'PARK_CLOWN_PEEK','PARK_LONELY_BALLOON','PARK_DRIVERLESS_CAR','PARK_ARCADE','PARK_POPCORN'
+ ])assert.ok(server.includes(marker),marker);
+ assert.doesNotMatch(server,/AmbientSurprise[^\n]{0,220}(awardContribution|setEnergy|setRole|infectPlayer|eliminateMonsterPlayer)/);
+});
+
+test('몬스터 감염 공격은 별도 버튼과 공격 모션을 가진다',()=>{
+ assert.match(client,/local infectButton=makeButton/);
+ assert.match(client,/setMotionImpulse\("INFECT_ATTACK"/);
+ assert.match(client,/remote:FireServer\(C\.Actions\.INFECT_ATTACK\)/);
+ assert.match(client,/motionImpulseKind=="INFECT_ATTACK"/);
+});
+
+test('병원과 놀이공원도 학교처럼 별도 코믹 발견거리를 가진다',()=>{
+ for(const marker of ['HOSPITAL_XRAY','HOSPITAL_BED','PARK_ARCADE','PARK_POPCORN'])assert.ok(server.includes(marker),marker);
+ for(const marker of ['LocalXrayDuck','LocalRunawayBed','LocalArcadeGhostScreen','LocalPopcorn'])assert.ok(client.includes(marker),marker);
+});
+
+test('승리 세레머니는 결과 단계 전용이며 서버가 팀과 랜덤 연출을 확정한다',()=>{
+ assert.match(config,/ResultSeconds=6/);
+ assert.match(config,/Celebrations=\{/);
+ for(const id of ['PHOTO_FAIL','PURIFIER_HIGHFIVE','CLOCK_OUT','ROLL_CALL','SHRUG_DANCE','SCARY_POSE','AWKWARD_CLAP'])assert.ok(config.includes('Id="'+id+'"'),id);
+ assert.match(server,/local function chooseCelebration\(winner\)/);
+ assert.match(server,/CelebrationWinnerTeam/);
+ assert.match(server,/CelebrationAIWinners/);
+ assert.match(server,/task\.wait\(C\.ResultSeconds or 6\)/);
+ assert.match(client,/Name="TeamCeremony"/);
+ assert.match(client,/playCeremonyConfetti/);
+ assert.match(client,/CelebrationCaption/);
+ assert.doesNotMatch(config,/Celebrations=[\s\S]{0,1400}(Damage|WalkSpeed|PurifyDistance|InfectRange|RegenMultiplier)/);
+});
+
+
+test('초기 세계 괴담 도감은 12종 3단계이며 서버 근접 검증을 사용한다',()=>{
+ const catalog=config.slice(config.indexOf('GhostCatalog={'),config.indexOf('GhostTitles={'));
+ const ids=[...catalog.matchAll(/\{Id="([^"]+)"/g)].map(x=>x[1]);
+ assert.equal(ids.length,12);
+ assert.match(config,/MaxStage=3/);
+ assert.match(config,/MaxSightingsPerRound=2/);
+ assert.match(config,/GHOST_SIGHTING_FOUND="GHOST_SIGHTING_FOUND"/);
+ assert.match(server,/local function reportGhostSighting\(p,id\)/);
+ assert.match(server,/GhostSighting_"\.\.id/);
+ assert.match(server,/Magnitude>radius then return/);
+ assert.match(server,/GhostProgress=ghostProgressSave/);
+ assert.match(client,/FireServer\(C\.Actions\.GHOST_SIGHTING_FOUND,ghostId\)/);
+ for(const marker of ['YUREI','BANSHEE','DULLAHAN','BLACK_SHUCK'])assert.ok(catalog.includes('Id="'+marker+'"'),marker);
+ assert.match(catalog,/Playable=false/);
+ const reportBlock=server.slice(server.indexOf('local function reportGhostSighting'),server.indexOf('local function validRemoteAction'));
+ assert.doesNotMatch(reportBlock,/WalkSpeed|Damage|RoundScore/);
+});
+
+test('괴담 메모는 읽는 수집품이며 칭호 외 경쟁 보상이 없다',()=>{
+ assert.match(config,/Lore=\{/);
+ assert.match(server,/local function addLoreCollectible/);
+ assert.match(server,/FoundLore=foundLoreList/);
+ assert.match(client,/괴담 메모 발견/);
+ const loreBlock=server.slice(server.indexOf('local function addLoreCollectible'),server.indexOf('local function addObjectiveStation'));
+ assert.doesNotMatch(loreBlock,/Coins|Energy|WalkSpeed|Damage|RoundScore/);
+});
+
+
+test('1인 방 생성과 방장 시작은 8인 AI 충원 계약을 유지한다',()=>{
+ assert.match(config,/MinimumParticipants=1/);
+ assert.match(config,/Room=\{MaxPlayers=8/);
+ for(const action of ['CREATE_ROOM','JOIN_ROOM_CODE','QUICK_JOIN_PUBLIC','QUICK_JOIN_FRIEND','START_ROOM','LEAVE_ROOM'])assert.ok(config.includes(action+'="'+action+'"'),action);
+ assert.match(server,/local function createReservedRoom\(p,visibility\)/);
+ assert.match(server,/local function startRoomMatch\(p\)/);
+ assert.match(server,/#Players:GetPlayers\(\)<math\.max\(1,tonumber\(C\.MinimumParticipants\)or 1\)/);
+ assert.match(server,/configure\(h\)/);
+ assert.match(client,/Name="RoomBrowser"/);
+ assert.match(client,/1명부터 시작 가능 · 최대 8명 · 빈자리는 AI/);
+});
+
+test('예약 방은 공개 친구만 비공개를 서버가 검증하고 예약 코드를 클라이언트에 노출하지 않는다',()=>{
+ for(const visibility of ['PUBLIC','FRIENDS','PRIVATE'])assert.ok(config.includes('"'+visibility+'"'),visibility);
+ assert.match(server,/TeleportService:ReserveServerAsync\(game\.PlaceId\)/);
+ assert.match(server,/options\.ReservedServerAccessCode=record\.accessCode/);
+ assert.match(server,/p:IsFriendsWithAsync/);
+ assert.match(server,/visibility=="PRIVATE"and explicitCode~=true/);
+ assert.doesNotMatch(client,/ReservedServerAccessCode|accessCode/);
+});
+
+test('방장 이탈은 대기방에서 다음 실제 유저에게 승계된다',()=>{
+ assert.match(server,/local leavingWasHost=roomServer and p\.UserId==roomHostUserId/);
+ assert.match(server,/table\.sort\(remaining/);
+ assert.match(server,/roomHostUserId=nextHost\.UserId/);
+ assert.match(server,/RoomIsHost/);
+});
+
+test('Studio 방 검증은 TeleportService 대신 로컬 fallback을 사용한다',()=>{
+ assert.match(server,/local studioRoomFallback=RunService:IsStudio\(\)/);
+ assert.match(server,/workspace:SetAttribute\("StudioRoomFallback",true\)/);
+ assert.match(server,/roomCode="000001"/);
 });
