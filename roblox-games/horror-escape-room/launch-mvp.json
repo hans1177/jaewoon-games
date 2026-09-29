@@ -29,7 +29,10 @@
     "energy combat: purification dash infection attack and monster abilities consume regenerating energy",
     "map content: reusable energy stations, contested central energy core and one utility interaction per map",
     "harmless local surprise/comic scenes that never affect competitive authority",
-    "comic team result ceremonies with map-specific jokes"
+    "comic team result ceremonies with map-specific jokes",
+    "short server-authoritative comic victory ceremonies for humans monsters and draws",
+    "winning team ceremony keeps AI participants visible until result phase ends",
+    "school hospital and theme park each contain harmless discovery surprises and comic easter eggs"
   ],
   "deferredUntilAfterMvp": [
     "extra monsters",
@@ -88,7 +91,12 @@
     "mid-round joins spectate until next round",
     "departed active players are replaced by same-role AI",
     "local-only winner team ceremony for survivor monster and draw results",
-    "map-specific comic ceremony copy without competitive effects"
+    "map-specific comic ceremony copy without competitive effects",
+    "6-second server-authoritative team victory ceremony",
+    "human and monster victory each have three comic ceremony variants",
+    "draw uses a dedicated comic ceremony",
+    "celebrations never modify combat stats or round authority",
+    "map surprise props are non-collidable non-touchable and non-queryable"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
