@@ -1626,6 +1626,9 @@ jobs:
     name: Official Studio MCP actual play ${{ matrix.gameId }}
     needs: studio-local-plan
     if: always() && needs.studio-local-plan.result == 'success' && needs.studio-local-plan.outputs.count != '0'
+    concurrency:
+      group: roblox-studio-mcp-game-${{ matrix.gameId }}
+      cancel-in-progress: false
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.studio-local-plan.outputs.matrix) }}
@@ -1652,8 +1655,52 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Revalidate exact same-game Studio need after concurrency wait
+        id: studio_guard
+        working-directory: main
+        shell: powershell
+        env:
+          GAME_ID: ${{ matrix.gameId }}
+          SOURCE_REVISION: ${{ matrix.sourceRevision }}
+          ARTIFACT_IDENTITY: ${{ matrix.artifactIdentity }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git -C ../runtime fetch --no-tags origin company-runtime
+          if ($LASTEXITCODE -ne 0) { throw 'latest company-runtime fetch before Studio guard failed' }
+          git -C ../runtime reset --hard origin/company-runtime
+          if ($LASTEXITCODE -ne 0) { throw 'latest company-runtime reset before Studio guard failed' }
+
+          $planOutput = Join-Path $env:RUNNER_TEMP "roblox-studio-revalidate-$env:GAME_ID.json"
+          $planArgs = @(
+            '--mode=plan',
+            '--queue=../runtime/development-queue.json',
+            '--roadmap=company-learning/platform-release-roadmap.json',
+            '--repo-root=.',
+            "--game-id=$env:GAME_ID",
+            "--output=$planOutput"
+          )
+          & node 'tools/company-development-roblox-studio-local-play.mjs' @planArgs
+          if ($LASTEXITCODE -ne 0) { throw 'same-game Studio revalidation plan failed' }
+
+          $plan = Get-Content $planOutput -Raw | ConvertFrom-Json
+          $rows = @($plan.include)
+          $match = $rows | Where-Object {
+            [string]$_.gameId -eq [string]$env:GAME_ID -and
+            [string]$_.sourceRevision -eq [string]$env:SOURCE_REVISION -and
+            [string]$_.artifactIdentity -eq [string]$env:ARTIFACT_IDENTITY
+          } | Select-Object -First 1
+
+          if ($match) {
+            'run=true' | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+            Write-Host "ROBLOX_STUDIO_SAME_GAME_REVALIDATE=RUN:$env:GAME_ID"
+          } else {
+            'run=false' | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+            Write-Host "ROBLOX_STUDIO_SAME_GAME_REVALIDATE=SKIP_ALREADY_HANDLED_OR_SUPERSEDED:$env:GAME_ID"
+          }
+
       - name: Verify official Studio MCP policy and runner
         id: mcp_preflight
+        if: steps.studio_guard.outputs.run == 'true'
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
@@ -1810,7 +1857,7 @@ jobs:
       - name: Download exact immutable Roblox build artifact
         id: artifact_download
         continue-on-error: true
-        if: steps.mcp_preflight.outputs.setting_blocked != 'true'
+        if: steps.studio_guard.outputs.run == 'true' && steps.mcp_preflight.outputs.setting_blocked != 'true'
         uses: actions/download-artifact@v4
         with:
           name: development-roblox-package-${{ matrix.gameId }}
@@ -1820,7 +1867,7 @@ jobs:
           run-id: ${{ matrix.artifactRunId }}
 
       - name: Rebuild byte-identical exact artifact when GitHub artifact API is unavailable
-        if: steps.mcp_preflight.outputs.setting_blocked != 'true' && steps.artifact_download.outcome != 'success'
+        if: steps.studio_guard.outputs.run == 'true' && steps.mcp_preflight.outputs.setting_blocked != 'true' && steps.artifact_download.outcome != 'success'
         shell: powershell
         env:
           GAME_ID: ${{ matrix.gameId }}
@@ -1886,7 +1933,7 @@ jobs:
           Write-Host 'ROBLOX_STUDIO_MCP_ARTIFACT_API_FALLBACK=NO_GAMEPLAY_OR_RUNTIME_BYPASS'
 
       - name: Bind and open exact local Place artifact
-        if: steps.mcp_preflight.outputs.setting_blocked != 'true'
+        if: steps.studio_guard.outputs.run == 'true' && steps.mcp_preflight.outputs.setting_blocked != 'true'
         shell: powershell
         env:
           EXPECTED_ARTIFACT: ${{ matrix.artifactIdentity }}
@@ -1927,21 +1974,9 @@ jobs:
             Start-Sleep -Seconds 1
           }
           if (-not $ownedStudioProcesses.Count) {
-            Write-Host 'ROBLOX_STUDIO_MCP_PRE_MCP_RELAUNCH=YES'
-            Start-Sleep -Seconds 1
-            $exactPlaceStarted = [DateTime]::UtcNow
-            $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($places[0].FullName) -PassThru
-            "VIBE2_STUDIO_PROCESS_ID=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-            "VIBE2_STUDIO_PROCESS_IDS=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-            Write-Host "ROBLOX_STUDIO_MCP_PRE_MCP_RELAUNCH_PROCESS_ID=$($placeLaunchProcess.Id)"
-            try { $null = $placeLaunchProcess.WaitForInputIdle(30000) } catch {}
-            for ($processProbe = 1; $processProbe -le 12; $processProbe++) {
-              $ownedStudioProcesses = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Where-Object { $_.StartTime.ToUniversalTime() -ge $exactPlaceStarted.AddSeconds(-2) -and $_.Id -eq $placeLaunchProcess.Id } | Sort-Object StartTime)
-              if ($ownedStudioProcesses.Count) { break }
-              Start-Sleep -Seconds 1
-            }
+            Write-Host 'ROBLOX_STUDIO_MCP_SINGLE_SESSION_PROCESS_NOT_READY=YES'
+            throw 'Roblox Studio unavailable after bounded exact local Place launch; duplicate Studio relaunch forbidden'
           }
-          if (-not $ownedStudioProcesses.Count) { throw 'Roblox Studio unavailable after bounded exact local Place relaunch' }
           Write-Host "ROBLOX_STUDIO_MCP_PRE_MCP_PROCESS_READY_COUNT=$($ownedStudioProcesses.Count)"
           $studioProcess = $ownedStudioProcesses | Where-Object { $_.Id -eq $placeLaunchProcess.Id } | Select-Object -First 1
           if (-not $studioProcess) {
@@ -2003,7 +2038,7 @@ jobs:
 
       - name: Run actual local play through official Studio MCP
         id: studio_play
-        if: steps.mcp_preflight.outputs.setting_blocked != 'true'
+        if: steps.studio_guard.outputs.run == 'true' && steps.mcp_preflight.outputs.setting_blocked != 'true'
         shell: powershell
         continue-on-error: true
         run: |
@@ -2088,93 +2123,20 @@ jobs:
             }
             if ($attempt -ge $maxSessionAttempts) { break }
 
-            Write-Host "ROBLOX_STUDIO_MCP_SESSION_RESTART=$attempt"
-            $ownedIds = @(([string]$env:VIBE2_STUDIO_PROCESS_IDS).Split(',') | Where-Object { $_ -match '^[0-9]+$' } | Select-Object -Unique)
-            foreach ($ownedId in $ownedIds) {
-              Stop-Process -Id ([int]$ownedId) -Force -ErrorAction SilentlyContinue
+            $ownedId = [string]$env:VIBE2_STUDIO_PROCESS_ID
+            if ($ownedId -notmatch '^[0-9]+$') {
+              $studioAttachmentFailureObserved = $true
+              Write-Host "ROBLOX_STUDIO_MCP_SAME_SESSION_RETRY_ABORTED=OWNED_PROCESS_ID_MISSING:attempt=$attempt"
+              break
             }
-            Start-Sleep -Seconds 2
-            if (-not (Test-Path $env:VIBE2_LOCAL_PLACE_FILE)) { throw 'Exact local Place artifact disappeared before MCP recovery restart' }
-
-            $officialVersionsRoot = Join-Path $env:LOCALAPPDATA 'Roblox\Versions'
-            Write-Host "ROBLOX_STUDIO_MCP_RETRY_OTHER_PROCESS_PRESERVED=YES:attempt=$attempt"
-            Start-Sleep -Seconds 1
-
-            $retryExactStarted = [DateTime]::UtcNow
-            $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($env:VIBE2_LOCAL_PLACE_FILE) -PassThru
-            "VIBE2_STUDIO_PROCESS_ID=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-            "VIBE2_STUDIO_PROCESS_IDS=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-            Write-Host "ROBLOX_STUDIO_MCP_RETRY_EXACT_PLACE_PROCESS_ID=$($placeLaunchProcess.Id):attempt=$attempt"
-            try {
-              if ($placeLaunchProcess.WaitForInputIdle(30000)) {
-                Write-Host "ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=YES:attempt=$attempt"
-              } else {
-                Write-Host "ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=TIMEOUT_CONTINUE_MCP_PROBE:attempt=$attempt"
-              }
-            } catch {
-              Write-Host "ROBLOX_STUDIO_MCP_RELAUNCH_GUI_READY=UNAVAILABLE_CONTINUE_MCP_PROBE:attempt=$attempt"
+            $ownedStudio = Get-Process -Id ([int]$ownedId) -ErrorAction SilentlyContinue
+            if (-not $ownedStudio) {
+              $studioAttachmentFailureObserved = $true
+              Write-Host "ROBLOX_STUDIO_MCP_SAME_SESSION_RETRY_ABORTED=OWNED_PROCESS_EXITED:attempt=$attempt"
+              break
             }
-            Start-Sleep -Seconds 1
-
-            $ownedStudioProcesses = @()
-            for ($processProbe = 1; $processProbe -le 12; $processProbe++) {
-              $ownedStudioProcesses = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Where-Object { $_.StartTime.ToUniversalTime() -ge $retryExactStarted.AddSeconds(-2) -and $_.Id -eq $placeLaunchProcess.Id } | Sort-Object StartTime)
-              if ($ownedStudioProcesses.Count) { break }
-              Start-Sleep -Seconds 1
-            }
-            if (-not $ownedStudioProcesses.Count) {
-              Write-Host "ROBLOX_STUDIO_MCP_RETRY_PROCESS_NOT_READY=attempt=$attempt"
-              $env:VIBE2_STUDIO_PROCESS_ID = ''
-              $env:VIBE2_STUDIO_PROCESS_IDS = ''
-              continue
-            }
-            $studioProcess = $ownedStudioProcesses | Where-Object { $_.Id -eq $placeLaunchProcess.Id } | Select-Object -First 1
-            if (-not $studioProcess) {
-              throw 'Retry Studio process handed off without provable ownership; preserve other Studio windows'
-            }
-            $ownedStudioIds = @([string]$studioProcess.Id)
-            $env:VIBE2_STUDIO_PROCESS_ID = [string]$studioProcess.Id
-            $env:VIBE2_STUDIO_PROCESS_IDS = $ownedStudioIds -join ','
-            "VIBE2_STUDIO_PROCESS_ID=$($studioProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-            "VIBE2_STUDIO_PROCESS_IDS=$($ownedStudioIds -join ',')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
-            $retryAssistantReady = $false
-            for ($probe = 1; $probe -le 8; $probe++) {
-              $recentStudioLogs = @(Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\logs') -File -Filter '*.log' -ErrorAction SilentlyContinue |
-                Where-Object { $_.LastWriteTimeUtc -ge $retryExactStarted.AddSeconds(-2) } |
-                Sort-Object LastWriteTimeUtc -Descending |
-                Select-Object -First 4)
-              foreach ($logFile in $recentStudioLogs) {
-                if (Select-String -Path $logFile.FullName -Pattern 'AssistantVersion:|Running plugin sabuiltin_Assistant\.rbxm' -Quiet -ErrorAction SilentlyContinue) {
-                  $retryAssistantReady = $true
-                  break
-                }
-              }
-              if ($retryAssistantReady) { break }
-              Start-Sleep -Seconds 1
-            }
-            if ($retryAssistantReady) {
-              Write-Host "ROBLOX_STUDIO_MCP_RETRY_EXACT_ASSISTANT_LOG_READY=YES:attempt=$attempt"
-            } else {
-              Write-Host "ROBLOX_STUDIO_MCP_RETRY_EXACT_ASSISTANT_LOG_READY=UNKNOWN_CONTINUE_OFFICIAL_HANDSHAKE:attempt=$attempt"
-            }
-            Write-Host "ROBLOX_STUDIO_MCP_RETRY_ASSISTANT_LOG_GATE=ADVISORY_ONLY:attempt=$attempt"
-            Write-Host "ROBLOX_STUDIO_MCP_STUDIO_RELAUNCHED=$($studioProcess.Id)"
-            Write-Host "ROBLOX_STUDIO_MCP_RETRY_OWNED_PROCESS_IDS=$($ownedStudioIds -join ','):attempt=$attempt"
-            Write-Host 'ROBLOX_STUDIO_MCP_RETRY_SINGLE_EXACT_STUDIO=YES'
-
-            $retryDiag = Join-Path $env:RUNNER_TEMP "roblox-studio-mcp-setting-retry-$attempt.json"
-            $retryDiagArgs = @(
-              '--mode=diagnose-setting',
-              "--settings-root=$env:VIBE2_ROBLOX_STUDIO_MCP_SETTINGS_ROOT",
-              "--output=$retryDiag"
-            )
-            & node 'main/tools/company-development-roblox-studio-local-play.mjs' @retryDiagArgs
-            if ($LASTEXITCODE -ne 0) { throw 'Studio MCP retry read-only setting diagnostic failed' }
-            $retrySetting = Get-Content $retryDiag -Raw | ConvertFrom-Json
-            Write-Host "ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED=$([string]$retrySetting.state):attempt=$attempt"
-            Write-Host "ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED_COUNT=$([int]$retrySetting.enabledCount):attempt=$attempt"
-            Write-Host 'ROBLOX_STUDIO_MCP_RETRY_SETTING_MUTATION=NO'
+            Write-Host "ROBLOX_STUDIO_MCP_SAME_STUDIO_RETRY=YES:process=$ownedId:attempt=$attempt"
+            Write-Host 'ROBLOX_STUDIO_MCP_DUPLICATE_STUDIO_RELAUNCH=NO'
             Start-Sleep -Seconds 3
           }
 
@@ -2207,12 +2169,12 @@ jobs:
               throw 'official Roblox Studio MCP tools unavailable; enable Studio as MCP server in Assistant'
             }
             if ($toolProviderTimeoutObserved) {
-              throw 'official Roblox Studio MCP tool provider timed out after 3 clean Studio sessions'
+              throw 'official Roblox Studio MCP tool provider timed out after 3 MCP attempts on one exact Studio session'
             }
             if ($studioAttachmentFailureObserved) {
-              throw 'official Roblox Studio MCP client connected but Studio instance registration remained empty after 3 exact Studio sessions'
+              throw 'official Roblox Studio MCP client connected but Studio instance registration remained empty after 3 MCP attempts on one exact Studio session'
             }
-            throw 'official Roblox Studio MCP play failed after 3 official restart sessions'
+            throw 'official Roblox Studio MCP play failed after 3 MCP attempts on one exact Studio session'
           }
           if ($runtimeVerified) {
             Write-Host 'ROBLOX_STUDIO_MCP_ACTUAL_PLAY=PASS'
@@ -2222,7 +2184,7 @@ jobs:
           }
 
       - name: Finalize Studio session after final capture
-        if: always()
+        if: always() && steps.studio_guard.outputs.run == 'true'
         shell: powershell
         run: |
           $ErrorActionPreference = 'Continue'
@@ -2233,7 +2195,7 @@ jobs:
 
       - name: Persist exact Studio MCP play evidence
         id: persist
-        if: always()
+        if: always() && steps.studio_guard.outputs.run == 'true'
         shell: powershell
         env:
           GAME_ID: ${{ matrix.gameId }}
