@@ -1404,7 +1404,7 @@
         "crossLaneGlobalReserveLock": false,
         "sameLaneReserveSerialization": false,
         "sharedQueue": "vibe2-unreal-core:.vibe2/queue.json",
-        "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5_ON_ACTUAL_WRITE_CONFLICT",
+        "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UNBOUNDED_WITH_CAPPED_BACKOFF_ON_ACTUAL_WRITE_CONFLICT",
         "workerDirectControlWrite": false,
         "schedulerConcurrencyEpoch": "vibe2-24h-cycle-singleton-v9",
         "gamePrimaryExternalBoundary": 256,
