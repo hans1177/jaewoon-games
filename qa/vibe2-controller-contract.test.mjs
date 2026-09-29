@@ -579,6 +579,13 @@ test('24H safety-net push ignores QA-only and descriptive document churn',()=>{
   assert.match(safetyNetWorkflow,/cron: '\*\/5 \* \* \* \*'/);
 });
 
+test('game reserve safety net wakes independently of the 24H singleton',()=>{
+  assert.match(workflow,/schedule:\n\s+- cron: '\*\/5 \* \* \* \*'/);
+  assert.match(workflow,/github\.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake'/);
+  assert.match(workflow,/cancel-in-progress: false/);
+  assert.match(workflow,/VIBE2_EXECUTION_LANE: \$\{\{ inputs\.execution_lane \|\| github\.event\.client_payload\.execution_lane \|\| 'game-primary' \}\}/);
+});
+
 test('reserve preflight uses the pinned main contract and blocks broken GAME_PRIMARY contracts before reservation',()=>{
   const start=workflow.indexOf('- name: Prepare latest main machine contract');
   const end=workflow.indexOf('- name: Reserve conflict-free DAG batch');

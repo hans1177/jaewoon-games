@@ -28,6 +28,9 @@ on:
         default: ''
   repository_dispatch:
     types: [vibe2-neuron-complete, vibe2-fanin-refill]
+  # Independent game reserve safety net while the 24H singleton waits on slow workers.
+  schedule:
+    - cron: '*/5 * * * *'
   # GAME_PRIMARY_MAIN_PUSH_WAKE: main churn must not starve queued game work behind
   # the singleton planner. This enters the existing canonical reserve path only.
   push:
@@ -71,7 +74,7 @@ permissions:
 concurrency:
   # Only a direct main push without an explicit lane uses the disposable main-wake singleton.
   # Reusable workflow_call lanes inherit the caller event name, so explicit lane inputs must stay run-scoped.
-  group: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
+  group: ${{ github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
 env:
