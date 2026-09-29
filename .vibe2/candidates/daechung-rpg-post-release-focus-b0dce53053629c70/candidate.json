@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": " local s=Instance.new(\"Sound\");s.Name=name;s.SoundId=id;s.Volume=volume;s.Parent=SoundService;return s",
+      "replace": "local s=Instance.new(\"Sound\");s.Name=name;s.SoundId=id;s.Volume=volume;s.Parent=SoundService;return s"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
