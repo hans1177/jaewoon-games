@@ -37,7 +37,7 @@ env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 concurrency:
-  group: roblox-runtime-foundation-${{ inputs.game_id || github.sha }}
+  group: roblox-runtime-foundation-${{ inputs.game_id || 'scan' }}
   cancel-in-progress: true
 
 jobs:
@@ -74,7 +74,12 @@ jobs:
           cancelled=0
           while read -r run_id; do
             [ -n "$run_id" ] || continue
-            gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null || true
+            gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null 2>&1 || true
+            run_status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.status' 2>/dev/null || true)"
+            if [[ "$run_status" =~ ^(queued|pending|requested|in_progress|waiting)$ ]]; then
+              gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/force-cancel" >/dev/null 2>&1 || true
+              echo "ROBLOX_STALE_FOUNDATION_RUN_FORCE_CANCEL_REQUESTED=$run_id:$run_status"
+            fi
             cancelled=$((cancelled+1))
             echo "ROBLOX_STALE_FOUNDATION_RUN_CANCELLED=$run_id"
           done < /tmp/roblox-stale-foundation-run-ids
