@@ -26,10 +26,16 @@ local Config={
   PurifyCost=35,
   DashCost=25,
   InfectAttackCost=30,
+  InfectAttackCooldown=1.2,
   AbilityCost=45,
   InfectRange=8,
   StationRecharge=35,
   StationCooldown=25,
+  PressurePassives={
+   {Minority=3,Majority=5,RegenMultiplier=1.25,StationBonus=0,LastStandEnergy=0,Label="열세 집중"},
+   {Minority=2,Majority=6,RegenMultiplier=1.50,StationBonus=10,LastStandEnergy=0,Label="비상 충전"},
+   {Minority=1,Majority=7,RegenMultiplier=1.80,StationBonus=20,LastStandEnergy=35,Label="최후 저항"},
+  },
  },
  Cosmetics={
   {Id="DEFAULT",Name="기본 프레임",Price=0,Accent=Color3.fromRGB(170,209,220),Title="신입 참가자"},
