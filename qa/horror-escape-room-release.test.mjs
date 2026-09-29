@@ -16,7 +16,7 @@ test('8명 4대4 시작과 AI 채움',()=>{
 });
 
 test('인간 감염과 양 진영 0명 승리조건',()=>{
- assert.match(server,/local function infectPlayer\(p\)/);assert.match(server,/local function infectBot\(b\)/);
+ assert.match(server,/local function infectPlayer\(p,sourcePlayer\)/);assert.match(server,/local function infectBot\(b,sourcePlayer\)/);
  assert.match(server,/setRole\(p,"MONSTER"\)/);assert.match(server,/FeedbackEvent","INFECT:/);
  assert.match(server,/if humans==0 then endRound\("MONSTER"\)/);assert.match(server,/if monsters==0 then endRound\("SURVIVOR"\)/);
  assert.match(server,/endRound\("DRAW"\)/);
@@ -337,4 +337,45 @@ test('승리 결과는 팀 세레머니와 맵별 코믹 문구로 확실하게 
  assert.match(client,/CELEBRATE_DRAW/);
  for(const marker of ['야자 탈출 성공','진료 결과: 감염 확정','오늘의 마지막 손님까지 감염 완료'])assert.ok(client.includes(marker),marker);
  assert.doesNotMatch(client,/playResultCeremony\([\s\S]{0,600}FireServer/);
+});
+
+
+test('맵 놀람 요소는 경쟁 판정과 레이캐스트에서 완전히 제외된다',()=>{
+ assert.match(server,/AmbientDecorativeOnly/);
+ assert.match(server,/CompetitiveEffect",false/);
+ assert.match(server,/CanCollide=false/);
+ assert.match(server,/CanTouch=false/);
+ assert.match(server,/CanQuery=false/);
+ for(const marker of [
+  'SCHOOL_WATCHER','SCHOOL_LOCKER_DUCK','SCHOOL_CHALK_FACE','SCHOOL_VENDING_CAN',
+  'HOSPITAL_MORGUE_PEEK','HOSPITAL_RUNAWAY_SLIPPERS','HOSPITAL_IV_WALK','HOSPITAL_XRAY','HOSPITAL_BED',
+  'PARK_CLOWN_PEEK','PARK_LONELY_BALLOON','PARK_DRIVERLESS_CAR','PARK_ARCADE','PARK_POPCORN'
+ ])assert.ok(server.includes(marker),marker);
+ assert.doesNotMatch(server,/AmbientSurprise[^\n]{0,220}(awardContribution|setEnergy|setRole|infectPlayer|eliminateMonsterPlayer)/);
+});
+
+test('몬스터 감염 공격은 별도 버튼과 공격 모션을 가진다',()=>{
+ assert.match(client,/local infectButton=makeButton/);
+ assert.match(client,/setMotionImpulse\("INFECT_ATTACK"/);
+ assert.match(client,/remote:FireServer\(C\.Actions\.INFECT_ATTACK\)/);
+ assert.match(client,/motionImpulseKind=="INFECT_ATTACK"/);
+});
+
+test('병원과 놀이공원도 학교처럼 별도 코믹 발견거리를 가진다',()=>{
+ for(const marker of ['HOSPITAL_XRAY','HOSPITAL_BED','PARK_ARCADE','PARK_POPCORN'])assert.ok(server.includes(marker),marker);
+ for(const marker of ['LocalXrayDuck','LocalRunawayBed','LocalArcadeGhostScreen','LocalPopcorn'])assert.ok(client.includes(marker),marker);
+});
+
+test('승리 세레머니는 결과 단계 전용이며 서버가 팀과 랜덤 연출을 확정한다',()=>{
+ assert.match(config,/ResultSeconds=6/);
+ assert.match(config,/Celebrations=\{/);
+ for(const id of ['PHOTO_FAIL','PURIFIER_HIGHFIVE','CLOCK_OUT','ROLL_CALL','SHRUG_DANCE','SCARY_POSE','AWKWARD_CLAP'])assert.ok(config.includes('Id="'+id+'"'),id);
+ assert.match(server,/local function chooseCelebration\(winner\)/);
+ assert.match(server,/CelebrationWinnerTeam/);
+ assert.match(server,/CelebrationAIWinners/);
+ assert.match(server,/task\.wait\(C\.ResultSeconds or 6\)/);
+ assert.match(client,/Name="TeamCeremony"/);
+ assert.match(client,/playCeremonyConfetti/);
+ assert.match(client,/CelebrationCaption/);
+ assert.doesNotMatch(config,/Celebrations=[\s\S]{0,1400}(Damage|WalkSpeed|PurifyDistance|InfectRange|RegenMultiplier)/);
 });
