@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-afk-arena",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 AFK Arena의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=IDLE_GROWTH_RPG; inputProfile=IDLE_RPG; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=NOT_CONFIRMED",
+  "output": "관찰된 방치형 성장 동작을 Unity로 독립 구현할 때는 영속 도메인 상태와 UI 표시를 분리하고, 오프라인 보상은 마지막 검증 시각과 서버/신뢰 가능한 시간 경계를 사용해 계산한다. 보상 claim은 idempotent하게 만들고 영웅·장비·스킬 성장의 쓰기 권한을 각각 명확한 서비스에 둬 화면 재진입이나 네트워크 재시도로 중복 지급되지 않게 한다.",
+  "sourceRevision": "external-playtest-35427794246-afk-arena",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "AFK Arena",
+    "packageId": "com.lilithgame.hgame.gp",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.lilithgame.hgame.gp.kr",
+    "playtestRunId": "35427794246",
+    "beforeScreenshotSha256": "bbdb1477ff561ccaff677343606bf026976a047df2467f3d16ad9cc8862a3c91",
+    "afterScreenshotSha256": "bbdb1477ff561ccaff677343606bf026976a047df2467f3d16ad9cc8862a3c91",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-idle-runtime-architecture",
+  "tags": [
+    "idle-reward",
+    "offline-progress",
+    "upgrade-layer",
+    "claim-idempotency",
+    "persistent-growth"
+  ]
+}

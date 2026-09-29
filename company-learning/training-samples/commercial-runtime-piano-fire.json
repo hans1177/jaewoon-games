@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-piano-fire",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Piano Fire: Edm Music & Piano의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=RHYTHM; inputProfile=CARD_TAP; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED",
+  "output": "관찰된 리듬 게임 동작을 독립 구현할 때는 오디오 시간축, 노트 스케줄, 입력 시각, 판정 윈도우, 콤보/점수 상태를 분리한다. 렌더 프레임보다 일관된 시간 기준으로 판정하고 시각 이펙트가 실제 타이밍 판정을 바꾸지 않게 하며 일시정지·재개에서 시간축 드리프트를 방지한다.",
+  "sourceRevision": "external-playtest-35426721957-piano-fire",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Piano Fire: Edm Music & Piano",
+    "packageId": "beatmaker.edm.musicgames.PianoGames",
+    "storeUrl": "https://play.google.com/store/apps/details?id=beatmaker.edm.musicgames.PianoGames",
+    "playtestRunId": "35426721957",
+    "beforeScreenshotSha256": "1eb4728b82b2680283694b70afcbcbd9b11f90bdfa35d640fd20f1c2750d2ab8",
+    "afterScreenshotSha256": "b927c4ca09f1e6261f8c70d7c863297234a509dda736189f26cb4fb0cb94f0b3",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-rhythm-runtime-architecture",
+  "tags": [
+    "timing-window",
+    "note-stream",
+    "input-judgement",
+    "combo-state",
+    "audio-visual-sync"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-pk-xd",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 PK XD의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=SANDBOX_SOCIAL; inputProfile=SURVIVAL; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=NOT_CONFIRMED",
+  "output": "관찰된 소셜 샌드박스 동작을 독립 구현할 때는 아바타 상태, 월드 상호작용, 소셜 공간 상태, 수집/꾸미기 진행, 세션 영속성을 분리한다. 로컬 표현과 서버 권한 데이터를 구분하고 여러 공간 이동과 재접속에서도 소유·진행 상태가 중복되거나 유실되지 않게 한다.",
+  "sourceRevision": "external-playtest-35426558013-pk-xd",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "PK XD",
+    "packageId": "com.movile.playkids.pkxd",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.movile.playkids.pkxd",
+    "playtestRunId": "35426558013",
+    "beforeScreenshotSha256": "59543814483c2073230b620af4035ff01977e777d9e176b6563912d1635518cf",
+    "afterScreenshotSha256": "59543814483c2073230b620af4035ff01977e777d9e176b6563912d1635518cf",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-social-sandbox-runtime-architecture",
+  "tags": [
+    "avatar-state",
+    "world-interaction",
+    "social-space",
+    "collection",
+    "session-persistence"
+  ]
+}

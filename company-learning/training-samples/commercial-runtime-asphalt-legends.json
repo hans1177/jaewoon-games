@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-asphalt-legends",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Asphalt Legends의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=RACING; inputProfile=DRIVE_TWO_BUTTON; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED",
+  "output": "관찰된 모바일 레이싱 동작을 독립 구현할 때는 조향·가속 입력, 차량 물리 상태, 트랙 진행, 체크포인트/순위, 업그레이드 상태를 분리한다. 입력 보조와 실제 물리 권한을 구분하고 속도 연출이 판정 상태를 직접 변경하지 않게 하며, 재시작 시 차량·트랙·타이머 상태를 명시적으로 초기화한다.",
+  "sourceRevision": "external-playtest-35430212865-asphalt-legends",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Asphalt Legends",
+    "packageId": "com.gameloft.android.ANMP.GloftA9HM",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.gameloft.android.ANMP.GloftA9HM",
+    "playtestRunId": "35430212865",
+    "beforeScreenshotSha256": "f523e23936a48b315a2e7acaa98e9ff6b8a1856bf5596f02b92061230ffebe47",
+    "afterScreenshotSha256": "cf3844da63a6c498d6b0b67d2a4fca4cd6a0382bcd30e7973067a1c434ff4b6a",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-racing-runtime-architecture",
+  "tags": [
+    "vehicle-control",
+    "race-progress",
+    "speed-feedback",
+    "track-pressure",
+    "upgrade-loop"
+  ]
+}

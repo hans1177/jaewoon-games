@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-simcity-buildit",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 SimCity BuildIt의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=CITY_BUILDER_SIMULATION; inputProfile=STRATEGY_TAP; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=NOT_CONFIRMED",
+  "output": "관찰된 도시 건설 동작을 독립 구현할 때는 도시 배치, 생산/소비 자원, 인구와 수요, 건설·업그레이드 타이머, 서비스 범위를 분리한다. 생산과 비용은 원장형 상태가 소유하고 건물 애니메이션과 실제 경제 상태를 분리하며 장기 타이머의 재접속 계산을 일관되게 처리한다.",
+  "sourceRevision": "external-playtest-35430868228-simcity-buildit",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "SimCity BuildIt",
+    "packageId": "com.ea.game.simcitymobile_row",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.ea.game.simcitymobile_row",
+    "playtestRunId": "35430868228",
+    "beforeScreenshotSha256": "3ed261ee10b5305f1de54c9caaae09b26b7c1ab15868795c8633bd6f5733a87c",
+    "afterScreenshotSha256": "3ed261ee10b5305f1de54c9caaae09b26b7c1ab15868795c8633bd6f5733a87c",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-city-builder-runtime-architecture",
+  "tags": [
+    "city-layout",
+    "resource-production",
+    "population-demand",
+    "upgrade-timer",
+    "service-coverage"
+  ]
+}

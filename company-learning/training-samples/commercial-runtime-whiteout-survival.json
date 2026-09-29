@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-whiteout-survival",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Whiteout Survival의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=STRATEGY_SURVIVAL; inputProfile=STRATEGY_TAP; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED",
+  "output": "관찰된 생존 전략 동작을 독립 구현할 때는 정착지 상태, 생존 자원, 유닛/영웅 성장, 이벤트 압력, 소셜 또는 동맹 상태를 분리한다. 생산과 소비를 원장형으로 관리하고 장기 진행과 일시 이벤트가 서로 덮어쓰지 않게 한다.",
+  "sourceRevision": "external-playtest-35429678065-whiteout-survival",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Whiteout Survival",
+    "packageId": "com.gof.global",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.gof.global",
+    "playtestRunId": "35429678065",
+    "beforeScreenshotSha256": "854e7616ab36df2e7b4f1d0b3d9fc3b207212c11d6796a31909e2e26fa286cff",
+    "afterScreenshotSha256": "e24a79e815a2f2462ab2d669d38d0c4a94b5dea543e45fa7be8c1f540c8b8f5d",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-survival-strategy-runtime-architecture",
+  "tags": [
+    "settlement-growth",
+    "survival-resource",
+    "hero-or-unit-growth",
+    "event-pressure",
+    "alliance-layer"
+  ]
+}
