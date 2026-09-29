@@ -5450,7 +5450,9 @@
       "coding_negative_gcwyrt",
       "coding_negative_vyzb5q",
       "coding_negative_6b1ftj",
-      "coding_negative_1qppdyy"
+      "coding_negative_1qppdyy",
+      "coding_negative_1x32zoa",
+      "coding_negative_1jfh3q2"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -14787,7 +14789,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 34,
+        "verifiedFailures": 35,
         "games": {
           "fantasy-survival": 1
         },
@@ -15077,12 +15079,32 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_fcier",
             "lastUpdatedAt": "2026-09-29T06:29:41.393Z"
+          },
+          "unity|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "monster-adventure": 1
+            },
+            "failureTargets": {
+              "unity": 1
+            },
+            "failureClasses": {
+              "TIMEOUT": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_1jfh3q2",
+            "lastUpdatedAt": "2026-09-29T08:24:50.541Z"
           }
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_4z99t9",
-        "lastFailureEvidence": "coding_negative_1bkq8xn",
-        "lastUpdatedAt": "2026-09-29T07:21:57.400Z"
+        "lastFailureEvidence": "coding_negative_1jfh3q2",
+        "lastUpdatedAt": "2026-09-29T08:24:50.541Z"
       },
       "SOURCE_RESCAN_REBIND": {
         "verifiedApplications": 1,
@@ -15683,7 +15705,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 38,
+        "verifiedFailures": 39,
         "games": {
           "fantasy-survival": 1
         },
@@ -15828,14 +15850,14 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 12,
+            "verifiedFailures": 13,
             "games": {},
             "targets": {},
             "failureGames": {
               "amusement-tycoon": 2,
               "monster-adventure": 2,
               "fantasy-survival": 2,
-              "line-defense": 1,
+              "line-defense": 2,
               "bug-defense": 1,
               "village-dungeons": 1,
               "horror-escape-room": 1,
@@ -15843,15 +15865,15 @@
               "survival": 1
             },
             "failureTargets": {
-              "unity": 12
+              "unity": 13
             },
             "failureClasses": {
               "TIMEOUT": 2,
-              "INVALID_PATH": 10
+              "INVALID_PATH": 11
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_vyzb5q",
-            "lastUpdatedAt": "2026-09-29T08:14:37.337Z"
+            "lastFailureEvidence": "coding_negative_1x32zoa",
+            "lastUpdatedAt": "2026-09-29T08:24:50.539Z"
           },
           "unity|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -15983,8 +16005,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_160lbz8",
-        "lastFailureEvidence": "coding_negative_1qppdyy",
-        "lastUpdatedAt": "2026-09-29T08:14:37.338Z"
+        "lastFailureEvidence": "coding_negative_1x32zoa",
+        "lastUpdatedAt": "2026-09-29T08:24:50.539Z"
       }
     }
   },
@@ -18715,7 +18737,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T08:17:40.427Z",
+    "lastBuiltAt": "2026-09-29T08:24:50.606Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -25539,5 +25561,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T08:17:40.427Z"
+  "updatedAt": "2026-09-29T08:24:50.606Z"
 }
