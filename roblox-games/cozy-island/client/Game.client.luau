@@ -663,7 +663,7 @@ remote.OnClientEvent:Connect(function(kind,snapshot)
  p:SetAttribute("SyncedSharedObjective",tonumber(snapshot.SharedObjective)or 0)
 end)
 
-QACamera.install(C,gui,function()
+QACamera.install(C,gui,function(controls) {
  return{
   {label="cozy-home-overview",position=Vector3.new(0,145,170),lookAt=Vector3.new(0,4,0)},
   {label="cozy-home-ground",position=Vector3.new(0,24,98),lookAt=Vector3.new(0,5,0)},
