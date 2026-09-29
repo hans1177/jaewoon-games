@@ -350,8 +350,11 @@ jobs:
           state_persisted=0
           state_write='NO'
           neuron_refill=0
-          for state_attempt in 1 2 3 4 5; do
-            echo "VIBE2_CONTROL_OPTIMISTIC_ATTEMPT=$state_attempt/5"
+          state_attempt=0
+          echo 'VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED'
+          while [ "$state_persisted" != 1 ]; do
+            state_attempt=$((state_attempt+1))
+            echo "VIBE2_CONTROL_OPTIMISTIC_ATTEMPT=$state_attempt"
             git -C "$control_root" fetch origin vibe2-unreal-core --quiet
             git -C "$control_root" reset --hard origin/vibe2-unreal-core
 
@@ -401,7 +404,10 @@ jobs:
                 break
               fi
               echo "VIBE2_NEURON_INGRESS_OPTIMISTIC_RETRY=$state_attempt"
-              sleep $((state_attempt * 2))
+              retry_sleep=$((state_attempt * 2))
+              if [ "$retry_sleep" -gt 10 ]; then retry_sleep=10; fi
+              echo "VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=$retry_sleep"
+              sleep "$retry_sleep"
               continue
             fi
 
@@ -583,7 +589,10 @@ jobs:
             fi
 
             echo "VIBE2_CONTROL_OPTIMISTIC_RETRY=$state_attempt"
-            sleep $((state_attempt * 2))
+            retry_sleep=$((state_attempt * 2))
+            if [ "$retry_sleep" -gt 10 ]; then retry_sleep=10; fi
+            echo "VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=$retry_sleep"
+            sleep "$retry_sleep"
           done
           test "$state_persisted" = 1
           echo "VIBE2_BATCH_RESERVATION_WRITE=$state_write"
