@@ -1887,14 +1887,65 @@ function mcpCommandArgs(command=''){
 }
 
 
+export async function stopOwnedStudioMultiplayerTests(client){
+  const listed=await client.call('list_roblox_studios',{});
+  const ids=[...new Set(collectStudios(listed,[]).map(row=>row.studioId))];
+  const tool=client.tool('execute_luau');
+  let stopped=0;
+  for(const studioId of ids){
+    try{
+      const marker='ROBLOX_STUDIO_ORPHAN_IDENTITY=';
+      const code=[
+        'local HttpService=game:GetService("HttpService")',
+        'local service=game:GetService("StudioTestService")',
+        'local ok,args=pcall(function() return service:GetTestArgs() end)',
+        'local probe=game:GetService("ReplicatedStorage"):FindFirstChild("__VibeMultiplayerAudit")',
+        'return "'+marker+'"..HttpService:JSONEncode({token=ok and type(args)=="string" and args or "",probePresent=probe~=nil})'
+      ].join('\n');
+      const result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},studioId,code,'Server'));
+      const identity=parseStudioActualPlayProbe(result,marker);
+      if(identity?.probePresent!==true||!/^VIBE2_F9_MULTIPLAYER_[a-zA-Z0-9_-]{1,24}_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(clean(identity?.token)))continue;
+      // Recheck the nonce in the same server before ending only our abandoned test.
+      const stopCode='local service=game:GetService("StudioTestService"); if service:GetTestArgs()=='+JSON.stringify(identity.token)+' then service:EndTest("VIBE2_ORPHAN_RECOVERY") end';
+      await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},studioId,stopCode,'Server'));
+      stopped++;
+    }catch(error){console.log('ROBLOX_STUDIO_ORPHAN_PROBE_UNAVAILABLE='+clean(error?.message||error).slice(0,180));}
+  }
+  return{stopped};
+}
+
 export async function runStudioMultiplayerAudit(client,studioId,contract={}){
   const tool=client.tool('execute_luau');
   const contractHash=clean(contract?.adaptiveCoverage?.contractHash).replace(/[^a-zA-Z0-9_-]/g,'').slice(-24);
   const token='VIBE2_F9_MULTIPLAYER_'+(contractHash||'AUDIT')+'_'+crypto.randomUUID();
   let auditPhase='initial';
   const probeName='__VibeMultiplayerAudit';
+  const contextStudios={Edit:studioId};
   const callJson=async(context,marker,code)=>{
-    const result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},studioId,code,context));
+    // Multiplayer creates separate server/client Studio instances. Bind by this test's
+    // nonce before issuing any commands; the original editor is not the running server.
+    if(!contextStudios[context]){
+      const listed=await client.call('list_roblox_studios',{});
+      const ids=[...new Set([studioId,...collectStudios(listed,[]).map(row=>row.studioId)])];
+      const identityMarker='ROBLOX_STUDIO_MULTIPLAYER_IDENTITY=';
+      const identityCode=[
+        'local HttpService=game:GetService("HttpService")',
+        'local probe=game:GetService("ReplicatedStorage"):FindFirstChild('+JSON.stringify(probeName)+')',
+        'local matches=probe~=nil and probe:GetAttribute("AuditSession")=='+JSON.stringify(token),
+        ...(context==='Server'?['local ok,args=pcall(function() return game:GetService("StudioTestService"):GetTestArgs() end)','matches=matches and ok and args=='+JSON.stringify(token)]:[]),
+        'return "'+identityMarker+'"..HttpService:JSONEncode({matches=matches})'
+      ].join('\n');
+      for(const id of ids){
+        try{
+          const result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},id,identityCode,context));
+          if(parseStudioActualPlayProbe(result,identityMarker)?.matches===true){contextStudios[context]=id;break;}
+        }catch{}
+      }
+      if(!contextStudios[context])throw new Error('ROBLOX_STUDIO_MULTIPLAYER_CONTEXT_NOT_READY:'+context);
+    }
+    let result;
+    try{result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},contextStudios[context],code,context));}
+    catch(error){if(context!=='Edit')delete contextStudios[context];throw error;}
     const parsed=parseStudioActualPlayProbe(result,marker);
     if(!parsed)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_PROBE_PARSE_EMPTY:'+marker+':'+context);
     return parsed;
@@ -1926,6 +1977,7 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
     'local HttpService=game:GetService("HttpService")',
     'local remote=game:GetService("ReplicatedStorage"):WaitForChild('+JSON.stringify(probeName)+',15)',
     'if not remote then return end',
+    'task.delay(120,function() local service=game:GetService("StudioTestService"); local ok,args=pcall(function() return service:GetTestArgs() end); if ok and args=='+JSON.stringify(token)+' then pcall(function() service:EndTest("VIBE2_MULTIPLAYER_WATCHDOG_TIMEOUT") end) end end)',
     'remote.OnServerEvent:Connect(function(player,challenge,rows)',
     ' if type(challenge)~="string" or challenge~=remote:GetAttribute("Challenge") or type(rows)~="table" or #rows>8 then return end',
     ' local ok,text=pcall(function() return HttpService:JSONEncode({observerUserId=player.UserId,challenge=challenge,players=rows}) end)',
@@ -2030,6 +2082,7 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
       'local containers={game:GetService("ReplicatedStorage"),game:GetService("ServerScriptService"),game:GetService("StarterPlayer").StarterPlayerScripts}',
       'for _,container in ipairs(containers) do if container:FindFirstChild('+JSON.stringify(probeName)+') then return "'+startMarker+'"..HttpService:JSONEncode({started=false,error="AUDIT_PROBE_NAME_COLLISION"}) end end',
       'local probe=Instance.new("RemoteEvent"); probe.Name='+JSON.stringify(probeName)+'; probe.Parent=containers[1]',
+      'probe:SetAttribute("AuditSession",'+JSON.stringify(token)+')',
       'local receiver=Instance.new("Script"); receiver.Name='+JSON.stringify(probeName)+'; receiver.Source='+JSON.stringify(receiptSource)+'; receiver.Parent=containers[2]',
       'local observer=Instance.new("LocalScript"); observer.Name='+JSON.stringify(probeName)+'; observer.Source='+JSON.stringify(clientSource)+'; observer.Parent=containers[3]',
       'local token='+JSON.stringify(token),
@@ -2208,7 +2261,7 @@ export async function runOfficialStudioMcpPlay({
 
     let studio=null;
     let studioListResult=null;
-    const studioAttachAttempts=20;
+    const studioAttachAttempts=60;
     for(let attempt=1;attempt<=studioAttachAttempts;attempt++){
       studioListResult=await client.call('list_roblox_studios',{});
       const studios=collectStudios(studioListResult,[]);
@@ -2219,7 +2272,18 @@ export async function runOfficialStudioMcpPlay({
         console.log('ROBLOX_STUDIO_MCP_STUDIO_LIST_RESPONSE='+attempt+':'+(listText||'EMPTY'));
       }
       if(unique.length){
-        studio=chooseStudio(studioListResult,expectedStudioName);
+        const candidate=chooseStudio(studioListResult,expectedStudioName);
+        try{
+          const stateTool=client.tool('get_studio_state');
+          const args={};setStudioId(args,stateTool.inputSchema||{},candidate.studioId);
+          await client.call('get_studio_state',fillRequired(args,stateTool.inputSchema||{}));
+        }catch(error){
+          if(!/Place is not open|timeout|not.*ready/i.test(clean(error?.message||error)))throw error;
+          console.log('ROBLOX_STUDIO_PLACE_LOADING_WAIT='+attempt+':same-session=true');
+          if(attempt<studioAttachAttempts)await wait(3000);
+          continue;
+        }
+        studio=candidate;
         console.log(
           'ROBLOX_STUDIO_MCP_STUDIO_ATTACHED='
           +clean(studio?.name||'LOCAL_STUDIO')
@@ -2227,7 +2291,7 @@ export async function runOfficialStudioMcpPlay({
         );
         break;
       }
-      if(attempt<studioAttachAttempts)await wait(1000);
+      if(attempt<studioAttachAttempts)await wait(3000);
     }
     if(!studio)throw new Error('ROBLOX_STUDIO_MCP_NO_STUDIO_AFTER_ATTACH_WAIT');
     studioId=studio.studioId;
@@ -3483,6 +3547,16 @@ async function main(){
     });
     writeJson(a.output,matrix);
     console.log('ROBLOX_STUDIO_MCP_PLAN_COUNT='+matrix.include.length);
+    return;
+  }
+  if(mode==='mcp-cleanup'){
+    const client=new McpStdioClient({...mcpCommandArgs(clean(a['mcp-command'])),timeoutMs:45000});
+    try{
+      await client.connect();
+      await client.waitForTools(['list_roblox_studios','execute_luau'],{attempts:3,delayMs:1000});
+      const result=await stopOwnedStudioMultiplayerTests(client);
+      console.log('ROBLOX_STUDIO_OWNED_TESTS_ENDED='+result.stopped);
+    }finally{client.close();}
     return;
   }
   if(mode==='mcp-run'){
