@@ -20,6 +20,13 @@ local Config={
   InfectPlayerCoins=4,
   InfectAICoins=1,
  },
+ Cosmetics={
+  {Id="DEFAULT",Name="기본 프레임",Price=0,Accent=Color3.fromRGB(170,209,220),Title="신입 참가자"},
+  {Id="MIDNIGHT_RED",Name="심야 적색",Price=120,Accent=Color3.fromRGB(225,76,92),Title="심야 추적자"},
+  {Id="MOON_BLUE",Name="월광 청색",Price=180,Accent=Color3.fromRGB(98,166,235),Title="월광 생존자"},
+  {Id="TOXIC_GREEN",Name="독성 녹색",Price=260,Accent=Color3.fromRGB(111,213,132),Title="감염 저항자"},
+  {Id="VOID_PURPLE",Name="공허 보라",Price=360,Accent=Color3.fromRGB(174,112,235),Title="공허 사냥꾼"},
+ },
  Audio={
   Background="rbxassetid://9043557976",
   Chase="rbxassetid://9042664292",
@@ -68,7 +75,8 @@ local Config={
  Actions={
   PREFER_MONSTER="PREFER_MONSTER",PREFER_SURVIVOR="PREFER_SURVIVOR",
   SOLO_MONSTER="SOLO_MONSTER",SOLO_SURVIVOR="SOLO_SURVIVOR",
-  PURIFY="PURIFY",RESCUE="RESCUE",DASH="DASH",ABILITY="ABILITY",NEXT_MONSTER="NEXT_MONSTER",NEXT_HUMAN="NEXT_HUMAN"
+  PURIFY="PURIFY",RESCUE="RESCUE",DASH="DASH",ABILITY="ABILITY",NEXT_MONSTER="NEXT_MONSTER",NEXT_HUMAN="NEXT_HUMAN",
+  BUY_COSMETIC="BUY_COSMETIC",EQUIP_COSMETIC="EQUIP_COSMETIC"
  },
  QACameraEnabled=true,QACaptureRemoteName="QACaptureReport",
  OwnerDirectDevelopment=true,
