@@ -336,3 +336,17 @@ test('source drift workflow exposes explicit restart-from-F0 input and forwards 
   const occurrences=(workflow.match(/force-f0-restart=true/g)||[]).length;
   assert.ok(occurrences>=2,'force flag must be used in initial sync and conflict regeneration');
 });
+
+
+test('one-click F0 restart workflow dispatches only canonical source sync with force flag',()=>{
+  const workflow=fs.readFileSync('.github/workflows/roblox-f0-restart.yml','utf8');
+  assert.match(workflow,/name: Roblox F0 Restart & Resync/);
+  assert.match(workflow,/default: horror-escape-room/);
+  assert.match(workflow,/gh workflow run company-roblox-source-drift-sync\.yml/);
+  assert.match(workflow,/-f "restart_from_f0=true"/);
+  assert.doesNotMatch(workflow,/release-promotion|private-deploy|Studio/);
+});
+
+test('parallel horror-only private deploy workflow is removed so canonical publish has one authority',()=>{
+  assert.equal(fs.existsSync('.github/workflows/horror-escape-room-private-deploy.yml'),false);
+});
