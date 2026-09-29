@@ -3559,9 +3559,10 @@ async function main(){
     }finally{client.close();}
     return;
   }
-  if(mode==='mcp-run'){
+  if(mode==='check-head'||mode==='mcp-run'){
     const headGuard=assertCurrentStudioWorkflowHead({workflowSha:clean(a['control-revision'])||clean(process.env.GITHUB_SHA)});
     console.log('ROBLOX_STUDIO_WORKFLOW_HEAD_FRESH=YES:'+headGuard.checkoutSha);
+    if(mode==='check-head')return;
     const result=await runOfficialStudioMcpPlay({
       mcpCommand:clean(a['mcp-command']),
       output:clean(a.output),
