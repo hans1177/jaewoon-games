@@ -1683,7 +1683,7 @@ jobs:
   studio-mcp-auto-play:
     name: Official Studio MCP actual play ${{ matrix.gameId }}
     concurrency:
-      group: roblox-studio-artifact-${{ matrix.gameId }}-${{ matrix.sourceRevision }}-${{ matrix.artifactIdentity }}
+      group: roblox-studio-shared-host
       cancel-in-progress: false
     needs: studio-local-plan
     if: always() && needs.studio-local-plan.result == 'success' && needs.studio-local-plan.outputs.count != '0'
@@ -1693,6 +1693,15 @@ jobs:
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 15
     steps:
+      - name: Clear only previous automated evidence files
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          foreach ($name in @('studio-captures','company-roblox-studio-mcp-runtime.json')) {
+            $previous = Join-Path $env:RUNNER_TEMP $name
+            if (Test-Path $previous) { Remove-Item $previous -Recurse -Force }
+          }
+
       - name: Checkout central policy and helper
         uses: actions/checkout@v4
         with:
@@ -2006,6 +2015,9 @@ jobs:
             Start-Sleep -Seconds 1
           }
           if (-not $ownedStudioProcesses.Count) {
+            if (Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue) {
+              throw 'Studio process changed identity; preserve existing session and do not launch a duplicate'
+            }
             Write-Host 'ROBLOX_STUDIO_MCP_PRE_MCP_RELAUNCH=YES'
             Start-Sleep -Seconds 1
             $exactPlaceStarted = [DateTime]::UtcNow
@@ -2174,6 +2186,9 @@ jobs:
               Stop-Process -Id ([int]$ownedId) -Force -ErrorAction SilentlyContinue
             }
             Start-Sleep -Seconds 2
+            if (Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue) {
+              throw 'Studio session still exists after owned cleanup; refusing overlapping recovery launch'
+            }
             if (-not (Test-Path $env:VIBE2_LOCAL_PLACE_FILE)) { throw 'Exact local Place artifact disappeared before MCP recovery restart' }
 
             $officialVersionsRoot = Join-Path $env:LOCALAPPDATA 'Roblox\Versions'
@@ -2411,6 +2426,17 @@ jobs:
             throw "ROBLOX_STUDIO_MCP_PLAY_FAILED:$env:GAME_ID"
           }
 
+      - name: Upload Studio captures and runtime report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-captures-${{ matrix.gameId }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/studio-captures
+            ${{ runner.temp }}/company-roblox-studio-mcp-runtime.json
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: Upload isolated candidate Studio evidence
         if: always() && inputs.candidate_context != ''
         uses: actions/upload-artifact@v4
@@ -2464,4 +2490,3 @@ jobs:
           } | ConvertTo-Json -Depth 5
           Invoke-RestMethod -Method Post -Uri "https://api.github.com/repos/$env:GITHUB_REPOSITORY/dispatches" -Headers $headers -Body $body -ContentType 'application/json'
           Write-Host "ROBLOX_STUDIO_MCP_VIBE_REFILL_DISPATCHED=$env:GAME_ID"
-
