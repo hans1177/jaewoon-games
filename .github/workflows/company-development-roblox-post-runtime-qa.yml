@@ -2433,6 +2433,18 @@ jobs:
           $remainingOwned = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction Stop | Where-Object { $_.CreationDate.ToUniversalTime() -ge $launchStarted.AddSeconds(-2) -and [string]$_.CommandLine -match $exactPlacePattern })
           if ($remainingOwned.Count) { throw 'Exact Place processes remain after owned-session cleanup' }
           Write-Host 'ROBLOX_STUDIO_OWNED_PLACE_PROCESS_REMAINING=0'
+          # A pathless child must not be mistaken for a clean host or killed by guesswork.
+          $unattributed = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction Stop)
+          foreach ($record in $unattributed) {
+            Write-Host ('ROBLOX_STUDIO_UNATTRIBUTED_PROCESS=' + (@{
+              processId = [int]$record.ProcessId
+              parentProcessId = [int]$record.ParentProcessId
+              createdAt = $record.CreationDate.ToUniversalTime().ToString('o')
+              exactPlaceArgument = [bool]([string]$record.CommandLine -match $exactPlacePattern)
+            } | ConvertTo-Json -Compress))
+          }
+          if ($unattributed.Count) { throw 'Studio processes remain without proven Place ownership; preserved for diagnosis, host cleanup is not verified' }
+          Write-Host 'ROBLOX_STUDIO_HOST_PROCESS_REMAINING=0'
 
       - name: Refill existing 24H development loop after verified play
         if: inputs.candidate_context == '' && steps.studio_play.outcome == 'success' && steps.persist.outcome == 'success'
