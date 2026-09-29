@@ -89,8 +89,13 @@ function taskFailureEvidence(order={}){
   const values=[
     ...(order?.workPackage?.sharedContext?.diagnosticEvidence||[]),
     order?.selectedTask?.blocker,
-    order?.selectedTask?.lastOutcome,
-    ...(order?.selectedTask?.evidence||[]).filter(value=>/fail|failure|blocker|runtime|hard|invalid|missing|no.?op|edit.?match|timeout|repair|recovery|실패|누락|오류/i.test(clean(value)))
+    /(?:FAIL|ERROR|BLOCKED)(?:_|$)/i.test(clean(order?.selectedTask?.lastOutcome))?order.selectedTask.lastOutcome:null,
+    // 런타임 검사 필요·성공·복구 정책 표시는 게임 실패의 관측 증거가 아니다.
+    ...(order?.selectedTask?.evidence||[]).filter(value=>{
+      const evidence=clean(value);
+      if(/:(?:PASS|PASSED|SUCCESS|NONE|NO|FALSE|REQUIRED|FORBIDDEN)$/i.test(evidence))return false;
+      return /(?:^|[-_: ])(?:fail(?:ed|ure)?|error|blocker|invalid|missing|no[-_ ]?op|edit[-_ ]?match|timeout|broken|hard[-_ ]?failure|실패|누락|오류)(?:$|[-_: ])/i.test(evidence);
+    })
   ];
   return unique(values).slice(0,16);
 }

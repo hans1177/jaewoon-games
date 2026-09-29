@@ -600,3 +600,17 @@ test('diagnostic evidence does not claim prepatch reproduction when exact issue 
   assert.equal(result.editContract.causalReplay.verifiedResponsibleSystem,null);
   assert.equal(result.editContract.causalReplay.authorityExpanded,false);
 });
+
+
+test('successful runtime evidence and verification requirements do not manufacture a game repair failure',()=>{
+  const cwd=tempRoot();
+  write(path.join(cwd,'web-games/healthy/index.js'),'function play(){return 1;}\n');
+  const order={run:true,taskId:'healthy-next',gameId:'healthy',target:'web',goal:'continue approved development',source:{root:'web-games/healthy',responsibleFiles:['web-games/healthy/index.js'],ignoredPaths:[]},selectedTask:{lastOutcome:'PASS',evidence:['roblox-runtime-verification-required','roblox-runtime:PASS','game-repair-full-regression:PASS','failure-class:NONE','recovery-policy:UNLIMITED_CAUSAL_REPAIR']},workPackage:{id:'healthy-wp',sharedContext:{diagnosticEvidence:[]}}};
+  const healthy=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(healthy.editContract.gameRepair.required,false);
+  assert.equal(healthy.editContract.causalReplay.required,false);
+  assert.equal(healthy.editContract.gameRepair.fullRegressionFanInRequired,true);
+  const broken=exploreVibe2WorkOrder({cwd,order:{...order,selectedTask:{...order.selectedTask,evidence:[...order.selectedTask.evidence,'runtime-failure:PLAYER_MOVE_BROKEN']}}});
+  assert.equal(broken.editContract.gameRepair.required,true);
+  assert.equal(broken.editContract.causalReplay.required,true);
+});
