@@ -320,3 +320,29 @@ test('queue settlement shallow snapshots still refresh after concurrent writer a
     assert.equal(git(upstream,'show','vibe2-unreal-core:other-task.txt'),'concurrent work');
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
+
+// 빠른 복구는 단일 브랜치 checkout에서도 최신 제어 브랜치로 복구 작업을 시작해야 한다.
+test('fast recovery fetch binds shallow control ref from a main-only checkout',()=>{
+  const fast=fs.readFileSync('.github/workflows/vibe2-recovery-fast.yml','utf8');
+  const fetch=fast.match(/^            (git fetch [^\n]+)$/m)?.[1];
+  assert.ok(fetch);
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'fast-recovery-ref-'));
+  const upstream=path.join(temp,'upstream'),checkout=path.join(temp,'checkout'),control=path.join(temp,'control');
+  fs.mkdirSync(upstream);
+  const git=(cwd,...args)=>execFileSync('git',args,{cwd,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+  try{
+    git(upstream,'init','-b','main');git(upstream,'config','user.name','QA');git(upstream,'config','user.email','qa@example.invalid');
+    fs.writeFileSync(path.join(upstream,'source.txt'),'main');git(upstream,'add','.');git(upstream,'commit','-m','main');
+    git(upstream,'checkout','-b','vibe2-unreal-core');
+    fs.writeFileSync(path.join(upstream,'queue.json'),'latest control');git(upstream,'add','.');git(upstream,'commit','-m','control');
+    git(temp,'clone','--single-branch','--depth=1','--no-tags','--branch','main',`file://${upstream}`,checkout);
+    assert.throws(()=>git(checkout,'rev-parse','--verify','origin/vibe2-unreal-core'));
+    execFileSync('bash',['-e','-c',fetch],{cwd:checkout,stdio:'pipe'});
+    git(checkout,'worktree','add','--detach',control,'origin/vibe2-unreal-core');
+    assert.equal(fs.readFileSync(path.join(control,'queue.json'),'utf8'),'latest control');
+    assert.equal(git(checkout,'rev-list','--count','origin/vibe2-unreal-core'),'1');
+    fs.writeFileSync(path.join(upstream,'queue.json'),'concurrent update');git(upstream,'add','.');git(upstream,'commit','-m','control advance');
+    execFileSync('bash',['-e','-c',fetch],{cwd:checkout,stdio:'pipe'});
+    assert.equal(git(checkout,'show','origin/vibe2-unreal-core:queue.json'),'concurrent update');
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
