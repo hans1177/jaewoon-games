@@ -2097,6 +2097,14 @@ test('mcp-run checks current main head before any Studio MCP play call',()=>{
   assert.match(helper,/ROBLOX_STUDIO_WORKFLOW_HEAD_FRESH=YES/);
 });
 
+test('Roblox foundation scan concurrency is stable across main SHAs and force-cancels stale queued Studio runs',()=>{
+  assert.match(workflow,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
+  assert.doesNotMatch(workflow,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| github\.sha \}\}/);
+  assert.match(workflow,/actions\/runs\/\$run_id\/force-cancel/);
+  assert.match(workflow,/ROBLOX_STALE_FOUNDATION_RUN_FORCE_CANCEL_REQUESTED/);
+  assert.match(workflow,/\^\(queued\|pending\|requested\|in_progress\|waiting\)\$/);
+});
+
 test('Studio screenshots are captured only as the final Studio audit action',()=>{
   assert.doesNotMatch(helper,/viewport-before-captured/);
   assert.doesNotMatch(helper,/checkpoint\('viewport-changed-after-input'/);
