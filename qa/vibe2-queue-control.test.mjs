@@ -51,6 +51,24 @@ test('shared queue retains first and latest shadow observations without growing 
   assert.deepEqual(createVibeContinuousQueue(first).tasks[0].evidence,retained);
 });
 
+test('legacy Roblox roots cannot reserve overlapping source files in one wave',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
+    {id:'release-focus',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
+      sourceRoot:'roblox-games/same',responsibleFiles:['roblox-games/same/client/Game.client.luau'],releaseState:'release-confirmed',priority:'high'},
+    {id:'second-gate',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
+      sourceRoot:'roblox:same',responsibleFiles:['roblox-games/same/client/Game.client.luau'],priority:'normal'},
+    {id:'studio-repair',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
+      responsibleFiles:['roblox-games/same/client/Game.client.luau'],priority:'normal'}
+  ]});
+  assert.ok(queue.tasks.every(row=>row.sourceRoot==='roblox-games/same'));
+  const selected=selectVibeQueueBatch(queue,{lane:'game-primary',maxConcurrentTasks:20});
+  assert.equal(selected.selected.length,1);
+  assert.equal(selected.selected[0].id,'release-focus');
+  const reserved=reserveVibeTaskBatch(queue,{lane:'game-primary',maxConcurrentTasks:20});
+  assert.equal(reserved.matrix.length,1);
+  assert.equal(reserved.matrix[0].taskId,'release-focus');
+});
+
 test('transient work lock conflicts are requeued without consuming retry budget or poisoning failure learning',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
     id:'visual-lock',gameId:'visual-game',target:'roblox',department:'development',type:'implementation',
