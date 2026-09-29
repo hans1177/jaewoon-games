@@ -1400,6 +1400,27 @@ test('atomic neuron completion is idempotent for duplicate variant callbacks',()
   assert.equal(duplicate.resultCount,1);
 });
 
+test('atomic completion sends a refill only when the same lane has runnable work',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-neuron-refill-'));
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'control.json');
+  const inputFile=path.join(dir,'result.json');
+  const running={id:'active',gameId:'active',target:'roblox',department:'development',type:'implementation',goal:'active',status:'running',sourceRoot:'roblox-games/active',responsibleFiles:['src/main.luau'],reservationId:'atomic-refill:1',reservationRunId:'atomic-refill',reservationRunAttempt:1,reservedAt:'2026-09-20T10:00:00Z',neuronExpectedVariants:1};
+  const blocked={id:'blocked',gameId:'blocked',target:'roblox',department:'development',type:'implementation',goal:'blocked',status:'queued',sourceRoot:'roblox-games/blocked',responsibleFiles:['src/main.luau'],dependencies:['missing']};
+  const result={taskId:'active',variant:'primary',outcome:'PASS',reservationId:'atomic-refill:1',metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}};
+  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:20,lastDecision:'HOLD'}));
+  fs.writeFileSync(inputFile,JSON.stringify(result));
+  fs.writeFileSync(queueFile,JSON.stringify(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[running,blocked]})));
+  const empty=runQueueCommand({command:'neuron-complete',queue:queueFile,control:controlFile,input:inputFile,lane:'game-primary',max:'20',min:'1','expected-variants':'1'});
+  assert.equal(empty.reason,'TASK_MICRO_FANIN_COMPLETE');
+  assert.equal(empty.refillReady,false);
+  const ready={id:'ready',gameId:'ready',target:'roblox',department:'development',type:'implementation',goal:'ready',status:'queued',sourceRoot:'roblox-games/ready',responsibleFiles:['src/other.luau']};
+  fs.writeFileSync(queueFile,JSON.stringify(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[running,blocked,ready]})));
+  const available=runQueueCommand({command:'neuron-complete',queue:queueFile,control:controlFile,input:inputFile,lane:'game-primary',max:'20',min:'1','expected-variants':'1'});
+  assert.equal(available.reason,'TASK_MICRO_FANIN_COMPLETE');
+  assert.equal(available.refillReady,true);
+});
+
 test('completed atomic neuron ignores late duplicate callbacks after micro fan-in',()=>{
   const reservation={id:'atomic-done:1',runId:'atomic-done',runAttempt:1,reservedAt:'2026-09-20T10:00:00Z'};
   const queue=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
@@ -1534,7 +1555,8 @@ test('continuous core keeps pending neuron callbacks light and blocks broken con
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING/);
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE/);
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=ALREADY_COMPLETE_DEDUP_NO_REFILL/);
-  assert.match(workflow,/VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_PENDING_VARIANTS/);
+  assert.match(workflow,/VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_NO_RUNNABLE_WORK_OR_PENDING_VARIANTS/);
+  assert.match(workflow,/neuron_refill_ready=.*VIBE2_NEURON_REFILL_READY/);
   assert.match(workflow,/VIBE2_NEURON_REFILL_DISPATCH=TASK_MICRO_FANIN_COMPLETE/);
   assert.match(workflow,/event_type:'vibe2-fanin-refill'/);
   assert.match(workflow,/contract_sha:String\(process\.env\.VIBE2_NEURON_CONTRACT_SHA\|\|''\)/);
