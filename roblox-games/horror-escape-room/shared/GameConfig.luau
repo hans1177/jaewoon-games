@@ -97,9 +97,10 @@ local Config={
   Name="괴담 기록자",
   RequiredTotal=26,
   Skins={
-   {Id="ARCHIVIST",Name="괴담 기록자",Price=0,Accent=Color3.fromRGB(194,218,228)},
-   {Id="ARCHIVIST_RED",Name="적색 기록자",Price=450,Accent=Color3.fromRGB(206,70,82)},
-   {Id="ARCHIVIST_MOON",Name="월광 기록자",Price=650,Accent=Color3.fromRGB(105,163,226)},
+   {Id="DEFAULT",Name="기본 귀신 외형",Price=0,Accent=Color3.fromRGB(170,209,220),AlwaysOwned=true},
+   {Id="ARCHIVIST",Name="괴담 기록자",Price=0,Accent=Color3.fromRGB(194,218,228),CompletionReward=true},
+   {Id="ARCHIVIST_RED",Name="적색 기록자",Price=450,Accent=Color3.fromRGB(206,70,82),RequiresCompletion=true},
+   {Id="ARCHIVIST_MOON",Name="월광 기록자",Price=650,Accent=Color3.fromRGB(105,163,226),RequiresCompletion=true},
   },
  },
  Cosmetics={
