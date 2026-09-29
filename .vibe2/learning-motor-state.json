@@ -5611,7 +5611,8 @@
       "coding_negative_1p2kt9c",
       "coding_negative_71wrqp",
       "coding_negative_1wz75f6",
-      "coding_negative_1jjmlxm"
+      "coding_negative_1jjmlxm",
+      "coding_negative_rw82ln"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16103,7 +16104,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 170,
+        "verifiedFailures": 171,
         "games": {
           "fantasy-survival": 1
         },
@@ -16331,11 +16332,11 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 26,
+            "verifiedFailures": 27,
             "games": {},
             "targets": {},
             "failureGames": {
-              "bug-defense": 6,
+              "bug-defense": 7,
               "survival": 6,
               "seed-idle-growth-rpg-crystal-bloom": 1,
               "seed-story-complete-rpg-chronicles-of-eldoria": 5,
@@ -16343,17 +16344,17 @@
               "seed-single-defense-strat-celestial-bastion": 4
             },
             "failureTargets": {
-              "unity": 26
+              "unity": 27
             },
             "failureClasses": {
               "NO_OP": 3,
               "TIMEOUT": 1,
               "MALFORMED_OUTPUT": 1,
-              "STUDIO_QUALITY_DELTA": 21
+              "STUDIO_QUALITY_DELTA": 22
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1jjmlxm",
-            "lastUpdatedAt": "2026-09-29T11:39:12.342Z"
+            "lastFailureEvidence": "coding_negative_rw82ln",
+            "lastUpdatedAt": "2026-09-29T11:42:34.788Z"
           },
           "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -16486,8 +16487,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_160lbz8",
-        "lastFailureEvidence": "coding_negative_1jjmlxm",
-        "lastUpdatedAt": "2026-09-29T11:39:12.342Z"
+        "lastFailureEvidence": "coding_negative_rw82ln",
+        "lastUpdatedAt": "2026-09-29T11:42:34.788Z"
       }
     }
   },
@@ -19218,7 +19219,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T11:41:24.915Z",
+    "lastBuiltAt": "2026-09-29T11:42:34.854Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -26042,5 +26043,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T11:41:24.915Z"
+  "updatedAt": "2026-09-29T11:42:34.854Z"
 }
