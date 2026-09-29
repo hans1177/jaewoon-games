@@ -53,11 +53,11 @@ test('shared queue retains first and latest shadow observations without growing 
 
 test('legacy Roblox roots cannot reserve overlapping source files in one wave',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
-    {id:'release-focus',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
+    {id:'release-focus',goal:'Repair shared Roblox client',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
       sourceRoot:'roblox-games/same',responsibleFiles:['roblox-games/same/client/Game.client.luau'],releaseState:'release-confirmed',priority:'high'},
-    {id:'second-gate',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
+    {id:'second-gate',goal:'Repair shared Roblox client',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
       sourceRoot:'roblox:same',responsibleFiles:['roblox-games/same/client/Game.client.luau'],priority:'normal'},
-    {id:'studio-repair',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
+    {id:'studio-repair',goal:'Repair shared Roblox client',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
       responsibleFiles:['roblox-games/same/client/Game.client.luau'],priority:'normal'}
   ]});
   assert.ok(queue.tasks.every(row=>row.sourceRoot==='roblox-games/same'));
