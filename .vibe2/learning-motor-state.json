@@ -6102,7 +6102,9 @@
       "coding_negative_n4mraq",
       "coding_negative_116jemi",
       "coding_negative_p8dpxe",
-      "coding_negative_9vjoec"
+      "coding_negative_9vjoec",
+      "coding_negative_1bnas8i",
+      "coding_negative_1b5f8kh"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16718,7 +16720,7 @@
         "verifiedApplications": 3,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 10,
-        "verifiedFailures": 649,
+        "verifiedFailures": 651,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -16963,7 +16965,7 @@
             "verifiedApplications": 1,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 2,
-            "verifiedFailures": 105,
+            "verifiedFailures": 106,
             "games": {
               "bug-defense": 1
             },
@@ -16976,20 +16978,20 @@
               "seed-idle-growth-rpg-crystal-bloom": 1,
               "seed-story-complete-rpg-chronicles-of-eldoria": 23,
               "village-dungeons": 23,
-              "seed-single-defense-strat-celestial-bastion": 23
+              "seed-single-defense-strat-celestial-bastion": 24
             },
             "failureTargets": {
-              "unity": 105
+              "unity": 106
             },
             "failureClasses": {
               "NO_OP": 4,
               "TIMEOUT": 1,
               "MALFORMED_OUTPUT": 1,
-              "STUDIO_QUALITY_DELTA": 99
+              "STUDIO_QUALITY_DELTA": 100
             },
             "lastEvidence": "coding_jra6qr",
-            "lastFailureEvidence": "coding_negative_9vjoec",
-            "lastUpdatedAt": "2026-09-29T22:06:29.136Z"
+            "lastFailureEvidence": "coding_negative_1b5f8kh",
+            "lastUpdatedAt": "2026-09-29T22:11:51.903Z"
           },
           "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -17082,26 +17084,26 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 43,
+            "verifiedFailures": 44,
             "games": {},
             "targets": {},
             "failureGames": {
-              "horror-escape-room": 22,
+              "horror-escape-room": 23,
               "fantasy-survival": 19,
               "line-defense": 2
             },
             "failureTargets": {
-              "unity": 43
+              "unity": 44
             },
             "failureClasses": {
               "INVALID_PATH": 18,
               "TIMEOUT": 19,
-              "MALFORMED_OUTPUT": 3,
+              "MALFORMED_OUTPUT": 4,
               "NO_OP": 3
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1qfvqby",
-            "lastUpdatedAt": "2026-09-29T21:48:54.263Z"
+            "lastFailureEvidence": "coding_negative_1bnas8i",
+            "lastUpdatedAt": "2026-09-29T22:11:51.898Z"
           },
           "unity|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -17208,8 +17210,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_pj21de",
-        "lastFailureEvidence": "coding_negative_9vjoec",
-        "lastUpdatedAt": "2026-09-29T22:06:29.136Z"
+        "lastFailureEvidence": "coding_negative_1b5f8kh",
+        "lastUpdatedAt": "2026-09-29T22:11:51.903Z"
       }
     }
   },
@@ -19958,7 +19960,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T22:08:59.764Z",
+    "lastBuiltAt": "2026-09-29T22:11:51.969Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -27909,5 +27911,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T22:08:59.764Z"
+  "updatedAt": "2026-09-29T22:11:51.969Z"
 }
