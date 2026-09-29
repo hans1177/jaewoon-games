@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "if hasStudioAssetAtom(\"FRAME_PANEL\") then",
+      "replace": "if hasStudioAssetAtom(\"FRAME_PANEL\") then\n  local studioAssetStroke = Instance.new(\"UIStroke\")\n  studioAssetStroke.Name = \"StudioAssetFramePanel\"\n  studioAssetStroke.Thickness = 1\n  studioAssetStroke.Transparency = 0.55\n  studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)\n  studioAssetStroke.Parent = root\nend\nroot:SetAttribute(\"StudioAssetBindingVersion\", STUDIO_ASSET_BINDING_VERSION)\nroot:SetAttribute(\"StudioAssetAtoms\", table.concat(studioUi, \",\"))"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
