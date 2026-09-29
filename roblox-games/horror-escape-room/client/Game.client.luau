@@ -588,7 +588,7 @@ local hud=Instance.new("Frame")
 hud.Name="MidnightTopHUD"
 hud.AnchorPoint=Vector2.new(.5,0)
 hud.Position=UDim2.new(.5,0,0,8)
-hud.Size=UDim2.fromOffset(330,62)
+hud.Size=UDim2.fromOffset(330,82)
 hud.BackgroundColor3=Color3.fromRGB(34,37,45)
 hud.BackgroundTransparency=.03
 hud.ZIndex=10
@@ -636,6 +636,80 @@ objectiveLine.TextSize=10
 objectiveLine.Font=Enum.Font.GothamBold
 objectiveLine.TextXAlignment=Enum.TextXAlignment.Left
 objectiveLine.Parent=hud
+
+local energyTrack=Instance.new("Frame")
+energyTrack.Name="EnergyTrack"
+energyTrack.Size=UDim2.new(1,-86,0,8)
+energyTrack.Position=UDim2.fromOffset(8,65)
+energyTrack.BackgroundColor3=Color3.fromRGB(50,56,68)
+energyTrack.BorderSizePixel=0
+energyTrack.ZIndex=11
+energyTrack.Parent=hud
+roundify(energyTrack,5)
+
+local energyFill=Instance.new("Frame")
+energyFill.Name="EnergyFill"
+energyFill.Size=UDim2.fromScale(1,1)
+energyFill.BackgroundColor3=Color3.fromRGB(82,183,236)
+energyFill.BorderSizePixel=0
+energyFill.ZIndex=12
+energyFill.Parent=energyTrack
+roundify(energyFill,5)
+
+local energyLabel=Instance.new("TextLabel")
+energyLabel.Name="EnergyLabel"
+energyLabel.Size=UDim2.fromOffset(72,14)
+energyLabel.Position=UDim2.new(1,-78,0,60)
+energyLabel.BackgroundTransparency=1
+energyLabel.TextColor3=Color3.fromRGB(192,224,244)
+energyLabel.TextSize=10
+energyLabel.Font=Enum.Font.GothamBold
+energyLabel.TextXAlignment=Enum.TextXAlignment.Right
+energyLabel.ZIndex=12
+energyLabel.Parent=hud
+
+local pressureLabel=Instance.new("TextLabel")
+pressureLabel.Name="PressurePassive"
+pressureLabel.AnchorPoint=Vector2.new(.5,0)
+pressureLabel.Position=UDim2.new(.5,0,0,88)
+pressureLabel.Size=UDim2.fromOffset(240,26)
+pressureLabel.BackgroundColor3=Color3.fromRGB(35,39,49)
+pressureLabel.BackgroundTransparency=.08
+pressureLabel.TextColor3=Color3.fromRGB(255,218,137)
+pressureLabel.TextSize=12
+pressureLabel.Font=Enum.Font.GothamBold
+pressureLabel.ZIndex=13
+pressureLabel.Visible=false
+pressureLabel.Parent=gui
+roundify(pressureLabel,10)
+
+local mapContentToast=Instance.new("TextLabel")
+mapContentToast.Name="MapContentToast"
+mapContentToast.AnchorPoint=Vector2.new(.5,0)
+mapContentToast.Position=UDim2.new(.5,0,0,118)
+mapContentToast.Size=UDim2.fromOffset(286,34)
+mapContentToast.BackgroundColor3=Color3.fromRGB(23,27,35)
+mapContentToast.BackgroundTransparency=.08
+mapContentToast.TextColor3=Color3.fromRGB(216,228,239)
+mapContentToast.TextSize=12
+mapContentToast.TextWrapped=true
+mapContentToast.Font=Enum.Font.GothamBold
+mapContentToast.ZIndex=14
+mapContentToast.Visible=false
+mapContentToast.Parent=gui
+roundify(mapContentToast,10)
+
+local toastSerial=0
+local function showMapContentToast(text,color,duration)
+ toastSerial+=1
+ local serial=toastSerial
+ mapContentToast.Text=text
+ mapContentToast.TextColor3=color or Color3.fromRGB(216,228,239)
+ mapContentToast.Visible=true
+ task.delay(duration or 2,function()
+  if toastSerial==serial then mapContentToast.Visible=false end
+ end)
+end
 
 -- 구석 놀람/코믹 연출: 로컬에서만 생성되며 경쟁 판정에는 관여하지 않는다.
 local surpriseArena=nil
@@ -1200,27 +1274,46 @@ local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(58,94,146))
 dashButton.Size=UDim2.fromOffset(110,50);dashButton.Position=UDim2.fromOffset(121,4);dashButton.ZIndex=11
 dashButton.Activated:Connect(function()setMotionImpulse("DASH",.38);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
 
-local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(157,49,65))
-abilityButton.Size=UDim2.fromOffset(132,50);abilityButton.Position=UDim2.fromOffset(52,4);abilityButton.ZIndex=11
+local infectButton=makeButton(actionDock,"감염 공격",Color3.fromRGB(150,52,66))
+infectButton.Size=UDim2.fromOffset(110,50);infectButton.Position=UDim2.fromOffset(5,4);infectButton.ZIndex=11
+infectButton.Activated:Connect(function()setMotionImpulse("INFECT",.38);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.INFECT_ATTACK)end)
+
+local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(112,58,145))
+abilityButton.Size=UDim2.fromOffset(110,50);abilityButton.Position=UDim2.fromOffset(121,4);abilityButton.ZIndex=11
 abilityButton.Activated:Connect(function()setMotionImpulse("ABILITY",.44);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
 
--- 액션 쿨다운은 서버 동기화 시간 기준으로 표시한다.
+-- 액션 쿨다운과 에너지 비용은 서버 상태 기준으로 표시한다.
 local cooldownClock=0
-local function updateCooldownButton(button,readyAt,readyText,cooldownText)
+local function updateCooldownButton(button,readyAt,readyText,cooldownText,cost)
  local left=math.max(0,(tonumber(readyAt)or 0)-workspace:GetServerTimeNow())
- local ready=left<=0
+ local energy=tonumber(p:GetAttribute("Energy"))or 0
+ local need=math.max(0,tonumber(cost)or 0)
+ local cooldownReady=left<=0
+ local energyReady=energy+1e-4>=need
+ local ready=cooldownReady and energyReady
  button.Active=ready
  button.AutoButtonColor=ready
  button.BackgroundTransparency=ready and 0 or .28
- button.Text=ready and readyText or string.format("%s %.1f",cooldownText,left)
+ if not cooldownReady then button.Text=string.format("%s %.1f",cooldownText,left)
+ elseif not energyReady then button.Text=string.format("%s %dE",cooldownText,need)
+ else button.Text=readyText end
 end
 RunService.RenderStepped:Connect(function(dt)
  cooldownClock+=dt
  if cooldownClock<.08 then return end
  cooldownClock=0
- updateCooldownButton(rescueButton,p:GetAttribute("PurifyReadyAt"),"정화 공격","정화")
- updateCooldownButton(dashButton,p:GetAttribute("DashReadyAt"),"대시","대시")
- updateCooldownButton(abilityButton,p:GetAttribute("AbilityReadyAt"),"괴물 스킬","스킬")
+ local energy=math.max(0,tonumber(p:GetAttribute("Energy"))or 0)
+ local maxEnergy=math.max(1,tonumber(p:GetAttribute("EnergyMax"))or tonumber(C.Energy and C.Energy.Max)or 100)
+ energyFill.Size=UDim2.fromScale(math.clamp(energy/maxEnergy,0,1),1)
+ energyLabel.Text=string.format("에너지 %d",math.floor(energy+.5))
+ local pressure=tostring(p:GetAttribute("PressurePassive")or"")
+ pressureLabel.Text=pressure~=""and("열세 패시브 · "..pressure)or""
+ pressureLabel.Visible=pressure~=""and p:GetAttribute("RoundState")=="RUNNING"
+
+ updateCooldownButton(rescueButton,p:GetAttribute("PurifyReadyAt"),"정화 공격","정화",C.Energy and C.Energy.PurifyCost or 35)
+ updateCooldownButton(dashButton,p:GetAttribute("DashReadyAt"),"대시","대시",C.Energy and C.Energy.DashCost or 25)
+ updateCooldownButton(infectButton,p:GetAttribute("InfectReadyAt"),"감염 공격","감염",C.Energy and C.Energy.InfectAttackCost or 30)
+ updateCooldownButton(abilityButton,p:GetAttribute("AbilityReadyAt"),"괴물 스킬","스킬",C.Energy and C.Energy.AbilityCost or 45)
 end)
 
 -- 라운드 결과 화면
@@ -1312,9 +1405,9 @@ local function render()
  local mc=p:GetAttribute("MonsterCount")or workspace:GetAttribute("MonsterCount")or 0
  roleLine.Text=string.format("%s · 인간 %d : 몬스터 %d",roleText,hc,mc)
  if role=="MONSTER"then
-  objectiveLine.Text=p:GetAttribute("Infected")==true and"감염 완료 · 이제 인간을 잡아 몬스터로 만들어"or"몬스터 목표 · 인간을 감염시켜 0명으로 만들어"
+  objectiveLine.Text=p:GetAttribute("Infected")==true and"감염 완료 · 에너지를 써서 인간을 감염시켜"or"몬스터 목표 · 감염 공격으로 인간을 0명으로 만들어"
  elseif role=="SURVIVOR"then
-  objectiveLine.Text="인간 목표 · 정화 공격으로 몬스터를 0명으로 만들어"
+  objectiveLine.Text="인간 목표 · 에너지로 정화/대시하며 몬스터를 0명으로 만들어"
  elseif role=="ELIMINATED"then
   objectiveLine.Text="정화되어 이번 라운드에서 탈락"
  else
@@ -1355,6 +1448,7 @@ local function render()
  end
  rescueButton.Visible=running and role=="SURVIVOR"
  dashButton.Visible=running and role=="SURVIVOR"
+ infectButton.Visible=running and role=="MONSTER"
  abilityButton.Visible=running and role=="MONSTER"
 
  if running then
@@ -1375,9 +1469,28 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","AbilityReadyAt","Spectating","OwnedCosmetics","EquippedCosmetic"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic"})do
  p:GetAttributeChangedSignal(k):Connect(function()render();updateCosmeticUI()end)
 end
+p:GetAttributeChangedSignal("EnergyFeedback"):Connect(function()
+ local raw=tostring(p:GetAttribute("EnergyFeedback")or"")
+ local kind,a,b=string.match(raw,"^([^:]+):?([^:]*):?([^:]*)$")
+ if kind=="NO_ENERGY"then showMapContentToast("에너지 부족 · "..tostring(a or"액션"),Color3.fromRGB(255,181,118),1.5)
+ elseif kind=="NO_TARGET"then showMapContentToast("사거리 안에 대상이 없어",Color3.fromRGB(214,221,230),1.2)
+ elseif kind=="STATION_RECHARGE"then showMapContentToast("에너지 +"..tostring(a or"0"),Color3.fromRGB(130,218,255),1.5)
+ elseif kind=="STATION_COOLDOWN"then showMapContentToast("단말 재충전 "..tostring(a or"0").."초",Color3.fromRGB(180,196,214),1.4)
+ elseif kind=="ENERGY_FULL"then showMapContentToast("에너지가 이미 가득 찼어",Color3.fromRGB(178,226,255),1.3)
+ elseif kind=="LAST_STAND"then showMapContentToast("최후 저항 · 에너지 +"..tostring(a or"0"),Color3.fromRGB(255,208,118),2)end
+end)
+
+p:GetAttributeChangedSignal("MapContentFeedback"):Connect(function()
+ local raw=tostring(p:GetAttribute("MapContentFeedback")or"")
+ local kind,a,b=string.match(raw,"^([^:]+):?([^:]*):?(.+)$")
+ if kind=="UTILITY"then showMapContentToast(tostring(b or"맵 장치").." 가동",Color3.fromRGB(155,220,255),2)
+ elseif kind=="UTILITY_COOLDOWN"then showMapContentToast(tostring(a or"장치").." · "..tostring(b or"0").."초 후 재사용",Color3.fromRGB(188,202,218),1.7)
+ elseif kind=="CORE"then showMapContentToast("중앙 에너지 코어 확보 · +"..tostring(b or"50"),Color3.fromRGB(113,214,255),2.2)end
+end)
+
 p:GetAttributeChangedSignal("CosmeticFeedback"):Connect(function()
  local raw=tostring(p:GetAttribute("CosmeticFeedback")or"")
  local kind,id,price=string.match(raw,"^([^:]+):([^:]+):?(%d*)$")
