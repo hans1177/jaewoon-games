@@ -5624,7 +5624,10 @@
       "coding_negative_1tx5zmi",
       "coding_negative_1lguq20",
       "coding_negative_f90gfh",
-      "coding_negative_1681zth"
+      "coding_negative_1681zth",
+      "coding_negative_smyx1z",
+      "coding_negative_azwqza",
+      "coding_negative_b75lj8"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -11431,7 +11434,7 @@
         "verifiedApplications": 558,
         "firstCandidatePasses": 98,
         "totalGenerationAttempts": 1242,
-        "verifiedFailures": 562,
+        "verifiedFailures": 563,
         "games": {
           "seed-single-defense-strat-celestial-bastion": 90,
           "seed-idle-growth-rpg-crystal-bloom": 5,
@@ -11492,13 +11495,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 52,
-            "verifiedFailures": 201,
+            "verifiedFailures": 202,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 141,
             "totalContextBytes": 1770031,
             "lastEvidence": "coding_obbja9",
-            "lastFailureEvidence": "coding_negative_1wz75f6",
-            "lastUpdatedAt": "2026-09-29T11:38:28.588Z"
+            "lastFailureEvidence": "coding_negative_b75lj8",
+            "lastUpdatedAt": "2026-09-29T11:49:49.304Z"
           },
           "UNKNOWN": {
             "verifiedApplications": 1,
@@ -13256,12 +13259,32 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_1wz75f6",
             "lastUpdatedAt": "2026-09-29T11:38:28.588Z"
+          },
+          "roblox|ROBLOX_STRUCTURAL_CONTINUITY|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "seed-story-complete-rpg-chronicles-of-eldoria": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "TIMEOUT": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_b75lj8",
+            "lastUpdatedAt": "2026-09-29T11:49:49.304Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_obbja9",
-        "lastFailureEvidence": "coding_negative_1wz75f6",
-        "lastUpdatedAt": "2026-09-29T11:38:28.588Z"
+        "lastFailureEvidence": "coding_negative_b75lj8",
+        "lastUpdatedAt": "2026-09-29T11:49:49.304Z"
       },
       "PHASE4_FIXED_CONTEXT_CONTROLLED_AB": {
         "verifiedApplications": 142,
@@ -16159,7 +16182,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 178,
+        "verifiedFailures": 180,
         "games": {
           "fantasy-survival": 1
         },
@@ -16304,14 +16327,14 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 72,
+            "verifiedFailures": 74,
             "games": {},
             "targets": {},
             "failureGames": {
               "amusement-tycoon": 4,
               "monster-adventure": 3,
               "fantasy-survival": 6,
-              "line-defense": 7,
+              "line-defense": 8,
               "bug-defense": 2,
               "village-dungeons": 6,
               "horror-escape-room": 3,
@@ -16320,21 +16343,21 @@
               "seed-idle-growth-rpg-crystal-bloom": 7,
               "seed-story-complete-rpg-chronicles-of-eldoria": 6,
               "seed-casual-realm-weaver": 5,
-              "seed-puzzle-chromatic-cascade": 5,
+              "seed-puzzle-chromatic-cascade": 6,
               "seed-single-defense-strat-celestial-bastion": 5
             },
             "failureTargets": {
-              "unity": 72
+              "unity": 74
             },
             "failureClasses": {
-              "TIMEOUT": 54,
+              "TIMEOUT": 56,
               "INVALID_PATH": 15,
               "MALFORMED_OUTPUT": 2,
               "NO_OP": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1ow9fx1",
-            "lastUpdatedAt": "2026-09-29T11:47:18.580Z"
+            "lastFailureEvidence": "coding_negative_azwqza",
+            "lastUpdatedAt": "2026-09-29T11:49:49.298Z"
           },
           "unity|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -16543,8 +16566,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_160lbz8",
-        "lastFailureEvidence": "coding_negative_1lguq20",
-        "lastUpdatedAt": "2026-09-29T11:48:44.434Z"
+        "lastFailureEvidence": "coding_negative_azwqza",
+        "lastUpdatedAt": "2026-09-29T11:49:49.298Z"
       }
     }
   },
@@ -19275,7 +19298,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T11:49:12.871Z",
+    "lastBuiltAt": "2026-09-29T11:49:49.353Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -26099,5 +26122,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T11:49:12.871Z"
+  "updatedAt": "2026-09-29T11:49:49.353Z"
 }
