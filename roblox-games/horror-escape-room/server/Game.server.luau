@@ -330,6 +330,84 @@ local function addEscapeGate(f,mapId,pos)
  gate:SetAttribute("DecorativeOnly",true);gate:SetAttribute("MapId",mapId)
  return gate
 end
+local function addMapUtility(f,id,name,pos)
+ local base=arenaPart(f,"MapUtility_"..id,Vector3.new(6,5,4),pos,Color3.fromRGB(58,66,78),Enum.Material.Metal)
+ local panel=arenaPart(f,"MapUtilityPanel_"..id,Vector3.new(4,2,.35),pos+Vector3.new(0,.5,-2.2),Color3.fromRGB(124,172,221),Enum.Material.Neon);panel.CanCollide=false
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="MapUtilityPrompt";prompt.ObjectText=name;prompt.ActionText="가동";prompt.HoldDuration=1;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Parent=base
+ local readyAt=0
+ prompt.Triggered:Connect(function(p)
+  if state~="RUNNING"then return end
+  local role=p:GetAttribute("Role");if role~="SURVIVOR"and role~="MONSTER"then return end
+  local now=workspace:GetServerTimeNow()
+  if now<readyAt then p:SetAttribute("MapContentFeedback","UTILITY_COOLDOWN:"..name..":"..tostring(math.ceil(readyAt-now)));return end
+  readyAt=now+math.max(1,tonumber(C.Energy and C.Energy.MapUtilityCooldown)or 35)
+  local recharge=math.max(0,tonumber(C.Energy and C.Energy.MapUtilityRecharge)or 20)
+  setEnergy(p,energyOf(p)+recharge)
+  p:SetAttribute("MapContentFeedback","UTILITY:"..id..":"..name)
+  workspace:SetAttribute("MapUtilityActive",id)
+  workspace:SetAttribute("MapUtilityUntil",now+math.max(1,tonumber(C.Energy and C.Energy.MapUtilityDuration)or 8))
+  panel.Color=Color3.fromRGB(183,231,255)
+  task.delay(.25,function()if panel and panel.Parent then panel.Color=Color3.fromRGB(124,172,221)end end)
+  local duration=math.max(1,tonumber(C.Energy and C.Energy.MapUtilityDuration)or 8)
+  if id=="SCHOOL_BROADCAST"then
+   local marks={}
+   for _,d in ipairs(f:GetDescendants())do
+    if d:IsA("BasePart")and(string.find(d.Name,"EnergyStation_",1,true)==1 or d.Name=="EnergyCore")then
+     local h=Instance.new("Highlight");h.Name="UtilityReveal";h.Adornee=d;h.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop;h.FillTransparency=.78;h.OutlineTransparency=.15;h.Parent=d;table.insert(marks,h)
+    end
+   end
+   task.delay(duration,function()for _,h in ipairs(marks)do if h and h.Parent then h:Destroy()end end end)
+  elseif id=="HOSPITAL_SURGERY_LIGHT"then
+   local beforeBrightness,beforeFog=Lighting.Brightness,Lighting.FogEnd
+   Lighting.Brightness=math.max(Lighting.Brightness,2.15);Lighting.FogEnd=math.max(Lighting.FogEnd,210)
+   task.delay(duration,function()
+    if f.Parent and workspace:GetAttribute("MapUtilityActive")==id then Lighting.Brightness=beforeBrightness;Lighting.FogEnd=beforeFog;workspace:SetAttribute("MapUtilityActive","")end
+   end)
+  elseif id=="PARK_CAROUSEL_POWER"then
+   local rotor=f:FindFirstChild("CarouselRotor",true)
+   if rotor and rotor:IsA("BasePart")then
+    task.spawn(function()
+     local untilAt=os.clock()+duration
+     while rotor.Parent and os.clock()<untilAt do rotor.CFrame=rotor.CFrame*CFrame.Angles(0,math.rad(4),0);task.wait(.08)end
+     if workspace:GetAttribute("MapUtilityActive")==id then workspace:SetAttribute("MapUtilityActive","")end
+    end)
+   end
+  end
+ end)
+ return base
+end
+local function addEnergyCore(f,mapId,pos)
+ local core=arenaPart(f,"EnergyCore",Vector3.new(6,8,6),pos,Color3.fromRGB(52,60,72),Enum.Material.Neon);core.CanCollide=false
+ local light=glow(core,Color3.fromRGB(90,185,255),30,.25)
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="EnergyCorePrompt";prompt.ObjectText="중앙 에너지 코어";prompt.ActionText="흡수";prompt.HoldDuration=1;prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Enabled=false;prompt.Parent=core
+ local open=false
+ prompt.Triggered:Connect(function(p)
+  if state~="RUNNING"or not open then return end
+  local role=p:GetAttribute("Role");if role~="SURVIVOR"and role~="MONSTER"then return end
+  open=false;prompt.Enabled=false;core.Color=Color3.fromRGB(52,60,72);light.Brightness=.25
+  local recharge=math.max(0,tonumber(C.Energy and C.Energy.CoreRecharge)or 50)
+  setEnergy(p,energyOf(p)+recharge)
+  p:SetAttribute("MapContentFeedback","CORE:"..mapId..":"..tostring(math.floor(recharge)))
+  workspace:SetAttribute("EnergyCoreState","CLAIMED")
+ end)
+ task.spawn(function()
+  local cycle=math.max(20,tonumber(C.Energy and C.Energy.CoreCycle)or 60)
+  local openSeconds=math.clamp(tonumber(C.Energy and C.Energy.CoreOpenSeconds)or 15,5,cycle-5)
+  local closedSeconds=cycle-openSeconds
+  while core.Parent do
+   open=false;prompt.Enabled=false;core.Color=Color3.fromRGB(52,60,72);light.Brightness=.25
+   workspace:SetAttribute("EnergyCoreState","CHARGING")
+   task.wait(closedSeconds)
+   if not core.Parent then return end
+   open=true;prompt.Enabled=true;core.Color=Color3.fromRGB(78,190,255);light.Brightness=2.2
+   workspace:SetAttribute("EnergyCoreState","OPEN")
+   local deadline=os.clock()+openSeconds
+   while core.Parent and open and os.clock()<deadline do task.wait(.2)end
+   open=false;prompt.Enabled=false
+  end
+ end)
+ return core
+end
 local function decorateArenaWithOfficialAssets(f,map)
  task.spawn(function()
   task.wait(.1);if not f.Parent then return end
@@ -580,6 +658,8 @@ local function makeArena(map)
   addObjectiveStation(f,"과학실 전원",Vector3.new(118,3,-70),2)
   addObjectiveStation(f,"운동장 방송",Vector3.new(-108,3,104),3)
   addObjectiveStation(f,"강당 비상패널",Vector3.new(108,3,104),4)
+  addMapUtility(f,"SCHOOL_BROADCAST","비상 방송실",Vector3.new(0,3,-42))
+  addEnergyCore(f,map.Id,Vector3.new(0,4,0))
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  elseif map.Id=="HOSPITAL"then
   -- 폐병원: 좁은 중앙 복도와 병실, 수술실, 지하실 느낌의 저천장 구역.
@@ -627,6 +707,8 @@ local function makeArena(map)
   addObjectiveStation(f,"약국 보안패널",Vector3.new(118,3,-82),2)
   addObjectiveStation(f,"영안실 퓨즈",Vector3.new(-118,3,108),3)
   addObjectiveStation(f,"하역장 셔터",Vector3.new(118,3,108),4)
+  addMapUtility(f,"HOSPITAL_SURGERY_LIGHT","수술실 전력장치",Vector3.new(-48,3,40))
+  addEnergyCore(f,map.Id,Vector3.new(0,4,0))
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  elseif map.Id=="THEME_PARK"then
   -- 폐놀이공원: 넓은 야외, 내부 공간, 매표소, 숨는 부스와 복잡한 우회 동선.
@@ -680,6 +762,8 @@ local function makeArena(map)
   addObjectiveStation(f,"범퍼카 제어반",Vector3.new(118,3,-92),2)
   addObjectiveStation(f,"푸드코트 셔터",Vector3.new(-118,3,108),3)
   addObjectiveStation(f,"정비실 발전기",Vector3.new(118,3,108),4)
+  addMapUtility(f,"PARK_CAROUSEL_POWER","회전목마 전원",Vector3.new(-32,3,30))
+  addEnergyCore(f,map.Id,Vector3.new(0,4,-12))
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  end
 
