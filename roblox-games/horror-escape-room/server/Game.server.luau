@@ -48,6 +48,28 @@ local tagGraceUntil={}
 local allowedActions={}
 for _,action in pairs(C.Actions)do allowedActions[action]=true end
 
+workspace:SetAttribute("LobbyReady",false)
+workspace:SetAttribute("LobbyPhase","LOADING")
+workspace:SetAttribute("LobbyRealPlayers",0)
+workspace:SetAttribute("LobbyAIFill",C.TargetPopulation)
+
+local function syncLobbyState(phase)
+ local real=#Players:GetPlayers()
+ local aiFill=math.max(0,(C.TargetPopulation or 8)-real)
+ local currentPhase=phase or tostring(workspace:GetAttribute("LobbyPhase")or"WAITING")
+ local ready=workspace:GetAttribute("MapReady")==true
+ workspace:SetAttribute("LobbyReady",ready)
+ workspace:SetAttribute("LobbyPhase",currentPhase)
+ workspace:SetAttribute("LobbyRealPlayers",real)
+ workspace:SetAttribute("LobbyAIFill",aiFill)
+ for _,player in ipairs(Players:GetPlayers())do
+  player:SetAttribute("LobbyReady",ready)
+  player:SetAttribute("LobbyPhase",currentPhase)
+  player:SetAttribute("LobbyRealPlayers",real)
+  player:SetAttribute("LobbyAIFill",aiFill)
+ end
+end
+
 local survivorSpawns={
  Vector3.new(-118,3,-70),Vector3.new(118,3,-70),Vector3.new(-108,3,104),
  Vector3.new(108,3,104),Vector3.new(0,3,40),Vector3.new(0,3,-40)
@@ -857,10 +879,10 @@ local function startRound()
   local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
   if role=="MONSTER"then teleport(p,monsterSpawn+Vector3.new((mi-1)*6,0,0));mi+=1 else teleport(p,survivorSpawns[((si-1)%#survivorSpawns)+1]);si+=1 end
  end
- configure(h);state="RUNNING";timeLeft=C.RoundSeconds;return true
+ configure(h);state="RUNNING";timeLeft=C.RoundSeconds;syncLobbyState("RUNNING");return true
 end
 local function endRound(winner)
- if state~="RUNNING"then return end;state="RESULT"
+ if state~="RUNNING"then return end;state="RESULT";syncLobbyState("RESULT")
  for _,p in ipairs(Players:GetPlayers())do
   local role=p:GetAttribute("Role");local m=role=="MONSTER";local win=(winner=="MONSTER"and m)or(winner=="SURVIVOR"and role=="SURVIVOR")
   local reward=(role=="MONSTER"or role=="SURVIVOR")and(winner=="DRAW"and 12 or win and 30 or 12)or 0
@@ -1014,6 +1036,7 @@ Players.PlayerAdded:Connect(function(p)
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
  p.CharacterAdded:Connect(function()onCharacter(p)end)
  if p.Character then task.defer(function()onCharacter(p)end)end
+ syncLobbyState()
 end)
 for _,p in ipairs(Players:GetPlayers())do
  load(p)
@@ -1022,6 +1045,7 @@ for _,p in ipairs(Players:GetPlayers())do
  p.CharacterAdded:Connect(function()onCharacter(p)end)
  if p.Character then task.defer(function()onCharacter(p)end)end
 end
+syncLobbyState()
 qaCaptureRemote.OnServerEvent:Connect(function(p,label,value)
  if C.QACameraEnabled~=true then return end
  if typeof(label)~="string"or #label<1 or #label>48 then return end
@@ -1056,6 +1080,7 @@ end)
 
 Players.PlayerRemoving:Connect(function(p)
  save(p);cooldown[p]=nil;dashCooldown[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil
+ task.defer(function()syncLobbyState()end)
 end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
@@ -1070,12 +1095,14 @@ for _,p in ipairs(Players:GetPlayers())do
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
 end
+syncLobbyState("WAITING")
 
 task.spawn(function()
  while true do
-  if #Players:GetPlayers()==0 then state="WAITING";task.wait(1)
+  if #Players:GetPlayers()==0 then state="WAITING";syncLobbyState("WAITING");task.wait(1)
   else
    state="INTERMISSION"
+   syncLobbyState("INTERMISSION")
    soloStartRequested=false
    for t=C.IntermissionSeconds,1,-1 do
     for _,p in ipairs(Players:GetPlayers())do p:SetAttribute("RoundState","INTERMISSION");p:SetAttribute("TimeLeft",t)end
