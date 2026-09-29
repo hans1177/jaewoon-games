@@ -4741,6 +4741,35 @@ test('final Roblox control-token failure reaches its corrective prompt once and 
   assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
 });
 
+test('repeated Roblox control-token failures vary repair instructions and sampling while preserving source',{timeout:5000},async(t)=>{
+  const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
+  const source='local status = {Text = "ready"}\nstatus.Text = "ready"\n';
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'repeat-control-token'})));
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));
+      const replacement='<think>invalid</think>\nstatus.Text = "changed"';
+      const response=requests.length===1?JSON.stringify({edits:[{path:relative,find:'status.Text = "ready"',replace:replacement}]})
+        :JSON.stringify({replace:replacement});
+      res.writeHead(200,{'content-type':'application/x-ndjson'});
+      res.end(JSON.stringify({response,done:true,done_reason:'stop'})+'\n');
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  await assert.rejects(runVibe2SourceWorker({cwd,applySource:true}),/MODEL_CONTROL_TOKEN/);
+  assert.equal(requests.length,4);
+  assert.deepEqual(requests.map(row=>row.options.temperature),[0.08,0.16,0.24,0.32]);
+  for(let i=1;i<4;i++){
+    assert.match(requests[i].prompt,new RegExp('SOURCE REPAIR PASS '+i));
+    assert.deepEqual(requests[i].format.required,['replace']);
+    assert.match(requests[i].prompt,/Preserve save keys, gameplay values/);
+  }
+  assert.equal(new Set(requests.slice(1).map(row=>row.prompt)).size,3);
+  assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
+});
+
 test('Roblox replace stream rejects split control tokens without waiting for completion',{timeout:5000},async(t)=>{
   const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
   const source='local status = {Text = "ready"}\nstatus.Text = "ready"\n';
