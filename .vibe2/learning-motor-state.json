@@ -5316,7 +5316,9 @@
       "coding_negative_1wma2n",
       "coding_negative_1qd09iy",
       "coding_negative_dtxlt5",
-      "coding_negative_1eb66c0"
+      "coding_negative_1eb66c0",
+      "coding_negative_1ascn1q",
+      "coding_negative_ctcwvc"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -14028,7 +14030,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 19,
+        "verifiedFailures": 20,
         "games": {
           "fantasy-survival": 1
         },
@@ -14261,18 +14263,38 @@
             "lastEvidence": "coding_1qejt70",
             "lastFailureEvidence": "coding_negative_1eb66c0",
             "lastUpdatedAt": "2026-09-29T05:50:29.386Z"
+          },
+          "roblox|NO_OP|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "fantasy-survival": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "NO_OP": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_1ascn1q",
+            "lastUpdatedAt": "2026-09-29T05:50:50.492Z"
           }
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_1qejt70",
-        "lastFailureEvidence": "coding_negative_1eb66c0",
-        "lastUpdatedAt": "2026-09-29T05:50:29.386Z"
+        "lastFailureEvidence": "coding_negative_1ascn1q",
+        "lastUpdatedAt": "2026-09-29T05:50:50.492Z"
       },
       "BOUNDED_OUTPUT_COMMIT_FIRST": {
         "verifiedApplications": 0,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 0,
-        "verifiedFailures": 9,
+        "verifiedFailures": 10,
         "games": {},
         "targets": {},
         "contextModes": {
@@ -14393,22 +14415,24 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 2,
+            "verifiedFailures": 3,
             "games": {},
             "targets": {},
             "failureGames": {
               "amusement-tycoon": 1,
-              "monster-adventure": 1
+              "monster-adventure": 1,
+              "fantasy-survival": 1
             },
             "failureTargets": {
-              "unity": 2
+              "unity": 3
             },
             "failureClasses": {
-              "INVALID_PATH": 2
+              "INVALID_PATH": 2,
+              "TIMEOUT": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_k4b22e",
-            "lastUpdatedAt": "2026-09-29T05:48:25.491Z"
+            "lastFailureEvidence": "coding_negative_ctcwvc",
+            "lastUpdatedAt": "2026-09-29T05:50:50.493Z"
           },
           "unity|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -14433,8 +14457,8 @@
         },
         "state": "CANDIDATE",
         "lastEvidence": null,
-        "lastFailureEvidence": "coding_negative_k4b22e",
-        "lastUpdatedAt": "2026-09-29T05:48:25.491Z"
+        "lastFailureEvidence": "coding_negative_ctcwvc",
+        "lastUpdatedAt": "2026-09-29T05:50:50.493Z"
       },
       "SOURCE_RESCAN_REBIND": {
         "verifiedApplications": 0,
@@ -17565,7 +17589,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T05:50:29.463Z",
+    "lastBuiltAt": "2026-09-29T05:50:50.573Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -24389,5 +24413,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T05:50:29.463Z"
+  "updatedAt": "2026-09-29T05:50:50.573Z"
 }
