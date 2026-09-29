@@ -2270,11 +2270,41 @@ test('stale Studio workflow runs abort before opening Studio',()=>{
 });
 
 test('mcp-run checks current main head before any Studio MCP play call',()=>{
-  const mainAt=helper.indexOf("if(mode==='mcp-run')");
+  const mainAt=helper.indexOf("if(mode==='check-head'||mode==='mcp-run')");
   const guardAt=helper.indexOf('assertCurrentStudioWorkflowHead({workflowSha:',mainAt);
   const playAt=helper.indexOf('runOfficialStudioMcpPlay({',mainAt);
   assert.ok(mainAt>=0&&guardAt>mainAt&&playAt>guardAt);
   assert.match(helper,/ROBLOX_STUDIO_WORKFLOW_HEAD_FRESH=YES/);
+});
+
+test('workflow rejects a stale control revision before Studio launch and rejects missing runtime reports',()=>{
+  const block=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  const guard=block.indexOf('--mode=check-head');
+  const cleanup=block.indexOf('$legacyProcesses =');
+  const launch=block.indexOf('$placeLaunchProcess = Start-Process');
+  assert.ok(guard>0&&cleanup>guard&&launch>cleanup);
+  assert.match(block,/if \(\$LASTEXITCODE -ne 0\) \{ throw 'Stale Studio workflow rejected before any Studio launch or cleanup' \}/);
+  const missing=block.slice(block.indexOf('ROBLOX_STUDIO_MCP_EVIDENCE_PERSIST=SKIPPED_NO_MCP_RUNTIME_EVIDENCE'));
+  assert.match(missing,/STUDIO_STEP_OUTCOME -eq 'failure' -or \$env:STUDIO_STEP_OUTCOME -eq 'success'/);
+  assert.ok(missing.indexOf("throw 'Studio play produced no runtime report")<missing.indexOf('exit 0'));
+});
+
+test('check-head CLI performs only the head guard and never needs an MCP process',()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'studio-preflight-'));
+  try{
+    const main=path.join(cwd,'main');
+    fs.mkdirSync(main);
+    for(const args of [['init'],['config','user.email','qa@example.com'],['config','user.name','qa'],['commit','--allow-empty','-m','init']]){
+      assert.equal(spawnSync('git',args,{cwd:main,encoding:'utf8'}).status,0);
+    }
+    const head=spawnSync('git',['rev-parse','HEAD'],{cwd:main,encoding:'utf8'}).stdout.trim();
+    const tool=path.resolve('tools/company-development-roblox-studio-local-play.mjs');
+    for(const [sha,expected] of [[head,0],['0'.repeat(40),1]]){
+      const result=spawnSync(process.execPath,[tool,'--mode=check-head','--control-revision='+sha],{cwd,encoding:'utf8',timeout:10000});
+      assert.equal(result.status,expected,result.stderr);
+      assert.match(result.stdout+result.stderr,expected===0?/ROBLOX_STUDIO_WORKFLOW_HEAD_FRESH=YES/:/ROBLOX_STUDIO_STALE_WORKFLOW_RUN_ABORT/);
+    }
+  }finally{fs.rmSync(cwd,{recursive:true,force:true});}
 });
 
 test('Roblox foundation scan concurrency is stable across main SHAs and force-cancels stale queued Studio runs',()=>{

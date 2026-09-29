@@ -1753,6 +1753,8 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
+          & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=check-head "--control-revision=${{ inputs.control_revision || github.sha }}"
+          if ($LASTEXITCODE -ne 0) { throw 'Stale Studio workflow rejected before any Studio launch or cleanup' }
           & node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('main/company-learning/platform-release-roadmap.json','utf8').replace(/^\\uFEFF/,''));const s=r?.roblox?.studioExecution||{};const ok=s.officialStudioMcpOnly===true&&s.robloxPlayerAutomationForbidden===true&&s.undocumentedStudioCliAutomationForbidden===true&&s.externalGuiAutomationForbidden===true&&s.localPlaceFileRequired===true;if(!ok){console.error('ROBLOX_STUDIO_MCP_POLICY_MISMATCH');process.exit(1)}console.log('ROBLOX_STUDIO_MCP_POLICY=PASS')"
           if ($LASTEXITCODE -ne 0) { throw 'official Studio MCP policy validation failed' }
           if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio MCP runner must be Windows' }
@@ -2270,11 +2272,15 @@ jobs:
           PLACE_ID: ${{ matrix.placeId }}
           VERSION_NUMBER: ${{ matrix.versionNumber }}
           STUDIO_STEP_SUCCEEDED: ${{ steps.studio_play.outcome == 'success' }}
+          STUDIO_STEP_OUTCOME: ${{ steps.studio_play.outcome }}
         run: |
           $ErrorActionPreference = 'Stop'
           if (-not $env:VIBE2_STUDIO_RUNTIME_RESULT -or -not (Test-Path $env:VIBE2_STUDIO_RUNTIME_RESULT)) {
             Write-Host 'ROBLOX_STUDIO_MCP_EVIDENCE_PERSIST=SKIPPED_NO_MCP_RUNTIME_EVIDENCE'
             Write-Host 'ROBLOX_STUDIO_MCP_EXISTING_EVIDENCE_PRESERVED=YES'
+            if ($env:STUDIO_STEP_OUTCOME -eq 'failure' -or $env:STUDIO_STEP_OUTCOME -eq 'success') {
+              throw 'Studio play produced no runtime report; actual play is unverified'
+            }
             exit 0
           }
 
