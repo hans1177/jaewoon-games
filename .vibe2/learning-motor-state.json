@@ -5483,7 +5483,11 @@
       "coding_negative_1hmf3qq",
       "coding_negative_1n4c6mi",
       "coding_negative_c10tz1",
-      "coding_negative_1jrmq8p"
+      "coding_negative_1jrmq8p",
+      "coding_negative_jwuwcq",
+      "coding_negative_1azgll5",
+      "coding_negative_2h8vgh",
+      "coding_negative_16rne7q"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -15761,7 +15765,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 64,
+        "verifiedFailures": 68,
         "games": {
           "fantasy-survival": 1
         },
@@ -15906,7 +15910,7 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 27,
+            "verifiedFailures": 28,
             "games": {},
             "targets": {},
             "failureGames": {
@@ -15922,42 +15926,43 @@
               "seed-idle-growth-rpg-crystal-bloom": 2,
               "seed-story-complete-rpg-chronicles-of-eldoria": 2,
               "seed-casual-realm-weaver": 1,
-              "seed-puzzle-chromatic-cascade": 1
+              "seed-puzzle-chromatic-cascade": 1,
+              "seed-single-defense-strat-celestial-bastion": 1
             },
             "failureTargets": {
-              "unity": 27
+              "unity": 28
             },
             "failureClasses": {
-              "TIMEOUT": 12,
+              "TIMEOUT": 13,
               "INVALID_PATH": 15
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1jrmq8p",
-            "lastUpdatedAt": "2026-09-29T08:53:53.287Z"
+            "lastFailureEvidence": "coding_negative_jwuwcq",
+            "lastUpdatedAt": "2026-09-29T09:04:39.590Z"
           },
           "unity|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 5,
+            "verifiedFailures": 6,
             "games": {},
             "targets": {},
             "failureGames": {
-              "amusement-tycoon": 3,
+              "amusement-tycoon": 4,
               "seed-casual-realm-weaver": 1,
               "seed-puzzle-chromatic-cascade": 1
             },
             "failureTargets": {
-              "unity": 5
+              "unity": 6
             },
             "failureClasses": {
               "MALFORMED_OUTPUT": 2,
               "TIMEOUT": 1,
-              "STUDIO_QUALITY_DELTA": 2
+              "STUDIO_QUALITY_DELTA": 3
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1369x79",
-            "lastUpdatedAt": "2026-09-29T08:38:10.422Z"
+            "lastFailureEvidence": "coding_negative_1azgll5",
+            "lastUpdatedAt": "2026-09-29T09:04:39.591Z"
           },
           "unity|EDIT_MATCH|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -15984,27 +15989,28 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 6,
+            "verifiedFailures": 8,
             "games": {},
             "targets": {},
             "failureGames": {
-              "bug-defense": 2,
+              "bug-defense": 3,
               "survival": 2,
               "seed-idle-growth-rpg-crystal-bloom": 1,
-              "seed-story-complete-rpg-chronicles-of-eldoria": 1
+              "seed-story-complete-rpg-chronicles-of-eldoria": 1,
+              "village-dungeons": 1
             },
             "failureTargets": {
-              "unity": 6
+              "unity": 8
             },
             "failureClasses": {
               "NO_OP": 2,
               "TIMEOUT": 1,
               "MALFORMED_OUTPUT": 1,
-              "STUDIO_QUALITY_DELTA": 2
+              "STUDIO_QUALITY_DELTA": 4
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_c10tz1",
-            "lastUpdatedAt": "2026-09-29T08:52:58.727Z"
+            "lastFailureEvidence": "coding_negative_16rne7q",
+            "lastUpdatedAt": "2026-09-29T09:04:39.593Z"
           },
           "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -16093,8 +16099,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_160lbz8",
-        "lastFailureEvidence": "coding_negative_1jrmq8p",
-        "lastUpdatedAt": "2026-09-29T08:53:53.287Z"
+        "lastFailureEvidence": "coding_negative_16rne7q",
+        "lastUpdatedAt": "2026-09-29T09:04:39.593Z"
       }
     }
   },
@@ -18825,7 +18831,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T09:02:30.830Z",
+    "lastBuiltAt": "2026-09-29T09:04:39.654Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -25649,5 +25655,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T09:02:30.830Z"
+  "updatedAt": "2026-09-29T09:04:39.654Z"
 }
