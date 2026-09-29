@@ -1395,6 +1395,7 @@ local function refreshRoomSlots()
 end
 
 local resultTitle
+local shopPanel
 
 -- 세계 괴담 도감: 수집 진행만 보여주며 전투 능력치에는 영향을 주지 않는다.
 local ghostBookPanel=Instance.new("Frame")
@@ -1525,7 +1526,7 @@ end)
 ghostBookClose.Activated:Connect(function()ghostBookPanel.Visible=false end)
 
 -- 코스메틱 상점: 전투 능력치는 바꾸지 않고 프로필 프레임/칭호/결과 화면 색만 바꾼다.
-local shopPanel=Instance.new("Frame")
+shopPanel=Instance.new("Frame")
 shopPanel.Name="CosmeticShop"
 shopPanel.AnchorPoint=Vector2.new(.5,.5)
 shopPanel.Position=UDim2.fromScale(.5,.5)
