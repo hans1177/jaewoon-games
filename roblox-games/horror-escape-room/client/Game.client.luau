@@ -1089,6 +1089,18 @@ selectionStatus.TextXAlignment=Enum.TextXAlignment.Left
 selectionStatus.ZIndex=11
 selectionStatus.Parent=setupPanel
 
+local loreStatus=Instance.new("TextLabel")
+loreStatus.Name="LoreStatus"
+loreStatus.Size=UDim2.new(1,-18,0,16)
+loreStatus.Position=UDim2.fromOffset(9,182)
+loreStatus.BackgroundTransparency=1
+loreStatus.TextColor3=Color3.fromRGB(169,181,198)
+loreStatus.TextSize=10
+loreStatus.Font=Enum.Font.GothamMedium
+loreStatus.TextXAlignment=Enum.TextXAlignment.Left
+loreStatus.ZIndex=11
+loreStatus.Parent=setupPanel
+
 local setupButtons={
  {C.Actions.PREFER_SURVIVOR,"인간 선호",Color3.fromRGB(50,112,145)},
  {C.Actions.PREFER_MONSTER,"몬스터 선호",Color3.fromRGB(145,48,59)},
@@ -1195,6 +1207,10 @@ end
 local function cosmeticItem(id)
  for _,item in ipairs(C.Cosmetics or{})do if item.Id==id then return item end end
  return(C.Cosmetics and C.Cosmetics[1])or{Id="DEFAULT",Name="기본 프레임",Price=0,Accent=Color3.fromRGB(170,209,220),Title="신입 참가자"}
+end
+local function loreItem(id)
+ for _,item in ipairs(C.Lore or{})do if item.Id==id then return item end end
+ return nil
 end
 for index,item in ipairs(C.Cosmetics or{})do
  local row=Instance.new("Frame")
@@ -1600,6 +1616,7 @@ local function render()
  local prefText=pref=="MONSTER"and"몬스터 선호"or pref=="SURVIVOR"and"인간 선호"or"자동 배정"
  local equippedItem=cosmeticItem(tostring(p:GetAttribute("EquippedCosmetic")or"DEFAULT"))
  selectionStatus.Text=string.format("%s · 인간 %s · 몬스터 %s · %s",prefText,humanName(),monsterName(),equippedItem.Title or"신입 참가자")
+ loreStatus.Text=string.format("괴담 메모 %d/%d · %s",tonumber(p:GetAttribute("LoreCount"))or 0,tonumber(p:GetAttribute("LoreTotal"))or #(C.Lore or{}),tostring(p:GetAttribute("LoreTitle")or"야간 신입"))
 
  local selectionConfirmed=p:GetAttribute("LobbySelectionConfirmed")==true
  local spectating=round=="SPECTATING"
@@ -1645,9 +1662,20 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle"})do
  p:GetAttributeChangedSignal(k):Connect(function()render();updateCosmeticUI()end)
 end
+p:GetAttributeChangedSignal("LoreFeedback"):Connect(function()
+ local raw=tostring(p:GetAttribute("LoreFeedback")or"")
+ local kind,id=string.match(raw,"^([^:]+):([^:]+)")
+ local item=loreItem(id or"")
+ if kind=="FOUND"and item then
+  showMapContentToast("괴담 메모 발견 · "..item.Name.."\n"..item.Text,Color3.fromRGB(235,219,171),3.4)
+ elseif kind=="ALREADY"then
+  showMapContentToast("이미 조사한 괴담 메모야",Color3.fromRGB(184,193,208),1.3)
+ end
+end)
+
 p:GetAttributeChangedSignal("EnergyFeedback"):Connect(function()
  local raw=tostring(p:GetAttribute("EnergyFeedback")or"")
  local kind,a,b=string.match(raw,"^([^:]+):?([^:]*):?([^:]*)$")
