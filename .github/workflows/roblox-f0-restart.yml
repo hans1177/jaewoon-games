@@ -26,7 +26,7 @@ concurrency:
 jobs:
   restart:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 120
     steps:
       - name: Validate exact game id
         env:
@@ -37,17 +37,83 @@ jobs:
           [[ "$GAME_ID" =~ ^[a-z0-9][a-z0-9-]{1,48}$ ]]
           echo "ROBLOX_F0_RESTART_GAME_ID=$GAME_ID"
 
-      - name: Restart canonical Roblox pipeline from current main
+      - name: Restart canonical Roblox pipeline from current main and require F0 PASS
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ inputs.game_id || 'horror-escape-room' }}
         shell: bash
         run: |
           set -euo pipefail
+          start_epoch="$(date +%s)"
+          source_title="Roblox source sync · $GAME_ID · F0 restart"
+          runtime_title="Roblox runtime · $GAME_ID"
+
           gh workflow run company-roblox-source-drift-sync.yml \
             --repo "$GITHUB_REPOSITORY" \
             --ref main \
             -f "game_id=$GAME_ID" \
             -f "restart_from_f0=true"
           echo "ROBLOX_F0_RESTART_DISPATCHED=$GAME_ID"
-          echo 'ROBLOX_F0_RESTART_PATH=MAIN_SOURCE_SYNC_BUILD_PREFLIGHT_F0'
+
+          source_run=""
+          for attempt in $(seq 1 60); do
+            runs="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow company-roblox-source-drift-sync.yml --event workflow_dispatch --limit 40 --json databaseId,displayTitle,status,conclusion,createdAt)"
+            source_run="$(printf '%s' "$runs" | TITLE="$source_title" START_EPOCH="$start_epoch" node -e "
+              let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+                const rows=JSON.parse(s||'[]'), title=process.env.TITLE, start=Number(process.env.START_EPOCH||0)*1000;
+                const row=rows.filter(r=>r.displayTitle===title&&Date.parse(r.createdAt)>=start-2000).sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt))[0];
+                process.stdout.write(row?String(row.databaseId):'');
+              });
+            ")"
+            [[ -n "$source_run" ]] && break
+            sleep 2
+          done
+          test -n "$source_run"
+          echo "ROBLOX_F0_SOURCE_SYNC_RUN=$source_run"
+
+          for attempt in $(seq 1 180); do
+            row="$(gh run view "$source_run" --repo "$GITHUB_REPOSITORY" --json status,conclusion)"
+            status="$(printf '%s' "$row" | jq -r '.status')"
+            conclusion="$(printf '%s' "$row" | jq -r '.conclusion // ""')"
+            if [[ "$status" == "completed" ]]; then
+              [[ "$conclusion" == "success" ]] || { echo "ROBLOX_F0_SOURCE_SYNC_FAILED=$conclusion" >&2; exit 2; }
+              break
+            fi
+            sleep 5
+            [[ "$attempt" != "180" ]] || { echo 'ROBLOX_F0_SOURCE_SYNC_TIMEOUT' >&2; exit 3; }
+          done
+          echo 'ROBLOX_F0_SOURCE_SYNC=PASS'
+
+          runtime_run=""
+          runtime_deadline=$(( $(date +%s) + 6300 ))
+          while [[ "$(date +%s)" -lt "$runtime_deadline" ]]; do
+            runs="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow company-development-roblox-runtime.yml --event workflow_dispatch --limit 60 --json databaseId,displayTitle,status,conclusion,createdAt)"
+            newest="$(printf '%s' "$runs" | TITLE="$runtime_title" START_EPOCH="$start_epoch" node -e "
+              let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{
+                const rows=JSON.parse(s||'[]'), title=process.env.TITLE, start=Number(process.env.START_EPOCH||0)*1000;
+                const row=rows.filter(r=>r.displayTitle===title&&Date.parse(r.createdAt)>=start-2000).sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt))[0];
+                process.stdout.write(row?JSON.stringify(row):'');
+              });
+            ")"
+            if [[ -z "$newest" ]]; then sleep 5; continue; fi
+            id="$(printf '%s' "$newest" | jq -r '.databaseId')"
+            status="$(printf '%s' "$newest" | jq -r '.status')"
+            conclusion="$(printf '%s' "$newest" | jq -r '.conclusion // ""')"
+            if [[ "$id" != "$runtime_run" ]]; then
+              runtime_run="$id"
+              echo "ROBLOX_F0_RUNTIME_TRACKING=$runtime_run"
+            fi
+            if [[ "$status" != "completed" ]]; then sleep 8; continue; fi
+            if [[ "$conclusion" == "cancelled" ]]; then sleep 5; continue; fi
+            [[ "$conclusion" == "success" ]] || { echo "ROBLOX_F0_RUNTIME_FAILED=$runtime_run:$conclusion" >&2; exit 4; }
+            logs="$(gh run view "$runtime_run" --repo "$GITHUB_REPOSITORY" --log)"
+            if printf '%s\n' "$logs" | grep -Fq "ROBLOX_FUSED_F0_RESULT=$GAME_ID:PASS"; then
+              echo "ROBLOX_F0_PASS_RUN=$runtime_run"
+              echo "ROBLOX_F0_RESTART_PATH=MAIN_SOURCE_SYNC_BUILD_PREFLIGHT_F0"
+              exit 0
+            fi
+            echo "ROBLOX_F0_MARKER_MISSING=$runtime_run"
+            sleep 5
+          done
+          echo 'ROBLOX_F0_RUNTIME_TIMEOUT' >&2
+          exit 5
