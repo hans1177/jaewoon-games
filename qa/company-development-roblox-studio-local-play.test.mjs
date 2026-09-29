@@ -2006,6 +2006,22 @@ test('F9 planner reruns legacy multiplayer evidence and persists the current aud
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('multiplayer Studio planning requires the two-client audit before final review',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-multi-required-'));
+  try{
+    const gameRoot=path.join(root,'roblox-games','g1');fs.mkdirSync(gameRoot,{recursive:true});
+    const launch={launchCore:['multiplayer team sync'],releaseGates:[]};
+    fs.writeFileSync(path.join(gameRoot,'launch-mvp.json'),JSON.stringify(launch));
+    const candidate=item();candidate.currentStep='ROBLOX_RUNTIME_FOUNDATION';
+    const plan=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root});
+    assert.equal(plan.include.length,1);
+    assert.equal(plan.include[0].auditProfile,'F9_SOAK');
+    fs.writeFileSync(path.join(gameRoot,'launch-mvp.json'),JSON.stringify({launchCore:['single player exploration'],releaseGates:[]}));
+    const single=planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root});
+    assert.equal(single.include[0].auditProfile,'FAST_DEEP');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('commercial world audit rejects broad floor gaps and unreachable semantic gameplay anchors',()=>{
   const contract=deriveStudioActualPlayContract({launchCore:['large map','NPC quest interaction'],releaseGates:[]});
   const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
