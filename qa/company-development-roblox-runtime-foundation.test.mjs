@@ -657,9 +657,9 @@ test('Roblox post-runtime QA keeps distinct identities parallel while newest sam
   const f9Jobs=f9.indexOf('\njobs:\n');
   assert.ok(postJobs>0&&f9Jobs>0);
   const postHeader=post.slice(0,postJobs);
-  assert.match(postHeader,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| github\.sha \}\}/);
+  assert.match(postHeader,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
   assert.match(postHeader,/cancel-in-progress: true/);
-  assert.doesNotMatch(postHeader,/group: roblox-runtime-foundation-scan\s*$/m);
+  assert.doesNotMatch(postHeader,/inputs\.game_id \|\| github\.sha/);
   assert.doesNotMatch(f9.slice(0,f9Jobs),/\nconcurrency:/);
 });
 
