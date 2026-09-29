@@ -223,9 +223,7 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     };
     if(existingUnity){
       Object.assign(existingUnity,queuePatch,{projectPath:root,releaseState:'development-confirmed'});
-      continue;
-    }
-    rows.push({
+    }else rows.push({
       gameId:id,
       name:clean(item?.gameName||game?.name||id),
       engine:'unity',
@@ -240,7 +238,12 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       developmentValidation:latestDevelopmentValidationStatus(id,repoRoot),
       ...queuePatch
     });
-    continue;
+    // 유니티 선행 개발은 유지하되 이미 실행된 로블록스의 복구 증거를 잃지 않는다.
+    const existingRobloxRuntime=item?.robloxBuildOrPackagePassed===true
+      &&/^[0-9a-f]{40}$/i.test(clean(item?.robloxSourceCommit))
+      &&/^sha256:[0-9a-f]{64}$/i.test(clean(item?.robloxBuildArtifactIdentity))
+      &&/^roblox-games\//.test(posix(item?.robloxProjectPath));
+    if(!existingRobloxRuntime)continue;
   }
 
   const queueTarget=clean(item?.selectedPlatform||item?.targetPlatform).toUpperCase();
@@ -274,7 +277,22 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
       queueRobloxQualityBuildUpSourceRevision,
       queueRobloxQualityFailureClass:clean(item?.robloxQualityFailureClass),
       queueRobloxQualityFailureKinds:(Array.isArray(item?.robloxQualityBuildUpEvidence?.qualityFailureKinds)?item.robloxQualityBuildUpEvidence.qualityFailureKinds:[]).map(clean).filter(Boolean).slice(0,24),
-      queueRobloxQualityBuildUpEvidence:item?.robloxQualityBuildUpEvidence&&typeof item.robloxQualityBuildUpEvidence==='object'?item.robloxQualityBuildUpEvidence:null,
+      queueRobloxQualityBuildUpEvidence:queueRobloxQualityBuildUpRequired
+        &&clean(item?.robloxQualityBuildUpEvidence?.sourceRevision)===queueRobloxSourceCommit
+        &&clean(item?.robloxQualityBuildUpEvidence?.artifactIdentity)===clean(item?.robloxBuildArtifactIdentity)
+        &&clean(item?.robloxQualityBuildUpEvidence?.authority)==='roblox-official-studio-mcp-product-quality-failure'
+        ?{
+          sourceRevision:queueRobloxSourceCommit,
+          artifactIdentity:clean(item.robloxBuildArtifactIdentity),
+          authority:item.robloxQualityBuildUpEvidence.authority,
+          workflowRunId:Number(item.robloxQualityBuildUpEvidence.workflowRunId)||null,
+          testedAt:clean(item.robloxQualityBuildUpEvidence.testedAt),
+          repairSurfaces:(item.robloxQualityBuildUpEvidence.repairSurfaces||[]).map(clean).slice(0,24),
+          qualityFailureDetails:(item.robloxQualityBuildUpEvidence.qualityFailureDetails||[]).slice(0,24).map(row=>({
+            id:clean(row.id),repairSurface:clean(row.repairSurface),priority:clean(row.priority),
+            hint:clean(row.hint).slice(0,500),observed:JSON.stringify(row.observed??{}).slice(0,4000)
+          }))
+        }:null,
       queueRobloxPublicReleaseFailureSignature:clean(item?.robloxPublicReleaseFailureSignature),
       queueRobloxPublicReleaseRuntimeObservationPending:item?.robloxPublicReleaseRuntimeObservationPending===true,
       queueRobloxSourceCommit,
@@ -1898,7 +1916,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     :[];
   const activeDirectiveTask=[...latestDirectiveTasks].reverse().find(item=>!inactiveDirectiveStatuses.has(clean(item.status).toLowerCase()));
   if(activeDirectiveTask?.buildUpDirective){
-    const directive=activeDirectiveTask.buildUpDirective;
+    const directive={...activeDirectiveTask.buildUpDirective,playtestRuntimeFindings:{...activeDirectiveTask.buildUpDirective.playtestRuntimeFindings,studioQualityFailure:project.queueRobloxQualityBuildUpEvidence||null}};
     return{
       ...taskInput,
       goal:clean(taskInput.goal)+'\n\n'+directivePrompt(directive),
@@ -1958,6 +1976,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     ...(project?.queueRoutingBlockers||[])
   ].map(clean).filter(Boolean);
   const runtimeEvidence={
+    studioQualityFailure:project.queueRobloxQualityBuildUpEvidence||null,
     failureStage:clean(project?.queueRuntimeFailureStage||project?.queueRobloxFailureStage),
     failureSignature:clean(project?.queueRuntimeFailureSignature||project?.queueRobloxFailureSignature),
     blockers:[
@@ -2444,6 +2463,17 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
     }else if(currentId&&item?.buildUpDirective){
       canonicalByScope.set(scope,item.buildUpDirective);
       freshness='CURRENT_NO_NEWER_GENERATION';
+    }
+    // 최신 소스·빌드의 실측 실패를 대기 작업에도 갱신하고 이전 소스 증거는 제거한다.
+    if(candidate?.buildUpDirective&&lane==='roblox'){
+      const studioQualityFailure=project.queueRobloxQualityBuildUpEvidence||null;
+      if(JSON.stringify(candidate.buildUpDirective.playtestRuntimeFindings?.studioQualityFailure??null)!==JSON.stringify(studioQualityFailure)){
+        candidate=bindSharedBuildUpDirective(candidate,{
+          ...candidate.buildUpDirective,
+          playtestRuntimeFindings:{...candidate.buildUpDirective.playtestRuntimeFindings,studioQualityFailure}
+        });
+        changed+=1;
+      }
     }
     const checkedCandidate={
       ...candidate,
