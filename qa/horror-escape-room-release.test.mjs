@@ -127,3 +127,13 @@ test('로비 역할 배정은 선호·공정 가중·직전 반복 방지를 사
  assert.ok(client.includes('몬스터 선호'));
  assert.match(client,/MonsterPreference/);
 });
+
+
+test('로비 선택 완료는 서버 승인 속성만 신뢰한다',()=>{
+ assert.match(server,/LobbySelectionConfirmed",false/);
+ assert.match(server,/LobbySelectionConfirmed",true/);
+ assert.match(client,/p:GetAttribute\("LobbySelectionConfirmed"\)==true/);
+ assert.doesNotMatch(client,/setupChosen/);
+ assert.match(client,/Size=UDim2\.new\(\.465,0,0,48\)/);
+ assert.match(client,/Size=UDim2\.new\(\.44,0,0,36\)/);
+});
