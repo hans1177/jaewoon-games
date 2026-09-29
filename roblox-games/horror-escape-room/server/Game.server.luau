@@ -154,9 +154,31 @@ local function humanForm(p)
  for _,f in ipairs(C.HumanForms or{})do if f.Id==id then return f end end
  return(C.HumanForms and C.HumanForms[1])or{Id="BROADCAST",Name="방송부"}
 end
+
+local cosmeticById={}
+for _,item in ipairs(C.Cosmetics or{})do cosmeticById[item.Id]=item end
+local function ownedCosmeticsFrom(value)
+ local owned={DEFAULT=true}
+ if typeof(value)=="table"then
+  for _,id in ipairs(value)do if typeof(id)=="string"and cosmeticById[id]then owned[id]=true end end
+ elseif typeof(value)=="string"then
+  for id in string.gmatch(value,"[^,]+")do if cosmeticById[id]then owned[id]=true end end
+ end
+ return owned
+end
+local function ownedCosmeticsList(owned)
+ local out={}
+ for _,item in ipairs(C.Cosmetics or{})do if owned[item.Id]then table.insert(out,item.Id)end end
+ if #out==0 then table.insert(out,"DEFAULT")end
+ return out
+end
+local function ownedCosmeticsAttribute(owned)
+ return table.concat(ownedCosmeticsList(owned),",")
+end
 local function load(p)
  p:SetAttribute("MonsterPreference","ANY");p:SetAttribute("SoloRole","SURVIVOR");p:SetAttribute("LobbySelectionConfirmed",false)
  p:SetAttribute("MonsterXP",0);p:SetAttribute("Coins",0);p:SetAttribute("RoundsSinceMonster",0)
+ p:SetAttribute("OwnedCosmetics","DEFAULT");p:SetAttribute("EquippedCosmetic","DEFAULT");p:SetAttribute("CosmeticFeedback","")
  p:SetAttribute("MonsterForm","DRACULA");p:SetAttribute("HumanForm","BROADCAST");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0)
  p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0);p:SetAttribute("RoundScore",0)
  p:SetAttribute("LastRoundReward",0);p:SetAttribute("LastRoundWinner","");p:SetAttribute("LastRoundRole","")
@@ -171,12 +193,20 @@ local function load(p)
   for _,k in ipairs({"MonsterXP","Coins","RoundsSinceMonster"})do if typeof(d[k])=="number"then p:SetAttribute(k,d[k])end end
   if typeof(d.MonsterForm)=="string"then p:SetAttribute("MonsterForm",legacyMonsterIds[d.MonsterForm]or d.MonsterForm)end
   if typeof(d.HumanForm)=="string"then p:SetAttribute("HumanForm",d.HumanForm)end
+  local owned=ownedCosmeticsFrom(d.OwnedCosmetics)
+  local equipped=typeof(d.EquippedCosmetic)=="string"and d.EquippedCosmetic or"DEFAULT"
+  if not owned[equipped]or not cosmeticById[equipped]then equipped="DEFAULT"end
+  p:SetAttribute("OwnedCosmetics",ownedCosmeticsAttribute(owned));p:SetAttribute("EquippedCosmetic",equipped)
  end
 end
 local function save(p)
+ local owned=ownedCosmeticsFrom(p:GetAttribute("OwnedCosmetics"))
+ local equipped=p:GetAttribute("EquippedCosmetic")or"DEFAULT"
+ if not owned[equipped]or not cosmeticById[equipped]then equipped="DEFAULT"end
  pcall(function()store:SetAsync("p:"..p.UserId,{
   MonsterXP=p:GetAttribute("MonsterXP")or 0,Coins=p:GetAttribute("Coins")or 0,
-  RoundsSinceMonster=p:GetAttribute("RoundsSinceMonster")or 0,MonsterForm=p:GetAttribute("MonsterForm")or"DRACULA",HumanForm=p:GetAttribute("HumanForm")or"BROADCAST"
+  RoundsSinceMonster=p:GetAttribute("RoundsSinceMonster")or 0,MonsterForm=p:GetAttribute("MonsterForm")or"DRACULA",HumanForm=p:GetAttribute("HumanForm")or"BROADCAST",
+  OwnedCosmetics=ownedCosmeticsList(owned),EquippedCosmetic=equipped
  })end)
 end
 local function arenaPart(f,name,size,pos,color,material)
@@ -1086,6 +1116,27 @@ local function nextHuman(p)
  for i,f in ipairs(list)do if f.Id==current then idx=i end end
  p:SetAttribute("HumanForm",list[idx%#list+1].Id)
 end
+local function buyCosmetic(p,id)
+ if state=="RUNNING"or typeof(id)~="string"or #id>32 then return end
+ local item=cosmeticById[id];if not item then return end
+ local owned=ownedCosmeticsFrom(p:GetAttribute("OwnedCosmetics"))
+ if owned[id]then p:SetAttribute("CosmeticFeedback","OWNED:"..id);return end
+ local price=math.max(0,math.floor(tonumber(item.Price)or 0))
+ local coins=math.max(0,math.floor(tonumber(p:GetAttribute("Coins"))or 0))
+ if coins<price then p:SetAttribute("CosmeticFeedback","NEED_COINS:"..id..":"..price);return end
+ p:SetAttribute("Coins",coins-price);owned[id]=true
+ p:SetAttribute("OwnedCosmetics",ownedCosmeticsAttribute(owned))
+ p:SetAttribute("CosmeticFeedback","PURCHASED:"..id)
+ save(p)
+end
+local function equipCosmetic(p,id)
+ if state=="RUNNING"or typeof(id)~="string"or #id>32 then return end
+ local item=cosmeticById[id];if not item then return end
+ local owned=ownedCosmeticsFrom(p:GetAttribute("OwnedCosmetics"))
+ if not owned[id]then p:SetAttribute("CosmeticFeedback","NOT_OWNED:"..id);return end
+ p:SetAttribute("EquippedCosmetic",id);p:SetAttribute("CosmeticFeedback","EQUIPPED:"..id)
+ save(p)
+end
 local function validRemoteAction(p,a)
  if typeof(a)~="string"or allowedActions[a]~=true then return false end
  local now=os.clock()
@@ -1097,7 +1148,7 @@ local function broadcastMultiplayerSync(actor)
  local participants=Players:GetPlayers();local hc,mc=teamCounts()
  remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor and actor.UserId or 0,ParticipantCount=#participants,ActivePopulation=hc+mc,AICount=#bots,HumanCount=hc,MonsterCount=mc,TimeLeft=math.max(0,math.ceil(timeLeft)),RoundScore=actor and(actor:GetAttribute("RoundScore")or 0)or 0})
 end
-remote.OnServerEvent:Connect(function(p,a)
+remote.OnServerEvent:Connect(function(p,a,value)
  if not validRemoteAction(p,a)then return end
  if a==C.Actions.PREFER_MONSTER and state~="RUNNING"then
   p:SetAttribute("MonsterPreference","MONSTER");p:SetAttribute("SoloRole","MONSTER");p:SetAttribute("LobbySelectionConfirmed",true);if #Players:GetPlayers()==1 then soloStartRequested=true end
@@ -1109,7 +1160,9 @@ remote.OnServerEvent:Connect(function(p,a)
  elseif a==C.Actions.DASH then survivorDash(p)
  elseif a==C.Actions.ABILITY then ability(p)
  elseif a==C.Actions.NEXT_MONSTER then nextMonster(p)
- elseif a==C.Actions.NEXT_HUMAN then nextHuman(p)end
+ elseif a==C.Actions.NEXT_HUMAN then nextHuman(p)
+ elseif a==C.Actions.BUY_COSMETIC then buyCosmetic(p,value)
+ elseif a==C.Actions.EQUIP_COSMETIC then equipCosmetic(p,value)end
  if a==C.Actions.PURIFY or a==C.Actions.RESCUE or a==C.Actions.DASH or a==C.Actions.ABILITY then foundationCheckpoint("CORE_LOOP_READY",p,{action=a})end
  broadcastMultiplayerSync(p)
 end)
