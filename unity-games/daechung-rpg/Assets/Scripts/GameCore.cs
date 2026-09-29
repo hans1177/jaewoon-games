@@ -299,7 +299,10 @@ namespace JaewoonGames.DaechungRpg
                 {
                     Player.level = 1;
                 }
-                if (Player.gold < 0)
+        if (string.IsNullOrEmpty(Player.currentRegionId) || !GameCatalog.Regions.ContainsKey(Player.currentRegionId))
+        {
+            Player.currentRegionId = "town";
+        }
                 {
                     Player.gold = 0;
                 }
