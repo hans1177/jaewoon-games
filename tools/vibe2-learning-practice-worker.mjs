@@ -185,6 +185,7 @@ export async function evaluateWebPracticeArtifact(html='',previousScore=null,{dr
             await page.goto('http://practice.invalid/',{waitUntil:'load',timeout:5000});
             const action=page.locator('[data-practice-action],button').first();
             const value=page.locator('[data-practice-value],#score').first();
+            if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw new Error('PORTRAIT_OVERFLOW');
             const before=await value.innerText();
             if(drill&&Number(before)!==seed)throw new Error('RESTORE_INITIAL_VALUE');
             for(let n=0;n<taps;n++)await action.tap();
@@ -194,6 +195,7 @@ export async function evaluateWebPracticeArtifact(html='',previousScore=null,{dr
             await page.setViewportSize({width:780,height:360+index*30});
             if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw new Error('VIEWPORT_OVERFLOW');
             await action.tap();
+            if((await value.innerText())===after)throw new Error('ROTATION_INPUT_UNCHANGED');
             if(drill){
               if(Number(await value.innerText())!==seed+taps+1)throw new Error('ROTATION_INPUT');
               await page.reload({waitUntil:'load',timeout:5000});
