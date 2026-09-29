@@ -533,6 +533,23 @@ local function addSurpriseTrigger(f,id,kind,pos,radius,text)
  trigger.Parent=f
  return trigger
 end
+local function addGhostSightingTrigger(f,id,pos,radius)
+ local item=ghostById[id];if not item then return nil end
+ local trigger=Instance.new("Part")
+ trigger.Name="GhostSighting_"..id
+ trigger.Size=Vector3.new(2,2,2)
+ trigger.Position=pos
+ trigger.Anchored=true
+ trigger.CanCollide=false
+ trigger.CanTouch=false
+ trigger.CanQuery=false
+ trigger.Transparency=1
+ trigger:SetAttribute("GhostId",id)
+ trigger:SetAttribute("GhostRadius",radius or 11)
+ trigger:SetAttribute("CompetitiveEffect",false)
+ trigger.Parent=f
+ return trigger
+end
 
 local function ambientPart(f,name,size,pos,color,material,shape)
  local x=arenaPart(f,name,size,pos,color,material)
@@ -929,6 +946,10 @@ local function makeArena(map)
   addSurpriseTrigger(f,"SCHOOL_GYM_BALL","SCHOOL_BALL",Vector3.new(50,3,50),11,"체육관 공이 혼자 굴러간다")
   addSurpriseTrigger(f,"SCHOOL_BOARD_GAG","SCHOOL_BOARD",Vector3.new(-66,5,-28),10,"오늘의 숙제: 살아서 집 가기")
   addSurpriseTrigger(f,"SCHOOL_CAFETERIA","SCHOOL_TRAY",Vector3.new(-51,3,39),10,"급식 당번이 아직 남아 있다…")
+  addGhostSightingTrigger(f,"YUREI",Vector3.new(-118,4,-52),12)
+  addGhostSightingTrigger(f,"NOPPERABO",Vector3.new(48,4,-12),11)
+  addGhostSightingTrigger(f,"CHEONNYEO_GWISHIN",Vector3.new(108,4,104),12)
+  addGhostSightingTrigger(f,"KRASUE",Vector3.new(-108,7,104),13)
   addLoreCollectible(f,"SCHOOL_01",Vector3.new(-43,1.1,-34));addLoreCollectible(f,"SCHOOL_02",Vector3.new(14,1.1,-62))
   addLoreCollectible(f,"SCHOOL_03",Vector3.new(63,1.1,65));addLoreCollectible(f,"SCHOOL_04",Vector3.new(-64,1.1,54))
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
@@ -985,6 +1006,10 @@ local function makeArena(map)
   addSurpriseTrigger(f,"HOSPITAL_MONITOR","HOSPITAL_MONITOR",Vector3.new(43,4,57),10,"삐— 배터리 1%")
   addSurpriseTrigger(f,"HOSPITAL_XRAY","HOSPITAL_XRAY",Vector3.new(118,4,-82),10,"엑스레이에 사람 말고 오리가 찍혔다")
   addSurpriseTrigger(f,"HOSPITAL_BED","HOSPITAL_BED",Vector3.new(-118,3,-82),11,"빈 침대가 혼자 한 칸 움직였다")
+  addGhostSightingTrigger(f,"BANSHEE",Vector3.new(-48,4,52),12)
+  addGhostSightingTrigger(f,"JIANGSHI",Vector3.new(47,4,57),11)
+  addGhostSightingTrigger(f,"CHUREL",Vector3.new(-118,4,108),12)
+  addGhostSightingTrigger(f,"WHITE_LADY",Vector3.new(118,4,-82),12)
   addLoreCollectible(f,"HOSPITAL_01",Vector3.new(-96,1.1,-94));addLoreCollectible(f,"HOSPITAL_02",Vector3.new(-54,1.1,58));addLoreCollectible(f,"HOSPITAL_03",Vector3.new(-132,1.1,122))
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  elseif map.Id=="THEME_PARK"then
@@ -1046,6 +1071,10 @@ local function makeArena(map)
   addSurpriseTrigger(f,"PARK_HORSE","PARK_HORSE",Vector3.new(-32,4,8),12,"회전목마 말이 나만 본다")
   addSurpriseTrigger(f,"PARK_ARCADE","PARK_ARCADE",Vector3.new(-118,4,-92),11,"아케이드 최고점수 이름: HELP")
   addSurpriseTrigger(f,"PARK_POPCORN","PARK_POPCORN",Vector3.new(-118,3,108),10,"팝콘 기계가 혼자 한 알씩 튀긴다")
+  addGhostSightingTrigger(f,"DULLAHAN",Vector3.new(118,4,108),13)
+  addGhostSightingTrigger(f,"LA_LLORONA",Vector3.new(0,4,-66),12)
+  addGhostSightingTrigger(f,"PONTIANAK",Vector3.new(34,7,38),12)
+  addGhostSightingTrigger(f,"BLACK_SHUCK",Vector3.new(-118,3,-92),13)
   addLoreCollectible(f,"PARK_01",Vector3.new(-24,1.1,-42));addLoreCollectible(f,"PARK_02",Vector3.new(-44,1.1,16));addLoreCollectible(f,"PARK_03",Vector3.new(47,1.1,45))
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  end
@@ -1416,6 +1445,7 @@ local function startRound()
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("RoundContributionCoins",0);p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0)
   p:SetAttribute("RoundParticipant",true)
+  ghostSeenThisRound[p]={_count=0}
   p:SetAttribute("CelebrationName","");p:SetAttribute("CelebrationCaption","");p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false)
   local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
   if role=="MONSTER"then teleport(p,monsterSpawn+Vector3.new((mi-1)*6,0,0));mi+=1 else teleport(p,survivorSpawns[((si-1)%#survivorSpawns)+1]);si+=1 end
@@ -1635,20 +1665,47 @@ local function equipCosmetic(p,id)
  p:SetAttribute("EquippedCosmetic",id);p:SetAttribute("CosmeticFeedback","EQUIPPED:"..id)
  save(p)
 end
-local function reportDiscovery(p,id)
+local function reportGhostSighting(p,id)
  if state~="RUNNING"or typeof(id)~="string"or #id>48 then return end
- local item=discoveryById[id];if not item then return end
- local trigger=arena and arena:FindFirstChild("SurpriseTrigger_"..id,true)
+ local role=p:GetAttribute("Role");if role~="SURVIVOR"and role~="MONSTER"then return end
+ local item=ghostById[id];if not item then return end
+ if tostring(workspace:GetAttribute("CurrentMapId")or"")~=tostring(item.Map or"")then return end
+ local trigger=arena and arena:FindFirstChild("GhostSighting_"..id,true)
  local rr=root(p)
  if not trigger or not trigger:IsA("BasePart")or not rr then return end
- local radius=math.max(3,tonumber(trigger:GetAttribute("SurpriseRadius"))or 10)+3
+ local radius=math.max(3,tonumber(trigger:GetAttribute("GhostRadius"))or 11)+3
  if (rr.Position-trigger.Position).Magnitude>radius then return end
- local found=discoveredFrom(p:GetAttribute("DiscoveredSurprises"))
- if found[id]then return end
- found[id]=true
- local count=#discoveredList(found)
- p:SetAttribute("DiscoveredSurprises",discoveredAttribute(found));p:SetAttribute("DiscoveryCount",count);p:SetAttribute("DiscoveryTotal",#(C.Discoveries or{}));p:SetAttribute("DiscoveryTitle",discoveryTitleFor(count))
- p:SetAttribute("DiscoveryFeedback","FOUND:"..id..":"..tostring(count))
+
+ local roundSeen=ghostSeenThisRound[p]or{_count=0};ghostSeenThisRound[p]=roundSeen
+ if roundSeen[id]then p:SetAttribute("GhostFeedback","ROUND_SEEN:"..id);return end
+ local cap=math.max(1,tonumber(C.GhostProgression and C.GhostProgression.MaxSightingsPerRound)or 2)
+ if (tonumber(roundSeen._count)or 0)>=cap then p:SetAttribute("GhostFeedback","ROUND_CAP:"..tostring(cap));return end
+ roundSeen[id]=true;roundSeen._count=(tonumber(roundSeen._count)or 0)+1
+
+ local progress=ghostProgressFrom(p:GetAttribute("GhostProgress"))
+ local maxStage=math.max(1,tonumber(C.GhostProgression and C.GhostProgression.MaxStage)or 3)
+ local stage=tonumber(progress[id])or 0
+ if stage<maxStage then
+  stage+=1;progress[id]=stage;syncGhostAttributes(p,progress)
+  p:SetAttribute("GhostFeedback","STAGE:"..id..":"..tostring(stage))
+  local _,completed=ghostStats(progress)
+  if completed>=#(C.GhostCatalog or{})and p:GetAttribute("GhostCatalogBonusClaimed")~=true then
+   local bonus=math.max(0,math.floor(tonumber(C.GhostProgression and C.GhostProgression.FullCatalogContractBonus)or 1))
+   p:SetAttribute("GhostContracts",(p:GetAttribute("GhostContracts")or 0)+bonus);p:SetAttribute("GhostCatalogBonusClaimed",true)
+   p:SetAttribute("GhostFeedback","CATALOG_COMPLETE:"..id..":"..tostring(bonus))
+  end
+ else
+  local fragments=(p:GetAttribute("GhostFragments")or 0)+math.max(0,math.floor(tonumber(C.GhostProgression and C.GhostProgression.DuplicateFragmentReward)or 1))
+  local contracts=p:GetAttribute("GhostContracts")or 0
+  local perContract=math.max(1,math.floor(tonumber(C.GhostProgression and C.GhostProgression.FragmentsPerContract)or 24))
+  if fragments>=perContract then
+   local gained=math.floor(fragments/perContract);fragments%=perContract;contracts+=gained
+   p:SetAttribute("GhostFeedback","CONTRACT:"..id..":"..tostring(gained))
+  else
+   p:SetAttribute("GhostFeedback","DUPLICATE:"..id..":"..tostring(fragments))
+  end
+  p:SetAttribute("GhostFragments",fragments);p:SetAttribute("GhostContracts",contracts)
+ end
  save(p)
 end
 
@@ -1679,7 +1736,7 @@ remote.OnServerEvent:Connect(function(p,a,value)
  elseif a==C.Actions.NEXT_HUMAN then nextHuman(p)
  elseif a==C.Actions.BUY_COSMETIC then buyCosmetic(p,value)
  elseif a==C.Actions.EQUIP_COSMETIC then equipCosmetic(p,value)
- elseif a==C.Actions.DISCOVERY_FOUND then reportDiscovery(p,value)end
+ elseif a==C.Actions.GHOST_SIGHTING_FOUND then reportGhostSighting(p,value)end
  if a==C.Actions.PURIFY or a==C.Actions.RESCUE or a==C.Actions.DASH or a==C.Actions.INFECT_ATTACK or a==C.Actions.ABILITY then foundationCheckpoint("CORE_LOOP_READY",p,{action=a})end
  broadcastMultiplayerSync(p)
 end)
@@ -1779,7 +1836,7 @@ Players.PlayerRemoving:Connect(function(p)
  local leavingRole=p:GetAttribute("Role")
  local rr=root(p)
  local leavingPos=rr and rr.Position or(leavingRole=="MONSTER"and monsterSpawn or survivorSpawns[1])
- save(p);cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;energyStationReady[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
+ save(p);cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
  task.defer(function()
   if state=="RUNNING"and arena and arena.Parent and(leavingRole=="MONSTER"or leavingRole=="SURVIVOR")then
    bot(leavingRole,leavingPos)
