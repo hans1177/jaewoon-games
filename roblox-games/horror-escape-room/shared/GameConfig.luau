@@ -11,6 +11,15 @@ local Config={
  SurvivorDashCooldown=7,MonsterAbilityCooldown=7,
  RemoteMinInterval=.08,MaxHorizontalVelocity=92,MaxTeleportStep=48,ArenaLimit=176,
  ObjectiveCount=4,EscapeUnlockObjectives=4,
+ Reward={
+  ParticipationCoins=12,
+  WinBonusCoins=18,
+  ContributionCapCoins=12,
+  PurifyPlayerCoins=4,
+  PurifyAICoins=1,
+  InfectPlayerCoins=4,
+  InfectAICoins=1,
+ },
  Audio={
   Background="rbxassetid://9043557976",
   Chase="rbxassetid://9042664292",
