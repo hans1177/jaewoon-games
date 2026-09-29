@@ -874,6 +874,8 @@ local function makeArena(map)
   addSurpriseTrigger(f,"HOSPITAL_WHEELCHAIR","HOSPITAL_WHEELCHAIR",Vector3.new(8,3,26),11,"휠체어가 혼자 움직였다")
   addSurpriseTrigger(f,"HOSPITAL_CURTAIN","HOSPITAL_CURTAIN",Vector3.new(-45,4,53),10,"커튼 뒤에는 아무도… 없나?")
   addSurpriseTrigger(f,"HOSPITAL_MONITOR","HOSPITAL_MONITOR",Vector3.new(43,4,57),10,"삐— 배터리 1%")
+  addSurpriseTrigger(f,"HOSPITAL_XRAY","HOSPITAL_XRAY",Vector3.new(118,4,-82),10,"엑스레이에 사람 말고 오리가 찍혔다")
+  addSurpriseTrigger(f,"HOSPITAL_BED","HOSPITAL_BED",Vector3.new(-118,3,-82),11,"빈 침대가 혼자 한 칸 움직였다")
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  elseif map.Id=="THEME_PARK"then
   -- 폐놀이공원: 넓은 야외, 내부 공간, 매표소, 숨는 부스와 복잡한 우회 동선.
@@ -932,6 +934,8 @@ local function makeArena(map)
   addSurpriseTrigger(f,"PARK_CLOWN","PARK_CLOWN",Vector3.new(34,4,38),11,"광대가 방금 고개를 돌린 것 같은데")
   addSurpriseTrigger(f,"PARK_TICKET","PARK_TICKET",Vector3.new(0,4,-38),10,"매표소: 오늘도 무단결근")
   addSurpriseTrigger(f,"PARK_HORSE","PARK_HORSE",Vector3.new(-32,4,8),12,"회전목마 말이 나만 본다")
+  addSurpriseTrigger(f,"PARK_ARCADE","PARK_ARCADE",Vector3.new(-118,4,-92),11,"아케이드 최고점수 이름: HELP")
+  addSurpriseTrigger(f,"PARK_POPCORN","PARK_POPCORN",Vector3.new(-118,3,108),10,"팝콘 기계가 혼자 한 알씩 튀긴다")
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  end
 
