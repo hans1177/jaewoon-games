@@ -1769,6 +1769,9 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     for(const original of parts){
       const trimmed=original.trim();
       if(trimmed.length<10||trimmed.length>420)continue;
+      // 함수 선언 한 줄은 본문 교체 범위가 아니다. 종료 구문이 붙으면 기존 본문이 함수 밖으로 밀려난다.
+      if(/\.(?:lua|luau)\s+\[EDITABLE\]/i.test(header)
+        &&/^(?:local\s+)?function\b/.test(trimmed)&&!/\bend\b/.test(trimmed))continue;
       if(/^(?:[{}()[\];,]|<!--|\/\*|\*|\/\/|#)+$/.test(trimmed))continue;
       if(/^(?:<!doctype|<\/?(?:html|head|body)\b)/i.test(trimmed))continue;
       const occurrenceCorpus=fullSource||body;
@@ -1874,6 +1877,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       verifiedExternalLearningBlockFromPrompt(raw),
       buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask}),
       reason?'Previous failure: '+reason:'',
+      /FUNCTION_HEADER_PREMATURE_END/.test(reason)?'LUA SCOPE REPAIR: the prior edit replaced only a function declaration but closed that function before its retained body. Edit the existing body statement selected below. Do not append an end that closes the enclosing function. For a whole-function rewrite, find must include the original full function body and its matching end.':'',
       'Exact writable path: '+JSON.stringify(spec.path),
       'Exact find anchor already fixed by the worker: '+JSON.stringify(spec.find),
       'Do NOT return path or find. The worker will apply them exactly.',
@@ -2033,7 +2037,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         ...retryAnchorSuggestions.map((value,index)=>`ANCHOR_${index+1}: ${JSON.stringify(value)}`)
       ].join('\n')
     :'';
-  const safeReason=invalidPath?'candidate attempted a path outside Allowed edit paths':semanticDiffViolation?'candidate crossed the compiled semantic edit budget; keep only primary responsibility and required direct dependencies':reason;
+  const safeReason=invalidPath?'candidate attempted a path outside Allowed edit paths':semanticDiffViolation?'candidate crossed the compiled semantic edit budget; keep only primary responsibility and required direct dependencies':/FUNCTION_HEADER_PREMATURE_END/.test(reason)?reason+'; replace an existing body statement, or match the complete original function including its closing end; never close a function when find matches only its declaration':reason;
   const missingRobloxVisualDomains=robloxVisualDomainsFailure
     ?unique((reason.match(/MISSING_([A-Z_,]+)/i)?.[1]||'').split(',').map(value=>clean(value).toUpperCase()).filter(Boolean))
     :[];
