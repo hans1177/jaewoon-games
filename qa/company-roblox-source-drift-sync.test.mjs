@@ -6,7 +6,8 @@ import {
   reconcileChangedRobloxItems,
   robloxBuildInputGameId,
   changedRobloxBuildGameIds,
-  restoreMetadataOnlyRobloxInvalidation
+  restoreMetadataOnlyRobloxInvalidation,
+  restartRobloxFromF0
 } from '../tools/company-roblox-source-drift-sync.mjs';
 
 function item(){
@@ -283,4 +284,55 @@ test('source drift persist refuses to write an older game-source tree after main
   assert.match(workflow,/git -C "\$GITHUB_WORKSPACE" diff --quiet "\$SOURCE_REVISION" "\$live_main"/);
   assert.match(workflow,/roblox-games\/\$game_id\/server/);
   assert.match(workflow,/roblox-games\/\$game_id\/client/);
+});
+
+
+test('forced F0 restart invalidates package and F0 even when current source is unchanged',()=>{
+  const x=item();
+  x.robloxFoundationF0Passed=true;
+  x.robloxFoundationF0PassedAt='2026-09-29T00:00:00.000Z';
+  x.robloxFoundationF0Evidence={pass:true,sourceRevision:x.robloxSourceCommit,artifactIdentity:x.robloxBuildArtifactIdentity};
+  const oldTarget=x.robloxPublicationTarget;
+  const source=x.robloxSourceCommit;
+  const out=reconcileChangedRobloxItems({
+    queue:{items:[x]},
+    changedGameIds:['horror-escape-room'],
+    sourceRevision:source,
+    stamp:'2026-09-30T00:00:00.000Z',
+    forceF0Restart:true,
+    validateItem:()=>({pass:true,buildSourceChanged:false}),
+  });
+  assert.equal(out.results[0].forcedF0Restart,true);
+  assert.equal(x.robloxSourceCommit,source);
+  assert.equal(x.robloxBuildOrPackagePassed,false);
+  assert.equal(x.robloxBuildArtifactIdentity,null);
+  assert.equal(x.robloxBuildPreflightPassed,false);
+  assert.equal(x.robloxFoundationF0Passed,false);
+  assert.equal(x.robloxFoundationF0PassedAt,null);
+  assert.equal(x.robloxFoundationF0Evidence,null);
+  assert.equal(x.robloxFailureSignature,'ROBLOX_F0_RESTART_BUILD_PACKAGE_PENDING');
+  assert.equal(x.robloxEvidenceInvalidatedBySourceChange,null);
+  assert.equal(x.robloxEvidenceInvalidatedByF0Restart.authority,'canonical-main-f0-restart');
+  assert.deepEqual(x.robloxPublicationTarget,oldTarget);
+});
+
+test('direct restart helper preserves publication target but clears stale F0 pass',()=>{
+  const x=item();
+  x.robloxFoundationF0Passed=true;
+  x.robloxFoundationF0Evidence={pass:true};
+  const target=x.robloxPublicationTarget;
+  restartRobloxFromF0(x,{sourceRevision:'f'.repeat(40),stamp:'2026-09-30T00:01:00.000Z'});
+  assert.equal(x.robloxFoundationF0Passed,false);
+  assert.equal(x.robloxFoundationF0Evidence,null);
+  assert.equal(x.robloxSourceCommit,'f'.repeat(40));
+  assert.deepEqual(x.robloxPublicationTarget,target);
+});
+
+test('source drift workflow exposes explicit restart-from-F0 input and forwards it through conflict retries',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(workflow,/restart_from_f0:/);
+  assert.match(workflow,/FORCE_F0_RESTART:/);
+  assert.match(workflow,/--force-f0-restart=true/);
+  const occurrences=(workflow.match(/force-f0-restart=true/g)||[]).length;
+  assert.ok(occurrences>=2,'force flag must be used in initial sync and conflict regeneration');
 });
