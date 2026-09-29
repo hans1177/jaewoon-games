@@ -1467,17 +1467,19 @@
       "thirdPartyMcpBridgeForbidden": true,
       "fallbackMustRemainInsideRobloxInstalledVersions": true,
       "mcpUnavailableRecovery": {
-        "mode": "OFFICIAL_RESTART_ONLY",
+        "mode": "OFFICIAL_SAME_STUDIO_SESSION_MCP_RETRY",
         "authority": "ROBLOX_OFFICIAL_MCP_TROUBLESHOOTING",
         "sequence": [
           "CAPTURE_ASSISTANT_MCP_SETTING_DIAGNOSTIC_READ_ONLY",
           "SHORT_TOOL_READINESS_PROBE",
-          "CLOSE_OWNED_STUDIO_PROCESS",
-          "RELAUNCH_EXACT_LOCAL_PLACE",
+          "VERIFY_OWNED_STUDIO_PROCESS_STILL_ALIVE",
           "RESTART_MCP_CLIENT",
           "REPROBE_REQUIRED_TOOLS"
         ],
-        "automaticSessionAttempts": 3,
+        "automaticSessionAttempts": 1,
+        "automaticMcpAttemptsPerSession": 3,
+        "sameStudioSessionRequired": true,
+        "duplicateStudioRelaunchForbidden": true,
         "toolReadinessAttemptsPerSession": 5,
         "toolReadinessDelayMs": 1000,
         "assistantSettingsDiagnosticOnly": true,
