@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute, runVibeContinuousRunner, expandPresentationResponsibleFiles, candidateStrategyRole } from '../tools/vibe2-continuous-runner.mjs';
 import { buildVibeDesignIntelligence, DESIGN_INTELLIGENCE_STAGES } from '../tools/vibe2-design-intelligence.mjs';
@@ -667,6 +668,44 @@ test('neuron callbacks keep every ingress event and reconcile shared queue state
 test('controller allows approved source root but enforces candidate boundary',()=>{
   assert(workflow.includes('git add "$SOURCE_ROOT" .vibe2/candidates'));
   assert(workflow.includes('candidate escaped approved boundary'));
+});
+
+test('complete non-leader game tasks bypass pressure coalescing while variant joins remain intact',()=>{
+  const start=workflow.indexOf('          game_micro_fanin=false');
+  const end=workflow.indexOf('          payload="$(node',start);
+  assert.ok(start>0&&end>start);
+  const script=workflow.slice(start,end).split('\n').map(line=>line.slice(10)).join('\n');
+  for(const target of ['roblox','unity','web']){
+    const result=spawnSync('bash',['-c',`set -euo pipefail\nqueue_pressure=3\n${script}\necho IMMEDIATE_CALLBACK`],{
+      encoding:'utf8',env:{...process.env,VIBE2_EXECUTION_LANE:'game-primary',VIBE2_NEURON_TARGET:target,VIBE2_NEURON_EXPECTED_VARIANTS:'1',VIBE2_PRESSURE_REFILL_LEADER:'false'}
+    });
+    assert.equal(result.status,0,result.stderr);
+    assert.match(result.stdout,/IMMEDIATE_CALLBACK/);
+    assert.doesNotMatch(result.stdout,/COALESCED_TO_COHORT_FANIN/);
+  }
+  const joined=spawnSync('bash',['-c',`set -euo pipefail\nqueue_pressure=3\n${script}\necho IMMEDIATE_CALLBACK`],{
+    encoding:'utf8',env:{...process.env,VIBE2_EXECUTION_LANE:'game-primary',VIBE2_NEURON_EXPECTED_VARIANTS:'3',VIBE2_PRESSURE_REFILL_LEADER:'false'}
+  });
+  assert.equal(joined.status,0,joined.stderr);
+  assert.match(joined.stdout,/COALESCED_TO_COHORT_FANIN/);
+  assert.doesNotMatch(joined.stdout,/IMMEDIATE_CALLBACK/);
+  assert.equal(runtime.continuous.callbackCoalescing.singleGameTaskImmediateCompletionRequired,true);
+  assert.equal(runtime.continuous.callbackCoalescing.singleGameTaskFullReviewBeforeCohortCompletion,true);
+});
+
+test('complete single-task callbacks reuse full regression and release review without waiting for other workers',()=>{
+  const fanIn=workflow.slice(workflow.indexOf('  fan_in:'));
+  assert.match(fanIn,/needs.reserve.outputs.task_review_required == 'true'/);
+  assert.match(fanIn,/Download completed task result for immediate full review/);
+  assert.match(fanIn,/run-id: \$\{\{ github.event.client_payload.source_run \}\}/);
+  assert.match(fanIn,/name: \$\{\{ github.event.client_payload.artifact_name \}\}/);
+  assert.match(fanIn,/node --test --test-concurrency=4/);
+  assert.match(fanIn,/tools\/vibe2-fan-in-review.mjs/);
+  assert.match(fanIn,/vibe2-candidate-release.yml\/dispatches/);
+  const ready=workflow.slice(workflow.indexOf('                TASK_MICRO_FANIN_COMPLETE)'),workflow.indexOf('                TASK_ALREADY_MICRO_FANIN_COMPLETE)'));
+  assert.match(ready,/expected_variants.*= '1'/);
+  assert.match(ready,/r.outcome==='PASS'/);
+  assert.match(ready,/task_review_required=true/);
 });
 
 test('workers signal atomic completion and task micro-fan-in refills capacity without a cohort barrier',()=>{

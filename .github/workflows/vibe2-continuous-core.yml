@@ -111,6 +111,7 @@ jobs:
       reserved_at: ${{ steps.batch.outputs.reserved_at }}
       effective_max: ${{ steps.batch.outputs.effective_max }}
       contract_sha: ${{ steps.contract.outputs.sha }}
+      task_review_required: ${{ steps.batch.outputs.task_review_required }}
       model_cache_hit: ${{ steps.ollama_cache_probe.outputs.cache-hit }}
     steps:
       - name: Checkout Vibe2 control line
@@ -376,6 +377,12 @@ jobs:
               neuron_reason="$(sed -n 's/^VIBE2_NEURON_RESULT=//p' /tmp/vibe2-neuron-complete.log | tail -n1)"
               case "$neuron_reason" in
                 TASK_MICRO_FANIN_COMPLETE)
+                  # A complete single-candidate game can enter the existing full review now.
+                  # Failed results only refill; partial variant sets never bypass their join.
+                  if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "$expected_variants" = '1' ] && node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.exit(r.outcome==='PASS'?0:1)" "$neuron_result_file"; then
+                    echo 'task_review_required=true' >> "$GITHUB_OUTPUT"
+                    echo 'VIBE2_TASK_REVIEW_READY=COMPLETE_SINGLE_GAME_RESULT'
+                  fi
                   neuron_refill_ready="$(sed -n 's/^VIBE2_NEURON_REFILL_READY=//p' /tmp/vibe2-neuron-complete.log | tail -n1)"
                   if [ "$neuron_refill_ready" = 'YES' ]; then
                     neuron_refill=1
@@ -2079,11 +2086,11 @@ jobs:
           fi
           echo "VIBE2_LIVE_RUNNER_QUEUE_PRESSURE=${queue_pressure:-0}"
 
-          roblox_micro_fanin=false
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_NEURON_TARGET:-}" = 'roblox' ] && [ "${VIBE2_PRESSURE_REFILL_LEADER:-false}" = 'true' ] && [ "${VIBE2_NEURON_EXPECTED_VARIANTS:-1}" = '1' ]; then
-            roblox_micro_fanin=true
+          game_micro_fanin=false
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_NEURON_EXPECTED_VARIANTS:-1}" = '1' ]; then
+            game_micro_fanin=true
           fi
-          if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" != 'asset-development' ] && [ "$roblox_micro_fanin" != 'true' ]; then
+          if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" != 'asset-development' ] && [ "$game_micro_fanin" != 'true' ]; then
             echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'
             if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_PRESSURE_REFILL_LEADER:-false}" = 'true' ]; then
               refill_payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:'game-primary',reason:'runner-pressure-wave-leader-free-slot-refill'}}))")"
@@ -2101,8 +2108,8 @@ jobs:
             echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'
             exit 0
           fi
-          if [ "$roblox_micro_fanin" = 'true' ]; then
-            echo 'VIBE2_ROBLOX_PRESSURE_MICRO_FANIN=ONE_PRIMARY_RESULT_PER_WAVE'
+          if [ "$game_micro_fanin" = 'true' ]; then
+            echo 'VIBE2_GAME_PRESSURE_MICRO_FANIN=EVERY_COMPLETE_SINGLE_TASK'
           fi
           if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" = 'asset-development' ]; then
             echo 'VIBE2_ASSET_NEURON_PRESSURE_BYPASS=IMMEDIATE_MICRO_FANIN'
@@ -2136,7 +2143,7 @@ jobs:
 
   fan_in:
     needs: [reserve, worker]
-    if: always() && needs.reserve.outputs.worker_count != '0'
+    if: always() && (needs.reserve.outputs.task_review_required == 'true' || needs.reserve.outputs.worker_count != '0')
     # State fan-in stays on the game-control pool; heavy workers remain ubuntu-latest.
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 8
@@ -2178,11 +2185,21 @@ jobs:
           node-version: '22'
 
       - name: Download all parallel worker results
+        if: needs.reserve.outputs.task_review_required != 'true'
         uses: actions/download-artifact@v4
         with:
           pattern: vibe2-result-*
           path: /tmp/vibe2-results
           merge-multiple: true
+
+      - name: Download completed task result for immediate full review
+        if: needs.reserve.outputs.task_review_required == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ github.event.client_payload.artifact_name }}
+          path: /tmp/vibe2-results
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.client_payload.source_run }}
 
       - name: Aggregate immutable results
         shell: bash
