@@ -146,3 +146,21 @@ test('로비 상용화 계약은 launch gate에도 고정된다',()=>{
   'lobby real-player and AI-fill visibility',
  ])assert.ok(launch.releaseGates.includes(gate),gate);
 });
+
+
+test('학교는 높은 천장과 구조 디테일을 유지한다',()=>{
+ assert.match(server,/local schoolCeilingY=18\.4/);
+ assert.match(server,/local schoolWallHeight=18/);
+ for(const marker of ['SchoolHallColumn','SchoolCeilingBeam','ClassDoorFrameL','SchoolFireCabinet','SchoolTrophyCase','SchoolVendingMachine','GymBackboard'])assert.ok(server.includes(marker),marker);
+ assert.doesNotMatch(server,/MainHallCeiling".*Vector3\.new\(0,12\.2,0\)/);
+});
+
+test('플레이어와 AI 추격 모션은 기존 Animator 위에 레이어로 적용된다',()=>{
+ assert.match(client,/BindToRenderStep\("MidnightCharacterMotion"/);
+ assert.match(client,/findMotionJoint/);
+ assert.match(client,/Motor6D/);
+ for(const action of ['PURIFY','DASH','ABILITY','INFECT'])assert.ok(client.includes('setMotionImpulse("'+action+'"'),action);
+ assert.doesNotMatch(client,/Animator:Destroy\(|Animate:Destroy\(/);
+ assert.match(server,/motionClock=math\.random\(\)\*6\.28/);
+ assert.match(server,/local stride=math\.sin\(b\.motionClock\)/);
+});
