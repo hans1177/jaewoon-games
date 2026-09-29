@@ -1,5 +1,5 @@
 {
-  "version": 15,
+  "version": 16,
   "gameId": "horror-escape-room",
   "gameName": "심야 감염전 [4대4]",
   "releaseStrategy": "FAST_MVP",
@@ -70,7 +70,10 @@
     "lobby real-player and AI-fill visibility",
     "school high-ceiling environment detail",
     "layered player chase and action motion",
-    "AI locomotion motion feedback"
+    "AI locomotion motion feedback",
+    "participation plus win plus capped contribution rewards",
+    "real-player contribution rewards exceed AI farming rewards",
+    "eliminated participants retain round rewards"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
