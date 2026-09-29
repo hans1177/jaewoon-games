@@ -1202,7 +1202,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     `gameIdentity=${clean(d?.gameIdentityAndNonNegotiables?.identity)}`,
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     `whyNow=${clean(d.primaryGoalReason)}`,
-    `sourceAnchors=${sourceAnchors.join(' | ')||'EXACT_SYMBOL_UNAVAILABLE_USE_RESPONSIBLE_FILE_AND_STATE_ANCHOR'}`,
+    ...(sourceAnchors.length?sourceAnchors.map(anchor=>`sourceAnchors=${anchor}`):['sourceAnchors=EXACT_SYMBOL_UNAVAILABLE_USE_RESPONSIBLE_FILE_AND_STATE_ANCHOR']),
     `expectedPlayerEffect=${clean(d?.effectivenessMeasurement?.expectedPlayerEffect)||'UNKNOWN'}`,
     `previousEffectiveness=${clean(d?.effectivenessMeasurement?.previousGeneration?.classification)||'NO_PREVIOUS_GENERATION'}`,
     `nextVibeAction=${clean(d?.nextActionDecision?.action)||'CONTINUE_BUILD_UP_CURRENT_SYSTEM'}`,
@@ -1231,7 +1231,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
   ].filter(Boolean).join('\n');
 }
-function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxVisual=false}={}){
+function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxVisual=false,focusedPresentation=false,selectedPath=''}={}){
   const raw=String(prompt??'');
   const begin='[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]';
   const end='[GAME SPECIFIC BUILD UP DIRECTIVE END]';
@@ -1248,11 +1248,26 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     'directiveId=','gameIdentity=','primaryGoal=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
-    'visual=','platform=','preserve=','acceptance='
+    ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
+    'platform=','preserve=','acceptance='
   ];
-  return block.split('\n').filter(line=>
-    line===begin||line===end||keepPrefixes.some(prefix=>line.startsWith(prefix))
-  ).join('\n');
+  const lines=block.split('\n');
+  // A fixed-anchor retry owns one file. Keep its complete instructions, not all sibling files.
+  const anchors=lines.filter(line=>line.startsWith('sourceAnchors='))
+    .flatMap(line=>line.slice('sourceAnchors='.length).split(/ \| (?=[^|\r\n]+\.(?:luau?|cs|[cm]?js|tsx?|html):\d+ )/));
+  const owned=selectedPath?anchors.filter(anchor=>{
+    const file=anchor.match(/^(.*?):(?:\d+|\?) /)?.[1];
+    return file&&(posix(file)===posix(selectedPath)||posix(file).endsWith('/'+posix(selectedPath)));
+  }):[];
+  let anchorsWritten=false;
+  return lines.flatMap(line=>{
+    if(line.startsWith('sourceAnchors=')&&selectedPath){
+      if(anchorsWritten)return[];
+      anchorsWritten=true;
+      return owned.length?owned.map(anchor=>'sourceAnchors='+anchor):['sourceAnchors=USE_FIXED_ANCHOR_AND_SOURCE_CONTEXT_BELOW'];
+    }
+    return line===begin||line===end||keepPrefixes.some(prefix=>line.startsWith(prefix))?[line]:[];
+  }).join('\n');
 }
 
 
@@ -1737,7 +1752,7 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     }catch{}
   }
   const rows=[];
-  const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
+  const presentationTask=/^Goal:[^\n]*(?:presentation|graphics|visual)|^\[PRESENTATION(?:_PASS:| IMPLEMENTATION)|^(?:\[STUDIO_QUALITY_EVOLUTION\]|directiveId=)[^\n]*(?:focus|primaryFocus)=PRESENTATION/im.test(raw.split(/\n=== FILE /)[0]);
   const preferred=unique(preferredTargets).filter(name=>/^[A-Za-z_$][\w$]{1,80}$/.test(name));
   if(fullSource&&preferred.length){
     for(const symbol of preferred.slice(0,12)){
@@ -1819,7 +1834,7 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
     :[];
   const exactResponsible=unique(responsibleFiles.length?responsibleFiles:allowedPaths);
   if(!exactResponsible.length)return null;
-  const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
+  const presentationTask=/^Goal:[^\n]*(?:presentation|graphics|visual)|^\[PRESENTATION(?:_PASS:| IMPLEMENTATION)|^(?:\[STUDIO_QUALITY_EVOLUTION\]|directiveId=)[^\n]*(?:focus|primaryFocus)=PRESENTATION/im.test(raw.split(/\n=== FILE /)[0]);
   const robloxTask=/Engine:\s*roblox/i.test(raw);
   if(presentationTask&&robloxTask){
     const visualOwnerScore=value=>{
@@ -1833,6 +1848,15 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
       return score;
     };
     exactResponsible.sort((a,b)=>visualOwnerScore(b)-visualOwnerScore(a));
+  }
+  if(!presentationTask){
+    const directive=buildUpDirectiveBlockFromPrompt(raw);
+    const anchoredPaths=[...directive.matchAll(/(?:^sourceAnchors=| \| )([^|\r\n]+?):(?:\d+|\?) /gm)].map(match=>posix(match[1]));
+    const ownerIndex=relative=>{
+      const index=anchoredPaths.findIndex(file=>file===posix(relative)||file.endsWith('/'+posix(relative)));
+      return index<0?Number.MAX_SAFE_INTEGER:index;
+    };
+    exactResponsible.sort((a,b)=>ownerIndex(a)-ownerIndex(b));
   }
   const candidates=[];
   for(const relative of exactResponsible){
@@ -1864,7 +1888,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
   if(!spec)return null;
   const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: make the smallest real implementation change required by the work order';
   const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
-  const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
+  const presentationTask=/^Goal:[^\n]*(?:presentation|graphics|visual)|^\[PRESENTATION(?:_PASS:| IMPLEMENTATION)|^(?:\[STUDIO_QUALITY_EVOLUTION\]|directiveId=)[^\n]*(?:focus|primaryFocus)=PRESENTATION/im.test(raw.split(/\n=== FILE /)[0]);
   const robloxPresentationTask=presentationTask&&/Engine:\s*roblox/i.test(raw);
   const robloxAssetAdaptationTask=robloxPresentationTask&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(raw);
   const presentationDeltaFailure=presentationRecovery===true||/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(reason);
@@ -1875,7 +1899,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'You are the Vibe2 focused source repair worker. Return JSON only.',
       goal,
       verifiedExternalLearningBlockFromPrompt(raw),
-      buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask}),
+      buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask,focusedPresentation:presentationTask,selectedPath:spec.path}),
       reason?'Previous failure: '+reason:'',
       /FUNCTION_HEADER_PREMATURE_END/.test(reason)?'LUA SCOPE REPAIR: the prior edit replaced only a function declaration but closed that function before its retained body. Edit the existing body statement selected below. Do not append an end that closes the enclosing function. For a whole-function rewrite, find must include the original full function body and its matching end.':'',
       'Exact writable path: '+JSON.stringify(spec.path),
