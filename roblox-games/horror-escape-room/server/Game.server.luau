@@ -31,6 +31,8 @@ local lastMonsterIds={}
 local bots={}
 local cooldown={}
 local dashCooldown={}
+local infectAttackCooldown={}
+local energyStationReady={}
 local arena=nil
 local currentMapIndex=0
 local lastRequest={}
@@ -38,6 +40,7 @@ local lastValidPosition={}
 local movementGraceUntil={}
 local movementProbeStart={}
 local movementGuardClock=0
+local pressureLastCounts={SURVIVOR=4,MONSTER=4}
 local foundationSpawn=nil
 local foundationSeen={}
 local foundationSequence=0
@@ -154,11 +157,108 @@ local function humanForm(p)
  for _,f in ipairs(C.HumanForms or{})do if f.Id==id then return f end end
  return(C.HumanForms and C.HumanForms[1])or{Id="BROADCAST",Name="방송부"}
 end
+local function energyMax()return math.max(1,tonumber(C.Energy and C.Energy.Max)or 100)end
+local function energyOf(p)return math.clamp(tonumber(p:GetAttribute("Energy"))or 0,0,energyMax())end
+local function setEnergy(p,value)
+ local v=math.clamp(tonumber(value)or 0,0,energyMax())
+ p:SetAttribute("Energy",v);p:SetAttribute("EnergyMax",energyMax())
+ return v
+end
+local function spendEnergy(p,cost,actionName)
+ cost=math.max(0,tonumber(cost)or 0)
+ local current=energyOf(p)
+ if current+1e-4<cost then
+  p:SetAttribute("EnergyFeedback","NO_ENERGY:"..tostring(actionName or"ACTION")..":"..tostring(math.ceil(cost-current)))
+  return false
+ end
+ setEnergy(p,current-cost)
+ return true
+end
+local function pressurePassiveFor(role,humans,monsters)
+ local own=role=="SURVIVOR"and humans or role=="MONSTER"and monsters or 0
+ local other=role=="SURVIVOR"and monsters or role=="MONSTER"and humans or 0
+ for _,row in ipairs(C.Energy and C.Energy.PressurePassives or{})do
+  if own==(tonumber(row.Minority)or-1)and other==(tonumber(row.Majority)or-1)then return row end
+ end
+ return nil
+end
+
+local discoveryById={}
+for _,item in ipairs(C.Discoveries or{})do discoveryById[item.Id]=item end
+local function discoveredFrom(value)
+ local found={}
+ if typeof(value)=="table"then
+  for _,id in ipairs(value)do if typeof(id)=="string"and discoveryById[id]then found[id]=true end end
+ elseif typeof(value)=="string"then
+  for id in string.gmatch(value,"[^,]+")do if discoveryById[id]then found[id]=true end end
+ end
+ return found
+end
+local function discoveredList(found)
+ local out={}
+ for _,item in ipairs(C.Discoveries or{})do if found[item.Id]then table.insert(out,item.Id)end end
+ return out
+end
+local function discoveryTitleFor(count)
+ local title="초보 목격자"
+ for _,row in ipairs(C.DiscoveryTitles or{})do if count>=(tonumber(row.Count)or math.huge)then title=tostring(row.Title or title)end end
+ return title
+end
+local function discoveredAttribute(found)return table.concat(discoveredList(found),",")end
+
+local loreById={}
+for _,item in ipairs(C.Lore or{})do loreById[item.Id]=item end
+local function foundLoreFrom(value)
+ local found={}
+ if typeof(value)=="table"then
+  for _,id in ipairs(value)do if typeof(id)=="string"and loreById[id]then found[id]=true end end
+ elseif typeof(value)=="string"then
+  for id in string.gmatch(value,"[^,]+")do if loreById[id]then found[id]=true end end
+ end
+ return found
+end
+local function foundLoreList(found)
+ local out={}
+ for _,item in ipairs(C.Lore or{})do if found[item.Id]then table.insert(out,item.Id)end end
+ return out
+end
+local function foundLoreAttribute(found)return table.concat(foundLoreList(found),",")end
+
+local cosmeticById={}
+for _,item in ipairs(C.Cosmetics or{})do cosmeticById[item.Id]=item end
+local function ownedCosmeticsFrom(value)
+ local owned={DEFAULT=true}
+ if typeof(value)=="table"then
+  for _,id in ipairs(value)do if typeof(id)=="string"and cosmeticById[id]then owned[id]=true end end
+ elseif typeof(value)=="string"then
+  for id in string.gmatch(value,"[^,]+")do if cosmeticById[id]then owned[id]=true end end
+ end
+ return owned
+end
+local function ownedCosmeticsList(owned)
+ local out={}
+ for _,item in ipairs(C.Cosmetics or{})do if owned[item.Id]then table.insert(out,item.Id)end end
+ if #out==0 then table.insert(out,"DEFAULT")end
+ return out
+end
+local function ownedCosmeticsAttribute(owned)
+ return table.concat(ownedCosmeticsList(owned),",")
+end
 local function load(p)
  p:SetAttribute("MonsterPreference","ANY");p:SetAttribute("SoloRole","SURVIVOR");p:SetAttribute("LobbySelectionConfirmed",false)
  p:SetAttribute("MonsterXP",0);p:SetAttribute("Coins",0);p:SetAttribute("RoundsSinceMonster",0)
+ p:SetAttribute("OwnedCosmetics","DEFAULT");p:SetAttribute("EquippedCosmetic","DEFAULT");p:SetAttribute("CosmeticFeedback","")
+ p:SetAttribute("FoundLore","");p:SetAttribute("LoreCount",0);p:SetAttribute("LoreTotal",#(C.Lore or{}));p:SetAttribute("LoreFeedback","");p:SetAttribute("LoreTitle","야간 신입")
+ p:SetAttribute("DiscoveredSurprises","");p:SetAttribute("DiscoveryCount",0);p:SetAttribute("DiscoveryTotal",#(C.Discoveries or{}));p:SetAttribute("DiscoveryTitle","초보 목격자");p:SetAttribute("DiscoveryFeedback","")
  p:SetAttribute("MonsterForm","DRACULA");p:SetAttribute("HumanForm","BROADCAST");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0)
  p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0);p:SetAttribute("RoundScore",0)
+ p:SetAttribute("LastRoundReward",0);p:SetAttribute("LastRoundWinner","");p:SetAttribute("LastRoundRole","")
+ p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0);p:SetAttribute("RoundContributionCoins",0)
+ p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+ p:SetAttribute("Energy",energyMax());p:SetAttribute("EnergyMax",energyMax());p:SetAttribute("EnergyFeedback","");p:SetAttribute("PressurePassive","")
+ p:SetAttribute("MapContentFeedback","")
+ p:SetAttribute("CelebrationName","");p:SetAttribute("CelebrationCaption","");p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false)
+ p:SetAttribute("RoundParticipant",false);p:SetAttribute("RoundTeam","")
  p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"맵 준비")
@@ -167,12 +267,25 @@ local function load(p)
   for _,k in ipairs({"MonsterXP","Coins","RoundsSinceMonster"})do if typeof(d[k])=="number"then p:SetAttribute(k,d[k])end end
   if typeof(d.MonsterForm)=="string"then p:SetAttribute("MonsterForm",legacyMonsterIds[d.MonsterForm]or d.MonsterForm)end
   if typeof(d.HumanForm)=="string"then p:SetAttribute("HumanForm",d.HumanForm)end
+  local owned=ownedCosmeticsFrom(d.OwnedCosmetics)
+  local equipped=typeof(d.EquippedCosmetic)=="string"and d.EquippedCosmetic or"DEFAULT"
+  if not owned[equipped]or not cosmeticById[equipped]then equipped="DEFAULT"end
+  p:SetAttribute("OwnedCosmetics",ownedCosmeticsAttribute(owned));p:SetAttribute("EquippedCosmetic",equipped)
+  local found=foundLoreFrom(d.FoundLore);local count=#foundLoreList(found)
+  p:SetAttribute("FoundLore",foundLoreAttribute(found));p:SetAttribute("LoreCount",count);p:SetAttribute("LoreTotal",#(C.Lore or{}))
+  p:SetAttribute("LoreTitle",count>=(#(C.Lore or{}))and"심야 괴담 조사원"or count>=5 and"야간 조사원"or"야간 신입")
+  local seen=discoveredFrom(d.DiscoveredSurprises);local seenCount=#discoveredList(seen)
+  p:SetAttribute("DiscoveredSurprises",discoveredAttribute(seen));p:SetAttribute("DiscoveryCount",seenCount);p:SetAttribute("DiscoveryTotal",#(C.Discoveries or{}));p:SetAttribute("DiscoveryTitle",discoveryTitleFor(seenCount))
  end
 end
 local function save(p)
+ local owned=ownedCosmeticsFrom(p:GetAttribute("OwnedCosmetics"))
+ local equipped=p:GetAttribute("EquippedCosmetic")or"DEFAULT"
+ if not owned[equipped]or not cosmeticById[equipped]then equipped="DEFAULT"end
  pcall(function()store:SetAsync("p:"..p.UserId,{
   MonsterXP=p:GetAttribute("MonsterXP")or 0,Coins=p:GetAttribute("Coins")or 0,
-  RoundsSinceMonster=p:GetAttribute("RoundsSinceMonster")or 0,MonsterForm=p:GetAttribute("MonsterForm")or"DRACULA",HumanForm=p:GetAttribute("HumanForm")or"BROADCAST"
+  RoundsSinceMonster=p:GetAttribute("RoundsSinceMonster")or 0,MonsterForm=p:GetAttribute("MonsterForm")or"DRACULA",HumanForm=p:GetAttribute("HumanForm")or"BROADCAST",
+  OwnedCosmetics=ownedCosmeticsList(owned),EquippedCosmetic=equipped,FoundLore=foundLoreList(foundLoreFrom(p:GetAttribute("FoundLore"))),DiscoveredSurprises=discoveredList(discoveredFrom(p:GetAttribute("DiscoveredSurprises")))
  })end)
 end
 local function arenaPart(f,name,size,pos,color,material)
@@ -232,38 +345,291 @@ local function cloneWholeAsset(assetId,parent,pos,scale)
  pcall(function()clone:ScaleTo(scale or 1)end);pcall(function()clone:PivotTo(CFrame.new(pos))end)
  return clone
 end
-local function addObjectiveStation(f,name,pos,index)
- local base=arenaPart(f,"Objective_"..name,Vector3.new(7,5,4),pos,Color3.fromRGB(70,79,87),Enum.Material.Metal)
- local screen=arenaPart(f,"ObjectiveScreen_"..name,Vector3.new(4.6,2.2,.35),pos+Vector3.new(0,.5,-2.2),Color3.fromRGB(91,201,176),Enum.Material.Neon);screen.CanCollide=false
- local prompt=Instance.new("ProximityPrompt");prompt.Name="ObjectivePrompt";prompt.ObjectText=name;prompt.ActionText="작동";prompt.HoldDuration=1.2;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Parent=base
- base:SetAttribute("ObjectiveIndex",index);base:SetAttribute("Completed",false)
+local function addLoreCollectible(f,id,pos)
+ local item=loreById[id];if not item then return nil end
+ local base=arenaPart(f,"Lore_"..id,Vector3.new(2.6,.5,3.2),pos,Color3.fromRGB(92,83,72),Enum.Material.WoodPlanks);base.CanCollide=false
+ local paper=arenaPart(f,"LorePaper_"..id,Vector3.new(2.1,.12,2.7),pos+Vector3.new(0,.32,0),Color3.fromRGB(224,215,184),Enum.Material.SmoothPlastic);paper.CanCollide=false
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="LorePrompt";prompt.ObjectText=item.Name;prompt.ActionText="조사";prompt.HoldDuration=.45;prompt.MaxActivationDistance=9;prompt.RequiresLineOfSight=false;prompt.Parent=base
  prompt.Triggered:Connect(function(p)
-  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"or p:GetAttribute("Frozen")==true or base:GetAttribute("Completed")==true then return end
-  base:SetAttribute("Completed",true);prompt.Enabled=false;screen.Color=Color3.fromRGB(98,235,125)
-  objectiveState.done+=1
-  for _,player in ipairs(Players:GetPlayers())do
-   player:SetAttribute("ObjectivesDone",objectiveState.done);player:SetAttribute("ObjectivesTotal",objectiveState.total)
-  end
-  if objectiveState.done>=C.EscapeUnlockObjectives then
-   workspace:SetAttribute("EscapeUnlocked",true)
-   for _,exit in ipairs(f:GetDescendants())do
-    if exit:IsA("ProximityPrompt")and exit.Name=="EscapePrompt"then exit.Enabled=true end
+  if state=="RESULT"then return end
+  local found=foundLoreFrom(p:GetAttribute("FoundLore"))
+  if found[id]then p:SetAttribute("LoreFeedback","ALREADY:"..id);return end
+  found[id]=true
+  local count=#foundLoreList(found)
+  p:SetAttribute("FoundLore",foundLoreAttribute(found));p:SetAttribute("LoreCount",count);p:SetAttribute("LoreTotal",#(C.Lore or{}))
+  p:SetAttribute("LoreTitle",count>=(#(C.Lore or{}))and"심야 괴담 조사원"or count>=5 and"야간 조사원"or"야간 신입")
+  p:SetAttribute("LoreFeedback","FOUND:"..id..":"..tostring(count))
+  save(p)
+ end)
+ return base
+end
+
+local function addObjectiveStation(f,name,pos,index)
+ local base=arenaPart(f,"EnergyStation_"..name,Vector3.new(7,5,4),pos,Color3.fromRGB(62,72,86),Enum.Material.Metal)
+ local screen=arenaPart(f,"EnergyScreen_"..name,Vector3.new(4.6,2.2,.35),pos+Vector3.new(0,.5,-2.2),Color3.fromRGB(84,181,235),Enum.Material.Neon);screen.CanCollide=false
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="EnergyPrompt";prompt.ObjectText=name.." · 에너지";prompt.ActionText="충전";prompt.HoldDuration=.8;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Parent=base
+ base:SetAttribute("EnergyStationIndex",index)
+ prompt.Triggered:Connect(function(p)
+  if state~="RUNNING"or p:GetAttribute("Frozen")==true then return end
+  local role=p:GetAttribute("Role");if role~="SURVIVOR"and role~="MONSTER"then return end
+  local now=workspace:GetServerTimeNow()
+  local ready=energyStationReady[p]or{};energyStationReady[p]=ready
+  local availableAt=tonumber(ready[index])or 0
+  if now<availableAt then p:SetAttribute("EnergyFeedback","STATION_COOLDOWN:"..tostring(math.ceil(availableAt-now)));return end
+  local current=energyOf(p);local max=energyMax()
+  if current>=max-.01 then p:SetAttribute("EnergyFeedback","ENERGY_FULL");return end
+  local recharge=math.max(0,tonumber(C.Energy and C.Energy.StationRecharge)or 35)
+  local humans=tonumber(workspace:GetAttribute("HumanCount"))or 0
+  local monsters=tonumber(workspace:GetAttribute("MonsterCount"))or 0
+  local pressure=pressurePassiveFor(role,humans,monsters)
+  recharge+=math.max(0,tonumber(pressure and pressure.StationBonus)or 0)
+  local stationCooldown=math.max(1,tonumber(C.Energy and C.Energy.StationCooldown)or 25)
+  ready[index]=now+stationCooldown
+  setEnergy(p,current+recharge)
+  p:SetAttribute("EnergyFeedback","STATION_RECHARGE:"..tostring(math.floor(recharge)))
+  screen.Color=Color3.fromRGB(150,226,255)
+  task.delay(.25,function()if screen and screen.Parent then screen.Color=Color3.fromRGB(84,181,235)end end)
+ end)
+ return base
+end
+local function addEscapeGate(f,mapId,pos)
+ local gate=arenaPart(f,"EmergencyGate",Vector3.new(18,12,3),pos,Color3.fromRGB(68,78,86),Enum.Material.Metal)
+ local sign=arenaPart(f,"EmergencySign",Vector3.new(12,2,.4),pos+Vector3.new(0,6,-1.8),Color3.fromRGB(112,130,145),Enum.Material.Neon);sign.CanCollide=false
+ gate:SetAttribute("DecorativeOnly",true);gate:SetAttribute("MapId",mapId)
+ return gate
+end
+local function addMapUtility(f,id,name,pos)
+ local base=arenaPart(f,"MapUtility_"..id,Vector3.new(6,5,4),pos,Color3.fromRGB(58,66,78),Enum.Material.Metal)
+ local panel=arenaPart(f,"MapUtilityPanel_"..id,Vector3.new(4,2,.35),pos+Vector3.new(0,.5,-2.2),Color3.fromRGB(124,172,221),Enum.Material.Neon);panel.CanCollide=false
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="MapUtilityPrompt";prompt.ObjectText=name;prompt.ActionText="가동";prompt.HoldDuration=1;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Parent=base
+ local readyAt=0
+ prompt.Triggered:Connect(function(p)
+  if state~="RUNNING"then return end
+  local role=p:GetAttribute("Role");if role~="SURVIVOR"and role~="MONSTER"then return end
+  local now=workspace:GetServerTimeNow()
+  if now<readyAt then p:SetAttribute("MapContentFeedback","UTILITY_COOLDOWN:"..name..":"..tostring(math.ceil(readyAt-now)));return end
+  readyAt=now+math.max(1,tonumber(C.Energy and C.Energy.MapUtilityCooldown)or 35)
+  local recharge=math.max(0,tonumber(C.Energy and C.Energy.MapUtilityRecharge)or 20)
+  setEnergy(p,energyOf(p)+recharge)
+  p:SetAttribute("MapContentFeedback","UTILITY:"..id..":"..name)
+  workspace:SetAttribute("MapUtilityActive",id)
+  workspace:SetAttribute("MapUtilityUntil",now+math.max(1,tonumber(C.Energy and C.Energy.MapUtilityDuration)or 8))
+  panel.Color=Color3.fromRGB(183,231,255)
+  task.delay(.25,function()if panel and panel.Parent then panel.Color=Color3.fromRGB(124,172,221)end end)
+  local duration=math.max(1,tonumber(C.Energy and C.Energy.MapUtilityDuration)or 8)
+  if id=="SCHOOL_BROADCAST"then
+   local marks={}
+   for _,d in ipairs(f:GetDescendants())do
+    if d:IsA("BasePart")and(string.find(d.Name,"EnergyStation_",1,true)==1 or d.Name=="EnergyCore")then
+     local h=Instance.new("Highlight");h.Name="UtilityReveal";h.Adornee=d;h.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop;h.FillTransparency=.78;h.OutlineTransparency=.15;h.Parent=d;table.insert(marks,h)
+    end
+   end
+   task.delay(duration,function()for _,h in ipairs(marks)do if h and h.Parent then h:Destroy()end end end)
+  elseif id=="HOSPITAL_SURGERY_LIGHT"then
+   local beforeBrightness,beforeFog=Lighting.Brightness,Lighting.FogEnd
+   Lighting.Brightness=math.max(Lighting.Brightness,2.15);Lighting.FogEnd=math.max(Lighting.FogEnd,210)
+   task.delay(duration,function()
+    if f.Parent and workspace:GetAttribute("MapUtilityActive")==id then Lighting.Brightness=beforeBrightness;Lighting.FogEnd=beforeFog;workspace:SetAttribute("MapUtilityActive","")end
+   end)
+  elseif id=="PARK_CAROUSEL_POWER"then
+   local rotor=f:FindFirstChild("CarouselRotor",true)
+   if rotor and rotor:IsA("BasePart")then
+    task.spawn(function()
+     local untilAt=os.clock()+duration
+     while rotor.Parent and os.clock()<untilAt do rotor.CFrame=rotor.CFrame*CFrame.Angles(0,math.rad(4),0);task.wait(.08)end
+     if workspace:GetAttribute("MapUtilityActive")==id then workspace:SetAttribute("MapUtilityActive","")end
+    end)
    end
   end
  end)
  return base
 end
-local function addEscapeGate(f,mapId,pos)
- local gate=arenaPart(f,"EscapeGate",Vector3.new(18,12,3),pos,Color3.fromRGB(68,96,86),Enum.Material.Metal)
- local sign=arenaPart(f,"EscapeSign",Vector3.new(12,2,.4),pos+Vector3.new(0,6,-1.8),Color3.fromRGB(100,230,156),Enum.Material.Neon);sign.CanCollide=false
- local prompt=Instance.new("ProximityPrompt");prompt.Name="EscapePrompt";prompt.ObjectText="비상 탈출구";prompt.ActionText="탈출";prompt.HoldDuration=1.4;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Enabled=false;prompt.Parent=gate
+local function addEnergyCore(f,mapId,pos)
+ local core=arenaPart(f,"EnergyCore",Vector3.new(6,8,6),pos,Color3.fromRGB(52,60,72),Enum.Material.Neon);core.CanCollide=false
+ local light=glow(core,Color3.fromRGB(90,185,255),30,.25)
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="EnergyCorePrompt";prompt.ObjectText="중앙 에너지 코어";prompt.ActionText="흡수";prompt.HoldDuration=1;prompt.MaxActivationDistance=12;prompt.RequiresLineOfSight=false;prompt.Enabled=false;prompt.Parent=core
+ local open=false
  prompt.Triggered:Connect(function(p)
-  if state=="RUNNING"and p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true and workspace:GetAttribute("EscapeUnlocked")==true then
-   escapedPlayers[p]=true;p:SetAttribute("Escaped",true);workspace:SetAttribute("SurvivorEscapeTriggered",true)
+  if state~="RUNNING"or not open then return end
+  local role=p:GetAttribute("Role");if role~="SURVIVOR"and role~="MONSTER"then return end
+  open=false;prompt.Enabled=false;core.Color=Color3.fromRGB(52,60,72);light.Brightness=.25
+  local recharge=math.max(0,tonumber(C.Energy and C.Energy.CoreRecharge)or 50)
+  setEnergy(p,energyOf(p)+recharge)
+  p:SetAttribute("MapContentFeedback","CORE:"..mapId..":"..tostring(math.floor(recharge)))
+  workspace:SetAttribute("EnergyCoreState","CLAIMED")
+ end)
+ task.spawn(function()
+  local cycle=math.max(20,tonumber(C.Energy and C.Energy.CoreCycle)or 60)
+  local openSeconds=math.clamp(tonumber(C.Energy and C.Energy.CoreOpenSeconds)or 15,5,cycle-5)
+  local closedSeconds=cycle-openSeconds
+  while core.Parent do
+   open=false;prompt.Enabled=false;core.Color=Color3.fromRGB(52,60,72);light.Brightness=.25
+   workspace:SetAttribute("EnergyCoreState","CHARGING")
+   task.wait(closedSeconds)
+   if not core.Parent then return end
+   open=true;prompt.Enabled=true;core.Color=Color3.fromRGB(78,190,255);light.Brightness=2.2
+   workspace:SetAttribute("EnergyCoreState","OPEN")
+   local deadline=os.clock()+openSeconds
+   while core.Parent and open and os.clock()<deadline do task.wait(.2)end
+   open=false;prompt.Enabled=false
   end
  end)
- return gate
+ return core
 end
+local function addSurpriseTrigger(f,id,kind,pos,radius,text)
+ local trigger=Instance.new("Part")
+ trigger.Name="SurpriseTrigger_"..id
+ trigger.Size=Vector3.new(2,2,2)
+ trigger.Position=pos
+ trigger.Anchored=true
+ trigger.CanCollide=false
+ trigger.CanTouch=false
+ trigger.CanQuery=false
+ trigger.Transparency=1
+ trigger:SetAttribute("SurpriseId",id)
+ trigger:SetAttribute("SurpriseKind",kind)
+ trigger:SetAttribute("SurpriseRadius",radius or 10)
+ trigger:SetAttribute("SurpriseText",text or"")
+ trigger:SetAttribute("CompetitiveEffect",false)
+ trigger.Parent=f
+ return trigger
+end
+
+local function ambientPart(f,name,size,pos,color,material,shape)
+ local x=arenaPart(f,name,size,pos,color,material)
+ x.CanCollide=false;x.CanTouch=false;x.CanQuery=false;x:SetAttribute("AmbientDecorativeOnly",true)
+ if shape then x.Shape=shape end
+ return x
+end
+local function setAmbientVisible(parts,visible)
+ for _,part in ipairs(parts)do
+  if part and part.Parent then
+   part.Transparency=visible and(part:GetAttribute("AmbientBaseTransparency")or 0)or 1
+  end
+ end
+end
+local function ambientGroupPart(parts,part,baseTransparency)
+ part:SetAttribute("AmbientBaseTransparency",baseTransparency or 0)
+ part.Transparency=1
+ table.insert(parts,part)
+ return part
+end
+local function addAmbientSurprises(f,map)
+ local surprises={}
+ local function addSurprise(id,parts,run)
+  for _,part in ipairs(parts)do part:SetAttribute("AmbientSurpriseId",id)end
+  setAmbientVisible(parts,false)
+  table.insert(surprises,{id=id,parts=parts,run=run})
+ end
+
+ if map.Id=="SCHOOL"then
+  -- 괴담 몬스터: 복도/창문 구석에 잠깐 보이는 시각 연출 전용 실루엣.
+  local watcher={}
+  ambientGroupPart(watcher,ambientPart(f,"SchoolHallWatcherBody",Vector3.new(2.8,5.6,1.4),Vector3.new(73,4.1,-18),Color3.fromRGB(28,30,34),Enum.Material.Fabric),.08)
+  ambientGroupPart(watcher,ambientPart(f,"SchoolHallWatcherHead",Vector3.new(2.4,2.4,2.4),Vector3.new(73,7.8,-18),Color3.fromRGB(35,36,39),Enum.Material.SmoothPlastic,Enum.PartType.Ball),.03)
+  ambientGroupPart(watcher,ambientPart(f,"SchoolHallWatcherEyeL",Vector3.new(.28,.28,.18),Vector3.new(72.55,8,-18.75),Color3.fromRGB(214,59,66),Enum.Material.Neon,Enum.PartType.Ball),0)
+  ambientGroupPart(watcher,ambientPart(f,"SchoolHallWatcherEyeR",Vector3.new(.28,.28,.18),Vector3.new(73.45,8,-18.75),Color3.fromRGB(214,59,66),Enum.Material.Neon,Enum.PartType.Ball),0)
+  addSurprise("SCHOOL_WATCHER",watcher,function(parts)
+   setAmbientVisible(parts,true);task.wait(2.6);setAmbientVisible(parts,false)
+  end)
+
+  -- 사물함 고무오리: 공포 뒤에 한 번 웃길 수 있는 발견 요소.
+  local duck={}
+  ambientGroupPart(duck,ambientPart(f,"LockerDuckBody",Vector3.new(1.5,1.3,1.7),Vector3.new(11,5.2,-64.2),Color3.fromRGB(246,207,61),Enum.Material.SmoothPlastic,Enum.PartType.Ball),0)
+  ambientGroupPart(duck,ambientPart(f,"LockerDuckHead",Vector3.new(1.05,1.05,1.05),Vector3.new(11,6.15,-64.5),Color3.fromRGB(250,219,71),Enum.Material.SmoothPlastic,Enum.PartType.Ball),0)
+  ambientGroupPart(duck,ambientPart(f,"LockerDuckBeak",Vector3.new(.75,.3,.55),Vector3.new(11,6.05,-65.2),Color3.fromRGB(237,129,38),Enum.Material.SmoothPlastic),0)
+  addSurprise("SCHOOL_LOCKER_DUCK",duck,function(parts)
+   setAmbientVisible(parts,true)
+   for n=1,8 do
+    for _,p in ipairs(parts)do if p.Parent then p.CFrame=p.CFrame*CFrame.Angles(0,math.rad(n%2==0 and 8 or-8),0)end end
+    task.wait(.09)
+   end
+   task.wait(2);setAmbientVisible(parts,false)
+  end)
+
+  -- 칠판 눈: 교실 구석을 확인하면 잠깐 마주치는 요소.
+  local chalk={}
+  ambientGroupPart(chalk,ambientPart(f,"ChalkEyeL",Vector3.new(1.3,.55,.2),Vector3.new(-73.2,7,-2.15),Color3.fromRGB(224,233,222),Enum.Material.Neon),.08)
+  ambientGroupPart(chalk,ambientPart(f,"ChalkEyeR",Vector3.new(1.3,.55,.2),Vector3.new(-70.8,7,-2.15),Color3.fromRGB(224,233,222),Enum.Material.Neon),.08)
+  ambientGroupPart(chalk,ambientPart(f,"ChalkSmile",Vector3.new(3.6,.22,.2),Vector3.new(-72,5.8,-2.15),Color3.fromRGB(224,233,222),Enum.Material.Neon),.12)
+  addSurprise("SCHOOL_CHALK_FACE",chalk,function(parts)
+   setAmbientVisible(parts,true);task.wait(3.2);setAmbientVisible(parts,false)
+  end)
+
+  -- 자판기 캔: 혼자 튀어나와 바닥에서 짧게 굴러가는 코믹 장면.
+  local can=ambientGroupPart({},ambientPart(f,"VendingRunawayCan",Vector3.new(.65,1.1,.65),Vector3.new(-14,1.25,53),Color3.fromRGB(204,67,72),Enum.Material.Metal,Enum.PartType.Cylinder),0)
+  local canParts={can};can:SetAttribute("AmbientBaseTransparency",0)
+  addSurprise("SCHOOL_VENDING_CAN",canParts,function(parts)
+   local p=parts[1];if not p.Parent then return end
+   local start=CFrame.new(-14,1.25,53)*CFrame.Angles(0,0,math.rad(90));p.CFrame=start;setAmbientVisible(parts,true)
+   for i=1,18 do if not p.Parent then return end;p.CFrame=start*CFrame.new(0,0,-i*.32)*CFrame.Angles(0,math.rad(i*24),0);task.wait(.045)end
+   task.wait(1.2);setAmbientVisible(parts,false)
+  end)
+ elseif map.Id=="HOSPITAL"then
+  local patient={}
+  ambientGroupPart(patient,ambientPart(f,"MorguePeekHead",Vector3.new(2.1,2.1,2.1),Vector3.new(-117,5.1,121),Color3.fromRGB(177,185,180),Enum.Material.SmoothPlastic,Enum.PartType.Ball),.06)
+  ambientGroupPart(patient,ambientPart(f,"MorguePeekEyes",Vector3.new(1.1,.22,.18),Vector3.new(-117,5.2,119.95),Color3.fromRGB(177,220,204),Enum.Material.Neon),0)
+  addSurprise("HOSPITAL_MORGUE_PEEK",patient,function(parts) setAmbientVisible(parts,true);task.wait(2.4);setAmbientVisible(parts,false)end)
+
+  local slipper={}
+  ambientGroupPart(slipper,ambientPart(f,"RunawaySlipperL",Vector3.new(1.4,.35,2.6),Vector3.new(-4,1.05,12),Color3.fromRGB(151,190,183),Enum.Material.Fabric),0)
+  ambientGroupPart(slipper,ambientPart(f,"RunawaySlipperR",Vector3.new(1.4,.35,2.6),Vector3.new(4,1.05,9),Color3.fromRGB(151,190,183),Enum.Material.Fabric),0)
+  addSurprise("HOSPITAL_RUNAWAY_SLIPPERS",slipper,function(parts)
+   setAmbientVisible(parts,true)
+   for i=1,14 do
+    for n,p in ipairs(parts)do if p.Parent then p.CFrame=p.CFrame*CFrame.new((n==1 and-.12 or.12),0,-.28)end end
+    task.wait(.07)
+   end
+   task.wait(1);setAmbientVisible(parts,false)
+  end)
+
+  local iv={}
+  local pole=ambientGroupPart(iv,ambientPart(f,"GhostIVPole",Vector3.new(.25,5,.25),Vector3.new(9,3.2,-34),Color3.fromRGB(160,170,174),Enum.Material.Metal),.08)
+  ambientGroupPart(iv,ambientPart(f,"GhostIVBag",Vector3.new(1.1,1.6,.4),Vector3.new(9,5.4,-34),Color3.fromRGB(179,218,211),Enum.Material.Glass),.28)
+  addSurprise("HOSPITAL_IV_WALK",iv,function(parts)
+   local origins={};for i,p in ipairs(parts)do origins[i]=p.CFrame end;setAmbientVisible(parts,true)
+   for step=1,20 do for i,p in ipairs(parts)do if p.Parent then p.CFrame=origins[i]*CFrame.new(0,0,-step*.35)end end;task.wait(.06)end
+   task.wait(.8);setAmbientVisible(parts,false);for i,p in ipairs(parts)do if p.Parent then p.CFrame=origins[i]end end
+  end)
+ elseif map.Id=="THEME_PARK"then
+  local clown={}
+  ambientGroupPart(clown,ambientPart(f,"BoothClownHead",Vector3.new(2.7,2.7,2.7),Vector3.new(48,7,-39),Color3.fromRGB(226,219,199),Enum.Material.SmoothPlastic,Enum.PartType.Ball),.04)
+  ambientGroupPart(clown,ambientPart(f,"BoothClownNose",Vector3.new(.7,.7,.7),Vector3.new(48,6.8,-40.3),Color3.fromRGB(222,54,73),Enum.Material.Neon,Enum.PartType.Ball),0)
+  addSurprise("PARK_CLOWN_PEEK",clown,function(parts) setAmbientVisible(parts,true);task.wait(2.2);setAmbientVisible(parts,false)end)
+
+  local balloon={}
+  ambientGroupPart(balloon,ambientPart(f,"LonelyBalloon",Vector3.new(2.6,3,2.6),Vector3.new(-70,8,36),Color3.fromRGB(218,75,151),Enum.Material.SmoothPlastic,Enum.PartType.Ball),.08)
+  ambientGroupPart(balloon,ambientPart(f,"BalloonString",Vector3.new(.08,5,.08),Vector3.new(-70,4,36),Color3.fromRGB(201,201,205),Enum.Material.SmoothPlastic),.25)
+  addSurprise("PARK_LONELY_BALLOON",balloon,function(parts)
+   setAmbientVisible(parts,true)
+   for i=1,18 do for _,p in ipairs(parts)do if p.Parent then p.CFrame=p.CFrame*CFrame.new(math.sin(i*.7)*.03,.04,0)end end;task.wait(.07)end
+   task.wait(.8);setAmbientVisible(parts,false)
+  end)
+
+  local car={}
+  ambientGroupPart(car,ambientPart(f,"DriverlessBumperCar",Vector3.new(6,2.2,8),Vector3.new(103,2,-91),Color3.fromRGB(80,151,199),Enum.Material.Metal),.06)
+  addSurprise("PARK_DRIVERLESS_CAR",car,function(parts)
+   local p=parts[1];if not p.Parent then return end;local start=p.CFrame;setAmbientVisible(parts,true)
+   for i=1,24 do if p.Parent then p.CFrame=start*CFrame.new(math.sin(i*.25)*5,0,-i*.18)*CFrame.Angles(0,math.rad(i*7),0)end;task.wait(.055)end
+   task.wait(.8);setAmbientVisible(parts,false);if p.Parent then p.CFrame=start end
+  end)
+ end
+
+ if #surprises==0 then return end
+ task.spawn(function()
+  task.wait(6+math.random()*5)
+  while f.Parent do
+   if state=="RUNNING"then
+    local chosen=surprises[math.random(1,#surprises)]
+    workspace:SetAttribute("AmbientSurprise",chosen.id)
+    chosen.run(chosen.parts)
+    workspace:SetAttribute("AmbientSurprise","")
+   end
+   task.wait(15+math.random()*13)
+  end
+ end)
+end
+
 local function decorateArenaWithOfficialAssets(f,map)
  task.spawn(function()
   task.wait(.1);if not f.Parent then return end
@@ -514,6 +880,18 @@ local function makeArena(map)
   addObjectiveStation(f,"과학실 전원",Vector3.new(118,3,-70),2)
   addObjectiveStation(f,"운동장 방송",Vector3.new(-108,3,104),3)
   addObjectiveStation(f,"강당 비상패널",Vector3.new(108,3,104),4)
+  addMapUtility(f,"SCHOOL_BROADCAST","비상 방송실",Vector3.new(0,3,-42))
+  addEnergyCore(f,map.Id,Vector3.new(0,4,0))
+
+  -- 학교 구석 놀람/코믹 연출. 로컬 클라이언트에서만 보이며 경쟁 판정에는 영향이 없다.
+  addSurpriseTrigger(f,"SCHOOL_HALL_SHADOW","SCHOOL_SHADOW",Vector3.new(0,4,24),12,"방금 뭐가 지나갔지?")
+  addSurpriseTrigger(f,"SCHOOL_LOCKER_EYES","SCHOOL_LOCKER",Vector3.new(0,4,-58),10,"사물함 안에서 누가 보고 있다")
+  addSurpriseTrigger(f,"SCHOOL_JANITOR","SCHOOL_JANITOR",Vector3.new(2,4,51),12,"청소 중이니까 뛰지 마!")
+  addSurpriseTrigger(f,"SCHOOL_GYM_BALL","SCHOOL_BALL",Vector3.new(50,3,50),11,"체육관 공이 혼자 굴러간다")
+  addSurpriseTrigger(f,"SCHOOL_BOARD_GAG","SCHOOL_BOARD",Vector3.new(-66,5,-28),10,"오늘의 숙제: 살아서 집 가기")
+  addSurpriseTrigger(f,"SCHOOL_CAFETERIA","SCHOOL_TRAY",Vector3.new(-51,3,39),10,"급식 당번이 아직 남아 있다…")
+  addLoreCollectible(f,"SCHOOL_01",Vector3.new(-43,1.1,-34));addLoreCollectible(f,"SCHOOL_02",Vector3.new(14,1.1,-62))
+  addLoreCollectible(f,"SCHOOL_03",Vector3.new(63,1.1,65));addLoreCollectible(f,"SCHOOL_04",Vector3.new(-64,1.1,54))
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  elseif map.Id=="HOSPITAL"then
   -- 폐병원: 좁은 중앙 복도와 병실, 수술실, 지하실 느낌의 저천장 구역.
@@ -561,6 +939,14 @@ local function makeArena(map)
   addObjectiveStation(f,"약국 보안패널",Vector3.new(118,3,-82),2)
   addObjectiveStation(f,"영안실 퓨즈",Vector3.new(-118,3,108),3)
   addObjectiveStation(f,"하역장 셔터",Vector3.new(118,3,108),4)
+  addMapUtility(f,"HOSPITAL_SURGERY_LIGHT","수술실 전력장치",Vector3.new(-48,3,40))
+  addEnergyCore(f,map.Id,Vector3.new(0,4,0))
+  addSurpriseTrigger(f,"HOSPITAL_WHEELCHAIR","HOSPITAL_WHEELCHAIR",Vector3.new(8,3,26),11,"휠체어가 혼자 움직였다")
+  addSurpriseTrigger(f,"HOSPITAL_CURTAIN","HOSPITAL_CURTAIN",Vector3.new(-45,4,53),10,"커튼 뒤에는 아무도… 없나?")
+  addSurpriseTrigger(f,"HOSPITAL_MONITOR","HOSPITAL_MONITOR",Vector3.new(43,4,57),10,"삐— 배터리 1%")
+  addSurpriseTrigger(f,"HOSPITAL_XRAY","HOSPITAL_XRAY",Vector3.new(118,4,-82),10,"엑스레이에 사람 말고 오리가 찍혔다")
+  addSurpriseTrigger(f,"HOSPITAL_BED","HOSPITAL_BED",Vector3.new(-118,3,-82),11,"빈 침대가 혼자 한 칸 움직였다")
+  addLoreCollectible(f,"HOSPITAL_01",Vector3.new(-96,1.1,-94));addLoreCollectible(f,"HOSPITAL_02",Vector3.new(-54,1.1,58));addLoreCollectible(f,"HOSPITAL_03",Vector3.new(-132,1.1,122))
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  elseif map.Id=="THEME_PARK"then
   -- 폐놀이공원: 넓은 야외, 내부 공간, 매표소, 숨는 부스와 복잡한 우회 동선.
@@ -614,8 +1000,18 @@ local function makeArena(map)
   addObjectiveStation(f,"범퍼카 제어반",Vector3.new(118,3,-92),2)
   addObjectiveStation(f,"푸드코트 셔터",Vector3.new(-118,3,108),3)
   addObjectiveStation(f,"정비실 발전기",Vector3.new(118,3,108),4)
+  addMapUtility(f,"PARK_CAROUSEL_POWER","회전목마 전원",Vector3.new(-32,3,30))
+  addEnergyCore(f,map.Id,Vector3.new(0,4,-12))
+  addSurpriseTrigger(f,"PARK_CLOWN","PARK_CLOWN",Vector3.new(34,4,38),11,"광대가 방금 고개를 돌린 것 같은데")
+  addSurpriseTrigger(f,"PARK_TICKET","PARK_TICKET",Vector3.new(0,4,-38),10,"매표소: 오늘도 무단결근")
+  addSurpriseTrigger(f,"PARK_HORSE","PARK_HORSE",Vector3.new(-32,4,8),12,"회전목마 말이 나만 본다")
+  addSurpriseTrigger(f,"PARK_ARCADE","PARK_ARCADE",Vector3.new(-118,4,-92),11,"아케이드 최고점수 이름: HELP")
+  addSurpriseTrigger(f,"PARK_POPCORN","PARK_POPCORN",Vector3.new(-118,3,108),10,"팝콘 기계가 혼자 한 알씩 튀긴다")
+  addLoreCollectible(f,"PARK_01",Vector3.new(-24,1.1,-42));addLoreCollectible(f,"PARK_02",Vector3.new(-44,1.1,16));addLoreCollectible(f,"PARK_03",Vector3.new(47,1.1,45))
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  end
+
+ addAmbientSurprises(f,map)
 
  local events=map.Events or {}
  local event=events[math.random(1,math.max(1,#events))]or{Id="NONE",Name="평온"}
@@ -760,7 +1156,7 @@ local function bot(role,pos)
   add("AIHumanLegR",Vector3.new(.78,2.85,.9),Vector3.new(.64,-3.1,0),Color3.fromRGB(42,47,54),Enum.Material.Fabric)
   add("AIHumanTool",Vector3.new(.42,1.9,.42),Vector3.new(1.9,-.1,-.65),Color3.fromRGB(91,205,220),Enum.Material.Neon)
  end
- local b={part=p,role=role,speed=role=="MONSTER"and 18 or 14,monsterId="DRACULA",visuals=visuals,infectReadyAt=0,purifyReadyAt=0,motionClock=math.random()*6.28}
+ local b={part=p,role=role,speed=role=="MONSTER"and 18 or 14,monsterId="DRACULA",visuals=visuals,infectReadyAt=0,purifyReadyAt=0,infectAttackReadyAt=0,energy=energyMax(),motionClock=math.random()*6.28}
  table.insert(bots,b);return b
 end
 local function weightPick(list)
@@ -881,7 +1277,9 @@ local function teleport(p,pos)
  end
 end
 local function setRole(p,r)
- p:SetAttribute("Role",r);p:SetAttribute("Frozen",false);restoreMovement(p,r=="MONSTER"and 19 or 16);applyRoleVisual(p,r)
+ p:SetAttribute("Role",r);p:SetAttribute("Frozen",false)
+ if r=="MONSTER"or r=="SURVIVOR"then p:SetAttribute("RoundTeam",r)end
+ restoreMovement(p,r=="MONSTER"and 19 or 16);applyRoleVisual(p,r)
  tagGraceUntil[p]=os.clock()+6
 end
 local function active()
@@ -906,21 +1304,45 @@ local function monsterPositions()
  for _,b in ipairs(bots)do if b.role=="MONSTER"and now>=(b.infectReadyAt or 0)then table.insert(out,b.part.Position)end end
  return out
 end
+local function nearestMonsterSource(pos)
+ local best=math.huge;local sourcePlayer=nil;local sourceBot=nil;local now=os.clock()
+ for _,player in ipairs(Players:GetPlayers())do
+  if player:GetAttribute("Role")=="MONSTER"and now>=(player:GetAttribute("InfectionReadyAt")or 0)then
+   local rr=root(player)
+   if rr then local d=(rr.Position-pos).Magnitude;if d<best then best=d;sourcePlayer=player;sourceBot=nil end end
+  end
+ end
+ for _,b in ipairs(bots)do
+  if b.role=="MONSTER"and now>=(b.infectReadyAt or 0)then
+   local d=(b.part.Position-pos).Magnitude
+   if d<best then best=d;sourcePlayer=nil;sourceBot=b end
+  end
+ end
+ return best,sourcePlayer,sourceBot
+end
 local function nearestMonsterDistance(pos)
- local best=math.huge
- for _,mp in ipairs(monsterPositions())do best=math.min(best,(mp-pos).Magnitude)end
+ local best=nearestMonsterSource(pos)
  return best
 end
-local function infectPlayer(p)
+local function awardContribution(player,amount)
+ if not player or not player.Parent or state~="RUNNING"then return end
+ local cap=(C.Reward and C.Reward.ContributionCapCoins)or 12
+ local current=tonumber(player:GetAttribute("RoundContributionCoins"))or 0
+ player:SetAttribute("RoundContributionCoins",math.min(cap,current+math.max(0,tonumber(amount)or 0)))
+end
+local function infectPlayer(p,sourcePlayer)
  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"or os.clock()<(tagGraceUntil[p]or 0)then return false end
  p:SetAttribute("Infected",true);p:SetAttribute("InfectionReadyAt",os.clock()+2.5);setRole(p,"MONSTER")
+ if sourcePlayer and sourcePlayer~=p then awardContribution(sourcePlayer,(C.Reward and C.Reward.InfectPlayerCoins)or 4)end
  p:SetAttribute("FeedbackEvent","INFECT:"..tostring(math.floor(os.clock()*1000)));return true
 end
-local function infectBot(b)
+local function infectBot(b,sourcePlayer)
  if not b or b.role~="SURVIVOR"then return false end
  if b.visuals then for _,v in ipairs(b.visuals)do if v.part then v.part:Destroy()end end end
  b.role="MONSTER";b.part.Name="AI_MONSTER";b.part.Color=Color3.fromRGB(65,34,44);b.part.Material=Enum.Material.Fabric;b.speed=18;b.infectReadyAt=os.clock()+2.5
- b.visuals=decorateClassicMonster(b.part,"DRACULA");return true
+ b.visuals=decorateClassicMonster(b.part,"DRACULA")
+ if sourcePlayer then awardContribution(sourcePlayer,(C.Reward and C.Reward.InfectAICoins)or 1)end
+ return true
 end
 local function monsterPos()
  local list=monsterPositions();return list[1]
@@ -951,23 +1373,98 @@ local function startRound()
  for _,p in ipairs(h)do
   p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
   p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0);p:SetAttribute("RoundScore",0)
+  p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+  setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
+  p:SetAttribute("RoundContributionCoins",0);p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0)
+  p:SetAttribute("RoundParticipant",true)
+  p:SetAttribute("CelebrationName","");p:SetAttribute("CelebrationCaption","");p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false)
   local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
   if role=="MONSTER"then teleport(p,monsterSpawn+Vector3.new((mi-1)*6,0,0));mi+=1 else teleport(p,survivorSpawns[((si-1)%#survivorSpawns)+1]);si+=1 end
  end
- configure(h);state="RUNNING";timeLeft=C.RoundSeconds;syncLobbyState("RUNNING");return true
+ configure(h)
+ local startHumans,startMonsters=teamCounts();pressureLastCounts.SURVIVOR=startHumans;pressureLastCounts.MONSTER=startMonsters
+ state="RUNNING";timeLeft=C.RoundSeconds;syncLobbyState("RUNNING");return true
+end
+local function chooseCelebration(winner)
+ local pool=(C.Celebrations and C.Celebrations[winner])or(C.Celebrations and C.Celebrations.DRAW)or{}
+ if #pool==0 then return{Id="DEFAULT",Name="팀 세레머니",Emote="cheer",ComicEmote="laugh",Caption="다음 판 준비"}end
+ return pool[math.random(1,#pool)]
+end
+local function playCelebrationEmote(player,celebration,comic)
+ local h=hum(player);if not h then return end
+ local emote=comic and celebration.ComicEmote or celebration.Emote
+ if typeof(emote)~="string"or emote==""then return end
+ pcall(function()h:PlayEmote(emote)end)
+end
+local function animateCelebratingBots(winner,duration)
+ local bases={}
+ for _,b in ipairs(bots)do
+  local wins=winner=="DRAW"or b.role==winner
+  if wins and b.part and b.part.Parent then bases[b]={cf=b.part.CFrame,phase=math.random()*math.pi*2}end
+ end
+ if next(bases)==nil then return end
+ task.spawn(function()
+  local started=os.clock()
+  while state=="RESULT"and os.clock()-started<duration do
+   local t=os.clock()-started
+   for b,row in pairs(bases)do
+    if b.part and b.part.Parent then
+     local hop=math.abs(math.sin(t*5+row.phase))*.45
+     local yaw=math.rad(math.sin(t*4+row.phase)*12)
+     b.part.CFrame=row.cf*CFrame.new(0,hop,0)*CFrame.Angles(0,yaw,0)
+    end
+   end
+   task.wait(.06)
+  end
+ end)
 end
 local function endRound(winner)
  if state~="RUNNING"then return end;state="RESULT";syncLobbyState("RESULT")
+ local celebration=chooseCelebration(winner)
+ local celebrationPlayers={}
+ for _,player in ipairs(Players:GetPlayers())do
+  local team=player:GetAttribute("RoundTeam")or player:GetAttribute("Role")
+  local participated=player:GetAttribute("RoundParticipant")==true
+  if participated and(winner=="DRAW"or team==winner)then table.insert(celebrationPlayers,player)end
+ end
+ local comicPlayer=#celebrationPlayers>0 and celebrationPlayers[math.random(1,#celebrationPlayers)]or nil
+ workspace:SetAttribute("CelebrationWinnerTeam",winner)
+ workspace:SetAttribute("CelebrationName",celebration.Name or"팀 세레머니")
+ workspace:SetAttribute("CelebrationCaption",celebration.Caption or"")
+ local aiWinners=0
+ for _,b in ipairs(bots)do if winner=="DRAW"or b.role==winner then aiWinners+=1 end end
+ workspace:SetAttribute("CelebrationAIWinners",aiWinners)
+ animateCelebratingBots(winner,math.max(1,(C.ResultSeconds or 6)-1))
  for _,p in ipairs(Players:GetPlayers())do
-  local role=p:GetAttribute("Role");local m=role=="MONSTER";local win=(winner=="MONSTER"and m)or(winner=="SURVIVOR"and role=="SURVIVOR")
-  local reward=(role=="MONSTER"or role=="SURVIVOR")and(winner=="DRAW"and 12 or win and 30 or 12)or 0
+  local role=p:GetAttribute("Role");local team=p:GetAttribute("RoundTeam")or role
+  local participated=p:GetAttribute("RoundParticipant")==true
+  local m=team=="MONSTER";local win=(winner=="MONSTER"and m)or(winner=="SURVIVOR"and team=="SURVIVOR")
+  local baseReward=participated and((C.Reward and C.Reward.ParticipationCoins)or 12)or 0
+  local winBonus=participated and win and winner~="DRAW"and((C.Reward and C.Reward.WinBonusCoins)or 18)or 0
+  local contribution=participated and math.min((C.Reward and C.Reward.ContributionCapCoins)or 12,tonumber(p:GetAttribute("RoundContributionCoins"))or 0)or 0
+  local reward=baseReward+winBonus+contribution
   p:SetAttribute("Coins",(p:GetAttribute("Coins")or 0)+reward)
   p:SetAttribute("RoundScore",win and 1 or 0)
+  p:SetAttribute("LastRoundReward",reward);p:SetAttribute("LastRoundWinner",winner);p:SetAttribute("LastRoundRole",team)
+  p:SetAttribute("LastRoundBaseReward",baseReward);p:SetAttribute("LastRoundWinBonus",winBonus);p:SetAttribute("LastRoundContribution",contribution)
+  p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+  setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
+  p:SetAttribute("CelebrationName",celebration.Name or"팀 세레머니");p:SetAttribute("CelebrationCaption",celebration.Caption or"")
+  local celebrate=participated and(winner=="DRAW"or win)
+  p:SetAttribute("CelebrationWinner",winner~="DRAW"and win);p:SetAttribute("CelebrationComic",celebrate and comicPlayer==p)
+  if celebrate then playCelebrationEmote(p,celebration,comicPlayer==p)end
+  p:SetAttribute("RoundParticipant",false)
   if m then p:SetAttribute("MonsterXP",(p:GetAttribute("MonsterXP")or 0)+(win and 40 or 18));p:SetAttribute("RoundsSinceMonster",0)
   elseif role=="SURVIVOR"then p:SetAttribute("RoundsSinceMonster",(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
-  p:SetAttribute("RoundState","RESULT_"..winner);p:SetAttribute("FeedbackEvent","RESULT:"..winner..":"..tostring(math.floor(os.clock()*1000)));p:SetAttribute("Frozen",false);p:SetAttribute("Escaped",false);p:SetAttribute("LobbySelectionConfirmed",false);speed(p,16)
+  p:SetAttribute("RoundState","RESULT_"..winner);p:SetAttribute("FeedbackEvent","RESULT:"..winner..":"..tostring(math.floor(os.clock()*1000)));p:SetAttribute("Frozen",false);p:SetAttribute("Escaped",false);p:SetAttribute("LobbySelectionConfirmed",false)
+  if celebrate then speed(p,0)else speed(p,16)end
  end
- clearBots();monster=nil;monsterBot=nil;workspace:SetAttribute("HumanCount",0);workspace:SetAttribute("MonsterCount",0);task.wait(4)
+ task.wait(C.ResultSeconds or 6)
+ for _,p in ipairs(Players:GetPlayers())do
+  p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false);speed(p,16)
+ end
+ clearBots();monster=nil;monsterBot=nil;workspace:SetAttribute("HumanCount",0);workspace:SetAttribute("MonsterCount",0)
+ workspace:SetAttribute("CelebrationWinnerTeam","");workspace:SetAttribute("CelebrationName","");workspace:SetAttribute("CelebrationCaption","");workspace:SetAttribute("CelebrationAIWinners",0)
 end
 local purifyCooldown={}
 local function removeBot(target)
@@ -990,20 +1487,28 @@ local function purify(p)
  local hf=humanForm(p);local now=os.clock();local cd=math.max(2,(C.PurifyCooldown or 5)+(hf.PurifyCooldownBonus or 0))
  local lastPurify=purifyCooldown[p]
  if lastPurify and now-lastPurify<cd then return end
- local r=root(p);if not r then return end;purifyCooldown[p]=now
+ local r=root(p);if not r then return end
  local range=math.max(4,(C.PurifyDistance or 8)+(hf.PurifyRangeBonus or 0));local targetPlayer,targetBot,best=nil,nil,range
  for _,other in ipairs(Players:GetPlayers())do if other:GetAttribute("Role")=="MONSTER"then local q=root(other);if q then local d=(q.Position-r.Position).Magnitude;if d<=best then best=d;targetPlayer=other;targetBot=nil end end end end
  for _,b in ipairs(bots)do if b.role=="MONSTER"then local d=(b.part.Position-r.Position).Magnitude;if d<=best then best=d;targetBot=b;targetPlayer=nil end end end
- if targetPlayer then eliminateMonsterPlayer(targetPlayer);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))
- elseif targetBot then removeBot(targetBot);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))end
+ if not targetPlayer and not targetBot then p:SetAttribute("EnergyFeedback","NO_TARGET:PURIFY");return end
+ if not spendEnergy(p,C.Energy and C.Energy.PurifyCost or 35,"PURIFY")then return end
+ purifyCooldown[p]=now;p:SetAttribute("PurifyReadyAt",workspace:GetServerTimeNow()+cd)
+ if targetPlayer then
+  if eliminateMonsterPlayer(targetPlayer)then awardContribution(p,(C.Reward and C.Reward.PurifyPlayerCoins)or 4);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))end
+ elseif targetBot then
+  if removeBot(targetBot)then awardContribution(p,(C.Reward and C.Reward.PurifyAICoins)or 1);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))end
+ end
 end
 local function survivorDash(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"then return end
  local hf=humanForm(p);local now=os.clock();local cd=math.max(3,C.SurvivorDashCooldown+(hf.DashCooldownBonus or 0))
  -- First use must not inherit server uptime as cooldown; only an actual prior dash starts it. Studio actual-play validates the resulting movement.
  local lastDash=dashCooldown[p]
- if lastDash and now-lastDash<cd then return end;dashCooldown[p]=now
+ if lastDash and now-lastDash<cd then return end
  local r=root(p);if r then
+  if not spendEnergy(p,C.Energy and C.Energy.DashCost or 25,"DASH")then return end
+  dashCooldown[p]=now;p:SetAttribute("DashReadyAt",workspace:GetServerTimeNow()+cd)
   movementGraceUntil[p]=now+.7
   r.AssemblyLinearVelocity=r.CFrame.LookVector*(52+(hf.DashPowerBonus or 0))+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)
   p:SetAttribute("FeedbackEvent","DASH:"..tostring(math.floor(now*1000)))
@@ -1011,8 +1516,11 @@ local function survivorDash(p)
 end
 local function ability(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="MONSTER"then return end
- local now=os.clock();local lastAbility=cooldown[p];if lastAbility and now-lastAbility<C.MonsterAbilityCooldown then return end;cooldown[p]=now
- local r=root(p);if not r then return end;local f=form(p);movementGraceUntil[p]=now+.8
+ local now=os.clock();local lastAbility=cooldown[p];if lastAbility and now-lastAbility<C.MonsterAbilityCooldown then return end
+ local r=root(p);if not r then return end
+ if not spendEnergy(p,C.Energy and C.Energy.AbilityCost or 45,"ABILITY")then return end
+ cooldown[p]=now;p:SetAttribute("AbilityReadyAt",workspace:GetServerTimeNow()+C.MonsterAbilityCooldown)
+ local f=form(p);movementGraceUntil[p]=now+.8
  local infectedAbility=p:GetAttribute("Infected")==true and humanForm(p).InfectedAbility or nil
  if infectedAbility=="RUSH"or infectedAbility=="BREACH"then r.AssemblyLinearVelocity=r.CFrame.LookVector*82+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)
  elseif infectedAbility=="BLACKOUT"or infectedAbility=="HUNT_FLASH"or infectedAbility=="FALSE_ALARM"then
@@ -1024,6 +1532,36 @@ local function ability(p)
   for _,o in ipairs(Players:GetPlayers())do if o:GetAttribute("Role")=="SURVIVOR"and o:GetAttribute("Frozen")~=true then local q=root(o);if q and(q.Position-r.Position).Magnitude<=22 then speed(o,9);task.delay(3,function()if o.Parent and o:GetAttribute("Frozen")~=true then speed(o,16)end end)end end end
  elseif f.Ability=="SHADOW_STEP"then r.CFrame=r.CFrame+r.CFrame.LookVector*18 end
 end
+local function infectAttack(p)
+ if state~="RUNNING"or p:GetAttribute("Role")~="MONSTER"then return end
+ local now=os.clock();local cd=math.max(.4,tonumber(C.Energy and C.Energy.InfectAttackCooldown)or 1.2)
+ local last=infectAttackCooldown[p];if last and now-last<cd then return end
+ if now<(p:GetAttribute("InfectionReadyAt")or 0)then return end
+ local r=root(p);if not r then return end
+ local range=math.max(2,tonumber(C.Energy and C.Energy.InfectRange)or 8)
+ local targetPlayer,targetBot,best=nil,nil,range
+ for _,other in ipairs(Players:GetPlayers())do
+  if other:GetAttribute("Role")=="SURVIVOR"and os.clock()>=(tagGraceUntil[other]or 0)then
+   local q=root(other)
+   if q then
+    local delta=q.Position-r.Position;local d=delta.Magnitude
+    if d<=best and d>.001 and r.CFrame.LookVector:Dot(delta.Unit)>=.05 then best=d;targetPlayer=other;targetBot=nil end
+   end
+  end
+ end
+ for _,b in ipairs(bots)do
+  if b.role=="SURVIVOR"then
+   local delta=b.part.Position-r.Position;local d=delta.Magnitude
+   if d<=best and d>.001 and r.CFrame.LookVector:Dot(delta.Unit)>=.05 then best=d;targetBot=b;targetPlayer=nil end
+  end
+ end
+ if not targetPlayer and not targetBot then p:SetAttribute("EnergyFeedback","NO_TARGET:INFECT");return end
+ if not spendEnergy(p,C.Energy and C.Energy.InfectAttackCost or 30,"INFECT")then return end
+ infectAttackCooldown[p]=now;p:SetAttribute("InfectReadyAt",workspace:GetServerTimeNow()+cd)
+ local hit=targetPlayer and infectPlayer(targetPlayer,p)or infectBot(targetBot,p)
+ if hit then p:SetAttribute("FeedbackEvent","INFECT_ATTACK_HIT:"..tostring(math.floor(now*1000)))end
+end
+
 local function nextMonster(p)
  if state=="RUNNING"then return end
  local xp=p:GetAttribute("MonsterXP")or 0;local cur=legacyMonsterIds[p:GetAttribute("MonsterForm")or"DRACULA"]or(p:GetAttribute("MonsterForm")or"DRACULA");local idx=1
@@ -1037,6 +1575,44 @@ local function nextHuman(p)
  for i,f in ipairs(list)do if f.Id==current then idx=i end end
  p:SetAttribute("HumanForm",list[idx%#list+1].Id)
 end
+local function buyCosmetic(p,id)
+ if state=="RUNNING"or typeof(id)~="string"or #id>32 then return end
+ local item=cosmeticById[id];if not item then return end
+ local owned=ownedCosmeticsFrom(p:GetAttribute("OwnedCosmetics"))
+ if owned[id]then p:SetAttribute("CosmeticFeedback","OWNED:"..id);return end
+ local price=math.max(0,math.floor(tonumber(item.Price)or 0))
+ local coins=math.max(0,math.floor(tonumber(p:GetAttribute("Coins"))or 0))
+ if coins<price then p:SetAttribute("CosmeticFeedback","NEED_COINS:"..id..":"..price);return end
+ p:SetAttribute("Coins",coins-price);owned[id]=true
+ p:SetAttribute("OwnedCosmetics",ownedCosmeticsAttribute(owned))
+ p:SetAttribute("CosmeticFeedback","PURCHASED:"..id)
+ save(p)
+end
+local function equipCosmetic(p,id)
+ if state=="RUNNING"or typeof(id)~="string"or #id>32 then return end
+ local item=cosmeticById[id];if not item then return end
+ local owned=ownedCosmeticsFrom(p:GetAttribute("OwnedCosmetics"))
+ if not owned[id]then p:SetAttribute("CosmeticFeedback","NOT_OWNED:"..id);return end
+ p:SetAttribute("EquippedCosmetic",id);p:SetAttribute("CosmeticFeedback","EQUIPPED:"..id)
+ save(p)
+end
+local function reportDiscovery(p,id)
+ if state~="RUNNING"or typeof(id)~="string"or #id>48 then return end
+ local item=discoveryById[id];if not item then return end
+ local trigger=arena and arena:FindFirstChild("SurpriseTrigger_"..id,true)
+ local rr=root(p)
+ if not trigger or not trigger:IsA("BasePart")or not rr then return end
+ local radius=math.max(3,tonumber(trigger:GetAttribute("SurpriseRadius"))or 10)+3
+ if (rr.Position-trigger.Position).Magnitude>radius then return end
+ local found=discoveredFrom(p:GetAttribute("DiscoveredSurprises"))
+ if found[id]then return end
+ found[id]=true
+ local count=#discoveredList(found)
+ p:SetAttribute("DiscoveredSurprises",discoveredAttribute(found));p:SetAttribute("DiscoveryCount",count);p:SetAttribute("DiscoveryTotal",#(C.Discoveries or{}));p:SetAttribute("DiscoveryTitle",discoveryTitleFor(count))
+ p:SetAttribute("DiscoveryFeedback","FOUND:"..id..":"..tostring(count))
+ save(p)
+end
+
 local function validRemoteAction(p,a)
  if typeof(a)~="string"or allowedActions[a]~=true then return false end
  local now=os.clock()
@@ -1048,7 +1624,7 @@ local function broadcastMultiplayerSync(actor)
  local participants=Players:GetPlayers();local hc,mc=teamCounts()
  remote:FireAllClients("MULTIPLAYER_SYNC",{ActorUserId=actor and actor.UserId or 0,ParticipantCount=#participants,ActivePopulation=hc+mc,AICount=#bots,HumanCount=hc,MonsterCount=mc,TimeLeft=math.max(0,math.ceil(timeLeft)),RoundScore=actor and(actor:GetAttribute("RoundScore")or 0)or 0})
 end
-remote.OnServerEvent:Connect(function(p,a)
+remote.OnServerEvent:Connect(function(p,a,value)
  if not validRemoteAction(p,a)then return end
  if a==C.Actions.PREFER_MONSTER and state~="RUNNING"then
   p:SetAttribute("MonsterPreference","MONSTER");p:SetAttribute("SoloRole","MONSTER");p:SetAttribute("LobbySelectionConfirmed",true);if #Players:GetPlayers()==1 then soloStartRequested=true end
@@ -1058,10 +1634,14 @@ remote.OnServerEvent:Connect(function(p,a)
  elseif a==C.Actions.SOLO_SURVIVOR and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("MonsterPreference","SURVIVOR");p:SetAttribute("SoloRole","SURVIVOR");p:SetAttribute("LobbySelectionConfirmed",true);soloStartRequested=true
  elseif a==C.Actions.PURIFY or a==C.Actions.RESCUE then purify(p)
  elseif a==C.Actions.DASH then survivorDash(p)
+ elseif a==C.Actions.INFECT_ATTACK then infectAttack(p)
  elseif a==C.Actions.ABILITY then ability(p)
  elseif a==C.Actions.NEXT_MONSTER then nextMonster(p)
- elseif a==C.Actions.NEXT_HUMAN then nextHuman(p)end
- if a==C.Actions.PURIFY or a==C.Actions.RESCUE or a==C.Actions.DASH or a==C.Actions.ABILITY then foundationCheckpoint("CORE_LOOP_READY",p,{action=a})end
+ elseif a==C.Actions.NEXT_HUMAN then nextHuman(p)
+ elseif a==C.Actions.BUY_COSMETIC then buyCosmetic(p,value)
+ elseif a==C.Actions.EQUIP_COSMETIC then equipCosmetic(p,value)
+ elseif a==C.Actions.DISCOVERY_FOUND then reportDiscovery(p,value)end
+ if a==C.Actions.PURIFY or a==C.Actions.RESCUE or a==C.Actions.DASH or a==C.Actions.INFECT_ATTACK or a==C.Actions.ABILITY then foundationCheckpoint("CORE_LOOP_READY",p,{action=a})end
  broadcastMultiplayerSync(p)
 end)
 
@@ -1109,6 +1689,9 @@ Players.PlayerAdded:Connect(function(p)
  load(p)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
+ if state=="RUNNING"then
+  p:SetAttribute("Role","SPECTATING");p:SetAttribute("RoundState","SPECTATING");p:SetAttribute("Spectating",true);p:SetAttribute("TimeLeft",math.max(0,math.ceil(timeLeft)))
+ end
  p.CharacterAdded:Connect(function()onCharacter(p)end)
  if p.Character then task.defer(function()onCharacter(p)end)end
  syncLobbyState()
@@ -1154,8 +1737,19 @@ foundationRemote.OnServerEvent:Connect(function(p,name)
 end)
 
 Players.PlayerRemoving:Connect(function(p)
- save(p);cooldown[p]=nil;dashCooldown[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil
- task.defer(function()syncLobbyState()end)
+ local leavingRole=p:GetAttribute("Role")
+ local rr=root(p)
+ local leavingPos=rr and rr.Position or(leavingRole=="MONSTER"and monsterSpawn or survivorSpawns[1])
+ save(p);cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;energyStationReady[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
+ task.defer(function()
+  if state=="RUNNING"and arena and arena.Parent and(leavingRole=="MONSTER"or leavingRole=="SURVIVOR")then
+   bot(leavingRole,leavingPos)
+   local hc,mc=teamCounts();workspace:SetAttribute("ActivePopulation",hc+mc);workspace:SetAttribute("AIBotCount",#bots);workspace:SetAttribute("HumanCount",hc);workspace:SetAttribute("MonsterCount",mc)
+   for _,player in ipairs(Players:GetPlayers())do player:SetAttribute("HumanCount",hc);player:SetAttribute("MonsterCount",mc)end
+   broadcastMultiplayerSync(nil)
+  end
+  syncLobbyState()
+ end)
 end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
@@ -1186,13 +1780,44 @@ task.spawn(function()
    end
    if startRound()then
     while state=="RUNNING"and timeLeft>0 do
-     for _,p in ipairs(Players:GetPlayers())do
-      if p:GetAttribute("Role")=="SURVIVOR"and os.clock()>=(tagGraceUntil[p]or 0)then local r=root(p);if r and nearestMonsterDistance(r.Position)<=C.TagDistance then infectPlayer(p)end end
-     end
-     for _,b in ipairs(bots)do if b.role=="SURVIVOR"and nearestMonsterDistance(b.part.Position)<=C.TagDistance then infectBot(b)end end
      local humans,monsters=teamCounts();workspace:SetAttribute("HumanCount",humans);workspace:SetAttribute("MonsterCount",monsters)
      if humans==0 then endRound("MONSTER");break end
      if monsters==0 then endRound("SURVIVOR");break end
+
+     local baseRegen=math.max(0,tonumber(C.Energy and C.Energy.RegenPerSecond)or 10)*.25
+     for _,p in ipairs(Players:GetPlayers())do
+      local role=p:GetAttribute("Role")
+      if role=="SURVIVOR"or role=="MONSTER"then
+       local pressure=pressurePassiveFor(role,humans,monsters)
+       local mult=math.max(1,tonumber(pressure and pressure.RegenMultiplier)or 1)
+       setEnergy(p,energyOf(p)+baseRegen*mult)
+       p:SetAttribute("PressurePassive",pressure and tostring(pressure.Label or"열세 보정")or"")
+      else
+       p:SetAttribute("PressurePassive","")
+      end
+     end
+     for _,b in ipairs(bots)do
+      local pressure=pressurePassiveFor(b.role,humans,monsters)
+      local mult=math.max(1,tonumber(pressure and pressure.RegenMultiplier)or 1)
+      b.energy=math.clamp((tonumber(b.energy)or energyMax())+baseRegen*mult,0,energyMax())
+     end
+
+     if humans==1 and pressureLastCounts.SURVIVOR>1 then
+      local row=pressurePassiveFor("SURVIVOR",humans,monsters);local bonus=math.max(0,tonumber(row and row.LastStandEnergy)or 0)
+      if bonus>0 then
+       for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="SURVIVOR"then setEnergy(p,energyOf(p)+bonus);p:SetAttribute("EnergyFeedback","LAST_STAND:"..tostring(math.floor(bonus)))end end
+       for _,b in ipairs(bots)do if b.role=="SURVIVOR"then b.energy=math.min(energyMax(),(b.energy or 0)+bonus)end end
+      end
+     end
+     if monsters==1 and pressureLastCounts.MONSTER>1 then
+      local row=pressurePassiveFor("MONSTER",humans,monsters);local bonus=math.max(0,tonumber(row and row.LastStandEnergy)or 0)
+      if bonus>0 then
+       for _,p in ipairs(Players:GetPlayers())do if p:GetAttribute("Role")=="MONSTER"then setEnergy(p,energyOf(p)+bonus);p:SetAttribute("EnergyFeedback","LAST_STAND:"..tostring(math.floor(bonus)))end end
+       for _,b in ipairs(bots)do if b.role=="MONSTER"then b.energy=math.min(energyMax(),(b.energy or 0)+bonus)end end
+      end
+     end
+     pressureLastCounts.SURVIVOR=humans;pressureLastCounts.MONSTER=monsters
+
      for _,p in ipairs(Players:GetPlayers())do p:SetAttribute("TimeLeft",math.ceil(timeLeft));p:SetAttribute("HumanCount",humans);p:SetAttribute("MonsterCount",monsters);p:SetAttribute("AliveCount",humans)end
      task.wait(.25);timeLeft-=.25
     end
@@ -1223,27 +1848,38 @@ RunService.Heartbeat:Connect(function(dt)
     end
    end
    if b.role=="MONSTER"then
-    local best,bd=nil,math.huge
+    local bestEntry,bestPos,bd=nil,nil,math.huge
     for _,a in ipairs(active())do
      local pos=a.p and(root(a.p)and root(a.p).Position)or(a.b and a.b.part.Position)
-     if pos then local d=(pos-b.part.Position).Magnitude;if d<bd then bd=d;best=pos end end
+     if pos then local d=(pos-b.part.Position).Magnitude;if d<bd then bd=d;bestPos=pos;bestEntry=a end end
     end
-    if best then
-     local d=Vector3.new(best.X-b.part.Position.X,0,best.Z-b.part.Position.Z)
-     if d.Magnitude>.1 then
-      local dir=d.Unit;local nextPos=b.part.Position+dir*math.min(d.Magnitude,b.speed*dt)
-      b.part.CFrame=CFrame.lookAt(nextPos,nextPos+dir)
+    if bestPos then
+     local infectRange=math.max(2,tonumber(C.Energy and C.Energy.InfectRange)or 8)
+     local infectCost=math.max(0,tonumber(C.Energy and C.Energy.InfectAttackCost)or 30)
+     local attackCd=math.max(.4,tonumber(C.Energy and C.Energy.InfectAttackCooldown)or 1.2)
+     if bd<=infectRange and os.clock()>=(b.infectAttackReadyAt or 0)and(b.energy or 0)>=infectCost then
+      b.energy=math.max(0,(b.energy or 0)-infectCost);b.infectAttackReadyAt=os.clock()+attackCd
+      if bestEntry and bestEntry.p then infectPlayer(bestEntry.p,nil)elseif bestEntry and bestEntry.b then infectBot(bestEntry.b,nil)end
+     else
+      local d=Vector3.new(bestPos.X-b.part.Position.X,0,bestPos.Z-b.part.Position.Z)
+      if d.Magnitude>.1 then
+       local dir=d.Unit;local nextPos=b.part.Position+dir*math.min(d.Magnitude,b.speed*dt)
+       b.part.CFrame=CFrame.lookAt(nextPos,nextPos+dir)
+      end
      end
     end
    elseif b.role=="SURVIVOR"then
     local nearest,best=nil,math.huge
     for _,mpos in ipairs(monsterPositions())do local d=(b.part.Position-mpos).Magnitude;if d<best then best=d;nearest=mpos end end
-    if nearest and best<=C.PurifyDistance and os.clock()>=(b.purifyReadyAt or 0)then
+    local purifyCost=math.max(0,tonumber(C.Energy and C.Energy.PurifyCost)or 35)
+    if nearest and best<=C.PurifyDistance and os.clock()>=(b.purifyReadyAt or 0)and(b.energy or 0)>=purifyCost then
      local targetPlayer,targetBot=nil,nil;local targetDist=C.PurifyDistance
      for _,other in ipairs(Players:GetPlayers())do if other:GetAttribute("Role")=="MONSTER"then local rr=root(other);if rr then local dd=(rr.Position-b.part.Position).Magnitude;if dd<=targetDist then targetDist=dd;targetPlayer=other;targetBot=nil end end end end
      for _,otherBot in ipairs(bots)do if otherBot~=b and otherBot.role=="MONSTER"then local dd=(otherBot.part.Position-b.part.Position).Magnitude;if dd<=targetDist then targetDist=dd;targetBot=otherBot;targetPlayer=nil end end end
-     b.purifyReadyAt=os.clock()+6
-     if targetPlayer then eliminateMonsterPlayer(targetPlayer)elseif targetBot then removeBot(targetBot)end
+     if targetPlayer or targetBot then
+      b.energy=math.max(0,(b.energy or 0)-purifyCost);b.purifyReadyAt=os.clock()+6
+      if targetPlayer then eliminateMonsterPlayer(targetPlayer)elseif targetBot then removeBot(targetBot)end
+     end
     elseif nearest and best<46 then
      local away=b.part.Position-nearest;local d=Vector3.new(away.X,0,away.Z)
      if d.Magnitude>.1 then
