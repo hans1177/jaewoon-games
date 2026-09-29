@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import http from 'node:http';
 import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, normalizeCandidate } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -4378,4 +4379,32 @@ test('continuous workflow marks Roblox text source as model-independent',()=>{
   assert.match(workflow,/VIBE2_ACTIVE_SOURCE_PROVIDER=DETERMINISTIC_LOCAL/);
   assert.match(workflow,/verifiedExternalLearningDeterministicContractConsumed/);
   assert.match(workflow,/deterministicLearningProof/);
+});
+
+
+test('local model output limit triggers bounded adaptive retry without external AI',async(t)=>{
+  const cwd=tempRoot(),requests=[];
+  write(path.join(cwd,'web-games/demo/index.html'),'<button id="play">Play</button>\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'truncated-local-repair'})));
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));
+      const index=requests.length;
+      const response=index===1?JSON.stringify({edits:[{path:'index.html',find:'NOT_PRESENT',replace:'changed'}],newFiles:[],replaceFiles:[]})
+        :index===2?'{"replace":"<button id=\\"play\\">Continue'
+        :JSON.stringify({replace:'<button id="play">Continue</button>'});
+      res.writeHead(200,{'content-type':'application/x-ndjson'});
+      res.end(JSON.stringify({response,done:true,done_reason:index===2?'length':'stop'})+'\n');
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  const result=await runVibe2SourceWorker({cwd});
+  assert.equal(requests.length,3);
+  assert.equal(requests[1].options.num_predict,384);
+  assert.equal(requests[2].options.num_predict,768);
+  assert.equal(requests[2].think,false);
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.maxPredict,768);
+  assert.deepEqual(result.changedFiles,['index.html']);
 });
