@@ -33,6 +33,7 @@ local cooldown={}
 local dashCooldown={}
 local infectAttackCooldown={}
 local energyStationReady={}
+local ghostSeenThisRound={}
 local arena=nil
 local currentMapIndex=0
 local lastRequest={}
@@ -183,28 +184,58 @@ local function pressurePassiveFor(role,humans,monsters)
  return nil
 end
 
-local discoveryById={}
-for _,item in ipairs(C.Discoveries or{})do discoveryById[item.Id]=item end
-local function discoveredFrom(value)
- local found={}
+local ghostById={}
+for _,item in ipairs(C.GhostCatalog or{})do ghostById[item.Id]=item end
+local function ghostProgressFrom(value)
+ local progress={}
  if typeof(value)=="table"then
-  for _,id in ipairs(value)do if typeof(id)=="string"and discoveryById[id]then found[id]=true end end
+  for id,stage in pairs(value)do
+   if ghostById[id]and typeof(stage)=="number"then progress[id]=math.clamp(math.floor(stage),0,(C.GhostProgression and C.GhostProgression.MaxStage)or 3)end
+  end
  elseif typeof(value)=="string"then
-  for id in string.gmatch(value,"[^,]+")do if discoveryById[id]then found[id]=true end end
+  for id,stage in string.gmatch(value,"([^:,]+):(%d+)")do
+   if ghostById[id]then progress[id]=math.clamp(tonumber(stage)or 0,0,(C.GhostProgression and C.GhostProgression.MaxStage)or 3)end
+  end
  end
- return found
+ return progress
 end
-local function discoveredList(found)
+local function ghostProgressAttribute(progress)
  local out={}
- for _,item in ipairs(C.Discoveries or{})do if found[item.Id]then table.insert(out,item.Id)end end
+ for _,item in ipairs(C.GhostCatalog or{})do
+  local stage=tonumber(progress[item.Id])or 0
+  if stage>0 then table.insert(out,item.Id..":"..tostring(stage))end
+ end
+ return table.concat(out,",")
+end
+local function ghostProgressSave(progress)
+ local out={}
+ for _,item in ipairs(C.GhostCatalog or{})do
+  local stage=tonumber(progress[item.Id])or 0
+  if stage>0 then out[item.Id]=stage end
+ end
  return out
 end
-local function discoveryTitleFor(count)
- local title="초보 목격자"
- for _,row in ipairs(C.DiscoveryTitles or{})do if count>=(tonumber(row.Count)or math.huge)then title=tostring(row.Title or title)end end
+local function ghostStats(progress)
+ local seen,completed=0,0
+ local maxStage=(C.GhostProgression and C.GhostProgression.MaxStage)or 3
+ for _,item in ipairs(C.GhostCatalog or{})do
+  local stage=tonumber(progress[item.Id])or 0
+  if stage>0 then seen+=1 end
+  if stage>=maxStage then completed+=1 end
+ end
+ return seen,completed
+end
+local function ghostTitleFor(completed)
+ local title="괴담 견습생"
+ for _,row in ipairs(C.GhostTitles or{})do if completed>=(tonumber(row.Completed)or math.huge)then title=tostring(row.Title or title)end end
  return title
 end
-local function discoveredAttribute(found)return table.concat(discoveredList(found),",")end
+local function syncGhostAttributes(p,progress)
+ local seen,completed=ghostStats(progress)
+ p:SetAttribute("GhostProgress",ghostProgressAttribute(progress))
+ p:SetAttribute("GhostSeenCount",seen);p:SetAttribute("GhostCompleted",completed);p:SetAttribute("GhostTotal",#(C.GhostCatalog or{}))
+ p:SetAttribute("GhostTitle",ghostTitleFor(completed))
+end
 
 local loreById={}
 for _,item in ipairs(C.Lore or{})do loreById[item.Id]=item end
@@ -223,6 +254,11 @@ local function foundLoreList(found)
  return out
 end
 local function foundLoreAttribute(found)return table.concat(foundLoreList(found),",")end
+local function loreTitleFor(count)
+ local title="야간 신입"
+ for _,row in ipairs(C.LoreTitles or{})do if count>=(tonumber(row.Count)or math.huge)then title=tostring(row.Title or title)end end
+ return title
+end
 
 local cosmeticById={}
 for _,item in ipairs(C.Cosmetics or{})do cosmeticById[item.Id]=item end
@@ -249,7 +285,8 @@ local function load(p)
  p:SetAttribute("MonsterXP",0);p:SetAttribute("Coins",0);p:SetAttribute("RoundsSinceMonster",0)
  p:SetAttribute("OwnedCosmetics","DEFAULT");p:SetAttribute("EquippedCosmetic","DEFAULT");p:SetAttribute("CosmeticFeedback","")
  p:SetAttribute("FoundLore","");p:SetAttribute("LoreCount",0);p:SetAttribute("LoreTotal",#(C.Lore or{}));p:SetAttribute("LoreFeedback","");p:SetAttribute("LoreTitle","야간 신입")
- p:SetAttribute("DiscoveredSurprises","");p:SetAttribute("DiscoveryCount",0);p:SetAttribute("DiscoveryTotal",#(C.Discoveries or{}));p:SetAttribute("DiscoveryTitle","초보 목격자");p:SetAttribute("DiscoveryFeedback","")
+ p:SetAttribute("GhostProgress","");p:SetAttribute("GhostSeenCount",0);p:SetAttribute("GhostCompleted",0);p:SetAttribute("GhostTotal",#(C.GhostCatalog or{}));p:SetAttribute("GhostTitle","괴담 견습생");p:SetAttribute("GhostFeedback","")
+ p:SetAttribute("GhostFragments",0);p:SetAttribute("GhostContracts",0);p:SetAttribute("GhostCatalogBonusClaimed",false)
  p:SetAttribute("MonsterForm","DRACULA");p:SetAttribute("HumanForm","BROADCAST");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0)
  p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0);p:SetAttribute("RoundScore",0)
  p:SetAttribute("LastRoundReward",0);p:SetAttribute("LastRoundWinner","");p:SetAttribute("LastRoundRole","")
@@ -272,10 +309,11 @@ local function load(p)
   if not owned[equipped]or not cosmeticById[equipped]then equipped="DEFAULT"end
   p:SetAttribute("OwnedCosmetics",ownedCosmeticsAttribute(owned));p:SetAttribute("EquippedCosmetic",equipped)
   local found=foundLoreFrom(d.FoundLore);local count=#foundLoreList(found)
-  p:SetAttribute("FoundLore",foundLoreAttribute(found));p:SetAttribute("LoreCount",count);p:SetAttribute("LoreTotal",#(C.Lore or{}))
-  p:SetAttribute("LoreTitle",count>=(#(C.Lore or{}))and"심야 괴담 조사원"or count>=5 and"야간 조사원"or"야간 신입")
-  local seen=discoveredFrom(d.DiscoveredSurprises);local seenCount=#discoveredList(seen)
-  p:SetAttribute("DiscoveredSurprises",discoveredAttribute(seen));p:SetAttribute("DiscoveryCount",seenCount);p:SetAttribute("DiscoveryTotal",#(C.Discoveries or{}));p:SetAttribute("DiscoveryTitle",discoveryTitleFor(seenCount))
+  p:SetAttribute("FoundLore",foundLoreAttribute(found));p:SetAttribute("LoreCount",count);p:SetAttribute("LoreTotal",#(C.Lore or{}));p:SetAttribute("LoreTitle",loreTitleFor(count))
+  local ghostProgress=ghostProgressFrom(d.GhostProgress);syncGhostAttributes(p,ghostProgress)
+  if typeof(d.GhostFragments)=="number"then p:SetAttribute("GhostFragments",math.max(0,math.floor(d.GhostFragments)))end
+  if typeof(d.GhostContracts)=="number"then p:SetAttribute("GhostContracts",math.max(0,math.floor(d.GhostContracts)))end
+  p:SetAttribute("GhostCatalogBonusClaimed",d.GhostCatalogBonusClaimed==true)
  end
 end
 local function save(p)
@@ -285,7 +323,8 @@ local function save(p)
  pcall(function()store:SetAsync("p:"..p.UserId,{
   MonsterXP=p:GetAttribute("MonsterXP")or 0,Coins=p:GetAttribute("Coins")or 0,
   RoundsSinceMonster=p:GetAttribute("RoundsSinceMonster")or 0,MonsterForm=p:GetAttribute("MonsterForm")or"DRACULA",HumanForm=p:GetAttribute("HumanForm")or"BROADCAST",
-  OwnedCosmetics=ownedCosmeticsList(owned),EquippedCosmetic=equipped,FoundLore=foundLoreList(foundLoreFrom(p:GetAttribute("FoundLore"))),DiscoveredSurprises=discoveredList(discoveredFrom(p:GetAttribute("DiscoveredSurprises")))
+  OwnedCosmetics=ownedCosmeticsList(owned),EquippedCosmetic=equipped,FoundLore=foundLoreList(foundLoreFrom(p:GetAttribute("FoundLore"))),
+  GhostProgress=ghostProgressSave(ghostProgressFrom(p:GetAttribute("GhostProgress"))),GhostFragments=p:GetAttribute("GhostFragments")or 0,GhostContracts=p:GetAttribute("GhostContracts")or 0,GhostCatalogBonusClaimed=p:GetAttribute("GhostCatalogBonusClaimed")==true
  })end)
 end
 local function arenaPart(f,name,size,pos,color,material)
@@ -357,7 +396,7 @@ local function addLoreCollectible(f,id,pos)
   found[id]=true
   local count=#foundLoreList(found)
   p:SetAttribute("FoundLore",foundLoreAttribute(found));p:SetAttribute("LoreCount",count);p:SetAttribute("LoreTotal",#(C.Lore or{}))
-  p:SetAttribute("LoreTitle",count>=(#(C.Lore or{}))and"심야 괴담 조사원"or count>=5 and"야간 조사원"or"야간 신입")
+  p:SetAttribute("LoreTitle",loreTitleFor(count))
   p:SetAttribute("LoreFeedback","FOUND:"..id..":"..tostring(count))
   save(p)
  end)
