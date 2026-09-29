@@ -2359,6 +2359,25 @@ test('Studio flags inaccessible graphics assets for exact visual repair while re
 });
 
 
+test('persistent start overlay aborts Studio exploration and enters UI repair',()=>{
+  const overlayAt=helper.indexOf("ROBLOX_STUDIO_BLOCKING_OVERLAY_ABORT:START_INPUT_OBSCURED");
+  const movementAt=helper.indexOf("const keyboardTool=client.tool('user_keyboard_input')",overlayAt);
+  assert.ok(overlayAt>=0&&movementAt>overlayAt);
+  assert.match(helper,/largeBlockingOverlayCount\|\|0\)>0/);
+  assert.match(helper,/checkpoint\('initial-ui-playability',false\)/);
+  const broken=runtime();
+  broken.runtimeVerified=false;
+  broken.scenarioContractRequired=true;
+  broken.scenarioCoverage=[{id:'adaptive-ui-blocking-overlay',pass:false}];
+  broken.qualityFailureKinds=['adaptive-ui-blocking-overlay'];
+  broken.qualityFailureDetails=[{id:'adaptive-ui-blocking-overlay',repairSurface:'MOBILE_UI',priority:'CRITICAL',hint:'Unblock start',observed:{largeBlockingOverlayCount:1,largestOverlayCoverage:0.8}}];
+  broken.errors=[{type:'studio-product-ui-blocking-error',signature:'ROBLOX_STUDIO_BLOCKING_OVERLAY_ABORT:START_INPUT_OBSCURED'}];
+  const applied=applyLocalStudioPlayResult({queue:{items:[item()]},gameId:'g1',runtime:broken,expected,workflowRunId:85,studioStepSucceeded:false,testedAt:'2026-09-29T00:00:00.000Z'});
+  assert.equal(applied.result.evidence.infrastructureFailure,false);
+  assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
+  assert.ok(applied.item.robloxQualityBuildUpEvidence.repairSurfaces.includes('MOBILE_UI'));
+});
+
 test('zero-floor Studio abort routes exact artifact to WORLD_GEOMETRY repair',()=>{
   assert.match(helper,/floorSampleCount\|\|0\)>0&&Number\(initialClientProbe\?\.world\?\.floorHitCount\|\|0\)===0/);
   assert.match(helper,/floorSampleCount\|\|0\)>0&&Number\(floatingConfirm\?\.world\?\.floorHitCount\|\|0\)===0/);
