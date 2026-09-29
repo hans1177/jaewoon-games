@@ -101,7 +101,11 @@
     "map surprise props are non-collidable non-touchable and non-queryable",
     "proximity-verified persistent surprise discovery collection",
     "persistent lore-note collection with title-only progression",
-    "no coins energy combat stats or win authority from exploration collections"
+    "no coins energy combat stats or win authority from exploration collections",
+    "initial lore catalog is intentionally capped near 12 instead of shipping 100 at once",
+    "lore expands gradually through staged sightings and periodic content updates",
+    "playable ghosts are promoted slowly and remain separate from lore collection",
+    "future ghost monetization remains non-pay-to-win"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -199,5 +203,16 @@
       "Console runtime errors remain release-blocking and are persisted separately from MCP infrastructure failures.",
       "After role preference input, the MCP scenario polls for the role-specific action surface before generic movement so the solo-round grace window cannot hide the action control."
     ]
+  },
+  "contentRoadmap": {
+    "path": "roblox-games/horror-escape-room/CONTENT_ROADMAP.md",
+    "strategy": "GRADUAL_CONTENT_CONSUMPTION",
+    "initialLoreCount": 12,
+    "sightingStagesPerLore": 3,
+    "updateCadence": "2-3 weeks",
+    "loreAddedPerUpdate": "3-5",
+    "longTermLoreTarget": 100,
+    "playableGhostReleasePace": "0-1 per update",
+    "monetization": "NON_PAY_TO_WIN"
   }
 }
