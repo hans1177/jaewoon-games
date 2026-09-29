@@ -891,6 +891,8 @@ RunService.Heartbeat:Connect(function(dt)
    local radius=math.max(3,tonumber(trigger:GetAttribute("SurpriseRadius"))or 10)
    if (root.Position-trigger.Position).Magnitude<=radius then
     surpriseSeen[trigger]=true
+    local discoveryId=tostring(trigger:GetAttribute("SurpriseId")or"")
+    if discoveryId~=""then remote:FireServer(C.Actions.DISCOVERY_FOUND,discoveryId)end
     playSurprise(trigger)
    end
   end
@@ -1616,7 +1618,7 @@ local function render()
  local prefText=pref=="MONSTER"and"몬스터 선호"or pref=="SURVIVOR"and"인간 선호"or"자동 배정"
  local equippedItem=cosmeticItem(tostring(p:GetAttribute("EquippedCosmetic")or"DEFAULT"))
  selectionStatus.Text=string.format("%s · 인간 %s · 몬스터 %s · %s",prefText,humanName(),monsterName(),equippedItem.Title or"신입 참가자")
- loreStatus.Text=string.format("괴담 메모 %d/%d · %s",tonumber(p:GetAttribute("LoreCount"))or 0,tonumber(p:GetAttribute("LoreTotal"))or #(C.Lore or{}),tostring(p:GetAttribute("LoreTitle")or"야간 신입"))
+ loreStatus.Text=string.format("목격 %d/%d · 괴담 %d/%d · %s",tonumber(p:GetAttribute("DiscoveryCount"))or 0,tonumber(p:GetAttribute("DiscoveryTotal"))or #(C.Discoveries or{}),tonumber(p:GetAttribute("LoreCount"))or 0,tonumber(p:GetAttribute("LoreTotal"))or #(C.Lore or{}),tostring(p:GetAttribute("DiscoveryTitle")or"초보 목격자"))
 
  local selectionConfirmed=p:GetAttribute("LobbySelectionConfirmed")==true
  local spectating=round=="SPECTATING"
@@ -1662,9 +1664,19 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle","DiscoveryCount","DiscoveryTotal","DiscoveryTitle"})do
  p:GetAttributeChangedSignal(k):Connect(function()render();updateCosmeticUI()end)
 end
+p:GetAttributeChangedSignal("DiscoveryFeedback"):Connect(function()
+ local raw=tostring(p:GetAttribute("DiscoveryFeedback")or"")
+ local kind,id,count=string.match(raw,"^([^:]+):([^:]+):?(%d*)$")
+ if kind=="FOUND"then
+  local item=nil
+  for _,row in ipairs(C.Discoveries or{})do if row.Id==id then item=row;break end end
+  if item then showMapContentToast("새 목격 기록 · "..tostring(item.Name).." ("..tostring(count).."/"..tostring(#(C.Discoveries or{}))..")",Color3.fromRGB(221,203,255),2.2)end
+ end
+end)
+
 p:GetAttributeChangedSignal("LoreFeedback"):Connect(function()
  local raw=tostring(p:GetAttribute("LoreFeedback")or"")
  local kind,id=string.match(raw,"^([^:]+):([^:]+)")
