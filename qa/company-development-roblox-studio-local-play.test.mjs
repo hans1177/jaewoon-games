@@ -2475,3 +2475,18 @@ test('Studio discovered pattern storage is bounded without passing overflow acti
   assert.equal(result.scenarios.find(row=>row.id==='observed-action-capacity-exceeded').pass,false);
   assert.equal(deriveStudioActualPlayContract({}).observedActionPatternVersion,1);
 });
+
+
+test('Studio patterns distinguish identically named controls and exclude unclassified shared UI',()=>{
+  const actions=[
+    {id:'ui-discovered-TextButton',targetIdentity:'Shop.Buy.TextButton',semantic:'SHOP',type:'mcp-ui-exploration',dispatched:true,ok:true,effectObserved:true},
+    {id:'ui-discovered-TextButton',targetIdentity:'Inventory.Equip.TextButton',semantic:'EQUIP',type:'mcp-ui-exploration',dispatched:true,ok:true,effectObserved:false},
+    {id:'ui-discovered-MessageMode',semantic:'GENERAL',type:'mcp-ui-exploration',dispatched:true,ok:true,effectObserved:false}
+  ];
+  const result=evaluateStudioActualPlayContract({contract:{required:true,requiredScenarios:['adaptive-semantic-interaction-effect']},actions});
+  const patterns=result.scenarios.filter(row=>row.generatedFrom);
+  assert.equal(patterns.length,2);
+  assert.notEqual(patterns[0].id,patterns[1].id);
+  assert.equal(patterns[0].pass,true);
+  assert.equal(patterns[1].pass,false);
+});
