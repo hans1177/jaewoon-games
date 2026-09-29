@@ -3,26 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-164j0mo",
-      "worker": "vibe2",
-      "taskId": "seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1",
-      "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
-      "files": [
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Editor/UnityWebFloorBuild.cs",
-        "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/Assets/Scripts/UnityWebFloorGame.cs"
-      ],
-      "baseSha": "6a460d5b98a094e0ea9b1b574dcf01a7aa4a653a",
-      "runId": "36641815365",
-      "runAttempt": "1",
-      "acquiredAt": "2026-09-29T23:08:38.839Z",
-      "expiresAt": "2026-09-29T23:53:38.839Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-action-survival-rogu-echoes-of-the-lost-star-studio-evolution-unity-web-usability-v1"
-      ]
-    },
-    {
       "id": "wl-1gthh7v",
       "worker": "vibe2",
       "taskId": "cozy-island-existing-web-assessment-v1",
@@ -344,6 +324,26 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:seed-single-defense-strat-celestial-bastion-roblox-second-gate-rebuild-v1"
+      ]
+    },
+    {
+      "id": "wl-i0bqya",
+      "worker": "vibe2",
+      "taskId": "fantasy-survival-unity-web-base-implementation-v1",
+      "gameId": "fantasy-survival",
+      "files": [
+        "unity-games/fantasy-survival/Assets/Scripts/GameCore.cs",
+        "unity-games/fantasy-survival/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "84cf94f8a40d79892fc81594338f1d786c0a63d4",
+      "runId": "36647071387",
+      "runAttempt": "1",
+      "acquiredAt": "2026-09-29T23:53:59.485Z",
+      "expiresAt": "2026-09-30T00:38:59.485Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:fantasy-survival-unity-web-base-implementation-v1"
       ]
     }
   ]
