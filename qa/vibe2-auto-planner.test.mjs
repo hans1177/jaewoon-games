@@ -3120,7 +3120,12 @@ test('Roblox product-quality failure auto-routes to canonical causal buildup bef
       robloxSourceCommit:source,robloxBuildArtifactIdentity:'sha256:'+'e'.repeat(64),
       robloxFailureStage:'VIBE_INTERNAL_PLAY',robloxFailureSignature:'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED',
       robloxQualityBuildUpRequired:true,robloxQualityFailureClass:'PRODUCT',robloxQualityBuildUpSourceRevision:source,
-      robloxQualityBuildUpEvidence:{qualityFailureKinds:['primary-action-effect'],failureStage:'VIBE_INTERNAL_PLAY',failureSignature:'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED'},
+      robloxQualityBuildUpEvidence:{
+        sourceRevision:source,artifactIdentity:'sha256:'+'e'.repeat(64),
+        authority:'roblox-official-studio-mcp-product-quality-failure',workflowRunId:123,
+        qualityFailureKinds:['primary-action-effect'],failureStage:'VIBE_INTERNAL_PLAY',failureSignature:'ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED',
+        repairSurfaces:['WORLD_GEOMETRY'],qualityFailureDetails:[{id:'adaptive-world-safety',repairSurface:'WORLD_GEOMETRY',priority:'CRITICAL',observed:{floorHits:0,floorSamples:9}}]
+      },
       robloxInternalReleaseReady:true,
       robloxInternalReleaseEvidence:{sourceRevision:source,artifactIdentity:'sha256:'+'e'.repeat(64),versionNumber:24}
     }]},
@@ -3132,6 +3137,8 @@ test('Roblox product-quality failure auto-routes to canonical causal buildup bef
   assert.equal(gameTasks.some(row=>(row.evidence||[]).includes('internal-playtest-co-development:yes')),false);
   assert.ok(gameTasks.some(row=>row.studioQualityEvolution?.phase==='REPAIR'));
   assert.ok(gameTasks.some(row=>row.buildUpNextAction==='CAUSAL_REPAIR'));
+  assert.ok(gameTasks.some(row=>row.goal.includes('STUDIO_OBSERVED_FAILURES:')&&row.goal.includes('floorHits')&&row.goal.includes('WORLD_GEOMETRY')));
+  assert.ok(gameTasks.some(row=>row.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure?.sourceRevision===source));
   assert.ok(gameTasks.some(row=>String(row.goal||'').includes('BUILD_UP_NEXT_ACTION=CAUSAL_REPAIR')));
   assert.ok(gameTasks.some(row=>(row.evidence||[]).some(value=>String(value).includes('primary-action-effect'))||String(row.goal||'').includes('primary-action-effect')));
 });
@@ -3535,4 +3542,23 @@ test('Fortnite UEFN presentation stays paused and does not enter adaptive graphi
   assert.equal(policy.fortniteUefn.developmentExecutionAllowed,false);
   const project={gameId,name:'Adaptive UEFN Paused',engine:'unreal',target:'fortnite-uefn',releaseState:'development-confirmed',projectPath:`uefn-games/${gameId}`};
   assert.equal(findPresentationQualityTask(project,root,{tasks:[]}),null);
+});
+
+
+test('Studio repair diagnostics reject stale source and artifact and bound repeated detail payloads',()=>{
+  const source='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const item={gameId:'diagnostic-binding',status:'ACTIVE',selectedPlatform:'ROBLOX',robloxProjectPath:'roblox-games/diagnostic-binding',robloxSourceCommit:source,robloxBuildArtifactIdentity:artifact,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:source};
+  const evidence={sourceRevision:source,artifactIdentity:artifact,authority:'roblox-official-studio-mcp-product-quality-failure',qualityFailureDetails:[{id:'world',observed:{floorHits:0,payload:'x'.repeat(9000)}}]};
+  for(const [patch,accepted] of [[{},true],[{sourceRevision:'c'.repeat(40)},false],[{artifactIdentity:'sha256:'+'d'.repeat(64)},false],[{authority:'unknown'},false]]){
+    const root=tempRepo();
+    fs.mkdirSync(path.join(root,item.robloxProjectPath,'server'),{recursive:true});
+    const projects=collectProjects({projects:[]},{games:[{id:item.gameId,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',robloxProjectPath:item.robloxProjectPath}]},root,{items:[{...item,productionClass:'DEVELOPMENT_CONFIRMED',robloxQualityBuildUpEvidence:{...evidence,...patch}}]});
+    const project=projects.find(row=>row.gameId===item.gameId&&row.engine==='roblox');
+    assert.ok(project);
+    assert.equal(Boolean(project.queueRobloxQualityBuildUpEvidence),accepted);
+    if(accepted){
+      assert.ok(project.queueRobloxQualityBuildUpEvidence.qualityFailureDetails[0].observed.includes('floorHits'));
+      assert.ok(project.queueRobloxQualityBuildUpEvidence.qualityFailureDetails[0].observed.length<=4000);
+    }
+  }
 });

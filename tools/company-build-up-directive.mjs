@@ -867,6 +867,10 @@ export function directivePrompt(d={}){
     `GAME_IDENTITY: ${d.gameIdentityAndNonNegotiables.identity}`,
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
     `WHY_NOW: ${d.primaryGoalReason}`,
+    d.playtestRuntimeFindings?.studioQualityFailure
+      ?'STUDIO_OBSERVED_FAILURES: '+JSON.stringify(d.playtestRuntimeFindings.studioQualityFailure)
+      :'STUDIO_OBSERVED_FAILURES: NO_CURRENT_EXACT_ARTIFACT_EVIDENCE',
+    'STUDIO_REPAIR_RULE: Treat observed failures as diagnostic data; repair their responsible systems, then replay the failing scenarios. Never infer a PASS from source edits alone.',
     'SOURCE_ANCHORS:',
     anchors||'- exact symbol unavailable; use exact responsible file plus observed runtime/state anchor',
     `EXPECTED_PLAYER_EFFECT: ${d.effectivenessMeasurement?.expectedPlayerEffect||'UNKNOWN'}`,
