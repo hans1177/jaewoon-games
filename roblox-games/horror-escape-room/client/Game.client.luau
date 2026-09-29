@@ -280,6 +280,8 @@ RunService:BindToRenderStep("MidnightCharacterMotion",Enum.RenderPriority.Charac
    actionPitch=math.rad(-3);rightAction=math.rad(-34);leftAction=math.rad(8)
   elseif motionImpulseKind=="ABILITY"then
    actionPitch=math.rad(-8);rightAction=math.rad(-20);leftAction=math.rad(-20)
+  elseif motionImpulseKind=="INFECT_ATTACK"then
+   actionPitch=math.rad(-7);rightAction=math.rad(-46);leftAction=math.rad(-18)
   elseif motionImpulseKind=="INFECT"then
    actionPitch=math.rad(-7);actionRoll=math.rad(math.sin(os.clock()*34)*5)
   end
@@ -818,6 +820,18 @@ local function playFloatingProp(trigger,kind,text)
  elseif kind=="PARK_HORSE"then
   part=localPart("LocalCarouselHorseHead",Vector3.new(3.8,2.4,4.6),CFrame.new(pos),Color3.fromRGB(212,190,153),Enum.Material.SmoothPlastic)
   TweenService:Create(part,TweenInfo.new(.35,Enum.EasingStyle.Back),{CFrame=part.CFrame*CFrame.Angles(0,math.rad(55),0)}):Play()
+ elseif kind=="HOSPITAL_XRAY"then
+  part=localPart("LocalXrayDuck",Vector3.new(2.2,2.1,.3),CFrame.new(pos),Color3.fromRGB(172,220,231),Enum.Material.Neon)
+  local head=localPart("LocalXrayDuckHead",Vector3.new(1.1,1.1,.3),CFrame.new(pos+Vector3.new(.8,.8,0)),Color3.fromRGB(172,220,231),Enum.Material.Neon,Enum.PartType.Ball)
+  Debris:AddItem(head,1.8)
+ elseif kind=="HOSPITAL_BED"then
+  part=localPart("LocalRunawayBed",Vector3.new(6,1.5,10),CFrame.new(trigger.Position+Vector3.new(-5,1,0)),Color3.fromRGB(161,177,181),Enum.Material.Metal)
+  TweenService:Create(part,TweenInfo.new(.85,Enum.EasingStyle.Sine),{CFrame=part.CFrame+CFrame.new(10,0,0)}):Play()
+ elseif kind=="PARK_ARCADE"then
+  part=localPart("LocalArcadeGhostScreen",Vector3.new(3,2,.25),CFrame.new(pos),Color3.fromRGB(84,221,171),Enum.Material.Neon)
+ elseif kind=="PARK_POPCORN"then
+  part=localPart("LocalPopcorn",Vector3.new(.9,.9,.9),CFrame.new(pos),Color3.fromRGB(245,227,160),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+  TweenService:Create(part,TweenInfo.new(.65,Enum.EasingStyle.Bounce),{CFrame=part.CFrame+CFrame.new(0,4,0)}):Play()
  elseif kind=="SCHOOL_TRAY"then
   part=localPart("LocalCafeteriaTray",Vector3.new(4,.25,3),CFrame.new(pos),Color3.fromRGB(144,153,156),Enum.Material.Metal)
   TweenService:Create(part,TweenInfo.new(.45,Enum.EasingStyle.Quad,Enum.EasingDirection.In),{CFrame=part.CFrame+CFrame.new(0,-2.6,0)*CFrame.Angles(math.rad(40),0,math.rad(25))}):Play()
@@ -837,7 +851,7 @@ local function playSurprise(trigger)
  elseif kind=="SCHOOL_BALL"then playGymBall(trigger)
  elseif kind=="SCHOOL_BOARD"then localText(trigger.Position+Vector3.new(0,5,0),text,Color3.fromRGB(202,235,188),2.4)
  elseif kind=="SCHOOL_TRAY"then playFloatingProp(trigger,kind,text)
- elseif kind=="HOSPITAL_WHEELCHAIR"or kind=="PARK_CLOWN"or kind=="PARK_HORSE"then playFloatingProp(trigger,kind,text)
+ elseif kind=="HOSPITAL_WHEELCHAIR"or kind=="PARK_CLOWN"or kind=="PARK_HORSE"or kind=="HOSPITAL_XRAY"or kind=="HOSPITAL_BED"or kind=="PARK_ARCADE"or kind=="PARK_POPCORN"then playFloatingProp(trigger,kind,text)
  elseif kind=="HOSPITAL_CURTAIN"then localText(trigger.Position+Vector3.new(0,5,0),"커튼 뒤: 비어 있음\n…방금 움직인 건 뭐지?",Color3.fromRGB(214,224,230),2.1)
  elseif kind=="HOSPITAL_MONITOR"then localText(trigger.Position+Vector3.new(0,5,0),"삐—  배터리 1%\n공포보다 충전기가 급하다",Color3.fromRGB(170,235,207),2.2)
  elseif kind=="PARK_TICKET"then localText(trigger.Position+Vector3.new(0,5,0),"매표소\n오늘도 무단결근",Color3.fromRGB(255,207,155),2.2)
@@ -1276,7 +1290,7 @@ dashButton.Activated:Connect(function()setMotionImpulse("DASH",.38);actionSfx.Ti
 
 local infectButton=makeButton(actionDock,"감염 공격",Color3.fromRGB(150,52,66))
 infectButton.Size=UDim2.fromOffset(110,50);infectButton.Position=UDim2.fromOffset(5,4);infectButton.ZIndex=11
-infectButton.Activated:Connect(function()setMotionImpulse("INFECT",.38);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.INFECT_ATTACK)end)
+infectButton.Activated:Connect(function()setMotionImpulse("INFECT_ATTACK",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.INFECT_ATTACK)end)
 
 local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(112,58,145))
 abilityButton.Size=UDim2.fromOffset(110,50);abilityButton.Position=UDim2.fromOffset(121,4);abilityButton.ZIndex=11
