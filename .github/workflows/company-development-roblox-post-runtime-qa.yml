@@ -2035,31 +2035,55 @@ jobs:
           "VIBE2_STUDIO_PROCESS_ID=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VIBE2_STUDIO_PROCESS_IDS=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           Write-Host "ROBLOX_STUDIO_MCP_EXACT_PLACE_PROCESS_ID=$($placeLaunchProcess.Id)"
-          try {
-            if ($placeLaunchProcess.WaitForInputIdle(30000)) {
-              Write-Host 'ROBLOX_STUDIO_GUI_READY=YES'
-            } else {
-              Write-Host 'ROBLOX_STUDIO_GUI_READY=TIMEOUT_CONTINUE_MCP_PROBE'
-            }
-          } catch {
-            Write-Host 'ROBLOX_STUDIO_GUI_READY=UNAVAILABLE_CONTINUE_MCP_PROBE'
-          }
-          Start-Sleep -Seconds 1
-
           $exactPlacePattern = '(?i)(?:^|[\s"])' + [regex]::Escape($places[0].FullName) + '(?=[\s"]|$)'
+          # Observe the launch family before waiting on GUI initialization; launchers can exit meanwhile.
+          $launchFamily = @{}
+          $launchFamily[[string]$placeLaunchProcess.Id] = @{ processId = $placeLaunchProcess.Id; createdAt = $placeLaunchProcess.StartTime.ToUniversalTime().ToString('o'); parentProcessId = $PID }
+          "VIBE2_STUDIO_OWNED_PROCESS_RECORDS=$(@($launchFamily.Values) | ConvertTo-Json -Compress)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $familyChangedAt = [DateTime]::UtcNow
+          $studioProcess = $null
           $ownedStudioProcesses = @()
           for ($processProbe = 1; $processProbe -le 180; $processProbe++) {
-            $ownedStudioProcesses = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction Stop | Where-Object { $_.CreationDate.ToUniversalTime() -ge $exactPlaceStarted.AddSeconds(-2) -and [string]$_.CommandLine -match $exactPlacePattern })
-            if ($ownedStudioProcesses.Count -eq 1) { break }
+            $observed = @(Get-CimInstance Win32_Process -Filter "Name LIKE 'Roblox%'" -ErrorAction Stop)
+            $familyChanged = $false
+            for ($generation = 0; $generation -lt 8; $generation++) {
+              foreach ($record in $observed) {
+                $key = [string]$record.ProcessId
+                if ($launchFamily.ContainsKey($key)) { continue }
+                $parentKey = [string]$record.ParentProcessId
+                if (-not $launchFamily.ContainsKey($parentKey)) { continue }
+                $parent = $observed | Where-Object { [string]$_.ProcessId -eq $parentKey } | Select-Object -First 1
+                if (-not $parent) { continue }
+                $parentCreated = [DateTime]::Parse($launchFamily[$parentKey].createdAt).ToUniversalTime()
+                if ([math]::Abs(($parent.CreationDate.ToUniversalTime() - $parentCreated).TotalMilliseconds) -gt 10) { continue }
+                if ($record.CreationDate.ToUniversalTime() -lt $parentCreated) { continue }
+                $launchFamily[$key] = @{ processId = [int]$record.ProcessId; createdAt = $record.CreationDate.ToUniversalTime().ToString('o'); parentProcessId = [int]$record.ParentProcessId }
+                $familyChanged = $true
+              }
+            }
+            if ($familyChanged) {
+              $familyChangedAt = [DateTime]::UtcNow
+              $familyJson = @($launchFamily.Values) | ConvertTo-Json -Compress
+              "VIBE2_STUDIO_OWNED_PROCESS_RECORDS=$familyJson" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+              Write-Host "ROBLOX_STUDIO_OWNED_PROCESS_CHAIN=$familyJson"
+            }
+            $ownedStudioProcesses = @($observed | Where-Object { $_.Name -eq 'RobloxStudioBeta.exe' -and $launchFamily.ContainsKey([string]$_.ProcessId) -and [math]::Abs(($_.CreationDate.ToUniversalTime() - [DateTime]::Parse($launchFamily[[string]$_.ProcessId].createdAt).ToUniversalTime()).TotalMilliseconds) -le 10 })
+            if ($ownedStudioProcesses.Count -eq 1 -and ([DateTime]::UtcNow - $familyChangedAt).TotalSeconds -ge 15) {
+              $candidate = Get-Process -Id ([int]$ownedStudioProcesses[0].ProcessId) -ErrorAction SilentlyContinue
+              if ($candidate -and $candidate.MainWindowHandle -ne 0) { $studioProcess = $candidate; break }
+            }
             Start-Sleep -Seconds 1
           }
-          if ($ownedStudioProcesses.Count -ne 1) { throw 'Expected one provably owned exact Place process after launch; no duplicate launch allowed' }
+          if ($ownedStudioProcesses.Count -ne 1 -or -not $studioProcess) { throw 'Expected one provably owned exact Place process after launch; no duplicate launch allowed' }
           Write-Host "ROBLOX_STUDIO_MCP_PRE_MCP_PROCESS_READY_COUNT=$($ownedStudioProcesses.Count)"
           $ownedRecord = $ownedStudioProcesses[0]
-          $studioProcess = Get-Process -Id ([int]$ownedRecord.ProcessId) -ErrorAction SilentlyContinue
           if (-not $studioProcess -or $studioProcess.ProcessName -ne 'RobloxStudioBeta' -or [math]::Abs(($studioProcess.StartTime.ToUniversalTime() - $ownedRecord.CreationDate.ToUniversalTime()).TotalSeconds) -gt 1) {
             throw 'Exact Studio process handed off without provable ownership; preserve all other Studio windows'
           }
+          try {
+            if ($studioProcess.WaitForInputIdle(30000)) { Write-Host 'ROBLOX_STUDIO_GUI_READY=YES' }
+            else { Write-Host 'ROBLOX_STUDIO_GUI_READY=TIMEOUT_CONTINUE_MCP_PROBE' }
+          } catch { Write-Host 'ROBLOX_STUDIO_GUI_READY=UNAVAILABLE_CONTINUE_MCP_PROBE' }
           $ownedStudioIds = @([string]$studioProcess.Id)
           $env:VIBE2_STUDIO_PROCESS_ID = [string]$studioProcess.Id
           $env:VIBE2_STUDIO_PROCESS_IDS = $ownedStudioIds -join ','
@@ -2206,9 +2230,11 @@ jobs:
             # Rebind only this job's unique Place path, never a user window or a fresh launch.
             $exactPlacePattern = '(?i)(?:^|[\s"])' + [regex]::Escape($env:VIBE2_LOCAL_PLACE_FILE) + '(?=[\s"]|$)'
             $launchStarted = [DateTime]::Parse($env:VIBE2_STUDIO_LAUNCH_STARTED).ToUniversalTime()
+            $launchFamily = @{}
+            foreach ($proof in @($env:VIBE2_STUDIO_OWNED_PROCESS_RECORDS | ConvertFrom-Json)) { $launchFamily[[string]$proof.processId] = $proof }
             $ownedStudio = $null
             for ($handoffWait = 0; $handoffWait -lt 180; $handoffWait++) {
-              $ownedRecords = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction Stop | Where-Object { $_.CreationDate.ToUniversalTime() -ge $launchStarted.AddSeconds(-2) -and [string]$_.CommandLine -match $exactPlacePattern })
+              $ownedRecords = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction Stop | Where-Object { $_.CreationDate.ToUniversalTime() -ge $launchStarted.AddSeconds(-2) -and (([string]$_.CommandLine -match $exactPlacePattern) -or ($launchFamily.ContainsKey([string]$_.ProcessId) -and [math]::Abs(($_.CreationDate.ToUniversalTime() - [DateTime]::Parse($launchFamily[[string]$_.ProcessId].createdAt).ToUniversalTime()).TotalMilliseconds) -le 10)) })
               if ($ownedRecords.Count -eq 1) {
                 $record = $ownedRecords[0]
                 $candidate = Get-Process -Id ([int]$record.ProcessId) -ErrorAction SilentlyContinue
@@ -2414,9 +2440,13 @@ jobs:
           }
           $exactPlacePattern = '(?i)(?:^|[\s"])' + [regex]::Escape($env:VIBE2_LOCAL_PLACE_FILE) + '(?=[\s"]|$)'
           $launchStarted = [DateTime]::Parse($env:VIBE2_STUDIO_LAUNCH_STARTED).ToUniversalTime()
+          $launchFamily = @{}
+          if ($env:VIBE2_STUDIO_OWNED_PROCESS_RECORDS) {
+            foreach ($proof in @($env:VIBE2_STUDIO_OWNED_PROCESS_RECORDS | ConvertFrom-Json)) { $launchFamily[[string]$proof.processId] = $proof }
+          }
           # Rediscover the exact writable Place instead of trusting a launcher PID that may have exited.
           for ($closeProbe = 0; $closeProbe -lt 15; $closeProbe++) {
-            $ownedRecords = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction Stop | Where-Object { $_.CreationDate.ToUniversalTime() -ge $launchStarted.AddSeconds(-2) -and [string]$_.CommandLine -match $exactPlacePattern })
+            $ownedRecords = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction Stop | Where-Object { $_.CreationDate.ToUniversalTime() -ge $launchStarted.AddSeconds(-2) -and (([string]$_.CommandLine -match $exactPlacePattern) -or ($launchFamily.ContainsKey([string]$_.ProcessId) -and [math]::Abs(($_.CreationDate.ToUniversalTime() - [DateTime]::Parse($launchFamily[[string]$_.ProcessId].createdAt).ToUniversalTime()).TotalMilliseconds) -le 10)) })
             foreach ($record in $ownedRecords) {
               $ownedStudio = Get-Process -Id ([int]$record.ProcessId) -ErrorAction SilentlyContinue
               if (-not $ownedStudio -or $ownedStudio.ProcessName -ne 'RobloxStudioBeta') { continue }

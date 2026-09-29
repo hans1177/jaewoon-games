@@ -2461,6 +2461,10 @@ test('Studio launcher handoff remains bound to one isolated Place and cleanup re
   const launch=block.indexOf('$placeLaunchProcess = Start-Process');
   assert.ok(block.indexOf('VIBE2_STUDIO_LAUNCH_STARTED=$')<launch);
   assert.ok(block.indexOf('VIBE2_LOCAL_PLACE_FILE=$')<launch);
+  assert.ok(block.indexOf('VIBE2_STUDIO_OWNED_PROCESS_RECORDS=')<block.indexOf('.WaitForInputIdle('));
+  assert.match(block,/\$parent\.CreationDate\.ToUniversalTime\(\) - \$parentCreated\)\.TotalMilliseconds\) -gt 10/);
+  assert.match(block,/\$record\.CreationDate\.ToUniversalTime\(\) -lt \$parentCreated/);
+  assert.match(block,/\$candidate\.MainWindowHandle -ne 0/);
   const retry=block.slice(block.indexOf('# The official launcher may hand'),block.indexOf('if (-not $sessionCompleted)'));
   assert.match(retry,/CreationDate\.ToUniversalTime\(\) -ge \$launchStarted\.AddSeconds\(-2\)/);
   assert.match(retry,/\$ownedRecords\.Count -eq 1/);
@@ -2472,6 +2476,9 @@ test('Studio launcher handoff remains bound to one isolated Place and cleanup re
   assert.match(close,/\$unattributed\.Count\) \{ throw/);
   assert.match(close,/ROBLOX_STUDIO_UNATTRIBUTED_PROCESS=/);
   assert.match(close,/parentProcessId = \[int\]\$record\.ParentProcessId/);
+  assert.match(close,/VIBE2_STUDIO_OWNED_PROCESS_RECORDS \| ConvertFrom-Json/);
+  assert.match(close,/\$launchFamily\.ContainsKey\(\[string\]\$_.ProcessId\)/);
+  assert.match(close,/\.TotalMilliseconds\) -le 10/);
   assert.doesNotMatch(close,/VIBE2_STUDIO_PROCESS_IDS|Stop-Process -Name/);
 
   // Execute the workflow's actual path-boundary expression against unrelated windows.
