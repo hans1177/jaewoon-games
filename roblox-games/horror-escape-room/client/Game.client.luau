@@ -1,6 +1,6 @@
 -- 파일명: roblox-games/horror-escape-room/client/Game.client.luau
 -- roblox-games/horror-escape-room/client/Game.client.luau
--- 심야 술래잡기 모바일 추격 HUD / 상황별 행동 UI
+-- 심야 감염전 모바일 추격 HUD / 상황별 행동 UI
 
 -- 서비스
 local Players=game:GetService("Players")
@@ -8,6 +8,8 @@ local RS=game:GetService("ReplicatedStorage")
 local UserInputService=game:GetService("UserInputService")
 local SoundService=game:GetService("SoundService")
 local RunService=game:GetService("RunService")
+local ContentProvider=game:GetService("ContentProvider")
+local TweenService=game:GetService("TweenService")
 
 -- 참조
 local touchEnabled=UserInputService.TouchEnabled
@@ -64,7 +66,100 @@ local gui=Instance.new("ScreenGui")
 gui.Name="MidnightTagHUD"
 gui.ResetOnSpawn=false
 gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
+gui.IgnoreGuiInset=false
 gui.Parent=p:WaitForChild("PlayerGui")
+
+-- 로딩: 클라이언트 핵심 리소스와 서버 맵 준비가 끝날 때까지 로비 진입을 가린다.
+local loadingLayer=Instance.new("Frame")
+loadingLayer.Name="LoadingScreen"
+loadingLayer.Size=UDim2.fromScale(1,1)
+loadingLayer.BackgroundColor3=Color3.fromRGB(8,10,15)
+loadingLayer.BorderSizePixel=0
+loadingLayer.ZIndex=100
+loadingLayer.Parent=gui
+
+local loadingTitle=Instance.new("TextLabel")
+loadingTitle.Name="LoadingTitle"
+loadingTitle.AnchorPoint=Vector2.new(.5,.5)
+loadingTitle.Position=UDim2.fromScale(.5,.43)
+loadingTitle.Size=UDim2.new(.86,0,0,42)
+loadingTitle.BackgroundTransparency=1
+loadingTitle.Text="심야 감염전"
+loadingTitle.TextColor3=Color3.fromRGB(242,244,248)
+loadingTitle.TextSize=30
+loadingTitle.Font=Enum.Font.GothamBold
+loadingTitle.ZIndex=101
+loadingTitle.Parent=loadingLayer
+
+local loadingStatus=Instance.new("TextLabel")
+loadingStatus.Name="LoadingStatus"
+loadingStatus.AnchorPoint=Vector2.new(.5,.5)
+loadingStatus.Position=UDim2.fromScale(.5,.51)
+loadingStatus.Size=UDim2.new(.82,0,0,28)
+loadingStatus.BackgroundTransparency=1
+loadingStatus.Text="게임 리소스 준비 중"
+loadingStatus.TextColor3=Color3.fromRGB(165,176,193)
+loadingStatus.TextSize=14
+loadingStatus.Font=Enum.Font.GothamMedium
+loadingStatus.ZIndex=101
+loadingStatus.Parent=loadingLayer
+
+local loadingTrack=Instance.new("Frame")
+loadingTrack.Name="LoadingTrack"
+loadingTrack.AnchorPoint=Vector2.new(.5,.5)
+loadingTrack.Position=UDim2.fromScale(.5,.57)
+loadingTrack.Size=UDim2.new(.58,0,0,6)
+loadingTrack.BackgroundColor3=Color3.fromRGB(34,39,49)
+loadingTrack.BorderSizePixel=0
+loadingTrack.ZIndex=101
+loadingTrack.Parent=loadingLayer
+local loadingTrackCorner=Instance.new("UICorner");loadingTrackCorner.CornerRadius=UDim.new(0,6);loadingTrackCorner.Parent=loadingTrack
+
+local loadingFill=Instance.new("Frame")
+loadingFill.Name="LoadingFill"
+loadingFill.Size=UDim2.fromScale(.08,1)
+loadingFill.BackgroundColor3=Color3.fromRGB(150,55,70)
+loadingFill.BorderSizePixel=0
+loadingFill.ZIndex=102
+loadingFill.Parent=loadingTrack
+local loadingFillCorner=Instance.new("UICorner");loadingFillCorner.CornerRadius=UDim.new(0,6);loadingFillCorner.Parent=loadingFill
+
+local loadingVisible=true
+local function setLoadingProgress(progress,status)
+ loadingFill:TweenSize(UDim2.fromScale(math.clamp(progress,0,1),1),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,.18,true)
+ if status then loadingStatus.Text=status end
+end
+local function finishLoading()
+ if not loadingVisible then return end
+ loadingVisible=false
+ setLoadingProgress(1,"로비 준비 완료")
+ task.wait(.12)
+ local tween=TweenService:Create(loadingLayer,TweenInfo.new(.28,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency=1})
+ tween:Play()
+ task.delay(.3,function()if loadingLayer then loadingLayer.Visible=false end end)
+end
+
+task.spawn(function()
+ setLoadingProgress(.18,"사운드와 UI 준비 중")
+ pcall(function()
+  ContentProvider:PreloadAsync({bgm,chase,actionSfx,warningSfx,resultSfx,footstepSfx,freezeSfx,rescueSfx})
+ end)
+ setLoadingProgress(.55,"서버 로비 연결 중")
+ local deadline=os.clock()+(C.LobbyLoadTimeoutSeconds or 12)
+ while workspace:GetAttribute("MapReady")~=true and os.clock()<deadline do
+  if workspace:GetAttribute("MapBuilding")==true then setLoadingProgress(.7,"맵 구성 중") end
+  task.wait(.1)
+ end
+ if workspace:GetAttribute("MapReady")~=true then
+  setLoadingProgress(.78,"로비 연결 지연 · 계속 준비 중")
+  while workspace:GetAttribute("MapReady")~=true do task.wait(.25) end
+ end
+ setLoadingProgress(.92,"플레이어 상태 동기화 중")
+ local syncDeadline=os.clock()+3
+ while p:GetAttribute("LobbyReady")~=true and os.clock()<syncDeadline do task.wait(.1) end
+ finishLoading()
+end)
+
 task.spawn(function()
  for _=1,20 do
   foundationRemote:FireServer("INPUT_READY")
@@ -105,6 +200,111 @@ local function makeButton(parent,text,color)
  roundify(b,13);outline(b,.45)
  return b
 end
+
+-- 캐릭터 모션: 기본 Animator를 유지하고 Motor6D C0에 작은 보조 움직임만 합성한다.
+local motionHumanoid=nil
+local motionRoot=nil
+local motionJoints={}
+local motionPhase=0
+local motionImpulseKind=""
+local motionImpulseUntil=0
+
+local function setMotionImpulse(kind,duration)
+ motionImpulseKind=kind or""
+ motionImpulseUntil=os.clock()+(duration or .3)
+end
+
+local function findMotionJoint(character,names)
+ for _,d in ipairs(character:GetDescendants())do
+  if d:IsA("Motor6D")and table.find(names,d.Name)then return d end
+ end
+ return nil
+end
+
+local function bindCharacterMotion(character)
+ local humanoid=character:WaitForChild("Humanoid",5)
+ local root=character:WaitForChild("HumanoidRootPart",5)
+ if not humanoid or not root then return end
+ motionHumanoid=humanoid
+ motionRoot=root
+ motionPhase=0
+ motionJoints={}
+ local specs={
+  Body={"Waist","Root","RootJoint"},
+  Neck={"Neck"},
+  LeftShoulder={"LeftShoulder","Left Shoulder"},
+  RightShoulder={"RightShoulder","Right Shoulder"},
+ }
+ for key,names in pairs(specs)do
+  local joint=findMotionJoint(character,names)
+  if joint then motionJoints[key]={joint=joint,baseC0=joint.C0}end
+ end
+end
+
+local function applyMotionJoint(key,offset,alpha)
+ local row=motionJoints[key]
+ if not row or not row.joint or not row.joint.Parent then return end
+ row.joint.C0=row.joint.C0:Lerp(row.baseC0*offset,alpha)
+end
+
+RunService:BindToRenderStep("MidnightCharacterMotion",Enum.RenderPriority.Character.Value+1,function(dt)
+ local humanoid=motionHumanoid
+ local root=motionRoot
+ if not humanoid or not root or not root.Parent or humanoid.Health<=0 then return end
+
+ local running=p:GetAttribute("RoundState")=="RUNNING"
+ local role=p:GetAttribute("Role")or"WAITING"
+ local moveAmount=running and math.clamp(humanoid.MoveDirection.Magnitude,0,1)or 0
+ local localMove=root.CFrame:VectorToObjectSpace(humanoid.MoveDirection)
+ local pace=role=="MONSTER"and 8.4 or 10.5
+ motionPhase+=dt*(moveAmount>.05 and pace or 2.1)
+
+ local breath=math.sin(os.clock()*2.15)
+ local stride=math.sin(motionPhase)
+ local strideOpp=math.sin(motionPhase+math.pi)
+ local monster=role=="MONSTER"
+ local baseLean=monster and math.rad(-4.5)or 0
+ local forwardLean=math.rad((monster and 10 or 6)*math.clamp(localMove.Z,-1,1))*moveAmount
+ local sideLean=math.rad(-4.5*math.clamp(localMove.X,-1,1))*moveAmount
+ local bob=math.abs(math.sin(motionPhase*2))*moveAmount*.025
+
+ local actionPitch=0
+ local actionRoll=0
+ local rightAction=0
+ local leftAction=0
+ if os.clock()<motionImpulseUntil then
+  if motionImpulseKind=="DASH"then
+   actionPitch=math.rad(-11)
+  elseif motionImpulseKind=="PURIFY"then
+   actionPitch=math.rad(-3);rightAction=math.rad(-34);leftAction=math.rad(8)
+  elseif motionImpulseKind=="ABILITY"then
+   actionPitch=math.rad(-8);rightAction=math.rad(-20);leftAction=math.rad(-20)
+  elseif motionImpulseKind=="INFECT"then
+   actionPitch=math.rad(-7);actionRoll=math.rad(math.sin(os.clock()*34)*5)
+  end
+ elseif motionImpulseKind~=""then
+  motionImpulseKind=""
+ end
+
+ local body=CFrame.new(0,bob,0)*CFrame.Angles(baseLean+forwardLean+actionPitch,0,sideLean+actionRoll)
+ local neck=CFrame.Angles(math.rad(breath*.7),0,math.rad(-sideLean*20/math.pi))
+ local armSwing=math.rad(stride*10*moveAmount)
+ if monster then armSwing=math.rad(stride*15*moveAmount-4)end
+ local shoulderBreath=math.rad(breath*.7)
+ local alpha=math.clamp(dt*13,0,1)
+ applyMotionJoint("Body",body,alpha)
+ applyMotionJoint("Neck",neck,alpha)
+ applyMotionJoint("LeftShoulder",CFrame.Angles(armSwing+shoulderBreath+leftAction,0,0),alpha)
+ applyMotionJoint("RightShoulder",CFrame.Angles(-armSwing+shoulderBreath+rightAction,0,0),alpha)
+
+ if moveAmount<=.05 and motionImpulseKind==""then
+  local idleBody=CFrame.Angles(baseLean+math.rad(breath*.8),0,0)
+  applyMotionJoint("Body",idleBody,math.clamp(dt*5,0,1))
+ end
+end)
+
+if p.Character then task.defer(bindCharacterMotion,p.Character)end
+p.CharacterAdded:Connect(bindCharacterMotion)
 
 local chaseTint=Instance.new("Frame")
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
@@ -544,7 +744,7 @@ local ruleTitle=Instance.new("TextLabel")
 ruleTitle.Size=UDim2.new(1,-16,0,24)
 ruleTitle.Position=UDim2.fromOffset(8,6)
 ruleTitle.BackgroundTransparency=1
-ruleTitle.Text="심야 술래잡기 · 게임 방법"
+ruleTitle.Text="심야 감염전 · 게임 방법"
 ruleTitle.TextColor3=Color3.fromRGB(255,225,160)
 ruleTitle.TextSize=15
 ruleTitle.Font=Enum.Font.GothamBold
@@ -585,8 +785,8 @@ roundify(monsterRule,8)
 local setupPanel=Instance.new("Frame")
 setupPanel.Name="RoleSetup"
 setupPanel.AnchorPoint=Vector2.new(.5,.5)
-setupPanel.Position=UDim2.fromScale(.5,.62)
-setupPanel.Size=UDim2.fromOffset(286,118)
+setupPanel.Position=UDim2.fromScale(.5,.64)
+setupPanel.Size=UDim2.fromOffset(304,194)
 setupPanel.BackgroundColor3=Color3.fromRGB(25,27,35)
 setupPanel.BackgroundTransparency=.04
 setupPanel.ZIndex=10
@@ -594,8 +794,8 @@ setupPanel.Parent=gui
 roundify(setupPanel,16);outline(setupPanel,.35)
 
 local setupTitle=Instance.new("TextLabel")
-setupTitle.Size=UDim2.new(1,-16,0,28)
-setupTitle.Position=UDim2.fromOffset(8,8)
+setupTitle.Size=UDim2.new(1,-16,0,26)
+setupTitle.Position=UDim2.fromOffset(8,7)
 setupTitle.BackgroundTransparency=1
 setupTitle.Text="8인 감염전 · 인간 4 VS 몬스터 4"
 setupTitle.TextColor3=Color3.fromRGB(255,255,255)
@@ -604,30 +804,51 @@ setupTitle.Font=Enum.Font.GothamBold
 setupTitle.ZIndex=11
 setupTitle.Parent=setupPanel
 
-local setupChosen=false
+local lobbyStatus=Instance.new("TextLabel")
+lobbyStatus.Name="LobbyStatus"
+lobbyStatus.Size=UDim2.new(1,-18,0,20)
+lobbyStatus.Position=UDim2.fromOffset(9,34)
+lobbyStatus.BackgroundTransparency=1
+lobbyStatus.TextColor3=Color3.fromRGB(184,193,208)
+lobbyStatus.TextSize=11
+lobbyStatus.Font=Enum.Font.GothamMedium
+lobbyStatus.TextXAlignment=Enum.TextXAlignment.Left
+lobbyStatus.ZIndex=11
+lobbyStatus.Parent=setupPanel
+
+local selectionStatus=Instance.new("TextLabel")
+selectionStatus.Name="SelectionStatus"
+selectionStatus.Size=UDim2.new(1,-18,0,22)
+selectionStatus.Position=UDim2.fromOffset(9,114)
+selectionStatus.BackgroundTransparency=1
+selectionStatus.TextColor3=Color3.fromRGB(220,225,235)
+selectionStatus.TextSize=11
+selectionStatus.Font=Enum.Font.GothamBold
+selectionStatus.TextXAlignment=Enum.TextXAlignment.Left
+selectionStatus.ZIndex=11
+selectionStatus.Parent=setupPanel
+
 local setupButtons={
  {C.Actions.PREFER_SURVIVOR,"인간 선호",Color3.fromRGB(50,112,145)},
- {C.Actions.PREFER_MONSTER,"귀신 선호",Color3.fromRGB(145,48,59)},
+ {C.Actions.PREFER_MONSTER,"몬스터 선호",Color3.fromRGB(145,48,59)},
 }
 for i,a in ipairs(setupButtons)do
  local b=makeButton(setupPanel,a[2],a[3])
  b.ZIndex=11
  local col=(i-1)%2
- b.Size=UDim2.new(.465,0,0,46)
- b.Position=UDim2.new(.025+col*.485,0,0,41)
+ b.Size=UDim2.new(.465,0,0,48)
+ b.Position=UDim2.new(.025+col*.485,0,0,58)
  b.Activated:Connect(function()
   actionSfx.TimePosition=0;actionSfx:Play()
   remote:FireServer(a[1])
-  setupChosen=true
-  setupPanel.Visible=false
  end)
 end
 
 local humanCycle=makeButton(setupPanel,"인간 변경",Color3.fromRGB(49,91,105))
-humanCycle.ZIndex=11;humanCycle.Size=UDim2.new(.44,0,0,28);humanCycle.Position=UDim2.new(.04,0,1,-30)
+humanCycle.ZIndex=11;humanCycle.Size=UDim2.new(.44,0,0,36);humanCycle.Position=UDim2.new(.04,0,1,-42)
 humanCycle.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.NEXT_HUMAN)end)
 local monsterCycle=makeButton(setupPanel,"몬스터 변경",Color3.fromRGB(76,58,96))
-monsterCycle.ZIndex=11;monsterCycle.Size=UDim2.new(.44,0,0,28);monsterCycle.Position=UDim2.new(.52,0,1,-30)
+monsterCycle.ZIndex=11;monsterCycle.Size=UDim2.new(.44,0,0,36);monsterCycle.Position=UDim2.new(.52,0,1,-42)
 monsterCycle.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.NEXT_MONSTER)end)
 
 -- 라운드 행동 버튼: 역할에 따라 딱 필요한 버튼만 노출
@@ -642,20 +863,25 @@ actionDock.Parent=gui
 
 local rescueButton=makeButton(actionDock,"정화 공격",Color3.fromRGB(42,126,151))
 rescueButton.Size=UDim2.fromOffset(91,40);rescueButton.Position=UDim2.fromOffset(4,4);rescueButton.ZIndex=11
-rescueButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.PURIFY)end)
+rescueButton.Activated:Connect(function()setMotionImpulse("PURIFY",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.PURIFY)end)
 
 local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(58,94,146))
 dashButton.Size=UDim2.fromOffset(91,40);dashButton.Position=UDim2.fromOffset(99,4);dashButton.ZIndex=11
-dashButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
+dashButton.Activated:Connect(function()setMotionImpulse("DASH",.38);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
 
 local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(157,49,65))
 abilityButton.Size=UDim2.fromOffset(112,40);abilityButton.Position=UDim2.fromOffset(41,4);abilityButton.ZIndex=11
-abilityButton.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
+abilityButton.Activated:Connect(function()setMotionImpulse("ABILITY",.44);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
 
 local function monsterName()
  local id=p:GetAttribute("MonsterForm")or"DRACULA"
  for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f.Name end end
  return"드라큘라"
+end
+local function humanName()
+ local id=p:GetAttribute("HumanForm")or"BROADCAST"
+ for _,f in ipairs(C.HumanForms or{})do if f.Id==id then return f.Name end end
+ return"방송부"
 end
 
 local function render()
@@ -687,9 +913,18 @@ local function render()
  end
  roundLine.Text=running and(string.format("%d초",seconds))or round
 
- if round:find("^RESULT_") then setupChosen=false end
- setupPanel.Visible=not setupChosen and not running and not round:find("^RESULT_")
- ruleCard.Visible=setupPanel.Visible
+ local realPlayers=tonumber(p:GetAttribute("LobbyRealPlayers"))or #Players:GetPlayers()
+ local aiFill=tonumber(p:GetAttribute("LobbyAIFill"))or math.max(0,(C.TargetPopulation or 8)-realPlayers)
+ local lobbyPhase=tostring(p:GetAttribute("LobbyPhase")or round)
+ local phaseText=lobbyPhase=="INTERMISSION"and("매치 준비 · "..seconds.."초 후 시작")or lobbyPhase=="RUNNING"and"라운드 진행"or lobbyPhase=="RESULT"and"결과 정산"or lobbyPhase=="LOADING"and"로비 준비"or"플레이어 대기"
+ lobbyStatus.Text=string.format("실제 %d명 · AI %d명 충원 예정 · %s",realPlayers,aiFill,phaseText)
+ local pref=p:GetAttribute("MonsterPreference")or"ANY"
+ local prefText=pref=="MONSTER"and"몬스터 선호"or pref=="SURVIVOR"and"인간 선호"or"자동 배정"
+ selectionStatus.Text=string.format("%s · 인간 %s · 몬스터 %s",prefText,humanName(),monsterName())
+
+ local selectionConfirmed=p:GetAttribute("LobbySelectionConfirmed")==true
+ setupPanel.Visible=not running and not round:find("^RESULT_")
+ ruleCard.Visible=setupPanel.Visible and not selectionConfirmed
  actionDock.Visible=running
  mapPanel.Visible=running
  rescueButton.Visible=running and role=="SURVIVOR"
@@ -714,7 +949,7 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed"})do
  p:GetAttributeChangedSignal(k):Connect(render)
 end
 
@@ -782,8 +1017,8 @@ p.CharacterAdded:Connect(bindFootsteps)
 
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local value=tostring(p:GetAttribute("FeedbackEvent")or"")
- if value:find("^INFECT:")then warningSfx.TimePosition=0;warningSfx:Play();chaseTint.BackgroundTransparency=.72
- elseif value:find("^PURIFY")then rescueSfx.TimePosition=0;rescueSfx:Play();chaseTint.BackgroundTransparency=.9
+ if value:find("^INFECT:")then setMotionImpulse("INFECT",.72);warningSfx.TimePosition=0;warningSfx:Play();chaseTint.BackgroundTransparency=.72
+ elseif value:find("^PURIFY")then setMotionImpulse("PURIFY",.3);rescueSfx.TimePosition=0;rescueSfx:Play();chaseTint.BackgroundTransparency=.9
  elseif value:find("^RESULT:")then resultSfx.TimePosition=0;resultSfx:Play()end
 end)
 

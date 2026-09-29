@@ -7,7 +7,7 @@ local Config={
  PlayMode = "COMPETITIVE",
  MultiplayerRequired = true,
  SoloPlayable=true,CoopRequired=false,CompetitiveRequired=true,MinimumParticipants=2,
- TargetPopulation=8,SurvivorSlots=4,MonsterSlots=4,RoundSeconds=240,IntermissionSeconds=8,TagDistance=5.5,PurifyDistance=8,PurifyCooldown=5,RemoteName="GameAction",
+ TargetPopulation=8,SurvivorSlots=4,MonsterSlots=4,RoundSeconds=240,IntermissionSeconds=8,LobbyLoadTimeoutSeconds=12,TagDistance=5.5,PurifyDistance=8,PurifyCooldown=5,RemoteName="GameAction",
  SurvivorDashCooldown=7,MonsterAbilityCooldown=7,
  RemoteMinInterval=.08,MaxHorizontalVelocity=92,MaxTeleportStep=48,ArenaLimit=176,
  ObjectiveCount=4,EscapeUnlockObjectives=4,
