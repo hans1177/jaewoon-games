@@ -2184,6 +2184,25 @@ export async function runOfficialStudioMcpPlay({
       }
     }
 
+    if(actualPlayContract?.required===true){
+      const overlayProbe=postActionClientProbe||preActionClientProbe;
+      const blockingOverlay=Number(overlayProbe?.ui?.largeBlockingOverlayCount||0)>0
+        &&Number(overlayProbe?.ui?.largestOverlayCoverage||0)>=0.55;
+      if(blockingOverlay){
+        await wait(450);
+        const overlayConfirm=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
+        if(Number(overlayConfirm?.ui?.largeBlockingOverlayCount||0)>0
+          &&Number(overlayConfirm?.ui?.largestOverlayCoverage||0)>=0.55){
+          checkpoint('initial-ui-playability',false);
+          actions.push({id:'initial-ui-playability',type:'mcp-start-ui-abort',dispatched:true,ok:false});
+          postActionClientProbe=overlayConfirm;
+          try{await client.call('start_stop_play',startStopArgs(playTool.inputSchema||{},studioId,false));started=false;}catch{}
+          throw new Error('ROBLOX_STUDIO_BLOCKING_OVERLAY_ABORT:START_INPUT_OBSCURED');
+        }
+      }
+      checkpoint('initial-ui-playability',true);
+    }
+
     const keyboardTool=client.tool('user_keyboard_input');
     for(const key of ['W','A','D','Space']){
       const result=await client.call('user_keyboard_input',keyboardArgs(keyboardTool.inputSchema||{},studioId,key));
@@ -2676,6 +2695,7 @@ export async function runOfficialStudioMcpPlay({
     }
     const deadStart=signature.startsWith('ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:');
     const floatingWorld=signature.startsWith('ROBLOX_STUDIO_FLOATING_CHARACTER_ABORT:');
+    const blockingOverlay=signature.startsWith('ROBLOX_STUDIO_BLOCKING_OVERLAY_ABORT:');
     if(deadStart){
       scenarioCoverage.push({id:'adaptive-start-playability',pass:false,required:true});
       qualityFailureKinds.push('adaptive-start-playability');
@@ -2693,6 +2713,21 @@ export async function runOfficialStudioMcpPlay({
         }
       });
       errors.push({type:'studio-product-start-playability-error',actionId:'initial-character-playable',signature});
+    }else if(blockingOverlay){
+      scenarioCoverage.push({id:'adaptive-ui-blocking-overlay',pass:false,required:true});
+      qualityFailureKinds.push('adaptive-ui-blocking-overlay');
+      qualityFailureDetails.push({
+        id:'adaptive-ui-blocking-overlay',
+        repairSurface:'MOBILE_UI',
+        priority:'CRITICAL',
+        hint:'A persistent large modal or guide obscures the start controls. Restore a visible actionable close/start control and playable viewport before further Studio QA.',
+        observed:{
+          largeBlockingOverlayCount:Number(postActionClientProbe?.ui?.largeBlockingOverlayCount||0),
+          largestOverlayCoverage:Number(postActionClientProbe?.ui?.largestOverlayCoverage||0),
+          primaryActionDispatched:actions.some(row=>row.id==='ui-primary-action'&&row.ok===true)
+        }
+      });
+      errors.push({type:'studio-product-ui-blocking-error',actionId:'initial-ui-playability',signature});
     }else if(floatingWorld){
       scenarioCoverage.push({id:'adaptive-world-safety',pass:false,required:true});
       qualityFailureKinds.push('adaptive-world-safety');
