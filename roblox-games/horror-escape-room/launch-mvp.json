@@ -1,5 +1,5 @@
 {
-  "version": 15,
+  "version": 20,
   "gameId": "horror-escape-room",
   "gameName": "심야 감염전 [4대4]",
   "releaseStrategy": "FAST_MVP",
@@ -25,7 +25,16 @@
     "classic monster roster: Dracula, Frankenstein, Werewolf, Mummy, Grim Reaper",
     "Roblox Creator Store environment asset decoration with script stripping",
     "distinct expanded school hospital and abandoned theme park subzones",
-    "240-second infection rounds"
+    "240-second infection rounds",
+    "energy combat: purification dash infection attack and monster abilities consume regenerating energy",
+    "map content: reusable energy stations, contested central energy core and one utility interaction per map",
+    "harmless local surprise/comic scenes that never affect competitive authority",
+    "comic team result ceremonies with map-specific jokes",
+    "short server-authoritative comic victory ceremonies for humans monsters and draws",
+    "winning team ceremony keeps AI participants visible until result phase ends",
+    "school hospital and theme park each contain harmless discovery surprises and comic easter eggs",
+    "exploration progression: harmless surprise discoveries plus hidden lore notes",
+    "result ceremony highlights team outcome with comic multiplayer presentation"
   ],
   "deferredUntilAfterMvp": [
     "extra monsters",
@@ -70,7 +79,43 @@
     "lobby real-player and AI-fill visibility",
     "school high-ceiling environment detail",
     "layered player chase and action motion",
-    "AI locomotion motion feedback"
+    "AI locomotion motion feedback",
+    "participation plus win plus capped contribution rewards",
+    "real-player contribution rewards exceed AI farming rewards",
+    "eliminated participants retain round rewards",
+    "100-energy action economy with server-authoritative costs and regeneration",
+    "infection requires explicit monster energy attack rather than body contact",
+    "symmetric 5v3 6v2 7v1 underdog energy passives",
+    "four reusable energy stations plus contested central energy core",
+    "school broadcast hospital surgery-light and theme-park carousel map utilities",
+    "local-only noncompetitive surprise and comic scenes",
+    "server-authoritative non-pay-to-win cosmetic shop",
+    "mid-round joins spectate until next round",
+    "departed active players are replaced by same-role AI",
+    "local-only winner team ceremony for survivor monster and draw results",
+    "map-specific comic ceremony copy without competitive effects",
+    "6-second server-authoritative team victory ceremony",
+    "human and monster victory each have three comic ceremony variants",
+    "draw uses a dedicated comic ceremony",
+    "celebrations never modify combat stats or round authority",
+    "map surprise props are non-collidable non-touchable and non-queryable",
+    "proximity-verified persistent surprise discovery collection",
+    "persistent lore-note collection with title-only progression",
+    "no coins energy combat stats or win authority from exploration collections",
+    "initial lore catalog is intentionally capped near 12 instead of shipping 100 at once",
+    "lore expands gradually through staged sightings and periodic content updates",
+    "playable ghosts are promoted slowly and remain separate from lore collection",
+    "future ghost monetization remains non-pay-to-win",
+    "one-player room creation and host start",
+    "room maximum eight real players with AI filling empty logical slots",
+    "public friends-only and private room visibility",
+    "server-side friend validation and private code joining",
+    "room host transfer when the host leaves before the match",
+    "reserved server access code is never replicated to clients",
+    "Studio room flow uses local fallback without TeleportService publishing",
+    "initial world-ghost compendium contains exactly twelve non-playable ghosts",
+    "world-ghost compendium uses three sighting stages and two accepted sightings per round",
+    "completed ghost duplicates convert into contract fragments without combat bonuses"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -168,5 +213,38 @@
       "Console runtime errors remain release-blocking and are persisted separately from MCP infrastructure failures.",
       "After role preference input, the MCP scenario polls for the role-specific action surface before generic movement so the solo-round grace window cannot hide the action control."
     ]
+  },
+  "contentRoadmap": {
+    "path": "roblox-games/horror-escape-room/CONTENT_ROADMAP.md",
+    "strategy": "GRADUAL_CONTENT_CONSUMPTION",
+    "initialLoreCount": 12,
+    "sightingStagesPerLore": 3,
+    "updateCadence": "2-3 weeks",
+    "loreAddedPerUpdate": "3-5",
+    "longTermLoreTarget": 100,
+    "playableGhostReleasePace": "0-1 per update",
+    "monetization": "NON_PAY_TO_WIN"
+  },
+  "roomSystem": {
+    "minPlayers": 1,
+    "maxPlayers": 8,
+    "aiFill": true,
+    "visibility": [
+      "PUBLIC",
+      "FRIENDS",
+      "PRIVATE"
+    ],
+    "hostStartRequired": true,
+    "friendValidation": "SERVER_AUTHORITATIVE",
+    "reservation": "ROBLOX_RESERVED_SERVER",
+    "studioFallback": "LOCAL_ROOM_ONLY"
+  },
+  "ghostCompendium": {
+    "initialGhosts": 12,
+    "maxStage": 3,
+    "maxSightingsPerRound": 2,
+    "fragmentsPerContract": 24,
+    "playableAtLaunch": false,
+    "gradualPlayablePromotion": true
   }
 }
