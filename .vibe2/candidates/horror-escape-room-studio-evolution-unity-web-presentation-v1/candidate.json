@@ -1,0 +1,35 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "            var p=enemy.transform.position;",
+      "replace": "            var p=enemy.transform.position;\n            Debug.Log(\"JAEWOON_UNITY_WEB_QA ENEMY_POSITION game=\" + GameId + \" mode=\" + Mode + \" status=\" + status);"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "            var p=player.transform.position;",
+      "replace": "            var p=player.transform.position;\n            Debug.Log(\"JAEWOON_UNITY_WEB_QA PLAYER_POSITION game=\" + GameId + \" mode=\" + Mode + \" status=\" + status);"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "        Camera cam = Camera.main;",
+      "replace": "        Camera cam = Camera.main;\n        cam.transform.position = new Vector3(0f, 1f, 3f);"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "            enemy.transform.position=p;",
+      "replace": "            enemy.transform.position = p;\n            Debug.Log(\"JAEWOON_UNITY_WEB_QA ENEMY_POSITION game=\" + GameId + \" mode=\" + Mode + \" status=\" + status);"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "            player.transform.position=p;",
+      "replace": "            player.transform.position = p;\n            Debug.Log(\"JAEWOON_UNITY_WEB_QA PLAYER_POSITION game=\" + GameId + \" mode=\" + Mode + \" status=\" + status);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}

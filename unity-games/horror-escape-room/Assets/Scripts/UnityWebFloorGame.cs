@@ -38,6 +38,7 @@ public sealed class UnityWebFloorGame : MonoBehaviour
     private void BuildWorld()
     {
         Camera cam = Camera.main;
+        cam.transform.position = new Vector3(0f, 1f, 3f);
         if (cam == null)
         {
             var cameraObject = new GameObject("Main Camera");
@@ -88,15 +89,19 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         {
             enemy.transform.Rotate(0f,55f * Time.unscaledDeltaTime,0f,Space.World);
             var p=enemy.transform.position;
+            Debug.Log("JAEWOON_UNITY_WEB_QA ENEMY_POSITION game=" + GameId + " mode=" + Mode + " status=" + status);
             p.y=1f+Mathf.Sin(motionClock*2.1f)*0.28f;
-            enemy.transform.position=p;
+            enemy.transform.position = p;
+            Debug.Log("JAEWOON_UNITY_WEB_QA ENEMY_POSITION game=" + GameId + " mode=" + Mode + " status=" + status);
         }
         if (equipment != null) equipment.transform.Rotate(35f*Time.unscaledDeltaTime,45f*Time.unscaledDeltaTime,0f);
         if (player != null && started)
         {
             var p=player.transform.position;
+            Debug.Log("JAEWOON_UNITY_WEB_QA PLAYER_POSITION game=" + GameId + " mode=" + Mode + " status=" + status);
             p.x=-2f+Mathf.Sin(motionClock*1.7f)*0.55f;
-            player.transform.position=p;
+            player.transform.position = p;
+            Debug.Log("JAEWOON_UNITY_WEB_QA PLAYER_POSITION game=" + GameId + " mode=" + Mode + " status=" + status);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha1)) StartGameplay();
