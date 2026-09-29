@@ -855,23 +855,101 @@ monsterCycle.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play
 local actionDock=Instance.new("Frame")
 actionDock.Name="RoundActions"
 actionDock.AnchorPoint=Vector2.new(.5,1)
-actionDock.Position=UDim2.new(.5,0,1,-12)
-actionDock.Size=UDim2.fromOffset(194,48)
+actionDock.Position=UDim2.new(.5,0,1,-18)
+actionDock.Size=UDim2.fromOffset(236,58)
 actionDock.BackgroundTransparency=1
 actionDock.ZIndex=10
 actionDock.Parent=gui
 
 local rescueButton=makeButton(actionDock,"정화 공격",Color3.fromRGB(42,126,151))
-rescueButton.Size=UDim2.fromOffset(91,40);rescueButton.Position=UDim2.fromOffset(4,4);rescueButton.ZIndex=11
+rescueButton.Size=UDim2.fromOffset(110,50);rescueButton.Position=UDim2.fromOffset(5,4);rescueButton.ZIndex=11
 rescueButton.Activated:Connect(function()setMotionImpulse("PURIFY",.34);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.PURIFY)end)
 
 local dashButton=makeButton(actionDock,"대시",Color3.fromRGB(58,94,146))
-dashButton.Size=UDim2.fromOffset(91,40);dashButton.Position=UDim2.fromOffset(99,4);dashButton.ZIndex=11
+dashButton.Size=UDim2.fromOffset(110,50);dashButton.Position=UDim2.fromOffset(121,4);dashButton.ZIndex=11
 dashButton.Activated:Connect(function()setMotionImpulse("DASH",.38);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.DASH)end)
 
 local abilityButton=makeButton(actionDock,"괴물 스킬",Color3.fromRGB(157,49,65))
-abilityButton.Size=UDim2.fromOffset(112,40);abilityButton.Position=UDim2.fromOffset(41,4);abilityButton.ZIndex=11
+abilityButton.Size=UDim2.fromOffset(132,50);abilityButton.Position=UDim2.fromOffset(52,4);abilityButton.ZIndex=11
 abilityButton.Activated:Connect(function()setMotionImpulse("ABILITY",.44);actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.ABILITY)end)
+
+-- 액션 쿨다운은 서버 동기화 시간 기준으로 표시한다.
+local cooldownClock=0
+local function updateCooldownButton(button,readyAt,readyText,cooldownText)
+ local left=math.max(0,(tonumber(readyAt)or 0)-workspace:GetServerTimeNow())
+ local ready=left<=0
+ button.Active=ready
+ button.AutoButtonColor=ready
+ button.BackgroundTransparency=ready and 0 or .28
+ button.Text=ready and readyText or string.format("%s %.1f",cooldownText,left)
+end
+RunService.RenderStepped:Connect(function(dt)
+ cooldownClock+=dt
+ if cooldownClock<.08 then return end
+ cooldownClock=0
+ updateCooldownButton(rescueButton,p:GetAttribute("PurifyReadyAt"),"정화 공격","정화")
+ updateCooldownButton(dashButton,p:GetAttribute("DashReadyAt"),"대시","대시")
+ updateCooldownButton(abilityButton,p:GetAttribute("AbilityReadyAt"),"괴물 스킬","스킬")
+end)
+
+-- 라운드 결과 화면
+local resultPanel=Instance.new("Frame")
+resultPanel.Name="RoundResult"
+resultPanel.AnchorPoint=Vector2.new(.5,.5)
+resultPanel.Position=UDim2.fromScale(.5,.42)
+resultPanel.Size=UDim2.fromOffset(304,132)
+resultPanel.BackgroundColor3=Color3.fromRGB(18,21,27)
+resultPanel.BackgroundTransparency=.03
+resultPanel.ZIndex=20
+resultPanel.Visible=false
+resultPanel.Parent=gui
+roundify(resultPanel,16);outline(resultPanel,.3)
+
+local resultTitle=Instance.new("TextLabel")
+resultTitle.Size=UDim2.new(1,-18,0,38)
+resultTitle.Position=UDim2.fromOffset(9,10)
+resultTitle.BackgroundTransparency=1
+resultTitle.TextColor3=Color3.fromRGB(255,229,164)
+resultTitle.TextSize=24
+resultTitle.Font=Enum.Font.GothamBold
+resultTitle.ZIndex=21
+resultTitle.Parent=resultPanel
+
+local resultDetail=Instance.new("TextLabel")
+resultDetail.Size=UDim2.new(1,-20,0,58)
+resultDetail.Position=UDim2.fromOffset(10,54)
+resultDetail.BackgroundTransparency=1
+resultDetail.TextColor3=Color3.fromRGB(219,225,235)
+resultDetail.TextSize=13
+resultDetail.TextWrapped=true
+resultDetail.Font=Enum.Font.GothamMedium
+resultDetail.ZIndex=21
+resultDetail.Parent=resultPanel
+
+-- 진행 중 서버 입장자는 다음 라운드까지 관전임을 명확히 보여준다.
+local spectatorPanel=Instance.new("Frame")
+spectatorPanel.Name="SpectatorNotice"
+spectatorPanel.AnchorPoint=Vector2.new(.5,0)
+spectatorPanel.Position=UDim2.new(.5,0,0,82)
+spectatorPanel.Size=UDim2.fromOffset(286,56)
+spectatorPanel.BackgroundColor3=Color3.fromRGB(30,33,42)
+spectatorPanel.BackgroundTransparency=.04
+spectatorPanel.ZIndex=15
+spectatorPanel.Visible=false
+spectatorPanel.Parent=gui
+roundify(spectatorPanel,12);outline(spectatorPanel,.45)
+
+local spectatorText=Instance.new("TextLabel")
+spectatorText.Size=UDim2.new(1,-16,1,-10)
+spectatorText.Position=UDim2.fromOffset(8,5)
+spectatorText.BackgroundTransparency=1
+spectatorText.Text="라운드 진행 중 · 다음 라운드부터 참가"
+spectatorText.TextColor3=Color3.fromRGB(226,231,240)
+spectatorText.TextSize=13
+spectatorText.TextWrapped=true
+spectatorText.Font=Enum.Font.GothamBold
+spectatorText.ZIndex=16
+spectatorText.Parent=spectatorPanel
 
 local function monsterName()
  local id=p:GetAttribute("MonsterForm")or"DRACULA"
@@ -911,7 +989,8 @@ local function render()
  else
   objectiveLine.Text="다음 라운드 준비"
  end
- roundLine.Text=running and(string.format("%d초",seconds))or round
+ local resultCode=round:match("^RESULT_(.+)$")
+ roundLine.Text=running and(string.format("%d초",seconds))or round=="SPECTATING"and"관전"or resultCode and"결과"or round
 
  local realPlayers=tonumber(p:GetAttribute("LobbyRealPlayers"))or #Players:GetPlayers()
  local aiFill=tonumber(p:GetAttribute("LobbyAIFill"))or math.max(0,(C.TargetPopulation or 8)-realPlayers)
@@ -923,10 +1002,21 @@ local function render()
  selectionStatus.Text=string.format("%s · 인간 %s · 몬스터 %s",prefText,humanName(),monsterName())
 
  local selectionConfirmed=p:GetAttribute("LobbySelectionConfirmed")==true
- setupPanel.Visible=not running and not round:find("^RESULT_")
+ local spectating=round=="SPECTATING"
+ setupPanel.Visible=not running and not resultCode and not spectating
  ruleCard.Visible=setupPanel.Visible and not selectionConfirmed
  actionDock.Visible=running
  mapPanel.Visible=running
+ spectatorPanel.Visible=spectating
+ resultPanel.Visible=resultCode~=nil
+ if resultCode then
+  resultTitle.Text=resultCode=="SURVIVOR"and"인간 승리"or resultCode=="MONSTER"and"몬스터 승리"or"무승부"
+  local reward=tonumber(p:GetAttribute("LastRoundReward"))or 0
+  local coins=tonumber(p:GetAttribute("Coins"))or 0
+  local lastRole=tostring(p:GetAttribute("LastRoundRole")or"")
+  local roleLabel=lastRole=="SURVIVOR"and"인간"or lastRole=="MONSTER"and"몬스터"or"관전"
+  resultDetail.Text=string.format("최종 진영 %s · 보상 +%d 코인\n보유 코인 %d · 잠시 후 다음 라운드",roleLabel,reward,coins)
+ end
  rescueButton.Visible=running and role=="SURVIVOR"
  dashButton.Visible=running and role=="SURVIVOR"
  abilityButton.Visible=running and role=="MONSTER"
@@ -949,7 +1039,7 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","PurifyReadyAt","DashReadyAt","AbilityReadyAt","Spectating"})do
  p:GetAttributeChangedSignal(k):Connect(render)
 end
 
