@@ -93,6 +93,33 @@ local Config={
   {Count=20,Title="야간 조사원"},
   {Count=26,Title="심야 괴담 조사원"},
  },
+ DiscoveryTitles={
+  {Count=0,Title="초보 목격자"},
+  {Count=3,Title="구석 탐험가"},
+  {Count=8,Title="괴담 수집가"},
+  {Count=16,Title="심야 목격자"},
+ },
+ ContentRollout={
+  ActiveWave=1,
+  TotalEntries=26,
+  Waves={
+   {Id=1,Name="첫 심야",Entries={
+    "SCHOOL_01","SCHOOL_HALL_SHADOW","SCHOOL_JANITOR",
+    "HOSPITAL_01","HOSPITAL_WHEELCHAIR","HOSPITAL_XRAY",
+    "PARK_01","PARK_CLOWN",
+   }},
+   {Id=2,Name="두 번째 기록",Entries={
+    "SCHOOL_02","SCHOOL_LOCKER_EYES","SCHOOL_GYM_BALL",
+    "HOSPITAL_02","HOSPITAL_CURTAIN","HOSPITAL_MONITOR",
+    "PARK_02","PARK_TICKET",
+   }},
+   {Id=3,Name="심야 완결",Entries={
+    "SCHOOL_03","SCHOOL_04","SCHOOL_BOARD_GAG","SCHOOL_CAFETERIA",
+    "HOSPITAL_03","HOSPITAL_BED",
+    "PARK_03","PARK_HORSE","PARK_ARCADE","PARK_POPCORN",
+   }},
+  },
+ },
  ArchiveGhost={
   Name="괴담 기록자",
   RequiredTotal=26,
