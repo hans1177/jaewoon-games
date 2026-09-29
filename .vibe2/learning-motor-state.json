@@ -5310,7 +5310,8 @@
       "coding_negative_1fsswr4",
       "coding_negative_1i91yyr",
       "coding_negative_k4b22e",
-      "coding_negative_sdmpta"
+      "coding_negative_sdmpta",
+      "coding_negative_11kr8sl"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -14021,7 +14022,7 @@
         "verifiedApplications": 0,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 0,
-        "verifiedFailures": 15,
+        "verifiedFailures": 16,
         "games": {},
         "targets": {},
         "contextModes": {
@@ -14162,7 +14163,7 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 6,
+            "verifiedFailures": 7,
             "games": {},
             "targets": {},
             "failureGames": {
@@ -14171,18 +14172,19 @@
               "fantasy-survival": 1,
               "bug-defense": 1,
               "line-defense": 1,
-              "village-dungeons": 1
+              "village-dungeons": 1,
+              "horror-escape-room": 1
             },
             "failureTargets": {
-              "unity": 6
+              "unity": 7
             },
             "failureClasses": {
-              "INVALID_PATH": 4,
+              "INVALID_PATH": 5,
               "TIMEOUT": 2
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1fsswr4",
-            "lastUpdatedAt": "2026-09-29T05:42:55.794Z"
+            "lastFailureEvidence": "coding_negative_11kr8sl",
+            "lastUpdatedAt": "2026-09-29T05:48:41.238Z"
           },
           "unity|EDIT_MATCH|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -14227,8 +14229,8 @@
         },
         "state": "CANDIDATE",
         "lastEvidence": null,
-        "lastFailureEvidence": "coding_negative_1fsswr4",
-        "lastUpdatedAt": "2026-09-29T05:42:55.794Z"
+        "lastFailureEvidence": "coding_negative_11kr8sl",
+        "lastUpdatedAt": "2026-09-29T05:48:41.238Z"
       },
       "BOUNDED_OUTPUT_COMMIT_FIRST": {
         "verifiedApplications": 0,
@@ -17527,7 +17529,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T05:48:25.562Z",
+    "lastBuiltAt": "2026-09-29T05:48:41.316Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -24351,5 +24353,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T05:48:25.562Z"
+  "updatedAt": "2026-09-29T05:48:41.316Z"
 }
