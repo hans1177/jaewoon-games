@@ -729,7 +729,7 @@ local function nearestMonsterDistance()
   if other~=p and other:GetAttribute("Role")=="MONSTER"then
    local oc=other.Character
    local oroot=oc and oc:FindFirstChild("HumanoidRootPart")
-   if oroot then best=math.min(best,(oroot.Position-root.Position).Magnitude)end
+if oroot then best=math.min(best,(oroot.Position-root.Position).Magnitude)end
   end
  end
  local arena=workspace:FindFirstChild("MidnightArena")
