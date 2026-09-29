@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {runInNewContext} from 'node:vm';
 import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope,applyRobloxStudioAssetBindingToExistingSource} from '../tools/company-development-roblox-bootstrap.mjs';
 import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
 import {createRobloxVibe3LearningContext} from '../tools/vibe3-roblox-learning-context.mjs';
@@ -1101,4 +1102,23 @@ test('Roblox BUILD_UP runtime settlement is bound to the exact promoted source t
   assert.match(f9,/const exactTreeMarker='roblox-runtime-await-source-tree:'\+sourceTree/);
   assert.match(f9,/if\(!evidence\.includes\(exactTreeMarker\)\)continue/);
   assert.match(f9,/roblox-runtime-source-tree:\$\{runtime_source_tree_sha\}/);
+});
+
+// 소스 수리가 끝나기 전 동일 빌드를 스튜디오 대기열에 다시 보내지 않는다.
+test('F0 dispatch defers same-source quality repair but resumes for new source and infrastructure recovery',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const start=workflow.indexOf("node - <<'NODE' > /tmp/roblox-local-f0-qa-ids");
+  const script=workflow.slice(workflow.indexOf('\n',start)+1,workflow.indexOf('\n          NODE',start));
+  const item={gameId:'demo',productionClass:'DEVELOPMENT_CONFIRMED',robloxSourceCommit:'new',robloxBuildSourceRevision:'new',robloxBuildArtifactIdentity:'artifact',robloxFoundationF0Passed:true,robloxBuildPreflightPassed:true,robloxBuildOrPackagePassed:true,robloxFoundationF0Evidence:{sourceRevision:'new',artifactIdentity:'artifact',artifactRunId:1},robloxFailureStage:'VIBE_INTERNAL_PLAY'};
+  const run=overrides=>{
+    const sent=[],deferred=[];
+    runInNewContext(script,{require:()=>({readFileSync:()=>JSON.stringify({items:[{...item,...overrides}]})}),process:{env:{REQUESTED_GAME_ID:'demo'}},console:{log:x=>sent.push(x),error:x=>deferred.push(x)}});
+    return{sent,deferred};
+  };
+  const blocked=run({robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:'new'});
+  assert.deepEqual(blocked.sent,[]);
+  assert.equal(blocked.deferred.length,1);
+  assert.deepEqual(run({robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:'old'}).sent,['demo']);
+  assert.deepEqual(run({robloxFailureSignature:'ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING'}).sent,['demo']);
+  assert.deepEqual(run({robloxFoundationF0Passed:false}).sent,[]);
 });

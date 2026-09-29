@@ -301,6 +301,10 @@ function installStyles(){
   style.id='homepageEnhancementStyles';
   style.textContent=`
 .foldGameBtn{min-height:46px;display:flex;align-items:center;justify-content:center}
+.foldGameCompletion{margin-top:8px;font-size:11px;line-height:1.6;color:#526477;overflow-wrap:anywhere}
+.foldGameCompletion summary{cursor:pointer;min-height:36px;display:flex;align-items:center}
+.foldGameCompletion a{display:inline-flex;min-height:36px;align-items:center;color:#1264c4}
+.foldGameCompletion ol{margin:4px 0;padding-left:20px}
 @media(max-width:700px){.gameShelfGrid{grid-template-columns:1fr}.homeFocusBtn{width:100%;min-height:48px}}
 @media(max-width:420px){.foldGameActions{grid-template-columns:repeat(2,minmax(0,1fr))}.foldGameBtn.platformAction{grid-column:1/-1}}
 `;
@@ -332,8 +336,20 @@ function buildCard(row){
     links.web?button(links.web,'웹 플레이','웹 빌드없음','webAction webCompanionAction'):''
   ].join('');
   const meta=platformExposureMeta(game.id)||'Roblox / Unity 앱 개발 준비';
+  const completions=(exposure?.platforms||[]).map(p=>{
+    const label=p.platform==='ROBLOX'?'로블록스':p.platform==='UNITY'?'유니티':esc(p.platform);
+    const history=p.completion;
+    if(!history)return `<div>${label} · 완주 기록 확인 중</div>`;
+    const count=Number.isSafeInteger(history.count)&&history.count>=0?history.count:0;
+    const date=history.lastCompletedAt?new Date(history.lastCompletedAt):null;
+    const last=date&&!Number.isNaN(date.getTime())?new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(date):'';
+    const records=(history.records||[]).filter(r=>/^https:\/\/github\.com\/hans1177\/jaewoon-games\/actions\/runs\/[1-9][0-9]*$/.test(String(r.evidenceUrl||'')));
+    const title=`${label} · 완주 ${count}회${last?' · '+last:''}`;
+    if(!count)return `<div>${title} · 검증된 배포 기록 없음</div>`;
+    return `<details><summary>${esc(title)}</summary><small>보존된 최종 검증·배포 기록 기준. 현재 수리 상태와 별개야. 최근 ${records.length}건 · 한국 시간</small><ol>${records.map(r=>`<li><a href="${esc(r.evidenceUrl)}" target="_blank" rel="noopener noreferrer">${esc(formatDate(r.completedAt))} · 증거 보기</a></li>`).join('')}</ol></details>`;
+  }).join('');
   const direct=links.roblox||links.unity||links.unityWeb||links.web||'';
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameActions">${actions}</div></div></article>`;
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameCompletion">${completions}</div><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
   document.getElementById(id)?.remove();
@@ -392,7 +408,7 @@ function bindDirectGameLaunch(){
   if(document.documentElement.dataset.directGameLaunchBound==='1')return;
   document.documentElement.dataset.directGameLaunchBound='1';
   document.addEventListener('click',event=>{
-    const interactive=event.target.closest('a,button,input,select,textarea,label');
+    const interactive=event.target.closest('a,button,input,select,textarea,label,details,summary');
     if(interactive)return;
     const card=event.target.closest('.foldGameCard,.gameCard');
     if(!card)return;

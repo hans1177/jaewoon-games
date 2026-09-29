@@ -297,3 +297,27 @@ test('queue command reads adaptive cap and duplicate fan-in keeps exactly one ne
   assert.equal(JSON.parse(fs.readFileSync(controlFile,'utf8')).currentMax,30);
   assert.equal(adaptiveRequestedMax(duplicate.adaptiveControl,32),30);
 });
+
+// 코드 수정률은 후보 생성, 검증 통과, 측정 누락을 구분한다.
+test('source mutation rates require actual diff metrics and keep failed QA separate',()=>{
+  const results=[
+    row(1,{outcome:'PASS',metrics:{changedFileCount:2}}),
+    row(2,{outcome:'FAIL',blocker:'incremental-qa-failed',metrics:{changedFileCount:1}}),
+    row(3,{outcome:'PASS',metrics:{changedFileCount:0}}),
+    row(4,{outcome:'FAIL',candidateFailure:{class:'TIMEOUT'},metrics:{changedFileCount:0}}),
+    row(5,{outcome:'PASS'}),
+    row(6,{outcome:'PASS',metrics:{changedFileCount:null}})
+  ];
+  const value=computeParallelismTelemetry({results}).throughput.sourceMutation;
+  assert.equal(value.measuredWorkerCount,4);
+  assert.equal(value.unknownWorkerCount,2);
+  assert.equal(value.changedWorkerCount,2);
+  assert.equal(value.verifiedChangedWorkerCount,1);
+  assert.equal(value.unchangedWorkerCount,2);
+  assert.equal(value.ratePct,50);
+  assert.equal(value.verifiedRatePct,25);
+  assert.equal(value.releaseCompletionClaim,false);
+  const unknown=computeParallelismTelemetry({results:[row(1)]}).throughput.sourceMutation;
+  assert.equal(unknown.ratePct,null);
+  assert.equal(unknown.verifiedRatePct,null);
+});
