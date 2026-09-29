@@ -190,7 +190,7 @@ jobs:
             echo 'reason=evidence-only-origin-or-target-invalid' >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          reject() { echo 'decision=reject' >> "$GITHUB_OUTPUT"; echo "reason=$1" >> "$GITHUB_OUTPUT"; exit 0; }
+          reject() { echo 'decision=reject' >> "$GITHUB_OUTPUT"; echo "reason=$1" >> "$GITHUB_OUTPUT"; echo "VIBE2_CANDIDATE_REJECT_REASON=$1"; exit 0; }
           [[ "$base_sha" =~ ^[0-9a-fA-F]{40}$ ]] || reject base-main-sha-invalid
           # Tree comparisons need this exact snapshot, not every branch and tag's history.
           if ! git cat-file -e "${base_sha}^{commit}" 2>/dev/null; then
@@ -216,9 +216,11 @@ jobs:
           done
 
           if [ "$decision" = 'roblox' ]; then
-            test -f "$source_root/roblox-technical-validation.json" || reject roblox-technical-validation-missing
-            mapfile -t place_files < <(find "$source_root" -type f \( -name '*.rbxl' -o -name '*.rbxlx' \) | sort)
-            [ "${#place_files[@]}" -eq 1 ] || reject roblox-place-package-count-invalid
+            # Source candidates are packaged by roblox-package below. Do not demand
+            # artifacts from that later stage before admitting its source inputs.
+            SOURCE_ROOT="$source_root" node -e 'const fs=require("fs");const p=JSON.parse(fs.readFileSync(process.env.SOURCE_ROOT+"/default.project.json","utf8"));if(!p.tree||typeof p.tree!=="object"||Array.isArray(p.tree))process.exit(1)' || reject roblox-project-input-invalid
+            mapfile -t source_files < <(find "$source_root" -type f \( -name '*.lua' -o -name '*.luau' \) | sort)
+            [ "${#source_files[@]}" -gt 0 ] || reject roblox-source-input-missing
           fi
 
           if [ "$decision" = 'unity' ] && [ "$production_class" = 'RELEASE_CONFIRMED' ]; then
