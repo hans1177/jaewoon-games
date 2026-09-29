@@ -284,6 +284,12 @@ RunService:BindToRenderStep("MidnightCharacterMotion",Enum.RenderPriority.Charac
    actionPitch=math.rad(-7);rightAction=math.rad(-46);leftAction=math.rad(-18)
   elseif motionImpulseKind=="INFECT"then
    actionPitch=math.rad(-7);actionRoll=math.rad(math.sin(os.clock()*34)*5)
+  elseif motionImpulseKind=="CELEBRATE_HUMAN"then
+   actionPitch=math.rad(-5+math.sin(os.clock()*8)*4);rightAction=math.rad(-105);leftAction=math.rad(-105);actionRoll=math.rad(math.sin(os.clock()*7)*5)
+  elseif motionImpulseKind=="CELEBRATE_MONSTER"then
+   actionPitch=math.rad(-12);rightAction=math.rad(-70+math.sin(os.clock()*9)*18);leftAction=math.rad(-70-math.sin(os.clock()*9)*18);actionRoll=math.rad(math.sin(os.clock()*5)*8)
+  elseif motionImpulseKind=="CELEBRATE_DRAW"then
+   actionPitch=math.rad(12);rightAction=math.rad(15);leftAction=math.rad(15)
   end
  elseif motionImpulseKind~=""then
   motionImpulseKind=""
@@ -1335,7 +1341,7 @@ local resultPanel=Instance.new("Frame")
 resultPanel.Name="RoundResult"
 resultPanel.AnchorPoint=Vector2.new(.5,.5)
 resultPanel.Position=UDim2.fromScale(.5,.42)
-resultPanel.Size=UDim2.fromOffset(304,132)
+resultPanel.Size=UDim2.fromOffset(330,292)
 resultPanel.BackgroundColor3=Color3.fromRGB(18,21,27)
 resultPanel.BackgroundTransparency=.03
 resultPanel.ZIndex=20
@@ -1354,8 +1360,8 @@ resultTitle.ZIndex=21
 resultTitle.Parent=resultPanel
 
 local resultDetail=Instance.new("TextLabel")
-resultDetail.Size=UDim2.new(1,-20,0,58)
-resultDetail.Position=UDim2.fromOffset(10,54)
+resultDetail.Size=UDim2.new(1,-20,0,54)
+resultDetail.Position=UDim2.fromOffset(10,50)
 resultDetail.BackgroundTransparency=1
 resultDetail.TextColor3=Color3.fromRGB(219,225,235)
 resultDetail.TextSize=13
@@ -1363,6 +1369,153 @@ resultDetail.TextWrapped=true
 resultDetail.Font=Enum.Font.GothamMedium
 resultDetail.ZIndex=21
 resultDetail.Parent=resultPanel
+
+local ceremonyJoke=Instance.new("TextLabel")
+ceremonyJoke.Name="CeremonyJoke"
+ceremonyJoke.Size=UDim2.new(1,-20,0,34)
+ceremonyJoke.Position=UDim2.fromOffset(10,108)
+ceremonyJoke.BackgroundColor3=Color3.fromRGB(30,33,42)
+ceremonyJoke.BackgroundTransparency=.12
+ceremonyJoke.TextColor3=Color3.fromRGB(240,230,199)
+ceremonyJoke.TextSize=12
+ceremonyJoke.TextWrapped=true
+ceremonyJoke.Font=Enum.Font.GothamBold
+ceremonyJoke.ZIndex=21
+ceremonyJoke.Parent=resultPanel
+roundify(ceremonyJoke,9)
+
+local ceremonyStage=Instance.new("Frame")
+ceremonyStage.Name="TeamCeremony"
+ceremonyStage.Size=UDim2.new(1,-20,0,122)
+ceremonyStage.Position=UDim2.fromOffset(10,150)
+ceremonyStage.BackgroundColor3=Color3.fromRGB(24,27,34)
+ceremonyStage.BackgroundTransparency=.04
+ceremonyStage.ClipsDescendants=true
+ceremonyStage.ZIndex=21
+ceremonyStage.Parent=resultPanel
+roundify(ceremonyStage,12)
+
+local ceremonyFigures={}
+local ceremonyNames={}
+for i=1,4 do
+ local slot=Instance.new("Frame")
+ slot.Name="CeremonySlot"..i
+ slot.AnchorPoint=Vector2.new(.5,1)
+ slot.Position=UDim2.new((i-.5)/4,0,1,-8)
+ slot.Size=UDim2.fromOffset(64,98)
+ slot.BackgroundTransparency=1
+ slot.ZIndex=22
+ slot.Parent=ceremonyStage
+
+ local body=Instance.new("Frame")
+ body.Name="Body"
+ body.AnchorPoint=Vector2.new(.5,1)
+ body.Position=UDim2.new(.5,0,1,-18)
+ body.Size=UDim2.fromOffset(30,48)
+ body.BackgroundColor3=Color3.fromRGB(93,126,145)
+ body.BorderSizePixel=0
+ body.ZIndex=23
+ body.Parent=slot
+ roundify(body,8)
+
+ local head=Instance.new("Frame")
+ head.Name="Head"
+ head.AnchorPoint=Vector2.new(.5,1)
+ head.Position=UDim2.new(.5,0,1,-63)
+ head.Size=UDim2.fromOffset(26,26)
+ head.BackgroundColor3=Color3.fromRGB(210,184,158)
+ head.BorderSizePixel=0
+ head.ZIndex=24
+ head.Parent=slot
+ roundify(head,20)
+
+ local nameLabel=Instance.new("TextLabel")
+ nameLabel.Name="Name"
+ nameLabel.AnchorPoint=Vector2.new(.5,1)
+ nameLabel.Position=UDim2.new(.5,0,1,0)
+ nameLabel.Size=UDim2.fromOffset(70,17)
+ nameLabel.BackgroundTransparency=1
+ nameLabel.TextColor3=Color3.fromRGB(220,225,233)
+ nameLabel.TextSize=9
+ nameLabel.Font=Enum.Font.GothamBold
+ nameLabel.TextTruncate=Enum.TextTruncate.AtEnd
+ nameLabel.ZIndex=24
+ nameLabel.Parent=slot
+
+ ceremonyFigures[i]={slot=slot,body=body,head=head}
+ ceremonyNames[i]=nameLabel
+end
+
+local humanCeremonyLines={
+ "살았다! …근데 내 가방은 어디 갔지?",
+ "단체 사진! 한 명은 또 눈 감았다.",
+ "정화 성공. 퇴근도 성공했으면 좋겠다.",
+}
+local monsterCeremonyLines={
+ "감염 완료. 한 명만 춤을 잘못 외웠다.",
+ "무서운 포즈! …왜 너만 브이 하냐.",
+ "심야 회식 시작. 메뉴는 에너지 코어.",
+}
+local drawCeremonyLines={
+ "양쪽 다 지쳐서 싸울 힘이 없다.",
+ "무승부. 체력보다 자존심이 먼저 쓰러졌다.",
+ "다음 판엔 덜 뛰기로 합의…는 실패 예정.",
+}
+local ceremonySerial=0
+
+local function collectCeremonyNames(winner)
+ local names={}
+ for _,player in ipairs(Players:GetPlayers())do
+  if tostring(player:GetAttribute("LastRoundRole")or"")==winner then table.insert(names,player.DisplayName)end
+ end
+ while #names<4 do table.insert(names,"AI "..tostring(#names+1))end
+ while #names>4 do table.remove(names)end
+ return names
+end
+
+local function playResultCeremony(resultCode)
+ ceremonySerial+=1
+ local serial=ceremonySerial
+ local winner=resultCode=="SURVIVOR"and"SURVIVOR"or resultCode=="MONSTER"and"MONSTER"or"DRAW"
+ local names=winner=="DRAW"and{"인간","몬스터","인간 AI","몬스터 AI"}or collectCeremonyNames(winner)
+ local palette=winner=="SURVIVOR"and Color3.fromRGB(88,165,195)or winner=="MONSTER"and Color3.fromRGB(166,64,82)or Color3.fromRGB(112,117,130)
+ local headColor=winner=="MONSTER"and Color3.fromRGB(92,72,82)or Color3.fromRGB(210,184,158)
+ local lines=winner=="SURVIVOR"and humanCeremonyLines or winner=="MONSTER"and monsterCeremonyLines or drawCeremonyLines
+ ceremonyJoke.Text=lines[(ceremonySerial-1)%#lines+1]
+
+ for i,row in ipairs(ceremonyFigures)do
+  row.body.BackgroundColor3=palette
+  row.head.BackgroundColor3=headColor
+  ceremonyNames[i].Text=names[i]or("AI "..i)
+  row.slot.Rotation=0
+  row.slot.Position=UDim2.new((i-.5)/4,0,1,28)
+  TweenService:Create(row.slot,TweenInfo.new(.38+.06*i,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Position=UDim2.new((i-.5)/4,0,1,-8)}):Play()
+ end
+
+ if winner=="SURVIVOR"then
+  task.delay(.45,function()
+   if ceremonySerial~=serial then return end
+   for i,row in ipairs(ceremonyFigures)do
+    local lift=i==4 and-2 or-10
+    local rot=i==4 and 18 or(i%2==0 and-7 or 7)
+    TweenService:Create(row.slot,TweenInfo.new(.3,Enum.EasingStyle.Back),{Position=UDim2.new((i-.5)/4,0,1,lift),Rotation=rot}):Play()
+   end
+  end)
+  setMotionImpulse("CELEBRATE_HUMAN",2.3)
+ elseif winner=="MONSTER"then
+  task.delay(.4,function()
+   if ceremonySerial~=serial then return end
+   for i,row in ipairs(ceremonyFigures)do
+    local rot=i==3 and 28 or(i%2==0 and-12 or 12)
+    TweenService:Create(row.slot,TweenInfo.new(.36,Enum.EasingStyle.Back),{Rotation=rot}):Play()
+   end
+  end)
+  setMotionImpulse("CELEBRATE_MONSTER",2.3)
+ else
+  for _,row in ipairs(ceremonyFigures)do TweenService:Create(row.slot,TweenInfo.new(.5,Enum.EasingStyle.Quad),{Position=UDim2.new(row.slot.Position.X.Scale,0,1,6),Rotation=8}):Play()end
+  setMotionImpulse("CELEBRATE_DRAW",2.3)
+ end
+end
 
 -- 진행 중 서버 입장자는 다음 라운드까지 관전임을 명확히 보여준다.
 local spectatorPanel=Instance.new("Frame")
@@ -1450,6 +1603,7 @@ local function render()
  resultPanel.Visible=resultCode~=nil
  if running or spectating or resultCode then shopPanel.Visible=false end
  if resultCode then
+  if round~=lastRoundState then playResultCeremony(resultCode)end
   resultTitle.Text=resultCode=="SURVIVOR"and"인간 승리"or resultCode=="MONSTER"and"몬스터 승리"or"무승부"
   local reward=tonumber(p:GetAttribute("LastRoundReward"))or 0
   local baseReward=tonumber(p:GetAttribute("LastRoundBaseReward"))or 0
