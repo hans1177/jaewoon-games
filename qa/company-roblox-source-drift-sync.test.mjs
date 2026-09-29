@@ -368,3 +368,19 @@ test('latest exact Roblox run supersedes stale exact work while batch remains no
   assert.match(runtime,/cancel-in-progress: ${{ inputs.game_id != '' }}/);
   assert.match(runtime,/batch-push/);
 });
+
+
+test('one-click F0 restart stays open until exact F0 PASS',()=>{
+  const wrapper=fs.readFileSync('.github/workflows/roblox-f0-restart.yml','utf8');
+  const sync=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  assert.match(sync,/run-name: Roblox source sync · \$\{\{ inputs\.game_id/);
+  assert.match(wrapper,/timeout-minutes: 120/);
+  assert.match(wrapper,/source_title="Roblox source sync · \$GAME_ID · F0 restart"/);
+  assert.match(wrapper,/runtime_title="Roblox runtime · \$GAME_ID"/);
+  assert.match(wrapper,/gh run view "\$source_run"/);
+  assert.match(wrapper,/ROBLOX_F0_SOURCE_SYNC=PASS/);
+  assert.match(wrapper,/ROBLOX_F0_RUNTIME_TRACKING=/);
+  assert.match(wrapper,/ROBLOX_FUSED_F0_RESULT=\$GAME_ID:PASS/);
+  assert.match(wrapper,/ROBLOX_F0_PASS_RUN=/);
+  assert.match(wrapper,/ROBLOX_F0_RUNTIME_TIMEOUT/);
+});
