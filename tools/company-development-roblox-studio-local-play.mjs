@@ -1317,6 +1317,19 @@ function persistentStateSummary(probe={}){
     persistentSignalCount:progression.length
   };
 }
+export function evaluateStudioSaveRejoin({beforeProbe=null,rejoinProbe=null,restartError=''}={}){
+  const before=persistentStateSummary(beforeProbe||{});
+  const after=persistentStateSummary(rejoinProbe||{});
+  const restartOk=rejoinProbe!=null;
+  const infrastructureFailure=!restartOk;
+  const progressionObserved=before.persistentSignalCount>0&&after.persistentSignalCount>0;
+  const progressionPreserved=progressionObserved&&before.progressionFingerprint===after.progressionFingerprint;
+  const inventoryComparable=before.inventory.length>0||after.inventory.length>0;
+  const inventoryPreserved=!inventoryComparable||before.inventoryFingerprint===after.inventoryFingerprint;
+  return{pass:restartOk&&progressionPreserved&&inventoryPreserved,infrastructureFailure,
+    error:infrastructureFailure?(restartError||'ROBLOX_STUDIO_REJOIN_PROBE_NOT_OBSERVED'):null,
+    restartOk,progressionObserved,progressionPreserved,inventoryComparable,inventoryPreserved,before,after};
+}
 export function evaluateStudioActualPlayContract({contract={},initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,clientProbe=null,serverProbe=null,actions=[],beforeImages=[],afterImages=[],timelineProbes=[],auditProfile='FAST_DEEP',visualCaptureDeferred=false}={}){
   if(contract?.required!==true)return{required:false,scenarios:[],qualityFailureKinds:[],authoritativeStateChangeObserved:false,capture:{before:{pass:true,frames:[]},after:{pass:true,frames:[]}},metrics:{}};
   const exp=contract?.expectations||{};
@@ -2590,8 +2603,7 @@ export async function runOfficialStudioMcpPlay({
       const saveDeclared=actualPlayContract?.adaptiveCoverage?.signals?.save===true
         ||actualPlayContract?.adaptiveCoverage?.evidencePolicy?.saveRejoinPassRequired===true;
       if(auditMode==='F9_SOAK'&&saveDeclared){
-        const beforePersist=persistentStateSummary(finalClientProbe||{});
-        let restartOk=false;
+        let restartError='';
         try{
           const restartTool=client.tool('start_stop_play');
           await client.call('start_stop_play',startStopArgs(restartTool.inputSchema||{},studioId,false));
@@ -2601,20 +2613,20 @@ export async function runOfficialStudioMcpPlay({
           started=true;
           await wait(2800);
           rejoinClientProbe=await collectStudioActualPlayProbe(client,studioId,actualPlayContract,'Client');
-          restartOk=rejoinClientProbe!=null;
-        }catch{}
-        const afterPersist=persistentStateSummary(rejoinClientProbe||{});
-        const progressionObserved=beforePersist.persistentSignalCount>0&&afterPersist.persistentSignalCount>0;
-        const progressionPreserved=progressionObserved&&beforePersist.progressionFingerprint===afterPersist.progressionFingerprint;
-        const inventoryComparable=beforePersist.inventory.length>0||afterPersist.inventory.length>0;
-        const inventoryPreserved=!inventoryComparable||beforePersist.inventoryFingerprint===afterPersist.inventoryFingerprint;
-        const pass=restartOk&&progressionPreserved&&inventoryPreserved;
-        saveRejoinSummary={restartOk,progressionObserved,progressionPreserved,inventoryComparable,inventoryPreserved,before:beforePersist,after:afterPersist};
+        }catch(error){restartError=String(error?.message||error);}
+        saveRejoinSummary=evaluateStudioSaveRejoin({beforeProbe:finalClientProbe,rejoinProbe:rejoinClientProbe,restartError});
+        const {pass,restartOk,progressionObserved,progressionPreserved,inventoryComparable,inventoryPreserved}=saveRejoinSummary;
         const existingIndex=scenarioCoverage.findIndex(row=>row?.id==='adaptive-save-rejoin-persistence');
         const row={id:'adaptive-save-rejoin-persistence',pass,required:true};
         if(existingIndex>=0)scenarioCoverage[existingIndex]=row;else scenarioCoverage.push(row);
         checkpoint('scenario-adaptive-save-rejoin-persistence',pass);
-        if(!pass){
+        if(saveRejoinSummary.infrastructureFailure){
+          errors.push({
+            type:'studio-save-rejoin-harness-infrastructure',
+            actionId:'studio-save-rejoin',
+            signature:'ROBLOX_STUDIO_SAVE_REJOIN_HARNESS_PENDING:'+saveRejoinSummary.error
+          });
+        }else if(!pass){
           if(!qualityFailureKinds.includes('adaptive-save-rejoin-persistence'))qualityFailureKinds.push('adaptive-save-rejoin-persistence');
           qualityFailureDetails.push({
             id:'adaptive-save-rejoin-persistence',
