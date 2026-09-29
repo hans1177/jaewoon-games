@@ -5282,7 +5282,9 @@
       "coding_negative_er26bm",
       "coding_negative_kzot41",
       "coding_negative_18e237s",
-      "coding_negative_1ux9lvq"
+      "coding_negative_1ux9lvq",
+      "coding_negative_15pn40d",
+      "coding_negative_1cd6z5d"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -13109,7 +13111,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 32,
+        "verifiedFailures": 33,
         "games": {
           "fantasy-survival": 1
         },
@@ -13471,18 +13473,38 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_1p79zl9",
             "lastUpdatedAt": "2026-09-28T02:34:08.217Z"
+          },
+          "unity|INVALID_PATH|NO_OP|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "seed-casual-realm-weaver": 1
+            },
+            "failureTargets": {
+              "unity": 1
+            },
+            "failureClasses": {
+              "INVALID_PATH": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_15pn40d",
+            "lastUpdatedAt": "2026-09-29T05:19:57.006Z"
           }
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_1jzef3p",
-        "lastFailureEvidence": "coding_negative_198ova3",
-        "lastUpdatedAt": "2026-09-28T02:34:08.217Z"
+        "lastFailureEvidence": "coding_negative_15pn40d",
+        "lastUpdatedAt": "2026-09-29T05:19:57.006Z"
       },
       "PATH_VERIFIED_ANCHOR_FIRST": {
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 20,
+        "verifiedFailures": 21,
         "games": {
           "fantasy-survival": 1
         },
@@ -13492,13 +13514,13 @@
         "contextModes": {
           "STANDARD_CONTEXT": {
             "verifiedApplications": 1,
-            "verifiedFailures": 7,
+            "verifiedFailures": 8,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 4,
             "totalContextBytes": 15191,
             "lastEvidence": "coding_1t9d22s",
-            "lastFailureEvidence": "coding_negative_ssorrq",
-            "lastUpdatedAt": "2026-09-28T09:27:10.827Z"
+            "lastFailureEvidence": "coding_negative_1cd6z5d",
+            "lastUpdatedAt": "2026-09-29T05:19:57.007Z"
           }
         },
         "failureFingerprints": {
@@ -13787,12 +13809,32 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_er26bm",
             "lastUpdatedAt": "2026-09-29T05:08:49.181Z"
+          },
+          "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|INVALID_PATH|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "fantasy-survival": 1
+            },
+            "failureTargets": {
+              "unity": 1
+            },
+            "failureClasses": {
+              "INVALID_PATH": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_1cd6z5d",
+            "lastUpdatedAt": "2026-09-29T05:19:57.007Z"
           }
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_1t9d22s",
-        "lastFailureEvidence": "coding_negative_1ux9lvq",
-        "lastUpdatedAt": "2026-09-29T05:16:02.636Z"
+        "lastFailureEvidence": "coding_negative_1cd6z5d",
+        "lastUpdatedAt": "2026-09-29T05:19:57.007Z"
       },
       "OBSERVABLE_DELTA_FIRST": {
         "verifiedApplications": 0,
@@ -17220,7 +17262,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T05:16:02.710Z",
+    "lastBuiltAt": "2026-09-29T05:19:57.079Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -24044,5 +24086,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T05:16:02.710Z"
+  "updatedAt": "2026-09-29T05:19:57.079Z"
 }
