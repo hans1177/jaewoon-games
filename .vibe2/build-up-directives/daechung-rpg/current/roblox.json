@@ -488,7 +488,58 @@
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
-    "regressionPassed": false
+    "regressionPassed": false,
+    "studioQualityFailure": {
+      "sourceRevision": "15d9ebb42466049456bb2e215e5bfa08ae5f8f57",
+      "artifactIdentity": "sha256:5da5b0060f238775c6cff0da1967faf3c236a61d3fd75dadf8dd5b302e9c3548",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 36479878848,
+      "testedAt": "2026-09-28T21:28:55.823Z",
+      "repairSurfaces": [
+        "MOBILE_UI",
+        "WORLD_GEOMETRY",
+        "CHARACTER_MOTION",
+        "SAVE_REJOIN",
+        "FAILURE_RECOVERY"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-ui-commercial-quality",
+          "repairSurface": "MOBILE_UI",
+          "priority": "HIGH",
+          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
+          "observed": "{\"offscreenButtons\":0,\"undersizedTouchButtons\":3,\"suboptimalTouchButtons\":0,\"textOverflowButtons\":0,\"overlapPairs\":0}"
+        },
+        {
+          "id": "adaptive-world-safety",
+          "repairSurface": "WORLD_GEOMETRY",
+          "priority": "CRITICAL",
+          "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
+          "observed": "{\"boundsFinite\":true,\"collidablePartCount\":1125,\"floorBelowPlayer\":true,\"floorSamples\":9,\"floorHits\":6,\"floorCoveragePass\":true,\"routeSamples\":16,\"routeSuccess\":7,\"routeCoveragePass\":false,\"spawnThreatDistance\":780.2060478757685,\"spawnOverlapSafe\":true}"
+        },
+        {
+          "id": "adaptive-motion-surface",
+          "repairSurface": "CHARACTER_MOTION",
+          "priority": "HIGH",
+          "hint": "Repair Animator/Motor6D rig behavior and verify movement/action animation response.",
+          "observed": "{\"interactionSurfaceCount\":35,\"progressionSurfaceCount\":83,\"combatSurfaceCount\":200,\"npcSurfaceCount\":27,\"companionSurfaceCount\":2,\"itemSurfaceCount\":9,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":30,\"promptCount\":18,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
+        },
+        {
+          "id": "adaptive-save-surface",
+          "repairSurface": "SAVE_REJOIN",
+          "priority": "CRITICAL",
+          "hint": "Repair save/load/rejoin persistence and idempotency without duplicating rewards.",
+          "observed": "{\"interactionSurfaceCount\":35,\"progressionSurfaceCount\":83,\"combatSurfaceCount\":200,\"npcSurfaceCount\":27,\"companionSurfaceCount\":2,\"itemSurfaceCount\":9,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":30,\"promptCount\":18,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
+        },
+        {
+          "id": "adaptive-retry-loop-surface",
+          "repairSurface": "FAILURE_RECOVERY",
+          "priority": "HIGH",
+          "hint": "Repair death/failure/restart/respawn flow and remove softlocks after retry.",
+          "observed": "{\"interactionSurfaceCount\":35,\"progressionSurfaceCount\":83,\"combatSurfaceCount\":200,\"npcSurfaceCount\":27,\"companionSurfaceCount\":2,\"itemSurfaceCount\":9,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":30,\"promptCount\":18,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
+        }
+      ]
+    }
   },
   "qualityGapMap": [
     {

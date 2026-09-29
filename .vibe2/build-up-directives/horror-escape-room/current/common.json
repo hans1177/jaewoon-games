@@ -165,7 +165,82 @@
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
-    "regressionPassed": false
+    "regressionPassed": false,
+    "studioQualityFailure": {
+      "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
+      "artifactIdentity": "sha256:6101e58da18b7326c7d94f7698c4ac0ee3d4ce0930feb54ae256079010305095",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 36510232525,
+      "testedAt": "2026-09-29T02:05:27.655Z",
+      "repairSurfaces": [
+        "MOBILE_UI",
+        "WORLD_GEOMETRY",
+        "MAP_ROUTEABILITY",
+        "CHARACTER_MOTION",
+        "AUDIO",
+        "FAILURE_RECOVERY",
+        "MULTIPLAYER_SYNC",
+        "SAVE_REJOIN"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-ui-commercial-quality",
+          "repairSurface": "MOBILE_UI",
+          "priority": "HIGH",
+          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
+          "observed": "{\"offscreenButtons\":0,\"undersizedTouchButtons\":2,\"suboptimalTouchButtons\":2,\"textOverflowButtons\":0,\"overlapPairs\":0,\"largeOverlayCount\":0,\"largeBlockingOverlayCount\":0,\"largestOverlayCoverage\":0}"
+        },
+        {
+          "id": "adaptive-world-safety",
+          "repairSurface": "WORLD_GEOMETRY",
+          "priority": "CRITICAL",
+          "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
+          "observed": "{\"boundsFinite\":true,\"collidablePartCount\":96,\"floorBelowPlayer\":true,\"floorSamples\":9,\"floorHits\":1,\"floorCoveragePass\":false,\"routeSamples\":10,\"routeSuccess\":9,\"routeCoveragePass\":true,\"spawnThreatDistance\":19.81820751908259,\"spawnOverlapSafe\":true}"
+        },
+        {
+          "id": "adaptive-map-route-coverage",
+          "repairSurface": "MAP_ROUTEABILITY",
+          "priority": "CRITICAL",
+          "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
+          "observed": "{\"routeAttemptCount\":1,\"routePassCount\":0,\"routeRequired\":1,\"routes\":[{\"id\":\"map-route-prompt:운동장 방송\",\"ok\":false,\"moved\":8.473833577868911,\"fall\":2.645134210586548,\"floorBelow\":true}]}"
+        },
+        {
+          "id": "adaptive-motion-surface",
+          "repairSurface": "CHARACTER_MOTION",
+          "priority": "HIGH",
+          "hint": "Repair Animator/Motor6D rig behavior and verify movement/action animation response.",
+          "observed": "{\"interactionSurfaceCount\":9,\"progressionSurfaceCount\":11,\"combatSurfaceCount\":8,\"npcSurfaceCount\":0,\"companionSurfaceCount\":0,\"itemSurfaceCount\":1,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":1,\"promptCount\":5,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":true,\"multiplayerActualSessionPass\":false}"
+        },
+        {
+          "id": "adaptive-audio-surface",
+          "repairSurface": "AUDIO",
+          "priority": "MEDIUM",
+          "hint": "Restore required gameplay/BGM/SFX surface and ensure runtime audio feedback exists.",
+          "observed": "{\"interactionSurfaceCount\":9,\"progressionSurfaceCount\":11,\"combatSurfaceCount\":8,\"npcSurfaceCount\":0,\"companionSurfaceCount\":0,\"itemSurfaceCount\":1,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":1,\"promptCount\":5,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":true,\"multiplayerActualSessionPass\":false}"
+        },
+        {
+          "id": "adaptive-retry-loop-surface",
+          "repairSurface": "FAILURE_RECOVERY",
+          "priority": "HIGH",
+          "hint": "Repair death/failure/restart/respawn flow and remove softlocks after retry.",
+          "observed": "{\"interactionSurfaceCount\":9,\"progressionSurfaceCount\":11,\"combatSurfaceCount\":8,\"npcSurfaceCount\":0,\"companionSurfaceCount\":0,\"itemSurfaceCount\":1,\"remoteCount\":17,\"soundCount\":0,\"effectCount\":1,\"promptCount\":5,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":true,\"multiplayerActualSessionPass\":false}"
+        },
+        {
+          "id": "adaptive-multiplayer-sync-surface",
+          "repairSurface": "MULTIPLAYER_SYNC",
+          "priority": "CRITICAL",
+          "hint": "The game declares multiplayer/co-op behavior but Studio found no credible replicated player/team state plus server Remote surface. Restore actual 2+ player synchronization evidence before release.",
+          "observed": "{\"declaredMultiplayer\":true,\"auditProfile\":\"F9_SOAK\",\"multiplayerRuntimeSurface\":true,\"multiplayerActualSessionPass\":false,\"multiplayerSignals\":16,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":true,\"remoteCount\":17}"
+        },
+        {
+          "id": "adaptive-save-rejoin-persistence",
+          "repairSurface": "SAVE_REJOIN",
+          "priority": "CRITICAL",
+          "hint": "F9 Studio restart did not preserve stable progression/inventory state. Repair save timing, load ordering, schema migration, or reset/duplication behavior.",
+          "observed": "{\"restartOk\":true,\"progressionObserved\":true,\"progressionPreserved\":false,\"inventoryComparable\":false,\"inventoryPreserved\":true}"
+        }
+      ]
+    }
   },
   "qualityGapMap": [
     {
