@@ -137,3 +137,12 @@ test('로비 선택 완료는 서버 승인 속성만 신뢰한다',()=>{
  assert.match(client,/Size=UDim2\.new\(\.465,0,0,48\)/);
  assert.match(client,/Size=UDim2\.new\(\.44,0,0,36\)/);
 });
+
+
+test('로비 상용화 계약은 launch gate에도 고정된다',()=>{
+ for(const gate of [
+  'loading screen gated by map readiness',
+  'server-authoritative lobby selection confirmation',
+  'lobby real-player and AI-fill visibility',
+ ])assert.ok(launch.releaseGates.includes(gate),gate);
+});
