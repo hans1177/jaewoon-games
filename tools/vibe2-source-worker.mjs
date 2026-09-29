@@ -66,6 +66,7 @@ const SPECULATIVE_FULL_WEB_MAX_ADDITIVE_ATTEMPTS=4;
 const FULL_WEB_PROGRESSIVE_ADDITIVE_ATTEMPT_CAP=8;
 const JSON_RETRY_TIMEOUT_MS=240000;
 const JSON_RETRY_MAX_PREDICT=3072;
+const JSON_OUTPUT_RECOVERY_MAX_PREDICT=4096;
 const FOCUSED_WEB_REPAIR_MAX_PREDICT=1024;
 const FOCUSED_WEB_REPAIR_CONTEXT_FILES=2;
 const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=28000;
@@ -1175,7 +1176,7 @@ function studioQualityWorkerGuidance(order = {}) {
   ].filter(Boolean).join('\n');
 }
 
-function gameSpecificBuildUpDirectiveGuidance(order = {}) {
+function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = []) {
   const d=order?.selectedTask?.buildUpDirective||order?.buildUpDirective||null;
   if(!d||typeof d!=='object'||!clean(d.directiveId))return'';
   const target=clean(order?.target).toUpperCase();
@@ -1188,7 +1189,8 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     .slice(0,14)
     .map(row=>`${clean(row.domain)}[${clean(row.priority)}]=${clean(row.directive)}`)
     .filter(Boolean);
-  const sourceAnchors=(d?.responsibleSystemsAndFiles?.sourceAnchors||[]).slice(0,8).map(row=>`${clean(row?.file)}:${Number(row?.line||0)||'?'} ${clean(row?.kind)||'SYMBOL'} ${clean(row?.symbol)||'UNKNOWN'} CURRENT=${clean(row?.currentBehavior||row?.context)||'UNKNOWN'} INTENDED=${clean(row?.intendedBehavior)||'FOLLOW_PRIMARY_GOAL'} ACCEPT=${clean(row?.observableAcceptance)||'REAL_SOURCE_AND_EFFECT_DELTA'}`).filter(Boolean);
+  const ownedAnchors=(d?.responsibleSystemsAndFiles?.sourceAnchors||[]).filter(row=>!responsibleFiles.length||responsibleFiles.some(file=>posix(row?.file||'')===posix(file)||posix(row?.file||'').endsWith('/'+posix(file))));
+  const sourceAnchors=ownedAnchors.slice(0,8).map(row=>`${clean(row?.file)}:${Number(row?.line||0)||'?'} ${clean(row?.kind)||'SYMBOL'} ${clean(row?.symbol)||'UNKNOWN'} CURRENT=${clean(row?.currentBehavior||row?.context)||'UNKNOWN'} INTENDED=${clean(row?.intendedBehavior)||'FOLLOW_PRIMARY_GOAL'} ACCEPT=${clean(row?.observableAcceptance)||'REAL_SOURCE_AND_EFFECT_DELTA'}`).filter(Boolean);
   const expansion=d?.autonomousContentExpansion||{};
   const breadth=expansion?.themeCoverageLedger||{};
   const completeness=expansion?.existingCompletenessReview||{};
@@ -1201,6 +1203,8 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     `directiveId=${clean(d.directiveId)} generation=${Number(d.generation||0)} developmentDepth=${Number(d.developmentDepth||1)} escalationStage=${clean(d.escalationStage)} primaryFocus=${clean(d.primaryFocus)}`,
     `gameIdentity=${clean(d?.gameIdentityAndNonNegotiables?.identity)}`,
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
+    `implementationUnit=${clean(ownedAnchors[0]?.intendedBehavior)||clean(d.thisLoopPrimaryGoal)}; observableResult=${clean(ownedAnchors[0]?.observableAcceptance)||clean(d?.effectivenessMeasurement?.expectedPlayerEffect)}`,
+    'Complete one coherent player action-to-state-to-feedback/result chain inside this goal. Include every required dependency and atomic file pair. Defer unrelated expansion, not required connected improvements or acceptance gates.',
     `whyNow=${clean(d.primaryGoalReason)}`,
     ...(sourceAnchors.length?sourceAnchors.map(anchor=>`sourceAnchors=${anchor}`):['sourceAnchors=EXACT_SYMBOL_UNAVAILABLE_USE_RESPONSIBLE_FILE_AND_STATE_ANCHOR']),
     `expectedPlayerEffect=${clean(d?.effectivenessMeasurement?.expectedPlayerEffect)||'UNKNOWN'}`,
@@ -1242,10 +1246,10 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const block=raw.slice(start,finish+end.length);
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
-    'directiveId=','gameIdentity=','primaryGoal=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance='
   ]:[
-    'directiveId=','gameIdentity=','primaryGoal=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
@@ -1558,7 +1562,7 @@ explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
 studioQualityWorkerGuidance(order),
-gameSpecificBuildUpDirectiveGuidance(order),
+gameSpecificBuildUpDirectiveGuidance(order,responsibleFiles),
 robloxNativeWorkerGuidance(order,context,responsibleFiles),
 gatedRetryStrategyGuidance(order),
 weatherWorkerGuidance(order),
@@ -1781,6 +1785,8 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     const parts=section.split('\n');
     const header=parts.shift()||'';
     if(!header.includes('[EDITABLE]'))continue;
+    const sectionPath=header.match(/^=== FILE (.*?) \[/)?.[1];
+    if(responsibleFiles.length&&!responsibleFiles.includes(sectionPath))continue;
     const body=parts.join('\n');
     for(const original of parts){
       const trimmed=original.trim();
@@ -1868,6 +1874,13 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
   const selected=candidates[index]||null;
   if(!selected?.find)return null;
   let context=selected.find;
+  // 초기 생성은 디스크 파일이 없으므로 승인된 소스 창에서도 주변 문맥을 확보한다.
+  const sourceWindow=raw.split('\n=== FILE ').slice(1).find(section=>section.startsWith(selected.path+' ['))?.split('\n').slice(1).join('\n')||'';
+  const windowAt=sourceWindow.indexOf(selected.find);
+  if(windowAt>=0){
+    const radius=robloxTask&&presentationTask?500:1400;
+    context=sourceWindow.slice(Math.max(0,windowAt-radius),windowAt+selected.find.length+radius).trim();
+  }
   if(clean(sourceRoot)){
     try{
       const root=path.resolve(sourceRoot),relative=posix(selected.path),file=path.resolve(root,relative);
@@ -1940,10 +1953,10 @@ export function normalizeFocusedReplaceOnly(raw,spec={}){
   };
 }
 
-export function systemAtomicPairCompletionSpec(prompt,{responsibleFiles=[],sourceRoot='',partialCandidate=null}={}){
+export function systemAtomicPairCompletionSpec(prompt,{responsibleFiles=[],sourceRoot='',partialCandidate=null,multiFilePairRequired=false}={}){
   const sourceFiles=unique(responsibleFiles).filter(file=>!/^qa\/.+\.test\.(?:mjs|js|cjs)$/i.test(file));
   const testFiles=unique(responsibleFiles).filter(file=>/^qa\/.+\.test\.(?:mjs|js|cjs)$/i.test(file));
-  if(!sourceFiles.length||!testFiles.length||!partialCandidate)return null;
+  if(!partialCandidate||(!multiFilePairRequired&&(!sourceFiles.length||!testFiles.length)))return null;
   const touched=new Set(unique([
     ...(partialCandidate.edits||[]).map(row=>row.path),
     ...(partialCandidate.newFiles||[]).map(row=>row.path),
@@ -1951,22 +1964,35 @@ export function systemAtomicPairCompletionSpec(prompt,{responsibleFiles=[],sourc
   ]));
   const sourceTouched=sourceFiles.some(file=>touched.has(file));
   const testTouched=testFiles.some(file=>touched.has(file));
-  if(sourceTouched===testTouched)return null;
-  const missingFiles=sourceTouched?testFiles:sourceFiles;
+  if(!multiFilePairRequired&&sourceTouched===testTouched)return null;
+  const missingFiles=multiFilePairRequired?unique(responsibleFiles).filter(file=>!touched.has(file)):(sourceTouched?testFiles:sourceFiles);
+  if(multiFilePairRequired&&(responsibleFiles.length!==2||missingFiles.length!==1))return null;
+  if(multiFilePairRequired){
+    if((partialCandidate.newFiles||[]).length||(partialCandidate.replaceFiles||[]).length)return null;
+    for(const edit of partialCandidate.edits||[]){
+      if(!responsibleFiles.includes(edit.path)||!edit.find||edit.find===edit.replace)return null;
+      let original=String(prompt??'').split('\n=== FILE ').slice(1).find(section=>section.startsWith(edit.path+' ['))?.split('\n').slice(1).join('\n')||'';
+      const file=sourceRoot?path.resolve(sourceRoot,edit.path):'';
+      if(file&&fs.existsSync(file))original=fs.readFileSync(file,'utf8');
+      if(original.split(edit.find).length-1!==1)return null;
+    }
+  }
   let spec=null;
   for(const file of missingFiles){
     spec=focusedReplaceOnlySpec(prompt,{responsibleFiles:[file],sourceRoot});
     if(spec)break;
   }
   if(!spec)return null;
-  return{spec,missingRole:sourceTouched?'regression-test':'system-source',preservedCandidate:partialCandidate};
+  return{spec,missingRole:multiFilePairRequired?'game-source':sourceTouched?'regression-test':'system-source',preservedCandidate:partialCandidate};
 }
-export function buildSystemAtomicPairCompletionPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',partialCandidate=null}={}){
-  const completion=systemAtomicPairCompletionSpec(prompt,{responsibleFiles,sourceRoot,partialCandidate});
+export function buildSystemAtomicPairCompletionPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',partialCandidate=null,multiFilePairRequired=false}={}){
+  const completion=systemAtomicPairCompletionSpec(prompt,{responsibleFiles,sourceRoot,partialCandidate,multiFilePairRequired});
   if(!completion)return null;
   const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: repair the verified system architecture cause';
   const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
-  const roleRule=completion.missingRole==='regression-test'
+  const roleRule=completion.missingRole==='game-source'
+    ?'Complete the missing Unity game-source file. Connect it to the preserved counterpart using the same state, method names and existing save contract. The final candidate must change BOTH required files and pass all original checks.'
+    :completion.missingRole==='regression-test'
     ?'Complete only the missing causal regression-test side. The replacement must assert the repaired behavior so the base failure is reproduced and the repaired source passes.'
     :'Complete only the missing responsible system-source side. The replacement must repair the structural cause covered by the preserved regression-test candidate.';
   return{
@@ -1977,7 +2003,9 @@ export function buildSystemAtomicPairCompletionPrompt(prompt,{error=null,respons
       buildUpDirectiveBlockFromPrompt(raw),
       reason?'Previous failure: '+reason:'',
       roleRule,
-      'The worker already preserves the valid counterpart edit from the rejected candidate. Do not regenerate or describe that counterpart.',
+      verifiedExternalLearningBlockFromPrompt(raw),
+      'The worker preserves the exact-match-checked counterpart. The merged candidate still requires every original validation. Do not regenerate that counterpart.',
+      'PRESERVED COUNTERPART (against the unchanged base): '+JSON.stringify(completion.preservedCandidate),
       'Exact missing writable path: '+JSON.stringify(completion.spec.path),
       'Exact missing find anchor already fixed by the worker: '+JSON.stringify(completion.spec.find),
       'Do NOT return path or find. The worker will apply them exactly.',
@@ -2292,6 +2320,8 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let presentationPatchDeltaCreditUsed=false;
   let studioEditMatchCreditUsed=false;
   let studioCausalRecoveryCreditUsed=false;
+  let truncatedOutputCreditUsed=false;
+  let recoveredOutputBudget=0;
   let missingPathRecoveries=0;
   let fullWebProgressCreditCount=0;
   let robloxFullGraphicsPackageActive=false;
@@ -2384,8 +2414,8 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const diagnosticFocusedReplaceOnly=!allowFullRewrite&&!studioExpansion&&!robloxFullGraphicsPackageRecovery&&!assetDevelopmentFocusedGraphics
       ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})
       :null;
-    const systemAtomicPairCompletion=!allowFullRewrite&&systemAtomicPairRequired&&priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'
-      ?buildSystemAtomicPairCompletionPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,partialCandidate:lastRejectedCandidate})
+    const systemAtomicPairCompletion=!allowFullRewrite&&((systemAtomicPairRequired&&priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED')||(multiFilePairRequired&&priorFailureClass==='UNITY_BOOTSTRAP_PAIR'))
+      ?buildSystemAtomicPairCompletionPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,partialCandidate:lastRejectedCandidate,multiFilePairRequired})
       :null;
     const preferredFocusedTargets=unique(exploration?.editContract?.primaryTargets||[]);
     const focusedReplaceOnly=diagnosticFocusedReplaceOnly||(focusedFinal
@@ -2403,11 +2433,17 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_MAX_PREDICT:(retry?FULL_WEB_RETRY_MAX_PREDICT:FULL_WEB_MAX_PREDICT))
         :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_MAX_PREDICT:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_MAX_PREDICT:JSON_FOCUSED_REPLACE_MAX_PREDICT)):(focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT)))));
-    // 출력 한도 종료가 확인된 경우만 같은 교체 요청의 예산을 제한적으로 늘린다.
-    if(focusedReplaceOnly&&lastError?.vibe2OutputTruncated===true){
-      maxPredict=Math.min(JSON_RETRY_MAX_PREDICT,Math.max(maxPredict,Number(lastError.vibe2MaxPredict||maxPredict)*2));
-      console.log(`VIBE2_TRUNCATED_OUTPUT_RECOVERY=${attempt}:maxPredict=${maxPredict}`);
+    // 고정 앵커의 JSON 이스케이프 분량과 연결 작업에 필요한 여유를 먼저 배정한다.
+    if(focusedReplaceOnly){
+      const anchorBytes=Buffer.byteLength(JSON.stringify({replace:focusedReplaceOnly.spec.find}),'utf8');
+      const anchorBudget=Math.ceil((anchorBytes/2+256)/128)*128;
+      maxPredict=Math.min(JSON_RETRY_MAX_PREDICT,Math.max(maxPredict,anchorBudget,studioExpansion?JSON_FINAL_RETRY_MAX_PREDICT:0));
     }
+    if(!allowFullRewrite&&lastError?.vibe2OutputTruncated===true){
+      recoveredOutputBudget=Math.min(JSON_OUTPUT_RECOVERY_MAX_PREDICT,Math.max(recoveredOutputBudget,Number(lastError.vibe2MaxPredict||maxPredict)*2));
+      console.log(`VIBE2_TRUNCATED_OUTPUT_RECOVERY=${attempt}:maxPredict=${Math.max(maxPredict,recoveredOutputBudget)}`);
+    }
+    if(!allowFullRewrite)maxPredict=Math.max(maxPredict,recoveredOutputBudget);
     const timeoutMs=expansionMode
       ?FULL_WEB_EXPANSION_TIMEOUT_MS
       :(allowFullRewrite
@@ -2418,6 +2454,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW)):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
+    console.log(`VIBE2_GENERATION_BUDGET=${attempt}:promptBytes=${attemptPromptBytes}:maxPredict=${maxPredict}:contextWindow=${contextWindow}:timeoutMs=${timeoutMs}`);
     if(allowFullRewrite&&retry)console.log(`VIBE2_FULL_WEB_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
     if(focusedReplaceOnly){
       console.log(`VIBE2_FOCUSED_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
@@ -2426,7 +2463,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const studioExactAnchorRecovery=studioExpansion&&priorFailureClass==='EDIT_MATCH';
     const temperature=systemAtomicPairCompletion?0.14:(focusedReplaceOnly?0.08:(expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(studioExactAnchorRecovery?0.08:(retry?(attempt>=3?0.22:0.16):0.08))));
     const focusedFirstEditEarlyStop=focusedWebRepair&&!retry&&!allowFullRewrite&&!focusedReplaceOnly&&!robloxAssetAdaptationTask;
-    const completionMode=(systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(((timeoutFastEscalation||focusedFirstEditEarlyStop)&&!robloxFullGraphicsPackageRecovery)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
+    const completionMode=(systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(((timeoutFastEscalation||focusedFirstEditEarlyStop)&&!robloxFullGraphicsPackageRecovery&&!multiFilePairRequired&&!systemAtomicPairRequired&&!studioExpansion)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
     try{
       const promptCoverage=assertVerifiedExternalLearningPromptCoverage(attemptPrompt,verifiedExternalLearningContract||{});
       if(promptCoverage.required===true){
@@ -2484,7 +2521,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       lastRejectedCandidate=candidate;
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,verifiedExternalLearningPromptChecks,verifiedExternalLearningPromptAllAttempts:(verifiedExternalLearningContract?.required!==true)||verifiedExternalLearningPromptChecks===attempt,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,studioCausalRecoveryCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,verifiedExternalLearningPromptChecks,verifiedExternalLearningPromptAllAttempts:(verifiedExternalLearningContract?.required!==true)||verifiedExternalLearningPromptChecks===attempt,robloxFullGraphicsInitialPackage:robloxGraphicsInitial,robloxZeroOutputTimeoutFocusedRecovery:robloxZeroOutputTimeoutFocusedRecoveryActive,robloxTimeoutRecoveryEscalatedFullGraphics,partialTimeoutRecovery:Boolean(streamedPartialEdit)&&!focusedFirstEditEarlyStop,streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFirstEditEarlyStop:Boolean(streamedPartialEdit)&&focusedFirstEditEarlyStop,focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,systemAtomicPairCompletion:systemAtomicPairCompletion!=null,gameSourcePairCompletion:multiFilePairRequired&&systemAtomicPairCompletion!=null,truncatedOutputCreditUsed,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,malformedFastEscalation,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,studioCausalRecoveryCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,missingPathRecoveries,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -2565,6 +2602,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
               }
             };
           }catch(recoveryError){
+            if(multiFilePairRequired&&generationFailureClass(recoveryError)==='UNITY_BOOTSTRAP_PAIR'){
+              lastRejectedCandidate=normalizeCandidate(recoveredPartial,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false,minFullRewriteBytes});
+              lastError=recoveryError;
+            }
             const rejectMarker=partialRecoveryClass==='MALFORMED_OUTPUT'?'VIBE2_MALFORMED_PARTIAL_EDIT_REJECTED':'VIBE2_TIMEOUT_PARTIAL_EDIT_REJECTED';
             console.log(`${rejectMarker}=${attempt}:${generationFailureClass(recoveryError)}:${clean(recoveryError?.message||recoveryError).replace(/\s+/g,' ').slice(0,240)}`);
           }
@@ -2668,11 +2709,19 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       if(accumulatedFullWeb)console.log(`VIBE2_FULL_WEB_ACCUMULATED_BYTES=${attempt}:${Buffer.byteLength(accumulatedFullWeb.content,'utf8')}`);
       if(intermediateGrowthBytes.length)console.log(`VIBE2_FULL_WEB_INTERMEDIATE_GROWTH=${attempt}:${intermediateGrowthBytes.join(',')}`);
       if(repeatedIntermediateOutputs)console.log(`VIBE2_FULL_WEB_REPEATED_INTERMEDIATE=${attempt}:${repeatedIntermediateOutputs}`);
+      // 마지막 응답이 잘렸어도 예산을 늘릴 수 있을 때 복구를 한 번 실행한다.
+      let truncatedOutputRetry=!allowFullRewrite&&error.vibe2OutputTruncated===true&&maxPredict<JSON_OUTPUT_RECOVERY_MAX_PREDICT&&attempt<maxAttempts;
+      if(!allowFullRewrite&&error.vibe2OutputTruncated===true&&maxPredict<JSON_OUTPUT_RECOVERY_MAX_PREDICT&&attempt>=maxAttempts&&!truncatedOutputCreditUsed){
+        maxAttempts=attempt+1;
+        truncatedOutputCreditUsed=true;
+        truncatedOutputRetry=true;
+        console.log(`VIBE2_TRUNCATED_OUTPUT_RETRY_CREDIT=${attempt}->${maxAttempts}`);
+      }
       const ordinaryRetry=attempt===1&&shouldRetryGenerationError(error);
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
       const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
-      const hasAnother=ordinaryRetry||focusedRetry||multiFilePairRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||studioCausalRecoveryCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
+      const hasAnother=truncatedOutputRetry||ordinaryRetry||focusedRetry||multiFilePairRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||studioCausalRecoveryCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
         error.vibe2GenerationAttempts=attempt;
@@ -3231,6 +3280,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     focusedFirstEditEarlyStop:generation.focusedFirstEditEarlyStop===true,
     focusedFinalRetry:generation.focusedFinalRetry===true,
     focusedReplaceOnly:generation.focusedReplaceOnly===true,
+    gameSourcePairCompletion:generation.gameSourcePairCompletion===true,
+    truncatedOutputCreditUsed:generation.truncatedOutputCreditUsed===true,
     focusedReplaceStringRecovery:generation.focusedReplaceStringRecovery===true,
     focusedFirstAttemptFastPath:generation.focusedFirstAttemptFastPath===true,
     malformedFastEscalation:generation.malformedFastEscalation===true,
