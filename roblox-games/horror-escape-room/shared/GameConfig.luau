@@ -58,6 +58,18 @@ local Config={
    {Id="AWKWARD_CLAP",Name="전원 어색한 박수",Emote="wave",ComicEmote="laugh",Caption="이긴 사람은 없고 박수만 남았다"},
   },
  },
+ Lore={
+  {Id="SCHOOL_01",Map="SCHOOL",Name="빈 교실 출석부",Text="새벽 2시에도 한 명이 출석으로 찍혀 있다."},
+  {Id="SCHOOL_02",Map="SCHOOL",Name="사물함 낙서",Text="열지 마. 안에 내가 있다."},
+  {Id="SCHOOL_03",Map="SCHOOL",Name="체육관 호루라기",Text="아무도 없는데 종료 휘슬이 세 번 울린다."},
+  {Id="SCHOOL_04",Map="SCHOOL",Name="급식표 뒷면",Text="오늘의 메뉴 마지막 줄: 도망쳐."},
+  {Id="HOSPITAL_01",Map="HOSPITAL",Name="퇴원 기록",Text="퇴원 날짜가 입원 날짜보다 하루 빠르다."},
+  {Id="HOSPITAL_02",Map="HOSPITAL",Name="수술실 메모",Text="환자는 없는데 수술등은 매일 켜진다."},
+  {Id="HOSPITAL_03",Map="HOSPITAL",Name="영안실 번호표",Text="마지막 번호는 아직 호출 중이다."},
+  {Id="PARK_01",Map="THEME_PARK",Name="찢어진 입장권",Text="폐장 후 입장객 1명. 퇴장객 0명."},
+  {Id="PARK_02",Map="THEME_PARK",Name="회전목마 사진",Text="말은 여덟 마리인데 사진에는 아홉 명이 타고 있다."},
+  {Id="PARK_03",Map="THEME_PARK",Name="광대 분실물",Text="분실물 이름: 웃음소리."},
+ },
  Cosmetics={
   {Id="DEFAULT",Name="기본 프레임",Price=0,Accent=Color3.fromRGB(170,209,220),Title="신입 참가자"},
   {Id="MIDNIGHT_RED",Name="심야 적색",Price=120,Accent=Color3.fromRGB(225,76,92),Title="심야 추적자"},
