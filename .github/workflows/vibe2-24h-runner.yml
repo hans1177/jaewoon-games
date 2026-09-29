@@ -736,7 +736,7 @@ jobs:
               --format=tsv > /tmp/vibe2-release-recovery-candidates.tsv
 
             : > /tmp/vibe2-release-recovery-current.tsv
-            while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
+            while IFS=$'\t' read -r task_id candidate_branch candidate_sha evidence_only; do
               [ -n "$task_id" ] || continue
               [ -n "$candidate_branch" ] || continue
               [ -n "$candidate_sha" ] || continue
@@ -745,7 +745,7 @@ jobs:
                 echo "VIBE2_RELEASE_RECOVERY_SHA_MISMATCH=$task_id:$candidate_branch:${remote_sha:-MISSING}:$candidate_sha"
                 continue
               fi
-              printf '%s\t%s\t%s\n' "$task_id" "$candidate_branch" "$candidate_sha" >> /tmp/vibe2-release-recovery-current.tsv
+              printf '%s\t%s\t%s\t%s\n' "$task_id" "$candidate_branch" "$candidate_sha" "$evidence_only" >> /tmp/vibe2-release-recovery-current.tsv
             done < /tmp/vibe2-release-recovery-candidates.tsv
 
             count="$(wc -l < /tmp/vibe2-release-recovery-current.tsv | tr -d ' ')"
@@ -756,10 +756,12 @@ jobs:
               break
             fi
 
-            while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
+            while IFS=$'\t' read -r task_id candidate_branch candidate_sha evidence_only; do
+              blocker=candidate-awaiting-qa-and-deployment
+              if [ "$evidence_only" = true ]; then blocker=candidate-awaiting-runtime-evidence; fi
               node /tmp/vibe2-main/tools/vibe2-queue-control.mjs await \
                 --id="$task_id" \
-                --blocker=candidate-awaiting-qa-and-deployment \
+                --blocker="$blocker" \
                 --evidence="release-dispatch-recovery-requested:$candidate_branch,release-dispatch-recovery-at:$stamp,release-dispatch-recovery-candidate-sha:$candidate_sha"
             done < /tmp/vibe2-release-recovery-current.tsv
 
@@ -780,8 +782,8 @@ jobs:
           done
           test "$pushed" = 1
 
-          while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
-            body="$(jq -nc --arg branch "$candidate_branch" '{ref:"main",inputs:{candidate_branch:$branch}}')"
+          while IFS=$'\t' read -r task_id candidate_branch candidate_sha evidence_only; do
+            body="$(jq -nc --arg branch "$candidate_branch" --arg evidence_only "$evidence_only" '{ref:"main",inputs:{candidate_branch:$branch,evidence_only:$evidence_only}}')"
             curl --fail-with-body --silent --show-error \
               --request POST \
               --header 'Accept: application/vnd.github+json' \

@@ -193,7 +193,7 @@ export function recoverFixedSourceCandidateGenerationFailures(queueInput) {
 
 function isWorkerCapacityReleasedBlocker(value = '') {
   const blocker = clean(value);
-  return /awaiting.*qa|qa.*awaiting|slot-released.*fan-in|WAITING_FOR_GEMINI_QUOTA|gemini.*quota|external.*model.*quota/i.test(blocker);
+  return /candidate-awaiting-runtime-evidence|awaiting.*qa|qa.*awaiting|slot-released.*fan-in|WAITING_FOR_GEMINI_QUOTA|gemini.*quota|external.*model.*quota/i.test(blocker);
 }
 
 function clearedReservation() {
@@ -492,7 +492,7 @@ export function releaseVibeTaskExecutionSlot(queueInput, { taskId = '', evidence
   if (!task) throw new Error(`task not found: ${id}`);
   if (task.status !== 'running') return { released:false, updated:false, reason:`TASK_${clean(task.status).toUpperCase()}_NOOP`, queue };
   const currentBlocker = clean(task.blocker);
-  if (/awaiting.*qa|qa.*awaiting/i.test(currentBlocker) || /slot-released.*fan-in/i.test(currentBlocker)) {
+  if (/candidate-awaiting-runtime-evidence|awaiting.*qa|qa.*awaiting/i.test(currentBlocker) || /slot-released.*fan-in/i.test(currentBlocker)) {
     return { released:false, updated:false, reason:'ALREADY_RELEASED', queue };
   }
   const nextQueue = markVibeTaskAwaiting(queue, { taskId:id, evidence, blocker:clean(blocker) || 'slot-released-awaiting-fan-in' });

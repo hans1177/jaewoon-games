@@ -81,7 +81,7 @@ function inferExecutionLane(input = {}) {
   const department=clean(input.department).toLowerCase();
   const type=clean(input.type||'implementation').toLowerCase();
   const evidence=(input.evidence||[]).map(clean);
-  if(status==='running'&&/candidate-awaiting-qa-and-deployment|candidate-awaiting-supervised-review|awaiting.*qa|qa.*awaiting|awaiting.*supervised-review|slot-released.*fan-in/i.test(blocker))return 'RELEASE_WAIT';
+  if(status==='running'&&/candidate-awaiting-runtime-evidence|candidate-awaiting-qa-and-deployment|candidate-awaiting-supervised-review|awaiting.*qa|qa.*awaiting|awaiting.*supervised-review|slot-released.*fan-in/i.test(blocker))return 'RELEASE_WAIT';
   if(evidence.includes('learning-practice-only')||department==='learning'||(department==='development'&&type==='research'))return 'LEARNING_IDLE';
   if(input.assetProductionLane===true||evidence.includes('asset-production-parallel:v1'))return 'ASSET_DEVELOPMENT';
   if(department==='development'&&type==='implementation')return 'GAME_PRIMARY';
@@ -269,6 +269,25 @@ function normalizeTask(input = {}, index = 0) {
   const normalizedEvidence=atomicPresentation
     ?[...inputEvidence,'atomic-neuron-stream:presentation','atomic-neuron-micro-fanin:per-task','graphics-atomic-candidate-isolation-required']
     :inputEvidence;
+  // 검증 전용 후보 식별자는 큐 재정규화 뒤에도 보존한다. 구형 저장 누락은 대기 증거로만 복구한다.
+  let runtimeCandidate=input.runtimeEvidenceCandidate;
+  if(!runtimeCandidate&&clean(input.target).toLowerCase()==='roblox'
+    &&clean(input.blocker)==='candidate-awaiting-runtime-evidence'
+    &&clean(input.lastOutcome)==='FAN_IN_RUNTIME_EVIDENCE_REQUIRED'
+    &&inputEvidence.includes('fan-in-runtime-evidence-only:REQUIRED')){
+    const branchIndex=inputEvidence.findLastIndex(value=>/^vibe2\/candidate\//.test(value));
+    const sha=branchIndex>=0?inputEvidence.slice(branchIndex+1).find(value=>/^candidate-sha:[0-9a-f]{40}$/.test(value)):null;
+    if(sha)runtimeCandidate={taskId:input.id,gameId:input.gameId,target:'roblox',candidateBranch:inputEvidence[branchIndex],candidateSha:sha.slice(14),evidenceOnly:true};
+  }
+  const runtimeEvidenceCandidate=runtimeCandidate?.evidenceOnly===true
+    &&clean(runtimeCandidate.taskId)===clean(input.id)&&clean(runtimeCandidate.gameId)===clean(input.gameId)
+    &&clean(input.target).toLowerCase()==='roblox'&&clean(runtimeCandidate.target)==='roblox'
+    &&/^vibe2\/candidate\/[A-Za-z0-9._/-]+$/.test(clean(runtimeCandidate.candidateBranch))
+    &&/^[0-9a-f]{40}$/.test(clean(runtimeCandidate.candidateSha))
+    ?freeze({taskId:clean(input.id),gameId:clean(input.gameId),target:'roblox',
+      candidateBranch:clean(runtimeCandidate.candidateBranch),candidateSha:clean(runtimeCandidate.candidateSha),evidenceOnly:true,
+      ...(runtimeCandidate.runId?{runId:clean(runtimeCandidate.runId),verified:runtimeCandidate.verified===true,reviewStillRequired:true,blockedReasons:freezeList(runtimeCandidate.blockedReasons||[])}:{})})
+    :null;
   const task = {
     id: clean(input.id) || `task-${index + 1}`,
     gameId: clean(input.gameId) || null,
@@ -305,6 +324,7 @@ function normalizeTask(input = {}, index = 0) {
     reservedAt: clean(input.reservedAt) || null,
     neuronExpectedVariants: clampInt(input.neuronExpectedVariants || 0, 0, 5),
     neuronResults: normalizeNeuronResults(input.neuronResults),
+    runtimeEvidenceCandidate,
     buildUpDirective: normalizeBuildUpDirective(input.buildUpDirective),
     buildUpDirectiveId: clean(input.buildUpDirectiveId||input.buildUpDirective?.directiveId) || null,
     buildUpGeneration: clampInt(input.buildUpGeneration??input.buildUpDirective?.generation??0,0,1000000),
@@ -451,7 +471,7 @@ function conflictsWith(task, active) {
   return conflictDetails(task, active)?.reason || null;
 }
 function isAwaitingQaTask(task) {
-  return task?.status === 'running' && /awaiting.*qa|qa.*awaiting|candidate-awaiting-supervised-review|awaiting.*supervised-review/i.test(clean(task?.blocker));
+  return task?.status === 'running' && /candidate-awaiting-runtime-evidence|awaiting.*qa|qa.*awaiting|candidate-awaiting-supervised-review|awaiting.*supervised-review/i.test(clean(task?.blocker));
 }
 function isReleasedWorkerSlotTask(task) {
   return task?.status === 'running' && /slot-released.*fan-in/i.test(clean(task?.blocker));

@@ -2011,3 +2011,19 @@ test('queue bounds repeated unresolved diagnoses while retaining verified learni
   for(const item of [...verified,distinct,...authoritative])assert.ok(evidence.includes(item));
   assert.deepEqual(createVibeContinuousQueue(q).tasks[0].evidence,evidence);
 });
+
+
+test('runtime evidence candidate survives queue normalization and worker lease recovery',()=>{
+  const pending={taskId:'probe',gameId:'demo',target:'roblox',candidateBranch:'vibe2/candidate/probe',candidateSha:'a'.repeat(40),evidenceOnly:true};
+  const raw={id:'probe',gameId:'demo',target:'roblox',department:'development',type:'implementation',status:'running',blocker:'candidate-awaiting-runtime-evidence',lastOutcome:'FAN_IN_RUNTIME_EVIDENCE_REQUIRED',reservedAt:'2026-01-01T00:00:00Z',runtimeEvidenceCandidate:pending};
+  const queue=createVibeContinuousQueue({tasks:[raw]});
+  assert.deepEqual(queue.tasks[0].runtimeEvidenceCandidate,pending);
+  const restored=createVibeContinuousQueue(JSON.parse(JSON.stringify(queue)));
+  assert.deepEqual(restored.tasks[0].runtimeEvidenceCandidate,pending);
+  assert.equal(recoverStaleRunningReservations(restored,{nowMs:Date.parse('2026-09-30T00:00:00Z')}).recovered,0);
+  const legacy={...raw,runtimeEvidenceCandidate:undefined,evidence:['fan-in-runtime-evidence-only:REQUIRED',pending.candidateBranch,'candidate-sha:'+pending.candidateSha]};
+  assert.deepEqual(createVibeContinuousQueue({tasks:[legacy]}).tasks[0].runtimeEvidenceCandidate,pending);
+  legacy.evidence=['candidate-sha:'+pending.candidateSha,pending.candidateBranch];
+  assert.equal(createVibeContinuousQueue({tasks:[legacy]}).tasks[0].runtimeEvidenceCandidate,null);
+  assert.equal(createVibeContinuousQueue({tasks:[{...raw,runtimeEvidenceCandidate:{...pending,gameId:'wrong'}}]}).tasks[0].runtimeEvidenceCandidate,null);
+});

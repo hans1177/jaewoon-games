@@ -187,3 +187,15 @@ test('system steward stale lease recovery stays synchronized with central archit
   assert.ok(logRecovery?.emittedMarkers?.includes('VIBE2_SYSTEM_STEWARD_QUEUE_CHANGED'));
 });
 
+
+
+test('steward preserves exact candidate runtime evidence wait after an expired worker lease',()=>{
+  const candidate={taskId:'probe',gameId:'demo',target:'roblox',candidateBranch:'vibe2/candidate/probe',candidateSha:'a'.repeat(40),evidenceOnly:true};
+  const result=runSystemStewardState({now:'2026-09-30T00:00:00Z',queueInput:{tasks:[{
+    id:'probe',gameId:'demo',target:'roblox',department:'development',type:'implementation',
+    status:'running',blocker:'candidate-awaiting-runtime-evidence',reservedAt:'2026-01-01T00:00:00Z',runtimeEvidenceCandidate:candidate
+  }]},controlInput:{version:4,currentMax:256}});
+  assert.equal(result.queue.tasks[0].status,'running');
+  assert.deepEqual(result.queue.tasks[0].runtimeEvidenceCandidate,candidate);
+  assert.ok(!result.queue.tasks[0].evidence.includes('system-steward:stale-running-reservation-recovered'));
+});

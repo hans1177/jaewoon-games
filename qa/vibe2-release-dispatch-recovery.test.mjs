@@ -94,3 +94,17 @@ test('release result workflows mutate control state only through latest main que
     assert.ok(workflow.includes('vibe2-main-contract/tools/vibe2-candidate-reconcile.mjs'));
   }
 });
+
+
+test('runtime evidence recovery preserves inspection-only mode without inventing review pass',()=>{
+  const branch='vibe2/candidate/probe',sha='a'.repeat(40);
+  const row={id:'probe',gameId:'demo',target:'roblox',status:'running',blocker:'candidate-awaiting-runtime-evidence',lastOutcome:'FAN_IN_RUNTIME_EVIDENCE_REQUIRED',evidence:['fan-in-runtime-evidence-only:REQUIRED',branch,'candidate-sha:'+sha]};
+  const recovery=selectReviewedWinnerRecoveries({tasks:[row]},{nowMs:1_000_000});
+  assert.equal(recovery.count,1);
+  assert.equal(recovery.selected[0].evidenceOnly,true);
+  assert.equal(recovery.selected[0].candidateSha,sha);
+  assert.equal(recovery.gateBypass,false);
+  assert.equal(row.evidence.includes('role-result:review:PASS'),false);
+  row.evidence.push('release-dispatch-recovery-at:950000');
+  assert.equal(selectReviewedWinnerRecoveries({tasks:[row]},{nowMs:1_000_000}).count,0);
+});
