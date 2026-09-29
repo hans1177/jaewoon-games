@@ -1576,3 +1576,29 @@ test('candidate promotion preserves the conflict-marker gate without rejecting f
   assert.equal(release.split('git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check').length-1,3);
   assert.ok(release.includes('reject candidate-diff-check-failed'));
 });
+
+
+test('shared queue retry delays spread concurrent writers within bounded windows',()=>{
+  const blocks=[...workflow.matchAll(/retry_window_ms=\$\(\((?:state_attempt|attempt) \* 2000\)\)[\s\S]*?printf -v retry_sleep[^\n]+/g)].map(match=>match[0]);
+  assert.equal(blocks.length,4);
+  for(const block of blocks){
+    const script=`set -euo pipefail
+RANDOM=1234
+for attempt in 1 5 1000; do
+  state_attempt=$attempt
+  for writer in {1..128}; do
+    ${block}
+    printf '%s %s\\n' "$attempt" "$retry_sleep"
+  done
+done`;
+    const result=spawnSync('bash',['-c',script],{encoding:'utf8'});
+    assert.equal(result.status,0,result.stderr);
+    const rows=result.stdout.trim().split('\n').map(line=>line.split(' ').map(Number));
+    assert.equal(rows.length,384);
+    for(const attempt of [1,5,1000]){
+      const delays=rows.filter(row=>row[0]===attempt).map(row=>row[1]);
+      assert(delays.every(value=>Number.isFinite(value)&&value>=(attempt===1?1:5)&&value<=(attempt===1?2:10)));
+      assert(new Set(delays).size>100,'concurrent writers must not share one fixed retry delay');
+    }
+  }
+});

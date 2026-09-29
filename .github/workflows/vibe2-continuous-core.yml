@@ -425,8 +425,12 @@ jobs:
                 break
               fi
               echo "VIBE2_NEURON_INGRESS_OPTIMISTIC_RETRY=$state_attempt"
-              retry_sleep=$((state_attempt * 2))
-              if [ "$retry_sleep" -gt 10 ]; then retry_sleep=10; fi
+              # 저장 충돌 재시도 시점을 분산해 같은 작업들이 다시 동시에 쓰지 않게 한다.
+              retry_window_ms=$((state_attempt * 2000))
+              if [ "$retry_window_ms" -gt 10000 ]; then retry_window_ms=10000; fi
+              retry_floor_ms=$((retry_window_ms / 2))
+              retry_delay_ms=$((retry_floor_ms + RANDOM % (retry_window_ms - retry_floor_ms + 1)))
+              printf -v retry_sleep '%d.%03d' "$((retry_delay_ms / 1000))" "$((retry_delay_ms % 1000))"
               echo "VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=$retry_sleep"
               sleep "$retry_sleep"
               continue
@@ -610,8 +614,12 @@ jobs:
             fi
 
             echo "VIBE2_CONTROL_OPTIMISTIC_RETRY=$state_attempt"
-            retry_sleep=$((state_attempt * 2))
-            if [ "$retry_sleep" -gt 10 ]; then retry_sleep=10; fi
+            # 저장 충돌 재시도 시점을 분산해 같은 작업들이 다시 동시에 쓰지 않게 한다.
+            retry_window_ms=$((state_attempt * 2000))
+            if [ "$retry_window_ms" -gt 10000 ]; then retry_window_ms=10000; fi
+            retry_floor_ms=$((retry_window_ms / 2))
+            retry_delay_ms=$((retry_floor_ms + RANDOM % (retry_window_ms - retry_floor_ms + 1)))
+            printf -v retry_sleep '%d.%03d' "$((retry_delay_ms / 1000))" "$((retry_delay_ms % 1000))"
             echo "VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=$retry_sleep"
             sleep "$retry_sleep"
           done
@@ -2401,8 +2409,12 @@ jobs:
                 break
               fi
               echo "VIBE2_FAN_IN_REGRESSION_OPTIMISTIC_RETRY=$attempt"
-              retry_sleep=$((attempt * 2))
-              if [ "$retry_sleep" -gt 10 ]; then retry_sleep=10; fi
+              # 저장 충돌 재시도 시점을 분산해 같은 작업들이 다시 동시에 쓰지 않게 한다.
+              retry_window_ms=$((attempt * 2000))
+              if [ "$retry_window_ms" -gt 10000 ]; then retry_window_ms=10000; fi
+              retry_floor_ms=$((retry_window_ms / 2))
+              retry_delay_ms=$((retry_floor_ms + RANDOM % (retry_window_ms - retry_floor_ms + 1)))
+              printf -v retry_sleep '%d.%03d' "$((retry_delay_ms / 1000))" "$((retry_delay_ms % 1000))"
               echo "VIBE2_FAN_IN_REGRESSION_RETRY_BACKOFF_SECONDS=$retry_sleep"
               sleep "$retry_sleep"
             done
@@ -2513,8 +2525,12 @@ jobs:
             fi
 
             echo "VIBE2_FAN_IN_OPTIMISTIC_RETRY=$attempt"
-            retry_sleep=$((attempt * 2))
-            if [ "$retry_sleep" -gt 10 ]; then retry_sleep=10; fi
+            # 저장 충돌 재시도 시점을 분산해 같은 작업들이 다시 동시에 쓰지 않게 한다.
+            retry_window_ms=$((attempt * 2000))
+            if [ "$retry_window_ms" -gt 10000 ]; then retry_window_ms=10000; fi
+            retry_floor_ms=$((retry_window_ms / 2))
+            retry_delay_ms=$((retry_floor_ms + RANDOM % (retry_window_ms - retry_floor_ms + 1)))
+            printf -v retry_sleep '%d.%03d' "$((retry_delay_ms / 1000))" "$((retry_delay_ms % 1000))"
             echo "VIBE2_FAN_IN_RETRY_BACKOFF_SECONDS=$retry_sleep"
             sleep "$retry_sleep"
           done
