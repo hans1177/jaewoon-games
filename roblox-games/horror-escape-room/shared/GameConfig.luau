@@ -7,7 +7,7 @@ local Config={
  PlayMode = "COMPETITIVE",
  MultiplayerRequired = true,
  SoloPlayable=true,CoopRequired=false,CompetitiveRequired=true,MinimumParticipants=2,
- TargetPopulation=8,SurvivorSlots=4,MonsterSlots=4,RoundSeconds=240,IntermissionSeconds=8,LobbyLoadTimeoutSeconds=12,TagDistance=5.5,PurifyDistance=8,PurifyCooldown=5,RemoteName="GameAction",
+ TargetPopulation=8,SurvivorSlots=4,MonsterSlots=4,RoundSeconds=240,IntermissionSeconds=8,ResultSeconds=6,LobbyLoadTimeoutSeconds=12,TagDistance=5.5,PurifyDistance=8,PurifyCooldown=5,RemoteName="GameAction",
  SurvivorDashCooldown=7,MonsterAbilityCooldown=7,
  RemoteMinInterval=.08,MaxHorizontalVelocity=92,MaxTeleportStep=48,ArenaLimit=176,
  ObjectiveCount=4,EscapeUnlockObjectives=4,
@@ -41,6 +41,21 @@ local Config={
    {Minority=3,Majority=5,RegenMultiplier=1.25,StationBonus=0,LastStandEnergy=0,Label="열세 집중"},
    {Minority=2,Majority=6,RegenMultiplier=1.50,StationBonus=10,LastStandEnergy=0,Label="비상 충전"},
    {Minority=1,Majority=7,RegenMultiplier=1.80,StationBonus=20,LastStandEnergy=35,Label="최후 저항"},
+  },
+ },
+ Celebrations={
+  SURVIVOR={
+   {Id="PHOTO_FAIL",Name="단체사진 망함",Emote="cheer",ComicEmote="laugh",Caption="한 명은 꼭 눈을 감았다"},
+   {Id="PURIFIER_HIGHFIVE",Name="정화기 하이파이브",Emote="wave",ComicEmote="point",Caption="하이파이브 타이밍은 각자 달랐다"},
+   {Id="CLOCK_OUT",Name="퇴근 성공",Emote="dance2",ComicEmote="laugh",Caption="괴물보다 퇴근이 더 중요했다"},
+  },
+  MONSTER={
+   {Id="ROLL_CALL",Name="괴물 출석체크",Emote="wave",ComicEmote="point",Caption="결석자는 인간팀으로 처리됩니다"},
+   {Id="SHRUG_DANCE",Name="단체 으쓱춤",Emote="dance3",ComicEmote="laugh",Caption="무서움보다 박자가 더 문제다"},
+   {Id="SCARY_POSE",Name="누가 제일 무섭나",Emote="cheer",ComicEmote="dance",Caption="판정 결과: 다들 조금씩 이상하다"},
+  },
+  DRAW={
+   {Id="AWKWARD_CLAP",Name="전원 어색한 박수",Emote="wave",ComicEmote="laugh",Caption="이긴 사람은 없고 박수만 남았다"},
   },
  },
  Cosmetics={
