@@ -638,13 +638,14 @@ jobs:
           let pressureRefillLeaderAssigned=false;
           let suppressedSpeculativeWorkers=0;
           const assetLane=String(process.env.VIBE2_EXECUTION_LANE||'').toLowerCase()==='asset-development';
+          const robloxLeaderTaskId=pressureRefillEligible?(batch.matrix||[]).find(row=>row.target==='roblox'&&Number(row.speculativeVariants||1)===1)?.taskId||'':'';
           for(const row of batch.matrix||[]){
             const safeTask=safe(row.taskId);
             const requestedVariantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
             const variantCount=assetLane?1:requestedVariantCount;
             if(assetLane)suppressedSpeculativeWorkers+=Math.max(0,requestedVariantCount-1);
-            const shared={taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256),expectedVariants:variantCount};
-            const pressureRefillLeader=pressureRefillEligible&&!pressureRefillLeaderAssigned;
+            const shared={taskId:row.taskId,target:row.target||'',safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256),expectedVariants:variantCount};
+            const pressureRefillLeader=pressureRefillEligible&&!pressureRefillLeaderAssigned&&(!robloxLeaderTaskId||row.taskId===robloxLeaderTaskId);
             workers.push({...shared,variant:'primary',pressureRefillLeader});
             if(pressureRefillLeader)pressureRefillLeaderAssigned=true;
             for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`,pressureRefillLeader:false});
@@ -2034,6 +2035,7 @@ jobs:
           VIBE2_NEURON_RESERVATION_ID: ${{ matrix.reservationId }}
           VIBE2_NEURON_CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
           VIBE2_PRESSURE_REFILL_LEADER: ${{ matrix.pressureRefillLeader }}
+          VIBE2_NEURON_TARGET: ${{ matrix.target }}
         shell: bash
         run: |
           set -euo pipefail
@@ -2068,7 +2070,11 @@ jobs:
           fi
           echo "VIBE2_LIVE_RUNNER_QUEUE_PRESSURE=${queue_pressure:-0}"
 
-          if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" != 'asset-development' ]; then
+          roblox_micro_fanin=false
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_NEURON_TARGET:-}" = 'roblox' ] && [ "${VIBE2_PRESSURE_REFILL_LEADER:-false}" = 'true' ] && [ "${VIBE2_NEURON_EXPECTED_VARIANTS:-1}" = '1' ]; then
+            roblox_micro_fanin=true
+          fi
+          if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" != 'asset-development' ] && [ "$roblox_micro_fanin" != 'true' ]; then
             echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'
             if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_PRESSURE_REFILL_LEADER:-false}" = 'true' ]; then
               refill_payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:'game-primary',reason:'runner-pressure-wave-leader-free-slot-refill'}}))")"
@@ -2085,6 +2091,9 @@ jobs:
             fi
             echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'
             exit 0
+          fi
+          if [ "$roblox_micro_fanin" = 'true' ]; then
+            echo 'VIBE2_ROBLOX_PRESSURE_MICRO_FANIN=ONE_PRIMARY_RESULT_PER_WAVE'
           fi
           if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" = 'asset-development' ]; then
             echo 'VIBE2_ASSET_NEURON_PRESSURE_BYPASS=IMMEDIATE_MICRO_FANIN'
