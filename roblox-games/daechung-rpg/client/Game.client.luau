@@ -35,7 +35,16 @@ foundationRemote.OnClientEvent:Connect(function(kind)
 end)
 
 local function sound(name,id,volume)
- local s=Instance.new("Sound");s.Name=name;s.SoundId=id;s.Volume=volume;s.Parent=SoundService;return s
+local actionSfx=sound("RPGAction",C.Audio.Action,.22)
+local hitSfx=sound("RPGHit",C.Audio.Hit,.2)
+local skillSfx=sound("RPGSkill",C.Audio.Skill,.24)
+local levelSfx=sound("RPGLevel",C.Audio.LevelUp,.26)
+local gui=Instance.new("ScreenGui");gui.Name="RPGHUD";gui.ResetOnSpawn=false;gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets;gui:SetAttribute("TouchEnabled",touchEnabled);gui.Parent=p:WaitForChild("PlayerGui")
+task.spawn(function()
+ for _=1,20 do
+  -- Add visual feedback here
+ end
+ end)
 end
 local actionSfx=sound("RPGAction",C.Audio.Action,.22)
 local hitSfx=sound("RPGHit",C.Audio.Hit,.2)
