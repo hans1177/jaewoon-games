@@ -12,6 +12,16 @@ import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedV
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
+// 테스트 실행 환경: 호출한 작업 흐름의 작업군이 개별 검증 조건을 바꾸지 않게 격리한다.
+const inheritedExecutionLane = process.env.VIBE2_EXECUTION_LANE;
+test.beforeEach(() => {
+  process.env.VIBE2_EXECUTION_LANE = 'game-primary';
+});
+test.afterEach(() => {
+  if (inheritedExecutionLane === undefined) delete process.env.VIBE2_EXECUTION_LANE;
+  else process.env.VIBE2_EXECUTION_LANE = inheritedExecutionLane;
+});
+
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
 function write(file, content) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, content, 'utf8'); }
 function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles = [], taskId = 'task-1' } = {}) {
