@@ -239,7 +239,50 @@
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
-    "regressionPassed": false
+    "regressionPassed": false,
+    "studioQualityFailure": {
+      "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
+      "artifactIdentity": "sha256:9e9e4476caf9224d4ec45c9221122d0a47966f1db08288ac11e1c8e36c9751f9",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 36481661807,
+      "testedAt": "2026-09-28T23:27:40.245Z",
+      "repairSurfaces": [
+        "CHARACTER_BOOT",
+        "MOBILE_UI",
+        "WORLD_GEOMETRY",
+        "MAP_ROUTEABILITY"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "character-camera-ready",
+          "repairSurface": "CHARACTER_BOOT",
+          "priority": "CRITICAL",
+          "hint": "Repair character spawn, Humanoid/root, and camera binding before gameplay starts.",
+          "observed": "{\"interactionSurfaceCount\":8,\"progressionSurfaceCount\":7,\"combatSurfaceCount\":0,\"npcSurfaceCount\":0,\"companionSurfaceCount\":0,\"itemSurfaceCount\":0,\"remoteCount\":16,\"soundCount\":0,\"effectCount\":0,\"promptCount\":0,\"inventoryCount\":0,\"currentActualPlayerCount\":1,\"maxActualPlayerCount\":1,\"multiplayerStateTransition\":false,\"multiplayerActualSessionPass\":false}"
+        },
+        {
+          "id": "adaptive-ui-commercial-quality",
+          "repairSurface": "MOBILE_UI",
+          "priority": "HIGH",
+          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
+          "observed": "{\"offscreenButtons\":1,\"undersizedTouchButtons\":1,\"suboptimalTouchButtons\":0,\"textOverflowButtons\":0,\"overlapPairs\":0}"
+        },
+        {
+          "id": "adaptive-world-safety",
+          "repairSurface": "WORLD_GEOMETRY",
+          "priority": "CRITICAL",
+          "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
+          "observed": "{\"boundsFinite\":true,\"collidablePartCount\":1,\"floorBelowPlayer\":false,\"floorSamples\":9,\"floorHits\":0,\"floorCoveragePass\":false,\"routeSamples\":0,\"routeSuccess\":0,\"routeCoveragePass\":true,\"spawnThreatDistance\":-1,\"spawnOverlapSafe\":true}"
+        },
+        {
+          "id": "adaptive-map-route-coverage",
+          "repairSurface": "MAP_ROUTEABILITY",
+          "priority": "CRITICAL",
+          "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
+          "observed": "{\"routeAttemptCount\":4,\"routePassCount\":0,\"routeRequired\":2,\"routes\":[{\"id\":\"map-route-nw\",\"ok\":false,\"moved\":0,\"fall\":0,\"floorBelow\":false},{\"id\":\"map-route-ne\",\"ok\":false,\"moved\":0,\"fall\":0,\"floorBelow\":false},{\"id\":\"map-route-sw\",\"ok\":false,\"moved\":0,\"fall\":0,\"floorBelow\":false},{\"id\":\"map-route-se\",\"ok\":false,\"moved\":0,\"fall\":0,\"floorBelow\":false}]}"
+        }
+      ]
+    }
   },
   "qualityGapMap": [
     {
