@@ -27,8 +27,7 @@ local state="WAITING"
 local timeLeft=0
 local monster=nil
 local monsterBot=nil
-local forced=false
-local lastMonster=0
+local lastMonsterIds={}
 local bots={}
 local cooldown={}
 local dashCooldown={}
@@ -734,17 +733,56 @@ local function weightPick(list)
  return list[#list]
 end
 local function selectStartingMonsters(h)
- local preferred,other={},{}
+ local preferred,neutral,survivorPreferred={},{},{}
  for _,p in ipairs(h)do
-  if p:GetAttribute("MonsterPreference")=="MONSTER"then table.insert(preferred,p)else table.insert(other,p)end
+  local pref=p:GetAttribute("MonsterPreference")
+  if pref=="MONSTER"then table.insert(preferred,p)
+  elseif pref=="SURVIVOR"then table.insert(survivorPreferred,p)
+  else table.insert(neutral,p)end
  end
- local selected={};local count=0;local monsterSlots=C.MonsterSlots or 4;local survivorSlots=C.SurvivorSlots or 4
- for _,p in ipairs(preferred)do if count>=monsterSlots then break end;selected[p]=true;count+=1 end
- local minimumRealMonsters=math.max(0,#h-survivorSlots)
- for _,p in ipairs(other)do
-  if count>=minimumRealMonsters or count>=monsterSlots then break end
-  selected[p]=true;count+=1
+
+ local selected={}
+ if #h==1 then
+  local only=h[1]
+  if only:GetAttribute("SoloRole")=="MONSTER"or only:GetAttribute("MonsterPreference")=="MONSTER"then selected[only]=true end
+  lastMonsterIds={}
+  for player in pairs(selected)do lastMonsterIds[player.UserId]=true end
+  return selected
  end
+
+ local monsterSlots=C.MonsterSlots or 4
+ local survivorSlots=C.SurvivorSlots or 4
+ local targetRealMonsters=math.min(monsterSlots,math.max(1,#h-survivorSlots))
+ local count=0
+
+ local function candidates(pool,avoidPrevious)
+  local out={}
+  for _,player in ipairs(pool)do
+   if not selected[player]and(not avoidPrevious or not lastMonsterIds[player.UserId])then table.insert(out,player)end
+  end
+  return out
+ end
+ local function pickFromPools(avoidPrevious)
+  for _,pool in ipairs({preferred,neutral,survivorPreferred})do
+   local list=candidates(pool,avoidPrevious)
+   if #list>0 then return weightPick(list)end
+  end
+  return nil
+ end
+
+ while count<targetRealMonsters do
+  local pick=pickFromPools(true)
+  if not pick then break end
+  selected[pick]=true;count+=1
+ end
+ while count<targetRealMonsters do
+  local pick=pickFromPools(false)
+  if not pick then break end
+  selected[pick]=true;count+=1
+ end
+
+ lastMonsterIds={}
+ for player in pairs(selected)do lastMonsterIds[player.UserId]=true end
  return selected
 end
 local function clearRoleVisual(p)
