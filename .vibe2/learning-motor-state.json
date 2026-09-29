@@ -5930,7 +5930,8 @@
       "coding_negative_lrelv8",
       "coding_negative_ataoyv",
       "coding_negative_1f69mcx",
-      "coding_negative_106srci"
+      "coding_negative_106srci",
+      "coding_negative_mvilmi"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16546,7 +16547,7 @@
         "verifiedApplications": 3,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 10,
-        "verifiedFailures": 477,
+        "verifiedFailures": 478,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -16791,7 +16792,7 @@
             "verifiedApplications": 1,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 2,
-            "verifiedFailures": 78,
+            "verifiedFailures": 79,
             "games": {
               "bug-defense": 1
             },
@@ -16802,22 +16803,22 @@
               "bug-defense": 10,
               "survival": 18,
               "seed-idle-growth-rpg-crystal-bloom": 1,
-              "seed-story-complete-rpg-chronicles-of-eldoria": 16,
+              "seed-story-complete-rpg-chronicles-of-eldoria": 17,
               "village-dungeons": 16,
               "seed-single-defense-strat-celestial-bastion": 17
             },
             "failureTargets": {
-              "unity": 78
+              "unity": 79
             },
             "failureClasses": {
               "NO_OP": 4,
               "TIMEOUT": 1,
               "MALFORMED_OUTPUT": 1,
-              "STUDIO_QUALITY_DELTA": 72
+              "STUDIO_QUALITY_DELTA": 73
             },
             "lastEvidence": "coding_jra6qr",
-            "lastFailureEvidence": "coding_negative_n5w829",
-            "lastUpdatedAt": "2026-09-29T18:21:48.363Z"
+            "lastFailureEvidence": "coding_negative_mvilmi",
+            "lastUpdatedAt": "2026-09-29T18:24:46.142Z"
           },
           "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -16995,8 +16996,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_pj21de",
-        "lastFailureEvidence": "coding_negative_106srci",
-        "lastUpdatedAt": "2026-09-29T18:24:06.080Z"
+        "lastFailureEvidence": "coding_negative_mvilmi",
+        "lastUpdatedAt": "2026-09-29T18:24:46.142Z"
       }
     }
   },
@@ -19737,7 +19738,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T18:24:06.148Z",
+    "lastBuiltAt": "2026-09-29T18:24:46.208Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -27307,5 +27308,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T18:24:06.148Z"
+  "updatedAt": "2026-09-29T18:24:46.208Z"
 }
