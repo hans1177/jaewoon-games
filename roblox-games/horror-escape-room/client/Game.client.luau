@@ -113,7 +113,7 @@ loadingTrack.BackgroundColor3=Color3.fromRGB(34,39,49)
 loadingTrack.BorderSizePixel=0
 loadingTrack.ZIndex=101
 loadingTrack.Parent=loadingLayer
-roundify(loadingTrack,6)
+local loadingTrackCorner=Instance.new("UICorner");loadingTrackCorner.CornerRadius=UDim.new(0,6);loadingTrackCorner.Parent=loadingTrack
 
 local loadingFill=Instance.new("Frame")
 loadingFill.Name="LoadingFill"
@@ -122,7 +122,7 @@ loadingFill.BackgroundColor3=Color3.fromRGB(150,55,70)
 loadingFill.BorderSizePixel=0
 loadingFill.ZIndex=102
 loadingFill.Parent=loadingTrack
-roundify(loadingFill,6)
+local loadingFillCorner=Instance.new("UICorner");loadingFillCorner.CornerRadius=UDim.new(0,6);loadingFillCorner.Parent=loadingFill
 
 local loadingVisible=true
 local function setLoadingProgress(progress,status)
