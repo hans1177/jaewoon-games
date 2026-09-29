@@ -1789,13 +1789,25 @@ local function render()
 
  local selectionConfirmed=p:GetAttribute("LobbySelectionConfirmed")==true
  local spectating=round=="SPECTATING"
- setupPanel.Visible=not running and not resultCode and not spectating
+ local isRoomServer=p:GetAttribute("RoomServer")==true
+ local roomState=tostring(p:GetAttribute("RoomState")or"BROWSER")
+ local browser=not isRoomServer
+ roomBrowserPanel.Visible=browser and not running and not resultCode
+ roomInfoPanel.Visible=isRoomServer and not running and not resultCode and not spectating
+ setupPanel.Visible=isRoomServer and not running and not resultCode and not spectating
  ruleCard.Visible=setupPanel.Visible and not selectionConfirmed
  actionDock.Visible=running
  mapPanel.Visible=running
  spectatorPanel.Visible=spectating
  resultPanel.Visible=resultCode~=nil
- if running or spectating or resultCode then shopPanel.Visible=false end
+ roomStartButton.Visible=roomInfoPanel.Visible and p:GetAttribute("RoomIsHost")==true and roomState=="ROOM_WAITING"
+ roomLeaveButton.Visible=roomInfoPanel.Visible and roomState=="ROOM_WAITING"
+ local roomVis=tostring(p:GetAttribute("RoomVisibility")or"PRIVATE")
+ local visText=roomVis=="PUBLIC"and"공개"or roomVis=="FRIENDS"and"친구만"or"비공개"
+ local roomMembers=tonumber(p:GetAttribute("RoomMemberCount"))or 0
+ local roomMax=tonumber(p:GetAttribute("RoomMaxPlayers"))or 8
+ roomInfoLabel.Text=string.format("방 코드 %s · %s\n실제 %d/%d명 · 빈자리 AI %d명%s",tostring(p:GetAttribute("RoomCode")or"------"),visText,roomMembers,roomMax,math.max(0,(C.TargetPopulation or 8)-roomMembers),p:GetAttribute("RoomIsHost")==true and" · 방장"or"")
+ if browser or running or spectating or resultCode then shopPanel.Visible=false end
  if resultCode then
   if round~=lastRoundState then playResultCeremony(resultCode)end
   resultTitle.Text=resultCode=="SURVIVOR"and"인간 승리"or resultCode=="MONSTER"and"몬스터 승리"or"무승부"
@@ -1831,7 +1843,7 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle","DiscoveryCount","DiscoveryTotal","DiscoveryTitle"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle","GhostSeenCount","GhostCompleted","GhostTotal","GhostTitle","GhostFragments","GhostContracts","RoomServer","RoomCode","RoomHostUserId","RoomHostName","RoomVisibility","RoomState","RoomMemberCount","RoomMaxPlayers","RoomIsHost"})do
  p:GetAttributeChangedSignal(k):Connect(function()render();updateCosmeticUI()end)
 end
 p:GetAttributeChangedSignal("DiscoveryFeedback"):Connect(function()
@@ -1853,6 +1865,17 @@ p:GetAttributeChangedSignal("LoreFeedback"):Connect(function()
  elseif kind=="ALREADY"then
   showMapContentToast("이미 조사한 괴담 메모야",Color3.fromRGB(184,193,208),1.3)
  end
+end)
+
+p:GetAttributeChangedSignal("RoomFeedback"):Connect(function()
+ local raw=tostring(p:GetAttribute("RoomFeedback")or"")
+ local kind,message=string.match(raw,"^([^:]+):?(.*)$")
+ if kind=="ERROR"then roomBrowserFeedback.Text="오류 · "..tostring(message)
+ elseif kind=="EMPTY"then roomBrowserFeedback.Text=tostring(message)
+ elseif kind=="TELEPORTING"then roomBrowserFeedback.Text="방으로 이동 중..."
+ elseif kind=="HOST"then showMapContentToast("방장이 되었어",Color3.fromRGB(155,224,192),2)
+ elseif kind=="START"then showMapContentToast("게임 시작 준비",Color3.fromRGB(155,224,192),1.5)
+ else roomBrowserFeedback.Text=tostring(message or"")end
 end)
 
 p:GetAttributeChangedSignal("EnergyFeedback"):Connect(function()
