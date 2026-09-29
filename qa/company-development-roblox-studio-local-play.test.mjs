@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -1932,6 +1933,27 @@ test('F9 planner upgrades a prior FAST_DEEP Studio pass to required F9_SOAK on t
   }
 });
 
+test('F9 planner reruns legacy multiplayer evidence and persists the current audit',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-multi-version-'));
+  try{
+    const gameRoot=path.join(root,'roblox-games','g1');fs.mkdirSync(gameRoot,{recursive:true});
+    const launch={launchCore:['multiplayer team sync'],releaseGates:['F9 regression']};
+    fs.writeFileSync(path.join(gameRoot,'launch-mvp.json'),JSON.stringify(launch));
+    const contract=deriveStudioActualPlayContract(launch);
+    const candidate=item();candidate.currentStep='FINAL_REVIEW';
+    const probe=runtime();probe.auditProfile='F9_SOAK';probe.scenarioContractRequired=true;
+    probe.scenarioContractVersion=contract.version;
+    probe.scenarioContractFingerprint='sha256:'+crypto.createHash('sha256').update(JSON.stringify(contract)).digest('hex');
+    probe.scenarioCoverage=[{id:'adaptive-multiplayer-sync-surface',pass:true}];
+    candidate.robloxInternalVibePlayEvidence=createLocalStudioPlayEvidence({item:candidate,runtime:probe,expected,workflowRunId:42,studioStepSucceeded:true}).evidence;
+    assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root}).include.length,1);
+    probe.multiplayerAuditSummary={version:2,pass:true,bothClientsStatePass:true,survivorStatePass:true,replacementJoinPass:true,sessionHash:'test-session',verificationScope:'STUDIO_REPLICATED_STATE_AND_PLAYER_LIFECYCLE'};
+    candidate.robloxInternalVibePlayEvidence=createLocalStudioPlayEvidence({item:candidate,runtime:probe,expected,workflowRunId:42,studioStepSucceeded:true}).evidence;
+    assert.equal(candidate.robloxInternalVibePlayEvidence.runtimeSummary.commercialAudit.multiplayer.version,2);
+    assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap(),repoRoot:root}).include.length,0);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('commercial world audit rejects broad floor gaps and unreachable semantic gameplay anchors',()=>{
   const contract=deriveStudioActualPlayContract({launchCore:['large map','NPC quest interaction'],releaseGates:[]});
   const png=Buffer.alloc(4096);Buffer.from('89504e470d0a1a0a','hex').copy(png,0);png.writeUInt32BE(640,16);png.writeUInt32BE(360,20);
@@ -2006,131 +2028,80 @@ test('commercial contract does not infer multiplayer from generic player or mons
 });
 
 
-test('F9 Studio multiplayer helper is defined and drives StudioTestService late-join leave lifecycle',async()=>{
-  assert.match(helper,/export async function runStudioMultiplayerAudit/);
-  assert.match(helper,/ExecuteMultiplayerTestAsync\(1,token\)/);
-  assert.match(helper,/StudioTestService:AddPlayers\(1\)/);
-  assert.match(helper,/StudioTestService:CanLeaveTest\(\)/);
-  assert.match(helper,/StudioTestService:LeaveTest\(\)/);
-  assert.match(helper,/StudioTestService:EndTest/);
-  assert.match(helper,/const stopTool=client\.tool\('start_stop_play'\)/);
-  assert.ok(helper.indexOf('export async function runStudioMultiplayerAudit')<helper.indexOf('multiplayerAuditSummary=await runStudioMultiplayerAudit'));
-
-  const schema={
-    type:'object',
-    required:['studio_id','code','data_model_type'],
-    properties:{
-      studio_id:{type:'string'},
-      code:{type:'string'},
-      data_model_type:{type:'string',enum:['Edit','Server','Client']}
-    }
-  };
-  let serverProbeCount=0;
-  const response=text=>({content:[{type:'text',text}]});
-  const fakeClient={
-    tool(name){
-      assert.equal(name,'execute_luau');
-      return{inputSchema:schema};
-    },
-    async call(name,args){
-      assert.equal(name,'execute_luau');
-      const code=String(args.code||'');
-      const context=String(args.data_model_type||'');
-      if(context==='Edit'&&code.includes('ROBLOX_STUDIO_MULTIPLAYER_START=')){
-        return response('ROBLOX_STUDIO_MULTIPLAYER_START='+JSON.stringify({started:true,token:'VIBE2_F9_MULTIPLAYER_TEST'}));
-      }
-      if(context==='Server'&&code.includes('ROBLOX_STUDIO_MULTIPLAYER_ADD=')){
-        return response('ROBLOX_STUDIO_MULTIPLAYER_ADD='+JSON.stringify({ok:true,error:''}));
-      }
-      if(context==='Client'&&code.includes('ROBLOX_STUDIO_MULTIPLAYER_CAN_LEAVE=')){
-        return response('ROBLOX_STUDIO_MULTIPLAYER_CAN_LEAVE='+JSON.stringify({ok:true,canLeave:true}));
-      }
-      if(context==='Client'&&code.includes('ROBLOX_STUDIO_MULTIPLAYER_LEAVE=')){
-        return response('ROBLOX_STUDIO_MULTIPLAYER_LEAVE='+JSON.stringify({ok:true}));
-      }
-      if(context==='Server'&&code.includes('ROBLOX_STUDIO_MULTIPLAYER_END=')){
-        return response('ROBLOX_STUDIO_MULTIPLAYER_END='+JSON.stringify({ok:true}));
-      }
-      if(context==='Client'&&code.includes('ROBLOX_STUDIO_MULTIPLAYER_CLIENT=')){
-        return response('ROBLOX_STUDIO_MULTIPLAYER_CLIENT='+JSON.stringify({
-          count:2,remoteCount:3,
-          players:[{name:'Player1',userId:1},{name:'Player2',userId:2}]
-        }));
-      }
-      if(context==='Server'&&code.includes('ROBLOX_STUDIO_MULTIPLAYER_SERVER=')){
-        serverProbeCount++;
-        if(serverProbeCount===1){
-          return response('ROBLOX_STUDIO_MULTIPLAYER_SERVER='+JSON.stringify({
-            count:1,remoteCount:3,testArgsReadable:true,
-            players:[{name:'Player1',userId:1}]
-          }));
+test('F9 multiplayer verifies two observers, survivor recovery and replacement join',{concurrency:true},async(t)=>{
+  const cases=['pass','one-observer','duplicate-observer','wrong-state','empty-state','stale-challenge','wrong-session','wrong-identity','zero-survivors','replacement-failed','cleanup-failed'];
+  await Promise.all(cases.map(mode=>t.test(mode,async()=>{
+    const schema={type:'object',required:['studio_id','code','data_model_type'],properties:{studio_id:{type:'string'},code:{type:'string'},data_model_type:{type:'string',enum:['Edit','Server','Client']}}};
+    let token='',phase='initial',addCount=0,cleanup=false;
+    const response=(marker,payload)=>({content:[{type:'text',text:marker+JSON.stringify(payload)}]});
+    const player=id=>({name:'Player'+id,userId:id,state:mode==='empty-state'?{}:{RoundState:'Playing',SharedObjective:4}});
+    const generated=[];
+    const fakeClient={
+      tool(){return{inputSchema:schema};},
+      async call(name,args){
+        const code=String(args.code||'');generated.push(code);
+        if(code.includes('ROBLOX_STUDIO_MULTIPLAYER_START=')){
+          token=JSON.parse(code.match(/local token=("[^"\n]+")/)[1]);
+          return response('ROBLOX_STUDIO_MULTIPLAYER_START=',{started:true});
         }
-        if(serverProbeCount===2){
-          return response('ROBLOX_STUDIO_MULTIPLAYER_SERVER='+JSON.stringify({
-            count:2,remoteCount:3,testArgsReadable:true,
-            players:[{name:'Player1',userId:1},{name:'Player2',userId:2}]
-          }));
+        if(code.includes('ROBLOX_STUDIO_MULTIPLAYER_CLEANUP=')){
+          cleanup=true;
+          if(mode==='cleanup-failed')throw new Error('cleanup unavailable');
+          return response('ROBLOX_STUDIO_MULTIPLAYER_CLEANUP=',{ok:true});
         }
-        return response('ROBLOX_STUDIO_MULTIPLAYER_SERVER='+JSON.stringify({
-          count:1,remoteCount:3,testArgsReadable:true,
-          players:[{name:'Player2',userId:2}]
-        }));
+        if(code.includes('ROBLOX_STUDIO_MULTIPLAYER_ADD=')){
+          phase=++addCount===1?'late':'replacement';
+          return response('ROBLOX_STUDIO_MULTIPLAYER_ADD=',{ok:true});
+        }
+        if(code.includes('ROBLOX_STUDIO_MULTIPLAYER_CAN_LEAVE='))return response('ROBLOX_STUDIO_MULTIPLAYER_CAN_LEAVE=',{ok:true,canLeave:true});
+        if(code.includes('ROBLOX_STUDIO_MULTIPLAYER_LEAVE=')){
+          phase='leave';return response('ROBLOX_STUDIO_MULTIPLAYER_LEAVE=',{ok:true,userId:1});
+        }
+        if(code.includes('ROBLOX_STUDIO_MULTIPLAYER_END='))return response('ROBLOX_STUDIO_MULTIPLAYER_END=',{ok:true});
+        if(code.includes('ROBLOX_STUDIO_MULTIPLAYER_CLIENT='))return response('ROBLOX_STUDIO_MULTIPLAYER_CLIENT=',{count:2,remoteCount:3,players:[player(1),player(2)]});
+        if(code.includes('ROBLOX_STUDIO_MULTIPLAYER_SERVER=')){
+          let players=phase==='initial'?[player(1)]:phase==='leave'?[player(2)]:phase==='replacement'?[player(2),player(3)]:[player(1),player(2)];
+          if(mode==='zero-survivors'&&phase==='leave')players=[];
+          if(mode==='replacement-failed'&&phase==='replacement')players=[player(2)];
+          let receipts=players.map(p=>({observerUserId:p.userId,challenge:token+':'+phase,players:structuredClone(players)}));
+          if(mode==='one-observer')receipts=receipts.slice(0,1);
+          if(mode==='duplicate-observer'&&receipts.length>1)receipts[1]=structuredClone(receipts[0]);
+          if(mode==='wrong-state'&&receipts.length>1)receipts[1].players[0].state.SharedObjective=3;
+          if(mode==='wrong-identity'&&receipts.length>1)receipts[1].players[0].userId=99;
+          if(mode==='stale-challenge')receipts.forEach(r=>r.challenge=token+':old');
+          return response('ROBLOX_STUDIO_MULTIPLAYER_SERVER=',{count:players.length,players,receipts,remoteCount:3,testArgs:mode==='wrong-session'?'old-session':token,testArgsReadable:true});
+        }
+        throw new Error('unexpected probe');
       }
-      throw new Error('unexpected fake MCP call '+context+' '+code.slice(0,80));
-    }
-  };
-
-  const result=await runStudioMultiplayerAudit(fakeClient,'studio-1',{
-    adaptiveCoverage:{contractHash:'sha256:abc123'}
-  });
-  assert.equal(result.infrastructureFailure,false);
-  assert.equal(result.initialServerCount,1);
-  assert.equal(result.lateServerCount,2);
-  assert.equal(result.clientPlayerCount,2);
-  assert.equal(result.clientRosterPass,true);
-  assert.equal(result.remoteSurfacePass,true);
-  assert.equal(result.leavePass,true);
-  assert.equal(result.pass,true);
-});
-
-test('F9 Studio multiplayer helper cannot pass a mismatched client roster as synchronized multiplayer',async()=>{
-  const schema={
-    type:'object',
-    required:['studio_id','code','data_model_type'],
-    properties:{
-      studio_id:{type:'string'},
-      code:{type:'string'},
-      data_model_type:{type:'string',enum:['Edit','Server','Client']}
-    }
-  };
-  let serverProbeCount=0;
-  const response=text=>({content:[{type:'text',text}]});
-  const fakeClient={
-    tool(){return{inputSchema:schema};},
-    async call(name,args){
-      const code=String(args.code||''),context=String(args.data_model_type||'');
-      if(context==='Edit'&&code.includes('ROBLOX_STUDIO_MULTIPLAYER_START='))return response('ROBLOX_STUDIO_MULTIPLAYER_START='+JSON.stringify({started:true}));
-      if(context==='Server'&&code.includes('ROBLOX_STUDIO_MULTIPLAYER_ADD='))return response('ROBLOX_STUDIO_MULTIPLAYER_ADD='+JSON.stringify({ok:true}));
-      if(context==='Server'&&code.includes('ROBLOX_STUDIO_MULTIPLAYER_END='))return response('ROBLOX_STUDIO_MULTIPLAYER_END='+JSON.stringify({ok:true}));
-      if(context==='Server'&&code.includes('ROBLOX_STUDIO_MULTIPLAYER_SERVER=')){
-        serverProbeCount++;
-        return response('ROBLOX_STUDIO_MULTIPLAYER_SERVER='+JSON.stringify({
-          count:serverProbeCount===1?1:2,remoteCount:2,
-          players:serverProbeCount===1?[{name:'Player1'}]:[{name:'Player1'},{name:'Player2'}]
-        }));
+    };
+    const result=await runStudioMultiplayerAudit(fakeClient,'studio-1',{adaptiveCoverage:{contractHash:'test'}});
+    assert.equal(result.pass,mode==='pass',mode);
+    assert.equal(cleanup,true);
+    assert.equal(result.sameUserRejoinVerified,false);
+    if(mode==='pass'){
+      assert.equal(result.bothClientsStatePass,true);
+      assert.equal(result.survivorStatePass,true);
+      assert.equal(result.replacementJoinPass,true);
+      assert.equal(addCount,2);
+      assert.equal(result.infrastructureFailure,false);
+      if(process.env.VIBE2_LUAU_COMPILE){
+        const dir=fs.mkdtempSync(path.join(os.tmpdir(),'multiplayer-probe-'));
+        try{
+          const startCode=generated.find(code=>code.includes('ROBLOX_STUDIO_MULTIPLAYER_START='));
+          for(const key of ['receiver','observer']){
+            generated.push(JSON.parse(startCode.match(new RegExp(key+'\\.Source=("(?:[^"\\\\]|\\\\.)*")'))[1]));
+          }
+          for(const [index,code] of generated.entries()){
+            const file=path.join(dir,index+'.luau');fs.writeFileSync(file,code);
+            const compiled=spawnSync(process.env.VIBE2_LUAU_COMPILE,[file],{encoding:'utf8'});
+            assert.equal(compiled.status,0,compiled.stderr);
+          }
+        }finally{fs.rmSync(dir,{recursive:true,force:true});}
       }
-      if(context==='Client'&&code.includes('ROBLOX_STUDIO_MULTIPLAYER_CLIENT=')){
-        return response('ROBLOX_STUDIO_MULTIPLAYER_CLIENT='+JSON.stringify({
-          count:2,remoteCount:2,players:[{name:'Other1'},{name:'Other2'}]
-        }));
-      }
-      throw new Error('fake-client-replication-missing');
+    }else if(['one-observer','duplicate-observer','wrong-state','empty-state','stale-challenge','wrong-identity','zero-survivors','replacement-failed'].includes(mode)){
+      assert.equal(result.infrastructureFailure,false,mode+' must request game repair');
     }
-  };
-  const result=await runStudioMultiplayerAudit(fakeClient,'studio-2',{adaptiveCoverage:{contractHash:'x'}});
-  assert.equal(result.pass,false);
-  assert.equal(result.infrastructureFailure,true);
-  assert.match(result.error,/CLIENT_REPLICATION_NOT_OBSERVED|fake-client-replication-missing/);
+  })));
 });
 
 test('commercial F9 multiplayer requires actual two-player synchronized Studio evidence',()=>{
