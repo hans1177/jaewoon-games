@@ -411,7 +411,7 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
       'status.Parent = root'
     ].join('\n');
 
-    const previousStages=['ROOT','TITLE','STATUS'].map(key=>blockMatch(source,key)?.stage||0);
+    const previousStages=['ROOT','TITLE','STATUS','SURFACE'].map(key=>blockMatch(source,key)?.stage||0);
     const stage=Math.max(1,Math.max(...previousStages)+1);
     const verifiedLearning=verifiedExternalLearningContract&&typeof verifiedExternalLearningContract==='object'?verifiedExternalLearningContract:{required:false,ids:[],coveragePct:0,block:''};
     const verifiedLearningIds=unique(verifiedLearning.ids||[]);
@@ -500,7 +500,8 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
       '-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_STATUS_END'
     ].join('\n');
 
-    const rows=[
+    let genericSurface=null;
+    let rows=[
       ['ROOT',rootSourceAnchor,rootBlock],
       ['TITLE',titleAnchor,titleBlock],
       ['STATUS',statusAnchor,statusBlock]
@@ -508,6 +509,69 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
       const edit=editFor(source,key,sourceAnchor,block);
       return edit?{path:relative,find:edit.find,replace:edit.replace}:null;
     }).filter(Boolean);
+    if(!rows.length){
+      const existingSurface=blockMatch(source,'SURFACE');
+      const existingSurfaceVariable=existingSurface?.text.match(/local deterministicGameplaySurfaceTarget = ([A-Za-z_]\w*)/)?.[1]||'';
+      const declarations=[...source.matchAll(/\blocal\s+([A-Za-z_]\w*)\s*=\s*Instance\.new\(["'](Frame|TextLabel|TextButton|ImageLabel|ImageButton)["']\)/g)];
+      const surfaces=declarations.map(match=>{
+        const variable=match[1],className=match[2];
+        const parentMatches=[...source.matchAll(new RegExp('\\b'+variable+'\\.Parent\\s*=\\s*gui\\b','g'))];
+        if(parentMatches.length!==1)return null;
+        let score=className==='Frame'?20:className.endsWith('Button')?8:5;
+        if(/hud|stats|status|party|dock|objective|panel|card|bar/i.test(variable))score+=12;
+        if(/overlay|modal|startup|loading|intro|tutorial|choice|class/i.test(variable))score-=20;
+        return{variable,className,anchor:parentMatches[0][0],score,index:match.index||0};
+      }).filter(Boolean).sort((a,b)=>b.score-a.score||a.index-b.index);
+      const selected=existingSurfaceVariable
+        ?{variable:existingSurfaceVariable,anchor:null,score:100}
+        :surfaces[0]||null;
+      if(selected){
+        const variable=selected.variable;
+        const surfaceBlock=[
+          `-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_SURFACE_BEGIN stage=${stage}`,
+          'do',
+          `  local deterministicBuildStage = ${stage}`,
+          `  local deterministicGameplaySurfaceTarget = ${variable}`,
+          '  deterministicGameplaySurfaceTarget:SetAttribute("DeterministicBuildStage", deterministicBuildStage)',
+          '  local deterministicGameplaySurfaceCorner = deterministicGameplaySurfaceTarget:FindFirstChild("DeterministicGameplaySurfaceCorner")',
+          '  if not deterministicGameplaySurfaceCorner then',
+          '    deterministicGameplaySurfaceCorner = Instance.new("UICorner")',
+          '    deterministicGameplaySurfaceCorner.Name = "DeterministicGameplaySurfaceCorner"',
+          '    deterministicGameplaySurfaceCorner.Parent = deterministicGameplaySurfaceTarget',
+          '  end',
+          `  deterministicGameplaySurfaceCorner.CornerRadius = UDim.new(0, ${radius})`,
+          '  local deterministicGameplaySurfaceStroke = deterministicGameplaySurfaceTarget:FindFirstChild("DeterministicGameplaySurfaceStroke")',
+          '  if not deterministicGameplaySurfaceStroke then',
+          '    deterministicGameplaySurfaceStroke = Instance.new("UIStroke")',
+          '    deterministicGameplaySurfaceStroke.Name = "DeterministicGameplaySurfaceStroke"',
+          '    deterministicGameplaySurfaceStroke.Parent = deterministicGameplaySurfaceTarget',
+          '  end',
+          `  deterministicGameplaySurfaceStroke.Color = Color3.fromRGB(${accent[0]}, ${accent[1]}, ${accent[2]})`,
+          '  deterministicGameplaySurfaceStroke.Thickness = 1.5',
+          '  deterministicGameplaySurfaceStroke.Transparency = 0.24',
+          '  local deterministicGameplaySurfaceGradient = deterministicGameplaySurfaceTarget:FindFirstChild("DeterministicGameplaySurfaceGradient")',
+          '  if not deterministicGameplaySurfaceGradient then',
+          '    deterministicGameplaySurfaceGradient = Instance.new("UIGradient")',
+          '    deterministicGameplaySurfaceGradient.Name = "DeterministicGameplaySurfaceGradient"',
+          '    deterministicGameplaySurfaceGradient.Parent = deterministicGameplaySurfaceTarget',
+          '  end',
+          `  deterministicGameplaySurfaceGradient.Color = ColorSequence.new(Color3.fromRGB(${accent[0]}, ${accent[1]}, ${accent[2]}), Color3.fromRGB(${accent2[0]}, ${accent2[1]}, ${accent2[2]}))`,
+          `  deterministicGameplaySurfaceGradient.Rotation = ${(stage*17)%360}`,
+          '  local deterministicGameplaySurfaceTweenService = game:GetService("TweenService")',
+          '  local deterministicGameplaySurfaceRestPosition = deterministicGameplaySurfaceTarget.Position',
+          `  local deterministicGameplaySurfaceEntryPosition = UDim2.new(deterministicGameplaySurfaceTarget.Position.X.Scale, deterministicGameplaySurfaceTarget.Position.X.Offset, deterministicGameplaySurfaceTarget.Position.Y.Scale, deterministicGameplaySurfaceTarget.Position.Y.Offset + ${entryOffset})`,
+          '  deterministicGameplaySurfaceTarget.Position = deterministicGameplaySurfaceEntryPosition',
+          '  deterministicGameplaySurfaceTweenService:Create(deterministicGameplaySurfaceTarget, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = deterministicGameplaySurfaceRestPosition}):Play()',
+          'end',
+          '-- VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_SURFACE_END'
+        ].join('\n');
+        const edit=editFor(source,'SURFACE',selected.anchor,surfaceBlock);
+        if(edit){
+          rows=[{path:relative,find:edit.find,replace:edit.replace}];
+          genericSurface={variable};
+        }
+      }
+    }
     if(!rows.length)continue;
 
     try{
@@ -518,11 +582,20 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
       const graphicsReuseMode=(graphicsContract?.reuseModes||[]).map(value=>clean(value).toUpperCase()).includes('ADAPT_RESTYLE_AND_RETARGET')
         ?'ADAPT_RESTYLE_AND_RETARGET'
         :clean((graphicsContract?.reuseModes||[])[0]).toUpperCase()||'ADAPT_RESTYLE_AND_RETARGET';
-      const evidenceLines=[
-        '    deterministicGameplayHudCorner = Instance.new("UICorner")',
-        '    deterministicGameplayHudStroke = Instance.new("UIStroke")',
-        '    deterministicGameplayHudGradient = Instance.new("UIGradient")'
-      ];
+      const evidenceLines=genericSurface
+        ?[
+          '    deterministicGameplaySurfaceCorner = Instance.new("UICorner")',
+          '    deterministicGameplaySurfaceStroke = Instance.new("UIStroke")',
+          '    deterministicGameplaySurfaceGradient = Instance.new("UIGradient")'
+        ]
+        :[
+          '    deterministicGameplayHudCorner = Instance.new("UICorner")',
+          '    deterministicGameplayHudStroke = Instance.new("UIStroke")',
+          '    deterministicGameplayHudGradient = Instance.new("UIGradient")'
+        ];
+      const evidenceBindings=genericSurface
+        ?['DeterministicGameplaySurfaceCorner','DeterministicGameplaySurfaceStroke','DeterministicGameplaySurfaceGradient']
+        :['DeterministicGameplayHudCorner','DeterministicGameplayHudStroke','DeterministicGameplayHudGradient'];
       const graphicsReplacementReport=graphicsContract?.required===true?{
         actualCount:evidenceLines.length,
         changedSurfaces:[graphicsSurface],
@@ -530,7 +603,7 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
         replacementEvidence:evidenceLines.map((sourceEvidence,index)=>({
           surface:graphicsSurface,
           path:relative,
-          bindingKey:['DeterministicGameplayHudCorner','DeterministicGameplayHudStroke','DeterministicGameplayHudGradient'][index],
+          bindingKey:evidenceBindings[index],
           reuseMode:graphicsReuseMode,
           sourceEvidence
         })),

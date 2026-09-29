@@ -4298,6 +4298,68 @@ test('deterministic Roblox build-up keeps motion when Root styling was already c
   assert.match(rootEdit.replace,/deterministicGameplayHudTweenService:Create/);
 });
 
+test('deterministic Roblox build-up supports compact custom HUDs without the root title status template',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'roblox-games/custom-hud');
+  const relative='client/Game.client.luau';
+  const source=[
+    'local gui=Instance.new("ScreenGui");gui.Name="RPGHUD";gui.Parent=game.Players.LocalPlayer:WaitForChild("PlayerGui")',
+    'local startupOverlay=Instance.new("Frame");startupOverlay.Size=UDim2.fromScale(1,1);startupOverlay.BackgroundColor3=Color3.fromRGB(19,21,29);startupOverlay.Parent=gui',
+    'local stats=Instance.new("Frame");stats.Name="RPGTopHUD";stats.Size=UDim2.fromOffset(270,88);stats.Position=UDim2.fromOffset(8,8);stats.BackgroundColor3=Color3.fromRGB(25,28,35);stats.Parent=gui',
+    'local title=Instance.new("TextLabel");title.Text="Custom RPG";title.Parent=stats'
+  ].join('\n');
+  write(path.join(sourceRoot,relative),source);
+  const order={
+    target:'roblox',
+    gameId:'custom-hud',
+    presentationQuality:{
+      required:true,
+      pass:'ASSET_ADAPTATION',
+      graphicsReplacement:{
+        required:true,
+        surfaces:['HUD'],
+        reuseModes:['ADAPT_RESTYLE_AND_RETARGET'],
+        beforeAfterEvidenceRequired:true,
+        perReplacementSourceEvidenceRequired:true,
+        actualReplacementCountMustEqualGroundedEvidenceCount:true,
+        selfReportedCountWithoutGroundedSourceEvidenceCannotPass:true
+      }
+    }
+  };
+  const first=deterministicRobloxBuildUpCandidate({
+    order,
+    sourceRoot,
+    sourceRootRelative:'roblox-games/custom-hud',
+    responsibleFiles:[relative]
+  });
+  assert.ok(first);
+  assert.equal(first.generation.mode,'DETERMINISTIC_ROBLOX_BUILDUP');
+  assert.equal(first.candidate.edits.length,1);
+  assert.equal(first.candidate.edits[0].find,'stats.Parent=gui');
+  assert.match(first.candidate.edits[0].replace,/VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_SURFACE_BEGIN stage=1/);
+  assert.match(first.candidate.edits[0].replace,/local deterministicGameplaySurfaceTarget = stats/);
+  assert.match(first.candidate.edits[0].replace,/deterministicGameplaySurfaceTweenService:Create/);
+  assert.doesNotMatch(first.candidate.edits[0].replace,/local deterministicGameplaySurfaceTarget = startupOverlay/);
+  assert.equal(first.candidate.graphicsReplacementReport?.actualCount,3);
+  assert.deepEqual(
+    first.candidate.graphicsReplacementReport?.replacementEvidence?.map(row=>row.bindingKey),
+    ['DeterministicGameplaySurfaceCorner','DeterministicGameplaySurfaceStroke','DeterministicGameplaySurfaceGradient']
+  );
+
+  applyExactEdits(sourceRoot,first.candidate.edits);
+  const second=deterministicRobloxBuildUpCandidate({
+    order,
+    sourceRoot,
+    sourceRootRelative:'roblox-games/custom-hud',
+    responsibleFiles:[relative]
+  });
+  assert.ok(second);
+  assert.equal(second.generation.deterministicRobloxBuildStage,2);
+  assert.equal(second.candidate.edits.length,1);
+  assert.match(second.candidate.edits[0].find,/VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_SURFACE_BEGIN stage=1/);
+  assert.match(second.candidate.edits[0].replace,/VIBE2_DETERMINISTIC_ROBLOX_BUILDUP_SURFACE_BEGIN stage=2/);
+});
+
 test('Roblox deterministic workflow activates only for an explicit deterministic work order and never falls back to Ollama',()=>{
   const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(worker,/const deterministicRobloxMode=target==='roblox'/);
