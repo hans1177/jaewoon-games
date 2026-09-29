@@ -749,8 +749,8 @@ jobs:
       - name: Checkout candidate
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.inspect.outputs.candidate_branch }}
-          fetch-depth: 0
+          ref: ${{ needs.inspect.outputs.candidate_sha }}
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -808,7 +808,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin main --quiet
+          git fetch --no-tags --depth=1 origin "$BASE_SHA" --quiet
+          git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
           [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ] || { echo 'main source changed; replan required' >&2; exit 1; }
           rm -rf /tmp/vibe2-roblox-promote
           git worktree prune
@@ -828,10 +829,10 @@ jobs:
           pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$release_branch" --title "vibe2: promote Roblox ${TASK_ID}" --body "Verified Roblox candidate. Direct main write: NO. Open Cloud publish runs only after this PR CI passes and source-root merge is verified.")"
           sleep 5
           gh pr checks "$pr_url" --watch --fail-fast --interval 10
-          git fetch origin main --quiet
+          git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
           [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ] || { echo 'main source changed before merge; replan required' >&2; exit 1; }
           gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
-          git fetch origin main --quiet
+          git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
           git diff --quiet "$release_commit" origin/main -- "$SOURCE_ROOT"
           promoted_main_sha="$(git rev-parse origin/main)"
           promoted_source_tree_sha="$(git rev-parse "origin/main:$SOURCE_ROOT")"
