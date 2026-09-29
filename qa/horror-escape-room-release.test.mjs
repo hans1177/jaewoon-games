@@ -327,3 +327,14 @@ test('중도 입장과 이탈은 다음 라운드 관전 및 AI 보충으로 복
  assert.match(client,/Name="SpectatorNotice"/);
  assert.match(client,/다음 라운드부터 참가/);
 });
+
+
+test('승리 결과는 팀 세레머니와 맵별 코믹 문구로 확실하게 마무리된다',()=>{
+ assert.match(client,/Name="TeamCeremony"/);
+ assert.match(client,/local function playResultCeremony\(resultCode\)/);
+ assert.match(client,/CELEBRATE_HUMAN/);
+ assert.match(client,/CELEBRATE_MONSTER/);
+ assert.match(client,/CELEBRATE_DRAW/);
+ for(const marker of ['야자 탈출 성공','진료 결과: 감염 확정','오늘의 마지막 손님까지 감염 완료'])assert.ok(client.includes(marker),marker);
+ assert.doesNotMatch(client,/playResultCeremony\([\s\S]{0,600}FireServer/);
+});
