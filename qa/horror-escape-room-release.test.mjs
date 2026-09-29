@@ -103,3 +103,16 @@ test('첫 액션은 서버 가동시간을 쿨다운으로 오인하지 않는�
  assert.doesNotMatch(server,/now-\(purifyCooldown\[p\]or 0\)<cd/);
  assert.doesNotMatch(server,/now-\(cooldown\[p\]or 0\)<C\.MonsterAbilityCooldown/);
 });
+
+
+test('상용 로딩과 로비 상태는 서버 정본에 바인딩된다',()=>{
+ assert.match(config,/LobbyLoadTimeoutSeconds=12/);
+ assert.match(client,/ContentProvider:PreloadAsync/);
+ assert.match(client,/Name="LoadingScreen"/);
+ assert.match(client,/workspace:GetAttribute\("MapReady"\)/);
+ assert.match(server,/local function syncLobbyState\(phase\)/);
+ for(const key of ['LobbyReady','LobbyPhase','LobbyRealPlayers','LobbyAIFill'])assert.ok(server.includes('"'+key+'"'),key);
+ assert.match(client,/실제 %d명 · AI %d명 충원 예정/);
+ assert.match(client,/setupPanel\.Visible=not running/);
+ assert.match(client,/ruleCard\.Visible=setupPanel\.Visible and not setupChosen/);
+});
