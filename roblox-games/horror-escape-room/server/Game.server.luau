@@ -117,6 +117,173 @@ local function syncLobbyState(phase)
  syncRoomState()
 end
 
+local function roomFeedback(p,kind,message)
+ if not p or not p.Parent then return end
+ p:SetAttribute("RoomFeedback",tostring(kind or"INFO")..":"..tostring(message or""))
+end
+local function normalizeRoomVisibility(value)
+ local raw=string.upper(tostring(value or"PUBLIC"))
+ for _,allowed in ipairs(C.Room and C.Room.Visibility or{"PUBLIC","FRIENDS","PRIVATE"})do
+  if raw==allowed then return raw end
+ end
+ return"PUBLIC"
+end
+local function roomActionReady(p)
+ local now=os.clock()
+ local cd=math.max(.5,tonumber(C.Room and C.Room.ActionCooldownSeconds)or 1.5)
+ if now-(roomActionLast[p]or 0)<cd then return false end
+ roomActionLast[p]=now
+ return true
+end
+local function roomDirectoryExpiration()
+ return math.max(300,math.floor(tonumber(C.Room and C.Room.DirectoryExpirationSeconds)or 7200))
+end
+local function roomMaxPlayers()
+ return math.max(1,math.floor(tonumber(C.Room and C.Room.MaxPlayers)or C.TargetPopulation or 8))
+end
+local function setRoomDirectoryEntry(code,data)
+ if code==""or typeof(data)~="table"then return false end
+ local ok=pcall(function()roomDirectory:SetAsync(code,data,roomDirectoryExpiration(),os.time())end)
+ return ok
+end
+local function getRoomDirectoryEntry(code)
+ local ok,data=pcall(function()return roomDirectory:GetAsync(code)end)
+ if not ok or typeof(data)~="table"then return nil end
+ return data
+end
+local function removeRoomDirectoryEntry(code)
+ if code==""then return end
+ pcall(function()roomDirectory:RemoveAsync(code)end)
+end
+local function updateCurrentRoomDirectory()
+ if not roomServer or roomCode==""then return end
+ local existing=getRoomDirectoryEntry(roomCode)
+ if not existing then return end
+ existing.hostUserId=roomHostUserId
+ existing.hostName=roomHostName
+ existing.visibility=roomVisibility
+ existing.memberCount=#Players:GetPlayers()
+ existing.maxPlayers=roomMaxPlayers()
+ existing.updatedAt=os.time()
+ existing.state=state=="RUNNING"and"RUNNING"or state=="RESULT"and"RESULT"or"WAITING"
+ setRoomDirectoryEntry(roomCode,existing)
+end
+local function createUniqueRoomCode()
+ local length=math.clamp(math.floor(tonumber(C.Room and C.Room.CodeLength)or 6),4,8)
+ local low=10^(length-1);local high=10^length-1
+ for _=1,12 do
+  local code=tostring(math.random(low,high))
+  if not getRoomDirectoryEntry(code)then return code end
+ end
+ return nil
+end
+local function teleportToReservedRoom(p,record)
+ if not p or not p.Parent or typeof(record)~="table"or typeof(record.accessCode)~="string"or record.accessCode==""then return false end
+ local options=Instance.new("TeleportOptions")
+ options.ReservedServerAccessCode=record.accessCode
+ options:SetTeleportData({
+  roomCode=record.code,
+  roomHostUserId=record.hostUserId,
+  roomHostName=record.hostName,
+  roomVisibility=record.visibility,
+  roomCreatedAt=record.createdAt,
+ })
+ local ok,err=pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p},options)end)
+ if not ok then roomFeedback(p,"ERROR","방 이동 실패");warn("Room teleport failed",err);return false end
+ roomFeedback(p,"TELEPORTING",record.code or"")
+ return true
+end
+local function createReservedRoom(p,visibility)
+ if roomServer or state=="RUNNING"or not roomActionReady(p)then return end
+ local code=createUniqueRoomCode()
+ if not code then roomFeedback(p,"ERROR","방 코드 생성 실패");return end
+ local ok,accessCode=pcall(function()
+  local reservedCode=TeleportService:ReserveServerAsync(game.PlaceId)
+  return reservedCode
+ end)
+ if not ok or typeof(accessCode)~="string"or accessCode==""then roomFeedback(p,"ERROR","예약 서버 생성 실패");return end
+ local record={
+  code=code,accessCode=accessCode,hostUserId=p.UserId,hostName=p.DisplayName,
+  visibility=normalizeRoomVisibility(visibility),memberCount=0,maxPlayers=roomMaxPlayers(),
+  createdAt=os.time(),updatedAt=os.time(),state="WAITING",placeId=game.PlaceId,
+ }
+ if not setRoomDirectoryEntry(code,record)then roomFeedback(p,"ERROR","방 등록 실패");return end
+ if not teleportToReservedRoom(p,record)then removeRoomDirectoryEntry(code)end
+end
+local function canJoinRoom(p,record,explicitCode)
+ if typeof(record)~="table"then return false,"방을 찾을 수 없음"end
+ if tonumber(record.placeId)~=game.PlaceId then return false,"다른 장소의 방"end
+ if tostring(record.state or"WAITING")~="WAITING"then return false,"이미 게임 진행 중"end
+ if (tonumber(record.memberCount)or 0)>=(tonumber(record.maxPlayers)or roomMaxPlayers())then return false,"방이 가득 참"end
+ local visibility=normalizeRoomVisibility(record.visibility)
+ if visibility=="PRIVATE"and explicitCode~=true then return false,"비공개 방"end
+ if visibility=="FRIENDS"and p.UserId~=tonumber(record.hostUserId)then
+  local ok,isFriend=pcall(function()return p:IsFriendsWithAsync(tonumber(record.hostUserId)or 0)end)
+  if not ok or isFriend~=true then return false,"방장 친구만 입장 가능"end
+ end
+ return true,nil
+end
+local function joinRoomByCode(p,rawCode)
+ if roomServer or state=="RUNNING"or not roomActionReady(p)then return end
+ local code=tostring(rawCode or""):gsub("%s+","")
+ if not code:match("^%d+$")or #code~=math.clamp(math.floor(tonumber(C.Room and C.Room.CodeLength)or 6),4,8)then roomFeedback(p,"ERROR","방 코드 확인");return end
+ local record=getRoomDirectoryEntry(code)
+ local allowed,reason=canJoinRoom(p,record,true)
+ if not allowed then roomFeedback(p,"ERROR",reason);return end
+ teleportToReservedRoom(p,record)
+end
+local function quickJoinRoom(p,friendsOnly)
+ if roomServer or state=="RUNNING"or not roomActionReady(p)then return end
+ local ok,rows=pcall(function()return roomDirectory:GetRangeAsync(Enum.SortDirection.Descending,30)end)
+ if not ok or typeof(rows)~="table"then roomFeedback(p,"ERROR","방 목록 조회 실패");return end
+ for _,row in ipairs(rows)do
+  local record=typeof(row)=="table"and row.value or nil
+  if typeof(record)=="table"then
+   local visibility=normalizeRoomVisibility(record.visibility)
+   local candidate=(friendsOnly and visibility=="FRIENDS")or(not friendsOnly and visibility=="PUBLIC")
+   if candidate then
+    local allowed=canJoinRoom(p,record,false)
+    if allowed and teleportToReservedRoom(p,record)then return end
+   end
+  end
+ end
+ roomFeedback(p,"EMPTY",friendsOnly and"참가 가능한 친구 방 없음"or"참가 가능한 공개 방 없음")
+end
+local function adoptReservedRoomFromPlayer(p)
+ if not roomServer then return end
+ local ok,joinData=pcall(function()return p:GetJoinData()end)
+ local teleportData=ok and typeof(joinData)=="table"and joinData.TeleportData or nil
+ if typeof(teleportData)~="table"then return end
+ local incomingCode=tostring(teleportData.roomCode or"")
+ if incomingCode==""then return end
+ if roomCode==""then
+  roomCode=incomingCode
+  roomHostUserId=tonumber(teleportData.roomHostUserId)or p.UserId
+  roomHostName=tostring(teleportData.roomHostName or p.DisplayName)
+  roomVisibility=normalizeRoomVisibility(teleportData.roomVisibility)
+ elseif roomCode~=incomingCode then
+  roomFeedback(p,"ERROR","잘못된 방 연결")
+  task.defer(function()pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p})end)end)
+  return
+ end
+ roomJoinedAt[p]=os.clock()
+ syncRoomState()
+ task.defer(updateCurrentRoomDirectory)
+end
+local function startRoomMatch(p)
+ if not roomServer or state=="RUNNING"or p.UserId~=roomHostUserId then return end
+ if #Players:GetPlayers()<math.max(1,tonumber(C.MinimumParticipants)or 1)then roomFeedback(p,"ERROR","참가 인원 부족");return end
+ roomStartRequested=true
+ workspace:SetAttribute("RoomStartRequested",true)
+ roomFeedback(p,"START","게임 시작")
+ syncRoomState()
+end
+local function leaveReservedRoom(p)
+ if not roomServer or state=="RUNNING"then return end
+ roomFeedback(p,"TELEPORTING","로비로 이동")
+ pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p})end)
+end
+
 local survivorSpawns={
  Vector3.new(-118,3,-70),Vector3.new(118,3,-70),Vector3.new(-108,3,104),
  Vector3.new(108,3,104),Vector3.new(0,3,40),Vector3.new(0,3,-40)
