@@ -723,6 +723,8 @@ end
 local surpriseArena=nil
 local surpriseTriggers={}
 local surpriseSeen={}
+local ghostSightingTriggers={}
+local ghostSightingSeen={}
 local surpriseClock=0
 
 local function localPart(name,size,cframe,color,material,shape)
@@ -848,6 +850,34 @@ local function playFloatingProp(trigger,kind,text)
  if text and text~=""then localText(pos+Vector3.new(0,2.5,0),text,Color3.fromRGB(229,233,240),1.8)end
 end
 
+local function ghostCatalogItem(id)
+ for _,item in ipairs(C.GhostCatalog or{})do if item.Id==id then return item end end
+ return nil
+end
+local function playGhostSighting(trigger)
+ local id=tostring(trigger:GetAttribute("GhostId")or"")
+ local item=ghostCatalogItem(id);if not item then return end
+ local base=trigger.Position+Vector3.new(0,2.8,0)
+ local color=item.Color or Color3.fromRGB(210,218,228)
+ local parts={}
+ local body=localPart("LocalGhostSightingBody",Vector3.new(2.8,5.4,1.4),CFrame.new(base),color,Enum.Material.SmoothPlastic);body.Transparency=.18;table.insert(parts,body)
+ local head=localPart("LocalGhostSightingHead",Vector3.new(2.25,2.25,2.25),CFrame.new(base+Vector3.new(0,3.6,0)),color,Enum.Material.SmoothPlastic,Enum.PartType.Ball);head.Transparency=.12;table.insert(parts,head)
+ if item.Visual=="BLACK_DOG"then
+  body.Size=Vector3.new(5.2,2.4,2.2);body.CFrame=CFrame.new(trigger.Position+Vector3.new(0,1.5,0))
+  head.Size=Vector3.new(2.3,2.3,2.5);head.CFrame=CFrame.new(trigger.Position+Vector3.new(0,2,-2.4))
+ elseif item.Visual=="FLOATING_HEAD"then
+  body.Transparency=1
+  head.CFrame=CFrame.new(trigger.Position+Vector3.new(0,6.5,0))
+ elseif item.Visual=="HEADLESS"then
+  head.Transparency=1
+ end
+ for _,part in ipairs(parts)do
+  TweenService:Create(part,TweenInfo.new(1.35,Enum.EasingStyle.Sine,Enum.EasingDirection.Out),{Transparency=1,CFrame=part.CFrame*CFrame.new(0,.8,0)}):Play()
+  Debris:AddItem(part,1.5)
+ end
+ localText(trigger.Position+Vector3.new(0,7,0),item.Name.." · "..item.Origin,Color3.fromRGB(224,215,255),1.5)
+end
+
 local function playSurprise(trigger)
  local kind=tostring(trigger:GetAttribute("SurpriseKind")or"")
  local text=tostring(trigger:GetAttribute("SurpriseText")or"")
@@ -867,11 +897,14 @@ end
 local function refreshSurpriseTriggers()
  surpriseTriggers={}
  surpriseSeen={}
+ ghostSightingTriggers={}
+ ghostSightingSeen={}
  surpriseArena=workspace:FindFirstChild("MidnightArena")
  if not surpriseArena then return end
  for _,d in ipairs(surpriseArena:GetDescendants())do
-  if d:IsA("BasePart")and string.find(d.Name,"SurpriseTrigger_",1,true)==1 and d:GetAttribute("CompetitiveEffect")==false then
-   table.insert(surpriseTriggers,d)
+  if d:IsA("BasePart")and d:GetAttribute("CompetitiveEffect")==false then
+   if string.find(d.Name,"SurpriseTrigger_",1,true)==1 then table.insert(surpriseTriggers,d)
+   elseif string.find(d.Name,"GhostSighting_",1,true)==1 then table.insert(ghostSightingTriggers,d)end
   end
  end
 end
@@ -891,9 +924,17 @@ RunService.Heartbeat:Connect(function(dt)
    local radius=math.max(3,tonumber(trigger:GetAttribute("SurpriseRadius"))or 10)
    if (root.Position-trigger.Position).Magnitude<=radius then
     surpriseSeen[trigger]=true
-    local discoveryId=tostring(trigger:GetAttribute("SurpriseId")or"")
-    if discoveryId~=""then remote:FireServer(C.Actions.DISCOVERY_FOUND,discoveryId)end
     playSurprise(trigger)
+   end
+  end
+ end
+ for _,trigger in ipairs(ghostSightingTriggers)do
+  if trigger.Parent and not ghostSightingSeen[trigger]then
+   local radius=math.max(3,tonumber(trigger:GetAttribute("GhostRadius"))or 11)
+   if (root.Position-trigger.Position).Magnitude<=radius then
+    ghostSightingSeen[trigger]=true
+    local ghostId=tostring(trigger:GetAttribute("GhostId")or"")
+    if ghostId~=""then remote:FireServer(C.Actions.GHOST_SIGHTING_FOUND,ghostId);playGhostSighting(trigger)end
    end
   end
  end
@@ -1785,7 +1826,7 @@ local function render()
  local prefText=pref=="MONSTER"and"몬스터 선호"or pref=="SURVIVOR"and"인간 선호"or"자동 배정"
  local equippedItem=cosmeticItem(tostring(p:GetAttribute("EquippedCosmetic")or"DEFAULT"))
  selectionStatus.Text=string.format("%s · 인간 %s · 몬스터 %s · %s",prefText,humanName(),monsterName(),equippedItem.Title or"신입 참가자")
- loreStatus.Text=string.format("목격 %d/%d · 괴담 %d/%d · %s",tonumber(p:GetAttribute("DiscoveryCount"))or 0,tonumber(p:GetAttribute("DiscoveryTotal"))or #(C.Discoveries or{}),tonumber(p:GetAttribute("LoreCount"))or 0,tonumber(p:GetAttribute("LoreTotal"))or #(C.Lore or{}),tostring(p:GetAttribute("DiscoveryTitle")or"초보 목격자"))
+ loreStatus.Text=string.format("세계 괴담 %d/%d 완성 · 조각 %d · 계약서 %d · %s",tonumber(p:GetAttribute("GhostCompleted"))or 0,tonumber(p:GetAttribute("GhostTotal"))or #(C.GhostCatalog or{}),tonumber(p:GetAttribute("GhostFragments"))or 0,tonumber(p:GetAttribute("GhostContracts"))or 0,tostring(p:GetAttribute("GhostTitle")or"괴담 견습생"))
 
  local selectionConfirmed=p:GetAttribute("LobbySelectionConfirmed")==true
  local spectating=round=="SPECTATING"
@@ -1846,13 +1887,22 @@ end
 for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle","GhostSeenCount","GhostCompleted","GhostTotal","GhostTitle","GhostFragments","GhostContracts","RoomServer","RoomCode","RoomHostUserId","RoomHostName","RoomVisibility","RoomState","RoomMemberCount","RoomMaxPlayers","RoomIsHost"})do
  p:GetAttributeChangedSignal(k):Connect(function()render();updateCosmeticUI()end)
 end
-p:GetAttributeChangedSignal("DiscoveryFeedback"):Connect(function()
- local raw=tostring(p:GetAttribute("DiscoveryFeedback")or"")
- local kind,id,count=string.match(raw,"^([^:]+):([^:]+):?(%d*)$")
- if kind=="FOUND"then
-  local item=nil
-  for _,row in ipairs(C.Discoveries or{})do if row.Id==id then item=row;break end end
-  if item then showMapContentToast("새 목격 기록 · "..tostring(item.Name).." ("..tostring(count).."/"..tostring(#(C.Discoveries or{}))..")",Color3.fromRGB(221,203,255),2.2)end
+p:GetAttributeChangedSignal("GhostFeedback"):Connect(function()
+ local raw=tostring(p:GetAttribute("GhostFeedback")or"")
+ local kind,id,value=string.match(raw,"^([^:]+):?([^:]*):?([^:]*)$")
+ local item=ghostCatalogItem(id or"")
+ if kind=="STAGE"and item then
+  local stage=tonumber(value)or 0
+  local stageName=item.Stages and item.Stages[stage]or("목격 "..stage.."단계")
+  showMapContentToast("세계 괴담 목격 · "..item.Name.."\n"..stageName.." ("..stage.."/3)",Color3.fromRGB(221,203,255),2.8)
+ elseif kind=="DUPLICATE"and item then
+  showMapContentToast(item.Name.." 재목격 · 괴담 조각 "..tostring(value),Color3.fromRGB(205,188,241),2)
+ elseif kind=="CONTRACT"then
+  showMapContentToast("괴담 계약서 +"..tostring(value),Color3.fromRGB(255,220,132),2.4)
+ elseif kind=="CATALOG_COMPLETE"then
+  showMapContentToast("초기 세계 괴담 도감 완성 · 계약서 보너스 +"..tostring(value),Color3.fromRGB(255,220,132),3)
+ elseif kind=="ROUND_CAP"then
+  showMapContentToast("이번 판 괴담 목격 기록은 여기까지",Color3.fromRGB(186,194,210),1.6)
  end
 end)
 
