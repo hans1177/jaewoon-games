@@ -230,7 +230,34 @@
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
-    "regressionPassed": false
+    "regressionPassed": false,
+    "studioQualityFailure": {
+      "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
+      "artifactIdentity": "sha256:2f1da667fcdc53f82f72d79ae1ca49e9783f743b4f7da4af3d5dc02b1779fc02",
+      "authority": "roblox-official-studio-mcp-product-quality-failure",
+      "workflowRunId": 36481661807,
+      "testedAt": "2026-09-28T23:31:38.683Z",
+      "repairSurfaces": [
+        "MOBILE_UI",
+        "WORLD_GEOMETRY"
+      ],
+      "qualityFailureDetails": [
+        {
+          "id": "adaptive-ui-commercial-quality",
+          "repairSurface": "MOBILE_UI",
+          "priority": "HIGH",
+          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
+          "observed": "{\"offscreenButtons\":0,\"undersizedTouchButtons\":1,\"suboptimalTouchButtons\":0,\"textOverflowButtons\":0,\"overlapPairs\":0}"
+        },
+        {
+          "id": "adaptive-world-safety",
+          "repairSurface": "WORLD_GEOMETRY",
+          "priority": "CRITICAL",
+          "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
+          "observed": "{\"boundsFinite\":true,\"collidablePartCount\":4,\"floorBelowPlayer\":false,\"floorSamples\":9,\"floorHits\":0,\"floorCoveragePass\":false,\"routeSamples\":0,\"routeSuccess\":0,\"routeCoveragePass\":true,\"spawnThreatDistance\":-1,\"spawnOverlapSafe\":true}"
+        }
+      ]
+    }
   },
   "qualityGapMap": [
     {
