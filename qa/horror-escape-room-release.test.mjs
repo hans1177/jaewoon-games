@@ -379,3 +379,25 @@ test('승리 세레머니는 결과 단계 전용이며 서버가 팀과 랜덤 
  assert.match(client,/CelebrationCaption/);
  assert.doesNotMatch(config,/Celebrations=[\s\S]{0,1400}(Damage|WalkSpeed|PurifyDistance|InfectRange|RegenMultiplier)/);
 });
+
+
+test('맵 목격 도감은 실제 근접 검증 후 저장하고 경쟁 보상을 주지 않는다',()=>{
+ assert.match(config,/Discoveries=\{/);
+ assert.match(config,/DISCOVERY_FOUND="DISCOVERY_FOUND"/);
+ assert.match(server,/local function reportDiscovery\(p,id\)/);
+ assert.match(server,/SurpriseTrigger_"\.\.id/);
+ assert.match(server,/Magnitude>radius then return/);
+ assert.match(server,/DiscoveredSurprises=discoveredList/);
+ assert.match(client,/FireServer\(C\.Actions\.DISCOVERY_FOUND,discoveryId\)/);
+ const reportBlock=server.slice(server.indexOf('local function reportDiscovery'),server.indexOf('local function validRemoteAction'));
+ assert.doesNotMatch(reportBlock,/Coins|Energy|WalkSpeed|Damage|RoundScore/);
+});
+
+test('괴담 메모는 읽는 수집품이며 칭호 외 경쟁 보상이 없다',()=>{
+ assert.match(config,/Lore=\{/);
+ assert.match(server,/local function addLoreCollectible/);
+ assert.match(server,/FoundLore=foundLoreList/);
+ assert.match(client,/괴담 메모 발견/);
+ const loreBlock=server.slice(server.indexOf('local function addLoreCollectible'),server.indexOf('local function addObjectiveStation'));
+ assert.doesNotMatch(loreBlock,/Coins|Energy|WalkSpeed|Damage|RoundScore/);
+});
