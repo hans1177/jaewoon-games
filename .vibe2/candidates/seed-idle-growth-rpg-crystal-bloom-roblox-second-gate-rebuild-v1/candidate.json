@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "shared/GameConfig.luau",
+      "find": "return table.freeze(Config)",
+      "replace": "return table.freeze(Config)\n    task.delay(0.09, function()"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
