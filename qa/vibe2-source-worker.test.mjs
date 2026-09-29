@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
+import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
 import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, normalizeCandidate } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -4000,6 +4001,24 @@ test('verified APK learning preserves game-source and QA-only dispositions throu
   const context={files:[{path:'index.html',content:'<button id="play">Play</button>',editable:true,truncated:false}],bytes:38};
   const initial=buildPrompt(order,context,['index.html'],{verifiedExternalLearningContract:contract});
   assert.equal(verifiedExternalLearningBlockFromPrompt(initial),contract.block);
+  // 최초 요청에서도 분류 전 원문을 중복 주입하지 않고 검증된 계약만 한 번 전달한다.
+  const learning={kind:'vibe2-unified-learning-context',playbookReuse:rows,
+    experience:[{id:'local-save',reusablePatterns:['preserve-existing-save']} ]};
+  const rawGoal='실제 게임 기능 개발\n\n'+learningGuidance(learning)+'\n\nOWNER: keep all save keys';
+  const withLearning=buildPrompt({...order,goal:rawGoal,unifiedLearning:learning},context,['index.html']);
+  assert.equal(withLearning.split(gamePrinciple).length-1,1);
+  assert.ok(!withLearning.includes(qaPrinciple));
+  assert.match(withLearning,/DISPOSITION=semantic-gameplay-input-plus-survival:VALIDATION_ONLY/);
+  assert.match(withLearning,/preserve-existing-save/);
+  assert.match(withLearning,/OWNER: keep all save keys/);
+  assert.match(withLearning,/verified-commercial-app-reuse=external-black-box-a-run-1/);
+  assert.equal(verifiedExternalLearningBlockFromPrompt(withLearning),contract.block);
+  assert.equal(withLearning.split('A-no-clone').length-1,1);
+  assert.equal(rawGoal.includes(qaPrinciple),true);
+  const customGoal=rawGoal.replace('검증되지 않은 성공은 재사용하지 않는다.','사용자 수정 학습 지시');
+  const custom=buildPrompt({...order,goal:customGoal,unifiedLearning:learning},context,['index.html']);
+  assert.ok(custom.includes(customGoal),'정확히 일치하지 않는 사용자 지시는 삭제하지 않는다');
+
   const retry=buildGenerationRetryPrompt(initial,{error:new Error('timeout'),responsibleFiles:['index.html'],attempt:2});
   assert.equal(verifiedExternalLearningBlockFromPrompt(retry),contract.block);
   const focused=buildFocusedReplaceOnlyPrompt(initial,{error:new Error('timeout'),responsibleFiles:['index.html']});

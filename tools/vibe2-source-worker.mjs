@@ -12,7 +12,7 @@ import { applyExactEdits, boundedLargeExcerpt } from './autonomous-safe-edit.mjs
 import { exploreVibe2WorkOrder, explorationGuidance } from './vibe2-exploration-worker.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { assertCompiledWorkContractFresh } from './vibe2-central-work-contract.mjs';
-import { classifyVerifiedExternalBlackBoxPrinciples } from './vibe2-learning-motor.mjs';
+import { classifyVerifiedExternalBlackBoxPrinciples, learningGuidance } from './vibe2-learning-motor.mjs';
 import { assertSystemArchitectureTask, isAllowedSystemArchitecturePath, systemArchitectureGuidance } from './vibe2-system-architecture-contract.mjs';
 
 const clean=value=>String(value??'').trim();
@@ -1552,12 +1552,28 @@ export function assertVerifiedExternalLearningPromptCoverage(prompt='',contract=
   return Object.freeze({required:true,pass:true,count:actualIds.length,ids:Object.freeze([...actualIds])});
 }
 function fullWebGenerationTarget(order={}){const requirements=[...clean(order?.goal).matchAll(/REAL_GAME_FOOTPRINT_TOO_SMALL:\d+:(\d+)/gi)].map(match=>Number(match[1])).filter(Number.isFinite);const minBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MIN_BYTES,...requirements));const maxBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minBytes*2));return{minBytes,maxBytes};}
-export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);return[
+export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);
+  // 학습 계약이 보존하는 원문은 목표 설명에 두 번 보내지 않는다.
+  const learningContract=verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order);
+  let goal=String(order.goal??'');
+  const originalLearning=learningGuidance(order.unifiedLearning||{});
+  if(learningContract.block&&originalLearning&&goal.includes(originalLearning)){
+    assertVerifiedExternalLearningPromptCoverage(learningContract.block,learningContract);
+    const coveredIds=new Set(learningContract.ids||[]);
+    const sourceLearning=learningGuidance({...order.unifiedLearning,
+      playbookReuse:(order.unifiedLearning.playbookReuse||[]).map(row=>coveredIds.has(clean(row.id))?{
+        ...row,distilledApplicationPrinciples:[],distilledAvoidancePrinciples:[],
+        distilledLearningUseAllowed:[],distilledLearningUseForbidden:[]
+      }:row)
+    });
+    goal=goal.replace(originalLearning,()=>sourceLearning);
+  }
+  return[
 allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON. Do not use markdown fences.':'You are the Vibe2 game source worker. Return JSON only.',
 `Engine: ${order.target}`,
-`Goal: ${order.goal}`,
+`Goal: ${goal}`,
 `Department: ${order.department||'development'}`,
-(verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order)).block,
+learningContract.block,
 explorationGuidance(exploration),
 presentationWorkerGuidance(order),
 universalAssetWorkerGuidance(order),
