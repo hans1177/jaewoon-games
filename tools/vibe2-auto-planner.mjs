@@ -2140,6 +2140,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     let score=0;
     if(/game|core|runtime|main|controller|player|client|server/.test(value))score+=10;
     if(focusPillar==='PRESENTATION'&&/visual|render|ui|hud|effect|vfx|camera|audio|anim|style|scene/.test(value))score+=18;
+    if(project.engine==='roblox'&&focusPillar==='PRESENTATION'&&/\/client\/.*(?:\.client\.luau|\.lua)$/i.test(file))score+=30;
     if(focusPillar==='USABILITY'&&/ui|hud|input|controller|client|menu/.test(value))score+=18;
     if(focusPillar==='PROGRESSION'&&/progress|quest|reward|inventory|economy|save|unlock|goal|wave|content/.test(value))score+=18;
     if(focusPillar==='CORE_FUN'&&/game|combat|enemy|player|world|core|controller|interaction|ability|weapon/.test(value))score+=18;
