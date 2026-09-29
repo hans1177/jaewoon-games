@@ -100,7 +100,10 @@ local function syncVerifiedLearningCharacterMotion(character)
   if not animator then return end
   humanoid.Running:Connect(function(speed)
     local ratio = speed > 0.1 and math.clamp(speed / math.max(humanoid.WalkSpeed, 1), 0.82, 1.25) or 1
-    for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+local verifiedLearningGuidance = Instance.new("TextLabel")
+verifiedLearningGuidance.Size = Vector2.new(200, 40)
+verifiedLearningGuidance.BackgroundColor3 = Color3.new(0, 0, 0)
+verifiedLearningGuidance.Text = "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다."
       if track.Priority == Enum.AnimationPriority.Movement or track.Priority == Enum.AnimationPriority.Core then
         track:AdjustSpeed(ratio)
       end
