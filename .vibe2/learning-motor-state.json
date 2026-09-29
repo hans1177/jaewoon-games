@@ -5979,7 +5979,8 @@
       "coding_negative_qmnnjy",
       "coding_negative_fl3p49",
       "coding_negative_174gdaz",
-      "coding_negative_9ehpmv"
+      "coding_negative_9ehpmv",
+      "coding_negative_1y9k0qm"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16595,7 +16596,7 @@
         "verifiedApplications": 3,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 10,
-        "verifiedFailures": 526,
+        "verifiedFailures": 527,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -16959,25 +16960,25 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 31,
+            "verifiedFailures": 32,
             "games": {},
             "targets": {},
             "failureGames": {
-              "horror-escape-room": 17,
+              "horror-escape-room": 18,
               "fantasy-survival": 14
             },
             "failureTargets": {
-              "unity": 31
+              "unity": 32
             },
             "failureClasses": {
-              "INVALID_PATH": 14,
+              "INVALID_PATH": 15,
               "TIMEOUT": 14,
               "MALFORMED_OUTPUT": 2,
               "NO_OP": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1vhkk4u",
-            "lastUpdatedAt": "2026-09-29T19:04:31.091Z"
+            "lastFailureEvidence": "coding_negative_1y9k0qm",
+            "lastUpdatedAt": "2026-09-29T19:25:49.317Z"
           },
           "unity|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -17084,8 +17085,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_pj21de",
-        "lastFailureEvidence": "coding_negative_9ehpmv",
-        "lastUpdatedAt": "2026-09-29T19:21:24.653Z"
+        "lastFailureEvidence": "coding_negative_1y9k0qm",
+        "lastUpdatedAt": "2026-09-29T19:25:49.317Z"
       }
     }
   },
@@ -19834,7 +19835,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T19:23:08.194Z",
+    "lastBuiltAt": "2026-09-29T19:25:49.382Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -27780,5 +27781,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T19:23:08.194Z"
+  "updatedAt": "2026-09-29T19:25:49.382Z"
 }
