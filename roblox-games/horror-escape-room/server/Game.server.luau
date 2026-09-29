@@ -27,8 +27,7 @@ local state="WAITING"
 local timeLeft=0
 local monster=nil
 local monsterBot=nil
-local forced=false
-local lastMonster=0
+local lastMonsterIds={}
 local bots={}
 local cooldown={}
 local dashCooldown={}
@@ -47,6 +46,28 @@ local soloStartRequested=false
 local tagGraceUntil={}
 local allowedActions={}
 for _,action in pairs(C.Actions)do allowedActions[action]=true end
+
+workspace:SetAttribute("LobbyReady",false)
+workspace:SetAttribute("LobbyPhase","LOADING")
+workspace:SetAttribute("LobbyRealPlayers",0)
+workspace:SetAttribute("LobbyAIFill",C.TargetPopulation)
+
+local function syncLobbyState(phase)
+ local real=#Players:GetPlayers()
+ local aiFill=math.max(0,(C.TargetPopulation or 8)-real)
+ local currentPhase=phase or tostring(workspace:GetAttribute("LobbyPhase")or"WAITING")
+ local ready=workspace:GetAttribute("MapReady")==true
+ workspace:SetAttribute("LobbyReady",ready)
+ workspace:SetAttribute("LobbyPhase",currentPhase)
+ workspace:SetAttribute("LobbyRealPlayers",real)
+ workspace:SetAttribute("LobbyAIFill",aiFill)
+ for _,player in ipairs(Players:GetPlayers())do
+  player:SetAttribute("LobbyReady",ready)
+  player:SetAttribute("LobbyPhase",currentPhase)
+  player:SetAttribute("LobbyRealPlayers",real)
+  player:SetAttribute("LobbyAIFill",aiFill)
+ end
+end
 
 local survivorSpawns={
  Vector3.new(-118,3,-70),Vector3.new(118,3,-70),Vector3.new(-108,3,104),
@@ -134,7 +155,7 @@ local function humanForm(p)
  return(C.HumanForms and C.HumanForms[1])or{Id="BROADCAST",Name="방송부"}
 end
 local function load(p)
- p:SetAttribute("MonsterPreference","ANY");p:SetAttribute("SoloRole","SURVIVOR")
+ p:SetAttribute("MonsterPreference","ANY");p:SetAttribute("SoloRole","SURVIVOR");p:SetAttribute("LobbySelectionConfirmed",false)
  p:SetAttribute("MonsterXP",0);p:SetAttribute("Coins",0);p:SetAttribute("RoundsSinceMonster",0)
  p:SetAttribute("MonsterForm","DRACULA");p:SetAttribute("HumanForm","BROADCAST");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0)
  p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0);p:SetAttribute("RoundScore",0)
@@ -712,17 +733,56 @@ local function weightPick(list)
  return list[#list]
 end
 local function selectStartingMonsters(h)
- local preferred,other={},{}
+ local preferred,neutral,survivorPreferred={},{},{}
  for _,p in ipairs(h)do
-  if p:GetAttribute("MonsterPreference")=="MONSTER"then table.insert(preferred,p)else table.insert(other,p)end
+  local pref=p:GetAttribute("MonsterPreference")
+  if pref=="MONSTER"then table.insert(preferred,p)
+  elseif pref=="SURVIVOR"then table.insert(survivorPreferred,p)
+  else table.insert(neutral,p)end
  end
- local selected={};local count=0;local monsterSlots=C.MonsterSlots or 4;local survivorSlots=C.SurvivorSlots or 4
- for _,p in ipairs(preferred)do if count>=monsterSlots then break end;selected[p]=true;count+=1 end
- local minimumRealMonsters=math.max(0,#h-survivorSlots)
- for _,p in ipairs(other)do
-  if count>=minimumRealMonsters or count>=monsterSlots then break end
-  selected[p]=true;count+=1
+
+ local selected={}
+ if #h==1 then
+  local only=h[1]
+  if only:GetAttribute("SoloRole")=="MONSTER"or only:GetAttribute("MonsterPreference")=="MONSTER"then selected[only]=true end
+  lastMonsterIds={}
+  for player in pairs(selected)do lastMonsterIds[player.UserId]=true end
+  return selected
  end
+
+ local monsterSlots=C.MonsterSlots or 4
+ local survivorSlots=C.SurvivorSlots or 4
+ local targetRealMonsters=math.min(monsterSlots,math.max(1,#h-survivorSlots))
+ local count=0
+
+ local function candidates(pool,avoidPrevious)
+  local out={}
+  for _,player in ipairs(pool)do
+   if not selected[player]and(not avoidPrevious or not lastMonsterIds[player.UserId])then table.insert(out,player)end
+  end
+  return out
+ end
+ local function pickFromPools(avoidPrevious)
+  for _,pool in ipairs({preferred,neutral,survivorPreferred})do
+   local list=candidates(pool,avoidPrevious)
+   if #list>0 then return weightPick(list)end
+  end
+  return nil
+ end
+
+ while count<targetRealMonsters do
+  local pick=pickFromPools(true)
+  if not pick then break end
+  selected[pick]=true;count+=1
+ end
+ while count<targetRealMonsters do
+  local pick=pickFromPools(false)
+  if not pick then break end
+  selected[pick]=true;count+=1
+ end
+
+ lastMonsterIds={}
+ for player in pairs(selected)do lastMonsterIds[player.UserId]=true end
  return selected
 end
 local function clearRoleVisual(p)
@@ -857,10 +917,10 @@ local function startRound()
   local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
   if role=="MONSTER"then teleport(p,monsterSpawn+Vector3.new((mi-1)*6,0,0));mi+=1 else teleport(p,survivorSpawns[((si-1)%#survivorSpawns)+1]);si+=1 end
  end
- configure(h);state="RUNNING";timeLeft=C.RoundSeconds;return true
+ configure(h);state="RUNNING";timeLeft=C.RoundSeconds;syncLobbyState("RUNNING");return true
 end
 local function endRound(winner)
- if state~="RUNNING"then return end;state="RESULT"
+ if state~="RUNNING"then return end;state="RESULT";syncLobbyState("RESULT")
  for _,p in ipairs(Players:GetPlayers())do
   local role=p:GetAttribute("Role");local m=role=="MONSTER";local win=(winner=="MONSTER"and m)or(winner=="SURVIVOR"and role=="SURVIVOR")
   local reward=(role=="MONSTER"or role=="SURVIVOR")and(winner=="DRAW"and 12 or win and 30 or 12)or 0
@@ -868,7 +928,7 @@ local function endRound(winner)
   p:SetAttribute("RoundScore",win and 1 or 0)
   if m then p:SetAttribute("MonsterXP",(p:GetAttribute("MonsterXP")or 0)+(win and 40 or 18));p:SetAttribute("RoundsSinceMonster",0)
   elseif role=="SURVIVOR"then p:SetAttribute("RoundsSinceMonster",(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
-  p:SetAttribute("RoundState","RESULT_"..winner);p:SetAttribute("FeedbackEvent","RESULT:"..winner..":"..tostring(math.floor(os.clock()*1000)));p:SetAttribute("Frozen",false);p:SetAttribute("Escaped",false);speed(p,16)
+  p:SetAttribute("RoundState","RESULT_"..winner);p:SetAttribute("FeedbackEvent","RESULT:"..winner..":"..tostring(math.floor(os.clock()*1000)));p:SetAttribute("Frozen",false);p:SetAttribute("Escaped",false);p:SetAttribute("LobbySelectionConfirmed",false);speed(p,16)
  end
  clearBots();monster=nil;monsterBot=nil;workspace:SetAttribute("HumanCount",0);workspace:SetAttribute("MonsterCount",0);task.wait(4)
 end
@@ -954,11 +1014,11 @@ end
 remote.OnServerEvent:Connect(function(p,a)
  if not validRemoteAction(p,a)then return end
  if a==C.Actions.PREFER_MONSTER and state~="RUNNING"then
-  p:SetAttribute("MonsterPreference","MONSTER");p:SetAttribute("SoloRole","MONSTER");if #Players:GetPlayers()==1 then soloStartRequested=true end
+  p:SetAttribute("MonsterPreference","MONSTER");p:SetAttribute("SoloRole","MONSTER");p:SetAttribute("LobbySelectionConfirmed",true);if #Players:GetPlayers()==1 then soloStartRequested=true end
  elseif a==C.Actions.PREFER_SURVIVOR and state~="RUNNING"then
-  p:SetAttribute("MonsterPreference","SURVIVOR");p:SetAttribute("SoloRole","SURVIVOR");if #Players:GetPlayers()==1 then soloStartRequested=true end
- elseif a==C.Actions.SOLO_MONSTER and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("MonsterPreference","MONSTER");p:SetAttribute("SoloRole","MONSTER");soloStartRequested=true
- elseif a==C.Actions.SOLO_SURVIVOR and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("MonsterPreference","SURVIVOR");p:SetAttribute("SoloRole","SURVIVOR");soloStartRequested=true
+  p:SetAttribute("MonsterPreference","SURVIVOR");p:SetAttribute("SoloRole","SURVIVOR");p:SetAttribute("LobbySelectionConfirmed",true);if #Players:GetPlayers()==1 then soloStartRequested=true end
+ elseif a==C.Actions.SOLO_MONSTER and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("MonsterPreference","MONSTER");p:SetAttribute("SoloRole","MONSTER");p:SetAttribute("LobbySelectionConfirmed",true);soloStartRequested=true
+ elseif a==C.Actions.SOLO_SURVIVOR and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("MonsterPreference","SURVIVOR");p:SetAttribute("SoloRole","SURVIVOR");p:SetAttribute("LobbySelectionConfirmed",true);soloStartRequested=true
  elseif a==C.Actions.PURIFY or a==C.Actions.RESCUE then purify(p)
  elseif a==C.Actions.DASH then survivorDash(p)
  elseif a==C.Actions.ABILITY then ability(p)
@@ -1014,6 +1074,7 @@ Players.PlayerAdded:Connect(function(p)
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
  p.CharacterAdded:Connect(function()onCharacter(p)end)
  if p.Character then task.defer(function()onCharacter(p)end)end
+ syncLobbyState()
 end)
 for _,p in ipairs(Players:GetPlayers())do
  load(p)
@@ -1022,6 +1083,7 @@ for _,p in ipairs(Players:GetPlayers())do
  p.CharacterAdded:Connect(function()onCharacter(p)end)
  if p.Character then task.defer(function()onCharacter(p)end)end
 end
+syncLobbyState()
 qaCaptureRemote.OnServerEvent:Connect(function(p,label,value)
  if C.QACameraEnabled~=true then return end
  if typeof(label)~="string"or #label<1 or #label>48 then return end
@@ -1056,6 +1118,7 @@ end)
 
 Players.PlayerRemoving:Connect(function(p)
  save(p);cooldown[p]=nil;dashCooldown[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil
+ task.defer(function()syncLobbyState()end)
 end)
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
@@ -1070,12 +1133,14 @@ for _,p in ipairs(Players:GetPlayers())do
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
 end
+syncLobbyState("WAITING")
 
 task.spawn(function()
  while true do
-  if #Players:GetPlayers()==0 then state="WAITING";task.wait(1)
+  if #Players:GetPlayers()==0 then state="WAITING";syncLobbyState("WAITING");task.wait(1)
   else
    state="INTERMISSION"
+   syncLobbyState("INTERMISSION")
    soloStartRequested=false
    for t=C.IntermissionSeconds,1,-1 do
     for _,p in ipairs(Players:GetPlayers())do p:SetAttribute("RoundState","INTERMISSION");p:SetAttribute("TimeLeft",t)end
