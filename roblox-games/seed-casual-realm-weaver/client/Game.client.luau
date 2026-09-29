@@ -238,6 +238,7 @@ local function playVerifiedLearningActionFeedback(control)
       if impactAttachment then impactAttachment:Destroy() end
       if impactLight then impactLight:Destroy() end
       if sparkles then sparkles:Destroy() end
+
       if highlight then highlight:Destroy() end
     end)
   end
