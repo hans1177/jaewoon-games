@@ -1446,22 +1446,27 @@ for i=1,4 do
  ceremonyNames[i]=nameLabel
 end
 
-local humanCeremonyLines={
- "살았다! …근데 내 가방은 어디 갔지?",
- "단체 사진! 한 명은 또 눈 감았다.",
- "정화 성공. 퇴근도 성공했으면 좋겠다.",
-}
-local monsterCeremonyLines={
- "감염 완료. 한 명만 춤을 잘못 외웠다.",
- "무서운 포즈! …왜 너만 브이 하냐.",
- "심야 회식 시작. 메뉴는 에너지 코어.",
-}
-local drawCeremonyLines={
- "양쪽 다 지쳐서 싸울 힘이 없다.",
- "무승부. 체력보다 자존심이 먼저 쓰러졌다.",
- "다음 판엔 덜 뛰기로 합의…는 실패 예정.",
-}
 local ceremonySerial=0
+local confettiSerial=0
+local function playCeremonyConfetti(color)
+ confettiSerial+=1
+ local serial=confettiSerial
+ for i=1,18 do
+  local bit=Instance.new("Frame")
+  bit.Name="CeremonyConfetti"
+  bit.Size=UDim2.fromOffset(6+(i%3)*2,10+(i%2)*4)
+  bit.Position=UDim2.new((i%9)/9,math.random(-8,8),0,-18-math.random(0,40))
+  bit.BackgroundColor3=i%3==0 and Color3.fromRGB(255,220,115)or color
+  bit.BorderSizePixel=0
+  bit.Rotation=math.random(-35,35)
+  bit.ZIndex=25
+  bit.Parent=ceremonyStage
+  local target=UDim2.new(math.clamp(bit.Position.X.Scale+math.random(-12,12)/100,0,1),0,1,25+math.random(0,35))
+  TweenService:Create(bit,TweenInfo.new(.9+math.random()*.7,Enum.EasingStyle.Quad,Enum.EasingDirection.In),{Position=target,Rotation=bit.Rotation+math.random(180,420),BackgroundTransparency=.18}):Play()
+  task.delay(1.8,function()if bit.Parent then bit:Destroy()end end)
+ end
+ task.delay(2,function()if confettiSerial==serial then end end)
+end
 
 local function collectCeremonyNames(winner)
  local names={}
@@ -1480,17 +1485,11 @@ local function playResultCeremony(resultCode)
  local names=winner=="DRAW"and{"인간","몬스터","인간 AI","몬스터 AI"}or collectCeremonyNames(winner)
  local palette=winner=="SURVIVOR"and Color3.fromRGB(88,165,195)or winner=="MONSTER"and Color3.fromRGB(166,64,82)or Color3.fromRGB(112,117,130)
  local headColor=winner=="MONSTER"and Color3.fromRGB(92,72,82)or Color3.fromRGB(210,184,158)
- local lines=winner=="SURVIVOR"and humanCeremonyLines or winner=="MONSTER"and monsterCeremonyLines or drawCeremonyLines
- local mapId=tostring(workspace:GetAttribute("CurrentMapId")or"")
- local mapJoke=nil
- if mapId=="SCHOOL"then
-  mapJoke=winner=="SURVIVOR"and"야자 탈출 성공. 담임은 아직 출석 체크 중."or winner=="MONSTER"and"종례 알림: 전원 감염 완료."or"종례가 끝났는데 아무도 집에 못 갔다."
- elseif mapId=="HOSPITAL"then
-  mapJoke=winner=="SURVIVOR"and"퇴원 수속 완료. 진료비는 코인으로 받습니다."or winner=="MONSTER"and"진료 결과: 감염 확정. 재검은 없습니다."or"의사도 환자도 같이 지쳐서 진료 중단."
- elseif mapId=="THEME_PARK"then
-  mapJoke=winner=="SURVIVOR"and"폐장 전 탈출 성공. 기념품은 살아남은 기억."or winner=="MONSTER"and"오늘의 마지막 손님까지 감염 완료."or"놀이공원 폐장. 승부도 같이 폐장."
- end
- ceremonyJoke.Text=mapJoke or lines[(ceremonySerial-1)%#lines+1]
+ playCeremonyConfetti(palette)
+ local ceremonyName=tostring(p:GetAttribute("CelebrationName")or"")
+ local ceremonyCaption=tostring(p:GetAttribute("CelebrationCaption")or"")
+ local comic=p:GetAttribute("CelebrationComic")==true
+ ceremonyJoke.Text=(ceremonyName~=""and ceremonyName or"팀 세레머니").." · "..(ceremonyCaption~=""and ceremonyCaption or"다음 판 준비")..(comic and" · 내가 오늘의 사고 담당"or"")
 
  for i,row in ipairs(ceremonyFigures)do
   row.body.BackgroundColor3=palette
@@ -1646,7 +1645,7 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic"})do
  p:GetAttributeChangedSignal(k):Connect(function()render();updateCosmeticUI()end)
 end
 p:GetAttributeChangedSignal("EnergyFeedback"):Connect(function()
