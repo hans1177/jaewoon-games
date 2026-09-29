@@ -2338,6 +2338,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let studioEditMatchCreditUsed=false;
   let studioCausalRecoveryCreditUsed=false;
   let truncatedOutputCreditUsed=false;
+  let robloxControlTokenCreditUsed=false;
   let recoveredOutputBudget=0;
   let missingPathRecoveries=0;
   let fullWebProgressCreditCount=0;
@@ -2734,11 +2735,21 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         truncatedOutputRetry=true;
         console.log(`VIBE2_TRUNCATED_OUTPUT_RETRY_CREDIT=${attempt}->${maxAttempts}`);
       }
+      // 마지막에 발견한 제어 문자 오류도 기존 교정 지시를 한 번은 전달한다.
+      const robloxControlTokenRetry=!allowFullRewrite&&target==='roblox'
+        &&failureClass==='ROBLOX_STRUCTURAL_CONTINUITY'
+        &&/MODEL_CONTROL_TOKEN/.test(clean(error?.message))
+        &&attempt>=3&&!robloxControlTokenCreditUsed;
+      if(robloxControlTokenRetry){
+        maxAttempts=Math.max(maxAttempts,attempt+1);
+        robloxControlTokenCreditUsed=true;
+        console.log(`VIBE2_ROBLOX_CONTROL_TOKEN_RETRY_CREDIT=${attempt}->${maxAttempts}`);
+      }
       const ordinaryRetry=attempt===1&&shouldRetryGenerationError(error);
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
       const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
-      const hasAnother=truncatedOutputRetry||ordinaryRetry||focusedRetry||multiFilePairRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||studioCausalRecoveryCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
+      const hasAnother=robloxControlTokenRetry||truncatedOutputRetry||ordinaryRetry||focusedRetry||multiFilePairRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||studioCausalRecoveryCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
         error.vibe2GenerationAttempts=attempt;
