@@ -726,7 +726,7 @@ selectionStatus.Parent=setupPanel
 local setupChosen=false
 local setupButtons={
  {C.Actions.PREFER_SURVIVOR,"인간 선호",Color3.fromRGB(50,112,145)},
- {C.Actions.PREFER_MONSTER,"귀신 선호",Color3.fromRGB(145,48,59)},
+ {C.Actions.PREFER_MONSTER,"몬스터 선호",Color3.fromRGB(145,48,59)},
 }
 for i,a in ipairs(setupButtons)do
  local b=makeButton(setupPanel,a[2],a[3])
@@ -814,7 +814,9 @@ local function render()
  local aiFill=tonumber(p:GetAttribute("LobbyAIFill"))or math.max(0,(C.TargetPopulation or 8)-realPlayers)
  local lobbyPhase=tostring(p:GetAttribute("LobbyPhase")or round)
  lobbyStatus.Text=string.format("실제 %d명 · AI %d명 충원 예정 · %s",realPlayers,aiFill,lobbyPhase)
- selectionStatus.Text=string.format("인간 %s · 몬스터 %s",humanName(),monsterName())
+ local pref=p:GetAttribute("MonsterPreference")or"ANY"
+ local prefText=pref=="MONSTER"and"몬스터 선호"or pref=="SURVIVOR"and"인간 선호"or"자동 배정"
+ selectionStatus.Text=string.format("%s · 인간 %s · 몬스터 %s",prefText,humanName(),monsterName())
 
  if round:find("^RESULT_") then setupChosen=false end
  setupPanel.Visible=not running and not round:find("^RESULT_")
@@ -843,7 +845,7 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference"})do
  p:GetAttributeChangedSignal(k):Connect(render)
 end
 
