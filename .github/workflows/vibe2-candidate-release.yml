@@ -476,6 +476,7 @@ jobs:
             exit 0
           fi
           rm -rf /tmp/vibe2-control
+          gh auth setup-git --hostname github.com
           gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
           git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
@@ -571,6 +572,7 @@ jobs:
             exit 1
           fi
           rm -rf /tmp/vibe2-control
+          gh auth setup-git --hostname github.com
           gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
           git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
@@ -886,6 +888,7 @@ jobs:
             exit
           fi
           rm -rf /tmp/vibe2-control
+          gh auth setup-git --hostname github.com
           gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
           git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
@@ -995,6 +998,7 @@ jobs:
             exit 1
           fi
           rm -rf /tmp/vibe2-control
+          gh auth setup-git --hostname github.com
           gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
           git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
