@@ -146,6 +146,9 @@ test('platform fault cards hide references and executable variants from model',(
     assert(prompt.includes(drill.scenario));
     assert(!prompt.includes(JSON.stringify(drill.reference).slice(1,-1)));
     for(const body of drill.tests||[])assert(!prompt.includes(body));
+    const replay=buildPracticePrompt({executionRoute:drill.platform==='web'?'learning-web-artifact':'analysis-only',goal:'[VIBE_LEARNING_PRACTICE] previousArtifactScore=100'},{drill});
+    assert.match(replay,/fresh hidden input and lifecycle variants/);
+    assert(!replay.includes('Improve the artifact beyond this score'));
   }
 });
 

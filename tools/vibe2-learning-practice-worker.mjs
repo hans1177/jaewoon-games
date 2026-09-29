@@ -47,7 +47,7 @@ export function buildPracticePrompt(order={}, {drill=null}={}){
       : drill?'Return JSON only with keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns, code. code must implement exactly the requested function or class.':'Solve the drill by returning JSON only with keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns.',
     'tests must contain at least 3 concrete verification checks; avoidPatterns/reusablePatterns are short generalized lessons.',
     webArtifact?'The artifact must have visible state change from a tappable button, clear text feedback in [data-practice-value] or #score, responsive viewport, and no fetch/WebSocket/external http(s) URLs. Mark the primary button with data-practice-action. A real mobile browser will tap it and rotate the viewport.':'',
-    previousArtifactScoreFromOrder(order)!==null?`Previous verified artifact score=${previousArtifactScoreFromOrder(order)}. Improve the artifact beyond this score while keeping the drill goal.`:'',
+    previousArtifactScoreFromOrder(order)!==null?`Previous verified artifact score=${previousArtifactScoreFromOrder(order)}. ${drill?'Preserve or improve this quality while solving fresh hidden input and lifecycle variants; do not exceed the 100-point scale.':'Improve the artifact beyond this score while keeping the drill goal.'}`:'',
     'WORK ORDER:',
     drill?JSON.stringify({id:drill.id,level:drill.level,scenario:drill.scenario,brokenCode:drill.broken}):clean(order.goal).slice(0,12000)
   ].filter(Boolean).join('\n');
