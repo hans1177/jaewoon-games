@@ -1,5 +1,5 @@
 {
-  "version": 20,
+  "version": 21,
   "gameId": "horror-escape-room",
   "gameName": "심야 감염전 [4대4]",
   "releaseStrategy": "FAST_MVP",
@@ -115,7 +115,12 @@
     "Studio room flow uses local fallback without TeleportService publishing",
     "initial world-ghost compendium contains exactly twelve non-playable ghosts",
     "world-ghost compendium uses three sighting stages and two accepted sightings per round",
-    "completed ghost duplicates convert into contract fragments without combat bonuses"
+    "completed ghost duplicates convert into contract fragments without combat bonuses",
+    "reserved room lobby displays eight logical slots with real players before AI placeholders",
+    "room host is visibly identified in the eight-slot lobby",
+    "world ghost compendium displays all twelve initial ghosts with three-stage progress",
+    "ghost compendium visibly reports fragments contracts and completion title",
+    "ghost compendium UI never changes competitive combat statistics"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
