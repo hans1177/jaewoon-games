@@ -639,12 +639,13 @@ jobs:
           let suppressedSpeculativeWorkers=0;
           const assetLane=String(process.env.VIBE2_EXECUTION_LANE||'').toLowerCase()==='asset-development';
           const robloxLeaderTaskId=pressureRefillEligible?(batch.matrix||[]).find(row=>row.target==='roblox'&&Number(row.speculativeVariants||1)===1)?.taskId||'':'';
+          const spareArmTaskId=pressureRefillEligible?(batch.matrix||[]).find(row=>row.deterministicRoblox===true&&Number(row.speculativeVariants||1)===1)?.taskId||'':'';
           for(const row of batch.matrix||[]){
             const safeTask=safe(row.taskId);
             const requestedVariantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
             const variantCount=assetLane?1:requestedVariantCount;
             if(assetLane)suppressedSpeculativeWorkers+=Math.max(0,requestedVariantCount-1);
-            const shared={taskId:row.taskId,target:row.target||'',safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256),expectedVariants:variantCount};
+            const shared={taskId:row.taskId,target:row.target||'',runnerPool:row.taskId===spareArmTaskId?'ubuntu-24.04-arm':'',safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256),expectedVariants:variantCount};
             const pressureRefillLeader=pressureRefillEligible&&!pressureRefillLeaderAssigned&&(!robloxLeaderTaskId||row.taskId===robloxLeaderTaskId);
             workers.push({...shared,variant:'primary',pressureRefillLeader});
             if(pressureRefillLeader)pressureRefillLeaderAssigned=true;
@@ -759,8 +760,8 @@ jobs:
   worker:
     needs: [reserve, model_cache]
     if: always() && needs.reserve.outputs.worker_count != '0'
-    # Roblox deterministic asset work does not need the ARM model pool; Unity asset work keeps the ARM lane.
-    runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && matrix.target == 'roblox' && 'ubuntu-latest' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest') }}
+    # One model-free Roblox presentation worker per game-primary wave may use spare ARM capacity.
+    runs-on: ${{ matrix.runnerPool || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && matrix.target == 'roblox' && 'ubuntu-latest' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest')) }}
     timeout-minutes: 22
     strategy:
       fail-fast: false
