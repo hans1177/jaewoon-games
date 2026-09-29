@@ -102,8 +102,11 @@ jobs:
     # Heavy game workers remain on their existing execution pools.
     runs-on: ${{ (github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && 'ubuntu-24.04-arm' || 'ubuntu-slim') }}
     timeout-minutes: 7
-    # Reserve jobs may run concurrently. Only the existing optimistic shared-state
-    # fetch/reset/replan/push retry section serializes on an actual write conflict.
+    # 같은 레인의 상태 없는 보충 요청만 예약 단계에서 합친다.
+    # 완료 결과 전달과 게임 작업은 실행별로 독립 진행한다.
+    concurrency:
+      group: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'vibe2-fanin-refill' && format('vibe2-refill-reserve-{0}', inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') || format('vibe2-reserve-{0}', github.run_id) }}
+      cancel-in-progress: false
     outputs:
       worker_matrix: ${{ steps.batch.outputs.worker_matrix }}
       worker_count: ${{ steps.batch.outputs.worker_count }}

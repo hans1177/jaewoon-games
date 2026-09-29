@@ -1659,9 +1659,12 @@ test('24H plan uses optimistic writes while reserve stays lightweight and fan-in
   const reserveSteps=core.indexOf('\n    steps:',reserveStart);
   assert.ok(reserveStart>=0&&reserveSteps>reserveStart);
   const reserveHeader=core.slice(reserveStart,reserveSteps);
-  assert.doesNotMatch(reserveHeader,/\n    concurrency:/);
+  assert.match(reserveHeader,/github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && format\('vibe2-refill-reserve-\{0\}'/);
+  assert.match(reserveHeader,/github\.event\.client_payload\.execution_lane/);
+  assert.match(reserveHeader,/format\('vibe2-reserve-\{0\}', github\.run_id\)/);
+  assert.match(reserveHeader,/cancel-in-progress: false/);
   assert.match(reserveHeader,/runs-on: \$\{\{ \(github\.event_name == 'repository_dispatch' && github\.event\.action == 'vibe2-fanin-refill' && 'ubuntu-24\.04-arm' \|\| 'ubuntu-slim'\) \}\}/);
-  assert.doesNotMatch(reserveHeader,/execution_lane/);
+  assert.doesNotMatch(reserveHeader,/vibe2-neuron-complete/);
   assert.doesNotMatch(reserveHeader,/asset-development/);
   assert.match(reserveHeader,/vibe2-fanin-refill/);
   assert.match(reserveHeader,/ubuntu-24\.04-arm/);
