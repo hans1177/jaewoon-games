@@ -95,6 +95,14 @@ function boundaryReasons(result={}){
   if(result?.independentVerificationRequired!==true)reasons.push('INDEPENDENT_VERIFICATION_REQUIRED');
   if(result?.distillationRequiredBeforeReuse!==true)reasons.push('DISTILLATION_REQUIRED');
   if(upper(result?.evaluation)!=='PASS')reasons.push('PRACTICE_EVALUATION_PASS_REQUIRED');
+  if(['ROBLOX_CODE','UNITY_CODE'].includes(upper(result?.practiceMode))){
+    const verification=result?.codeVerification;
+    if(verification?.pass!==true||verification?.baselineRejected!==true||verification?.referencePassed!==true||!(verification?.totalTests>=2)||verification.passedTests!==verification.totalTests)reasons.push('EXECUTED_CODE_VARIANTS_REQUIRED');
+  }
+  if(upper(result?.practiceMode)==='WEB_ARTIFACT'){
+    const runtime=result?.artifact?.validation?.runtime;
+    if(runtime?.executed!==true||runtime?.pass!==true||!(runtime?.variants?.length>=2)||runtime.variants.some(row=>row.pass!==true))reasons.push('EXECUTED_BROWSER_VARIANTS_REQUIRED');
+  }
   if(!SHA256.test(clean(result?.rawModelOutputSha256)))reasons.push('RAW_OUTPUT_SHA256_REQUIRED');
   return reasons;
 }

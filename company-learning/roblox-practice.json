@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "authority": "PRACTICE_ONLY",
   "sourceKind": "teacher",
   "synthetic": true,
@@ -68,6 +68,56 @@
       "tests": [
         "local solve = require(\"./candidate\")\nlocal s={key=\"progress-v1\",value=9}; assert(not solve(s,12,function() error(\"offline\") end)); assert(s.value==9 and s.key==\"progress-v1\"); assert(not solve(s,14,function() return false end)); assert(s.value==9); assert(solve(s,16,function(v) return v==16 end)); assert(s.value==16 and s.key==\"progress-v1\")",
         "local solve = require(\"./candidate\")\nlocal s={key=\"kept\",value=101}; local calls=0; local function write(v) calls+=1; return calls==3 end; assert(not solve(s,200,write)); assert(not solve(s,200,write)); assert(s.value==101); assert(solve(s,200,write)); assert(s.value==200 and s.key==\"kept\" and calls==3)"
+      ]
+    },
+    {
+      "id": "late-join",
+      "level": "실전",
+      "failure": "LATE_JOIN_STATE_ALIAS",
+      "domains": [
+        "STATE_MACHINE",
+        "SAVE"
+      ],
+      "scenario": "늦게 접속한 플레이어에게 현재 점수 스냅샷을 주는 함수(state, playerId)를 반환하라. state.scores의 모든 플레이어 점수를 새 테이블로 복사하고, 새 플레이어가 없으면 0으로 추가한다. 원본 state와 이전 스냅샷은 변경하면 안 된다. playerId는 문자열이다. 실제 서버 복제 대신 독립 상태 논리를 검증한다.",
+      "broken": "return function(state, playerId)\n state.scores[playerId] = state.scores[playerId] or 0\n return state.scores\nend",
+      "reference": "return function(state, playerId)\n local snapshot = {}\n for id, score in state.scores do snapshot[id] = score end\n if snapshot[playerId] == nil then snapshot[playerId] = 0 end\n return snapshot\nend",
+      "tests": [
+        "local solve=require(\"./candidate\")\nlocal s={scores={a=7,b=12}}; local x=solve(s,\"c\"); assert(x.a==7 and x.b==12 and x.c==0 and s.scores.c==nil); x.a=99; assert(s.scores.a==7); local y=solve(s,\"a\"); assert(y.a==7 and y.b==12 and y.c==nil)",
+        "local solve=require(\"./candidate\")\nfor n=1,29 do local id=\"player\"..n; local s={scores={[id]=n*3}}; local x=solve(s,id); local y=solve(s,\"guest\"..n); s.scores[id]=-n; assert(x[id]==n*3 and y[id]==n*3 and y[\"guest\"..n]==0 and s.scores[\"guest\"..n]==nil) end"
+      ]
+    }
+  ],
+  "platformDrills": [
+    {
+      "id": "web-input-save",
+      "platform": "web",
+      "level": "실전",
+      "failure": "INPUT_SAVE_RESTORE",
+      "domains": [
+        "MOBILE_INPUT",
+        "SAVE",
+        "WEB_RUNTIME"
+      ],
+      "scenario": "완전한 HTML의 기존 입력/저장 흐름을 고쳐라. data-practice-action 버튼을 터치할 때마다 data-practice-value의 정수가 정확히 1 증가해야 한다. 저장 키 practice-score-v1의 기존 값을 불러오고 변경을 저장한다. 화면 회전·연타·새로고침 후에도 값과 입력이 유지되고 가로 넘침이 없어야 한다. 외부 네트워크는 금지한다.",
+      "broken": "<!doctype html><html><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>body{max-width:600px;margin:auto;padding:16px;font-family:sans-serif}button{min-width:48px;min-height:48px;font-size:20px}@media(max-width:400px){body{padding:8px}}.panel{display:grid;gap:16px}p{font-size:24px}</style></head><body><main class=\"panel\"><h1>입력과 저장 복구 연습</h1><p data-practice-value aria-live=\"polite\">0</p><button data-practice-action>하나 더하기</button></main><script>let count=0;const value=document.querySelector('[data-practice-value]');value.textContent=String(count);document.querySelector('[data-practice-action]').addEventListener('click',()=>{count+=1;value.textContent=String(count);});</script></body></html>",
+      "reference": "<!doctype html><html><head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><style>body{max-width:600px;margin:auto;padding:16px;font-family:sans-serif}button{min-width:48px;min-height:48px;font-size:20px}@media(max-width:400px){body{padding:8px}}.panel{display:grid;gap:16px}p{font-size:24px}</style></head><body><main class=\"panel\"><h1>입력과 저장 복구 연습</h1><p data-practice-value aria-live=\"polite\">0</p><button data-practice-action>하나 더하기</button></main><script>let count=Number(localStorage.getItem('practice-score-v1')||0);const value=document.querySelector('[data-practice-value]');value.textContent=String(count);document.querySelector('[data-practice-action]').addEventListener('click',()=>{count+=1;localStorage.setItem('practice-score-v1',String(count));value.textContent=String(count);});</script></body></html>"
+    },
+    {
+      "id": "unity-lifecycle",
+      "platform": "unity",
+      "level": "실전",
+      "failure": "SCENE_INPUT_POOL_STATE_DRIFT",
+      "domains": [
+        "STATE_MACHINE",
+        "SAVE",
+        "MOBILE_INPUT"
+      ],
+      "scenario": "C# public static class Practice의 public static void Apply(PracticeState s, string action, int value)를 고쳐라. 상태 클래스는 검수기가 제공한다: bool Active, InputEnabled, Paused; int Subscriptions, LiveObjects, Score, SavedScore. enter는 활성화하고 구독을 정확히 1개, 입력을 !Paused로 설정한다. exit는 비활성화하고 입력/구독/활성 오브젝트를 0으로 하되 점수/저장은 보존한다. pause/resume은 입력을 정지/복원하되 비활성 씬에서 입력을 켜면 안 된다. collect는 활성 입력 중에만 value를 점수에 더하고 SavedScore에 저장한다. spawn은 활성 씬에서만 활성 오브젝트를 정확히 1개로, despawn은 0으로 한다. 알 수 없는 action은 무시한다. Unity API 대신 독립 C# 상태 전이 과제다. class Practice만 반환하고 파일/네트워크/프로세스/환경/콘솔 API는 사용하지 않는다.",
+      "broken": "public static class Practice { public static void Apply(PracticeState s,string action,int value) { if(action==\"enter\"){s.Active=true;s.InputEnabled=true;s.Subscriptions++;} if(action==\"collect\"){s.Score+=value;} if(action==\"spawn\"){s.LiveObjects++;} if(action==\"exit\"){s.Score=0;} } }",
+      "reference": "public static class Practice {\n public static void Apply(PracticeState s, string action, int value) {\n  if(action==\"enter\"){s.Active=true;s.Subscriptions=1;s.InputEnabled=!s.Paused;}\n  else if(action==\"exit\"){s.Active=false;s.InputEnabled=false;s.Subscriptions=0;s.LiveObjects=0;}\n  else if(action==\"pause\"){s.Paused=true;s.InputEnabled=false;}\n  else if(action==\"resume\"){s.Paused=false;s.InputEnabled=s.Active;}\n  else if(action==\"collect\" && s.Active && s.InputEnabled){s.Score+=value;s.SavedScore=s.Score;}\n  else if(action==\"spawn\" && s.Active){s.LiveObjects=1;}\n  else if(action==\"despawn\"){s.LiveObjects=0;}\n }\n}",
+      "tests": [
+        "var s=new PracticeState(); for(int n=0;n<7;n++){Practice.Apply(s,\"enter\",0);Practice.Apply(s,\"enter\",0);Check(s.Active&&s.InputEnabled&&s.Subscriptions==1);Practice.Apply(s,\"spawn\",0);Practice.Apply(s,\"spawn\",0);Check(s.LiveObjects==1);Practice.Apply(s,\"collect\",3);Practice.Apply(s,\"pause\",0);Practice.Apply(s,\"collect\",91);Check(!s.InputEnabled&&s.Paused);Practice.Apply(s,\"exit\",0);Check(!s.Active&&!s.InputEnabled&&s.Subscriptions==0&&s.LiveObjects==0);Practice.Apply(s,\"resume\",0);Practice.Apply(s,\"collect\",100);Check(!s.InputEnabled&&s.Score==(n+1)*3&&s.SavedScore==s.Score);}",
+        "var s=new PracticeState{Score=37,SavedScore=37};Practice.Apply(s,\"pause\",0);Practice.Apply(s,\"enter\",0);Check(!s.InputEnabled&&s.Subscriptions==1);Practice.Apply(s,\"resume\",0);Check(s.InputEnabled);for(int n=1;n<=17;n++){Practice.Apply(s,\"collect\",n);Practice.Apply(s,\"spawn\",0);Practice.Apply(s,\"despawn\",0);Practice.Apply(s,\"despawn\",0);Check(s.LiveObjects==0);}Check(s.Score==190&&s.SavedScore==190);Practice.Apply(s,\"exit\",0);Practice.Apply(s,\"spawn\",0);Practice.Apply(s,\"unknown\",999);Check(s.LiveObjects==0&&s.Score==190);Practice.Apply(s,\"enter\",0);Check(s.InputEnabled&&s.Subscriptions==1&&s.SavedScore==190);"
       ]
     }
   ]

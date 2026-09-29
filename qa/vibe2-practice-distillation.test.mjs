@@ -132,3 +132,12 @@ test('presentation practice distills only verified quality domains without stori
   assert.doesNotMatch(serialized,/secondary motion/);
   assert.doesNotMatch(serialized,/duplicate audio owner/);
 });
+
+
+test('coding and browser practice cannot reuse static or prose-only success claims',()=>{
+  for(const practiceMode of ['ROBLOX_CODE','UNITY_CODE','WEB_ARTIFACT']){
+    const check=validatePracticeResultForDistillation({...result,practiceMode});
+    assert.equal(check.ok,false);
+    assert(check.reasons.some(reason=>reason.startsWith('EXECUTED_')));
+  }
+});

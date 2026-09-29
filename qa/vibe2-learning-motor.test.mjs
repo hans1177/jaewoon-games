@@ -1868,3 +1868,20 @@ test('specialized negative markers require explicit verified failure provenance 
   assert.equal(nonGame.negative,0);
   assert.equal(nonGame.records.length,0);
 });
+
+
+test('platform fault cards enter existing practice queue with executable route contracts',()=>{
+  const idle=buildIdlePracticeQueue({});
+  const cards=idle.drills.filter(row=>row.kind==='PLATFORM_CODE_REPAIR');
+  assert.deepEqual(cards.map(row=>row.platformProfile).sort(),['unity','web']);
+  for(const card of cards){
+    const injected=injectIdlePracticeTask({tasks:[]},{drills:[card]});
+    assert.equal(injected.added,true);
+    assert.equal(injected.task.codingPracticeDrill,card.id);
+    assert.equal(injected.task.target,card.platformProfile);
+    assert(injected.task.goal.includes('codingPracticeDrill='+card.id));
+    assert(injected.task.evidence.includes(card.platformProfile==='web'?'learning-web-artifact-practice':'learning-analysis-practice'));
+    assert.equal(injected.task.responsibleFiles.length,0);
+  }
+  assert(idle.drills.some(row=>row.robloxPracticeDrill==='late-join'));
+});
