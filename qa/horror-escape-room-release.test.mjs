@@ -113,7 +113,8 @@ test('상용 로딩과 로비 상태는 서버 정본에 바인딩된다',()=>{
  assert.match(server,/local function syncLobbyState\(phase\)/);
  for(const key of ['LobbyReady','LobbyPhase','LobbyRealPlayers','LobbyAIFill'])assert.ok(server.includes('"'+key+'"'),key);
  assert.match(client,/실제 %d명 · AI %d명 충원 예정/);
- assert.match(client,/setupPanel\.Visible=not running/);
+ assert.match(client,/roomBrowserPanel\.Visible=browser and not running and not resultCode/);
+ assert.match(client,/setupPanel\.Visible=isRoomServer and not running and not resultCode and not spectating/);
  assert.match(client,/ruleCard\.Visible=setupPanel\.Visible and not selectionConfirmed/);
 });
 
