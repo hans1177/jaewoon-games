@@ -2351,6 +2351,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let presentationPatchDeltaCreditUsed=false;
   let studioEditMatchCreditUsed=false;
   let studioCausalRecoveryCreditUsed=false;
+  let studioFocusedSourceRepair=false;
   let truncatedOutputCreditUsed=false;
   let robloxStructuralCreditUsed=false;
   let controlTokenRecoveryCount=0;
@@ -2450,7 +2451,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const systemCausalPairRecovery=priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'||priorFailureClass==='SYSTEM_CANDIDATE_SYNTAX';
     const presentationPatchDeltaRecovery=!allowFullRewrite&&priorFailureClass==='PRESENTATION_PATCH_DELTA';
     const assetDevelopmentFocusedGraphics=assetDevelopmentLane&&robloxAssetAdaptationTask;
-    const focusedFinal=!allowFullRewrite&&!multiFilePairRequired&&(!studioExpansion||zeroOutputTimeoutRecovery||unityStudioTimeoutFocusedRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||assetDevelopmentFocusedGraphics)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(robloxRebuildFocused||assetDevelopmentFocusedGraphics||attempt>=3||(target==='roblox'&&/MODEL_CONTROL_TOKEN/.test(clean(lastError?.message)))||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||(speculativeVariant&&attempt>=2));
+    const focusedFinal=!allowFullRewrite&&!multiFilePairRequired&&(!studioExpansion||studioFocusedSourceRepair||zeroOutputTimeoutRecovery||unityStudioTimeoutFocusedRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||assetDevelopmentFocusedGraphics)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(robloxRebuildFocused||assetDevelopmentFocusedGraphics||attempt>=3||(target==='roblox'&&/MODEL_CONTROL_TOKEN/.test(clean(lastError?.message)))||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const diagnosticFocusedReplaceOnly=!allowFullRewrite&&!studioExpansion&&!robloxFullGraphicsPackageRecovery&&!assetDevelopmentFocusedGraphics
       ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})
@@ -2571,6 +2572,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const partialOutput=String(error?.vibe2PartialOutput??'');
       if(partialOutput.trim())lastRaw=partialOutput;
       const failureClass=generationFailureClass(error);
+      // 축소 요청의 출력 오류를 고치는 동안 대형 스튜디오 주문으로 되돌아가지 않는다.
+      // 유효한 후보의 품질 부족은 기존 연결 패키지 복구 경로에서 처리한다.
+      studioFocusedSourceRepair=target==='roblox'&&studioExpansion&&Boolean(focusedReplaceOnly)
+        &&['ROBLOX_STRUCTURAL_CONTINUITY','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass);
       if(target==='roblox'&&failureClass==='ROBLOX_STRUCTURAL_CONTINUITY'&&/MODEL_CONTROL_TOKEN/.test(clean(error?.message)))controlTokenRecoveryCount+=1;
       if(failureClass==='PRESENTATION_PATCH_DELTA')presentationPatchDeltaObserved=true;
       if(allowFullRewrite&&lastRaw.trim()&&Buffer.byteLength(lastRaw,'utf8')>Buffer.byteLength(bestFullWebFallbackRaw,'utf8')){
