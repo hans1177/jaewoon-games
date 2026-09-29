@@ -5290,7 +5290,8 @@
       "coding_negative_kdbwpt",
       "coding_negative_c316hc",
       "coding_negative_15inrwl",
-      "coding_negative_1bxjweh"
+      "coding_negative_1bxjweh",
+      "coding_negative_4zd30e"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -13137,7 +13138,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 34,
+        "verifiedFailures": 35,
         "games": {
           "fantasy-survival": 1
         },
@@ -13520,12 +13521,32 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_kdbwpt",
             "lastUpdatedAt": "2026-09-29T05:30:33.465Z"
+          },
+          "unity|INVALID_PATH|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "seed-story-complete-rpg-chronicles-of-eldoria": 1
+            },
+            "failureTargets": {
+              "unity": 1
+            },
+            "failureClasses": {
+              "STUDIO_QUALITY_DELTA": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_4zd30e",
+            "lastUpdatedAt": "2026-09-29T05:36:14.012Z"
           }
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_1jzef3p",
-        "lastFailureEvidence": "coding_negative_kdbwpt",
-        "lastUpdatedAt": "2026-09-29T05:30:33.465Z"
+        "lastFailureEvidence": "coding_negative_4zd30e",
+        "lastUpdatedAt": "2026-09-29T05:36:14.012Z"
       },
       "PATH_VERIFIED_ANCHOR_FIRST": {
         "verifiedApplications": 1,
@@ -17350,7 +17371,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T05:35:25.863Z",
+    "lastBuiltAt": "2026-09-29T05:36:14.138Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -24174,5 +24195,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T05:35:25.863Z"
+  "updatedAt": "2026-09-29T05:36:14.138Z"
 }
