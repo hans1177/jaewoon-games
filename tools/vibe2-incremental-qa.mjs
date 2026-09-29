@@ -183,7 +183,8 @@ function runCausalReplay({root,data={}}={}){
     const sourceRoot=posix(data.sourceRoot);
     if(!type||!file||!sourceRoot)throw new Error('CAUSAL_REPLAY_DIAGNOSTIC_IDENTITY_REQUIRED');
     const sourceDir=assertInside(root,sourceRoot);
-    const report=diagnoseGame(sourceDir,{maxIssues:200});
+    const report=diagnoseGame(sourceDir,{maxIssues:Infinity});
+    if(!report.scanCoverage?.some(row=>row.file===file&&row.complete))throw new Error(`CAUSAL_REPLAY_DIAGNOSTIC_NOT_FULLY_SCANNED:${file}`);
     const stillPresent=(report.issues||[]).some(row=>clean(row?.type).toUpperCase()===type&&posix(row?.file)===file);
     if(stillPresent){
       const error=new Error(`CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT:${type}:${file}`);
@@ -876,7 +877,10 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const contentHash = sha256(payload);
   const cachePath = clean(cacheFile);
   const cache = cachePath ? readJson(cachePath,{version:13,entries:{}}) : {version:13,entries:{}};
-  const cached = cache.entries?.[contentHash];
+  // Diagnostic findings also depend on unchanged files and referenced assets.
+  // Always rescan current inputs; changed-file hashes cannot certify this replay.
+  const diagnosticReplay=replayPlan?.required===true&&replayPlan?.executable===true&&clean(replayPlan.mode)==='DIAGNOSTIC_RESCAN';
+  const cached = diagnosticReplay ? null : cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
     return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, gameRepairQa:cached.gameRepairQa||{status:'NOT_REQUIRED',required:false,fullRegressionStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, graphicsReplacementQa:cached.graphicsReplacementQa||{status:'NOT_REQUIRED',required:false,actualCount:0,groundedCount:0,checks:[],authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, robloxStudioAssetBindingQa:cached.robloxStudioAssetBindingQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, specializedVerificationQa:cached.specializedVerificationQa||{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY',runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   }
@@ -908,6 +912,7 @@ export function incrementalQaFailureSignature(error){
     'CAUSAL_REPLAY_PREPATCH_REPRODUCTION_REQUIRED',
     'CAUSAL_REPLAY_EXECUTABLE_WITHOUT_TARGET',
     'CAUSAL_REPLAY_DIAGNOSTIC_IDENTITY_REQUIRED',
+    'CAUSAL_REPLAY_DIAGNOSTIC_NOT_FULLY_SCANNED',
     'CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT',
     'PRESENTATION_STATIC_QA_FAILED',
     'GRAPHICS_REPLACEMENT_GROUNDING_QA_FAILED',
@@ -995,3 +1000,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     process.exitCode=1;
   }
 }
+

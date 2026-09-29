@@ -799,3 +799,44 @@ test('continuous worker and fan-in preserve grounded graphics proof instead of m
   assert.match(fanIn,/graphics-replacement-incremental-qa/);
   assert.match(fanIn,/graphics-replacement-fan-in-gate:PASS/);
 });
+
+
+for(const scenario of ['missing','scan-limit','byte-limit','issue-limit','cached-target','cached-reference']){
+  test(`diagnostic causal replay rejects incomplete or stale evidence: ${scenario}`,()=>{
+    const root=repo();
+    const sourceRoot='web-games/replay-integrity';
+    const dir=path.join(root,sourceRoot);
+    fs.mkdirSync(dir,{recursive:true});
+    fs.writeFileSync(path.join(dir,'changed.js'),'export const changed=true;\n');
+    const target=scenario==='cached-reference'?'index.html':'target.js';
+    const targetPath=path.join(dir,target);
+    fs.writeFileSync(targetPath,'const safe=true;\n');
+    let diagnosticType='INTERVAL_CLEANUP_RISK';
+    let expected=/CAUSAL_REPLAY_DIAGNOSTIC_NOT_FULLY_SCANNED/;
+    if(scenario==='missing')fs.unlinkSync(targetPath);
+    if(scenario==='scan-limit')for(let i=0;i<80;i++)fs.writeFileSync(path.join(dir,`a${String(i).padStart(3,'0')}.js`),'const safe=true;\n');
+    if(scenario==='byte-limit')fs.writeFileSync(targetPath,' '.repeat(1_600_001)+'setInterval(()=>{},1000);\n');
+    if(scenario==='issue-limit'){
+      fs.writeFileSync(path.join(dir,'a.html'),Array.from({length:205},(_,i)=>`<script src="missing${i}.js"></script>`).join('\n'));
+      fs.writeFileSync(targetPath,'setInterval(()=>{},1000);\n');
+      expected=/CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT/;
+    }
+    if(scenario==='cached-reference'){
+      diagnosticType='BROKEN_LOCAL_PATH';
+      fs.writeFileSync(targetPath,'<script src="dependency.js"></script>\n');
+      fs.writeFileSync(path.join(dir,'dependency.js'),'const safe=true;\n');
+    }
+    const manifest=path.join(root,'manifest.json');
+    fs.writeFileSync(manifest,JSON.stringify({sourceRoot,changedFiles:['changed.js'],exploration:{editContract:{causalReplay:{
+      required:true,prePatchReproduced:true,executable:true,mode:'DIAGNOSTIC_RESCAN',diagnosticType,diagnosticFile:target
+    }}}}));
+    const options={root,manifest,cacheFile:path.join(root,'cache.json')};
+    if(scenario.startsWith('cached-')){
+      assert.equal(runIncrementalQa(options).causalReplay.status,'EXECUTED_PASS');
+      if(scenario==='cached-target')fs.writeFileSync(targetPath,'setInterval(()=>{},1000);\n');
+      else fs.unlinkSync(path.join(dir,'dependency.js'));
+      expected=/CAUSAL_REPLAY_DIAGNOSTIC_STILL_PRESENT/;
+    }
+    assert.throws(()=>runIncrementalQa(options),expected);
+  });
+}
