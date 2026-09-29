@@ -1,5 +1,5 @@
 {
-  "version": 18,
+  "version": 19,
   "gameId": "horror-escape-room",
   "gameName": "심야 감염전 [4대4]",
   "releaseStrategy": "FAST_MVP",
@@ -32,7 +32,9 @@
     "comic team result ceremonies with map-specific jokes",
     "short server-authoritative comic victory ceremonies for humans monsters and draws",
     "winning team ceremony keeps AI participants visible until result phase ends",
-    "school hospital and theme park each contain harmless discovery surprises and comic easter eggs"
+    "school hospital and theme park each contain harmless discovery surprises and comic easter eggs",
+    "exploration progression: harmless surprise discoveries plus hidden lore notes",
+    "result ceremony highlights team outcome with comic multiplayer presentation"
   ],
   "deferredUntilAfterMvp": [
     "extra monsters",
@@ -96,7 +98,10 @@
     "human and monster victory each have three comic ceremony variants",
     "draw uses a dedicated comic ceremony",
     "celebrations never modify combat stats or round authority",
-    "map surprise props are non-collidable non-touchable and non-queryable"
+    "map surprise props are non-collidable non-touchable and non-queryable",
+    "proximity-verified persistent surprise discovery collection",
+    "persistent lore-note collection with title-only progression",
+    "no coins energy combat stats or win authority from exploration collections"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
