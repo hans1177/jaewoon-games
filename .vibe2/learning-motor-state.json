@@ -5828,7 +5828,9 @@
       "coding_negative_18f58o3",
       "coding_negative_a3ajdr",
       "coding_negative_1d3stjm",
-      "coding_negative_1k95ghe"
+      "coding_negative_1k95ghe",
+      "coding_negative_ig527o",
+      "coding_negative_1e54u6j"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16424,7 +16426,7 @@
         "verifiedApplications": 2,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 6,
-        "verifiedFailures": 377,
+        "verifiedFailures": 379,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1
@@ -16616,27 +16618,27 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 65,
+            "verifiedFailures": 67,
             "games": {},
             "targets": {},
             "failureGames": {
               "amusement-tycoon": 16,
               "seed-casual-realm-weaver": 14,
-              "seed-puzzle-chromatic-cascade": 13,
-              "seed-idle-growth-rpg-crystal-bloom": 11,
+              "seed-puzzle-chromatic-cascade": 14,
+              "seed-idle-growth-rpg-crystal-bloom": 12,
               "seed-action-survival-rogu-echoes-of-the-lost-star": 11
             },
             "failureTargets": {
-              "unity": 65
+              "unity": 67
             },
             "failureClasses": {
               "MALFORMED_OUTPUT": 2,
               "TIMEOUT": 5,
-              "STUDIO_QUALITY_DELTA": 58
+              "STUDIO_QUALITY_DELTA": 60
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_18f58o3",
-            "lastUpdatedAt": "2026-09-29T15:59:12.133Z"
+            "lastFailureEvidence": "coding_negative_1e54u6j",
+            "lastUpdatedAt": "2026-09-29T16:08:41.361Z"
           },
           "unity|EDIT_MATCH|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -16866,8 +16868,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_jra6qr",
-        "lastFailureEvidence": "coding_negative_1k95ghe",
-        "lastUpdatedAt": "2026-09-29T16:00:07.751Z"
+        "lastFailureEvidence": "coding_negative_1e54u6j",
+        "lastUpdatedAt": "2026-09-29T16:08:41.361Z"
       }
     }
   },
@@ -19606,7 +19608,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T16:06:32.210Z",
+    "lastBuiltAt": "2026-09-29T16:08:41.430Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -27027,5 +27029,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T16:06:32.210Z"
+  "updatedAt": "2026-09-29T16:08:41.430Z"
 }
