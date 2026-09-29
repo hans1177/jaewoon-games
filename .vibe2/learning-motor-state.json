@@ -5830,7 +5830,8 @@
       "coding_negative_1d3stjm",
       "coding_negative_1k95ghe",
       "coding_negative_ig527o",
-      "coding_negative_1e54u6j"
+      "coding_negative_1e54u6j",
+      "coding_negative_1s4xz2g"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16426,7 +16427,7 @@
         "verifiedApplications": 2,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 6,
-        "verifiedFailures": 379,
+        "verifiedFailures": 380,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1
@@ -16582,11 +16583,11 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 148,
+            "verifiedFailures": 149,
             "games": {},
             "targets": {},
             "failureGames": {
-              "amusement-tycoon": 5,
+              "amusement-tycoon": 6,
               "monster-adventure": 5,
               "fantasy-survival": 6,
               "line-defense": 14,
@@ -16602,17 +16603,17 @@
               "seed-single-defense-strat-celestial-bastion": 13
             },
             "failureTargets": {
-              "unity": 148
+              "unity": 149
             },
             "failureClasses": {
-              "TIMEOUT": 130,
+              "TIMEOUT": 131,
               "INVALID_PATH": 15,
               "MALFORMED_OUTPUT": 2,
               "NO_OP": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1k95ghe",
-            "lastUpdatedAt": "2026-09-29T16:00:07.751Z"
+            "lastFailureEvidence": "coding_negative_1s4xz2g",
+            "lastUpdatedAt": "2026-09-29T16:09:41.103Z"
           },
           "unity|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -16868,8 +16869,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_jra6qr",
-        "lastFailureEvidence": "coding_negative_1e54u6j",
-        "lastUpdatedAt": "2026-09-29T16:08:41.361Z"
+        "lastFailureEvidence": "coding_negative_1s4xz2g",
+        "lastUpdatedAt": "2026-09-29T16:09:41.103Z"
       }
     }
   },
@@ -19608,7 +19609,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T16:08:41.430Z",
+    "lastBuiltAt": "2026-09-29T16:09:41.178Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -27029,5 +27030,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T16:08:41.430Z"
+  "updatedAt": "2026-09-29T16:09:41.178Z"
 }
