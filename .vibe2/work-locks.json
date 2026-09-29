@@ -250,6 +250,27 @@
         "compiled-central-work-contract",
         "change-set:SYS-ARCH-425305e25df9-v1"
       ]
+    },
+    {
+      "id": "wl-4xk0wk",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-28a2f2747401-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-queue-control.mjs",
+        ".github/workflows/vibe2-continuous-core.yml",
+        "qa/vibe2-queue-control.test.mjs"
+      ],
+      "baseSha": "46b5ab1d0103bb528418f3b63f6cc94bc9cc33ed",
+      "runId": "36523075482",
+      "runAttempt": "1",
+      "acquiredAt": "2026-09-29T04:47:34.995Z",
+      "expiresAt": "2026-09-29T05:32:34.995Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-28a2f2747401-v1"
+      ]
     }
   ]
 }
