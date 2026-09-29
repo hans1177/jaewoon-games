@@ -729,7 +729,23 @@ local function nearestMonsterDistance()
   if other~=p and other:GetAttribute("Role")=="MONSTER"then
    local oc=other.Character
    local oroot=oc and oc:FindFirstChild("HumanoidRootPart")
-   if oroot then best=math.min(best,(oroot.Position-root.Position).Magnitude)end
+local tensionClock=0
+local function nearestMonsterDistance()
+ local character=p.Character
+ local root=character and character:FindFirstChild("HumanoidRootPart")
+ if not root then return math.huge end
+ local best=math.huge
+ for _,other in ipairs(Players:GetPlayers())do
+  if other~=p and other:GetAttribute("Role")=="MONSTER" then
+   local oc=other.Character
+   local oroot=oc and oc:FindFirstChild("HumanoidRootPart")
+   if oroot then best=math.min(best,(oroot.Position-root.Position).Magnitude) end
+  end
+ end
+ local arena=workspace:FindFirstChild("MidnightArena")
+ if arena then for _,ai in ipairs(arena:GetDescendants())do if ai:IsA("BasePart") and ai.Name=="AI_MONSTER" then best=math.min(best,(ai.Position-root.Position).Magnitude) end end end
+ return best
+ end
   end
  end
  local arena=workspace:FindFirstChild("MidnightArena")

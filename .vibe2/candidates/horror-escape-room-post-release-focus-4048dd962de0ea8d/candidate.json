@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "   if oroot then best=math.min(best,(oroot.Position-root.Position).Magnitude)end",
+      "replace": "local tensionClock=0\nlocal function nearestMonsterDistance()\n local character=p.Character\n local root=character and character:FindFirstChild(\"HumanoidRootPart\")\n if not root then return math.huge end\n local best=math.huge\n for _,other in ipairs(Players:GetPlayers())do\n  if other~=p and other:GetAttribute(\"Role\")==\"MONSTER\" then\n   local oc=other.Character\n   local oroot=oc and oc:FindFirstChild(\"HumanoidRootPart\")\n   if oroot then best=math.min(best,(oroot.Position-root.Position).Magnitude) end\n  end\n end\n local arena=workspace:FindFirstChild(\"MidnightArena\")\n if arena then for _,ai in ipairs(arena:GetDescendants())do if ai:IsA(\"BasePart\") and ai.Name==\"AI_MONSTER\" then best=math.min(best,(ai.Position-root.Position).Magnitude) end end end\n return best\n end"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
