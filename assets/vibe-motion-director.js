@@ -1077,7 +1077,7 @@ export function selectRobloxCharacterMotionSource({
   const rows=(candidates||[]).map(candidate=>{
     const dna=candidate.dna||candidate;
     const base=scoreMotionCandidate(candidate,{...context,platform:'ROBLOX'},recentMotionIds);
-    if(!base.valid)return Object.freeze({candidate,id:base.id,valid:false,score:-Infinity,sourceClass:'INCOMPATIBLE',rejectedBy:base.rejectedBy});
+    if(!base.valid||candidate.qualityReview?.verdict==='FAIL')return Object.freeze({candidate,id:base.id,valid:false,score:-Infinity,sourceClass:'INCOMPATIBLE',rejectedBy:base.rejectedBy||'QUALITY_REVIEW_FAILED'});
     const verified=upper(dna.RUNTIME_VERIFICATION_STATE||candidate.runtimeVerificationState)==='VERIFIED_RUNTIME'||candidate.companyVerified===true;
     const sameGame=targetGame&&text(candidate.gameId||candidate.GAME_ID)===targetGame;
     const sameArchetype=targetArchetype&&upper(dna.SPECIES_OR_ARCHETYPE||candidate.archetype)===targetArchetype;
@@ -1089,8 +1089,8 @@ export function selectRobloxCharacterMotionSource({
     else if(licensed&&/REPOSITORY|PROJECT_ORIGINAL|CC0/.test(provenance)){sourceClass='LICENSE_VERIFIED_REPOSITORY_MOTION';bonus=300;}
     else if(licensed&&/EXTERNAL|ROBLOX_PLATFORM/.test(provenance)){sourceClass='LICENSE_VERIFIED_EXTERNAL_MOTION_WITH_PROVENANCE';bonus=200;}
     else if(candidate.retargeted===true||/RETARGET/.test(provenance)){sourceClass='SAFE_RETARGET_AND_CLEANUP';bonus=100;}
-    return Object.freeze({candidate,id:base.id,valid:true,score:base.score+bonus,sourceClass,rejectedBy:null});
-  }).filter(row=>row.valid).sort((a,b)=>b.score-a.score||a.id.localeCompare(b.id));
+    return Object.freeze({candidate,id:base.id,valid:true,score:base.score,sourcePreference:bonus,sourceClass,rejectedBy:null});
+  }).filter(row=>row.valid).sort((a,b)=>b.score-a.score||b.sourcePreference-a.sourcePreference||a.id.localeCompare(b.id));
   return Object.freeze({
     selected:rows[0]?.candidate||null,
     selectedId:rows[0]?.id||null,
@@ -1098,6 +1098,8 @@ export function selectRobloxCharacterMotionSource({
     ranked:Object.freeze(rows.map(row=>Object.freeze({id:row.id,score:row.score,sourceClass:row.sourceClass}))),
     priority:ROBLOX_MOTION_SOURCE_PRIORITY,
     libraryFirst:true,
+    sourcePreferenceOnlyBreaksCompatibilityScoreTies:true,
+    selectionRequiresTargetGameVisualReview:true,
     newKeyframeAuthoringLast:true,
     gameplayAuthority:false
   });
@@ -1134,6 +1136,20 @@ export function createRobloxMotionBlendProfile({
   });
 }
 
+const STUDIO_MOTION_PRODUCTION=Object.freeze({
+      status:'PLANNED_NOT_VERIFIED',
+      stages:Object.freeze(['ACTING_BRIEF','RIG_DEFORMATION','KEY_POSES','LOCOMOTION','COMBAT_CONTACT','TRANSITIONS','SECONDARY_ACTING','GAME_CAMERA_REVIEW','MOBILE_MULTIPLAYER_REVIEW']),
+      actingBriefFields:Object.freeze(['PERSONALITY','INTENT','WEIGHT','BODY_PLAN','WEAPON','SILHOUETTE','STYLE_REFERENCE']),
+      performanceBeatOrder:Object.freeze(['EYE_TARGET','HEAD_ORIENT','BODY_WEIGHT_SHIFT','PRIMARY_ACTION','FOLLOW_THROUGH','SETTLE']),
+      bodyPlanSpecific:true,
+      representativeScene:Object.freeze({durationSeconds:10,beats:Object.freeze(['OBSERVE','TRAVEL','NOTICE_TARGET','ACT','REACT','RECOVER']),combatOnlyWhenApplicable:true}),
+      reviewCapture:Object.freeze({sameCamera:true,samePlaybackSpeed:true,referenceAndCandidate:true,frameAddressedFindings:true,sourceAndClipVersionBound:true}),
+      secondaryMotion:Object.freeze(['BREATH','GAZE','EARS_TAIL_WINGS_WHEN_PRESENT','INERTIA_AND_SETTLE']),
+      gameplayTimingChangesForbidden:true,
+      failedStageRepairThenRegression:true,
+      promotionRequiresActualNativeEvidence:true
+    });
+
 export function createRobloxCharacterMotionPlan({
   actorClass='HUMANOID_NPC',
   bodyPlan='HUMANOID',
@@ -1167,6 +1183,7 @@ export function createRobloxCharacterMotionPlan({
       ?['MOTOR6D_OR_BONES','HUMANOID_OR_ANIMATION_CONTROLLER','ANIMATOR']
       :['BODY_PLAN_SPECIFIC_ARTICULATED_JOINT_CHAIN','ANIMATOR']),
     requiredStates:Object.freeze(requiredStates),
+    studioProduction:STUDIO_MOTION_PRODUCTION,
     motionSource:source,
     blend:createRobloxMotionBlendProfile(blend),
     procedural:createProceduralMotionProfile({
@@ -1203,7 +1220,11 @@ export function auditRobloxCharacterMotionEvidence({
   playbackSpeedSynced=true,
   footSlideNormalized=0,
   attackRecoverySnap=false,
-  officialStudioRuntimeObserved=false
+  officialStudioRuntimeObserved=false,
+  sourceRevision='',
+  clipVersion='',
+  combatant=true,
+  studioReview=null
 }={}){
   const failures=[];
   const articulated=hasMotor6D===true||hasBones===true;
@@ -1216,9 +1237,20 @@ export function auditRobloxCharacterMotionEvidence({
   if(visibleLocomotion===true&&jointTransformChanges!==true)failures.push('JOINT_ACTIVITY_MISSING');
   if(hardStatePop===true)failures.push('HARD_MOTION_STATE_POP');
   if(playbackSpeedSynced!==true)failures.push('LOCOMOTION_PLAYBACK_SPEED_DESYNC');
-  if(Number(footSlideNormalized||0)>.035)failures.push('FOOT_SLIDE_DISTANCE');
+  if(!Number.isFinite(Number(footSlideNormalized))||Number(footSlideNormalized)<0)failures.push('FOOT_SLIDE_MEASUREMENT_INVALID');
+  else if(Number(footSlideNormalized)>.035)failures.push('FOOT_SLIDE_DISTANCE');
   if(attackRecoverySnap===true)failures.push('ATTACK_RECOVERY_SNAP');
   if(officialStudioRuntimeObserved!==true)failures.push('OFFICIAL_STUDIO_RUNTIME_EVIDENCE_MISSING');
+  const review=studioReview||{};
+  if(!text(sourceRevision)||!text(clipVersion)||review.sourceRevision!==sourceRevision||review.clipVersion!==clipVersion)failures.push('STUDIO_REVIEW_VERSION_BINDING_MISSING');
+  if(!text(review.referenceCapture)||!text(review.candidateCapture)||review.sameCamera!==true||review.samePlaybackSpeed!==true)failures.push('STUDIO_COMPARISON_CAPTURE_MISSING');
+  for(const stage of ['ACTING_BRIEF','RIG_DEFORMATION','KEY_POSES','LOCOMOTION','COMBAT_CONTACT','TRANSITIONS','SECONDARY_ACTING','GAME_CAMERA_REVIEW','MOBILE_MULTIPLAYER_REVIEW']){
+    const row=review.stages?.[stage];
+    if(stage==='COMBAT_CONTACT'&&combatant===false&&row?.applicable===false&&text(row.reason)&&text(row.evidence))continue;
+    if(row?.pass!==true||!text(row.evidence))failures.push('STUDIO_STAGE_UNVERIFIED:'+stage);
+  }
+  if(!Number.isInteger(review.playerCount)||review.playerCount<2||!text(review.runtimeRunId))failures.push('STUDIO_MULTIPLAYER_EVIDENCE_MISSING');
+  if(review.gameplayTimingPreserved!==true)failures.push('GAMEPLAY_TIMING_PRESERVATION_UNVERIFIED');
   const mannequin=failures.some(value=>[
     'RIG_ARTICULATION_MISSING','ANIMATOR_MISSING','ANIMATION_CONTROLLER_MISSING',
     'WELD_CONSTRAINT_ONLY_ARTICULATED_BODY','ROOT_ONLY_VISIBLE_LOCOMOTION','JOINT_ACTIVITY_MISSING'
@@ -1271,6 +1303,7 @@ export function createMotionDirectorPlan({
   return Object.freeze({
     version:2,
     target:MOTION_DIRECTOR_TARGET,
+    studioProduction:Object.freeze({...STUDIO_MOTION_PRODUCTION,targetPlatform:upper(platform)}),
     platform:upper(platform),
     motionDNA:createMotionDNA(selectedDNA),
     selector,
