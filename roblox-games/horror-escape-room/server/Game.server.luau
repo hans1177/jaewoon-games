@@ -1525,27 +1525,38 @@ RunService.Heartbeat:Connect(function(dt)
     end
    end
    if b.role=="MONSTER"then
-    local best,bd=nil,math.huge
+    local bestEntry,bestPos,bd=nil,nil,math.huge
     for _,a in ipairs(active())do
      local pos=a.p and(root(a.p)and root(a.p).Position)or(a.b and a.b.part.Position)
-     if pos then local d=(pos-b.part.Position).Magnitude;if d<bd then bd=d;best=pos end end
+     if pos then local d=(pos-b.part.Position).Magnitude;if d<bd then bd=d;bestPos=pos;bestEntry=a end end
     end
-    if best then
-     local d=Vector3.new(best.X-b.part.Position.X,0,best.Z-b.part.Position.Z)
-     if d.Magnitude>.1 then
-      local dir=d.Unit;local nextPos=b.part.Position+dir*math.min(d.Magnitude,b.speed*dt)
-      b.part.CFrame=CFrame.lookAt(nextPos,nextPos+dir)
+    if bestPos then
+     local infectRange=math.max(2,tonumber(C.Energy and C.Energy.InfectRange)or 8)
+     local infectCost=math.max(0,tonumber(C.Energy and C.Energy.InfectAttackCost)or 30)
+     local attackCd=math.max(.4,tonumber(C.Energy and C.Energy.InfectAttackCooldown)or 1.2)
+     if bd<=infectRange and os.clock()>=(b.infectAttackReadyAt or 0)and(b.energy or 0)>=infectCost then
+      b.energy=math.max(0,(b.energy or 0)-infectCost);b.infectAttackReadyAt=os.clock()+attackCd
+      if bestEntry and bestEntry.p then infectPlayer(bestEntry.p,nil)elseif bestEntry and bestEntry.b then infectBot(bestEntry.b,nil)end
+     else
+      local d=Vector3.new(bestPos.X-b.part.Position.X,0,bestPos.Z-b.part.Position.Z)
+      if d.Magnitude>.1 then
+       local dir=d.Unit;local nextPos=b.part.Position+dir*math.min(d.Magnitude,b.speed*dt)
+       b.part.CFrame=CFrame.lookAt(nextPos,nextPos+dir)
+      end
      end
     end
    elseif b.role=="SURVIVOR"then
     local nearest,best=nil,math.huge
     for _,mpos in ipairs(monsterPositions())do local d=(b.part.Position-mpos).Magnitude;if d<best then best=d;nearest=mpos end end
-    if nearest and best<=C.PurifyDistance and os.clock()>=(b.purifyReadyAt or 0)then
+    local purifyCost=math.max(0,tonumber(C.Energy and C.Energy.PurifyCost)or 35)
+    if nearest and best<=C.PurifyDistance and os.clock()>=(b.purifyReadyAt or 0)and(b.energy or 0)>=purifyCost then
      local targetPlayer,targetBot=nil,nil;local targetDist=C.PurifyDistance
      for _,other in ipairs(Players:GetPlayers())do if other:GetAttribute("Role")=="MONSTER"then local rr=root(other);if rr then local dd=(rr.Position-b.part.Position).Magnitude;if dd<=targetDist then targetDist=dd;targetPlayer=other;targetBot=nil end end end end
      for _,otherBot in ipairs(bots)do if otherBot~=b and otherBot.role=="MONSTER"then local dd=(otherBot.part.Position-b.part.Position).Magnitude;if dd<=targetDist then targetDist=dd;targetBot=otherBot;targetPlayer=nil end end end
-     b.purifyReadyAt=os.clock()+6
-     if targetPlayer then eliminateMonsterPlayer(targetPlayer)elseif targetBot then removeBot(targetBot)end
+     if targetPlayer or targetBot then
+      b.energy=math.max(0,(b.energy or 0)-purifyCost);b.purifyReadyAt=os.clock()+6
+      if targetPlayer then eliminateMonsterPlayer(targetPlayer)elseif targetBot then removeBot(targetBot)end
+     end
     elseif nearest and best<46 then
      local away=b.part.Position-nearest;local d=Vector3.new(away.X,0,away.Z)
      if d.Magnitude>.1 then
