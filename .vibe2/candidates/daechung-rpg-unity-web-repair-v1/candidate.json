@@ -1,0 +1,98 @@
+{
+  "summary": "Implement game-specific directive for player state and region handling",
+  "expectedEffect": "Directive worked as intended, player state and region handling implemented",
+  "edits": [
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (Player.level < 1)",
+      "replace": "            if (Player.level < 1)\n                Player.level = 1;"
+    },
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (Player.gold < 0)",
+      "replace": "            if (Player.gold < 0)\n                Player.gold = 0;"
+    },
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (Player.baseMaxHp <= 0)",
+      "replace": "            if (Player.baseMaxHp <= 0)\n                Player.baseMaxHp = 100;"
+    },
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (Player.baseAttack <= 0)",
+      "replace": "            if (Player.baseAttack <= 0)\n                Player.baseAttack = 3;"
+    },
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (!Enum.IsDefined(typeof(JobType), Player.job))",
+      "replace": "            if (!Enum.IsDefined(typeof(JobType), Player.job))\n                Player.job = JobType.None;"
+    },
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (Player.ownedWeapons == null)",
+      "replace": "            if (Player.ownedWeapons == null)\n                Player.ownedWeapons = new List<string>();"
+    },
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (Player.ownedArmors == null)",
+      "replace": "            if (Player.ownedArmors == null)\n                Player.ownedArmors = new List<string>();"
+    },
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (Player.completedHiddenQuests == null)",
+      "replace": "            if (Player.completedHiddenQuests == null)\n                Player.completedHiddenQuests = new List<string>();"
+    },
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (string.IsNullOrEmpty(Player.currentRegionId) || !GameCatalog.Regions.ContainsKey(Player.currentRegionId))",
+      "replace": "            if (string.IsNullOrEmpty(Player.currentRegionId) || !GameCatalog.Regions.ContainsKey(Player.currentRegionId))\n                Player.currentRegionId = \"town\";"
+    },
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (string.IsNullOrEmpty(Player.equippedWeaponId) ||\n                (Player.equippedWeaponId != \"bare-hands\" && !GameCatalog.Weapons.ContainsKey(Player.equippedWeaponId)))",
+      "replace": "            if (string.IsNullOrEmpty(Player.equippedWeaponId) ||\n                (Player.equippedWeaponId != \"bare-hands\" && !GameCatalog.Weapons.ContainsKey(Player.equippedWeaponId)))\n                Player.equippedWeaponId = \"bare-hands\";"
+    },
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (string.IsNullOrEmpty(Player.equippedArmorId) ||\n                (Player.equippedArmorId != \"none\" && !GameCatalog.Armors.ContainsKey(Player.equippedArmorId)))",
+      "replace": "            if (string.IsNullOrEmpty(Player.equippedArmorId) ||\n                (Player.equippedArmorId != \"none\" && !GameCatalog.Armors.ContainsKey(Player.equippedArmorId)))\n                Player.equippedArmorId = \"none\";"
+    },
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (Player.equippedWeaponId != \"bare-hands\" && !Player.ownedWeapons.Contains(Player.equippedWeaponId))",
+      "replace": "            if (Player.equippedWeaponId != \"bare-hands\" && !Player.ownedWeapons.Contains(Player.equippedWeaponId))\n                Player.ownedWeapons.Add(Player.equippedWeaponId);"
+    },
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "            if (Player.equippedArmorId != \"none\" && !Player.ownedArmors.Contains(Player.equippedArmorId))",
+      "replace": "            if (Player.equippedArmorId != \"none\" && !Player.ownedArmors.Contains(Player.equippedArmorId))\n                Player.ownedArmors.Add(Player.equippedArmorId);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "GameCore_PlayerState_Validation",
+    "GameCore_RegionHandling",
+    "GameCore_EnemyState"
+  ],
+  "graphicsReplacementReport": {
+    "actualCount": 1,
+    "changedSurfaces": [
+      "VFX"
+    ],
+    "reuseModesUsed": [
+      "ADAPT_RESTYLE_AND_RETARGET"
+    ],
+    "replacementEvidence": [
+      {
+        "surface": "VFX",
+        "path": "Assets/Scripts/PrototypeAnimatedVisuals.cs",
+        "bindingKey": "impactVfx",
+        "reuseMode": "ADAPT_RESTYLE_AND_RETARGET",
+        "sourceEvidence": "const impactVfx = createImpactVfx()"
+      }
+    ],
+    "before": "",
+    "after": ""
+  }
+}

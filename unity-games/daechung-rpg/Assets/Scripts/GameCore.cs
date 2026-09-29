@@ -296,10 +296,12 @@ namespace JaewoonGames.DaechungRpg
                 Player = data?.player ?? new PlayerState();
 
                 if (Player.level < 1)
+                Player.level = 1;
                 {
                     Player.level = 1;
                 }
                 if (Player.gold < 0)
+                Player.gold = 0;
                 {
                     Player.gold = 0;
                 }
@@ -312,48 +314,59 @@ namespace JaewoonGames.DaechungRpg
                     Player.mainQuestStep = 0;
                 }
                 if (Player.baseMaxHp <= 0)
+                Player.baseMaxHp = 100;
                 {
                     Player.baseMaxHp = 100;
                 }
                 if (Player.baseAttack <= 0)
+                Player.baseAttack = 3;
                 {
                     Player.baseAttack = 3;
                 }
                 if (!Enum.IsDefined(typeof(JobType), Player.job))
+                Player.job = JobType.None;
                 {
                     Player.job = JobType.None;
                 }
                 if (Player.ownedWeapons == null)
+                Player.ownedWeapons = new List<string>();
                 {
                     Player.ownedWeapons = new List<string>();
                 }
                 if (Player.ownedArmors == null)
+                Player.ownedArmors = new List<string>();
                 {
                     Player.ownedArmors = new List<string>();
                 }
                 if (Player.completedHiddenQuests == null)
+                Player.completedHiddenQuests = new List<string>();
                 {
                     Player.completedHiddenQuests = new List<string>();
                 }
                 if (string.IsNullOrEmpty(Player.currentRegionId) || !GameCatalog.Regions.ContainsKey(Player.currentRegionId))
+                Player.currentRegionId = "town";
                 {
                     Player.currentRegionId = "town";
                 }
-                if (string.IsNullOrEmpty(Player.equippedWeaponId) ||
-                    (Player.equippedWeaponId != "bare-hands" && !GameCatalog.Weapons.ContainsKey(Player.equippedWeaponId)))
+                            if (string.IsNullOrEmpty(Player.equippedWeaponId) ||
+                (Player.equippedWeaponId != "bare-hands" && !GameCatalog.Weapons.ContainsKey(Player.equippedWeaponId)))
+                Player.equippedWeaponId = "bare-hands";
                 {
                     Player.equippedWeaponId = "bare-hands";
                 }
-                if (string.IsNullOrEmpty(Player.equippedArmorId) ||
-                    (Player.equippedArmorId != "none" && !GameCatalog.Armors.ContainsKey(Player.equippedArmorId)))
+                            if (string.IsNullOrEmpty(Player.equippedArmorId) ||
+                (Player.equippedArmorId != "none" && !GameCatalog.Armors.ContainsKey(Player.equippedArmorId)))
+                Player.equippedArmorId = "none";
                 {
                     Player.equippedArmorId = "none";
                 }
                 if (Player.equippedWeaponId != "bare-hands" && !Player.ownedWeapons.Contains(Player.equippedWeaponId))
+                Player.ownedWeapons.Add(Player.equippedWeaponId);
                 {
                     Player.ownedWeapons.Add(Player.equippedWeaponId);
                 }
                 if (Player.equippedArmorId != "none" && !Player.ownedArmors.Contains(Player.equippedArmorId))
+                Player.ownedArmors.Add(Player.equippedArmorId);
                 {
                     Player.ownedArmors.Add(Player.equippedArmorId);
                 }
