@@ -1513,6 +1513,22 @@ test('continuous core fan-in replays immutable results on latest runtime head in
   assert.doesNotMatch(fanIn,/git pull --rebase origin vibe2-unreal-core/);
 });
 
+test('continuous core drops stale fan-in refill wakes but always ingests neuron completion callbacks',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('- name: Drop stale reserve wake before reserve work');
+  const end=workflow.indexOf('- name: Download atomic neuron completion result',start);
+  assert.ok(start>=0&&end>start);
+  const block=workflow.slice(start,end);
+  assert.match(block,/VIBE2_DISPATCH_ACTION: \$\{\{ github\.event\.action \|\| '' \}\}/);
+  assert.match(block,/vibe2-fanin-refill/);
+  assert.match(block,/VIBE2_FANIN_WAKE_STALE_DROPPED/);
+  assert.match(block,/VIBE2_RESERVE_WAKE_EVENT_SHA/);
+  assert.match(block,/VIBE2_RESERVE_WAKE_LATEST_SHA/);
+  assert.match(block,/vibe2-neuron-complete/);
+  assert.match(block,/VIBE2_RESERVE_WAKE_FRESHNESS=NEURON_CALLBACK_ALWAYS_INGEST/);
+  assert.doesNotMatch(block,/BYPASS_NON_MAIN_PUSH/);
+});
+
 test('continuous core keeps pending neuron callbacks light and blocks broken contracts before reserve',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=RESULT_RECORDED_PENDING/);
