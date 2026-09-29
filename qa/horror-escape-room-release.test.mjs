@@ -250,3 +250,80 @@ test('액션 쿨다운과 결과 보상은 서버 시간과 서버 속성을 사
  assert.match(client,/LastRoundWinBonus/);
  assert.match(client,/LastRoundContribution/);
 });
+
+
+test('감염은 자동 접촉이 아니라 서버 에너지 공격으로만 발생한다',()=>{
+ assert.match(config,/INFECT_ATTACK="INFECT_ATTACK"/);
+ assert.match(config,/InfectAttackCost=30/);
+ assert.match(config,/InfectRange=8/);
+ assert.match(server,/local function infectAttack\(p\)/);
+ assert.match(server,/spendEnergy\(p,C\.Energy and C\.Energy\.InfectAttackCost or 30,"INFECT"\)/);
+ assert.match(server,/elseif a==C\.Actions\.INFECT_ATTACK then infectAttack\(p\)/);
+ assert.doesNotMatch(server,/nearestMonsterDistance\(r\.Position\)<=C\.TagDistance/);
+ assert.match(client,/remote:FireServer\(C\.Actions\.INFECT_ATTACK\)/);
+});
+
+test('인간과 몬스터 주요 행동은 같은 에너지 규칙을 사용한다',()=>{
+ for(const marker of ['Max=100','RegenPerSecond=10','PurifyCost=35','DashCost=25','AbilityCost=45'])assert.ok(config.includes(marker),marker);
+ assert.match(server,/spendEnergy\(p,C\.Energy and C\.Energy\.PurifyCost or 35,"PURIFY"\)/);
+ assert.match(server,/spendEnergy\(p,C\.Energy and C\.Energy\.DashCost or 25,"DASH"\)/);
+ assert.match(server,/spendEnergy\(p,C\.Energy and C\.Energy\.AbilityCost or 45,"ABILITY"\)/);
+ assert.match(client,/Name="EnergyTrack"/);
+ assert.match(client,/EnergyLabel/);
+});
+
+test('5대3 6대2 7대1 열세 패시브는 양 진영 공통 에너지 보정만 제공한다',()=>{
+ assert.match(config,/Minority=3,Majority=5,RegenMultiplier=1\.25/);
+ assert.match(config,/Minority=2,Majority=6,RegenMultiplier=1\.50,StationBonus=10/);
+ assert.match(config,/Minority=1,Majority=7,RegenMultiplier=1\.80,StationBonus=20,LastStandEnergy=35/);
+ assert.match(server,/local function pressurePassiveFor\(role,humans,monsters\)/);
+ assert.match(server,/role=="SURVIVOR"and humans or role=="MONSTER"and monsters/);
+ assert.doesNotMatch(config,/PressurePassives=[\s\S]{0,500}(WalkSpeed|Damage|RangeBonus|PurifyRange)/);
+ assert.match(client,/열세 패시브/);
+});
+
+test('기존 단말은 에너지 충전 거점으로 동작하고 탈출 승리 흔적은 제거된다',()=>{
+ assert.match(server,/Name="EnergyPrompt"/);
+ assert.match(server,/StationRecharge/);
+ assert.match(server,/StationCooldown/);
+ assert.match(server,/Name="EnergyCorePrompt"/);
+ assert.match(server,/EnergyCoreState/);
+ assert.doesNotMatch(server,/Name="EscapePrompt"/);
+ assert.doesNotMatch(server,/ActionText="탈출"/);
+});
+
+test('세 맵에는 각자 다른 상호작용 콘텐츠가 있다',()=>{
+ assert.match(server,/SCHOOL_BROADCAST/);
+ assert.match(server,/HOSPITAL_SURGERY_LIGHT/);
+ assert.match(server,/PARK_CAROUSEL_POWER/);
+ assert.match(server,/addEnergyCore/);
+ for(const marker of ['비상 방송실','수술실 전력장치','회전목마 전원','중앙 에너지 코어'])assert.ok(server.includes(marker),marker);
+});
+
+test('코믹 놀람 요소는 로컬 전용이며 경쟁 판정과 분리된다',()=>{
+ assert.match(server,/CompetitiveEffect",false/);
+ for(const marker of ['SCHOOL_HALL_SHADOW','SCHOOL_LOCKER_EYES','SCHOOL_JANITOR','SCHOOL_GYM_BALL','SCHOOL_BOARD_GAG','HOSPITAL_WHEELCHAIR','PARK_CLOWN'])assert.ok(server.includes(marker),marker);
+ assert.match(client,/local function playSurprise\(trigger\)/);
+ assert.match(client,/CanCollide=false/);
+ assert.match(client,/CanTouch=false/);
+ assert.match(client,/CanQuery=false/);
+ assert.doesNotMatch(client,/playSurprise\([\s\S]{0,200}FireServer/);
+});
+
+test('코인 상점은 UI 코스메틱만 구매 장착하며 서버가 가격과 보유를 검증한다',()=>{
+ assert.match(config,/Cosmetics=\{/);
+ assert.match(config,/BUY_COSMETIC="BUY_COSMETIC"/);
+ assert.match(config,/EQUIP_COSMETIC="EQUIP_COSMETIC"/);
+ assert.match(server,/local function buyCosmetic\(p,id\)/);
+ assert.match(server,/local function equipCosmetic\(p,id\)/);
+ assert.match(server,/OwnedCosmetics=ownedCosmeticsList/);
+ assert.match(client,/Name="CosmeticShop"/);
+ assert.doesNotMatch(config,/Cosmetics=[\s\S]{0,900}(WalkSpeed|Damage|PurifyRangeBonus|DashPowerBonus|AbilityCooldown)/);
+});
+
+test('중도 입장과 이탈은 다음 라운드 관전 및 AI 보충으로 복구한다',()=>{
+ assert.match(server,/RoundState","SPECTATING"/);
+ assert.match(server,/bot\(leavingRole,leavingPos\)/);
+ assert.match(client,/Name="SpectatorNotice"/);
+ assert.match(client,/다음 라운드부터 참가/);
+});
