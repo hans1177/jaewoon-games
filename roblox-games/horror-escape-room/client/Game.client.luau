@@ -1481,7 +1481,16 @@ local function playResultCeremony(resultCode)
  local palette=winner=="SURVIVOR"and Color3.fromRGB(88,165,195)or winner=="MONSTER"and Color3.fromRGB(166,64,82)or Color3.fromRGB(112,117,130)
  local headColor=winner=="MONSTER"and Color3.fromRGB(92,72,82)or Color3.fromRGB(210,184,158)
  local lines=winner=="SURVIVOR"and humanCeremonyLines or winner=="MONSTER"and monsterCeremonyLines or drawCeremonyLines
- ceremonyJoke.Text=lines[(ceremonySerial-1)%#lines+1]
+ local mapId=tostring(workspace:GetAttribute("CurrentMapId")or"")
+ local mapJoke=nil
+ if mapId=="SCHOOL"then
+  mapJoke=winner=="SURVIVOR"and"야자 탈출 성공. 담임은 아직 출석 체크 중."or winner=="MONSTER"and"종례 알림: 전원 감염 완료."or"종례가 끝났는데 아무도 집에 못 갔다."
+ elseif mapId=="HOSPITAL"then
+  mapJoke=winner=="SURVIVOR"and"퇴원 수속 완료. 진료비는 코인으로 받습니다."or winner=="MONSTER"and"진료 결과: 감염 확정. 재검은 없습니다."or"의사도 환자도 같이 지쳐서 진료 중단."
+ elseif mapId=="THEME_PARK"then
+  mapJoke=winner=="SURVIVOR"and"폐장 전 탈출 성공. 기념품은 살아남은 기억."or winner=="MONSTER"and"오늘의 마지막 손님까지 감염 완료."or"놀이공원 폐장. 승부도 같이 폐장."
+ end
+ ceremonyJoke.Text=mapJoke or lines[(ceremonySerial-1)%#lines+1]
 
  for i,row in ipairs(ceremonyFigures)do
   row.body.BackgroundColor3=palette
