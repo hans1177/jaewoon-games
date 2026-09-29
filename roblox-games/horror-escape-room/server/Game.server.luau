@@ -162,6 +162,7 @@ local function load(p)
  p:SetAttribute("LastRoundReward",0);p:SetAttribute("LastRoundWinner","");p:SetAttribute("LastRoundRole","")
  p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0);p:SetAttribute("RoundContributionCoins",0)
  p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+ p:SetAttribute("RoundParticipant",false);p:SetAttribute("RoundTeam","")
  p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"맵 준비")
@@ -884,7 +885,9 @@ local function teleport(p,pos)
  end
 end
 local function setRole(p,r)
- p:SetAttribute("Role",r);p:SetAttribute("Frozen",false);restoreMovement(p,r=="MONSTER"and 19 or 16);applyRoleVisual(p,r)
+ p:SetAttribute("Role",r);p:SetAttribute("Frozen",false)
+ if r=="MONSTER"or r=="SURVIVOR"then p:SetAttribute("RoundTeam",r)end
+ restoreMovement(p,r=="MONSTER"and 19 or 16);applyRoleVisual(p,r)
  tagGraceUntil[p]=os.clock()+6
 end
 local function active()
@@ -980,6 +983,7 @@ local function startRound()
   p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0);p:SetAttribute("RoundScore",0)
   p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
   p:SetAttribute("RoundContributionCoins",0);p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0)
+  p:SetAttribute("RoundParticipant",true)
   local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
   if role=="MONSTER"then teleport(p,monsterSpawn+Vector3.new((mi-1)*6,0,0));mi+=1 else teleport(p,survivorSpawns[((si-1)%#survivorSpawns)+1]);si+=1 end
  end
@@ -988,17 +992,19 @@ end
 local function endRound(winner)
  if state~="RUNNING"then return end;state="RESULT";syncLobbyState("RESULT")
  for _,p in ipairs(Players:GetPlayers())do
-  local role=p:GetAttribute("Role");local m=role=="MONSTER";local win=(winner=="MONSTER"and m)or(winner=="SURVIVOR"and role=="SURVIVOR")
-  local activeRole=role=="MONSTER"or role=="SURVIVOR"
-  local baseReward=activeRole and((C.Reward and C.Reward.ParticipationCoins)or 12)or 0
-  local winBonus=activeRole and win and winner~="DRAW"and((C.Reward and C.Reward.WinBonusCoins)or 18)or 0
-  local contribution=activeRole and math.min((C.Reward and C.Reward.ContributionCapCoins)or 12,tonumber(p:GetAttribute("RoundContributionCoins"))or 0)or 0
+  local role=p:GetAttribute("Role");local team=p:GetAttribute("RoundTeam")or role
+  local participated=p:GetAttribute("RoundParticipant")==true
+  local m=team=="MONSTER";local win=(winner=="MONSTER"and m)or(winner=="SURVIVOR"and team=="SURVIVOR")
+  local baseReward=participated and((C.Reward and C.Reward.ParticipationCoins)or 12)or 0
+  local winBonus=participated and win and winner~="DRAW"and((C.Reward and C.Reward.WinBonusCoins)or 18)or 0
+  local contribution=participated and math.min((C.Reward and C.Reward.ContributionCapCoins)or 12,tonumber(p:GetAttribute("RoundContributionCoins"))or 0)or 0
   local reward=baseReward+winBonus+contribution
   p:SetAttribute("Coins",(p:GetAttribute("Coins")or 0)+reward)
   p:SetAttribute("RoundScore",win and 1 or 0)
-  p:SetAttribute("LastRoundReward",reward);p:SetAttribute("LastRoundWinner",winner);p:SetAttribute("LastRoundRole",role)
+  p:SetAttribute("LastRoundReward",reward);p:SetAttribute("LastRoundWinner",winner);p:SetAttribute("LastRoundRole",team)
   p:SetAttribute("LastRoundBaseReward",baseReward);p:SetAttribute("LastRoundWinBonus",winBonus);p:SetAttribute("LastRoundContribution",contribution)
   p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+  p:SetAttribute("RoundParticipant",false)
   if m then p:SetAttribute("MonsterXP",(p:GetAttribute("MonsterXP")or 0)+(win and 40 or 18));p:SetAttribute("RoundsSinceMonster",0)
   elseif role=="SURVIVOR"then p:SetAttribute("RoundsSinceMonster",(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
   p:SetAttribute("RoundState","RESULT_"..winner);p:SetAttribute("FeedbackEvent","RESULT:"..winner..":"..tostring(math.floor(os.clock()*1000)));p:SetAttribute("Frozen",false);p:SetAttribute("Escaped",false);p:SetAttribute("LobbySelectionConfirmed",false);speed(p,16)
