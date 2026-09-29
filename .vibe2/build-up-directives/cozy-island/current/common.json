@@ -176,7 +176,7 @@
     "failureStage": "",
     "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
@@ -1134,5 +1134,16 @@
       "REPLAYABILITY_VARIATION"
     ]
   },
-  "generatedAt": "2026-09-25T21:51:20.606Z"
+  "generatedAt": "2026-09-25T21:51:20.606Z",
+  "nextActionDecision": {
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
+  },
+  "effectivenessMeasurement": {
+    "previousGeneration": {
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure",
+      "runtimeObserved": true
+    }
+  }
 }
