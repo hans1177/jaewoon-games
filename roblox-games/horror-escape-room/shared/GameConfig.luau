@@ -78,6 +78,7 @@ local Config={
  },
  GhostProgression={
   MaxStage=3,
+  MaxSightingsPerRound=2,
   DuplicateFragmentReward=1,
   FragmentsPerContract=24,
   FullCatalogContractBonus=1,
