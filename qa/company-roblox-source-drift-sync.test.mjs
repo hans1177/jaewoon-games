@@ -350,3 +350,13 @@ test('one-click F0 restart workflow dispatches only canonical source sync with f
 test('parallel horror-only private deploy workflow is removed so canonical publish has one authority',()=>{
   assert.equal(fs.existsSync('.github/workflows/horror-escape-room-private-deploy.yml'),false);
 });
+
+
+test('source-sync implementation edits do not wake a batch runtime',()=>{
+  const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.doesNotMatch(runtime,/company-roblox-source-drift-sync\.yml/);
+  assert.doesNotMatch(runtime,/tools\/company-roblox-source-drift-sync\.mjs/);
+  assert.doesNotMatch(runtime,/qa\/company-roblox-source-drift-sync\.test\.mjs/);
+  assert.match(runtime,/company-development-roblox-runtime\.yml/);
+  assert.match(runtime,/company-development-roblox-headless-fast-mvp\.yml/);
+});
