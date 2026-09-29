@@ -255,6 +255,7 @@ function localStudioActualPlayContractMetadata(repoRoot='',gameId=''){
     version:Number(contract.version||0),
     fingerprint:'sha256:'+stableSha256(contract),
     adaptiveCoverage:true,
+    multiplayerRequired:contract?.adaptiveCoverage?.signals?.multiplayer===true,
     featureCount:Number(contract?.adaptiveCoverage?.featureCount||0)
   };
 }
@@ -407,7 +408,12 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       ||/FINAL_REVIEW|RELEASE|F9/i.test(clean(item?.currentStep))
     )?'F9_SOAK':'FAST_DEEP';
     const priorAuditProfile=clean(prior?.runtimeSummary?.commercialAudit?.auditProfile||prior?.auditProfile||'FAST_DEEP').toUpperCase();
-    const auditProfileEvidenceExact=priorAuditProfile===requiredAuditProfile;
+    const priorMultiplayer=prior?.runtimeSummary?.commercialAudit?.multiplayer;
+    const multiplayerEvidenceExact=requiredAuditProfile!=='F9_SOAK'||scenarioContract.multiplayerRequired!==true||(
+      priorMultiplayer?.version===2&&priorMultiplayer?.pass===true&&priorMultiplayer?.bothClientsStatePass===true
+      &&priorMultiplayer?.survivorStatePass===true&&priorMultiplayer?.replacementJoinPass===true
+    );
+    const auditProfileEvidenceExact=priorAuditProfile===requiredAuditProfile&&multiplayerEvidenceExact;
     const scenarioEvidenceExact=Boolean(
       scenarioContract.required!==true
       ||(
@@ -1844,13 +1850,48 @@ function mcpCommandArgs(command=''){
 export async function runStudioMultiplayerAudit(client,studioId,contract={}){
   const tool=client.tool('execute_luau');
   const contractHash=clean(contract?.adaptiveCoverage?.contractHash).replace(/[^a-zA-Z0-9_-]/g,'').slice(-24);
-  const token='VIBE2_F9_MULTIPLAYER_'+(contractHash||'AUDIT');
+  const token='VIBE2_F9_MULTIPLAYER_'+(contractHash||'AUDIT')+'_'+crypto.randomUUID();
+  let auditPhase='initial';
+  const probeName='__VibeMultiplayerAudit';
   const callJson=async(context,marker,code)=>{
     const result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},studioId,code,context));
     const parsed=parseStudioActualPlayProbe(result,marker);
     if(!parsed)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_PROBE_PARSE_EMPTY:'+marker+':'+context);
     return parsed;
   };
+  // Read existing replicated state; the temporary probe never changes game attributes.
+  const snapshotSource=[
+    'local rows={}',
+    'for _,p in ipairs(Players:GetPlayers()) do',
+    ' local state={}',
+    ' for _,key in ipairs({"RoundState","Role","CurrentMap","SharedObjective","RoundScore","Score","Coins","Level","Progress","Health","Wave","Objective"}) do',
+    '  local value=p:GetAttribute(key); if type(value)=="string" or type(value)=="number" or type(value)=="boolean" then state[key]=value end',
+    ' end',
+    ' if p.Team then state.Team=p.Team.Name end',
+    ' table.insert(rows,{name=p.Name,userId=p.UserId,state=state})',
+    'end',
+    'table.sort(rows,function(a,b) return a.userId<b.userId end)'
+  ].join('\n');
+  const clientSource=[
+    'local Players=game:GetService("Players")',
+    'local remote=game:GetService("ReplicatedStorage"):WaitForChild('+JSON.stringify(probeName)+',15)',
+    'if not remote then return end',
+    'while remote.Parent do',
+    snapshotSource,
+    ' remote:FireServer(remote:GetAttribute("Challenge"),rows)',
+    ' task.wait(0.25)',
+    'end'
+  ].join('\n');
+  const receiptSource=[
+    'local HttpService=game:GetService("HttpService")',
+    'local remote=game:GetService("ReplicatedStorage"):WaitForChild('+JSON.stringify(probeName)+',15)',
+    'if not remote then return end',
+    'remote.OnServerEvent:Connect(function(player,challenge,rows)',
+    ' if type(challenge)~="string" or challenge~=remote:GetAttribute("Challenge") or type(rows)~="table" or #rows>8 then return end',
+    ' local ok,text=pcall(function() return HttpService:JSONEncode({observerUserId=player.UserId,challenge=challenge,players=rows}) end)',
+    ' if ok and #text<32768 then remote:SetAttribute(tostring(player.UserId),text) end',
+    'end)'
+  ].join('\n');
   const serverProbeSource=()=>{
     const marker='ROBLOX_STUDIO_MULTIPLAYER_SERVER=';
     return{
@@ -1860,13 +1901,21 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
         'local Players=game:GetService("Players")',
         'local ReplicatedStorage=game:GetService("ReplicatedStorage")',
         'local StudioTestService=game:GetService("StudioTestService")',
-        'local rows={}',
-        'for _,p in ipairs(Players:GetPlayers()) do table.insert(rows,{name=p.Name,userId=p.UserId,roundState=tostring(p:GetAttribute("RoundState") or ""),role=tostring(p:GetAttribute("Role") or ""),team=p.Team and p.Team.Name or "",currentMap=tostring(p:GetAttribute("CurrentMap") or "")}) end',
-        'table.sort(rows,function(a,b) return tostring(a.name)<tostring(b.name) end)',
+        snapshotSource,
         'local remoteCount=0',
-        'for _,d in ipairs(ReplicatedStorage:GetDescendants()) do if d:IsA("RemoteEvent") or d:IsA("RemoteFunction") then remoteCount=remoteCount+1 end end',
+        'for _,d in ipairs(ReplicatedStorage:GetDescendants()) do if d.Name~='+JSON.stringify(probeName)+' and (d:IsA("RemoteEvent") or d:IsA("RemoteFunction")) then remoteCount=remoteCount+1 end end',
         'local argsOk,args=pcall(function() return StudioTestService:GetTestArgs() end)',
-        'local payload={count=#rows,players=rows,remoteCount=remoteCount,testArgs=argsOk and tostring(args) or "",testArgsReadable=argsOk}',
+        'local challenge='+JSON.stringify(token+':'+auditPhase),
+        'local probe=ReplicatedStorage:FindFirstChild('+JSON.stringify(probeName)+')',
+        'local receipts={}',
+        'if probe then',
+        ' probe:SetAttribute("Challenge",challenge)',
+        ' for _,p in ipairs(Players:GetPlayers()) do',
+        '  local raw=probe:GetAttribute(tostring(p.UserId))',
+        '  if type(raw)=="string" then local ok,row=pcall(function() return HttpService:JSONDecode(raw) end); if ok and row.challenge==challenge and row.observerUserId==p.UserId then table.insert(receipts,row) end end',
+        ' end',
+        'end',
+        'local payload={count=#rows,players=rows,receipts=receipts,remoteCount=remoteCount,testArgs=argsOk and tostring(args) or "",testArgsReadable=argsOk}',
         'return "'+marker+'"..HttpService:JSONEncode(payload)'
       ].join('\n')
     };
@@ -1879,14 +1928,33 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
         'local HttpService=game:GetService("HttpService")',
         'local Players=game:GetService("Players")',
         'local ReplicatedStorage=game:GetService("ReplicatedStorage")',
-        'local rows={}',
-        'for _,p in ipairs(Players:GetPlayers()) do table.insert(rows,{name=p.Name,userId=p.UserId,roundState=tostring(p:GetAttribute("RoundState") or ""),role=tostring(p:GetAttribute("Role") or ""),team=p.Team and p.Team.Name or "",currentMap=tostring(p:GetAttribute("CurrentMap") or "")}) end',
-        'table.sort(rows,function(a,b) return tostring(a.name)<tostring(b.name) end)',
+        snapshotSource,
         'local remoteCount=0',
-        'for _,d in ipairs(ReplicatedStorage:GetDescendants()) do if d:IsA("RemoteEvent") or d:IsA("RemoteFunction") then remoteCount=remoteCount+1 end end',
+        'for _,d in ipairs(ReplicatedStorage:GetDescendants()) do if d.Name~='+JSON.stringify(probeName)+' and (d:IsA("RemoteEvent") or d:IsA("RemoteFunction")) then remoteCount=remoteCount+1 end end',
         'return "'+marker+'"..HttpService:JSONEncode({count=#rows,players=rows,remoteCount=remoteCount})'
       ].join('\n')
     };
+  };
+  const synchronized=(row,expectedCount)=>{
+    const players=entityRows(row?.players),receipts=entityRows(row?.receipts);
+    if(row?.testArgs!==token||row?.testArgsReadable!==true||row?.count!==expectedCount||players.length!==expectedCount||Number(row?.remoteCount||0)<1)return false;
+    const ids=new Set(players.map(p=>p.userId));
+    if(ids.size!==expectedCount||players.some(p=>!Number.isInteger(p.userId)||!clean(p.name)))return false;
+    if(!players.some(p=>Object.keys(p.state||{}).length>0))return false;
+    const observers=new Set();
+    for(const receipt of receipts){
+      if(!ids.has(receipt.observerUserId)||observers.has(receipt.observerUserId)||receipt.challenge!==token+':'+auditPhase)return false;
+      const peers=entityRows(receipt.players);
+      if(peers.length!==expectedCount||new Set(peers.map(p=>p.userId)).size!==expectedCount)return false;
+      for(const server of players){
+        const peer=peers.find(p=>p.userId===server.userId);
+        if(!peer||peer.name!==server.name)return false;
+        const state=server.state||{},observed=peer.state||{};
+        if(Object.keys(state).length!==Object.keys(observed).length||Object.keys(state).some(key=>state[key]!==observed[key]))return false;
+      }
+      observers.add(receipt.observerUserId);
+    }
+    return observers.size===expectedCount;
   };
   const poll=async(context,sourceFactory,predicate,attempts=18)=>{
     let last=null,lastError=null;
@@ -1903,12 +1971,14 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
     return null;
   };
   const summary={
-    pass:false,infrastructureFailure:false,error:null,
+    version:2,sessionHash:hash(token),pass:false,infrastructureFailure:false,error:null,
     initialServerCount:0,lateServerCount:0,clientPlayerCount:0,leaveServerCount:0,
     lateJoinPass:false,clientRosterPass:false,remoteSurfacePass:false,leavePass:false,
+    bothClientsStatePass:false,survivorStatePass:false,replacementJoinPass:false,
+    verificationScope:'STUDIO_REPLICATED_STATE_AND_PLAYER_LIFECYCLE',sameUserRejoinVerified:false,
     serverPlayers:[],clientPlayers:[]
   };
-  let launched=false;
+  let launched=false,probeInstalled=false;
   try{
     const startMarker='ROBLOX_STUDIO_MULTIPLAYER_START=';
     const startCode=[
@@ -1917,6 +1987,11 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
       'if not okService or not StudioTestService then return "'+startMarker+'"..HttpService:JSONEncode({started=false,error="STUDIO_TEST_SERVICE_UNAVAILABLE"}) end',
       'local editOk,editActive=pcall(function() return StudioTestService.EditModeActive end)',
       'if editOk and editActive~=true then return "'+startMarker+'"..HttpService:JSONEncode({started=false,error="EDIT_MODE_NOT_ACTIVE"}) end',
+      'local containers={game:GetService("ReplicatedStorage"),game:GetService("ServerScriptService"),game:GetService("StarterPlayer").StarterPlayerScripts}',
+      'for _,container in ipairs(containers) do if container:FindFirstChild('+JSON.stringify(probeName)+') then return "'+startMarker+'"..HttpService:JSONEncode({started=false,error="AUDIT_PROBE_NAME_COLLISION"}) end end',
+      'local probe=Instance.new("RemoteEvent"); probe.Name='+JSON.stringify(probeName)+'; probe.Parent=containers[1]',
+      'local receiver=Instance.new("Script"); receiver.Name='+JSON.stringify(probeName)+'; receiver.Source='+JSON.stringify(receiptSource)+'; receiver.Parent=containers[2]',
+      'local observer=Instance.new("LocalScript"); observer.Name='+JSON.stringify(probeName)+'; observer.Source='+JSON.stringify(clientSource)+'; observer.Parent=containers[3]',
       'local token='+JSON.stringify(token),
       'task.spawn(function()',
       ' local ok,result=pcall(function() return StudioTestService:ExecuteMultiplayerTestAsync(1,token) end)',
@@ -1927,11 +2002,12 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
     const start=await callJson('Edit',startMarker,startCode);
     if(start?.started!==true)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_START_FAILED:'+clean(start?.error||'UNKNOWN'));
     launched=true;
+    probeInstalled=true;
 
-    const initial=await poll('Server',serverProbeSource,row=>Number(row?.count||0)>=1);
+    const initial=await poll('Server',serverProbeSource,row=>row?.count===1&&row?.testArgs===token&&row?.testArgsReadable===true);
     summary.initialServerCount=Number(initial?.count||0);
     summary.serverPlayers=entityRows(initial?.players);
-    if(summary.initialServerCount<1)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_INITIAL_SERVER_NOT_READY');
+    if(summary.initialServerCount!==1||initial?.testArgs!==token||initial?.testArgsReadable!==true)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_INITIAL_SERVER_NOT_READY');
 
     const addMarker='ROBLOX_STUDIO_MULTIPLAYER_ADD=';
     const addCode=[
@@ -1943,10 +2019,13 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
     const added=await callJson('Server',addMarker,addCode);
     if(added?.ok!==true)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_ADD_FAILED:'+clean(added?.error||'UNKNOWN'));
 
-    const late=await poll('Server',serverProbeSource,row=>Number(row?.count||0)>=2);
+    auditPhase='late';
+    const late=await poll('Server',serverProbeSource,row=>synchronized(row,2));
     summary.lateServerCount=Number(late?.count||0);
     summary.serverPlayers=entityRows(late?.players);
-    summary.lateJoinPass=summary.lateServerCount>=2;
+    summary.lateJoinPass=summary.lateServerCount===2&&entityRows(initial?.players).every(p=>summary.serverPlayers.some(peer=>peer.userId===p.userId));
+    summary.bothClientsStatePass=synchronized(late,2);
+    if(!summary.bothClientsStatePass)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_BOTH_CLIENT_STATE_MISMATCH');
     if(!summary.lateJoinPass)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_LATE_JOIN_NOT_OBSERVED');
 
     const replicated=await poll('Client',clientProbeSource,row=>Number(row?.count||0)>=2);
@@ -1983,14 +2062,26 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
       'local HttpService=game:GetService("HttpService")',
       'local StudioTestService=game:GetService("StudioTestService")',
       'task.delay(0.15,function() pcall(function() StudioTestService:LeaveTest() end) end)',
-      'return "'+leaveMarker+'"..HttpService:JSONEncode({ok=true})'
+      'return "'+leaveMarker+'"..HttpService:JSONEncode({ok=true,userId=game:GetService("Players").LocalPlayer.UserId})'
     ].join('\n');
     const leave=await callJson('Client',leaveMarker,leaveCode);
     if(leave?.ok!==true)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_CLIENT_LEAVE_DISPATCH_FAILED');
 
-    const afterLeave=await poll('Server',serverProbeSource,row=>Number(row?.count||0)<summary.lateServerCount);
+    auditPhase='leave';
+    const afterLeave=await poll('Server',serverProbeSource,row=>synchronized(row,1));
     summary.leaveServerCount=Number(afterLeave?.count||0);
-    summary.leavePass=summary.leaveServerCount<summary.lateServerCount;
+    const survivor=entityRows(afterLeave?.players)[0];
+    summary.leavePass=summary.leaveServerCount===1&&summary.serverPlayers.some(p=>p.userId===leave.userId)
+      &&summary.serverPlayers.some(p=>p.userId===survivor?.userId)&&survivor?.userId!==leave.userId;
+    summary.survivorStatePass=synchronized(afterLeave,1);
+    if(!summary.leavePass||!summary.survivorStatePass)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_SURVIVOR_STATE_MISMATCH');
+
+    const replacement=await callJson('Server',addMarker,addCode);
+    if(replacement?.ok!==true)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_ADD_FAILED:REPLACEMENT');
+    auditPhase='replacement';
+    const recovered=await poll('Server',serverProbeSource,row=>synchronized(row,2));
+    summary.replacementJoinPass=synchronized(recovered,2)&&entityRows(recovered?.players).some(p=>p.userId===survivor.userId);
+    if(!summary.replacementJoinPass)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_REPLACEMENT_STATE_MISMATCH');
 
     const endMarker='ROBLOX_STUDIO_MULTIPLAYER_END=';
     const endCode=[
@@ -2003,13 +2094,12 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
     await wait(500);
     launched=false;
 
-    summary.pass=summary.lateJoinPass&&summary.clientPlayerCount>=2&&summary.clientRosterPass&&summary.remoteSurfacePass&&summary.leavePass;
-    console.log('ROBLOX_STUDIO_MULTIPLAYER_AUDIT_RESULT='+JSON.stringify(summary));
+    summary.pass=summary.lateJoinPass&&summary.clientPlayerCount>=2&&summary.clientRosterPass&&summary.remoteSurfacePass&&summary.leavePass&&summary.bothClientsStatePass&&summary.survivorStatePass&&summary.replacementJoinPass;
     return summary;
   }catch(error){
     summary.pass=false;
-    summary.infrastructureFailure=true;
     summary.error=clean(error?.message||error)||'UNKNOWN';
+    summary.infrastructureFailure=!/STATE_MISMATCH|CLIENT_REPLICATION_NOT_OBSERVED/.test(summary.error);
     if(launched){
       let ended=false;
       try{
@@ -2031,8 +2121,22 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
       }
       await wait(300);
     }
-    console.log('ROBLOX_STUDIO_MULTIPLAYER_AUDIT_RESULT='+JSON.stringify(summary));
     return summary;
+  }finally{
+    if(probeInstalled){
+      try{
+        await callJson('Edit','ROBLOX_STUDIO_MULTIPLAYER_CLEANUP=',[
+          'local HttpService=game:GetService("HttpService")',
+          'for _,container in ipairs({game:GetService("ReplicatedStorage"),game:GetService("ServerScriptService"),game:GetService("StarterPlayer").StarterPlayerScripts}) do local probe=container:FindFirstChild('+JSON.stringify(probeName)+'); if probe then probe:Destroy() end end',
+          'return "ROBLOX_STUDIO_MULTIPLAYER_CLEANUP="..HttpService:JSONEncode({ok=true})'
+        ].join('\n'));
+      }catch{
+        summary.pass=false;
+        summary.infrastructureFailure=true;
+        summary.error='ROBLOX_STUDIO_MULTIPLAYER_CLEANUP_FAILED';
+      }
+    }
+    console.log('ROBLOX_STUDIO_MULTIPLAYER_AUDIT_RESULT='+JSON.stringify(summary));
   }
 }
 
@@ -3101,6 +3205,16 @@ export function createLocalStudioPlayEvidence({
           uiCommercial:runtime?.metrics?.uiCommercial&&typeof runtime.metrics.uiCommercial==='object'?runtime.metrics.uiCommercial:{},
           surfaces:runtime?.metrics?.surfaces&&typeof runtime.metrics.surfaces==='object'?runtime.metrics.surfaces:{},
           performance:runtime?.metrics?.performance&&typeof runtime.metrics.performance==='object'?runtime.metrics.performance:{},
+          multiplayer:runtime?.multiplayerAuditSummary?{
+            version:Number(runtime.multiplayerAuditSummary.version||0),
+            sessionHash:clean(runtime.multiplayerAuditSummary.sessionHash),
+            pass:runtime.multiplayerAuditSummary.pass===true,
+            bothClientsStatePass:runtime.multiplayerAuditSummary.bothClientsStatePass===true,
+            survivorStatePass:runtime.multiplayerAuditSummary.survivorStatePass===true,
+            replacementJoinPass:runtime.multiplayerAuditSummary.replacementJoinPass===true,
+            verificationScope:clean(runtime.multiplayerAuditSummary.verificationScope),
+            sameUserRejoinVerified:false
+          }:null,
           saveRejoin:runtime?.saveRejoinSummary&&typeof runtime.saveRejoinSummary==='object'?{
             restartOk:runtime.saveRejoinSummary.restartOk===true,
             progressionObserved:runtime.saveRejoinSummary.progressionObserved===true,
