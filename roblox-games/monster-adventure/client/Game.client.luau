@@ -237,7 +237,7 @@ local function playVerifiedLearningActionFeedback(control)
     task.delay(0.24, function()
       if impactAttachment then impactAttachment:Destroy() end
       if impactLight then impactLight:Destroy() end
-      if sparkles then sparkles:Destroy() end
+verifiedLearningRoot:SetAttribute("VerifiedExternalLearningGame", "no_think")
       if highlight then highlight:Destroy() end
     end)
   end
