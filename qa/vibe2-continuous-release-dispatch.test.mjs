@@ -13,6 +13,31 @@ function count(needle){
   return workflow.split(needle).length-1;
 }
 
+test('Roblox inspection admits buildable source inputs before package creation and rejects invalid inputs',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-prepackage-'));
+  try{
+    const start=releaseWorkflow.indexOf('          if [ "$decision" = \'roblox\' ]; then');
+    const end=releaseWorkflow.indexOf('\n          fi',start);
+    assert.ok(start>0&&end>start);
+    const script=releaseWorkflow.slice(start,end)+'\nfi';
+    const source=path.join(root,'source');fs.mkdirSync(source);
+    const output=path.join(root,'output');
+    const run=()=>{fs.writeFileSync(output,'');execFileSync('bash',['-e','-c',`reject() { echo "$1" >> "$GITHUB_OUTPUT"; exit 0; }\n${script}`],{cwd:root,env:{...process.env,decision:'roblox',source_root:source,GITHUB_OUTPUT:output},stdio:'pipe'});return fs.readFileSync(output,'utf8').trim();};
+    assert.equal(run(),'roblox-project-input-invalid');
+    fs.writeFileSync(path.join(source,'default.project.json'),JSON.stringify({name:'demo',tree:{$className:'DataModel'}}));
+    assert.equal(run(),'roblox-source-input-missing');
+    fs.writeFileSync(path.join(source,'Game.server.luau'),'print("source awaits build")\n');
+    assert.equal(run(),'');
+    assert.equal(fs.existsSync(path.join(source,'roblox-technical-validation.json')),false);
+    fs.writeFileSync(path.join(source,'default.project.json'),'{broken');
+    assert.equal(run(),'roblox-project-input-invalid');
+    const packageStage=releaseWorkflow.slice(releaseWorkflow.indexOf('  roblox-package:'),releaseWorkflow.indexOf('  roblox-studio:'));
+    assert.match(packageStage,/build\.buildOrPackagePassed!==true/);
+    assert.match(packageStage,/luau-compile "\$file"/);
+    assert.match(packageStage,/candidate preflight identity mismatch/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('shallow candidate inspection fetches the exact base and still detects out-of-bound changes',()=>{
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'candidate-shallow-'));
   const upstream=path.join(temp,'upstream');
