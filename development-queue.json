@@ -2945,22 +2945,22 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "REPAIR_REQUIRED",
-      "canonicalState": "REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-29T23:06:19.517Z",
-      "robloxSourceCommit": "2a69315d023356f35441995dd3c8a9cdf8839fee",
-      "robloxSourceBootstrapPassedAt": "2026-09-29T22:39:46.439Z",
+      "updatedAt": "2026-09-29T23:36:29.650Z",
+      "robloxSourceCommit": "5ba5e483942790731e57f9592bdcb11141659224",
+      "robloxSourceBootstrapPassedAt": "2026-09-29T23:36:29.650Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": true,
-      "robloxBuildSourceRevision": "2a69315d023356f35441995dd3c8a9cdf8839fee",
-      "robloxBuildArtifactIdentity": "sha256:a624f955895a9e4fc2fba71206699c94513d01768c6ca77aba99ff037ed72049",
-      "robloxBuildPassedAt": "2026-09-29T22:42:03.464Z",
+      "robloxBuildOrPackagePassed": false,
+      "robloxBuildSourceRevision": null,
+      "robloxBuildArtifactIdentity": null,
+      "robloxBuildPassedAt": null,
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-09-29T22:42:03.464Z",
+      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassedAt": null,
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
@@ -3075,7 +3075,7 @@
         "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
-      "robloxHeadlessFastMvpPassed": true,
+      "robloxHeadlessFastMvpPassed": false,
       "robloxHeadlessFastMvpEvidence": {
         "version": 3,
         "gameId": "horror-escape-room",
@@ -3180,11 +3180,11 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxLastSuccessfulStage": "F0_SOURCE_PREFLIGHT",
-      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-studio-mcp-play-repair-required"
+        "roblox-build-package-revalidation-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -3195,7 +3195,7 @@
         "capturedAt": "2026-09-25T07:09:56.124Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxSharedTargetCurrent": true,
       "robloxFastMvpSupersededBy": null,
       "robloxPublicationTarget": {
@@ -4640,8 +4640,8 @@
       "robloxHeadlessPassedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
         "previousSourceRevision": "2a69315d023356f35441995dd3c8a9cdf8839fee",
-        "newSourceRevision": "2a69315d023356f35441995dd3c8a9cdf8839fee",
-        "invalidatedAt": "2026-09-29T22:39:46.439Z"
+        "newSourceRevision": "5ba5e483942790731e57f9592bdcb11141659224",
+        "invalidatedAt": "2026-09-29T23:36:29.650Z"
       },
       "robloxMetadataOnlySourceRecoveryEvidence": {
         "version": 1,
@@ -28910,7 +28910,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-29T23:18:28.078Z",
+  "updatedAt": "2026-09-29T23:36:29.650Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
