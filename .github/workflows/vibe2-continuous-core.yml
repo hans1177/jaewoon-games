@@ -120,26 +120,40 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Drop stale main-push wake before reserve work
+      - name: Drop stale reserve wake before reserve work
         id: main_wake
         env:
           GH_TOKEN: ${{ github.token }}
+          VIBE2_DISPATCH_ACTION: ${{ github.event.action || '' }}
         shell: bash
         run: |
           set -euo pipefail
           proceed=true
+          freshness_required=false
           if [[ "${GITHUB_EVENT_NAME:-}" == 'push' && "${GITHUB_REF_NAME:-}" == 'main' ]]; then
+            freshness_required=true
+          elif [[ "${GITHUB_EVENT_NAME:-}" == 'repository_dispatch' && "${VIBE2_DISPATCH_ACTION:-}" == 'vibe2-fanin-refill' ]]; then
+            freshness_required=true
+          fi
+
+          if [ "$freshness_required" = true ]; then
             latest_main="$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq '.sha')"
-            echo "VIBE2_MAIN_PUSH_WAKE_EVENT_SHA=$GITHUB_SHA"
-            echo "VIBE2_MAIN_PUSH_WAKE_LATEST_SHA=$latest_main"
+            echo "VIBE2_RESERVE_WAKE_EVENT_SHA=$GITHUB_SHA"
+            echo "VIBE2_RESERVE_WAKE_LATEST_SHA=$latest_main"
             if [[ "$GITHUB_SHA" != "$latest_main" ]]; then
               proceed=false
-              echo "VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED=$GITHUB_SHA:$latest_main"
+              if [[ "${GITHUB_EVENT_NAME:-}" == 'repository_dispatch' ]]; then
+                echo "VIBE2_FANIN_WAKE_STALE_DROPPED=$GITHUB_SHA:$latest_main"
+              else
+                echo "VIBE2_MAIN_PUSH_WAKE_STALE_DROPPED=$GITHUB_SHA:$latest_main"
+              fi
             else
-              echo "VIBE2_MAIN_PUSH_WAKE_FRESH=$GITHUB_SHA"
+              echo "VIBE2_RESERVE_WAKE_FRESH=$GITHUB_SHA"
             fi
+          elif [[ "${GITHUB_EVENT_NAME:-}" == 'repository_dispatch' && "${VIBE2_DISPATCH_ACTION:-}" == 'vibe2-neuron-complete' ]]; then
+            echo "VIBE2_RESERVE_WAKE_FRESHNESS=NEURON_CALLBACK_ALWAYS_INGEST"
           else
-            echo "VIBE2_MAIN_PUSH_WAKE_FRESHNESS=BYPASS_NON_MAIN_PUSH"
+            echo "VIBE2_RESERVE_WAKE_FRESHNESS=BYPASS_NON_RESERVE_WAKE"
           fi
           echo "proceed=$proceed" >> "$GITHUB_OUTPUT"
 
