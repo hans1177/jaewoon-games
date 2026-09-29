@@ -4408,3 +4408,17 @@ test('local model output limit triggers bounded adaptive retry without external 
   assert.equal(result.generation.maxPredict,768);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
+
+
+test('Luau focused retry uses a body statement instead of an incomplete function declaration',()=>{
+  const prompt=['Engine: roblox','Goal: repair rendering','Allowed edit paths: client/Game.client.luau',
+    '=== FILE client/Game.client.luau [EDITABLE] ===','local function render()',
+    '  status.Text = "ready"','end'].join('\n');
+  const anchors=exactRetryAnchorSuggestions(prompt,{max:5,responsibleFiles:['client/Game.client.luau']});
+  assert.ok(anchors.includes('  status.Text = "ready"'));
+  assert.ok(!anchors.includes('local function render()'));
+  const focused=buildFocusedReplaceOnlyPrompt(prompt,{error:new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:FUNCTION_HEADER_PREMATURE_END:client/Game.client.luau'),responsibleFiles:['client/Game.client.luau']});
+  assert.equal(focused.spec.find,'  status.Text = "ready"');
+  assert.match(focused.prompt,/LUA SCOPE REPAIR/);
+  assert.match(focused.prompt,/Do not append an end that closes the enclosing function/);
+});
