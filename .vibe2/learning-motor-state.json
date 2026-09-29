@@ -5275,7 +5275,8 @@
       "coding_negative_198ova3",
       "coding_negative_189wg6r",
       "coding_negative_twrkvx",
-      "coding_negative_1bh8kwt"
+      "coding_negative_1bh8kwt",
+      "coding_negative_9zruei"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -13474,7 +13475,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 16,
+        "verifiedFailures": 17,
         "games": {
           "fantasy-survival": 1
         },
@@ -13737,12 +13738,32 @@
             "lastEvidence": "coding_1t9d22s",
             "lastFailureEvidence": null,
             "lastUpdatedAt": "2026-09-28T09:27:10.827Z"
+          },
+          "unity|INVALID_PATH|NO_OP|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "village-dungeons": 1
+            },
+            "failureTargets": {
+              "unity": 1
+            },
+            "failureClasses": {
+              "INVALID_PATH": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_9zruei",
+            "lastUpdatedAt": "2026-09-29T05:05:02.941Z"
           }
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_1t9d22s",
-        "lastFailureEvidence": "coding_negative_my3fox",
-        "lastUpdatedAt": "2026-09-28T09:27:10.827Z"
+        "lastFailureEvidence": "coding_negative_9zruei",
+        "lastUpdatedAt": "2026-09-29T05:05:02.941Z"
       },
       "OBSERVABLE_DELTA_FIRST": {
         "verifiedApplications": 0,
@@ -17167,7 +17188,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T05:02:29.792Z",
+    "lastBuiltAt": "2026-09-29T05:05:03.009Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -23991,5 +24012,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T05:02:29.792Z"
+  "updatedAt": "2026-09-29T05:05:03.009Z"
 }
