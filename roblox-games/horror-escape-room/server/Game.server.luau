@@ -5,6 +5,8 @@ local DSS=game:GetService("DataStoreService")
 local RunService=game:GetService("RunService")
 local Lighting=game:GetService("Lighting")
 local AssetService=game:GetService("AssetService")
+local TeleportService=game:GetService("TeleportService")
+local MemoryStoreService=game:GetService("MemoryStoreService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
@@ -21,7 +23,15 @@ pcall(function()foundationStore=DSS:GetDataStore("native-foundation-sentinel-v1"
 local foundationRemote=RS:FindFirstChild("RuntimeFoundationReport")or Instance.new("RemoteEvent")
 foundationRemote.Name="RuntimeFoundationReport";foundationRemote.Parent=RS
 local qaCaptureLast={}
-
+local roomDirectory=MemoryStoreService:GetSortedMap("midnight-infection-room-directory-v1")
+local roomServer=game.PrivateServerId~=""and game.PrivateServerOwnerId==0
+local roomCode=""
+local roomHostUserId=0
+local roomHostName=""
+local roomVisibility="PUBLIC"
+local roomStartRequested=false
+local roomActionLast={}
+local roomJoinedAt={}
 
 local state="WAITING"
 local timeLeft=0
@@ -55,6 +65,39 @@ workspace:SetAttribute("LobbyReady",false)
 workspace:SetAttribute("LobbyPhase","LOADING")
 workspace:SetAttribute("LobbyRealPlayers",0)
 workspace:SetAttribute("LobbyAIFill",C.TargetPopulation)
+workspace:SetAttribute("RoomServer",roomServer)
+workspace:SetAttribute("RoomCode","")
+workspace:SetAttribute("RoomHostUserId",0)
+workspace:SetAttribute("RoomHostName","")
+workspace:SetAttribute("RoomVisibility",roomServer and"PRIVATE"or"BROWSER")
+workspace:SetAttribute("RoomState",roomServer and"INITIALIZING"or"BROWSER")
+workspace:SetAttribute("RoomMemberCount",0)
+workspace:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
+workspace:SetAttribute("RoomStartRequested",false)
+
+local function syncRoomState()
+ local count=#Players:GetPlayers()
+ workspace:SetAttribute("RoomServer",roomServer)
+ workspace:SetAttribute("RoomCode",roomCode)
+ workspace:SetAttribute("RoomHostUserId",roomHostUserId)
+ workspace:SetAttribute("RoomHostName",roomHostName)
+ workspace:SetAttribute("RoomVisibility",roomServer and roomVisibility or"BROWSER")
+ workspace:SetAttribute("RoomState",roomServer and(state=="RUNNING"and"RUNNING"or state=="RESULT"and"RESULT"or"ROOM_WAITING")or"BROWSER")
+ workspace:SetAttribute("RoomMemberCount",count)
+ workspace:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
+ workspace:SetAttribute("RoomStartRequested",roomStartRequested)
+ for _,player in ipairs(Players:GetPlayers())do
+  player:SetAttribute("RoomServer",roomServer)
+  player:SetAttribute("RoomCode",roomCode)
+  player:SetAttribute("RoomHostUserId",roomHostUserId)
+  player:SetAttribute("RoomHostName",roomHostName)
+  player:SetAttribute("RoomVisibility",roomServer and roomVisibility or"BROWSER")
+  player:SetAttribute("RoomState",roomServer and(state=="RUNNING"and"RUNNING"or state=="RESULT"and"RESULT"or"ROOM_WAITING")or"BROWSER")
+  player:SetAttribute("RoomMemberCount",count)
+  player:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
+  player:SetAttribute("RoomIsHost",roomServer and player.UserId==roomHostUserId)
+ end
+end
 
 local function syncLobbyState(phase)
  local real=#Players:GetPlayers()
@@ -71,6 +114,7 @@ local function syncLobbyState(phase)
   player:SetAttribute("LobbyRealPlayers",real)
   player:SetAttribute("LobbyAIFill",aiFill)
  end
+ syncRoomState()
 end
 
 local survivorSpawns={
