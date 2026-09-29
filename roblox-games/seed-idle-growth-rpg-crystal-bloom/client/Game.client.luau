@@ -289,7 +289,8 @@ root:SetAttribute("VerifiedExternalLearningMappingCount", #verifiedExternalLearn
 root:SetAttribute("VerifiedLearningSemanticVariant", verifiedExternalLearningContext.SemanticVariant or "")
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END
 
-if hasStudioAssetAtom("FRAME_PANEL") then
+root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION);
+root:SetAttribute("StudioAssetAtoms", table.concat(studioUi,","))
   local studioAssetStroke = Instance.new("UIStroke")
   studioAssetStroke.Name = "StudioAssetFramePanel"
   studioAssetStroke.Thickness = 1
