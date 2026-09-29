@@ -4422,3 +4422,91 @@ test('Luau focused retry uses a body statement instead of an incomplete function
   assert.match(focused.prompt,/LUA SCOPE REPAIR/);
   assert.match(focused.prompt,/Do not append an end that closes the enclosing function/);
 });
+
+test('gameplay recovery ignores incidental visual vocabulary and follows the declared source owner',()=>{
+  const prompt=[
+    'Engine: roblox',
+    'Goal: repair capture state persistence',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
+    'directiveId=capture-g2 primaryFocus=STABILITY',
+    'primaryGoal=Persist the captured monster after a successful capture.',
+    'sourceAnchors=roblox-games/demo/server/Game.server.luau:1 FUNCTION capture CURRENT=not saved INTENDED=persist capture ACCEPT=reload retains capture',
+    'sourceAnchors=roblox-games/demo/client/Game.client.luau:2 FUNCTION render CURRENT=weak visual INTENDED=clear visual ACCEPT=visible',
+    'gameplay=Capture must update the authoritative collection before save.',
+    'visual=GRAPHICS and VISUAL improvements remain separate responsibilities.',
+    'preserve=SAVE_KEYS',
+    'acceptance=RELOAD_CAPTURED_COLLECTION',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE END]',
+    'Allowed edit paths: shared/GameConfig.luau, server/Game.server.luau, client/Game.client.luau',
+    '=== FILE shared/GameConfig.luau [EDITABLE] ===',
+    'local config = { VisualStyle = "forest" }',
+    '=== FILE server/Game.server.luau [EDITABLE] ===',
+    'state.captured = capturedMonster',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    'panel.BackgroundColor3 = Color3.fromRGB(18,28,48)'
+  ].join('\n');
+  const focused=buildFocusedReplaceOnlyPrompt(prompt);
+  assert.equal(focused.spec.path,'server/Game.server.luau');
+  assert.equal(focused.spec.find,'state.captured = capturedMonster');
+  assert.match(focused.prompt,/gameplay=Capture must update the authoritative collection before save\./);
+  assert.match(focused.prompt,/INTENDED=persist capture ACCEPT=reload retains capture/);
+  assert.match(focused.prompt,/SAVE_KEYS/);
+  assert.match(focused.prompt,/RELOAD_CAPTURED_COLLECTION/);
+  assert.doesNotMatch(focused.prompt,/sourceAnchors=.*client\/Game/);
+  assert.doesNotMatch(focused.prompt,/PRESENTATION TASK HARD RULE|ROBLOX VISUAL ANCHOR RULE/);
+});
+
+test('focused recovery removes sibling anchor payloads without truncating the owned instructions or external learning',()=>{
+  const own='server/Game.server.luau:1 FUNCTION capture CURRENT=missing INTENDED=save collection ACCEPT=reload';
+  const sibling='client/Game.client.luau:2 FUNCTION render CURRENT='+('unrelated visual detail '.repeat(500))+' INTENDED=visible ACCEPT=rendered';
+  const external='[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]\nexternal principle stays intact\n[VERIFIED EXTERNAL BLACK-BOX LEARNING END]';
+  // Exercise the legacy joined format as well as the current per-anchor format.
+  for(const anchors of ['sourceAnchors='+own+' | '+sibling,'sourceAnchors='+own+'\nsourceAnchors='+sibling]){
+    const prompt=[
+      'Engine: roblox','Goal: repair collection persistence',external,
+      '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
+      'directiveId=capture-g2 primaryFocus=STABILITY',anchors,
+      'preserve=SAVE_KEYS','acceptance=RELOAD_CAPTURED_COLLECTION',
+      '[GAME SPECIFIC BUILD UP DIRECTIVE END]',
+      'Allowed edit paths: server/Game.server.luau',
+      '=== FILE server/Game.server.luau [EDITABLE] ===',
+      'state.captured = capturedMonster'
+    ].join('\n');
+    const focused=buildFocusedReplaceOnlyPrompt(prompt);
+    assert.ok(focused.prompt.includes('sourceAnchors='+own));
+    assert.ok(focused.prompt.includes(external));
+    assert.doesNotMatch(focused.prompt,/unrelated visual detail/);
+    assert.ok(Buffer.byteLength(focused.prompt)<Buffer.byteLength(prompt)/2);
+  }
+});
+
+test('invalid-path retry removes stale source ownership and sends the build-up directive only once',()=>{
+  const prompt=[
+    'Engine: unity','Goal: implement the approved game loop',
+    'Obsolete context: Assets/Scripts/UnityWebFloorGame.cs',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
+    'directiveId=unity-g2 primaryFocus=GAMEPLAY',
+    'sourceAnchors=unity-games/demo/Assets/Scripts/UnityWebFloorGame.cs:1 FUNCTION Act CURRENT=stub INTENDED=play ACCEPT=loop',
+    'gameplay=Capture, grow and evolve the collected monsters.',
+    'preserve=SAVE_KEYS',
+    'acceptance=REAL_GAMEPLAY',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE END]',
+    'Allowed edit paths: Assets/Scripts/GameCore.cs, Assets/Scripts/RuntimeBootstrap.cs',
+    '=== FILE Assets/Scripts/GameCore.cs [EDITABLE] ===',
+    'public class GameCore { public int Captured = 0; }',
+    '=== FILE Assets/Scripts/RuntimeBootstrap.cs [EDITABLE] ===',
+    'public class RuntimeBootstrap { public bool Started = false; }'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(prompt,{
+    error:new Error('책임 파일 범위 밖 수정 금지: Assets/Scripts/UnityWebFloorGame.cs'),
+    responsibleFiles:['Assets/Scripts/GameCore.cs','Assets/Scripts/RuntimeBootstrap.cs'],
+    attempt:2,multiFilePairRequired:true
+  });
+  assert.doesNotMatch(retry,/UnityWebFloorGame/);
+  assert.equal(retry.split('[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]').length-1,1);
+  assert.match(retry,/Capture, grow and evolve/);
+  assert.match(retry,/SAVE_KEYS/);
+  assert.match(retry,/UNITY WEB BOOTSTRAP PAIR CONTRACT/);
+  assert.match(retry,/public class GameCore/);
+  assert.match(retry,/public class RuntimeBootstrap/);
+});

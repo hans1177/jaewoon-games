@@ -1202,7 +1202,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     `gameIdentity=${clean(d?.gameIdentityAndNonNegotiables?.identity)}`,
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     `whyNow=${clean(d.primaryGoalReason)}`,
-    `sourceAnchors=${sourceAnchors.join(' | ')||'EXACT_SYMBOL_UNAVAILABLE_USE_RESPONSIBLE_FILE_AND_STATE_ANCHOR'}`,
+    ...(sourceAnchors.length?sourceAnchors.map(anchor=>`sourceAnchors=${anchor}`):['sourceAnchors=EXACT_SYMBOL_UNAVAILABLE_USE_RESPONSIBLE_FILE_AND_STATE_ANCHOR']),
     `expectedPlayerEffect=${clean(d?.effectivenessMeasurement?.expectedPlayerEffect)||'UNKNOWN'}`,
     `previousEffectiveness=${clean(d?.effectivenessMeasurement?.previousGeneration?.classification)||'NO_PREVIOUS_GENERATION'}`,
     `nextVibeAction=${clean(d?.nextActionDecision?.action)||'CONTINUE_BUILD_UP_CURRENT_SYSTEM'}`,
@@ -1231,7 +1231,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}) {
     '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
   ].filter(Boolean).join('\n');
 }
-function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxVisual=false}={}){
+function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxVisual=false,focusedPresentation=false,selectedPath='',responsiblePaths=[]}={}){
   const raw=String(prompt??'');
   const begin='[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]';
   const end='[GAME SPECIFIC BUILD UP DIRECTIVE END]';
@@ -1240,7 +1240,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const finish=raw.indexOf(end,start+begin.length);
   if(finish<0)return'';
   const block=raw.slice(start,finish+end.length);
-  if(!compact)return block;
+  if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
     'directiveId=','gameIdentity=','primaryGoal=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance='
@@ -1248,11 +1248,27 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     'directiveId=','gameIdentity=','primaryGoal=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
-    'visual=','platform=','preserve=','acceptance='
+    ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
+    'platform=','preserve=','acceptance='
   ];
-  return block.split('\n').filter(line=>
-    line===begin||line===end||keepPrefixes.some(prefix=>line.startsWith(prefix))
-  ).join('\n');
+  const lines=block.split('\n');
+  // A fixed-anchor retry owns one file. Keep its complete instructions, not all sibling files.
+  const anchors=lines.filter(line=>line.startsWith('sourceAnchors='))
+    .flatMap(line=>line.slice('sourceAnchors='.length).split(/ \| (?=[^|\r\n]+\.(?:luau?|cs|[cm]?js|tsx?|html):\d+ )/));
+  const paths=selectedPath?[selectedPath]:responsiblePaths;
+  const owned=paths.length?anchors.filter(anchor=>{
+    const file=anchor.match(/^(.*?):(?:\d+|\?) /)?.[1];
+    return file&&paths.some(relative=>posix(file)===posix(relative)||posix(file).endsWith('/'+posix(relative)));
+  }):[];
+  let anchorsWritten=false;
+  return lines.flatMap(line=>{
+    if(line.startsWith('sourceAnchors=')&&paths.length){
+      if(anchorsWritten)return[];
+      anchorsWritten=true;
+      return owned.length?owned.map(anchor=>'sourceAnchors='+anchor):[selectedPath?'sourceAnchors=USE_FIXED_ANCHOR_AND_SOURCE_CONTEXT_BELOW':'sourceAnchors=USE_ALLOWED_EDIT_PATHS_AND_EDITABLE_SOURCE_BELOW'];
+    }
+    return !compact||line===begin||line===end||keepPrefixes.some(prefix=>line.startsWith(prefix))?[line]:[];
+  }).join('\n');
 }
 
 
@@ -1737,7 +1753,7 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     }catch{}
   }
   const rows=[];
-  const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
+  const presentationTask=/^Goal:[^\n]*(?:presentation|graphics|visual)|^\[PRESENTATION(?:_PASS:| IMPLEMENTATION)|^(?:\[STUDIO_QUALITY_EVOLUTION\]|directiveId=)[^\n]*(?:focus|primaryFocus)=PRESENTATION/im.test(raw.split(/\n=== FILE /)[0]);
   const preferred=unique(preferredTargets).filter(name=>/^[A-Za-z_$][\w$]{1,80}$/.test(name));
   if(fullSource&&preferred.length){
     for(const symbol of preferred.slice(0,12)){
@@ -1819,7 +1835,7 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
     :[];
   const exactResponsible=unique(responsibleFiles.length?responsibleFiles:allowedPaths);
   if(!exactResponsible.length)return null;
-  const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
+  const presentationTask=/^Goal:[^\n]*(?:presentation|graphics|visual)|^\[PRESENTATION(?:_PASS:| IMPLEMENTATION)|^(?:\[STUDIO_QUALITY_EVOLUTION\]|directiveId=)[^\n]*(?:focus|primaryFocus)=PRESENTATION/im.test(raw.split(/\n=== FILE /)[0]);
   const robloxTask=/Engine:\s*roblox/i.test(raw);
   if(presentationTask&&robloxTask){
     const visualOwnerScore=value=>{
@@ -1833,6 +1849,15 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
       return score;
     };
     exactResponsible.sort((a,b)=>visualOwnerScore(b)-visualOwnerScore(a));
+  }
+  if(!presentationTask){
+    const directive=buildUpDirectiveBlockFromPrompt(raw);
+    const anchoredPaths=[...directive.matchAll(/(?:^sourceAnchors=| \| )([^|\r\n]+?):(?:\d+|\?) /gm)].map(match=>posix(match[1]));
+    const ownerIndex=relative=>{
+      const index=anchoredPaths.findIndex(file=>file===posix(relative)||file.endsWith('/'+posix(relative)));
+      return index<0?Number.MAX_SAFE_INTEGER:index;
+    };
+    exactResponsible.sort((a,b)=>ownerIndex(a)-ownerIndex(b));
   }
   const candidates=[];
   for(const relative of exactResponsible){
@@ -1864,7 +1889,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
   if(!spec)return null;
   const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: make the smallest real implementation change required by the work order';
   const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
-  const presentationTask=/(?:PRESENTATION(?:_PASS|\s)|ASSET_ADAPTATION|GRAPHICS|VISUAL)/i.test(raw);
+  const presentationTask=/^Goal:[^\n]*(?:presentation|graphics|visual)|^\[PRESENTATION(?:_PASS:| IMPLEMENTATION)|^(?:\[STUDIO_QUALITY_EVOLUTION\]|directiveId=)[^\n]*(?:focus|primaryFocus)=PRESENTATION/im.test(raw.split(/\n=== FILE /)[0]);
   const robloxPresentationTask=presentationTask&&/Engine:\s*roblox/i.test(raw);
   const robloxAssetAdaptationTask=robloxPresentationTask&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(raw);
   const presentationDeltaFailure=presentationRecovery===true||/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(reason);
@@ -1875,7 +1900,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'You are the Vibe2 focused source repair worker. Return JSON only.',
       goal,
       verifiedExternalLearningBlockFromPrompt(raw),
-      buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask}),
+      buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask,focusedPresentation:presentationTask,selectedPath:spec.path}),
       reason?'Previous failure: '+reason:'',
       /FUNCTION_HEADER_PREMATURE_END/.test(reason)?'LUA SCOPE REPAIR: the prior edit replaced only a function declaration but closed that function before its retained body. Edit the existing body statement selected below. Do not append an end that closes the enclosing function. For a whole-function rewrite, find must include the original full function body and its matching end.':'',
       'Exact writable path: '+JSON.stringify(spec.path),
@@ -2060,7 +2085,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
       rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
       verifiedExternalLearningBlockFromPrompt(rawPrompt),
-      buildUpDirectiveBlockFromPrompt(rawPrompt),
+      buildUpDirectiveBlockFromPrompt(rawPrompt,{responsiblePaths:invalidPath?exactResponsible:[]}),
       allowedLine,
       fullWebTargetLine,
       'Preserve the exact responsible path. Do not touch homepage/company files or widen writable scope.',
@@ -2120,12 +2145,12 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         }
       }
       if(editable.length){
-        const compactRetryPrefix=(timeoutFailure||presentationDelta||robloxFullGraphicsPackageRecovery||studioQualityDelta||(studioExpansion&&editMatchFailure))?[
+        const compactRetryPrefix=(invalidPath||timeoutFailure||presentationDelta||robloxFullGraphicsPackageRecovery||studioQualityDelta||(studioExpansion&&editMatchFailure))?[
           'You are the Vibe2 game source worker. Return JSON only.',
           rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
           rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
           verifiedExternalLearningBlockFromPrompt(rawPrompt),
-          buildUpDirectiveBlockFromPrompt(rawPrompt),
+          buildUpDirectiveBlockFromPrompt(rawPrompt,{responsiblePaths:invalidPath?exactResponsible:[]}),
           allowedLine,
           'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
           'Every edits[].path MUST be one exact path from Allowed edit paths.',
@@ -2163,7 +2188,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const correction=allowFullRewrite
     ? [
         'RECOVERY RETRY: the previous generation did not finish or violated the full-file envelope.',
-        buildUpDirectiveBlockFromPrompt(rawPrompt),
+        retryBase.includes('[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]')?'':buildUpDirectiveBlockFromPrompt(rawPrompt,{responsiblePaths:invalidPath?exactResponsible:[]}),
         `Previous failure: ${reason}`,
         'Return a complete file from start to finish. Keep any valid gameplay idea from the prior attempt, but expand it into a fully playable HTML instead of repeating a tiny shell. Use implementation code only: no explanatory prose, no markdown, and no comments outside the game file.',
         fullWebTargetLine,
@@ -2177,7 +2202,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       ].join('\n')
     : [
         robloxGraphicsInitial?'INITIAL ROBLOX FULL GRAPHICS PACKAGE: generate the complete connected visual package directly from the writable source; this is the first attempt, not a recovery retry.':studioInitial?'STUDIO QUALITY BUILD-UP: generate the connected implementation package directly.':zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':semanticDiffViolation?'RECOVERY RETRY: the previous candidate crossed the compiled semantic edit budget.':presentationDelta?'RECOVERY RETRY: the previous presentation candidate did not change any actual visible source behavior.':studioQualityDelta?'RECOVERY RETRY: the previous studio-quality candidate was too small for the required connected implementation package.':unityBootstrapPairFailure?'RECOVERY RETRY: the Unity Web bootstrap candidate did not edit both required game-source files in one atomic candidate.':systemCausalTestRequired?'RECOVERY RETRY: the system architecture candidate did not include the required atomic source plus causal regression-test pair.':systemSyntaxInvalid?'RECOVERY RETRY: the system architecture candidate was syntactically invalid before incremental QA.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
-        buildUpDirectiveBlockFromPrompt(rawPrompt),
+        retryBase.includes('[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]')?'':buildUpDirectiveBlockFromPrompt(rawPrompt,{responsiblePaths:invalidPath?exactResponsible:[]}),
         `Previous failure: ${safeReason}`,
         robloxFullGraphicsPackageInstruction||standardRetryInstruction,
         missingRobloxVisualDomains.length?'MISSING CORE VISUAL DOMAINS TO ADD FIRST: '+missingRobloxVisualDomains.join(', ')+'. Keep every already-satisfied core domain and native motion while adding the missing ones.':'',
