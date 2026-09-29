@@ -1264,7 +1264,8 @@ jobs:
           test -f "$candidate_manifest"
           echo "candidate_manifest=$candidate_manifest" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CANDIDATE_MANIFEST=$candidate_manifest_rel"
-          git diff --check
+          # Formatting whitespace is not a gameplay failure; conflict markers still fail.
+          git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check
           security_sensitive="$(node --input-type=module - "$candidate_manifest" <<'NODE'
           import fs from 'node:fs';
           const manifest=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
@@ -1698,7 +1699,8 @@ jobs:
             &&sameDeterministicLearningIds;
           const sourcePromptLearningOk=!sourcePromptLearningRequired||promptLearningProof||deterministicLearningProof;
           const effectiveCandidateOk=candidateOk&&sourcePromptLearningOk;
-          if(sourceGenerationAttempted&&sourcePromptLearningRequired&&!sourcePromptLearningOk){
+          const sourcePromptLearningFailed=sourceGenerationAttempted&&candidateOk&&sourcePromptLearningRequired&&!sourcePromptLearningOk;
+          if(sourcePromptLearningFailed){
             outcome='FAIL';
             blocker='verified-external-learning-source-prompt-unproven';
           }
@@ -1719,10 +1721,10 @@ jobs:
             authorityExpanded:false
           };
           const candidateFailureClass=sourceGenerationAttempted&&!effectiveCandidateOk
-            ?(!sourcePromptLearningOk?'VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT':(clean(process.env.CANDIDATE_FAILURE_CLASS)||null))
+            ?(sourcePromptLearningFailed?'VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT':(clean(process.env.CANDIDATE_FAILURE_CLASS)||null))
             :null;
           const candidateFailureMessage=sourceGenerationAttempted&&!effectiveCandidateOk
-            ?(!sourcePromptLearningOk?'verified external APK black-box learning was not proven in the actual source-generation prompt':(clean(process.env.CANDIDATE_FAILURE_MESSAGE)||null))
+            ?(sourcePromptLearningFailed?'verified external APK black-box learning was not proven in the actual source-generation prompt':(clean(process.env.CANDIDATE_FAILURE_MESSAGE)||null))
             :null;
           const fallbackCodingMethod=clean(workOrder?.candidateStrategyRole?.strategy)?{
             version:2,

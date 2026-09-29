@@ -725,6 +725,31 @@ test('idle learning cannot take runners while game development or recovery work 
   }
 });
 
+test('candidate formatting whitespace does not abort development but conflict markers still fail',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-format-gate-'));
+  const git=(args)=>spawnSync('git',args,{cwd:root,encoding:'utf8'});
+  try{
+    assert.equal(git(['init','-q']).status,0);
+    fs.writeFileSync(path.join(root,'source.luau'),'local function render()\nend\n');
+    assert.equal(git(['add','source.luau']).status,0);
+    fs.writeFileSync(path.join(root,'source.luau'),'local function render() \nend\n');
+    const command=['-c','core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab','diff','--check'];
+    assert.equal(git(command).status,0);
+    fs.writeFileSync(path.join(root,'source.luau'),'<<<<<<< HEAD\nlocal a=1\n=======\nlocal a=2\n>>>>>>> candidate\n');
+    assert.notEqual(git(command).status,0);
+    assert.ok(workflow.includes('git '+command.join(' ')));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('missing generation manifest cannot replace a real generation failure with a prompt-learning failure',()=>{
+  const expression=workflow.match(/const sourcePromptLearningFailed=([^;]+);/)[1];
+  const failed=new Function('sourceGenerationAttempted','candidateOk','sourcePromptLearningRequired','sourcePromptLearningOk',`return ${expression}`);
+  assert.equal(failed(true,false,true,false),false);
+  assert.equal(failed(true,true,true,false),true);
+  assert.equal(failed(true,true,true,true),false);
+  assert.equal(failed(false,false,true,false),false);
+});
+
 test('workers signal atomic completion and task micro-fan-in refills capacity without a cohort barrier',()=>{
   const reserveStart=workflow.indexOf('      - name: Reserve conflict-free DAG batch');
   const reserveEnd=workflow.indexOf('  model_cache:',reserveStart);
