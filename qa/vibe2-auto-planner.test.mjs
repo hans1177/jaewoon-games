@@ -3267,6 +3267,19 @@ test('Roblox verified product-quality failure auto-routes to source buildup befo
   });
   assert.ok(result.tasks.some(row=>row.gameId===gameId&&row.studioQualityEvolution?.phase==='REPAIR'));
   assert.equal(result.tasks.some(row=>row.gameId===gameId&&(row.evidence||[]).includes('internal-playtest-co-development:yes')),false);
+  const pending={...task,status:'queued',buildUpDirective:{...task.buildUpDirective,
+    nextActionDecision:{action:'REQUEST_REQUIRED_RUNTIME_OBSERVATION',reason:'old unobserved state'},
+    effectivenessMeasurement:{...task.buildUpDirective.effectivenessMeasurement,previousGeneration:{classification:'UNKNOWN_RUNTIME_EFFECT'}}}};
+  const refreshed=planVibe2AutonomousTasks({status:{projects:[]},catalog,developmentQueue,
+    queue:{maxConcurrentTasks:20,tasks:[pending]},repoRoot:root,maxConcurrentTasks:20,
+    queueMaxConcurrentTasks:20,planningBacklogTarget:5,planningBacklogMinimum:0});
+  const repaired=refreshed.queue.tasks.find(row=>row.id===pending.id);
+  assert.equal(repaired.buildUpDirective.directiveId,pending.buildUpDirective.directiveId);
+  assert.equal(repaired.buildUpDirective.generation,pending.buildUpDirective.generation);
+  assert.equal(repaired.buildUpNextAction,'CAUSAL_REPAIR');
+  assert.equal(repaired.buildUpDirective.playtestRuntimeFindings.runtimePassed,false);
+  assert.equal(repaired.buildUpDirective.effectivenessMeasurement.previousGeneration.classification,'REGRESSION');
+
 });
 
 test('stale quality-failure source does not force rebuilt source back through the old repair',()=>{
