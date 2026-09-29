@@ -1228,7 +1228,13 @@ RunService.Heartbeat:Connect(function(dt)
      local pos=a.p and(root(a.p)and root(a.p).Position)or(a.b and a.b.part.Position)
      if pos then local d=(pos-b.part.Position).Magnitude;if d<bd then bd=d;best=pos end end
     end
-    if best then local d=Vector3.new(best.X-b.part.Position.X,0,best.Z-b.part.Position.Z);if d.Magnitude>.1 then b.part.Position+=d.Unit*math.min(d.Magnitude,b.speed*dt)end end
+    if best then
+     local d=Vector3.new(best.X-b.part.Position.X,0,best.Z-b.part.Position.Z)
+     if d.Magnitude>.1 then
+      local dir=d.Unit;local nextPos=b.part.Position+dir*math.min(d.Magnitude,b.speed*dt)
+      b.part.CFrame=CFrame.lookAt(nextPos,nextPos+dir)
+     end
+    end
    elseif b.role=="SURVIVOR"then
     local nearest,best=nil,math.huge
     for _,mpos in ipairs(monsterPositions())do local d=(b.part.Position-mpos).Magnitude;if d<best then best=d;nearest=mpos end end
@@ -1239,7 +1245,11 @@ RunService.Heartbeat:Connect(function(dt)
      b.purifyReadyAt=os.clock()+6
      if targetPlayer then eliminateMonsterPlayer(targetPlayer)elseif targetBot then removeBot(targetBot)end
     elseif nearest and best<46 then
-     local away=b.part.Position-nearest;local d=Vector3.new(away.X,0,away.Z);if d.Magnitude>.1 then b.part.Position+=d.Unit*b.speed*dt end
+     local away=b.part.Position-nearest;local d=Vector3.new(away.X,0,away.Z)
+     if d.Magnitude>.1 then
+      local dir=d.Unit;local nextPos=b.part.Position+dir*b.speed*dt
+      b.part.CFrame=CFrame.lookAt(nextPos,nextPos+dir)
+     end
     end
    end
   end
