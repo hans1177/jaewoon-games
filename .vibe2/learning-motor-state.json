@@ -5288,14 +5288,16 @@
       "coding_negative_1eju0tx",
       "coding_negative_gezx9u",
       "coding_negative_kdbwpt",
-      "coding_negative_c316hc"
+      "coding_negative_c316hc",
+      "coding_negative_15inrwl",
+      "coding_negative_1bxjweh"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
         "verifiedApplications": 125,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 307,
-        "verifiedFailures": 618,
+        "verifiedFailures": 619,
         "games": {
           "territory-war": 2,
           "island-village": 3,
@@ -5366,13 +5368,13 @@
           },
           "STANDARD_CONTEXT": {
             "verifiedApplications": 25,
-            "verifiedFailures": 189,
+            "verifiedFailures": 190,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 81,
             "totalContextBytes": 1056651,
             "lastEvidence": "coding_1m6b66q",
-            "lastFailureEvidence": "coding_negative_qc2v8y",
-            "lastUpdatedAt": "2026-09-28T01:00:07.969Z"
+            "lastFailureEvidence": "coding_negative_1bxjweh",
+            "lastUpdatedAt": "2026-09-29T05:35:25.802Z"
           }
         },
         "failureFingerprints": {
@@ -6969,12 +6971,32 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_1amxkk5",
             "lastUpdatedAt": "2026-09-28T02:34:08.217Z"
+          },
+          "roblox|MALFORMED_OUTPUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "village-dungeons": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "MALFORMED_OUTPUT": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_1bxjweh",
+            "lastUpdatedAt": "2026-09-29T05:35:25.802Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_1m6b66q",
-        "lastFailureEvidence": "coding_negative_1amxkk5",
-        "lastUpdatedAt": "2026-09-28T02:34:08.217Z"
+        "lastFailureEvidence": "coding_negative_1bxjweh",
+        "lastUpdatedAt": "2026-09-29T05:35:25.802Z"
       },
       "PRIMARY_RESPONSIBILITY_MINIMAL": {
         "verifiedApplications": 217,
@@ -14056,7 +14078,7 @@
         "verifiedApplications": 0,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 0,
-        "verifiedFailures": 6,
+        "verifiedFailures": 7,
         "games": {},
         "targets": {},
         "contextModes": {
@@ -14172,12 +14194,32 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_1awi54c",
             "lastUpdatedAt": "2026-09-27T23:55:29.945Z"
+          },
+          "unity|INVALID_PATH|NO_OP|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "amusement-tycoon": 1
+            },
+            "failureTargets": {
+              "unity": 1
+            },
+            "failureClasses": {
+              "INVALID_PATH": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_15inrwl",
+            "lastUpdatedAt": "2026-09-29T05:35:25.794Z"
           }
         },
         "state": "CANDIDATE",
         "lastEvidence": null,
-        "lastFailureEvidence": "coding_negative_1awi54c",
-        "lastUpdatedAt": "2026-09-27T23:55:29.945Z"
+        "lastFailureEvidence": "coding_negative_15inrwl",
+        "lastUpdatedAt": "2026-09-29T05:35:25.794Z"
       },
       "SOURCE_RESCAN_REBIND": {
         "verifiedApplications": 0,
@@ -17308,7 +17350,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T05:34:58.970Z",
+    "lastBuiltAt": "2026-09-29T05:35:25.863Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -24132,5 +24174,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T05:34:58.970Z"
+  "updatedAt": "2026-09-29T05:35:25.863Z"
 }
