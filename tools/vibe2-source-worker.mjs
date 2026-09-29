@@ -1866,6 +1866,12 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
   const robloxAssetAdaptationTask=robloxPresentationTask&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(raw);
   const presentationDeltaFailure=presentationRecovery===true||/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(reason);
   const robloxPresentationDeltaFailure=presentationDeltaFailure&&robloxPresentationTask;
+  const failureClass=generationFailureClass(error);
+  const robloxStructuralFailure=/Engine:\s*roblox/i.test(raw)&&failureClass==='ROBLOX_STRUCTURAL_CONTINUITY';
+  const robloxFunctionHeaderPrematureEnd=robloxStructuralFailure
+    &&/FUNCTION_HEADER_PREMATURE_END/i.test(reason)
+    &&/^(?:local\s+)?function\s+[A-Za-z_][\w.:]*\s*\([^\n]*\)\s*$/.test(String(spec.find||'').trim());
+  const robloxModelControlTokenFailure=robloxStructuralFailure&&/MODEL_CONTROL_TOKEN/i.test(reason);
   return{
     spec,
     prompt:[
@@ -1880,6 +1886,9 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'Return exactly one JSON object with exactly one key named "replace".',
       'The replace value MUST contain the actual replacement source snippet; never output a template token or placeholder.',
       'replace MUST be materially different from the exact find anchor, syntactically valid in the shown source context, and the smallest coherent behavior change that advances the Goal.',
+      robloxStructuralFailure?'ROBLOX STRUCTURAL RECOVERY: replace must contain valid Luau source only. Never emit model-control tokens, markdown fences, or a replacement that breaks the surrounding existing block structure.':'',
+      robloxFunctionHeaderPrematureEnd?'ROBLOX FUNCTION-HEADER RECOVERY: the exact find anchor is only the existing function declaration. replace MUST start with that exact declaration and may add statements immediately after it, but MUST NOT add a standalone end. The original function body and its existing end remain immediately after this replacement anchor.':'',
+      robloxModelControlTokenFailure?'ROBLOX MODEL-TOKEN RECOVERY: /no_think, <think>, </think>, and triple-backtick fences are forbidden source text.':'',
       presentationTask?'PRESENTATION TASK HARD RULE: replace MUST change real visible render/material/color/lighting/motion/camera/VFX/UI source behavior even when the previous failure was timeout or malformed output; marker-only constants, comments, metadata, or gameplay-only changes are invalid.':'',
       robloxPresentationTask?'ROBLOX VISUAL ANCHOR RULE: the fixed anchor must be treated as presentation-owned source. Change native Roblox presentation primitives such as Color3, Material, Lighting, Camera/FieldOfView, Tween/CFrame motion, Particle/Trail/Beam VFX, or ScreenGui/Frame/Image UI while preserving gameplay numbers and save/progression semantics.':'',
       robloxAssetAdaptationTask?'ROBLOX FULL GRAPHICS CONTRACT: replace MUST improve at least one game-relevant visual domain (character, equipment, environment, or gameplay HUD) together with material/color/style language and real native motion. Continue other applicable domains in later source tasks; there is no maximum visual-domain count; add UI, VFX, lighting, props, camera presentation, or other coherent visual domains when useful. Keep the composite replacement bounded to this exact anchor so it can finish quickly on the local model.':'',
