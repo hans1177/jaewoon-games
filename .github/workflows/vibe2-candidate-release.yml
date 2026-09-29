@@ -216,9 +216,10 @@ jobs:
           done
 
           if [ "$decision" = 'roblox' ]; then
-            test -f "$source_root/roblox-technical-validation.json" || reject roblox-technical-validation-missing
-            mapfile -t place_files < <(find "$source_root" -type f \( -name '*.rbxl' -o -name '*.rbxlx' \) | sort)
-            [ "${#place_files[@]}" -eq 1 ] || reject roblox-place-package-count-invalid
+            # Source admission precedes packaging; generated evidence belongs to roblox-package.
+            test -f "$source_root/default.project.json" || reject roblox-project-missing
+            mapfile -d '' source_scripts < <(find "$source_root" -type f \( -name '*.luau' -o -name '*.lua' \) -print0)
+            [ "${#source_scripts[@]}" -gt 0 ] || reject roblox-source-scripts-missing
           fi
 
           if [ "$decision" = 'unity' ] && [ "$production_class" = 'RELEASE_CONFIRMED' ]; then
@@ -475,8 +476,8 @@ jobs:
             exit 0
           fi
           rm -rf /tmp/vibe2-control
-          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch >/dev/null 2>&1
-          git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
+          git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
           git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
           cd /tmp/vibe2-control
@@ -484,7 +485,7 @@ jobs:
           git config user.email 'vibe2-release@users.noreply.github.com'
           settled=0
           for attempt in 1 2 3; do
-            git fetch origin vibe2-unreal-core --quiet
+            git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
             if [ "$result" = PASS ]; then
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-deploy-attempted,web-static-qa-pass,web-cloudflare-deployment-pass,main-pr-merged,web-runtime-source-tree:${PROMOTED_SOURCE_TREE_SHA},web-main-sha:${PROMOTED_MAIN_SHA},web-publication-retry-resolved,actions-run-${GITHUB_RUN_ID}"
@@ -570,8 +571,8 @@ jobs:
             exit 1
           fi
           rm -rf /tmp/vibe2-control
-          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch >/dev/null 2>&1
-          git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
+          git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
           git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
           cd /tmp/vibe2-control
@@ -579,7 +580,7 @@ jobs:
           git config user.email 'vibe2-release@users.noreply.github.com'
           settled=0
           for attempt in 1 2 3; do
-            git fetch origin vibe2-unreal-core --quiet
+            git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
             node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-dispatch-failed --evidence="actions-run-${GITHUB_RUN_ID}"
             git add .vibe2/queue.json
@@ -625,7 +626,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ needs.inspect.outputs.control_sha }}
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -636,7 +638,7 @@ jobs:
           [[ "$GAME_ID" =~ ^[a-zA-Z0-9_-]+$ ]]
           [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
           test "$SOURCE_ROOT" = "roblox-games/$GAME_ID"
-          git fetch origin "$CANDIDATE_SHA" company-runtime:refs/remotes/origin/company-runtime --quiet
+          git fetch --no-tags --depth=1 origin "$CANDIDATE_SHA" +refs/heads/company-runtime:refs/remotes/origin/company-runtime --quiet
           mkdir -p /tmp/roblox-candidate/context /tmp/roblox-candidate/package/packages /tmp/roblox-candidate/package/results
           git show origin/company-runtime:development-queue.json > /tmp/roblox-candidate/runtime.json
           node <<'NODE'
@@ -673,6 +675,8 @@ jobs:
         run: |
           set -euo pipefail
           node tools/company-development-roblox-package.mjs --repo-root=. --game-id="$GAME_ID" --source-path="$SOURCE_ROOT" --source-revision="$CANDIDATE_SHA" --baseline=/tmp/roblox-candidate/baseline.json --rojo=/tmp/rojo-bin/rojo --output-dir=/tmp/roblox-candidate/package/packages --evidence=/tmp/roblox-candidate/package/results/build.json
+          mapfile -d '' place_files < <(find /tmp/roblox-candidate/package/packages -type f \( -name '*.rbxl' -o -name '*.rbxlx' \) -print0)
+          [ "${#place_files[@]}" -eq 1 ] || { echo 'roblox-place-package-count-invalid' >&2; exit 1; }
           node <<'NODE'
           const fs=require('fs');const file='/tmp/roblox-candidate/context/development-queue.json';
           const q=JSON.parse(fs.readFileSync(file)),build=JSON.parse(fs.readFileSync('/tmp/roblox-candidate/package/results/build.json'));
@@ -882,8 +886,8 @@ jobs:
             exit
           fi
           rm -rf /tmp/vibe2-control
-          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch >/dev/null 2>&1
-          git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
+          git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
           git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
           cd /tmp/vibe2-control
@@ -891,7 +895,7 @@ jobs:
           git config user.email 'vibe2-release@users.noreply.github.com'
           settled=0
           for attempt in 1 2 3; do
-            git fetch origin vibe2-unreal-core --quiet
+            git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
             if [ "$EVIDENCE_ONLY" = true ]; then
               node <<'NODE'
@@ -991,8 +995,8 @@ jobs:
             exit 1
           fi
           rm -rf /tmp/vibe2-control
-          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch >/dev/null 2>&1
-          git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet
+          gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags >/dev/null 2>&1
+          git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet
           rm -rf /tmp/vibe2-main-contract
           git -C /tmp/vibe2-control worktree add --detach /tmp/vibe2-main-contract origin/main >/dev/null
           cd /tmp/vibe2-control
@@ -1000,7 +1004,7 @@ jobs:
           git config user.email 'vibe2-release@users.noreply.github.com'
           settled=0
           for attempt in 1 2 3; do
-            git fetch origin vibe2-unreal-core --quiet
+            git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
             node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker="$REASON" --evidence="candidate-release-rejected,actions-run-${GITHUB_RUN_ID}"
             git add .vibe2/queue.json
