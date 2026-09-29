@@ -2028,6 +2028,9 @@ jobs:
             throw 'Roblox Studio already open on shared runner; reschedule isolated Studio QA'
           }
           $exactPlaceStarted = [DateTime]::UtcNow
+          # Publish ownership before launch so cleanup also covers a slow launcher handoff.
+          "VIBE2_LOCAL_PLACE_FILE=$($places[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_STUDIO_LAUNCH_STARTED=$($exactPlaceStarted.ToString('o'))" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           $placeLaunchProcess = Start-Process -FilePath $env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @($places[0].FullName) -PassThru
           "VIBE2_STUDIO_PROCESS_ID=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "VIBE2_STUDIO_PROCESS_IDS=$($placeLaunchProcess.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
@@ -2043,16 +2046,18 @@ jobs:
           }
           Start-Sleep -Seconds 1
 
+          $exactPlacePattern = '(?i)(?:^|[\s"])' + [regex]::Escape($places[0].FullName) + '(?=[\s"]|$)'
           $ownedStudioProcesses = @()
-          for ($processProbe = 1; $processProbe -le 60; $processProbe++) {
-            $ownedStudioProcesses = @(Get-Process RobloxStudioBeta -ErrorAction SilentlyContinue | Where-Object { $_.StartTime.ToUniversalTime() -ge $exactPlaceStarted.AddSeconds(-2) -and $_.Id -eq $placeLaunchProcess.Id } | Sort-Object StartTime)
-            if ($ownedStudioProcesses.Count) { break }
+          for ($processProbe = 1; $processProbe -le 180; $processProbe++) {
+            $ownedStudioProcesses = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction Stop | Where-Object { $_.CreationDate.ToUniversalTime() -ge $exactPlaceStarted.AddSeconds(-2) -and [string]$_.CommandLine -match $exactPlacePattern })
+            if ($ownedStudioProcesses.Count -eq 1) { break }
             Start-Sleep -Seconds 1
           }
-          if (-not $ownedStudioProcesses.Count) { throw 'Roblox Studio unavailable after bounded exact local Place relaunch' }
+          if ($ownedStudioProcesses.Count -ne 1) { throw 'Expected one provably owned exact Place process after launch; no duplicate launch allowed' }
           Write-Host "ROBLOX_STUDIO_MCP_PRE_MCP_PROCESS_READY_COUNT=$($ownedStudioProcesses.Count)"
-          $studioProcess = $ownedStudioProcesses | Where-Object { $_.Id -eq $placeLaunchProcess.Id } | Select-Object -First 1
-          if (-not $studioProcess) {
+          $ownedRecord = $ownedStudioProcesses[0]
+          $studioProcess = Get-Process -Id ([int]$ownedRecord.ProcessId) -ErrorAction SilentlyContinue
+          if (-not $studioProcess -or $studioProcess.ProcessName -ne 'RobloxStudioBeta' -or [math]::Abs(($studioProcess.StartTime.ToUniversalTime() - $ownedRecord.CreationDate.ToUniversalTime()).TotalSeconds) -gt 1) {
             throw 'Exact Studio process handed off without provable ownership; preserve all other Studio windows'
           }
           $ownedStudioIds = @([string]$studioProcess.Id)
@@ -2197,12 +2202,27 @@ jobs:
             }
             if ($attempt -ge $maxSessionAttempts) { break }
 
-            Write-Host "ROBLOX_STUDIO_MCP_RECONNECT_SAME_PROCESS=$($env:VIBE2_STUDIO_PROCESS_ID):attempt=$attempt"
-            $ownedStudio = Get-Process -Id ([int]$env:VIBE2_STUDIO_PROCESS_ID) -ErrorAction SilentlyContinue
-            if (-not $ownedStudio -or $ownedStudio.ProcessName -ne 'RobloxStudioBeta') {
-              throw 'Owned Studio exited; defer a fresh launch to the next isolated job'
+            # The official launcher may hand the same Place to a replacement process.
+            # Rebind only this job's unique Place path, never a user window or a fresh launch.
+            $exactPlacePattern = '(?i)(?:^|[\s"])' + [regex]::Escape($env:VIBE2_LOCAL_PLACE_FILE) + '(?=[\s"]|$)'
+            $launchStarted = [DateTime]::Parse($env:VIBE2_STUDIO_LAUNCH_STARTED).ToUniversalTime()
+            $ownedStudio = $null
+            for ($handoffWait = 0; $handoffWait -lt 180; $handoffWait++) {
+              $ownedRecords = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction Stop | Where-Object { $_.CreationDate.ToUniversalTime() -ge $launchStarted.AddSeconds(-2) -and [string]$_.CommandLine -match $exactPlacePattern })
+              if ($ownedRecords.Count -eq 1) {
+                $record = $ownedRecords[0]
+                $candidate = Get-Process -Id ([int]$record.ProcessId) -ErrorAction SilentlyContinue
+                if ($candidate -and $candidate.ProcessName -eq 'RobloxStudioBeta' -and [math]::Abs(($candidate.StartTime.ToUniversalTime() - $record.CreationDate.ToUniversalTime()).TotalSeconds) -le 1) { $ownedStudio = $candidate; break }
+              }
+              Start-Sleep -Seconds 1
             }
-            # Slow hosts reconnect MCP to the same window; never start another Studio here.
+            if (-not $ownedStudio) { throw 'Exact Place process ownership unavailable after handoff wait; preserve other windows without relaunch' }
+            if ([string]$ownedStudio.Id -ne $env:VIBE2_STUDIO_PROCESS_ID) { Write-Host "ROBLOX_STUDIO_MCP_OWNED_PROCESS_HANDOFF=$($env:VIBE2_STUDIO_PROCESS_ID):$($ownedStudio.Id)" }
+            $env:VIBE2_STUDIO_PROCESS_ID = [string]$ownedStudio.Id
+            $env:VIBE2_STUDIO_PROCESS_IDS = [string]$ownedStudio.Id
+            "VIBE2_STUDIO_PROCESS_ID=$($ownedStudio.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "VIBE2_STUDIO_PROCESS_IDS=$($ownedStudio.Id)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            Write-Host "ROBLOX_STUDIO_MCP_RECONNECT_SAME_PROCESS=$($ownedStudio.Id):attempt=$attempt"
             Start-Sleep -Seconds 10
           }
 
@@ -2387,24 +2407,32 @@ jobs:
         if: always()
         shell: powershell
         run: |
-          $ErrorActionPreference = 'Continue'
-          $ownedIds = @(([string]$env:VIBE2_STUDIO_PROCESS_IDS).Split(',') | Where-Object { $_ -match '^[0-9]+$' } | Select-Object -Unique)
-          if (-not $ownedIds.Count -and $env:VIBE2_STUDIO_PROCESS_ID -match '^[0-9]+$') {
-            $ownedIds = @([string]$env:VIBE2_STUDIO_PROCESS_ID)
+          $ErrorActionPreference = 'Stop'
+          if (-not $env:VIBE2_LOCAL_PLACE_FILE -or -not $env:VIBE2_STUDIO_LAUNCH_STARTED) {
+            Write-Host 'ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=NO_OWNED_LAUNCH'
+            exit 0
           }
-          foreach ($ownedId in $ownedIds) {
-            $ownedStudio = Get-Process -Id ([int]$ownedId) -ErrorAction SilentlyContinue
-            if ($ownedStudio) {
-              Stop-Process -Id ([int]$ownedId) -Force -ErrorAction SilentlyContinue
-              Wait-Process -Id ([int]$ownedId) -Timeout 60 -ErrorAction SilentlyContinue
-              if (Get-Process -Id ([int]$ownedId) -ErrorAction SilentlyContinue) {
-                throw "Owned Studio has not exited; next launch must remain blocked:process=$ownedId"
+          $exactPlacePattern = '(?i)(?:^|[\s"])' + [regex]::Escape($env:VIBE2_LOCAL_PLACE_FILE) + '(?=[\s"]|$)'
+          $launchStarted = [DateTime]::Parse($env:VIBE2_STUDIO_LAUNCH_STARTED).ToUniversalTime()
+          # Rediscover the exact writable Place instead of trusting a launcher PID that may have exited.
+          for ($closeProbe = 0; $closeProbe -lt 15; $closeProbe++) {
+            $ownedRecords = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction Stop | Where-Object { $_.CreationDate.ToUniversalTime() -ge $launchStarted.AddSeconds(-2) -and [string]$_.CommandLine -match $exactPlacePattern })
+            foreach ($record in $ownedRecords) {
+              $ownedStudio = Get-Process -Id ([int]$record.ProcessId) -ErrorAction SilentlyContinue
+              if (-not $ownedStudio -or $ownedStudio.ProcessName -ne 'RobloxStudioBeta') { continue }
+              if ([math]::Abs(($ownedStudio.StartTime.ToUniversalTime() - $record.CreationDate.ToUniversalTime()).TotalSeconds) -gt 1) { continue }
+              Stop-Process -Id $ownedStudio.Id -Force -ErrorAction Stop
+              Wait-Process -Id $ownedStudio.Id -Timeout 60 -ErrorAction SilentlyContinue
+              if (Get-Process -Id $ownedStudio.Id -ErrorAction SilentlyContinue) {
+                throw "Owned Studio has not exited; next launch must remain blocked:process=$($ownedStudio.Id)"
               }
-              Write-Host "ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES:process=$ownedId"
-            } else {
-              Write-Host "ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=ALREADY_CLOSED:process=$ownedId"
+              Write-Host "ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES:process=$($ownedStudio.Id)"
             }
+            Start-Sleep -Seconds 1
           }
+          $remainingOwned = @(Get-CimInstance Win32_Process -Filter "Name = 'RobloxStudioBeta.exe'" -ErrorAction Stop | Where-Object { $_.CreationDate.ToUniversalTime() -ge $launchStarted.AddSeconds(-2) -and [string]$_.CommandLine -match $exactPlacePattern })
+          if ($remainingOwned.Count) { throw 'Exact Place processes remain after owned-session cleanup' }
+          Write-Host 'ROBLOX_STUDIO_OWNED_PLACE_PROCESS_REMAINING=0'
 
       - name: Refill existing 24H development loop after verified play
         if: inputs.candidate_context == '' && steps.studio_play.outcome == 'success' && steps.persist.outcome == 'success'

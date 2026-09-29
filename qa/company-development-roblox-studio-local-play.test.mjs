@@ -20,6 +20,7 @@ import {
   deriveStudioActualPlayContract,
   assertCurrentStudioWorkflowHead,
   runStudioMultiplayerAudit,
+  runOfficialStudioMcpPlay,
   stopOwnedStudioMultiplayerTests,
   evaluateStudioSaveRejoin
 } from '../tools/company-development-roblox-studio-local-play.mjs';
@@ -925,7 +926,7 @@ test('Studio MCP opens the exact local Place as the single Studio before MCP and
   assert.equal((bindBlock.match(/Start-Process -FilePath/g)||[]).length,1);
   assert.match(bindBlock,/ROBLOX_STUDIO_MCP_PRE_MCP_PROCESS_READY_COUNT=/);
   assert.match(bindBlock,/without provable ownership; preserve all other Studio windows/);
-  assert.match(bindBlock,/for \(\$processProbe = 1; \$processProbe -le 60; \$processProbe\+\+\)/);
+  assert.match(bindBlock,/for \(\$processProbe = 1; \$processProbe -le 180; \$processProbe\+\+\)/);
   assert.doesNotMatch(bindBlock,/Roblox Studio exited before exact local Place MCP probe/);
   assert.match(bindBlock,/AssistantVersion:\|Running plugin sabuiltin_Assistant\\\.rbxm/);
   assert.doesNotMatch(bindBlock,/Roblox Studio Assistant did not finish loading in exact local Place/);
@@ -938,7 +939,7 @@ test('Studio MCP opens the exact local Place as the single Studio before MCP and
   assert.match(helper,/ROBLOX_STUDIO_PLACE_LOADING_WAIT=/);
   assert.match(helper,/const studioAttachAttempts=60/);
   assert.match(studioMcpBlock,/Wait-Process -Id.*-Timeout 60/);
-  assert.match(studioMcpBlock,/foreach \(\$ownedId in \$ownedIds\)/);
+  assert.match(studioMcpBlock,/foreach \(\$record in \$ownedRecords\)/);
   assert.doesNotMatch(studioMcpBlock,/AutoHotkey|pyautogui|SendKeys|mouse_event|keybd_event/i);
 });
 
@@ -1750,6 +1751,56 @@ test('dead-start Studio product evidence enters repair-required instead of infra
   assert.ok(applied.item.robloxQualityBuildUpEvidence.repairSurfaces.includes('GAME_START'));
 });
 
+test('dead-start failure captures the live viewport before stopping and preserves observed world evidence',{skip:process.platform==='win32'},async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'studio-failure-capture-'));
+  const executable=path.join(dir,'mcp.cjs');
+  const events=path.join(dir,'events.jsonl');
+  const output=path.join(dir,'runtime.json');
+  const contractFile=path.join(dir,'launch.json');
+  fs.writeFileSync(contractFile,JSON.stringify({studioActualPlayContract:{required:true}}));
+  fs.writeFileSync(executable,`#!/usr/bin/env node
+const fs=require('node:fs');
+const readline=require('node:readline');
+const names=['list_roblox_studios','get_studio_state','start_stop_play','get_console_output','screen_capture','user_keyboard_input','user_mouse_input','character_navigation','execute_luau'];
+let playing=false;
+readline.createInterface({input:process.stdin}).on('line',line=>{
+ const req=JSON.parse(line);if(req.id==null)return;
+ let result={};
+ if(req.method==='initialize')result={protocolVersion:'2024-11-05',capabilities:{},serverInfo:{name:'test'}};
+ if(req.method==='tools/list')result={tools:names.map(name=>({name,inputSchema:{type:'object',properties:{studio_id:{type:'string'},...(name==='start_stop_play'?{action:{type:'string',enum:['start','stop']}}:{}),...(name==='execute_luau'?{code:{type:'string'},data_model_type:{type:'string',enum:['Client','Server','Edit']}}:{})}}}))};
+ if(req.method==='tools/call'){
+  const {name,arguments:args}=req.params;
+  fs.appendFileSync(${JSON.stringify(events)},JSON.stringify({name,action:args.action,playing})+'\\n');
+  if(name==='list_roblox_studios')result={studios:[{studio_id:'test-studio',name:'test'}]};
+  if(name==='start_stop_play')playing=args.action==='start';
+  if(name==='execute_luau'){
+   const marker=args.code.match(/ROBLOX_STUDIO_ACTUAL_PLAY_(?:CORE|WORLD|RUNTIME)=/)[0];
+   const data=marker.includes('CORE')?{player:{characterPresent:true,humanoidPresent:true,health:0,maxHealth:100,humanoidState:'Dead',rootY:-500}}:marker.includes('WORLD')?{world:{floorBelowPlayer:false,collidablePartCount:0}}:{};
+   result={content:[{type:'text',text:marker+JSON.stringify(data)}]};
+  }
+  if(name==='screen_capture')result=playing?{content:[{type:'image',mimeType:'image/png',data:'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII='}]}:{isError:true,content:[{type:'text',text:'viewport already stopped'}]};
+ }
+ process.stdout.write(JSON.stringify({jsonrpc:'2.0',id:req.id,result})+'\\n');
+});
+`);
+  fs.chmodSync(executable,0o755);
+  try{
+    await assert.rejects(runOfficialStudioMcpPlay({mcpCommand:executable,output,expectedStudioName:'test',actualPlayContractPath:contractFile,timeoutMs:5000}),/ROBLOX_STUDIO_DEAD_CHARACTER_ABORT/);
+    const report=JSON.parse(fs.readFileSync(output,'utf8'));
+    const calls=fs.readFileSync(events,'utf8').trim().split('\n').map(JSON.parse);
+    const capture=calls.findIndex(x=>x.name==='screen_capture');
+    const stop=calls.findIndex(x=>x.name==='start_stop_play'&&x.action==='stop');
+    assert.ok(capture>=0&&stop>capture);
+    assert.equal(calls[capture].playing,true);
+    assert.equal(report.runtimeVerified,false);
+    assert.equal(report.captureFiles.length,1);
+    assert.ok(fs.statSync(report.captureFiles[0].path).size>0);
+    assert.equal(report.runtimeProbes.initialClient.player.rootY,-500);
+    assert.equal(report.runtimeProbes.initialClient.world.floorBelowPlayer,false);
+    assert.equal(report.errors.some(x=>x.type==='studio-capture-evidence-error'),false);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
 test('missing local character aborts before movement and routes to exact-source spawn repair',()=>{
   const abortAt=helper.indexOf('ROBLOX_STUDIO_MISSING_CHARACTER_ABORT:NO_PLAYABLE_CHARACTER');
   const movementAt=helper.indexOf("const keyboardTool=client.tool('user_keyboard_input')");
@@ -2348,7 +2399,8 @@ test('automated Studio close workflow contains one clean close step and one refi
   const closeAt=workflow.indexOf('- name: Close owned Studio after evidence persistence');
   const refillAt=workflow.indexOf('- name: Refill existing 24H development loop after verified play');
   const block=workflow.slice(closeAt,refillAt);
-  assert.match(block,/\^\[0-9\]\+\$/);
+  assert.match(block,/CommandLine -match \$exactPlacePattern/);
+  assert.match(block,/StartTime\.ToUniversalTime\(\) - \$record\.CreationDate\.ToUniversalTime\(\)/);
   assert.doesNotMatch(block,/event_type = 'vibe2-fanin-refill'/);
   assert.doesNotMatch(block,/GH_TOKEN:/);
 });
@@ -2364,7 +2416,7 @@ test('final Studio capture requires no user save and closes only after evidence 
   assert.match(finalizeBlock,/ROBLOX_STUDIO_PLAYTEST_SOURCE_MUTATION_PERSIST=NO/);
   assert.doesNotMatch(finalizeBlock,/Stop-Process/);
   const closeBlock=workflow.slice(closeAt,refillAt);
-  assert.match(closeBlock,/Stop-Process -Id \(\[int\]\$ownedId\)/);
+  assert.match(closeBlock,/Stop-Process -Id \$ownedStudio\.Id/);
   assert.match(closeBlock,/ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES/);
   assert.match(helper,/finally\{\s*client\.close\(\)/);
   assert.match(finalizeBlock,/ROBLOX_STUDIO_MCP_POST_CAPTURE_UI_RELEASED=YES/);
@@ -2377,6 +2429,30 @@ test('Studio QA keeps user windows and releases only its exact owned process',()
   assert.match(block,/\$ownedStudioIds = @\(\[string\]\$studioProcess\.Id\)/);
   assert.equal((block.match(/- name: Persist exact Studio MCP play evidence/g)||[]).length,1);
   assert.equal((block.match(/- name: Refill existing 24H development loop/g)||[]).length,1);
+});
+
+test('Studio launcher handoff remains bound to one isolated Place and cleanup rediscovers its live process',()=>{
+  const block=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  const launch=block.indexOf('$placeLaunchProcess = Start-Process');
+  assert.ok(block.indexOf('VIBE2_STUDIO_LAUNCH_STARTED=$')<launch);
+  assert.ok(block.indexOf('VIBE2_LOCAL_PLACE_FILE=$')<launch);
+  const retry=block.slice(block.indexOf('# The official launcher may hand'),block.indexOf('if (-not $sessionCompleted)'));
+  assert.match(retry,/CreationDate\.ToUniversalTime\(\) -ge \$launchStarted\.AddSeconds\(-2\)/);
+  assert.match(retry,/\$ownedRecords\.Count -eq 1/);
+  assert.match(retry,/ROBLOX_STUDIO_MCP_OWNED_PROCESS_HANDOFF=/);
+  assert.doesNotMatch(retry,/Start-Process|Stop-Process/);
+  const close=block.slice(block.indexOf('- name: Close owned Studio after evidence persistence'),block.indexOf('- name: Refill existing 24H development loop'));
+  assert.match(close,/Get-CimInstance Win32_Process/);
+  assert.match(close,/\$remainingOwned\.Count\) \{ throw/);
+  assert.doesNotMatch(close,/VIBE2_STUDIO_PROCESS_IDS|Stop-Process -Name/);
+
+  // Execute the workflow's actual path-boundary expression against unrelated windows.
+  const expression=close.match(/\$exactPlacePattern = '([^']+)' \+ \[regex\]::Escape\(\$env:VIBE2_LOCAL_PLACE_FILE\) \+ '([^']+)'/);
+  assert.ok(expression);
+  const place=String.raw`C:\runner temp\studio-qa\run-123\bug-defense.rbxlx`;
+  const pattern=new RegExp(expression[1].replace('(?i)','')+place.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+expression[2],'i');
+  for(const command of ['"Studio.exe" "'+place+'"','Studio.exe '+place,'Studio.exe "'+place.toUpperCase()+'" --ready'])assert.equal(pattern.test(command),true,command);
+  for(const command of ['Studio.exe "'+place+'.backup"','Studio.exe "'+place.replace('run-123','run-456')+'"','Studio.exe "'+place.replace('studio-qa','user-work')+'"','Studio.exe "prefix'+place+'"'])assert.equal(pattern.test(command),false,command);
 });
 
 
