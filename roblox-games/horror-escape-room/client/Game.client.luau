@@ -1002,7 +1002,7 @@ survivorRule.TextSize=12
 survivorRule.TextWrapped=true
 survivorRule.TextXAlignment=Enum.TextXAlignment.Left
 survivorRule.Font=Enum.Font.GothamBold
-survivorRule.Text="인간  고유 도구로 몬스터를 정화 · 잡히면 몬스터로 감염"
+survivorRule.Text="인간  에너지로 정화·대시 · 단말과 중앙 코어로 충전"
 survivorRule.ZIndex=11
 survivorRule.Parent=ruleCard
 roundify(survivorRule,8)
@@ -1017,7 +1017,7 @@ monsterRule.TextSize=11
 monsterRule.TextWrapped=true
 monsterRule.TextXAlignment=Enum.TextXAlignment.Left
 monsterRule.Font=Enum.Font.GothamBold
-monsterRule.Text="몬스터  인간을 잡아 감염시켜라 · 인간 0명이면 승리"
+monsterRule.Text="몬스터  접촉이 아닌 감염 공격 사용 · 인간 0명이면 승리"
 monsterRule.ZIndex=11
 monsterRule.Parent=ruleCard
 roundify(monsterRule,8)
