@@ -5306,7 +5306,9 @@
       "coding_negative_ig3904",
       "coding_negative_zodksv",
       "coding_negative_cnhjlc",
-      "coding_negative_1vx73bn"
+      "coding_negative_1vx73bn",
+      "coding_negative_1fsswr4",
+      "coding_negative_1i91yyr"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -13173,7 +13175,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 38,
+        "verifiedFailures": 39,
         "games": {
           "fantasy-survival": 1
         },
@@ -13563,22 +13565,24 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 2,
+            "verifiedFailures": 3,
             "games": {},
             "targets": {},
             "failureGames": {
               "seed-story-complete-rpg-chronicles-of-eldoria": 1,
-              "village-dungeons": 1
+              "village-dungeons": 1,
+              "seed-single-defense-strat-celestial-bastion": 1
             },
             "failureTargets": {
-              "unity": 2
+              "unity": 3
             },
             "failureClasses": {
-              "STUDIO_QUALITY_DELTA": 2
+              "STUDIO_QUALITY_DELTA": 2,
+              "TIMEOUT": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1vx73bn",
-            "lastUpdatedAt": "2026-09-29T05:37:51.535Z"
+            "lastFailureEvidence": "coding_negative_1i91yyr",
+            "lastUpdatedAt": "2026-09-29T05:42:55.796Z"
           },
           "unity|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -13603,8 +13607,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_1jzef3p",
-        "lastFailureEvidence": "coding_negative_1vx73bn",
-        "lastUpdatedAt": "2026-09-29T05:37:51.535Z"
+        "lastFailureEvidence": "coding_negative_1i91yyr",
+        "lastUpdatedAt": "2026-09-29T05:42:55.796Z"
       },
       "PATH_VERIFIED_ANCHOR_FIRST": {
         "verifiedApplications": 1,
@@ -13995,7 +13999,7 @@
         "verifiedApplications": 0,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 0,
-        "verifiedFailures": 14,
+        "verifiedFailures": 15,
         "games": {},
         "targets": {},
         "contextModes": {
@@ -14136,7 +14140,7 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 5,
+            "verifiedFailures": 6,
             "games": {},
             "targets": {},
             "failureGames": {
@@ -14144,18 +14148,19 @@
               "monster-adventure": 1,
               "fantasy-survival": 1,
               "bug-defense": 1,
-              "line-defense": 1
+              "line-defense": 1,
+              "village-dungeons": 1
             },
             "failureTargets": {
-              "unity": 5
+              "unity": 6
             },
             "failureClasses": {
-              "INVALID_PATH": 3,
+              "INVALID_PATH": 4,
               "TIMEOUT": 2
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_36c9s7",
-            "lastUpdatedAt": "2026-09-29T05:37:51.533Z"
+            "lastFailureEvidence": "coding_negative_1fsswr4",
+            "lastUpdatedAt": "2026-09-29T05:42:55.794Z"
           },
           "unity|EDIT_MATCH|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -14200,8 +14205,8 @@
         },
         "state": "CANDIDATE",
         "lastEvidence": null,
-        "lastFailureEvidence": "coding_negative_1x1m40z",
-        "lastUpdatedAt": "2026-09-29T05:37:51.534Z"
+        "lastFailureEvidence": "coding_negative_1fsswr4",
+        "lastUpdatedAt": "2026-09-29T05:42:55.794Z"
       },
       "BOUNDED_OUTPUT_COMMIT_FIRST": {
         "verifiedApplications": 0,
@@ -17499,7 +17504,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T05:42:14.214Z",
+    "lastBuiltAt": "2026-09-29T05:42:55.869Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -24323,5 +24328,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T05:42:14.214Z"
+  "updatedAt": "2026-09-29T05:42:55.869Z"
 }
