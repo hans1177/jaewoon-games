@@ -1,8 +1,0 @@
-name: Company DEVELOPMENT_CONFIRMED Roblox Multiplayer Studio QA (Disabled)
-on:
-  workflow_dispatch:
-jobs:
-  disabled:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo 'ROBLOX_STUDIO_MULTIPLAYER_QA=REMOVED; ROBLOX_MULTIPLAYER_VALIDATION=HEADLESS_STATE_SYNC_CONTRACT'

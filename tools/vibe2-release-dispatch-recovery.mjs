@@ -1,5 +1,6 @@
 // Reviewed winner release-dispatch recovery. Never creates PASS; it only re-enters the existing release gate.
 import fs from 'node:fs';
+import {createVibeContinuousQueue} from '../assets/vibe-continuous-queue.js';
 import { pathToFileURL } from 'node:url';
 
 const clean=v=>String(v??'').trim();
@@ -8,15 +9,19 @@ const DEFAULT_COOLDOWN_MS=2*60*1000;
 
 export function selectReviewedWinnerRecoveries(queueInput={}, {nowMs=Date.now(),cooldownMs=DEFAULT_COOLDOWN_MS}={}) {
   const selected=[];
-  for(const task of queueInput?.tasks||[]) {
+  for(const task of createVibeContinuousQueue(queueInput).tasks) {
     if(clean(task?.status)!=='running') continue;
-    if(!/candidate-awaiting-qa-and-deployment|awaiting.*qa/i.test(clean(task?.blocker))) continue;
+    const probe=task.runtimeEvidenceCandidate;
+    const evidenceOnly=clean(task.blocker)==='candidate-awaiting-runtime-evidence'&&probe?.evidenceOnly===true
+      &&probe.taskId===task.id&&probe.gameId===task.gameId&&probe.target==='roblox'&&task.target==='roblox'
+      &&/^vibe2\/candidate\//.test(clean(probe.candidateBranch))&&/^[0-9a-f]{40}$/.test(clean(probe.candidateSha));
+    if(!evidenceOnly&&!/candidate-awaiting-qa-and-deployment|awaiting.*qa/i.test(clean(task?.blocker))) continue;
     const evidence=list(task?.evidence);
-    if(!evidence.includes('package-review:all-required-roles-pass')) continue;
-    if(!evidence.includes('role-result:regression:PASS')) continue;
-    if(!evidence.includes('role-result:review:PASS')) continue;
-    const candidateBranch=[...evidence].reverse().find(x=>/^vibe2\/candidate\//.test(x));
-    const candidateSha=[...evidence].reverse().find(x=>/^candidate-sha:[0-9a-f]{7,40}$/i.test(x));
+    if(!evidenceOnly&&!evidence.includes('package-review:all-required-roles-pass')) continue;
+    if(!evidenceOnly&&!evidence.includes('role-result:regression:PASS')) continue;
+    if(!evidenceOnly&&!evidence.includes('role-result:review:PASS')) continue;
+    const candidateBranch=evidenceOnly?probe.candidateBranch:[...evidence].reverse().find(x=>/^vibe2\/candidate\//.test(x));
+    const candidateSha=evidenceOnly?'candidate-sha:'+probe.candidateSha:[...evidence].reverse().find(x=>/^candidate-sha:[0-9a-f]{7,40}$/i.test(x));
     if(!candidateBranch||!candidateSha) continue;
     const stamps=evidence
       .filter(x=>/^release-dispatch-recovery-at:\d+$/.test(x))
@@ -25,6 +30,7 @@ export function selectReviewedWinnerRecoveries(queueInput={}, {nowMs=Date.now(),
     const last=stamps.length?Math.max(...stamps):0;
     if(last>0 && Number(nowMs)-last<Math.max(60000,Number(cooldownMs)||DEFAULT_COOLDOWN_MS)) continue;
     selected.push({
+      ...(evidenceOnly?{evidenceOnly:true}:{}),
       taskId:clean(task.id),
       gameId:clean(task.gameId)||null,
       candidateBranch,
@@ -53,7 +59,7 @@ if(process.argv[1] && import.meta.url===pathToFileURL(process.argv[1]).href){
   const queue=JSON.parse(fs.readFileSync(queueFile,'utf8'));
   const result=selectReviewedWinnerRecoveries(queue,{cooldownMs:Number(args['cooldown-ms'])||DEFAULT_COOLDOWN_MS});
   if(format==='tsv'){
-    for(const row of result.selected) process.stdout.write([row.taskId,row.candidateBranch,row.candidateSha].join('\t')+'\n');
+    for(const row of result.selected) process.stdout.write([row.taskId,row.candidateBranch,row.candidateSha,row.evidenceOnly===true?'true':'false'].join('\t')+'\n');
   }else{
     process.stdout.write(JSON.stringify(result,null,2)+'\n');
   }
