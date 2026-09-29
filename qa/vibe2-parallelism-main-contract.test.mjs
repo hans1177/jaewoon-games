@@ -217,7 +217,7 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(reserve.sameLaneReserveSerialization,false);
   assert.equal(reserve.reserveJobsParallel,true);
   assert.equal(reserve.serializationScope,'ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY');
-  assert.equal(reserve.conflictResolution,'FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UP_TO_5_ON_ACTUAL_WRITE_CONFLICT');
+  assert.equal(reserve.conflictResolution,'FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UNBOUNDED_WITH_CAPPED_BACKOFF_ON_ACTUAL_WRITE_CONFLICT');
   assert.equal(reserve.schedulerConcurrencyEpoch,'vibe2-24h-cycle-singleton-v9');
   assert.equal(reserve.gamePrimaryExternalBoundary,256);
 
@@ -225,6 +225,8 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(runtime.continuous.reserveConcurrency.mode,'PARALLEL_RESERVE_OPTIMISTIC_SHARED_QUEUE_WRITE');
   assert.equal(runtime.continuous.reserveConcurrency.crossLaneGlobalReserveLock,false);
   assert.equal(runtime.continuous.reserveConcurrency.sameLaneReserveSerialization,false);
+  assert.equal(runtime.continuous.reserveConcurrency.sharedQueueWriteRetryAttempts,null);
+  assert.equal(runtime.continuous.reserveConcurrency.sharedQueueWriteRetryPolicy,'UNBOUNDED_WITH_CAPPED_BACKOFF');
   assert.equal(runtime.continuous.reserveConcurrency.reserveJobsParallel,true);
   assert.equal(runtime.continuous.reserveConcurrency.serializationScope,'ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY');
   assert.equal(runtime.continuous.reserveConcurrency.gamePrimaryExternalBoundary,256);
@@ -239,6 +241,10 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.equal(runtime.continuous.callbackCoalescing.pressureCapacityRefill.maxSignalsPerWave,1);
   assert.match(core,/VIBE2_PRESSURE_REFILL_DISPATCH=WAVE_LEADER_EXISTING_FANIN_REFILL/);
   assert.match(core,/runner-pressure-wave-leader-free-slot-refill/);
+  assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED/);
+  assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_BACKOFF_SECONDS=/);
+  assert.doesNotMatch(core,/for state_attempt in 1 2 3 4 5/);
+  assert.doesNotMatch(core,/VIBE2_CONTROL_OPTIMISTIC_ATTEMPT=\$state_attempt\/5/);
   assert.match(core,/VIBE2_ASSET_NEURON_PRESSURE_BYPASS=IMMEDIATE_MICRO_FANIN/);
   assert.match(core,/\[ "\$VIBE2_EXECUTION_LANE" != 'asset-development' \]/);
   assert.match(core,/execution_lane:String\(process\.env\.VIBE2_EXECUTION_LANE\|\|'game-primary'\)/);
