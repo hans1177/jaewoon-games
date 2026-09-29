@@ -5465,7 +5465,9 @@
       "coding_negative_1xy50tb",
       "coding_negative_12g9n5n",
       "coding_negative_d6zaic",
-      "coding_negative_1bl7qzd"
+      "coding_negative_1bl7qzd",
+      "coding_negative_rpv5hx",
+      "coding_negative_xso60j"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -15722,7 +15724,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 48,
+        "verifiedFailures": 50,
         "games": {
           "fantasy-survival": 1
         },
@@ -15732,13 +15734,13 @@
         "contextModes": {
           "STANDARD_CONTEXT": {
             "verifiedApplications": 1,
-            "verifiedFailures": 16,
+            "verifiedFailures": 17,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 4,
             "totalContextBytes": 15191,
             "lastEvidence": "coding_160lbz8",
-            "lastFailureEvidence": "coding_negative_1xf1d12",
-            "lastUpdatedAt": "2026-09-29T08:01:57.226Z"
+            "lastFailureEvidence": "coding_negative_xso60j",
+            "lastUpdatedAt": "2026-09-29T08:36:57.366Z"
           }
         },
         "failureFingerprints": {
@@ -15867,7 +15869,7 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 18,
+            "verifiedFailures": 19,
             "games": {},
             "targets": {},
             "failureGames": {
@@ -15877,22 +15879,22 @@
               "line-defense": 2,
               "bug-defense": 2,
               "village-dungeons": 2,
-              "horror-escape-room": 1,
+              "horror-escape-room": 2,
               "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
               "survival": 1,
               "seed-idle-growth-rpg-crystal-bloom": 1,
               "seed-story-complete-rpg-chronicles-of-eldoria": 1
             },
             "failureTargets": {
-              "unity": 18
+              "unity": 19
             },
             "failureClasses": {
               "TIMEOUT": 4,
-              "INVALID_PATH": 14
+              "INVALID_PATH": 15
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_d6zaic",
-            "lastUpdatedAt": "2026-09-29T08:34:50.705Z"
+            "lastFailureEvidence": "coding_negative_rpv5hx",
+            "lastUpdatedAt": "2026-09-29T08:36:57.364Z"
           },
           "unity|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -15964,7 +15966,7 @@
             "verifiedApplications": 1,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 4,
-            "verifiedFailures": 1,
+            "verifiedFailures": 2,
             "games": {
               "fantasy-survival": 1
             },
@@ -15972,17 +15974,17 @@
               "unity": 1
             },
             "failureGames": {
-              "fantasy-survival": 1
+              "fantasy-survival": 2
             },
             "failureTargets": {
-              "unity": 1
+              "unity": 2
             },
             "failureClasses": {
-              "MALFORMED_OUTPUT": 1
+              "MALFORMED_OUTPUT": 2
             },
             "lastEvidence": "coding_160lbz8",
-            "lastFailureEvidence": "coding_negative_1xf1d12",
-            "lastUpdatedAt": "2026-09-29T08:01:57.226Z"
+            "lastFailureEvidence": "coding_negative_xso60j",
+            "lastUpdatedAt": "2026-09-29T08:36:57.366Z"
           },
           "roblox|NO_OP|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -16027,8 +16029,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_160lbz8",
-        "lastFailureEvidence": "coding_negative_d6zaic",
-        "lastUpdatedAt": "2026-09-29T08:34:50.705Z"
+        "lastFailureEvidence": "coding_negative_xso60j",
+        "lastUpdatedAt": "2026-09-29T08:36:57.366Z"
       }
     }
   },
@@ -18759,7 +18761,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T08:36:22.981Z",
+    "lastBuiltAt": "2026-09-29T08:36:57.427Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -25583,5 +25585,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T08:36:22.981Z"
+  "updatedAt": "2026-09-29T08:36:57.427Z"
 }
