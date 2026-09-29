@@ -93,6 +93,15 @@ local Config={
   {Count=20,Title="야간 조사원"},
   {Count=26,Title="심야 괴담 조사원"},
  },
+ ArchiveGhost={
+  Name="괴담 기록자",
+  RequiredTotal=26,
+  Skins={
+   {Id="ARCHIVIST",Name="괴담 기록자",Price=0,Accent=Color3.fromRGB(194,218,228)},
+   {Id="ARCHIVIST_RED",Name="적색 기록자",Price=450,Accent=Color3.fromRGB(206,70,82)},
+   {Id="ARCHIVIST_MOON",Name="월광 기록자",Price=650,Accent=Color3.fromRGB(105,163,226)},
+  },
+ },
  Cosmetics={
   {Id="DEFAULT",Name="기본 프레임",Price=0,Accent=Color3.fromRGB(170,209,220),Title="신입 참가자"},
   {Id="MIDNIGHT_RED",Name="심야 적색",Price=120,Accent=Color3.fromRGB(225,76,92),Title="심야 추적자"},
@@ -149,7 +158,8 @@ local Config={
   PREFER_MONSTER="PREFER_MONSTER",PREFER_SURVIVOR="PREFER_SURVIVOR",
   SOLO_MONSTER="SOLO_MONSTER",SOLO_SURVIVOR="SOLO_SURVIVOR",
   PURIFY="PURIFY",RESCUE="RESCUE",DASH="DASH",INFECT_ATTACK="INFECT_ATTACK",ABILITY="ABILITY",NEXT_MONSTER="NEXT_MONSTER",NEXT_HUMAN="NEXT_HUMAN",
-  BUY_COSMETIC="BUY_COSMETIC",EQUIP_COSMETIC="EQUIP_COSMETIC",DISCOVERY_FOUND="DISCOVERY_FOUND"
+  BUY_COSMETIC="BUY_COSMETIC",EQUIP_COSMETIC="EQUIP_COSMETIC",DISCOVERY_FOUND="DISCOVERY_FOUND",
+  BUY_MONSTER_SKIN="BUY_MONSTER_SKIN",EQUIP_MONSTER_SKIN="EQUIP_MONSTER_SKIN"
  },
  QACameraEnabled=true,QACaptureRemoteName="QACaptureReport",
  OwnerDirectDevelopment=true,
