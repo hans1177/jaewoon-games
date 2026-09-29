@@ -27,6 +27,8 @@ import {
 } from '../tools/vibe2-queue-control.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
 
+const continuousWorkflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+
 function add(queue, id, gameId, target='unity', extra={}) {
   return enqueueVibeTask(queue,{ id, gameId, target, goal:`${id} 작업`, sourceRoot:`${target}-games/${gameId}`, ...extra });
 }
@@ -1017,6 +1019,17 @@ test('retryable failure clears blocker and remains selectable until retry limit'
   reserved=reserveNextVibeTask(failed.queue);
   failed=settleVibeTask(reserved.queue,{taskId:'retry',outcome:'FAIL',evidence:['fail-2'],blocker:'source-candidate-generation-failed'});
   assert.equal(failed.queue.tasks[0].status,'failed');
+});
+
+test('completed reservation probe prioritizes oldest running reservations and covers the external 256-task boundary',()=>{
+  const start=continuousWorkflow.indexOf("completed_reservation_runs=''");
+  const end=continuousWorkflow.indexOf('active_worker_reservations=',start);
+  assert.ok(start>=0&&end>start);
+  const block=continuousWorkflow.slice(start,end);
+  assert.match(block,/reservedAt:Date\.parse/);
+  assert.match(block,/\.sort\(\(a,b\)=>a\.reservedAt-b\.reservedAt\|\|Number\(a\.runId\)-Number\(b\.runId\)\)/);
+  assert.match(block,/if\(ids\.length>=256\)break/);
+  assert.doesNotMatch(block,/slice\(0,64\)/);
 });
 
 test('completed workflow reservation is requeued immediately without waiting for stale TTL', () => {
