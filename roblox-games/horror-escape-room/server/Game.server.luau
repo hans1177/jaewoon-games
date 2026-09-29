@@ -275,8 +275,11 @@ local function load(p)
  p:SetAttribute("MonsterPreference","ANY");p:SetAttribute("SoloRole","SURVIVOR");p:SetAttribute("LobbySelectionConfirmed",false)
  p:SetAttribute("MonsterXP",0);p:SetAttribute("Coins",0);p:SetAttribute("RoundsSinceMonster",0)
  p:SetAttribute("OwnedCosmetics","DEFAULT");p:SetAttribute("EquippedCosmetic","DEFAULT");p:SetAttribute("CosmeticFeedback","")
- p:SetAttribute("FoundLore","");p:SetAttribute("LoreCount",0);p:SetAttribute("LoreTotal",#(C.Lore or{}));p:SetAttribute("LoreFeedback","");p:SetAttribute("LoreTitle","야간 신입")
- p:SetAttribute("DiscoveredSurprises","");p:SetAttribute("DiscoveryCount",0);p:SetAttribute("DiscoveryTotal",#(C.Discoveries or{}));p:SetAttribute("DiscoveryTitle","초보 목격자");p:SetAttribute("DiscoveryFeedback","")
+ local activeSightings,activeNotes,activeTotal=activeArchiveTotals()
+ p:SetAttribute("FoundLore","");p:SetAttribute("LoreCount",0);p:SetAttribute("LoreTotal",activeNotes);p:SetAttribute("LoreFeedback","");p:SetAttribute("LoreTitle","야간 신입")
+ p:SetAttribute("DiscoveredSurprises","");p:SetAttribute("DiscoveryCount",0);p:SetAttribute("DiscoveryTotal",activeSightings);p:SetAttribute("DiscoveryTitle","초보 목격자");p:SetAttribute("DiscoveryFeedback","")
+ p:SetAttribute("ArchiveWave",activeRolloutWave);p:SetAttribute("ArchiveWaveName",(rolloutWaves[activeRolloutWave]and rolloutWaves[activeRolloutWave].Name)or"첫 심야")
+ p:SetAttribute("ArchiveActiveTotal",activeTotal);p:SetAttribute("ArchiveTotalAll",tonumber(rolloutConfig.TotalEntries)or 26);p:SetAttribute("ArchiveCollected",0);p:SetAttribute("ArchiveGhostUnlocked",false)
  p:SetAttribute("MonsterForm","DRACULA");p:SetAttribute("HumanForm","BROADCAST");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0)
  p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0);p:SetAttribute("RoundScore",0)
  p:SetAttribute("LastRoundReward",0);p:SetAttribute("LastRoundWinner","");p:SetAttribute("LastRoundRole","")
@@ -299,10 +302,12 @@ local function load(p)
   if not owned[equipped]or not cosmeticById[equipped]then equipped="DEFAULT"end
   p:SetAttribute("OwnedCosmetics",ownedCosmeticsAttribute(owned));p:SetAttribute("EquippedCosmetic",equipped)
   local found=foundLoreFrom(d.FoundLore);local count=#foundLoreList(found)
-  p:SetAttribute("FoundLore",foundLoreAttribute(found));p:SetAttribute("LoreCount",count);p:SetAttribute("LoreTotal",#(C.Lore or{}))
-  p:SetAttribute("LoreTitle",count>=(#(C.Lore or{}))and"심야 괴담 조사원"or count>=5 and"야간 조사원"or"야간 신입")
+  local activeSightings,activeNotes,activeTotal=activeArchiveTotals()
+  p:SetAttribute("FoundLore",foundLoreAttribute(found));p:SetAttribute("LoreCount",count);p:SetAttribute("LoreTotal",activeNotes)
+  p:SetAttribute("LoreTitle",count>=10 and"심야 괴담 조사원"or count>=5 and"야간 조사원"or"야간 신입")
   local seen=discoveredFrom(d.DiscoveredSurprises);local seenCount=#discoveredList(seen)
-  p:SetAttribute("DiscoveredSurprises",discoveredAttribute(seen));p:SetAttribute("DiscoveryCount",seenCount);p:SetAttribute("DiscoveryTotal",#(C.Discoveries or{}));p:SetAttribute("DiscoveryTitle",discoveryTitleFor(seenCount))
+  p:SetAttribute("DiscoveredSurprises",discoveredAttribute(seen));p:SetAttribute("DiscoveryCount",seenCount);p:SetAttribute("DiscoveryTotal",activeSightings);p:SetAttribute("DiscoveryTitle",discoveryTitleFor(seenCount))
+  p:SetAttribute("ArchiveActiveTotal",activeTotal);p:SetAttribute("ArchiveCollected",seenCount+count);p:SetAttribute("ArchiveGhostUnlocked",archiveGhostUnlocked(p))
  end
 end
 local function save(p)
@@ -373,6 +378,7 @@ local function cloneWholeAsset(assetId,parent,pos,scale)
  return clone
 end
 local function addLoreCollectible(f,id,pos)
+ if not isArchiveEntryActive(id)then return nil end
  local item=loreById[id];if not item then return nil end
  local base=arenaPart(f,"Lore_"..id,Vector3.new(2.6,.5,3.2),pos,Color3.fromRGB(92,83,72),Enum.Material.WoodPlanks);base.CanCollide=false
  local paper=arenaPart(f,"LorePaper_"..id,Vector3.new(2.1,.12,2.7),pos+Vector3.new(0,.32,0),Color3.fromRGB(224,215,184),Enum.Material.SmoothPlastic);paper.CanCollide=false
@@ -504,6 +510,7 @@ local function addEnergyCore(f,mapId,pos)
  return core
 end
 local function addSurpriseTrigger(f,id,kind,pos,radius,text)
+ if not isArchiveEntryActive(id)then return nil end
  local trigger=Instance.new("Part")
  trigger.Name="SurpriseTrigger_"..id
  trigger.Size=Vector3.new(2,2,2)
@@ -1625,7 +1632,7 @@ local function equipCosmetic(p,id)
 end
 local function reportDiscovery(p,id)
  if state~="RUNNING"or typeof(id)~="string"or #id>48 then return end
- local item=discoveryById[id];if not item then return end
+ local item=discoveryById[id];if not item or not isArchiveEntryActive(id)then return end
  local trigger=arena and arena:FindFirstChild("SurpriseTrigger_"..id,true)
  local rr=root(p)
  if not trigger or not trigger:IsA("BasePart")or not rr then return end
