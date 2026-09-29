@@ -6150,7 +6150,8 @@
       "coding_negative_13h79ft",
       "coding_negative_14gnwc4",
       "coding_negative_p2kkmw",
-      "coding_negative_5kflle"
+      "coding_negative_5kflle",
+      "coding_negative_e04p0j"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16766,7 +16767,7 @@
         "verifiedApplications": 4,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 14,
-        "verifiedFailures": 696,
+        "verifiedFailures": 697,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -17131,26 +17132,26 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 49,
+            "verifiedFailures": 50,
             "games": {},
             "targets": {},
             "failureGames": {
               "horror-escape-room": 25,
-              "fantasy-survival": 20,
+              "fantasy-survival": 21,
               "line-defense": 4
             },
             "failureTargets": {
-              "unity": 49
+              "unity": 50
             },
             "failureClasses": {
               "INVALID_PATH": 20,
-              "TIMEOUT": 21,
+              "TIMEOUT": 22,
               "MALFORMED_OUTPUT": 4,
               "NO_OP": 4
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1229y4",
-            "lastUpdatedAt": "2026-09-29T23:06:56.774Z"
+            "lastFailureEvidence": "coding_negative_e04p0j",
+            "lastUpdatedAt": "2026-09-29T23:10:24.984Z"
           },
           "unity|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -17261,8 +17262,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_1ud2weu",
-        "lastFailureEvidence": "coding_negative_5kflle",
-        "lastUpdatedAt": "2026-09-29T23:08:40.057Z"
+        "lastFailureEvidence": "coding_negative_e04p0j",
+        "lastUpdatedAt": "2026-09-29T23:10:24.984Z"
       }
     }
   },
@@ -20013,7 +20014,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T23:08:40.128Z",
+    "lastBuiltAt": "2026-09-29T23:10:25.079Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -20022,7 +20023,7 @@
     "domains": {
       "CORE_LOOP": {
         "verifiedApplications": 183,
-        "verifiedFailures": 97,
+        "verifiedFailures": 98,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -20042,17 +20043,17 @@
           "seed-idle-growth-rpg-crystal-bloom": 19,
           "seed-story-complete-rpg-chronicles-of-eldoria": 13,
           "survival": 12,
-          "ant-simulator": 22,
+          "ant-simulator": 23,
           "fantasy-survival": 14
         },
         "holdoutPasses": 0,
         "level": 3,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "STATE_MACHINE": {
         "verifiedApplications": 234,
-        "verifiedFailures": 135,
+        "verifiedFailures": 136,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -20075,16 +20076,16 @@
           "survival": 12,
           "cozy-island": 46,
           "horror-escape-room": 17,
-          "ant-simulator": 22
+          "ant-simulator": 23
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "COMBAT": {
         "verifiedApplications": 169,
-        "verifiedFailures": 60,
+        "verifiedFailures": 61,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -20104,14 +20105,14 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "cozy-island": 30,
-          "ant-simulator": 22,
+          "ant-simulator": 23,
           "fantasy-survival": 14,
           "seed-puzzle-chromatic-cascade": 1
         },
         "holdoutPasses": 0,
         "level": 3,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "AI": {
         "verifiedApplications": 96,
@@ -20142,7 +20143,7 @@
       },
       "PROGRESSION": {
         "verifiedApplications": 207,
-        "verifiedFailures": 71,
+        "verifiedFailures": 72,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -20163,18 +20164,18 @@
           "survival": 3,
           "cozy-island": 46,
           "horror-escape-room": 17,
-          "ant-simulator": 22,
+          "ant-simulator": 23,
           "fantasy-survival": 14,
           "bug-defense": 6
         },
         "holdoutPasses": 0,
         "level": 3,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "ECONOMY": {
         "verifiedApplications": 58,
-        "verifiedFailures": 71,
+        "verifiedFailures": 72,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -20184,7 +20185,7 @@
           "cozy-island": 46,
           "horror-escape-room": 17,
           "daechung-rpg": 10,
-          "ant-simulator": 22,
+          "ant-simulator": 23,
           "fantasy-survival": 14,
           "bug-defense": 6,
           "seed-casual-realm-weaver": 2,
@@ -20197,12 +20198,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "SAVE": {
         "verifiedApplications": 69,
-        "verifiedFailures": 71,
+        "verifiedFailures": 72,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -20213,7 +20214,7 @@
           "cozy-island": 46,
           "horror-escape-room": 17,
           "daechung-rpg": 10,
-          "ant-simulator": 22,
+          "ant-simulator": 23,
           "fantasy-survival": 14,
           "seed-casual-realm-weaver": 2,
           "amusement-tycoon": 1,
@@ -20225,8 +20226,8 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "MOBILE_INPUT": {
         "verifiedApplications": 197,
@@ -20290,7 +20291,7 @@
       },
       "DEBUGGING": {
         "verifiedApplications": 256,
-        "verifiedFailures": 143,
+        "verifiedFailures": 144,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -20303,7 +20304,7 @@
           "village-dungeons": 23,
           "monster-adventure": 21,
           "bug-defense": 26,
-          "ant-simulator": 39,
+          "ant-simulator": 40,
           "fantasy-survival": 32,
           "daechung-rpg": 24,
           "line-defense": 16,
@@ -20317,8 +20318,8 @@
         },
         "holdoutPasses": 0,
         "level": 2,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "RECOVERY": {
         "verifiedApplications": 23,
@@ -20347,7 +20348,7 @@
       },
       "SECURITY": {
         "verifiedApplications": 72,
-        "verifiedFailures": 72,
+        "verifiedFailures": 73,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -20358,7 +20359,7 @@
           "cozy-island": 50,
           "horror-escape-room": 17,
           "daechung-rpg": 10,
-          "ant-simulator": 22,
+          "ant-simulator": 23,
           "fantasy-survival": 14,
           "bug-defense": 6,
           "seed-casual-realm-weaver": 2,
@@ -20369,9 +20370,9 @@
           "monster-adventure": 1
         },
         "holdoutPasses": 0,
-        "level": 2,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "level": 1,
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "PERFORMANCE": {
         "verifiedApplications": 58,
@@ -20402,7 +20403,7 @@
       },
       "ASSET_PRODUCTION": {
         "verifiedApplications": 31,
-        "verifiedFailures": 66,
+        "verifiedFailures": 67,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -20413,7 +20414,7 @@
           "bug-defense": 7,
           "village-dungeons": 4,
           "cozy-island": 31,
-          "ant-simulator": 22,
+          "ant-simulator": 23,
           "seed-casual-realm-weaver": 2,
           "amusement-tycoon": 1,
           "seed-idle-growth-rpg-crystal-bloom": 5,
@@ -20423,12 +20424,12 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "ASSET_ADAPTATION": {
         "verifiedApplications": 52,
-        "verifiedFailures": 62,
+        "verifiedFailures": 63,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -20439,7 +20440,7 @@
           "bug-defense": 7,
           "village-dungeons": 4,
           "cozy-island": 30,
-          "ant-simulator": 22,
+          "ant-simulator": 23,
           "seed-casual-realm-weaver": 2,
           "amusement-tycoon": 1,
           "seed-idle-growth-rpg-crystal-bloom": 5,
@@ -20449,8 +20450,8 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "LIVING_MOTION": {
         "verifiedApplications": 41,
@@ -20965,14 +20966,14 @@
       },
       "CONCEPT_DIRECTION": {
         "verifiedApplications": 0,
-        "verifiedFailures": 59,
+        "verifiedFailures": 60,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
         "primaryDomainMatches": 0,
         "primaryDomainMismatches": 0,
         "games": {
-          "ant-simulator": 22,
+          "ant-simulator": 23,
           "cozy-island": 26,
           "seed-casual-realm-weaver": 2,
           "amusement-tycoon": 1,
@@ -20984,8 +20985,8 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "ENVIRONMENT_COMPOSITION": {
         "verifiedApplications": 0,
@@ -21129,7 +21130,7 @@
       },
       "WEB_RUNTIME": {
         "verifiedApplications": 242,
-        "verifiedFailures": 67,
+        "verifiedFailures": 68,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -21143,7 +21144,7 @@
           "village-dungeons": 16,
           "monster-adventure": 21,
           "bug-defense": 18,
-          "ant-simulator": 39,
+          "ant-simulator": 40,
           "fantasy-survival": 40,
           "line-defense": 16,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 10,
@@ -21155,12 +21156,12 @@
         },
         "holdoutPasses": 0,
         "level": 4,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "ROBLOX_STUDIO": {
         "verifiedApplications": 61,
-        "verifiedFailures": 136,
+        "verifiedFailures": 137,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -21179,15 +21180,15 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 7,
           "survival": 9,
           "village-dungeons": 10,
-          "ant-simulator": 22,
+          "ant-simulator": 23,
           "fantasy-survival": 14,
           "line-defense": 1,
           "monster-adventure": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "ROBLOX_DATASTORE": {
         "verifiedApplications": 23,
@@ -21359,7 +21360,7 @@
       },
       "UNITY_RUNTIME": {
         "verifiedApplications": 39,
-        "verifiedFailures": 124,
+        "verifiedFailures": 125,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -21377,15 +21378,15 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 7,
           "survival": 9,
           "village-dungeons": 10,
-          "ant-simulator": 22,
+          "ant-simulator": 23,
           "fantasy-survival": 14,
           "line-defense": 1,
           "monster-adventure": 1
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "UNITY_PHYSICS": {
         "verifiedApplications": 0,
@@ -21417,7 +21418,7 @@
       },
       "UEFN_RUNTIME": {
         "verifiedApplications": 22,
-        "verifiedFailures": 60,
+        "verifiedFailures": 61,
         "firstPasses": 0,
         "failureSignatureClears": 0,
         "regressionFailures": 0,
@@ -21425,7 +21426,7 @@
         "primaryDomainMismatches": 0,
         "games": {
           "cozy-island": 30,
-          "ant-simulator": 22,
+          "ant-simulator": 23,
           "fantasy-survival": 10,
           "bug-defense": 6,
           "seed-casual-realm-weaver": 2,
@@ -21438,8 +21439,8 @@
         },
         "holdoutPasses": 0,
         "level": 1,
-        "lastEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.836Z"
+        "lastEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.054Z"
       },
       "UEFN_VERSE": {
         "verifiedApplications": 0,
@@ -21478,11 +21479,11 @@
       "EXPERIENCE:exp_1oonbi8": {
         "source": "EXPERIENCE",
         "verifiedApplications": 292,
-        "verifiedFailures": 143,
+        "verifiedFailures": 144,
         "firstPasses": 10,
         "failureSignatureClears": 119,
-        "regressionFailures": 143,
-        "primaryDomainMatches": 47,
+        "regressionFailures": 144,
+        "primaryDomainMatches": 48,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 49,
@@ -21492,7 +21493,7 @@
           "village-dungeons": 23,
           "monster-adventure": 21,
           "bug-defense": 26,
-          "ant-simulator": 39,
+          "ant-simulator": 40,
           "fantasy-survival": 40,
           "line-defense": 16,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 10,
@@ -21504,23 +21505,23 @@
           "horror-escape-room": 17
         },
         "targets": {
-          "web": 275,
+          "web": 276,
           "unity": 38,
           "roblox": 122
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.827Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.043Z"
       },
       "EXPERIENCE:exp_4odofx": {
         "source": "EXPERIENCE",
         "verifiedApplications": 292,
-        "verifiedFailures": 143,
+        "verifiedFailures": 144,
         "firstPasses": 10,
         "failureSignatureClears": 119,
-        "regressionFailures": 143,
-        "primaryDomainMatches": 47,
+        "regressionFailures": 144,
+        "primaryDomainMatches": 48,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 49,
@@ -21530,7 +21531,7 @@
           "village-dungeons": 23,
           "monster-adventure": 21,
           "bug-defense": 26,
-          "ant-simulator": 39,
+          "ant-simulator": 40,
           "fantasy-survival": 40,
           "line-defense": 16,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 10,
@@ -21542,23 +21543,23 @@
           "horror-escape-room": 17
         },
         "targets": {
-          "web": 275,
+          "web": 276,
           "unity": 38,
           "roblox": 122
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.828Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.044Z"
       },
       "EXPERIENCE:exp_pg739o": {
         "source": "EXPERIENCE",
         "verifiedApplications": 292,
-        "verifiedFailures": 142,
+        "verifiedFailures": 143,
         "firstPasses": 10,
         "failureSignatureClears": 119,
-        "regressionFailures": 142,
-        "primaryDomainMatches": 47,
+        "regressionFailures": 143,
+        "primaryDomainMatches": 48,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 49,
@@ -21568,7 +21569,7 @@
           "village-dungeons": 23,
           "monster-adventure": 21,
           "bug-defense": 25,
-          "ant-simulator": 39,
+          "ant-simulator": 40,
           "fantasy-survival": 40,
           "line-defense": 16,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 10,
@@ -21580,23 +21581,23 @@
           "horror-escape-room": 17
         },
         "targets": {
-          "web": 275,
+          "web": 276,
           "unity": 38,
           "roblox": 121
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.828Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.044Z"
       },
       "EXPERIENCE:supervised_bug-defense_35476177742_revise": {
         "source": "EXPERIENCE",
         "verifiedApplications": 292,
-        "verifiedFailures": 137,
+        "verifiedFailures": 138,
         "firstPasses": 10,
         "failureSignatureClears": 119,
-        "regressionFailures": 137,
-        "primaryDomainMatches": 47,
+        "regressionFailures": 138,
+        "primaryDomainMatches": 48,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 49,
@@ -21606,7 +21607,7 @@
           "village-dungeons": 22,
           "monster-adventure": 21,
           "bug-defense": 26,
-          "ant-simulator": 39,
+          "ant-simulator": 40,
           "fantasy-survival": 40,
           "line-defense": 16,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 10,
@@ -21618,23 +21619,23 @@
           "horror-escape-room": 17
         },
         "targets": {
-          "web": 275,
+          "web": 276,
           "unity": 38,
           "roblox": 116
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.828Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.044Z"
       },
       "EXPERIENCE:exp_rg6lvy": {
         "source": "EXPERIENCE",
         "verifiedApplications": 291,
-        "verifiedFailures": 134,
+        "verifiedFailures": 135,
         "firstPasses": 10,
         "failureSignatureClears": 118,
-        "regressionFailures": 134,
-        "primaryDomainMatches": 46,
+        "regressionFailures": 135,
+        "primaryDomainMatches": 47,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 49,
@@ -21644,7 +21645,7 @@
           "village-dungeons": 22,
           "monster-adventure": 21,
           "bug-defense": 25,
-          "ant-simulator": 38,
+          "ant-simulator": 39,
           "fantasy-survival": 39,
           "line-defense": 16,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 10,
@@ -21656,23 +21657,23 @@
           "horror-escape-room": 17
         },
         "targets": {
-          "web": 272,
+          "web": 273,
           "unity": 38,
           "roblox": 115
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.828Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.045Z"
       },
       "EXPERIENCE:exp_i00mwv": {
         "source": "EXPERIENCE",
         "verifiedApplications": 290,
-        "verifiedFailures": 142,
+        "verifiedFailures": 143,
         "firstPasses": 10,
         "failureSignatureClears": 117,
-        "regressionFailures": 142,
-        "primaryDomainMatches": 47,
+        "regressionFailures": 143,
+        "primaryDomainMatches": 48,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 48,
@@ -21682,7 +21683,7 @@
           "village-dungeons": 23,
           "monster-adventure": 21,
           "bug-defense": 26,
-          "ant-simulator": 39,
+          "ant-simulator": 40,
           "fantasy-survival": 39,
           "line-defense": 16,
           "seed-action-survival-rogu-echoes-of-the-lost-star": 10,
@@ -21694,14 +21695,14 @@
           "horror-escape-room": 17
         },
         "targets": {
-          "web": 273,
+          "web": 274,
           "unity": 37,
           "roblox": 122
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.827Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.045Z"
       },
       "EXPERIENCE:exp_recovery_0283345dd9580a246abbf745": {
         "source": "EXPERIENCE",
@@ -21782,45 +21783,10 @@
       "CODE_PATTERN:pat_130jf9c": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 135,
-        "verifiedFailures": 43,
+        "verifiedFailures": 44,
         "firstPasses": 0,
         "failureSignatureClears": 5,
-        "regressionFailures": 43,
-        "primaryDomainMatches": 18,
-        "primaryDomainMismatches": 0,
-        "games": {
-          "daechung-rpg": 24,
-          "amusement-tycoon": 17,
-          "seed-puzzle-chromatic-cascade": 12,
-          "seed-single-defense-strat-celestial-bastion": 18,
-          "village-dungeons": 13,
-          "bug-defense": 18,
-          "line-defense": 12,
-          "seed-action-survival-rogu-echoes-of-the-lost-star": 7,
-          "seed-casual-realm-weaver": 2,
-          "seed-idle-growth-rpg-crystal-bloom": 6,
-          "seed-story-complete-rpg-chronicles-of-eldoria": 6,
-          "survival": 3,
-          "ant-simulator": 18,
-          "cozy-island": 22
-        },
-        "targets": {
-          "web": 172,
-          "unity": 5,
-          "roblox": 1
-        },
-        "state": "VERIFIED",
-        "lastEvidence": "knowledge_rp1nnn",
-        "lastFailureEvidence": "knowledge_1d8ur09",
-        "lastUpdatedAt": "2026-09-29T19:43:25.786Z"
-      },
-      "CODE_PATTERN:pat_1avbmmv": {
-        "source": "CODE_PATTERN",
-        "verifiedApplications": 135,
-        "verifiedFailures": 43,
-        "firstPasses": 0,
-        "failureSignatureClears": 5,
-        "regressionFailures": 43,
+        "regressionFailures": 44,
         "primaryDomainMatches": 19,
         "primaryDomainMismatches": 0,
         "games": {
@@ -21837,26 +21803,61 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
           "ant-simulator": 19,
-          "cozy-island": 21
+          "cozy-island": 22
         },
         "targets": {
-          "web": 172,
+          "web": 173,
           "unity": 5,
           "roblox": 1
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_rp1nnn",
-        "lastFailureEvidence": "knowledge_1d8ur09",
-        "lastUpdatedAt": "2026-09-29T19:43:25.790Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.046Z"
+      },
+      "CODE_PATTERN:pat_1avbmmv": {
+        "source": "CODE_PATTERN",
+        "verifiedApplications": 135,
+        "verifiedFailures": 44,
+        "firstPasses": 0,
+        "failureSignatureClears": 5,
+        "regressionFailures": 44,
+        "primaryDomainMatches": 20,
+        "primaryDomainMismatches": 0,
+        "games": {
+          "daechung-rpg": 24,
+          "amusement-tycoon": 17,
+          "seed-puzzle-chromatic-cascade": 12,
+          "seed-single-defense-strat-celestial-bastion": 18,
+          "village-dungeons": 13,
+          "bug-defense": 18,
+          "line-defense": 12,
+          "seed-action-survival-rogu-echoes-of-the-lost-star": 7,
+          "seed-casual-realm-weaver": 2,
+          "seed-idle-growth-rpg-crystal-bloom": 6,
+          "seed-story-complete-rpg-chronicles-of-eldoria": 6,
+          "survival": 3,
+          "ant-simulator": 20,
+          "cozy-island": 21
+        },
+        "targets": {
+          "web": 173,
+          "unity": 5,
+          "roblox": 1
+        },
+        "state": "VERIFIED",
+        "lastEvidence": "knowledge_rp1nnn",
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.047Z"
       },
       "CODE_PATTERN:pat_1vgfuno": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 130,
-        "verifiedFailures": 38,
+        "verifiedFailures": 39,
         "firstPasses": 0,
         "failureSignatureClears": 0,
-        "regressionFailures": 38,
-        "primaryDomainMatches": 17,
+        "regressionFailures": 39,
+        "primaryDomainMatches": 18,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 24,
@@ -21871,17 +21872,17 @@
           "seed-idle-growth-rpg-crystal-bloom": 6,
           "seed-story-complete-rpg-chronicles-of-eldoria": 6,
           "survival": 3,
-          "ant-simulator": 17,
+          "ant-simulator": 18,
           "cozy-island": 18
         },
         "targets": {
-          "web": 167,
+          "web": 168,
           "roblox": 1
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_18wz855",
-        "lastFailureEvidence": "knowledge_1h1beww",
-        "lastUpdatedAt": "2026-09-29T19:19:25.774Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.047Z"
       },
       "CODE_PATTERN:pat_3f780w": {
         "source": "CODE_PATTERN",
@@ -22024,11 +22025,11 @@
       "PRACTICE_DISTILLED:practice-distilled:9c328ab0d2941e9c1b3c": {
         "source": "PRACTICE_DISTILLED",
         "verifiedApplications": 207,
-        "verifiedFailures": 71,
+        "verifiedFailures": 72,
         "firstPasses": 10,
         "failureSignatureClears": 88,
-        "regressionFailures": 71,
-        "primaryDomainMatches": 43,
+        "regressionFailures": 72,
+        "primaryDomainMatches": 44,
         "primaryDomainMismatches": 0,
         "games": {
           "amusement-tycoon": 26,
@@ -22045,19 +22046,19 @@
           "survival": 3,
           "cozy-island": 46,
           "horror-escape-room": 17,
-          "ant-simulator": 22,
+          "ant-simulator": 23,
           "fantasy-survival": 14,
           "bug-defense": 6
         },
         "targets": {
-          "web": 197,
+          "web": 198,
           "roblox": 58,
           "unity": 23
         },
         "state": "VERIFIED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.829Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.047Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_0ce73fa4ec23024bd474ad30": {
         "source": "VERIFIED_CAPABILITY",
@@ -22708,62 +22709,62 @@
       "VERIFIED_CAPABILITY:capability_ctrace_8f46ea8c8412790f7b83bfab": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 17,
-        "verifiedFailures": 22,
+        "verifiedFailures": 23,
         "firstPasses": 0,
         "failureSignatureClears": 5,
-        "regressionFailures": 22,
-        "primaryDomainMatches": 26,
+        "regressionFailures": 23,
+        "primaryDomainMatches": 27,
         "primaryDomainMismatches": 0,
         "games": {
-          "ant-simulator": 39
+          "ant-simulator": 40
         },
         "targets": {
-          "web": 39
+          "web": 40
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_1x8ikop",
-        "lastFailureEvidence": "knowledge_ai6jys",
-        "lastUpdatedAt": "2026-09-29T19:43:25.772Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.050Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_a670473591ad9b9fb242be1b": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 17,
-        "verifiedFailures": 22,
+        "verifiedFailures": 23,
         "firstPasses": 0,
         "failureSignatureClears": 5,
-        "regressionFailures": 22,
-        "primaryDomainMatches": 26,
+        "regressionFailures": 23,
+        "primaryDomainMatches": 27,
         "primaryDomainMismatches": 0,
         "games": {
-          "ant-simulator": 39
+          "ant-simulator": 40
         },
         "targets": {
-          "web": 39
+          "web": 40
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_1x8ikop",
-        "lastFailureEvidence": "knowledge_ai6jys",
-        "lastUpdatedAt": "2026-09-29T19:43:25.774Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.050Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_c487582246e9035b791501b3": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 12,
-        "verifiedFailures": 22,
+        "verifiedFailures": 23,
         "firstPasses": 0,
         "failureSignatureClears": 5,
-        "regressionFailures": 22,
-        "primaryDomainMatches": 26,
+        "regressionFailures": 23,
+        "primaryDomainMatches": 27,
         "primaryDomainMismatches": 0,
         "games": {
-          "ant-simulator": 34
+          "ant-simulator": 35
         },
         "targets": {
-          "web": 34
+          "web": 35
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_1x8ikop",
-        "lastFailureEvidence": "knowledge_ai6jys",
-        "lastUpdatedAt": "2026-09-29T19:43:25.772Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.049Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_0f382275217b8135a0aa8d56": {
         "source": "VERIFIED_CAPABILITY",
@@ -23259,11 +23260,11 @@
       "CODE_PATTERN:pat_r3a1fy": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 38,
-        "verifiedFailures": 24,
+        "verifiedFailures": 25,
         "firstPasses": 0,
         "failureSignatureClears": 29,
-        "regressionFailures": 24,
-        "primaryDomainMatches": 6,
+        "regressionFailures": 25,
+        "primaryDomainMatches": 7,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 15,
@@ -23277,28 +23278,28 @@
           "survival": 1,
           "village-dungeons": 2,
           "fantasy-survival": 14,
-          "ant-simulator": 6,
+          "ant-simulator": 7,
           "cozy-island": 7,
           "monster-adventure": 1
         },
         "targets": {
           "unity": 38,
           "roblox": 11,
-          "web": 13
+          "web": 14
         },
-        "state": "VERIFIED",
+        "state": "DEMOTED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.829Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.046Z"
       },
       "CODE_PATTERN:pat_1xg0er9": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 38,
-        "verifiedFailures": 24,
+        "verifiedFailures": 25,
         "firstPasses": 0,
         "failureSignatureClears": 29,
-        "regressionFailures": 24,
-        "primaryDomainMatches": 6,
+        "regressionFailures": 25,
+        "primaryDomainMatches": 7,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 15,
@@ -23312,28 +23313,28 @@
           "survival": 1,
           "village-dungeons": 2,
           "fantasy-survival": 14,
-          "ant-simulator": 6,
+          "ant-simulator": 7,
           "cozy-island": 7,
           "monster-adventure": 1
         },
         "targets": {
           "unity": 38,
           "roblox": 11,
-          "web": 13
+          "web": 14
         },
-        "state": "VERIFIED",
+        "state": "DEMOTED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.828Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.046Z"
       },
       "CODE_PATTERN:pat_vzhsq4": {
         "source": "CODE_PATTERN",
         "verifiedApplications": 38,
-        "verifiedFailures": 24,
+        "verifiedFailures": 25,
         "firstPasses": 0,
         "failureSignatureClears": 29,
-        "regressionFailures": 24,
-        "primaryDomainMatches": 6,
+        "regressionFailures": 25,
+        "primaryDomainMatches": 7,
         "primaryDomainMismatches": 0,
         "games": {
           "daechung-rpg": 15,
@@ -23347,19 +23348,19 @@
           "survival": 1,
           "village-dungeons": 2,
           "fantasy-survival": 14,
-          "ant-simulator": 6,
+          "ant-simulator": 7,
           "cozy-island": 7,
           "monster-adventure": 1
         },
         "targets": {
           "unity": 38,
           "roblox": 11,
-          "web": 13
+          "web": 14
         },
-        "state": "VERIFIED",
+        "state": "DEMOTED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.829Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.046Z"
       },
       "CODE_PATTERN:pat_1x7z0gk": {
         "source": "CODE_PATTERN",
@@ -23984,22 +23985,22 @@
       "VERIFIED_CAPABILITY:capability_ctrace_ca07155796f1d9843b59a64b": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 9,
-        "verifiedFailures": 22,
+        "verifiedFailures": 23,
         "firstPasses": 0,
         "failureSignatureClears": 5,
-        "regressionFailures": 22,
-        "primaryDomainMatches": 26,
+        "regressionFailures": 23,
+        "primaryDomainMatches": 27,
         "primaryDomainMismatches": 0,
         "games": {
-          "ant-simulator": 31
+          "ant-simulator": 32
         },
         "targets": {
-          "web": 31
+          "web": 32
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_1x8ikop",
-        "lastFailureEvidence": "knowledge_ai6jys",
-        "lastUpdatedAt": "2026-09-29T19:43:25.772Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.049Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_12dba6009c4fe760e1a6434c": {
         "source": "VERIFIED_CAPABILITY",
@@ -24127,26 +24128,26 @@
       "VERIFIED_CAPABILITY:capability_ctrace_8d74f51489e0fcd3b8c02e18": {
         "source": "VERIFIED_CAPABILITY",
         "verifiedApplications": 24,
-        "verifiedFailures": 33,
+        "verifiedFailures": 34,
         "firstPasses": 0,
         "failureSignatureClears": 17,
-        "regressionFailures": 33,
-        "primaryDomainMatches": 28,
+        "regressionFailures": 34,
+        "primaryDomainMatches": 29,
         "primaryDomainMismatches": 0,
         "games": {
           "line-defense": 10,
-          "ant-simulator": 28,
+          "ant-simulator": 29,
           "cozy-island": 13,
           "horror-escape-room": 6
         },
         "targets": {
-          "web": 46,
+          "web": 47,
           "roblox": 11
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_1x8ikop",
-        "lastFailureEvidence": "knowledge_ai6jys",
-        "lastUpdatedAt": "2026-09-29T19:43:25.775Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.050Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_768f8bbfda545b8cb89751b2": {
         "source": "VERIFIED_CAPABILITY",
@@ -24782,11 +24783,11 @@
       "EXPERIENCE:exp_system_ai_34373d2f1f6135962e2e0a5d": {
         "source": "EXPERIENCE",
         "verifiedApplications": 22,
-        "verifiedFailures": 41,
+        "verifiedFailures": 42,
         "firstPasses": 0,
         "failureSignatureClears": 22,
-        "regressionFailures": 41,
-        "primaryDomainMatches": 9,
+        "regressionFailures": 42,
+        "primaryDomainMatches": 10,
         "primaryDomainMismatches": 0,
         "games": {
           "fantasy-survival": 12,
@@ -24800,21 +24801,21 @@
           "seed-story-complete-rpg-chronicles-of-eldoria": 1,
           "survival": 1,
           "village-dungeons": 4,
-          "ant-simulator": 9,
+          "ant-simulator": 10,
           "amusement-tycoon": 1,
           "line-defense": 1,
           "seed-puzzle-chromatic-cascade": 1,
           "monster-adventure": 1
         },
         "targets": {
-          "web": 24,
+          "web": 25,
           "unity": 19,
           "roblox": 20
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.828Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.045Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_9fe65cb8b0b9d335e6647eb3": {
         "source": "VERIFIED_CAPABILITY",
@@ -24839,11 +24840,11 @@
       "EXPERIENCE:exp_system_ai_0b0a34e7dbf177b41b7207d9": {
         "source": "EXPERIENCE",
         "verifiedApplications": 60,
-        "verifiedFailures": 60,
+        "verifiedFailures": 61,
         "firstPasses": 1,
         "failureSignatureClears": 60,
-        "regressionFailures": 60,
-        "primaryDomainMatches": 14,
+        "regressionFailures": 61,
+        "primaryDomainMatches": 15,
         "primaryDomainMismatches": 0,
         "games": {
           "cozy-island": 34,
@@ -24861,17 +24862,17 @@
           "village-dungeons": 6,
           "line-defense": 2,
           "monster-adventure": 2,
-          "ant-simulator": 9
+          "ant-simulator": 10
         },
         "targets": {
           "roblox": 68,
-          "web": 34,
+          "web": 35,
           "unity": 18
         },
         "state": "DEMOTED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.828Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.045Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_694d98ebd713acfd3b0a9289": {
         "source": "VERIFIED_CAPABILITY",
@@ -26481,14 +26482,14 @@
       "PLAYBOOK_REUSE:external-black-box-block-blast-run-30": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 18,
-        "verifiedFailures": 33,
+        "verifiedFailures": 34,
         "firstPasses": 0,
         "failureSignatureClears": 18,
-        "regressionFailures": 33,
-        "primaryDomainMatches": 10,
+        "regressionFailures": 34,
+        "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
         "games": {
-          "ant-simulator": 10,
+          "ant-simulator": 11,
           "cozy-island": 12,
           "fantasy-survival": 9,
           "bug-defense": 6,
@@ -26501,26 +26502,26 @@
           "monster-adventure": 1
         },
         "targets": {
-          "web": 22,
+          "web": 23,
           "unity": 18,
           "roblox": 11
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.829Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.048Z"
       },
       "PLAYBOOK_REUSE:external-black-box-cavern-cravers-run-47": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 18,
-        "verifiedFailures": 33,
+        "verifiedFailures": 34,
         "firstPasses": 0,
         "failureSignatureClears": 18,
-        "regressionFailures": 33,
-        "primaryDomainMatches": 10,
+        "regressionFailures": 34,
+        "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
         "games": {
-          "ant-simulator": 10,
+          "ant-simulator": 11,
           "cozy-island": 12,
           "fantasy-survival": 9,
           "bug-defense": 6,
@@ -26533,26 +26534,26 @@
           "monster-adventure": 1
         },
         "targets": {
-          "web": 22,
+          "web": 23,
           "unity": 18,
           "roblox": 11
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.829Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.048Z"
       },
       "PLAYBOOK_REUSE:external-black-box-idle-fantasy-run-42": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 18,
-        "verifiedFailures": 33,
+        "verifiedFailures": 34,
         "firstPasses": 0,
         "failureSignatureClears": 18,
-        "regressionFailures": 33,
-        "primaryDomainMatches": 10,
+        "regressionFailures": 34,
+        "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
         "games": {
-          "ant-simulator": 10,
+          "ant-simulator": 11,
           "cozy-island": 12,
           "fantasy-survival": 9,
           "bug-defense": 6,
@@ -26565,26 +26566,26 @@
           "monster-adventure": 1
         },
         "targets": {
-          "web": 22,
+          "web": 23,
           "unity": 18,
           "roblox": 11
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.829Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.048Z"
       },
       "PLAYBOOK_REUSE:external-black-box-luanti-run-10": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 18,
-        "verifiedFailures": 33,
+        "verifiedFailures": 34,
         "firstPasses": 0,
         "failureSignatureClears": 18,
-        "regressionFailures": 33,
-        "primaryDomainMatches": 10,
+        "regressionFailures": 34,
+        "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
         "games": {
-          "ant-simulator": 10,
+          "ant-simulator": 11,
           "cozy-island": 12,
           "fantasy-survival": 9,
           "bug-defense": 6,
@@ -26597,26 +26598,26 @@
           "monster-adventure": 1
         },
         "targets": {
-          "web": 22,
+          "web": 23,
           "unity": 18,
           "roblox": 11
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.830Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.048Z"
       },
       "PLAYBOOK_REUSE:external-black-box-revengate-run-59": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 18,
-        "verifiedFailures": 33,
+        "verifiedFailures": 34,
         "firstPasses": 0,
         "failureSignatureClears": 18,
-        "regressionFailures": 33,
-        "primaryDomainMatches": 10,
+        "regressionFailures": 34,
+        "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
         "games": {
-          "ant-simulator": 10,
+          "ant-simulator": 11,
           "cozy-island": 12,
           "fantasy-survival": 9,
           "bug-defense": 6,
@@ -26629,26 +26630,26 @@
           "monster-adventure": 1
         },
         "targets": {
-          "web": 22,
+          "web": 23,
           "unity": 18,
           "roblox": 11
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.830Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.049Z"
       },
       "PLAYBOOK_REUSE:external-black-box-sgtpuzzles-run-29": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 18,
-        "verifiedFailures": 33,
+        "verifiedFailures": 34,
         "firstPasses": 0,
         "failureSignatureClears": 18,
-        "regressionFailures": 33,
-        "primaryDomainMatches": 10,
+        "regressionFailures": 34,
+        "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
         "games": {
-          "ant-simulator": 10,
+          "ant-simulator": 11,
           "cozy-island": 12,
           "fantasy-survival": 9,
           "bug-defense": 6,
@@ -26661,26 +26662,26 @@
           "monster-adventure": 1
         },
         "targets": {
-          "web": 22,
+          "web": 23,
           "unity": 18,
           "roblox": 11
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.830Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.049Z"
       },
       "PLAYBOOK_REUSE:external-black-box-shattered-pixel-dungeon-run-4": {
         "source": "PLAYBOOK_REUSE",
         "verifiedApplications": 18,
-        "verifiedFailures": 33,
+        "verifiedFailures": 34,
         "firstPasses": 0,
         "failureSignatureClears": 18,
-        "regressionFailures": 33,
-        "primaryDomainMatches": 10,
+        "regressionFailures": 34,
+        "primaryDomainMatches": 11,
         "primaryDomainMismatches": 0,
         "games": {
-          "ant-simulator": 10,
+          "ant-simulator": 11,
           "cozy-island": 12,
           "fantasy-survival": 9,
           "bug-defense": 6,
@@ -26693,14 +26694,14 @@
           "monster-adventure": 1
         },
         "targets": {
-          "web": 22,
+          "web": 23,
           "unity": 18,
           "roblox": 11
         },
         "state": "RETIRED",
         "lastEvidence": "knowledge_11rd398",
-        "lastFailureEvidence": "knowledge_xfc7lw",
-        "lastUpdatedAt": "2026-09-29T23:06:56.830Z"
+        "lastFailureEvidence": "knowledge_8s0eko",
+        "lastUpdatedAt": "2026-09-29T23:10:25.049Z"
       },
       "VERIFIED_CAPABILITY:capability_ctrace_8305b4f8ffdcc3aaf9882d39": {
         "source": "VERIFIED_CAPABILITY",
@@ -28107,7 +28108,8 @@
       "knowledge_1d8ur09",
       "knowledge_wl5s0h",
       "knowledge_11rd398",
-      "knowledge_xfc7lw"
+      "knowledge_xfc7lw",
+      "knowledge_8s0eko"
     ]
   },
   "graphicsEvolutionMemory": {
@@ -28115,5 +28117,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T23:08:40.128Z"
+  "updatedAt": "2026-09-29T23:10:25.079Z"
 }
