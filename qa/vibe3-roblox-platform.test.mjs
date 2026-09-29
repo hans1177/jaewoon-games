@@ -1,3 +1,4 @@
+// 파일명: qa/vibe3-roblox-platform.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -13,6 +14,40 @@ import {
 } from '../tools/vibe3-roblox-platform.mjs';
 
 const contract=createRobloxPlatformContract();
+test('candidate promotion requires exact native Studio and multiplayer proof without claiming release',()=>{
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const binding={pass:true,sourceRevision:revision,artifactIdentity:artifact};
+  const item={
+    robloxSourceCommit:revision,robloxBuildSourceRevision:revision,robloxBuildArtifactIdentity:artifact,
+    robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,robloxFoundationF0Passed:true,
+    robloxBuildPreflightEvidence:{...binding},
+    robloxFoundationF0Evidence:{...binding,nativeLanguageCompilePassed:true,artifactRunId:42,saveExists:true},
+    robloxInternalVibePlayEvidence:{...binding,artifactRunId:42,authority:'roblox-official-studio-mcp-runtime',
+      actualPlay:true,runtimeVerified:true,officialStudioMcp:true,localPlaceFile:true,onlinePlaceDirectOpen:false,
+      currentSourceArtifactBinding:true,scenarioContractRequired:true,scenarioCoveragePass:true,
+      scenarioContractFingerprint:'sha256:'+'c'.repeat(64),errors:[],
+      runtimeSummary:{consoleErrorCount:0,commercialAudit:{auditProfile:'F9_SOAK',
+        multiplayer:{version:2,pass:true,sessionHash:'session-42',bothClientsStatePass:true,survivorStatePass:true,replacementJoinPass:true},
+        saveRejoin:{restartOk:true,progressionPreserved:true,inventoryPreserved:true}}}}
+  };
+  const gate=value=>validateRobloxReleaseEvidence(value,revision,{stage:'SOURCE_PROMOTION'});
+  assert.equal(gate(item).pass,true);
+  assert.equal(gate(item).releaseClaim,false);
+  assert.equal(validateRobloxReleaseEvidence(item,revision).pass,false,'source promotion cannot satisfy public release');
+  const cases=[
+    x=>{x.robloxInternalVibePlayEvidence.sourceRevision='d'.repeat(40);},
+    x=>{x.robloxInternalVibePlayEvidence.artifactIdentity='sha256:'+'e'.repeat(64);},
+    x=>{x.robloxInternalVibePlayEvidence.artifactRunId=43;},
+    x=>{x.robloxFoundationF0Evidence.nativeLanguageCompilePassed=false;},
+    x=>{x.robloxBuildPreflightEvidence.pass=false;},
+    x=>{x.robloxInternalVibePlayEvidence.runtimeSummary.commercialAudit.multiplayer.replacementJoinPass=false;},
+    x=>{x.robloxInternalVibePlayEvidence.runtimeSummary.commercialAudit.auditProfile='FAST_DEEP';},
+    x=>{x.robloxInternalVibePlayEvidence.runtimeSummary.commercialAudit.saveRejoin.inventoryPreserved=false;},
+    x=>{x.robloxInternalVibePlayEvidence.commercialRegressionDetected=true;},
+    x=>{x.robloxInternalVibePlayEvidence.errors.push({type:'runtime-error'});}
+  ];
+  for(const mutate of cases){const copy=structuredClone(item);mutate(copy);assert.equal(gate(copy).pass,false);}
+});
 assert.equal(contract.platform,'ROBLOX');
 assert.equal(contract.roadmapPhase,'ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE');
 assert.equal(contract.parallelPipeline,false);

@@ -1,7 +1,28 @@
+# 파일명: .github/workflows/company-development-roblox-post-runtime-qa.yml
 name: Company DEVELOPMENT_CONFIRMED Roblox Runtime Foundation QA
 run-name: Roblox runtime foundation QA · ${{ inputs.game_id || 'scan' }}
 
 on:
+  workflow_call:
+    secrets:
+      ROBLOX_OPEN_CLOUD_API_KEY:
+        required: false
+    inputs:
+      retry_open_cloud_only:
+        type: boolean
+        default: false
+      game_id:
+        required: true
+        type: string
+      candidate_revision:
+        required: true
+        type: string
+      control_revision:
+        required: true
+        type: string
+      candidate_context:
+        required: true
+        type: string
   push:
     branches: [main]
     paths:
@@ -43,6 +64,7 @@ concurrency:
 
 jobs:
   dedupe:
+    if: inputs.candidate_context == ''
     name: collapse duplicate runtime foundation scans
     runs-on: ubuntu-slim
     timeout-minutes: 3
@@ -569,6 +591,9 @@ jobs:
           });
           const f9Ids=[];
           const studioFollowupIds=[];
+          const initialStudioCandidates=new Map(candidates.map(item=>[
+            item.gameId,JSON.stringify(planLocalStudioCandidates({queue:{items:[item]},roadmap,requestedGameId:String(item.gameId||''),repoRoot:process.cwd()}).include||[])
+          ]));
           const stamp=new Date().toISOString();
           const multiplayerRequirementFor=item=>{
             const rel=String(item.designBaselineSource||'').trim();
@@ -609,7 +634,8 @@ jobs:
               requestedGameId:String(item.gameId||''),
               repoRoot:process.cwd(),
             });
-            if((matrix.include||[]).some(row=>row.gameId===item.gameId))studioFollowupIds.push(item.gameId);
+            if((matrix.include||[]).some(row=>row.gameId===item.gameId)
+              &&JSON.stringify(matrix.include||[])!==initialStudioCandidates.get(item.gameId))studioFollowupIds.push(item.gameId);
           };
 
           for(const item of candidates){
@@ -1527,7 +1553,7 @@ jobs:
           echo "ROBLOX_F9_SCAN_DISPATCHED=candidates=$candidate_count"
 
       - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
-        if: ${{ false }} # TEMP: floating-character Studio sessions paused
+        if: ${{ inputs.retry_open_cloud_only != true }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -1583,7 +1609,7 @@ jobs:
       - name: Checkout current canonical implementation
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ inputs.control_revision || 'main' }}
           path: main
           fetch-depth: 1
           fetch-tags: false
@@ -1600,6 +1626,24 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Download isolated candidate context
+        if: inputs.candidate_context != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.candidate_context }}
+          path: candidate-context
+
+      - name: Bind isolated candidate context without canonical state mutation
+        if: inputs.candidate_context != ''
+        shell: powershell
+        env:
+          CANDIDATE_REVISION: ${{ inputs.candidate_revision }}
+          CANDIDATE_GAME: ${{ inputs.game_id }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('candidate-context/development-queue.json','utf8'));const i=q.items?.[0];if(q.items?.length!==1||i.gameId!==process.env.CANDIDATE_GAME||i.robloxSourceCommit!==process.env.CANDIDATE_REVISION||!/^[0-9a-f]{40}$/.test(i.robloxSourceCommit)||!/^[-a-zA-Z0-9_]+$/.test(i.gameId))throw Error('candidate context identity mismatch');fs.copyFileSync('candidate-context/development-queue.json','runtime/development-queue.json');fs.mkdirSync('main/roblox-games/'+i.gameId,{recursive:true});fs.copyFileSync('candidate-context/launch-mvp.json','main/roblox-games/'+i.gameId+'/launch-mvp.json');"
+          if ($LASTEXITCODE -ne 0) { throw 'isolated candidate context rejected' }
+
       - name: Select exact runtime-foundation or internal-release artifacts needing official Studio MCP play
         id: plan
         working-directory: main
@@ -1610,10 +1654,12 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
-          & git -C ../runtime fetch --no-tags origin company-runtime
-          if ($LASTEXITCODE -ne 0) { throw 'runtime fetch failed' }
-          & git -C ../runtime reset --hard origin/company-runtime
-          if ($LASTEXITCODE -ne 0) { throw 'runtime refresh failed' }
+          if ('${{ inputs.candidate_context }}' -eq '') {
+            & git -C ../runtime fetch --no-tags origin company-runtime
+            if ($LASTEXITCODE -ne 0) { throw 'runtime fetch failed' }
+            & git -C ../runtime reset --hard origin/company-runtime
+            if ($LASTEXITCODE -ne 0) { throw 'runtime refresh failed' }
+          }
           $requested = [string]$env:REQUESTED_GAME_ID
           if (-not $requested -and $env:EVENT_NAME -eq 'push' -and $env:TRIGGER_CHANGED -eq 'true') {
             $triggerPath = 'roblox-games/.company-runtime-trigger'
@@ -1627,6 +1673,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Studio candidate planning failed' }
           $plan = Get-Content $planOutput -Raw | ConvertFrom-Json
           $include = @($plan.include)
+          if ('${{ inputs.candidate_context }}' -ne '' -and $include.Count -ne 1) { throw 'candidate must schedule exactly one Studio playtest' }
           $matrix = @{ include = $include } | ConvertTo-Json -Compress -Depth 12
           "matrix=$matrix" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           "count=$($include.Count)" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
@@ -1649,7 +1696,7 @@ jobs:
       - name: Checkout central policy and helper
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ inputs.control_revision || 'main' }}
           path: main
           fetch-depth: 1
           fetch-tags: false
@@ -1665,6 +1712,24 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Download isolated candidate context
+        if: inputs.candidate_context != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.candidate_context }}
+          path: candidate-context
+
+      - name: Bind isolated candidate context without canonical state mutation
+        if: inputs.candidate_context != ''
+        shell: powershell
+        env:
+          CANDIDATE_REVISION: ${{ inputs.candidate_revision }}
+          CANDIDATE_GAME: ${{ inputs.game_id }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('candidate-context/development-queue.json','utf8'));const i=q.items?.[0];if(q.items?.length!==1||i.gameId!==process.env.CANDIDATE_GAME||i.robloxSourceCommit!==process.env.CANDIDATE_REVISION||!/^[0-9a-f]{40}$/.test(i.robloxSourceCommit)||!/^[-a-zA-Z0-9_]+$/.test(i.gameId))throw Error('candidate context identity mismatch');fs.copyFileSync('candidate-context/development-queue.json','runtime/development-queue.json');fs.mkdirSync('main/roblox-games/'+i.gameId,{recursive:true});fs.copyFileSync('candidate-context/launch-mvp.json','main/roblox-games/'+i.gameId+'/launch-mvp.json');"
+          if ($LASTEXITCODE -ne 0) { throw 'isolated candidate context rejected' }
 
       - name: Verify official Studio MCP policy and runner
         id: mcp_preflight
@@ -1834,7 +1899,7 @@ jobs:
           run-id: ${{ matrix.artifactRunId }}
 
       - name: Rebuild byte-identical exact artifact when GitHub artifact API is unavailable
-        if: steps.mcp_preflight.outputs.setting_blocked != 'true' && steps.artifact_download.outcome != 'success'
+        if: inputs.candidate_context == '' && steps.mcp_preflight.outputs.setting_blocked != 'true' && steps.artifact_download.outcome != 'success'
         shell: powershell
         env:
           GAME_ID: ${{ matrix.gameId }}
@@ -2043,6 +2108,7 @@ jobs:
             Write-Host "ROBLOX_STUDIO_MCP_SESSION_ATTEMPT=$attempt/$maxSessionAttempts"
             $runnerArgs = @(
               '--mode=mcp-run',
+              "--control-revision=${{ inputs.control_revision || github.sha }}",
               "--mcp-command=$mcpCommandForAttempt",
               "--studio-name=$env:VIBE2_STUDIO_EXPECTED_NAME",
               "--output=$result",
@@ -2266,10 +2332,12 @@ jobs:
             exit 0
           }
 
-          git -C runtime fetch --no-tags origin company-runtime
-          if ($LASTEXITCODE -ne 0) { throw 'company-runtime refresh failed' }
-          git -C runtime reset --hard origin/company-runtime
-          if ($LASTEXITCODE -ne 0) { throw 'company-runtime reset failed' }
+          if ('${{ inputs.candidate_context }}' -eq '') {
+            git -C runtime fetch --no-tags origin company-runtime
+            if ($LASTEXITCODE -ne 0) { throw 'company-runtime refresh failed' }
+            git -C runtime reset --hard origin/company-runtime
+            if ($LASTEXITCODE -ne 0) { throw 'company-runtime reset failed' }
+          }
 
           $persistArgs = @(
             '--mode=persist',
@@ -2287,6 +2355,14 @@ jobs:
           )
           & node 'main/tools/company-development-roblox-studio-local-play.mjs' @persistArgs
           if ($LASTEXITCODE -ne 0) { throw 'Studio MCP play evidence validation failed' }
+
+          if ('${{ inputs.candidate_context }}' -ne '') {
+            New-Item -ItemType Directory -Force -Path candidate-result | Out-Null
+            Copy-Item runtime/development-queue.json candidate-result/development-queue.json
+            Copy-Item $env:VIBE2_STUDIO_RUNTIME_RESULT candidate-result/studio-runtime.json
+            Write-Host 'ROBLOX_CANDIDATE_STUDIO_CANONICAL_WRITE=NO'
+            exit 0
+          }
 
           git -C runtime config user.name 'jaewoon-roblox-studio-mcp'
           git -C runtime config user.email 'actions@users.noreply.github.com'
@@ -2335,6 +2411,15 @@ jobs:
             throw "ROBLOX_STUDIO_MCP_PLAY_FAILED:$env:GAME_ID"
           }
 
+      - name: Upload isolated candidate Studio evidence
+        if: always() && inputs.candidate_context != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-candidate-studio-${{ matrix.gameId }}
+          path: candidate-result
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Close owned Studio after evidence persistence
         if: always()
         shell: powershell
@@ -2355,7 +2440,7 @@ jobs:
           }
 
       - name: Refill existing 24H development loop after verified play
-        if: steps.studio_play.outcome == 'success' && steps.persist.outcome == 'success'
+        if: inputs.candidate_context == '' && steps.studio_play.outcome == 'success' && steps.persist.outcome == 'success'
         shell: powershell
         env:
           GH_TOKEN: ${{ github.token }}

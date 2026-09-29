@@ -1,3 +1,4 @@
+# 파일명: .github/workflows/vibe2-continuous-core.yml
 name: Vibe2 Continuous Core
 
 on:
@@ -2595,7 +2596,11 @@ jobs:
           while IFS='|' read -r task_id candidate_branch target game_id; do
             [ -n "$task_id" ] || continue
             [ -n "$candidate_branch" ] || continue
-            echo "PLATFORM_F9_VERIFIED=${target:-unknown}:${game_id:-unknown}:$task_id"
+            if [ "$target" = web ]; then
+              echo "PLATFORM_F9_VERIFIED=web:${game_id:-unknown}:$task_id"
+            else
+              echo "PLATFORM_RUNTIME_VERIFICATION_REQUIRED=${target:-unknown}:${game_id:-unknown}:$task_id"
+            fi
             echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCH_ATTEMPTED=${target:-unknown}:${game_id:-unknown}:$task_id"
             body="$(jq -nc --arg branch "$candidate_branch" '{ref:"main",inputs:{candidate_branch:$branch}}')"
             dispatched=0

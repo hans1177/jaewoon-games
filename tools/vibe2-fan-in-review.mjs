@@ -454,7 +454,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
         evidence.add('signal-continuity:NEXT_CAUSAL_INPUT');
       }
       reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult)||clean(task.id),pass:true,missing:[],releaseBlocked:false,releaseBlocker:null,rootCause,neuralEventRoute,supervisorNeuralEventRoute,presentationRuntimeVisual});
-      releaseCandidates.push({taskId:clean(task.id),candidateBranch,target:platformTarget,gameId:clean(task.gameId),f0ToF9Verified:platformTarget==='web'?true:undefined,f9Verified:true});
+      releaseCandidates.push({taskId:clean(task.id),candidateBranch,target:platformTarget,gameId:clean(task.gameId),f0ToF9Verified:platformTarget==='web',f9Verified:platformTarget==='web'});
       if(platformTarget==='web'){
         return{
           ...task,

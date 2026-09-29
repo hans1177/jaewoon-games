@@ -1,3 +1,4 @@
+// 파일명: tools/vibe3-roblox-platform.mjs
 // Vibe3 Roblox platform adapter.
 // This is an adapter inside the existing V3 Pump execution chain, not a parallel pipeline.
 // Live publishing is opt-in (--execute) and credentials are read only from environment variables.
@@ -314,9 +315,29 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
   return Object.freeze(evidence);
 }
 
-export function validateRobloxReleaseEvidence(evidence={},sourceRevision=''){
+export function validateRobloxReleaseEvidence(evidence={},sourceRevision='',{stage='RELEASE'}={}){
   const blocked=[];
   const revision=clean(sourceRevision||evidence.sourceRevision);
+  // 메인 반영 전 후보 검수. 공개 배포 판정과 분리하며 실제 Studio 증거를 요구한다.
+  if(stage==='SOURCE_PROMOTION'){
+    const item=evidence,play=item.robloxInternalVibePlayEvidence||{};
+    const pre=item.robloxBuildPreflightEvidence||{},f0=item.robloxFoundationF0Evidence||{};
+    const identity=clean(item.robloxBuildArtifactIdentity);
+    const audit=play.runtimeSummary?.commercialAudit||{},multi=audit.multiplayer||{};
+    if(!COMMIT40.test(revision)||item.robloxSourceCommit!==revision||item.robloxBuildSourceRevision!==revision)blocked.push('exact-source-revision-mismatch');
+    if(!/^sha256:[0-9a-f]{64}$/i.test(identity)||item.robloxBuildOrPackagePassed!==true)blocked.push('build-or-package-not-passed');
+    for(const [name,row] of [['preflight',pre],['f0',f0],['studio',play]]){
+      if(row.pass!==true||row.sourceRevision!==revision||row.artifactIdentity!==identity)blocked.push(name+'-exact-evidence-missing');
+    }
+    if(item.robloxBuildPreflightPassed!==true||item.robloxFoundationF0Passed!==true||f0.nativeLanguageCompilePassed!==true)blocked.push('candidate-source-preflight-not-passed');
+    if(Number(f0.artifactRunId)<=0||Number(play.artifactRunId)!==Number(f0.artifactRunId))blocked.push('exact-artifact-run-mismatch');
+    if(play.authority!=='roblox-official-studio-mcp-runtime'||play.actualPlay!==true||play.runtimeVerified!==true||play.officialStudioMcp!==true||play.localPlaceFile!==true||play.onlinePlaceDirectOpen!==false||play.currentSourceArtifactBinding!==true)blocked.push('actual-candidate-studio-evidence-missing');
+    if(play.scenarioContractRequired!==true||play.scenarioCoveragePass!==true||!play.scenarioContractFingerprint||audit.auditProfile!=='F9_SOAK')blocked.push('candidate-scenario-audit-missing');
+    if(!Array.isArray(play.errors)||play.errors.length||Number(play.runtimeSummary?.consoleErrorCount)!==0||play.commercialRegressionDetected===true)blocked.push('candidate-runtime-regression');
+    if(multi.version!==2||multi.pass!==true||!multi.sessionHash||multi.bothClientsStatePass!==true||multi.survivorStatePass!==true||multi.replacementJoinPass!==true)blocked.push('actual-multiplayer-evidence-missing');
+    if(f0.saveExists===true&&(audit.saveRejoin?.restartOk!==true||audit.saveRejoin?.progressionPreserved!==true||audit.saveRejoin?.inventoryPreserved!==true))blocked.push('datastore-rejoin-not-passed');
+    return Object.freeze({pass:blocked.length===0,sourceRevision:revision,blockedReasons:Object.freeze(blocked),authority:'roblox-candidate-source-promotion-gate',releaseClaim:false});
+  }
   if(['HEADLESS_FAST_MVP','HEADLESS_SOURCE_PREFLIGHT_F0'].includes(upper(evidence.validationMode))){
     return Object.freeze({
       pass:false,
