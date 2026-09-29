@@ -183,6 +183,24 @@ local function pressurePassiveFor(role,humans,monsters)
  return nil
 end
 
+local loreById={}
+for _,item in ipairs(C.Lore or{})do loreById[item.Id]=item end
+local function foundLoreFrom(value)
+ local found={}
+ if typeof(value)=="table"then
+  for _,id in ipairs(value)do if typeof(id)=="string"and loreById[id]then found[id]=true end end
+ elseif typeof(value)=="string"then
+  for id in string.gmatch(value,"[^,]+")do if loreById[id]then found[id]=true end end
+ end
+ return found
+end
+local function foundLoreList(found)
+ local out={}
+ for _,item in ipairs(C.Lore or{})do if found[item.Id]then table.insert(out,item.Id)end end
+ return out
+end
+local function foundLoreAttribute(found)return table.concat(foundLoreList(found),",")end
+
 local cosmeticById={}
 for _,item in ipairs(C.Cosmetics or{})do cosmeticById[item.Id]=item end
 local function ownedCosmeticsFrom(value)
@@ -207,6 +225,7 @@ local function load(p)
  p:SetAttribute("MonsterPreference","ANY");p:SetAttribute("SoloRole","SURVIVOR");p:SetAttribute("LobbySelectionConfirmed",false)
  p:SetAttribute("MonsterXP",0);p:SetAttribute("Coins",0);p:SetAttribute("RoundsSinceMonster",0)
  p:SetAttribute("OwnedCosmetics","DEFAULT");p:SetAttribute("EquippedCosmetic","DEFAULT");p:SetAttribute("CosmeticFeedback","")
+ p:SetAttribute("FoundLore","");p:SetAttribute("LoreCount",0);p:SetAttribute("LoreTotal",#(C.Lore or{}));p:SetAttribute("LoreFeedback","");p:SetAttribute("LoreTitle","야간 신입")
  p:SetAttribute("MonsterForm","DRACULA");p:SetAttribute("HumanForm","BROADCAST");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0)
  p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0);p:SetAttribute("RoundScore",0)
  p:SetAttribute("LastRoundReward",0);p:SetAttribute("LastRoundWinner","");p:SetAttribute("LastRoundRole","")
@@ -228,6 +247,9 @@ local function load(p)
   local equipped=typeof(d.EquippedCosmetic)=="string"and d.EquippedCosmetic or"DEFAULT"
   if not owned[equipped]or not cosmeticById[equipped]then equipped="DEFAULT"end
   p:SetAttribute("OwnedCosmetics",ownedCosmeticsAttribute(owned));p:SetAttribute("EquippedCosmetic",equipped)
+  local found=foundLoreFrom(d.FoundLore);local count=#foundLoreList(found)
+  p:SetAttribute("FoundLore",foundLoreAttribute(found));p:SetAttribute("LoreCount",count);p:SetAttribute("LoreTotal",#(C.Lore or{}))
+  p:SetAttribute("LoreTitle",count>=(#(C.Lore or{}))and"심야 괴담 조사원"or count>=5 and"야간 조사원"or"야간 신입")
  end
 end
 local function save(p)
@@ -237,7 +259,7 @@ local function save(p)
  pcall(function()store:SetAsync("p:"..p.UserId,{
   MonsterXP=p:GetAttribute("MonsterXP")or 0,Coins=p:GetAttribute("Coins")or 0,
   RoundsSinceMonster=p:GetAttribute("RoundsSinceMonster")or 0,MonsterForm=p:GetAttribute("MonsterForm")or"DRACULA",HumanForm=p:GetAttribute("HumanForm")or"BROADCAST",
-  OwnedCosmetics=ownedCosmeticsList(owned),EquippedCosmetic=equipped
+  OwnedCosmetics=ownedCosmeticsList(owned),EquippedCosmetic=equipped,FoundLore=foundLoreList(foundLoreFrom(p:GetAttribute("FoundLore")))
  })end)
 end
 local function arenaPart(f,name,size,pos,color,material)
@@ -297,6 +319,25 @@ local function cloneWholeAsset(assetId,parent,pos,scale)
  pcall(function()clone:ScaleTo(scale or 1)end);pcall(function()clone:PivotTo(CFrame.new(pos))end)
  return clone
 end
+local function addLoreCollectible(f,id,pos)
+ local item=loreById[id];if not item then return nil end
+ local base=arenaPart(f,"Lore_"..id,Vector3.new(2.6,.5,3.2),pos,Color3.fromRGB(92,83,72),Enum.Material.WoodPlanks);base.CanCollide=false
+ local paper=arenaPart(f,"LorePaper_"..id,Vector3.new(2.1,.12,2.7),pos+Vector3.new(0,.32,0),Color3.fromRGB(224,215,184),Enum.Material.SmoothPlastic);paper.CanCollide=false
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="LorePrompt";prompt.ObjectText=item.Name;prompt.ActionText="조사";prompt.HoldDuration=.45;prompt.MaxActivationDistance=9;prompt.RequiresLineOfSight=false;prompt.Parent=base
+ prompt.Triggered:Connect(function(p)
+  if state=="RESULT"then return end
+  local found=foundLoreFrom(p:GetAttribute("FoundLore"))
+  if found[id]then p:SetAttribute("LoreFeedback","ALREADY:"..id);return end
+  found[id]=true
+  local count=#foundLoreList(found)
+  p:SetAttribute("FoundLore",foundLoreAttribute(found));p:SetAttribute("LoreCount",count);p:SetAttribute("LoreTotal",#(C.Lore or{}))
+  p:SetAttribute("LoreTitle",count>=(#(C.Lore or{}))and"심야 괴담 조사원"or count>=5 and"야간 조사원"or"야간 신입")
+  p:SetAttribute("LoreFeedback","FOUND:"..id..":"..tostring(count))
+  save(p)
+ end)
+ return base
+end
+
 local function addObjectiveStation(f,name,pos,index)
  local base=arenaPart(f,"EnergyStation_"..name,Vector3.new(7,5,4),pos,Color3.fromRGB(62,72,86),Enum.Material.Metal)
  local screen=arenaPart(f,"EnergyScreen_"..name,Vector3.new(4.6,2.2,.35),pos+Vector3.new(0,.5,-2.2),Color3.fromRGB(84,181,235),Enum.Material.Neon);screen.CanCollide=false
@@ -823,6 +864,8 @@ local function makeArena(map)
   addSurpriseTrigger(f,"SCHOOL_GYM_BALL","SCHOOL_BALL",Vector3.new(50,3,50),11,"체육관 공이 혼자 굴러간다")
   addSurpriseTrigger(f,"SCHOOL_BOARD_GAG","SCHOOL_BOARD",Vector3.new(-66,5,-28),10,"오늘의 숙제: 살아서 집 가기")
   addSurpriseTrigger(f,"SCHOOL_CAFETERIA","SCHOOL_TRAY",Vector3.new(-51,3,39),10,"급식 당번이 아직 남아 있다…")
+  addLoreCollectible(f,"SCHOOL_01",Vector3.new(-43,1.1,-34));addLoreCollectible(f,"SCHOOL_02",Vector3.new(14,1.1,-62))
+  addLoreCollectible(f,"SCHOOL_03",Vector3.new(63,1.1,65));addLoreCollectible(f,"SCHOOL_04",Vector3.new(-64,1.1,54))
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  elseif map.Id=="HOSPITAL"then
   -- 폐병원: 좁은 중앙 복도와 병실, 수술실, 지하실 느낌의 저천장 구역.
@@ -877,6 +920,7 @@ local function makeArena(map)
   addSurpriseTrigger(f,"HOSPITAL_MONITOR","HOSPITAL_MONITOR",Vector3.new(43,4,57),10,"삐— 배터리 1%")
   addSurpriseTrigger(f,"HOSPITAL_XRAY","HOSPITAL_XRAY",Vector3.new(118,4,-82),10,"엑스레이에 사람 말고 오리가 찍혔다")
   addSurpriseTrigger(f,"HOSPITAL_BED","HOSPITAL_BED",Vector3.new(-118,3,-82),11,"빈 침대가 혼자 한 칸 움직였다")
+  addLoreCollectible(f,"HOSPITAL_01",Vector3.new(-96,1.1,-94));addLoreCollectible(f,"HOSPITAL_02",Vector3.new(-54,1.1,58));addLoreCollectible(f,"HOSPITAL_03",Vector3.new(-132,1.1,122))
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  elseif map.Id=="THEME_PARK"then
   -- 폐놀이공원: 넓은 야외, 내부 공간, 매표소, 숨는 부스와 복잡한 우회 동선.
@@ -937,6 +981,7 @@ local function makeArena(map)
   addSurpriseTrigger(f,"PARK_HORSE","PARK_HORSE",Vector3.new(-32,4,8),12,"회전목마 말이 나만 본다")
   addSurpriseTrigger(f,"PARK_ARCADE","PARK_ARCADE",Vector3.new(-118,4,-92),11,"아케이드 최고점수 이름: HELP")
   addSurpriseTrigger(f,"PARK_POPCORN","PARK_POPCORN",Vector3.new(-118,3,108),10,"팝콘 기계가 혼자 한 알씩 튀긴다")
+  addLoreCollectible(f,"PARK_01",Vector3.new(-24,1.1,-42));addLoreCollectible(f,"PARK_02",Vector3.new(-44,1.1,16));addLoreCollectible(f,"PARK_03",Vector3.new(47,1.1,45))
   addEscapeGate(f,map.Id,Vector3.new(0,6,158))
  end
 
