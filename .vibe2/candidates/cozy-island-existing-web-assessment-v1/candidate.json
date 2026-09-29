@@ -1,0 +1,38 @@
+{
+  "summary": "Visual enhancement and gameplay integration for the cozy island build-up",
+  "expectedEffect": "Improved visual identity and gameplay integration for the cozy island build-up",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "  <script type=\"module\" src=\"./render-performance.js\"></script>",
+      "replace": "  <script type=\"module\" src=\"./cozy-balance-v5.js\"></script>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "visualIdentityCheck",
+    "gameplayIntegrationCheck",
+    "impactVfxCheck"
+  ],
+  "graphicsReplacementReport": {
+    "actualCount": 1,
+    "changedSurfaces": [
+      "VFX"
+    ],
+    "reuseModesUsed": [
+      "ADAPT_RESTYLE_AND_RETARGET"
+    ],
+    "replacementEvidence": [
+      {
+        "surface": "VFX",
+        "path": "index.html",
+        "bindingKey": "impactVfx",
+        "reuseMode": "ADAPT_RESTYLE_AND_RETARGET",
+        "sourceEvidence": "const impactVfx = createImpactVfx()"
+      }
+    ],
+    "before": "<script type=\"module\" src=\"./render-performance.js\"></script>",
+    "after": "<script type=\"module\" src=\"./cozy-balance-v5.js\"></script>"
+  }
+}
