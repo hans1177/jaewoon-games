@@ -1,3 +1,4 @@
+# 파일명: .github/workflows/vibe2-recovery-fast.yml
 name: Vibe2 Recovery Fast
 
 on:
@@ -50,7 +51,7 @@ jobs:
 
           for attempt in 1 2 3; do
             rm -rf /tmp/vibe2-recovery-control
-            git fetch origin main vibe2-unreal-core --quiet
+            git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git worktree prune
             git worktree add --detach /tmp/vibe2-recovery-control origin/vibe2-unreal-core >/dev/null
             control=/tmp/vibe2-recovery-control
