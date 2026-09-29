@@ -3435,6 +3435,25 @@ test('presentation BUILD_UP uses adaptive 1-60 replacement across models VFX mot
   assert.match(task.goal,/같은 카드\/그리드\/탭 템플릿/);
 });
 
+test('Roblox presentation ownership includes gameplay client before QA camera and palette modules',()=>{
+  const root=tempRepo();
+  const gameId='presentation-client-owner';
+  const dir=path.join(root,'roblox-games',gameId);
+  for(const [file,body] of [
+    ['client/Game.client.luau','local gui=Instance.new("ScreenGui")\\n'],
+    ['shared/QACamera.luau','return {}\\n'],
+    ['shared/VisualStyle.luau','return {}\\n']
+  ]){
+    const full=path.join(dir,file);
+    fs.mkdirSync(path.dirname(full),{recursive:true});
+    fs.writeFileSync(full,body,'utf8');
+  }
+  const project={gameId,name:'Presentation Client Owner',engine:'roblox',target:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`};
+  const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'PRESENTATION');
+  assert.ok(task);
+  assert.ok(task.responsibleFiles.includes(`roblox-games/${gameId}/client/Game.client.luau`));
+});
+
 test('studio PRESENTATION focus receives the same adaptive replacement contract inside existing BUILD_UP',()=>{
   const root=tempRepo();
   const gameId='adaptive-studio-presentation';
