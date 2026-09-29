@@ -37,7 +37,14 @@ local foundationRemote=RS:WaitForChild("RuntimeFoundationReport")
 
 -- 사운드
 local function sound(name,id,volume,looped)
- local s=Instance.new("Sound");s.Name=name;s.SoundId=id;s.Volume=volume;s.Looped=looped;s.Parent=SoundService;return s
+local bgm=sound("CozyBackground",C.Audio.Background,.16,true);
+local battleBgm=sound("CozyBattle",C.Audio.Battle,.2,true);
+local actionSfx=sound("CozyAction",C.Audio.Action,.28,false);
+local victorySfx=sound("CozyVictory",C.Audio.Victory,.3,false);
+local resourceSfx=sound("CozyResource",C.Audio.Resource,.22,false);
+local buildSfx=sound("CozyBuild",C.Audio.Build,.25,false);
+local hitSfx=sound("CozyHit",C.Audio.Hit,.24,false);
+local captureSfx=sound("CozyCapture",C.Audio.Capture,.34,false);
 end
 local bgm=sound("CozyBackground",C.Audio.Background,.16,true)
 local battleBgm=sound("CozyBattle",C.Audio.Battle,.2,true)
