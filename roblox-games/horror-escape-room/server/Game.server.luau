@@ -183,8 +183,19 @@ local function pressurePassiveFor(role,humans,monsters)
  return nil
 end
 
+local rolloutConfig=C.ContentRollout or{}
+local rolloutWaves=rolloutConfig.Waves or{}
+local activeRolloutWave=math.clamp(math.floor(tonumber(rolloutConfig.ActiveWave)or 1),1,math.max(1,#rolloutWaves))
+local activeArchiveIds={}
+for waveIndex,wave in ipairs(rolloutWaves)do
+ if waveIndex<=activeRolloutWave then
+  for _,id in ipairs(wave.Entries or{})do activeArchiveIds[id]=true end
+ end
+end
+local function isArchiveEntryActive(id)return activeArchiveIds[id]==true end
+
 local discoveryById={}
-for _,item in ipairs(C.Discoveries or{})do discoveryById[item.Id]=item end
+for _,item in ipairs(C.Lore or{})do if item.Type=="SIGHTING"then discoveryById[item.Id]=item end end
 local function discoveredFrom(value)
  local found={}
  if typeof(value)=="table"then
@@ -196,7 +207,7 @@ local function discoveredFrom(value)
 end
 local function discoveredList(found)
  local out={}
- for _,item in ipairs(C.Discoveries or{})do if found[item.Id]then table.insert(out,item.Id)end end
+ for _,item in ipairs(C.Lore or{})do if item.Type=="SIGHTING"and found[item.Id]then table.insert(out,item.Id)end end
  return out
 end
 local function discoveryTitleFor(count)
@@ -207,7 +218,7 @@ end
 local function discoveredAttribute(found)return table.concat(discoveredList(found),",")end
 
 local loreById={}
-for _,item in ipairs(C.Lore or{})do loreById[item.Id]=item end
+for _,item in ipairs(C.Lore or{})do if item.Type~="SIGHTING"then loreById[item.Id]=item end end
 local function foundLoreFrom(value)
  local found={}
  if typeof(value)=="table"then
@@ -223,6 +234,22 @@ local function foundLoreList(found)
  return out
 end
 local function foundLoreAttribute(found)return table.concat(foundLoreList(found),",")end
+local function activeArchiveTotals()
+ local sightings,notes,total=0,0,0
+ for id in pairs(activeArchiveIds)do
+  local item=discoveryById[id]or loreById[id]
+  if item then total+=1;if item.Type=="SIGHTING"then sightings+=1 else notes+=1 end end
+ end
+ return sightings,notes,total
+end
+local function archiveCollectedCount(p)
+ return #discoveredList(discoveredFrom(p:GetAttribute("DiscoveredSurprises")))+#foundLoreList(foundLoreFrom(p:GetAttribute("FoundLore")))
+end
+local function archiveAllWavesLive()return activeRolloutWave>=math.max(1,#rolloutWaves)end
+local function archiveGhostUnlocked(p)
+ local required=math.max(1,tonumber(C.ArchiveGhost and C.ArchiveGhost.RequiredTotal)or 26)
+ return archiveAllWavesLive()and archiveCollectedCount(p)>=required
+end
 
 local cosmeticById={}
 for _,item in ipairs(C.Cosmetics or{})do cosmeticById[item.Id]=item end
