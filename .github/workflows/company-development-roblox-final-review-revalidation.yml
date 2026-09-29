@@ -676,6 +676,8 @@ jobs:
             for(const row of item.robloxCanonicalPublishQueue||[]){
               if(!['PENDING','RETRY_REQUIRED'].includes(String(row?.status||'')))continue;
               if(row.finalReviewPassed!==true||row.f9ReleaseRegressionPassed!==true)continue;
+              if(row.sourceRevision!==item.robloxSourceCommit||row.artifactIdentity!==item.robloxBuildArtifactIdentity)continue;
+              if(item.robloxQualityBuildUpRequired===true||item.robloxStudioLocalPlayRepairRequired===true)continue;
               process.stdout.write([item.gameId,row.cycleId].join('\t')+'\n');
             }
           }

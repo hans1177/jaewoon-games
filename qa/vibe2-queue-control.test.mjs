@@ -273,7 +273,7 @@ test('learning-idle lane reservation uses its own cap instead of game adaptive c
   const queueFile=path.join(dir,'queue.json');
   const controlFile=path.join(dir,'control.json');
   fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[
-    {id:'game',gameId:'g',target:'web',department:'development',type:'implementation',goal:'game',status:'queued',sourceRoot:'web-games/g',responsibleFiles:['index.html']},
+    {id:'game',gameId:'g',target:'web',department:'development',type:'implementation',goal:'game',status:'verified',sourceRoot:'web-games/g',responsibleFiles:['index.html']},
     ...Array.from({length:4},(_,i)=>({id:`learn-${i}`,gameId:`learn-${i}`,target:'web',department:'development',type:'research',goal:'practice',status:'queued',evidence:['learning-practice-only']}))
   ]},null,2));
   fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:20,lastDecision:'HOLD'},null,2));
@@ -1668,7 +1668,7 @@ test('24H plan uses optimistic writes while reserve stays lightweight and fan-in
   assert.match(reserveHeader,/ubuntu-slim/);
   assert.doesNotMatch(reserveHeader,/vibe2-control-state-/);
   assert.match(runner,/runner_pressure: \$\{\{ steps\.queue_state\.outputs\.runner_pressure \}\}/);
-  assert.match(runner,/needs\.plan\.outputs\.learning_idle_queued != '0' && needs\.plan\.outputs\.runner_pressure != 'YES'/);
+  assert.match(runner,/needs\.plan\.outputs\.learning_idle_queued != '0'/);
 
   const fanInStart=core.indexOf('\n  fan_in:');
   const fanInSteps=core.indexOf('\n    steps:',fanInStart);
@@ -1976,4 +1976,18 @@ test('Roblox investment score ranks eligible games and explicit owner hold block
   const selection=selectVibeQueueBatch(queue,{maxConcurrentTasks:1,lane:'game-primary'});
   assert.deepEqual(selection.selected.map(task=>task.id),['high']);
   assert.ok(selection.blocked.some(row=>row.task.id==='held'&&row.reasons.includes('owner-development-hold')));
+});
+
+
+test('production retains one learning worker without allowing direct dispatch to consume four',()=>{
+  for(const state of [{status:'queued'},{status:'running'},{status:'queued',assetProductionLane:true},{status:'queued',department:'system-supervision',type:'inspect',executionLane:'RECOVERY_FAST'},{status:'running',blocker:'candidate-awaiting-qa-and-deployment'}]){
+    const queue=createVibeContinuousQueue({tasks:[
+      {id:'game',gameId:'g',target:'roblox',department:'development',type:'implementation',goal:'repair',...state},
+      ...Array.from({length:4},(_,i)=>({id:`practice-${i}`,gameId:`p-${i}`,target:'web',department:'learning',type:'research',goal:'practice',status:'queued',evidence:['learning-practice-only']}))
+    ]});
+    const first=reserveVibeTaskBatch(queue,{lane:'learning-idle',maxConcurrentTasks:4});
+    assert.equal(first.tasks.length,1);
+    const next=reserveVibeTaskBatch(first.queue,{lane:'learning-idle',maxConcurrentTasks:4});
+    assert.equal(next.tasks.length,0);
+  }
 });

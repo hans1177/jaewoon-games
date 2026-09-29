@@ -172,10 +172,11 @@ test('24H learning cycle persists verified experience and external AI distilled 
   assert.match(workflow,/VIBE2_LEARNING_ALWAYS_ON: 'true'/);
   assert.match(workflow,/VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'/);
   const idle=workflow.slice(workflow.indexOf('  learning_idle:'),workflow.indexOf('  game_study:'));
-  assert.match(idle,/needs\.plan\.outputs\.learning_idle_queued != '0' && needs\.plan\.outputs\.runner_pressure != 'YES'/);
+  assert.match(idle,/needs\.plan\.outputs\.learning_idle_queued != '0'/);
   for(const output of ['game_primary_queued','active_worker_reservations','asset_development_queued','asset_development_active','recovery_fast_queued']){
-    assert.ok(idle.includes(`needs.plan.outputs.${output} == '0'`),output);
+    assert.ok(idle.includes(`needs.plan.outputs.${output} != '0'`),output);
   }
+  assert.match(idle,/&& '1' \|\| '4'/);
   assert.match(workflow,/Dispatch next cycle unconditionally/);
 });
 

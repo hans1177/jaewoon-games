@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {assembleRobloxDevelopmentReleaseEvidence} from '../tools/vibe3-roblox-platform.mjs';
+import {assembleRobloxDevelopmentReleaseEvidence,assertRobloxLatestPublishCandidate} from '../tools/vibe3-roblox-platform.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
 
@@ -437,4 +437,34 @@ test('private runtime guard uses standard control runner while publish remains o
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-release-promotion.yml','utf8');
   assert.match(workflow,/\n  release-dedupe:\n[\s\S]*?runs-on:\s*ubuntu-24\.04/);
   assert.match(workflow,/\n  release:\n[\s\S]*?runs-on:\s*ubuntu-latest/);
+});
+
+
+test('upload rejects a superseded source, artifact or revoked quality/F9 evidence',()=>{
+  const sourceRevision='a'.repeat(40), artifactIdentity='sha256:build';
+  const item={robloxSourceCommit:sourceRevision,robloxBuildSourceRevision:sourceRevision,
+    robloxBuildArtifactIdentity:artifactIdentity,robloxFinalReviewPassed:true,
+    robloxF9ReleaseRegressionPassed:true,robloxF9ReleaseRegressionEvidence:{sourceRevision,artifactIdentity}};
+  const candidate={item,sourceRevision,artifactIdentity,sourceTree:'tree',latestSourceTree:'tree'};
+  assert.equal(assertRobloxLatestPublishCandidate(candidate),true);
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,latestSourceTree:'new-tree'}),/STALE_SOURCE_TREE/);
+  for(const change of [
+    {robloxSourceCommit:'b'.repeat(40)},
+    {robloxBuildArtifactIdentity:'sha256:new'},
+    {robloxQualityBuildUpRequired:true},
+    {robloxStudioLocalPlayRepairRequired:true},
+    {robloxF9ReleaseRegressionPassed:false},
+    {robloxF9ReleaseRegressionEvidence:{sourceRevision:'old',artifactIdentity}}
+  ]) assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,...change}}),/ROBLOX_PUBLISH_/);
+  const upload=workflow.slice(workflow.indexOf('      - name: Publish exact package'),workflow.indexOf('      - name:',workflow.indexOf('      - name: Publish exact package')+15));
+  assert.ok(upload.indexOf('while true; do')<upload.indexOf('git fetch --no-tags --depth=1 origin main'));
+  assert.ok(upload.indexOf('assertRobloxLatestPublishCandidate({')<upload.indexOf('await publishRobloxPlace('));
+});
+
+
+test('F9 dispatch does not launch obsolete or currently failed publication candidates',()=>{
+  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  const dispatch=finalReview.slice(finalReview.indexOf('      - name: Dispatch exact F9-verified artifact'));
+  assert.match(dispatch,/row\.sourceRevision!==item\.robloxSourceCommit\|\|row\.artifactIdentity!==item\.robloxBuildArtifactIdentity/);
+  assert.match(dispatch,/item\.robloxQualityBuildUpRequired===true\|\|item\.robloxStudioLocalPlayRepairRequired===true/);
 });

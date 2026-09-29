@@ -456,6 +456,23 @@ export function createRobloxRuntimeCandidatePublishPlan({placeFile='',universeId
   });
 }
 
+// Re-evaluate immediately before every upload attempt, never from an old dispatch snapshot.
+export function assertRobloxLatestPublishCandidate({item,sourceRevision,artifactIdentity,sourceTree,latestSourceTree}={}){
+  if(!sourceTree || !latestSourceTree || sourceTree!==latestSourceTree)
+    throw new Error('ROBLOX_PUBLISH_STALE_SOURCE_TREE');
+  if(!item || !sourceRevision || item.robloxSourceCommit!==sourceRevision)
+    throw new Error('ROBLOX_PUBLISH_STALE_SOURCE_REVISION');
+  if(!artifactIdentity || item.robloxBuildSourceRevision!==sourceRevision || item.robloxBuildArtifactIdentity!==artifactIdentity)
+    throw new Error('ROBLOX_PUBLISH_STALE_BUILD_ARTIFACT');
+  if(item.robloxQualityBuildUpRequired===true || item.robloxStudioLocalPlayRepairRequired===true)
+    throw new Error('ROBLOX_PUBLISH_CURRENT_QUALITY_REPAIR_REQUIRED');
+  const f9=item.robloxF9ReleaseRegressionEvidence||{};
+  if(item.robloxF9ReleaseRegressionPassed!==true || item.robloxFinalReviewPassed!==true ||
+    f9.sourceRevision!==sourceRevision || f9.artifactIdentity!==artifactIdentity)
+    throw new Error('ROBLOX_PUBLISH_CURRENT_F9_REQUIRED');
+  return true;
+}
+
 export async function publishRobloxPlace({plan,apiKey=process.env.ROBLOX_OPEN_CLOUD_API_KEY,fetchImpl=globalThis.fetch,readFile=fs.readFileSync,sleepImpl=sleep,retryDelaysMs=ROBLOX_PUBLISH_BUSY_RETRY_DELAYS_MS}={}){
   if(plan?.authority!=='roblox-place-publish-plan')throw new Error('validated Roblox publish plan required');
   if(plan.executionReady!==true)throw new Error(`Roblox publish blocked: ${(plan.blockedReasons||[]).join(',')}`);

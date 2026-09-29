@@ -660,6 +660,7 @@ jobs:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
           ROBLOX_PLACE_ID: ${{ steps.target.outputs.place_id }}
+          SOURCE_ROOT: ${{ steps.target.outputs.source_root }}
           SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
           ARTIFACT_IDENTITY: ${{ steps.target.outputs.artifact_identity }}
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
@@ -672,11 +673,26 @@ jobs:
           attempt=0
           while true; do
             attempt=$((attempt+1))
+            # Refresh both source and runtime state on every retry, including server-busy retries.
+            git fetch --no-tags --depth=1 origin main
+            git -C ../runtime fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+            git -C ../runtime show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/roblox-latest-publish-queue.json
+            export PUBLISH_SOURCE_TREE="$(git rev-parse "$SOURCE_REVISION:$SOURCE_ROOT")"
+            export PUBLISH_LATEST_SOURCE_TREE="$(git rev-parse "origin/main:$SOURCE_ROOT")"
             : > /tmp/roblox-final-release-publish.log
             set +e
             node --input-type=module <<'NODE' 2>&1 | tee /tmp/roblox-final-release-publish.log
           import fs from 'node:fs';
-          import {createRobloxRuntimeCandidatePublishPlan,publishRobloxPlace} from './tools/vibe3-roblox-platform.mjs';
+          import {createRobloxRuntimeCandidatePublishPlan,publishRobloxPlace,assertRobloxLatestPublishCandidate} from './tools/vibe3-roblox-platform.mjs';
+          const latestQueue=JSON.parse(fs.readFileSync('/tmp/roblox-latest-publish-queue.json','utf8'));
+          assertRobloxLatestPublishCandidate({
+            item:(latestQueue.items||[]).find(row=>row.gameId===process.env.GAME_ID),
+            sourceRevision:process.env.SOURCE_REVISION,
+            artifactIdentity:process.env.ARTIFACT_IDENTITY,
+            sourceTree:process.env.PUBLISH_SOURCE_TREE,
+            latestSourceTree:process.env.PUBLISH_LATEST_SOURCE_TREE,
+          });
+          console.log('ROBLOX_PUBLISH_LATEST_SOURCE_AND_F9=PASS');
           const f0=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-candidate-evidence.json','utf8'));
           const plan=createRobloxRuntimeCandidatePublishPlan({
             placeFile:process.env.PLACE_FILE,

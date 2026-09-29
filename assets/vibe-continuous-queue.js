@@ -512,7 +512,12 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const laneMode=normalizedExecutionLane(lane);
   const running = queue.tasks.filter((task) => task.status === 'running');
   const capacityRunning = running.filter((task) => !releasesWorkerCapacity(task) && taskMatchesExecutionLane(task,laneMode));
-  const concurrency = dynamicConcurrency(queue, maxConcurrentTasks);
+  const productionPending = queue.tasks.some((task) =>
+    ['queued','running'].includes(task.status) &&
+    ['GAME_PRIMARY','ASSET_DEVELOPMENT','RECOVERY_FAST','RELEASE_WAIT'].includes(task.executionLane)
+  );
+  const learningFloorOnly = laneMode === 'learning-idle' && productionPending;
+  const concurrency = dynamicConcurrency(queue, learningFloorOnly ? 1 : maxConcurrentTasks);
   const effectiveMax = concurrency.effectiveMaxConcurrentTasks;
   const freeSlots = Math.max(0, effectiveMax - capacityRunning.length);
   const completed = completedIds(queue);

@@ -718,10 +718,10 @@ test('fan-in reuses only successful exact-commit engine regression and retains a
   assert.match(fanIn,/tools\/vibe2-fan-in-review.mjs/);
 });
 
-test('idle learning cannot take runners while game development or recovery work remains',()=>{
+test('idle learning retains a minimum worker while game development or recovery work remains',()=>{
   const idle=safetyNetWorkflow.slice(safetyNetWorkflow.indexOf('  learning_idle:'),safetyNetWorkflow.indexOf('  game_study:'));
   for(const output of ['game_primary_queued','active_worker_reservations','asset_development_queued','asset_development_active','recovery_fast_queued']){
-    assert.ok(idle.includes(`needs.plan.outputs.${output} == '0'`),output);
+    assert.ok(idle.includes(`needs.plan.outputs.${output} != '0'`),output);
   }
 });
 
@@ -873,7 +873,7 @@ test('24H safety-net refills free game slots while preserving responsible-file c
   assert(safetyNetWorkflow.includes("lane_max: '256'"));
   assert.equal(safetyNetWorkflow.includes("lane_max: '20'"),false);
   assert(safetyNetWorkflow.includes("needs.plan.outputs.game_refill_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0'"));
-  assert(safetyNetWorkflow.includes("needs.plan.outputs.learning_idle_queued != '0' && needs.plan.outputs.runner_pressure != 'YES'"));
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.learning_idle_queued != '0'"));
   assert(safetyNetWorkflow.includes("new Set(['queued','pending','requested'])"));
   assert(safetyNetWorkflow.includes("VIBE2_LEARNING_CONCURRENT_WITH_PRODUCTION: 'true'"));
   assert(safetyNetWorkflow.includes("VIBE2_LEARNING_ALWAYS_ON: 'true'"));
@@ -930,7 +930,7 @@ test('continuous core and 24H runner isolate game-primary and learning-idle exec
   assert(safetyNetWorkflow.includes('learning_idle_queued: ${{ steps.queue_state.outputs.learning_idle_queued }}'));
   assert(safetyNetWorkflow.includes('  learning_idle:'));
   assert(safetyNetWorkflow.includes('execution_lane: learning-idle'));
-  assert(safetyNetWorkflow.includes("lane_max: '4'"));
+  assert(safetyNetWorkflow.includes("&& '1' || '4'"));
   assert(safetyNetWorkflow.includes("needs.plan.outputs.game_primary_queued == '0'"));
 });
 
@@ -1542,4 +1542,37 @@ test('game and asset-development workers bind verified learning-runtime playbook
   assert.ok(continuousRunnerSource.includes('VIBE2_COMMERCIAL_BLACK_BOX_INTERNAL_ASSET_DISTILLATION='));
   assert.ok(continuousRunnerSource.includes('VIBE2_COMMERCIAL_BLACK_BOX_REUSE_COUNT='));
   assert.ok(continuousRunnerSource.includes('VIBE2_INTERNAL_ASSET_EVOLUTION_MODE='));
+});
+
+
+test('asset candidates enter the same regression review and release gates as game candidates',()=>{
+  const fanin=workflow.slice(workflow.indexOf('  fan_in:'));
+  const sharedCondition=`[[ "$VIBE2_EXECUTION_LANE" == 'game-primary' || "$VIBE2_EXECUTION_LANE" == 'asset-development' ]]`;
+  assert.equal(fanin.split('if '+sharedCondition+'; then').length-1,2);
+  assert.match(fanin,/Dispatch reviewed winner candidates to release gate\n\s+if: env\.VIBE2_EXECUTION_LANE == 'game-primary' \|\| env\.VIBE2_EXECUTION_LANE == 'asset-development'/);
+  assert.ok(workflow.includes('if '+sharedCondition+' && [ "$expected_variants"'));
+});
+
+test('stranded asset review resumes only original completed-run evidence without regenerating source',()=>{
+  const start=workflow.indexOf('      - name: Resume stranded asset candidate review');
+  const block=workflow.slice(start,workflow.indexOf('\n  model_cache:',start));
+  const script=block.match(/node <<'NODE' > \/tmp\/vibe2-stranded-review-runs.txt\n([\s\S]*?)\n          NODE/)[1].replace(/^          /gm,'');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-stranded-'));
+  fs.mkdirSync(path.join(root,'.vibe2'));
+  const asset={assetProductionLane:true,status:'running',blocker:'candidate-awaiting-qa-and-deployment',reservationRunId:'123',evidence:[]};
+  fs.writeFileSync(path.join(root,'.vibe2/queue.json'),JSON.stringify({tasks:[asset,{...asset},{...asset,assetProductionLane:false,reservationRunId:'124'},{...asset,reservationRunId:'125',evidence:['role-result:review:PASS']},{...asset,status:'verified',reservationRunId:'126'}]}));
+  try{
+    const result=spawnSync(process.execPath,['-e',script],{cwd:root,encoding:'utf8'});
+    assert.equal(result.status,0,result.stderr);
+    assert.equal(result.stdout,'123');
+    assert.ok(block.includes('if [ "$status" = \'completed\' ]; then'));
+    assert.match(workflow,/run-id: \$\{\{ needs\.reserve\.outputs\.stranded_review_run \}\}/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('candidate promotion preserves the conflict-marker gate without rejecting formatting whitespace',()=>{
+  const release=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+  assert.equal(release.split('git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check').length-1,3);
+  assert.ok(release.includes('reject candidate-diff-check-failed'));
 });
