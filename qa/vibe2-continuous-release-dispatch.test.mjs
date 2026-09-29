@@ -346,3 +346,16 @@ test('fast recovery fetch binds shallow control ref from a main-only checkout',(
     assert.equal(git(checkout,'show','origin/vibe2-unreal-core:queue.json'),'concurrent update');
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
+
+
+test('all candidate settlement clones configure existing GitHub token for git push',()=>{
+  const clones=[...releaseWorkflow.matchAll(/^          gh repo clone "\$GITHUB_REPOSITORY" \/tmp\/vibe2-control --/gm)];
+  assert.equal(clones.length,4);
+  for(const clone of clones){
+    const prefix=releaseWorkflow.slice(0,clone.index);
+    assert.match(prefix,/gh auth setup-git --hostname github\.com\n$/);
+    const step=prefix.slice(prefix.lastIndexOf('      - name:'));
+    assert.match(step,/GH_TOKEN: \$\{\{ github\.token \}\}/);
+    assert.match(step,/set -euo pipefail/);
+  }
+});
