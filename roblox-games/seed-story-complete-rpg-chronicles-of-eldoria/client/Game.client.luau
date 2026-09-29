@@ -297,6 +297,13 @@ if hasStudioAssetAtom("FRAME_PANEL") then
   studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
   studioAssetStroke.Parent = root
 end
+  local studioAssetStroke = Instance.new("UIStroke")
+  studioAssetStroke.Name = "StudioAssetFramePanel"
+  studioAssetStroke.Thickness = 1
+  studioAssetStroke.Transparency = 0.55
+  studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
+  studioAssetStroke.Parent = root
+end
 root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
 root:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
 
