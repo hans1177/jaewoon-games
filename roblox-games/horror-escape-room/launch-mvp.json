@@ -1,5 +1,5 @@
 {
-  "version": 17,
+  "version": 18,
   "gameId": "horror-escape-room",
   "gameName": "심야 감염전 [4대4]",
   "releaseStrategy": "FAST_MVP",
@@ -28,7 +28,8 @@
     "240-second infection rounds",
     "energy combat: purification dash infection attack and monster abilities consume regenerating energy",
     "map content: reusable energy stations, contested central energy core and one utility interaction per map",
-    "harmless local surprise/comic scenes that never affect competitive authority"
+    "harmless local surprise/comic scenes that never affect competitive authority",
+    "comic team result ceremonies with map-specific jokes"
   ],
   "deferredUntilAfterMvp": [
     "extra monsters",
@@ -85,7 +86,9 @@
     "local-only noncompetitive surprise and comic scenes",
     "server-authoritative non-pay-to-win cosmetic shop",
     "mid-round joins spectate until next round",
-    "departed active players are replaced by same-role AI"
+    "departed active players are replaced by same-role AI",
+    "local-only winner team ceremony for survivor monster and draw results",
+    "map-specific comic ceremony copy without competitive effects"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
