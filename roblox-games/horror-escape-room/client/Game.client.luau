@@ -1012,10 +1012,13 @@ local function render()
  if resultCode then
   resultTitle.Text=resultCode=="SURVIVOR"and"인간 승리"or resultCode=="MONSTER"and"몬스터 승리"or"무승부"
   local reward=tonumber(p:GetAttribute("LastRoundReward"))or 0
+  local baseReward=tonumber(p:GetAttribute("LastRoundBaseReward"))or 0
+  local winBonus=tonumber(p:GetAttribute("LastRoundWinBonus"))or 0
+  local contribution=tonumber(p:GetAttribute("LastRoundContribution"))or 0
   local coins=tonumber(p:GetAttribute("Coins"))or 0
   local lastRole=tostring(p:GetAttribute("LastRoundRole")or"")
   local roleLabel=lastRole=="SURVIVOR"and"인간"or lastRole=="MONSTER"and"몬스터"or"관전"
-  resultDetail.Text=string.format("최종 진영 %s · 보상 +%d 코인\n보유 코인 %d · 잠시 후 다음 라운드",roleLabel,reward,coins)
+  resultDetail.Text=string.format("최종 진영 %s · 총 +%d 코인\n참가 %d + 승리 %d + 기여 %d · 보유 %d",roleLabel,reward,baseReward,winBonus,contribution,coins)
  end
  rescueButton.Visible=running and role=="SURVIVOR"
  dashButton.Visible=running and role=="SURVIVOR"
@@ -1039,7 +1042,7 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","PurifyReadyAt","DashReadyAt","AbilityReadyAt","Spectating"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","AbilityReadyAt","Spectating"})do
  p:GetAttributeChangedSignal(k):Connect(render)
 end
 
