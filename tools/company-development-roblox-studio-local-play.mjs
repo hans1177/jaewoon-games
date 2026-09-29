@@ -226,6 +226,7 @@ export function deriveStudioActualPlayContract(launch={}){
     version:Number(explicit?.version||3),
     required:true,
     source:clean(explicit?.source)||'COMMERCIAL_ADAPTIVE_STUDIO_AUDIT',
+    observedActionPatternVersion:1,
     requiredScenarios:[...new Set([...explicitScenarios,...adaptiveScenarios])],
     expectations:{...(explicit?.expectations||{})},
     adaptiveCoverage:Object.freeze({
@@ -947,6 +948,7 @@ function studioActualPlayCoreProbeSource(contract={},context='Client'){
     '   gui.visibleButtons=gui.visibleButtons+1',
     '   local row=guiInfo(d)',
     '   row.name=d.Name',
+    '   row.path=string.sub(d:GetFullName(),#pg:GetFullName()+2)',
     '   row.className=d.ClassName',
     '   row.centerX=row.x+row.width/2',
     '   row.centerY=row.y+row.height/2',
@@ -1061,7 +1063,7 @@ function studioActualPlayWorldProbeSource(){
     '  prompts=prompts+1',
     '  local parent=d.Parent',
     '  local pos=parent and parent:IsA("BasePart") and parent.Position or Vector3.new()',
-    '  if #promptRows<60 then table.insert(promptRows,{name=d.Name,actionText=tostring(d.ActionText),objectText=tostring(d.ObjectText),x=pos.X,y=pos.Y,z=pos.Z,maxDistance=d.MaxActivationDistance,key=tostring(d.KeyboardKeyCode),holdDuration=d.HoldDuration,enabled=d.Enabled}) end',
+    '  if #promptRows<60 then table.insert(promptRows,{name=d.Name,path=d:GetFullName(),actionText=tostring(d.ActionText),objectText=tostring(d.ObjectText),x=pos.X,y=pos.Y,z=pos.Z,maxDistance=d.MaxActivationDistance,key=tostring(d.KeyboardKeyCode),holdDuration=d.HoldDuration,enabled=d.Enabled}) end',
     ' elseif d:IsA("ClickDetector") then',
     '  clickDetectors=clickDetectors+1',
     ' elseif d:IsA("ParticleEmitter") or d:IsA("Trail") or d:IsA("Beam") or d:IsA("Highlight") then',
@@ -1561,7 +1563,31 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-camera-quality',pass:!signals.camera||(client?.camera?.present===true&&client?.camera?.subjectPresent===true&&Number(client?.camera?.fieldOfView||0)>0&&client?.camera?.occluded!==true)},
     {id:'adaptive-performance-budget',pass:Number(runtime.memoryMb||0)>=0&&Number(runtime.descendantCount||0)<120000&&performanceTrendPass}
   ];
+  // 실제 발견한 버튼·상호작용·이동 경로별 검증 패턴을 기존 판정 흐름에 추가한다.
+  const discoveredPatterns=new Map();
+  let discoveredPatternOverflow=false;
+  for(const action of actions){
+    if(!['mcp-ui-exploration','mcp-world-interaction','mcp-combat-action','mcp-map-route-audit'].includes(clean(action?.type)))continue;
+    const actionId=clean(action?.id);
+    if(!actionId)continue;
+    // 의미를 모르는 공용 UI를 게임 기능 회귀 검사로 오인하지 않는다.
+    if(action.type==='mcp-ui-exploration'&&action.semantic==='GENERAL')continue;
+    const targetIdentity=clean(action?.targetIdentity)||actionId;
+    const id='observed-action-'+stableSha256({type:action.type,targetIdentity}).slice(0,20);
+    if(!discoveredPatterns.has(id)&&discoveredPatterns.size>=64){discoveredPatternOverflow=true;continue;}
+    const effectRequired=action.type!=='mcp-map-route-audit';
+    const pass=action.dispatched===true&&action.ok===true&&(!effectRequired||action.effectObserved===true);
+    const previous=discoveredPatterns.get(id);
+    discoveredPatterns.set(id,{id,pass:pass&&previous?.pass!==false,required:true,generatedFrom:'OFFICIAL_STUDIO_OBSERVED_ACTION',actionId:actionId.slice(0,160),targetIdentity:targetIdentity.slice(0,240),actionType:action.type,effectRequired,attempts:Number(previous?.attempts||0)+1});
+  }
   const scenarios=rows.filter(row=>requiredIds.size===0||requiredIds.has(row.id)).map(row=>({...row,required:true}));
+  scenarios.push(...discoveredPatterns.values());
+  if(discoveredPatternOverflow)scenarios.push({id:'observed-action-capacity-exceeded',pass:false,required:true,reason:'UNVERIFIED_ACTIONS_REMAIN'});
+  // 실행기가 모르는 필수 패턴도 누락 성공으로 처리하지 않는다.
+  const evaluatedIds=new Set(scenarios.map(row=>row.id));
+  for(const id of requiredIds){
+    if(!evaluatedIds.has(id))scenarios.push({id,pass:false,required:true,reason:'REQUIRED_SCENARIO_NOT_EXECUTED'});
+  }
   const qualityFailureKinds=scenarios.filter(row=>row.pass!==true).map(row=>row.id);
   const initialState=clean(initialClientProbe?.player?.roundState);
   const finalState=clean(player.roundState);
@@ -1662,6 +1688,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     return metrics.surfaces;
   };
   const qualityFailureDetails=qualityFailureKinds.map(id=>{
+    const pattern=discoveredPatterns.get(id);
+    if(pattern)return{id,repairSurface:'ROBLOX_OBSERVED_INTERACTION',priority:'HIGH',hint:'Replay the exact observed action and verify its real state change after repair.',observed:pattern};
     const [repairSurface,priority,hint]=repairMap[id]||['ROBLOX_PRODUCT_QUALITY','HIGH','Repair the failing Studio actual-play scenario and re-run the exact artifact.'];
     return{id,repairSurface,priority,hint,observed:observedFor(id)};
   });
@@ -2382,9 +2410,9 @@ export async function runOfficialStudioMcpPlay({
           const effect=probeEffectSummary(beforeProbe||{},interactionProbe||{});
           const semanticPass=semanticEffectPass(semantic,effect);
           if(interactionProbe)timelineProbes.push(interactionProbe);
-          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',semantic,dispatched:true,ok:navOk&&inputOk,effectObserved:semanticPass,effect});
+          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',targetIdentity:clean(prompt?.path)||clean(prompt?.objectText)||clean(prompt?.name),semantic,dispatched:true,ok:navOk&&inputOk,effectObserved:semanticPass,effect});
         }catch{
-          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',semantic,dispatched:true,ok:false,effectObserved:false});
+          actions.push({id:'prompt-'+clean(prompt?.name||prompt?.objectText||'interaction'),type:'mcp-world-interaction',targetIdentity:clean(prompt?.path)||clean(prompt?.objectText)||clean(prompt?.name),semantic,dispatched:true,ok:false,effectObserved:false});
         }
       }
       if(promptRows.length>0)checkpoint('commercial-prompt-exploration',actions.some(row=>row.type==='mcp-world-interaction'&&row.ok===true));
@@ -2422,7 +2450,7 @@ export async function runOfficialStudioMcpPlay({
         }catch{}
         const effect=probeEffectSummary(beforeProbe||{},afterProbe||{});
         const semantic=uiSemantic(target);
-        actions.push({id:'ui-discovered-'+clean(target?.name||target?.text||'button'),type:'mcp-ui-exploration',semantic,dispatched:true,ok,effectObserved:effect.effectObserved,effect});
+        actions.push({id:'ui-discovered-'+clean(target?.name||target?.text||'button'),type:'mcp-ui-exploration',targetIdentity:clean(target?.path)||clean(target?.name),semantic,dispatched:true,ok,effectObserved:effect.effectObserved,effect});
       }
 
       const sampleCount=auditMode==='F9_SOAK'?12:4;
