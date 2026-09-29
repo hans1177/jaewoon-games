@@ -83,7 +83,7 @@ local function syncRoomState()
  workspace:SetAttribute("RoomHostUserId",roomHostUserId)
  workspace:SetAttribute("RoomHostName",roomHostName)
  workspace:SetAttribute("RoomVisibility",roomServer and roomVisibility or"BROWSER")
- workspace:SetAttribute("RoomState",roomServer and(state=="RUNNING"and"RUNNING"or state=="RESULT"and"RESULT"or"ROOM_WAITING")or"BROWSER")
+ workspace:SetAttribute("RoomState",roomServer and(state=="RUNNING"and"RUNNING"or state=="RESULT"and"RESULT"or state=="INTERMISSION"and"INTERMISSION"or"ROOM_WAITING")or"BROWSER")
  workspace:SetAttribute("RoomMemberCount",count)
  workspace:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
  workspace:SetAttribute("RoomStartRequested",roomStartRequested)
@@ -93,7 +93,7 @@ local function syncRoomState()
   player:SetAttribute("RoomHostUserId",roomHostUserId)
   player:SetAttribute("RoomHostName",roomHostName)
   player:SetAttribute("RoomVisibility",roomServer and roomVisibility or"BROWSER")
-  player:SetAttribute("RoomState",roomServer and(state=="RUNNING"and"RUNNING"or state=="RESULT"and"RESULT"or"ROOM_WAITING")or"BROWSER")
+  player:SetAttribute("RoomState",roomServer and(state=="RUNNING"and"RUNNING"or state=="RESULT"and"RESULT"or state=="INTERMISSION"and"INTERMISSION"or"ROOM_WAITING")or"BROWSER")
   player:SetAttribute("RoomMemberCount",count)
   player:SetAttribute("RoomMaxPlayers",(C.Room and C.Room.MaxPlayers)or 8)
   player:SetAttribute("RoomIsHost",roomServer and player.UserId==roomHostUserId)
@@ -279,7 +279,7 @@ local function adoptReservedRoomFromPlayer(p)
  task.defer(updateCurrentRoomDirectory)
 end
 local function startRoomMatch(p)
- if not roomServer or state=="RUNNING"or p.UserId~=roomHostUserId then return end
+ if not roomServer or state~="WAITING"or p.UserId~=roomHostUserId then return end
  if #Players:GetPlayers()<math.max(1,tonumber(C.MinimumParticipants)or 1)then roomFeedback(p,"ERROR","참가 인원 부족");return end
  roomStartRequested=true
  workspace:SetAttribute("RoomStartRequested",true)
@@ -287,7 +287,7 @@ local function startRoomMatch(p)
  syncRoomState()
 end
 local function leaveReservedRoom(p)
- if not roomServer or state=="RUNNING"then return end
+ if not roomServer or state~="WAITING"then return end
  if studioRoomFallback then
   roomServer=false;roomCode="";roomHostUserId=0;roomHostName="";roomVisibility="PUBLIC";roomStartRequested=false
   workspace:SetAttribute("StudioRoomFallback",false)
