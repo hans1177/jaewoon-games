@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
-import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation} from '../assets/vibe-motion-director.js';
+import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan} from '../assets/vibe-motion-director.js';
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation} from '../assets/vibe-environment-director.js';
 
@@ -437,6 +437,7 @@ function decisionFor(selector={},target='',binding={},manifest={}){
     'AUTHORING_GENERATOR_REQUEST'
   ]);
   const motionReusePlan=type==='animation'?freeze({
+    studioProduction:['roblox','unity'].includes(target)?createMotionDirectorPlan({platform:target.toUpperCase()}).studioProduction:null,
     // Declared clip coverage is a selection aid, never runtime proof.
     stateBindings:freezeList((binding.targetStates||[]).map(state=>{
       const matches=[...reuseCandidates,...externalCandidates].filter(asset=>asset.motionStates.includes(clean(state).toLowerCase()));
@@ -1169,6 +1170,8 @@ export function assetProductionGuidance(plan={}){
     lines.push(`- type=${row.type}; reuse=${reuse}; external=${external}; direct=${direct}; order=${(row.decisionOrder||[]).join('>')}`);
     if(row.type==='animation')lines.push(`모션 품질 비교 필수=${(row.qualitySelection?.requiredChecks||[]).join(',')}; 품질 미달 후보를 적용하지 말고 비교 결과와 선택 이유를 남긴다.`);
     if(row.motionReusePlan){
+      const studio=row.motionReusePlan.studioProduction;
+      if(studio)lines.push(`스튜디오 제작 단계=${studio.stages.join('>')}. 성격·의도·무게·몸 구조·무기·실루엣 기준을 정하고 주요 자세부터 검수한다. 시선→머리→중심 이동→행동→관성→정착 순서를 몸 구조에 맞게 적용한다. 호흡·귀·꼬리·날개는 존재하는 부위만 연기한다. 10초 대표 장면(관찰→이동→발견→행동→반응→회복)을 같은 게임 카메라·속도로 기준 영상과 비교하고 실패 프레임을 지정해 수정한다. 소스·클립 버전이 일치하는 영상, 모바일 성능, 실제 2인 이상 실행 증거가 없으면 검증 등록 금지. 비전투 캐릭터에 공격을 새로 추가하지 않는다.`);
       lines.push(`동작별 재사용 후보(실행 통과 아님): ${row.motionReusePlan.stateBindings.map(item=>`${item.state}=${item.candidateIds.slice(0,4).join('|')||'unresolved'}`).join('; ')}`);
       lines.push(`동작 확인 필요=${row.motionReusePlan.unresolvedStates.join(',')||'none'}; 동작 목록 미확인 후보=${row.motionReusePlan.coverageUnknownCandidateIds.slice(0,4).join('|')||'none'}. 먼저 기존 클립 목록을 확인하고 부족한 동작만 권한·라이선스·무료 제공 조건이 확인된 외부 자산으로 보충한다. 무료 여부를 라이선스만으로 추정하거나 Asset ID를 지어내지 않는다. 적합한 후보가 없을 때만 새 제작한다.`);
       lines.push(`모션 적용 검수=${row.motionReusePlan.requiredChecks.join(',')}. R6/R15/커스텀 골격과 관절을 확인하고 기존 공격 판정·쿨다운·이동 속도·저장 규칙을 모션 길이에 맞춰 바꾸지 않는다. 중단·사망·재생성 후 전환과 실제 멀티 동기화를 검사하기 전에는 검증 자산으로 승격하지 않는다.`);

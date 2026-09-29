@@ -51,6 +51,36 @@ import {
   createMotionDirectorPlan
 } from '../assets/vibe-motion-director.js';
 
+const studioReviewFixture=()=>({
+  sourceRevision:'a'.repeat(40),clipVersion:'clip-v1',referenceCapture:'fixture/reference.mp4',candidateCapture:'fixture/candidate.mp4',
+  sameCamera:true,samePlaybackSpeed:true,playerCount:2,runtimeRunId:'fixture-run',gameplayTimingPreserved:true,
+  stages:Object.fromEntries(createMotionDirectorPlan().studioProduction.stages.map(stage=>[stage,{pass:true,evidence:'fixture/'+stage}]))
+});
+const observedMotionFixture=()=>({hasHumanoid:true,hasAnimator:true,hasMotor6D:true,visibleLocomotion:true,rootTransformChanges:true,jointTransformChanges:true,playbackSpeedSynced:true,footSlideNormalized:.01,officialStudioRuntimeObserved:true,sourceRevision:'a'.repeat(40),clipVersion:'clip-v1',studioReview:studioReviewFixture()});
+
+test('studio review rejects missing, stale, incomplete and single-player evidence',()=>{
+  assert.equal(auditRobloxCharacterMotionEvidence(observedMotionFixture()).pass,true);
+  for(const mutate of [
+    x=>{x.studioReview=null;},x=>{x.studioReview.sourceRevision='b'.repeat(40);},
+    x=>{x.studioReview.clipVersion='old';},x=>{x.studioReview.sameCamera=false;},
+    x=>{x.studioReview.playerCount=1;},x=>{x.studioReview.gameplayTimingPreserved=false;},
+    x=>{delete x.studioReview.stages.KEY_POSES;},x=>{x.footSlideNormalized=NaN;}
+  ]){const input=observedMotionFixture();mutate(input);assert.equal(auditRobloxCharacterMotionEvidence(input).blocksVerifiedPromotion,true);}
+});
+test('studio pipeline shares production stages across platforms without inventing verification',()=>{
+  const roblox=createMotionDirectorPlan({platform:'ROBLOX'}).studioProduction;
+  const unity=createMotionDirectorPlan({platform:'UNITY'}).studioProduction;
+  assert.deepEqual(roblox.stages,unity.stages);
+  assert.equal(unity.targetPlatform,'UNITY');assert.equal(roblox.status,'PLANNED_NOT_VERIFIED');
+  assert.equal(roblox.representativeScene.durationSeconds,10);
+  assert.equal(roblox.reviewCapture.frameAddressedFindings,true);
+});
+test('explicit failed quality cannot win through company ownership',()=>{
+  const dna=createMotionDNA({id:'test',bodyPlan:'HUMANOID',rigProfile:'R15',platformVariant:'ROBLOX'});
+  const selection=selectRobloxCharacterMotionSource({candidates:[{id:'bad-owned',companyVerified:true,dna,qualityReview:{verdict:'FAIL'}},{id:'external',licenseVerified:true,sourceType:'EXTERNAL',dna}],context:{bodyPlan:'HUMANOID',rigProfile:'R15'}});
+  assert.equal(selection.selected.id,'external');
+});
+
 test('motion DNA captures high-end compatibility metadata',()=>{
   const dna=createMotionDNA({
     id:'goblin-slash',
@@ -615,6 +645,7 @@ test('Roblox articulated character audit hard fails mannequin root-only motion',
 
 test('Roblox articulated character audit passes smooth joint motion with native runtime evidence',()=>{
   const result=auditRobloxCharacterMotionEvidence({
+    ...observedMotionFixture(),
     actorClass:'HUMANOID_NPC',
     articulatedExpected:true,
     hasHumanoid:true,
