@@ -716,6 +716,7 @@ jobs:
 
       - name: Resume stranded asset candidate review from completed immutable results
         id: stranded_review
+        continue-on-error: true
         if: steps.main_wake.outputs.proceed != 'false' && (env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development')
         env:
           GH_TOKEN: ${{ github.token }}
@@ -738,6 +739,8 @@ jobs:
             [ -n "$source_run" ] || continue
             status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run" --jq '.status')"
             if [ "$status" = 'completed' ]; then
+              available="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run/artifacts?per_page=100" --jq '[.artifacts[] | select(.expired == false and (.name | startswith("vibe2-result-")))] | length')"
+              [ "$available" -gt 0 ] || continue
               echo "source_run=$source_run" >> "$GITHUB_OUTPUT"
               echo "VIBE2_STRANDED_ASSET_REVIEW_RESUME=$source_run"
               break

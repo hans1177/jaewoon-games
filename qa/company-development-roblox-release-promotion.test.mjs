@@ -460,3 +460,11 @@ test('upload rejects a superseded source, artifact or revoked quality/F9 evidenc
   assert.ok(upload.indexOf('while true; do')<upload.indexOf('git fetch --no-tags --depth=1 origin main'));
   assert.ok(upload.indexOf('assertRobloxLatestPublishCandidate({')<upload.indexOf('await publishRobloxPlace('));
 });
+
+
+test('F9 dispatch does not launch obsolete or currently failed publication candidates',()=>{
+  const finalReview=fs.readFileSync('.github/workflows/company-development-roblox-final-review-revalidation.yml','utf8');
+  const dispatch=finalReview.slice(finalReview.indexOf('      - name: Dispatch exact F9-verified artifact'));
+  assert.match(dispatch,/row\.sourceRevision!==item\.robloxSourceCommit\|\|row\.artifactIdentity!==item\.robloxBuildArtifactIdentity/);
+  assert.match(dispatch,/item\.robloxQualityBuildUpRequired===true\|\|item\.robloxStudioLocalPlayRepairRequired===true/);
+});
