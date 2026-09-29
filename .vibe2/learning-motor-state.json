@@ -5578,7 +5578,8 @@
       "coding_negative_1s8u3ov",
       "coding_negative_1k050ji",
       "coding_negative_q4qdg8",
-      "coding_negative_akn8fs"
+      "coding_negative_akn8fs",
+      "coding_negative_1rlz8eb"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -15988,7 +15989,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 143,
+        "verifiedFailures": 144,
         "games": {
           "fantasy-survival": 1
         },
@@ -16195,22 +16196,22 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 5,
+            "verifiedFailures": 6,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 5
+              "cozy-island": 6
             },
             "failureTargets": {
-              "unity": 5
+              "unity": 6
             },
             "failureClasses": {
-              "EDIT_MATCH": 4,
+              "EDIT_MATCH": 5,
               "TIMEOUT": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1kn92bs",
-            "lastUpdatedAt": "2026-09-29T10:20:16.775Z"
+            "lastFailureEvidence": "coding_negative_1rlz8eb",
+            "lastUpdatedAt": "2026-09-29T11:03:18.300Z"
           },
           "unity|INVALID_PATH|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -16369,8 +16370,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_160lbz8",
-        "lastFailureEvidence": "coding_negative_akn8fs",
-        "lastUpdatedAt": "2026-09-29T10:59:41.743Z"
+        "lastFailureEvidence": "coding_negative_1rlz8eb",
+        "lastUpdatedAt": "2026-09-29T11:03:18.300Z"
       }
     }
   },
@@ -19101,7 +19102,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T11:02:40.013Z",
+    "lastBuiltAt": "2026-09-29T11:03:18.369Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -25925,5 +25926,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T11:02:40.013Z"
+  "updatedAt": "2026-09-29T11:03:18.369Z"
 }
