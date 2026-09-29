@@ -5280,7 +5280,8 @@
       "coding_negative_1846dfl",
       "coding_negative_c2ad03",
       "coding_negative_er26bm",
-      "coding_negative_kzot41"
+      "coding_negative_kzot41",
+      "coding_negative_18e237s"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -13480,7 +13481,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 18,
+        "verifiedFailures": 19,
         "games": {
           "fantasy-survival": 1
         },
@@ -13748,21 +13749,22 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 1,
+            "verifiedFailures": 2,
             "games": {},
             "targets": {},
             "failureGames": {
-              "village-dungeons": 1
+              "village-dungeons": 1,
+              "survival": 1
             },
             "failureTargets": {
-              "unity": 1
+              "unity": 2
             },
             "failureClasses": {
-              "INVALID_PATH": 1
+              "INVALID_PATH": 2
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_9zruei",
-            "lastUpdatedAt": "2026-09-29T05:05:02.941Z"
+            "lastFailureEvidence": "coding_negative_18e237s",
+            "lastUpdatedAt": "2026-09-29T05:13:51.212Z"
           },
           "roblox|NO_OP|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -13787,8 +13789,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_1t9d22s",
-        "lastFailureEvidence": "coding_negative_er26bm",
-        "lastUpdatedAt": "2026-09-29T05:08:49.181Z"
+        "lastFailureEvidence": "coding_negative_18e237s",
+        "lastUpdatedAt": "2026-09-29T05:13:51.212Z"
       },
       "OBSERVABLE_DELTA_FIRST": {
         "verifiedApplications": 0,
@@ -17216,7 +17218,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T05:12:25.068Z",
+    "lastBuiltAt": "2026-09-29T05:13:51.277Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -24040,5 +24042,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T05:12:25.068Z"
+  "updatedAt": "2026-09-29T05:13:51.277Z"
 }
