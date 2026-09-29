@@ -1994,3 +1994,20 @@ test('production retains one learning worker without allowing direct dispatch to
     assert.equal(next.tasks.length,0);
   }
 });
+
+
+test('queue bounds repeated unresolved diagnoses while retaining verified learning and distinct causes',()=>{
+  const marker=(prefix,payload)=>prefix+':'+encodeURIComponent(JSON.stringify(payload));
+  const base={version:2,verificationStage:'WORKER_RESULT',state:'UNRESOLVED',causalRepairVerified:false,independentConfirmation:false,responsibleSystemVerified:false,rootCauseVerified:false,learningEligible:false,actionFiringAllowed:false,phase2AuthorityEligible:false,predictedResponsibleSystem:'GAME_INPUT'};
+  const unresolved=Array.from({length:20},(_,i)=>marker('neural-root-cause',{...base,sampleId:'sample-'+i}));
+  const verified=Array.from({length:3},(_,i)=>marker('neural-root-cause',{...base,sampleId:'verified-'+i,state:'ROOT_CAUSE_VERIFIED',rootCauseVerified:true}));
+  const distinct=marker('neural-root-cause',{...base,sampleId:'other',predictedResponsibleSystem:'WORLD_GEOMETRY'});
+  const atomic=Array.from({length:20},(_,i)=>marker('neural-atomic-transaction',{version:1,sampleId:'sample-'+i,feedback:'UNKNOWN',critic:'UNRESOLVED',rootCause:'UNRESOLVED',route:'REQUEST_EVIDENCE'}));
+  const authoritative=['learning-knowledge-ids:kept','source-revision:kept','roblox-verification-run:123','neural-root-cause:invalid'];
+  const q=createVibeContinuousQueue({tasks:[{id:'bounded-diagnosis',evidence:[...unresolved,...verified,distinct,...atomic,...authoritative]}]});
+  const evidence=q.tasks[0].evidence;
+  assert.deepEqual(evidence.filter(x=>unresolved.includes(x)),[unresolved[0],unresolved.at(-1)]);
+  assert.deepEqual(evidence.filter(x=>atomic.includes(x)),[atomic[0],atomic.at(-1)]);
+  for(const item of [...verified,distinct,...authoritative])assert.ok(evidence.includes(item));
+  assert.deepEqual(createVibeContinuousQueue(q).tasks[0].evidence,evidence);
+});
