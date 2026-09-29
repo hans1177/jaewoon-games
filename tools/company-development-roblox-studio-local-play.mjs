@@ -2872,7 +2872,13 @@ export function createLocalStudioPlayEvidence({
     observed:row?.observed&&typeof row.observed==='object'?row.observed:{}
   })).filter(row=>row.id).slice(0,48);
   const pass=basePass&&scenarioContractPass;
-  const infrastructureFailure=errors.some(row=>/infrastructure|mcp.*missing|no_studio/i.test(row.type+' '+(row.signature||'')));
+  const productFailureObserved=Boolean(
+    qualityFailureKinds.length>0
+    ||qualityFailureDetails.length>0
+    ||errors.some(row=>/^studio-product-/i.test(clean(row?.type)))
+  );
+  const infrastructureSignal=errors.some(row=>/infrastructure|mcp.*missing|no_studio/i.test(row.type+' '+(row.signature||'')));
+  const infrastructureFailure=!productFailureObserved&&infrastructureSignal;
   const studioMcpServerEnablementRequired=errors.some(row=>{
     const signature=clean(row.signature||'');
     return /ROBLOX_STUDIO_MCP_SETTING_ENABLE/i.test(signature)
@@ -2880,6 +2886,7 @@ export function createLocalStudioPlayEvidence({
       ||(/ROBLOX_STUDIO_MCP_REQUIRED_TOOLS_NOT_READY/i.test(signature)&&/settingHint=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY/i.test(signature));
   });
   const failureClass=pass?null
+    :productFailureObserved?'STUDIO_PRODUCT_QUALITY_FAILURE'
     :infrastructureFailure?'STUDIO_MCP_INFRASTRUCTURE_PENDING'
     :errors.length?'STUDIO_MCP_RUNTIME_ERROR'
     :required.some(row=>row.pass!==true)?'STUDIO_MCP_REQUIRED_CHECKPOINT_FAILURE'
