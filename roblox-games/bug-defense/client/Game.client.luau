@@ -237,7 +237,29 @@ local function playVerifiedLearningActionFeedback(control)
     task.delay(0.24, function()
       if impactAttachment then impactAttachment:Destroy() end
       if impactLight then impactLight:Destroy() end
-      if sparkles then sparkles:Destroy() end
+  local verifiedLearningLastControl = nil
+  local function bindVerifiedLearningControl(control)
+    if not control:IsA("GuiButton") then return end
+    if not control:FindFirstChild("VerifiedLearningTouchTarget") then
+      local size = Instance.new("UISizeConstraint")
+      size.Name = "VerifiedLearningTouchTarget"
+      size.MinSize = Vector2.new(0, 52)
+      size:SetAttribute("SemanticTouchTarget", verifiedLearningSemanticVariant)
+      size.Parent = control
+    end
+    control.Activated:Connect(function()
+      verifiedLearningLastControl = control
+      verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputSubmittedAt", os.clock())
+      playVerifiedLearningActionFeedback(control)
+    end)
+  end
+  for _, descendant in ipairs(verifiedLearningRoot:GetDescendants()) do bindVerifiedLearningControl(descendant) end
+  verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
+  verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):
+    Connect(function()
+      verifiedLearningRoot:SetAttribute("VerifiedExternalLearningGame", "no_think")
+    end)
+
       if highlight then highlight:Destroy() end
     end)
   end

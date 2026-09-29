@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "      if sparkles then sparkles:Destroy() end",
+      "replace": "  local verifiedLearningLastControl = nil\n  local function bindVerifiedLearningControl(control)\n    if not control:IsA(\"GuiButton\") then return end\n    if not control:FindFirstChild(\"VerifiedLearningTouchTarget\") then\n      local size = Instance.new(\"UISizeConstraint\")\n      size.Name = \"VerifiedLearningTouchTarget\"\n      size.MinSize = Vector2.new(0, 52)\n      size:SetAttribute(\"SemanticTouchTarget\", verifiedLearningSemanticVariant)\n      size.Parent = control\n    end\n    control.Activated:Connect(function()\n      verifiedLearningLastControl = control\n      verifiedLearningRoot:SetAttribute(\"VerifiedExternalLearningInputSubmittedAt\", os.clock())\n      playVerifiedLearningActionFeedback(control)\n    end)\n  end\n  for _, descendant in ipairs(verifiedLearningRoot:GetDescendants()) do bindVerifiedLearningControl(descendant) end\n  verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)\n  verifiedLearningPlayer:GetAttributeChangedSignal(\"LastApprovedScope\"):\n    Connect(function()\n      verifiedLearningRoot:SetAttribute(\"VerifiedExternalLearningGame\", \"no_think\")\n    end)\n"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
