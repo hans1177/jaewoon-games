@@ -1,0 +1,103 @@
+name: Horror Direct Self-hosted Publish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/horror-direct-selfhosted-publish.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: horror-direct-selfhosted-publish
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 30
+    env:
+      GAME_ID: horror-escape-room
+      GAME_NAME: '심야 감염전 [4대4]'
+      SOURCE_REVISION: 'b65f1346a87dc009b95c36a18b23e2359c051325'
+      UNIVERSE_ID: '10767445796'
+      PLACE_ID: '98222620265768'
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify exact game source still matches hotfix revision
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          git fetch --no-tags --depth=1 origin $env:SOURCE_REVISION
+          git diff --exit-code $env:SOURCE_REVISION HEAD -- "roblox-games/$env:GAME_ID/default.project.json" "roblox-games/$env:GAME_ID/shared" "roblox-games/$env:GAME_ID/server" "roblox-games/$env:GAME_ID/client" "qa/horror-escape-room-release.test.mjs"
+          Write-Host "HORROR_DIRECT_SOURCE_BIND=PASS:$env:SOURCE_REVISION"
+
+      - name: Run release QA
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          node --test qa/horror-escape-room-release.test.mjs
+
+      - name: Install pinned Rojo
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $root = Join-Path $env:RUNNER_TEMP 'horror-direct'
+          $bin = Join-Path $root 'rojo-bin'
+          New-Item -ItemType Directory -Force -Path $bin | Out-Null
+          $zip = Join-Path $root 'rojo.zip'
+          Invoke-WebRequest -Uri 'https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip' -OutFile $zip
+          $hash=(Get-FileHash -Algorithm SHA256 $zip).Hash.ToLowerInvariant()
+          Write-Host "HORROR_DIRECT_ROJO_ZIP_SHA256=$hash"
+          Expand-Archive -Path $zip -DestinationPath $bin -Force
+          $rojo = Get-ChildItem -Path $bin -Filter 'rojo.exe' -Recurse | Select-Object -First 1
+          if(-not $rojo){ throw 'rojo.exe missing' }
+          "ROJO_EXE=$($rojo.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Build current game source
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $outDir = Join-Path $env:RUNNER_TEMP 'horror-direct-output'
+          New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+          $place = Join-Path $outDir "$env:GAME_ID.rbxlx"
+          & $env:ROJO_EXE build "roblox-games/$env:GAME_ID/default.project.json" -o $place
+          if(-not (Test-Path $place)){ throw 'place artifact missing' }
+          $sha=(Get-FileHash -Algorithm SHA256 $place).Hash.ToLowerInvariant()
+          Write-Host "HORROR_DIRECT_BUILD_SHA256=$sha"
+          "PLACE_FILE=$place" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Publish directly to existing private Roblox target
+        shell: pwsh
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        run: |
+          $ErrorActionPreference='Stop'
+          if([string]::IsNullOrWhiteSpace($env:ROBLOX_OPEN_CLOUD_API_KEY)){ throw 'ROBLOX_OPEN_CLOUD_API_KEY missing' }
+          $result = Join-Path $env:RUNNER_TEMP 'horror-direct-output\horror-escape-room.result.json'
+          $args=@('--game-id',$env:GAME_ID,'--game-name',$env:GAME_NAME,'--place-file',$env:PLACE_FILE,'--source-revision',$env:SOURCE_REVISION,'--output',$result,'--reuse-universe-id',$env:UNIVERSE_ID,'--reuse-place-id',$env:PLACE_ID)
+          node tools/company-roblox-dedicated-experience.mjs @args
+          "PUBLISH_RESULT=$result" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Require direct publish success
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $r=Get-Content $env:PUBLISH_RESULT -Raw | ConvertFrom-Json
+          if($r.pass -ne $true -or $r.private -ne $true -or $r.published -ne $true){ throw "HORROR_DIRECT_PUBLISH_FAILED:$($r.stage):$($r.error)" }
+          if([string]$r.universeId -ne $env:UNIVERSE_ID -or [string]$r.placeId -ne $env:PLACE_ID){ throw 'HORROR_DIRECT_TARGET_DRIFT' }
+          Write-Host 'HORROR_DIRECT_PRIVATE_PUBLISH=PASS'
+          Write-Host "HORROR_DIRECT_TARGET=$($r.universeId)/$($r.placeId)"
+          Write-Host "HORROR_DIRECT_SOURCE_REVISION=$($r.sourceRevision)"
