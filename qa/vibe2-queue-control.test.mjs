@@ -33,6 +33,42 @@ function add(queue, id, gameId, target='unity', extra={}) {
   return enqueueVibeTask(queue,{ id, gameId, target, goal:`${id} 작업`, sourceRoot:`${target}-games/${gameId}`, ...extra });
 }
 
+test('shared queue retains first and latest shadow observations without growing on every retry',()=>{
+  const evidence=[
+    'source-revision:abc','neural-work-graph-shadow:first','neural-event-shadow:first','neural-shadow-feedback:first',
+    'neural-root-cause:first','neural-work-graph-shadow:middle','neural-event-shadow:middle','neural-shadow-feedback:middle',
+    'failure-cause:real','neural-work-graph-shadow:latest','neural-event-shadow:latest','neural-shadow-feedback:latest',
+    'neural-root-cause:latest'
+  ];
+  const first=createVibeContinuousQueue({tasks:[{id:'evidence',gameId:'evidence',target:'roblox',evidence}]});
+  const retained=first.tasks[0].evidence;
+  assert.deepEqual(retained.filter(value=>value.startsWith('neural-work-graph-shadow:')),['neural-work-graph-shadow:first','neural-work-graph-shadow:latest']);
+  assert.deepEqual(retained.filter(value=>value.startsWith('neural-event-shadow:')),['neural-event-shadow:first','neural-event-shadow:latest']);
+  assert.deepEqual(retained.filter(value=>value.startsWith('neural-shadow-feedback:')),['neural-shadow-feedback:first','neural-shadow-feedback:latest']);
+  assert.ok(retained.includes('source-revision:abc'));
+  assert.ok(retained.includes('failure-cause:real'));
+  assert.deepEqual(retained.filter(value=>value.startsWith('neural-root-cause:')),['neural-root-cause:first','neural-root-cause:latest']);
+  assert.deepEqual(createVibeContinuousQueue(first).tasks[0].evidence,retained);
+});
+
+test('legacy Roblox roots cannot reserve overlapping source files in one wave',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
+    {id:'release-focus',goal:'Repair shared Roblox client',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
+      sourceRoot:'roblox-games/same',responsibleFiles:['roblox-games/same/client/Game.client.luau'],releaseState:'release-confirmed',priority:'high'},
+    {id:'second-gate',goal:'Repair shared Roblox client',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
+      sourceRoot:'roblox:same',responsibleFiles:['roblox-games/same/client/Game.client.luau'],priority:'normal'},
+    {id:'studio-repair',goal:'Repair shared Roblox client',gameId:'same',target:'roblox',department:'development',type:'implementation',status:'queued',
+      responsibleFiles:['roblox-games/same/client/Game.client.luau'],priority:'normal'}
+  ]});
+  assert.ok(queue.tasks.every(row=>row.sourceRoot==='roblox-games/same'));
+  const selected=selectVibeQueueBatch(queue,{lane:'game-primary',maxConcurrentTasks:20});
+  assert.equal(selected.selected.length,1);
+  assert.equal(selected.selected[0].id,'release-focus');
+  const reserved=reserveVibeTaskBatch(queue,{lane:'game-primary',maxConcurrentTasks:20});
+  assert.equal(reserved.matrix.length,1);
+  assert.equal(reserved.matrix[0].taskId,'release-focus');
+});
+
 test('transient work lock conflicts are requeued without consuming retry budget or poisoning failure learning',()=>{
   const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
     id:'visual-lock',gameId:'visual-game',target:'roblox',department:'development',type:'implementation',

@@ -13,7 +13,20 @@ function normalizeEvidence(values=[]){
   const hadLegacy=rows.includes(LEGACY_POLICY_EVIDENCE);
   const filtered=rows.filter(value=>value!==LEGACY_POLICY_EVIDENCE);
   if(hadLegacy&&!filtered.includes(CANONICAL_POLICY_EVIDENCE))filtered.unshift(CANONICAL_POLICY_EVIDENCE);
-  return filtered;
+  // Shadow telemetry is advisory. Keep its baseline and latest sample in the queue;
+  // authoritative QA, failure, source, and release evidence stays intact.
+  const shadowPrefixes=['neural-work-graph-shadow:','neural-event-shadow:','neural-shadow-feedback:'];
+  const first=new Map(),last=new Map();
+  filtered.forEach((value,index)=>{
+    const prefix=shadowPrefixes.find(item=>value.startsWith(item));
+    if(!prefix)return;
+    if(!first.has(prefix))first.set(prefix,index);
+    last.set(prefix,index);
+  });
+  return filtered.filter((value,index)=>{
+    const prefix=shadowPrefixes.find(item=>value.startsWith(item));
+    return !prefix||index===first.get(prefix)||index===last.get(prefix);
+  });
 }
 const clampInt = (value, min = 0, max = Number.MAX_SAFE_INTEGER) => Math.max(min, Math.min(max, Math.floor(Number(value) || 0)));
 const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/+$/, '');
@@ -85,10 +98,13 @@ function inferShard(input = {}) {
 }
 function inferSourceRoot(input = {}) {
   const explicit = posix(input.sourceRoot);
-  if (explicit) return explicit;
   const gameId = clean(input.gameId);
   const target = clean(input.target).toLowerCase();
+  // Migrate legacy Roblox queue roots so full repository paths use the same file lock.
+  if (target === 'roblox' && gameId && explicit === `roblox:${gameId}`) return `roblox-games/${gameId}`;
+  if (explicit) return explicit;
   if (!gameId || !target) return null;
+  if (target === 'roblox') return `roblox-games/${gameId}`;
   if (target === 'web') return `web-games/${gameId}`;
   if (target === 'unity') return `unity-games/${gameId}`;
   if (target === 'unreal') return `unreal-games/${gameId}`;
