@@ -310,10 +310,25 @@ export function planLocalStudioCandidates({queue={},roadmap={},requestedGameId='
       item?.robloxQualityBuildUpRequired===true
       &&clean(item?.robloxQualityBuildUpSourceRevision)===currentSourceRevision
     );
-    if(activeQualityBuildUp){
+    // A newer exact infrastructure failure needs a harness recheck, not a source rewrite.
+    // Keep the product repair evidence intact; only a real successful audit may clear it.
+    const infrastructureRecheck=Boolean(
+      activeQualityBuildUp
+      &&prior?.infrastructureFailure===true
+      &&clean(prior?.failureClass)==='STUDIO_MCP_INFRASTRUCTURE_PENDING'
+      &&clean(prior?.sourceRevision)===currentSourceRevision
+      &&clean(prior?.artifactIdentity)===currentArtifactIdentity
+      &&Number(prior?.artifactRunId||0)===candidateArtifactRunId
+      &&String(prior?.universeId||'')===String(candidate?.universeId||'')
+      &&String(prior?.placeId||'')===String(candidate?.placeId||'')
+      &&Number(prior?.versionNumber||0)===Number(candidate?.versionNumber||0)
+      &&Date.parse(prior?.testedAt)>Date.parse(item?.robloxQualityBuildUpEvidence?.testedAt)
+    );
+    if(activeQualityBuildUp&&!infrastructureRecheck){
       console.log('ROBLOX_STUDIO_MCP_QUALITY_BUILDUP_SUPPRESSED='+clean(item?.gameId)+':source='+currentSourceRevision);
       continue;
     }
+    if(infrastructureRecheck)console.log('ROBLOX_STUDIO_MCP_INFRASTRUCTURE_RECHECK='+clean(item?.gameId)+':source='+currentSourceRevision);
 
     const publishedCandidateExact=Boolean(
       candidate?.published===true
@@ -524,14 +539,25 @@ function flattenText(value,out=[]){
   return out;
 }
 
-function collectImages(value,out=[]){
+export function collectImages(value,out=[],captureDirectory='',phase='frame'){
   if(value==null)return out;
-  if(Array.isArray(value)){for(const v of value)collectImages(v,out);return out;}
+  if(Array.isArray(value)){for(const v of value)collectImages(v,out,captureDirectory,phase);return out;}
   if(typeof value==='object'){
     if(clean(value.type).toLowerCase()==='image'&&typeof value.data==='string'){
-      out.push({mimeType:clean(value.mimeType||value.mime_type||'image/png'),data:value.data});
+      const row={mimeType:clean(value.mimeType||value.mime_type||'image/png'),data:value.data};
+      if(captureDirectory){
+        const bytes=Buffer.from(row.data,'base64');
+        const extension=row.mimeType==='image/jpeg'?'jpg':row.mimeType==='image/png'?'png':null;
+        if(!extension||bytes.length===0)throw new Error('ROBLOX_STUDIO_CAPTURE_FORMAT_INVALID');
+        fs.mkdirSync(captureDirectory,{recursive:true});
+        row.sha256=crypto.createHash('sha256').update(bytes).digest('hex');
+        row.path=path.join(captureDirectory,clean(phase).replace(/[^a-zA-Z0-9_-]/g,'_')+'-'+out.length+'.'+extension);
+        fs.writeFileSync(row.path,bytes);
+        row.bytes=bytes.length;
+      }
+      out.push(row);
     }
-    for(const v of Object.values(value))collectImages(v,out);
+    for(const v of Object.values(value))collectImages(v,out,captureDirectory,phase);
   }
   return out;
 }
@@ -2163,6 +2189,7 @@ export async function runOfficialStudioMcpPlay({
   const launch=mcpCommandArgs(mcpCommand);
   const client=new McpStdioClient({...launch,timeoutMs});
   const actions=[],checkpoints=[],errors=[];
+  const captureDirectory=output?path.join(path.dirname(path.resolve(output)),'studio-captures',crypto.randomUUID()):'';
   const checkpoint=(id,pass)=>checkpoints.push({id,name:id,required:true,pass:pass===true});
   let studioId='',beforeImages=[],afterImages=[],consoleResult=null,characterMotionRuntime=null,started=false;
   let initialClientProbe=null,preActionClientProbe=null,postActionClientProbe=null,finalClientProbe=null,finalServerProbe=null,rejoinClientProbe=null,scenarioCoverage=[];
@@ -2753,10 +2780,10 @@ export async function runOfficialStudioMcpPlay({
     const captureTool=client.tool('screen_capture');
     const captureArgs=fillRequired((()=>{const a={};setStudioId(a,captureTool.inputSchema||{},studioId);return a;})(),captureTool.inputSchema||{});
     const finalBefore=await client.call('screen_capture',captureArgs);
-    beforeImages=collectImages(finalBefore,[]);
+    beforeImages=collectImages(finalBefore,[],captureDirectory,'before');
     await wait(250);
     const finalAfter=await client.call('screen_capture',captureArgs);
-    afterImages=collectImages(finalAfter,[]);
+    afterImages=collectImages(finalAfter,[],captureDirectory,'after');
     const captureExp=actualPlayContract?.expectations||{};
     const finalBeforeQuality=captureSanity(beforeImages,Number(captureExp.minimumCaptureWidth||320),Number(captureExp.minimumCaptureHeight||180),Number(captureExp.minimumCaptureBytes||2048));
     const finalAfterQuality=captureSanity(afterImages,Number(captureExp.minimumCaptureWidth||320),Number(captureExp.minimumCaptureHeight||180),Number(captureExp.minimumCaptureBytes||2048));
@@ -2845,6 +2872,7 @@ export async function runOfficialStudioMcpPlay({
         captureQuality
       },
       characterMotionRuntime,
+      captureFiles:[...beforeImages,...afterImages].map(({path,sha256,bytes,mimeType})=>({path,sha256,bytes,mimeType})),
       rawSourceIncluded:false,
       rawGameplayValuesIncluded:false,
       rawViewportIncluded:false
@@ -2946,6 +2974,16 @@ export async function runOfficialStudioMcpPlay({
     }else{
       errors.push({type:'studio-mcp-infrastructure-or-runtime-error',actionId:null,signature});
     }
+    if(studioId&&captureDirectory&&client.tools.has('screen_capture')){
+      try{
+        const tool=client.tool('screen_capture');
+        const args={};setStudioId(args,tool.inputSchema||{},studioId);
+        const failureCapture=await client.call('screen_capture',fillRequired(args,tool.inputSchema||{}));
+        collectImages(failureCapture,afterImages,captureDirectory,'failure');
+      }catch(captureError){
+        errors.push({type:'studio-capture-evidence-error',actionId:null,signature:clean(captureError?.message||captureError).slice(0,500)});
+      }
+    }
     if(started&&studioId&&client.tools.has('start_stop_play')){
       try{const tool=client.tool('start_stop_play');await client.call('start_stop_play',startStopArgs(tool.inputSchema||{},studioId,false));}catch{}
     }
@@ -2959,6 +2997,7 @@ export async function runOfficialStudioMcpPlay({
       scenarioContractFingerprint:actualPlayContract?.required===true?'sha256:'+stableSha256(actualPlayContract):null,
       scenarioCoverage,authoritativeStateChangeObserved,qualityFailureKinds,qualityFailureDetails,
       actions,checkpoints,errors,
+      captureFiles:[...beforeImages,...afterImages].map(({path,sha256,bytes,mimeType})=>({path,sha256,bytes,mimeType})),
       metrics:{beforeFrameCount:beforeImages.length,afterFrameCount:afterImages.length,distinctFrameChange:false,consoleErrorCount:errors.length},
       rawSourceIncluded:false,rawGameplayValuesIncluded:false,rawViewportIncluded:false
     };

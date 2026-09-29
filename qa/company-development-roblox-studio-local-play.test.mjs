@@ -10,6 +10,7 @@ import {
   validateLocalStudioPolicy,
   detectStudioMcpAssistantSetting,
   collectStudios,
+  collectImages,
   collectStudioConsoleEntries,
   classifyStudioConsoleOutput,
   planLocalStudioCandidates,
@@ -2408,8 +2409,8 @@ test('zero-floor Studio abort routes exact artifact to WORLD_GEOMETRY repair',()
 });
 
 
-test('active Studio runs survive new requests and only duplicate immutable artifacts share a slot',()=>{
-  assert.match(workflow,/group: roblox-studio-artifact-\$\{\{ matrix\.gameId \}\}-\$\{\{ matrix\.sourceRevision \}\}-\$\{\{ matrix\.artifactIdentity \}\}/);
+test('active Studio runs survive new requests and all games share the Studio host slot',()=>{
+  assert.match(workflow,/group: roblox-studio-shared-host/);
   const preserve=workflow.indexOf('ROBLOX_ACTIVE_STUDIO_RUN_PRESERVED=');
   const cancel=workflow.indexOf('actions/runs/$run_id/cancel');
   assert.ok(preserve>0&&preserve<cancel);
@@ -2508,4 +2509,47 @@ test('F9 restart transport failure keeps checkpoint blocked without inventing sa
     assert.equal(result.errors[0].type,'studio-save-rejoin-harness-infrastructure');
     assert.match(result.errors[0].signature,/No Roblox Studio instances/);
   }
+});
+
+
+test('newer exact infrastructure failures resume without clearing product repair evidence',()=>{
+ const candidate=item();
+ candidate.robloxQualityBuildUpRequired=true;
+ candidate.robloxQualityBuildUpSourceRevision=source;
+ candidate.robloxQualityBuildUpEvidence={testedAt:'2026-09-28T00:00:00Z'};
+ candidate.robloxInternalVibePlayEvidence={...candidate.robloxRuntimeCandidateEvidence,
+   infrastructureFailure:true,failureClass:'STUDIO_MCP_INFRASTRUCTURE_PENDING',testedAt:'2026-09-29T00:00:00Z'};
+ const before=structuredClone(candidate);
+ assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:roadmap()}).include.length,1);
+ assert.deepEqual(candidate,before);
+ for(const patch of [
+   {sourceRevision:'c'.repeat(40)},{artifactIdentity:'sha256:'+'d'.repeat(64)},
+   {artifactRunId:778},{versionNumber:10},{placeId:'789'},
+   {testedAt:'2026-09-27T00:00:00Z'},{testedAt:'invalid'},
+   {infrastructureFailure:false},{failureClass:'STUDIO_PRODUCT_QUALITY_FAILURE'}
+ ]){
+   const changed=structuredClone(candidate);Object.assign(changed.robloxInternalVibePlayEvidence,patch);
+   assert.equal(planLocalStudioCandidates({queue:{items:[changed]},roadmap:roadmap()}).include.length,0);
+ }
+ const peer=structuredClone(candidate);peer.gameId='g2';
+ const batch=planLocalStudioCandidates({queue:{items:[candidate,peer]},roadmap:roadmap()});
+ assert.equal(batch.include.length,1);assert.equal(batch.sharedInfrastructureCanary,true);
+});
+
+test('Studio captures persist exact image bytes before later failures and remain separate by phase',()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'studio-captures-'));
+ try{
+  const bytes=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=','base64');
+  const response={content:[{type:'image',mimeType:'image/png',data:bytes.toString('base64')}]};
+  const before=collectImages(response,[],dir,'before');
+  const after=collectImages(response,[],dir,'after');
+  assert.deepEqual(fs.readFileSync(before[0].path),bytes);
+  assert.notEqual(before[0].path,after[0].path);
+  assert.equal(before[0].sha256,crypto.createHash('sha256').update(bytes).digest('hex'));
+  assert.throws(()=>collectImages({type:'image',data:'',mimeType:'image/png'},[],dir,'failure'));
+  assert.deepEqual(fs.readFileSync(before[0].path),bytes);
+  assert.match(workflow,/name: Upload Studio captures and runtime report\n        if: always\(\)/);
+  assert.match(workflow,/studio-captures-\$\{\{ matrix.gameId/);
+  assert.match(workflow,/preserve existing session and do not launch a duplicate/);
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
