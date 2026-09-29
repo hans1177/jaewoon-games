@@ -445,3 +445,26 @@ test('Studio 방 검증은 TeleportService 대신 로컬 fallback을 사용한�
  assert.match(server,/workspace:SetAttribute\("StudioRoomFallback",true\)/);
  assert.match(server,/roomCode="000001"/);
 });
+
+
+test('예약방 로비는 8칸 슬롯에서 실제 유저와 AI를 구분한다',()=>{
+ assert.match(client,/Name="RoomSlots"/);
+ assert.match(client,/for i=1,8 do/);
+ assert.match(client,/local function refreshRoomSlots\(\)/);
+ assert.match(client,/slot\.Text="AI"/);
+ assert.match(client,/방장 · /);
+ assert.match(client,/roomSlotsPanel\.Visible=roomInfoPanel\.Visible/);
+});
+
+test('세계 괴담 도감 UI는 12종 3단계 진행과 조각 계약서를 보여준다',()=>{
+ assert.match(client,/Name="GhostCompendium"/);
+ assert.match(client,/local function ghostProgressSet\(\)/);
+ assert.match(client,/local function updateGhostBookUI\(\)/);
+ assert.match(client,/괴담 조각 %d\/24 · 계약서 %d/);
+ assert.match(client,/string\.format\("%s · %s\\n%s · %s · %s"/);
+ assert.match(client,/GhostProgress/);
+ assert.match(client,/GhostCompleted/);
+ assert.match(client,/GhostContracts/);
+ const bookBlock=client.slice(client.indexOf('-- 세계 괴담 도감'),client.indexOf('-- 코스메틱 상점'));
+ assert.doesNotMatch(bookBlock,/FireServer|WalkSpeed|Damage|Energy|PurifyDistance|InfectRange/);
+});
