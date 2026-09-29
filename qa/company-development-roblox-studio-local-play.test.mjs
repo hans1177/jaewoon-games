@@ -904,41 +904,43 @@ test('local exact Studio boot does not abort before remotes when DataStore is un
   }
 });
 
-test('Studio MCP opens the exact local Place as the single Studio before MCP and preserves exact-first retries',()=>{
+test('Studio MCP opens one exact local Place and never relaunches Studio during MCP recovery',()=>{
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
   const bindBlock=studioMcpBlock.slice(
     studioMcpBlock.indexOf('      - name: Bind and open exact local Place artifact'),
     studioMcpBlock.indexOf('      - name: Run actual local play through official Studio MCP')
   );
-  assert.match(bindBlock,/\$placeLaunchProcess = Start-Process -FilePath \$env:VIBE2_ROBLOX_STUDIO_PATH -ArgumentList @\(\$places\[0\]\.FullName\) -PassThru/);
-  assert.doesNotMatch(bindBlock,/\$warmStudioProcess\s*=\s*Start-Process/);
-  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_EXACT_ASSISTANT_LOG_READY=YES/);
-  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_EXACT_ASSISTANT_LOG_READY=UNKNOWN_CONTINUE_OFFICIAL_HANDSHAKE/);
-  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_ASSISTANT_LOG_GATE=ADVISORY_ONLY/);
+  const runBlock=studioMcpBlock.slice(
+    studioMcpBlock.indexOf('      - name: Run actual local play through official Studio MCP'),
+    studioMcpBlock.indexOf('      - name: Finalize Studio session after final capture')
+  );
+  assert.equal((bindBlock.match(/Start-Process -FilePath \$env:VIBE2_ROBLOX_STUDIO_PATH/g)||[]).length,1);
   assert.match(bindBlock,/ROBLOX_STUDIO_MCP_SINGLE_EXACT_STUDIO=YES/);
-  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_PRE_MCP_RELAUNCH=YES/);
-  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_PRE_MCP_PROCESS_READY_COUNT=/);
-  assert.match(bindBlock,/without provable ownership; preserve all other Studio windows/);
-  assert.match(bindBlock,/for \(\$processProbe = 1; \$processProbe -le 12; \$processProbe\+\+\)/);
-  assert.doesNotMatch(bindBlock,/Roblox Studio exited before exact local Place MCP probe/);
-  assert.match(bindBlock,/AssistantVersion:\|Running plugin sabuiltin_Assistant\\\.rbxm/);
-  assert.doesNotMatch(bindBlock,/Roblox Studio Assistant did not finish loading in exact local Place/);
-  assert.match(bindBlock,/VIBE2_STUDIO_PROCESS_IDS=/);
-  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_OWNED_PROCESS_IDS=/);
-
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_EXACT_PLACE_PROCESS_ID=/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_EXACT_ASSISTANT_LOG_READY=YES/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_EXACT_ASSISTANT_LOG_READY=UNKNOWN_CONTINUE_OFFICIAL_HANDSHAKE/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_ASSISTANT_LOG_GATE=ADVISORY_ONLY/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SINGLE_EXACT_STUDIO=YES/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_PROCESS_NOT_READY=/);
-  assert.match(studioMcpBlock,/without provable ownership; preserve other Studio windows/);
-  assert.doesNotMatch(studioMcpBlock,/Roblox Studio exited before MCP recovery Place probe/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_OTHER_PROCESS_PRESERVED=YES/);
-  assert.match(studioMcpBlock,/foreach \(\$ownedId in \$ownedIds\)/);
+  assert.match(bindBlock,/ROBLOX_STUDIO_MCP_SINGLE_SESSION_PROCESS_NOT_READY=YES/);
+  assert.match(bindBlock,/duplicate Studio relaunch forbidden/);
+  assert.doesNotMatch(bindBlock,/ROBLOX_STUDIO_MCP_PRE_MCP_RELAUNCH=YES/);
+  assert.match(runBlock,/ROBLOX_STUDIO_MCP_SAME_STUDIO_RETRY=YES/);
+  assert.match(runBlock,/ROBLOX_STUDIO_MCP_DUPLICATE_STUDIO_RELAUNCH=NO/);
+  assert.doesNotMatch(runBlock,/ROBLOX_STUDIO_MCP_SESSION_RESTART=/);
+  assert.doesNotMatch(runBlock,/ROBLOX_STUDIO_MCP_STUDIO_RELAUNCHED=/);
+  assert.doesNotMatch(runBlock,/Start-Process -FilePath \$env:VIBE2_ROBLOX_STUDIO_PATH/);
   assert.doesNotMatch(studioMcpBlock,/AutoHotkey|pyautogui|SendKeys|mouse_event|keybd_event/i);
 });
 
+test('same Roblox game Studio jobs serialize and revalidate latest runtime before opening Studio',()=>{
+  const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
+  const head=studioMcpBlock.slice(0,studioMcpBlock.indexOf('    steps:'));
+  assert.match(head,/group: roblox-studio-mcp-game-\$\{\{ matrix\.gameId \}\}/);
+  assert.match(head,/cancel-in-progress: false/);
+  const guardAt=studioMcpBlock.indexOf('- name: Revalidate exact same-game Studio need after concurrency wait');
+  const preflightAt=studioMcpBlock.indexOf('- name: Verify official Studio MCP policy and runner');
+  const launchAt=studioMcpBlock.indexOf('- name: Bind and open exact local Place artifact');
+  assert.ok(guardAt>=0&&preflightAt>guardAt&&launchAt>preflightAt);
+  const guardBlock=studioMcpBlock.slice(guardAt,preflightAt);
+  assert.match(guardBlock,/git -C \.\.\/runtime fetch --no-tags origin company-runtime/);
+  assert.match(guardBlock,/ROBLOX_STUDIO_SAME_GAME_REVALIDATE=SKIP_ALREADY_HANDLED_OR_SUPERSEDED/);
+  assert.match(studioMcpBlock,/if: steps\.studio_guard\.outputs\.run == 'true'/);
+});
 test('Assistant log readiness is advisory and official required-tool handshake remains authoritative',()=>{
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
   const bindBlock=studioMcpBlock.slice(
@@ -1020,8 +1022,10 @@ test('Studio MCP recovery blocks explicit disabled state but probes missing or u
   const studioMcpBlock=workflow.slice(workflow.indexOf('\n  studio-mcp-auto-play:'));
   assert.match(studioMcpBlock,/\$maxSessionAttempts = 3/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SESSION_ATTEMPT=/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SESSION_RESTART=/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_STUDIO_RELAUNCHED=/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SAME_STUDIO_RETRY=YES/);
+  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_DUPLICATE_STUDIO_RELAUNCH=NO/);
+  assert.doesNotMatch(studioMcpBlock,/ROBLOX_STUDIO_MCP_SESSION_RESTART=/);
+  assert.doesNotMatch(studioMcpBlock,/ROBLOX_STUDIO_MCP_STUDIO_RELAUNCHED=/);
   assert.match(studioMcpBlock,/--tool-attempts=5/);
   assert.match(studioMcpBlock,/--tool-delay-ms=1000/);
   assert.match(studioMcpBlock,/--timeout=15000/);
@@ -1047,9 +1051,9 @@ test('Studio MCP recovery blocks explicit disabled state but probes missing or u
   assert.match(studioMcpBlock,/ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_PREREQUISITE_EVIDENCE=ASSISTANT_SETTINGS_EMPTY_AFTER_ASSISTANT_READY/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_POST_LAUNCH_SETTING_MUTATION=NO/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED=/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED_COUNT=/);
-  assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SETTING_MUTATION=NO/);
+  assert.doesNotMatch(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED=/);
+  assert.doesNotMatch(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SETTING_ENABLED_COUNT=/);
+  assert.doesNotMatch(studioMcpBlock,/ROBLOX_STUDIO_MCP_RETRY_SETTING_MUTATION=NO/);
   assert.match(studioMcpBlock,/setting_confirmed=/);
   assert.match(studioMcpBlock,/setting_probe_required=/);
   assert.match(studioMcpBlock,/setting_blocked=/);
@@ -1063,8 +1067,8 @@ test('Studio MCP recovery blocks explicit disabled state but probes missing or u
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_SETTING_DIAGNOSTIC_ADVISORY=/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_ENABLEMENT_AUTHORITY=OFFICIAL_REQUIRED_TOOL_HANDSHAKE/);
   assert.match(studioMcpBlock,/ROBLOX_STUDIO_MCP_PLAY_ATTEMPT=PROBE_OFFICIAL_TOOL_HANDSHAKE/);
-  assert.match(studioMcpBlock,/Download exact immutable Roblox build artifact[\s\S]{0,180}if: steps\.mcp_preflight\.outputs\.setting_blocked != 'true'/);
-  assert.match(studioMcpBlock,/Run actual local play through official Studio MCP[\s\S]{0,180}if: steps\.mcp_preflight\.outputs\.setting_blocked != 'true'/);
+  assert.match(studioMcpBlock,/Download exact immutable Roblox build artifact[\s\S]{0,220}if: steps\.studio_guard\.outputs\.run == 'true' && steps\.mcp_preflight\.outputs\.setting_blocked != 'true'/);
+  assert.match(studioMcpBlock,/Run actual local play through official Studio MCP[\s\S]{0,220}if: steps\.studio_guard\.outputs\.run == 'true' && steps\.mcp_preflight\.outputs\.setting_blocked != 'true'/);
   assert.doesNotMatch(studioMcpBlock,/Set-Content .*AssistantSettings|Out-File .*AssistantSettings|Remove-Item .*AssistantSettings/i);
   assert.doesNotMatch(studioMcpBlock,/Set-Content .*VIBE2_ROBLOX_STUDIO_MCP_SETTINGS_ROOT|Remove-Item .*VIBE2_ROBLOX_STUDIO_MCP_SETTINGS_ROOT/i);
   assert.doesNotMatch(studioMcpBlock,/user_mouse_input[\s\S]{0,120}(?:Manage MCP Servers|Enable Studio as MCP server)/i);
@@ -1078,24 +1082,21 @@ test('MCP helper accepts bounded per-session readiness attempts from workflow ar
   assert.match(helper,/toolDelayMs:Number\(a\['tool-delay-ms'\]\|\|1000\)/);
 });
 
-test('central Studio MCP recovery policy stays restart-only and fail-closed on infrastructure exhaustion',()=>{
+test('central Studio MCP recovery policy keeps one Studio session and retries only the MCP client',()=>{
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
   const recovery=roadmap.roblox?.studioExecution?.mcpUnavailableRecovery||{};
-  assert.equal(recovery.mode,'OFFICIAL_RESTART_ONLY');
-  assert.equal(recovery.automaticSessionAttempts,3);
+  assert.equal(recovery.mode,'OFFICIAL_SAME_STUDIO_SESSION_MCP_RETRY');
+  assert.equal(recovery.automaticSessionAttempts,1);
+  assert.equal(recovery.automaticMcpAttemptsPerSession,3);
+  assert.equal(recovery.sameStudioSessionRequired,true);
+  assert.equal(recovery.duplicateStudioRelaunchForbidden,true);
   assert.equal(recovery.toolReadinessAttemptsPerSession,5);
   assert.equal(recovery.assistantSettingsDiagnosticOnly,true);
   assert.equal(recovery.assistantSettingsMutationForbidden,true);
   assert.equal(recovery.guiToggleAutomationForbidden,true);
   assert.equal(recovery.finalFailureClass,'STUDIO_MCP_INFRASTRUCTURE_PENDING');
   assert.equal(recovery.infrastructureFailureMustNotBecomeGameFailure,true);
-  assert.deepEqual(recovery.sessionRestartEligibleFailureScope,[
-    'MCP_TOOL_READINESS',
-    'MCP_SERVER_ENABLEMENT',
-    'STUDIO_ATTACHMENT',
-    'MCP_TRANSPORT'
-  ]);
   assert.equal(recovery.completedMcpSessionRuntimeFailureAction,'PERSIST_GAME_RUNTIME_EVIDENCE_WITHOUT_MCP_SESSION_RESTART');
   assert.equal(recovery.runtimeFailureMustNotConsumeMcpRecoveryAttempts,true);
   assert.equal(recovery.completedSessionExitContract,'MCP_RUN_EXITS_SUCCESS_AFTER_REQUIRED_TOOLS_AND_STUDIO_SESSION_COMPLETE_EVEN_WHEN_RUNTIME_QA_FAILS');
@@ -1111,9 +1112,13 @@ test('central Studio MCP recovery policy stays restart-only and fail-closed on i
   assert.equal(recovery.automaticSettingMutationForbidden,true);
   assert.equal(recovery.manualPrerequisite,'ASSISTANT_MANAGE_MCP_SERVERS_ENABLE_STUDIO_AS_MCP_SERVER');
   assert.equal(recovery.automaticResumeAfterPrerequisite,true);
+
   const arch=architecture.releaseExposureLifecycle?.robloxPerpetualInternalBuildup?.mcpUnavailableRecovery||{};
-  assert.equal(arch.automaticSessionAttempts,3);
-  assert.equal(arch.ownedStudioRestart,true);
+  assert.equal(arch.automaticSessionAttempts,1);
+  assert.equal(arch.automaticMcpAttemptsPerSession,3);
+  assert.equal(arch.ownedStudioRestart,false);
+  assert.equal(arch.sameStudioSessionRequired,true);
+  assert.equal(arch.duplicateStudioRelaunchForbidden,true);
   assert.equal(arch.mcpClientRestart,true);
   assert.equal(arch.assistantSettingsReadOnlyDiagnostic,true);
   assert.equal(arch.assistantSettingsMutation,false);
@@ -1124,25 +1129,18 @@ test('central Studio MCP recovery policy stays restart-only and fail-closed on i
   assert.deepEqual(arch.unconfirmedSettingStates,['MISSING','UNKNOWN']);
   assert.equal(arch.unconfirmedSettingExecution,'PROBE_OFFICIAL_MCP_REQUIRED_TOOLS');
   assert.equal(arch.requiredToolHandshakeAuthority,true);
-  assert.deepEqual(arch.sessionRestartEligibleFailureScope,[
-    'MCP_TOOL_READINESS',
-    'MCP_SERVER_ENABLEMENT',
-    'STUDIO_ATTACHMENT',
-    'MCP_TRANSPORT'
-  ]);
   assert.equal(arch.completedMcpSessionRuntimeFailureAction,'PERSIST_GAME_RUNTIME_EVIDENCE_WITHOUT_MCP_SESSION_RESTART');
   assert.equal(arch.runtimeFailureMustNotConsumeMcpRecoveryAttempts,true);
+
   const ingress=architecture.learningClosedLoopTopology?.robloxStudioVerifiedRuntimeIngress||{};
   assert.equal(ingress.version,3);
-  assert.equal(ingress.infrastructureRecovery,'RESTART_ONLY_WHEN_MCP_TOOL_READINESS_ENABLEMENT_ATTACHMENT_OR_TRANSPORT_FAILS');
+  assert.equal(ingress.infrastructureRecovery,'RETRY_MCP_CLIENT_WITHIN_ONE_STUDIO_SESSION_WHEN_MCP_TOOL_READINESS_ENABLEMENT_ATTACHMENT_OR_TRANSPORT_FAILS');
   assert.equal(ingress.completedSessionRuntimeFailure,'PERSIST_AS_GAME_RUNTIME_EVIDENCE_NO_MCP_RESTART');
   assert.equal(ingress.runtimeFailureConsumesMcpRecoveryAttempt,false);
   assert.equal(ingress.completedSessionExitContract,'MCP_PROCESS_EXIT_ZERO_RUNTIME_QA_RESULT_PERSISTED_SEPARATELY');
   assert.equal(arch.unconfirmedSettingState,'STUDIO_MCP_INFRASTRUCTURE_PENDING_IF_REQUIRED_TOOL_HANDSHAKE_FAILS');
   assert.equal(arch.automaticSettingMutation,false);
 });
-
-
 test('Studio MCP strategy matrix receives include rows only and never planner metadata axes',()=>{
   const studioPlanBlock=workflow.slice(workflow.indexOf('\n  studio-local-plan:'),workflow.indexOf('\n  studio-mcp-auto-play:'));
   const jsIncludeOnly=/const include=Array\.isArray\(plan\.include\)\?plan\.include:\[\];[\s\S]*JSON\.stringify\(\{include\}\)/.test(studioPlanBlock)
@@ -2057,20 +2055,20 @@ test('Studio evidence push conflicts reapply onto latest company-runtime instead
 });
 
 
-test('Studio retry preserves a verified product failure instead of letting later MCP infrastructure noise overwrite repair routing',()=>{
+test('Studio retry preserves product failure and never relaunches Studio',()=>{
   const block=workflow.slice(workflow.indexOf('- name: Run actual local play through official Studio MCP'),workflow.indexOf('- name: Finalize Studio session after final capture'));
   assert.match(block,/\$productFailureObserved = \$false/);
   assert.match(block,/ROBLOX_STUDIO_MCP_PRODUCT_FAILURE_PRESERVED=YES/);
   assert.match(block,/\^studio-product-/);
   const productThrow=block.indexOf('official Roblox Studio product failure preserved for repair');
-  const timeoutThrow=block.indexOf('official Roblox Studio MCP tool provider timed out after 3 clean Studio sessions');
+  const timeoutThrow=block.indexOf('official Roblox Studio MCP tool provider timed out after 3 MCP attempts on one exact Studio session');
   assert.ok(productThrow>=0&&timeoutThrow>productThrow);
-  const preservedAt=block.indexOf('ROBLOX_STUDIO_MCP_PRODUCT_FAILURE_PRESERVED=YES');
-  const restartAt=block.indexOf('ROBLOX_STUDIO_MCP_SESSION_RESTART=$attempt',preservedAt);
-  assert.ok(preservedAt>=0);
-  assert.ok(restartAt<0||block.lastIndexOf('break',restartAt)>preservedAt);
+  assert.match(block,/ROBLOX_STUDIO_MCP_SAME_STUDIO_RETRY=YES/);
+  assert.match(block,/ROBLOX_STUDIO_MCP_DUPLICATE_STUDIO_RELAUNCH=NO/);
+  assert.doesNotMatch(block,/ROBLOX_STUDIO_MCP_SESSION_RESTART=/);
+  assert.doesNotMatch(block,/ROBLOX_STUDIO_MCP_STUDIO_RELAUNCHED=/);
+  assert.doesNotMatch(block,/Start-Process -FilePath \$env:VIBE2_ROBLOX_STUDIO_PATH/);
 });
-
 test('stale Studio workflow runs abort before opening Studio',()=>{
   const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'studio-head-'));
   const repoDir=path.join(cwd,'repo');
