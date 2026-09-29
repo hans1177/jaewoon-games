@@ -134,6 +134,9 @@ export function invalidateRobloxDownstreamEvidence(item,{sourceRevision,stamp}){
     robloxBuildPreflightPassed:false,
     robloxBuildPreflightPassedAt:null,
     robloxBuildPreflightFailedAt:null,
+    robloxFoundationF0Passed:false,
+    robloxFoundationF0PassedAt:null,
+    robloxFoundationF0Evidence:null,
     robloxRuntimePassed:false,
     robloxRuntimePassedAt:null,
     robloxRuntimeFailedAt:null,
@@ -168,7 +171,25 @@ export function invalidateRobloxDownstreamEvidence(item,{sourceRevision,stamp}){
   });
 }
 
-export function reconcileChangedRobloxItems({queue={},changedGameIds=[],sourceRevision='',stamp=new Date().toISOString(),validateItem}={}){
+export function restartRobloxFromF0(item,{sourceRevision,stamp=new Date().toISOString()}={}){
+  const previousArtifactIdentity=clean(item?.robloxBuildArtifactIdentity)||null;
+  const previousSourceRevision=clean(item?.robloxSourceCommit)||null;
+  invalidateRobloxDownstreamEvidence(item,{sourceRevision,stamp});
+  item.robloxEvidenceInvalidatedBySourceChange=null;
+  item.robloxEvidenceInvalidatedByF0Restart={
+    sourceRevision,
+    previousSourceRevision,
+    previousArtifactIdentity,
+    restartedAt:stamp,
+    authority:'canonical-main-f0-restart',
+  };
+  item.robloxFailureStage='TARGET_PLATFORM_BUILD_OR_PACKAGE';
+  item.robloxFailureSignature='ROBLOX_F0_RESTART_BUILD_PACKAGE_PENDING';
+  item.routingBlockers=['roblox-f0-restart-build-package-pending'];
+  return item;
+}
+
+export function reconcileChangedRobloxItems({queue={},changedGameIds=[],sourceRevision='',stamp=new Date().toISOString(),validateItem,forceF0Restart=false}={}){
   if(typeof validateItem!=='function')throw new Error('validateItem callback required');
   if(!/^[0-9a-f]{40}$/i.test(sourceRevision))throw new Error('sourceRevision must be a 40-char sha');
   const changed=[...new Set((changedGameIds||[]).map(clean).filter(Boolean))];
@@ -178,6 +199,11 @@ export function reconcileChangedRobloxItems({queue={},changedGameIds=[],sourceRe
     if(!item||!activeRobloxDevelopmentItem(item)){results.push({gameId,skipped:true,reason:'not-active-development'});continue;}
     const verdict=validateItem(item);
     if(verdict?.pass===true){
+      if(forceF0Restart===true){
+        restartRobloxFromF0(item,{sourceRevision,stamp});
+        results.push({gameId,pass:true,sourceRevision,forcedF0Restart:true,buildSourceChanged:verdict?.buildSourceChanged??null});
+        continue;
+      }
       if(verdict?.buildSourceChanged==null){
         results.push({
           gameId,
@@ -226,11 +252,12 @@ function runCli(){
   const runtimeRef=arg('runtime-ref');
   const sourceRevision=arg('source-revision');
   const changedGameIds=arg('changed-game-ids').split(',').map(clean).filter(Boolean);
+  const forceF0Restart=upper(arg('force-f0-restart'))==='TRUE';
   const output=arg('output','/tmp/company-roblox-source-drift-sync.json');
   if(!queueFile||!runtimeRef||!sourceRevision)throw new Error('required: --queue, --runtime-ref, --source-revision');
   const queue=JSON.parse(fs.readFileSync(queueFile,'utf8'));
   const result=reconcileChangedRobloxItems({
-    queue,changedGameIds,sourceRevision,
+    queue,changedGameIds,sourceRevision,forceF0Restart,
     validateItem:item=>{
       const sourcePath=`roblox-games/${item.gameId}`;
       const root=path.join(repoRoot,sourcePath);
@@ -254,5 +281,6 @@ function runCli(){
   console.log(`ROBLOX_CHANGED_SOURCE_SYNC_COUNT=${result.results.length}`);
   console.log(`ROBLOX_CHANGED_SOURCE_SYNC_PASS=${result.results.filter(x=>x.pass===true).length}`);
   console.log(`ROBLOX_CHANGED_SOURCE_SYNC_FAIL=${result.results.filter(x=>x.pass===false).length}`);
+  console.log(`ROBLOX_F0_FORCE_RESTART=${forceF0Restart?'YES':'NO'}`);
 }
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href)runCli();
