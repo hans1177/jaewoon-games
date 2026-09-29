@@ -4741,6 +4741,37 @@ test('final Roblox control-token failure reaches its corrective prompt once and 
   assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
 });
 
+test('Roblox replace stream rejects split control tokens without waiting for completion',{timeout:5000},async(t)=>{
+  const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
+  const source='local status = {Text = "ready"}\nstatus.Text = "ready"\n';
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'stream-control-token'})));
+  let aborted=false;
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));
+      const n=requests.length;
+      res.writeHead(200,{'content-type':'application/x-ndjson'});
+      if(n===3){
+        res.on('close',()=>{aborted=true;});
+        res.write(JSON.stringify({response:'{"replace":"<thi',done:false})+'\n');
+        setImmediate(()=>res.write(JSON.stringify({response:'nk>invalid',done:false})+'\n'));
+        return; // 완료 신호 없이 열린 스트림도 교정 요청으로 넘어가야 한다.
+      }
+      const response=n===1?JSON.stringify({edits:[{path:relative,find:'missing anchor',replace:'changed'}]})
+        :n===2?'{' :JSON.stringify({replace:'<think>invalid</think>'});
+      res.end(JSON.stringify({response,done:true,done_reason:n===2?'length':'stop'})+'\n');
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(()=>{server.closeAllConnections();return new Promise(resolve=>server.close(resolve));});
+  await assert.rejects(runVibe2SourceWorker({cwd,applySource:true}),/MODEL_CONTROL_TOKEN:STREAM_OUTPUT/);
+  assert.equal(requests.length,4);
+  assert.equal(aborted,true);
+  assert.match(requests[3].prompt,/SOURCE CONTENT REPAIR/);
+  assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
+});
+
 test('final Luau syntax failure receives a real corrective request with rejected source and compiles before promotion',{skip:!process.env.VIBE2_TEST_LUAU_COMPILER},async(t)=>{
   const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
   const source='local status = {Text = "ready"}\nstatus.Text = "ready"\n';
