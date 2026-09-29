@@ -164,3 +164,9 @@ test('플레이어와 AI 추격 모션은 기존 Animator 위에 레이어로 �
  assert.match(server,/motionClock=math\.random\(\)\*6\.28/);
  assert.match(server,/local stride=math\.sin\(b\.motionClock\)/);
 });
+
+
+test('AI 추격 이동은 진행 방향을 바라본다',()=>{
+ assert.match(server,/CFrame\.lookAt\(nextPos,nextPos\+dir\)/);
+ assert.match(server,/local dir=d\.Unit/);
+});
