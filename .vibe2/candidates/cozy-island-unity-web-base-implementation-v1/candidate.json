@@ -1,0 +1,20 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "Assets/Scripts/GameCore.cs",
+      "find": "public sealed class GameCore : MonoBehaviour",
+      "replace": "public sealed class GameCore : MonoBehaviour\n{\n    // Vibe가 승인 설계의 실제 상태/규칙/세이브 책임으로 교체한다.\n    [SerializeField]\n    private static readonly string[] _approvedState = { \"cozy-island-build-up-g1-a0b017c8d73d\" };\n\n    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]\n    private static void AutoStart()\n    {\n        var go = new GameObject(\"GameCore\");\n        DontDestroyOnLoad(go);\n        go.AddComponent<GameCore>();\n    }\n\n    private void Start()\n    {\n        Debug.Log(\"JAEWOON_UNITY_WEB_QA_BOOT game=cozy-island status=BOOTSTRAP_STUB\");\n    }\n}"
+    },
+    {
+      "path": "Assets/Scripts/RuntimeBootstrap.cs",
+      "find": "            var go = new GameObject(\"RuntimeBootstrap\");",
+      "replace": "public sealed class RuntimeBootstrap : MonoBehaviour\n{\n    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]\n    private static void AutoStart()\n    {\n        var go = new GameObject(\"RuntimeBootstrap\");\n        DontDestroyOnLoad(go);\n        go.AddComponent<RuntimeBootstrap>();\n    }\n\n    private void Start()\n    {\n        Debug.Log(\"JAEWOON_UNITY_WEB_QA_BOOT game=cozy-island status=BOOTSTRAP_STUB\");\n    }\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
