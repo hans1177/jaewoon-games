@@ -1611,6 +1611,54 @@ test('commercial adaptive Studio contract expands automatically from launch core
   assert.match(contract.adaptiveCoverage.contractHash,/^sha256:[0-9a-f]{64}$/);
 });
 
+test('verified Studio product failures outrank generic MCP infrastructure noise for repair routing',()=>{
+  const broken=runtime();
+  broken.runtimeVerified=false;
+  broken.scenarioContractRequired=true;
+  broken.scenarioContractVersion=3;
+  broken.scenarioContractFingerprint='sha256:'+'c'.repeat(64);
+  broken.scenarioCoverage=[
+    {id:'adaptive-start-playability',pass:true},
+    {id:'adaptive-ui-commercial-quality',pass:false},
+    {id:'adaptive-world-safety',pass:false}
+  ];
+  broken.qualityFailureKinds=['adaptive-ui-commercial-quality','adaptive-world-safety'];
+  broken.qualityFailureDetails=[
+    {id:'adaptive-ui-commercial-quality',repairSurface:'MOBILE_UI',priority:'HIGH',hint:'Repair mobile UI',observed:{undersizedTouchButtons:2}},
+    {id:'adaptive-world-safety',repairSurface:'WORLD_GEOMETRY',priority:'CRITICAL',hint:'Repair walkable world',observed:{floorCoveragePass:false}}
+  ];
+  broken.errors=[{
+    type:'studio-mcp-infrastructure-or-runtime-error',
+    signature:'MCP timeout: tools/call'
+  }];
+
+  const applied=applyLocalStudioPlayResult({
+    queue:{items:[item()]},
+    gameId:'g1',
+    runtime:broken,
+    expected,
+    workflowRunId:36504730085,
+    studioStepSucceeded:true,
+    testedAt:'2026-09-29T00:50:06.194Z'
+  });
+
+  assert.equal(applied.result.evidence.infrastructureFailure,false);
+  assert.equal(applied.result.evidence.failureClass,'STUDIO_PRODUCT_QUALITY_FAILURE');
+  assert.equal(applied.item.currentStep,'REPAIR_REQUIRED');
+  assert.equal(applied.item.canonicalState,'REPAIR_REQUIRED');
+  assert.equal(applied.item.robloxStudioLocalPlayInfrastructurePending,false);
+  assert.equal(applied.item.robloxStudioLocalPlayRepairRequired,true);
+  assert.equal(applied.item.robloxQualityBuildUpRequired,true);
+  assert.deepEqual(applied.item.robloxQualityBuildUpEvidence.qualityFailureKinds,[
+    'adaptive-ui-commercial-quality',
+    'adaptive-world-safety'
+  ]);
+  assert.deepEqual(applied.item.robloxQualityBuildUpEvidence.repairSurfaces,[
+    'MOBILE_UI',
+    'WORLD_GEOMETRY'
+  ]);
+});
+
 test('commercial Studio evaluator rejects clipped tiny UI and unsafe world even when basic play input works',()=>{
   const contract=deriveStudioActualPlayContract({
     launchCore:['mobile HUD','large village map','quest progression'],
