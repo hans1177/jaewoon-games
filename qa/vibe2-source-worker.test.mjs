@@ -4740,3 +4740,54 @@ test('final Roblox control-token failure reaches its corrective prompt once and 
   assert.match(requests[3].prompt,/SOURCE CONTENT REPAIR/);
   assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
 });
+
+test('oversized Roblox rebuild starts with owned source and complete learning instead of a guaranteed oversized first request',async(t)=>{
+  const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
+  const source='local status = {Text = "ready"}\nstatus.Text = "ready"\n';
+  write(path.join(cwd,root,relative),source);
+  const work=order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'large-roblox-input'});
+  work.goal='[SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX]\n'+('Historical planner observation. '.repeat(10000));
+  work.selectedTask={gameId:'demo',buildUpDirective:{
+    directiveId:'demo-repair',thisLoopPrimaryGoal:'Synchronize the authoritative result with the existing HUD',
+    responsibleSystemsAndFiles:{sourceAnchors:[{file:root+'/'+relative,line:2,symbol:'status',currentBehavior:'stale HUD',intendedBehavior:'show authoritative result',observableAcceptance:'two clients see the same result'}]},
+    gameplayImplementationDirectives:['Keep server authority'],preserveConstraints:['SAVE_KEY_DEMO'],acceptanceEvidence:['TWO_CLIENT_RESULT_REQUIRED']
+  }};
+  const principle='id=persistent-contextual-action-controls;scope=mobile-interaction-observation;lesson=keep contextual controls visible;apply=keep controls beside play';
+  work.knowledgeApplicationContract={mandatoryForGameTarget:true,verifiedExternalLearningIds:['external-black-box-demo'],verifiedExternalLearningRetrievedCount:1,retrievedVerifiedExternalLearningTruncationForbidden:true,allRetrievedPrinciplesHaveExplicitDisposition:true,verifiedExternalLearningDispositions:[{id:'persistent-contextual-action-controls',disposition:'APPLIED_GAME_SOURCE'}]};
+  work.unifiedLearning={playbookReuse:[{id:'external-black-box-demo',verified:true,authority:'verified-task-playbook',distilledApplicationPrinciples:[principle],distilledAvoidancePrinciples:['Do not clone assets']}]};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(work));
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));res.writeHead(503);res.end('probe ends before candidate generation');
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  await assert.rejects(runVibe2SourceWorker({cwd,applySource:true}),/Ollama HTTP 503/);
+  assert.equal(requests.length,1);
+  const request=requests[0];
+  assert.ok(Buffer.byteLength(request.prompt)<20000);
+  assert.deepEqual(request.format.required,['replace']);
+  assert.match(request.prompt,/Synchronize the authoritative result/);
+  assert.match(request.prompt,/SAVE_KEY_DEMO/);
+  assert.match(request.prompt,/TWO_CLIENT_RESULT_REQUIRED/);
+  assert.ok(request.prompt.includes(principle));
+  assert.match(request.prompt,/Do not clone assets/);
+  assert.ok(request.options.num_predict>=1024);
+  assert.ok(request.options.num_ctx>=16384);
+  // 연결 패키지는 입력이 커도 한 앵커 수정으로 축소하지 않는다.
+  requests.length=0;
+  work.goal='[STUDIO_QUALITY_EVOLUTION]\n'+work.goal;
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(work));
+  await assert.rejects(runVibe2SourceWorker({cwd,applySource:true}),/Ollama HTTP 503/);
+  assert.equal(requests[0].format,'json');
+  assert.match(requests[0].prompt,/3-6 connected edits/);
+  assert.ok(requests[0].prompt.includes(principle));
+  // 충분히 작은 일반 주문은 기존 전체 후보 경로를 유지한다.
+  requests.length=0;
+  work.goal='[SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX]\nRepair the existing HUD';
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(work));
+  await assert.rejects(runVibe2SourceWorker({cwd,applySource:true}),/Ollama HTTP 503/);
+  assert.equal(requests[0].format,'json');
+  assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
+});
