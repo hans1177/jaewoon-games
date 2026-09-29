@@ -1947,7 +1947,13 @@ remote.OnServerEvent:Connect(function(p,a,value)
  elseif a==C.Actions.NEXT_HUMAN then nextHuman(p)
  elseif a==C.Actions.BUY_COSMETIC then buyCosmetic(p,value)
  elseif a==C.Actions.EQUIP_COSMETIC then equipCosmetic(p,value)
- elseif a==C.Actions.GHOST_SIGHTING_FOUND then reportGhostSighting(p,value)end
+ elseif a==C.Actions.GHOST_SIGHTING_FOUND then reportGhostSighting(p,value)
+ elseif a==C.Actions.CREATE_ROOM then createReservedRoom(p,value)
+ elseif a==C.Actions.JOIN_ROOM_CODE then joinRoomByCode(p,value)
+ elseif a==C.Actions.QUICK_JOIN_PUBLIC then quickJoinRoom(p,false)
+ elseif a==C.Actions.QUICK_JOIN_FRIEND then quickJoinRoom(p,true)
+ elseif a==C.Actions.START_ROOM then startRoomMatch(p)
+ elseif a==C.Actions.LEAVE_ROOM then leaveReservedRoom(p)end
  if a==C.Actions.PURIFY or a==C.Actions.RESCUE or a==C.Actions.DASH or a==C.Actions.INFECT_ATTACK or a==C.Actions.ABILITY then foundationCheckpoint("CORE_LOOP_READY",p,{action=a})end
  broadcastMultiplayerSync(p)
 end)
@@ -1994,6 +2000,13 @@ local function onCharacter(p)
 end
 Players.PlayerAdded:Connect(function(p)
  load(p)
+ p:SetAttribute("RoomFeedback","")
+ adoptReservedRoomFromPlayer(p)
+ if roomServer and #Players:GetPlayers()>roomMaxPlayers()then
+  roomFeedback(p,"ERROR","방 정원 초과")
+  task.defer(function()pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p})end)end)
+  return
+ end
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
  if state=="RUNNING"then
@@ -2005,6 +2018,8 @@ Players.PlayerAdded:Connect(function(p)
 end)
 for _,p in ipairs(Players:GetPlayers())do
  load(p)
+ p:SetAttribute("RoomFeedback","")
+ adoptReservedRoomFromPlayer(p)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
  p.CharacterAdded:Connect(function()onCharacter(p)end)
@@ -2045,15 +2060,27 @@ end)
 
 Players.PlayerRemoving:Connect(function(p)
  local leavingRole=p:GetAttribute("Role")
+ local leavingWasHost=roomServer and p.UserId==roomHostUserId
  local rr=root(p)
  local leavingPos=rr and rr.Position or(leavingRole=="MONSTER"and monsterSpawn or survivorSpawns[1])
- save(p);cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
+ save(p);cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;roomActionLast[p]=nil;roomJoinedAt[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
  task.defer(function()
   if state=="RUNNING"and arena and arena.Parent and(leavingRole=="MONSTER"or leavingRole=="SURVIVOR")then
    bot(leavingRole,leavingPos)
    local hc,mc=teamCounts();workspace:SetAttribute("ActivePopulation",hc+mc);workspace:SetAttribute("AIBotCount",#bots);workspace:SetAttribute("HumanCount",hc);workspace:SetAttribute("MonsterCount",mc)
    for _,player in ipairs(Players:GetPlayers())do player:SetAttribute("HumanCount",hc);player:SetAttribute("MonsterCount",mc)end
    broadcastMultiplayerSync(nil)
+  end
+  if roomServer then
+   local remaining=Players:GetPlayers()
+   if #remaining==0 then
+    removeRoomDirectoryEntry(roomCode)
+   elseif leavingWasHost then
+    table.sort(remaining,function(a,b)return(roomJoinedAt[a]or math.huge)<(roomJoinedAt[b]or math.huge)end)
+    local nextHost=remaining[1]
+    if nextHost then roomHostUserId=nextHost.UserId;roomHostName=nextHost.DisplayName;roomFeedback(nextHost,"HOST","방장이 되었어")end
+   end
+   syncRoomState();updateCurrentRoomDirectory()
   end
   syncLobbyState()
  end)
@@ -2075,10 +2102,27 @@ syncLobbyState("WAITING")
 
 task.spawn(function()
  while true do
-  if #Players:GetPlayers()==0 then state="WAITING";syncLobbyState("WAITING");task.wait(1)
+  local players=Players:GetPlayers()
+  if #players==0 then
+   state="WAITING";roomStartRequested=false;syncLobbyState("WAITING");task.wait(1)
+  elseif not roomServer then
+   state="WAITING";roomStartRequested=false
+   for _,p in ipairs(players)do p:SetAttribute("RoundState","ROOM_BROWSER");p:SetAttribute("TimeLeft",0)end
+   syncLobbyState("ROOM_BROWSER")
+   task.wait(.5)
+  elseif roomCode==""then
+   state="WAITING";roomStartRequested=false
+   for _,p in ipairs(players)do p:SetAttribute("RoundState","ROOM_CONNECTING");p:SetAttribute("TimeLeft",0)end
+   syncLobbyState("ROOM_CONNECTING")
+   task.wait(.25)
+  elseif not roomStartRequested then
+   state="WAITING"
+   for _,p in ipairs(players)do p:SetAttribute("RoundState","ROOM_WAITING");p:SetAttribute("TimeLeft",0)end
+   syncLobbyState("ROOM_WAITING");updateCurrentRoomDirectory()
+   task.wait(.25)
   else
-   state="INTERMISSION"
-   syncLobbyState("INTERMISSION")
+   roomStartRequested=false;workspace:SetAttribute("RoomStartRequested",false)
+   state="INTERMISSION";syncLobbyState("INTERMISSION");updateCurrentRoomDirectory()
    soloStartRequested=false
    for t=C.IntermissionSeconds,1,-1 do
     for _,p in ipairs(Players:GetPlayers())do p:SetAttribute("RoundState","INTERMISSION");p:SetAttribute("TimeLeft",t)end
@@ -2086,6 +2130,7 @@ task.spawn(function()
     task.wait(1)
    end
    if startRound()then
+    updateCurrentRoomDirectory()
     while state=="RUNNING"and timeLeft>0 do
      local humans,monsters=teamCounts();workspace:SetAttribute("HumanCount",humans);workspace:SetAttribute("MonsterCount",monsters)
      if humans==0 then endRound("MONSTER");break end
@@ -2129,7 +2174,8 @@ task.spawn(function()
      task.wait(.25);timeLeft-=.25
     end
     if state=="RUNNING"then endRound("DRAW")end
-   end
+    roomStartRequested=false;workspace:SetAttribute("RoomStartRequested",false)
+    syncRoomState();updateCurrentRoomDirectory()
   end
  end
 end)
