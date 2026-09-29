@@ -244,34 +244,18 @@
       "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
       "artifactIdentity": "sha256:ef3b9fd4105437aa70929582c887654c9e204f201005186d573172538e99dd8a",
       "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36479878848,
-      "testedAt": "2026-09-28T21:02:20.067Z",
+      "workflowRunId": 36637382560,
+      "testedAt": "2026-09-29T22:17:12.844Z",
       "repairSurfaces": [
-        "MOBILE_UI",
-        "WORLD_GEOMETRY",
-        "MAP_ROUTEABILITY"
+        "GAME_START"
       ],
       "qualityFailureDetails": [
         {
-          "id": "adaptive-ui-commercial-quality",
-          "repairSurface": "MOBILE_UI",
-          "priority": "HIGH",
-          "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
-          "observed": "{\"offscreenButtons\":0,\"undersizedTouchButtons\":1,\"suboptimalTouchButtons\":0,\"textOverflowButtons\":0,\"overlapPairs\":0}"
-        },
-        {
-          "id": "adaptive-world-safety",
-          "repairSurface": "WORLD_GEOMETRY",
+          "id": "adaptive-start-playability",
+          "repairSurface": "GAME_START",
           "priority": "CRITICAL",
-          "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
-          "observed": "{\"boundsFinite\":true,\"collidablePartCount\":4,\"floorBelowPlayer\":false,\"floorSamples\":9,\"floorHits\":0,\"floorCoveragePass\":false,\"routeSamples\":0,\"routeSuccess\":0,\"routeCoveragePass\":true,\"spawnThreatDistance\":-1,\"spawnOverlapSafe\":true}"
-        },
-        {
-          "id": "adaptive-map-route-coverage",
-          "repairSurface": "MAP_ROUTEABILITY",
-          "priority": "CRITICAL",
-          "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
-          "observed": "{\"routeAttemptCount\":4,\"routePassCount\":0,\"routeRequired\":2,\"routes\":[{\"id\":\"map-route-nw\",\"ok\":false,\"moved\":0,\"fall\":0,\"floorBelow\":false},{\"id\":\"map-route-ne\",\"ok\":false,\"moved\":0,\"fall\":0,\"floorBelow\":false},{\"id\":\"map-route-sw\",\"ok\":false,\"moved\":0,\"fall\":0,\"floorBelow\":false},{\"id\":\"map-route-se\",\"ok\":false,\"moved\":0,\"fall\":0,\"floorBelow\":false}]}"
+          "hint": "Studio started with a dead/unplayable character. Restore healthy spawn/respawn/start state before normal gameplay QA.",
+          "observed": "{\"characterPresent\":true,\"humanoidPresent\":true,\"health\":1.005523920059204,\"maxHealth\":100,\"humanoidState\":\"Enum.HumanoidStateType.Dead\"}"
         }
       ]
     }
