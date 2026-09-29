@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "  return table.find(studioUi, atom) ~= nil",
+      "replace": "local function hasStudioAssetAtom(atom)\n  return table.find(studioUi, atom) ~= nil\nend"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}

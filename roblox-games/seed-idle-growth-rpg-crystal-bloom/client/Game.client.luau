@@ -21,7 +21,9 @@ local studioAssetConfig = Config.StudioAssets or {}
 local studioAssetFamilies = studioAssetConfig.Families or {}
 local studioUi = studioAssetFamilies.UI or {}
 local function hasStudioAssetAtom(atom)
+local function hasStudioAssetAtom(atom)
   return table.find(studioUi, atom) ~= nil
+end
 end
 -- STUDIO_ASSET_BINDING_CLIENT_END
 
