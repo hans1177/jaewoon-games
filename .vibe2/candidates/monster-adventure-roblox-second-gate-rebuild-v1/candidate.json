@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "if hasStudioAssetAtom(\"FRAME_PANEL\") then",
+      "replace": "root:SetAttribute(\"StudioAssetBindingVersion\", STUDIO_ASSET_BINDING_VERSION)\nroot:SetAttribute(\"StudioAssetAtoms\", table.concat(studioUi,\",\"))\nroot.Name = \"Root\"\nroot.AnchorPoint = Vector2.new(0.5, 1)\nroot.Position = UDim2.new(0, 0, 0, 0)"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
