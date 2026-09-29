@@ -6115,7 +6115,8 @@
       "coding_negative_e0p8ex",
       "coding_negative_1cqttxw",
       "coding_negative_1tlk16z",
-      "coding_negative_1sk1xje"
+      "coding_negative_1sk1xje",
+      "coding_negative_9jxkpv"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16731,7 +16732,7 @@
         "verifiedApplications": 3,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 10,
-        "verifiedFailures": 662,
+        "verifiedFailures": 663,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -16976,7 +16977,7 @@
             "verifiedApplications": 1,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 2,
-            "verifiedFailures": 106,
+            "verifiedFailures": 107,
             "games": {
               "bug-defense": 1
             },
@@ -16988,21 +16989,21 @@
               "survival": 25,
               "seed-idle-growth-rpg-crystal-bloom": 1,
               "seed-story-complete-rpg-chronicles-of-eldoria": 23,
-              "village-dungeons": 23,
+              "village-dungeons": 24,
               "seed-single-defense-strat-celestial-bastion": 24
             },
             "failureTargets": {
-              "unity": 106
+              "unity": 107
             },
             "failureClasses": {
               "NO_OP": 4,
               "TIMEOUT": 1,
               "MALFORMED_OUTPUT": 1,
-              "STUDIO_QUALITY_DELTA": 100
+              "STUDIO_QUALITY_DELTA": 101
             },
             "lastEvidence": "coding_jra6qr",
-            "lastFailureEvidence": "coding_negative_1b5f8kh",
-            "lastUpdatedAt": "2026-09-29T22:11:51.903Z"
+            "lastFailureEvidence": "coding_negative_9jxkpv",
+            "lastUpdatedAt": "2026-09-29T22:27:48.145Z"
           },
           "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -17221,8 +17222,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_pj21de",
-        "lastFailureEvidence": "coding_negative_1sk1xje",
-        "lastUpdatedAt": "2026-09-29T22:23:37.352Z"
+        "lastFailureEvidence": "coding_negative_9jxkpv",
+        "lastUpdatedAt": "2026-09-29T22:27:48.145Z"
       }
     }
   },
@@ -19971,7 +19972,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T22:23:37.414Z",
+    "lastBuiltAt": "2026-09-29T22:27:48.216Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -27922,5 +27923,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T22:23:37.414Z"
+  "updatedAt": "2026-09-29T22:27:48.216Z"
 }
