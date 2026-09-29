@@ -13,6 +13,47 @@ function count(needle){
   return workflow.split(needle).length-1;
 }
 
+test('shallow candidate inspection fetches the exact base and still detects out-of-bound changes',()=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'candidate-shallow-'));
+  const upstream=path.join(temp,'upstream');
+  const checkout=path.join(temp,'checkout');
+  fs.mkdirSync(upstream);
+  const git=(cwd,...args)=>execFileSync('git',args,{cwd,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+  try{
+    git(upstream,'init','-b','main');
+    git(upstream,'config','user.name','QA');
+    git(upstream,'config','user.email','qa@example.invalid');
+    fs.mkdirSync(path.join(upstream,'roblox-games/demo'),{recursive:true});
+    fs.writeFileSync(path.join(upstream,'roblox-games/demo/source.lua'),'return 1\n');
+    git(upstream,'add','.'); git(upstream,'commit','-m','base');
+    const base=git(upstream,'rev-parse','HEAD');
+    fs.writeFileSync(path.join(upstream,'unrelated.txt'),'main update\n');
+    git(upstream,'add','.'); git(upstream,'commit','-m','main advance');
+    git(upstream,'checkout','-b','vibe2/candidate/demo',base);
+    fs.writeFileSync(path.join(upstream,'roblox-games/demo/source.lua'),'return 2\n');
+    fs.writeFileSync(path.join(upstream,'outside.txt'),'must reject\n');
+    git(upstream,'add','.'); git(upstream,'commit','-m','candidate');
+    git(temp,'clone','--no-tags','--depth=1','--branch','vibe2/candidate/demo',`file://${upstream}`,checkout);
+    assert.throws(()=>git(checkout,'cat-file','-e',`${base}^{commit}`));
+    const fetchMain=releaseWorkflow.match(/^          git fetch --no-tags --depth=1 origin \+refs\/heads\/main:refs\/remotes\/origin\/main --quiet$/m)?.[0].trim();
+    assert.ok(fetchMain);
+    execFileSync('bash',['-e','-c',fetchMain],{cwd:checkout,stdio:'pipe'});
+    const start=releaseWorkflow.indexOf('          reject()');
+    const end=releaseWorkflow.indexOf('          already_promoted=false',start);
+    const fetchBase=releaseWorkflow.slice(start,end).replace(/^ {10}/gm,'');
+    const output=path.join(temp,'output');
+    const run=sha=>execFileSync('bash',['-e','-c',fetchBase],{cwd:checkout,env:{...process.env,base_sha:sha,GITHUB_OUTPUT:output},stdio:'pipe'});
+    run(base);
+    assert.equal(git(checkout,'rev-parse',`${base}^{commit}`),base);
+    assert.equal(git(checkout,'diff','--name-only',base,'origin/main','--','roblox-games/demo'),'');
+    assert.deepEqual(git(checkout,'diff','--name-only',base,'HEAD').split('\n'),['outside.txt','roblox-games/demo/source.lua']);
+    run('--all');
+    assert.match(fs.readFileSync(output,'utf8'),/reason=base-main-sha-invalid/);
+    run('f'.repeat(40));
+    assert.match(fs.readFileSync(output,'utf8'),/reason=base-main-sha-missing/);
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+
 test('reviewed winner release dispatch remains structurally intact',()=>{
   assert.equal(count('      - name: Dispatch reviewed winner candidates to release gate'),1);
   assert.equal(count('      - name: Upload generated machine handoff and role review'),1);
