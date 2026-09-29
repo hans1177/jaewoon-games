@@ -1972,6 +1972,7 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
       'return "'+endMarker+'"..HttpService:JSONEncode({ok=true})'
     ].join('\n');
     await callJson('Server',endMarker,endCode);
+    await wait(500);
     launched=false;
 
     summary.pass=summary.lateJoinPass&&summary.clientPlayerCount>=2&&summary.clientRosterPass&&summary.remoteSurfacePass&&summary.leavePass;
@@ -1982,6 +1983,7 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
     summary.infrastructureFailure=true;
     summary.error=clean(error?.message||error)||'UNKNOWN';
     if(launched){
+      let ended=false;
       try{
         const marker='ROBLOX_STUDIO_MULTIPLAYER_END=';
         const code=[
@@ -1991,7 +1993,15 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
           'return "'+marker+'"..HttpService:JSONEncode({ok=true})'
         ].join('\n');
         await callJson('Server',marker,code);
+        ended=true;
       }catch{}
+      if(!ended){
+        try{
+          const stopTool=client.tool('start_stop_play');
+          await client.call('start_stop_play',startStopArgs(stopTool.inputSchema||{},studioId,false));
+        }catch{}
+      }
+      await wait(300);
     }
     console.log('ROBLOX_STUDIO_MULTIPLAYER_AUDIT_RESULT='+JSON.stringify(summary));
     return summary;
