@@ -226,6 +226,7 @@ export function deriveStudioActualPlayContract(launch={}){
     version:Number(explicit?.version||3),
     required:true,
     source:clean(explicit?.source)||'COMMERCIAL_ADAPTIVE_STUDIO_AUDIT',
+    observedActionPatternVersion:1,
     requiredScenarios:[...new Set([...explicitScenarios,...adaptiveScenarios])],
     expectations:{...(explicit?.expectations||{})},
     adaptiveCoverage:Object.freeze({
@@ -1561,7 +1562,28 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     {id:'adaptive-camera-quality',pass:!signals.camera||(client?.camera?.present===true&&client?.camera?.subjectPresent===true&&Number(client?.camera?.fieldOfView||0)>0&&client?.camera?.occluded!==true)},
     {id:'adaptive-performance-budget',pass:Number(runtime.memoryMb||0)>=0&&Number(runtime.descendantCount||0)<120000&&performanceTrendPass}
   ];
+  // 실제 발견한 버튼·상호작용·이동 경로별 검증 패턴을 기존 판정 흐름에 추가한다.
+  const discoveredPatterns=new Map();
+  let discoveredPatternOverflow=false;
+  for(const action of actions){
+    if(!['mcp-ui-exploration','mcp-world-interaction','mcp-combat-action','mcp-map-route-audit'].includes(clean(action?.type)))continue;
+    const actionId=clean(action?.id);
+    if(!actionId)continue;
+    const id='observed-action-'+stableSha256({type:action.type,id:actionId}).slice(0,20);
+    if(!discoveredPatterns.has(id)&&discoveredPatterns.size>=64){discoveredPatternOverflow=true;continue;}
+    const effectRequired=action.type!=='mcp-map-route-audit';
+    const pass=action.dispatched===true&&action.ok===true&&(!effectRequired||action.effectObserved===true);
+    const previous=discoveredPatterns.get(id);
+    discoveredPatterns.set(id,{id,pass:pass&&previous?.pass!==false,required:true,generatedFrom:'OFFICIAL_STUDIO_OBSERVED_ACTION',actionId:actionId.slice(0,160),actionType:action.type,effectRequired,attempts:Number(previous?.attempts||0)+1});
+  }
   const scenarios=rows.filter(row=>requiredIds.size===0||requiredIds.has(row.id)).map(row=>({...row,required:true}));
+  scenarios.push(...discoveredPatterns.values());
+  if(discoveredPatternOverflow)scenarios.push({id:'observed-action-capacity-exceeded',pass:false,required:true,reason:'UNVERIFIED_ACTIONS_REMAIN'});
+  // 실행기가 모르는 필수 패턴도 누락 성공으로 처리하지 않는다.
+  const evaluatedIds=new Set(scenarios.map(row=>row.id));
+  for(const id of requiredIds){
+    if(!evaluatedIds.has(id))scenarios.push({id,pass:false,required:true,reason:'REQUIRED_SCENARIO_NOT_EXECUTED'});
+  }
   const qualityFailureKinds=scenarios.filter(row=>row.pass!==true).map(row=>row.id);
   const initialState=clean(initialClientProbe?.player?.roundState);
   const finalState=clean(player.roundState);
@@ -1662,6 +1684,8 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
     return metrics.surfaces;
   };
   const qualityFailureDetails=qualityFailureKinds.map(id=>{
+    const pattern=discoveredPatterns.get(id);
+    if(pattern)return{id,repairSurface:'ROBLOX_OBSERVED_INTERACTION',priority:'HIGH',hint:'Replay the exact observed action and verify its real state change after repair.',observed:pattern};
     const [repairSurface,priority,hint]=repairMap[id]||['ROBLOX_PRODUCT_QUALITY','HIGH','Repair the failing Studio actual-play scenario and re-run the exact artifact.'];
     return{id,repairSurface,priority,hint,observed:observedFor(id)};
   });

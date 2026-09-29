@@ -2442,3 +2442,36 @@ test('active Studio runs survive new requests and only duplicate immutable artif
   assert.ok(preserve>0&&preserve<cancel);
   assert.match(workflow,/const states=new Set\(\['queued','pending','requested'\]\)/);
 });
+
+
+test('Studio generates separate observed-action patterns so one working button cannot hide another failure',()=>{
+  const contract={required:true,requiredScenarios:['adaptive-semantic-interaction-effect']};
+  const actions=[
+    {id:'ui-discovered-shop',type:'mcp-ui-exploration',dispatched:true,ok:true,effectObserved:true},
+    {id:'ui-discovered-equip',type:'mcp-ui-exploration',dispatched:true,ok:true,effectObserved:false}
+  ];
+  const result=evaluateStudioActualPlayContract({contract,actions});
+  const patterns=result.scenarios.filter(row=>row.generatedFrom==='OFFICIAL_STUDIO_OBSERVED_ACTION');
+  assert.equal(patterns.length,2);
+  assert.equal(patterns.find(row=>row.actionId==='ui-discovered-shop').pass,true);
+  const failed=patterns.find(row=>row.actionId==='ui-discovered-equip');
+  assert.equal(failed.pass,false);
+  assert.equal(result.qualityFailureDetails.find(row=>row.id===failed.id).observed.actionId,'ui-discovered-equip');
+  const retry=evaluateStudioActualPlayContract({contract,actions:[...actions,{...actions[1],effectObserved:true}]});
+  assert.equal(retry.scenarios.find(row=>row.id===failed.id).pass,false);
+});
+
+test('Studio required pattern without an executed evaluator remains a failure',()=>{
+  const result=evaluateStudioActualPlayContract({contract:{required:true,requiredScenarios:['new-pattern-with-no-executor']}});
+  assert.deepEqual(result.scenarios,[{id:'new-pattern-with-no-executor',pass:false,required:true,reason:'REQUIRED_SCENARIO_NOT_EXECUTED'}]);
+  assert.deepEqual(result.qualityFailureKinds,['new-pattern-with-no-executor']);
+});
+
+
+test('Studio discovered pattern storage is bounded without passing overflow actions',()=>{
+  const actions=Array.from({length:65},(_,i)=>({id:'route-'+i,type:'mcp-map-route-audit',dispatched:true,ok:true}));
+  const result=evaluateStudioActualPlayContract({contract:{required:true,requiredScenarios:['adaptive-map-route-coverage']},actions});
+  assert.equal(result.scenarios.filter(row=>row.generatedFrom==='OFFICIAL_STUDIO_OBSERVED_ACTION').length,64);
+  assert.equal(result.scenarios.find(row=>row.id==='observed-action-capacity-exceeded').pass,false);
+  assert.equal(deriveStudioActualPlayContract({}).observedActionPatternVersion,1);
+});
