@@ -1,0 +1,94 @@
+name: Horror Escape Room Hotfix Publish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/horror-escape-room-hotfix-publish.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: horror-escape-room-hotfix-publish
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GAME_ID: horror-escape-room
+      GAME_NAME: '심야 감염전 [4대4]'
+      UNIVERSE_ID: '10767445796'
+      PLACE_ID: '98222620265768'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run release QA
+        run: node --test qa/horror-escape-room-release.test.mjs
+
+      - name: Install pinned Rojo
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rojo-bin /tmp/horror-hotfix
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/rojo.zip https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-linux-x86_64.zip
+          echo '22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073  /tmp/rojo.zip' | sha256sum -c -
+          unzip -q /tmp/rojo.zip -d /tmp/rojo-bin
+          chmod +x /tmp/rojo-bin/rojo
+
+      - name: Build exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          /tmp/rojo-bin/rojo build "roblox-games/$GAME_ID/default.project.json" -o "/tmp/horror-hotfix/$GAME_ID.rbxlx"
+          test -s "/tmp/horror-hotfix/$GAME_ID.rbxlx"
+          echo "HORROR_HOTFIX_SOURCE_SHA=$GITHUB_SHA"
+          echo "HORROR_HOTFIX_BUILD_SHA256=$(sha256sum "/tmp/horror-hotfix/$GAME_ID.rbxlx" | awk '{print $1}')"
+
+      - name: Publish to existing private target
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          ROBLOX_ROBLOSECURITY: ${{ secrets.ROBLOX_ROBLOSECURITY }}
+          ROBLOX_SECURITY_COOKIE: ${{ secrets.ROBLOX_SECURITY_COOKIE }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-roblox-dedicated-experience.mjs \
+            --game-id "$GAME_ID" \
+            --game-name "$GAME_NAME" \
+            --place-file "/tmp/horror-hotfix/$GAME_ID.rbxlx" \
+            --source-revision "$GITHUB_SHA" \
+            --output "/tmp/horror-hotfix/$GAME_ID.result.json" \
+            --reuse-universe-id "$UNIVERSE_ID" \
+            --reuse-place-id "$PLACE_ID"
+
+      - name: Require hotfix publish success
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync('/tmp/horror-hotfix/horror-escape-room.result.json','utf8'));
+          if(r.pass!==true||r.private!==true||r.published!==true)throw new Error('HORROR_HOTFIX_PUBLISH_FAILED:'+String(r.stage||'unknown')+':'+String(r.error||'unknown'));
+          if(String(r.universeId)!=='10767445796'||String(r.placeId)!=='98222620265768')throw new Error('HORROR_HOTFIX_TARGET_DRIFT');
+          console.log('HORROR_HOTFIX_PRIVATE_PUBLISH=PASS');
+          console.log('HORROR_HOTFIX_TARGET='+r.universeId+'/'+r.placeId);
+          console.log('HORROR_HOTFIX_SOURCE_REVISION='+String(r.sourceRevision||''));
+          NODE
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: horror-escape-room-hotfix-publish
+          path: /tmp/horror-hotfix/horror-escape-room.result.json
+          if-no-files-found: warn
+          retention-days: 7
