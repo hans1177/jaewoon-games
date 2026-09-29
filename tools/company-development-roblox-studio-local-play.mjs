@@ -1921,6 +1921,7 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
   let auditPhase='initial';
   const probeName='__VibeMultiplayerAudit';
   const contextStudios={Edit:studioId};
+  const connectionEvidence=[];
   const callJson=async(context,marker,code)=>{
     // Multiplayer creates separate server/client Studio instances. Bind by this test's
     // nonce before issuing any commands; the original editor is not the running server.
@@ -1931,16 +1932,24 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
       const identityCode=[
         'local HttpService=game:GetService("HttpService")',
         'local probe=game:GetService("ReplicatedStorage"):FindFirstChild('+JSON.stringify(probeName)+')',
-        'local matches=probe~=nil and probe:GetAttribute("AuditSession")=='+JSON.stringify(token),
+        'local sessionMatches=probe~=nil and probe:GetAttribute("AuditSession")=='+JSON.stringify(token),
+        'local matches=sessionMatches',
         ...(context==='Server'?['local ok,args=pcall(function() return game:GetService("StudioTestService"):GetTestArgs() end)','matches=matches and ok and args=='+JSON.stringify(token)]:[]),
-        'return "'+identityMarker+'"..HttpService:JSONEncode({matches=matches})'
+        'return "'+identityMarker+'"..HttpService:JSONEncode({matches=matches,probePresent=probe~=nil,sessionMatches=sessionMatches'+(context==='Server'?',testArgsReadable=ok,testArgsPresent=args~=nil,testArgsMatches=ok and args=='+JSON.stringify(token):'')+'})'
       ].join('\n');
+      const observations=[];
       for(const id of ids){
         try{
           const result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},id,identityCode,context));
-          if(parseStudioActualPlayProbe(result,identityMarker)?.matches===true){contextStudios[context]=id;break;}
-        }catch{}
+          const identity=parseStudioActualPlayProbe(result,identityMarker);
+          observations.push({studioId:id,identity:identity||null});
+          if(identity?.matches===true){contextStudios[context]=id;break;}
+        }catch(error){observations.push({studioId:id,error:clean(error?.message||error).slice(0,500)});}
       }
+      const evidence={context,candidateCount:ids.length,observations};
+      connectionEvidence.push(evidence);
+      if(connectionEvidence.length>24)connectionEvidence.shift();
+      console.log('ROBLOX_STUDIO_MULTIPLAYER_CONTEXT_PROBE='+JSON.stringify(evidence));
       if(!contextStudios[context])throw new Error('ROBLOX_STUDIO_MULTIPLAYER_CONTEXT_NOT_READY:'+context);
     }
     let result;
@@ -1977,7 +1986,7 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
     'local HttpService=game:GetService("HttpService")',
     'local remote=game:GetService("ReplicatedStorage"):WaitForChild('+JSON.stringify(probeName)+',15)',
     'if not remote then return end',
-    'task.delay(120,function() local service=game:GetService("StudioTestService"); local ok,args=pcall(function() return service:GetTestArgs() end); if ok and args=='+JSON.stringify(token)+' then pcall(function() service:EndTest("VIBE2_MULTIPLAYER_WATCHDOG_TIMEOUT") end) end end)',
+    'task.delay(600,function() local service=game:GetService("StudioTestService"); local ok,args=pcall(function() return service:GetTestArgs() end); if ok and args=='+JSON.stringify(token)+' then pcall(function() service:EndTest("VIBE2_MULTIPLAYER_WATCHDOG_TIMEOUT") end) end end)',
     'remote.OnServerEvent:Connect(function(player,challenge,rows)',
     ' if type(challenge)~="string" or challenge~=remote:GetAttribute("Challenge") or type(rows)~="table" or #rows>8 then return end',
     ' local ok,text=pcall(function() return HttpService:JSONEncode({observerUserId=player.UserId,challenge=challenge,players=rows}) end)',
@@ -2048,15 +2057,17 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
     }
     return observers.size===expectedCount;
   };
-  const poll=async(context,sourceFactory,predicate,attempts=18)=>{
+  const poll=async(context,sourceFactory,predicate,attempts=60,delayMs=3000)=>{
     let last=null,lastError=null;
+    const deadline=Date.now()+180000;
     for(let attempt=1;attempt<=attempts;attempt++){
       try{
         const source=sourceFactory();
         last=await callJson(context,source.marker,source.code);
         if(predicate(last))return last;
       }catch(error){lastError=error;}
-      if(attempt<attempts)await wait(500);
+      if(Date.now()>=deadline)break;
+      if(attempt<attempts)await wait(Math.min(delayMs,Math.max(0,deadline-Date.now())));
     }
     if(last)return last;
     if(lastError)throw lastError;
@@ -2068,7 +2079,7 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
     lateJoinPass:false,clientRosterPass:false,remoteSurfacePass:false,leavePass:false,
     bothClientsStatePass:false,survivorStatePass:false,replacementJoinPass:false,
     verificationScope:'STUDIO_REPLICATED_STATE_AND_PLAYER_LIFECYCLE',sameUserRejoinVerified:false,
-    serverPlayers:[],clientPlayers:[]
+    serverPlayers:[],clientPlayers:[],connectionEvidence
   };
   let launched=false,probeInstalled=false;
   try{
@@ -2097,7 +2108,8 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
     launched=true;
     probeInstalled=true;
 
-    const initial=await poll('Server',serverProbeSource,row=>row?.count===1&&row?.testArgs===token&&row?.testArgsReadable===true);
+    // A slow host must finish loading the same test server before adding a client.
+    const initial=await poll('Server',serverProbeSource,row=>row?.count===1&&row?.testArgs===token&&row?.testArgsReadable===true,60,3000);
     summary.initialServerCount=Number(initial?.count||0);
     summary.serverPlayers=entityRows(initial?.players);
     if(summary.initialServerCount!==1||initial?.testArgs!==token||initial?.testArgsReadable!==true)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_INITIAL_SERVER_NOT_READY');
@@ -2193,6 +2205,12 @@ export async function runStudioMultiplayerAudit(client,studioId,contract={}){
     summary.pass=false;
     summary.error=clean(error?.message||error)||'UNKNOWN';
     summary.infrastructureFailure=!/STATE_MISMATCH|CLIENT_REPLICATION_NOT_OBSERVED/.test(summary.error);
+    try{
+      const consoleTool=client.tool('get_console_output');
+      const args={};setStudioId(args,consoleTool.inputSchema||{},studioId);
+      const output=await client.call('get_console_output',fillRequired(args,consoleTool.inputSchema||{}));
+      summary.launchConsole=flattenText(output,[]).filter(line=>/ROBLOX_STUDIO_MULTIPLAYER_ASYNC_RESULT|ExecuteMultiplayerTestAsync|StudioTestService/i.test(line)).map(line=>line.slice(0,1500)).slice(-8);
+    }catch(error){summary.launchConsoleError=clean(error?.message||error).slice(0,500);}
     if(launched){
       let ended=false;
       try{

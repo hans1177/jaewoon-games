@@ -2081,10 +2081,10 @@ test('commercial contract does not infer multiplayer from generic player or mons
 
 
 test('F9 multiplayer verifies two observers, survivor recovery and replacement join',{concurrency:true},async(t)=>{
-  const cases=['pass','separate-studios','one-observer','duplicate-observer','wrong-state','empty-state','stale-challenge','wrong-session','wrong-identity','zero-survivors','replacement-failed','cleanup-failed'];
+  const cases=['pass','separate-studios','slow-server','one-observer','duplicate-observer','wrong-state','empty-state','stale-challenge','wrong-session','wrong-identity','zero-survivors','replacement-failed','cleanup-failed'];
   await Promise.all(cases.map(mode=>t.test(mode,async()=>{
     const schema={type:'object',required:['studio_id','code','data_model_type'],properties:{studio_id:{type:'string'},code:{type:'string'},data_model_type:{type:'string',enum:['Edit','Server','Client']}}};
-    let token='',phase='initial',addCount=0,cleanup=false;
+    let token='',phase='initial',addCount=0,cleanup=false,startCount=0,identityPolls=0;
     const response=(marker,payload)=>({content:[{type:'text',text:marker+JSON.stringify(payload)}]});
     const player=id=>({name:'Player'+id,userId:id,state:mode==='empty-state'?{}:{RoundState:'Playing',SharedObjective:4}});
     const generated=[];
@@ -2096,6 +2096,8 @@ test('F9 multiplayer verifies two observers, survivor recovery and replacement j
         const context=args.data_model_type;
         if(code.includes('ROBLOX_STUDIO_MULTIPLAYER_IDENTITY=')){
           assert.match(code,/AuditSession/);
+          if(mode==='slow-server'&&context==='Server'&&args.studio_id==='studio-1')identityPolls++;
+          if(mode==='slow-server'&&context==='Server'&&identityPolls<=20)return response('ROBLOX_STUDIO_MULTIPLAYER_IDENTITY=',{matches:false,probePresent:false});
           if(mode==='separate-studios'){
             if(args.studio_id==='studio-1')throw new Error('Server datamodel is not available in Edit mode');
             return response('ROBLOX_STUDIO_MULTIPLAYER_IDENTITY=',{matches:args.studio_id===(context==='Server'?'server-2':'client-2')});
@@ -2104,6 +2106,7 @@ test('F9 multiplayer verifies two observers, survivor recovery and replacement j
         }
         if(mode==='separate-studios')assert.equal(args.studio_id,context==='Edit'?'studio-1':context==='Server'?'server-2':'client-2');
         if(code.includes('ROBLOX_STUDIO_MULTIPLAYER_START=')){
+          startCount++;
           token=JSON.parse(code.match(/local token=("[^"\n]+")/)[1]);
           return response('ROBLOX_STUDIO_MULTIPLAYER_START=',{started:true});
         }
@@ -2138,10 +2141,16 @@ test('F9 multiplayer verifies two observers, survivor recovery and replacement j
       }
     };
     const result=await runStudioMultiplayerAudit(fakeClient,'studio-1',{adaptiveCoverage:{contractHash:'test'}});
-    assert.equal(result.pass,mode==='pass'||mode==='separate-studios',mode);
+    const expectedPass=['pass','separate-studios','slow-server'].includes(mode);
+    assert.equal(result.pass,expectedPass,mode);
+    assert.equal(startCount,1,'readiness polling never launches another test');
     assert.equal(cleanup,true);
     assert.equal(result.sameUserRejoinVerified,false);
-    if(mode==='pass'||mode==='separate-studios'){
+    if(mode==='slow-server'){
+      assert.ok(identityPolls>20);
+      assert.ok(result.connectionEvidence.some(row=>row.observations.some(o=>o.identity?.probePresent===false)));
+    }
+    if(expectedPass){
       assert.equal(result.bothClientsStatePass,true);
       assert.equal(result.survivorStatePass,true);
       assert.equal(result.replacementJoinPass,true);
@@ -2444,6 +2453,9 @@ test('Studio launcher handoff remains bound to one isolated Place and cleanup re
   const close=block.slice(block.indexOf('- name: Close owned Studio after evidence persistence'),block.indexOf('- name: Refill existing 24H development loop'));
   assert.match(close,/Get-CimInstance Win32_Process/);
   assert.match(close,/\$remainingOwned\.Count\) \{ throw/);
+  assert.match(close,/\$unattributed\.Count\) \{ throw/);
+  assert.match(close,/ROBLOX_STUDIO_UNATTRIBUTED_PROCESS=/);
+  assert.match(close,/parentProcessId = \[int\]\$record\.ParentProcessId/);
   assert.doesNotMatch(close,/VIBE2_STUDIO_PROCESS_IDS|Stop-Process -Name/);
 
   // Execute the workflow's actual path-boundary expression against unrelated windows.
