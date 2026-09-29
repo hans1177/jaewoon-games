@@ -140,14 +140,14 @@ test('web candidate release blocks inline script syntax and generic storage-cont
   assert.match(section,/storageContract\(base\)/);
   assert.match(section,/storageContract\(source\)/);
   assert.match(section,/VIBE2_WEB_SAVE_CONTRACT_MUTATION/);
-  assert.match(releaseWorkflow,/git -C \/tmp\/vibe2-control fetch origin main:refs\/remotes\/origin\/main --quiet/);
+  assert.match(releaseWorkflow,/git -C \/tmp\/vibe2-control fetch --no-tags --depth=1 origin \+refs\/heads\/main:refs\/remotes\/origin\/main --quiet/);
 });
 
 
 test('candidate release queue recovery always fetches main into an explicit remote-tracking ref',()=>{
-  const explicit='git -C /tmp/vibe2-control fetch origin main:refs/remotes/origin/main --quiet';
+  const explicit='git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main --quiet';
   const legacy='git -C /tmp/vibe2-control fetch origin main --quiet';
-  const clones=releaseWorkflow.split('gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch').length-1;
+  const clones=releaseWorkflow.split('gh repo clone "$GITHUB_REPOSITORY" /tmp/vibe2-control -- --branch vibe2-unreal-core --single-branch --depth=1 --no-tags').length-1;
   const explicitFetches=releaseWorkflow.split(explicit).length-1;
   assert.ok(clones>=4);
   assert.equal(explicitFetches,clones);
@@ -252,6 +252,10 @@ test('Roblox candidate build and Studio verification precede promotion without p
   assert.match(build,/company-development-roblox-package\.mjs/);
   assert.match(build,/company-development-roblox-build-preflight\.mjs/);
   assert.match(build,/company-development-roblox-headless-fast-mvp\.mjs/);
+  assert.match(build,/roblox-place-package-count-invalid/);
+  assert.match(build,/for file in "\$\{scripts\[@\]\}"; do \/tmp\/luau-bin\/luau-compile/);
+  assert.match(build,/candidate preflight identity mismatch/);
+  assert.doesNotMatch(build,/fetch-depth: 0/);
   assert.doesNotMatch(build,/gh pr merge|git push/);
   assert.match(releaseWorkflow.slice(promoteStart),/needs: \[inspect, roblox-package, roblox-studio\]/);
   assert.match(releaseWorkflow.slice(promoteStart),/stage:'SOURCE_PROMOTION'/);
@@ -260,4 +264,59 @@ test('Roblox candidate build and Studio verification precede promotion without p
   assert.match(native,/candidate_context == '' && steps\.studio_play/);
   const followup=native.slice(native.indexOf('      - name: Dispatch exact Studio MCP follow-up'),native.indexOf('      - name: Enforce persistent Open Cloud probe failures'));
   assert.doesNotMatch(followup,/if: \$\{\{ false \}\}/);
+});
+
+// 빌드 전 소스 진입 검수: 산출물은 이후 기존 빌드·컴파일·실행 게이트가 검증한다.
+test('Roblox source candidates reach package build without prebuilt artifacts',()=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'candidate-source-admission-'));
+  try{
+    const root=path.join(temp,'roblox-games/demo');
+    fs.mkdirSync(root,{recursive:true});
+    fs.writeFileSync(path.join(root,'default.project.json'),'{"name":"demo","tree":{"$className":"DataModel"}}');
+    fs.writeFileSync(path.join(root,'Game.server.luau'),'print("candidate")\n');
+    const start=releaseWorkflow.indexOf('          if [ "$decision" = \'roblox\' ]; then');
+    const end=releaseWorkflow.indexOf('\n          fi',start);
+    assert.ok(start>0&&end>start);
+    const script='reject() { echo "REJECT:$1"; exit 0; };\n'+releaseWorkflow.slice(start,end+13).replace(/^ {10}/gm,'')+'\necho BUILD_READY';
+    const run=()=>execFileSync('bash',['-e','-c',script],{cwd:temp,encoding:'utf8',env:{...process.env,decision:'roblox',source_root:'roblox-games/demo'}});
+    assert.match(run(),/BUILD_READY/);
+    fs.unlinkSync(path.join(root,'default.project.json'));
+    assert.match(run(),/REJECT:roblox-project-missing/);
+    fs.writeFileSync(path.join(root,'default.project.json'),'{}');
+    fs.unlinkSync(path.join(root,'Game.server.luau'));
+    fs.writeFileSync(path.join(root,'old.rbxlx'),'<roblox/>');
+    fs.writeFileSync(path.join(root,'roblox-technical-validation.json'),'{"pass":true}');
+    assert.match(run(),/REJECT:roblox-source-scripts-missing/);
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+
+test('queue settlement shallow snapshots still refresh after concurrent writer and push safely',()=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'candidate-settlement-'));
+  const upstream=path.join(temp,'upstream'),checkout=path.join(temp,'checkout'),contract=path.join(temp,'contract');
+  fs.mkdirSync(upstream);
+  const git=(cwd,...args)=>execFileSync('git',args,{cwd,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+  try{
+    git(upstream,'init','-b','main');git(upstream,'config','user.name','QA');git(upstream,'config','user.email','qa@example.invalid');
+    fs.writeFileSync(path.join(upstream,'contract.txt'),'current contract');git(upstream,'add','.');git(upstream,'commit','-m','main');
+    git(upstream,'checkout','-b','vibe2-unreal-core');
+    fs.writeFileSync(path.join(upstream,'queue.json'),'old state');git(upstream,'add','.');git(upstream,'commit','-m','control');
+    const clone=releaseWorkflow.match(/gh repo clone "\$GITHUB_REPOSITORY" \/tmp\/vibe2-control -- ([^\n]+?) >\/dev\/null/)?.[1];
+    assert.ok(clone);
+    git(temp,'clone',...clone.split(' '),`file://${upstream}`,checkout);
+    assert.equal(git(checkout,'rev-list','--count','HEAD'),'1');
+    const fetch=releaseWorkflow.match(/git -C \/tmp\/vibe2-control (fetch [^\n]+main:refs\/remotes\/origin\/main --quiet)/)?.[1];
+    assert.ok(fetch);git(checkout,...fetch.split(' '));
+    git(checkout,'worktree','add','--detach',contract,'origin/main');
+    assert.equal(fs.readFileSync(path.join(contract,'contract.txt'),'utf8'),'current contract');
+    fs.writeFileSync(path.join(upstream,'other-task.txt'),'concurrent work');git(upstream,'add','.');git(upstream,'commit','-m','concurrent settlement');
+    const refresh=releaseWorkflow.match(/^            (git fetch [^\n]+vibe2-unreal-core[^\n]*--quiet)$/m)?.[1];
+    assert.ok(refresh);execFileSync('bash',['-e','-c',refresh],{cwd:checkout,stdio:'pipe'});
+    git(checkout,'reset','--hard','origin/vibe2-unreal-core');
+    assert.equal(fs.readFileSync(path.join(checkout,'other-task.txt'),'utf8'),'concurrent work');
+    git(checkout,'config','user.name','QA');git(checkout,'config','user.email','qa@example.invalid');
+    fs.writeFileSync(path.join(checkout,'queue.json'),'repair required');git(checkout,'add','.');git(checkout,'commit','-m','settle');
+    git(upstream,'checkout','main');git(checkout,'push','origin','HEAD:vibe2-unreal-core');
+    assert.equal(git(upstream,'show','vibe2-unreal-core:queue.json'),'repair required');
+    assert.equal(git(upstream,'show','vibe2-unreal-core:other-task.txt'),'concurrent work');
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
