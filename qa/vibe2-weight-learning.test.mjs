@@ -25,6 +25,7 @@ function verified(overrides = {}) {
     sourceCommit: 'abc123',
     independentQa: 'PASS',
     browserQa: 'PASS',
+    runtime: 'PASS',
     quality: { codeQuality: 1, noRegression: true, playImprovement: 1, ruleCompliance: 1 },
     ...overrides,
   };
@@ -217,4 +218,12 @@ test('학습 이상 신호는 중단과 rollback을 요구한다', () => {
   assert.equal(result.abort, true);
   assert.equal(result.rollback, true);
   assert.ok(result.reasons.includes('OOM'));
+});
+
+
+test('runtime evidence cannot default to PASS, including Roblox teacher records',()=>{
+  assert.equal(isVerifiedPass(verified({taskType:'roblox',runtime:undefined,browserQa:'NOT_APPLICABLE'})),false);
+  assert.equal(isVerifiedPass(verified({taskType:'roblox',runtime:'PASS',browserQa:'NOT_APPLICABLE'})),true);
+  assert.equal(isTeacherEligible({taskType:'roblox',difficulty:'regression',teacher:true,sourceKind:'teacher'}),true);
+  assert.equal(isTeacherEligible({taskType:'roblox',difficulty:'simple',teacher:true,sourceKind:'teacher'}),false);
 });

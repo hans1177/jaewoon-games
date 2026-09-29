@@ -279,9 +279,9 @@ test('learning-idle lane reservation uses its own cap instead of game adaptive c
   fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:20,lastDecision:'HOLD'},null,2));
   const result=runQueueCommand({command:'reserve-batch',queue:queueFile,control:controlFile,lane:'learning-idle',max:'4',min:'1'});
   assert.equal(result.executionLane,'learning-idle');
-  assert.equal(result.reservationMaxConcurrentTasks,4);
+  assert.equal(result.reservationMaxConcurrentTasks,1);
   assert.equal(result.adaptiveControl.currentMax,20);
-  assert.equal(result.tasks.length,4);
+  assert.equal(result.tasks.length,1);
   assert.ok(result.tasks.every(task=>task.executionLane==='LEARNING_IDLE'));
   assert.equal(result.tasks.some(task=>task.id==='game'),false);
 });

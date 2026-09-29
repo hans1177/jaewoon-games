@@ -521,12 +521,8 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const laneMode=normalizedExecutionLane(lane);
   const running = queue.tasks.filter((task) => task.status === 'running');
   const capacityRunning = running.filter((task) => !releasesWorkerCapacity(task) && taskMatchesExecutionLane(task,laneMode));
-  const productionPending = queue.tasks.some((task) =>
-    ['queued','running'].includes(task.status) &&
-    ['GAME_PRIMARY','ASSET_DEVELOPMENT','RECOVERY_FAST','RELEASE_WAIT'].includes(task.executionLane)
-  );
-  const learningFloorOnly = laneMode === 'learning-idle' && productionPending;
-  const concurrency = dynamicConcurrency(queue, learningFloorOnly ? 1 : maxConcurrentTasks);
+  // 학습은 게임 작업 유무와 관계없이 한 슬롯만 예약한다.
+  const concurrency = dynamicConcurrency(queue, laneMode === 'learning-idle' ? 1 : maxConcurrentTasks);
   const effectiveMax = concurrency.effectiveMaxConcurrentTasks;
   const freeSlots = Math.max(0, effectiveMax - capacityRunning.length);
   const completed = completedIds(queue);

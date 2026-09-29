@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "teacher",
+  "synthetic": true,
+  "runtimePromotionAllowed": false,
+  "verificationScope": "STANDALONE_LUAU_LOGIC_ONLY",
+  "nativeRuntimeVerified": false,
+  "drills": [
+    {
+      "id": "scope",
+      "level": "기초",
+      "failure": "ROBLOX_STRUCTURAL_CONTINUITY",
+      "domains": [
+        "DEBUGGING"
+      ],
+      "scenario": "함수 종료 위치가 잘못되어 본문이 함수 밖으로 나갔다. 두 숫자를 더해 반환하는 함수 하나를 반환하라. 외부 상태와 전역 변수는 사용하지 않는다.",
+      "broken": "return function(value, delta)\nend\nreturn value + delta",
+      "reference": "return function(value, delta)\n    return value + delta\nend",
+      "tests": [
+        "local solve = require(\"./candidate\")\nfor n = -20, 20 do assert(solve(n, 7) == n + 7) end",
+        "local solve = require(\"./candidate\")\nfor n = 1, 25 do assert(solve(n * 3, -n) == n * 2) end"
+      ]
+    },
+    {
+      "id": "authority",
+      "level": "중급",
+      "failure": "DUPLICATE_CAUSAL_REWARD",
+      "domains": [
+        "STATE_MACHINE",
+        "PROGRESSION"
+      ],
+      "scenario": "서버 소유 상태를 갱신하는 함수(state, actor, requestId)를 반환하라. state.owner와 다른 actor 및 빈 requestId는 거부한다. 같은 요청은 한 번만 state.count를 1 증가시킨다. 성공은 true, 거부는 false를 반환한다. state.seen은 요청 기록이다. 실제 네트워크 대신 호출 인자를 사용하는 독립 논리 과제다.",
+      "broken": "return function(state, actor, requestId)\n    state.count += 1\n    return true\nend",
+      "reference": "return function(state, actor, requestId)\n    if actor ~= state.owner or type(requestId) ~= \"string\" or requestId == \"\" or state.seen[requestId] then return false end\n    state.seen[requestId] = true\n    state.count += 1\n    return true\nend",
+      "tests": [
+        "local solve = require(\"./candidate\")\nlocal s={owner=\"a\",count=0,seen={}}; assert(solve(s,\"b\",\"r1\")==false and s.count==0); assert(solve(s,\"a\",\"\")==false); assert(solve(s,\"a\",\"r1\")==true); assert(solve(s,\"a\",\"r1\")==false and s.count==1)",
+        "local solve = require(\"./candidate\")\nlocal s={owner=73,count=11,seen={}}; for n=1,31 do local id=tostring(n); assert(solve(s,73,id)); assert(not solve(s,73,id)); assert(not solve(s,74,id)) end; assert(s.count==42)"
+      ]
+    },
+    {
+      "id": "lifecycle",
+      "level": "고급",
+      "failure": "DUPLICATE_EVENT_CONNECTION",
+      "domains": [
+        "MOBILE_INPUT",
+        "UI_STATE"
+      ],
+      "scenario": "재접속 시 이벤트 구독을 교체하는 함수(state, connect, handler)를 반환하라. state.disconnect가 있으면 호출한 뒤 connect(handler)의 반환 함수를 state.disconnect에 저장한다. 여러 번 호출해도 활성 구독은 하나여야 한다. 실제 Roblox 이벤트 대신 주입한 연결 함수를 사용하는 과제다.",
+      "broken": "return function(state, connect, handler)\n    state.disconnect = connect(handler)\nend",
+      "reference": "return function(state, connect, handler)\n    if state.disconnect then state.disconnect() end\n    state.disconnect = connect(handler)\nend",
+      "tests": [
+        "local solve = require(\"./candidate\")\nlocal live=0; local s={}; local function connect(h) live+=1; return function() live-=1 end end; for n=1,5 do solve(s,connect,function() end); assert(live==1) end; s.disconnect(); assert(live==0)",
+        "local solve = require(\"./candidate\")\nlocal callbacks={}; local current=0; local s={}; local function connect(h) current+=1; local id=current; callbacks[id]=h; return function() callbacks[id]=nil end end; for n=1,13 do local v=n; solve(s,connect,function() return v end) end; local count=0; for _,h in callbacks do count+=1; assert(h()==13) end; assert(count==1)"
+      ]
+    },
+    {
+      "id": "save",
+      "level": "실전",
+      "failure": "SAVE_FAILURE_STATE_DRIFT",
+      "domains": [
+        "SAVE",
+        "DEBUGGING"
+      ],
+      "scenario": "저장 성공 후에만 메모리 상태를 확정하는 함수(state, value, write)를 반환하라. write(value)는 성공 시 true, 실패 시 false를 반환하거나 오류를 발생시킨다. 성공일 때만 state.value를 갱신하고 true를 반환하라. 실패는 false이며 기존 state.value와 state.key를 보존한다. 실제 DataStore 없이 오류를 주입하는 과제다.",
+      "broken": "return function(state, value, write)\n    state.value = value\n    return write(value)\nend",
+      "reference": "return function(state, value, write)\n    local ok, saved = pcall(write, value)\n    if not ok or saved ~= true then return false end\n    state.value = value\n    return true\nend",
+      "tests": [
+        "local solve = require(\"./candidate\")\nlocal s={key=\"progress-v1\",value=9}; assert(not solve(s,12,function() error(\"offline\") end)); assert(s.value==9 and s.key==\"progress-v1\"); assert(not solve(s,14,function() return false end)); assert(s.value==9); assert(solve(s,16,function(v) return v==16 end)); assert(s.value==16 and s.key==\"progress-v1\")",
+        "local solve = require(\"./candidate\")\nlocal s={key=\"kept\",value=101}; local calls=0; local function write(v) calls+=1; return calls==3 end; assert(not solve(s,200,write)); assert(not solve(s,200,write)); assert(s.value==101); assert(solve(s,200,write)); assert(s.value==200 and s.key==\"kept\" and calls==3)"
+      ]
+    }
+  ]
+}

@@ -1,10 +1,13 @@
 // 파일명: tools/vibe2-learning-practice-worker.mjs
-// 역할: 생산 작업이 없는 빈 슬롯에서 검증 실패 복습/미니 시스템 드릴을 수행한다.
+// 역할: 고정 학습 슬롯에서 검증 실패 복습과 격리된 실행 과제를 수행한다.
 // 안전: 게임 소스 write 0, production PASS 0, 배포/승격 증거로 사용할 수 없다.
 
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import http from 'node:http';
+import os from 'node:os';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
 const clean=v=>String(v??'').trim();
@@ -26,7 +29,7 @@ function parseJson(raw=''){
   return JSON.parse(text.slice(a,b+1));
 }
 
-export function buildPracticePrompt(order={}){
+export function buildPracticePrompt(order={}, {drill=null}={}){
   const route=clean(order?.executionRoute);
   if(!['analysis-only','learning-web-artifact'].includes(route))throw new Error('practice worker requires analysis-only or learning-web-artifact work order');
   if(!/\[VIBE_LEARNING_PRACTICE\]/.test(clean(order.goal)))throw new Error('practice marker missing');
@@ -35,24 +38,24 @@ export function buildPracticePrompt(order={}){
     'You are the Vibe learning practice worker. This is PRACTICE_ONLY.',
     webArtifact
       ? 'Create one self-contained runnable Web practice artifact. It must be original, interactive, mobile-friendly, and require no external network or assets.'
-      : 'Do not edit files.',
+      : drill?'Return a repaired Luau module in the code field. Do not edit repository files.':'Do not edit files.',
     'Do not claim production pass. Do not invent runtime evidence.',
     'Your answer is untrusted practice knowledge until independently verified and distilled; do not claim it is reusable canonical knowledge.',
     webArtifact
       ? 'Return JSON only with keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns, artifactHtml. artifactHtml must be a complete self-contained HTML document with inline CSS and JavaScript.'
-      : 'Solve the drill by returning JSON only with keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns.',
+      : drill?'Return JSON only with keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns, code. code must return exactly the requested function.':'Solve the drill by returning JSON only with keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns.',
     'tests must contain at least 3 concrete verification checks; avoidPatterns/reusablePatterns are short generalized lessons.',
     webArtifact?'The artifact must have visible state change from user input, clear feedback, responsive viewport, and no fetch/WebSocket/external http(s) URLs.':'',
     previousArtifactScoreFromOrder(order)!==null?`Previous verified artifact score=${previousArtifactScoreFromOrder(order)}. Improve the artifact beyond this score while keeping the drill goal.`:'',
     'WORK ORDER:',
-    clean(order.goal).slice(0,12000)
+    drill?JSON.stringify({id:drill.id,level:drill.level,scenario:drill.scenario,brokenCode:drill.broken}):clean(order.goal).slice(0,12000)
   ].filter(Boolean).join('\n');
 }
 
-async function requestModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT}={}){
+async function requestModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT,maxPredict=1200}={}){
   const fake=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);
   if(fake)return fs.readFileSync(fake,'utf8');
-  const body=JSON.stringify({model,prompt,stream:false,think:false,options:{num_predict:1200,temperature:.12}});
+  const body=JSON.stringify({model,prompt,stream:false,think:false,options:{num_predict:maxPredict,temperature:.12}});
   return await new Promise((resolve,reject)=>{
     const req=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{
       let data='';res.setEncoding('utf8');res.on('data',x=>data+=x);res.on('end',()=>{
@@ -64,13 +67,42 @@ async function requestModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutM
   });
 }
 
-export function evaluatePracticeAnswer(value={}){
+export function evaluatePracticeAnswer(value={}, {drill=null,luauBinary=process.env.VIBE2_LUAU_BINARY||'luau'}={}){
   const tests=Array.isArray(value.tests)?value.tests.map(clean).filter(Boolean):[];
   const reusable=Array.isArray(value.reusablePatterns)?value.reusablePatterns.map(clean).filter(Boolean):[];
   const avoid=Array.isArray(value.avoidPatterns)?value.avoidPatterns.map(clean).filter(Boolean):[];
   const diagnosis=clean(value.diagnosis),strategy=clean(value.strategy);
-  const pass=diagnosis.length>=12&&strategy.length>=12&&tests.length>=3&&(reusable.length+avoid.length)>=1;
-  return {pass,diagnosis,strategy,tests:tests.slice(0,8),reusablePatterns:reusable.slice(0,8),avoidPatterns:avoid.slice(0,8)};
+  let pass=diagnosis.length>=12&&strategy.length>=12&&tests.length>=3&&(reusable.length+avoid.length)>=1;
+  let codeVerification=null;
+  if(drill){
+    const code=String(value.code||'');
+    codeVerification={scope:'STANDALONE_LUAU_LOGIC_ONLY',nativeRuntimeVerified:false,productionPromotionAllowed:false,passedTests:0,totalTests:drill.tests.length,baselineRejected:false,referencePassed:false,candidateSha256:sha256(code),drillSha256:sha256(JSON.stringify(drill)),pass:false};
+    if(!code.trim()||Buffer.byteLength(code,'utf8')>24000||/\b(?:require|loadstring|getfenv|setfenv|debug)\b/.test(code)){
+      codeVerification.reason='INVALID_OR_UNSAFE_PRACTICE_MODULE';
+    }else{
+      const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-luau-'));
+      try{
+        const outcomes={};
+        for(const [kind,source] of Object.entries({baseline:drill.broken,reference:drill.reference,candidate:code})){
+          fs.writeFileSync(path.join(dir,'candidate.luau'),source,'utf8');
+          outcomes[kind]=[];
+          for(const testBody of drill.tests){
+            fs.writeFileSync(path.join(dir,'check.luau'),testBody,'utf8');
+            try{execFileSync(luauBinary,['check.luau'],{cwd:dir,timeout:3000,maxBuffer:131072,stdio:['ignore','pipe','pipe']});outcomes[kind].push(true);}
+            catch(error){if(error.code==='ENOENT'||error.code==='EACCES')throw error;outcomes[kind].push(false);}
+          }
+        }
+        codeVerification.baselineRejected=outcomes.baseline.some(value=>!value);
+        codeVerification.referencePassed=outcomes.reference.every(Boolean);
+        codeVerification.passedTests=outcomes.candidate.filter(Boolean).length;
+        codeVerification.pass=codeVerification.baselineRejected&&codeVerification.referencePassed&&outcomes.candidate.every(Boolean);
+        codeVerification.reason=codeVerification.pass?'VERIFIED_LOGIC_ONLY':'REGRESSION_OR_FIXTURE_FAILED';
+      }catch(error){codeVerification.reason='LUAU_EXECUTOR_UNAVAILABLE';}
+      finally{fs.rmSync(dir,{recursive:true,force:true});}
+    }
+    pass=pass&&codeVerification.pass;
+  }
+  return {pass,diagnosis,strategy,tests:tests.slice(0,8),reusablePatterns:reusable.slice(0,8),avoidPatterns:avoid.slice(0,8),...(codeVerification?{codeVerification}:{})};
 }
 
 export function evaluateWebPracticeArtifact(html='',previousScore=null){
@@ -106,9 +138,13 @@ export function evaluateWebPracticeArtifact(html='',previousScore=null){
 
 export async function runLearningPractice({workOrderFile='.vibe2/work-order.json',outputFile='/tmp/vibe2-learning-practice-result.json',artifactDir='/tmp/vibe2-practice-web-artifact',model=DEFAULT_MODEL,responseFile=''}={}){
   const order=readJson(workOrderFile);
-  const raw=await requestModel(buildPracticePrompt(order),{model,responseFile});
+  const drillId=clean(order?.selectedTask?.robloxPracticeDrill||order?.robloxPracticeDrill);
+  const curriculum=drillId?readJson(new URL('../company-learning/roblox-practice.json',import.meta.url)):null;
+  const drill=curriculum?.drills.find(row=>row.id===drillId)||null;
+  if(drillId&&!drill)throw new Error('UNKNOWN_ROBLOX_PRACTICE_DRILL');
+  const raw=await requestModel(buildPracticePrompt(order,{drill}),{model,responseFile,maxPredict:drill?3072:1200});
   const parsed=parseJson(raw);
-  const evaluation=evaluatePracticeAnswer(parsed);
+  const evaluation=evaluatePracticeAnswer(parsed,{drill});
   const webArtifact=clean(order.executionRoute)==='learning-web-artifact';
   const previousArtifactScore=previousArtifactScoreFromOrder(order);
   let artifact=null;
@@ -137,7 +173,8 @@ export async function runLearningPractice({workOrderFile='.vibe2/work-order.json
   const rawModelOutputSha256=sha256(raw);
   const result={
     version:3,kind:'vibe2-learning-practice-result',taskId:clean(order.taskId)||null,
-    practiceMode:webArtifact?'WEB_ARTIFACT':'ANALYSIS',
+    practiceMode:drill?'ROBLOX_CODE':webArtifact?'WEB_ARTIFACT':'ANALYSIS',
+    practiceDrillId:drill?.id||null,nativeRuntimeVerified:false,
     practiceOnly:true,productionPass:false,sourceWrite:false,repositorySourceWrite:false,artifactWrite:webArtifact,model,
     knowledgeState:'UNTRUSTED_PRACTICE_OUTPUT',rawModelOutputSha256,rawModelOutputStored:false,
     candidateLessonsVerified:false,retrievalEligible:false,masteryCreditEligible:false,canonicalTrainingEligible:false,

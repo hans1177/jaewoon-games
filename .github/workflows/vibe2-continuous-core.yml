@@ -73,8 +73,8 @@ permissions:
 # GAME_PRIMARY must never wait behind recovery-fast, learning-idle or control-fast refill work.
 concurrency:
   # Only a direct main push without an explicit lane uses the disposable main-wake singleton.
-  # Reusable workflow_call lanes inherit the caller event name, so explicit lane inputs must stay run-scoped.
-  group: ${{ github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
+  # Learning uses one shared execution group; other explicit lanes remain run-scoped.
+  group: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && 'vibe2-learning-single-worker' || github.event_name == 'schedule' && 'vibe2-scheduled-game-primary-wake' || github.event_name == 'push' && github.ref == 'refs/heads/main' && inputs.execution_lane == '' && 'vibe2-main-push-game-primary-wake' || format('vibe2-continuous-{0}-{1}', github.run_id, inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') }}
   cancel-in-progress: false
 
 env:
@@ -94,7 +94,7 @@ env:
   VIBE2_OPENAI_PAID_API_ALLOWED: 'false'
   VIBE2_SHARED_CONTEXT_REQUIRED: 'true'
   VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}
-  VIBE2_LANE_MAX: ${{ inputs.lane_max || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '4') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || '256' }}
+  VIBE2_LANE_MAX: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '1' || inputs.lane_max || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '64') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || '256' }}
 
 jobs:
   reserve:
@@ -752,7 +752,7 @@ jobs:
 
   model_cache:
     needs: reserve
-    if: needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_cache_hit != 'true' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'asset-development'
+    if: needs.reserve.outputs.worker_count != '0' && needs.reserve.outputs.model_cache_hit != 'true' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'asset-development' && (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') != 'learning-idle'
     runs-on: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     timeout-minutes: 12
     continue-on-error: true
@@ -1072,6 +1072,15 @@ jobs:
             ollama pull "$VIBE2_LOCAL_MODEL"
           fi
           practice_route="$(node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));process.stdout.write(String(o.executionRoute||''))")"
+          if node -e "const o=require('/tmp/vibe2-work-order.json');process.exit(o.selectedTask?.robloxPracticeDrill?0:1)"; then
+            luau_dir="$RUNNER_TEMP/vibe2-luau-practice"
+            mkdir -p "$luau_dir"
+            curl -fsSL --retry 3 --retry-delay 2 -o "$luau_dir/luau.zip" https://github.com/luau-lang/luau/releases/download/0.739/luau-ubuntu.zip
+            unzip -oq "$luau_dir/luau.zip" -d "$luau_dir"
+            chmod +x "$luau_dir/luau"
+            export VIBE2_LUAU_BINARY="$luau_dir/luau"
+            node --test "$contract_root/qa/vibe2-learning-practice-worker.test.mjs"
+          fi
           artifact_dir="/tmp/vibe2-practice-web-${SAFE_TASK}-${VARIANT}"
           node "$contract_root/tools/vibe2-learning-practice-worker.mjs" \
             --order=/tmp/vibe2-work-order.json \
