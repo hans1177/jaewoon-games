@@ -4862,6 +4862,19 @@ test('oversized Roblox rebuild starts with owned source and complete learning in
   assert.match(request.prompt,/Do not clone assets/);
   assert.ok(request.options.num_predict>=1024);
   assert.ok(request.options.num_ctx>=16384);
+  // 출시 후 집중 개선에도 같은 입력·출력 예산과 학습 보존을 적용한다.
+  requests.length=0;
+  work.goal=work.goal.replace('[SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX]','[POST_RELEASE_FOCUSED_DEVELOPMENT]');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(work));
+  await assert.rejects(runVibe2SourceWorker({cwd,applySource:true}),/Ollama HTTP 503/);
+  assert.equal(requests.length,1);
+  assert.ok(Buffer.byteLength(requests[0].prompt)<20000);
+  assert.deepEqual(requests[0].format.required,['replace']);
+  assert.ok(requests[0].prompt.includes(principle));
+  assert.match(requests[0].prompt,/SAVE_KEY_DEMO/);
+  assert.match(requests[0].prompt,/TWO_CLIENT_RESULT_REQUIRED/);
+  assert.ok(requests[0].options.num_predict>=1024);
+  assert.ok(requests[0].options.num_ctx>=16384);
   // 연결 패키지는 입력이 커도 한 앵커 수정으로 축소하지 않는다.
   requests.length=0;
   work.goal='[STUDIO_QUALITY_EVOLUTION]\n'+work.goal;
