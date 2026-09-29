@@ -929,7 +929,7 @@
         "adaptiveRole": "TELEMETRY_AND_SPECULATIVE_SUPPRESSION_ONLY",
         "primaryReservationLimit": "CONFIGURED_EXTERNAL_PROVIDER_BOUNDARY",
         "pressureMayDownshiftPrimaryReservations": false,
-        "fanInRefillConcurrencyScope": "RUN_SCOPED_PARALLEL_RESERVE",
+        "fanInRefillConcurrencyScope": "LANE_SCOPED_STATELESS_REFILL_COALESCING",
         "globalFanInRefillSingletonForbidden": true,
         "recoveryFastCausalReturn": "VIBE2_FANIN_REFILL_EVENT_WITH_GAME_PRIMARY_EXECUTION_LANE",
         "recoveryFastDirectGameWorkerDispatch": false
@@ -1403,6 +1403,7 @@
         ],
         "crossLaneGlobalReserveLock": false,
         "sameLaneReserveSerialization": false,
+        "statelessRefillCoalescing": "ONE_RUNNING_AND_LATEST_PENDING_PER_LANE",
         "sharedQueue": "vibe2-unreal-core:.vibe2/queue.json",
         "conflictResolution": "FETCH_RESET_REPLAN_RESERVE_PUSH_RETRY_UNBOUNDED_WITH_CAPPED_BACKOFF_ON_ACTUAL_WRITE_CONFLICT",
         "workerDirectControlWrite": false,
