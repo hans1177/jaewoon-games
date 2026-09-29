@@ -442,6 +442,7 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
     matrix: tasks.map((task) => ({
       taskId: task.id,
       target: clean(task.target).toLowerCase() || 'unknown',
+      deterministicRoblox: clean(task.target).toLowerCase() === 'roblox' && (task.evidence || []).map(clean).includes('presentation-pass:ASSET_ADAPTATION'),
       shard: task.shard,
       packageId: task.packageId || null,
       packageRole: task.packageRole || null,
