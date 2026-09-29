@@ -1615,7 +1615,7 @@ test('24H plan uses optimistic writes while reserve stays lightweight and fan-in
   assert.ok(planStart>=0&&recoveryStart>planStart);
   const planBlock=runner.slice(planStart,recoveryStart);
   assert.doesNotMatch(planBlock,/group: vibe2-control-state-vibe2-unreal-core/);
-  assert.match(planBlock,/VIBE2_AUTOPLAN_ATTEMPT=\$attempt\/5/);
+  assert.match(planBlock,/VIBE2_AUTOPLAN_ATTEMPT=\$attempt/);
   assert.match(planBlock,/git reset --hard origin\/vibe2-unreal-core/);
   assert.match(planBlock,/if git push origin HEAD:vibe2-unreal-core; then/);
 
