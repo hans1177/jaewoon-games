@@ -1,0 +1,48 @@
+{
+  "summary": "수정된 코드는 UnityWebFloorGame.cs 파일의 특정 구문을 수정하여 게임의 상태 변화와 피드백 연결을 강화하고, 실제 source 변경을 포함한다.",
+  "expectedEffect": "게임의 상태 변화와 피드백 연결이 강화되며, 실제 source 변경이 포함되어야 한다.",
+  "edits": [
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "        if(!started) StartGameplay();",
+      "replace": "        if(!started) StartGameplay();\n        LogState();"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "        if (player != null && started)",
+      "replace": "        if (player != null && started)\n        {\n            var p=enemy.transform.position;\n            var p=player.transform.position;\n            enemy.transform.position=p;\n            player.transform.position=p;\n        }\n        LogState();"
+    },
+    {
+      "path": "Assets/Scripts/UnityWebFloorGame.cs",
+      "find": "        if(progress >= level * 4) level++;",
+      "replace": "        if(progress >= level * 4)\n        {\n            level++;\n            LogState();\n        }"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "JAEWOON_UNITY_WEB_QA STATE game=bug-defense progress=1 level=1 resource=10 actions=0 status=PASS",
+    "JAEWOON_UNITY_WEB_QA ACTION game=bug-defense mode=DEFENSE action=1 status=PASS",
+    "JAEWOON_UNITY_WEB_QA CORE_FUN game=bug-defense mode=DEFENSE status=REPAIR_REQUIRED reason=BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED"
+  ],
+  "graphicsReplacementReport": {
+    "actualCount": 3,
+    "changedSurfaces": [
+      "LOG_STATE"
+    ],
+    "reuseModesUsed": [
+      "ADAPT_RESTYLE_AND_RETARGET"
+    ],
+    "replacementEvidence": [
+      {
+        "surface": "LOG_STATE",
+        "path": "Assets/Scripts/UnityWebFloorGame.cs",
+        "bindingKey": "LOG_STATE",
+        "reuseMode": "ADAPT_RESTYLE_AND_RETARGET",
+        "sourceEvidence": "Debug.Log(\"JAEWOON_UNITY_WEB_QA STATE game=bug-defense progress=\nprogress level=\nlevel actions=\");"
+      }
+    ],
+    "before": "",
+    "after": ""
+  }
+}
