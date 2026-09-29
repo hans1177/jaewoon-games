@@ -26,7 +26,7 @@ test('reviewed winner release dispatch remains structurally intact',()=>{
   assert.ok(dispatch>0&&dispatch<upload&&upload<telemetry&&telemetry<refill);
 
   const section=workflow.slice(dispatch,upload);
-  assert.match(section,/while IFS='\\|' read -r task_id candidate_branch target game_id; do/);
+  assert.match(section,/while IFS='\\|' read -r task_id candidate_branch target game_id evidence_only; do/);
   assert.match(section,/done < \/tmp\/vibe2-release-candidates\.tsv/);
   assert.match(section,/actions\/workflows\/vibe2-candidate-release\.yml\/dispatches/);
   assert.match(section,/VIBE2_RELEASE_DISPATCHED=/);

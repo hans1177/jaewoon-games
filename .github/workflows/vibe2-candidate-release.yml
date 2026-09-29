@@ -12,6 +12,12 @@ on:
         required: true
         type: string
 
+      evidence_only:
+        description: 'Collect exact candidate runtime evidence without source promotion or publication'
+        required: false
+        type: boolean
+        default: false
+
 permissions:
   contents: write
   actions: write
@@ -28,6 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 6
     outputs:
+      evidence_only: ${{ steps.gate.outputs.evidence_only }}
       decision: ${{ steps.gate.outputs.decision }}
       control_sha: ${{ steps.gate.outputs.control_sha }}
       reason: ${{ steps.gate.outputs.reason }}
@@ -53,6 +60,7 @@ jobs:
       - name: Resolve candidate, central production authority and boundary
         id: gate
         env:
+          EVIDENCE_ONLY: ${{ github.event.inputs.evidence_only || 'false' }}
           SUBMITTED_CANDIDATE_BRANCH: ${{ github.event.inputs.candidate_branch || github.ref_name }}
         shell: bash
         run: |
@@ -61,6 +69,7 @@ jobs:
           echo "control_sha=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
           candidate_sha="$(git rev-parse HEAD)"
           echo "candidate_sha=$candidate_sha" >> "$GITHUB_OUTPUT"
+          echo "evidence_only=$EVIDENCE_ONLY" >> "$GITHUB_OUTPUT"
           echo "candidate_branch=$SUBMITTED_CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
           mapfile -t manifests < <(find .vibe2/candidates -type f -name manifest.json 2>/dev/null | sort)
           matching_manifests=()
@@ -129,7 +138,7 @@ jobs:
           if [ "$candidate_origin" = 'VIBE2_NATIVE' ]; then
             git fetch origin vibe2-unreal-core --quiet
             git show origin/vibe2-unreal-core:.vibe2/queue.json > /tmp/vibe2-current-control-queue.json
-            control_state="$(TASK_ID="$task_id" CANDIDATE_BRANCH="$SUBMITTED_CANDIDATE_BRANCH" TARGET="$decision" node <<'NODE'
+            control_state="$(TASK_ID="$task_id" CANDIDATE_BRANCH="$SUBMITTED_CANDIDATE_BRANCH" TARGET="$decision" CANDIDATE_SHA="$candidate_sha" node <<'NODE'
           const fs=require('fs');
           const queue=JSON.parse(fs.readFileSync('/tmp/vibe2-current-control-queue.json','utf8'));
           const task=(queue.tasks||[]).find(row=>String(row?.id||'').trim()===String(process.env.TASK_ID||'').trim());
@@ -157,7 +166,13 @@ jobs:
             &&!evidence.includes('web-publication-retry-resolved');
           const publicationRetry=publicationPending
             &&evidence.includes('web-publication-retry-required');
-          process.stdout.write(activeCandidate||publicationPending||publicationRetry?'CURRENT':'STALE');
+          const pending=task?.runtimeEvidenceCandidate;
+          const evidenceOnly=process.env.EVIDENCE_ONLY==='true';
+          const exactProbe=evidenceOnly&&target==='roblox'&&task?.status==='running'
+            &&blocker==='candidate-awaiting-runtime-evidence'
+            &&pending?.evidenceOnly===true&&pending?.candidateBranch===branch
+            &&pending?.candidateSha===process.env.CANDIDATE_SHA;
+          process.stdout.write((evidenceOnly?exactProbe:activeCandidate||publicationPending||publicationRetry)?'CURRENT':'STALE');
           NODE
             )"
             if [ "$control_state" != 'CURRENT' ]; then
@@ -169,6 +184,11 @@ jobs:
             echo "VIBE2_CANDIDATE_CURRENT_WINNER=$SUBMITTED_CANDIDATE_BRANCH"
           fi
 
+          if [ "$EVIDENCE_ONLY" = true ] && { [ "$decision" != roblox ] || [ "$candidate_origin" != VIBE2_NATIVE ]; }; then
+            echo 'decision=reject' >> "$GITHUB_OUTPUT"
+            echo 'reason=evidence-only-origin-or-target-invalid' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           reject() { echo 'decision=reject' >> "$GITHUB_OUTPUT"; echo "reason=$1" >> "$GITHUB_OUTPUT"; exit 0; }
           git cat-file -e "${base_sha}^{commit}" 2>/dev/null || reject base-main-sha-missing
           already_promoted=false
@@ -757,6 +777,7 @@ jobs:
           const item=q.items?.[0];
           if(q.items?.length!==1||item.gameId!==process.env.GAME_ID)throw Error('candidate result game mismatch');
           const gate=validateRobloxReleaseEvidence(item,process.env.CANDIDATE_SHA,{stage:'SOURCE_PROMOTION'});
+          fs.writeFileSync('/tmp/roblox-candidate-studio/release-evidence-review.json',JSON.stringify(gate));
           if(!gate.pass)throw Error(gate.blockedReasons.join('|'));
           console.log('ROBLOX_EXACT_CANDIDATE_STUDIO_EVIDENCE=PASS');
           console.log('ROBLOX_FINAL_PUBLICATION_CLAIM=NO');
@@ -764,7 +785,7 @@ jobs:
 
       - name: Promote verified Roblox source root through reviewed PR
         id: promote
-        if: steps.validate.outcome == 'success'
+        if: steps.validate.outcome == 'success' && needs.inspect.outputs.evidence_only != 'true'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -830,6 +851,9 @@ jobs:
           VALIDATE_OUTCOME: ${{ steps.validate.outcome }}
           PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+          EVIDENCE_ONLY: ${{ needs.inspect.outputs.evidence_only }}
+          CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
+          CANDIDATE_BRANCH: ${{ needs.inspect.outputs.candidate_branch }}
           CANDIDATE_ORIGIN: ${{ needs.inspect.outputs.origin }}
           PROMOTED_MAIN_SHA: ${{ steps.promote.outputs.main_sha }}
           PROMOTED_SOURCE_TREE_SHA: ${{ steps.promote.outputs.source_tree_sha }}
@@ -863,7 +887,29 @@ jobs:
           for attempt in 1 2 3; do
             git fetch origin vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
-            if [ "$result" = PASS ]; then
+            if [ "$EVIDENCE_ONLY" = true ]; then
+              node <<'NODE'
+          const fs=require('fs');const file='.vibe2/queue.json';
+          const queue=JSON.parse(fs.readFileSync(file,'utf8'));
+          const task=(queue.tasks||[]).find(row=>row.id===process.env.TASK_ID);
+          const pending=task?.runtimeEvidenceCandidate;
+          if(task?.status!=='running'||task?.blocker!=='candidate-awaiting-runtime-evidence'
+            ||pending?.evidenceOnly!==true||pending?.candidateSha!==process.env.CANDIDATE_SHA||pending?.candidateBranch!==process.env.CANDIDATE_BRANCH)throw Error('stale runtime evidence candidate');
+          const pass=process.env.VALIDATE_OUTCOME==='success';
+          const reportFile='/tmp/roblox-candidate-studio/release-evidence-review.json';
+          const report=fs.existsSync(reportFile)?JSON.parse(fs.readFileSync(reportFile,'utf8')):null;
+          const reasons=Array.isArray(report?.blockedReasons)?report.blockedReasons.map(String).slice(0,30):[];
+          task.evidence=[...new Set([...(task.evidence||[]),
+            'candidate-runtime-probe:'+process.env.CANDIDATE_SHA+':'+(pass?'PASS':'FAIL'),
+            'candidate-runtime-probe-run:'+process.env.GITHUB_RUN_ID,
+            'candidate-runtime-probe-artifact:roblox-candidate-studio-'+process.env.GAME_ID,
+            'candidate-runtime-probe-source-promotion:FORBIDDEN',
+            ...reasons.map(reason=>'candidate-runtime-probe-failure:'+reason)])];
+          task.runtimeEvidenceCandidate={...pending,runId:process.env.GITHUB_RUN_ID,verified:pass,blockedReasons:reasons,reviewStillRequired:true};
+          Object.assign(task,{status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,neuronExpectedVariants:0,neuronResults:[],lastOutcome:'RUNTIME_EVIDENCE_COLLECTED_REVIEW_REQUIRED'});
+          fs.writeFileSync(file,JSON.stringify(queue,null,2)+'\n');
+          NODE
+            elif [ "$result" = PASS ]; then
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs await \
                 --id="$TASK_ID" \
                 --blocker=candidate-awaiting-roblox-runtime-qa \
@@ -876,7 +922,9 @@ jobs:
               settled=1
               break
             fi
-            if [ "$result" = PASS ]; then
+            if [ "$EVIDENCE_ONLY" = true ]; then
+              git commit -m "vibe2: collect Roblox candidate runtime evidence for ${TASK_ID} [skip ci]"
+            elif [ "$result" = PASS ]; then
               git commit -m "vibe2: await Roblox runtime QA for ${TASK_ID} [skip ci]"
             else
               git commit -m "vibe2: settle Roblox task ${TASK_ID} ${result} [skip ci]"
@@ -888,6 +936,11 @@ jobs:
             sleep $((attempt * 2))
           done
           test "$settled" = 1
+          if [ "$EVIDENCE_ONLY" = true ]; then
+            echo 'VIBE2_RUNTIME_EVIDENCE_COLLECTED=YES'
+            echo 'VIBE2_SOURCE_PROMOTION=FORBIDDEN_REVIEW_REQUIRED'
+            exit 0
+          fi
           if [ "$result" = PASS ]; then
             gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$GAME_ID"
             echo "VIBE2_ROBLOX_RUNTIME_QA_DISPATCHED=$GAME_ID"

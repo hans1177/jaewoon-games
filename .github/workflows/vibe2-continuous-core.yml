@@ -2612,17 +2612,17 @@ jobs:
           node - <<'NODE' > /tmp/vibe2-release-candidates.tsv
           const fs=require('fs');
           const review=JSON.parse(fs.readFileSync('/tmp/vibe2-package-review.json','utf8'));
-          for(const row of review.releaseCandidates||[]){
+          for(const row of [...(review.releaseCandidates||[]),...(review.verificationCandidates||[])]){
             const taskId=String(row?.taskId||'').trim();
             const candidateBranch=String(row?.candidateBranch||'').trim();
             const target=String(row?.target||'').trim().toLowerCase();
             const gameId=String(row?.gameId||'').trim();
-            if(taskId&&candidateBranch)process.stdout.write([taskId,candidateBranch,target,gameId].join('|')+'\n');
+            if(taskId&&candidateBranch)process.stdout.write([taskId,candidateBranch,target,gameId,row.evidenceOnly===true?'true':'false'].join('|')+'\n');
           }
           NODE
           count="$(wc -l < /tmp/vibe2-release-candidates.tsv | tr -d ' ')"
           echo "VIBE2_RELEASE_CANDIDATE_COUNT=${count:-0}"
-          while IFS='|' read -r task_id candidate_branch target game_id; do
+          while IFS='|' read -r task_id candidate_branch target game_id evidence_only; do
             [ -n "$task_id" ] || continue
             [ -n "$candidate_branch" ] || continue
             if [ "$target" = web ]; then
@@ -2630,8 +2630,12 @@ jobs:
             else
               echo "PLATFORM_RUNTIME_VERIFICATION_REQUIRED=${target:-unknown}:${game_id:-unknown}:$task_id"
             fi
-            echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCH_ATTEMPTED=${target:-unknown}:${game_id:-unknown}:$task_id"
-            body="$(jq -nc --arg branch "$candidate_branch" '{ref:"main",inputs:{candidate_branch:$branch}}')"
+            if [ "$evidence_only" = true ]; then
+              echo "PLATFORM_RUNTIME_EVIDENCE_ONLY_DISPATCH_ATTEMPTED=${task_id}"
+            else
+              echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCH_ATTEMPTED=${target:-unknown}:${game_id:-unknown}:$task_id"
+            fi
+            body="$(jq -nc --arg branch "$candidate_branch" --arg evidence_only "$evidence_only" '{ref:"main",inputs:{candidate_branch:$branch,evidence_only:$evidence_only}}')"
             dispatched=0
             for dispatch_attempt in 1 2 3; do
               if curl --fail-with-body --silent --show-error \
@@ -2642,7 +2646,11 @@ jobs:
                 "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-candidate-release.yml/dispatches" \
                 --data "$body"; then
                 dispatched=1
-                echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED=${target:-unknown}:${game_id:-unknown}:${task_id}"
+                if [ "$evidence_only" = true ]; then
+                  echo "PLATFORM_RUNTIME_EVIDENCE_ONLY_DISPATCHED=${task_id}"
+                else
+                  echo "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED=${target:-unknown}:${game_id:-unknown}:${task_id}"
+                fi
                 echo "VIBE2_RELEASE_DISPATCHED=${task_id}:${candidate_branch}"
                 break
               fi
