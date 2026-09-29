@@ -1,8 +1,12 @@
 name: Roblox F0 Restart & Resync
 
-run-name: F0 restart · ${{ inputs.game_id }}
+run-name: F0 restart · ${{ inputs.game_id || 'horror-escape-room' }}
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/roblox-f0-restart.yml'
   workflow_dispatch:
     inputs:
       game_id:
@@ -16,7 +20,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: roblox-f0-restart-${{ inputs.game_id }}
+  group: roblox-f0-restart-${{ inputs.game_id || 'horror-escape-room' }}
   cancel-in-progress: false
 
 jobs:
@@ -26,7 +30,7 @@ jobs:
     steps:
       - name: Validate exact game id
         env:
-          GAME_ID: ${{ inputs.game_id }}
+          GAME_ID: ${{ inputs.game_id || 'horror-escape-room' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -36,7 +40,7 @@ jobs:
       - name: Restart canonical Roblox pipeline from current main
         env:
           GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ inputs.game_id }}
+          GAME_ID: ${{ inputs.game_id || 'horror-escape-room' }}
         shell: bash
         run: |
           set -euo pipefail
