@@ -5712,7 +5712,8 @@
       "coding_negative_1wt6g36",
       "coding_negative_x6h01q",
       "coding_negative_11xch9y",
-      "coding_negative_1eux68l"
+      "coding_negative_1eux68l",
+      "coding_negative_1tacq55"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16288,7 +16289,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 263,
+        "verifiedFailures": 264,
         "games": {
           "fantasy-survival": 1
         },
@@ -16433,7 +16434,7 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 105,
+            "verifiedFailures": 106,
             "games": {},
             "targets": {},
             "failureGames": {
@@ -16442,7 +16443,7 @@
               "fantasy-survival": 6,
               "line-defense": 10,
               "bug-defense": 4,
-              "village-dungeons": 9,
+              "village-dungeons": 10,
               "horror-escape-room": 3,
               "seed-action-survival-rogu-echoes-of-the-lost-star": 10,
               "survival": 10,
@@ -16453,17 +16454,17 @@
               "seed-single-defense-strat-celestial-bastion": 8
             },
             "failureTargets": {
-              "unity": 105
+              "unity": 106
             },
             "failureClasses": {
-              "TIMEOUT": 87,
+              "TIMEOUT": 88,
               "INVALID_PATH": 15,
               "MALFORMED_OUTPUT": 2,
               "NO_OP": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1wt6g36",
-            "lastUpdatedAt": "2026-09-29T13:39:08.335Z"
+            "lastFailureEvidence": "coding_negative_1tacq55",
+            "lastUpdatedAt": "2026-09-29T13:41:59.406Z"
           },
           "unity|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -16694,8 +16695,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_160lbz8",
-        "lastFailureEvidence": "coding_negative_1eux68l",
-        "lastUpdatedAt": "2026-09-29T13:41:07.157Z"
+        "lastFailureEvidence": "coding_negative_1tacq55",
+        "lastUpdatedAt": "2026-09-29T13:41:59.406Z"
       }
     }
   },
@@ -19426,7 +19427,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T13:41:24.202Z",
+    "lastBuiltAt": "2026-09-29T13:41:59.474Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -26250,5 +26251,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T13:41:24.202Z"
+  "updatedAt": "2026-09-29T13:41:59.474Z"
 }
