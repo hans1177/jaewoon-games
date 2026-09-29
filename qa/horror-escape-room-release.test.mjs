@@ -170,3 +170,34 @@ test('AI 추격 이동은 진행 방향을 바라본다',()=>{
  assert.match(server,/CFrame\.lookAt\(nextPos,nextPos\+dir\)/);
  assert.match(server,/local dir=d\.Unit/);
 });
+
+
+test('보상은 기존 기본값을 유지하면서 실제 기여도만 제한적으로 추가한다',()=>{
+ assert.match(config,/ParticipationCoins=12/);
+ assert.match(config,/WinBonusCoins=18/);
+ assert.match(config,/ContributionCapCoins=12/);
+ assert.match(config,/PurifyPlayerCoins=4/);
+ assert.match(config,/PurifyAICoins=1/);
+ assert.match(config,/InfectPlayerCoins=4/);
+ assert.match(config,/InfectAICoins=1/);
+ assert.match(server,/local function awardContribution\(player,amount\)/);
+ assert.match(server,/RoundContributionCoins/);
+ assert.match(server,/local reward=baseReward\+winBonus\+contribution/);
+ assert.match(client,/참가 %d \+ 승리 %d \+ 기여 %d/);
+});
+
+test('정화 탈락자도 참가 보상과 팀 결과를 잃지 않는다',()=>{
+ assert.match(server,/RoundParticipant",true/);
+ assert.match(server,/RoundTeam/);
+ assert.match(server,/local participated=p:GetAttribute\("RoundParticipant"\)==true/);
+ assert.match(server,/local team=p:GetAttribute\("RoundTeam"\)or role/);
+});
+
+test('실제 플레이어 기여 보상은 AI 기여보다 크고 상한이 있다',()=>{
+ const rewardBlock=config.slice(config.indexOf('Reward={'),config.indexOf('Audio={'));
+ assert.ok(rewardBlock.includes('PurifyPlayerCoins=4'));
+ assert.ok(rewardBlock.includes('PurifyAICoins=1'));
+ assert.ok(rewardBlock.includes('InfectPlayerCoins=4'));
+ assert.ok(rewardBlock.includes('InfectAICoins=1'));
+ assert.match(server,/math\.min\(cap,current\+math\.max/);
+});
