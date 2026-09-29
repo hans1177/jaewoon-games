@@ -492,53 +492,6 @@
       "countsAsProductionPass": false
     },
     {
-      "id": "roblox-late-join",
-      "kind": "ROBLOX_CODE_REPAIR",
-      "robloxCodePractice": true,
-      "robloxPracticeDrill": "late-join",
-      "level": "실전",
-      "sourceFailure": "LATE_JOIN_STATE_ALIAS",
-      "domains": [
-        "STATE_MACHINE",
-        "SAVE"
-      ],
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false
-    },
-    {
-      "id": "web-input-save",
-      "kind": "PLATFORM_CODE_REPAIR",
-      "codingPracticeDrill": "web-input-save",
-      "platformProfile": "web",
-      "level": "실전",
-      "sourceFailure": "INPUT_SAVE_RESTORE",
-      "domains": [
-        "MOBILE_INPUT",
-        "SAVE",
-        "WEB_RUNTIME"
-      ],
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false
-    },
-    {
-      "id": "unity-lifecycle",
-      "kind": "PLATFORM_CODE_REPAIR",
-      "codingPracticeDrill": "unity-lifecycle",
-      "platformProfile": "unity",
-      "level": "실전",
-      "sourceFailure": "SCENE_INPUT_POOL_STATE_DRIFT",
-      "domains": [
-        "STATE_MACHINE",
-        "SAVE",
-        "MOBILE_INPUT"
-      ],
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false
-    },
-    {
       "id": "company-graphics-unity-character-archetype",
       "kind": "CHARACTER_ARCHETYPE_LIBRARY_DRILL",
       "priority": "low",
