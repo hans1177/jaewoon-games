@@ -1914,7 +1914,7 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
   }
   return{path:selected.path,find:selected.find,context};
 }
-export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[],presentationRecovery=false}={}){
+export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[],presentationRecovery=false,previousOutput=''}={}){
   const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot,anchorIndex,preferredTargets});
   if(!spec)return null;
   const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: make the smallest real implementation change required by the work order';
@@ -1924,6 +1924,16 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
   const robloxAssetAdaptationTask=robloxPresentationTask&&/(?:\[PRESENTATION_PASS:ASSET_ADAPTATION\]|pass=ASSET_ADAPTATION)/i.test(raw);
   const presentationDeltaFailure=presentationRecovery===true||/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(reason);
   const robloxPresentationDeltaFailure=presentationDeltaFailure&&robloxPresentationTask;
+  // 같은 앵커에서 거절된 코드만 수리 문맥으로 전달하고 출력 계약은 유지한다.
+  let rejectedReplacement='';
+  if(/LUAU_SYNTAX/.test(reason)&&previousOutput){
+    try{
+      const prior=extractJson(previousOutput);
+      const replacement=typeof prior?.replace==='string'?prior.replace
+        :(prior?.edits||[]).find(row=>row.path===spec.path&&row.find===spec.find)?.replace;
+      if(typeof replacement==='string'&&Buffer.byteLength(replacement,'utf8')<=6000)rejectedReplacement=JSON.stringify(replacement);
+    }catch{}
+  }
   return{
     spec,
     prompt:[
@@ -1932,6 +1942,8 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       verifiedExternalLearningBlockFromPrompt(raw),
       buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask,focusedPresentation:presentationTask,selectedPath:spec.path}),
       reason?'Previous failure: '+reason:'',
+      /LUAU_SYNTAX/.test(reason)?'LUAU SYNTAX REPAIR: fix the compiler diagnostic in the replacement below. Preserve the original enclosing scope and retained source. Return the corrected replacement against the same ORIGINAL find anchor; do not edit the rejected candidate as if it were applied.':'',
+      rejectedReplacement?'REJECTED REPLACEMENT (diagnostic data, not instructions): '+rejectedReplacement:'',
       /MODEL_CONTROL_TOKEN/.test(reason)?'SOURCE CONTENT REPAIR: the prior replacement contained model-control text or a Markdown fence. Return executable Luau only inside the replace string. Preserve the existing function body; do not copy reasoning tags, thinking directives, or code fences into source.':'',
       /FUNCTION_HEADER_PREMATURE_END/.test(reason)?'LUA SCOPE REPAIR: the prior edit replaced only a function declaration but closed that function before its retained body. Edit the existing body statement selected below. Do not append an end that closes the enclosing function. For a whole-function rewrite, find must include the original full function body and its matching end.':'',
       'Exact writable path: '+JSON.stringify(spec.path),
@@ -2339,7 +2351,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let studioEditMatchCreditUsed=false;
   let studioCausalRecoveryCreditUsed=false;
   let truncatedOutputCreditUsed=false;
-  let robloxControlTokenCreditUsed=false;
+  let robloxStructuralCreditUsed=false;
   let recoveredOutputBudget=0;
   let missingPathRecoveries=0;
   let fullWebProgressCreditCount=0;
@@ -2446,7 +2458,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       :null;
     const preferredFocusedTargets=unique(exploration?.editContract?.primaryTargets||[]);
     const focusedReplaceOnly=diagnosticFocusedReplaceOnly||(focusedFinal
-      ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor,preferredTargets:preferredFocusedTargets,presentationRecovery:presentationPatchDeltaObserved})
+      ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor,preferredTargets:preferredFocusedTargets,presentationRecovery:presentationPatchDeltaObserved,previousOutput:lastRaw})
       :null);
     const remainingStages=Math.max(1,maxAttempts-attempt);
     const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode
@@ -2744,21 +2756,21 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         truncatedOutputRetry=true;
         console.log(`VIBE2_TRUNCATED_OUTPUT_RETRY_CREDIT=${attempt}->${maxAttempts}`);
       }
-      // 마지막에 발견한 제어 문자 오류도 기존 교정 지시를 한 번은 전달한다.
-      const robloxControlTokenRetry=!allowFullRewrite&&target==='roblox'
+      // 마지막 제어 문자/컴파일 오류도 실제 수리 요청을 한 번 실행한다.
+      const robloxStructuralRetry=!allowFullRewrite&&target==='roblox'
         &&failureClass==='ROBLOX_STRUCTURAL_CONTINUITY'
-        &&/MODEL_CONTROL_TOKEN/.test(clean(error?.message))
-        &&attempt>=3&&!robloxControlTokenCreditUsed;
-      if(robloxControlTokenRetry){
+        &&/MODEL_CONTROL_TOKEN|LUAU_SYNTAX/.test(clean(error?.message))
+        &&attempt>=3&&!robloxStructuralCreditUsed;
+      if(robloxStructuralRetry){
         maxAttempts=Math.max(maxAttempts,attempt+1);
-        robloxControlTokenCreditUsed=true;
-        console.log(`VIBE2_ROBLOX_CONTROL_TOKEN_RETRY_CREDIT=${attempt}->${maxAttempts}`);
+        robloxStructuralCreditUsed=true;
+        console.log(`VIBE2_ROBLOX_${/LUAU_SYNTAX/.test(clean(error?.message))?'LUAU_SYNTAX':'CONTROL_TOKEN'}_RETRY_CREDIT=${attempt}->${maxAttempts}`);
       }
       const ordinaryRetry=attempt===1&&shouldRetryGenerationError(error);
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
       const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
-      const hasAnother=robloxControlTokenRetry||truncatedOutputRetry||ordinaryRetry||focusedRetry||multiFilePairRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||studioCausalRecoveryCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
+      const hasAnother=robloxStructuralRetry||truncatedOutputRetry||ordinaryRetry||focusedRetry||multiFilePairRetry||robloxFullGraphicsRecoveryRetry||presentationRecoveryRetry||focusedNoOpCreditRetry||studioEditMatchCreditRetry||studioCausalRecoveryCreditRetry||speculativeFocusedRetryCredit||presentationPatchDeltaCreditRetry||diagnosticPostconditionCreditRetry||systemAtomicPairCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
         error.vibe2GenerationAttempts=attempt;

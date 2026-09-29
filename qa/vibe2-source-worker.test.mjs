@@ -4741,6 +4741,33 @@ test('final Roblox control-token failure reaches its corrective prompt once and 
   assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
 });
 
+test('final Luau syntax failure receives a real corrective request with rejected source and compiles before promotion',{skip:!process.env.VIBE2_TEST_LUAU_COMPILER},async(t)=>{
+  const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
+  const source='local status = {Text = "ready"}\nstatus.Text = "ready"\n';
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'terminal-luau-syntax'})));
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));
+      const n=requests.length;
+      const response=n===1?JSON.stringify({edits:[{path:relative,find:'missing anchor',replace:'changed'}]})
+        :n===2?'{' :JSON.stringify({replace:n===3?'status.Text = )':'status.Text = "changed"'});
+      res.writeHead(200,{'content-type':'application/x-ndjson'});
+      res.end(JSON.stringify({response,done:true,done_reason:n===2?'length':'stop'})+'\n');
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  const result=await runVibe2SourceWorker({cwd,luauCompiler:process.env.VIBE2_TEST_LUAU_COMPILER});
+  assert.equal(requests.length,4);
+  assert.equal(result.generation.attempts,4);
+  assert.match(requests[3].prompt,/LUAU SYNTAX REPAIR/);
+  assert.match(requests[3].prompt,/REJECTED REPLACEMENT.*status.Text = \)/);
+  assert.match(requests[3].prompt,/SyntaxError/);
+  assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/terminal-luau-syntax/files',relative),'utf8'),/status.Text = "changed"/);
+});
+
 test('oversized Roblox rebuild starts with owned source and complete learning instead of a guaranteed oversized first request',async(t)=>{
   const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
   const source='local status = {Text = "ready"}\nstatus.Text = "ready"\n';
