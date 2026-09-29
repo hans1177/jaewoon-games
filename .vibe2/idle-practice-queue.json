@@ -433,65 +433,6 @@
       "mayPromoteGeneralization": false
     },
     {
-      "id": "roblox-scope",
-      "kind": "ROBLOX_CODE_REPAIR",
-      "robloxCodePractice": true,
-      "robloxPracticeDrill": "scope",
-      "level": "기초",
-      "sourceFailure": "ROBLOX_STRUCTURAL_CONTINUITY",
-      "domains": [
-        "DEBUGGING"
-      ],
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false
-    },
-    {
-      "id": "roblox-authority",
-      "kind": "ROBLOX_CODE_REPAIR",
-      "robloxCodePractice": true,
-      "robloxPracticeDrill": "authority",
-      "level": "중급",
-      "sourceFailure": "DUPLICATE_CAUSAL_REWARD",
-      "domains": [
-        "STATE_MACHINE",
-        "PROGRESSION"
-      ],
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false
-    },
-    {
-      "id": "roblox-lifecycle",
-      "kind": "ROBLOX_CODE_REPAIR",
-      "robloxCodePractice": true,
-      "robloxPracticeDrill": "lifecycle",
-      "level": "고급",
-      "sourceFailure": "DUPLICATE_EVENT_CONNECTION",
-      "domains": [
-        "MOBILE_INPUT",
-        "UI_STATE"
-      ],
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false
-    },
-    {
-      "id": "roblox-save",
-      "kind": "ROBLOX_CODE_REPAIR",
-      "robloxCodePractice": true,
-      "robloxPracticeDrill": "save",
-      "level": "실전",
-      "sourceFailure": "SAVE_FAILURE_STATE_DRIFT",
-      "domains": [
-        "SAVE",
-        "DEBUGGING"
-      ],
-      "priority": "high",
-      "productionPreemptible": true,
-      "countsAsProductionPass": false
-    },
-    {
       "id": "company-graphics-unity-character-archetype",
       "kind": "CHARACTER_ARCHETYPE_LIBRARY_DRILL",
       "priority": "low",
