@@ -1,0 +1,20 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "qa/vibe2-queue-control.test.mjs",
+      "find": "  for(const item of [...verified,distinct,...authoritative])assert.ok(evidence.includes(item));",
+      "replace": "  for(const item of [...verified,distinct,...authoritative])assert.ok(evidence.includes(item));\n    assert.ok(!evidence.includes(\"neural-root-cause:invalid\"));"
+    },
+    {
+      "path": "tools/vibe2-queue-control.mjs",
+      "find": "  for(const [role,status] of Object.entries(roles))if(clean(status))evidence.push(`role-result:${clean(role)}:${clean(status)}`);",
+      "replace": "  for(const [role,status] of Object.entries(roles))if(clean(status))evidence.push(`role-result:${clean(role)}:${clean(status)}`);\n    assert.ok(!evidence.includes(\"neural-root-cause:invalid\"));"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}

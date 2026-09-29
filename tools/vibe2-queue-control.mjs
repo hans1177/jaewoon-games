@@ -660,6 +660,7 @@ function reusableWorkerEvidence(row = {}) {
   if(Array.isArray(exploration.testTargets)&&exploration.testTargets.length)evidence.push(`exploration-tests:${exploration.testTargets.map(clean).filter(Boolean).join('|')}`);
   const roles=row?.roleResults&&typeof row.roleResults==='object'?row.roleResults:{};
   for(const [role,status] of Object.entries(roles))if(clean(status))evidence.push(`role-result:${clean(role)}:${clean(status)}`);
+    assert.ok(!evidence.includes("neural-root-cause:invalid"));
   const outcome=clean(row?.outcome).toUpperCase();
   if(['FAIL','BLOCKED'].includes(outcome)&&clean(row?.blocker))evidence.push(`failure-cause:${clean(row.blocker)}`);
   return evidence;

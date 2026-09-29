@@ -2009,5 +2009,6 @@ test('queue bounds repeated unresolved diagnoses while retaining verified learni
   assert.deepEqual(evidence.filter(x=>unresolved.includes(x)),[unresolved[0],unresolved.at(-1)]);
   assert.deepEqual(evidence.filter(x=>atomic.includes(x)),[atomic[0],atomic.at(-1)]);
   for(const item of [...verified,distinct,...authoritative])assert.ok(evidence.includes(item));
+    assert.ok(!evidence.includes("neural-root-cause:invalid"));
   assert.deepEqual(createVibeContinuousQueue(q).tasks[0].evidence,evidence);
 });
