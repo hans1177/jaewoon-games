@@ -755,7 +755,7 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert(reserveBlock.includes('git -C "$control_root" fetch origin company-runtime --quiet'));
   assert(reserveBlock.includes('VIBE2_RESERVE_RUNTIME_SYNC=PASS:$callback_kind'));
   assert.equal(reserveBlock.includes('VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS'),false);
-  assert(reserveBlock.includes('VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_PENDING_VARIANTS'));
+  assert(reserveBlock.includes('VIBE2_NEURON_REFILL_DISPATCH=SKIPPED_NO_RUNNABLE_WORK_OR_PENDING_VARIANTS'));
   assert(reserveBlock.includes('VIBE2_NEURON_REFILL_DISPATCH=TASK_MICRO_FANIN_COMPLETE'));
   assert(reserveBlock.indexOf('VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE') < reserveBlock.indexOf("event_type:'vibe2-fanin-refill'"));
 });
