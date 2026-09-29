@@ -5311,7 +5311,8 @@
       "coding_negative_1i91yyr",
       "coding_negative_k4b22e",
       "coding_negative_sdmpta",
-      "coding_negative_11kr8sl"
+      "coding_negative_11kr8sl",
+      "coding_negative_1wma2n"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -14022,7 +14023,7 @@
         "verifiedApplications": 0,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 0,
-        "verifiedFailures": 16,
+        "verifiedFailures": 17,
         "games": {},
         "targets": {},
         "contextModes": {
@@ -14163,7 +14164,7 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 7,
+            "verifiedFailures": 8,
             "games": {},
             "targets": {},
             "failureGames": {
@@ -14173,18 +14174,19 @@
               "bug-defense": 1,
               "line-defense": 1,
               "village-dungeons": 1,
-              "horror-escape-room": 1
+              "horror-escape-room": 1,
+              "survival": 1
             },
             "failureTargets": {
-              "unity": 7
+              "unity": 8
             },
             "failureClasses": {
-              "INVALID_PATH": 5,
+              "INVALID_PATH": 6,
               "TIMEOUT": 2
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_11kr8sl",
-            "lastUpdatedAt": "2026-09-29T05:48:41.238Z"
+            "lastFailureEvidence": "coding_negative_1wma2n",
+            "lastUpdatedAt": "2026-09-29T05:49:06.597Z"
           },
           "unity|EDIT_MATCH|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -14229,8 +14231,8 @@
         },
         "state": "CANDIDATE",
         "lastEvidence": null,
-        "lastFailureEvidence": "coding_negative_11kr8sl",
-        "lastUpdatedAt": "2026-09-29T05:48:41.238Z"
+        "lastFailureEvidence": "coding_negative_1wma2n",
+        "lastUpdatedAt": "2026-09-29T05:49:06.597Z"
       },
       "BOUNDED_OUTPUT_COMMIT_FIRST": {
         "verifiedApplications": 0,
@@ -17529,7 +17531,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T05:48:41.316Z",
+    "lastBuiltAt": "2026-09-29T05:49:06.666Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -24353,5 +24355,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T05:48:41.316Z"
+  "updatedAt": "2026-09-29T05:49:06.666Z"
 }
