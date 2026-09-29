@@ -1808,9 +1808,15 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     for(const original of parts){
       const trimmed=original.trim();
       if(trimmed.length<10||trimmed.length>420)continue;
-      // 함수 선언 한 줄은 본문 교체 범위가 아니다. 종료 구문이 붙으면 기존 본문이 함수 밖으로 밀려난다.
+      // 이름 있는 함수와 익명 콜백의 선언 한 줄은 본문 교체 범위가 아니다.
       if(/\.(?:lua|luau)\s+\[EDITABLE\]/i.test(header)
-        &&/^(?:local\s+)?function\b/.test(trimmed)&&!/\bend\b/.test(trimmed))continue;
+        &&/(?:^(?:local\s+)?function\b|\bfunction\s*\()/.test(trimmed)&&!/\bend\b/.test(trimmed))continue;
+      if(/\.(?:lua|luau)\s+\[EDITABLE\]/i.test(header)){
+        if(/^(?:(?:if|elseif)\b.*\bthen\b|(?:for|while)\b.*\bdo\b|(?:else|do|repeat)\b)/.test(trimmed)&&!/\bend\b/.test(trimmed))continue;
+        if(/[({\[,]\s*$/.test(trimmed))continue;
+      }
+      // 검수 카메라 호출은 게임의 시각 개선 대상으로 선택하지 않는다.
+      if(presentationTask&&/\b(?:QACamera|foundationRemote)\b/.test(trimmed))continue;
       if(/^(?:[{}()[\];,]|<!--|\/\*|\*|\/\/|#)+$/.test(trimmed))continue;
       if(/^(?:<!doctype|<\/?(?:html|head|body)\b)/i.test(trimmed))continue;
       const occurrenceCorpus=fullSource||body;
