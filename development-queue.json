@@ -2163,7 +2163,7 @@
       "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-29T01:55:59.757Z",
+      "updatedAt": "2026-09-29T01:58:57.079Z",
       "robloxSourceCommit": "825a26d1b013de94f2086c6d38a9839895abb781",
       "robloxSourceBootstrapPassedAt": "2026-09-28T21:42:16.545Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2466,9 +2466,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F9_RELEASE_REGRESSION",
       "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_INFRASTRUCTURE_PENDING",
       "routingBlockers": [
-        "roblox-studio-internal-validation-pending"
+        "roblox-studio-mcp-infrastructure-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -2506,7 +2506,7 @@
         "gameId": "horror-escape-room",
         "authority": "roblox-official-studio-mcp-runtime",
         "pass": false,
-        "actualPlay": false,
+        "actualPlay": true,
         "runtimeVerified": false,
         "learningReusable": false,
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
@@ -2536,11 +2536,11 @@
         "publishedCandidateCrossCheckPassed": true,
         "publishedCandidateCrossCheckAuthority": "COMPANY_RUNTIME_PLUS_OPEN_CLOUD_PUBLICATION_EVIDENCE",
         "capabilities": {
-          "officialStudioMcp": false,
-          "playMode": false,
-          "mcpInput": false,
-          "screenCapture": false,
-          "consoleCapture": false
+          "officialStudioMcp": true,
+          "playMode": true,
+          "mcpInput": true,
+          "screenCapture": true,
+          "consoleCapture": true
         },
         "actions": [
           {
@@ -2819,7 +2819,7 @@
             "id": "scenario-logical-population-eight",
             "name": "scenario-logical-population-eight",
             "required": true,
-            "pass": true
+            "pass": false
           },
           {
             "id": "scenario-hud-visible",
@@ -3096,29 +3096,65 @@
             "name": "scenario-adaptive-save-rejoin-persistence",
             "required": true,
             "pass": false
+          },
+          {
+            "id": "scenario-adaptive-multiplayer-sync-surface-f9",
+            "name": "scenario-adaptive-multiplayer-sync-surface-f9",
+            "required": true,
+            "pass": false
+          },
+          {
+            "id": "console-output-captured",
+            "name": "console-output-captured",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "no-release-blocking-runtime-errors",
+            "name": "no-release-blocking-runtime-errors",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "final-capture-play-restored",
+            "name": "final-capture-play-restored",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "final-visual-capture-sane",
+            "name": "final-visual-capture-sane",
+            "required": true,
+            "pass": true
+          },
+          {
+            "id": "play-mode-stopped",
+            "name": "play-mode-stopped",
+            "required": true,
+            "pass": true
           }
         ],
         "errors": [
           {
-            "type": "studio-mcp-infrastructure-or-runtime-error",
-            "actionId": null,
-            "signature": "runStudioMultiplayerAudit is not defined"
+            "type": "studio-multiplayer-harness-infrastructure",
+            "actionId": "studio-test-service-multiplayer",
+            "signature": "ROBLOX_STUDIO_MULTIPLAYER_HARNESS_PENDING:ROBLOX_STUDIO_MULTIPLAYER_START_FAILED:EDIT_MODE_NOT_ACTIVE"
           }
         ],
         "runtimeSummary": {
-          "consoleErrorCount": 1,
+          "consoleErrorCount": 0,
           "consoleWarningCount": 0,
-          "distinctFrameChange": false,
+          "distinctFrameChange": true,
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 8,
+          "scenarioFailureCount": 9,
           "primaryActionDisplacement": 0,
-          "primaryActionVelocity": 0,
-          "primaryActionFeedbackChanged": false,
+          "primaryActionVelocity": 0.00005203628679003597,
+          "primaryActionFeedbackChanged": true,
           "commercialAudit": {
-            "auditProfile": "FAST_DEEP",
-            "timelineProbeCount": 0,
+            "auditProfile": "F9_SOAK",
+            "timelineProbeCount": 21,
             "progressChanged": false,
             "inventoryChanged": false,
             "timelineProgressChanged": false,
@@ -3127,10 +3163,24 @@
             "uiCommercial": {},
             "surfaces": {},
             "performance": {},
-            "saveRejoin": null
+            "saveRejoin": {
+              "restartOk": true,
+              "progressionObserved": true,
+              "progressionPreserved": false,
+              "inventoryComparable": false,
+              "inventoryPreserved": true
+            }
           }
         },
-        "characterMotionRuntime": null,
+        "characterMotionRuntime": {
+          "required": false,
+          "observed": false,
+          "started": false,
+          "pass": false,
+          "failed": false,
+          "failureReasons": [],
+          "hardFailure": "ROBLOX_CHARACTER_MOTION_MANNEQUIN"
+        },
         "learningSignals": [
           "roblox official studio mcp local runtime",
           "mcp-mouse-input",
@@ -3182,7 +3232,7 @@
           },
           {
             "id": "logical-population-eight",
-            "pass": true
+            "pass": false
           },
           {
             "id": "hud-visible",
@@ -3363,10 +3413,15 @@
           {
             "id": "adaptive-performance-budget",
             "pass": true
+          },
+          {
+            "id": "visual-asset-load-integrity",
+            "pass": true
           }
         ],
         "scenarioCoveragePass": false,
         "qualityFailureKinds": [
+          "logical-population-eight",
           "adaptive-ui-commercial-quality",
           "adaptive-world-safety",
           "adaptive-map-route-coverage",
@@ -3377,6 +3432,29 @@
           "adaptive-save-rejoin-persistence"
         ],
         "qualityFailureDetails": [
+          {
+            "id": "logical-population-eight",
+            "repairSurface": "ROBLOX_PRODUCT_QUALITY",
+            "priority": "HIGH",
+            "hint": "Repair the failing Studio actual-play scenario and re-run the exact artifact.",
+            "observed": {
+              "interactionSurfaceCount": 9,
+              "progressionSurfaceCount": 11,
+              "combatSurfaceCount": 8,
+              "npcSurfaceCount": 0,
+              "companionSurfaceCount": 0,
+              "itemSurfaceCount": 1,
+              "remoteCount": 17,
+              "soundCount": 0,
+              "effectCount": 1,
+              "promptCount": 5,
+              "inventoryCount": 0,
+              "currentActualPlayerCount": 1,
+              "maxActualPlayerCount": 1,
+              "multiplayerStateTransition": true,
+              "multiplayerActualSessionPass": false
+            }
+          },
           {
             "id": "adaptive-ui-commercial-quality",
             "repairSurface": "MOBILE_UI",
@@ -3400,15 +3478,15 @@
             "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
             "observed": {
               "boundsFinite": true,
-              "collidablePartCount": 104,
+              "collidablePartCount": 96,
               "floorBelowPlayer": true,
               "floorSamples": 9,
               "floorHits": 1,
               "floorCoveragePass": false,
               "routeSamples": 10,
-              "routeSuccess": 9,
+              "routeSuccess": 7,
               "routeCoveragePass": true,
-              "spawnThreatDistance": 87.74793974489658,
+              "spawnThreatDistance": 211.66208114553976,
               "spawnOverlapSafe": true
             }
           },
@@ -3425,8 +3503,8 @@
                 {
                   "id": "map-route-prompt:비상 탈출구",
                   "ok": false,
-                  "moved": 23.43662185138008,
-                  "fall": 6.148533821105957,
+                  "moved": 19.854044785066353,
+                  "fall": 6.147953271865845,
                   "floorBelow": true
                 }
               ]
@@ -3511,7 +3589,7 @@
               "auditProfile": "F9_SOAK",
               "multiplayerRuntimeSurface": true,
               "multiplayerActualSessionPass": false,
-              "multiplayerSignals": 16,
+              "multiplayerSignals": 14,
               "currentActualPlayerCount": 1,
               "maxActualPlayerCount": 1,
               "multiplayerStateTransition": true,
@@ -3535,12 +3613,12 @@
         "functionalChainEvidence": {
           "inputDispatched": true,
           "runtimeVerified": false,
-          "screenChanged": false,
+          "screenChanged": true,
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-29T00:50:06.194Z",
-        "workflowRunId": 36504730085,
+        "testedAt": "2026-09-29T01:58:57.079Z",
+        "workflowRunId": 36509835185,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -27874,7 +27952,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-29T01:55:59.757Z",
+  "updatedAt": "2026-09-29T01:58:57.079Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
