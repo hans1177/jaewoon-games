@@ -1944,6 +1944,7 @@ test('F9 Studio multiplayer helper is defined and drives StudioTestService late-
   assert.match(helper,/StudioTestService:CanLeaveTest\(\)/);
   assert.match(helper,/StudioTestService:LeaveTest\(\)/);
   assert.match(helper,/StudioTestService:EndTest/);
+  assert.match(helper,/const stopTool=client\.tool\('start_stop_play'\)/);
   assert.ok(helper.indexOf('export async function runStudioMultiplayerAudit')<helper.indexOf('multiplayerAuditSummary=await runStudioMultiplayerAudit'));
 
   const schema={
