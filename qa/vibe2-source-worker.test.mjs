@@ -2214,6 +2214,29 @@ test('Web source worker retries when a function declaration is removed while loc
   assert.equal(shouldRetryGenerationError(error),true);
 });
 
+test('Roblox focused structural recovery forbids closing an existing function-header anchor',()=>{
+  const focused=buildFocusedReplaceOnlyPrompt([
+    'Engine: roblox',
+    'Goal: improve the existing HUD render behavior without changing gameplay',
+    'Allowed edit paths: client/Game.client.luau',
+    '=== FILE client/Game.client.luau [EDITABLE] ===',
+    'local function render()',
+    '  status.Text = "ok"',
+    'end'
+  ].join('\n'),{
+    error:new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:FUNCTION_HEADER_PREMATURE_END:client/Game.client.luau'),
+    responsibleFiles:['client/Game.client.luau'],
+    preferredTargets:['local function render()']
+  });
+  assert.ok(focused);
+  assert.equal(focused.spec.path,'client/Game.client.luau');
+  assert.equal(focused.spec.find,'local function render()');
+  assert.match(focused.prompt,/ROBLOX STRUCTURAL RECOVERY/);
+  assert.match(focused.prompt,/ROBLOX FUNCTION-HEADER RECOVERY/);
+  assert.match(focused.prompt,/MUST NOT add a standalone end/);
+  assert.match(focused.prompt,/original function body and its existing end remain/i);
+});
+
 test('Roblox source worker retries when a function-header anchor prematurely closes the existing function',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/demo';
