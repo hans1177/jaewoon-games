@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
-import { runVibe2SourceWorker, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, normalizeCandidate } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, normalizeCandidate } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
@@ -1725,7 +1725,7 @@ test('responsible file boundary rejects unrelated model path', async () => {
   await assert.rejects(runVibe2SourceWorker({ cwd, responseFile }), /책임 파일 범위 밖 수정 금지/);
 });
 
-test('Unity bootstrap pair failure retries without collapsing to single-file focused recovery', async()=>{
+test('Unity bootstrap pair recovery preserves the exact counterpart and completes the missing file atomically', async()=>{
   const cwd=tempRoot();
   const root='unity-games/missing-unity';
   const gameCore='Assets/Scripts/GameCore.cs';
@@ -1743,19 +1743,16 @@ test('Unity bootstrap pair failure retries without collapsing to single-file foc
   workOrder.workerPolicy={directMainWrite:false,sourceRootBootstrapAllowed:true};
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
   const gameFind='// Vibe가 승인 설계의 실제 상태/규칙/세이브 책임으로 교체한다.';
-  const runtimeFind='Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=missing-unity status=BOOTSTRAP_STUB");';
   write(bad,JSON.stringify({edits:[{path:gameCore,find:gameFind,replace:'public int RuntimeState = 1;'}],newFiles:[]}));
-  write(good,JSON.stringify({edits:[
-    {path:gameCore,find:gameFind,replace:'public int RuntimeState = 1;'},
-    {path:runtimeBootstrap,find:runtimeFind,replace:'Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=missing-unity status=READY");'}
-  ],newFiles:[]}));
+  write(good,JSON.stringify({replace:'            var go = new GameObject("RuntimeBootstrap");\n            go.AddComponent<GameCore>();'}));
   const result=await runVibe2SourceWorker({cwd,responseFiles:[bad,good]});
   assert.equal(generationFailureClass(new Error('UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED:Assets/Scripts/RuntimeBootstrap.cs')),'UNITY_BOOTSTRAP_PAIR');
   assert.equal(result.sourceRootBootstrap,true);
   assert.equal(result.generation.attempts,2);
   assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.systemAtomicPairCompletion,true);
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',result.taskId,'files',gameCore),'utf8'),/RuntimeState = 1/);
-  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',result.taskId,'files',runtimeBootstrap),'utf8'),/status=READY/);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',result.taskId,'files',runtimeBootstrap),'utf8'),/go\.AddComponent<GameCore>\(\)/);
 });
 
 test('Unity bootstrap pair contract keeps timeout recovery multi-file',()=>{
@@ -4509,4 +4506,134 @@ test('invalid-path retry removes stale source ownership and sends the build-up d
   assert.match(retry,/UNITY WEB BOOTSTRAP PAIR CONTRACT/);
   assert.match(retry,/public class GameCore/);
   assert.match(retry,/public class RuntimeBootstrap/);
+});
+
+test('long fixed anchors receive sufficient initial replacement budget',async(t)=>{
+  const cwd=tempRoot(),requests=[];
+  const source='<button id="play" aria-label="'+('A'.repeat(330))+'">Play</button>';
+  write(path.join(cwd,'web-games/demo/index.html'),source+'\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html']})));
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));
+      const response=requests.length===1?JSON.stringify({edits:[{path:'index.html',find:'NOT_PRESENT',replace:'changed'}]}):JSON.stringify({replace:source.replace('>Play<','>Continue<')});
+      res.end(JSON.stringify({response,done:true})+'\n');
+    });
+  });
+  await new Promise(resolve=>server.listen(11434,'127.0.0.1',resolve));
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  const result=await runVibe2SourceWorker({cwd});
+  assert.equal(requests.length,2);
+  assert.ok(requests[1].options.num_predict>384);
+  assert.ok(requests[1].options.num_predict<=3072);
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
+
+test('output truncation on the final ordinary retry receives an enlarged recovery attempt',async(t)=>{
+  const cwd=tempRoot(),requests=[];
+  write(path.join(cwd,'web-games/demo/index.html'),'<button id="play">Play</button>\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html']})));
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));const n=requests.length;
+      const response=n===1?JSON.stringify({edits:[{path:'index.html',find:'NOT_PRESENT',replace:'changed'}]}):n===2?'{':n<=4?'{"replace":"<button':JSON.stringify({replace:'<button id="play">Continue</button>'});
+      res.end(JSON.stringify({response,done:true,done_reason:n===3||n===4?'length':'stop'})+'\n');
+    });
+  });
+  await new Promise(resolve=>server.listen(11434,'127.0.0.1',resolve));
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  const result=await runVibe2SourceWorker({cwd});
+  assert.equal(requests.length,5);
+  assert.ok(requests[3].options.num_predict>requests[2].options.num_predict);
+  assert.equal(result.generation.attempts,5);
+  assert.equal(result.generation.truncatedOutputCreditUsed,true);
+  assert.ok(requests[4].options.num_predict>requests[3].options.num_predict);
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
+
+test('Unity timeout retry waits for both streamed file edits before atomic validation',async(t)=>{
+  const cwd=tempRoot(),requests=[];
+  const root='unity-games/missing-unity',core='Assets/Scripts/GameCore.cs',runtime='Assets/Scripts/RuntimeBootstrap.cs';
+  const workOrder=order({target:'unity',root,responsibleFiles:[`${root}/${core}`,`${root}/${runtime}`]});
+  workOrder.gameId='missing-unity';
+  workOrder.selectedTask={evidence:['source-root-bootstrap-required','unity-web-source-root-bootstrap-required']};
+  workOrder.workerPolicy={directMainWrite:false,sourceRootBootstrapAllowed:true};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder));
+  const first={path:core,find:'// Vibe가 승인 설계의 실제 상태/규칙/세이브 책임으로 교체한다.',replace:'public int RuntimeState = 1;'};
+  const second={path:runtime,find:'            var go = new GameObject("RuntimeBootstrap");',replace:'            var go = new GameObject("RuntimeBootstrap");\n            go.AddComponent<GameCore>();'};
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));res.writeHead(200,{'content-type':'application/x-ndjson'});
+      if(requests.length===1){res.end(JSON.stringify({error:'Ollama 응답 시간 초과'})+'\n');return;}
+      res.write(JSON.stringify({response:'{"edits":['+JSON.stringify(first)+',',done:false})+'\n');
+      setImmediate(()=>res.end(JSON.stringify({response:JSON.stringify(second)+']}',done:true})+'\n'));
+    });
+  });
+  await new Promise(resolve=>server.listen(11434,'127.0.0.1',resolve));
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  const result=await runVibe2SourceWorker({cwd});
+  assert.equal(requests.length,2);
+  assert.deepEqual(result.changedFiles.filter(file=>file.startsWith('Assets/Scripts/')).sort(),[core,runtime].sort());
+  assert.equal(result.generation.streamedPartialEditRecovery,false);
+});
+
+test('missing-file recovery cannot select a sibling source anchor when bootstrapping without disk files',()=>{
+  const prompt=[
+    'Engine: unity','Goal: implement approved collection state',
+    'Allowed edit paths: Assets/Scripts/GameCore.cs, Assets/Scripts/RuntimeBootstrap.cs',
+    '=== FILE Assets/Scripts/RuntimeBootstrap.cs [EDITABLE] ===',
+    'var go = new GameObject("RuntimeBootstrap");',
+    '=== FILE Assets/Scripts/GameCore.cs [EDITABLE] ===',
+    'namespace Demo {',
+    'public sealed class GameCore {',
+    '    // Replace this approved game-state implementation.',
+    '}','}'
+  ].join('\n');
+  const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles:['Assets/Scripts/GameCore.cs']});
+  assert.ok(spec);
+  assert.equal(spec.path,'Assets/Scripts/GameCore.cs');
+  assert.doesNotMatch(spec.find,/new GameObject/);
+  assert.match(spec.context,/namespace Demo/);
+  assert.match(spec.context,/class GameCore/);
+});
+
+test('truncated Unity pair preserves an exact first edit and completes the missing file without committing a partial candidate',async(t)=>{
+  const cwd=tempRoot(),requests=[];
+  const root='unity-games/missing-unity',core='Assets/Scripts/GameCore.cs',runtime='Assets/Scripts/RuntimeBootstrap.cs';
+  const workOrder=order({target:'unity',root,responsibleFiles:[`${root}/${core}`,`${root}/${runtime}`]});
+  workOrder.gameId='missing-unity';
+  workOrder.selectedTask={evidence:['source-root-bootstrap-required','unity-web-source-root-bootstrap-required']};
+  workOrder.workerPolicy={directMainWrite:false,sourceRootBootstrapAllowed:true};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder));
+  const first={path:core,find:'// Vibe가 승인 설계의 실제 상태/규칙/세이브 책임으로 교체한다.',replace:'public int RuntimeState = 1;'};
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));
+      const response=requests.length===1?'{"edits":['+JSON.stringify(first)+',':JSON.stringify({replace:'            var go = new GameObject("RuntimeBootstrap");\n            go.AddComponent<GameCore>();'});
+      res.end(JSON.stringify({response,done:true,done_reason:requests.length===1?'length':'stop'})+'\n');
+    });
+  });
+  await new Promise(resolve=>server.listen(11434,'127.0.0.1',resolve));
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  const result=await runVibe2SourceWorker({cwd});
+  assert.equal(requests.length,2);
+  assert.match(requests[1].prompt,/PRESERVED COUNTERPART.*RuntimeState/);
+  assert.match(requests[1].prompt,/Exact missing writable path: "Assets\/Scripts\/RuntimeBootstrap.cs"/);
+  assert.equal(result.generation.gameSourcePairCompletion,true);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',result.taskId,'files',core),'utf8'),/public int RuntimeState = 1;/);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates',result.taskId,'files',runtime),'utf8'),/go\.AddComponent<GameCore>\(\)/);
+  assert.equal(fs.existsSync(path.join(cwd,root)),false);
+});
+
+test('pair completion refuses a counterpart whose anchor is stale on the unchanged base',()=>{
+  const prompt=[
+    'Engine: unity','Goal: connect state and runtime',
+    '=== FILE Assets/Scripts/GameCore.cs [EDITABLE] ===','public int State = 0;',
+    '=== FILE Assets/Scripts/RuntimeBootstrap.cs [EDITABLE] ===','var go = new GameObject("RuntimeBootstrap");'
+  ].join('\n');
+  const spec=systemAtomicPairCompletionSpec(prompt,{
+    responsibleFiles:['Assets/Scripts/GameCore.cs','Assets/Scripts/RuntimeBootstrap.cs'],multiFilePairRequired:true,
+    partialCandidate:{edits:[{path:'Assets/Scripts/GameCore.cs',find:'public int State = 99;',replace:'public int State = 1;'}]}
+  });
+  assert.equal(spec,null);
 });
