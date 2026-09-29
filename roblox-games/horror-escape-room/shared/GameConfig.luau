@@ -20,6 +20,17 @@ local Config={
   InfectPlayerCoins=4,
   InfectAICoins=1,
  },
+ Energy={
+  Max=100,
+  RegenPerSecond=10,
+  PurifyCost=35,
+  DashCost=25,
+  InfectAttackCost=30,
+  AbilityCost=45,
+  InfectRange=8,
+  StationRecharge=35,
+  StationCooldown=25,
+ },
  Cosmetics={
   {Id="DEFAULT",Name="기본 프레임",Price=0,Accent=Color3.fromRGB(170,209,220),Title="신입 참가자"},
   {Id="MIDNIGHT_RED",Name="심야 적색",Price=120,Accent=Color3.fromRGB(225,76,92),Title="심야 추적자"},
@@ -75,7 +86,7 @@ local Config={
  Actions={
   PREFER_MONSTER="PREFER_MONSTER",PREFER_SURVIVOR="PREFER_SURVIVOR",
   SOLO_MONSTER="SOLO_MONSTER",SOLO_SURVIVOR="SOLO_SURVIVOR",
-  PURIFY="PURIFY",RESCUE="RESCUE",DASH="DASH",ABILITY="ABILITY",NEXT_MONSTER="NEXT_MONSTER",NEXT_HUMAN="NEXT_HUMAN",
+  PURIFY="PURIFY",RESCUE="RESCUE",DASH="DASH",INFECT_ATTACK="INFECT_ATTACK",ABILITY="ABILITY",NEXT_MONSTER="NEXT_MONSTER",NEXT_HUMAN="NEXT_HUMAN",
   BUY_COSMETIC="BUY_COSMETIC",EQUIP_COSMETIC="EQUIP_COSMETIC"
  },
  QACameraEnabled=true,QACaptureRemoteName="QACaptureReport",
