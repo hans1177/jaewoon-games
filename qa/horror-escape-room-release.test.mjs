@@ -116,3 +116,14 @@ test('상용 로딩과 로비 상태는 서버 정본에 바인딩된다',()=>{
  assert.match(client,/setupPanel\.Visible=not running/);
  assert.match(client,/ruleCard\.Visible=setupPanel\.Visible and not setupChosen/);
 });
+
+
+test('로비 역할 배정은 선호·공정 가중·직전 반복 방지를 사용한다',()=>{
+ assert.match(server,/local lastMonsterIds=\{\}/);
+ assert.match(server,/targetRealMonsters=math\.min\(monsterSlots,math\.max\(1,#h-survivorSlots\)\)/);
+ assert.match(server,/return weightPick\(list\)/);
+ assert.match(server,/not lastMonsterIds\[player\.UserId\]/);
+ assert.match(server,/\{preferred,neutral,survivorPreferred\}/);
+ assert.ok(client.includes('몬스터 선호'));
+ assert.match(client,/MonsterPreference/);
+});
