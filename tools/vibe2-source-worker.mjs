@@ -2957,7 +2957,42 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         const headerOnly=/^(?:local\s+)?function\s+[A-Za-z_][\w.:]*\s*\([^\n]*\)\s*$/.test(find);
         if(!headerOnly||!replacement.startsWith(find))continue;
         const tail=replacement.slice(find.length);
-        if(/(?:^|\n)\s*end\s*(?:--[^\n]*)?(?:\n|$)/.test(tail)){
+        let nestedBlockDepth=0;
+        let closesOuterFunction=false;
+        for(const rawLine of tail.split('\n')){
+          const line=rawLine.replace(/--.*$/,'').trim();
+          if(!line)continue;
+          const code=line.replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g,'');
+          const tokens=[...code.matchAll(/\b(function|if|for|while|repeat|until|end)\b/g)];
+          const standaloneDo=/^do\b/.test(code);
+          if(standaloneDo)nestedBlockDepth++;
+          for(const match of tokens){
+            const token=match[1];
+            const rest=code.slice(match.index||0);
+            if(token==='end'){
+              if(nestedBlockDepth<=0){closesOuterFunction=true;break;}
+              nestedBlockDepth--;
+              continue;
+            }
+            if(token==='until'){
+              if(nestedBlockDepth>0)nestedBlockDepth--;
+              continue;
+            }
+            if(token==='function'||token==='repeat'){
+              nestedBlockDepth++;
+              continue;
+            }
+            if(token==='if'&&/\bthen\b/.test(rest)){
+              nestedBlockDepth++;
+              continue;
+            }
+            if((token==='for'||token==='while')&&/\bdo\b/.test(rest)){
+              nestedBlockDepth++;
+            }
+          }
+          if(closesOuterFunction)break;
+        }
+        if(closesOuterFunction){
           throw new Error('ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:FUNCTION_HEADER_PREMATURE_END:'+row.path);
         }
       }
