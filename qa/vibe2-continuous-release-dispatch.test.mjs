@@ -9,6 +9,58 @@ import { execFileSync } from 'node:child_process';
 const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
 const releaseWorkflow=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
 
+test('shallow candidate inspection fetches exact comparison commits and preserves source drift rejection',()=>{
+  const inspect=releaseWorkflow.slice(releaseWorkflow.indexOf('  inspect:'),releaseWorkflow.indexOf('\n  web-release:'));
+  assert.match(inspect,/fetch-depth: 1/);
+  assert.doesNotMatch(inspect,/fetch-depth: 0/);
+  const fetchMain=inspect.split('\n').find(line=>line.includes('git fetch')&&line.includes('refs/heads/main:')).trim();
+  const fetchControl=inspect.split('\n').find(line=>line.includes('git fetch')&&line.includes('refs/heads/vibe2-unreal-core:')).trim();
+  const start=inspect.indexOf('          reject()');
+  const end=inspect.indexOf('          if [ "$decision" = \'roblox\' ]',start);
+  assert.ok(start>=0&&end>start);
+  const boundary=inspect.slice(start,end).split('\n').map(line=>line.replace(/^ {10}/,'')).join('\n');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'candidate-shallow-'));
+  const origin=path.join(root,'origin'),clone=path.join(root,'clone'),output=path.join(root,'output');
+  const git=(cwd,...args)=>execFileSync('git',args,{cwd,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
+  try{
+    fs.mkdirSync(origin);
+    git(origin,'init','-b','main');
+    git(origin,'config','user.email','test@example.invalid');
+    git(origin,'config','user.name','test');
+    fs.mkdirSync(path.join(origin,'web-games/demo'),{recursive:true});
+    fs.writeFileSync(path.join(origin,'web-games/demo/index.html'),'base\n');
+    git(origin,'add','.');git(origin,'commit','-m','base');
+    const base=git(origin,'rev-parse','HEAD');
+    git(origin,'checkout','-b','vibe2/candidate/probe');
+    fs.writeFileSync(path.join(origin,'web-games/demo/index.html'),'candidate\n');
+    git(origin,'commit','-am','candidate');
+    git(origin,'checkout','main');
+    fs.writeFileSync(path.join(origin,'unrelated.txt'),'unrelated\n');
+    git(origin,'add','.');git(origin,'commit','-m','unrelated');
+    git(origin,'branch','vibe2-unreal-core');
+    git(root,'clone','--depth=1','--single-branch','--branch','vibe2/candidate/probe','file://'+origin,clone);
+    assert.throws(()=>git(clone,'cat-file','-e',base+'^{commit}'));
+    const run=(baseSha=base)=>{
+      fs.writeFileSync(output,'');
+      execFileSync('bash',['-euo','pipefail','-c',fetchMain+'\n'+fetchControl+'\ncandidate_sha="$(git rev-parse HEAD)"\n'+boundary],{
+        cwd:clone,env:{...process.env,BASH_ENV:'',base_sha:baseSha,source_root:'web-games/demo',GITHUB_OUTPUT:output,SUBMITTED_CANDIDATE_BRANCH:'vibe2/candidate/probe'},stdio:'pipe'
+      });
+      return fs.readFileSync(output,'utf8');
+    };
+    assert.match(run(),/already_promoted=false/);
+    assert.equal(git(clone,'rev-parse','--is-shallow-repository'),'true');
+    fs.writeFileSync(path.join(origin,'web-games/demo/index.html'),'conflicting-main\n');
+    git(origin,'commit','-am','drift');
+    assert.match(run(),/reason=source-root-changed-on-main/);
+    fs.writeFileSync(path.join(origin,'web-games/demo/index.html'),'candidate\n');
+    git(origin,'commit','-am','promoted');
+    assert.match(run(),/already_promoted=true/);
+    assert.match(run('main'),/reason=base-main-sha-invalid/);
+    assert.match(run('f'.repeat(40)),/reason=base-main-sha-missing/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
 function count(needle){
   return workflow.split(needle).length-1;
 }
