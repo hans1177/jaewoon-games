@@ -180,7 +180,7 @@ jobs:
           echo "already_promoted=$already_promoted" >> "$GITHUB_OUTPUT"
           mapfile -t source_changed < <(git diff --name-only "$base_sha" "$candidate_sha" -- "$source_root")
           [ "${#source_changed[@]}" -gt 0 ] || reject no-source-change
-          git diff --check "$base_sha" "$candidate_sha" || reject candidate-diff-check-failed
+          git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check "$base_sha" "$candidate_sha" || reject candidate-diff-check-failed
           mapfile -t changed < <(git diff --name-only "$base_sha" "$candidate_sha")
           for file in "${changed[@]}"; do
             case "$file" in "$source_root"/*|.vibe2/candidates/*) ;; *) reject candidate-path-outside-boundary ;; esac
@@ -368,7 +368,7 @@ jobs:
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
           git checkout "$CANDIDATE_SHA" -- "$SOURCE_ROOT"
-          git diff --check
+          git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check
           git add "$SOURCE_ROOT"
           git diff --cached --quiet && { echo 'nothing to promote' >&2; exit 1; }
           git commit -m "vibe2: deploy ${TASK_ID}"
@@ -648,7 +648,7 @@ jobs:
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
           git checkout "$CANDIDATE_SHA" -- "$SOURCE_ROOT"
-          git diff --check
+          git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check
           git add "$SOURCE_ROOT"
           git diff --cached --quiet && { echo 'nothing to promote' >&2; exit 1; }
           git commit -m "vibe2: promote Roblox ${TASK_ID}"

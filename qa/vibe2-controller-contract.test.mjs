@@ -1569,3 +1569,10 @@ test('stranded asset review resumes only original completed-run evidence without
     assert.match(workflow,/run-id: \$\{\{ needs\.reserve\.outputs\.stranded_review_run \}\}/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('candidate promotion preserves the conflict-marker gate without rejecting formatting whitespace',()=>{
+  const release=fs.readFileSync('.github/workflows/vibe2-candidate-release.yml','utf8');
+  assert.equal(release.split('git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check').length-1,3);
+  assert.ok(release.includes('reject candidate-diff-check-failed'));
+});
