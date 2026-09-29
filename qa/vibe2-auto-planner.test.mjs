@@ -2601,6 +2601,12 @@ test('BUILD_UP depth advances only when the entire shared directive generation v
   },root,{tasks:verified},pendingFocus);
   assert.equal(ownRuntime.buildUpDirective.effectivenessMeasurement.previousGeneration.classification,'EFFECT_CONFIRMED');
 
+  const latestFailure=findStudioContinuousImprovementTask({
+    ...project,queueRuntimeEvidencePlatform:'ROBLOX',queueRuntimeObserved:true,queueRuntimePassed:false,
+    queueRuntimeFailureSignature:'current-failure',queueRobloxRuntimeObserved:true,queueRobloxRuntimePassed:true
+  },root,{tasks:verified},pendingFocus);
+  assert.equal(latestFailure.buildUpDirective.effectivenessMeasurement.previousGeneration.classification,'REGRESSION');
+
   const projectWithConfirmedEffect={...project,queueRuntimeObserved:true,queueRuntimePassed:true};
   const afterVerified=findStudioContinuousImprovementTasks(projectWithConfirmedEffect,root,{tasks:verified});
   assert.equal(afterVerified.length,5);

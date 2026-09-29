@@ -1993,8 +1993,8 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
     ].map(clean).filter(Boolean),
     runtimeObserved:(samePlatform&&project?.queueRuntimeObserved===true)
       ||(roblox&&project?.queueRobloxRuntimeObserved===true)||qualityFailure,
-    runtimePassed:!qualityFailure&&((samePlatform&&project?.queueRuntimePassed===true)
-      ||(roblox&&project?.queueRobloxRuntimePassed===true)),
+    runtimePassed:!qualityFailure&&(samePlatform&&project?.queueRuntimeObserved===true
+      ?project?.queueRuntimePassed===true:(roblox&&project?.queueRobloxRuntimePassed===true)),
     independentQaPassed:(samePlatform&&project?.queueRuntimeIndependentQaPassed===true)
       ||(roblox&&project?.queueRobloxIndependentQaPassed===true),
     regressionPassed:(samePlatform&&project?.queueRuntimeRegressionPassed===true)
