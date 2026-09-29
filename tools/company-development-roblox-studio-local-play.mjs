@@ -1812,6 +1812,192 @@ function mcpCommandArgs(command=''){
   return{command:resolved,args:[]};
 }
 
+
+export async function runStudioMultiplayerAudit(client,studioId,contract={}){
+  const tool=client.tool('execute_luau');
+  const contractHash=clean(contract?.adaptiveCoverage?.contractHash).replace(/[^a-zA-Z0-9_-]/g,'').slice(-24);
+  const token='VIBE2_F9_MULTIPLAYER_'+(contractHash||'AUDIT');
+  const callJson=async(context,marker,code)=>{
+    const result=await client.call('execute_luau',executeLuauArgs(tool.inputSchema||{},studioId,code,context));
+    const parsed=parseStudioActualPlayProbe(result,marker);
+    if(!parsed)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_PROBE_PARSE_EMPTY:'+marker+':'+context);
+    return parsed;
+  };
+  const serverProbeSource=()=>{
+    const marker='ROBLOX_STUDIO_MULTIPLAYER_SERVER=';
+    return{
+      marker,
+      code:[
+        'local HttpService=game:GetService("HttpService")',
+        'local Players=game:GetService("Players")',
+        'local ReplicatedStorage=game:GetService("ReplicatedStorage")',
+        'local StudioTestService=game:GetService("StudioTestService")',
+        'local rows={}',
+        'for _,p in ipairs(Players:GetPlayers()) do table.insert(rows,{name=p.Name,userId=p.UserId,roundState=tostring(p:GetAttribute("RoundState") or ""),role=tostring(p:GetAttribute("Role") or ""),team=p.Team and p.Team.Name or "",currentMap=tostring(p:GetAttribute("CurrentMap") or "")}) end',
+        'table.sort(rows,function(a,b) return tostring(a.name)<tostring(b.name) end)',
+        'local remoteCount=0',
+        'for _,d in ipairs(ReplicatedStorage:GetDescendants()) do if d:IsA("RemoteEvent") or d:IsA("RemoteFunction") then remoteCount=remoteCount+1 end end',
+        'local argsOk,args=pcall(function() return StudioTestService:GetTestArgs() end)',
+        'local payload={count=#rows,players=rows,remoteCount=remoteCount,testArgs=argsOk and tostring(args) or "",testArgsReadable=argsOk}',
+        'return "'+marker+'"..HttpService:JSONEncode(payload)'
+      ].join('\n')
+    };
+  };
+  const clientProbeSource=()=>{
+    const marker='ROBLOX_STUDIO_MULTIPLAYER_CLIENT=';
+    return{
+      marker,
+      code:[
+        'local HttpService=game:GetService("HttpService")',
+        'local Players=game:GetService("Players")',
+        'local ReplicatedStorage=game:GetService("ReplicatedStorage")',
+        'local rows={}',
+        'for _,p in ipairs(Players:GetPlayers()) do table.insert(rows,{name=p.Name,userId=p.UserId,roundState=tostring(p:GetAttribute("RoundState") or ""),role=tostring(p:GetAttribute("Role") or ""),team=p.Team and p.Team.Name or "",currentMap=tostring(p:GetAttribute("CurrentMap") or "")}) end',
+        'table.sort(rows,function(a,b) return tostring(a.name)<tostring(b.name) end)',
+        'local remoteCount=0',
+        'for _,d in ipairs(ReplicatedStorage:GetDescendants()) do if d:IsA("RemoteEvent") or d:IsA("RemoteFunction") then remoteCount=remoteCount+1 end end',
+        'return "'+marker+'"..HttpService:JSONEncode({count=#rows,players=rows,remoteCount=remoteCount})'
+      ].join('\n')
+    };
+  };
+  const poll=async(context,sourceFactory,predicate,attempts=18)=>{
+    let last=null,lastError=null;
+    for(let attempt=1;attempt<=attempts;attempt++){
+      try{
+        const source=sourceFactory();
+        last=await callJson(context,source.marker,source.code);
+        if(predicate(last))return last;
+      }catch(error){lastError=error;}
+      if(attempt<attempts)await wait(500);
+    }
+    if(last)return last;
+    if(lastError)throw lastError;
+    return null;
+  };
+  const summary={
+    pass:false,infrastructureFailure:false,error:null,
+    initialServerCount:0,lateServerCount:0,clientPlayerCount:0,leaveServerCount:0,
+    lateJoinPass:false,clientRosterPass:false,remoteSurfacePass:false,leavePass:false,
+    serverPlayers:[],clientPlayers:[]
+  };
+  let launched=false;
+  try{
+    const startMarker='ROBLOX_STUDIO_MULTIPLAYER_START=';
+    const startCode=[
+      'local HttpService=game:GetService("HttpService")',
+      'local okService,StudioTestService=pcall(function() return game:GetService("StudioTestService") end)',
+      'if not okService or not StudioTestService then return "'+startMarker+'"..HttpService:JSONEncode({started=false,error="STUDIO_TEST_SERVICE_UNAVAILABLE"}) end',
+      'local editOk,editActive=pcall(function() return StudioTestService.EditModeActive end)',
+      'if editOk and editActive~=true then return "'+startMarker+'"..HttpService:JSONEncode({started=false,error="EDIT_MODE_NOT_ACTIVE"}) end',
+      'local token='+JSON.stringify(token),
+      'task.spawn(function()',
+      ' local ok,result=pcall(function() return StudioTestService:ExecuteMultiplayerTestAsync(1,token) end)',
+      ' print("ROBLOX_STUDIO_MULTIPLAYER_ASYNC_RESULT="..HttpService:JSONEncode({ok=ok,result=tostring(result)}))',
+      'end)',
+      'return "'+startMarker+'"..HttpService:JSONEncode({started=true,token=token})'
+    ].join('\n');
+    const start=await callJson('Edit',startMarker,startCode);
+    if(start?.started!==true)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_START_FAILED:'+clean(start?.error||'UNKNOWN'));
+    launched=true;
+
+    const initial=await poll('Server',serverProbeSource,row=>Number(row?.count||0)>=1);
+    summary.initialServerCount=Number(initial?.count||0);
+    summary.serverPlayers=entityRows(initial?.players);
+    if(summary.initialServerCount<1)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_INITIAL_SERVER_NOT_READY');
+
+    const addMarker='ROBLOX_STUDIO_MULTIPLAYER_ADD=';
+    const addCode=[
+      'local HttpService=game:GetService("HttpService")',
+      'local StudioTestService=game:GetService("StudioTestService")',
+      'local ok,err=pcall(function() StudioTestService:AddPlayers(1) end)',
+      'return "'+addMarker+'"..HttpService:JSONEncode({ok=ok,error=ok and "" or tostring(err)})'
+    ].join('\n');
+    const added=await callJson('Server',addMarker,addCode);
+    if(added?.ok!==true)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_ADD_FAILED:'+clean(added?.error||'UNKNOWN'));
+
+    const late=await poll('Server',serverProbeSource,row=>Number(row?.count||0)>=2);
+    summary.lateServerCount=Number(late?.count||0);
+    summary.serverPlayers=entityRows(late?.players);
+    summary.lateJoinPass=summary.lateServerCount>=2;
+    if(!summary.lateJoinPass)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_LATE_JOIN_NOT_OBSERVED');
+
+    const replicated=await poll('Client',clientProbeSource,row=>Number(row?.count||0)>=2);
+    summary.clientPlayerCount=Number(replicated?.count||0);
+    summary.clientPlayers=entityRows(replicated?.players);
+    const serverNames=new Set(summary.serverPlayers.map(row=>clean(row?.name)).filter(Boolean));
+    const clientNames=new Set(summary.clientPlayers.map(row=>clean(row?.name)).filter(Boolean));
+    summary.clientRosterPass=serverNames.size>=2&&[...serverNames].every(name=>clientNames.has(name));
+    summary.remoteSurfacePass=Number(late?.remoteCount||0)>0&&Number(replicated?.remoteCount||0)>0;
+    if(summary.clientPlayerCount<2||!summary.clientRosterPass){
+      throw new Error('ROBLOX_STUDIO_MULTIPLAYER_CLIENT_REPLICATION_NOT_OBSERVED');
+    }
+
+    const canLeaveMarker='ROBLOX_STUDIO_MULTIPLAYER_CAN_LEAVE=';
+    let canLeave=false;
+    for(let attempt=1;attempt<=10;attempt++){
+      const canLeaveCode=[
+        'local HttpService=game:GetService("HttpService")',
+        'local StudioTestService=game:GetService("StudioTestService")',
+        'local ok,value=pcall(function() return StudioTestService:CanLeaveTest() end)',
+        'return "'+canLeaveMarker+'"..HttpService:JSONEncode({ok=ok,canLeave=ok and value==true})'
+      ].join('\n');
+      try{
+        const probe=await callJson('Client',canLeaveMarker,canLeaveCode);
+        canLeave=probe?.ok===true&&probe?.canLeave===true;
+      }catch{}
+      if(canLeave)break;
+      if(attempt<10)await wait(300);
+    }
+    if(!canLeave)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_CLIENT_LEAVE_NOT_READY');
+
+    const leaveMarker='ROBLOX_STUDIO_MULTIPLAYER_LEAVE=';
+    const leaveCode=[
+      'local HttpService=game:GetService("HttpService")',
+      'local StudioTestService=game:GetService("StudioTestService")',
+      'task.delay(0.15,function() pcall(function() StudioTestService:LeaveTest() end) end)',
+      'return "'+leaveMarker+'"..HttpService:JSONEncode({ok=true})'
+    ].join('\n');
+    const leave=await callJson('Client',leaveMarker,leaveCode);
+    if(leave?.ok!==true)throw new Error('ROBLOX_STUDIO_MULTIPLAYER_CLIENT_LEAVE_DISPATCH_FAILED');
+
+    const afterLeave=await poll('Server',serverProbeSource,row=>Number(row?.count||0)<summary.lateServerCount);
+    summary.leaveServerCount=Number(afterLeave?.count||0);
+    summary.leavePass=summary.leaveServerCount<summary.lateServerCount;
+
+    const endMarker='ROBLOX_STUDIO_MULTIPLAYER_END=';
+    const endCode=[
+      'local HttpService=game:GetService("HttpService")',
+      'local StudioTestService=game:GetService("StudioTestService")',
+      'task.delay(0.15,function() pcall(function() StudioTestService:EndTest("VIBE2_F9_MULTIPLAYER_COMPLETE") end) end)',
+      'return "'+endMarker+'"..HttpService:JSONEncode({ok=true})'
+    ].join('\n');
+    await callJson('Server',endMarker,endCode);
+    launched=false;
+
+    summary.pass=summary.lateJoinPass&&summary.clientPlayerCount>=2&&summary.clientRosterPass&&summary.remoteSurfacePass&&summary.leavePass;
+    console.log('ROBLOX_STUDIO_MULTIPLAYER_AUDIT_RESULT='+JSON.stringify(summary));
+    return summary;
+  }catch(error){
+    summary.pass=false;
+    summary.infrastructureFailure=true;
+    summary.error=clean(error?.message||error)||'UNKNOWN';
+    if(launched){
+      try{
+        const marker='ROBLOX_STUDIO_MULTIPLAYER_END=';
+        const code=[
+          'local HttpService=game:GetService("HttpService")',
+          'local StudioTestService=game:GetService("StudioTestService")',
+          'task.delay(0.1,function() pcall(function() StudioTestService:EndTest("VIBE2_F9_MULTIPLAYER_ABORT") end) end)',
+          'return "'+marker+'"..HttpService:JSONEncode({ok=true})'
+        ].join('\n');
+        await callJson('Server',marker,code);
+      }catch{}
+    }
+    console.log('ROBLOX_STUDIO_MULTIPLAYER_AUDIT_RESULT='+JSON.stringify(summary));
+    return summary;
+  }
+}
+
 export async function runOfficialStudioMcpPlay({
   mcpCommand='',output='',expectedStudioName='',timeoutMs=45000,toolAttempts=5,toolDelayMs=1000,
   settingState='',settingCandidatePathCount=-1,actualPlayContractPath='',auditProfile='FAST_DEEP'
