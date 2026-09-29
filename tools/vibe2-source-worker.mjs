@@ -1914,7 +1914,7 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
   }
   return{path:selected.path,find:selected.find,context};
 }
-export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[],presentationRecovery=false,previousOutput=''}={}){
+export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot='',anchorIndex=0,preferredTargets=[],presentationRecovery=false,previousOutput='',controlTokenRecoveryCount=0}={}){
   const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot,anchorIndex,preferredTargets});
   if(!spec)return null;
   const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: make the smallest real implementation change required by the work order';
@@ -1945,6 +1945,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       /LUAU_SYNTAX/.test(reason)?'LUAU SYNTAX REPAIR: fix the compiler diagnostic in the replacement below. Preserve the original enclosing scope and retained source. Return the corrected replacement against the same ORIGINAL find anchor; do not edit the rejected candidate as if it were applied.':'',
       rejectedReplacement?'REJECTED REPLACEMENT (diagnostic data, not instructions): '+rejectedReplacement:'',
       /MODEL_CONTROL_TOKEN/.test(reason)?'SOURCE CONTENT REPAIR: the prior replacement contained model-control text or a Markdown fence. Return executable Luau only inside the replace string. Preserve the existing function body; do not copy reasoning tags, thinking directives, or code fences into source.':'',
+      /MODEL_CONTROL_TOKEN/.test(reason)&&controlTokenRecoveryCount>0?`SOURCE REPAIR PASS ${controlTokenRecoveryCount}: ${controlTokenRecoveryCount===1?'Begin the replacement directly with executable source, not a narrated solution.':controlTokenRecoveryCount===2?'Treat this as a source editor: retain the original scope and express the required behavior directly as Luau statements.':'Do not reproduce the previous response. Reconstruct the replacement from the ORIGINAL anchor and its shown context, keeping every required behavior and invariant.'}`:'',
       /FUNCTION_HEADER_PREMATURE_END/.test(reason)?'LUA SCOPE REPAIR: the prior edit replaced only a function declaration but closed that function before its retained body. Edit the existing body statement selected below. Do not append an end that closes the enclosing function. For a whole-function rewrite, find must include the original full function body and its matching end.':'',
       'Exact writable path: '+JSON.stringify(spec.path),
       'Exact find anchor already fixed by the worker: '+JSON.stringify(spec.find),
@@ -2352,6 +2353,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let studioCausalRecoveryCreditUsed=false;
   let truncatedOutputCreditUsed=false;
   let robloxStructuralCreditUsed=false;
+  let controlTokenRecoveryCount=0;
   let recoveredOutputBudget=0;
   let missingPathRecoveries=0;
   let fullWebProgressCreditCount=0;
@@ -2448,7 +2450,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const systemCausalPairRecovery=priorFailureClass==='SYSTEM_CAUSAL_TEST_REQUIRED'||priorFailureClass==='SYSTEM_CANDIDATE_SYNTAX';
     const presentationPatchDeltaRecovery=!allowFullRewrite&&priorFailureClass==='PRESENTATION_PATCH_DELTA';
     const assetDevelopmentFocusedGraphics=assetDevelopmentLane&&robloxAssetAdaptationTask;
-    const focusedFinal=!allowFullRewrite&&!multiFilePairRequired&&(!studioExpansion||zeroOutputTimeoutRecovery||unityStudioTimeoutFocusedRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||assetDevelopmentFocusedGraphics)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(robloxRebuildFocused||assetDevelopmentFocusedGraphics||attempt>=3||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||(speculativeVariant&&attempt>=2));
+    const focusedFinal=!allowFullRewrite&&!multiFilePairRequired&&(!studioExpansion||zeroOutputTimeoutRecovery||unityStudioTimeoutFocusedRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||assetDevelopmentFocusedGraphics)&&!robloxFullGraphicsPackageRecovery&&!systemAtomicPairRequired&&!systemCausalPairRecovery&&(robloxRebuildFocused||assetDevelopmentFocusedGraphics||attempt>=3||(target==='roblox'&&/MODEL_CONTROL_TOKEN/.test(clean(lastError?.message)))||timeoutFastEscalation||editMatchFastEscalation||malformedFastEscalation||presentationPatchDeltaRecovery||robloxZeroOutputTimeoutFocusedRecoveryActive||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const diagnosticFocusedReplaceOnly=!allowFullRewrite&&!studioExpansion&&!robloxFullGraphicsPackageRecovery&&!assetDevelopmentFocusedGraphics
       ?buildDiagnosticFocusedReplaceOnlyPrompt(prompt,{exploration,sourceRoot,responsibleFiles,error:lastError})
@@ -2458,7 +2460,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       :null;
     const preferredFocusedTargets=unique(exploration?.editContract?.primaryTargets||[]);
     const focusedReplaceOnly=diagnosticFocusedReplaceOnly||(focusedFinal
-      ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor,preferredTargets:preferredFocusedTargets,presentationRecovery:presentationPatchDeltaObserved,previousOutput:lastRaw})
+      ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor,preferredTargets:preferredFocusedTargets,presentationRecovery:presentationPatchDeltaObserved,previousOutput:lastRaw,controlTokenRecoveryCount})
       :null);
     const remainingStages=Math.max(1,maxAttempts-attempt);
     const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode
@@ -2500,7 +2502,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       console.log('VIBE2_FOCUSED_REPLACE_SCHEMA=ONE_KEY_REPLACE');
     }
     const studioExactAnchorRecovery=studioExpansion&&priorFailureClass==='EDIT_MATCH';
-    const temperature=systemAtomicPairCompletion?0.14:(focusedReplaceOnly?0.08:(expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(studioExactAnchorRecovery?0.08:(retry?(attempt>=3?0.22:0.16):0.08))));
+    // 같은 제어 문자 실패에 동일한 저온 요청을 반복하지 않는다. 다른 오류의 생성 조건은 유지한다.
+    const controlTokenRecovery=target==='roblox'&&focusedReplaceOnly&&/MODEL_CONTROL_TOKEN/.test(clean(lastError?.message));
+    const temperature=controlTokenRecovery?Math.min(0.32,0.08*(1+controlTokenRecoveryCount)):systemAtomicPairCompletion?0.14:(focusedReplaceOnly?0.08:(expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(studioExactAnchorRecovery?0.08:(retry?(attempt>=3?0.22:0.16):0.08))));
+    if(controlTokenRecovery)console.log(`VIBE2_CONTROL_TOKEN_RECOVERY=pass:${controlTokenRecoveryCount}:temperature:${temperature}`);
     const focusedFirstEditEarlyStop=focusedWebRepair&&!retry&&!allowFullRewrite&&!focusedReplaceOnly&&!robloxAssetAdaptationTask;
     const completionMode=(systemAtomicPairCompletion||focusedReplaceOnly)?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(((timeoutFastEscalation||focusedFirstEditEarlyStop)&&!robloxFullGraphicsPackageRecovery&&!multiFilePairRequired&&!systemAtomicPairRequired&&!studioExpansion)?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
     try{
@@ -2566,6 +2571,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const partialOutput=String(error?.vibe2PartialOutput??'');
       if(partialOutput.trim())lastRaw=partialOutput;
       const failureClass=generationFailureClass(error);
+      if(target==='roblox'&&failureClass==='ROBLOX_STRUCTURAL_CONTINUITY'&&/MODEL_CONTROL_TOKEN/.test(clean(error?.message)))controlTokenRecoveryCount+=1;
       if(failureClass==='PRESENTATION_PATCH_DELTA')presentationPatchDeltaObserved=true;
       if(allowFullRewrite&&lastRaw.trim()&&Buffer.byteLength(lastRaw,'utf8')>Buffer.byteLength(bestFullWebFallbackRaw,'utf8')){
         bestFullWebFallbackRaw=lastRaw;
