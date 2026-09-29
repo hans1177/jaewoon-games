@@ -1129,6 +1129,173 @@ local monsterCycle=makeButton(setupPanel,"몬스터 변경",Color3.fromRGB(76,58
 monsterCycle.ZIndex=11;monsterCycle.Size=UDim2.new(.44,0,0,36);monsterCycle.Position=UDim2.new(.52,0,1,-42)
 monsterCycle.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.NEXT_MONSTER)end)
 
+local roomBrowserPanel=Instance.new("Frame")
+roomBrowserPanel.Name="RoomBrowser"
+roomBrowserPanel.AnchorPoint=Vector2.new(.5,.5)
+roomBrowserPanel.Position=UDim2.fromScale(.5,.52)
+roomBrowserPanel.Size=UDim2.fromOffset(330,330)
+roomBrowserPanel.BackgroundColor3=Color3.fromRGB(21,24,31)
+roomBrowserPanel.BackgroundTransparency=.02
+roomBrowserPanel.ZIndex=20
+roomBrowserPanel.Visible=false
+roomBrowserPanel.Parent=gui
+roundify(roomBrowserPanel,16);outline(roomBrowserPanel,.3)
+
+local roomBrowserTitle=Instance.new("TextLabel")
+roomBrowserTitle.Size=UDim2.new(1,-20,0,34)
+roomBrowserTitle.Position=UDim2.fromOffset(10,10)
+roomBrowserTitle.BackgroundTransparency=1
+roomBrowserTitle.Text="방 만들기 / 참가"
+roomBrowserTitle.TextColor3=Color3.fromRGB(241,244,249)
+roomBrowserTitle.TextSize=21
+roomBrowserTitle.Font=Enum.Font.GothamBold
+roomBrowserTitle.TextXAlignment=Enum.TextXAlignment.Left
+roomBrowserTitle.ZIndex=21
+roomBrowserTitle.Parent=roomBrowserPanel
+
+local roomBrowserInfo=Instance.new("TextLabel")
+roomBrowserInfo.Size=UDim2.new(1,-20,0,34)
+roomBrowserInfo.Position=UDim2.fromOffset(10,44)
+roomBrowserInfo.BackgroundTransparency=1
+roomBrowserInfo.Text="1명부터 시작 가능 · 최대 8명 · 빈자리는 AI"
+roomBrowserInfo.TextColor3=Color3.fromRGB(180,193,209)
+roomBrowserInfo.TextSize=11
+roomBrowserInfo.TextWrapped=true
+roomBrowserInfo.Font=Enum.Font.GothamMedium
+roomBrowserInfo.TextXAlignment=Enum.TextXAlignment.Left
+roomBrowserInfo.ZIndex=21
+roomBrowserInfo.Parent=roomBrowserPanel
+
+local visibilityLabel=Instance.new("TextLabel")
+visibilityLabel.Size=UDim2.new(1,-20,0,20)
+visibilityLabel.Position=UDim2.fromOffset(10,80)
+visibilityLabel.BackgroundTransparency=1
+visibilityLabel.Text="방 공개 범위"
+visibilityLabel.TextColor3=Color3.fromRGB(220,226,235)
+visibilityLabel.TextSize=12
+visibilityLabel.Font=Enum.Font.GothamBold
+visibilityLabel.TextXAlignment=Enum.TextXAlignment.Left
+visibilityLabel.ZIndex=21
+visibilityLabel.Parent=roomBrowserPanel
+
+local selectedRoomVisibility="PUBLIC"
+local visibilityButtons={}
+local visibilitySpecs={
+ {"PUBLIC","공개",Color3.fromRGB(51,104,129)},
+ {"FRIENDS","친구만",Color3.fromRGB(77,91,132)},
+ {"PRIVATE","비공개",Color3.fromRGB(91,72,105)},
+}
+local function refreshVisibilityButtons()
+ for id,button in pairs(visibilityButtons)do
+  button.BackgroundTransparency=id==selectedRoomVisibility and 0 or .32
+  button.Text=(id==selectedRoomVisibility and"✓ "or"")..(id=="PUBLIC"and"공개"or id=="FRIENDS"and"친구만"or"비공개")
+ end
+end
+for i,spec in ipairs(visibilitySpecs)do
+ local b=makeButton(roomBrowserPanel,spec[2],spec[3])
+ b.Size=UDim2.fromOffset(96,38)
+ b.Position=UDim2.fromOffset(10+(i-1)*105,103)
+ b.ZIndex=21
+ visibilityButtons[spec[1]]=b
+ b.Activated:Connect(function()selectedRoomVisibility=spec[1];refreshVisibilityButtons()end)
+end
+refreshVisibilityButtons()
+
+local createRoomButton=makeButton(roomBrowserPanel,"방 만들기",Color3.fromRGB(48,126,104))
+createRoomButton.Size=UDim2.new(1,-20,0,44)
+createRoomButton.Position=UDim2.fromOffset(10,150)
+createRoomButton.ZIndex=21
+createRoomButton.Activated:Connect(function()
+ actionSfx.TimePosition=0;actionSfx:Play()
+ remote:FireServer(C.Actions.CREATE_ROOM,selectedRoomVisibility)
+end)
+
+local quickPublicButton=makeButton(roomBrowserPanel,"공개 방 빠른 참가",Color3.fromRGB(58,92,128))
+quickPublicButton.Size=UDim2.fromOffset(146,38)
+quickPublicButton.Position=UDim2.fromOffset(10,202)
+quickPublicButton.ZIndex=21
+quickPublicButton.Activated:Connect(function()remote:FireServer(C.Actions.QUICK_JOIN_PUBLIC)end)
+
+local quickFriendButton=makeButton(roomBrowserPanel,"친구 방 찾기",Color3.fromRGB(78,75,122))
+quickFriendButton.Size=UDim2.fromOffset(146,38)
+quickFriendButton.Position=UDim2.fromOffset(174,202)
+quickFriendButton.ZIndex=21
+quickFriendButton.Activated:Connect(function()remote:FireServer(C.Actions.QUICK_JOIN_FRIEND)end)
+
+local roomCodeBox=Instance.new("TextBox")
+roomCodeBox.Name="RoomCodeInput"
+roomCodeBox.Size=UDim2.fromOffset(190,40)
+roomCodeBox.Position=UDim2.fromOffset(10,250)
+roomCodeBox.BackgroundColor3=Color3.fromRGB(35,39,48)
+roomCodeBox.TextColor3=Color3.fromRGB(239,242,247)
+roomCodeBox.PlaceholderText="6자리 방 코드"
+roomCodeBox.PlaceholderColor3=Color3.fromRGB(132,143,158)
+roomCodeBox.Text=""
+roomCodeBox.TextSize=16
+roomCodeBox.Font=Enum.Font.GothamBold
+roomCodeBox.ClearTextOnFocus=false
+roomCodeBox.MultiLine=false
+roomCodeBox.ZIndex=21
+roomCodeBox.Parent=roomBrowserPanel
+roundify(roomCodeBox,10);outline(roomCodeBox,.55)
+
+local roomCodeJoin=makeButton(roomBrowserPanel,"코드 참가",Color3.fromRGB(87,79,105))
+roomCodeJoin.Size=UDim2.fromOffset(110,40)
+roomCodeJoin.Position=UDim2.fromOffset(210,250)
+roomCodeJoin.ZIndex=21
+local function submitRoomCode()remote:FireServer(C.Actions.JOIN_ROOM_CODE,roomCodeBox.Text)end
+roomCodeJoin.Activated:Connect(submitRoomCode)
+roomCodeBox.FocusLost:Connect(function(enterPressed)if enterPressed then submitRoomCode()end end)
+
+local roomBrowserFeedback=Instance.new("TextLabel")
+roomBrowserFeedback.Size=UDim2.new(1,-20,0,25)
+roomBrowserFeedback.Position=UDim2.fromOffset(10,296)
+roomBrowserFeedback.BackgroundTransparency=1
+roomBrowserFeedback.Text=""
+roomBrowserFeedback.TextColor3=Color3.fromRGB(187,199,214)
+roomBrowserFeedback.TextSize=11
+roomBrowserFeedback.Font=Enum.Font.GothamMedium
+roomBrowserFeedback.TextXAlignment=Enum.TextXAlignment.Left
+roomBrowserFeedback.ZIndex=21
+roomBrowserFeedback.Parent=roomBrowserPanel
+
+local roomInfoPanel=Instance.new("Frame")
+roomInfoPanel.Name="RoomInfo"
+roomInfoPanel.AnchorPoint=Vector2.new(.5,0)
+roomInfoPanel.Position=UDim2.new(.5,0,0,92)
+roomInfoPanel.Size=UDim2.fromOffset(320,78)
+roomInfoPanel.BackgroundColor3=Color3.fromRGB(23,26,34)
+roomInfoPanel.BackgroundTransparency=.04
+roomInfoPanel.ZIndex=18
+roomInfoPanel.Visible=false
+roomInfoPanel.Parent=gui
+roundify(roomInfoPanel,13);outline(roomInfoPanel,.4)
+
+local roomInfoLabel=Instance.new("TextLabel")
+roomInfoLabel.Size=UDim2.new(1,-142,1,-12)
+roomInfoLabel.Position=UDim2.fromOffset(10,6)
+roomInfoLabel.BackgroundTransparency=1
+roomInfoLabel.TextColor3=Color3.fromRGB(226,232,240)
+roomInfoLabel.TextSize=11
+roomInfoLabel.TextWrapped=true
+roomInfoLabel.Font=Enum.Font.GothamBold
+roomInfoLabel.TextXAlignment=Enum.TextXAlignment.Left
+roomInfoLabel.TextYAlignment=Enum.TextYAlignment.Center
+roomInfoLabel.ZIndex=19
+roomInfoLabel.Parent=roomInfoPanel
+
+local roomStartButton=makeButton(roomInfoPanel,"게임 시작",Color3.fromRGB(45,126,96))
+roomStartButton.Size=UDim2.fromOffset(116,32)
+roomStartButton.Position=UDim2.new(1,-126,0,7)
+roomStartButton.ZIndex=19
+roomStartButton.Activated:Connect(function()remote:FireServer(C.Actions.START_ROOM)end)
+
+local roomLeaveButton=makeButton(roomInfoPanel,"방 나가기",Color3.fromRGB(98,62,71))
+roomLeaveButton.Size=UDim2.fromOffset(116,27)
+roomLeaveButton.Position=UDim2.new(1,-126,0,44)
+roomLeaveButton.ZIndex=19
+roomLeaveButton.Activated:Connect(function()remote:FireServer(C.Actions.LEAVE_ROOM)end)
+
 local resultTitle
 
 -- 코스메틱 상점: 전투 능력치는 바꾸지 않고 프로필 프레임/칭호/결과 화면 색만 바꾼다.
