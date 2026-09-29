@@ -243,8 +243,8 @@ test('reserve scheduling runs same-lane reserves in parallel and learning still 
   assert.match(core,/const robloxLeaderTaskId=pressureRefillEligible/);
   assert.match(core,/row\.target==='roblox'&&Number\(row\.speculativeVariants\|\|1\)===1/);
   assert.match(core,/VIBE2_NEURON_TARGET: \$\{\{ matrix\.target \}\}/);
-  assert.match(core,/VIBE2_ROBLOX_PRESSURE_MICRO_FANIN=ONE_PRIMARY_RESULT_PER_WAVE/);
-  assert.match(core,/\[ "\$roblox_micro_fanin" != 'true' \]/);
+  assert.match(core,/VIBE2_GAME_PRESSURE_MICRO_FANIN=EVERY_COMPLETE_SINGLE_TASK/);
+  assert.match(core,/\[ "\$game_micro_fanin" != 'true' \]/);
 
   assert.match(core,/runner-pressure-wave-leader-free-slot-refill/);
   assert.match(core,/VIBE2_CONTROL_OPTIMISTIC_RETRY_POLICY=UNBOUNDED/);

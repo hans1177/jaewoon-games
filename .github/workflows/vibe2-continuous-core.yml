@@ -111,6 +111,7 @@ jobs:
       reserved_at: ${{ steps.batch.outputs.reserved_at }}
       effective_max: ${{ steps.batch.outputs.effective_max }}
       contract_sha: ${{ steps.contract.outputs.sha }}
+      task_review_required: ${{ steps.batch.outputs.task_review_required }}
       model_cache_hit: ${{ steps.ollama_cache_probe.outputs.cache-hit }}
     steps:
       - name: Checkout Vibe2 control line
@@ -376,6 +377,12 @@ jobs:
               neuron_reason="$(sed -n 's/^VIBE2_NEURON_RESULT=//p' /tmp/vibe2-neuron-complete.log | tail -n1)"
               case "$neuron_reason" in
                 TASK_MICRO_FANIN_COMPLETE)
+                  # A complete single-candidate game can enter the existing full review now.
+                  # Failed results only refill; partial variant sets never bypass their join.
+                  if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "$expected_variants" = '1' ] && node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.exit(r.outcome==='PASS'?0:1)" "$neuron_result_file"; then
+                    echo 'task_review_required=true' >> "$GITHUB_OUTPUT"
+                    echo 'VIBE2_TASK_REVIEW_READY=COMPLETE_SINGLE_GAME_RESULT'
+                  fi
                   neuron_refill_ready="$(sed -n 's/^VIBE2_NEURON_REFILL_READY=//p' /tmp/vibe2-neuron-complete.log | tail -n1)"
                   if [ "$neuron_refill_ready" = 'YES' ]; then
                     neuron_refill=1
@@ -1257,7 +1264,8 @@ jobs:
           test -f "$candidate_manifest"
           echo "candidate_manifest=$candidate_manifest" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CANDIDATE_MANIFEST=$candidate_manifest_rel"
-          git diff --check
+          # Formatting whitespace is not a gameplay failure; conflict markers still fail.
+          git -c core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab diff --check
           security_sensitive="$(node --input-type=module - "$candidate_manifest" <<'NODE'
           import fs from 'node:fs';
           const manifest=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
@@ -1691,7 +1699,8 @@ jobs:
             &&sameDeterministicLearningIds;
           const sourcePromptLearningOk=!sourcePromptLearningRequired||promptLearningProof||deterministicLearningProof;
           const effectiveCandidateOk=candidateOk&&sourcePromptLearningOk;
-          if(sourceGenerationAttempted&&sourcePromptLearningRequired&&!sourcePromptLearningOk){
+          const sourcePromptLearningFailed=sourceGenerationAttempted&&candidateOk&&sourcePromptLearningRequired&&!sourcePromptLearningOk;
+          if(sourcePromptLearningFailed){
             outcome='FAIL';
             blocker='verified-external-learning-source-prompt-unproven';
           }
@@ -1712,10 +1721,10 @@ jobs:
             authorityExpanded:false
           };
           const candidateFailureClass=sourceGenerationAttempted&&!effectiveCandidateOk
-            ?(!sourcePromptLearningOk?'VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT':(clean(process.env.CANDIDATE_FAILURE_CLASS)||null))
+            ?(sourcePromptLearningFailed?'VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT':(clean(process.env.CANDIDATE_FAILURE_CLASS)||null))
             :null;
           const candidateFailureMessage=sourceGenerationAttempted&&!effectiveCandidateOk
-            ?(!sourcePromptLearningOk?'verified external APK black-box learning was not proven in the actual source-generation prompt':(clean(process.env.CANDIDATE_FAILURE_MESSAGE)||null))
+            ?(sourcePromptLearningFailed?'verified external APK black-box learning was not proven in the actual source-generation prompt':(clean(process.env.CANDIDATE_FAILURE_MESSAGE)||null))
             :null;
           const fallbackCodingMethod=clean(workOrder?.candidateStrategyRole?.strategy)?{
             version:2,
@@ -2079,11 +2088,11 @@ jobs:
           fi
           echo "VIBE2_LIVE_RUNNER_QUEUE_PRESSURE=${queue_pressure:-0}"
 
-          roblox_micro_fanin=false
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_NEURON_TARGET:-}" = 'roblox' ] && [ "${VIBE2_PRESSURE_REFILL_LEADER:-false}" = 'true' ] && [ "${VIBE2_NEURON_EXPECTED_VARIANTS:-1}" = '1' ]; then
-            roblox_micro_fanin=true
+          game_micro_fanin=false
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_NEURON_EXPECTED_VARIANTS:-1}" = '1' ]; then
+            game_micro_fanin=true
           fi
-          if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" != 'asset-development' ] && [ "$roblox_micro_fanin" != 'true' ]; then
+          if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" != 'asset-development' ] && [ "$game_micro_fanin" != 'true' ]; then
             echo 'VIBE2_ATOMIC_NEURON_RESULT_CARRIER=WORKER_ARTIFACT'
             if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "${VIBE2_PRESSURE_REFILL_LEADER:-false}" = 'true' ]; then
               refill_payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-fanin-refill',client_payload:{source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||'',execution_lane:'game-primary',reason:'runner-pressure-wave-leader-free-slot-refill'}}))")"
@@ -2101,8 +2110,8 @@ jobs:
             echo 'VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN'
             exit 0
           fi
-          if [ "$roblox_micro_fanin" = 'true' ]; then
-            echo 'VIBE2_ROBLOX_PRESSURE_MICRO_FANIN=ONE_PRIMARY_RESULT_PER_WAVE'
+          if [ "$game_micro_fanin" = 'true' ]; then
+            echo 'VIBE2_GAME_PRESSURE_MICRO_FANIN=EVERY_COMPLETE_SINGLE_TASK'
           fi
           if [ "${queue_pressure:-0}" -gt 0 ] && [ "$VIBE2_EXECUTION_LANE" = 'asset-development' ]; then
             echo 'VIBE2_ASSET_NEURON_PRESSURE_BYPASS=IMMEDIATE_MICRO_FANIN'
@@ -2136,7 +2145,7 @@ jobs:
 
   fan_in:
     needs: [reserve, worker]
-    if: always() && needs.reserve.outputs.worker_count != '0'
+    if: always() && (needs.reserve.outputs.task_review_required == 'true' || needs.reserve.outputs.worker_count != '0')
     # State fan-in stays on the game-control pool; heavy workers remain ubuntu-latest.
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 8
@@ -2178,11 +2187,21 @@ jobs:
           node-version: '22'
 
       - name: Download all parallel worker results
+        if: needs.reserve.outputs.task_review_required != 'true'
         uses: actions/download-artifact@v4
         with:
           pattern: vibe2-result-*
           path: /tmp/vibe2-results
           merge-multiple: true
+
+      - name: Download completed task result for immediate full review
+        if: needs.reserve.outputs.task_review_required == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ github.event.client_payload.artifact_name }}
+          path: /tmp/vibe2-results
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.client_payload.source_run }}
 
       - name: Aggregate immutable results
         shell: bash
@@ -2219,6 +2238,38 @@ jobs:
           if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
           # Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.
           if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+            export VIBE2_FANIN_CONTRACT_SHA="$contract_sha"
+            core_qa_reuse=0
+            if curl --fail-with-body --silent --show-error \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${VIBE2_FANIN_CONTRACT_SHA}&per_page=100" \
+              --output /tmp/vibe2-fanin-core-qa-runs.json; then
+              core_qa_reuse="$(node <<'NODE'
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/vibe2-fanin-core-qa-runs.json','utf8'));
+          const sha=String(process.env.VIBE2_FANIN_CONTRACT_SHA||'');
+          const pass=(payload.workflow_runs||[]).some(row=>
+            String(row.name||'')==='Vibe2 Core QA' &&
+            String(row.head_sha||'')===sha &&
+            String(row.status||'')==='completed' &&
+            String(row.conclusion||'')==='success'
+          );
+          process.stdout.write(pass?'1':'0');
+          NODE
+              )"
+              echo 'VIBE2_FANIN_CORE_QA_REUSE_OBSERVATION=PASS'
+            else
+              core_qa_reuse=0
+              echo 'VIBE2_FANIN_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION'
+            fi
+
+            if [ "$core_qa_reuse" = '1' ]; then
+              regression_rc=0
+              echo 'VIBE2_FAN_IN_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'
+            else
+              echo 'VIBE2_FAN_IN_REGRESSION_SOURCE=LOCAL_FULL_REGRESSION'
             set +e
             (cd "$contract_root" && node --test --test-concurrency=4 \
             qa/vibe2-auto-planner.test.mjs \
@@ -2249,6 +2300,7 @@ jobs:
             qa/vibe2-practice-distillation.test.mjs)
           regression_rc=$?
           set -e
+            fi
           if [ "$regression_rc" -ne 0 ]; then
             pushed=0
             attempt=0

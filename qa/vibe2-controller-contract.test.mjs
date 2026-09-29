@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute, runVibeContinuousRunner, expandPresentationResponsibleFiles, candidateStrategyRole } from '../tools/vibe2-continuous-runner.mjs';
 import { buildVibeDesignIntelligence, DESIGN_INTELLIGENCE_STAGES } from '../tools/vibe2-design-intelligence.mjs';
@@ -667,6 +668,86 @@ test('neuron callbacks keep every ingress event and reconcile shared queue state
 test('controller allows approved source root but enforces candidate boundary',()=>{
   assert(workflow.includes('git add "$SOURCE_ROOT" .vibe2/candidates'));
   assert(workflow.includes('candidate escaped approved boundary'));
+});
+
+test('complete non-leader game tasks bypass pressure coalescing while variant joins remain intact',()=>{
+  const start=workflow.indexOf('          game_micro_fanin=false');
+  const end=workflow.indexOf('          payload="$(node',start);
+  assert.ok(start>0&&end>start);
+  const script=workflow.slice(start,end).split('\n').map(line=>line.slice(10)).join('\n');
+  for(const target of ['roblox','unity','web']){
+    const result=spawnSync('bash',['-c',`set -euo pipefail\nqueue_pressure=3\n${script}\necho IMMEDIATE_CALLBACK`],{
+      encoding:'utf8',env:{...process.env,VIBE2_EXECUTION_LANE:'game-primary',VIBE2_NEURON_TARGET:target,VIBE2_NEURON_EXPECTED_VARIANTS:'1',VIBE2_PRESSURE_REFILL_LEADER:'false'}
+    });
+    assert.equal(result.status,0,result.stderr);
+    assert.match(result.stdout,/IMMEDIATE_CALLBACK/);
+    assert.doesNotMatch(result.stdout,/COALESCED_TO_COHORT_FANIN/);
+  }
+  const joined=spawnSync('bash',['-c',`set -euo pipefail\nqueue_pressure=3\n${script}\necho IMMEDIATE_CALLBACK`],{
+    encoding:'utf8',env:{...process.env,VIBE2_EXECUTION_LANE:'game-primary',VIBE2_NEURON_EXPECTED_VARIANTS:'3',VIBE2_PRESSURE_REFILL_LEADER:'false'}
+  });
+  assert.equal(joined.status,0,joined.stderr);
+  assert.match(joined.stdout,/COALESCED_TO_COHORT_FANIN/);
+  assert.doesNotMatch(joined.stdout,/IMMEDIATE_CALLBACK/);
+  assert.equal(runtime.continuous.callbackCoalescing.singleGameTaskImmediateCompletionRequired,true);
+  assert.equal(runtime.continuous.callbackCoalescing.singleGameTaskFullReviewBeforeCohortCompletion,true);
+});
+
+test('complete single-task callbacks reuse full regression and release review without waiting for other workers',()=>{
+  const fanIn=workflow.slice(workflow.indexOf('  fan_in:'));
+  assert.match(fanIn,/needs.reserve.outputs.task_review_required == 'true'/);
+  assert.match(fanIn,/Download completed task result for immediate full review/);
+  assert.match(fanIn,/run-id: \$\{\{ github.event.client_payload.source_run \}\}/);
+  assert.match(fanIn,/name: \$\{\{ github.event.client_payload.artifact_name \}\}/);
+  assert.match(fanIn,/node --test --test-concurrency=4/);
+  assert.match(fanIn,/tools\/vibe2-fan-in-review.mjs/);
+  assert.match(fanIn,/vibe2-candidate-release.yml\/dispatches/);
+  const ready=workflow.slice(workflow.indexOf('                TASK_MICRO_FANIN_COMPLETE)'),workflow.indexOf('                TASK_ALREADY_MICRO_FANIN_COMPLETE)'));
+  assert.match(ready,/expected_variants.*= '1'/);
+  assert.match(ready,/r.outcome==='PASS'/);
+  assert.match(ready,/task_review_required=true/);
+});
+
+test('fan-in reuses only successful exact-commit engine regression and retains all candidate gates',()=>{
+  const fanIn=workflow.slice(workflow.indexOf('  fan_in:'));
+  assert.match(fanIn,/VIBE2_FAN_IN_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
+  assert.match(fanIn,/VIBE2_FAN_IN_REGRESSION_SOURCE=LOCAL_FULL_REGRESSION/);
+  assert.match(fanIn,/String\(row.head_sha\|\|''\)===sha/);
+  assert.match(fanIn,/String\(row.conclusion\|\|''\)==='success'/);
+  for(const file of new Set(fanIn.match(/qa\/[\w.-]+\.test\.mjs/g)))assert.ok(coreQaWorkflow.includes(file),file);
+  assert.match(fanIn,/tools\/vibe2-fan-in-review.mjs/);
+});
+
+test('idle learning cannot take runners while game development or recovery work remains',()=>{
+  const idle=safetyNetWorkflow.slice(safetyNetWorkflow.indexOf('  learning_idle:'),safetyNetWorkflow.indexOf('  game_study:'));
+  for(const output of ['game_primary_queued','active_worker_reservations','asset_development_queued','asset_development_active','recovery_fast_queued']){
+    assert.ok(idle.includes(`needs.plan.outputs.${output} == '0'`),output);
+  }
+});
+
+test('candidate formatting whitespace does not abort development but conflict markers still fail',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-format-gate-'));
+  const git=(args)=>spawnSync('git',args,{cwd:root,encoding:'utf8'});
+  try{
+    assert.equal(git(['init','-q']).status,0);
+    fs.writeFileSync(path.join(root,'source.luau'),'local function render()\nend\n');
+    assert.equal(git(['add','source.luau']).status,0);
+    fs.writeFileSync(path.join(root,'source.luau'),'local function render() \nend\n');
+    const command=['-c','core.whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab','diff','--check'];
+    assert.equal(git(command).status,0);
+    fs.writeFileSync(path.join(root,'source.luau'),'<<<<<<< HEAD\nlocal a=1\n=======\nlocal a=2\n>>>>>>> candidate\n');
+    assert.notEqual(git(command).status,0);
+    assert.ok(workflow.includes('git '+command.join(' ')));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('missing generation manifest cannot replace a real generation failure with a prompt-learning failure',()=>{
+  const expression=workflow.match(/const sourcePromptLearningFailed=([^;]+);/)[1];
+  const failed=new Function('sourceGenerationAttempted','candidateOk','sourcePromptLearningRequired','sourcePromptLearningOk',`return ${expression}`);
+  assert.equal(failed(true,false,true,false),false);
+  assert.equal(failed(true,true,true,false),true);
+  assert.equal(failed(true,true,true,true),false);
+  assert.equal(failed(false,false,true,false),false);
 });
 
 test('workers signal atomic completion and task micro-fan-in refills capacity without a cohort barrier',()=>{
