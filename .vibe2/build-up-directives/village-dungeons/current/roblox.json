@@ -237,7 +237,7 @@
     "failureStage": "",
     "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
@@ -1919,9 +1919,9 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure",
+      "runtimeObserved": true
     },
     "baseline": {
       "sourceTreeFingerprint": "d7e238f269e62eba560155cb6a47b3d3da9489beba0535fc698f1dfe9094c9f7",
@@ -1939,8 +1939,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",

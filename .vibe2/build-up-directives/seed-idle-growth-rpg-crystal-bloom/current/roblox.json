@@ -227,7 +227,7 @@
     "failureStage": "",
     "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": false,
+    "runtimeObserved": true,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false,
@@ -1928,9 +1928,9 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "수정의 개화는 방치형 성장 RPG의 한계를 넘어, 실시간으로 개화하는 마력 수정의 원소 조합과 영웅 배치를 통해 깊이 있는 전략적 선택을 제공하는 게임입니다. 플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "UNKNOWN_RUNTIME_EFFECT",
-      "reason": "previous generation lacks sufficient verified effect evidence",
-      "runtimeObserved": false
+      "classification": "REGRESSION",
+      "reason": "current source Studio product-quality failure",
+      "runtimeObserved": true
     },
     "baseline": {
       "sourceTreeFingerprint": "8482a922c6cb43758d551b3644a6445d11b31ee4c0816b1bd5c758acf89782fc",
@@ -1948,8 +1948,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
-    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
+    "action": "CAUSAL_REPAIR",
+    "reason": "current source Studio product-quality failure requires source repair before another observation"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
