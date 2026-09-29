@@ -160,6 +160,7 @@ local function load(p)
  p:SetAttribute("MonsterForm","DRACULA");p:SetAttribute("HumanForm","BROADCAST");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0)
  p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0);p:SetAttribute("RoundScore",0)
  p:SetAttribute("LastRoundReward",0);p:SetAttribute("LastRoundWinner","");p:SetAttribute("LastRoundRole","")
+ p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0);p:SetAttribute("RoundContributionCoins",0)
  p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
  p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
@@ -908,21 +909,45 @@ local function monsterPositions()
  for _,b in ipairs(bots)do if b.role=="MONSTER"and now>=(b.infectReadyAt or 0)then table.insert(out,b.part.Position)end end
  return out
 end
+local function nearestMonsterSource(pos)
+ local best=math.huge;local sourcePlayer=nil;local sourceBot=nil;local now=os.clock()
+ for _,player in ipairs(Players:GetPlayers())do
+  if player:GetAttribute("Role")=="MONSTER"and now>=(player:GetAttribute("InfectionReadyAt")or 0)then
+   local rr=root(player)
+   if rr then local d=(rr.Position-pos).Magnitude;if d<best then best=d;sourcePlayer=player;sourceBot=nil end end
+  end
+ end
+ for _,b in ipairs(bots)do
+  if b.role=="MONSTER"and now>=(b.infectReadyAt or 0)then
+   local d=(b.part.Position-pos).Magnitude
+   if d<best then best=d;sourcePlayer=nil;sourceBot=b end
+  end
+ end
+ return best,sourcePlayer,sourceBot
+end
 local function nearestMonsterDistance(pos)
- local best=math.huge
- for _,mp in ipairs(monsterPositions())do best=math.min(best,(mp-pos).Magnitude)end
+ local best=nearestMonsterSource(pos)
  return best
 end
-local function infectPlayer(p)
+local function awardContribution(player,amount)
+ if not player or not player.Parent or state~="RUNNING"then return end
+ local cap=(C.Reward and C.Reward.ContributionCapCoins)or 12
+ local current=tonumber(player:GetAttribute("RoundContributionCoins"))or 0
+ player:SetAttribute("RoundContributionCoins",math.min(cap,current+math.max(0,tonumber(amount)or 0)))
+end
+local function infectPlayer(p,sourcePlayer)
  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"or os.clock()<(tagGraceUntil[p]or 0)then return false end
  p:SetAttribute("Infected",true);p:SetAttribute("InfectionReadyAt",os.clock()+2.5);setRole(p,"MONSTER")
+ if sourcePlayer and sourcePlayer~=p then awardContribution(sourcePlayer,(C.Reward and C.Reward.InfectPlayerCoins)or 4)end
  p:SetAttribute("FeedbackEvent","INFECT:"..tostring(math.floor(os.clock()*1000)));return true
 end
-local function infectBot(b)
+local function infectBot(b,sourcePlayer)
  if not b or b.role~="SURVIVOR"then return false end
  if b.visuals then for _,v in ipairs(b.visuals)do if v.part then v.part:Destroy()end end end
  b.role="MONSTER";b.part.Name="AI_MONSTER";b.part.Color=Color3.fromRGB(65,34,44);b.part.Material=Enum.Material.Fabric;b.speed=18;b.infectReadyAt=os.clock()+2.5
- b.visuals=decorateClassicMonster(b.part,"DRACULA");return true
+ b.visuals=decorateClassicMonster(b.part,"DRACULA")
+ if sourcePlayer then awardContribution(sourcePlayer,(C.Reward and C.Reward.InfectAICoins)or 1)end
+ return true
 end
 local function monsterPos()
  local list=monsterPositions();return list[1]
@@ -954,6 +979,7 @@ local function startRound()
   p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
   p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0);p:SetAttribute("RoundScore",0)
   p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+  p:SetAttribute("RoundContributionCoins",0);p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0)
   local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
   if role=="MONSTER"then teleport(p,monsterSpawn+Vector3.new((mi-1)*6,0,0));mi+=1 else teleport(p,survivorSpawns[((si-1)%#survivorSpawns)+1]);si+=1 end
  end
@@ -963,10 +989,15 @@ local function endRound(winner)
  if state~="RUNNING"then return end;state="RESULT";syncLobbyState("RESULT")
  for _,p in ipairs(Players:GetPlayers())do
   local role=p:GetAttribute("Role");local m=role=="MONSTER";local win=(winner=="MONSTER"and m)or(winner=="SURVIVOR"and role=="SURVIVOR")
-  local reward=(role=="MONSTER"or role=="SURVIVOR")and(winner=="DRAW"and 12 or win and 30 or 12)or 0
+  local activeRole=role=="MONSTER"or role=="SURVIVOR"
+  local baseReward=activeRole and((C.Reward and C.Reward.ParticipationCoins)or 12)or 0
+  local winBonus=activeRole and win and winner~="DRAW"and((C.Reward and C.Reward.WinBonusCoins)or 18)or 0
+  local contribution=activeRole and math.min((C.Reward and C.Reward.ContributionCapCoins)or 12,tonumber(p:GetAttribute("RoundContributionCoins"))or 0)or 0
+  local reward=baseReward+winBonus+contribution
   p:SetAttribute("Coins",(p:GetAttribute("Coins")or 0)+reward)
   p:SetAttribute("RoundScore",win and 1 or 0)
   p:SetAttribute("LastRoundReward",reward);p:SetAttribute("LastRoundWinner",winner);p:SetAttribute("LastRoundRole",role)
+  p:SetAttribute("LastRoundBaseReward",baseReward);p:SetAttribute("LastRoundWinBonus",winBonus);p:SetAttribute("LastRoundContribution",contribution)
   p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
   if m then p:SetAttribute("MonsterXP",(p:GetAttribute("MonsterXP")or 0)+(win and 40 or 18));p:SetAttribute("RoundsSinceMonster",0)
   elseif role=="SURVIVOR"then p:SetAttribute("RoundsSinceMonster",(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
@@ -1000,8 +1031,11 @@ local function purify(p)
  local range=math.max(4,(C.PurifyDistance or 8)+(hf.PurifyRangeBonus or 0));local targetPlayer,targetBot,best=nil,nil,range
  for _,other in ipairs(Players:GetPlayers())do if other:GetAttribute("Role")=="MONSTER"then local q=root(other);if q then local d=(q.Position-r.Position).Magnitude;if d<=best then best=d;targetPlayer=other;targetBot=nil end end end end
  for _,b in ipairs(bots)do if b.role=="MONSTER"then local d=(b.part.Position-r.Position).Magnitude;if d<=best then best=d;targetBot=b;targetPlayer=nil end end end
- if targetPlayer then eliminateMonsterPlayer(targetPlayer);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))
- elseif targetBot then removeBot(targetBot);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))end
+ if targetPlayer then
+  if eliminateMonsterPlayer(targetPlayer)then awardContribution(p,(C.Reward and C.Reward.PurifyPlayerCoins)or 4);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))end
+ elseif targetBot then
+  if removeBot(targetBot)then awardContribution(p,(C.Reward and C.Reward.PurifyAICoins)or 1);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))end
+ end
 end
 local function survivorDash(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"then return end
@@ -1210,9 +1244,14 @@ task.spawn(function()
    if startRound()then
     while state=="RUNNING"and timeLeft>0 do
      for _,p in ipairs(Players:GetPlayers())do
-      if p:GetAttribute("Role")=="SURVIVOR"and os.clock()>=(tagGraceUntil[p]or 0)then local r=root(p);if r and nearestMonsterDistance(r.Position)<=C.TagDistance then infectPlayer(p)end end
+      if p:GetAttribute("Role")=="SURVIVOR"and os.clock()>=(tagGraceUntil[p]or 0)then
+       local r=root(p)
+       if r then local distance,sourcePlayer=nearestMonsterSource(r.Position);if distance<=C.TagDistance then infectPlayer(p,sourcePlayer)end end
+      end
      end
-     for _,b in ipairs(bots)do if b.role=="SURVIVOR"and nearestMonsterDistance(b.part.Position)<=C.TagDistance then infectBot(b)end end
+     for _,b in ipairs(bots)do
+      if b.role=="SURVIVOR"then local distance,sourcePlayer=nearestMonsterSource(b.part.Position);if distance<=C.TagDistance then infectBot(b,sourcePlayer)end end
+     end
      local humans,monsters=teamCounts();workspace:SetAttribute("HumanCount",humans);workspace:SetAttribute("MonsterCount",monsters)
      if humans==0 then endRound("MONSTER");break end
      if monsters==0 then endRound("SURVIVOR");break end
