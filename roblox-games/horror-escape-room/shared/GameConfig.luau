@@ -31,6 +31,12 @@ local Config={
   InfectRange=8,
   StationRecharge=35,
   StationCooldown=25,
+  MapUtilityRecharge=20,
+  MapUtilityCooldown=35,
+  MapUtilityDuration=8,
+  CoreRecharge=50,
+  CoreCycle=60,
+  CoreOpenSeconds=15,
   PressurePassives={
    {Minority=3,Majority=5,RegenMultiplier=1.25,StationBonus=0,LastStandEnergy=0,Label="열세 집중"},
    {Minority=2,Majority=6,RegenMultiplier=1.50,StationBonus=10,LastStandEnergy=0,Label="비상 충전"},
