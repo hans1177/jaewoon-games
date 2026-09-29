@@ -2057,18 +2057,45 @@ test('Studio evidence push conflicts reapply onto latest company-runtime instead
 });
 
 
-test('Studio retry preserves a verified product failure instead of letting later MCP infrastructure noise overwrite repair routing',()=>{
+test('Studio retry preserves product failure and retries MCP on one exact Studio process only',()=>{
   const block=workflow.slice(workflow.indexOf('- name: Run actual local play through official Studio MCP'),workflow.indexOf('- name: Finalize Studio session after final capture'));
   assert.match(block,/\$productFailureObserved = \$false/);
   assert.match(block,/ROBLOX_STUDIO_MCP_PRODUCT_FAILURE_PRESERVED=YES/);
   assert.match(block,/\^studio-product-/);
   const productThrow=block.indexOf('official Roblox Studio product failure preserved for repair');
-  const timeoutThrow=block.indexOf('official Roblox Studio MCP tool provider timed out after 3 clean Studio sessions');
+  const timeoutThrow=block.indexOf('official Roblox Studio MCP tool provider timed out after 3 MCP attempts on one exact Studio session');
   assert.ok(productThrow>=0&&timeoutThrow>productThrow);
-  const preservedAt=block.indexOf('ROBLOX_STUDIO_MCP_PRODUCT_FAILURE_PRESERVED=YES');
-  const restartAt=block.indexOf('ROBLOX_STUDIO_MCP_SESSION_RESTART=$attempt',preservedAt);
-  assert.ok(preservedAt>=0);
-  assert.ok(restartAt<0||block.lastIndexOf('break',restartAt)>preservedAt);
+  assert.match(block,/ROBLOX_STUDIO_MCP_SAME_STUDIO_RETRY=YES/);
+  assert.match(block,/ROBLOX_STUDIO_MCP_DUPLICATE_STUDIO_RELAUNCH=NO/);
+  assert.doesNotMatch(block,/ROBLOX_STUDIO_MCP_SESSION_RESTART=/);
+  assert.doesNotMatch(block,/ROBLOX_STUDIO_MCP_STUDIO_RELAUNCHED=/);
+  assert.doesNotMatch(block,/Start-Process -FilePath \$env:VIBE2_ROBLOX_STUDIO_PATH/);
+});
+
+test('Studio jobs serialize by game id and revalidate latest runtime before opening Studio',()=>{
+  const start=workflow.indexOf('\n  studio-mcp-auto-play:');
+  const end=workflow.indexOf('\n  ',start+5);
+  const jobHead=workflow.slice(start,workflow.indexOf('    steps:',start));
+  assert.match(jobHead,/group: roblox-studio-mcp-game-\$\{\{ matrix\.gameId \}\}/);
+  assert.match(jobHead,/cancel-in-progress: false/);
+  const guardAt=workflow.indexOf('- name: Revalidate exact same-game Studio need after concurrency wait',start);
+  const preflightAt=workflow.indexOf('- name: Verify official Studio MCP policy and runner',start);
+  const launchAt=workflow.indexOf('- name: Bind and open exact local Place artifact',start);
+  assert.ok(guardAt>=0&&preflightAt>guardAt&&launchAt>preflightAt);
+  const guardBlock=workflow.slice(guardAt,preflightAt);
+  assert.match(guardBlock,/git -C \.\.\/runtime fetch --no-tags origin company-runtime/);
+  assert.match(guardBlock,/ROBLOX_STUDIO_SAME_GAME_REVALIDATE=SKIP_ALREADY_HANDLED_OR_SUPERSEDED/);
+  assert.match(workflow,/if: steps\.studio_guard\.outputs\.run == 'true'/);
+});
+
+test('Studio exact artifact bind launches only once and never performs a pre-MCP duplicate relaunch',()=>{
+  const start=workflow.indexOf('- name: Bind and open exact local Place artifact');
+  const end=workflow.indexOf('- name: Run actual local play through official Studio MCP',start);
+  const block=workflow.slice(start,end);
+  assert.equal((block.match(/Start-Process -FilePath \$env:VIBE2_ROBLOX_STUDIO_PATH/g)||[]).length,1);
+  assert.match(block,/ROBLOX_STUDIO_MCP_SINGLE_SESSION_PROCESS_NOT_READY=YES/);
+  assert.match(block,/duplicate Studio relaunch forbidden/);
+  assert.doesNotMatch(block,/ROBLOX_STUDIO_MCP_PRE_MCP_RELAUNCH=YES/);
 });
 
 test('stale Studio workflow runs abort before opening Studio',()=>{
