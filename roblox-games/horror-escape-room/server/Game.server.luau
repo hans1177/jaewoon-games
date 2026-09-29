@@ -31,6 +31,8 @@ local lastMonsterIds={}
 local bots={}
 local cooldown={}
 local dashCooldown={}
+local infectAttackCooldown={}
+local energyStationReady={}
 local arena=nil
 local currentMapIndex=0
 local lastRequest={}
@@ -154,6 +156,23 @@ local function humanForm(p)
  for _,f in ipairs(C.HumanForms or{})do if f.Id==id then return f end end
  return(C.HumanForms and C.HumanForms[1])or{Id="BROADCAST",Name="방송부"}
 end
+local function energyMax()return math.max(1,tonumber(C.Energy and C.Energy.Max)or 100)end
+local function energyOf(p)return math.clamp(tonumber(p:GetAttribute("Energy"))or 0,0,energyMax())end
+local function setEnergy(p,value)
+ local v=math.clamp(tonumber(value)or 0,0,energyMax())
+ p:SetAttribute("Energy",v);p:SetAttribute("EnergyMax",energyMax())
+ return v
+end
+local function spendEnergy(p,cost,actionName)
+ cost=math.max(0,tonumber(cost)or 0)
+ local current=energyOf(p)
+ if current+1e-4<cost then
+  p:SetAttribute("EnergyFeedback","NO_ENERGY:"..tostring(actionName or"ACTION")..":"..tostring(math.ceil(cost-current)))
+  return false
+ end
+ setEnergy(p,current-cost)
+ return true
+end
 
 local cosmeticById={}
 for _,item in ipairs(C.Cosmetics or{})do cosmeticById[item.Id]=item end
@@ -183,7 +202,8 @@ local function load(p)
  p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0);p:SetAttribute("RoundScore",0)
  p:SetAttribute("LastRoundReward",0);p:SetAttribute("LastRoundWinner","");p:SetAttribute("LastRoundRole","")
  p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0);p:SetAttribute("RoundContributionCoins",0)
- p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+ p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+ p:SetAttribute("Energy",energyMax());p:SetAttribute("EnergyMax",energyMax());p:SetAttribute("EnergyFeedback","")
  p:SetAttribute("RoundParticipant",false);p:SetAttribute("RoundTeam","")
  p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
@@ -267,35 +287,33 @@ local function cloneWholeAsset(assetId,parent,pos,scale)
  return clone
 end
 local function addObjectiveStation(f,name,pos,index)
- local base=arenaPart(f,"Objective_"..name,Vector3.new(7,5,4),pos,Color3.fromRGB(70,79,87),Enum.Material.Metal)
- local screen=arenaPart(f,"ObjectiveScreen_"..name,Vector3.new(4.6,2.2,.35),pos+Vector3.new(0,.5,-2.2),Color3.fromRGB(91,201,176),Enum.Material.Neon);screen.CanCollide=false
- local prompt=Instance.new("ProximityPrompt");prompt.Name="ObjectivePrompt";prompt.ObjectText=name;prompt.ActionText="작동";prompt.HoldDuration=1.2;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Parent=base
- base:SetAttribute("ObjectiveIndex",index);base:SetAttribute("Completed",false)
+ local base=arenaPart(f,"EnergyStation_"..name,Vector3.new(7,5,4),pos,Color3.fromRGB(62,72,86),Enum.Material.Metal)
+ local screen=arenaPart(f,"EnergyScreen_"..name,Vector3.new(4.6,2.2,.35),pos+Vector3.new(0,.5,-2.2),Color3.fromRGB(84,181,235),Enum.Material.Neon);screen.CanCollide=false
+ local prompt=Instance.new("ProximityPrompt");prompt.Name="EnergyPrompt";prompt.ObjectText=name.." · 에너지";prompt.ActionText="충전";prompt.HoldDuration=.8;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Parent=base
+ base:SetAttribute("EnergyStationIndex",index)
  prompt.Triggered:Connect(function(p)
-  if state~="RUNNING"or p:GetAttribute("Role")~="SURVIVOR"or p:GetAttribute("Frozen")==true or base:GetAttribute("Completed")==true then return end
-  base:SetAttribute("Completed",true);prompt.Enabled=false;screen.Color=Color3.fromRGB(98,235,125)
-  objectiveState.done+=1
-  for _,player in ipairs(Players:GetPlayers())do
-   player:SetAttribute("ObjectivesDone",objectiveState.done);player:SetAttribute("ObjectivesTotal",objectiveState.total)
-  end
-  if objectiveState.done>=C.EscapeUnlockObjectives then
-   workspace:SetAttribute("EscapeUnlocked",true)
-   for _,exit in ipairs(f:GetDescendants())do
-    if exit:IsA("ProximityPrompt")and exit.Name=="EscapePrompt"then exit.Enabled=true end
-   end
-  end
+  if state~="RUNNING"or p:GetAttribute("Frozen")==true then return end
+  local role=p:GetAttribute("Role");if role~="SURVIVOR"and role~="MONSTER"then return end
+  local now=workspace:GetServerTimeNow()
+  local ready=energyStationReady[p]or{};energyStationReady[p]=ready
+  local availableAt=tonumber(ready[index])or 0
+  if now<availableAt then p:SetAttribute("EnergyFeedback","STATION_COOLDOWN:"..tostring(math.ceil(availableAt-now)));return end
+  local current=energyOf(p);local max=energyMax()
+  if current>=max-.01 then p:SetAttribute("EnergyFeedback","ENERGY_FULL");return end
+  local recharge=math.max(0,tonumber(C.Energy and C.Energy.StationRecharge)or 35)
+  local stationCooldown=math.max(1,tonumber(C.Energy and C.Energy.StationCooldown)or 25)
+  ready[index]=now+stationCooldown
+  setEnergy(p,current+recharge)
+  p:SetAttribute("EnergyFeedback","STATION_RECHARGE:"..tostring(math.floor(recharge)))
+  screen.Color=Color3.fromRGB(150,226,255)
+  task.delay(.25,function()if screen and screen.Parent then screen.Color=Color3.fromRGB(84,181,235)end end)
  end)
  return base
 end
 local function addEscapeGate(f,mapId,pos)
- local gate=arenaPart(f,"EscapeGate",Vector3.new(18,12,3),pos,Color3.fromRGB(68,96,86),Enum.Material.Metal)
- local sign=arenaPart(f,"EscapeSign",Vector3.new(12,2,.4),pos+Vector3.new(0,6,-1.8),Color3.fromRGB(100,230,156),Enum.Material.Neon);sign.CanCollide=false
- local prompt=Instance.new("ProximityPrompt");prompt.Name="EscapePrompt";prompt.ObjectText="비상 탈출구";prompt.ActionText="탈출";prompt.HoldDuration=1.4;prompt.MaxActivationDistance=10;prompt.RequiresLineOfSight=false;prompt.Enabled=false;prompt.Parent=gate
- prompt.Triggered:Connect(function(p)
-  if state=="RUNNING"and p:GetAttribute("Role")=="SURVIVOR"and p:GetAttribute("Frozen")~=true and workspace:GetAttribute("EscapeUnlocked")==true then
-   escapedPlayers[p]=true;p:SetAttribute("Escaped",true);workspace:SetAttribute("SurvivorEscapeTriggered",true)
-  end
- end)
+ local gate=arenaPart(f,"EmergencyGate",Vector3.new(18,12,3),pos,Color3.fromRGB(68,78,86),Enum.Material.Metal)
+ local sign=arenaPart(f,"EmergencySign",Vector3.new(12,2,.4),pos+Vector3.new(0,6,-1.8),Color3.fromRGB(112,130,145),Enum.Material.Neon);sign.CanCollide=false
+ gate:SetAttribute("DecorativeOnly",true);gate:SetAttribute("MapId",mapId)
  return gate
 end
 local function decorateArenaWithOfficialAssets(f,map)
@@ -794,7 +812,7 @@ local function bot(role,pos)
   add("AIHumanLegR",Vector3.new(.78,2.85,.9),Vector3.new(.64,-3.1,0),Color3.fromRGB(42,47,54),Enum.Material.Fabric)
   add("AIHumanTool",Vector3.new(.42,1.9,.42),Vector3.new(1.9,-.1,-.65),Color3.fromRGB(91,205,220),Enum.Material.Neon)
  end
- local b={part=p,role=role,speed=role=="MONSTER"and 18 or 14,monsterId="DRACULA",visuals=visuals,infectReadyAt=0,purifyReadyAt=0,motionClock=math.random()*6.28}
+ local b={part=p,role=role,speed=role=="MONSTER"and 18 or 14,monsterId="DRACULA",visuals=visuals,infectReadyAt=0,purifyReadyAt=0,infectAttackReadyAt=0,energy=energyMax(),motionClock=math.random()*6.28}
  table.insert(bots,b);return b
 end
 local function weightPick(list)
@@ -1011,7 +1029,8 @@ local function startRound()
  for _,p in ipairs(h)do
   p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
   p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0);p:SetAttribute("RoundScore",0)
-  p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+  p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+  setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("RoundContributionCoins",0);p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0)
   p:SetAttribute("RoundParticipant",true)
   local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
@@ -1033,7 +1052,8 @@ local function endRound(winner)
   p:SetAttribute("RoundScore",win and 1 or 0)
   p:SetAttribute("LastRoundReward",reward);p:SetAttribute("LastRoundWinner",winner);p:SetAttribute("LastRoundRole",team)
   p:SetAttribute("LastRoundBaseReward",baseReward);p:SetAttribute("LastRoundWinBonus",winBonus);p:SetAttribute("LastRoundContribution",contribution)
-  p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+  p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
+  setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("RoundParticipant",false)
   if m then p:SetAttribute("MonsterXP",(p:GetAttribute("MonsterXP")or 0)+(win and 40 or 18));p:SetAttribute("RoundsSinceMonster",0)
   elseif role=="SURVIVOR"then p:SetAttribute("RoundsSinceMonster",(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
@@ -1062,11 +1082,13 @@ local function purify(p)
  local hf=humanForm(p);local now=os.clock();local cd=math.max(2,(C.PurifyCooldown or 5)+(hf.PurifyCooldownBonus or 0))
  local lastPurify=purifyCooldown[p]
  if lastPurify and now-lastPurify<cd then return end
- local r=root(p);if not r then return end;purifyCooldown[p]=now
- p:SetAttribute("PurifyReadyAt",workspace:GetServerTimeNow()+cd)
+ local r=root(p);if not r then return end
  local range=math.max(4,(C.PurifyDistance or 8)+(hf.PurifyRangeBonus or 0));local targetPlayer,targetBot,best=nil,nil,range
  for _,other in ipairs(Players:GetPlayers())do if other:GetAttribute("Role")=="MONSTER"then local q=root(other);if q then local d=(q.Position-r.Position).Magnitude;if d<=best then best=d;targetPlayer=other;targetBot=nil end end end end
  for _,b in ipairs(bots)do if b.role=="MONSTER"then local d=(b.part.Position-r.Position).Magnitude;if d<=best then best=d;targetBot=b;targetPlayer=nil end end end
+ if not targetPlayer and not targetBot then p:SetAttribute("EnergyFeedback","NO_TARGET:PURIFY");return end
+ if not spendEnergy(p,C.Energy and C.Energy.PurifyCost or 35,"PURIFY")then return end
+ purifyCooldown[p]=now;p:SetAttribute("PurifyReadyAt",workspace:GetServerTimeNow()+cd)
  if targetPlayer then
   if eliminateMonsterPlayer(targetPlayer)then awardContribution(p,(C.Reward and C.Reward.PurifyPlayerCoins)or 4);p:SetAttribute("FeedbackEvent","PURIFY_HIT:"..tostring(math.floor(os.clock()*1000)))end
  elseif targetBot then
@@ -1080,6 +1102,7 @@ local function survivorDash(p)
  local lastDash=dashCooldown[p]
  if lastDash and now-lastDash<cd then return end
  local r=root(p);if r then
+  if not spendEnergy(p,C.Energy and C.Energy.DashCost or 25,"DASH")then return end
   dashCooldown[p]=now;p:SetAttribute("DashReadyAt",workspace:GetServerTimeNow()+cd)
   movementGraceUntil[p]=now+.7
   r.AssemblyLinearVelocity=r.CFrame.LookVector*(52+(hf.DashPowerBonus or 0))+Vector3.new(0,r.AssemblyLinearVelocity.Y,0)
@@ -1090,6 +1113,7 @@ local function ability(p)
  if state~="RUNNING"or p:GetAttribute("Role")~="MONSTER"then return end
  local now=os.clock();local lastAbility=cooldown[p];if lastAbility and now-lastAbility<C.MonsterAbilityCooldown then return end
  local r=root(p);if not r then return end
+ if not spendEnergy(p,C.Energy and C.Energy.AbilityCost or 45,"ABILITY")then return end
  cooldown[p]=now;p:SetAttribute("AbilityReadyAt",workspace:GetServerTimeNow()+C.MonsterAbilityCooldown)
  local f=form(p);movementGraceUntil[p]=now+.8
  local infectedAbility=p:GetAttribute("Infected")==true and humanForm(p).InfectedAbility or nil
@@ -1103,6 +1127,36 @@ local function ability(p)
   for _,o in ipairs(Players:GetPlayers())do if o:GetAttribute("Role")=="SURVIVOR"and o:GetAttribute("Frozen")~=true then local q=root(o);if q and(q.Position-r.Position).Magnitude<=22 then speed(o,9);task.delay(3,function()if o.Parent and o:GetAttribute("Frozen")~=true then speed(o,16)end end)end end end
  elseif f.Ability=="SHADOW_STEP"then r.CFrame=r.CFrame+r.CFrame.LookVector*18 end
 end
+local function infectAttack(p)
+ if state~="RUNNING"or p:GetAttribute("Role")~="MONSTER"then return end
+ local now=os.clock();local cd=math.max(.4,tonumber(C.Energy and C.Energy.InfectAttackCooldown)or 1.2)
+ local last=infectAttackCooldown[p];if last and now-last<cd then return end
+ if now<(p:GetAttribute("InfectionReadyAt")or 0)then return end
+ local r=root(p);if not r then return end
+ local range=math.max(2,tonumber(C.Energy and C.Energy.InfectRange)or 8)
+ local targetPlayer,targetBot,best=nil,nil,range
+ for _,other in ipairs(Players:GetPlayers())do
+  if other:GetAttribute("Role")=="SURVIVOR"and os.clock()>=(tagGraceUntil[other]or 0)then
+   local q=root(other)
+   if q then
+    local delta=q.Position-r.Position;local d=delta.Magnitude
+    if d<=best and d>.001 and r.CFrame.LookVector:Dot(delta.Unit)>=.05 then best=d;targetPlayer=other;targetBot=nil end
+   end
+  end
+ end
+ for _,b in ipairs(bots)do
+  if b.role=="SURVIVOR"then
+   local delta=b.part.Position-r.Position;local d=delta.Magnitude
+   if d<=best and d>.001 and r.CFrame.LookVector:Dot(delta.Unit)>=.05 then best=d;targetBot=b;targetPlayer=nil end
+  end
+ end
+ if not targetPlayer and not targetBot then p:SetAttribute("EnergyFeedback","NO_TARGET:INFECT");return end
+ if not spendEnergy(p,C.Energy and C.Energy.InfectAttackCost or 30,"INFECT")then return end
+ infectAttackCooldown[p]=now;p:SetAttribute("InfectReadyAt",workspace:GetServerTimeNow()+cd)
+ local hit=targetPlayer and infectPlayer(targetPlayer,p)or infectBot(targetBot,p)
+ if hit then p:SetAttribute("FeedbackEvent","INFECT_ATTACK_HIT:"..tostring(math.floor(now*1000)))end
+end
+
 local function nextMonster(p)
  if state=="RUNNING"then return end
  local xp=p:GetAttribute("MonsterXP")or 0;local cur=legacyMonsterIds[p:GetAttribute("MonsterForm")or"DRACULA"]or(p:GetAttribute("MonsterForm")or"DRACULA");local idx=1
@@ -1158,12 +1212,13 @@ remote.OnServerEvent:Connect(function(p,a,value)
  elseif a==C.Actions.SOLO_SURVIVOR and #Players:GetPlayers()==1 and state~="RUNNING"then p:SetAttribute("MonsterPreference","SURVIVOR");p:SetAttribute("SoloRole","SURVIVOR");p:SetAttribute("LobbySelectionConfirmed",true);soloStartRequested=true
  elseif a==C.Actions.PURIFY or a==C.Actions.RESCUE then purify(p)
  elseif a==C.Actions.DASH then survivorDash(p)
+ elseif a==C.Actions.INFECT_ATTACK then infectAttack(p)
  elseif a==C.Actions.ABILITY then ability(p)
  elseif a==C.Actions.NEXT_MONSTER then nextMonster(p)
  elseif a==C.Actions.NEXT_HUMAN then nextHuman(p)
  elseif a==C.Actions.BUY_COSMETIC then buyCosmetic(p,value)
  elseif a==C.Actions.EQUIP_COSMETIC then equipCosmetic(p,value)end
- if a==C.Actions.PURIFY or a==C.Actions.RESCUE or a==C.Actions.DASH or a==C.Actions.ABILITY then foundationCheckpoint("CORE_LOOP_READY",p,{action=a})end
+ if a==C.Actions.PURIFY or a==C.Actions.RESCUE or a==C.Actions.DASH or a==C.Actions.INFECT_ATTACK or a==C.Actions.ABILITY then foundationCheckpoint("CORE_LOOP_READY",p,{action=a})end
  broadcastMultiplayerSync(p)
 end)
 
@@ -1262,7 +1317,7 @@ Players.PlayerRemoving:Connect(function(p)
  local leavingRole=p:GetAttribute("Role")
  local rr=root(p)
  local leavingPos=rr and rr.Position or(leavingRole=="MONSTER"and monsterSpawn or survivorSpawns[1])
- save(p);cooldown[p]=nil;dashCooldown[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
+ save(p);cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;energyStationReady[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
  task.defer(function()
   if state=="RUNNING"and arena and arena.Parent and(leavingRole=="MONSTER"or leavingRole=="SURVIVOR")then
    bot(leavingRole,leavingPos)
@@ -1302,14 +1357,10 @@ task.spawn(function()
    end
    if startRound()then
     while state=="RUNNING"and timeLeft>0 do
+     local regen=math.max(0,tonumber(C.Energy and C.Energy.RegenPerSecond)or 10)*.25
      for _,p in ipairs(Players:GetPlayers())do
-      if p:GetAttribute("Role")=="SURVIVOR"and os.clock()>=(tagGraceUntil[p]or 0)then
-       local r=root(p)
-       if r then local distance,sourcePlayer=nearestMonsterSource(r.Position);if distance<=C.TagDistance then infectPlayer(p,sourcePlayer)end end
-      end
-     end
-     for _,b in ipairs(bots)do
-      if b.role=="SURVIVOR"then local distance,sourcePlayer=nearestMonsterSource(b.part.Position);if distance<=C.TagDistance then infectBot(b,sourcePlayer)end end
+      local role=p:GetAttribute("Role")
+      if role=="SURVIVOR"or role=="MONSTER"then setEnergy(p,energyOf(p)+regen)end
      end
      local humans,monsters=teamCounts();workspace:SetAttribute("HumanCount",humans);workspace:SetAttribute("MonsterCount",monsters)
      if humans==0 then endRound("MONSTER");break end
