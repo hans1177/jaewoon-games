@@ -24,6 +24,7 @@ local foundationRemote=RS:FindFirstChild("RuntimeFoundationReport")or Instance.n
 foundationRemote.Name="RuntimeFoundationReport";foundationRemote.Parent=RS
 local qaCaptureLast={}
 local roomDirectory=MemoryStoreService:GetSortedMap("midnight-infection-room-directory-v1")
+local studioRoomFallback=RunService:IsStudio()
 local roomServer=game.PrivateServerId~=""and game.PrivateServerOwnerId==0
 local roomCode=""
 local roomHostUserId=0
@@ -195,6 +196,13 @@ local function teleportToReservedRoom(p,record)
 end
 local function createReservedRoom(p,visibility)
  if roomServer or state=="RUNNING"or not roomActionReady(p)then return end
+ if studioRoomFallback then
+  roomServer=true;roomCode="000001";roomHostUserId=p.UserId;roomHostName=p.DisplayName;roomVisibility=normalizeRoomVisibility(visibility);roomStartRequested=false
+  roomJoinedAt[p]=os.clock()
+  workspace:SetAttribute("StudioRoomFallback",true)
+  roomFeedback(p,"CREATED",roomCode);syncRoomState();syncLobbyState("ROOM_WAITING")
+  return
+ end
  local code=createUniqueRoomCode()
  if not code then roomFeedback(p,"ERROR","방 코드 생성 실패");return end
  local ok,accessCode=pcall(function()
@@ -280,6 +288,13 @@ local function startRoomMatch(p)
 end
 local function leaveReservedRoom(p)
  if not roomServer or state=="RUNNING"then return end
+ if studioRoomFallback then
+  roomServer=false;roomCode="";roomHostUserId=0;roomHostName="";roomVisibility="PUBLIC";roomStartRequested=false
+  workspace:SetAttribute("StudioRoomFallback",false)
+  for _,player in ipairs(Players:GetPlayers())do player:SetAttribute("RoundState","ROOM_BROWSER");roomFeedback(player,"LEFT","로비로 이동")end
+  syncLobbyState("ROOM_BROWSER")
+  return
+ end
  roomFeedback(p,"TELEPORTING","로비로 이동")
  pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p})end)
 end
