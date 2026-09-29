@@ -1752,7 +1752,7 @@ test('missing local character aborts before movement and routes to exact-source 
   const abortAt=helper.indexOf('ROBLOX_STUDIO_MISSING_CHARACTER_ABORT:NO_PLAYABLE_CHARACTER');
   const movementAt=helper.indexOf("const keyboardTool=client.tool('user_keyboard_input')");
   assert.ok(abortAt>0&&abortAt<movementAt);
-  assert.match(helper,/spawnConfirm\\?\\.player\\?\\.characterPresent===false/);
+  assert.ok(helper.includes('spawnConfirm?.player?.characterPresent===false'));
   const broken=runtime();
   broken.runtimeVerified=false;
   broken.scenarioContractRequired=true;
