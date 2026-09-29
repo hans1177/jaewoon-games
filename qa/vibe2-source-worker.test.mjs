@@ -4997,3 +4997,24 @@ test('Roblox repetition guard preserves short runs and repetitions already prese
     }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
   }
 });
+
+
+test('Roblox focused context keeps complete boundary lines and separates the sole editable anchor',()=>{
+  const sourceRoot=tempRoot(),relative='client/Game.client.luau';
+  const anchor='status.BackgroundColor3 = Color3.fromRGB(20, 40, 60)';
+  const source=['local before = "'+('b'.repeat(1600))+'"',
+    'local status = script.Parent',anchor,'status.Visible = true',
+    'local after = "'+('a'.repeat(1600))+'"'].join('\n');
+  const prompt=['Engine: roblox','Goal: improve visual presentation','Allowed edit paths: '+relative,'',
+    '=== FILE '+relative+' [EDITABLE] ===',source].join('\n');
+  write(path.join(sourceRoot,relative),source);
+  for(const root of ['',sourceRoot]){
+    const focused=buildFocusedReplaceOnlyPrompt(prompt,{sourceRoot:root,responsibleFiles:[relative]});
+    assert.equal(focused.spec.find,anchor);
+    assert.equal(focused.spec.context,['local status = script.Parent',anchor,'status.Visible = true'].join('\n'));
+    assert.match(focused.prompt,/Code before and after it remains in the file unchanged/);
+    assert(focused.prompt.includes('[EXACT FIND ANCHOR BEGIN]\n'+anchor+'\n[EXACT FIND ANCHOR END]'));
+    assert.equal(normalizeFocusedReplaceOnly({replace:anchor.replace('20, 40, 60','30, 50, 70')},focused.spec).edits[0].find,anchor);
+  }
+  assert.equal(fs.readFileSync(path.join(sourceRoot,relative),'utf8'),source);
+});

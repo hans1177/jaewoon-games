@@ -1897,26 +1897,28 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
   const selected=candidates[index]||null;
   if(!selected?.find)return null;
   let context=selected.find;
-  // 초기 생성은 디스크 파일이 없으므로 승인된 소스 창에서도 주변 문맥을 확보한다.
-  const sourceWindow=raw.split('\n=== FILE ').slice(1).find(section=>section.startsWith(selected.path+' ['))?.split('\n').slice(1).join('\n')||'';
-  const windowAt=sourceWindow.indexOf(selected.find);
-  if(windowAt>=0){
-    const radius=robloxTask&&presentationTask?500:1400;
-    context=sourceWindow.slice(Math.max(0,windowAt-radius),windowAt+selected.find.length+radius).trim();
-  }
+  // 초기 생성은 승인된 소스 창, 기존 파일 수리는 디스크 원본을 사용한다.
+  let contextSource=raw.split('\n=== FILE ').slice(1).find(section=>section.startsWith(selected.path+' ['))?.split('\n').slice(1).join('\n')||'';
   if(clean(sourceRoot)){
     try{
       const root=path.resolve(sourceRoot),relative=posix(selected.path),file=path.resolve(root,relative);
       if(file.startsWith(root+path.sep)&&fs.existsSync(file)&&fs.statSync(file).isFile()){
-        const source=fs.readFileSync(file,'utf8'),at=source.indexOf(selected.find);
-        if(at>=0){
-          const radius=robloxTask&&presentationTask?500:1400;
-          const before=source.slice(Math.max(0,at-radius),at);
-          const after=source.slice(at+selected.find.length,Math.min(source.length,at+selected.find.length+radius));
-          context=(before+selected.find+after).trim();
-        }
+        const source=fs.readFileSync(file,'utf8');
+        if(source.includes(selected.find))contextSource=source;
       }
     }catch{}
+  }
+  const at=contextSource.indexOf(selected.find);
+  if(at>=0){
+    const radius=robloxTask&&presentationTask?500:1400;
+    let start=Math.max(0,at-radius),end=Math.min(contextSource.length,at+selected.find.length+radius);
+    // Luau 문맥 경계에서 잘린 대입문·문자열을 완전한 소스처럼 전달하지 않는다.
+    if(robloxTask){
+      if(start>0)start=Math.min(at,contextSource.indexOf('\n',start-1)+1||at);
+      if(end<contextSource.length)end=Math.max(at+selected.find.length,contextSource.lastIndexOf('\n',end));
+    }
+    context=contextSource.slice(start,end);
+    if(!robloxTask)context=context.trim();
   }
   return{path:selected.path,find:selected.find,context};
 }
@@ -1970,7 +1972,8 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'Preserve save keys, gameplay values, existing behavior, and unrelated systems unless the Goal explicitly requires changing them.',
       'No markdown, prose, comments outside source, extra keys, placeholders, ellipsis, or unchanged copy.',
       'SOURCE CONTEXT AROUND FIXED ANCHOR:',
-      spec.context
+      /Engine:\s*roblox/i.test(raw)?'Only the EXACT FIND ANCHOR is replaced. Code before and after it remains in the file unchanged. Do not copy the enclosing function or retained statements into replace. The boundary labels below are not source code.':'',
+      /Engine:\s*roblox/i.test(raw)?spec.context.replace(spec.find,()=>'\n[EXACT FIND ANCHOR BEGIN]\n'+spec.find+'\n[EXACT FIND ANCHOR END]\n'):spec.context
     ].filter(Boolean).join('\n')
   };
 }
