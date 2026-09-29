@@ -1,6 +1,6 @@
 -- 파일명: roblox-games/horror-escape-room/client/Game.client.luau
 -- roblox-games/horror-escape-room/client/Game.client.luau
--- 심야 술래잡기 모바일 추격 HUD / 상황별 행동 UI
+-- 심야 감염전 모바일 추격 HUD / 상황별 행동 UI
 
 -- 서비스
 local Players=game:GetService("Players")
@@ -744,7 +744,7 @@ local ruleTitle=Instance.new("TextLabel")
 ruleTitle.Size=UDim2.new(1,-16,0,24)
 ruleTitle.Position=UDim2.fromOffset(8,6)
 ruleTitle.BackgroundTransparency=1
-ruleTitle.Text="심야 술래잡기 · 게임 방법"
+ruleTitle.Text="심야 감염전 · 게임 방법"
 ruleTitle.TextColor3=Color3.fromRGB(255,225,160)
 ruleTitle.TextSize=15
 ruleTitle.Font=Enum.Font.GothamBold
