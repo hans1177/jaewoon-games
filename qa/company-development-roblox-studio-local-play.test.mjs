@@ -2024,7 +2024,7 @@ test('F9 Studio multiplayer helper is defined and drives StudioTestService late-
   assert.equal(result.pass,true);
 });
 
-test('F9 Studio multiplayer helper cannot pass on server-only fake population without client replication',async()=>{
+test('F9 Studio multiplayer helper cannot pass a mismatched client roster as synchronized multiplayer',async()=>{
   const schema={
     type:'object',
     required:['studio_id','code','data_model_type'],
@@ -2052,7 +2052,7 @@ test('F9 Studio multiplayer helper cannot pass on server-only fake population wi
       }
       if(context==='Client'&&code.includes('ROBLOX_STUDIO_MULTIPLAYER_CLIENT=')){
         return response('ROBLOX_STUDIO_MULTIPLAYER_CLIENT='+JSON.stringify({
-          count:1,remoteCount:2,players:[{name:'Player1'}]
+          count:2,remoteCount:2,players:[{name:'Other1'},{name:'Other2'}]
         }));
       }
       throw new Error('fake-client-replication-missing');
