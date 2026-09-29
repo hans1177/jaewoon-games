@@ -786,7 +786,7 @@ local setupPanel=Instance.new("Frame")
 setupPanel.Name="RoleSetup"
 setupPanel.AnchorPoint=Vector2.new(.5,.5)
 setupPanel.Position=UDim2.fromScale(.5,.64)
-setupPanel.Size=UDim2.fromOffset(304,194)
+setupPanel.Size=UDim2.fromOffset(304,238)
 setupPanel.BackgroundColor3=Color3.fromRGB(25,27,35)
 setupPanel.BackgroundTransparency=.04
 setupPanel.ZIndex=10
@@ -844,12 +844,176 @@ for i,a in ipairs(setupButtons)do
  end)
 end
 
+local shopOpenButton=makeButton(setupPanel,"코스메틱 상점",Color3.fromRGB(66,72,88))
+shopOpenButton.ZIndex=11;shopOpenButton.Size=UDim2.fromOffset(118,34);shopOpenButton.Position=UDim2.new(.5,-59,0,146)
+
 local humanCycle=makeButton(setupPanel,"인간 변경",Color3.fromRGB(49,91,105))
 humanCycle.ZIndex=11;humanCycle.Size=UDim2.new(.44,0,0,36);humanCycle.Position=UDim2.new(.04,0,1,-42)
 humanCycle.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.NEXT_HUMAN)end)
 local monsterCycle=makeButton(setupPanel,"몬스터 변경",Color3.fromRGB(76,58,96))
 monsterCycle.ZIndex=11;monsterCycle.Size=UDim2.new(.44,0,0,36);monsterCycle.Position=UDim2.new(.52,0,1,-42)
 monsterCycle.Activated:Connect(function()actionSfx.TimePosition=0;actionSfx:Play();remote:FireServer(C.Actions.NEXT_MONSTER)end)
+
+local resultTitle
+
+-- 코스메틱 상점: 전투 능력치는 바꾸지 않고 프로필 프레임/칭호/결과 화면 색만 바꾼다.
+local shopPanel=Instance.new("Frame")
+shopPanel.Name="CosmeticShop"
+shopPanel.AnchorPoint=Vector2.new(.5,.5)
+shopPanel.Position=UDim2.fromScale(.5,.5)
+shopPanel.Size=UDim2.fromOffset(324,356)
+shopPanel.BackgroundColor3=Color3.fromRGB(20,23,30)
+shopPanel.BackgroundTransparency=.02
+shopPanel.ZIndex=30
+shopPanel.Visible=false
+shopPanel.Parent=gui
+roundify(shopPanel,16);outline(shopPanel,.3)
+
+local shopTitle=Instance.new("TextLabel")
+shopTitle.Size=UDim2.new(1,-88,0,30)
+shopTitle.Position=UDim2.fromOffset(12,10)
+shopTitle.BackgroundTransparency=1
+shopTitle.Text="코스메틱 상점"
+shopTitle.TextColor3=Color3.fromRGB(240,243,248)
+shopTitle.TextSize=20
+shopTitle.Font=Enum.Font.GothamBold
+shopTitle.TextXAlignment=Enum.TextXAlignment.Left
+shopTitle.ZIndex=31
+shopTitle.Parent=shopPanel
+
+local shopCoins=Instance.new("TextLabel")
+shopCoins.Size=UDim2.fromOffset(112,24)
+shopCoins.Position=UDim2.fromOffset(12,42)
+shopCoins.BackgroundTransparency=1
+shopCoins.TextColor3=Color3.fromRGB(255,211,118)
+shopCoins.TextSize=13
+shopCoins.Font=Enum.Font.GothamBold
+shopCoins.TextXAlignment=Enum.TextXAlignment.Left
+shopCoins.ZIndex=31
+shopCoins.Parent=shopPanel
+
+local shopClose=makeButton(shopPanel,"닫기",Color3.fromRGB(72,76,88))
+shopClose.Size=UDim2.fromOffset(64,30)
+shopClose.Position=UDim2.new(1,-76,0,10)
+shopClose.ZIndex=31
+
+local shopFeedback=Instance.new("TextLabel")
+shopFeedback.Size=UDim2.new(1,-24,0,24)
+shopFeedback.Position=UDim2.fromOffset(12,66)
+shopFeedback.BackgroundTransparency=1
+shopFeedback.TextColor3=Color3.fromRGB(184,193,208)
+shopFeedback.TextSize=11
+shopFeedback.Font=Enum.Font.GothamMedium
+shopFeedback.TextXAlignment=Enum.TextXAlignment.Left
+shopFeedback.ZIndex=31
+shopFeedback.Parent=shopPanel
+
+local shopList=Instance.new("ScrollingFrame")
+shopList.Name="CosmeticList"
+shopList.Size=UDim2.new(1,-20,1,-100)
+shopList.Position=UDim2.fromOffset(10,92)
+shopList.BackgroundTransparency=1
+shopList.BorderSizePixel=0
+shopList.ScrollBarThickness=4
+shopList.AutomaticCanvasSize=Enum.AutomaticSize.Y
+shopList.CanvasSize=UDim2.new()
+shopList.ZIndex=31
+shopList.Parent=shopPanel
+
+local shopLayout=Instance.new("UIListLayout")
+shopLayout.Padding=UDim.new(0,7)
+shopLayout.SortOrder=Enum.SortOrder.LayoutOrder
+shopLayout.Parent=shopList
+
+local cosmeticButtons={}
+local function ownedCosmeticSet()
+ local owned={DEFAULT=true}
+ for id in string.gmatch(tostring(p:GetAttribute("OwnedCosmetics")or"DEFAULT"),"[^,]+")do owned[id]=true end
+ return owned
+end
+local function cosmeticItem(id)
+ for _,item in ipairs(C.Cosmetics or{})do if item.Id==id then return item end end
+ return(C.Cosmetics and C.Cosmetics[1])or{Id="DEFAULT",Name="기본 프레임",Price=0,Accent=Color3.fromRGB(170,209,220),Title="신입 참가자"}
+end
+for index,item in ipairs(C.Cosmetics or{})do
+ local row=Instance.new("Frame")
+ row.Name="Cosmetic_"..item.Id
+ row.Size=UDim2.new(1,-4,0,48)
+ row.BackgroundColor3=Color3.fromRGB(31,35,44)
+ row.BackgroundTransparency=.04
+ row.LayoutOrder=index
+ row.ZIndex=31
+ row.Parent=shopList
+ roundify(row,10)
+
+ local accent=Instance.new("Frame")
+ accent.Size=UDim2.fromOffset(5,36)
+ accent.Position=UDim2.fromOffset(7,6)
+ accent.BackgroundColor3=item.Accent
+ accent.BorderSizePixel=0
+ accent.ZIndex=32
+ accent.Parent=row
+ roundify(accent,4)
+
+ local label=Instance.new("TextLabel")
+ label.Size=UDim2.new(1,-128,1,-8)
+ label.Position=UDim2.fromOffset(19,4)
+ label.BackgroundTransparency=1
+ label.Text=string.format("%s\n%s",item.Name,item.Title)
+ label.TextColor3=Color3.fromRGB(230,234,241)
+ label.TextSize=11
+ label.TextWrapped=true
+ label.Font=Enum.Font.GothamBold
+ label.TextXAlignment=Enum.TextXAlignment.Left
+ label.ZIndex=32
+ label.Parent=row
+
+ local action=makeButton(row,"-",Color3.fromRGB(65,74,91))
+ action.Size=UDim2.fromOffset(98,36)
+ action.Position=UDim2.new(1,-105,0,6)
+ action.ZIndex=32
+ cosmeticButtons[item.Id]=action
+ action.Activated:Connect(function()
+  local owned=ownedCosmeticSet()
+  local equipped=tostring(p:GetAttribute("EquippedCosmetic")or"DEFAULT")
+  if equipped==item.Id then return end
+  actionSfx.TimePosition=0;actionSfx:Play()
+  if owned[item.Id]then remote:FireServer(C.Actions.EQUIP_COSMETIC,item.Id)
+  else remote:FireServer(C.Actions.BUY_COSMETIC,item.Id)end
+ end)
+end
+
+local function updateCosmeticUI()
+ local owned=ownedCosmeticSet()
+ local equipped=tostring(p:GetAttribute("EquippedCosmetic")or"DEFAULT")
+ local equippedItem=cosmeticItem(equipped)
+ local accent=equippedItem.Accent or Color3.fromRGB(170,209,220)
+ shopCoins.Text=string.format("보유 %d 코인",tonumber(p:GetAttribute("Coins"))or 0)
+ shopTitle.TextColor3=accent
+ ruleTitle.TextColor3=accent
+ setupTitle.TextColor3=accent
+ if resultTitle then resultTitle.TextColor3=accent end
+ selectionStatus.TextColor3=accent
+ loadingFill.BackgroundColor3=accent
+ for _,item in ipairs(C.Cosmetics or{})do
+  local button=cosmeticButtons[item.Id]
+  if button then
+   if equipped==item.Id then
+    button.Text="장착 중";button.BackgroundColor3=accent
+   elseif owned[item.Id]then
+    button.Text="장착";button.BackgroundColor3=Color3.fromRGB(65,91,82)
+   else
+    button.Text=string.format("%d 코인",item.Price or 0);button.BackgroundColor3=Color3.fromRGB(72,67,85)
+   end
+  end
+ end
+end
+
+shopOpenButton.Activated:Connect(function()
+ shopPanel.Visible=true
+ updateCosmeticUI()
+end)
+shopClose.Activated:Connect(function()shopPanel.Visible=false end)
 
 -- 라운드 행동 버튼: 역할에 따라 딱 필요한 버튼만 노출
 local actionDock=Instance.new("Frame")
@@ -905,7 +1069,7 @@ resultPanel.Visible=false
 resultPanel.Parent=gui
 roundify(resultPanel,16);outline(resultPanel,.3)
 
-local resultTitle=Instance.new("TextLabel")
+resultTitle=Instance.new("TextLabel")
 resultTitle.Size=UDim2.new(1,-18,0,38)
 resultTitle.Position=UDim2.fromOffset(9,10)
 resultTitle.BackgroundTransparency=1
@@ -999,7 +1163,8 @@ local function render()
  lobbyStatus.Text=string.format("실제 %d명 · AI %d명 충원 예정 · %s",realPlayers,aiFill,phaseText)
  local pref=p:GetAttribute("MonsterPreference")or"ANY"
  local prefText=pref=="MONSTER"and"몬스터 선호"or pref=="SURVIVOR"and"인간 선호"or"자동 배정"
- selectionStatus.Text=string.format("%s · 인간 %s · 몬스터 %s",prefText,humanName(),monsterName())
+ local equippedItem=cosmeticItem(tostring(p:GetAttribute("EquippedCosmetic")or"DEFAULT"))
+ selectionStatus.Text=string.format("%s · 인간 %s · 몬스터 %s · %s",prefText,humanName(),monsterName(),equippedItem.Title or"신입 참가자")
 
  local selectionConfirmed=p:GetAttribute("LobbySelectionConfirmed")==true
  local spectating=round=="SPECTATING"
@@ -1009,6 +1174,7 @@ local function render()
  mapPanel.Visible=running
  spectatorPanel.Visible=spectating
  resultPanel.Visible=resultCode~=nil
+ if running or spectating or resultCode then shopPanel.Visible=false end
  if resultCode then
   resultTitle.Text=resultCode=="SURVIVOR"and"인간 승리"or resultCode=="MONSTER"and"몬스터 승리"or"무승부"
   local reward=tonumber(p:GetAttribute("LastRoundReward"))or 0
@@ -1042,9 +1208,21 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","AbilityReadyAt","Spectating"})do
- p:GetAttributeChangedSignal(k):Connect(render)
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","AbilityReadyAt","Spectating","OwnedCosmetics","EquippedCosmetic"})do
+ p:GetAttributeChangedSignal(k):Connect(function()render();updateCosmeticUI()end)
 end
+p:GetAttributeChangedSignal("CosmeticFeedback"):Connect(function()
+ local raw=tostring(p:GetAttribute("CosmeticFeedback")or"")
+ local kind,id,price=string.match(raw,"^([^:]+):([^:]+):?(%d*)$")
+ local item=cosmeticItem(id or"DEFAULT")
+ if kind=="PURCHASED"then shopFeedback.Text=item.Name.." 구매 완료"
+ elseif kind=="EQUIPPED"then shopFeedback.Text=item.Name.." 장착 완료"
+ elseif kind=="NEED_COINS"then shopFeedback.Text=string.format("코인 부족 · %s 필요",price~=""and price or tostring(item.Price or 0))
+ elseif kind=="OWNED"then shopFeedback.Text="이미 보유 중"
+ elseif kind=="NOT_OWNED"then shopFeedback.Text="먼저 구매해야 해"
+ else shopFeedback.Text=""end
+ updateCosmeticUI()
+end)
 
 -- 강한 추격곡은 괴물이 실제로 가까울 때만 재생한다.
 local tensionClock=0
@@ -1149,4 +1327,5 @@ QACamera.install(C,gui,function()
 end)
 
 
+updateCosmeticUI()
 render()
