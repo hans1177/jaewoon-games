@@ -299,6 +299,18 @@ if hasStudioAssetAtom("FRAME_PANEL") then
 end
 root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
 root:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
+root.Name = "Root"
+root.AnchorPoint = Vector2.new(0.5, 1)
+root.Position = UDim2.new(0, 0, 0, 0)
+  local studioAssetStroke = Instance.new("UIStroke")
+  studioAssetStroke.Name = "StudioAssetFramePanel"
+  studioAssetStroke.Thickness = 1
+  studioAssetStroke.Transparency = 0.55
+  studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
+  studioAssetStroke.Parent = root
+end
+root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
+root:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
 
 root.Name = "Root"
 root.AnchorPoint = Vector2.new(0.5, 1)
