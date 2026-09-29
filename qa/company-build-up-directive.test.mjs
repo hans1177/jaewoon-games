@@ -525,3 +525,15 @@ test('verified product-quality failure keeps autonomous expansion inside existin
   assert.equal(d.autonomousContentExpansion.newWorkflowForbidden,true);
   assert.equal(d.autonomousContentExpansion.newStageForbidden,true);
 });
+
+
+test('each approved loop and signature choice reaches the shared implementation prompt',()=>{
+  for(const platform of ['ROBLOX','WEB']){
+    const directive=buildGameSpecificBuildUpDirective({gameId:'design-chain',platform,designRecord:design(),sourceObservation:{sourceTreeFingerprint:'test',signals:{},observations:[],topFiles:[],sourceAnchors:[]}});
+    const prompt=directivePrompt(directive);
+    for(const step of design().content.coreLoop)assert.ok(prompt.includes(`기획 루프 ${design().content.coreLoop.indexOf(step)+1} "${step}"`));
+    for(const system of design().content.signatureSystems)assert.ok(prompt.includes(`플레이어 선택 "${system.playerChoice}"`));
+    assert.match(prompt,/공통 점수 증가만으로/);
+    assert.match(prompt,/실측하지 못하면 미확인/);
+  }
+});

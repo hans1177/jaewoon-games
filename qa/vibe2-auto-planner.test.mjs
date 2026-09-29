@@ -2584,6 +2584,29 @@ test('BUILD_UP depth advances only when the entire shared directive generation v
   const effectPending=findStudioContinuousImprovementTasks(project,root,{tasks:cancelledHistory});
   assert.equal(effectPending.length,0);
 
+  // 다른 플랫폼의 성공/실패로 로블록스 구현 효과를 승격하거나 회귀 판정하지 않는다.
+  for(const passed of [true,false]){
+    const crossPlatform=findStudioContinuousImprovementTask({
+      ...project,queueRuntimeEvidencePlatform:'UNITY',queueRuntimeObserved:true,
+      queueRuntimePassed:passed,queueRuntimeFailureStage:passed?'':'UNITY_RUNTIME',
+      queueRuntimeFailureSignature:passed?'':'unity-only-failure'
+    },root,{tasks:verified},pendingFocus);
+    assert.equal(crossPlatform.buildUpDirective.effectivenessMeasurement.previousGeneration.classification,'PARTIAL_EFFECT');
+    assert.equal(crossPlatform.buildUpDirective.developmentDepth,1);
+    assert.equal(crossPlatform.buildUpDirective.playtestRuntimeFindings.runtimeObserved,false);
+  }
+  const ownRuntime=findStudioContinuousImprovementTask({
+    ...project,queueRuntimeEvidencePlatform:'UNITY',queueRuntimeObserved:true,queueRuntimePassed:false,
+    queueRobloxRuntimeObserved:true,queueRobloxRuntimePassed:true
+  },root,{tasks:verified},pendingFocus);
+  assert.equal(ownRuntime.buildUpDirective.effectivenessMeasurement.previousGeneration.classification,'EFFECT_CONFIRMED');
+
+  const latestFailure=findStudioContinuousImprovementTask({
+    ...project,queueRuntimeEvidencePlatform:'ROBLOX',queueRuntimeObserved:true,queueRuntimePassed:false,
+    queueRuntimeFailureSignature:'current-failure',queueRobloxRuntimeObserved:true,queueRobloxRuntimePassed:true
+  },root,{tasks:verified},pendingFocus);
+  assert.equal(latestFailure.buildUpDirective.effectivenessMeasurement.previousGeneration.classification,'REGRESSION');
+
   const projectWithConfirmedEffect={...project,queueRuntimeObserved:true,queueRuntimePassed:true};
   const afterVerified=findStudioContinuousImprovementTasks(projectWithConfirmedEffect,root,{tasks:verified});
   assert.equal(afterVerified.length,5);

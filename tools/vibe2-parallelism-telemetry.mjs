@@ -135,6 +135,21 @@ export function computeParallelismTelemetry(input={}){
   const qa=durationStats(rows,'qaMs');
   const workerTotal=durationStats(rows,'workerTotalMs');
   const workload=computeWorkload(rows,input.tasks||[]);
+  // 코드 수정률: 작업 성공 표시만으로 실제 수정으로 세지 않고 변경 파일 측정값을 사용한다.
+  const measuredSourceRows=rows.filter(row=>Number.isSafeInteger(row?.metrics?.changedFileCount)&&row.metrics.changedFileCount>=0);
+  const changedSourceRows=measuredSourceRows.filter(row=>row.metrics.changedFileCount>0);
+  const verifiedChangedSourceRows=changedSourceRows.filter(row=>clean(row.outcome).toUpperCase()==='PASS');
+  const sourceMutation={
+    measuredWorkerCount:measuredSourceRows.length,
+    unknownWorkerCount:workerCount-measuredSourceRows.length,
+    changedWorkerCount:changedSourceRows.length,
+    verifiedChangedWorkerCount:verifiedChangedSourceRows.length,
+    unchangedWorkerCount:measuredSourceRows.length-changedSourceRows.length,
+    ratePct:measuredSourceRows.length?round(changedSourceRows.length/measuredSourceRows.length*100):null,
+    verifiedRatePct:measuredSourceRows.length?round(verifiedChangedSourceRows.length/measuredSourceRows.length*100):null,
+    authority:'MEASURED_WORKER_FILE_DIFF_AND_QA_OUTCOME',
+    releaseCompletionClaim:false
+  };
   const waveStarts=rows.map(row=>parseTime(row?.metrics?.workerStartedAt)).filter(Boolean);
   const waveEnds=rows.map(row=>parseTime(row?.metrics?.workerFinishedAt)).filter(Boolean);
   const waveElapsedMs=waveStarts.length&&waveEnds.length?Math.max(1,Math.max(...waveEnds)-Math.min(...waveStarts)):0;
@@ -214,7 +229,8 @@ export function computeParallelismTelemetry(input={}){
       verifiedCandidateCount:passTaskIds.size,
       verifiedCandidatesPerMinute,
       firstCandidatePassRatePct,
-      changedLinesPerMinute
+      changedLinesPerMinute,
+      sourceMutation
     },
     queueWait:{avgMs:round(avg(queueWait)),p95Ms:round(p95(queueWait)),maxMs:round(queueWait.length?Math.max(...queueWait):0)},
     checkout,
@@ -263,6 +279,10 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_PARALLEL_FAILURE_RATE=${t.failureRatePct}`);
   console.log(`VIBE2_VERIFIED_CANDIDATES_PER_MINUTE=${t.throughput.verifiedCandidatesPerMinute}`);
   console.log(`VIBE2_FIRST_CANDIDATE_PASS_RATE=${t.throughput.firstCandidatePassRatePct}`);
+  console.log(`VIBE2_SOURCE_MUTATION_RATE=${t.throughput.sourceMutation.ratePct??'UNKNOWN'}`);
+  console.log(`VIBE2_VERIFIED_SOURCE_MUTATION_RATE=${t.throughput.sourceMutation.verifiedRatePct??'UNKNOWN'}`);
+  console.log(`VIBE2_SOURCE_MUTATION_MEASURED_WORKERS=${t.throughput.sourceMutation.measuredWorkerCount}`);
+  console.log(`VIBE2_SOURCE_MUTATION_UNKNOWN_WORKERS=${t.throughput.sourceMutation.unknownWorkerCount}`);
   console.log(`VIBE2_SOURCE_GENERATION_FAILURES=${t.sourceGenerationFailures.count}`);
   console.log(`VIBE2_SOURCE_GENERATION_FAILURE_CLASSES=${Object.entries(t.sourceGenerationFailures.classes).map(([key,value])=>`${key}:${value}`).join(',')||'NONE'}`);
   console.log(`VIBE2_WORKER_FAILURE_STAGES=${Object.entries(t.workerFailureStages.classes).map(([key,value])=>`${key}:${value}`).join(',')||'NONE'}`);

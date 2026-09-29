@@ -245,7 +245,13 @@ jobs:
           item.unityCanonicalPublishRepairRequired=!pass;
           item.unityCanonicalPublishRetry=retry;
           if(pass){
-            item.unityCanonicalReleaseEvidence={...retry,published:true,publishedAt:stamp,authority:'unity-f9-exact-publication-repair'};
+            const evidence={...retry,published:true,publishedAt:stamp,authority:'unity-f9-exact-publication-repair'};
+            const history=Array.isArray(item.unityCanonicalPublishHistory)?item.unityCanonicalPublishHistory:[];
+            for(const completed of [item.unityCanonicalReleaseEvidence,evidence]){
+              if(completed?.published===true&&!history.some(row=>row.sourceRevision===completed.sourceRevision&&row.artifactIdentity===completed.artifactIdentity))history.push(completed);
+            }
+            item.unityCanonicalPublishHistory=history;
+            item.unityCanonicalReleaseEvidence=evidence;
           }
           item.updatedAt=stamp;q.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
@@ -1296,7 +1302,15 @@ jobs:
           item.unityCanonicalPublishPending=!pass;
           item.unityCanonicalPublishRepairRequired=!pass;
           item.unityCanonicalPublishRetry=record;
-          if(pass)item.unityCanonicalReleaseEvidence={...record,published:true,publishedAt:stamp,authority:'unity-f9-exact-canonical-internal-release'};
+          if(pass){
+            const evidence={...record,published:true,publishedAt:stamp,authority:'unity-f9-exact-canonical-internal-release'};
+            const history=Array.isArray(item.unityCanonicalPublishHistory)?item.unityCanonicalPublishHistory:[];
+            for(const completed of [item.unityCanonicalReleaseEvidence,evidence]){
+              if(completed?.published===true&&!history.some(row=>row.sourceRevision===completed.sourceRevision&&row.artifactIdentity===completed.artifactIdentity))history.push(completed);
+            }
+            item.unityCanonicalPublishHistory=history;
+            item.unityCanonicalReleaseEvidence=evidence;
+          }
           item.updatedAt=stamp;q.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
           NODE

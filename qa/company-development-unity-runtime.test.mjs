@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+import {runInNewContext} from 'node:vm';
 
 const generatorSource=process.env.UNITY_BOOTSTRAP_SOURCE||path.resolve('tools/company-development-unity-bootstrap.mjs');
 const workflowSource=fs.readFileSync(path.resolve('.github/workflows/company-development-unity-runtime.yml'),'utf8');
@@ -571,4 +572,25 @@ test('Unity runs exact F0-F9, deploys the F9 artifact, and starts the next cycle
   assert.match(workflow,/PLATFORM_NEXT_EVOLUTION_CYCLE_DISPATCHED=UNITY:/);
   assert.match(workflow,/UNITY_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO/);
   assert.match(workflow,/unity-f0-f9-verified,unity-f9-pass,unity-f9-nonterminal/);
+});
+
+// 정상 배포·재시도 두 경로 모두 이전 완주를 보존하고 동일 빌드는 한 번만 기록한다.
+test('Unity publication and repair preserve unique completed history on retry and next cycle',()=>{
+  const blocks=[...workflowSource.matchAll(/          if\(pass\)\{\n            const evidence=\{\.\.\.(retry|record),[\s\S]*?item\.unityCanonicalReleaseEvidence=evidence;\n          \}/g)];
+  assert.equal(blocks.length,2);
+  for(const match of blocks){
+    const item={unityCanonicalReleaseEvidence:{sourceRevision:'older',artifactIdentity:'old',published:true,publishedAt:'before'}};
+    const publication={sourceRevision:'new',artifactIdentity:'new',workflowRunId:1};
+    const execute=pass=>runInNewContext(match[0],{pass,item,retry:publication,record:publication,stamp:'now'});
+    execute(false);
+    assert.equal(item.unityCanonicalPublishHistory,undefined);
+    execute(true);execute(true);
+    assert.equal(item.unityCanonicalPublishHistory.length,2);
+    publication.sourceRevision='next';publication.artifactIdentity='next';
+    execute(true);
+    assert.equal(item.unityCanonicalPublishHistory.length,3);
+    execute(false);
+    assert.equal(item.unityCanonicalPublishHistory.length,3);
+    assert.equal(item.unityCanonicalPublishHistory[1].publishedAt,'now');
+  }
 });

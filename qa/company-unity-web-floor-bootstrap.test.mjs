@@ -104,7 +104,8 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.match(build,/public static void BuildWeb\(\)/);
     assert.match(runtime,/JAEWOON_UNITY_WEB_QA BOOT/);
     assert.match(runtime,/JAEWOON_UNITY_WEB_QA MOBILE_TARGET/);
-    assert.match(runtime,/JAEWOON_UNITY_WEB_QA CORE_FUN/);
+    assert.match(runtime,/CORE_FUN[^\n]+status=REPAIR_REQUIRED reason=BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
+    assert.doesNotMatch(runtime,/CORE_FUN[^\n]+status=PASS/);
     assert.match(runtime,/PlayerPrefs\.Save\(\)/);
     assert.match(runtime,/enemy\.transform\.Rotate/);
     for(const dir of ['Art','Prefabs','Materials','Animations']){
