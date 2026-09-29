@@ -98,10 +98,13 @@ function inferShard(input = {}) {
 }
 function inferSourceRoot(input = {}) {
   const explicit = posix(input.sourceRoot);
-  if (explicit) return explicit;
   const gameId = clean(input.gameId);
   const target = clean(input.target).toLowerCase();
+  // Migrate legacy Roblox queue roots so full repository paths use the same file lock.
+  if (target === 'roblox' && gameId && explicit === `roblox:${gameId}`) return `roblox-games/${gameId}`;
+  if (explicit) return explicit;
   if (!gameId || !target) return null;
+  if (target === 'roblox') return `roblox-games/${gameId}`;
   if (target === 'web') return `web-games/${gameId}`;
   if (target === 'unity') return `unity-games/${gameId}`;
   if (target === 'unreal') return `unreal-games/${gameId}`;
