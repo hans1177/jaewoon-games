@@ -282,6 +282,7 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
   const reviewed=[];
   const skipped=[];
   const releaseCandidates=[];
+  const verificationCandidates=[];
   const experienceReviews=[];
   const capabilityApplicationReviews=[];
   const capabilityBenchmarkReviews=[];
@@ -331,6 +332,18 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
     if(uniqueMissing.length){
       evidence.add('role-result:review:BLOCKED');
       evidence.add(`package-review-missing:${uniqueMissing.join('|')}`);
+      // 실행 증거만 부족한 Roblox 후보는 승격 없이 같은 SHA로 검사한다.
+      const candidateSha=(selectedResult?.evidence||[]).map(clean).filter(value=>/^candidate-sha:[0-9a-f]{40}$/.test(value)).at(-1)?.slice('candidate-sha:'.length);
+      const runtimeEvidenceOnly=clean(task.target).toLowerCase()==='roblox'
+        &&uniqueMissing.every(value=>value.startsWith('game-repair-'))
+        &&/^[0-9a-f]{40}$/.test(candidateSha||'');
+      if(runtimeEvidenceOnly){
+        const candidate={taskId:clean(task.id),gameId:clean(task.gameId),target:'roblox',candidateBranch,candidateSha,evidenceOnly:true};
+        verificationCandidates.push(candidate);
+        reviewed.push({taskId:task.id,sampleId:resultSampleId(selectedResult),pass:false,missing:uniqueMissing,presentationRuntimeVisual,taskLocalRequeue:false,runtimeEvidencePending:true});
+        evidence.add('fan-in-runtime-evidence-only:REQUIRED');
+        return{...task,status:'running',blocker:'candidate-awaiting-runtime-evidence',lastOutcome:'FAN_IN_RUNTIME_EVIDENCE_REQUIRED',runtimeEvidenceCandidate:candidate,evidence:[...evidence]};
+      }
       evidence.add('fan-in-review-task-local-requeue:YES');
       reviewed.push({
         taskId:task.id,
@@ -567,10 +580,10 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
   });
   const pass=reviewed.every(row=>row.pass);
   const taskLocalRequeueCount=reviewed.filter(row=>row.pass===false&&row.taskLocalRequeue===true).length;
-  const cohortSettlementPass=reviewed.every(row=>row.pass===true||row.taskLocalRequeue===true);
+  const cohortSettlementPass=reviewed.every(row=>row.pass===true||row.taskLocalRequeue===true||row.runtimeEvidencePending===true);
   return{
     queue:{...queue,tasks:tasksWithNeuralAudit},
-    reviewed,skipped,releaseCandidates,experienceReviews,capabilityApplicationReviews,capabilityBenchmarkReviews,
+    reviewed,skipped,releaseCandidates,verificationCandidates,experienceReviews,capabilityApplicationReviews,capabilityBenchmarkReviews,
     codingTraces,neuralShadowAudit,neuralDurableShadowAudit,neuralWorkGraphSummary,neuralPhase2Readiness,
     pass,cohortSettlementPass,taskLocalRequeueCount
   };
@@ -588,7 +601,7 @@ export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',
     codingTraceLedger=mergeCodingTraceLedger(readJson(traceLedgerFile,{traces:[]}),result.codingTraces);
     writeJson(traceLedgerFile,codingTraceLedger);
   }
-  if(clean(outputFile))writeJson(outputFile,{version:7,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,experienceReviews:result.experienceReviews,capabilityApplicationReviews:result.capabilityApplicationReviews,capabilityBenchmarkReviews:result.capabilityBenchmarkReviews,codingTraces:result.codingTraces,codingTraceLedgerStats:codingTraceLedger?.stats||null,neuralShadowAudit:result.neuralShadowAudit,neuralDurableShadowAudit:result.neuralDurableShadowAudit,neuralWorkGraphSummary:result.neuralWorkGraphSummary,neuralPhase2Readiness:result.neuralPhase2Readiness,pass:result.pass,cohortSettlementPass:result.cohortSettlementPass,taskLocalRequeueCount:result.taskLocalRequeueCount});
+  if(clean(outputFile))writeJson(outputFile,{version:7,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,verificationCandidates:result.verificationCandidates,experienceReviews:result.experienceReviews,capabilityApplicationReviews:result.capabilityApplicationReviews,capabilityBenchmarkReviews:result.capabilityBenchmarkReviews,codingTraces:result.codingTraces,codingTraceLedgerStats:codingTraceLedger?.stats||null,neuralShadowAudit:result.neuralShadowAudit,neuralDurableShadowAudit:result.neuralDurableShadowAudit,neuralWorkGraphSummary:result.neuralWorkGraphSummary,neuralPhase2Readiness:result.neuralPhase2Readiness,pass:result.pass,cohortSettlementPass:result.cohortSettlementPass,taskLocalRequeueCount:result.taskLocalRequeueCount});
   return{...result,codingTraceLedger};
 }
 
