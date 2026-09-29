@@ -4479,3 +4479,34 @@ test('focused recovery removes sibling anchor payloads without truncating the ow
     assert.ok(Buffer.byteLength(focused.prompt)<Buffer.byteLength(prompt)/2);
   }
 });
+
+test('invalid-path retry removes stale source ownership and sends the build-up directive only once',()=>{
+  const prompt=[
+    'Engine: unity','Goal: implement the approved game loop',
+    'Obsolete context: Assets/Scripts/UnityWebFloorGame.cs',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
+    'directiveId=unity-g2 primaryFocus=GAMEPLAY',
+    'sourceAnchors=unity-games/demo/Assets/Scripts/UnityWebFloorGame.cs:1 FUNCTION Act CURRENT=stub INTENDED=play ACCEPT=loop',
+    'gameplay=Capture, grow and evolve the collected monsters.',
+    'preserve=SAVE_KEYS',
+    'acceptance=REAL_GAMEPLAY',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE END]',
+    'Allowed edit paths: Assets/Scripts/GameCore.cs, Assets/Scripts/RuntimeBootstrap.cs',
+    '=== FILE Assets/Scripts/GameCore.cs [EDITABLE] ===',
+    'public class GameCore { public int Captured = 0; }',
+    '=== FILE Assets/Scripts/RuntimeBootstrap.cs [EDITABLE] ===',
+    'public class RuntimeBootstrap { public bool Started = false; }'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(prompt,{
+    error:new Error('책임 파일 범위 밖 수정 금지: Assets/Scripts/UnityWebFloorGame.cs'),
+    responsibleFiles:['Assets/Scripts/GameCore.cs','Assets/Scripts/RuntimeBootstrap.cs'],
+    attempt:2,multiFilePairRequired:true
+  });
+  assert.doesNotMatch(retry,/UnityWebFloorGame/);
+  assert.equal(retry.split('[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]').length-1,1);
+  assert.match(retry,/Capture, grow and evolve/);
+  assert.match(retry,/SAVE_KEYS/);
+  assert.match(retry,/UNITY WEB BOOTSTRAP PAIR CONTRACT/);
+  assert.match(retry,/public class GameCore/);
+  assert.match(retry,/public class RuntimeBootstrap/);
+});
