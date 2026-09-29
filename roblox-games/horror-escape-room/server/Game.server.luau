@@ -40,6 +40,7 @@ local lastValidPosition={}
 local movementGraceUntil={}
 local movementProbeStart={}
 local movementGuardClock=0
+local pressureLastCounts={SURVIVOR=4,MONSTER=4}
 local foundationSpawn=nil
 local foundationSeen={}
 local foundationSequence=0
@@ -173,6 +174,14 @@ local function spendEnergy(p,cost,actionName)
  setEnergy(p,current-cost)
  return true
 end
+local function pressurePassiveFor(role,humans,monsters)
+ local own=role=="SURVIVOR"and humans or role=="MONSTER"and monsters or 0
+ local other=role=="SURVIVOR"and monsters or role=="MONSTER"and humans or 0
+ for _,row in ipairs(C.Energy and C.Energy.PressurePassives or{})do
+  if own==(tonumber(row.Minority)or-1)and other==(tonumber(row.Majority)or-1)then return row end
+ end
+ return nil
+end
 
 local cosmeticById={}
 for _,item in ipairs(C.Cosmetics or{})do cosmeticById[item.Id]=item end
@@ -203,7 +212,8 @@ local function load(p)
  p:SetAttribute("LastRoundReward",0);p:SetAttribute("LastRoundWinner","");p:SetAttribute("LastRoundRole","")
  p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0);p:SetAttribute("RoundContributionCoins",0)
  p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
- p:SetAttribute("Energy",energyMax());p:SetAttribute("EnergyMax",energyMax());p:SetAttribute("EnergyFeedback","")
+ p:SetAttribute("Energy",energyMax());p:SetAttribute("EnergyMax",energyMax());p:SetAttribute("EnergyFeedback","");p:SetAttribute("PressurePassive","")
+ p:SetAttribute("MapContentFeedback","")
  p:SetAttribute("RoundParticipant",false);p:SetAttribute("RoundTeam","")
  p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
@@ -301,6 +311,10 @@ local function addObjectiveStation(f,name,pos,index)
   local current=energyOf(p);local max=energyMax()
   if current>=max-.01 then p:SetAttribute("EnergyFeedback","ENERGY_FULL");return end
   local recharge=math.max(0,tonumber(C.Energy and C.Energy.StationRecharge)or 35)
+  local humans=tonumber(workspace:GetAttribute("HumanCount"))or 0
+  local monsters=tonumber(workspace:GetAttribute("MonsterCount"))or 0
+  local pressure=pressurePassiveFor(role,humans,monsters)
+  recharge+=math.max(0,tonumber(pressure and pressure.StationBonus)or 0)
   local stationCooldown=math.max(1,tonumber(C.Energy and C.Energy.StationCooldown)or 25)
   ready[index]=now+stationCooldown
   setEnergy(p,current+recharge)
