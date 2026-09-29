@@ -70,7 +70,7 @@ test('foundation workflow edits self-trigger exact current game revalidation',()
   assert.ok(workflow.includes("TRIGGER_CHANGED: ${{ github.event_name == 'push' && (contains(toJSON(github.event.head_commit.modified), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.added), 'roblox-games/.company-runtime-trigger') || contains(toJSON(github.event.head_commit.removed), 'roblox-games/.company-runtime-trigger')) }}"));
   assert.doesNotMatch(workflow,/TRIGGER_CHANGED: .*github\.event\.commits/);
   assert.match(workflow,/process\.env\.EVENT_NAME==='push'&&String\(process\.env\.TRIGGER_CHANGED\|\|''\)\.toLowerCase\(\)==='true'/);
-  assert.match(workflow,/\[ "\$\{EVENT_NAME:-\}" = "push" \] && \[ "\$\{TRIGGER_CHANGED:-\}" = "true" \]/);
+  assert.match(workflow,/\$env:EVENT_NAME -eq 'push' -and \$env:TRIGGER_CHANGED -eq 'true'/);
   assert.match(workflow,/roblox-games\/\.company-runtime-trigger/);
   assert.match(workflow,/ROBLOX_FOUNDATION_REQUESTED_GAME_ID=/);
   assert.match(workflow,/ROBLOX_FOUNDATION_REQUESTED_GAME_ID_INVALID/);
@@ -97,11 +97,11 @@ test('stale published Roblox version preserves the exact failed stage and retrie
 });
 
 
-test('exact Roblox foundation QA isolates exact games while collapsing duplicate scan work before runner allocation',()=>{
+test('exact Roblox foundation QA keeps active runs independent while deduplicating pending work',()=>{
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
-  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}\n\s+cancel-in-progress: true/);
+  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ github\.run_id \}\}\n\s+cancel-in-progress: false/);
   assert.match(workflow,/inputs\.game_id/);
   assert.match(workflow,/title='Roblox runtime foundation QA · '\+\(game\|\|'scan'\)/);
   assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
@@ -136,11 +136,11 @@ test('foundation runtime write contention defers only the stale write and keeps 
 });
 
 
-test('post-runtime QA collapses duplicate scans before heavy work with scan-scoped workflow concurrency',()=>{
+test('post-runtime QA deduplicates heavy scans without blocking local Studio planning',()=>{
   const jobsAt=workflow.indexOf('\njobs:\n');
   assert.ok(jobsAt>0);
   assert.match(workflow,/run-name: Roblox runtime foundation QA · \$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
-  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}\n\s+cancel-in-progress: true/);
+  assert.match(workflow.slice(0,jobsAt),/\nconcurrency:\n\s+group: roblox-runtime-foundation-\$\{\{ github\.run_id \}\}\n\s+cancel-in-progress: false/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_ACTIVE_WINNER=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_EXACT_DEDUPED=/);
   assert.match(workflow,/ROBLOX_RUNTIME_FOUNDATION_QA_SCAN_DEDUPED_NEWER=/);
@@ -151,7 +151,7 @@ test('post-runtime QA collapses duplicate scans before heavy work with scan-scop
   const studioPlan=workflow.slice(studioPlanAt,studioAutoPlayAt);
   assert.doesNotMatch(studioPlan,/\n\s+needs:\s+dedupe(?:\s|$)/);
   assert.match(studioPlan,/concurrency:\n\s+group: roblox-studio-mcp-plan-/);
-  assert.match(studioPlan,/runs-on: ubuntu-slim/);
+  assert.match(studioPlan,/runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
 });
 
 
@@ -294,23 +294,25 @@ test('exact local F0 artifact rebinds prior Studio evidence instead of replaying
 });
 
 
-test('foundation QA has no periodic cron fanout and newest same-game work supersedes stale runs',()=>{
+test('foundation QA has no periodic cron fanout and preserves active same-game work',()=>{
   const head=workflow.slice(0,workflow.indexOf('\njobs:\n'));
   assert.doesNotMatch(head,/schedule:/);
-  assert.match(head,/cancel-in-progress: true/);
+  assert.match(head,/cancel-in-progress: false/);
   assert.match(workflow,/process\.stdout\.write\(String\(ids\[ids\.length-1\]\)\)/);
 });
 
 
-test('batch scan cancels stale queued and running foundation runs before heavy work',()=>{
+test('batch scan cancels stale queued foundation runs and preserves active validation',()=>{
   const head=workflow.slice(0,workflow.indexOf('\njobs:\n'));
   const dedupe=workflow.slice(workflow.indexOf('\n  dedupe:'),workflow.indexOf('\n  runtime-foundation-qa:'));
   const cleanup=dedupe.slice(dedupe.indexOf('Cancel stale queued foundation runs before batch scan'),dedupe.indexOf('Select newest same-identity runtime foundation run'));
-  assert.match(head,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| 'scan' \}\}/);
+  assert.match(head,/group: roblox-runtime-foundation-\$\{\{ github\.run_id \}\}/);
   assert.match(dedupe,/runs-on: ubuntu-slim/);
   assert.match(cleanup,/Cancel stale queued foundation runs before batch scan/);
   assert.match(cleanup,/github\.event_name != 'workflow_dispatch' \|\| inputs\.game_id == ''/);
-  assert.match(cleanup,/const states=new Set\(\['queued','pending','requested','in_progress'\]\)/);
+  assert.match(cleanup,/const states=new Set\(\['queued','pending','requested'\]\)/);
+  assert.match(cleanup,/ROBLOX_ACTIVE_STUDIO_RUN_PRESERVED=/);
+  assert.ok(cleanup.indexOf('ROBLOX_ACTIVE_STUDIO_RUN_PRESERVED=') < cleanup.indexOf('actions/runs/$run_id/cancel'));
   assert.match(dedupe,/head_sha/);
   assert.match(dedupe,/actions\/runs\/\$run_id\/cancel/);
   assert.match(dedupe,/ROBLOX_STALE_FOUNDATION_RUN_CANCELLED=/);
