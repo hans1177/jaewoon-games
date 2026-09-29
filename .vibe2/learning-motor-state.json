@@ -5689,7 +5689,9 @@
       "coding_negative_14h7pl5",
       "coding_negative_7ux8xw",
       "coding_negative_2sehrm",
-      "coding_negative_ev9dd1"
+      "coding_negative_ev9dd1",
+      "coding_negative_s8p0d5",
+      "coding_negative_lsjv5i"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16265,7 +16267,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 240,
+        "verifiedFailures": 242,
         "games": {
           "fantasy-survival": 1
         },
@@ -16410,7 +16412,7 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 97,
+            "verifiedFailures": 98,
             "games": {},
             "targets": {},
             "failureGames": {
@@ -16424,29 +16426,29 @@
               "seed-action-survival-rogu-echoes-of-the-lost-star": 9,
               "survival": 9,
               "seed-idle-growth-rpg-crystal-bloom": 9,
-              "seed-story-complete-rpg-chronicles-of-eldoria": 8,
+              "seed-story-complete-rpg-chronicles-of-eldoria": 9,
               "seed-casual-realm-weaver": 8,
               "seed-puzzle-chromatic-cascade": 8,
               "seed-single-defense-strat-celestial-bastion": 7
             },
             "failureTargets": {
-              "unity": 97
+              "unity": 98
             },
             "failureClasses": {
-              "TIMEOUT": 79,
+              "TIMEOUT": 80,
               "INVALID_PATH": 15,
               "MALFORMED_OUTPUT": 2,
               "NO_OP": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_14h7pl5",
-            "lastUpdatedAt": "2026-09-29T13:02:33.109Z"
+            "lastFailureEvidence": "coding_negative_s8p0d5",
+            "lastUpdatedAt": "2026-09-29T13:09:21.191Z"
           },
           "unity|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 38,
+            "verifiedFailures": 39,
             "games": {},
             "targets": {},
             "failureGames": {
@@ -16454,19 +16456,19 @@
               "seed-casual-realm-weaver": 8,
               "seed-puzzle-chromatic-cascade": 8,
               "seed-idle-growth-rpg-crystal-bloom": 6,
-              "seed-action-survival-rogu-echoes-of-the-lost-star": 5
+              "seed-action-survival-rogu-echoes-of-the-lost-star": 6
             },
             "failureTargets": {
-              "unity": 38
+              "unity": 39
             },
             "failureClasses": {
               "MALFORMED_OUTPUT": 2,
               "TIMEOUT": 3,
-              "STUDIO_QUALITY_DELTA": 33
+              "STUDIO_QUALITY_DELTA": 34
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_7ux8xw",
-            "lastUpdatedAt": "2026-09-29T13:02:33.110Z"
+            "lastFailureEvidence": "coding_negative_lsjv5i",
+            "lastUpdatedAt": "2026-09-29T13:09:21.193Z"
           },
           "unity|EDIT_MATCH|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -16671,8 +16673,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_160lbz8",
-        "lastFailureEvidence": "coding_negative_ev9dd1",
-        "lastUpdatedAt": "2026-09-29T13:02:33.112Z"
+        "lastFailureEvidence": "coding_negative_lsjv5i",
+        "lastUpdatedAt": "2026-09-29T13:09:21.193Z"
       }
     }
   },
@@ -19403,7 +19405,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T13:09:04.868Z",
+    "lastBuiltAt": "2026-09-29T13:09:21.253Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -26227,5 +26229,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T13:09:04.868Z"
+  "updatedAt": "2026-09-29T13:09:21.253Z"
 }
