@@ -103,3 +103,46 @@ test('첫 액션은 서버 가동시간을 쿨다운으로 오인하지 않는�
  assert.doesNotMatch(server,/now-\(purifyCooldown\[p\]or 0\)<cd/);
  assert.doesNotMatch(server,/now-\(cooldown\[p\]or 0\)<C\.MonsterAbilityCooldown/);
 });
+
+
+test('상용 로딩과 로비 상태는 서버 정본에 바인딩된다',()=>{
+ assert.match(config,/LobbyLoadTimeoutSeconds=12/);
+ assert.match(client,/ContentProvider:PreloadAsync/);
+ assert.match(client,/Name="LoadingScreen"/);
+ assert.match(client,/workspace:GetAttribute\("MapReady"\)/);
+ assert.match(server,/local function syncLobbyState\(phase\)/);
+ for(const key of ['LobbyReady','LobbyPhase','LobbyRealPlayers','LobbyAIFill'])assert.ok(server.includes('"'+key+'"'),key);
+ assert.match(client,/실제 %d명 · AI %d명 충원 예정/);
+ assert.match(client,/setupPanel\.Visible=not running/);
+ assert.match(client,/ruleCard\.Visible=setupPanel\.Visible and not setupChosen/);
+});
+
+
+test('로비 역할 배정은 선호·공정 가중·직전 반복 방지를 사용한다',()=>{
+ assert.match(server,/local lastMonsterIds=\{\}/);
+ assert.match(server,/targetRealMonsters=math\.min\(monsterSlots,math\.max\(1,#h-survivorSlots\)\)/);
+ assert.match(server,/return weightPick\(list\)/);
+ assert.match(server,/not lastMonsterIds\[player\.UserId\]/);
+ assert.match(server,/\{preferred,neutral,survivorPreferred\}/);
+ assert.ok(client.includes('몬스터 선호'));
+ assert.match(client,/MonsterPreference/);
+});
+
+
+test('로비 선택 완료는 서버 승인 속성만 신뢰한다',()=>{
+ assert.match(server,/LobbySelectionConfirmed",false/);
+ assert.match(server,/LobbySelectionConfirmed",true/);
+ assert.match(client,/p:GetAttribute\("LobbySelectionConfirmed"\)==true/);
+ assert.doesNotMatch(client,/setupChosen/);
+ assert.match(client,/Size=UDim2\.new\(\.465,0,0,48\)/);
+ assert.match(client,/Size=UDim2\.new\(\.44,0,0,36\)/);
+});
+
+
+test('로비 상용화 계약은 launch gate에도 고정된다',()=>{
+ for(const gate of [
+  'loading screen gated by map readiness',
+  'server-authoritative lobby selection confirmation',
+  'lobby real-player and AI-fill visibility',
+ ])assert.ok(launch.releaseGates.includes(gate),gate);
+});
