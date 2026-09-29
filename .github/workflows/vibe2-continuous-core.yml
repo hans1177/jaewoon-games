@@ -1330,6 +1330,9 @@ jobs:
           echo "duration_ms=$((candidate_finished-candidate_started))" >> "$GITHUB_OUTPUT"
           failure_class="$(sed -n 's/^VIBE2_SOURCE_WORKER_FAILURE_CLASS=//p' "$source_worker_log" | tail -n1)"
           failure_message="$(sed -n 's/^VIBE2_SOURCE_WORKER_FAILURE_MESSAGE=//p' "$source_worker_log" | tail -n1)"
+          generation_attempts="$(sed -n 's/^VIBE2_GENERATION_ATTEMPTS=//p' "$source_worker_log" | tail -n1)"
+          [[ "$generation_attempts" =~ ^[0-9]+$ ]] || generation_attempts=0
+          echo "generation_attempts=$generation_attempts" >> "$GITHUB_OUTPUT"
           echo "failure_class=$failure_class" >> "$GITHUB_OUTPUT"
           echo "failure_message=$failure_message" >> "$GITHUB_OUTPUT"
           node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.log"
@@ -1677,6 +1680,7 @@ jobs:
           CANDIDATE_MANIFEST: ${{ steps.candidate.outputs.candidate_manifest }}
           CANDIDATE_FAILURE_CLASS: ${{ steps.candidate.outputs.failure_class }}
           CANDIDATE_FAILURE_MESSAGE: ${{ steps.candidate.outputs.failure_message }}
+          CANDIDATE_GENERATION_ATTEMPTS: ${{ steps.candidate.outputs.generation_attempts }}
           EXPLORATION_FILE: /tmp/vibe2-exploration/vibe2-exploration.json
           BASE_SHA: ${{ steps.candidate.outputs.base_sha }}
           CHANGED_FILE_COUNT: ${{ steps.candidate.outputs.changed_file_count }}
@@ -1818,7 +1822,7 @@ jobs:
             patchRecipeMode:clean(exploration?.editContract?.patchRecipe?.mode)||null,
             verifiedFailureLocalMemoryCount:Number(exploration?.editContract?.patchRecipe?.verifiedMemoryCount||0),
             verifiedFailureLocalMemoryIds:Array.isArray(exploration?.editContract?.patchRecipe?.verifiedMemoryIds)?exploration.editContract.patchRecipe.verifiedMemoryIds.slice(0,8):[],
-            generationAttempts:0,
+            generationAttempts:/^\d+$/.test(clean(process.env.CANDIDATE_GENERATION_ATTEMPTS))?Number(process.env.CANDIDATE_GENERATION_ATTEMPTS):0,
             candidateProducedFirstAttempt:false,
             writableScopeExpansionAllowed:false,
             learningAuthorityExpanded:false
