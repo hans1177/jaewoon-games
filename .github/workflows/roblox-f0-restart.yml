@@ -1,0 +1,49 @@
+name: Roblox F0 Restart & Resync
+
+run-name: F0 restart · ${{ inputs.game_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      game_id:
+        description: Exact Roblox gameId to rebind from current main and restart from F0
+        required: true
+        default: horror-escape-room
+        type: string
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: roblox-f0-restart-${{ inputs.game_id }}
+  cancel-in-progress: false
+
+jobs:
+  restart:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Validate exact game id
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GAME_ID" =~ ^[a-z0-9][a-z0-9-]{1,48}$ ]]
+          echo "ROBLOX_F0_RESTART_GAME_ID=$GAME_ID"
+
+      - name: Restart canonical Roblox pipeline from current main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ inputs.game_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-roblox-source-drift-sync.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f "game_id=$GAME_ID" \
+            -f "restart_from_f0=true"
+          echo "ROBLOX_F0_RESTART_DISPATCHED=$GAME_ID"
+          echo 'ROBLOX_F0_RESTART_PATH=MAIN_SOURCE_SYNC_BUILD_PREFLIGHT_F0'
