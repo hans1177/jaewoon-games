@@ -183,6 +183,29 @@ local function pressurePassiveFor(role,humans,monsters)
  return nil
 end
 
+local discoveryById={}
+for _,item in ipairs(C.Discoveries or{})do discoveryById[item.Id]=item end
+local function discoveredFrom(value)
+ local found={}
+ if typeof(value)=="table"then
+  for _,id in ipairs(value)do if typeof(id)=="string"and discoveryById[id]then found[id]=true end end
+ elseif typeof(value)=="string"then
+  for id in string.gmatch(value,"[^,]+")do if discoveryById[id]then found[id]=true end end
+ end
+ return found
+end
+local function discoveredList(found)
+ local out={}
+ for _,item in ipairs(C.Discoveries or{})do if found[item.Id]then table.insert(out,item.Id)end end
+ return out
+end
+local function discoveryTitleFor(count)
+ local title="초보 목격자"
+ for _,row in ipairs(C.DiscoveryTitles or{})do if count>=(tonumber(row.Count)or math.huge)then title=tostring(row.Title or title)end end
+ return title
+end
+local function discoveredAttribute(found)return table.concat(discoveredList(found),",")end
+
 local loreById={}
 for _,item in ipairs(C.Lore or{})do loreById[item.Id]=item end
 local function foundLoreFrom(value)
@@ -226,6 +249,7 @@ local function load(p)
  p:SetAttribute("MonsterXP",0);p:SetAttribute("Coins",0);p:SetAttribute("RoundsSinceMonster",0)
  p:SetAttribute("OwnedCosmetics","DEFAULT");p:SetAttribute("EquippedCosmetic","DEFAULT");p:SetAttribute("CosmeticFeedback","")
  p:SetAttribute("FoundLore","");p:SetAttribute("LoreCount",0);p:SetAttribute("LoreTotal",#(C.Lore or{}));p:SetAttribute("LoreFeedback","");p:SetAttribute("LoreTitle","야간 신입")
+ p:SetAttribute("DiscoveredSurprises","");p:SetAttribute("DiscoveryCount",0);p:SetAttribute("DiscoveryTotal",#(C.Discoveries or{}));p:SetAttribute("DiscoveryTitle","초보 목격자");p:SetAttribute("DiscoveryFeedback","")
  p:SetAttribute("MonsterForm","DRACULA");p:SetAttribute("HumanForm","BROADCAST");p:SetAttribute("Role","WAITING");p:SetAttribute("Frozen",false);p:SetAttribute("Infected",false);p:SetAttribute("InfectionReadyAt",0)
  p:SetAttribute("RoundState","WAITING");p:SetAttribute("TimeLeft",0);p:SetAttribute("RoundScore",0)
  p:SetAttribute("LastRoundReward",0);p:SetAttribute("LastRoundWinner","");p:SetAttribute("LastRoundRole","")
@@ -250,6 +274,8 @@ local function load(p)
   local found=foundLoreFrom(d.FoundLore);local count=#foundLoreList(found)
   p:SetAttribute("FoundLore",foundLoreAttribute(found));p:SetAttribute("LoreCount",count);p:SetAttribute("LoreTotal",#(C.Lore or{}))
   p:SetAttribute("LoreTitle",count>=(#(C.Lore or{}))and"심야 괴담 조사원"or count>=5 and"야간 조사원"or"야간 신입")
+  local seen=discoveredFrom(d.DiscoveredSurprises);local seenCount=#discoveredList(seen)
+  p:SetAttribute("DiscoveredSurprises",discoveredAttribute(seen));p:SetAttribute("DiscoveryCount",seenCount);p:SetAttribute("DiscoveryTotal",#(C.Discoveries or{}));p:SetAttribute("DiscoveryTitle",discoveryTitleFor(seenCount))
  end
 end
 local function save(p)
@@ -259,7 +285,7 @@ local function save(p)
  pcall(function()store:SetAsync("p:"..p.UserId,{
   MonsterXP=p:GetAttribute("MonsterXP")or 0,Coins=p:GetAttribute("Coins")or 0,
   RoundsSinceMonster=p:GetAttribute("RoundsSinceMonster")or 0,MonsterForm=p:GetAttribute("MonsterForm")or"DRACULA",HumanForm=p:GetAttribute("HumanForm")or"BROADCAST",
-  OwnedCosmetics=ownedCosmeticsList(owned),EquippedCosmetic=equipped,FoundLore=foundLoreList(foundLoreFrom(p:GetAttribute("FoundLore")))
+  OwnedCosmetics=ownedCosmeticsList(owned),EquippedCosmetic=equipped,FoundLore=foundLoreList(foundLoreFrom(p:GetAttribute("FoundLore"))),DiscoveredSurprises=discoveredList(discoveredFrom(p:GetAttribute("DiscoveredSurprises")))
  })end)
 end
 local function arenaPart(f,name,size,pos,color,material)
@@ -1570,6 +1596,23 @@ local function equipCosmetic(p,id)
  p:SetAttribute("EquippedCosmetic",id);p:SetAttribute("CosmeticFeedback","EQUIPPED:"..id)
  save(p)
 end
+local function reportDiscovery(p,id)
+ if state~="RUNNING"or typeof(id)~="string"or #id>48 then return end
+ local item=discoveryById[id];if not item then return end
+ local trigger=arena and arena:FindFirstChild("SurpriseTrigger_"..id,true)
+ local rr=root(p)
+ if not trigger or not trigger:IsA("BasePart")or not rr then return end
+ local radius=math.max(3,tonumber(trigger:GetAttribute("SurpriseRadius"))or 10)+3
+ if (rr.Position-trigger.Position).Magnitude>radius then return end
+ local found=discoveredFrom(p:GetAttribute("DiscoveredSurprises"))
+ if found[id]then return end
+ found[id]=true
+ local count=#discoveredList(found)
+ p:SetAttribute("DiscoveredSurprises",discoveredAttribute(found));p:SetAttribute("DiscoveryCount",count);p:SetAttribute("DiscoveryTotal",#(C.Discoveries or{}));p:SetAttribute("DiscoveryTitle",discoveryTitleFor(count))
+ p:SetAttribute("DiscoveryFeedback","FOUND:"..id..":"..tostring(count))
+ save(p)
+end
+
 local function validRemoteAction(p,a)
  if typeof(a)~="string"or allowedActions[a]~=true then return false end
  local now=os.clock()
@@ -1596,7 +1639,8 @@ remote.OnServerEvent:Connect(function(p,a,value)
  elseif a==C.Actions.NEXT_MONSTER then nextMonster(p)
  elseif a==C.Actions.NEXT_HUMAN then nextHuman(p)
  elseif a==C.Actions.BUY_COSMETIC then buyCosmetic(p,value)
- elseif a==C.Actions.EQUIP_COSMETIC then equipCosmetic(p,value)end
+ elseif a==C.Actions.EQUIP_COSMETIC then equipCosmetic(p,value)
+ elseif a==C.Actions.DISCOVERY_FOUND then reportDiscovery(p,value)end
  if a==C.Actions.PURIFY or a==C.Actions.RESCUE or a==C.Actions.DASH or a==C.Actions.INFECT_ATTACK or a==C.Actions.ABILITY then foundationCheckpoint("CORE_LOOP_READY",p,{action=a})end
  broadcastMultiplayerSync(p)
 end)
