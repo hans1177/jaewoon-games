@@ -296,6 +296,7 @@ namespace JaewoonGames.DaechungRpg
                 Player = data?.player ?? new PlayerState();
 
                 if (Player.level < 1)
+                Player.level = 1;
                 {
                     Player.level = 1;
                 }
