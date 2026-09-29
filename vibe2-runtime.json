@@ -482,7 +482,8 @@
         "priorityMayYieldToGamePrimaryWithoutTerminatingLearning": true,
         "liveRunnerPressureGateImplemented": true,
         "runnerPressureSource": "GITHUB_ACTIONS_RECENT_RUN_STATUS_QUEUED_PENDING_REQUESTED",
-        "pressureObservationFailureDefersLearning": true,
+        "pressureObservationFailureDefersLearning": false,
+        "minimumActiveWorkersUnderPressure": 1,
         "productionMayNotWaitForLearningReserve": true
       },
       "RELEASE_WAIT": {
@@ -650,7 +651,11 @@
       "singleGameTaskImmediateCompletionRequired": true,
       "singleGameTaskFullReviewBeforeCohortCompletion": true,
       "fanInMayReuseSuccessfulExactCommitCoreRegression": true,
-      "idleLearningRequiresEmptyDevelopmentAssetAndRecoveryQueues": true,
+      "idleLearningRequiresEmptyDevelopmentAssetAndRecoveryQueues": false,
+      "minimumLearningWorkersUnderProductionPressure": 1,
+      "assetCandidatesRequireExistingFullReviewAndReleaseGate": true,
+      "strandedAssetReviewResumesImmutableWorkerResults": true,
+      "robloxPublishRechecksLatestSourceAndF9OnEveryAttempt": true,
       "trigger": "LIVE_RUNNER_QUEUE_PRESSURE_GT_0",
       "action": "KEEP_IMMUTABLE_WORKER_ARTIFACT_AND_SKIP_NEW_NEURON_CALLBACK_WORKFLOW",
       "fallbackConsumer": "EXISTING_COHORT_FAN_IN",

@@ -112,6 +112,7 @@ jobs:
       effective_max: ${{ steps.batch.outputs.effective_max }}
       contract_sha: ${{ steps.contract.outputs.sha }}
       task_review_required: ${{ steps.batch.outputs.task_review_required }}
+      stranded_review_run: ${{ steps.stranded_review.outputs.source_run }}
       model_cache_hit: ${{ steps.ollama_cache_probe.outputs.cache-hit }}
     steps:
       - name: Checkout Vibe2 control line
@@ -379,7 +380,7 @@ jobs:
                 TASK_MICRO_FANIN_COMPLETE)
                   # A complete single-candidate game can enter the existing full review now.
                   # Failed results only refill; partial variant sets never bypass their join.
-                  if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] && [ "$expected_variants" = '1' ] && node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.exit(r.outcome==='PASS'?0:1)" "$neuron_result_file"; then
+                  if [[ "$VIBE2_EXECUTION_LANE" == 'game-primary' || "$VIBE2_EXECUTION_LANE" == 'asset-development' ]] && [ "$expected_variants" = '1' ] && node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.exit(r.outcome==='PASS'?0:1)" "$neuron_result_file"; then
                     echo 'task_review_required=true' >> "$GITHUB_OUTPUT"
                     echo 'VIBE2_TASK_REVIEW_READY=COMPLETE_SINGLE_GAME_RESULT'
                   fi
@@ -712,6 +713,36 @@ jobs:
         run: |
           echo 'VIBE2_MODEL_CACHE_RESERVE_PROBE=SKIPPED_ASSET_LANE'
           echo 'VIBE2_MODEL_CACHE_WARMUP_DECISION=SKIP_ASSET_WORKER_LOCAL_DECISION'
+
+      - name: Resume stranded asset candidate review from completed immutable results
+        id: stranded_review
+        if: steps.main_wake.outputs.proceed != 'false' && (env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE' > /tmp/vibe2-stranded-review-runs.txt
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          const runs=new Set();
+          for(const task of queue.tasks||[]){
+            if(task.assetProductionLane!==true || task.status!=='running' || task.blocker!=='candidate-awaiting-qa-and-deployment')continue;
+            if((task.evidence||[]).includes('role-result:review:PASS'))continue;
+            const run=String(task.reservationRunId||'');
+            if(/^\d+$/.test(run))runs.add(run);
+          }
+          process.stdout.write([...runs].slice(0,3).join('\n'));
+          NODE
+          while IFS= read -r source_run || [ -n "$source_run" ]; do
+            [ -n "$source_run" ] || continue
+            status="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run" --jq '.status')"
+            if [ "$status" = 'completed' ]; then
+              echo "source_run=$source_run" >> "$GITHUB_OUTPUT"
+              echo "VIBE2_STRANDED_ASSET_REVIEW_RESUME=$source_run"
+              break
+            fi
+          done < /tmp/vibe2-stranded-review-runs.txt
 
   model_cache:
     needs: reserve
@@ -2145,7 +2176,7 @@ jobs:
 
   fan_in:
     needs: [reserve, worker]
-    if: always() && (needs.reserve.outputs.task_review_required == 'true' || needs.reserve.outputs.worker_count != '0')
+    if: always() && (needs.reserve.outputs.task_review_required == 'true' || needs.reserve.outputs.worker_count != '0' || needs.reserve.outputs.stranded_review_run != '')
     # State fan-in stays on the game-control pool; heavy workers remain ubuntu-latest.
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 8
@@ -2187,7 +2218,7 @@ jobs:
           node-version: '22'
 
       - name: Download all parallel worker results
-        if: needs.reserve.outputs.task_review_required != 'true'
+        if: needs.reserve.outputs.task_review_required != 'true' && needs.reserve.outputs.worker_count != '0'
         uses: actions/download-artifact@v4
         with:
           pattern: vibe2-result-*
@@ -2203,15 +2234,24 @@ jobs:
           github-token: ${{ github.token }}
           run-id: ${{ github.event.client_payload.source_run }}
 
+      - name: Download stranded asset results for existing full review
+        if: needs.reserve.outputs.stranded_review_run != ''
+        uses: actions/download-artifact@v4
+        with:
+          pattern: vibe2-result-*
+          path: /tmp/vibe2-stranded-results
+          merge-multiple: true
+          github-token: ${{ github.token }}
+          run-id: ${{ needs.reserve.outputs.stranded_review_run }}
+
       - name: Aggregate immutable results
         shell: bash
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs'),path=require('path');
-          const dir='/tmp/vibe2-results';
-          const files=fs.readdirSync(dir).filter(f=>f.endsWith('.json')).sort();
-          const results=files.map(f=>JSON.parse(fs.readFileSync(path.join(dir,f),'utf8')));
+          const dirs=['/tmp/vibe2-results','/tmp/vibe2-stranded-results'].filter(dir=>fs.existsSync(dir));
+          const results=dirs.flatMap(dir=>fs.readdirSync(dir).filter(f=>f.endsWith('.json')).sort().map(f=>JSON.parse(fs.readFileSync(path.join(dir,f),'utf8'))));
           const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
           fs.writeFileSync('/tmp/vibe2-fan-in.json',JSON.stringify({version:3,results,tasks:queue.tasks||[]},null,2)+'\n');
           console.log(`VIBE2_FAN_IN_RESULT_COUNT=${results.length}`);
@@ -2237,7 +2277,7 @@ jobs:
           lane_min='1'
           if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then lane_min="$VIBE2_GAME_PRIMARY_ADAPTIVE_MIN"; fi
           # Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.
-          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+          if [[ "$VIBE2_EXECUTION_LANE" == 'game-primary' || "$VIBE2_EXECUTION_LANE" == 'asset-development' ]]; then
             export VIBE2_FANIN_CONTRACT_SHA="$contract_sha"
             core_qa_reuse=0
             if curl --fail-with-body --silent --show-error \
@@ -2399,7 +2439,7 @@ jobs:
               --fanin=/tmp/vibe2-fan-in.json \
               --store="$control_root/.vibe2/practice-distilled-knowledge.json" | tee /tmp/vibe2-practice-distillation-fanin.log
 
-            if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ]; then
+            if [[ "$VIBE2_EXECUTION_LANE" == 'game-primary' || "$VIBE2_EXECUTION_LANE" == 'asset-development' ]]; then
               node "$contract_root/tools/vibe2-fan-in-review.mjs" \
                 --queue="$control_root/.vibe2/queue.json" \
                 --input=/tmp/vibe2-fan-in.json \
@@ -2505,7 +2545,7 @@ jobs:
           echo "VIBE2_SHARED_WORK_LOCK_RELEASED=$released"
 
       - name: Dispatch reviewed winner candidates to release gate
-        if: env.VIBE2_EXECUTION_LANE == 'game-primary'
+        if: env.VIBE2_EXECUTION_LANE == 'game-primary' || env.VIBE2_EXECUTION_LANE == 'asset-development'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
