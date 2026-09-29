@@ -2102,7 +2102,11 @@ test('Roblox foundation scan concurrency is stable across main SHAs and force-ca
   assert.doesNotMatch(workflow,/group: roblox-runtime-foundation-\$\{\{ inputs\.game_id \|\| github\.sha \}\}/);
   assert.match(workflow,/actions\/runs\/\$run_id\/force-cancel/);
   assert.match(workflow,/ROBLOX_STALE_FOUNDATION_RUN_FORCE_CANCEL_REQUESTED/);
-  assert.match(workflow,/\^\(queued\|pending\|requested\|in_progress\|waiting\)\$/);
+  assert.match(workflow,/\^\(queued\|pending\|requested\|waiting\)\$/);
+  assert.match(workflow,/ROBLOX_STALE_FOUNDATION_RUN_NORMAL_CANCEL_CLEANUP_PENDING/);
+  const forceAt=workflow.indexOf('actions/runs/$run_id/force-cancel');
+  const activeCleanupAt=workflow.indexOf("run_status\" = 'in_progress'",forceAt);
+  assert.ok(forceAt>=0&&activeCleanupAt>forceAt);
 });
 
 test('Studio screenshots are captured only as the final Studio audit action',()=>{
