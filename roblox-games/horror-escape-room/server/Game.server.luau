@@ -214,6 +214,7 @@ local function load(p)
  p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
  p:SetAttribute("Energy",energyMax());p:SetAttribute("EnergyMax",energyMax());p:SetAttribute("EnergyFeedback","");p:SetAttribute("PressurePassive","")
  p:SetAttribute("MapContentFeedback","")
+ p:SetAttribute("CelebrationName","");p:SetAttribute("CelebrationCaption","");p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false)
  p:SetAttribute("RoundParticipant",false);p:SetAttribute("RoundTeam","")
  p:SetAttribute("ObjectivesDone",0);p:SetAttribute("ObjectivesTotal",C.ObjectiveCount);p:SetAttribute("Escaped",false)
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
@@ -1305,6 +1306,7 @@ local function startRound()
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("RoundContributionCoins",0);p:SetAttribute("LastRoundBaseReward",0);p:SetAttribute("LastRoundWinBonus",0);p:SetAttribute("LastRoundContribution",0)
   p:SetAttribute("RoundParticipant",true)
+  p:SetAttribute("CelebrationName","");p:SetAttribute("CelebrationCaption","");p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false)
   local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
   if role=="MONSTER"then teleport(p,monsterSpawn+Vector3.new((mi-1)*6,0,0));mi+=1 else teleport(p,survivorSpawns[((si-1)%#survivorSpawns)+1]);si+=1 end
  end
@@ -1312,8 +1314,56 @@ local function startRound()
  local startHumans,startMonsters=teamCounts();pressureLastCounts.SURVIVOR=startHumans;pressureLastCounts.MONSTER=startMonsters
  state="RUNNING";timeLeft=C.RoundSeconds;syncLobbyState("RUNNING");return true
 end
+local function chooseCelebration(winner)
+ local pool=(C.Celebrations and C.Celebrations[winner])or(C.Celebrations and C.Celebrations.DRAW)or{}
+ if #pool==0 then return{Id="DEFAULT",Name="팀 세레머니",Emote="cheer",ComicEmote="laugh",Caption="다음 판 준비"}end
+ return pool[math.random(1,#pool)]
+end
+local function playCelebrationEmote(player,celebration,comic)
+ local h=hum(player);if not h then return end
+ local emote=comic and celebration.ComicEmote or celebration.Emote
+ if typeof(emote)~="string"or emote==""then return end
+ pcall(function()h:PlayEmote(emote)end)
+end
+local function animateCelebratingBots(winner,duration)
+ local bases={}
+ for _,b in ipairs(bots)do
+  local wins=winner=="DRAW"or b.role==winner
+  if wins and b.part and b.part.Parent then bases[b]={cf=b.part.CFrame,phase=math.random()*math.pi*2}end
+ end
+ if next(bases)==nil then return end
+ task.spawn(function()
+  local started=os.clock()
+  while state=="RESULT"and os.clock()-started<duration do
+   local t=os.clock()-started
+   for b,row in pairs(bases)do
+    if b.part and b.part.Parent then
+     local hop=math.abs(math.sin(t*5+row.phase))*.45
+     local yaw=math.rad(math.sin(t*4+row.phase)*12)
+     b.part.CFrame=row.cf*CFrame.new(0,hop,0)*CFrame.Angles(0,yaw,0)
+    end
+   end
+   task.wait(.06)
+  end
+ end)
+end
 local function endRound(winner)
  if state~="RUNNING"then return end;state="RESULT";syncLobbyState("RESULT")
+ local celebration=chooseCelebration(winner)
+ local celebrationPlayers={}
+ for _,player in ipairs(Players:GetPlayers())do
+  local team=player:GetAttribute("RoundTeam")or player:GetAttribute("Role")
+  local participated=player:GetAttribute("RoundParticipant")==true
+  if participated and(winner=="DRAW"or team==winner)then table.insert(celebrationPlayers,player)end
+ end
+ local comicPlayer=#celebrationPlayers>0 and celebrationPlayers[math.random(1,#celebrationPlayers)]or nil
+ workspace:SetAttribute("CelebrationWinnerTeam",winner)
+ workspace:SetAttribute("CelebrationName",celebration.Name or"팀 세레머니")
+ workspace:SetAttribute("CelebrationCaption",celebration.Caption or"")
+ local aiWinners=0
+ for _,b in ipairs(bots)do if winner=="DRAW"or b.role==winner then aiWinners+=1 end end
+ workspace:SetAttribute("CelebrationAIWinners",aiWinners)
+ animateCelebratingBots(winner,math.max(1,(C.ResultSeconds or 6)-1))
  for _,p in ipairs(Players:GetPlayers())do
   local role=p:GetAttribute("Role");local team=p:GetAttribute("RoundTeam")or role
   local participated=p:GetAttribute("RoundParticipant")==true
@@ -1328,12 +1378,22 @@ local function endRound(winner)
   p:SetAttribute("LastRoundBaseReward",baseReward);p:SetAttribute("LastRoundWinBonus",winBonus);p:SetAttribute("LastRoundContribution",contribution)
   p:SetAttribute("PurifyReadyAt",0);p:SetAttribute("DashReadyAt",0);p:SetAttribute("InfectReadyAt",0);p:SetAttribute("AbilityReadyAt",0);p:SetAttribute("Spectating",false)
   setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
+  p:SetAttribute("CelebrationName",celebration.Name or"팀 세레머니");p:SetAttribute("CelebrationCaption",celebration.Caption or"")
+  local celebrate=participated and(winner=="DRAW"or win)
+  p:SetAttribute("CelebrationWinner",winner~="DRAW"and win);p:SetAttribute("CelebrationComic",celebrate and comicPlayer==p)
+  if celebrate then playCelebrationEmote(p,celebration,comicPlayer==p)end
   p:SetAttribute("RoundParticipant",false)
   if m then p:SetAttribute("MonsterXP",(p:GetAttribute("MonsterXP")or 0)+(win and 40 or 18));p:SetAttribute("RoundsSinceMonster",0)
   elseif role=="SURVIVOR"then p:SetAttribute("RoundsSinceMonster",(p:GetAttribute("RoundsSinceMonster")or 0)+1)end
-  p:SetAttribute("RoundState","RESULT_"..winner);p:SetAttribute("FeedbackEvent","RESULT:"..winner..":"..tostring(math.floor(os.clock()*1000)));p:SetAttribute("Frozen",false);p:SetAttribute("Escaped",false);p:SetAttribute("LobbySelectionConfirmed",false);speed(p,16)
+  p:SetAttribute("RoundState","RESULT_"..winner);p:SetAttribute("FeedbackEvent","RESULT:"..winner..":"..tostring(math.floor(os.clock()*1000)));p:SetAttribute("Frozen",false);p:SetAttribute("Escaped",false);p:SetAttribute("LobbySelectionConfirmed",false)
+  if celebrate then speed(p,0)else speed(p,16)end
  end
- clearBots();monster=nil;monsterBot=nil;workspace:SetAttribute("HumanCount",0);workspace:SetAttribute("MonsterCount",0);task.wait(4)
+ task.wait(C.ResultSeconds or 6)
+ for _,p in ipairs(Players:GetPlayers())do
+  p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false);speed(p,16)
+ end
+ clearBots();monster=nil;monsterBot=nil;workspace:SetAttribute("HumanCount",0);workspace:SetAttribute("MonsterCount",0)
+ workspace:SetAttribute("CelebrationWinnerTeam","");workspace:SetAttribute("CelebrationName","");workspace:SetAttribute("CelebrationCaption","");workspace:SetAttribute("CelebrationAIWinners",0)
 end
 local purifyCooldown={}
 local function removeBot(target)
