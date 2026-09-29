@@ -4940,3 +4940,60 @@ test('oversized Roblox rebuild starts with owned source and complete learning in
   assert.equal(requests[0].format,'json');
   assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
 });
+
+
+test('Roblox repeated assignment stream aborts before completion and retries without applying partial source',{timeout:5000},async(t)=>{
+  const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
+  const source='local status = {Text = "ready"}\nstatus.Text = "ready"\n';
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'stream-repeat'})));
+  let aborted=false;
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));
+      if(requests.length===3){res.writeHead(503);res.end('end probe');return;}
+      res.writeHead(200,{'content-type':'application/x-ndjson'});
+      if(requests.length===1){res.end(JSON.stringify({error:'prediction aborted'})+'\n');return;}
+      res.on('close',()=>{aborted=true;});
+      const repeated='particles.ParticleEmissionRateSpreadDirection = Vector3.new(0, 0, 1)\n';
+      const encoded=JSON.stringify({replace:repeated.repeat(8)}).slice(0,-2);
+      const cut=encoded.length-3;
+      res.write(JSON.stringify({response:encoded.slice(0,cut),done:false})+'\n');
+      setImmediate(()=>res.write(JSON.stringify({response:encoded.slice(cut),done:false})+'\n'));
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(()=>{server.closeAllConnections();return new Promise(resolve=>server.close(resolve));});
+  await assert.rejects(runVibe2SourceWorker({cwd,applySource:true}),/Ollama HTTP 503/);
+  assert.equal(requests.length,3);
+  assert.equal(aborted,true);
+  assert.match(requests[2].prompt,/SOURCE REPETITION REPAIR/);
+  assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
+});
+
+test('Roblox repetition guard preserves short runs and repetitions already present in source',{timeout:5000},async(t)=>{
+  for(const originalRepetitions of [0,8]){
+    const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau';
+    const repeated='status.Text = "existing deliberately repeated status assignment"\n';
+    const source='local status = {Text = "ready"}\n'+repeated.repeat(originalRepetitions)+'status.Text = "ready"\n';
+    write(path.join(cwd,root,relative),source);
+    write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'allowed-repeat-'+originalRepetitions})));
+    let requests=0;
+    const server=http.createServer((req,res)=>{
+      req.resume();req.on('end',()=>{
+        requests++;
+        res.writeHead(200,{'content-type':'application/x-ndjson'});
+        if(requests===1){res.end(JSON.stringify({error:'prediction aborted'})+'\n');return;}
+        const replace='local status = {Text = "changed"}\n'+repeated.repeat(originalRepetitions||7)+'status.Text = "changed"';
+        res.end(JSON.stringify({response:JSON.stringify({replace}),done:true})+'\n');
+      });
+    });
+    await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+    try{
+      const result=await runVibe2SourceWorker({cwd,luauCompiler:process.env.VIBE2_TEST_LUAU_COMPILER});
+      assert.equal(result.generation.attempts,2);
+      assert.equal(requests,2);
+      assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
+    }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+  }
+});

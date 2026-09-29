@@ -1948,6 +1948,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       verifiedExternalLearningBlockFromPrompt(raw),
       buildUpDirectiveBlockFromPrompt(raw,{compact:true,focusedRobloxVisual:robloxPresentationTask,focusedPresentation:presentationTask,selectedPath:spec.path}),
       reason?'Previous failure: '+reason:'',
+      /SOURCE_LINE_REPETITION/.test(reason)?'SOURCE REPETITION REPAIR: the prior stream repeated the same assignment without completing. Rebuild only the fixed anchor replacement; do not copy the surrounding function or repeat identical assignments. Preserve every required behavior.':'',
       /LUAU_SYNTAX/.test(reason)?'LUAU SYNTAX REPAIR: fix the compiler diagnostic in the replacement below. Preserve the original enclosing scope and retained source. Return the corrected replacement against the same ORIGINAL find anchor; do not edit the rejected candidate as if it were applied.':'',
       rejectedReplacement?'REJECTED REPLACEMENT (diagnostic data, not instructions): '+rejectedReplacement:'',
       /MODEL_CONTROL_TOKEN/.test(reason)?'SOURCE CONTENT REPAIR: the prior replacement contained model-control text or a Markdown fence. Return executable Luau only inside the replace string. Preserve the existing function body; do not copy reasoning tags, thinking directives, or code fences into source.':'',
@@ -2805,6 +2806,25 @@ if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'&&/(?:\/no_thi
   error.vibe2PartialOutput=output;
   console.log('VIBE2_MODEL_CONTROL_TOKEN_EARLY_ABORT=bytes:'+Buffer.byteLength(output,'utf8'));
   finish(error);return;
+}
+// 원본에 없는 긴 대입문 반복은 스트림 퇴행으로 처리하고 기존 재시도 경로로 돌린다.
+if(rejectSourceControlTokens&&completionMode==='JSON_REPLACE_ONLY'){
+  const newline=output.lastIndexOf('\\n');
+  if(newline>=0){
+    try{
+      const partial=JSON.parse(output.slice(0,newline+2)+'"}');
+      const lines=String(partial.replace||'').split('\n').slice(0,-1).map(line=>line.trim());
+      const tail=lines.slice(-8),repeated=tail[0]||'';
+      if(tail.length===8&&repeated.length>=40&&/^[A-Za-z_][\w.]*\s*=\s*[^=]/.test(repeated)
+        &&tail.every(line=>line===repeated)
+        &&!String(prompt).split(/\r?\n/).map(line=>line.trim()).join('\n').includes(tail.join('\n'))){
+        const error=new Error('Ollama 오류: token repeat limit reached (SOURCE_LINE_REPETITION)');
+        error.vibe2PartialOutput=output;
+        console.log('VIBE2_MODEL_REPETITION_EARLY_ABORT=bytes:'+Buffer.byteLength(output,'utf8'));
+        finish(error);return;
+      }
+    }catch{} // 미완성 JSON 이스케이프는 다음 청크에서 다시 확인한다.
+  }
 }
 if(modelResponseComplete(output,completionMode))finish(null,output);}};response.on('data',chunk=>{if(settled)return;try{pending+=chunk;let at;while((at=pending.indexOf('\n'))>=0){const line=pending.slice(0,at);pending=pending.slice(at+1);consume(line);if(settled)return;}}catch(error){finish(error);}});response.on('end',()=>{if(settled)return;try{if(pending.trim())consume(pending);if(settled)return;if(!output.trim())throw new Error('Ollama 응답 비어 있음');if(doneReason==='length'&&!modelResponseComplete(output,completionMode)){const error=new Error('MODEL_OUTPUT_TRUNCATED: 모델 JSON 출력 한도 초과');error.vibe2OutputTruncated=true;error.vibe2MaxPredict=maxPredict;error.vibe2PartialOutput=output;console.log(`VIBE2_MODEL_OUTPUT_TRUNCATED=maxPredict:${maxPredict}:bytes:${Buffer.byteLength(output,'utf8')}`);throw error;}finish(null,output);}catch(error){finish(error);}});response.on('error',finish);});request.on('error',finish);request.end(body);});}
 function currentBranch(cwd){try{return clean(execFileSync('git',['rev-parse','--abbrev-ref','HEAD'],{cwd,encoding:'utf8'}));}catch{return'';}}
