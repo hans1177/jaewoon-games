@@ -1748,6 +1748,27 @@ test('dead-start Studio product evidence enters repair-required instead of infra
   assert.ok(applied.item.robloxQualityBuildUpEvidence.repairSurfaces.includes('GAME_START'));
 });
 
+test('missing local character aborts before movement and routes to exact-source spawn repair',()=>{
+  const abortAt=helper.indexOf('ROBLOX_STUDIO_MISSING_CHARACTER_ABORT:NO_PLAYABLE_CHARACTER');
+  const movementAt=helper.indexOf("const keyboardTool=client.tool('user_keyboard_input')");
+  assert.ok(abortAt>0&&abortAt<movementAt);
+  assert.match(helper,/spawnConfirm\\?\\.player\\?\\.characterPresent===false/);
+  const broken=runtime();
+  broken.runtimeVerified=false;
+  broken.scenarioContractRequired=true;
+  broken.scenarioCoverage=[{id:'character-camera-ready',pass:false}];
+  broken.qualityFailureKinds=['character-camera-ready'];
+  broken.qualityFailureDetails=[{id:'character-camera-ready',repairSurface:'CHARACTER_BOOT',priority:'CRITICAL',hint:'Repair spawn',observed:{characterPresent:false}}];
+  broken.errors=[{type:'studio-product-character-spawn-error',signature:'ROBLOX_STUDIO_MISSING_CHARACTER_ABORT:NO_PLAYABLE_CHARACTER'}];
+  const applied=applyLocalStudioPlayResult({
+    queue:{items:[item()]},gameId:'g1',runtime:broken,expected,workflowRunId:86,studioStepSucceeded:false,
+    testedAt:'2026-09-29T02:45:00.000Z'
+  });
+  assert.equal(applied.result.evidence.infrastructureFailure,false);
+  assert.equal(applied.item.currentStep,'REPAIR_REQUIRED');
+  assert.ok(applied.item.robloxQualityBuildUpEvidence.repairSurfaces.includes('CHARACTER_BOOT'));
+});
+
 test('Studio startup probe explicitly checks dead spawn, start buttons, and blocking overlays before normal QA',()=>{
   assert.match(helper,/ROBLOX_STUDIO_DEAD_CHARACTER_ABORT:INITIAL_CHARACTER_NOT_PLAYABLE/);
   assert.match(helper,/initial-character-playable/);
