@@ -353,7 +353,70 @@ for index, action in ipairs(Config.Actions) do
   button.Activated:Connect(function() remote:FireServer(action.Id) end)
 end
 local watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}
+55)
+  button.TextColor3 = Color3.fromRGB(16, 24, 40)
+  button.TextWrapped = true
+  button.TextScaled = true
+  button.Text = string.format("%d. %s [%s]", index, action.Label, action.Kind)
+  button.Parent = list
+  button.Activated:Connect(function() remote:FireServer(action.Id) end)
+end
+local watched = {
+  "Score",
+  "Coins",
+  "Level",
+  "Progress",
+  "Health",
+  "Wave",
+  "Position",
+  "Objective",
+  "Combo",
+  "EnemyHealth",
+  "PuzzleChain",
+  "Towers",
+  "BaseHealth",
+  "SocialBond",
+  "SharedObjective",
+  "RoundScore",
+  "LastApprovedScope"
+}
 local function render()
+  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d",
+    player:GetAttribute("Score") or 0,
+    player:GetAttribute("Level") or 1,
+    player:GetAttribute("Progress") or 0,
+    player:GetAttribute("Health") or 100,
+    player:GetAttribute("Wave") or 1
+  )
+end
+for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
+render()
+
+if #Config.Actions > 0 then
+  ContextActionService:BindAction("VibePrimaryAction", function(_, inputState)
+    if inputState == En
+    then
+      local action = Config.Actions[1]
+      local index = 1
+      local actionLabel = action.Label
+      local actionKind = action.Kind
+      local actionId = action.Id
+
+      local list = workspace:FindFirstChild("List")
+      if list then
+        local button = list:FindFirstChild("Button")
+        if button then
+          button.TextColor3 = Color3.fromRGB(16, 24, 40)
+          button.TextWrapped = true
+          button.TextScaled = true
+          button.Text = string.format("%d. %s [%s]", index, actionLabel, actionKind)
+          button.Parent = list
+          button.Activated:Connect(function() remote:FireServer(actionId) end)
+        end
+      end
+    end
+  end)
+end
   status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)
 end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end

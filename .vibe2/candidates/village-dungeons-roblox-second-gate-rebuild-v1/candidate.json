@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": "local function render()",
+      "replace": "55)\n  button.TextColor3 = Color3.fromRGB(16, 24, 40)\n  button.TextWrapped = true\n  button.TextScaled = true\n  button.Text = string.format(\"%d. %s [%s]\", index, action.Label, action.Kind)\n  button.Parent = list\n  button.Activated:Connect(function() remote:FireServer(action.Id) end)\nend\nlocal watched = {\n  \"Score\",\n  \"Coins\",\n  \"Level\",\n  \"Progress\",\n  \"Health\",\n  \"Wave\",\n  \"Position\",\n  \"Objective\",\n  \"Combo\",\n  \"EnemyHealth\",\n  \"PuzzleChain\",\n  \"Towers\",\n  \"BaseHealth\",\n  \"SocialBond\",\n  \"SharedObjective\",\n  \"RoundScore\",\n  \"LastApprovedScope\"\n}\nlocal function render()\n  status.Text = string.format(\"Score %d · Lv %d · Progress %d · HP %d · Wave %d\",\n    player:GetAttribute(\"Score\") or 0,\n    player:GetAttribute(\"Level\") or 1,\n    player:GetAttribute(\"Progress\") or 0,\n    player:GetAttribute(\"Health\") or 100,\n    player:GetAttribute(\"Wave\") or 1\n  )\nend\nfor _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end\nrender()\n\nif #Config.Actions > 0 then\n  ContextActionService:BindAction(\"VibePrimaryAction\", function(_, inputState)\n    if inputState == En\n    then\n      local action = Config.Actions[1]\n      local index = 1\n      local actionLabel = action.Label\n      local actionKind = action.Kind\n      local actionId = action.Id\n\n      local list = workspace:FindFirstChild(\"List\")\n      if list then\n        local button = list:FindFirstChild(\"Button\")\n        if button then\n          button.TextColor3 = Color3.fromRGB(16, 24, 40)\n          button.TextWrapped = true\n          button.TextScaled = true\n          button.Text = string.format(\"%d. %s [%s]\", index, actionLabel, actionKind)\n          button.Parent = list\n          button.Activated:Connect(function() remote:FireServer(actionId) end)\n        end\n      end\n    end\n  end)\nend"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
