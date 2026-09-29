@@ -13,6 +13,34 @@ function count(needle){
   return workflow.split(needle).length-1;
 }
 
+test('failed source generation preserves terminal attempt count in fallback receipt',()=>{
+  const parser=workflow.match(/          generation_attempts="\$\(sed[^\n]+\n[\s\S]*?echo "generation_attempts=\$generation_attempts" >> "\$GITHUB_OUTPUT"/);
+  assert.ok(parser,'candidate must export attempts before exiting on failure');
+  const start=workflow.indexOf(parser[0]);
+  assert.ok(start<workflow.indexOf('if [ "$worker_rc" -ne 0 ]; then',start));
+  assert.ok(workflow.includes('CANDIDATE_GENERATION_ATTEMPTS: ${{ steps.candidate.outputs.generation_attempts }}'));
+  const fallback=workflow.match(/const fallbackCodingMethod=[\s\S]*?const baseCodingMethod=manifest\?\.codingMethod\|\|fallbackCodingMethod;/)[0];
+  const evaluate=new Function('process','manifest',`const clean=value=>String(value||'').trim(); const workOrder={candidateStrategyRole:{strategy:'repair'}}; const exploration={}; ${fallback} return baseCodingMethod;`);
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'failed-attempts-'));
+  try{
+    for(const [log,expected] of [
+      ['# VIBE2_GENERATION_ATTEMPTS=99\nVIBE2_GENERATION_ATTEMPTS=1\nVIBE2_GENERATION_ATTEMPTS=4\n',4],
+      ['TIMEOUT\n',0],
+      ['VIBE2_GENERATION_ATTEMPTS=invalid\n',0]
+    ]){
+      const sourceLog=path.join(temp,'source.log');
+      const output=path.join(temp,'output');
+      fs.writeFileSync(sourceLog,log); fs.writeFileSync(output,'');
+      execFileSync('bash',['-e','-c',parser[0]],{env:{...process.env,source_worker_log:sourceLog,GITHUB_OUTPUT:output}});
+      const attempts=fs.readFileSync(output,'utf8').trim().split('=')[1];
+      const env={CANDIDATE_GENERATION_ATTEMPTS:attempts};
+      assert.equal(evaluate({env},null).generationAttempts,expected);
+      assert.equal(evaluate({env},{codingMethod:{generationAttempts:2}}).generationAttempts,2);
+      assert.equal(evaluate({env},null).candidateProducedFirstAttempt,false);
+    }
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+
 test('shallow candidate inspection fetches the exact base and still detects out-of-bound changes',()=>{
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'candidate-shallow-'));
   const upstream=path.join(temp,'upstream');
