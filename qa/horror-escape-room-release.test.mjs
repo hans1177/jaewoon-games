@@ -445,3 +445,46 @@ test('Studio 방 검증은 TeleportService 대신 로컬 fallback을 사용한�
  assert.match(server,/workspace:SetAttribute\("StudioRoomFallback",true\)/);
  assert.match(server,/roomCode="000001"/);
 });
+
+
+test('예약방 로비는 8칸 슬롯에서 실제 유저와 AI를 구분한다',()=>{
+ assert.match(client,/Name="RoomSlots"/);
+ assert.match(client,/for i=1,8 do/);
+ assert.match(client,/local function refreshRoomSlots\(\)/);
+ assert.match(client,/slot\.Text="AI"/);
+ assert.match(client,/방장 · /);
+ assert.match(client,/roomSlotsPanel\.Visible=roomInfoPanel\.Visible/);
+});
+
+test('세계 괴담 도감 UI는 12종 3단계 진행과 조각 계약서를 보여준다',()=>{
+ assert.match(client,/Name="GhostCompendium"/);
+ assert.match(client,/local function ghostProgressSet\(\)/);
+ assert.match(client,/local function updateGhostBookUI\(\)/);
+ assert.match(client,/괴담 조각 %d\/24 · 계약서 %d/);
+ assert.match(client,/string\.format\("%s · %s\\n%s · %s · %s"/);
+ assert.match(client,/GhostProgress/);
+ assert.match(client,/GhostCompleted/);
+ assert.match(client,/GhostContracts/);
+ const bookBlock=client.slice(client.indexOf('-- 세계 괴담 도감'),client.indexOf('-- 코스메틱 상점'));
+ assert.doesNotMatch(bookBlock,/FireServer|WalkSpeed|Damage|Energy|PurifyDistance|InfectRange/);
+});
+
+
+test('투명 스폰은 공중 발판이 되지 않고 플레이어를 실제 바닥 높이에 둔다',()=>{
+ assert.match(server,/foundationSpawn\.CanCollide=false/);
+ assert.match(server,/foundationSpawn\.CanTouch=false/);
+ assert.match(server,/foundationSpawn\.CanQuery=false/);
+ assert.doesNotMatch(server,/foundationSpawn\.CanCollide=true/);
+ assert.match(server,/foundationSpawn\.Position=Vector3\.new\(survivorSpawns\[1\]\.X,\.55,survivorSpawns\[1\]\.Z\)/);
+ assert.match(server,/local target=Vector3\.new\(pos\.X,3\.6,pos\.Z\)/);
+ assert.match(server,/r\.AssemblyLinearVelocity=Vector3\.zero/);
+ assert.match(server,/r\.AssemblyAngularVelocity=Vector3\.zero/);
+});
+
+test('에너지 HUD는 로비와 게임에서 현재값과 최대값을 항상 표시한다',()=>{
+ assert.match(client,/energyLabel\.Text="에너지 100\/100"/);
+ assert.match(client,/energyLabel\.Text=string\.format\("에너지 %d\/%d"/);
+ assert.match(client,/energyTrack\.Visible=true/);
+ assert.match(client,/energyFill\.Visible=true/);
+ assert.match(client,/energyLabel\.Visible=true/);
+});

@@ -674,6 +674,7 @@ energyLabel.TextSize=10
 energyLabel.Font=Enum.Font.GothamBold
 energyLabel.TextXAlignment=Enum.TextXAlignment.Right
 energyLabel.ZIndex=12
+energyLabel.Text="에너지 100/100"
 energyLabel.Parent=hud
 
 local pressureLabel=Instance.new("TextLabel")
@@ -1160,8 +1161,10 @@ for i,a in ipairs(setupButtons)do
  end)
 end
 
-local shopOpenButton=makeButton(setupPanel,"코스메틱 상점",Color3.fromRGB(66,72,88))
-shopOpenButton.ZIndex=11;shopOpenButton.Size=UDim2.fromOffset(118,34);shopOpenButton.Position=UDim2.new(.5,-59,0,146)
+local shopOpenButton=makeButton(setupPanel,"코스메틱",Color3.fromRGB(66,72,88))
+shopOpenButton.ZIndex=11;shopOpenButton.Size=UDim2.fromOffset(132,34);shopOpenButton.Position=UDim2.fromOffset(10,146)
+local ghostBookOpenButton=makeButton(setupPanel,"세계 괴담 도감",Color3.fromRGB(74,64,94))
+ghostBookOpenButton.ZIndex=11;ghostBookOpenButton.Size=UDim2.fromOffset(142,34);ghostBookOpenButton.Position=UDim2.fromOffset(152,146)
 
 local humanCycle=makeButton(setupPanel,"인간 변경",Color3.fromRGB(49,91,105))
 humanCycle.ZIndex=11;humanCycle.Size=UDim2.new(.44,0,0,36);humanCycle.Position=UDim2.new(.04,0,1,-42)
@@ -1337,10 +1340,194 @@ roomLeaveButton.Position=UDim2.new(1,-126,0,44)
 roomLeaveButton.ZIndex=19
 roomLeaveButton.Activated:Connect(function()remote:FireServer(C.Actions.LEAVE_ROOM)end)
 
+local roomSlotsPanel=Instance.new("Frame")
+roomSlotsPanel.Name="RoomSlots"
+roomSlotsPanel.AnchorPoint=Vector2.new(.5,0)
+roomSlotsPanel.Position=UDim2.new(.5,0,0,176)
+roomSlotsPanel.Size=UDim2.fromOffset(320,86)
+roomSlotsPanel.BackgroundColor3=Color3.fromRGB(23,26,34)
+roomSlotsPanel.BackgroundTransparency=.05
+roomSlotsPanel.ZIndex=18
+roomSlotsPanel.Visible=false
+roomSlotsPanel.Parent=gui
+roundify(roomSlotsPanel,12);outline(roomSlotsPanel,.45)
+
+local roomSlotLabels={}
+for i=1,8 do
+ local slot=Instance.new("TextLabel")
+ slot.Name="RoomSlot"..i
+ slot.Size=UDim2.fromOffset(72,32)
+ local col=(i-1)%4
+ local row=math.floor((i-1)/4)
+ slot.Position=UDim2.fromOffset(8+col*78,8+row*38)
+ slot.BackgroundColor3=Color3.fromRGB(35,39,49)
+ slot.BackgroundTransparency=.08
+ slot.TextColor3=Color3.fromRGB(214,221,231)
+ slot.TextSize=9
+ slot.TextWrapped=true
+ slot.Font=Enum.Font.GothamBold
+ slot.ZIndex=19
+ slot.Parent=roomSlotsPanel
+ roundify(slot,8)
+ roomSlotLabels[i]=slot
+end
+
+local function refreshRoomSlots()
+ local list=Players:GetPlayers()
+ local hostId=tonumber(p:GetAttribute("RoomHostUserId"))or 0
+ table.sort(list,function(a,b)
+  if a.UserId==hostId then return true end
+  if b.UserId==hostId then return false end
+  return a.UserId<b.UserId
+ end)
+ for i=1,8 do
+  local slot=roomSlotLabels[i]
+  local player=list[i]
+  if player then
+   local host=player.UserId==hostId
+   local selfMark=player==p and" · 나"or""
+   slot.Text=(host and"방장 · "or"")..player.DisplayName..selfMark
+   slot.BackgroundColor3=host and Color3.fromRGB(70,78,101)or Color3.fromRGB(35,39,49)
+  else
+   slot.Text="AI"
+   slot.BackgroundColor3=Color3.fromRGB(47,50,58)
+  end
+ end
+end
+
 local resultTitle
+local shopPanel
+
+-- 세계 괴담 도감: 수집 진행만 보여주며 전투 능력치에는 영향을 주지 않는다.
+local ghostBookPanel=Instance.new("Frame")
+ghostBookPanel.Name="GhostCompendium"
+ghostBookPanel.AnchorPoint=Vector2.new(.5,.5)
+ghostBookPanel.Position=UDim2.fromScale(.5,.5)
+ghostBookPanel.Size=UDim2.fromOffset(342,430)
+ghostBookPanel.BackgroundColor3=Color3.fromRGB(18,21,29)
+ghostBookPanel.BackgroundTransparency=.02
+ghostBookPanel.ZIndex=34
+ghostBookPanel.Visible=false
+ghostBookPanel.Parent=gui
+roundify(ghostBookPanel,16);outline(ghostBookPanel,.28)
+
+local ghostBookTitle=Instance.new("TextLabel")
+ghostBookTitle.Size=UDim2.new(1,-90,0,30)
+ghostBookTitle.Position=UDim2.fromOffset(12,10)
+ghostBookTitle.BackgroundTransparency=1
+ghostBookTitle.Text="세계 괴담 도감"
+ghostBookTitle.TextColor3=Color3.fromRGB(230,220,255)
+ghostBookTitle.TextSize=20
+ghostBookTitle.Font=Enum.Font.GothamBold
+ghostBookTitle.TextXAlignment=Enum.TextXAlignment.Left
+ghostBookTitle.ZIndex=35
+ghostBookTitle.Parent=ghostBookPanel
+
+local ghostBookClose=makeButton(ghostBookPanel,"닫기",Color3.fromRGB(72,76,88))
+ghostBookClose.Size=UDim2.fromOffset(64,30)
+ghostBookClose.Position=UDim2.new(1,-76,0,10)
+ghostBookClose.ZIndex=35
+
+local ghostBookSummary=Instance.new("TextLabel")
+ghostBookSummary.Size=UDim2.new(1,-24,0,38)
+ghostBookSummary.Position=UDim2.fromOffset(12,43)
+ghostBookSummary.BackgroundTransparency=1
+ghostBookSummary.TextColor3=Color3.fromRGB(184,193,210)
+ghostBookSummary.TextSize=11
+ghostBookSummary.TextWrapped=true
+ghostBookSummary.Font=Enum.Font.GothamMedium
+ghostBookSummary.TextXAlignment=Enum.TextXAlignment.Left
+ghostBookSummary.ZIndex=35
+ghostBookSummary.Parent=ghostBookPanel
+
+local ghostBookList=Instance.new("ScrollingFrame")
+ghostBookList.Name="GhostList"
+ghostBookList.Size=UDim2.new(1,-20,1,-92)
+ghostBookList.Position=UDim2.fromOffset(10,84)
+ghostBookList.BackgroundTransparency=1
+ghostBookList.BorderSizePixel=0
+ghostBookList.ScrollBarThickness=4
+ghostBookList.AutomaticCanvasSize=Enum.AutomaticSize.Y
+ghostBookList.CanvasSize=UDim2.new()
+ghostBookList.ZIndex=35
+ghostBookList.Parent=ghostBookPanel
+
+local ghostBookLayout=Instance.new("UIListLayout")
+ghostBookLayout.Padding=UDim.new(0,7)
+ghostBookLayout.SortOrder=Enum.SortOrder.LayoutOrder
+ghostBookLayout.Parent=ghostBookList
+
+local ghostBookRows={}
+for index,item in ipairs(C.GhostCatalog or{})do
+ local row=Instance.new("Frame")
+ row.Name="Ghost_"..item.Id
+ row.Size=UDim2.new(1,-4,0,62)
+ row.BackgroundColor3=Color3.fromRGB(30,34,44)
+ row.BackgroundTransparency=.04
+ row.LayoutOrder=index
+ row.ZIndex=35
+ row.Parent=ghostBookList
+ roundify(row,10)
+
+ local accent=Instance.new("Frame")
+ accent.Size=UDim2.fromOffset(5,48)
+ accent.Position=UDim2.fromOffset(7,7)
+ accent.BackgroundColor3=item.Color or Color3.fromRGB(170,175,190)
+ accent.BorderSizePixel=0
+ accent.ZIndex=36
+ accent.Parent=row
+ roundify(accent,4)
+
+ local label=Instance.new("TextLabel")
+ label.Size=UDim2.new(1,-28,1,-8)
+ label.Position=UDim2.fromOffset(20,4)
+ label.BackgroundTransparency=1
+ label.TextColor3=Color3.fromRGB(229,233,241)
+ label.TextSize=10
+ label.TextWrapped=true
+ label.Font=Enum.Font.GothamBold
+ label.TextXAlignment=Enum.TextXAlignment.Left
+ label.TextYAlignment=Enum.TextYAlignment.Center
+ label.ZIndex=36
+ label.Parent=row
+
+ ghostBookRows[item.Id]={row=row,label=label,item=item}
+end
+
+local function ghostProgressSet()
+ local progress={}
+ for id,stage in string.gmatch(tostring(p:GetAttribute("GhostProgress")or""),"([^:,]+):(%d+)")do progress[id]=tonumber(stage)or 0 end
+ return progress
+end
+local function mapLabel(id)
+ return id=="SCHOOL"and"학교"or id=="HOSPITAL"and"폐병원"or id=="THEME_PARK"and"폐놀이공원"or id
+end
+local function updateGhostBookUI()
+ local progress=ghostProgressSet()
+ local completed=tonumber(p:GetAttribute("GhostCompleted"))or 0
+ local total=tonumber(p:GetAttribute("GhostTotal"))or #(C.GhostCatalog or{})
+ local fragments=tonumber(p:GetAttribute("GhostFragments"))or 0
+ local contracts=tonumber(p:GetAttribute("GhostContracts"))or 0
+ ghostBookSummary.Text=string.format("완성 %d/%d · 괴담 조각 %d/24 · 계약서 %d\n%s",completed,total,fragments,contracts,tostring(p:GetAttribute("GhostTitle")or"괴담 견습생"))
+ for id,data in pairs(ghostBookRows)do
+  local item=data.item
+  local stage=math.clamp(tonumber(progress[id])or 0,0,3)
+  local stageText=stage>0 and(item.Stages and item.Stages[stage]or("목격 "..stage.."단계"))or"미목격"
+  local status=stage>=3 and"완성"or string.format("%d/3",stage)
+  data.label.Text=string.format("%s · %s\n%s · %s · %s",item.Name,item.Origin,mapLabel(item.Map),stageText,status)
+  data.row.BackgroundTransparency=stage>=3 and 0 or .04
+ end
+end
+
+ghostBookOpenButton.Activated:Connect(function()
+ ghostBookPanel.Visible=true
+ shopPanel.Visible=false
+ updateGhostBookUI()
+end)
+ghostBookClose.Activated:Connect(function()ghostBookPanel.Visible=false end)
 
 -- 코스메틱 상점: 전투 능력치는 바꾸지 않고 프로필 프레임/칭호/결과 화면 색만 바꾼다.
-local shopPanel=Instance.new("Frame")
+shopPanel=Instance.new("Frame")
 shopPanel.Name="CosmeticShop"
 shopPanel.AnchorPoint=Vector2.new(.5,.5)
 shopPanel.Position=UDim2.fromScale(.5,.5)
@@ -1551,7 +1738,7 @@ RunService.RenderStepped:Connect(function(dt)
  local energy=math.max(0,tonumber(p:GetAttribute("Energy"))or 0)
  local maxEnergy=math.max(1,tonumber(p:GetAttribute("EnergyMax"))or tonumber(C.Energy and C.Energy.Max)or 100)
  energyFill.Size=UDim2.fromScale(math.clamp(energy/maxEnergy,0,1),1)
- energyLabel.Text=string.format("에너지 %d",math.floor(energy+.5))
+ energyLabel.Text=string.format("에너지 %d/%d",math.floor(energy+.5),math.floor(maxEnergy+.5))
  local pressure=tostring(p:GetAttribute("PressurePassive")or"")
  pressureLabel.Text=pressure~=""and("열세 패시브 · "..pressure)or""
  pressureLabel.Visible=pressure~=""and p:GetAttribute("RoundState")=="RUNNING"
@@ -1835,9 +2022,14 @@ local function render()
  local browser=not isRoomServer
  roomBrowserPanel.Visible=browser and not running and not resultCode
  roomInfoPanel.Visible=isRoomServer and not running and not resultCode and not spectating
+ roomSlotsPanel.Visible=roomInfoPanel.Visible
  setupPanel.Visible=isRoomServer and not running and not resultCode and not spectating
+ if roomSlotsPanel.Visible then refreshRoomSlots()end
  ruleCard.Visible=setupPanel.Visible and not selectionConfirmed
  actionDock.Visible=running
+ energyTrack.Visible=true
+ energyFill.Visible=true
+ energyLabel.Visible=true
  mapPanel.Visible=running
  spectatorPanel.Visible=spectating
  resultPanel.Visible=resultCode~=nil
@@ -1848,7 +2040,7 @@ local function render()
  local roomMembers=tonumber(p:GetAttribute("RoomMemberCount"))or 0
  local roomMax=tonumber(p:GetAttribute("RoomMaxPlayers"))or 8
  roomInfoLabel.Text=string.format("방 코드 %s · %s\n실제 %d/%d명 · 빈자리 AI %d명%s",tostring(p:GetAttribute("RoomCode")or"------"),visText,roomMembers,roomMax,math.max(0,(C.TargetPopulation or 8)-roomMembers),p:GetAttribute("RoomIsHost")==true and" · 방장"or"")
- if browser or running or spectating or resultCode then shopPanel.Visible=false end
+ if browser or running or spectating or resultCode then shopPanel.Visible=false;ghostBookPanel.Visible=false end
  if resultCode then
   if round~=lastRoundState then playResultCeremony(resultCode)end
   resultTitle.Text=resultCode=="SURVIVOR"and"인간 승리"or resultCode=="MONSTER"and"몬스터 승리"or"무승부"
@@ -1884,8 +2076,8 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle","GhostSeenCount","GhostCompleted","GhostTotal","GhostTitle","GhostFragments","GhostContracts","RoomServer","RoomCode","RoomHostUserId","RoomHostName","RoomVisibility","RoomState","RoomMemberCount","RoomMaxPlayers","RoomIsHost"})do
- p:GetAttributeChangedSignal(k):Connect(function()render();updateCosmeticUI()end)
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","InfectReadyAt","AbilityReadyAt","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle","GhostProgress","GhostSeenCount","GhostCompleted","GhostTotal","GhostTitle","GhostFragments","GhostContracts","RoomServer","RoomCode","RoomHostUserId","RoomHostName","RoomVisibility","RoomState","RoomMemberCount","RoomMaxPlayers","RoomIsHost"})do
+ p:GetAttributeChangedSignal(k):Connect(function()render();updateCosmeticUI();updateGhostBookUI()end)
 end
 p:GetAttributeChangedSignal("GhostFeedback"):Connect(function()
  local raw=tostring(p:GetAttribute("GhostFeedback")or"")

@@ -1002,11 +1002,13 @@ local function makeArena(map)
  foundationSpawn=Instance.new("SpawnLocation")
  foundationSpawn.Name="FoundationSpawn"
  foundationSpawn.Size=Vector3.new(10,1,10)
- foundationSpawn.Position=survivorSpawns[1]
+ foundationSpawn.Position=Vector3.new(survivorSpawns[1].X,.55,survivorSpawns[1].Z)
  foundationSpawn.Anchored=true
  foundationSpawn.Neutral=true
  foundationSpawn.Transparency=1
- foundationSpawn.CanCollide=true
+ foundationSpawn.CanCollide=false
+ foundationSpawn.CanTouch=false
+ foundationSpawn.CanQuery=false
  foundationSpawn.Parent=f
  for k,v in pairs(Style.Lighting)do Lighting[k]=v end
  local grade=Lighting:FindFirstChild("MidnightColorGrade")or Instance.new("ColorCorrectionEffect")
@@ -1349,7 +1351,7 @@ local function makeFallbackArena(map,reason)
  local old=workspace:FindFirstChild("MidnightArena");if old then old:Destroy()end
  local nextArena=workspace:FindFirstChild("MidnightArenaNext");if nextArena then nextArena:Destroy()end
  local f=Instance.new("Folder");f.Name="MidnightArena";f.Parent=workspace
- foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="FoundationSpawn";foundationSpawn.Size=Vector3.new(10,1,10);foundationSpawn.Position=survivorSpawns[1];foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=true;foundationSpawn.Parent=f
+ foundationSpawn=Instance.new("SpawnLocation");foundationSpawn.Name="FoundationSpawn";foundationSpawn.Size=Vector3.new(10,1,10);foundationSpawn.Position=Vector3.new(survivorSpawns[1].X,.55,survivorSpawns[1].Z);foundationSpawn.Anchored=true;foundationSpawn.Neutral=true;foundationSpawn.Transparency=1;foundationSpawn.CanCollide=false;foundationSpawn.CanTouch=false;foundationSpawn.CanQuery=false;foundationSpawn.Parent=f
  Lighting.Brightness=2.05;Lighting.ClockTime=.35;Lighting.FogEnd=270
  Lighting.Ambient=Color3.fromRGB(72,78,90);Lighting.OutdoorAmbient=Color3.fromRGB(58,64,76)
  arenaPart(f,"Floor",Vector3.new(160,1,160),Vector3.new(0,0,0),Style.Floor,Enum.Material.Concrete)
@@ -1564,10 +1566,12 @@ local function applyRoleVisual(p,r)
 end
 local function teleport(p,pos)
  local r=root(p);if r then
-  local target=pos+Vector3.new(0,2,0)
+  local target=Vector3.new(pos.X,3.6,pos.Z)
   movementGraceUntil[p]=os.clock()+1
   lastValidPosition[p]=target
   r.CFrame=CFrame.new(target)
+  r.AssemblyLinearVelocity=Vector3.zero
+  r.AssemblyAngularVelocity=Vector3.zero
  end
 end
 local function setRole(p,r)
