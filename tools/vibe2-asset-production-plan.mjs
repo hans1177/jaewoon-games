@@ -272,6 +272,10 @@ function matchedForType(selector={},type='',manifest={},target=''){
   return freezeList((selector.matched||[])
     .filter(row=>clean(row.type)===clean(type))
     .filter(row=>assetTargetCompatible(byId.get(clean(row.id))||row,target))
+    .filter(row=>{
+      const asset=byId.get(clean(row.id))||row;
+      return asset.referenceOnly!==true&&!/_REFERENCE(?:_ONLY)?$/.test(clean(asset.platform).toUpperCase());
+    })
     .map(row=>{
       const asset=byId.get(clean(row.id))||row;
       return freeze({
@@ -283,6 +287,8 @@ function matchedForType(selector={},type='',manifest={},target=''){
         downloaded:asset.downloaded!==false,
         animated:row.animated===true,
         motionMode:clean(row.motionMode)||null,
+        motionStates:freezeList(unique([...(Array.isArray(asset.states)?asset.states:[]),...(Array.isArray(asset.animations)?asset.animations:[])].filter(value=>typeof value==='string').map(value=>clean(value).toLowerCase()))),
+        rigType:clean(asset.rigType)||null,
         sourceTier:sourceTierFor(asset),
         companyVerified:asset.companyVerified===true,
         sameGameExistingRoblox:asset.sameGameExistingRoblox===true,
@@ -422,6 +428,7 @@ function decisionFor(selector={},target='',binding={},manifest={}){
   const reuseCandidates=freezeList([...companyCandidates,...sameGameCandidates,...repositoryCandidates]);
   const directAuthoring=directAuthoringFor(target,type);
   const decisionOrder=unique([
+    'COMPARE_TARGET_GAME_QUALITY',
     companyCandidates.length?'REUSE_VERIFIED_COMPANY_ASSET':'',
     sameGameCandidates.length?'REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET':'',
     repositoryCandidates.length?'REUSE_LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET':'',
@@ -429,6 +436,19 @@ function decisionFor(selector={},target='',binding={},manifest={}){
     directAuthoring.length?'VIBE_DIRECT_AUTHOR':'',
     'AUTHORING_GENERATOR_REQUEST'
   ]);
+  const motionReusePlan=type==='animation'?freeze({
+    // Declared clip coverage is a selection aid, never runtime proof.
+    stateBindings:freezeList((binding.targetStates||[]).map(state=>{
+      const matches=[...reuseCandidates,...externalCandidates].filter(asset=>asset.motionStates.includes(clean(state).toLowerCase()));
+      return freeze({state,candidateIds:freezeList(matches.map(asset=>asset.id)),runtimeVerified:false});
+    })),
+    unresolvedStates:freezeList((binding.targetStates||[]).filter(state=>![...reuseCandidates,...externalCandidates].some(asset=>asset.motionStates.includes(clean(state).toLowerCase())))),
+    coverageUnknownCandidateIds:freezeList([...reuseCandidates,...externalCandidates].filter(asset=>!asset.motionStates.length).map(asset=>asset.id)),
+    inspectUnknownCoverageBeforeNewAuthoring:true,
+    preserveExistingGameplayTiming:true,
+    requiredChecks:freezeList(['TARGET_GAME_ASSET_PERMISSION','RIG_AND_JOINT_COMPATIBILITY','ACTUAL_CLIP_PLAYBACK','TRANSITION_AND_INTERRUPT','MULTIPLAYER_SYNC']),
+    runtimeVerified:false
+  }):null;
   return freeze({
     type,
     required:binding.required!==false,
@@ -440,6 +460,18 @@ function decisionFor(selector={},target='',binding={},manifest={}){
     reuseCandidates,
     directAuthoring,
     decisionOrder:freezeList(decisionOrder),
+    qualitySelection:freeze({
+      requiredBeforeSourcePreference:true,
+      companyOwnershipIsNotQualityEvidence:true,
+      compareCandidateIds:freezeList([...reuseCandidates,...externalCandidates].map(asset=>asset.id)),
+      requiredChecks:freezeList(type==='animation'
+        ?['GAME_STYLE_FIT','RIG_AND_JOINT_COMPATIBILITY','FOOT_SLIDING_AND_CONTACT','TRANSITION_AND_INTERRUPT','ACTUAL_CLIP_PLAYBACK','MULTIPLAYER_SYNC']
+        :['GAME_STYLE_FIT','SILHOUETTE_AND_READABILITY','MATERIAL_AND_SCALE_COHERENCE','TARGET_RUNTIME_AND_MOBILE_PERFORMANCE']),
+      selectionState:'TARGET_GAME_REVIEW_REQUIRED',
+      selectedAssetId:null,
+      sourcePreferenceOnlyAfterQualityPass:true
+    }),
+    motionReusePlan,
     generatorFallback:freeze({
       route:'AUTHORING_GENERATOR_REQUEST',
       requestedKinds:BINARY_AUTHORING_KINDS,
@@ -1123,7 +1155,7 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'의복은 layer/clipping/theme grammar, 건물은 modular/interior/navigation grammar, 환경은 Biome DNA/Prop Density, 몬스터는 body-plan/species/mutation/signature identity, 무기-모션과 스킬 표현은 cross-asset compatibility로 자동 검사한다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?'24H Gap Fill은 검증 회사 자산→저장소→안전 파생→라이선스 검증 외부→PREPARED_SEMANTIC→신규 네이티브 제작 순으로 우선순위를 채운다. Semantic seed는 실제 Unity/Roblox 런타임 PASS 전 VERIFIED가 아니다.':'',
     plan.target==='roblox'&&Number(plan.summary?.discoveredSameGameRobloxAssets||0)>0?`현재 Roblox 게임 소스에서 기존 Asset ID ${plan.summary.discoveredSameGameRobloxAssets}개를 발견했다. REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET는 현재 게임 바인딩을 보존하는 후보지만 SOURCE_BOUND_UNVERIFIED 상태에서는 호환되는 VERIFIED_COMPANY_ASSET보다 우선하지 않고 회사 공용 VERIFIED로도 승격하지 않는다.`:'',
-    '선택 순서: 검증된 같은 게임/회사 에셋 → 같은 게임 SOURCE_BOUND 후보 → 라이선스 검증 기존 저장소 → 라이선스 검증 외부 에셋·모션 확보 → 리타겟/클린업 또는 직접 제작 → 별도 authoring generator. 외부 후보는 실제 다운로드·플랫폼 변환·런타임 검증 전 회사 검증 자산이 아니다.',
+    '선택 순서: 현재 게임 품질·분위기·호환성 비교가 먼저다. 회사 소유 또는 다른 게임 검증 이력만으로 선택하지 않는다. 우리 자산과 무료 제공 조건·사용 권한이 확인된 외부 후보를 함께 비교하고, 품질 기준을 통과한 동급 후보끼리만 회사/기존 게임 → 저장소 → 외부 순으로 재사용한다. 우리 자산이 기준 미달이면 적합한 외부 후보를 우선하고, 둘 다 부족할 때만 리타겟/클린업 또는 새 제작한다. 참조용 이미지를 완성된 네이티브 자산으로 취급하지 않는다. 외부 후보는 실제 다운로드·플랫폼 변환·런타임 검증 전 회사 검증 자산이 아니다.',
     'Web에서 SVG/CSS/Canvas/절차적 JavaScript/WebAudio/Motion Engine으로 최종 품질을 만들 수 있으면 Vibe가 직접 제작한다.',
     '이모지/단순 도형/검증용 임시 그래픽/임시 모형 몹/무맥락 배경을 최종 에셋으로 사용하지 않는다.',
     'PNG/WebP 스프라이트시트, 고품질 음원, 3D 모델처럼 binary authoring이 필요한데 현재 worker가 만들 수 없으면 가짜 파일을 쓰지 말고 authoring generator 요청으로 분리한다.',
@@ -1135,6 +1167,12 @@ export function assetProductionGuidance(plan={}){
     const external=(row.externalCandidates||[]).slice(0,4).map(x=>x.id).join('|')||'none';
     const direct=(row.directAuthoring||[]).join('|')||'none';
     lines.push(`- type=${row.type}; reuse=${reuse}; external=${external}; direct=${direct}; order=${(row.decisionOrder||[]).join('>')}`);
+    if(row.type==='animation')lines.push(`모션 품질 비교 필수=${(row.qualitySelection?.requiredChecks||[]).join(',')}; 품질 미달 후보를 적용하지 말고 비교 결과와 선택 이유를 남긴다.`);
+    if(row.motionReusePlan){
+      lines.push(`동작별 재사용 후보(실행 통과 아님): ${row.motionReusePlan.stateBindings.map(item=>`${item.state}=${item.candidateIds.slice(0,4).join('|')||'unresolved'}`).join('; ')}`);
+      lines.push(`동작 확인 필요=${row.motionReusePlan.unresolvedStates.join(',')||'none'}; 동작 목록 미확인 후보=${row.motionReusePlan.coverageUnknownCandidateIds.slice(0,4).join('|')||'none'}. 먼저 기존 클립 목록을 확인하고 부족한 동작만 권한·라이선스·무료 제공 조건이 확인된 외부 자산으로 보충한다. 무료 여부를 라이선스만으로 추정하거나 Asset ID를 지어내지 않는다. 적합한 후보가 없을 때만 새 제작한다.`);
+      lines.push(`모션 적용 검수=${row.motionReusePlan.requiredChecks.join(',')}. R6/R15/커스텀 골격과 관절을 확인하고 기존 공격 판정·쿨다운·이동 속도·저장 규칙을 모션 길이에 맞춰 바꾸지 않는다. 중단·사망·재생성 후 전환과 실제 멀티 동기화를 검사하기 전에는 검증 자산으로 승격하지 않는다.`);
+    }
   }
   return lines.join('\n');
 }
