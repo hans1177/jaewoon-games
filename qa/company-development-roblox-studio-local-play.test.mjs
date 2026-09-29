@@ -18,7 +18,8 @@ import {
   evaluateStudioActualPlayContract,
   deriveStudioActualPlayContract,
   assertCurrentStudioWorkflowHead,
-  runStudioMultiplayerAudit
+  runStudioMultiplayerAudit,
+  evaluateStudioSaveRejoin
 } from '../tools/company-development-roblox-studio-local-play.mjs';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
@@ -2461,4 +2462,50 @@ test('Studio patterns distinguish identically named controls and exclude unclass
   assert.notEqual(patterns[0].id,patterns[1].id);
   assert.equal(patterns[0].pass,true);
   assert.equal(patterns[1].pass,false);
+});
+
+
+test('F9 save rejoin distinguishes missing Studio observations from observed data loss',()=>{
+  const beforeProbe={runtime:{progression:[{scope:'player',name:'Gold',value:'12'}],inventory:[]}};
+  for(const restartError of ['ROBLOX_STUDIO_MCP_TOOL_ERROR:No Roblox Studio instances are connected','MCP timeout: tools/call','']){
+    const result=evaluateStudioSaveRejoin({beforeProbe,restartError});
+    assert.equal(result.pass,false);
+    assert.equal(result.infrastructureFailure,true);
+    assert.equal(result.restartOk,false);
+    assert.ok(result.error);
+  }
+  const lost=evaluateStudioSaveRejoin({beforeProbe,rejoinProbe:{runtime:{progression:[{scope:'player',name:'Gold',value:'0'}],inventory:[]}}});
+  assert.equal(lost.pass,false);
+  assert.equal(lost.infrastructureFailure,false);
+  assert.equal(lost.progressionPreserved,false);
+  const missingState=evaluateStudioSaveRejoin({beforeProbe,rejoinProbe:{}});
+  assert.equal(missingState.pass,false);
+  assert.equal(missingState.infrastructureFailure,false);
+  assert.equal(evaluateStudioSaveRejoin({beforeProbe,rejoinProbe:beforeProbe}).pass,true);
+});
+
+test('F9 restart transport failure keeps checkpoint blocked without inventing save repair',async()=>{
+  const start=helper.indexOf("        let restartError='';");
+  const end=helper.indexOf('\n      }\n      const multiplayerDeclared',start);
+  assert.ok(start>0&&end>start);
+  const execute=new (Object.getPrototypeOf(async function(){}).constructor)(
+    'evaluateStudioSaveRejoin','existingFailures',
+    `let started=true,rejoinClientProbe=null,saveRejoinSummary=null;
+     const finalClientProbe={runtime:{progression:[{name:'Gold',value:'12'}]}};
+     const client={tool:()=>({}),call:async()=>{throw new Error('No Roblox Studio instances are connected');}};
+     const studioId='fixture',actualPlayContract={},startStopArgs=()=>({}),wait=async()=>{};
+     const collectStudioActualPlayProbe=async()=>null;
+     const scenarioCoverage=[],qualityFailureKinds=[...existingFailures],qualityFailureDetails=[],errors=[],checkpoints=[];
+     const checkpoint=(id,pass)=>checkpoints.push({id,pass});
+     ${helper.slice(start,end)}
+     return {saveRejoinSummary,qualityFailureKinds,errors,checkpoints};`
+  );
+  for(const existing of [[],['adaptive-world-safety']]){
+    const result=await execute(evaluateStudioSaveRejoin,existing);
+    assert.deepEqual(result.qualityFailureKinds,existing);
+    assert.equal(result.saveRejoinSummary.pass,false);
+    assert.equal(result.checkpoints[0].pass,false);
+    assert.equal(result.errors[0].type,'studio-save-rejoin-harness-infrastructure');
+    assert.match(result.errors[0].signature,/No Roblox Studio instances/);
+  }
 });
