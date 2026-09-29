@@ -5763,7 +5763,8 @@
       "coding_negative_hfvhnd",
       "coding_negative_1o2fs4x",
       "coding_negative_caj5tq",
-      "coding_negative_1o3vja6"
+      "coding_negative_1o3vja6",
+      "coding_negative_1mjdzeg"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16339,7 +16340,7 @@
         "verifiedApplications": 2,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 6,
-        "verifiedFailures": 313,
+        "verifiedFailures": 314,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1
@@ -16547,22 +16548,22 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 12,
+            "verifiedFailures": 13,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 12
+              "cozy-island": 13
             },
             "failureTargets": {
-              "unity": 12
+              "unity": 13
             },
             "failureClasses": {
-              "EDIT_MATCH": 11,
+              "EDIT_MATCH": 12,
               "TIMEOUT": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_8mm7v9",
-            "lastUpdatedAt": "2026-09-29T14:20:40.024Z"
+            "lastFailureEvidence": "coding_negative_1mjdzeg",
+            "lastUpdatedAt": "2026-09-29T14:52:09.229Z"
           },
           "unity|INVALID_PATH|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -16770,8 +16771,8 @@
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_jra6qr",
-        "lastFailureEvidence": "coding_negative_1o3vja6",
-        "lastUpdatedAt": "2026-09-29T14:42:46.184Z"
+        "lastFailureEvidence": "coding_negative_1mjdzeg",
+        "lastUpdatedAt": "2026-09-29T14:52:09.229Z"
       }
     }
   },
@@ -19506,7 +19507,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-29T14:46:54.848Z",
+    "lastBuiltAt": "2026-09-29T14:52:09.300Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -26694,5 +26695,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-29T14:46:54.848Z"
+  "updatedAt": "2026-09-29T14:52:09.300Z"
 }
