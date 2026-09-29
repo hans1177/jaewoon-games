@@ -201,3 +201,52 @@ test('실제 플레이어 기여 보상은 AI 기여보다 크고 상한이 있�
  assert.ok(rewardBlock.includes('InfectAICoins=1'));
  assert.match(server,/math\.min\(cap,current\+math\.max/);
 });
+
+
+test('코스메틱 상점은 서버 권한 구매와 장착만 허용한다',()=>{
+ assert.match(config,/Cosmetics=\{/);
+ for(const id of ['DEFAULT','MIDNIGHT_RED','MOON_BLUE','TOXIC_GREEN','VOID_PURPLE'])assert.ok(config.includes('Id="'+id+'"'),id);
+ assert.match(config,/BUY_COSMETIC="BUY_COSMETIC"/);
+ assert.match(config,/EQUIP_COSMETIC="EQUIP_COSMETIC"/);
+ assert.match(server,/local function buyCosmetic\(p,id\)/);
+ assert.match(server,/local function equipCosmetic\(p,id\)/);
+ assert.match(server,/local item=cosmeticById\[id\];if not item then return end/);
+ assert.match(server,/if coins<price then/);
+ assert.match(server,/if not owned\[id\]then/);
+ assert.match(client,/remote:FireServer\(C\.Actions\.BUY_COSMETIC,item\.Id\)/);
+ assert.match(client,/remote:FireServer\(C\.Actions\.EQUIP_COSMETIC,item\.Id\)/);
+});
+
+test('코스메틱 저장은 기존 세이브를 깨지 않는 추가 필드다',()=>{
+ assert.match(server,/local owned=\{DEFAULT=true\}/);
+ assert.match(server,/OwnedCosmetics=ownedCosmeticsList\(owned\)/);
+ assert.match(server,/EquippedCosmetic=equipped/);
+ assert.match(server,/typeof\(d\.EquippedCosmetic\)=="string"/);
+ assert.match(server,/if not owned\[equipped\]or not cosmeticById\[equipped\]then equipped="DEFAULT"end/);
+ assert.ok(server.includes('DSS:GetDataStore("midnight-tag-v3")'));
+});
+
+test('코스메틱은 UI 테마와 칭호 전용이며 전투 수치에 연결되지 않는다',()=>{
+ const cosmeticBlock=config.slice(config.indexOf('Cosmetics={'),config.indexOf('Audio={'));
+ for(const forbidden of ['WalkSpeed','Damage','PurifyDistance','Cooldown','DashPower','TagDistance'])assert.ok(!cosmeticBlock.includes(forbidden),forbidden);
+ assert.match(client,/resultTitle\.TextColor3=accent/);
+ assert.match(client,/selectionStatus\.TextColor3=accent/);
+ assert.match(client,/equippedItem\.Title/);
+ assert.doesNotMatch(server,/EquippedCosmetic[^\n]{0,120}(WalkSpeed|Damage|PurifyDistance|Cooldown|DashPower|TagDistance)/);
+});
+
+test('진행중 이탈은 같은 역할 AI로 즉시 채우고 중도입장은 관전한다',()=>{
+ assert.match(server,/bot\(leavingRole,leavingPos\)/);
+ assert.match(server,/RoundState","SPECTATING"/);
+ assert.match(server,/Spectating",true/);
+ assert.match(client,/Name="SpectatorNotice"/);
+});
+
+test('액션 쿨다운과 결과 보상은 서버 시간과 서버 속성을 사용한다',()=>{
+ for(const key of ['PurifyReadyAt','DashReadyAt','AbilityReadyAt'])assert.ok(server.includes('"'+key+'"'),key);
+ assert.match(client,/workspace:GetServerTimeNow\(\)/);
+ assert.match(client,/Name="RoundResult"/);
+ assert.match(client,/LastRoundBaseReward/);
+ assert.match(client,/LastRoundWinBonus/);
+ assert.match(client,/LastRoundContribution/);
+});
