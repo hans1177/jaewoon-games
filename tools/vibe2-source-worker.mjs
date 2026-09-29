@@ -2372,11 +2372,11 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     :robloxGraphicsInitial
       ?buildGenerationRetryPrompt(prompt,{allowFullRewrite:false,responsibleFiles,attempt:1,sourceRoot,systemAtomicPairRequired,robloxGraphicsInitial:true,robloxFullGraphicsPackageActive:true})
       :prompt;
-  // 과대한 플랫폼 재구축 주문은 시간 초과 후에야 쓰던 기존 책임 앵커 경로로 바로 시작한다.
+  // 과대한 재구축·출시 후 집중 개선 주문은 기존 책임 앵커 경로로 바로 시작한다.
   // 연결 패키지/원자적 파일 쌍은 기존 경로를 유지하고 최종 후보 검증도 그대로 적용한다.
   const robloxRebuildFocused=target==='roblox'&&!allowFullRewrite&&!studioExpansion&&!robloxGraphicsInitial
     &&!systemAtomicPairRequired&&!multiFilePairRequired
-    &&String(prompt).includes('[SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX]')
+    &&/\[(?:SECOND_PLATFORM_ADAPTATION_REBUILD:ROBLOX|POST_RELEASE_FOCUSED_DEVELOPMENT)\]/.test(String(prompt))
     &&String(prompt).includes('[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]')
     &&Buffer.byteLength(initialStudioPrompt,'utf8')>MAX_CONTEXT_BYTES;
   if(robloxRebuildFocused)console.log('VIBE2_ROBLOX_REBUILD_FOCUSED_INITIAL=bytes:'+Buffer.byteLength(initialStudioPrompt,'utf8'));
