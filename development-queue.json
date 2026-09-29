@@ -2160,10 +2160,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
-      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "currentStep": "REPAIR_REQUIRED",
+      "canonicalState": "REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-29T02:01:18.131Z",
+      "updatedAt": "2026-09-29T02:05:27.655Z",
       "robloxSourceCommit": "825a26d1b013de94f2086c6d38a9839895abb781",
       "robloxSourceBootstrapPassedAt": "2026-09-28T21:42:16.545Z",
       "robloxSourceBootstrapFailedAt": null,
@@ -2466,9 +2466,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "F9_RELEASE_REGRESSION",
       "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_STUDIO_INTERNAL_VALIDATION_PENDING",
+      "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
       "routingBlockers": [
-        "roblox-studio-internal-validation-pending"
+        "roblox-studio-mcp-play-repair-required"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -2508,10 +2508,10 @@
         "pass": false,
         "actualPlay": true,
         "runtimeVerified": false,
-        "learningReusable": false,
+        "learningReusable": true,
         "learningScope": "STRUCTURED_VERIFIED_QA_FACTS_ONLY",
-        "infrastructureFailure": true,
-        "failureClass": "STUDIO_MCP_INFRASTRUCTURE_PENDING",
+        "infrastructureFailure": false,
+        "failureClass": "STUDIO_PRODUCT_QUALITY_FAILURE",
         "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
         "actualPlayEligibility": "PRIVATE_INTERNAL_CANDIDATE_EXACT",
         "studioMcpServerEnablementRequired": false,
@@ -2580,7 +2580,7 @@
             "ok": true
           },
           {
-            "id": "map-route-prompt:비상 탈출구",
+            "id": "map-route-prompt:운동장 방송",
             "type": "mcp-map-route-audit",
             "dispatched": true,
             "ok": false
@@ -2819,7 +2819,7 @@
             "id": "scenario-logical-population-eight",
             "name": "scenario-logical-population-eight",
             "required": true,
-            "pass": false
+            "pass": true
           },
           {
             "id": "scenario-hud-visible",
@@ -3119,7 +3119,7 @@
             "id": "final-capture-play-restored",
             "name": "final-capture-play-restored",
             "required": true,
-            "pass": true
+            "pass": false
           },
           {
             "id": "final-visual-capture-sane",
@@ -3138,7 +3138,7 @@
           {
             "type": "studio-multiplayer-harness-infrastructure",
             "actionId": "studio-test-service-multiplayer",
-            "signature": "ROBLOX_STUDIO_MULTIPLAYER_HARNESS_PENDING:ROBLOX_STUDIO_MULTIPLAYER_START_FAILED:EDIT_MODE_NOT_ACTIVE"
+            "signature": "ROBLOX_STUDIO_MULTIPLAYER_HARNESS_PENDING:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:Server datamodel is not available in Edit mode | text"
           }
         ],
         "runtimeSummary": {
@@ -3148,13 +3148,13 @@
           "characterMotionRuntimeRequired": false,
           "characterMotionRuntimePassed": true,
           "scenarioContractRequired": true,
-          "scenarioFailureCount": 9,
-          "primaryActionDisplacement": 0,
-          "primaryActionVelocity": 0.00005203628679003597,
+          "scenarioFailureCount": 8,
+          "primaryActionDisplacement": 0.00160980224609375,
+          "primaryActionVelocity": 0.000052079551950917196,
           "primaryActionFeedbackChanged": true,
           "commercialAudit": {
             "auditProfile": "F9_SOAK",
-            "timelineProbeCount": 21,
+            "timelineProbeCount": 18,
             "progressChanged": false,
             "inventoryChanged": false,
             "timelineProgressChanged": false,
@@ -3232,7 +3232,7 @@
           },
           {
             "id": "logical-population-eight",
-            "pass": false
+            "pass": true
           },
           {
             "id": "hud-visible",
@@ -3421,7 +3421,6 @@
         ],
         "scenarioCoveragePass": false,
         "qualityFailureKinds": [
-          "logical-population-eight",
           "adaptive-ui-commercial-quality",
           "adaptive-world-safety",
           "adaptive-map-route-coverage",
@@ -3433,29 +3432,6 @@
         ],
         "qualityFailureDetails": [
           {
-            "id": "logical-population-eight",
-            "repairSurface": "ROBLOX_PRODUCT_QUALITY",
-            "priority": "HIGH",
-            "hint": "Repair the failing Studio actual-play scenario and re-run the exact artifact.",
-            "observed": {
-              "interactionSurfaceCount": 9,
-              "progressionSurfaceCount": 11,
-              "combatSurfaceCount": 8,
-              "npcSurfaceCount": 0,
-              "companionSurfaceCount": 0,
-              "itemSurfaceCount": 1,
-              "remoteCount": 17,
-              "soundCount": 0,
-              "effectCount": 1,
-              "promptCount": 5,
-              "inventoryCount": 0,
-              "currentActualPlayerCount": 1,
-              "maxActualPlayerCount": 1,
-              "multiplayerStateTransition": true,
-              "multiplayerActualSessionPass": false
-            }
-          },
-          {
             "id": "adaptive-ui-commercial-quality",
             "repairSurface": "MOBILE_UI",
             "priority": "HIGH",
@@ -3463,7 +3439,7 @@
             "observed": {
               "offscreenButtons": 0,
               "undersizedTouchButtons": 2,
-              "suboptimalTouchButtons": 1,
+              "suboptimalTouchButtons": 2,
               "textOverflowButtons": 0,
               "overlapPairs": 0,
               "largeOverlayCount": 0,
@@ -3484,9 +3460,9 @@
               "floorHits": 1,
               "floorCoveragePass": false,
               "routeSamples": 10,
-              "routeSuccess": 7,
+              "routeSuccess": 9,
               "routeCoveragePass": true,
-              "spawnThreatDistance": 211.66208114553976,
+              "spawnThreatDistance": 19.81820751908259,
               "spawnOverlapSafe": true
             }
           },
@@ -3501,10 +3477,10 @@
               "routeRequired": 1,
               "routes": [
                 {
-                  "id": "map-route-prompt:비상 탈출구",
+                  "id": "map-route-prompt:운동장 방송",
                   "ok": false,
-                  "moved": 19.854044785066353,
-                  "fall": 6.147953271865845,
+                  "moved": 8.473833577868911,
+                  "fall": 2.645134210586548,
                   "floorBelow": true
                 }
               ]
@@ -3589,7 +3565,7 @@
               "auditProfile": "F9_SOAK",
               "multiplayerRuntimeSurface": true,
               "multiplayerActualSessionPass": false,
-              "multiplayerSignals": 14,
+              "multiplayerSignals": 16,
               "currentActualPlayerCount": 1,
               "maxActualPlayerCount": 1,
               "multiplayerStateTransition": true,
@@ -3617,8 +3593,8 @@
           "authoritativeStateChangeObserved": true,
           "exactScenarioObserved": true
         },
-        "testedAt": "2026-09-29T01:58:57.079Z",
-        "workflowRunId": 36509835185,
+        "testedAt": "2026-09-29T02:05:27.655Z",
+        "workflowRunId": 36510232525,
         "publicationAuthority": false,
         "publicationTargetDiscovery": false,
         "commercialRegressionDetected": false,
@@ -3652,8 +3628,8 @@
       "robloxInternalReleasePublished": false,
       "robloxInternalPlaytestPassed": false,
       "robloxInternalPlaytestPassedAt": null,
-      "robloxStudioLocalPlayRepairRequired": false,
-      "robloxStudioLocalPlayInfrastructurePending": true,
+      "robloxStudioLocalPlayRepairRequired": true,
+      "robloxStudioLocalPlayInfrastructurePending": false,
       "robloxDedicatedTargetRegistryBinding": {
         "version": 1,
         "source": "roblox-dedicated-targets.json",
@@ -3715,7 +3691,7 @@
       },
       "ownerWebEditPropagationPending": true,
       "ownerWebEditPropagationUpdatedAt": "2026-09-25T20:06:01.391Z",
-      "robloxNativeFailureClass": null,
+      "robloxNativeFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -3935,10 +3911,197 @@
       "robloxRuntimeFoundationInternalReleaseException": true,
       "robloxPublicReleaseVersionNumber": 25,
       "robloxPublicReleaseEvidence": null,
-      "robloxQualityBuildUpRequired": false,
-      "robloxQualityFailureClass": "INFRASTRUCTURE_OR_EVIDENCE_ONLY",
-      "robloxQualityBuildUpSourceRevision": null,
-      "robloxQualityBuildUpEvidence": null,
+      "robloxQualityBuildUpRequired": true,
+      "robloxQualityFailureClass": "PRODUCT",
+      "robloxQualityBuildUpSourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
+      "robloxQualityBuildUpEvidence": {
+        "version": 1,
+        "sourceRevision": "825a26d1b013de94f2086c6d38a9839895abb781",
+        "artifactIdentity": "sha256:6101e58da18b7326c7d94f7698c4ac0ee3d4ce0930feb54ae256079010305095",
+        "versionNumber": 36432015025,
+        "failureStage": "VIBE_INTERNAL_PLAY",
+        "failureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
+        "qualityFailureKinds": [
+          "adaptive-ui-commercial-quality",
+          "adaptive-world-safety",
+          "adaptive-map-route-coverage",
+          "adaptive-motion-surface",
+          "adaptive-audio-surface",
+          "adaptive-retry-loop-surface",
+          "adaptive-multiplayer-sync-surface",
+          "adaptive-save-rejoin-persistence"
+        ],
+        "qualityFailureDetails": [
+          {
+            "id": "adaptive-ui-commercial-quality",
+            "repairSurface": "MOBILE_UI",
+            "priority": "HIGH",
+            "hint": "Fix clipping, touch target size, text fit, and overlapping HUD controls across mobile viewports.",
+            "observed": {
+              "offscreenButtons": 0,
+              "undersizedTouchButtons": 2,
+              "suboptimalTouchButtons": 2,
+              "textOverflowButtons": 0,
+              "overlapPairs": 0,
+              "largeOverlayCount": 0,
+              "largeBlockingOverlayCount": 0,
+              "largestOverlayCoverage": 0
+            }
+          },
+          {
+            "id": "adaptive-world-safety",
+            "repairSurface": "WORLD_GEOMETRY",
+            "priority": "CRITICAL",
+            "hint": "Repair walkable floor coverage, collision gaps, void falls, stuck geometry, and unsafe map boundaries.",
+            "observed": {
+              "boundsFinite": true,
+              "collidablePartCount": 96,
+              "floorBelowPlayer": true,
+              "floorSamples": 9,
+              "floorHits": 1,
+              "floorCoveragePass": false,
+              "routeSamples": 10,
+              "routeSuccess": 9,
+              "routeCoveragePass": true,
+              "spawnThreatDistance": 19.81820751908259,
+              "spawnOverlapSafe": true
+            }
+          },
+          {
+            "id": "adaptive-map-route-coverage",
+            "repairSurface": "MAP_ROUTEABILITY",
+            "priority": "CRITICAL",
+            "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
+            "observed": {
+              "routeAttemptCount": 1,
+              "routePassCount": 0,
+              "routeRequired": 1,
+              "routes": [
+                {
+                  "id": "map-route-prompt:운동장 방송",
+                  "ok": false,
+                  "moved": 8.473833577868911,
+                  "fall": 2.645134210586548,
+                  "floorBelow": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "adaptive-motion-surface",
+            "repairSurface": "CHARACTER_MOTION",
+            "priority": "HIGH",
+            "hint": "Repair Animator/Motor6D rig behavior and verify movement/action animation response.",
+            "observed": {
+              "interactionSurfaceCount": 9,
+              "progressionSurfaceCount": 11,
+              "combatSurfaceCount": 8,
+              "npcSurfaceCount": 0,
+              "companionSurfaceCount": 0,
+              "itemSurfaceCount": 1,
+              "remoteCount": 17,
+              "soundCount": 0,
+              "effectCount": 1,
+              "promptCount": 5,
+              "inventoryCount": 0,
+              "currentActualPlayerCount": 1,
+              "maxActualPlayerCount": 1,
+              "multiplayerStateTransition": true,
+              "multiplayerActualSessionPass": false
+            }
+          },
+          {
+            "id": "adaptive-audio-surface",
+            "repairSurface": "AUDIO",
+            "priority": "MEDIUM",
+            "hint": "Restore required gameplay/BGM/SFX surface and ensure runtime audio feedback exists.",
+            "observed": {
+              "interactionSurfaceCount": 9,
+              "progressionSurfaceCount": 11,
+              "combatSurfaceCount": 8,
+              "npcSurfaceCount": 0,
+              "companionSurfaceCount": 0,
+              "itemSurfaceCount": 1,
+              "remoteCount": 17,
+              "soundCount": 0,
+              "effectCount": 1,
+              "promptCount": 5,
+              "inventoryCount": 0,
+              "currentActualPlayerCount": 1,
+              "maxActualPlayerCount": 1,
+              "multiplayerStateTransition": true,
+              "multiplayerActualSessionPass": false
+            }
+          },
+          {
+            "id": "adaptive-retry-loop-surface",
+            "repairSurface": "FAILURE_RECOVERY",
+            "priority": "HIGH",
+            "hint": "Repair death/failure/restart/respawn flow and remove softlocks after retry.",
+            "observed": {
+              "interactionSurfaceCount": 9,
+              "progressionSurfaceCount": 11,
+              "combatSurfaceCount": 8,
+              "npcSurfaceCount": 0,
+              "companionSurfaceCount": 0,
+              "itemSurfaceCount": 1,
+              "remoteCount": 17,
+              "soundCount": 0,
+              "effectCount": 1,
+              "promptCount": 5,
+              "inventoryCount": 0,
+              "currentActualPlayerCount": 1,
+              "maxActualPlayerCount": 1,
+              "multiplayerStateTransition": true,
+              "multiplayerActualSessionPass": false
+            }
+          },
+          {
+            "id": "adaptive-multiplayer-sync-surface",
+            "repairSurface": "MULTIPLAYER_SYNC",
+            "priority": "CRITICAL",
+            "hint": "The game declares multiplayer/co-op behavior but Studio found no credible replicated player/team state plus server Remote surface. Restore actual 2+ player synchronization evidence before release.",
+            "observed": {
+              "declaredMultiplayer": true,
+              "auditProfile": "F9_SOAK",
+              "multiplayerRuntimeSurface": true,
+              "multiplayerActualSessionPass": false,
+              "multiplayerSignals": 16,
+              "currentActualPlayerCount": 1,
+              "maxActualPlayerCount": 1,
+              "multiplayerStateTransition": true,
+              "remoteCount": 17
+            }
+          },
+          {
+            "id": "adaptive-save-rejoin-persistence",
+            "repairSurface": "SAVE_REJOIN",
+            "priority": "CRITICAL",
+            "hint": "F9 Studio restart did not preserve stable progression/inventory state. Repair save timing, load ordering, schema migration, or reset/duplication behavior.",
+            "observed": {
+              "restartOk": true,
+              "progressionObserved": true,
+              "progressionPreserved": false,
+              "inventoryComparable": false,
+              "inventoryPreserved": true
+            }
+          }
+        ],
+        "repairSurfaces": [
+          "MOBILE_UI",
+          "WORLD_GEOMETRY",
+          "MAP_ROUTEABILITY",
+          "CHARACTER_MOTION",
+          "AUDIO",
+          "FAILURE_RECOVERY",
+          "MULTIPLAYER_SYNC",
+          "SAVE_REJOIN"
+        ],
+        "robloxFailureClass": "ROBLOX_DATASTORE_SAVE_LOAD",
+        "testedAt": "2026-09-29T02:05:27.655Z",
+        "workflowRunId": 36510232525,
+        "authority": "roblox-official-studio-mcp-product-quality-failure"
+      },
       "robloxQualityBuildUpLastPassedAt": "2026-09-28T13:51:01.540Z",
       "robloxValidationTarget": {
         "version": 3,
@@ -27952,7 +28115,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-29T02:01:18.131Z",
+  "updatedAt": "2026-09-29T02:05:27.655Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
