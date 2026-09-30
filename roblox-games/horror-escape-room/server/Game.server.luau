@@ -1603,6 +1603,20 @@ local function teleport(p,pos)
    h.PlatformStand=false;h.Sit=false;h.AutoRotate=true
    pcall(function()h:ChangeState(Enum.HumanoidStateType.GettingUp)end)
   end
+  task.defer(function()
+   task.wait()
+   local rr=root(p);local hh=hum(p)
+   if not rr or not hh or not rr.Parent then return end
+   local corrected=groundedRootTarget(p,pos)
+   if math.abs(rr.Position.Y-corrected.Y)>.12 or hh.FloorMaterial==Enum.Material.Air then
+    movementGraceUntil[p]=os.clock()+1
+    lastValidPosition[p]=corrected
+    rr.CFrame=CFrame.new(corrected)
+    rr.AssemblyLinearVelocity=Vector3.zero
+    rr.AssemblyAngularVelocity=Vector3.zero
+    hh.PlatformStand=false;hh.Sit=false;hh.AutoRotate=true
+   end
+  end)
  end
 end
 local function setRole(p,r)
@@ -2041,6 +2055,7 @@ local function onCharacter(p)
   elseif role=="ELIMINATED"then local rr=root(p);if rr then rr.Anchored=true end end
  else
   -- 대기/방 브라우저에서도 모든 실제 캐릭터를 보이지 않는 SpawnLocation이 아니라 실제 바닥에 둔다.
+  setEnergy(p,energyMax());p:SetAttribute("EnergyFeedback","")
   p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
   p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
   local players=Players:GetPlayers()
