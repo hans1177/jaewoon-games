@@ -680,37 +680,19 @@ local function makePhysicalLobby()
   leaveReservedRoom(p)
  end)
 
- -- 예약방 대기 인원을 실제 공간의 8개 자리로 보여준다.
- for i=1,8 do
-  local col=(i-1)%4;local row=math.floor((i-1)/4)
-  local pad=arenaPart(f,"LobbySlot"..i,Vector3.new(12,.32,8),Vector3.new(-24+col*16,.41,226+row*12),Color3.fromRGB(48,55,66),Enum.Material.Metal)
-  pad.CanCollide=true;pad:SetAttribute("LobbySlotIndex",i)
- end
- local board=arenaPart(f,"RoomStatusBoard",Vector3.new(22,6,1),Vector3.new(0,6.7,282.8),Color3.fromRGB(30,35,45),Enum.Material.Metal)
- lobbyLabel(board,"로비 준비 중",Color3.fromRGB(169,223,242))
+ local board=arenaPart(f,"RoomStatusBoard",Vector3.new(26,6,1),Vector3.new(0,6.7,282.8),Color3.fromRGB(30,35,45),Enum.Material.Metal)
+ lobbyLabel(board,"방 입장 칸에서 매칭",Color3.fromRGB(169,223,242))
 
  refreshPhysicalLobby=function()
   local browser=not roomServer
   friendJoinPrompt.Enabled=browser;codePrompt.Enabled=browser
   leavePrompt.Enabled=roomServer and state=="WAITING"
   if lobbyQueuePart then lobbyQueuePart.CanTouch=browser end
-  local players=Players:GetPlayers();table.sort(players,function(a,b)
-   if a.UserId==roomHostUserId then return true end
-   if b.UserId==roomHostUserId then return false end
-   return a.UserId<b.UserId
-  end)
-  for i=1,8 do
-   local pad=f:FindFirstChild("LobbySlot"..i)
-   local player=players[i]
-   if pad then
-    pad.Color=player and Color3.fromRGB(67,96,111)or Color3.fromRGB(48,55,66)
-    pad.Material=player and Enum.Material.Neon or Enum.Material.Metal
-   end
-  end
+  local players=Players:GetPlayers()
   local bg=board:FindFirstChild("LobbyLabel");local label=bg and bg:FindFirstChildOfClass("TextLabel")
   if label then
    if roomServer then
-    label.Text=string.format("방 %s · %d/8명",roomCode~=""and roomCode or"연결중",#players)
+    label.Text=string.format("매치 대기 · %d명",#players)
    else
     label.Text="초록색 방 입장 칸으로 들어가"
    end
@@ -718,6 +700,7 @@ local function makePhysicalLobby()
  end
  refreshPhysicalLobby()
  workspace:SetAttribute("PhysicalLobbyReady",true)
+ workspace:SetAttribute("WorldLobbyMode",true)
  return f
 end
 
@@ -736,9 +719,9 @@ local function updateLobbyQueueLabel()
  if count==0 then
   lobbyQueueLabel.Text="방 입장 · 안으로 들어와"
  elseif lobbyQueueCountdown then
-  lobbyQueueLabel.Text=string.format("방 대기 %d/8 · %d초",count,math.max(0,math.ceil(lobbyQueueCountdown)))
+  lobbyQueueLabel.Text=string.format("매칭 %d명 · %d초",count,math.max(0,math.ceil(lobbyQueueCountdown)))
  else
-  lobbyQueueLabel.Text=string.format("방 대기 %d/8",count)
+  lobbyQueueLabel.Text=string.format("매칭 대기 %d명",count)
  end
 end
 
