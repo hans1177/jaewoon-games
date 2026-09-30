@@ -1504,7 +1504,7 @@ export function evaluateStudioActualPlayContract({contract={},initialClientProbe
   const startGateAction=(actions||[]).find(row=>row?.id==='ui-start-gate')||null;
   const initialStartLikeButton=startGateAction
     ?{text:clean(startGateAction.text)}
-    :(entityRows(initialClientProbe?.ui?.interactive).find(row=>row?.visible!==false&&row?.active!==false&&/^(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text)))||null);
+    :(entityRows(initialClientProbe?.ui?.interactive).find(row=>row?.visible!==false&&row?.active!==false&&/^(?:(?:게임|game)\s+)?(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text)))||null);
   const onboardingText=visibleTexts.join(' ').toLowerCase();
   const onboardingClarityPass=!signals.onboarding||(
     visibleButtons>0
