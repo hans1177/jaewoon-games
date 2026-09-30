@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-k9gqpt",
+      "worker": "vibe2",
+      "taskId": "ant-simulator-existing-web-assessment-v1",
+      "gameId": "ant-simulator",
+      "files": [
+        "web-games/ant-simulator/index.html"
+      ],
+      "baseSha": "79e3bae1081eed4676258b2ce979a4d509384d6b",
+      "runId": "36785970167",
+      "runAttempt": "1",
+      "acquiredAt": "2026-09-30T22:32:53.278Z",
+      "expiresAt": "2026-09-30T23:17:53.278Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:ant-simulator-existing-web-assessment-v1"
+      ]
+    }
+  ]
 }
