@@ -1939,7 +1939,7 @@ local function collectCeremonyNames(winner)
  for _,player in ipairs(Players:GetPlayers())do
   if tostring(player:GetAttribute("LastRoundRole")or"")==winner then table.insert(names,player.DisplayName)end
  end
- while #names<4 do table.insert(names,"AI "..tostring(#names+1))end
+ while #names<4 do table.insert(names,"팀원 "..tostring(#names+1))end
  while #names>4 do table.remove(names)end
  return names
 end
@@ -1960,7 +1960,7 @@ local function playResultCeremony(resultCode)
  for i,row in ipairs(ceremonyFigures)do
   row.body.BackgroundColor3=palette
   row.head.BackgroundColor3=headColor
-  ceremonyNames[i].Text=names[i]or("AI "..i)
+  ceremonyNames[i].Text=names[i]or("팀원 "..i)
   row.slot.Rotation=0
   row.slot.Position=UDim2.new((i-.5)/4,0,1,28)
   TweenService:Create(row.slot,TweenInfo.new(.38+.06*i,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Position=UDim2.new((i-.5)/4,0,1,-8)}):Play()
@@ -2096,7 +2096,7 @@ local function render()
  local visText=roomVis=="PUBLIC"and"공개"or roomVis=="FRIENDS"and"친구만"or"비공개"
  local roomMembers=tonumber(p:GetAttribute("RoomMemberCount"))or 0
  local roomMax=tonumber(p:GetAttribute("RoomMaxPlayers"))or 8
- roomInfoLabel.Text=string.format("방 코드 %s · %s\n실제 %d/%d명 · 빈자리 AI %d명%s",tostring(p:GetAttribute("RoomCode")or"------"),visText,roomMembers,roomMax,math.max(0,(C.TargetPopulation or 8)-roomMembers),p:GetAttribute("RoomIsHost")==true and" · 방장"or"")
+ roomInfoLabel.Text=string.format("방 코드 %s · %s\n현재 %d/%d명%s",tostring(p:GetAttribute("RoomCode")or"------"),visText,roomMembers,roomMax,p:GetAttribute("RoomIsHost")==true and" · 방장"or"")
  if browser or running or spectating or resultCode then shopPanel.Visible=false;ghostBookPanel.Visible=false end
  if resultCode then
   if round~=lastRoundState then playResultCeremony(resultCode)end
