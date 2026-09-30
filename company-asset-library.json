@@ -333,6 +333,3238 @@
         "daechung-rpg"
       ],
       "note": "실제 Luau 코드 자산. 게임별 복제본을 패키지에 고정하고 parity 검사로 일치 확인. 보유 장비·도구·진행 데이터만 표시. 모바일/게임패드 UI 구현, 실제 Studio 검증 전 VERIFIED 아님."
+    },
+    {
+      "id": "roblox-world-ghost-skins-v1",
+      "title": "세계 귀신·몬스터 스킨 100종",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau",
+        "assets/roblox/world-ghosts/Gallery.client.luau",
+        "assets/roblox/world-ghosts/default.project.json",
+        "assets/roblox/world-ghosts/catalog.tsv",
+        "assets/roblox/world-ghosts/generate-catalog.mjs",
+        "assets/roblox/world-ghosts/research.json",
+        "assets/roblox/world-ghosts/README.md"
+      ],
+      "skinCount": 100,
+      "bodyFormCount": 27,
+      "previewPageSize": 8,
+      "note": "실제 Model 생성 코드와 독립 갤러리. 민속 모티프를 재해석한 원형 자산. 색상만 다른 중복은 제외. 보호된 게임 소스 자동 변경·적용 없음. 네이티브 아트/성능/플레이 미검증."
+    },
+    {
+      "id": "roblox-world-ghost-gwisin-bride",
+      "title": "처녀귀신",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "gwisin-bride",
+      "region": "KOREA",
+      "bodyForm": "SHROUD",
+      "features": [
+        "LONG_HAIR",
+        "RIBBON",
+        "VEIL"
+      ],
+      "suggestedLocation": "객실 복도",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-mongdal",
+      "title": "몽달귀신",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "mongdal",
+      "region": "KOREA",
+      "bodyForm": "TALL",
+      "features": [
+        "TOPKNOT",
+        "LANTERN",
+        "SASH"
+      ],
+      "suggestedLocation": "빈 연회장",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-water-gwisin",
+      "title": "물귀신",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "water-gwisin",
+      "region": "KOREA",
+      "bodyForm": "SHROUD",
+      "features": [
+        "WET_HAIR",
+        "CHAINS",
+        "WEBBED"
+      ],
+      "suggestedLocation": "침수 지하실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-egg-face",
+      "title": "달걀귀신",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "egg-face",
+      "region": "KOREA",
+      "bodyForm": "SLENDER",
+      "features": [
+        "SMOOTH_MASK",
+        "KEYS",
+        "LONG_FINGERS"
+      ],
+      "suggestedLocation": "거울 복도",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-eoduksini",
+      "title": "어둑시니",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "eoduksini",
+      "region": "KOREA",
+      "bodyForm": "GIANT",
+      "features": [
+        "SHADOW_SPIKES",
+        "LONG_ARMS",
+        "CROWN"
+      ],
+      "suggestedLocation": "불 꺼진 계단",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-gumiho",
+      "title": "구미호",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "gumiho",
+      "region": "KOREA",
+      "bodyForm": "SLENDER",
+      "features": [
+        "FOX_EARS",
+        "NINE_TAILS",
+        "BEADS"
+      ],
+      "suggestedLocation": "붉은 정원",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-dokkaebi",
+      "title": "도깨비",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "dokkaebi",
+      "region": "KOREA",
+      "bodyForm": "STOCKY",
+      "features": [
+        "CLUB",
+        "ONE_HORN",
+        "STRAW_CAPE"
+      ],
+      "suggestedLocation": "설비실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-bulgasari",
+      "title": "불가사리",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "bulgasari",
+      "region": "KOREA",
+      "bodyForm": "BEAST",
+      "features": [
+        "IRON_PLATES",
+        "TUSKS",
+        "SCALES"
+      ],
+      "suggestedLocation": "보일러실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-jangsanbeom",
+      "title": "장산범",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "jangsanbeom",
+      "region": "KOREA",
+      "bodyForm": "BEAST",
+      "features": [
+        "MANE",
+        "LONG_CLAWS",
+        "WHITE_MASK"
+      ],
+      "suggestedLocation": "숲 연결 통로",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-dueoksini",
+      "title": "두억시니",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "dueoksini",
+      "region": "KOREA",
+      "bodyForm": "GIANT",
+      "features": [
+        "TWO_HORNS",
+        "SHOULDER_SPIKES",
+        "CLUB"
+      ],
+      "suggestedLocation": "봉인 창고",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-jeoseung",
+      "title": "저승사자",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "jeoseung",
+      "region": "KOREA",
+      "bodyForm": "TALL",
+      "features": [
+        "GAT",
+        "SCROLL",
+        "BEADS"
+      ],
+      "suggestedLocation": "체크아웃 로비",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-gangcheori",
+      "title": "강철이",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "gangcheori",
+      "region": "KOREA",
+      "bodyForm": "SERPENT",
+      "features": [
+        "ANTLERS",
+        "DORSAL_SPINES",
+        "SMOKE"
+      ],
+      "suggestedLocation": "지붕 수로",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-yurei",
+      "title": "유레이",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "yurei",
+      "region": "JAPAN",
+      "bodyForm": "SHROUD",
+      "features": [
+        "LONG_HAIR",
+        "TRIANGLE_HEADBAND",
+        "WISP_TAIL"
+      ],
+      "suggestedLocation": "별관 객실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-yuki-onna",
+      "title": "유키온나",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "yuki-onna",
+      "region": "JAPAN",
+      "bodyForm": "SHROUD",
+      "features": [
+        "ICE_CROWN",
+        "FROST_SHARDS",
+        "VEIL"
+      ],
+      "suggestedLocation": "냉동 창고",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-rokurokubi",
+      "title": "로쿠로쿠비",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "rokurokubi",
+      "region": "JAPAN",
+      "bodyForm": "LONG_NECK",
+      "features": [
+        "LONG_HAIR",
+        "NECK_RINGS",
+        "FAN"
+      ],
+      "suggestedLocation": "천장 점검구",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-nukekubi",
+      "title": "누케쿠비",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "nukekubi",
+      "region": "JAPAN",
+      "bodyForm": "FLOATING_HEAD",
+      "features": [
+        "LONG_HAIR",
+        "WISP_TAIL",
+        "BEADS"
+      ],
+      "suggestedLocation": "환풍구",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-nopperabo",
+      "title": "놋페라보",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "nopperabo",
+      "region": "JAPAN",
+      "bodyForm": "SLENDER",
+      "features": [
+        "SMOOTH_MASK",
+        "UMBRELLA",
+        "SASH"
+      ],
+      "suggestedLocation": "우산 보관실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-kuchisake",
+      "title": "구치사케온나",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "kuchisake",
+      "region": "JAPAN",
+      "bodyForm": "TALL",
+      "features": [
+        "SCISSORS",
+        "FACE_CLOTH",
+        "LONG_HAIR"
+      ],
+      "suggestedLocation": "이발실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-oni",
+      "title": "오니",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "oni",
+      "region": "JAPAN",
+      "bodyForm": "GIANT",
+      "features": [
+        "TWO_HORNS",
+        "CLUB",
+        "TIGER_STRIPES"
+      ],
+      "suggestedLocation": "중앙 홀",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-tengu",
+      "title": "텐구",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "tengu",
+      "region": "JAPAN",
+      "bodyForm": "WINGED",
+      "features": [
+        "FEATHER_WINGS",
+        "FAN",
+        "CAP"
+      ],
+      "suggestedLocation": "종탑",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-kappa",
+      "title": "갓파",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "kappa",
+      "region": "JAPAN",
+      "bodyForm": "STOCKY",
+      "features": [
+        "HEAD_DISH",
+        "SHELL",
+        "WEBBED"
+      ],
+      "suggestedLocation": "목욕탕",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-nekomata",
+      "title": "네코마타",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "nekomata",
+      "region": "JAPAN",
+      "bodyForm": "BEAST",
+      "features": [
+        "CAT_EARS",
+        "TWO_TAILS",
+        "LANTERN"
+      ],
+      "suggestedLocation": "연회장 주방",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-bakeneko",
+      "title": "바케네코",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "bakeneko",
+      "region": "JAPAN",
+      "bodyForm": "SLENDER",
+      "features": [
+        "CAT_EARS",
+        "ONE_TAIL",
+        "BELL"
+      ],
+      "suggestedLocation": "찻집",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-jorogumo",
+      "title": "조로구모",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "jorogumo",
+      "region": "JAPAN",
+      "bodyForm": "ARACHNID",
+      "features": [
+        "SPIDER_LEGS",
+        "HAIR_PIN",
+        "WEB_CROWN"
+      ],
+      "suggestedLocation": "천장 샹들리에",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-tsuchigumo",
+      "title": "쓰치구모",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "tsuchigumo",
+      "region": "JAPAN",
+      "bodyForm": "ARACHNID",
+      "features": [
+        "SPIDER_LEGS",
+        "FANGS",
+        "DORSAL_SPINES"
+      ],
+      "suggestedLocation": "기초 공사장",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-karakasa",
+      "title": "가라카사",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "karakasa",
+      "region": "JAPAN",
+      "bodyForm": "UMBRELLA",
+      "features": [
+        "TONGUE",
+        "ONE_LEG",
+        "PAPER_RIBS"
+      ],
+      "suggestedLocation": "우산 창고",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-chochin",
+      "title": "초친오바케",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "chochin",
+      "region": "JAPAN",
+      "bodyForm": "LANTERN",
+      "features": [
+        "TONGUE",
+        "LANTERN_RIBS",
+        "CHAIN_HANDLE"
+      ],
+      "suggestedLocation": "정문 처마",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-ittan-momen",
+      "title": "잇탄모멘",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "ittan-momen",
+      "region": "JAPAN",
+      "bodyForm": "RIBBON",
+      "features": [
+        "RIBBON",
+        "WISP_TAIL",
+        "TORN_HEM"
+      ],
+      "suggestedLocation": "세탁실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-nurikabe",
+      "title": "누리카베",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "nurikabe",
+      "region": "JAPAN",
+      "bodyForm": "WALL",
+      "features": [
+        "STONE_BLOCKS",
+        "SHORT_ARMS",
+        "MOSS"
+      ],
+      "suggestedLocation": "막힌 복도",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-gashadokuro",
+      "title": "가샤도쿠로",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "gashadokuro",
+      "region": "JAPAN",
+      "bodyForm": "SKELETON",
+      "features": [
+        "RIBS",
+        "LONG_FINGERS",
+        "SKULL_CROWN"
+      ],
+      "suggestedLocation": "지하 납골실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-ushioni",
+      "title": "우시오니",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "ushioni",
+      "region": "JAPAN",
+      "bodyForm": "ARACHNID",
+      "features": [
+        "SPIDER_LEGS",
+        "TWO_HORNS",
+        "MANE"
+      ],
+      "suggestedLocation": "배수로",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-wanyudo",
+      "title": "와뉴도",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "wanyudo",
+      "region": "JAPAN",
+      "bodyForm": "WHEEL",
+      "features": [
+        "WHEEL_SPOKES",
+        "FLAME_CROWN",
+        "CHAINS"
+      ],
+      "suggestedLocation": "화물 승강기",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-futakuchi",
+      "title": "후타쿠치온나",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "futakuchi",
+      "region": "JAPAN",
+      "bodyForm": "SLENDER",
+      "features": [
+        "LONG_HAIR",
+        "HAIR_ARMS",
+        "HAIR_PIN"
+      ],
+      "suggestedLocation": "식당",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-dodomeki",
+      "title": "도도메키",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "dodomeki",
+      "region": "JAPAN",
+      "bodyForm": "TALL",
+      "features": [
+        "ARM_EYES",
+        "LONG_ARMS",
+        "BEADS"
+      ],
+      "suggestedLocation": "도난품 창고",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-akaname",
+      "title": "아카나메",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "akaname",
+      "region": "JAPAN",
+      "bodyForm": "CRAWLER",
+      "features": [
+        "TONGUE",
+        "LONG_CLAWS",
+        "ONE_HORN"
+      ],
+      "suggestedLocation": "청소 도구실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-umibozu",
+      "title": "우미보즈",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "umibozu",
+      "region": "JAPAN",
+      "bodyForm": "GIANT",
+      "features": [
+        "SMOOTH_MASK",
+        "WAVE_COLLAR",
+        "WISP_TAIL"
+      ],
+      "suggestedLocation": "지하 저수조",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-jiangshi",
+      "title": "강시",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "jiangshi",
+      "region": "CHINA",
+      "bodyForm": "STOCKY",
+      "features": [
+        "TALISMAN",
+        "CAP",
+        "STIFF_ARMS"
+      ],
+      "suggestedLocation": "부적 보관실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-huli-jing",
+      "title": "후리징",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "huli-jing",
+      "region": "CHINA",
+      "bodyForm": "SLENDER",
+      "features": [
+        "FOX_EARS",
+        "THREE_TAILS",
+        "JADE_ORB"
+      ],
+      "suggestedLocation": "골동품 객실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-baigujing",
+      "title": "백골정",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "baigujing",
+      "region": "CHINA",
+      "bodyForm": "SKELETON",
+      "features": [
+        "RIBS",
+        "FAN",
+        "HAIR_PIN"
+      ],
+      "suggestedLocation": "분장실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-nian",
+      "title": "니엔",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "nian",
+      "region": "CHINA",
+      "bodyForm": "BEAST",
+      "features": [
+        "TWO_HORNS",
+        "MANE",
+        "ONE_TAIL"
+      ],
+      "suggestedLocation": "새해 연회장",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-hei-wuchang",
+      "title": "흑무상",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "hei-wuchang",
+      "region": "CHINA",
+      "bodyForm": "STOCKY",
+      "features": [
+        "TALL_HAT",
+        "CHAINS",
+        "SCROLL"
+      ],
+      "suggestedLocation": "직원 출입구",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-bai-wuchang",
+      "title": "백무상",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "bai-wuchang",
+      "region": "CHINA",
+      "bodyForm": "TALL",
+      "features": [
+        "TALL_HAT",
+        "TONGUE",
+        "FAN"
+      ],
+      "suggestedLocation": "객실 출입구",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-shui-gui",
+      "title": "수이구이",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "shui-gui",
+      "region": "CHINA",
+      "bodyForm": "SHROUD",
+      "features": [
+        "WET_HAIR",
+        "WEBBED",
+        "JADE_ORB"
+      ],
+      "suggestedLocation": "실내 연못",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-huapi",
+      "title": "화피",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "huapi",
+      "region": "CHINA",
+      "bodyForm": "SLENDER",
+      "features": [
+        "PEEL_MASK",
+        "FAN",
+        "LONG_FINGERS"
+      ],
+      "suggestedLocation": "초상화 복도",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-pontianak",
+      "title": "폰티아낙",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "pontianak",
+      "region": "MALAY_ARCHIPELAGO",
+      "bodyForm": "SHROUD",
+      "features": [
+        "LONG_HAIR",
+        "FLOWER_CROWN",
+        "LONG_CLAWS"
+      ],
+      "suggestedLocation": "향수 객실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-penanggalan",
+      "title": "페낭갈란",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "penanggalan",
+      "region": "MALAY_ARCHIPELAGO",
+      "bodyForm": "FLOATING_HEAD",
+      "features": [
+        "WISP_TAIL",
+        "BEADS",
+        "WET_HAIR"
+      ],
+      "suggestedLocation": "천장 배관",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-pocong",
+      "title": "포총",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "pocong",
+      "region": "INDONESIA",
+      "bodyForm": "BOUND",
+      "features": [
+        "HEAD_KNOT",
+        "BINDINGS",
+        "TORN_HEM"
+      ],
+      "suggestedLocation": "린넨 창고",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-aswang",
+      "title": "아스왕",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "aswang",
+      "region": "PHILIPPINES",
+      "bodyForm": "CRAWLER",
+      "features": [
+        "BAT_WINGS",
+        "LONG_CLAWS",
+        "ONE_TAIL"
+      ],
+      "suggestedLocation": "주방 후문",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-krasue",
+      "title": "끄라스",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "krasue",
+      "region": "THAILAND",
+      "bodyForm": "FLOATING_HEAD",
+      "features": [
+        "WISP_TAIL",
+        "FLOWER_CROWN",
+        "LONG_HAIR"
+      ],
+      "suggestedLocation": "야간 정원",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-krahang",
+      "title": "끄라항",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "krahang",
+      "region": "THAILAND",
+      "bodyForm": "WINGED",
+      "features": [
+        "BASKET_WINGS",
+        "BROOM_TAIL",
+        "HEADBAND"
+      ],
+      "suggestedLocation": "곡물 창고",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-phi-pop",
+      "title": "피폽",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "phi-pop",
+      "region": "THAILAND",
+      "bodyForm": "HUNCHED",
+      "features": [
+        "LONG_FINGERS",
+        "BEADS",
+        "WET_HAIR"
+      ],
+      "suggestedLocation": "폐쇄 주방",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-phi-tai-hong",
+      "title": "피타이홍",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "phi-tai-hong",
+      "region": "THAILAND",
+      "bodyForm": "SHROUD",
+      "features": [
+        "BINDINGS",
+        "SHADOW_SPIKES",
+        "WISP_TAIL"
+      ],
+      "suggestedLocation": "폐쇄 계단",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-mae-nak",
+      "title": "매낙",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "mae-nak",
+      "region": "THAILAND",
+      "bodyForm": "LONG_ARM",
+      "features": [
+        "LONG_ARMS",
+        "WRAPPED_BUNDLE",
+        "FLOWER_CROWN"
+      ],
+      "suggestedLocation": "가족 객실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-toyol",
+      "title": "토욜",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "toyol",
+      "region": "MALAY_ARCHIPELAGO",
+      "bodyForm": "SMALL",
+      "features": [
+        "COIN_BAG",
+        "BIG_EARS",
+        "BEADS"
+      ],
+      "suggestedLocation": "금고실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-orang-minyak",
+      "title": "오랑미냑",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "orang-minyak",
+      "region": "MALAY_ARCHIPELAGO",
+      "bodyForm": "SLENDER",
+      "features": [
+        "LONG_FINGERS",
+        "SMOKE",
+        "FACE_CLOTH"
+      ],
+      "suggestedLocation": "기계실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-manananggal",
+      "title": "마나낭갈",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "manananggal",
+      "region": "PHILIPPINES",
+      "bodyForm": "WINGED",
+      "features": [
+        "BAT_WINGS",
+        "WISP_TAIL",
+        "LONG_HAIR"
+      ],
+      "suggestedLocation": "발코니",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-tikbalang",
+      "title": "틱발랑",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "tikbalang",
+      "region": "PHILIPPINES",
+      "bodyForm": "TALL",
+      "features": [
+        "MANE",
+        "LONG_LEGS",
+        "HOOVES"
+      ],
+      "suggestedLocation": "마차 보관소",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-kapre",
+      "title": "카프레",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "kapre",
+      "region": "PHILIPPINES",
+      "bodyForm": "GIANT",
+      "features": [
+        "PIPE",
+        "WOOD_CROWN",
+        "LONG_ARMS"
+      ],
+      "suggestedLocation": "거목 중정",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-vetala",
+      "title": "베탈라",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "vetala",
+      "region": "SOUTH_ASIA",
+      "bodyForm": "HUNCHED",
+      "features": [
+        "UPSIDE_MASK",
+        "RIBS",
+        "LONG_CLAWS"
+      ],
+      "suggestedLocation": "매달린 전시실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-preta",
+      "title": "프레타",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "preta",
+      "region": "SOUTH_ASIA",
+      "bodyForm": "THIN_NECK",
+      "features": [
+        "BELLY",
+        "RIBS",
+        "TINY_MOUTH"
+      ],
+      "suggestedLocation": "굶주린 식당",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-pishacha",
+      "title": "피샤차",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "pishacha",
+      "region": "SOUTH_ASIA",
+      "bodyForm": "CRAWLER",
+      "features": [
+        "LONG_CLAWS",
+        "DORSAL_SPINES",
+        "BIG_EARS"
+      ],
+      "suggestedLocation": "폐기물 통로",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-rakshasa",
+      "title": "락샤사",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "rakshasa",
+      "region": "SOUTH_ASIA",
+      "bodyForm": "GIANT",
+      "features": [
+        "TUSKS",
+        "CROWN",
+        "FOUR_ARMS"
+      ],
+      "suggestedLocation": "왕실 객실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-churel",
+      "title": "추렐",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "churel",
+      "region": "SOUTH_ASIA",
+      "bodyForm": "LONG_ARM",
+      "features": [
+        "REVERSED_FEET",
+        "LONG_HAIR",
+        "BEADS"
+      ],
+      "suggestedLocation": "발자국 복도",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-brahmadaitya",
+      "title": "브라흐다이티야",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "brahmadaitya",
+      "region": "SOUTH_ASIA",
+      "bodyForm": "TALL",
+      "features": [
+        "TOPKNOT",
+        "SCROLL",
+        "WOOD_CROWN"
+      ],
+      "suggestedLocation": "오래된 서재",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-ghoul",
+      "title": "굴",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "ghoul",
+      "region": "MIDDLE_EAST",
+      "bodyForm": "HUNCHED",
+      "features": [
+        "LONG_CLAWS",
+        "SKULL_CROWN",
+        "ONE_TAIL"
+      ],
+      "suggestedLocation": "모래 지하실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-ifrit",
+      "title": "이프리트",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "ifrit",
+      "region": "MIDDLE_EAST",
+      "bodyForm": "GIANT",
+      "features": [
+        "FLAME_CROWN",
+        "TWO_HORNS",
+        "SMOKE"
+      ],
+      "suggestedLocation": "화로 홀",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-jinn",
+      "title": "진",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "jinn",
+      "region": "MIDDLE_EAST",
+      "bodyForm": "SHROUD",
+      "features": [
+        "TURBAN",
+        "JADE_ORB",
+        "WISP_TAIL"
+      ],
+      "suggestedLocation": "황동 램프방",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-nasnas",
+      "title": "나스나스",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "nasnas",
+      "region": "MIDDLE_EAST",
+      "bodyForm": "HALF_BODY",
+      "features": [
+        "ONE_ARM",
+        "ONE_LEG",
+        "HALF_MASK"
+      ],
+      "suggestedLocation": "반쪽 거울방",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-banshee",
+      "title": "밴시",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "banshee",
+      "region": "EUROPE",
+      "bodyForm": "SHROUD",
+      "features": [
+        "VEIL",
+        "LONG_HAIR",
+        "COMB"
+      ],
+      "suggestedLocation": "창가 객실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-dullahan",
+      "title": "듀라한",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "dullahan",
+      "region": "EUROPE",
+      "bodyForm": "HEADLESS",
+      "features": [
+        "CARRIED_HEAD",
+        "CAPE",
+        "CHAINS"
+      ],
+      "suggestedLocation": "마차 로비",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-kelpie",
+      "title": "켈피",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "kelpie",
+      "region": "EUROPE",
+      "bodyForm": "BEAST",
+      "features": [
+        "WET_HAIR",
+        "HOOVES",
+        "ONE_TAIL"
+      ],
+      "suggestedLocation": "물안개 정원",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-nuckelavee",
+      "title": "누켈라비",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "nuckelavee",
+      "region": "EUROPE",
+      "bodyForm": "CENTAUR",
+      "features": [
+        "RIBS",
+        "LONG_ARMS",
+        "HOOVES"
+      ],
+      "suggestedLocation": "바닷가 통로",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-redcap",
+      "title": "레드캡",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "redcap",
+      "region": "EUROPE",
+      "bodyForm": "SMALL",
+      "features": [
+        "RED_CAP",
+        "IRON_BOOTS",
+        "HOOK"
+      ],
+      "suggestedLocation": "수리실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-barghest",
+      "title": "바게스트",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "barghest",
+      "region": "EUROPE",
+      "bodyForm": "BEAST",
+      "features": [
+        "DOG_EARS",
+        "CHAINS",
+        "LONG_CLAWS"
+      ],
+      "suggestedLocation": "정문 경비소",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-boggart",
+      "title": "보가트",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "boggart",
+      "region": "EUROPE",
+      "bodyForm": "SMALL",
+      "features": [
+        "BIG_EARS",
+        "KEYS",
+        "ONE_TAIL"
+      ],
+      "suggestedLocation": "벽장",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-strigoi",
+      "title": "스트리고이",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "strigoi",
+      "region": "EUROPE",
+      "bodyForm": "TALL",
+      "features": [
+        "CAPE",
+        "MEDALLION",
+        "LONG_FINGERS"
+      ],
+      "suggestedLocation": "와인 저장고",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-moroi",
+      "title": "모로이",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "moroi",
+      "region": "EUROPE",
+      "bodyForm": "SLENDER",
+      "features": [
+        "VEIL",
+        "CANDLE",
+        "BEADS"
+      ],
+      "suggestedLocation": "촛불 예배실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-rusalka",
+      "title": "루살카",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "rusalka",
+      "region": "EUROPE",
+      "bodyForm": "SHROUD",
+      "features": [
+        "WET_HAIR",
+        "FLOWER_CROWN",
+        "WEBBED"
+      ],
+      "suggestedLocation": "수련 연못",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-leshy",
+      "title": "레시",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "leshy",
+      "region": "EUROPE",
+      "bodyForm": "GIANT",
+      "features": [
+        "ANTLERS",
+        "MOSS",
+        "WOOD_CROWN"
+      ],
+      "suggestedLocation": "온실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-baba-yaga",
+      "title": "바바야가",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "baba-yaga",
+      "region": "EUROPE",
+      "bodyForm": "HUNCHED",
+      "features": [
+        "BROOM",
+        "HEADSCARF",
+        "LONG_FINGERS"
+      ],
+      "suggestedLocation": "마녀 객실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-mare",
+      "title": "마레",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "mare",
+      "region": "EUROPE",
+      "bodyForm": "CRAWLER",
+      "features": [
+        "SHADOW_SPIKES",
+        "LONG_FINGERS",
+        "WISP_TAIL"
+      ],
+      "suggestedLocation": "악몽 침실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-poltergeist",
+      "title": "폴터가이스트",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "poltergeist",
+      "region": "EUROPE",
+      "bodyForm": "OBJECT_SWARM",
+      "features": [
+        "FLOATING_BOOKS",
+        "CHAINS",
+        "KEYS"
+      ],
+      "suggestedLocation": "뒤집힌 서재",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-draugr",
+      "title": "드라우그",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "draugr",
+      "region": "EUROPE",
+      "bodyForm": "STOCKY",
+      "features": [
+        "HELMET",
+        "RIBS",
+        "AXE"
+      ],
+      "suggestedLocation": "갑옷 전시실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-headless-horseman",
+      "title": "목 없는 기수",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "headless-horseman",
+      "region": "EUROPE",
+      "bodyForm": "HEADLESS",
+      "features": [
+        "PUMPKIN",
+        "CAPE",
+        "SWORD"
+      ],
+      "suggestedLocation": "안개 마당",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-tokoloshe",
+      "title": "토콜로셰",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "tokoloshe",
+      "region": "AFRICA",
+      "bodyForm": "SMALL",
+      "features": [
+        "BIG_EARS",
+        "LONG_CLAWS",
+        "BEADS"
+      ],
+      "suggestedLocation": "침대 밑",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-adze",
+      "title": "아제",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "adze",
+      "region": "AFRICA",
+      "bodyForm": "WINGED",
+      "features": [
+        "INSECT_WINGS",
+        "ANTENNAE",
+        "GLOW_ORB"
+      ],
+      "suggestedLocation": "램프 창고",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-asanbosam",
+      "title": "아산보삼",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "asanbosam",
+      "region": "AFRICA",
+      "bodyForm": "HUNCHED",
+      "features": [
+        "HOOK_FEET",
+        "IRON_TEETH",
+        "LONG_ARMS"
+      ],
+      "suggestedLocation": "나무 천장",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-sasabonsam",
+      "title": "사사보삼",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "sasabonsam",
+      "region": "AFRICA",
+      "bodyForm": "WINGED",
+      "features": [
+        "BAT_WINGS",
+        "LONG_LEGS",
+        "HOOK_FEET"
+      ],
+      "suggestedLocation": "지붕 박공",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-popobawa",
+      "title": "포포바와",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "popobawa",
+      "region": "AFRICA",
+      "bodyForm": "WINGED",
+      "features": [
+        "BAT_WINGS",
+        "TWO_HORNS",
+        "LONG_CLAWS"
+      ],
+      "suggestedLocation": "높은 환기실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-impundulu",
+      "title": "임푼둘루",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "impundulu",
+      "region": "AFRICA",
+      "bodyForm": "WINGED",
+      "features": [
+        "FEATHER_WINGS",
+        "CREST",
+        "LIGHTNING_SPIKES"
+      ],
+      "suggestedLocation": "폭풍 종탑",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-la-llorona",
+      "title": "라 요로나",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "la-llorona",
+      "region": "AMERICAS",
+      "bodyForm": "SHROUD",
+      "features": [
+        "VEIL",
+        "WET_HAIR",
+        "WRAPPED_BUNDLE"
+      ],
+      "suggestedLocation": "강변 객실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-el-silbon",
+      "title": "엘 실본",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "el-silbon",
+      "region": "AMERICAS",
+      "bodyForm": "TALL",
+      "features": [
+        "STRAW_HAT",
+        "BONE_BAG",
+        "LONG_LEGS"
+      ],
+      "suggestedLocation": "긴 산책로",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-siguanaba",
+      "title": "시구아나바",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "siguanaba",
+      "region": "AMERICAS",
+      "bodyForm": "SLENDER",
+      "features": [
+        "LONG_HAIR",
+        "VEIL",
+        "HOOVES"
+      ],
+      "suggestedLocation": "세면실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-cadejo",
+      "title": "카데호",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "cadejo",
+      "region": "AMERICAS",
+      "bodyForm": "BEAST",
+      "features": [
+        "DOG_EARS",
+        "HOOVES",
+        "MANE"
+      ],
+      "suggestedLocation": "밤길 출입구",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-chupacabra",
+      "title": "추파카브라",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "chupacabra",
+      "region": "AMERICAS",
+      "bodyForm": "HUNCHED",
+      "features": [
+        "DORSAL_SPINES",
+        "LONG_CLAWS",
+        "BIG_EARS"
+      ],
+      "suggestedLocation": "가축 창고",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-curupira",
+      "title": "쿠루피라",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "curupira",
+      "region": "AMERICAS",
+      "bodyForm": "SMALL",
+      "features": [
+        "REVERSED_FEET",
+        "FLAME_HAIR",
+        "LEAF_COLLAR"
+      ],
+      "suggestedLocation": "미로 정원",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-boitata",
+      "title": "보이타타",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "boitata",
+      "region": "AMERICAS",
+      "bodyForm": "SERPENT",
+      "features": [
+        "FLAME_CROWN",
+        "DORSAL_SPINES",
+        "GLOW_ORB"
+      ],
+      "suggestedLocation": "불빛 수로",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-mapinguari",
+      "title": "마핑구아리",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "mapinguari",
+      "region": "AMERICAS",
+      "bodyForm": "GIANT",
+      "features": [
+        "BELLY_MOUTH",
+        "LONG_CLAWS",
+        "MANE"
+      ],
+      "suggestedLocation": "폐쇄 동물원",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-pisadeira",
+      "title": "피사데이라",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "pisadeira",
+      "region": "AMERICAS",
+      "bodyForm": "HUNCHED",
+      "features": [
+        "LONG_FINGERS",
+        "POINTED_HAT",
+        "LONG_NOSE"
+      ],
+      "suggestedLocation": "옥상 침실",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
+    },
+    {
+      "id": "roblox-world-ghost-la-sayona",
+      "title": "라 사요나",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/world-ghosts/GhostSkinFactory.luau",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [
+        "horror-escape-room"
+      ],
+      "packId": "roblox-world-ghost-skins-v1",
+      "skinId": "la-sayona",
+      "region": "AMERICAS",
+      "bodyForm": "TALL",
+      "features": [
+        "LONG_HAIR",
+        "VEIL",
+        "BLACK_RIBBON"
+      ],
+      "suggestedLocation": "웨딩 홀",
+      "sourceFiles": [
+        "assets/roblox/world-ghosts/GhostSkinCatalog.luau",
+        "assets/roblox/world-ghosts/GhostSkinFactory.luau"
+      ]
     }
   ],
   "research": [
