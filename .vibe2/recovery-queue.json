@@ -19911,7 +19911,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-09-30T10:38:44.150Z"
+      "updatedAt": "2026-09-30T11:15:25.450Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -148143,7 +148143,7 @@
     },
     {
       "id": "recovery-d802c0bf795942df10a6",
-      "status": "queued",
+      "status": "blocked-primary-ai-assignment-required",
       "priority": "critical",
       "sourceQueue": "security",
       "sourceTaskId": "security-run-36705623977",
@@ -148179,7 +148179,13 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-30T11:00:39.389Z",
-      "updatedAt": "2026-09-30T11:00:39.389Z"
+      "updatedAt": "2026-09-30T11:15:26.363Z",
+      "dispatchEvidence": [
+        "security-recovery-executor-missing",
+        "primary-ai-assignment-required",
+        "primary-ai-repair-file:.github/workflows/roblox-world-ghost-assets.yml",
+        "recovery-dispatch-blocked-at:2026-09-30T11:15:26.363Z"
+      ]
     }
   ]
 }
