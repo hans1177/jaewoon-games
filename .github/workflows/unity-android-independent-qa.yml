@@ -46,12 +46,16 @@ jobs:
           [[ "$run_id" =~ ^[0-9]+$ ]] || { echo 'invalid upstream run id' >&2; exit 2; }
           echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
 
-      - name: Download exact upstream build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ steps.upstream.outputs.run_id }}
-          path: upstream-artifacts
+      - name: Download exact upstream prerelease assets
+        env:
+          UPSTREAM_RUN_ID: ${{ steps.upstream.outputs.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/unity-release-artifact-transport.mjs \
+            --run-id "$UPSTREAM_RUN_ID" \
+            --repository "$GITHUB_REPOSITORY" \
+            --out upstream-artifacts
 
       - name: Bind APK to build metadata
         id: apk
