@@ -25,6 +25,8 @@ import { simulateNeuralEventRoute, neuralEventRouteEvidence } from './vibe2-neur
 import { summarizeNeuralEventShadowEvidence } from './vibe2-neural-event-telemetry.mjs';
 
 const clean = (value) => String(value ?? '').trim();
+// The executable lives in the exact main contract checkout; cwd can be a stale control branch.
+const CANONICAL_RESERVATION_POLICY = new URL('../company-learning/platform-release-roadmap.json',import.meta.url);
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
 const SOURCE_GENERATION_CONTEXT_REPAIR_EVIDENCE = 'repair-retry:vibe2-source-generation-context-v3';
 const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
@@ -375,14 +377,14 @@ export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '') {
     || (clean(target).toLowerCase()==='roblox' && (policy.robloxDevelopmentInvestment?.ownerHoldGameIds||[]).includes(id))));
 }
 
-export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson('company-learning/platform-release-roadmap.json')) {
+export function synchronizeOwnerDevelopmentHolds(queueInput, policy = readJson(CANONICAL_RESERVATION_POLICY)) {
   const queue=createVibeContinuousQueue(queueInput);
   return createVibeContinuousQueue({...queue,tasks:queue.tasks.map(task=>({
     ...task,ownerDevelopmentHold:ownerDevelopmentHeld(policy,task.gameId,task.target)
   }))});
 }
 
-export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'game-primary', policy = readJson('company-learning/platform-release-roadmap.json') } = {}) {
+export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'game-primary', policy = readJson(CANONICAL_RESERVATION_POLICY) } = {}) {
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue = synchronizeOwnerDevelopmentHolds(recovered.queue,policy);
   const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane });
@@ -392,7 +394,7 @@ export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, res
   return { reserved: started.started, task: started.task || null, queue: started.queue, selection, recovered: recovered.recovered };
 }
 
-export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'game-primary', speculativeExpansionAllowed = true, speculativeExpansionReason = 'AVAILABLE', policy = readJson('company-learning/platform-release-roadmap.json') } = {}) {
+export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'game-primary', speculativeExpansionAllowed = true, speculativeExpansionReason = 'AVAILABLE', policy = readJson(CANONICAL_RESERVATION_POLICY) } = {}) {
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue=synchronizeOwnerDevelopmentHolds(recovered.queue,policy);
   const laneMode=clean(lane||'game-primary').toLowerCase();
@@ -1163,6 +1165,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_WORKLOAD_QA_DUPLICATE_RATE=${result.telemetry.workload.qaDuplicateRatePct}`);
   }
   if (result.task?.id) console.log(`VIBE2_RESERVED_TASK=${result.task.id}`);
+  console.log(`VIBE2_QUEUE_OWNER_HOLD_TASKS=${(result.queue?.tasks||[]).filter(t=>t.status==='queued'&&t.ownerDevelopmentHold).length}`);
   if (result.tasks?.length) console.log(`VIBE2_RESERVED_TASKS=${result.tasks.map((task) => task.id).join(',')}`);
   if (result.matrix) console.log(`VIBE2_RESERVED_MATRIX=${JSON.stringify(result.matrix)}`);
 }

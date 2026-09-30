@@ -431,7 +431,8 @@ for(const game of Array.isArray(catalog.games)?catalog.games:[]){
   const exists=fs.existsSync(path.join(repoRoot,root));
   rows.push({gameId:id,name:clean(game.name),engine:'web',target:'web',projectPath:root,lifecycleState:gameLifecycleState(game),existing:exists,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});
 }
-return rows.filter(project=>!ownerDevelopmentHeld(centralPresentationPolicy(repoRoot)||{},project.gameId,project.engine));
+const ownerPolicy=centralPresentationPolicy(repoRoot)||{};
+return rows.filter(project=>!ownerDevelopmentHeld(ownerPolicy,project.gameId,project.engine));
 }
 function focusedCaretakerPolicy(repoRoot=process.cwd()){
   const policy=centralPresentationPolicy(repoRoot)?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
@@ -1197,7 +1198,11 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
 
 export function applyWorldLobbyFirst(taskInput,project={},repoRoot=process.cwd()){
   if(!taskInput||!['roblox','unity','web'].includes(clean(project.engine).toLowerCase()))return taskInput;
-  if(!(taskInput.evidence||[]).some(value=>['studio-quality-loop:v1','presentation-quality-pipeline:v1'].includes(value)))return taskInput;
+  if(!(taskInput.evidence||[]).some(value=>[
+    'studio-quality-loop:v1','presentation-quality-pipeline:v1',
+    'second-platform-gate-rebuild:required','post-release-focused:yes',
+    'existing-web-continuation','full-web-game-rebuild'
+  ].includes(value)))return taskInput;
   if((taskInput.evidence||[]).includes('world-lobby-first:v1'))return taskInput;
   const identity=[project.gameId,project.name,project.genre,project.subgenre].map(clean).join(' ');
   const text=identity.toLowerCase();
@@ -1224,7 +1229,7 @@ UI는 로비→선택→플레이 상태와 연결한다. 직업 선택은 서�
     const file=posix(project.projectPath)+'/'+relative;
     if(fs.existsSync(path.join(repoRoot,file))&&!responsible.includes(file))responsible.push(file);
   }
-  return{...taskInput,goal:guidance+taskInput.goal,responsibleFiles:responsible,
+  return{...taskInput,goal:guidance+taskInput.goal,sourceRoot:taskInput.sourceRoot||posix(project.projectPath),responsibleFiles:responsible,
     evidence:[...(taskInput.evidence||[]),'world-lobby-first:v1','world-lobby-theme:CURRENT_GAME_SOURCE_AND_DESIGN','world-lobby-source-preservation:REQUIRED']};
 }
 
@@ -2934,7 +2939,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   for(const project of projects){
     if(planned.length>=capacity)break;
     const remaining=Math.max(1,capacity-planned.length);
-    let packageTasks=selectPackageCandidates(findSafeTasks(project,repoRoot,queue),queue,remaining,policy);
+    let packageTasks=selectPackageCandidates(findSafeTasks(project,repoRoot,queue).map(candidate=>applyWorldLobbyFirst(candidate,project,repoRoot)),queue,remaining,policy);
     if(!packageTasks.length)continue;
     packageTasks=packageTasks.map(candidate=>applyTransformativeRecombination(candidate,recombinationMemory));
     packageTasks=packageTasks.map(candidate=>attachRobloxDistilledLearning(candidate,project,{playbooks:robloxPlaybooks,distillation:robloxDistillationLedger}));
@@ -3104,6 +3109,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_AUTO_PLAN_PRIORITY=${result.projectPriorityPolicy||'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_TASK=${result.task?.id||'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_TASKS=${(result.tasks||[]).map(t=>t.id).join(',')||'NONE'}`);
+  console.log(`VIBE2_WORLD_LOBBY_QUEUED=${(result.queue?.tasks||[]).filter(t=>t.status==='queued'&&!t.ownerDevelopmentHold&&(t.evidence||[]).includes('world-lobby-first:v1')).length}`);
   console.log(`VIBE2_RUNTIME_NEURAL_EVENT_COUNT=${result.runtimeNeuralEvents?.length||0}`);
   console.log(`VIBE2_RUNTIME_NEURAL_MUTATION_COUNT=${(result.runtimeNeuralMutations||[]).filter(row=>row?.mutated===true).length}`);
   for(const mutation of result.runtimeNeuralMutations||[]){
