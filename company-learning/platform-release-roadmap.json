@@ -1,5 +1,5 @@
 {
-  "version": 500,
+  "version": 501,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1350,6 +1350,22 @@
       "failedGameEvidencePreserved": true,
       "cancellationNoiseMayNotTriggerHeavyControlWork": true,
       "qualityOrEvidenceGateWeakeningForbidden": true
+    },
+    "developmentBatchPlannerCoalescing": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-01",
+      "status": "ACTIVE_EXECUTABLE_CONTRACT",
+      "objective": "STOP_DUPLICATE_PORTFOLIO_BATCH_PLANNERS_FROM_OCCUPYING_CONTROL_CAPACITY_WHILE_PRESERVING_ACTIVE_AND_EXACT_GAME_WORK",
+      "workflow": ".github/workflows/company-development-confirmed-runtime.yml",
+      "batchConcurrencyGroup": "company-development-confirmed-batch",
+      "exactGameConcurrencyGroup": "company-development-confirmed-<gameId>",
+      "activeBatchCancellationForbidden": true,
+      "pendingBatchPolicy": "KEEP_ONLY_LATEST_PENDING",
+      "exactGameParallelismPreserved": true,
+      "activeExactGameCancellationForbidden": true,
+      "nativeChildPerGameDedupePreserved": true,
+      "qualitySecurityReleaseGatesUnchanged": true,
+      "newWorkflowOrQueueCreated": false
     }
   },
   "phases": [
@@ -9502,6 +9518,17 @@
         ".github/workflows/company-development-queue-reconcile.yml"
       ],
       "qualityOrEvidenceGateWeakening": false
+    },
+    "developmentBatchPlannerCoalescing20261001": {
+      "version": 501,
+      "id": "DEVELOPMENT_BATCH_PLANNER_COALESCING_2026-10-01",
+      "summary": "Coalesce duplicate DEVELOPMENT_CONFIRMED portfolio planners into one active plus latest pending batch while exact game lanes stay independent.",
+      "workflow": ".github/workflows/company-development-confirmed-runtime.yml",
+      "previousBatchFallback": "RUN_ID_OR_MAIN_PUSH",
+      "currentBatchGroup": "company-development-confirmed-batch",
+      "cancelInProgress": false,
+      "exactGameParallelismPreserved": true,
+      "activeGameCancellationForbidden": true
     }
   },
   "vibeExecutionLaneContract": {

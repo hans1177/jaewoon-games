@@ -26,4 +26,7 @@ test('DEVELOPMENT_CONFIRMED workflow continues after failed game lanes and keeps
   assert.match(workflow,/gh workflow run company-development-confirmed-runtime\.yml/);
   assert.match(workflow,/CONTINUOUS_PER_GAME_ISOLATED_CYCLE/);
   assert.match(workflow,/SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO/);
+  assert.match(workflow,/group: company-development-confirmed-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(workflow,/cancel-in-progress: false/);
+  assert.doesNotMatch(workflow,/company-development-confirmed-\$\{\{[^\n]*github\.run_id/);
 });

@@ -6846,5 +6846,17 @@
         "nextCycleRoute": "vibe2-fanin-refill"
       }
     }
+  },
+  "developmentBatchPlannerCoalescing": {
+    "version": 1,
+    "source": "company-learning/platform-release-roadmap.json#developmentSpeedExecution.developmentBatchPlannerCoalescing",
+    "workflow": ".github/workflows/company-development-confirmed-runtime.yml",
+    "batchConcurrencyGroup": "company-development-confirmed-batch",
+    "exactGameConcurrencyGroup": "company-development-confirmed-<gameId>",
+    "activeBatchCancellationForbidden": true,
+    "pendingBatchPolicy": "KEEP_ONLY_LATEST_PENDING",
+    "exactGameParallelismPreserved": true,
+    "activeExactGameCancellationForbidden": true,
+    "qualityGateWeakening": false
   }
 }
