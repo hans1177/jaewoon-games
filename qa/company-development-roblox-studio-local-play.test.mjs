@@ -1827,7 +1827,8 @@ test('Studio startup probe explicitly checks dead spawn, start buttons, and bloc
   assert.match(helper,/initial-character-playable/);
   assert.match(helper,/ui-start-gate/);
   // Real Studio evidence: the entry label was "게임 시작", so combat ran behind the entry screen.
-  const startMatcher=helper.match(/&&\/(\^.*)\/i\.test\(clean\(row\?\.text\)\)/)?.[1];
+  const startBlock=helper.slice(helper.indexOf('const startTarget=entityRows'),helper.indexOf('if(startTarget){'));
+  const startMatcher=startBlock.match(/&&\/(\^.*)\/i\.test\(clean\(row\?\.text\)\)/)?.[1];
   assert.ok(startMatcher);
   const matchesStart=new RegExp(startMatcher,'i');
   for(const label of ['게임 시작','게임 플레이','Game Start','Play','시작'])assert.equal(matchesStart.test(label),true,label);

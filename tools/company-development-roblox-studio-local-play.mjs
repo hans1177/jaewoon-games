@@ -2396,7 +2396,7 @@ export async function runOfficialStudioMcpPlay({
         row?.visible!==false
         &&row?.active!==false
         &&clean(row?.text)!==primaryTextBeforeStart
-        &&/^(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text))
+        &&/^(?:(?:게임|game)\s+)?(?:start|play|begin|continue|ready|시작|플레이|계속|준비)(?:\s|$)/i.test(clean(row?.text))
       )||null;
       if(startTarget){
         let ok=false;
