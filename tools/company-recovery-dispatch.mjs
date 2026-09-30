@@ -29,6 +29,8 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
   const gameQueue={...gameQueueInput,tasks:(gameQueueInput.tasks||[]).map(x=>({...x}))};
   const systemAi={...systemAiQueueInput,tasks:(systemAiQueueInput.tasks||[]).map(x=>({...x}))};
   const dispatched=[];
+  // 이번 복구가 대기열로 돌려보낸 작업만 예약 알림에 사용한다. 실행 중 예약은 보존한다.
+  const gameRequeuedTaskIds=new Set();
 
   recovery.tasks=recovery.tasks.map(rec=>{
     if(clean(rec.status)!=='queued')return rec;
@@ -57,6 +59,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
         if(clean(task.status)==='done'||clean(task.status)==='cancelled')return task;
         touched++;
         const running=clean(task.status)==='running';
+        if(!running)gameRequeuedTaskIds.add(clean(task.id));
         return{
           ...(running?task:clearReservation(task)),
           status:running?'running':'queued',
@@ -296,7 +299,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
     dispatched.push({id:rec.id,owner,touched});
     return{...rec,status:'dispatched',dispatchEvidence:uniq([...(rec.dispatchEvidence||[]),'recovery-dispatched:'+owner.toLowerCase(),'recovery-dispatched-at:'+stamp]),updatedAt:stamp};
   });
-  return{recovery,gameQueue,systemAi,dispatched};
+  return{recovery,gameQueue,systemAi,dispatched,gameRequeuedTaskIds:[...gameRequeuedTaskIds]};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
@@ -315,5 +318,6 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   if(['all','vibe'].includes(clean(args.route||'all').toLowerCase()))writeJson(gameFile,result.gameQueue);
   if(['all','system-ai'].includes(clean(args.route||'all').toLowerCase()))writeJson(systemFile,result.systemAi);
   console.log('RECOVERY_DISPATCH_COUNT='+result.dispatched.length);
+  console.log('RECOVERY_GAME_REQUEUED_COUNT='+result.gameRequeuedTaskIds.length);
   for(const row of result.dispatched)console.log('RECOVERY_DISPATCH='+row.id+':'+row.owner+':'+row.touched);
 }

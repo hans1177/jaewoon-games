@@ -8,6 +8,31 @@ import { escalateRecoveryCandidates } from '../tools/company-recovery-escalation
 import { promoteVerifiedRecoveryLearning } from '../tools/company-recovery-learning.mjs';
 import { distillRecoveryCodePatterns } from '../tools/company-recovery-code-distillation.mjs';
 
+test('recovery wake counts unique newly dispatched queued games and preserves active reservations',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const active={id:'active',status:'running',reservationId:'run:1',reservationRunId:'run',reservedAt:'2026-09-30T00:00:00Z',retries:2};
+  const gameQueueInput={tasks:[
+    {id:'old',status:'queued',evidence:['recovery-queue:historical']},
+    {id:'repair',status:'failed',blocker:'runtime-failure'},
+    {id:'queued-repair',status:'queued'},active,{id:'done',status:'done'},{id:'cancelled',status:'cancelled'}
+  ]};
+  const recoveryInput={tasks:[
+    {id:'r1',status:'queued',recoveryOwner:'VIBE2_VIBE3',sourceTaskId:'repair',relatedTaskIds:['queued-repair','active','done','cancelled']},
+    {id:'r2',status:'queued',recoveryOwner:'VIBE2_VIBE3',sourceTaskId:'repair'},
+    {id:'old-r',status:'dispatched',recoveryOwner:'VIBE2_VIBE3',sourceTaskId:'old'}
+  ]};
+  const first=dispatchRecovery({gameQueueInput,recoveryInput});
+  assert.deepEqual(first.gameRequeuedTaskIds,['repair','queued-repair']);
+  const running=first.gameQueue.tasks.find(x=>x.id==='active');
+  for(const key of ['status','reservationId','reservationRunId','reservedAt','retries'])assert.equal(running[key],active[key]);
+  const second=dispatchRecovery({gameQueueInput:first.gameQueue,recoveryInput:first.recovery});
+  assert.deepEqual(second.gameRequeuedTaskIds,[]);
+  assert.equal(second.dispatched.length,0);
+  assert.deepEqual(second.gameQueue,first.gameQueue);
+  const systemOnly=dispatchRecovery({gameQueueInput,recoveryInput,route:'system-ai'});
+  assert.deepEqual(systemOnly.gameRequeuedTaskIds,[]);
+});
+
 test('repeated failure is escalated into recovery queue',()=>{
   const result=escalateRecoveryCandidates({
     gameQueueInput:{tasks:[
@@ -412,4 +437,3 @@ test('System-AI workflow disables unchanged-main shortcuts for mutation-required
   assert.match(workflow,/source-mutation-sha:/);
   assert.match(workflow,/env\.SOURCE_MUTATION_REQUIRED != 'true'/);
 });
-

@@ -66,7 +66,9 @@ jobs:
             system_ai_recovery_dispatched="$(grep -Ec '^RECOVERY_DISPATCH=.*:SYSTEM_AI:[1-9][0-9]*$' /tmp/vibe2-recovery-fast/dispatch.log || true)"
             system_ai_queued="$(node -e "const q=require(process.argv[1]);process.stdout.write(String((q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='queued').length))" "$control/.vibe2/system-ai-queue.json")"
             primary_ai_collaboration_requested="$(node -e "const q=require(process.argv[1]);process.stdout.write(String((q.tasks||[]).filter(t=>(t.evidence||[]).includes('primary-ai-collaboration:REQUESTED')).length))" "$control/.vibe2/recovery-queue.json")"
-            vibe_requeued="$(node -e "const q=require(process.argv[1]);process.stdout.write(String((q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='queued'&&(t.evidence||[]).some(e=>String(e).startsWith('recovery-queue:'))).length))" "$control/.vibe2/queue.json")"
+            # 누적 대기 작업 수는 새 복구가 아니다. 이번 호출이 돌려보낸 작업만 즉시 예약한다.
+            vibe_requeued="$(awk -F= '$1 == "RECOVERY_GAME_REQUEUED_COUNT" { print $2 }' /tmp/vibe2-recovery-fast/dispatch.log)"
+            [[ "$vibe_requeued" =~ ^[0-9]+$ ]]
 
             cd "$control"
             git config user.name 'jaewoon-vibe2-recovery-fast'
@@ -103,7 +105,11 @@ jobs:
           echo "VIBE2_RECOVERY_FAST_SYSTEM_AI_NEW_RECOVERY_DISPATCH=$system_ai_recovery_dispatched"
           echo "VIBE2_RECOVERY_FAST_PRIMARY_AI_COLLABORATION_REQUESTED=$primary_ai_collaboration_requested"
           echo "VIBE2_RECOVERY_FAST_GAME_REQUEUED=$vibe_requeued"
-          echo 'VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=PENDING_CAUSAL_RETURN_TO_GAME_PRIMARY_ATOMIC_REFILL'
+          if [ "$vibe_requeued" -gt 0 ]; then
+            echo 'VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=PENDING_CAUSAL_RETURN_TO_GAME_PRIMARY_ATOMIC_REFILL'
+          else
+            echo 'VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=SKIPPED_NO_NEW_GAME_RECOVERY'
+          fi
 
       - name: Return recovered game work to GAME_PRIMARY immediately
         if: steps.recovery.outputs.vibe_requeued != '0'
