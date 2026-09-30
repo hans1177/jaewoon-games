@@ -245,16 +245,28 @@ test('checkpoint persistence is game-local and does not wait for cohort artifact
 });
 
 
-test('Unity checkpoint persistence preserves farther exact Roblox shared progress for concurrent games',()=>{
+test('Unity checkpoint persistence preserves farther exact Roblox shared progress and repairs stale waiting states for concurrent games',()=>{
   assert.match(workflowSource,/const mergedUpdate=\{\.\.\.update\}/);
   assert.match(workflowSource,/const concurrent=Array\.isArray\(item\.concurrentTargetPlatforms\)/);
   assert.match(workflowSource,/const exactRobloxBuild=item\.robloxBuildOrPackagePassed===true/);
   assert.match(workflowSource,/const exactRobloxCandidate=exactCandidate\.published===true/);
   assert.match(workflowSource,/const robloxInternal=item\.robloxInternalReleaseReady===true/);
-  assert.match(workflowSource,/const robloxRepairRequired=/);
-  assert.match(workflowSource,/item\.canonicalState\|\|''\)\.toUpperCase\(\)==='TARGET_PLATFORM_REPAIR_REQUIRED'/);
-  assert.match(workflowSource,/Boolean\(String\(item\.robloxFailureStage\|\|''\)\.trim\(\)\)/);
-  assert.match(workflowSource,/mergedUpdate\.currentStep=String\(item\.currentStep\|\|'TARGET_PLATFORM_TECHNICAL_VALIDATION'\)/);
+  assert.match(workflowSource,/const robloxFailureStage=String\(item\.robloxFailureStage\|\|''\)\.toUpperCase\(\)/);
+  assert.match(workflowSource,/const robloxRepairWaitingEvidence=/);
+  assert.match(workflowSource,/existing-source-studio-asset-binding-required/);
+  assert.match(workflowSource,/ROBLOX_BUILD_PACKAGE_PENDING/);
+  assert.match(workflowSource,/ROBLOX_RUNTIME_CANDIDATE_IDENTITY_MISMATCH/);
+  assert.match(workflowSource,/item\.robloxQualityBuildUpRequired===true/);
+  assert.match(workflowSource,/robloxCanonicalState==='WAITING_TARGET_PLATFORM_VALIDATION'&&robloxRepairWaitingEvidence/);
+  assert.match(workflowSource,/const robloxRepairResumeStep=/);
+  assert.match(workflowSource,/\?'TARGET_PLATFORM_SOURCE_BIND'/);
+  assert.match(workflowSource,/!exactRobloxBuild/);
+  assert.match(workflowSource,/\?'TARGET_PLATFORM_BUILD_OR_PACKAGE'/);
+  assert.match(workflowSource,/\?'PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
+  const repairAt=workflowSource.indexOf("}else if(robloxRepairRequired){");
+  const buildAt=workflowSource.indexOf("}else if(exactRobloxBuild){");
+  assert.ok(repairAt>0&&buildAt>repairAt,'Roblox repair state must win over reusable build progress when the downstream failure is active');
+  assert.match(workflowSource,/mergedUpdate\.currentStep=robloxRepairResumeStep/);
   assert.match(workflowSource,/mergedUpdate\.canonicalState='TARGET_PLATFORM_REPAIR_REQUIRED'/);
   assert.match(workflowSource,/UNITY_SHARED_REPAIR_PRESERVED_FROM_ROBLOX=/);
   assert.match(workflowSource,/mergedUpdate\.currentStep='PRIVATE_RUNTIME_CANDIDATE_DEPLOY'/);
