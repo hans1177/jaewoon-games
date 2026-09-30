@@ -24,6 +24,16 @@ const info=await fetch(`https://games.roblox.com/v1/games?universeIds=${universe
 const owner=info.data?.[0]?.creator;
 if(Number(owner?.id)>0)creator={[owner.type==='Group'?'groupId':'userId']:String(owner.id)};
 if(!creator){
+ // Private experiences are omitted from the public games API. Read their authenticated metadata.
+ const cookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
+ if(cookie){
+  const r=await fetch(`https://develop.roblox.com/v1/universes/${universeId}`,{headers:{cookie:cookie.includes('.ROBLOSECURITY=')?cookie:`.ROBLOSECURITY=${cookie};`},signal:AbortSignal.timeout(30000)});
+  const d=await r.json().catch(()=>({}));
+  if(r.ok&&String(d.id)===universeId&&Number(d.creatorTargetId)>0&&['User','Group'].includes(d.creatorType))creator={[d.creatorType==='Group'?'groupId':'userId']:String(d.creatorTargetId)};
+  console.log(`MANOR_PRIVATE_OWNER_LOOKUP=${r.status}:${creator?'RESOLVED':'UNRESOLVED'}`);
+ }
+}
+if(!creator){
  const scope=await introspectRobloxApiKey({apiKey:key});
  const candidates=[];
  for(const row of scope.scopes){
@@ -32,7 +42,7 @@ if(!creator){
   for(const id of row.groupIds)if(/^[1-9]\d*$/.test(id))candidates.push({groupId:id});
  }
  const unique=[...new Map(candidates.map(x=>[JSON.stringify(x),x])).values()];
- if(unique.length!==1)throw Error('MANOR_ASSET_CREATOR_NOT_RESOLVED');
+ if(unique.length!==1)throw Error('MANOR_ASSET_CREATOR_NOT_RESOLVED:asset_scopes='+scope.scopes.filter(x=>/asset/i.test(x.name)).map(x=>x.name).join(','));
  creator=unique[0];
 }
 const evidencePath=`${root}/roblox-asset.json`;
