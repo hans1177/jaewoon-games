@@ -985,10 +985,15 @@ jobs:
           set -euo pipefail
           mkdir -p runtime-persist/"$(dirname "$BASE")" runtime-persist/queue
           [[ -d "$BASE" ]] && cp -R "$BASE" runtime-persist/"$(dirname "$BASE")"/
-          source_tree_sha="$(git rev-parse "$SOURCE_REVISION:$PROJECT")"
-          [[ "$source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+          source_tree_sha=''
+          if [[ "$SOURCE_REVISION" =~ ^[0-9a-f]{40}$ ]] && git cat-file -e "$SOURCE_REVISION:$PROJECT" 2>/dev/null; then
+            source_tree_sha="$(git rev-parse "$SOURCE_REVISION:$PROJECT")"
+            [[ "$source_tree_sha" =~ ^[0-9a-f]{40}$ ]]
+          else
+            echo "UNITY_CHECKPOINT_SOURCE_TREE_SHA=UNAVAILABLE_SOURCE_STAGE_FAILED"
+          fi
           export SOURCE_TREE_SHA="$source_tree_sha"
-          echo "UNITY_CHECKPOINT_SOURCE_TREE_SHA=$source_tree_sha"
+          [[ -z "$source_tree_sha" ]] || echo "UNITY_CHECKPOINT_SOURCE_TREE_SHA=$source_tree_sha"
           git show origin/company-runtime:development-queue.json > /tmp/unity-current-queue.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
