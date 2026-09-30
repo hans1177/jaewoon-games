@@ -712,7 +712,7 @@ jobs:
           const q=JSON.parse(fs.readFileSync(file)),i=q.items[0],read=name=>JSON.parse(fs.readFileSync('/tmp/roblox-candidate/package/results/'+name+'.json'));
           const pre=read('preflight'),f0=read('f0');
           for(const e of [pre,f0])if(e.pass!==true||e.sourceRevision!==i.robloxSourceCommit||e.artifactIdentity!==i.robloxBuildArtifactIdentity)throw Error('candidate preflight identity mismatch');
-          Object.assign(i,{currentStep:'CANDIDATE_F9_STUDIO_REVIEW',robloxBuildPreflightPassed:true,robloxBuildPreflightEvidence:pre,robloxFoundationF0Passed:true,robloxFoundationF0Evidence:f0});
+          Object.assign(i,{currentStep:'CANDIDATE_STATIC_REVIEW',robloxBuildPreflightPassed:true,robloxBuildPreflightEvidence:pre,robloxFoundationF0Passed:true,robloxFoundationF0Evidence:f0});
           const launchFile='/tmp/roblox-candidate/context/launch-mvp.json',launch=JSON.parse(fs.readFileSync(launchFile));
           if(f0.saveExists===true)launch.launchCore.push('save and rejoin persistence');
           fs.writeFileSync(launchFile,JSON.stringify(launch));fs.writeFileSync(file,JSON.stringify(q));
@@ -741,7 +741,7 @@ jobs:
       candidate_context: roblox-candidate-context-${{ needs.inspect.outputs.game_id }}
 
   roblox-release:
-    needs: [inspect, roblox-package, roblox-studio]
+    needs: [inspect, roblox-package]
     if: always() && needs.inspect.outputs.decision == 'roblox'
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -762,12 +762,12 @@ jobs:
           path: .vibe3-control
           fetch-depth: 1
 
-      - name: Download exact candidate Studio result
+      - name: Download exact candidate static result
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
-          name: roblox-candidate-studio-${{ needs.inspect.outputs.game_id }}
-          path: /tmp/roblox-candidate-studio
+          name: roblox-candidate-context-${{ needs.inspect.outputs.game_id }}
+          path: /tmp/roblox-candidate-review
 
       - name: Validate exact Roblox release evidence
         id: validate
@@ -776,22 +776,21 @@ jobs:
           GAME_ID: ${{ needs.inspect.outputs.game_id }}
           CANDIDATE_SHA: ${{ needs.inspect.outputs.candidate_sha }}
           PACKAGE_RESULT: ${{ needs.roblox-package.result }}
-          STUDIO_RESULT: ${{ needs.roblox-studio.result }}
         shell: bash
         run: |
           set -euo pipefail
           test "$PACKAGE_RESULT" = success
-          test "$STUDIO_RESULT" = success
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {validateRobloxReleaseEvidence} from './.vibe3-control/tools/vibe3-roblox-platform.mjs';
-          const q=JSON.parse(fs.readFileSync('/tmp/roblox-candidate-studio/development-queue.json','utf8'));
+          const q=JSON.parse(fs.readFileSync('/tmp/roblox-candidate-review/development-queue.json','utf8'));
           const item=q.items?.[0];
           if(q.items?.length!==1||item.gameId!==process.env.GAME_ID)throw Error('candidate result game mismatch');
-          const gate=validateRobloxReleaseEvidence(item,process.env.CANDIDATE_SHA,{stage:'SOURCE_PROMOTION'});
-          fs.writeFileSync('/tmp/roblox-candidate-studio/release-evidence-review.json',JSON.stringify(gate));
+          if(Number(item.robloxFoundationF0Evidence?.artifactRunId)!==Number(process.env.GITHUB_RUN_ID))throw Error('candidate static run mismatch');
+          const gate=validateRobloxReleaseEvidence(item,process.env.CANDIDATE_SHA,{stage:'SOURCE_PROMOTION',validationMode:'STATIC'});
+          fs.writeFileSync('/tmp/roblox-candidate-review/release-evidence-review.json',JSON.stringify(gate));
           if(!gate.pass)throw Error(gate.blockedReasons.join('|'));
-          console.log('ROBLOX_EXACT_CANDIDATE_STUDIO_EVIDENCE=PASS');
+          console.log('ROBLOX_EXACT_CANDIDATE_STATIC_EVIDENCE=PASS');
           console.log('ROBLOX_FINAL_PUBLICATION_CLAIM=NO');
           NODE
 
@@ -910,17 +909,17 @@ jobs:
           if(task?.status!=='running'||task?.blocker!=='candidate-awaiting-runtime-evidence'
             ||pending?.evidenceOnly!==true||pending?.candidateSha!==process.env.CANDIDATE_SHA||pending?.candidateBranch!==process.env.CANDIDATE_BRANCH)throw Error('stale runtime evidence candidate');
           const pass=process.env.VALIDATE_OUTCOME==='success';
-          const reportFile='/tmp/roblox-candidate-studio/release-evidence-review.json';
+          const reportFile='/tmp/roblox-candidate-review/release-evidence-review.json';
           const report=fs.existsSync(reportFile)?JSON.parse(fs.readFileSync(reportFile,'utf8')):null;
           const reasons=Array.isArray(report?.blockedReasons)?report.blockedReasons.map(String).slice(0,30):[];
           task.evidence=[...new Set([...(task.evidence||[]),
-            'candidate-runtime-probe:'+process.env.CANDIDATE_SHA+':'+(pass?'PASS':'FAIL'),
-            'candidate-runtime-probe-run:'+process.env.GITHUB_RUN_ID,
-            'candidate-runtime-probe-artifact:roblox-candidate-studio-'+process.env.GAME_ID,
-            'candidate-runtime-probe-source-promotion:FORBIDDEN',
-            ...reasons.map(reason=>'candidate-runtime-probe-failure:'+reason)])];
-          task.runtimeEvidenceCandidate={...pending,runId:process.env.GITHUB_RUN_ID,verified:pass,blockedReasons:reasons,reviewStillRequired:true};
-          Object.assign(task,{status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,neuronExpectedVariants:0,neuronResults:[],lastOutcome:'RUNTIME_EVIDENCE_COLLECTED_REVIEW_REQUIRED'});
+            'candidate-static-probe:'+process.env.CANDIDATE_SHA+':'+(pass?'PASS':'FAIL'),
+            'candidate-static-probe-run:'+process.env.GITHUB_RUN_ID,
+            'candidate-static-probe-artifact:roblox-candidate-context-'+process.env.GAME_ID,
+            'candidate-static-probe-source-promotion:FORBIDDEN',
+            ...reasons.map(reason=>'candidate-static-probe-failure:'+reason)])];
+          task.runtimeEvidenceCandidate={...pending,runId:process.env.GITHUB_RUN_ID,verified:false,staticVerified:pass,validationMode:'STATIC',blockedReasons:reasons,reviewStillRequired:true};
+          Object.assign(task,{status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,neuronExpectedVariants:0,neuronResults:[],lastOutcome:'STATIC_EVIDENCE_COLLECTED_REVIEW_REQUIRED'});
           fs.writeFileSync(file,JSON.stringify(queue,null,2)+'\n');
           NODE
             elif [ "$result" = PASS ]; then

@@ -270,7 +270,7 @@ test('Roblox generic candidate release cannot publish canonical Open Cloud befor
 });
 
 
-test('Roblox candidate build and Studio verification precede promotion without publishing candidate state',()=>{
+test('Roblox candidate static validation precedes promotion without claiming actual play',()=>{
   const native=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
   const packageStart=releaseWorkflow.indexOf('  roblox-package:');
   const studioStart=releaseWorkflow.indexOf('  roblox-studio:');
@@ -285,7 +285,11 @@ test('Roblox candidate build and Studio verification precede promotion without p
   assert.match(build,/candidate preflight identity mismatch/);
   assert.doesNotMatch(build,/fetch-depth: 0/);
   assert.doesNotMatch(build,/gh pr merge|git push/);
-  assert.match(releaseWorkflow.slice(promoteStart),/needs: \[inspect, roblox-package, roblox-studio\]/);
+  assert.match(releaseWorkflow.slice(promoteStart),/needs: \[inspect, roblox-package\]/);
+  assert.match(releaseWorkflow.slice(promoteStart),/validationMode:'STATIC'/);
+  assert.match(releaseWorkflow.slice(promoteStart),/candidate static run mismatch/);
+  assert.doesNotMatch(releaseWorkflow.slice(promoteStart),/test "\$STUDIO_RESULT" = success/);
+  assert.match(releaseWorkflow.slice(promoteStart),/verified:false,staticVerified:pass/);
   assert.match(releaseWorkflow.slice(promoteStart),/stage:'SOURCE_PROMOTION'/);
   assert.match(native,/candidate must schedule exactly one Studio playtest/);
   assert.match(native,/ROBLOX_CANDIDATE_STUDIO_CANONICAL_WRITE=NO'[\s\S]*?exit 0[\s\S]*?git -C runtime config/);
