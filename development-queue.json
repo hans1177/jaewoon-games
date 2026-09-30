@@ -57,13 +57,13 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-30T11:52:30.111Z",
-      "robloxSourceCommit": "33f5aa4c39b889a740fea927cd07e23fd6c90de6",
-      "robloxSourceBootstrapPassedAt": "2026-09-30T09:40:54.415Z",
-      "robloxSourceBootstrapFailedAt": "2026-09-30T11:52:30.111Z",
+      "updatedAt": "2026-09-30T12:07:02.632Z",
+      "robloxSourceCommit": "b0c2a716f654aca3c0930170a4b2f51969df0847",
+      "robloxSourceBootstrapPassedAt": "2026-09-30T12:07:02.632Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -115,7 +115,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureSignature": "existing-source-studio-asset-binding-required",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED"
+        "roblox-runtime-evidence-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -1780,7 +1780,7 @@
         "bindingVersion": 2,
         "applied": true,
         "source": "company-asset-library.json#baseMaterialLibrary",
-        "libraryVersion": 19,
+        "libraryVersion": 28,
         "atomState": "PREPARED_SEMANTIC_ATOM_LIBRARY",
         "selectedAtomCount": 46,
         "families": {
@@ -2801,10 +2801,10 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-30T11:57:02.839Z",
+      "updatedAt": "2026-09-30T12:07:02.632Z",
       "robloxSourceCommit": "06e5ffed4caa534b9ddcaa82088eca0c8ca85839",
       "robloxSourceBootstrapPassedAt": "2026-09-30T09:50:42.342Z",
-      "robloxSourceBootstrapFailedAt": "2026-09-30T11:57:02.839Z",
+      "robloxSourceBootstrapFailedAt": "2026-09-30T12:07:02.632Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -29093,7 +29093,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T11:57:02.839Z",
+  "updatedAt": "2026-09-30T12:07:02.632Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
