@@ -312,6 +312,11 @@ jobs:
           const artifact=String(publishStage==='final'?finalEntry.artifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
           const sourceRoot=String(item.robloxProjectPath||item.targetSourcePath||'').replace(/^\/+|\/+$/g,'');
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const {evaluateInternalRelease}=await import('./tools/company-platform-exposure-control.mjs');
+          if(publishStage==='final'&&!evaluateInternalRelease(item,'ROBLOX',roadmap).ready){
+            put('skip','true');put('skip_reason','development-game-server-publication-forbidden');
+            console.log('ROBLOX_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT');process.exit(0);
+          }
           const canonicalRobloxValidationMode=String(roadmap?.roblox?.validationMode||'').trim().toUpperCase();
           const f0Evidence=publishStage==='final'?(finalEntry.f0Evidence||{}):(item.robloxFoundationF0Evidence||{});
           const f0EvidenceMode=String(f0Evidence?.validationMode||item.robloxHeadlessFastMvpEvidence?.validationMode||'').trim().toUpperCase();

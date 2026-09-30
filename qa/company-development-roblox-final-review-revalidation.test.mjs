@@ -1,3 +1,4 @@
+// 파일명: qa/company-development-roblox-final-review-revalidation.test.mjs
 import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -75,16 +76,16 @@ test('exact Roblox F9 review is isolated per game after multiplayer acceptance',
   assert.doesNotMatch(workflow,/group: company-development-roblox-f9-final-review\s*\n/);
 });
 
-test('F9 records exact verified prepublish evidence and waits for canonical server publish',()=>{
+test('F9 records exact verified evidence and queues publication only for released games',()=>{
   assert.match(workflow,/item\.robloxFinalReviewPassed=true/);
   assert.match(workflow,/item\.robloxF9ReleaseRegressionPassed=true/);
   assert.match(workflow,/item\.robloxF9VerifiedPrepublishEvidence=\{/);
-  assert.match(workflow,/canonicalPublishRequired:true/);
+  assert.match(workflow,/canonicalPublishRequired:serverPublishEligible/);
   assert.match(workflow,/canonicalPublishCompleted:false/);
-  assert.match(workflow,/item\.robloxInternalReleaseReady=false/);
-  assert.match(workflow,/item\.robloxCanonicalPublishPending=true/);
-  assert.match(workflow,/item\.currentStep='CANONICAL_ROBLOX_PUBLISH_PENDING'/);
-  assert.match(workflow,/ROBLOX_CANONICAL_FINAL_PUBLISH_PENDING/);
+  assert.match(workflow,/item\.robloxInternalReleaseReady=serverPublishEligible/);
+  assert.match(workflow,/item\.robloxCanonicalPublishPending=serverPublishEligible/);
+  assert.match(workflow,/item\.currentStep='POST_F9_CONTINUOUS_EVOLUTION'/);
+  assert.match(workflow,/ROBLOX_F9_VERIFIED_CANONICAL_PUBLISH_PENDING/);
 });
 
 test('F9 keeps exact runtime continuation evidence but cannot publish canonical target before F9 pass',()=>{
@@ -93,7 +94,7 @@ test('F9 keeps exact runtime continuation evidence but cannot publish canonical 
   assert.match(workflow,/post\.runtimeFailureExternalReleaseOnly===true/);
   assert.match(workflow,/const internalRuntimeAcceptance=sharedReleaseRuntimeAcceptance\|\|internalRuntimeObservationDeferred\|\|internalRuntimeFindingDeferred/);
   assert.match(workflow,/item\.robloxF9VerifiedPrepublishEvidence=\{/);
-  assert.match(workflow,/item\.robloxCanonicalPublishPending=true/);
+  assert.match(workflow,/item\.robloxCanonicalPublishPending=serverPublishEligible/);
 });
 
 test('F9 runs in parallel and cannot pause internal playtest under an external-only runtime blocker',()=>{
@@ -109,8 +110,8 @@ test('F9 runs in parallel and cannot pause internal playtest under an external-o
 });
 
 test('F9 is nonterminal and dispatches final canonical publish instead of ending evolution',()=>{
-  assert.match(workflow,/item\.robloxInternalReleaseReady=false/);
-  assert.match(workflow,/item\.robloxCanonicalPublishPending=true/);
+  assert.match(workflow,/item\.robloxInternalReleaseReady=serverPublishEligible/);
+  assert.match(workflow,/item\.robloxCanonicalPublishPending=serverPublishEligible/);
   assert.match(workflow,/ROBLOX_F9_VERIFIED_CANONICAL_PUBLISH_PENDING=/);
   assert.match(workflow,/Dispatch exact F9-verified artifact to canonical Roblox game target/);
   assert.match(workflow,/publish_stage=final/);
@@ -133,11 +134,13 @@ test('F9 runtime persistence retries from latest company-runtime with a field-sc
   assert.doesNotMatch(workflow,/group:.*company-runtime-writer/);
 });
 
-test('F9 fan-in waits for canonical publish and then reuses exact verified proof for the next cycle',()=>{
-  assert.match(workflow,/item\.robloxFinalReviewPassed!==true\|\|item\.robloxInternalReleaseReady!==true/);
-  assert.match(workflow,/item\.robloxCanonicalReleaseEvidence\?\.versionNumber\|\|item\.robloxReleaseVersionNumber/);
+test('F9 fan-in repeats development without requiring publication',()=>{
+  const fanin=workflow.slice(workflow.indexOf('proof_tsv=/tmp/roblox-f9-vibe-fanin.tsv'));
+  assert.match(fanin,/item\.robloxFinalReviewPassed!==true\|\|item\.robloxF9ReleaseRegressionPassed!==true/);
+  assert.doesNotMatch(fanin,/item\.robloxInternalReleaseReady!==true/);
+  assert.match(fanin,/prepublish\.validationVersionNumber/);
   assert.match(workflow,/const exactInternalF9Proof=/);
-  assert.match(workflow,/release\.f9RuntimeReplay===false/);
+  assert.match(workflow,/prepublish\.f9RuntimeReplay===false/);
   assert.match(workflow,/ROBLOX_F9_VIBE_REFILL_DISPATCHED=/);
   assert.match(workflow,/vibe2-fanin-refill/);
 });

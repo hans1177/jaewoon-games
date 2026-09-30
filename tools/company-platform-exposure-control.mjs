@@ -1,3 +1,6 @@
+// 파일명: tools/company-platform-exposure-control.mjs
+// 역할: 설계·로비 실행 증거와 실제 게시 대상을 함께 판정한다.
+// 임포트
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -9,13 +12,62 @@ function args(argv=process.argv.slice(2)){return Object.fromEntries(argv.filter(
 function openBlockingTickets(ticketQueue={},gameId='',platform=''){
   return (ticketQueue.tickets||[]).filter(t=>clean(t.gameId)===gameId&&['OPEN','REOPENED'].includes(upper(t.status))&&['CRITICAL','HIGH'].includes(upper(t.severity))&&(!clean(t.surface)||upper(t.surface)===platform||upper(t.surface)==='WEB'));
 }
-function internalReady(item={},platform=''){
-  if(platform==='UNITY'){
-    const e=item.executionEvidence||{};
-    return e.runtimePassed===true&&e.independentQaPassed===true&&e.regressionPassed===true&&e.exactRevision===true;
-  }
-  if(platform==='ROBLOX')return item.robloxInternalReleaseReady===true||(item.robloxRuntimePassed===true&&item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true);
-  return false;
+// 출시 판정: 과거 배포 이력과 검증된 로비를 구분하고, 사용자 확정은 별도로 기록한다.
+export function evaluateInternalRelease(item={},platform='',roadmap={}){
+  const rule=roadmap.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.internalRelease?.lobbyGate||{};
+  const roblox=platform==='ROBLOX',lower=roblox?'roblox':'unity';
+  const execution=item.unityExecutionEvidence||item.executionEvidence||{};
+  const technical=roblox
+    ?item.robloxInternalReleaseReady===true||(item.robloxRuntimePassed===true&&item.robloxIndependentQaPassed===true&&item.robloxRegressionPassed===true)
+    :platform==='UNITY'&&execution.runtimePassed===true&&execution.independentQaPassed===true&&execution.regressionPassed===true&&execution.exactRevision===true;
+  const design=item.minimumDesignContract||{};
+  const designChecks=design.releaseChecklist||{};
+  const designReady=design.pass===true&&clean(design.source)!==''&&clean(design.source)===clean(item.designBaselineSource)
+    &&['identity','coreLoop','sessionRules','signatureSystems','presentation'].every(key=>designChecks[key]===true);
+  const play=roblox?(item.robloxInternalVibePlayEvidence||{}):(item.unityInternalVibePlayEvidence||item.unityRuntimeEvidence||{});
+  const publications=roblox
+    ?[item.robloxCanonicalReleaseEvidence,item.robloxLastCanonicalPublishedEvidence,item.robloxInternalReleaseEvidence,item.robloxReleaseEvidence]
+    :[item.unityCanonicalReleaseEvidence,item.unityInternalReleaseEvidence];
+  const target=item.robloxPublicationTarget||{};
+  const currentPlace=clean(target.placeId);
+  const publication=publications.find(row=>row?.published===true&&(!roblox||!currentPlace||clean(row.placeId)===currentPlace))||{};
+  const published=roblox
+    ?/^[1-9][0-9]*$/.test(currentPlace||clean(publication.placeId))&&(target.verified===true||target.published===true||publication.published===true)
+      &&!(item.robloxSharedTargetCurrent===false&&target.dedicated!==true)
+    :publication.published===true&&Boolean(clean(item.unityInternalBuildUrl||item.unityBuildUrl||item.unityDownloadUrl));
+  const candidate=roblox?(item.robloxRuntimeCandidateEvidence||publication):(item.unityRuntimeCandidateEvidence||item.unityInternalReleaseEvidence||publication);
+  const sourceRevision=clean(candidate.sourceRevision),artifactIdentity=clean(candidate.artifactIdentity);
+  const exactRuntime=/^[a-f0-9]{40}$/i.test(sourceRevision)&&/^sha256:[a-f0-9]{64}$/i.test(artifactIdentity)
+    &&play.sourceRevision===sourceRevision&&play.artifactIdentity===artifactIdentity
+    &&clean(play.gameId)===clean(item.gameId)&&play.actualPlay===true
+    &&Number.isFinite(Date.parse(play.testedAt))
+    &&(roblox?play.authority==='roblox-official-studio-mcp-runtime':play.runtimeVerified===true)
+    &&play.infrastructureFailure!==true;
+  const scenarios=Array.isArray(play.scenarioCoverage)?play.scenarioCoverage:[];
+  const required=rule.runtimeScenarios||[];
+  const scenarioPass=id=>scenarios.some(row=>row?.id===id&&row.pass===true)&&!scenarios.some(row=>row?.id===id&&row.pass!==true);
+  const checks={
+    design:designReady,
+    publication:published,
+    exactRuntime,
+    lobby:required.length>0&&required.every(scenarioPass),
+    movement:Number(play.runtimeSummary?.primaryActionDisplacement)>0.25,
+    noRuntimeErrors:play.runtimeSummary?.consoleErrorCount===0&&Array.isArray(play.errors)&&play.errors.length===0
+  };
+  const lobbyReady=checks.exactRuntime&&checks.lobby&&checks.movement&&checks.noRuntimeErrors;
+  const ownerConfirmed=(rule.ownerConfirmedReleases||[]).some(row=>row.gameId===item.gameId&&row.platform===platform&&row.authority==='OWNER_DIRECTIVE'&&clean(row.placeId)===currentPlace)&&published;
+  const verified=technical&&designReady&&lobbyReady;
+  const ready=rule.enabled===true&&(ownerConfirmed||verified);
+  const homepageReady=ready&&published&&(ownerConfirmed||(sourceRevision===clean(publication.sourceRevision)&&artifactIdentity===clean(publication.artifactIdentity)));
+  const gameplayReady=ready&&!ownerConfirmed&&play.pass===true&&play.scenarioCoveragePass===true&&scenarioPass('adaptive-gameplay-loop-cadence');
+  return{
+    version:1,ready,homepageReady,technicalReady:technical,designReady,lobbyReady,ownerConfirmed,
+    basis:ownerConfirmed?'OWNER_CONFIRMED':verified?'VERIFIED_LOBBY':'PENDING_EVIDENCE',
+    experience:ready?(gameplayReady?'GAMEPLAY':'LOBBY'):'DEVELOPMENT',
+    checks,blockers:ready?[]:Object.entries(checks).filter(([,pass])=>!pass).map(([key])=>key),
+    sourceRevision:sourceRevision||null,artifactIdentity:artifactIdentity||null,
+    verifiedAt:exactRuntime?play.testedAt:null
+  };
 }
 function adaptationEvidence(item={},platform=''){
   if(platform==='UNITY')return item.unityPlatformAdaptationEvidence||item.platformAdaptationEvidence?.UNITY||{};
@@ -118,9 +170,9 @@ function robloxPublicHardGate(item={},tickets=[]){
   return{pass:blockers.length===0,checks,blockers,candidateVersionNumber:Number(candidate.versionNumber||0)};
 }
 function platformState(item,tickets,platform,roadmap={}){
-  void roadmap;
   const gameId=clean(item.gameId);
-  const technical=internalReady(item,platform);
+  const releaseReadiness=evaluateInternalRelease(item,platform,roadmap);
+  const technical=releaseReadiness.technicalReady;
   const blocking=openBlockingTickets(tickets,gameId,platform);
   const lower=platform==='ROBLOX'?'roblox':'unity';
   const internalPublished=platform==='ROBLOX'
@@ -130,24 +182,25 @@ function platformState(item,tickets,platform,roadmap={}){
   const explicitPublic=platform==='ROBLOX'?item.robloxExternalPublicReleaseConfirmed===true:item.unityExternalPublicReleaseConfirmed===true;
   const hardGate=platform==='ROBLOX'?robloxPublicHardGate(item,blocking):null;
   const publicReady=platform==='ROBLOX'
-    ?technical&&internalPublished&&hardGate.pass===true
-    :technical&&internalPublished&&playtestPassed&&blocking.length===0;
+    ?releaseReadiness.ready&&technical&&internalPublished&&hardGate.pass===true
+    :releaseReadiness.ready&&technical&&internalPublished&&playtestPassed&&blocking.length===0;
   const legacyPublic=platform==='ROBLOX'&&item.preexistingPublicReleaseBeforeExposureGate===true&&explicitPublic;
   const publicReleased=explicitPublic&&(publicReady||legacyPublic);
   const state=publicReleased
     ?'PUBLIC_RELEASE'
     :publicReady
       ?'PUBLIC_RELEASE_READY'
-      :internalPublished
+      :releaseReadiness.ready&&internalPublished
         ?'INTERNAL_PLAYTEST_AND_DEBUG'
-        :technical
+        :releaseReadiness.ready
           ?'INTERNAL_RELEASE_READY'
           :'NATIVE_DEVELOPMENT';
   return{
     platform,
     technicalReady:technical,
     internalReleaseState:state,
-    internalReleaseReady:technical,
+    internalReleaseReady:releaseReadiness.ready,
+    releaseReadiness,
     internalReleasePublished:internalPublished,
     internalPlaytestPassed:platform==='ROBLOX'?hardGate?.checks?.actualVibePlay===true:playtestPassed,
     externalExposureAllowed:publicReleased,

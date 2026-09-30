@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- 파일명: index.html · 재운게임즈 홈페이지 -->
 <html lang="ko" data-homepage-version="SAMPLE_FRONT_DOOR_V1" data-homepage-build="2026-09-21-sample-exact">
 <head>
 <meta charset="utf-8">
@@ -59,6 +60,7 @@ button,a{font:inherit}
 .recentUpdates{margin-top:24px;padding:14px;border:1px solid var(--line);border-radius:18px;background:#fff}
 .recentUpdatesHead{display:flex;align-items:end;justify-content:space-between;gap:8px;margin-bottom:8px}.recentUpdatesHead h2{margin:0;font-size:20px}.recentUpdatesHead span{font-size:11px;color:var(--muted)}
 .recentUpdateList{display:grid;gap:5px}.recentUpdateItem{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:12px;background:#f7f9fb}.recentUpdateItem div{min-width:0}.recentUpdateItem b{display:block;font-size:11px}.recentUpdateItem span{display:block;margin-top:2px;color:#5f7182;font-size:9px;line-height:1.3}.recentUpdateItem small{flex:0 0 auto;color:#75879a;font-size:8px;font-weight:850}.recentUpdateEmpty{padding:18px;text-align:center;color:#8090a0;font-size:10px}
+.releaseNav{display:flex;gap:10px;margin:8px 0 18px}.releaseNav a{flex:1;min-height:48px;display:flex;align-items:center;justify-content:center;gap:10px;background:#e3efff;color:#075dc4;border:1px solid #bbd8fd;border-radius:12px;text-decoration:none;font-size:14px;font-weight:900}.releaseNav a+ a{background:#fff1d6;color:#875100;border-color:#eed099}.releaseNav b{font-size:16px}
 .footer{margin:38px 0 8px;text-align:center;color:#8492a0;font-size:10px}
 .mobileDock{display:none}
 
@@ -79,7 +81,7 @@ button,a{font:inherit}
 <main class="shell">
 <header class="topbar">
   <a class="brand" href="#top" id="top">JAEWOON <span>GAMES</span></a>
-  <nav class="mainNav" aria-label="주요 메뉴"><a href="#gameHub">게임</a><a href="/asset-library.html">자산</a><a href="#recentUpdates">최근 수정</a><a href="/command.html?from=chatgpt-shortcut" data-chatgpt-launch>ChatGPT</a></nav>
+  <nav class="mainNav" aria-label="주요 메뉴"><a href="#homePlatformAvailableGameCenter">출시 게임</a><a href="#homeDevelopmentGameCenter">개발 중</a><a href="/asset-library.html">자산</a><a href="#recentUpdates">최근 수정</a><a href="/command.html?from=chatgpt-shortcut" data-chatgpt-launch>ChatGPT</a></nav>
   <div id="appInstallBar"><button class="installMini" id="appInstallBtn" type="button">앱 설치</button><span class="installState" id="appInstallState"></span></div>
 </header>
 
@@ -88,27 +90,20 @@ button,a{font:inherit}
 </section>
 
 <section class="stats opsBar" aria-label="게임 요약">
-  <div class="stat"><b id="metricPlayable">-</b><span>게임 가능</span></div>
+  <div class="stat"><b id="metricPlayable">-</b><span>출시 게임</span></div>
   <div class="stat"><b id="metricDevelopment">-</b><span>개발 중</span></div>
   <div class="stat"><b id="metricRecent">-</b><span>최근 수정</span></div>
 </section>
 
 <section class="section" id="gameHub" aria-label="게임">
+  <nav class="releaseNav" aria-label="출시와 개발 구분"><a href="#homePlatformAvailableGameCenter">출시 게임 <b id="releasedCount">1</b></a><a href="#homeDevelopmentGameCenter">개발 중 <b id="developmentCount">-</b></a></nav>
   <div id="gameGrid"></div>
   <section class="homeGameShelf" id="homeInternalReleaseFallback" data-runtime-fallback="internal-releases">
-    <div class="gameShelfHead"><div><h2>내부 출시 게임</h2><p>내부 출시된 Roblox 게임을 바로 실행할 수 있어.</p></div><span class="gameShelfCount">3개</span></div>
+    <div class="gameShelfHead"><div><h2>출시 게임</h2><p>입장 가능한 게임 · 로비 체험</p></div><span class="gameShelfCount">1개</span></div>
     <div class="gameShelfGrid">
-      <article class="foldGameCard" data-game-id="cozy-island">
-        <div class="foldGameArt"><img src="/assets/title-cozy-island.svg" alt="포근섬: 작은 왕국 키우기"></div>
-        <div class="foldGameBody"><h3>포근섬: 작은 왕국 키우기</h3><p>직접 채집해 주민과 병영을 키우고 5개 전략 거점을 정복하는 협동 섬 개척 게임</p><div class="foldGameMeta">ROBLOX 내부출시 / UNITY 개발중</div><div class="foldGameActions"><a class="foldGameBtn platformAction robloxAction" href="https://www.roblox.com/games/116850096561713">Roblox · 내부출시</a><span class="foldGameBtn off">Unity 앱 · 개발중</span></div></div>
-      </article>
-      <article class="foldGameCard" data-game-id="daechung-rpg">
-        <div class="foldGameArt"><img src="/assets/fantasy-rpg-v2.webp" alt="5포탈 RPG: 던전 파티"></div>
-        <div class="foldGameBody"><h3>5포탈 RPG: 던전 파티</h3><p>마을에서 장비와 퀘스트를 준비하고 AI 동료와 5개 포탈 지역을 정복하는 3D 파티 RPG</p><div class="foldGameMeta">ROBLOX 내부출시 / UNITY 개발중</div><div class="foldGameActions"><a class="foldGameBtn platformAction robloxAction" href="https://www.roblox.com/games/126302702438348">Roblox · 내부출시</a><span class="foldGameBtn off">Unity 앱 · 개발중</span></div></div>
-      </article>
       <article class="foldGameCard" data-game-id="horror-escape-room">
-        <div class="foldGameArt"><img src="/assets/page-bg-v4.webp" alt="심야 감염전 [4대4]"></div>
-        <div class="foldGameBody"><h3>심야 감염전 [4대4]</h3><p>8명 4대4로 시작해 잡힌 인간이 몬스터로 전환되는 AI 충원형 감염 추격전</p><div class="foldGameMeta">ROBLOX 내부출시 / UNITY 개발중</div><div class="foldGameActions"><a class="foldGameBtn platformAction robloxAction" href="https://www.roblox.com/games/98222620265768">Roblox · 내부출시</a><span class="foldGameBtn off">Unity 앱 · 개발중</span></div></div>
+        <div class="foldGameArt"><img src="/assets/page-bg-v4.webp" alt="심야 대탈출"></div>
+        <div class="foldGameBody"><h3>심야 대탈출</h3><p>8명 4대4로 시작해 잡힌 인간이 몬스터로 전환되는 AI 충원형 감염 추격전</p><div class="foldGameMeta">로블록스 출시 · 로비 체험 / 유니티 개발 중</div><div class="foldGameActions"><a class="foldGameBtn platformAction robloxAction" href="https://www.roblox.com/games/98222620265768">로블록스 · 로비 체험</a><span class="foldGameBtn off">Unity 앱 · 개발중</span></div></div>
       </article>
     </div>
   </section>

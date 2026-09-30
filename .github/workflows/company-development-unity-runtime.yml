@@ -112,6 +112,7 @@ jobs:
           node-version: '22'
 
       - name: Verify exact persisted F9 publication repair identity
+        id: retry_gate
         env:
           GAME_ID: ${{ inputs.game_id }}
           SOURCE_REVISION: ${{ inputs.publication_retry_source_revision }}
@@ -129,11 +130,16 @@ jobs:
           [[ "$BUILD_RUN_ID" =~ ^[0-9]+$ ]]
           git fetch --no-tags --depth=1 origin company-runtime
           git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
-          node <<'NODE'
-          const fs=require('fs');
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const item=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID);
           if(!item)throw new Error('Unity publication retry game missing');
+          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const eligible=evaluateInternalRelease(item,'UNITY',policy).ready;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`eligible=${eligible}\n`);
+          if(!eligible){console.log('UNITY_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT');process.exit(0);}
           const ev=item.unityInternalReleaseEvidence||{};
           if(item.unityF9ReleaseRegressionPassed!==true||ev.f0ThroughF9Passed!==true||ev.f9ReleaseRegressionPassed!==true)throw new Error('Unity publication retry requires persisted exact F9 PASS');
           const exact=
@@ -149,6 +155,7 @@ jobs:
 
       - name: Retry exact F9 Unity APK publication
         id: publish
+        if: steps.retry_gate.outputs.eligible == 'true'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -201,7 +208,7 @@ jobs:
           echo "UNITY_F9_PUBLICATION_REPAIR=PASS:$GAME_ID:$tag"
 
       - name: Persist exact Unity publication repair outcome
-        if: always()
+        if: always() && steps.retry_gate.outcome == 'success' && steps.retry_gate.outputs.eligible == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ inputs.game_id }}
@@ -265,7 +272,7 @@ jobs:
           test "$persisted" = 1
 
       - name: Re-dispatch exact Unity publication repair until success
-        if: always() && steps.publish.outcome != 'success'
+        if: always() && steps.retry_gate.outcome == 'success' && steps.retry_gate.outputs.eligible == 'true' && steps.publish.outcome != 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ inputs.game_id }}
@@ -972,6 +979,7 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {failureSignature} from './tools/company-selected-platform-router.mjs';
+          import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
           const yes=v=>String(v).toLowerCase()==='true';
           const build=yes(process.env.BUILD_PASS),runtime=yes(process.env.RUNTIME_PASS),qa=yes(process.env.QA_PASS),regression=yes(process.env.REGRESSION_PASS);
           const currentQueue=JSON.parse(fs.readFileSync('/tmp/unity-current-queue.json','utf8'));
@@ -1040,9 +1048,19 @@ jobs:
               f0ThroughF9Passed:true,f9ReleaseRegressionPassed:true,
               authority:'unity-exact-apk-runtime-qa-regression'
             }:null,
-            executionEvidence:evidence,resumeStage:failure||(internalReady?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'IMMEDIATE_NEXT_STAGE_DISPATCH'),
+            unityExecutionEvidence:evidence,executionEvidence:evidence,resumeStage:failure||(internalReady?'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG':'IMMEDIATE_NEXT_STAGE_DISPATCH'),
             failureCount:failure?1:0,contractCanaryPassed:String(process.env.IS_CANARY).toLowerCase()==='true'&&regression,updatedAt:stamp
           };
+          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const releaseReady=internalReady&&evaluateInternalRelease({...currentItem,...row,unityExecutionEvidence:evidence},'UNITY',policy).ready;
+          row.unityInternalReleaseReady=releaseReady;
+          row.unityCanonicalPublishPending=releaseReady;
+          row.unityInternalReleaseAt=releaseReady?stamp:null;
+          if(internalReady&&!releaseReady){
+            row.currentStep='POST_F9_CONTINUOUS_EVOLUTION';
+            row.canonicalState='F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION';
+            row.resumeStage='POST_F9_CONTINUOUS_EVOLUTION';
+          }
           fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.json`,JSON.stringify(row,null,2)+'\n');
           fs.writeFileSync(`runtime-persist/queue/${process.env.GAME_ID}.evidence.json`,JSON.stringify(evidence,null,2)+'\n');
           console.log(`CHECKPOINT_LAST_SUCCESS=${last}`);console.log(`CHECKPOINT_FAILURE_STAGE=${failure||'NONE'}`);console.log(`UNITY_INTERNAL_RELEASE_READY=${internalReady?'YES':'NO'}`);console.log(`UNITY_PLATFORM_F0_TO_F9_VERIFIED=${internalReady?'YES':'NO'}`);console.log('UNITY_PUBLIC_RELEASE_MUTATION=NO');
@@ -1136,11 +1154,11 @@ jobs:
           fs.writeFileSync(queuePath,JSON.stringify(queue,null,2)+'\n');
           console.log('DEVELOPMENT_UNITY_GAME_PERSIST='+update.gameId);
           NODE
-            git -C "$state_dir" checkout origin/main -- tools/company-homepage-platform-exposure-sync.mjs
+            git -C "$state_dir" checkout origin/main -- tools/company-homepage-platform-exposure-sync.mjs tools/company-platform-exposure-control.mjs tools/company-shared-context.mjs company-learning/platform-release-roadmap.json
             (
               cd "$state_dir"
               node tools/company-homepage-platform-exposure-sync.mjs development-queue.json game-catalog.json homepage-platform-exposure.json
-              git reset -- tools/company-homepage-platform-exposure-sync.mjs >/dev/null 2>&1 || true
+              git reset -- tools/company-homepage-platform-exposure-sync.mjs tools/company-platform-exposure-control.mjs tools/company-shared-context.mjs company-learning/platform-release-roadmap.json >/dev/null 2>&1 || true
               git add design development-queue.json homepage-platform-exposure.json
               git diff --cached --check
               if git diff --cached --quiet; then
@@ -1172,9 +1190,30 @@ jobs:
           echo "passed=$passed" >> "$GITHUB_OUTPUT"
           echo "COMPANY_RUNTIME_UNITY_GAME_PERSIST=PASS:$GAME_ID"
 
+      - name: Check released game eligibility before server publication
+        id: release_gate
+        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
+        env:
+          GAME_ID: ${{ matrix.item.gameId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin company-runtime
+          git show origin/company-runtime:development-queue.json > /tmp/unity-release-queue.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
+          const q=JSON.parse(fs.readFileSync('/tmp/unity-release-queue.json','utf8'));
+          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const item=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID)||{};
+          const eligible=evaluateInternalRelease(item,'UNITY',policy).ready;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`eligible=${eligible}\n`);
+          console.log('UNITY_SERVER_PUBLICATION='+ (eligible?'ELIGIBLE':'SKIPPED_DEVELOPMENT'));
+          NODE
+
       - name: Publish exact F9 Unity APK to canonical internal release target
         id: f9_publish
-        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
+        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true' && steps.release_gate.outputs.eligible == 'true'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -1229,7 +1268,7 @@ jobs:
           echo "UNITY_F9_CANONICAL_SOURCE_ARTIFACT_MATCH=YES"
 
       - name: Record Unity F9 publication dispatch without gating next cycle
-        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
+        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true' && steps.release_gate.outputs.eligible == 'true'
         env:
           GAME_ID: ${{ matrix.item.gameId }}
           PUBLISH_OUTCOME: ${{ steps.f9_publish.outcome }}
@@ -1250,7 +1289,7 @@ jobs:
           echo 'UNITY_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=NO'
 
       - name: Persist Unity F9 publication outcome without gating evolution
-        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true'
+        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true' && steps.release_gate.outputs.eligible == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.item.gameId }}
@@ -1328,7 +1367,7 @@ jobs:
           echo 'UNITY_PUBLICATION_OUTCOME_BLOCKS_EVOLUTION=NO'
 
       - name: Dispatch exact Unity F9 publication repair in parallel
-        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true' && steps.f9_publish.outcome != 'success'
+        if: always() && steps.persist_game.outcome == 'success' && steps.persist_game.outputs.passed == 'true' && steps.release_gate.outputs.eligible == 'true' && steps.f9_publish.outcome != 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.item.gameId }}
@@ -1421,7 +1460,7 @@ jobs:
               if(!evidence.includes(exactTreeMarker))continue;
               process.stdout.write(String(task.id)+'\n');
             }
-            NODE
+          NODE
             )
             for task_id in "${task_ids[@]}"; do
               (

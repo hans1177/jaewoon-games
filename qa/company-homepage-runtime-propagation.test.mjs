@@ -48,7 +48,7 @@ test('visible game titles stay aligned with Roblox project titles',()=>{
   const expected={
     'cozy-island':'포근섬: 작은 왕국 키우기',
     'daechung-rpg':'5포탈 RPG: 던전 파티',
-    'horror-escape-room':'심야 감염전 [4대4]'
+    'horror-escape-room':'심야 대탈출'
   };
   for(const [id,title] of Object.entries(expected)){
     const project=JSON.parse(fs.readFileSync(`roblox-games/${id}/default.project.json`,'utf8'));
@@ -99,7 +99,7 @@ test('homepage suppresses superseded shared Roblox targets until a dedicated cur
   const roblox=snap.games[0].platforms.find(row=>row.platform==='ROBLOX');
   assert.equal(roblox.placeId,null);
   assert.equal(roblox.internalUrl,null);
-  assert.equal(roblox.internalReleaseReady,true);
+  assert.equal(roblox.internalReleaseReady,false);
   assert.equal(roblox.publicReleaseReady,false);
   assert.equal(roblox.internalLinkSuppressedReason,'STALE_SHARED_TARGET_AWAITING_DEDICATED_TARGET');
 });
@@ -162,7 +162,7 @@ test('homepage keeps Roblox runtime truth separate from independent QA',()=>{
   assert.equal(roblox.runtimePassed,false);
   assert.equal(roblox.independentQaPassed,true);
   assert.equal(roblox.regressionPassed,true);
-  assert.equal(roblox.internalReleaseReady,true);
+  assert.equal(roblox.internalReleaseReady,false);
   assert.equal(roblox.publicReleaseReady,false);
   assert.equal(row.externalPublicReleaseState,'INTERNAL_ONLY');
 });

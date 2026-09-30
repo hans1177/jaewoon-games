@@ -77,11 +77,10 @@ const exposureOf=id=>(platformExposure?.games||[]).find(x=>String(x.gameId||'')=
 const exposureStateOf=id=>String(exposureOf(id)?.externalPublicReleaseState||'INTERNAL_ONLY');
 const exposureLabelOf=id=>({INTERNAL_ONLY:'내부전용',PUBLIC_RELEASE_READY:'외부공개 준비',PUBLIC_RELEASE:'외부공개'})[exposureStateOf(id)]||exposureStateOf(id);
 const platformReleaseLabel=p=>{
-  if(p?.publicRelease===true||p?.publicReleaseState==='PUBLIC_RELEASE')return'공개출시';
-  if(p?.publicReleaseReady===true||p?.publicReleaseState==='PUBLIC_RELEASE_READY')return'공개출시 준비';
-  if(p?.internalReleaseReady===true&&p?.internalLinkSuppressedReason)return'내부출시 · 링크이전중';
-  if(p?.internalReleaseReady===true)return'내부출시';
-  return p?.developmentState==='NATIVE_DEVELOPMENT'?'개발중':'준비중';
+  if(p?.internalReleaseReady===true&&p?.releaseReadiness?.homepageReady===true){
+    return p.releaseReadiness.experience==='GAMEPLAY'?'출시 · 본게임 가능':'출시 · 로비 체험';
+  }
+  return '개발 중';
 };
 const platformExposureMeta=id=>{const row=exposureOf(id);if(!row)return'';return (row.platforms||[]).filter(p=>['ROBLOX','UNITY'].includes(normalizePlatform(p.platform))).map(p=>`${normalizePlatform(p.platform)} ${platformReleaseLabel(p)}`).join(' / ');};
 
@@ -117,7 +116,7 @@ function releaseRows(catalog,status){
 }
 function developmentRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
-    .filter(game=>activeLifecycle(game)&&productionClassOf(game)==='DEVELOPMENT_CONFIRMED')
+    .filter(game=>activeLifecycle(game)&&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(productionClassOf(game)))
     .map(game=>bindVerifiedUnityBuild(game,status))
     .sort((a,b)=>{
       const sa=scoreState(a),sb=scoreState(b);
@@ -260,15 +259,15 @@ function internalReleaseLinks(game){
   const state=id=>(exposure?.platforms||[]).find(p=>normalizePlatform(p?.platform)===id)||{};
   const roblox=state('ROBLOX'),unity=state('UNITY');
   return {
-    roblox:roblox.internalReleaseReady===true||roblox.publicRelease===true?links.roblox:'',
-    unity:unity.internalReleaseReady===true||unity.publicRelease===true?links.unity:'',
+    roblox:roblox.internalReleaseReady===true&&roblox.releaseReadiness?.homepageReady===true?links.roblox:'',
+    unity:unity.internalReleaseReady===true&&unity.releaseReadiness?.homepageReady===true?links.unity:'',
     unityWeb:platformExposure?.unityWebEnabled===true?links.unityWeb:'',
     web:links.web
   };
 }
 function hasInternalRelease(game){
   const exposure=exposureOf(gameIdOf(game));
-  return (exposure?.platforms||[]).some(p=>['ROBLOX','UNITY'].includes(normalizePlatform(p?.platform))&&(p?.internalReleaseReady===true||p?.publicRelease===true));
+  return (exposure?.platforms||[]).some(p=>['ROBLOX','UNITY'].includes(normalizePlatform(p?.platform))&&p?.internalReleaseReady===true&&p?.releaseReadiness?.homepageReady===true&&Boolean(p.internalUrl||p.publicUrl));
 }
 function internalReleaseRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
@@ -300,6 +299,11 @@ function installStyles(){
   const style=document.createElement('style');
   style.id='homepageEnhancementStyles';
   style.textContent=`
+.homeGameShelf{scroll-margin-top:18px;padding:20px;border:1px solid #dce5ef;border-radius:20px;background:#fff;margin-top:18px}
+.releasedShelf{border-top:5px solid #1479ed;background:#f7fbff}.developmentShelf{border-top:5px solid #d99523;background:#fffcf5}
+.gameStatus{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-bottom:10px;font-size:11px;line-height:1.4}.gameStatus b{padding:5px 9px;border-radius:7px}.isReleased b{background:#e2efff;color:#075dc4}.isDevelopment b{background:#fff0ce;color:#875100}.gameStatus span{font-weight:750;color:#617185}
+.shelfEmpty{padding:26px 12px;color:#65758a;font-size:13px;line-height:1.7}.foldGameCard{overflow:hidden}.developmentCard .foldGameArt{border-bottom:3px solid #efc373}.releasedCard .foldGameArt{border-bottom:3px solid #88bcfa}
+@media(max-width:700px){.homeGameShelf{padding:14px 10px}.gameStatus{font-size:11px}.homeGameShelf .foldGameCard{flex-basis:76vw}.gameShelfHead{gap:8px}.gameShelfHead p{line-height:1.5}}
 .foldGameBtn{min-height:46px;display:flex;align-items:center;justify-content:center}
 .foldGameCompletion{margin-top:8px;font-size:11px;line-height:1.6;color:#526477;overflow-wrap:anywhere}
 .foldGameCompletion summary{cursor:pointer;min-height:36px;display:flex;align-items:center}
@@ -313,15 +317,16 @@ function installStyles(){
 function buildFocus(catalog,status){
   const hero=document.getElementById('hero');
   if(!hero)return;
-  const allRows=[...releaseRows(catalog,status),...developmentRows(catalog,status)];
+  const allRows=[...internalReleaseRows(catalog,status),...developmentRows(catalog,status)];
   const seen=new Set();
   const rows=allRows.filter(row=>{const id=gameIdOf(row);if(!id||seen.has(id))return false;seen.add(id);return true;});
-  const row=rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID)||rows[0];
+  const row=rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID&&hasInternalRelease(item))||rows.find(hasInternalRelease)||rows[0];
   if(!row)return;
-  const game=mergeGame(row),native=platformHref(game);
+  const game=mergeGame(row),released=hasInternalRelease(game),links=internalReleaseLinks(game);
+  const native=released?(links.roblox||links.unity||''):'';
   hero.className='hero homeFocus';
   hero.style.setProperty('--focus-bg',`url('${String(game.image).replaceAll("'","%27")}')`);
-  hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p>${native?`<a class="homeFocusBtn" href="${esc(native)}">내부 플레이</a>`:'<a class="homeFocusBtn" href="#gameHub">개발 상태 보기</a>'}</div>`;
+  hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p>${native?`<a class="homeFocusBtn" href="${esc(native)}">출시 게임 입장</a>`:'<a class="homeFocusBtn" href="#gameHub">개발 상태 보기</a>'}</div>`;
 }
 function buildCard(row){
   const game=mergeGame(row),links=internalReleaseLinks(game),exposure=exposureOf(gameIdOf(game));
@@ -335,7 +340,15 @@ function buildCard(row){
       :'',
     links.web?button(links.web,'웹 플레이','웹 빌드없음','webAction webCompanionAction'):''
   ].join('');
-  const meta=platformExposureMeta(game.id)||'Roblox / Unity 앱 개발 준비';
+  const meta=platformExposureMeta(game.id)||'로블록스 / 유니티 개발 준비';
+  const released=hasInternalRelease(game);
+  const states=exposure?.platforms||[];
+  const designReady=states.some(p=>p.releaseReadiness?.designReady===true);
+  const lobbyReady=states.some(p=>p.releaseReadiness?.lobbyReady===true);
+  const progress=released
+    ?(states.some(p=>p.internalReleaseReady===true&&p.releaseReadiness?.experience==='GAMEPLAY')?'본게임 가능':'로비 체험')
+    :(!designReady?'설계 확정·로비 준비 중':!lobbyReady?'로비 구현·검증 중':'출시 준비 중');
+  const statusBadge=`<div class="gameStatus ${released?'isReleased':'isDevelopment'}"><b>${released?'출시 게임':'개발 중'}</b><span>${progress}</span></div>`;
   const completions=(exposure?.platforms||[]).map(p=>{
     const label=p.platform==='ROBLOX'?'로블록스':p.platform==='UNITY'?'유니티':esc(p.platform);
     const history=p.completion;
@@ -349,14 +362,14 @@ function buildCard(row){
     return `<details><summary>${esc(title)}</summary><small>보존된 최종 검증·배포 기록 기준. 현재 수리 상태와 별개야. 최근 ${records.length}건 · 한국 시간</small><ol>${records.map(r=>`<li><a href="${esc(r.evidenceUrl)}" target="_blank" rel="noopener noreferrer">${esc(formatDate(r.completedAt))} · 증거 보기</a></li>`).join('')}</ol></details>`;
   }).join('');
   const direct=links.roblox||links.unity||links.unityWeb||links.web||'';
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameCompletion">${completions}</div><div class="foldGameActions">${actions}</div></div></article>`;
+  return `<article class="foldGameCard ${released?'releasedCard':'developmentCard'}" data-release-state="${released?'released':'development'}" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"></div><div class="foldGameBody">${statusBadge}<h3>${esc(game.name)}</h3><p>${esc(game.description)}</p><div class="foldGameMeta">${esc(meta)}</div><div class="foldGameCompletion">${completions}</div><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
   document.getElementById(id)?.remove();
   const wrapper=document.createElement('section');
   wrapper.id=id;
-  wrapper.className='homeGameShelf';
-  wrapper.innerHTML=`<div class="gameShelfHead"><div><h2>${esc(title)}</h2><p>${esc(description)}</p></div><span class="gameShelfCount">${rows.length}개</span></div><div class="gameShelfGrid">${rows.length?rows.map(row=>buildCard(row)).join(''):'<div class="foldGameMeta">표시할 게임이 없어.</div>'}</div>`;
+  wrapper.className='homeGameShelf '+(id==='homePlatformAvailableGameCenter'?'releasedShelf':'developmentShelf');
+  wrapper.innerHTML=`<div class="gameShelfHead"><div><h2>${esc(title)}</h2><p>${esc(description)}</p></div><span class="gameShelfCount">${rows.length}개</span></div><div class="gameShelfGrid">${rows.length?rows.map(row=>buildCard(row)).join(''):`<div class="shelfEmpty">${id==='homePlatformAvailableGameCenter'?'출시 기준을 확인한 게임이 아직 없어. 개발 중 목록에서 진행 상황을 볼 수 있어.':'현재 개발 중인 게임이 없어.'}</div>`}</div>`;
   hub.appendChild(wrapper);
 }
 function buildRecentUpdates(catalog){
@@ -392,10 +405,13 @@ function buildGameCenter(catalog,status){
   const available=internalReleaseRows(catalog,status);
   const availableIds=new Set(available.map(gameIdOf));
   const development=developmentRows(catalog,status).filter(game=>!availableIds.has(gameIdOf(game)));
-  buildShelf(hub,'homePlatformAvailableGameCenter','출시 게임','현재 플레이 가능한 출시 게임',available);
-  buildShelf(hub,'homeDevelopmentGameCenter','개발 중','플랫폼 개발이 진행 중인 게임',development);
+  buildShelf(hub,'homePlatformAvailableGameCenter','출시 게임','입장 가능한 게임 · 로비 체험 또는 본게임 가능',available);
+  buildShelf(hub,'homeDevelopmentGameCenter','개발 중','설계·로비 구현과 검증이 진행 중인 게임',development);
   document.documentElement.dataset.homePlatformAvailableCount=String(available.length);
   document.documentElement.dataset.homeDevelopmentCount=String(development.length);
+  const releasedCount=document.getElementById('releasedCount'),developmentCount=document.getElementById('developmentCount');
+  if(releasedCount)releasedCount.textContent=String(available.length);
+  if(developmentCount)developmentCount.textContent=String(development.length);
   document.documentElement.dataset.homeServerAuthority=String(catalog?.runtimeInfoAuthority||catalog?.runtimeAuthority||'none');
   document.documentElement.dataset.homeSupportedPlatforms=(catalog?.runtimeSupportedPlatforms||[]).join(',');
   markDirectPlayCards();

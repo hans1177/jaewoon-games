@@ -156,6 +156,8 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {ingestTesterDebug} from './tools/company-tester-debug-intake.mjs';
+          import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
+          const releasePolicy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           const queuePath='../runtime/development-queue.json';
@@ -398,7 +400,9 @@ jobs:
               authority:'deterministic-f9-exact-runtime-candidate-review',
               verifiedAt:stamp,
             };
-            item.robloxInternalReleaseReady=false;
+            const releaseReadiness=evaluateInternalRelease(item,'ROBLOX',releasePolicy);
+            const serverPublishEligible=releaseReadiness.ready;
+            item.robloxInternalReleaseReady=serverPublishEligible;
             item.robloxInternalReleasePublished=false;
             item.robloxInternalReleaseAt=null;
             item.robloxF9VerifiedPrepublishEvidence={
@@ -416,7 +420,7 @@ jobs:
               internalStudioValidationOnly:internalStudioValidationAccepted,
               runtimeAcceptancePassed:internalRuntimeAcceptance,
               studioAssetRuntimeBindingPassed:studioAssetRuntimeBindingExact,
-              canonicalPublishRequired:true,
+              canonicalPublishRequired:serverPublishEligible,
               canonicalPublishCompleted:false,
               authority:'roblox-f9-verified-prepublish-gate',
               verifiedAt:stamp,
@@ -424,7 +428,7 @@ jobs:
             const publishCycleId=sourceRevision+':'+artifactIdentity;
             const publishQueue=Array.isArray(item.robloxCanonicalPublishQueue)?item.robloxCanonicalPublishQueue:[];
             const f0Snapshot=JSON.parse(JSON.stringify(item.robloxFoundationF0Evidence||{}));
-            if(!publishQueue.some(row=>row?.cycleId===publishCycleId)){
+            if(serverPublishEligible&&!publishQueue.some(row=>row?.cycleId===publishCycleId)){
               publishQueue.push({
                 version:1,
                 cycleId:publishCycleId,
@@ -449,7 +453,7 @@ jobs:
               });
             }
             item.robloxCanonicalPublishQueue=publishQueue;
-            item.robloxCanonicalPublishPending=true;
+            item.robloxCanonicalPublishPending=serverPublishEligible;
             item.robloxInternalReleaseEvidence=null;
             item.robloxReleaseEvidence=null;
             item.robloxReleaseVersionNumber=null;
@@ -460,7 +464,8 @@ jobs:
             item.robloxPublicReleaseEvidence=null;
             item.robloxPromotionBlockers=[];
             item.currentStep='POST_F9_CONTINUOUS_EVOLUTION';
-            item.canonicalState='F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION';
+            item.canonicalState=serverPublishEligible?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION':'F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION';
+            console.log('ROBLOX_F9_SERVER_PUBLICATION='+item.gameId+':'+(serverPublishEligible?'ELIGIBLE':'SKIPPED_DEVELOPMENT'));
             item.robloxLastSuccessfulStage='F9_RELEASE_REGRESSION';
             item.robloxFailureStage=null;
             item.robloxFailureSignature=null;
@@ -667,12 +672,15 @@ jobs:
           set -euo pipefail
           git -C runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
           git -C runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
-          mapfile -t rows < <(REQUESTED_GAME_ID="$REQUESTED_GAME_ID" node <<'NODE'
-          const fs=require('fs');
+          mapfile -t rows < <(REQUESTED_GAME_ID="$REQUESTED_GAME_ID" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {evaluateInternalRelease} from './main/tools/company-platform-exposure-control.mjs';
+          const releasePolicy=JSON.parse(fs.readFileSync('main/company-learning/platform-release-roadmap.json','utf8'));
           const q=JSON.parse(fs.readFileSync('runtime/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           for(const item of q.items||[]){
             if(requested&&item.gameId!==requested)continue;
+            if(!evaluateInternalRelease(item,'ROBLOX',releasePolicy).ready)continue;
             for(const row of item.robloxCanonicalPublishQueue||[]){
               if(!['PENDING','RETRY_REQUIRED'].includes(String(row?.status||'')))continue;
               if(row.finalReviewPassed!==true||row.f9ReleaseRegressionPassed!==true)continue;

@@ -166,6 +166,7 @@ function bindDirectNativeQueueItem(item,{seed,design,stamp}){
     designDate:design.date,
     minimumDesignContract:{
       version:1,pass:true,source:design.file,date:design.date,
+      releaseChecklist:design.gate.releaseChecklist,
       commonCoreReady:true,platformProfiles:{ROBLOX:true,UNITY:true,distinct:true}
     },
     platformDesignProfiles:{
