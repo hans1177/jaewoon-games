@@ -1703,10 +1703,12 @@ jobs:
     concurrency:
       group: roblox-studio-shared-host
       cancel-in-progress: false
+      queue: max
     needs: studio-local-plan
     if: always() && needs.studio-local-plan.result == 'success' && needs.studio-local-plan.outputs.count != '0'
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix: ${{ fromJSON(needs.studio-local-plan.outputs.matrix) }}
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 25

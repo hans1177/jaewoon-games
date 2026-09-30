@@ -2716,6 +2716,31 @@ test('F9 restart transport failure keeps checkpoint blocked without inventing sa
 
 
 
+test('Studio planning excludes owner-held games in batch and explicit rechecks without blocking peers',()=>{
+ const candidate=item();
+ const peer={...structuredClone(candidate),gameId:'g2'};
+ for(const hold of [
+  {ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'ACTIVE',gameIds:['g1']}}},
+  {robloxDevelopmentInvestment:{ownerHoldGameIds:['g1']}}
+ ]){
+  const policy={...roadmap(),...hold};
+  const queue={items:[candidate,peer]},before=structuredClone(queue);
+  assert.deepEqual(planLocalStudioCandidates({queue,roadmap:policy}).include.map(row=>row.gameId),['g2']);
+  assert.equal(planLocalStudioCandidates({queue,roadmap:policy,requestedGameId:'g1',recheckProductFailure:true}).include.length,0);
+  assert.deepEqual(queue,before);
+ }
+ const released={...roadmap(),ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'RELEASED',gameIds:['g1']}}};
+ assert.equal(planLocalStudioCandidates({queue:{items:[candidate]},roadmap:released}).include.length,1);
+});
+
+test('Studio serializes play without replacing pending games or blocking parallel build jobs',()=>{
+ const play=workflow.slice(workflow.indexOf('  studio-mcp-auto-play:'));
+ assert.match(play,/concurrency:\n      group: roblox-studio-shared-host\n      cancel-in-progress: false\n      queue: max/);
+ assert.match(play,/strategy:\n      fail-fast: false\n      max-parallel: 1\n      matrix:/);
+ assert.match(play,/needs: studio-local-plan/);
+ assert.doesNotMatch(play.split('    steps:')[0],/needs:.*runtime-foundation/);
+});
+
 test('manual single-game diagnosis preserves product failures and still rejects mismatched artifacts',()=>{
  const candidate=item();
  candidate.robloxQualityBuildUpRequired=true;

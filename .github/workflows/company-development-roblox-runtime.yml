@@ -1702,7 +1702,7 @@ jobs:
                 deduped_count=1
                 echo "ROBLOX_LOCAL_F0_QA_DISPATCH=DEDUPED_ACTIVE:$REQUESTED_GAME_ID"
               else
-                gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID"
+                gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$REQUESTED_GAME_ID" -f run_studio=true
                 dispatch_count=1
                 echo "ROBLOX_LOCAL_F0_QA_DISPATCH=$REQUESTED_GAME_ID"
               fi
@@ -1718,7 +1718,7 @@ jobs:
                 deduped_count="$candidate_count"
                 echo "ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DEDUPED_ACTIVE:candidates=$candidate_count"
               else
-                gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main
+                gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f run_studio=true
                 dispatch_count=1
                 echo "ROBLOX_LOCAL_F0_QA_BATCH_SCAN=DISPATCHED:candidates=$candidate_count"
               fi
