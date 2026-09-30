@@ -1,6 +1,6 @@
 -- 파일명: roblox-games/horror-escape-room/client/Game.client.luau
 -- roblox-games/horror-escape-room/client/Game.client.luau
--- 심야 감염전 모바일 추격 HUD / 상황별 행동 UI
+-- 심야 대탈출 모바일 추격 HUD / 상황별 행동 UI
 
 -- 서비스
 local Players=game:GetService("Players")
@@ -74,7 +74,7 @@ gui.Parent=p:WaitForChild("PlayerGui")
 local loadingLayer=Instance.new("Frame")
 loadingLayer.Name="LoadingScreen"
 loadingLayer.Size=UDim2.fromScale(1,1)
-loadingLayer.BackgroundColor3=Color3.fromRGB(20,16,14)
+loadingLayer.BackgroundColor3=Color3.fromRGB(10,10,11)
 loadingLayer.BorderSizePixel=0
 loadingLayer.ZIndex=100
 loadingLayer.Parent=gui
@@ -85,8 +85,8 @@ loadingTitle.AnchorPoint=Vector2.new(.5,.5)
 loadingTitle.Position=UDim2.fromScale(.5,.43)
 loadingTitle.Size=UDim2.new(.86,0,0,42)
 loadingTitle.BackgroundTransparency=1
-loadingTitle.Text="심야 감염전"
-loadingTitle.TextColor3=Color3.fromRGB(235,215,171)
+loadingTitle.Text="심야 대탈출"
+loadingTitle.TextColor3=Color3.fromRGB(235,222,190)
 loadingTitle.TextSize=30
 loadingTitle.Font=Enum.Font.GothamBold
 loadingTitle.ZIndex=103
@@ -98,8 +98,8 @@ loadingStatus.AnchorPoint=Vector2.new(.5,.5)
 loadingStatus.Position=UDim2.fromScale(.5,.51)
 loadingStatus.Size=UDim2.new(.82,0,0,28)
 loadingStatus.BackgroundTransparency=1
-loadingStatus.Text="심야 객잔으로 들어가는 중"
-loadingStatus.TextColor3=Color3.fromRGB(185,169,145)
+loadingStatus.Text="호텔 로비를 준비하는 중"
+loadingStatus.TextColor3=Color3.fromRGB(172,164,151)
 loadingStatus.TextSize=14
 loadingStatus.Font=Enum.Font.GothamMedium
 loadingStatus.ZIndex=103
@@ -119,62 +119,86 @@ local loadingTrackCorner=Instance.new("UICorner");loadingTrackCorner.CornerRadiu
 local loadingFill=Instance.new("Frame")
 loadingFill.Name="LoadingFill"
 loadingFill.Size=UDim2.fromScale(.08,1)
-loadingFill.BackgroundColor3=Color3.fromRGB(175,67,52)
+loadingFill.BackgroundColor3=Color3.fromRGB(190,151,86)
 loadingFill.BorderSizePixel=0
 loadingFill.ZIndex=104
 loadingFill.Parent=loadingTrack
 local loadingFillCorner=Instance.new("UICorner");loadingFillCorner.CornerRadius=UDim.new(0,6);loadingFillCorner.Parent=loadingFill
 
--- 동양식 시작 연출: 창호 미닫이문 + 등불 + 먹색 타이틀.
+-- 시작 연출: 오래된 호텔의 양쪽 문이 열리며 로비로 연결된다.
 local loadingLeftDoor=Instance.new("Frame")
-loadingLeftDoor.Name="LoadingShojiLeft"
+loadingLeftDoor.Name="LoadingHotelDoorLeft"
 loadingLeftDoor.Size=UDim2.fromScale(.5,1)
 loadingLeftDoor.Position=UDim2.fromScale(0,0)
-loadingLeftDoor.BackgroundColor3=Color3.fromRGB(221,211,191)
+loadingLeftDoor.BackgroundColor3=Color3.fromRGB(42,34,30)
 loadingLeftDoor.BorderSizePixel=0
 loadingLeftDoor.ZIndex=99
 loadingLeftDoor.Parent=loadingLayer
 
 local loadingRightDoor=loadingLeftDoor:Clone()
-loadingRightDoor.Name="LoadingShojiRight"
+loadingRightDoor.Name="LoadingHotelDoorRight"
 loadingRightDoor.Position=UDim2.fromScale(.5,0)
 loadingRightDoor.Parent=loadingLayer
 
-local function addShojiGrid(panel)
- for i=1,5 do
-  local v=Instance.new("Frame");v.Size=UDim2.new(0,3,1,0);v.Position=UDim2.new(i/6,0,0,0);v.BackgroundColor3=Color3.fromRGB(83,56,39);v.BorderSizePixel=0;v.ZIndex=100;v.Parent=panel
+local function addHotelDoor(panel,leftSide)
+ local inner=Instance.new("Frame")
+ inner.Size=UDim2.new(1,-24,1,-36)
+ inner.Position=UDim2.fromOffset(12,18)
+ inner.BackgroundColor3=Color3.fromRGB(58,45,38)
+ inner.BorderSizePixel=0
+ inner.ZIndex=100
+ inner.Parent=panel
+ local stroke=Instance.new("UIStroke");stroke.Thickness=2;stroke.Transparency=.18;stroke.Color=Color3.fromRGB(123,92,61);stroke.Parent=inner
+ for i=1,3 do
+  local panelInset=Instance.new("Frame")
+  panelInset.Size=UDim2.new(.72,0,.19,0)
+  panelInset.AnchorPoint=Vector2.new(.5,0)
+  panelInset.Position=UDim2.new(.5,0,.12+(i-1)*.265,0)
+  panelInset.BackgroundColor3=Color3.fromRGB(49,38,33)
+  panelInset.BorderSizePixel=0
+  panelInset.ZIndex=101
+  panelInset.Parent=inner
+  local insetStroke=Instance.new("UIStroke");insetStroke.Thickness=1.5;insetStroke.Transparency=.3;insetStroke.Color=Color3.fromRGB(112,80,53);insetStroke.Parent=panelInset
  end
- for i=1,7 do
-  local h=Instance.new("Frame");h.Size=UDim2.new(1,0,0,3);h.Position=UDim2.new(0,0,i/8,0);h.BackgroundColor3=Color3.fromRGB(83,56,39);h.BorderSizePixel=0;h.ZIndex=100;h.Parent=panel
- end
- local edge=Instance.new("Frame");edge.Size=UDim2.new(0,9,1,0);edge.Position=UDim2.new(panel==loadingLeftDoor and 1 or 0,panel==loadingLeftDoor and -9 or 0,0,0);edge.BackgroundColor3=Color3.fromRGB(56,38,28);edge.BorderSizePixel=0;edge.ZIndex=101;edge.Parent=panel
+ local edge=Instance.new("Frame")
+ edge.Size=UDim2.new(0,7,1,0)
+ edge.Position=leftSide and UDim2.new(1,-7,0,0)or UDim2.fromOffset(0,0)
+ edge.BackgroundColor3=Color3.fromRGB(24,21,20)
+ edge.BorderSizePixel=0
+ edge.ZIndex=102
+ edge.Parent=panel
+ local handle=Instance.new("Frame")
+ handle.AnchorPoint=Vector2.new(.5,.5)
+ handle.Position=leftSide and UDim2.fromScale(.91,.53)or UDim2.fromScale(.09,.53)
+ handle.Size=UDim2.fromOffset(10,26)
+ handle.BackgroundColor3=Color3.fromRGB(188,146,77)
+ handle.BorderSizePixel=0
+ handle.ZIndex=103
+ handle.Parent=panel
+ local hc=Instance.new("UICorner");hc.CornerRadius=UDim.new(1,0);hc.Parent=handle
 end
-addShojiGrid(loadingLeftDoor);addShojiGrid(loadingRightDoor)
+addHotelDoor(loadingLeftDoor,true);addHotelDoor(loadingRightDoor,false)
 
 local loadingInk=Instance.new("TextLabel")
 loadingInk.AnchorPoint=Vector2.new(.5,.5)
 loadingInk.Position=UDim2.fromScale(.5,.31)
-loadingInk.Size=UDim2.new(.72,0,0,28)
+loadingInk.Size=UDim2.new(.8,0,0,28)
 loadingInk.BackgroundTransparency=1
-loadingInk.Text="밤의 객잔 · 들어오는 자는 돌아갈 길을 잃는다"
-loadingInk.TextColor3=Color3.fromRGB(104,75,55)
+loadingInk.Text="문이 열리면 돌아갈 수 없는 밤이 시작된다"
+loadingInk.TextColor3=Color3.fromRGB(177,158,128)
 loadingInk.TextSize=13
 loadingInk.Font=Enum.Font.GothamMedium
-loadingInk.ZIndex=102
+loadingInk.ZIndex=104
 loadingInk.Parent=loadingLayer
 
-for _,x in ipairs({.16,.84})do
- local lamp=Instance.new("Frame")
- lamp.AnchorPoint=Vector2.new(.5,.5)
- lamp.Position=UDim2.fromScale(x,.22)
- lamp.Size=UDim2.fromOffset(34,48)
- lamp.BackgroundColor3=Color3.fromRGB(168,49,39)
- lamp.BorderSizePixel=0
- lamp.ZIndex=102
- lamp.Parent=loadingLayer
- local corner=Instance.new("UICorner");corner.CornerRadius=UDim.new(.35,0);corner.Parent=lamp
- local glow=Instance.new("UIStroke");glow.Thickness=5;glow.Transparency=.55;glow.Color=Color3.fromRGB(241,153,79);glow.Parent=lamp
-end
+local loadingFloor=Instance.new("Frame")
+loadingFloor.AnchorPoint=Vector2.new(.5,1)
+loadingFloor.Position=UDim2.fromScale(.5,1)
+loadingFloor.Size=UDim2.new(1,0,.13,0)
+loadingFloor.BackgroundColor3=Color3.fromRGB(28,25,24)
+loadingFloor.BorderSizePixel=0
+loadingFloor.ZIndex=98
+loadingFloor.Parent=loadingLayer
 
 local loadingVisible=true
 local function setLoadingProgress(progress,status)
@@ -184,7 +208,7 @@ end
 local function finishLoading()
  if not loadingVisible then return end
  loadingVisible=false
- setLoadingProgress(1,"문이 열린다")
+ setLoadingProgress(1,"로비 문이 열린다")
  task.wait(.12)
  local leftTween=TweenService:Create(loadingLeftDoor,TweenInfo.new(.5,Enum.EasingStyle.Quart,Enum.EasingDirection.InOut),{Position=UDim2.fromScale(-.5,0)})
  local rightTween=TweenService:Create(loadingRightDoor,TweenInfo.new(.5,Enum.EasingStyle.Quart,Enum.EasingDirection.InOut),{Position=UDim2.fromScale(1,0)})
@@ -199,18 +223,18 @@ local function finishLoading()
 end
 
 task.spawn(function()
- setLoadingProgress(.18,"객잔의 불을 밝히는 중")
+ setLoadingProgress(.18,"호텔 조명을 켜는 중")
  pcall(function()
   ContentProvider:PreloadAsync({bgm,chase,actionSfx,warningSfx,resultSfx,footstepSfx,freezeSfx,rescueSfx})
  end)
- setLoadingProgress(.55,"심야 객잔 문을 여는 중")
+ setLoadingProgress(.55,"승강기 로비를 준비하는 중")
  local deadline=os.clock()+(C.LobbyLoadTimeoutSeconds or 12)
  while workspace:GetAttribute("MapReady")~=true and os.clock()<deadline do
-  if workspace:GetAttribute("MapBuilding")==true then setLoadingProgress(.7,"안쪽 공간을 준비하는 중") end
+  if workspace:GetAttribute("MapBuilding")==true then setLoadingProgress(.7,"호텔 내부를 준비하는 중") end
   task.wait(.1)
  end
  if workspace:GetAttribute("MapReady")~=true then
-  setLoadingProgress(.78,"객잔 연결 중")
+  setLoadingProgress(.78,"서버 로비 연결 중")
   while workspace:GetAttribute("MapReady")~=true do task.wait(.25) end
  end
  setLoadingProgress(.92,"입장 준비 중")
@@ -1110,7 +1134,7 @@ local ruleTitle=Instance.new("TextLabel")
 ruleTitle.Size=UDim2.new(1,-16,0,24)
 ruleTitle.Position=UDim2.fromOffset(8,6)
 ruleTitle.BackgroundTransparency=1
-ruleTitle.Text="심야 감염전 · 게임 방법"
+ruleTitle.Text="심야 대탈출 · 게임 방법"
 ruleTitle.TextColor3=Color3.fromRGB(255,225,160)
 ruleTitle.TextSize=15
 ruleTitle.Font=Enum.Font.GothamBold
@@ -1366,27 +1390,91 @@ roomBrowserFeedback.Parent=roomBrowserPanel
 
 -- 실제 3D 로비의 코드 단말에서만 잠깐 열리는 작은 입력창.
 
+local lobbyHeader=Instance.new("Frame")
+lobbyHeader.Name="LobbyHeader"
+lobbyHeader.Position=UDim2.fromOffset(12,12)
+lobbyHeader.Size=UDim2.fromOffset(224,58)
+lobbyHeader.BackgroundColor3=Color3.fromRGB(12,12,13)
+lobbyHeader.BackgroundTransparency=.2
+lobbyHeader.BorderSizePixel=0
+lobbyHeader.Visible=false
+lobbyHeader.ZIndex=37
+lobbyHeader.Parent=gui
+roundify(lobbyHeader,8);outline(lobbyHeader,.62)
+
+local lobbyHeaderTitle=Instance.new("TextLabel")
+lobbyHeaderTitle.Size=UDim2.new(1,-18,0,29)
+lobbyHeaderTitle.Position=UDim2.fromOffset(9,5)
+lobbyHeaderTitle.BackgroundTransparency=1
+lobbyHeaderTitle.Text="심야 대탈출"
+lobbyHeaderTitle.TextColor3=Color3.fromRGB(239,232,218)
+lobbyHeaderTitle.TextSize=20
+lobbyHeaderTitle.Font=Enum.Font.GothamBold
+lobbyHeaderTitle.TextXAlignment=Enum.TextXAlignment.Left
+lobbyHeaderTitle.ZIndex=38
+lobbyHeaderTitle.Parent=lobbyHeader
+
+local lobbyHeaderSub=Instance.new("TextLabel")
+lobbyHeaderSub.Size=UDim2.new(1,-18,0,18)
+lobbyHeaderSub.Position=UDim2.fromOffset(9,34)
+lobbyHeaderSub.BackgroundTransparency=1
+lobbyHeaderSub.Text="오래된 호텔 · 승강기 로비"
+lobbyHeaderSub.TextColor3=Color3.fromRGB(163,154,143)
+lobbyHeaderSub.TextSize=10
+lobbyHeaderSub.Font=Enum.Font.GothamMedium
+lobbyHeaderSub.TextXAlignment=Enum.TextXAlignment.Left
+lobbyHeaderSub.ZIndex=38
+lobbyHeaderSub.Parent=lobbyHeader
+
+local lobbyHint=Instance.new("TextLabel")
+lobbyHint.Name="LobbyHint"
+lobbyHint.AnchorPoint=Vector2.new(.5,1)
+lobbyHint.Position=UDim2.new(.5,0,1,-18)
+lobbyHint.Size=UDim2.fromOffset(304,34)
+lobbyHint.BackgroundColor3=Color3.fromRGB(12,12,13)
+lobbyHint.BackgroundTransparency=.28
+lobbyHint.BorderSizePixel=0
+lobbyHint.Text="승강기에 들어가면 5초 후 출발 · 최대 8명"
+lobbyHint.TextColor3=Color3.fromRGB(216,208,192)
+lobbyHint.TextSize=11
+lobbyHint.Font=Enum.Font.GothamMedium
+lobbyHint.Visible=false
+lobbyHint.ZIndex=37
+lobbyHint.Parent=gui
+roundify(lobbyHint,8)
+
 local roomCreateNotice=Instance.new("Frame")
 roomCreateNotice.Name="RoomCreateNotice"
-roomCreateNotice.AnchorPoint=Vector2.new(.5,0)
-roomCreateNotice.Position=UDim2.new(.5,0,0,74)
-roomCreateNotice.Size=UDim2.fromOffset(250,44)
-roomCreateNotice.BackgroundColor3=Color3.fromRGB(34,25,20)
-roomCreateNotice.BackgroundTransparency=.12
+roomCreateNotice.AnchorPoint=Vector2.new(.5,1)
+roomCreateNotice.Position=UDim2.new(.5,0,1,-60)
+roomCreateNotice.Size=UDim2.fromOffset(284,54)
+roomCreateNotice.BackgroundColor3=Color3.fromRGB(18,17,17)
+roomCreateNotice.BackgroundTransparency=.1
 roomCreateNotice.BorderSizePixel=0
 roomCreateNotice.Visible=false
 roomCreateNotice.ZIndex=38
 roomCreateNotice.Parent=gui
-roundify(roomCreateNotice,10);outline(roomCreateNotice,.45)
+roundify(roomCreateNotice,8);outline(roomCreateNotice,.48)
+
+local roomCreateAccent=Instance.new("Frame")
+roomCreateAccent.Size=UDim2.fromOffset(4,38)
+roomCreateAccent.Position=UDim2.fromOffset(8,8)
+roomCreateAccent.BackgroundColor3=Color3.fromRGB(188,146,77)
+roomCreateAccent.BorderSizePixel=0
+roomCreateAccent.ZIndex=39
+roomCreateAccent.Parent=roomCreateNotice
+roundify(roomCreateAccent,3)
 
 local roomCreateNoticeText=Instance.new("TextLabel")
-roomCreateNoticeText.Size=UDim2.new(1,-14,1,-8)
-roomCreateNoticeText.Position=UDim2.fromOffset(7,4)
+roomCreateNoticeText.Size=UDim2.new(1,-28,1,-8)
+roomCreateNoticeText.Position=UDim2.fromOffset(20,4)
 roomCreateNoticeText.BackgroundTransparency=1
-roomCreateNoticeText.Text="객실 입장 · 방 개설"
-roomCreateNoticeText.TextColor3=Color3.fromRGB(239,213,167)
-roomCreateNoticeText.TextSize=14
+roomCreateNoticeText.Text="승강기 입장 · 방 개설"
+roomCreateNoticeText.TextColor3=Color3.fromRGB(235,226,207)
+roomCreateNoticeText.TextSize=13
+roomCreateNoticeText.TextWrapped=true
 roomCreateNoticeText.Font=Enum.Font.GothamBold
+roomCreateNoticeText.TextXAlignment=Enum.TextXAlignment.Left
 roomCreateNoticeText.ZIndex=39
 roomCreateNoticeText.Parent=roomCreateNotice
 
@@ -2161,7 +2249,7 @@ local function render()
  local spectating=round=="SPECTATING"
  local isRoomServer=p:GetAttribute("RoomServer")==true
  local roomState=tostring(p:GetAttribute("RoomState")or"BROWSER")
- local browser=not isRoomServer
+ local browser=not isRoomServer\n lobbyHeader.Visible=browser and not running and not resultCode\n lobbyHint.Visible=browser and not running and not resultCode
  local lobbyFolder=workspace:FindFirstChild("MidnightLobby")
  local rootNow=p.Character and p.Character:FindFirstChild("HumanoidRootPart")
  local nearestBay=nil
@@ -2180,7 +2268,7 @@ local function render()
   local board=folder and folder:FindFirstChild("GateBoard")
   local sg=board and board:FindFirstChild("LobbySurfaceText")
   local label=sg and sg:FindFirstChildOfClass("TextLabel")
-  roomCreateNoticeText.Text=label and label.Text or "객실 입장 · 방 개설"
+  roomCreateNoticeText.Text=label and label.Text or "승강기 입장 · 방 개설"
  end
  roomBrowserPanel.Visible=false
  roomInfoPanel.Visible=false
