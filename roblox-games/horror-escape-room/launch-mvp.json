@@ -1,5 +1,5 @@
 {
-  "version": 26,
+  "version": 27,
   "gameId": "horror-escape-room",
   "gameName": "심야 감염전 [4대4]",
   "releaseStrategy": "FAST_MVP",
@@ -133,10 +133,12 @@
     "lobby and room-browser energy initializes to full maximum before round start",
     "physical walkable 3D lobby replaces full-screen room browser",
     "room creation quick join friend join and code join are accessed through lobby world terminals",
-    "reserved-room waiting uses eight physical lobby slots and world start/leave terminals",
     "walking into the physical room queue automatically joins room creation",
     "physical room queue starts a visible 10-second countdown",
-    "players still inside the queue are teleported together to one reserved room when countdown reaches zero"
+    "players still inside the queue are teleported together to one reserved room when countdown reaches zero",
+    "public world lobby contains no AI waiting slots or AI waiting labels",
+    "world lobby matchmaking displays only real users currently queued",
+    "entering the physical matchmaking zone starts a shared countdown for real users in that lobby server"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -149,7 +151,7 @@
     "startUiRegressionPassRequired": true,
     "audioFeedbackPassRequired": true
   },
-  "updatedAt": "2026-09-30T11:02:00+09:00",
+  "updatedAt": "2026-09-30T11:08:00+09:00",
   "externalReleaseCandidate": true,
   "candidateScopeVersion": 6,
   "gameTitleKo": "심야 감염전 [4대4]",
