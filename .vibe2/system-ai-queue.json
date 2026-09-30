@@ -144591,7 +144591,247 @@
       "learningCandidate": true,
       "createdAt": "2026-09-23T11:57:20.543Z",
       "updatedAt": "2026-09-23T11:57:20.543Z"
+    },
+    {
+      "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+      "goal": "Create the current non-financial growth/marketing execution package for seed-roblox-roleplay-life-avat-brookhaven-rp (seed-roblox-roleplay-life-avat-brookhaven-rp). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/seed-roblox-roleplay-life-avat-brookhaven-rp/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-roblox-roleplay-life-avat-brookhaven-rp/latest.json --game-id=seed-roblox-roleplay-life-avat-brookhaven-rp"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-30T04:50:41.834Z",
+      "updatedAt": "2026-09-30T04:50:41.834Z"
+    },
+    {
+      "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
+      "goal": "Create the current non-financial growth/marketing execution package for seed-roblox-simulator-tycoon-i-adopt-me (seed-roblox-simulator-tycoon-i-adopt-me). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/seed-roblox-simulator-tycoon-i-adopt-me/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-roblox-simulator-tycoon-i-adopt-me/latest.json --game-id=seed-roblox-simulator-tycoon-i-adopt-me"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-30T04:50:41.834Z",
+      "updatedAt": "2026-09-30T04:50:41.834Z"
+    },
+    {
+      "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+      "goal": "Create the current non-financial growth/marketing execution package for seed-roblox-story-rpg-adventur-blox-fruits (seed-roblox-story-rpg-adventur-blox-fruits). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/seed-roblox-story-rpg-adventur-blox-fruits/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-roblox-story-rpg-adventur-blox-fruits/latest.json --game-id=seed-roblox-story-rpg-adventur-blox-fruits"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-30T04:50:41.834Z",
+      "updatedAt": "2026-09-30T04:50:41.834Z"
+    },
+    {
+      "id": "marketing-seed-roblox-survival-horror-es-doors-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "seed-roblox-survival-horror-es-doors",
+      "goal": "Create the current non-financial growth/marketing execution package for seed-roblox-survival-horror-es-doors (seed-roblox-survival-horror-es-doors). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/seed-roblox-survival-horror-es-doors/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/seed-roblox-survival-horror-es-doors/latest.json --game-id=seed-roblox-survival-horror-es-doors"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-30T04:50:41.834Z",
+      "updatedAt": "2026-09-30T04:50:41.834Z"
+    },
+    {
+      "id": "marketing-star-frontier-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "star-frontier",
+      "goal": "Create the current non-financial growth/marketing execution package for 별길 개척자 (star-frontier). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/star-frontier/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/star-frontier/latest.json --game-id=star-frontier"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-09-30T04:50:41.834Z",
+      "updatedAt": "2026-09-30T04:50:41.834Z"
     }
   ],
-  "updatedAt": "2026-09-30T04:36:39.670Z"
+  "updatedAt": "2026-09-30T04:50:41.834Z"
 }
