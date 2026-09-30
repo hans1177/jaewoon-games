@@ -2688,6 +2688,55 @@ test('F9 save rejoin distinguishes missing Studio observations from observed dat
   assert.equal(evaluateStudioSaveRejoin({beforeProbe,rejoinProbe:beforeProbe}).pass,true);
 });
 
+test('successful F9 save rejoin clears weaker save-surface failure and checkpoint',async()=>{
+  const start=helper.indexOf("        let restartError='';");
+  const end=helper.indexOf('\n      }\n      const multiplayerDeclared',start);
+  assert.ok(start>0&&end>start);
+  const execute=new (Object.getPrototypeOf(async function(){}).constructor)(
+    'evaluateStudioSaveRejoin',
+    `let started=true,rejoinClientProbe=null,saveRejoinSummary=null;
+     const finalClientProbe={runtime:{progression:[{scope:'player',name:'Gold',value:'12'}],inventory:[]}};
+     const client={tool:()=>({inputSchema:{}}),call:async()=>({})};
+     const studioId='fixture',actualPlayContract={},startStopArgs=()=>({}),wait=async()=>{};
+     const collectStudioActualPlayProbe=async()=>finalClientProbe;
+     const scenarioCoverage=[{id:'adaptive-save-surface',pass:false},{id:'adaptive-save-rejoin-persistence',pass:true}];
+     let qualityFailureKinds=['adaptive-save-surface','adaptive-world-safety'];
+     let qualityFailureDetails=[{id:'adaptive-save-surface'},{id:'adaptive-world-safety'}];
+     const errors=[],checkpoints=[{id:'scenario-adaptive-save-surface',name:'scenario-adaptive-save-surface',required:true,pass:false}];
+     const checkpoint=(id,pass)=>checkpoints.push({id,pass});
+     ${helper.slice(start,end)}
+     return {saveRejoinSummary,scenarioCoverage,qualityFailureKinds,qualityFailureDetails,checkpoints};`
+  );
+  const result=await execute(evaluateStudioSaveRejoin);
+  assert.equal(result.saveRejoinSummary.pass,true);
+  assert.equal(result.scenarioCoverage.find(row=>row.id==='adaptive-save-surface')?.pass,true);
+  assert.equal(result.checkpoints.find(row=>row.id==='scenario-adaptive-save-surface')?.pass,true);
+  assert.equal(result.qualityFailureKinds.includes('adaptive-save-surface'),false);
+  assert.equal(result.qualityFailureKinds.includes('adaptive-world-safety'),true);
+  assert.equal(result.qualityFailureDetails.some(row=>row.id==='adaptive-save-surface'),false);
+});
+
+test('generic save-surface miss does not masquerade as DataStore failure after verified rejoin',()=>{
+  const candidate=item();
+  const observed=runtime();
+  observed.runtimeVerified=false;
+  observed.scenarioContractRequired=true;
+  observed.scenarioContractVersion=3;
+  observed.scenarioContractFingerprint='sha256:'+'c'.repeat(64);
+  observed.scenarioCoverage=[
+    {id:'adaptive-save-surface',pass:false},
+    {id:'adaptive-save-rejoin-persistence',pass:true}
+  ];
+  observed.qualityFailureKinds=['adaptive-save-surface'];
+  observed.qualityFailureDetails=[{id:'adaptive-save-surface',repairSurface:'SAVE_REJOIN',priority:'CRITICAL',hint:'surface probe missing',observed:{}}];
+  observed.saveRejoinSummary={pass:true,infrastructureFailure:false,restartOk:true,progressionPreserved:true,inventoryPreserved:true};
+  observed.checkpoints.push({id:'scenario-adaptive-save-surface',name:'scenario-adaptive-save-surface',required:true,pass:false});
+  const evidence=createLocalStudioPlayEvidence({item:candidate,runtime:observed,expected,workflowRunId:1234,studioStepSucceeded:true});
+  assert.equal(evidence.pass,false);
+  assert.equal(evidence.failureClass,'STUDIO_PRODUCT_QUALITY_FAILURE');
+  assert.notEqual(evidence.robloxFailureClass,'ROBLOX_DATASTORE_SAVE_LOAD');
+});
+
 test('F9 restart transport failure keeps checkpoint blocked without inventing save repair',async()=>{
   const start=helper.indexOf("        let restartError='';");
   const end=helper.indexOf('\n      }\n      const multiplayerDeclared',start);
