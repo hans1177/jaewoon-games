@@ -500,14 +500,17 @@ test('실제 캐릭터 스폰은 고정 Y가 아니라 바닥 Raycast와 아바�
  assert.match(server,/h:ChangeState\(Enum\.HumanoidStateType\.GettingUp\)/);
 });
 
-test('로비는 전체화면 방 UI가 아니라 실제 3D 공간과 근접 단말을 사용한다',()=>{
+test('로비는 방 입장 칸에 들어가면 자동 대기열과 카운트다운으로 방을 만든다',()=>{
  assert.match(server,/local function makePhysicalLobby\(\)/);
  assert.match(server,/f\.Name="MidnightLobby"/);
- assert.match(server,/CreatePublicRoom/);
- assert.match(server,/QuickPublicRoom/);
+ assert.match(server,/AutoRoomQueue/);
+ assert.match(server,/LOBBY_QUEUE_SECONDS=10/);
+ assert.match(server,/local function playerInsideLobbyQueue\(p\)/);
+ assert.match(server,/local function beginLobbyQueueCountdown\(\)/);
+ assert.match(server,/createQueuedReservedRoom\(group\)/);
+ assert.match(server,/TeleportService:TeleportAsync\(game\.PlaceId,valid,options\)/);
+ assert.match(server,/방 대기 %d\/8 · %d초/);
  assert.match(server,/CodeRoomTerminal/);
- assert.match(server,/RoomStartTerminal/);
- assert.match(server,/for i=1,8 do/);
  assert.match(server,/WorldLobbyCodeInputRequest/);
  assert.match(server,/teleport\(p,lobbySpawns\[slot\]\)/);
  assert.match(client,/roomBrowserPanel\.Visible=false/);
