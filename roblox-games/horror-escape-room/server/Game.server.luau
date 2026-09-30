@@ -410,7 +410,18 @@ local survivorSpawns={
  Vector3.new(-5,3,54),Vector3.new(5,3,54),Vector3.new(-5,3,42),
  Vector3.new(5,3,42),Vector3.new(-5,3,30),Vector3.new(5,3,30)
 }
-local monsterSpawn=Vector3.new(0,3,-54)
+local monsterSpawns={
+ Vector3.new(-12,3,-54),Vector3.new(-4,3,-54),Vector3.new(4,3,-54),
+ Vector3.new(12,3,-54),Vector3.new(-8,3,-42),Vector3.new(8,3,-42)
+}
+local function shuffledSpawns(source)
+ local shuffled=table.clone(source)
+ for i=#shuffled,2,-1 do
+  local j=math.random(1,i)
+  shuffled[i],shuffled[j]=shuffled[j],shuffled[i]
+ end
+ return shuffled
+end
 local lobbySpawns={
  Vector3.new(-21,3,270),Vector3.new(-7,3,270),Vector3.new(7,3,270),Vector3.new(21,3,270),
  Vector3.new(-21,3,258),Vector3.new(-7,3,258),Vector3.new(7,3,258),Vector3.new(21,3,258)
@@ -1008,8 +1019,8 @@ makePhysicalLobby=function()
   end
  end
  for _,z in ipairs({233,258,283})do
-  local pool=arenaPart(f,"WallSconceGlow",Vector3.new(1,.75,.42),Vector3.new(-86.3,11.7,z),Color3.fromRGB(225,176,91),Enum.Material.Neon);pool.CanCollide=false;glow(pool,pool.Color,13,.55)
-  local pool2=arenaPart(f,"WallSconceGlow",Vector3.new(1,.75,.42),Vector3.new(86.3,11.7,z),Color3.fromRGB(225,176,91),Enum.Material.Neon);pool2.CanCollide=false;glow(pool2,pool2.Color,13,.55)
+  local pool=arenaPart(f,"WallSconceGlow",Vector3.new(1,.75,.42),Vector3.new(-86.3,11.7,z),Color3.fromRGB(238,191,105),Enum.Material.Neon);pool.CanCollide=false;glow(pool,pool.Color,19,.9)
+  local pool2=arenaPart(f,"WallSconceGlow",Vector3.new(1,.75,.42),Vector3.new(86.3,11.7,z),Color3.fromRGB(238,191,105),Enum.Material.Neon);pool2.CanCollide=false;glow(pool2,pool2.Color,19,.9)
  end
  local staffDoor=arenaPart(f,"StaffOnlyDoor",Vector3.new(11,14,.9),Vector3.new(72,7.2,306),Color3.fromRGB(49,34,30),Enum.Material.WoodPlanks)
  local staffPlaque=arenaPart(f,"StaffOnlyPlaque",Vector3.new(6.5,1.7,.18),Vector3.new(72,11.7,305.45),Color3.fromRGB(127,91,48),Enum.Material.Metal);staffPlaque.CanCollide=false
@@ -1042,7 +1053,7 @@ makePhysicalLobby=function()
  arenaPart(f,"GuestBook",Vector3.new(5.8,.35,3.9),Vector3.new(7,6.82,290.5),Color3.fromRGB(188,176,148),Enum.Material.Fabric).CanCollide=false
  for _,x in ipairs({-14,0,14})do
   local deskLamp=arenaPart(f,"ReceptionDownlight",Vector3.new(3.8,.3,1.2),Vector3.new(x,18.2,295),Color3.fromRGB(236,190,108),Enum.Material.Neon)
-  deskLamp.CanCollide=false;glow(deskLamp,deskLamp.Color,16,.72)
+  deskLamp.CanCollide=false;glow(deskLamp,deskLamp.Color,22,1.08)
  end
 
  -- 로비 자체가 게임 튜토리얼 역할을 한다. 안내판도 호텔의 미친 투숙 규정으로 보인다.
@@ -1181,6 +1192,7 @@ makePhysicalLobby=function()
  lobbyHauntTrigger(f,"Portrait",Vector3.new(-70,9,255),"PORTRAIT_EYES",13,"초상화 속 손님이 눈을 돌렸다.")
  lobbyHauntTrigger(f,"Bellboy",Vector3.new(-66,3,278),"LUGGAGE_HAND",12,"벨보이: 짐은 제가 들겠습니다. 손님도요.")
  lobbyHauntTrigger(f,"Maid",Vector3.new(74,3,235),"MAID_CORRIDOR",13,"메이드: 청소할 손님이 한 명 늘었네요.")
+ lobbyHauntTrigger(f,"HallShadow",Vector3.new(0,3,252),"MAID_CORRIDOR",10,"방금 네 뒤로 누가 지나갔다.")
  lobbyHauntTrigger(f,"Elevator13",Vector3.new(0,3,225),"ELEVATOR_13",12,"띵— 13층은 존재하지 않습니다.")
  lobbyHauntTrigger(f,"Clerk",Vector3.new(2,3,286),"CLERK_SMILE",11,"프런트 직원의 미소가 너무 길다.")
 
@@ -1195,7 +1207,7 @@ makePhysicalLobby=function()
   for _,dx in ipairs({-2.1,0,2.1})do
    local bulb=arenaPart(f,"ChandelierBulb",Vector3.new(.85,1.2,.85),Vector3.new(dx,14.1,z),Color3.fromRGB(221,179,105),Enum.Material.Neon)
    bulb.CanCollide=false
-   local light=glow(bulb,Color3.fromRGB(255,202,127),z==236 and 17 or 14,z==236 and 1.0 or .72)
+   local light=glow(bulb,Color3.fromRGB(255,211,145),z==236 and 24 or 20,z==236 and 1.45 or 1.08)
    table.insert(flickerLights,light)
   end
  end
@@ -1215,7 +1227,7 @@ makePhysicalLobby=function()
   for _,z in ipairs({191,199,206})do
    local insideLamp=arenaPart(bay,"ElevatorInsideLamp",Vector3.new(5,.28,1.1),Vector3.new(x,12.75,z),Color3.fromRGB(205,166,99),Enum.Material.Neon)
    insideLamp.CanCollide=false
-   local light=glow(insideLamp,Color3.fromRGB(241,194,120),9,.55);table.insert(flickerLights,light)
+   local light=glow(insideLamp,Color3.fromRGB(248,205,132),14,.82);table.insert(flickerLights,light)
   end
 
   -- 문틀과 양쪽 벽면. 문 앞은 완전히 열려 메인홀에서 바로 들어간다.
@@ -2577,14 +2589,20 @@ end
 local function monsterPos()
  local list=monsterPositions();return list[1]
 end
-local function configure(h)
+local function configure(h,survivorOrder,monsterOrder,nextSurvivor,nextMonster)
  clearBots()
  local realHumans,realMonsters=0,0
  for _,p in ipairs(h)do if p:GetAttribute("Role")=="MONSTER"then realMonsters+=1 elseif p:GetAttribute("Role")=="SURVIVOR"then realHumans+=1 end end
  local monsterNeed=math.max(0,(C.MonsterSlots or 4)-realMonsters)
  local humanNeed=math.max(0,(C.SurvivorSlots or 4)-realHumans)
- for i=1,monsterNeed do bot("MONSTER",monsterSpawn+Vector3.new((i-1)*6-(monsterNeed-1)*3,0,0))end
- for i=1,humanNeed do bot("SURVIVOR",survivorSpawns[((realHumans+i-1)%#survivorSpawns)+1])end
+ for i=1,monsterNeed do
+  local index=((nextMonster+i-2)%#monsterOrder)+1
+  bot("MONSTER",monsterOrder[index])
+ end
+ for i=1,humanNeed do
+  local index=((nextSurvivor+i-2)%#survivorOrder)+1
+  bot("SURVIVOR",survivorOrder[index])
+ end
  local hc,mc=teamCounts();workspace:SetAttribute("ActivePopulation",hc+mc);workspace:SetAttribute("AIBotCount",#bots);workspace:SetAttribute("HumanCount",hc);workspace:SetAttribute("MonsterCount",mc)
 end
 local function startRound()
@@ -2599,6 +2617,8 @@ local function startRound()
  local startingMonsters=selectStartingMonsters(h)
  objectiveState.round+=1;objectiveState.done=0;objectiveState.total=C.ObjectiveCount
  escapedPlayers={};workspace:SetAttribute("EscapeUnlocked",false);workspace:SetAttribute("SurvivorEscapeTriggered",false)
+ local survivorOrder=shuffledSpawns(survivorSpawns)
+ local monsterOrder=shuffledSpawns(monsterSpawns)
  local si,mi=1,1
  for _,p in ipairs(h)do
   p:SetAttribute("CurrentMap",map.Name);p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
@@ -2611,9 +2631,13 @@ local function startRound()
   ghostSeenThisRound[p]={_count=0}
   p:SetAttribute("CelebrationName","");p:SetAttribute("CelebrationCaption","");p:SetAttribute("CelebrationWinner",false);p:SetAttribute("CelebrationComic",false)
   local role=startingMonsters[p]and"MONSTER"or"SURVIVOR";setRole(p,role);p:SetAttribute("RoundState","RUNNING")
-  if role=="MONSTER"then teleport(p,monsterSpawn+Vector3.new((mi-1)*6,0,0));mi+=1 else teleport(p,survivorSpawns[((si-1)%#survivorSpawns)+1]);si+=1 end
+  if role=="MONSTER"then
+   teleport(p,monsterOrder[((mi-1)%#monsterOrder)+1]);mi+=1
+  else
+   teleport(p,survivorOrder[((si-1)%#survivorOrder)+1]);si+=1
+  end
  end
- configure(h)
+ configure(h,survivorOrder,monsterOrder,si,mi)
  local startHumans,startMonsters=teamCounts();pressureLastCounts.SURVIVOR=startHumans;pressureLastCounts.MONSTER=startMonsters
  state="RUNNING";timeLeft=C.RoundSeconds;syncLobbyState("RUNNING");return true
 end
@@ -3107,7 +3131,7 @@ Players.PlayerRemoving:Connect(function(p)
  local leavingRole=p:GetAttribute("Role")
  local leavingWasHost=roomServer and p.UserId==roomHostUserId
  local rr=root(p)
- local leavingPos=rr and rr.Position or(leavingRole=="MONSTER"and monsterSpawn or survivorSpawns[1])
+ local leavingPos=rr and rr.Position or(leavingRole=="MONSTER"and monsterSpawns[1]or survivorSpawns[1])
  save(p);for _,bay in ipairs(lobbyQueueBays)do bay.players[p]=nil end;cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;roomActionLast[p]=nil;roomJoinedAt[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
  task.defer(function()
   if state=="RUNNING"and arena and arena.Parent and(leavingRole=="MONSTER"or leavingRole=="SURVIVOR")then
