@@ -537,12 +537,10 @@ if ARGS.render:
     SCENE.render.resolution_x=1200;SCENE.render.resolution_y=900;SCENE.render.resolution_percentage=100
     SCENE.render.image_settings.file_format='PNG'
     SCENE.render.film_transparent=False
-    try:
-        SCENE.render.engine='BLENDER_EEVEE_NEXT'
-    except Exception:
-        SCENE.render.engine='BLENDER_EEVEE'
-    if hasattr(SCENE,'eevee'):
-        SCENE.eevee.taa_render_samples=64
+    SCENE.render.engine='CYCLES'
+    SCENE.cycles.device='CPU'
+    SCENE.cycles.samples=24
+    SCENE.cycles.use_denoising=True
     SCENE.view_settings.view_transform='Filmic'
     SCENE.frame_set(18)
     SCENE.render.filepath=str(ARGS.output/'spider.png')
