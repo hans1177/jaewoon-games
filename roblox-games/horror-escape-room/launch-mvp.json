@@ -1,5 +1,5 @@
 {
-  "version": 22,
+  "version": 23,
   "gameId": "horror-escape-room",
   "gameName": "심야 감염전 [4대4]",
   "releaseStrategy": "FAST_MVP",
@@ -123,7 +123,12 @@
     "ghost compendium UI never changes competitive combat statistics",
     "invisible FoundationSpawn is non-collidable non-touchable and non-queryable",
     "player teleport root height is grounded to arena floor instead of an invisible spawn platform",
-    "energy meter displays current and maximum energy in lobby and gameplay"
+    "energy meter displays current and maximum energy in lobby and gameplay",
+    "homepage Roblox link points to the single canonical horror place 98222620265768",
+    "room creation uses reserved servers of game.PlaceId instead of a separate lobby or match place",
+    "alternate horror place creation is forbidden",
+    "spawn positions are separated from energy stations and interaction props",
+    "ground snap raycasts only parts marked WalkableGround"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -254,5 +259,12 @@
     "fragmentsPerContract": 24,
     "playableAtLaunch": false,
     "gradualPlayablePromotion": true
+  },
+  "singlePlaceAuthority": {
+    "universeId": "10767445796",
+    "placeId": "98222620265768",
+    "homepageUsesCanonicalPlace": true,
+    "roomServersUseSamePlace": true,
+    "alternatePlaceCreationForbidden": true
   }
 }
