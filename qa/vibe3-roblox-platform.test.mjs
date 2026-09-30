@@ -14,6 +14,30 @@ import {
 } from '../tools/vibe3-roblox-platform.mjs';
 
 const contract=createRobloxPlatformContract();
+test('static candidate promotion requires exact compiled contracts without inventing runtime proof',()=>{
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const binding={pass:true,sourceRevision:revision,artifactIdentity:artifact};
+  const item={robloxSourceCommit:revision,robloxBuildSourceRevision:revision,robloxBuildArtifactIdentity:artifact,
+    robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,robloxFoundationF0Passed:true,
+    robloxBuildPreflightEvidence:{...binding},robloxFoundationF0Evidence:{...binding,artifactRunId:42,nativeLanguageCompilePassed:true,
+      serverClientBoundaryPreflightPassed:true,remoteSecurityPreflightPassed:true,mobileControlUiPreflightPassed:true,
+      datastoreContractPassed:true,multiplayerSyncContractPassed:true}};
+  const gate=x=>validateRobloxReleaseEvidence(x,revision,{stage:'SOURCE_PROMOTION',validationMode:'STATIC'});
+  assert.equal(gate(item).pass,true);
+  assert.equal(gate(item).runtimeVerified,false);
+  assert.equal(gate(item).releaseClaim,false);
+  assert.equal(validateRobloxReleaseEvidence(item,revision,{validationMode:'STATIC'}).pass,false);
+  assert.equal(validateRobloxReleaseEvidence(item,revision,{stage:'SOURCE_PROMOTION'}).pass,false);
+  for(const mutate of [
+    x=>{x.robloxBuildPreflightEvidence.sourceRevision='c'.repeat(40);},
+    x=>{x.robloxFoundationF0Evidence.artifactIdentity='sha256:'+'d'.repeat(64);},
+    x=>{x.robloxFoundationF0Evidence.nativeLanguageCompilePassed=false;},
+    x=>{x.robloxFoundationF0Evidence.multiplayerSyncContractPassed=false;},
+    x=>{x.robloxFoundationF0Evidence.datastoreContractPassed=false;},
+    x=>{x.robloxFoundationF0Evidence.artifactRunId='invalid';},
+    x=>{x.robloxBuildPreflightEvidence.pass=false;}
+  ]){const copy=structuredClone(item);mutate(copy);assert.equal(gate(copy).pass,false);}
+});
 test('candidate promotion requires exact native Studio and multiplayer proof without claiming release',()=>{
   const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
   const binding={pass:true,sourceRevision:revision,artifactIdentity:artifact};

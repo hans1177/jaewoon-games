@@ -315,21 +315,29 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
   return Object.freeze(evidence);
 }
 
-export function validateRobloxReleaseEvidence(evidence={},sourceRevision='',{stage='RELEASE'}={}){
+export function validateRobloxReleaseEvidence(evidence={},sourceRevision='',{stage='RELEASE',validationMode='RUNTIME'}={}){
   const blocked=[];
   const revision=clean(sourceRevision||evidence.sourceRevision);
-  // 메인 반영 전 후보 검수. 공개 배포 판정과 분리하며 실제 Studio 증거를 요구한다.
+  // 메인 반영 전 후보 검수. 정적 검수 성공과 실제 실행 증거를 구분한다.
   if(stage==='SOURCE_PROMOTION'){
     const item=evidence,play=item.robloxInternalVibePlayEvidence||{};
     const pre=item.robloxBuildPreflightEvidence||{},f0=item.robloxFoundationF0Evidence||{};
     const identity=clean(item.robloxBuildArtifactIdentity);
+    const staticOnly=validationMode==='STATIC';
     const audit=play.runtimeSummary?.commercialAudit||{},multi=audit.multiplayer||{};
     if(!COMMIT40.test(revision)||item.robloxSourceCommit!==revision||item.robloxBuildSourceRevision!==revision)blocked.push('exact-source-revision-mismatch');
     if(!/^sha256:[0-9a-f]{64}$/i.test(identity)||item.robloxBuildOrPackagePassed!==true)blocked.push('build-or-package-not-passed');
-    for(const [name,row] of [['preflight',pre],['f0',f0],['studio',play]]){
+    for(const [name,row] of (staticOnly?[['preflight',pre],['f0',f0]]:[['preflight',pre],['f0',f0],['studio',play]])){
       if(row.pass!==true||row.sourceRevision!==revision||row.artifactIdentity!==identity)blocked.push(name+'-exact-evidence-missing');
     }
     if(item.robloxBuildPreflightPassed!==true||item.robloxFoundationF0Passed!==true||f0.nativeLanguageCompilePassed!==true)blocked.push('candidate-source-preflight-not-passed');
+    if(staticOnly){
+      if(!Number.isSafeInteger(Number(f0.artifactRunId))||Number(f0.artifactRunId)<=0)blocked.push('exact-artifact-run-mismatch');
+      for(const key of ['serverClientBoundaryPreflightPassed','remoteSecurityPreflightPassed','mobileControlUiPreflightPassed','datastoreContractPassed','multiplayerSyncContractPassed']){
+        if(f0[key]!==true)blocked.push('candidate-static-contract-missing:'+key);
+      }
+      return Object.freeze({pass:blocked.length===0,sourceRevision:revision,artifactIdentity:identity,blockedReasons:Object.freeze(blocked),authority:'roblox-candidate-static-source-promotion-gate',validationMode:'STATIC',runtimeVerified:false,releaseClaim:false});
+    }
     if(Number(f0.artifactRunId)<=0||Number(play.artifactRunId)!==Number(f0.artifactRunId))blocked.push('exact-artifact-run-mismatch');
     if(play.authority!=='roblox-official-studio-mcp-runtime'||play.actualPlay!==true||play.runtimeVerified!==true||play.officialStudioMcp!==true||play.localPlaceFile!==true||play.onlinePlaceDirectOpen!==false||play.currentSourceArtifactBinding!==true)blocked.push('actual-candidate-studio-evidence-missing');
     if(play.scenarioContractRequired!==true||play.scenarioCoveragePass!==true||!play.scenarioContractFingerprint||audit.auditProfile!=='F9_SOAK')blocked.push('candidate-scenario-audit-missing');
