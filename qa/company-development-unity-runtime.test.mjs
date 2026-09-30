@@ -341,7 +341,7 @@ test('non-seed Unity games bind Android platform metrics without pretending seed
   const sha='a'.repeat(64), commit='b'.repeat(40), tree='c'.repeat(40);
   const build=path.join(root,'build.json'), runtime=path.join(root,'runtime.json'), independent=path.join(root,'independent.json'), output=path.join(root,'evidence.json');
   fs.writeFileSync(build,JSON.stringify({sha256:sha,sourceCommit:commit,sourceTreeSha:tree,runId:17}));
-  fs.writeFileSync(runtime,JSON.stringify({state:'PASS',runtime:'PASS',qaPassEligibleRuntimeEvidence:true,apkSha256:sha,buildSourceCommit:commit,sourceTreeSha:tree,gameplayInputDelivered:true,updateInstallPassed:true,developmentSeedRuntime:{required:false,pass:true},androidPerformance:{provider:'ANDROID_DUMPSYS_GFXINFO_MEMINFO',graphicsFrameStatsObserved:true,totalFramesRendered:120,jankyFrames:3,jankyFrameRatePct:2.5,memoryTotalPssBytes:67108864,sampleCount:2,pass:true}}));
+  fs.writeFileSync(runtime,JSON.stringify({state:'PASS',runtime:'PASS',qaPassEligibleRuntimeEvidence:true,apkSha256:sha,buildSourceCommit:commit,sourceTreeSha:tree,gameplayInputDelivered:true,updateInstallPassed:true,developmentSeedRuntime:{required:false,pass:true},androidPerformance:{provider:'ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO',graphicsFrameStatsObserved:true,totalFramesRendered:120,jankyFrames:3,jankyFrameRatePct:2.5,memoryTotalPssBytes:67108864,sampleCount:2,pass:true}}));
   fs.writeFileSync(independent,JSON.stringify({state:'PASS',independentQa:'PASS',independent:true,apkSha256:sha,buildSourceCommit:commit,sourceTreeSha:tree,checks:{backgroundResume:'PASS'}}));
   const args=[evidenceTool,'--game-id=existing-game',`--build-info=${build}`,`--runtime=${runtime}`,`--independent=${independent}`,`--project=${project}`,`--output=${output}`];
   const pass=spawnSync(process.execPath,args,{encoding:'utf8'});
@@ -375,8 +375,9 @@ test('Unity checkpoint cannot promote child job success when canonical evidence 
 
 test('Unity runtime captures platform graphics and memory metrics for every APK',()=>{
   assert.match(runtimeSmokeSource,/dumpsys gfxinfo "\$package"/);
+  assert.match(runtimeSmokeSource,/dumpsys SurfaceFlinger --latency/);
   assert.match(runtimeSmokeSource,/dumpsys meminfo "\$package"/);
-  assert.match(runtimeSmokeSource,/ANDROID_DUMPSYS_GFXINFO_MEMINFO/);
+  assert.match(runtimeSmokeSource,/ANDROID_DUMPSYS_GFXINFO_SURFACEFLINGER_MEMINFO/);
   assert.match(runtimeSmokeSource,/ANDROID_PLATFORM_METRICS_MISSING/);
   assert.match(runtimeSmokeSource,/qaPassEligibleRuntimeEvidence[^\n]*platform_metrics_pass/);
 });
