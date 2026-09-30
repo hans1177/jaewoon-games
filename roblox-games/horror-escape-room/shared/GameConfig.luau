@@ -165,11 +165,18 @@ local Config={
   {Id="GRIM_REAPER",Name="사신",UnlockXP=1200,Ability="SHADOW_STEP",Theme="REAPER",SkinConcept="VOID_HARVESTER",EffectColor=Color3.fromRGB(151,82,235),AccentColor=Color3.fromRGB(31,23,45),ExternalAssetId=49353603},
  },
  HumanForms={
-  {Id="BROADCAST",Name="방송부",Tool="신호 송신기",Passive="WIDE_PURIFY",PurifyRangeBonus=3,InfectedAbility="FALSE_ALARM"},
-  {Id="ELECTRICIAN",Name="전기기사",Tool="고압 정화기",Passive="FAST_PURIFY",PurifyCooldownBonus=-2,InfectedAbility="BLACKOUT"},
-  {Id="COURIER",Name="배달부",Tool="긴급 가방",Passive="FAST_DASH",DashCooldownBonus=-2,DashPowerBonus=10,InfectedAbility="RUSH"},
-  {Id="PHOTOGRAPHER",Name="사진가",Tool="플래시 카메라",Passive="FLASH_PURIFY",PurifyRangeBonus=1,PurifyCooldownBonus=-1,InfectedAbility="HUNT_FLASH"},
-  {Id="SECURITY",Name="경비원",Tool="충격봉",Passive="CLOSE_PURIFY",PurifyRangeBonus=-1,PurifyCooldownBonus=-1,InfectedAbility="BREACH"},
+  {Id="BROADCAST",Name="방송부",Tool="신호 송신기",Passive="WIDE_PURIFY",PurifyRangeBonus=3,ActiveAbility="SIGNAL_JAM",InfectedAbility="FALSE_ALARM"},
+  {Id="ELECTRICIAN",Name="전기기사",Tool="고압 정화기",Passive="FAST_PURIFY",PurifyCooldownBonus=-2,ActiveAbility="OVERLOAD",InfectedAbility="BLACKOUT"},
+  {Id="COURIER",Name="배달부",Tool="긴급 가방",Passive="FAST_DASH",DashCooldownBonus=-2,DashPowerBonus=10,ActiveAbility="IMPACT_BAG",InfectedAbility="RUSH"},
+  {Id="PHOTOGRAPHER",Name="사진가",Tool="플래시 카메라",Passive="FLASH_PURIFY",PurifyRangeBonus=1,PurifyCooldownBonus=-1,ActiveAbility="CAMERA_FLASH",InfectedAbility="HUNT_FLASH"},
+  {Id="SECURITY",Name="경비원",Tool="충격봉",Passive="CLOSE_PURIFY",PurifyRangeBonus=-1,PurifyCooldownBonus=-1,ActiveAbility="SHOCK_BATON",InfectedAbility="BREACH"},
+ },
+ HumanAbilities={
+  SIGNAL_JAM={Name="교란 송신",Cost=30,Cooldown=8,Radius=24,EnergyDrain=20,Effect="SIGNAL_WAVE"},
+  OVERLOAD={Name="과전류",Cost=30,Cooldown=8,Radius=14,Duration=1.5,SlowSpeed=10,Effect="ELECTRIC_RING"},
+  IMPACT_BAG={Name="충격 가방",Cost=25,Cooldown=7,Range=15,Knockback=42,Effect="IMPACT_BURST"},
+  CAMERA_FLASH={Name="섬광 촬영",Cost=30,Cooldown=8,Radius=19,Duration=1.1,SlowSpeed=7,Effect="WHITE_FLASH"},
+  SHOCK_BATON={Name="진압 충격",Cost=25,Cooldown=7,Range=8,Duration=1.25,SlowSpeed=0,Effect="BATON_ARC"},
  },
  InfectedAbilities={
   FALSE_ALARM={Name="가짜 경보",Effect="FAKE_ALERT",Radius=30,Duration=3.0},
@@ -195,7 +202,7 @@ local Config={
  Actions={
   PREFER_MONSTER="PREFER_MONSTER",PREFER_SURVIVOR="PREFER_SURVIVOR",
   SOLO_MONSTER="SOLO_MONSTER",SOLO_SURVIVOR="SOLO_SURVIVOR",
-  PURIFY="PURIFY",RESCUE="RESCUE",DASH="DASH",INFECT_ATTACK="INFECT_ATTACK",ABILITY="ABILITY",NEXT_MONSTER="NEXT_MONSTER",NEXT_HUMAN="NEXT_HUMAN",
+  PURIFY="PURIFY",RESCUE="RESCUE",DASH="DASH",HUMAN_ABILITY="HUMAN_ABILITY",INFECT_ATTACK="INFECT_ATTACK",ABILITY="ABILITY",NEXT_MONSTER="NEXT_MONSTER",NEXT_HUMAN="NEXT_HUMAN",
   BUY_COSMETIC="BUY_COSMETIC",EQUIP_COSMETIC="EQUIP_COSMETIC",GHOST_SIGHTING_FOUND="GHOST_SIGHTING_FOUND",
   CREATE_ROOM="CREATE_ROOM",JOIN_ROOM_CODE="JOIN_ROOM_CODE",QUICK_JOIN_PUBLIC="QUICK_JOIN_PUBLIC",QUICK_JOIN_FRIEND="QUICK_JOIN_FRIEND",START_ROOM="START_ROOM",LEAVE_ROOM="LEAVE_ROOM"
  },
