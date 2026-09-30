@@ -6876,7 +6876,9 @@
       "coding_negative_12tqrtf",
       "coding_negative_eojk7n",
       "coding_negative_31k3ri",
-      "coding_negative_18ncnqg"
+      "coding_negative_18ncnqg",
+      "coding_negative_53mo6y",
+      "coding_negative_lz7xoj"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -18260,7 +18262,7 @@
         "verifiedApplications": 13,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 53,
-        "verifiedFailures": 1330,
+        "verifiedFailures": 1332,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -18274,13 +18276,13 @@
         "contextModes": {
           "STANDARD_CONTEXT": {
             "verifiedApplications": 13,
-            "verifiedFailures": 229,
+            "verifiedFailures": 230,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 53,
             "totalContextBytes": 218375,
             "lastEvidence": "coding_gu6x9n",
-            "lastFailureEvidence": "coding_negative_18ncnqg",
-            "lastUpdatedAt": "2026-09-30T13:02:41.336Z"
+            "lastFailureEvidence": "coding_negative_lz7xoj",
+            "lastUpdatedAt": "2026-09-30T13:03:53.425Z"
           },
           "UNITY_WEB_BOOTSTRAP_SHELL": {
             "verifiedApplications": 0,
@@ -18684,22 +18686,22 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 11,
+            "verifiedFailures": 12,
             "games": {},
             "targets": {},
             "failureGames": {
-              "fantasy-survival": 11
+              "fantasy-survival": 12
             },
             "failureTargets": {
-              "roblox": 11
+              "roblox": 12
             },
             "failureClasses": {
               "TIMEOUT": 8,
-              "NO_OP": 3
+              "NO_OP": 4
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1lssmfi",
-            "lastUpdatedAt": "2026-09-30T12:24:50.189Z"
+            "lastFailureEvidence": "coding_negative_53mo6y",
+            "lastUpdatedAt": "2026-09-30T13:03:53.409Z"
           },
           "unity|AUTHORITATIVE_TARGET_ENGINE_QA_MISSING|FOCUSED_MARKER_NOT_PASS|FOCUSED_QA_NOT_PASS|INVALID_PATH|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -18861,21 +18863,21 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 5,
+            "verifiedFailures": 6,
             "games": {},
             "targets": {},
             "failureGames": {
-              "monster-adventure": 5
+              "monster-adventure": 6
             },
             "failureTargets": {
-              "roblox": 5
+              "roblox": 6
             },
             "failureClasses": {
-              "NO_OP": 5
+              "NO_OP": 6
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1iz2d1i",
-            "lastUpdatedAt": "2026-09-30T12:32:00.275Z"
+            "lastFailureEvidence": "coding_negative_lz7xoj",
+            "lastUpdatedAt": "2026-09-30T13:03:53.425Z"
           },
           "roblox|NO_OP|ROBLOX_STRUCTURAL_CONTINUITY|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -18964,8 +18966,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_gu6x9n",
-        "lastFailureEvidence": "coding_negative_18ncnqg",
-        "lastUpdatedAt": "2026-09-30T13:02:41.336Z"
+        "lastFailureEvidence": "coding_negative_lz7xoj",
+        "lastUpdatedAt": "2026-09-30T13:03:53.425Z"
       }
     }
   },
@@ -21718,7 +21720,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T13:02:41.410Z",
+    "lastBuiltAt": "2026-09-30T13:03:53.498Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -29978,5 +29980,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T13:02:41.410Z"
+  "updatedAt": "2026-09-30T13:03:53.498Z"
 }
