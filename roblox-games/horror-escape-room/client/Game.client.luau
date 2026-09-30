@@ -1742,6 +1742,7 @@ for i=1,4 do
 end
 
 local function refreshElevatorStatus()
+ elevatorStatusTitle.Text=string.format("승강기 매칭 · 현재 로비 %d명",#Players:GetPlayers())
  for i=1,4 do
   local mode=tostring(workspace:GetAttribute("Elevator"..i.."Mode")or({"1인 전용","2인 전용","3~4인","5~8인"})[i])
   local map=tostring(workspace:GetAttribute("Elevator"..i.."Map")or"학교")
@@ -2762,7 +2763,7 @@ local function render()
  elevatorStatusPanel.Visible=lobbyWaiting and not isRoomServer
  lobbyHint.Visible=lobbyWaiting
  lobbyHeaderSub.Text=isRoomServer and "체크인 완료 · 객실 배정 중"or"심야 대탈출 · 서양식 저주 호텔"
- lobbyHint.Text=isRoomServer and"직원이 문을 잠그는 중 · 잠시 후 시작"or"① 승강기 선택  →  ② 안으로 들어가기  →  ③ 5초 후 자동 체크인"
+ lobbyHint.Text=isRoomServer and"선택한 맵 준비 중 · 곧 경기 시작"or"1번 1인 · 2번 2인 · 3번 3~4인 · 4번 5~8인 · 방장이 안에서 맵 선택"
  lobbyColor.Enabled=lobbyWaiting
  lobbyBloom.Enabled=lobbyWaiting
  lobbyDepth.Enabled=lobbyWaiting
@@ -2811,7 +2812,8 @@ local function render()
  local visText=roomVis=="PUBLIC"and"공개"or roomVis=="FRIENDS"and"친구만"or"비공개"
  local roomMembers=tonumber(p:GetAttribute("RoomMemberCount"))or 0
  local roomMax=tonumber(p:GetAttribute("RoomMaxPlayers"))or 8
- roomInfoLabel.Text=string.format("방 코드 %s · %s\n현재 %d/%d명%s",tostring(p:GetAttribute("RoomCode")or"------"),visText,roomMembers,roomMax,p:GetAttribute("RoomIsHost")==true and" · 방장"or"")
+ local roomSelectedMap=tostring(p:GetAttribute("RoomSelectedMapName")or workspace:GetAttribute("RoomSelectedMapName")or"학교")
+ roomInfoLabel.Text=string.format("방 코드 %s · %s\n%s · 현재 %d/%d명%s",tostring(p:GetAttribute("RoomCode")or"------"),visText,roomSelectedMap,roomMembers,roomMax,p:GetAttribute("RoomIsHost")==true and" · 방장"or"")
  if browser or running or spectating or resultCode then shopPanel.Visible=false;ghostBookPanel.Visible=false end
  if resultCode then
   if round~=lastRoundState then playResultCeremony(resultCode)end
@@ -2854,7 +2856,7 @@ local function render()
  lastRoundState=round
 end
 
-for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","HumanAbilityReadyAt","InfectReadyAt","AbilityReadyAt","FalseAlarmUntil","BlackoutUntil","HuntFlashUntil","AbilityFeedback","HumanAbilityFeedback","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle","GhostProgress","GhostSeenCount","GhostCompleted","GhostTotal","GhostTitle","GhostFragments","GhostContracts","RoomServer","RoomCode","RoomHostUserId","RoomHostName","RoomVisibility","RoomState","RoomMemberCount","RoomMaxPlayers","RoomIsHost"})do
+for _,k in ipairs({"RoundState","TimeLeft","Role","Infected","HumanForm","MonsterForm","MonsterXP","Coins","HumanCount","MonsterCount","CurrentMap","CurrentMapEvent","LobbyReady","LobbyPhase","LobbyRealPlayers","LobbyAIFill","MonsterPreference","LobbySelectionConfirmed","LastRoundReward","LastRoundWinner","LastRoundRole","LastRoundBaseReward","LastRoundWinBonus","LastRoundContribution","PurifyReadyAt","DashReadyAt","HumanAbilityReadyAt","InfectReadyAt","AbilityReadyAt","FalseAlarmUntil","BlackoutUntil","HuntFlashUntil","AbilityFeedback","HumanAbilityFeedback","Energy","EnergyMax","PressurePassive","Spectating","OwnedCosmetics","EquippedCosmetic","CelebrationName","CelebrationCaption","CelebrationWinner","CelebrationComic","LoreCount","LoreTotal","LoreTitle","GhostProgress","GhostSeenCount","GhostCompleted","GhostTotal","GhostTitle","GhostFragments","GhostContracts","RoomServer","RoomCode","RoomHostUserId","RoomHostName","RoomVisibility","RoomState","RoomMemberCount","RoomMaxPlayers","RoomIsHost","RoomSelectedMapId","RoomSelectedMapName"})do
  p:GetAttributeChangedSignal(k):Connect(function()render();updateCosmeticUI();updateGhostBookUI()end)
 end
 p:GetAttributeChangedSignal("GhostFeedback"):Connect(function()
@@ -3212,6 +3214,8 @@ for i=1,4 do
   end)
  end
 end
+Players.PlayerAdded:Connect(function()refreshElevatorStatus()end)
+Players.PlayerRemoving:Connect(function()task.defer(refreshElevatorStatus)end)
 
 updateCosmeticUI()
 refreshElevatorStatus()
