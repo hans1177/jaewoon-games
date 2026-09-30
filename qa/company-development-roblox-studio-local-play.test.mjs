@@ -2680,6 +2680,36 @@ test('F9 restart transport failure keeps checkpoint blocked without inventing sa
 });
 
 
+
+test('manual single-game diagnosis preserves product failures and still rejects mismatched artifacts',()=>{
+ const candidate=item();
+ candidate.robloxQualityBuildUpRequired=true;
+ candidate.robloxQualityBuildUpSourceRevision=source;
+ candidate.robloxQualityBuildUpEvidence={qualityFailureKinds:['adaptive-world-safety']};
+ candidate.robloxInternalVibePlayEvidence={pass:false,runtimeVerified:false,failureClass:'STUDIO_PRODUCT_QUALITY_FAILURE'};
+ const peer=structuredClone(candidate);peer.gameId='g2';
+ const queue={items:[candidate,peer]};
+ const before=structuredClone(queue);
+ const options={queue,roadmap:roadmap(),requestedGameId:'g1'};
+ assert.equal(planLocalStudioCandidates(options).include.length,0);
+ const replay=planLocalStudioCandidates({...options,recheckProductFailure:true});
+ assert.deepEqual(replay.include.map(row=>row.gameId),['g1']);
+ assert.deepEqual(queue,before);
+ assert.equal(planLocalStudioCandidates({...options,requestedGameId:'',recheckProductFailure:true}).include.length,0);
+ for(const patch of [
+   {robloxBuildOrPackagePassed:false},
+   {robloxBuildSourceRevision:'c'.repeat(40)},
+   {robloxBuildArtifactIdentity:'sha256:'+'d'.repeat(64)},
+   {robloxRuntimeCandidateEvidence:null},
+   {status:'DISABLED'}
+ ]){
+   const changed={...structuredClone(candidate),...patch};
+   assert.equal(planLocalStudioCandidates({...options,queue:{items:[changed]},recheckProductFailure:true}).include.length,0);
+ }
+ assert.ok(workflow.includes("RECHECK_PRODUCT_FAILURE: ${{ github.event_name == 'workflow_dispatch' && inputs.run_studio == true && inputs.game_id != '' }}"));
+ assert.ok(workflow.includes('"--recheck-product-failure=$env:RECHECK_PRODUCT_FAILURE"'));
+});
+
 test('newer exact infrastructure failures resume without clearing product repair evidence',()=>{
  const candidate=item();
  candidate.robloxQualityBuildUpRequired=true;
