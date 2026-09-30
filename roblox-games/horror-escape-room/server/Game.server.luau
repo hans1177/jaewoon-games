@@ -2243,6 +2243,7 @@ task.spawn(function()
     if state=="RUNNING"then endRound("DRAW")end
     roomStartRequested=false;workspace:SetAttribute("RoomStartRequested",false)
     syncRoomState();updateCurrentRoomDirectory()
+   end
   end
  end
 end)
