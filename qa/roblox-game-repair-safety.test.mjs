@@ -103,3 +103,36 @@ test('cozy touch actions fit their dock and popup with separate rows',()=>{
  assert.match(client,/tab.Size=UDim2.new\(.46,0,0,44\)/);
  assert.match(camera,/button.Size=UDim2.fromOffset\(58,44\)/);
 });
+
+test('village boots without local DataStore and never overwrites a failed load',{skip:!luau},()=>{
+ const acquisition=village.slice(village.indexOf('local store\n'),village.indexOf('local Shared ='));
+ const helpers=village.slice(village.indexOf('local function readNumber'),village.indexOf('local function scopeHandler1'));
+ const loading=village.slice(village.indexOf('local function loadPlayer'),village.indexOf('remote.OnServerEvent:Connect'));
+ const saving=village.slice(village.indexOf('Players.PlayerRemoving:Connect'),village.indexOf('-- native-foundation-sentinel-v1'));
+ assert.ok(acquisition.includes('pcall('));
+ runLuau(`
+local DataStoreService={GetDataStore=function()error('local unpublished place')end}
+${acquisition}
+assert(store==nil)
+local Config={InitialState={Score=0,Coins=5}}
+local p={UserId=42,Parent=true,attributes={}}
+function p:SetAttribute(k,v)self.attributes[k]=v end
+function p:GetAttribute(k)return self.attributes[k]end
+local callbacks={}
+local Players={PlayerAdded={Connect=function(_,f)callbacks.add=f end},PlayerRemoving={Connect=function(_,f)callbacks.remove=f end},GetPlayers=function()return{}end}
+local lastAction={}
+${helpers}
+${loading}
+${saving}
+loadPlayer(p);assert(p:GetAttribute('SaveStatus')=='UNAVAILABLE' and p:GetAttribute('Score')==0)
+callbacks.remove(p)
+local writes=0;local failure=true;local corrupted=false
+local saved={Score=90,Coins=30,FutureKey='keep'}
+store={GetAsync=function(_,key)assert(key=='player:42');if failure then error('read outage')end;if corrupted then return 'bad record'end;return saved end,
+ UpdateAsync=function(_,key,update)assert(key=='player:42');writes+=1;saved=update(saved)end}
+loadPlayer(p);callbacks.remove(p);assert(writes==0 and saved.Score==90)
+failure=false;corrupted=true;loadPlayer(p);callbacks.remove(p);assert(writes==0)
+corrupted=false;loadPlayer(p);assert(p:GetAttribute('Score')==90)
+p:SetAttribute('Coins',31);callbacks.remove(p);assert(writes==1 and saved.Coins==31 and saved.FutureKey=='keep')
+`);
+});
