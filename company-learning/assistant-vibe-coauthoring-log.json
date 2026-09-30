@@ -357,7 +357,7 @@
       "problem": "Company Evolution QA run 36735498688 stopped at homepage-manager-publication-order because the no-direct-child-dispatch assertion also matched the central DEVELOPMENT_CONFIRMED workflow's intentional self-cycle redispatch.",
       "rootCause": "OVERBROAD_QA_REGEX_CONFUSED_SELF_CYCLE_WITH_FORBIDDEN_CHILD_WORKFLOW_API_DISPATCH",
       "decision": "Keep the direct reusable-workflow fan-out and isolated continuous self-cycle. Narrow the guard to only the four forbidden child workflow names.",
-      "change": "Updated all five existing responsibility tests that duplicated the broad prefix assertion. The guards now forbid only the four child workflow API dispatch identities while allowing the central workflow's intentional self-cycle.",
+      "change": "Updated all five existing responsibility tests that duplicated the broad prefix assertion. The guards now forbid only the four child workflow API dispatch identities while allowing the central workflow's intentional self-cycle. The same PR exposed a second pre-existing central bottleneck: 48 changeRecord entries exceeded the policy limit of 43. Archived five unreferenced execution-history records to the exact main commit while preserving the current owner-exclusive horror-escape-room scope.",
       "evidence": [
         "main:a64347b74a3757dbe41d6e85c1fbb310a40e58cb",
         "failure-run:36735498688",
@@ -368,7 +368,10 @@
         "forbidden-child-dispatches:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap",
         "pr:4192",
         "pr-homepage-run:36737174818:PASS",
-        "pr-central-policy-run:36737174898:FAIL_SAME_REGEX_IN_FOUR_CENTRAL_TESTS"
+        "pr-central-policy-run:36737174898:FAIL_SAME_REGEX_IN_FOUR_CENTRAL_TESTS",
+        "pr-game-seed-run:36738299769:FAIL_CENTRAL_CHANGE_RECORD_BUDGET_48_OVER_43",
+        "roadmap-retention:archived-5-unreferenced-records-at-main-a64347b",
+        "roadmap-retention:ownerExclusiveDirectDevelopment20260930-preserved"
       ],
       "reusablePatterns": [
         "ASSERT_FORBIDDEN_CHILD_IDENTITIES_NOT_BROAD_PREFIXES",
@@ -382,13 +385,16 @@
       ],
       "qa": [
         "local catalog normalization: PASS",
-        "local homepage publication-order: 37/37 PASS",
         "local affected combined regression: 139/139 PASS",
-        "PR Homepage Manager run 36737174818: PASS",
-        "full Company Central Policy Contract QA rerun pending"
+        "local central policy contract: 63/63 PASS",
+        "roadmap JSON parse and changeRecord budget: 43/43 PASS",
+        "PR Homepage Manager run 36738299801: PASS",
+        "PR Company Evolution QA run 36738300042: PASS",
+        "PR Vibe3 Engine Contract run 36738299602: PASS",
+        "full PR checks rerun pending after retention repair"
       ],
       "learningState": "TRACE_ONLY",
-      "liveState": "AFFECTED_TESTS_PASS; FULL_PR_POLICY_QA_RERUN_PENDING"
+      "liveState": "AFFECTED_TESTS_AND_EVOLUTION_QA_PASS; FULL_PR_RERUN_PENDING"
     }
   ]
 }
