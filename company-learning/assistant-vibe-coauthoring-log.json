@@ -635,7 +635,13 @@
         "owner-exclusive-leak-job:110073000023:Unity-staged-validation-horror-escape-room",
         "line-defense-example-failure-job:110072808060",
         "queue-authority:company-runtime@0a908481f8e84afed4fe0764c6ba4333ca5bc92b",
-        "vibe2-authority:vibe2-unreal-core@afd85f419221102944b8c35fe1c7796d1dd5d94b"
+        "vibe2-authority:vibe2-unreal-core@afd85f419221102944b8c35fe1c7796d1dd5d94b",
+        "pull-request:4210",
+        "merged-main:3c5bd8164916c273dd22117b9026abdffb14ab2d",
+        "post-change-unity-batch-run:36772548003",
+        "post-change-unity-prepare-job:110082301354:PASS",
+        "post-change-owner-exclusive-log:UNITY_OWNER_EXCLUSIVE_GAME_EXCLUDED=horror-escape-room",
+        "post-change-target-selected:12-of-12:no-horror-escape-room:no-village-dungeons"
       ],
       "reusablePatterns": [
         "EXACT_REQUEST_PRESENCE_NOT_MATCH_COUNT_CONTROLS_BATCH_FALLBACK",
@@ -652,12 +658,14 @@
       "qa": [
         "local Unity plus central coordinator responsibility regression: 73/73 PASS",
         "local JSON parse and git diff whitespace validation: PASS",
-        "post-change GitHub Actions: PENDING",
-        "Unity APK/runtime actual execution: NOT_RUN on repaired source",
+        "PR #4210 required GitHub Actions: 4/4 PASS",
+        "post-change main Unity planner actual execution: PASS; owner-exclusive horror-escape-room excluded and 12 eligible independent games selected",
+        "exact unavailable village-dungeons post-change workflow dispatch: NOT_YET_OBSERVED; zero-row behavior is covered by responsibility regression only",
+        "Unity staged APK/runtime actual execution: QUEUED_OR_RUNNING for selected games; no aggregate runtime PASS claim",
         "Roblox Studio actual execution: NOT_RUN; no F9 or release completion claim"
       ],
       "learningState": "TRACE_ONLY",
-      "liveState": "LOCAL_REPAIR_VERIFIED; PR_AND_POST_CHANGE_ACTIONS_PENDING; NEXT_ROTATION_LINE_DEFENSE_ROBLOX_STUDIO_SCENARIO_AND_INDEPENDENT_UNITY_LANE_AFTER_EXACT_FANOUT_REPAIR"
+      "liveState": "MERGED_AT_3C5BD816; POST_CHANGE_BATCH_OWNER_EXCLUSIVE_FILTER_ACTUALLY_PASS; EXACT_UNAVAILABLE_DYNAMIC_DISPATCH_NOT_YET_OBSERVED; UNITY_STAGED_RUNTIME_IN_PROGRESS; NEXT_ROTATION_EXACT_VILLAGE_DUNGEONS_AND_LINE_DEFENSE_ROBLOX_STUDIO_SCENARIO"
     }
   ]
 }
