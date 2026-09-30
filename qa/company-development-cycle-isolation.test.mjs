@@ -3,9 +3,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-test('central policy v496 isolates one game failure from the continuous development cycle',()=>{
+test('central policy keeps v496 per-game failure isolation in current revisions',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.equal(policy.version,496);
+  assert.ok(policy.version>=496);
   const isolation=policy.developmentSpeedExecution?.perGameFailureIsolation||{};
   assert.equal(isolation.enabled,true);
   assert.equal(isolation.failureScope,'GAME_AND_PLATFORM_LANE_ONLY');
@@ -19,6 +19,13 @@ test('central policy v496 isolates one game failure from the continuous developm
 test('DEVELOPMENT_CONFIRMED workflow continues after failed game lanes and keeps midnight excluded',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   assert.match(workflow,/ownerExcludedGameIds=new Set\(\['horror-escape-room'\]\)/);
+  assert.match(workflow,/run-name: DEVELOPMENT cycle \| \$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
+  assert.match(workflow,/coordinator-gate:/);
+  assert.match(workflow,/group: company-development-confirmed-coordinator-gate-/);
+  assert.match(workflow,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
+  assert.match(workflow,/native-plan:[\s\S]{0,180}?needs: coordinator-gate[\s\S]{0,180}?if: needs\.coordinator-gate\.outputs\.proceed == 'true'/);
+  assert.match(workflow,/event=workflow_dispatch&per_page=100&page=\$page/);
+  assert.match(workflow,/DEVELOPMENT cycle \| batch \|/);
   assert.ok((workflow.match(/fail-fast: false/g)||[]).length>=4);
   assert.match(workflow,/continue-cycle:/);
   assert.match(workflow,/needs: \[native-plan, dispatch-roblox, dispatch-unity, dispatch-unity-web-floor, dispatch-unity-web-bootstrap\]/);

@@ -1,4 +1,5 @@
 name: Company DEVELOPMENT_CONFIRMED Runtime
+run-name: DEVELOPMENT cycle | ${{ inputs.game_id || 'batch' }} | ${{ inputs.trigger_source || github.event_name }}
 
 on:
   push:
@@ -41,8 +42,69 @@ env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
+  coordinator-gate:
+    name: Admit one unscoped development coordinator
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    concurrency:
+      group: company-development-confirmed-coordinator-gate-${{ inputs.game_id || (github.event_name == 'push' && github.run_id) || 'batch' }}
+      cancel-in-progress: false
+    outputs:
+      proceed: ${{ steps.admit.outputs.proceed }}
+    steps:
+      - name: Coalesce duplicate whole-portfolio dispatches without serializing game lanes
+        id: admit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "$REQUESTED_GAME_ID" || "$GITHUB_EVENT_NAME" == 'push' ]]; then
+            echo 'proceed=true' >> "$GITHUB_OUTPUT"
+            echo 'DEVELOPMENT_COORDINATOR_ADMISSION=EXACT_GAME_OR_SOURCE_CHANGE'
+            exit 0
+          fi
+
+          pids=()
+          for page in 1 2 3; do
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-confirmed-runtime.yml/runs?event=workflow_dispatch&per_page=100&page=$page" > "/tmp/development-coordinator-runs-$page.json" &
+            pids+=("$!")
+          done
+          scan_failed=0
+          for pid in "${pids[@]}"; do
+            if ! wait "$pid"; then scan_failed=1; fi
+          done
+          if (( scan_failed != 0 )); then
+            echo 'DEVELOPMENT_COORDINATOR_ACTIVE_SCAN=FAIL' >&2
+            exit 15
+          fi
+          jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/development-coordinator-runs-{1,2,3}.json > /tmp/development-coordinator-runs.json
+          oldest_active_id="$(jq -r --argjson current "$GITHUB_RUN_ID" '
+            [
+              .workflow_runs[]
+              | select(.status == "queued" or .status == "pending" or .status == "in_progress" or .status == "requested")
+              | select(
+                  .display_title == "Company DEVELOPMENT_CONFIRMED Runtime"
+                  or (.display_title | startswith("DEVELOPMENT cycle | batch | "))
+                )
+              | .id
+            ]
+            | min // $current
+          ' /tmp/development-coordinator-runs.json)"
+          echo "DEVELOPMENT_COORDINATOR_OLDEST_ACTIVE_RUN=$oldest_active_id"
+          if [[ "$oldest_active_id" != "$GITHUB_RUN_ID" ]]; then
+            echo 'proceed=false' >> "$GITHUB_OUTPUT"
+            echo 'DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH'
+            exit 0
+          fi
+          echo 'proceed=true' >> "$GITHUB_OUTPUT"
+          echo 'DEVELOPMENT_COORDINATOR_ADMISSION=OLDEST_ACTIVE_BATCH'
+
   native-plan:
     name: Resolve direct native development
+    needs: coordinator-gate
+    if: needs.coordinator-gate.outputs.proceed == 'true'
     runs-on: ubuntu-slim
     timeout-minutes: 8
     outputs:
@@ -249,7 +311,7 @@ jobs:
   dispatch-roblox:
     name: Run ready Roblox upper-platform lanes
     needs: native-plan
-    if: needs.native-plan.outputs.roblox_count != '0'
+    if: needs.native-plan.result == 'success' && needs.native-plan.outputs.roblox_count != '0'
     strategy:
       fail-fast: false
       matrix:
@@ -266,7 +328,7 @@ jobs:
   dispatch-unity:
     name: Run ready Unity upper-platform lanes
     needs: native-plan
-    if: needs.native-plan.outputs.unity_count != '0'
+    if: needs.native-plan.result == 'success' && needs.native-plan.outputs.unity_count != '0'
     strategy:
       fail-fast: false
       matrix:
@@ -282,7 +344,7 @@ jobs:
   dispatch-unity-web-floor:
     name: Run Unity Web development floor
     needs: native-plan
-    if: needs.native-plan.outputs.unity_web_ids != ''
+    if: needs.native-plan.result == 'success' && needs.native-plan.outputs.unity_web_ids != ''
     strategy:
       fail-fast: false
       matrix:
@@ -305,7 +367,7 @@ jobs:
   dispatch-unity-web-bootstrap:
     name: Bootstrap Unity Web source ${{ matrix.game_id }}
     needs: native-plan
-    if: needs.native-plan.outputs.unity_web_bootstrap_ids != ''
+    if: needs.native-plan.result == 'success' && needs.native-plan.outputs.unity_web_bootstrap_ids != ''
     strategy:
       fail-fast: false
       matrix:
@@ -338,4 +400,3 @@ jobs:
             -f trigger_source=CONTINUOUS_PER_GAME_ISOLATED_CYCLE
           echo 'DEVELOPMENT_CONTINUOUS_CYCLE_REOPENED=YES'
           echo 'SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO'
-
