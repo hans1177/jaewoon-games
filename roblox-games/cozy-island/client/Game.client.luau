@@ -7,11 +7,14 @@ local Players=game:GetService("Players")
 local RS=game:GetService("ReplicatedStorage")
 local UserInputService=game:GetService("UserInputService")
 local SoundService=game:GetService("SoundService")
+local CollectionService=game:GetService("CollectionService")
 
 -- 참조
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
-local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+local Shared=RS:WaitForChild("Shared")
+local C=require(Shared:WaitForChild("GameConfig"))
+local WildlifeAnimator=require(Shared:WaitForChild("WildlifeAnimator"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = C.VerifiedExternalLearning or C.LearningContext or {}
 local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
@@ -34,6 +37,45 @@ end
 local QACamera=require(RS:WaitForChild("Shared"):WaitForChild("QACamera"))
 local remote=RS:WaitForChild(C.RemoteName)
 local foundationRemote=RS:WaitForChild("RuntimeFoundationReport")
+
+-- Roblox-native survival wildlife: server owns root/state, client owns smooth Motor6D presentation.
+local wildlifeControllers=setmetatable({}, {__mode="k"})
+local wildlifeConnections=setmetatable({}, {__mode="k"})
+local function unbindWildlife(model)
+ local list=wildlifeConnections[model]
+ if list then for _,connection in ipairs(list)do connection:Disconnect()end end
+ wildlifeConnections[model]=nil
+ local controller=wildlifeControllers[model]
+ if controller then controller:Destroy()end
+ wildlifeControllers[model]=nil
+end
+local function syncWildlife(model,controller)
+ local speed=model:GetAttribute("WildlifeDesiredSpeed")
+ controller:SetSpeed(speed)
+ controller:SetState(tostring(model:GetAttribute("WildlifeMotionState")or"LOCOMOTION"),{
+  side=model:GetAttribute("WildlifeHitSide"),
+  duration=model:GetAttribute("WildlifeAttackDuration"),
+ })
+end
+local function bindWildlife(model)
+ if wildlifeControllers[model]or not model:IsA("Model")then return end
+ local deadline=os.clock()+5
+ while model.Parent and not model.PrimaryPart and os.clock()<deadline do task.wait(.05)end
+ if not model.Parent or not model.PrimaryPart then return end
+ local controller=WildlifeAnimator.bind(model,{nominalRunSpeed=15})
+ wildlifeControllers[model]=controller
+ syncWildlife(model,controller)
+ local list={}
+ for _,attribute in ipairs({"WildlifeDesiredSpeed","WildlifeMotionState","WildlifeHitSide","WildlifeAttackDuration"})do
+  table.insert(list,model:GetAttributeChangedSignal(attribute):Connect(function()syncWildlife(model,controller)end))
+ end
+ table.insert(list,model.AncestryChanged:Connect(function(_,parent)if parent==nil then unbindWildlife(model)end end))
+ wildlifeConnections[model]=list
+end
+for _,model in ipairs(CollectionService:GetTagged("VibeSurvivalWildlife"))do task.defer(bindWildlife,model)end
+CollectionService:GetInstanceAddedSignal("VibeSurvivalWildlife"):Connect(function(model)task.defer(bindWildlife,model)end)
+CollectionService:GetInstanceRemovedSignal("VibeSurvivalWildlife"):Connect(unbindWildlife)
+
 
 -- 사운드
 local function sound(name,id,volume,looped)
