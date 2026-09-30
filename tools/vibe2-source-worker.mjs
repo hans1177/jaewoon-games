@@ -3014,7 +3014,7 @@ function createCandidateSnapshot(sourceRoot,candidateRoot,candidate,{scaffoldFil
   }
   return[...new Set(changed)];
 }
-function validateCandidateSyntax({candidate,sourceRoot,target='system',luauCompiler=''}={}){
+export function validateCandidateSyntax({candidate,sourceRoot,target='system',luauCompiler=''}={}){
   const roblox=target==='roblox';
   const failurePrefix=roblox?'ROBLOX_SOURCE_STRUCTURAL_CONTINUITY:LUAU_SYNTAX':'SYSTEM_CANDIDATE_SYNTAX_INVALID';
   const touched=unique([
