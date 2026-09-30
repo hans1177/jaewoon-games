@@ -680,83 +680,107 @@ local function lobbyBuilding(parent,name,pos,size,baseColor,windowColor)
 end
 
 -- 로비 직원은 전투와 무관한 R15 연출 전용 NPC다.
-local function lobbyStaff(parent,staffId,pos,lookAt,labelText,promptText,onTriggered)
- local description=Instance.new("HumanoidDescription")
- description.HeightScale=staffId=="BELLBOY"and .94 or 1
- description.WidthScale=staffId=="MAID"and .92 or .96
- description.DepthScale=.96
- description.HeadScale=1
- local ok,model=pcall(function()return Players:CreateHumanoidModelFromDescription(description,Enum.HumanoidRigType.R15)end)
- if not ok or not model then return nil end
- model.Name="LobbyStaff_"..staffId
- model.Parent=parent
- local rootPart=model:FindFirstChild("HumanoidRootPart")
- local humanoid=model:FindFirstChildOfClass("Humanoid")
- if not rootPart or not humanoid then model:Destroy();return nil end
- humanoid.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None
- humanoid.NameDisplayDistance=0
- humanoid.HealthDisplayDistance=0
- humanoid.AutoRotate=false
+local function lobbyStaff(parent,staffId,pos,lookAt,labelText,promptText,lines)
+ local model=Instance.new("Model");model.Name="LobbyStaff_"..staffId;model.Parent=parent
+ local facePoint=Vector3.new(lookAt.X,pos.Y,lookAt.Z)
+ local rootCf=CFrame.lookAt(pos,facePoint)
+ local root=Instance.new("Part");root.Name="StaffRoot";root.Size=Vector3.new(2.2,6.8,1.8);root.CFrame=rootCf*CFrame.new(0,3.4,0);root.Transparency=1
+ root.Anchored=true;root.CanCollide=false;root.CanTouch=false;root.CanQuery=false;root.Parent=model
+ model.PrimaryPart=root
 
- local skin=staffId=="MAID"and Color3.fromRGB(213,202,192)or Color3.fromRGB(207,192,176)
- local top=staffId=="BELLBOY"and Color3.fromRGB(92,26,31)or Color3.fromRGB(31,29,31)
- local bottom=Color3.fromRGB(25,24,26)
- for _,d in ipairs(model:GetDescendants())do
-  if d:IsA("BasePart")then
-   d.Anchored=d==rootPart
-   d.CanCollide=false;d.CanTouch=false;d.CanQuery=false;d.Massless=d~=rootPart
-   if d~=rootPart then
-    if d.Name=="Head"or d.Name:find("Hand")or d.Name:find("LowerArm")then d.Color=skin
-    elseif d.Name:find("UpperTorso")or d.Name:find("LowerTorso")or d.Name:find("UpperArm")then d.Color=top
-    elseif d.Name:find("Leg")or d.Name:find("Foot")then d.Color=bottom end
-    d.Material=Enum.Material.SmoothPlastic
-   end
-  elseif d:IsA("Script")or d:IsA("LocalScript")then d:Destroy()end
+ local parts={}
+ local function part(name,size,offset,color,material,shape,rotation)
+  local p=Instance.new("Part");p.Name=name;p.Size=size;p.Color=color;p.Material=material or Enum.Material.SmoothPlastic
+  p.Anchored=true;p.CanCollide=false;p.CanTouch=false;p.CanQuery=false;p.CastShadow=true
+  if shape then p.Shape=shape end
+  p.CFrame=rootCf*CFrame.new(offset)*(rotation or CFrame.new())
+  p.Parent=model;table.insert(parts,p);return p
  end
- rootPart.Transparency=1
 
- local function attach(name,body,size,offset,color,material)
-  if not body then return nil end
-  local part=Instance.new("Part");part.Name=name;part.Size=size;part.Color=color;part.Material=material or Enum.Material.SmoothPlastic
-  part.CanCollide=false;part.CanTouch=false;part.CanQuery=false;part.Massless=true
-  part.CFrame=body.CFrame*CFrame.new(offset);part.Parent=model
-  local weld=Instance.new("WeldConstraint");weld.Part0=body;weld.Part1=part;weld.Parent=part
-  return part
- end
- local head=model:FindFirstChild("Head")
- local torso=model:FindFirstChild("UpperTorso")
+ local skin=staffId=="MAID"and Color3.fromRGB(196,186,180)or Color3.fromRGB(203,187,171)
+ local black=Color3.fromRGB(22,21,23)
+ local red=Color3.fromRGB(91,20,27)
+ local brass=Color3.fromRGB(172,128,61)
+ local cloth=staffId=="BELLBOY"and red or black
+
+ -- 기본 인형 대신 과장된 1920년대 호텔 직원 실루엣을 직접 조형한다.
+ local torso=part("Torso",Vector3.new(staffId=="CLERK"and 2.15 or 2.35,staffId=="CLERK"and 3.7 or 3.25,1.35),Vector3.new(0,3.75,0),cloth,Enum.Material.Fabric)
+ local waist=part("Waist",Vector3.new(2.05,1.15,1.25),Vector3.new(0,1.55,0),Color3.fromRGB(26,24,25),Enum.Material.Fabric)
+ local head=part("Head",Vector3.new(staffId=="CLERK"and 1.75 or 1.9,2.05,1.75),Vector3.new(0,6.55,-.02),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ local neck=part("Neck",Vector3.new(.72,.65,.72),Vector3.new(0,5.45,0),skin,Enum.Material.SmoothPlastic)
+ local legL=part("LegL",Vector3.new(.72,2.55,.86),Vector3.new(-.58,.05,0),Color3.fromRGB(25,24,26),Enum.Material.Fabric)
+ local legR=part("LegR",Vector3.new(.72,2.55,.86),Vector3.new(.58,.05,0),Color3.fromRGB(25,24,26),Enum.Material.Fabric)
+ local shoeL=part("ShoeL",Vector3.new(.9,.45,1.45),Vector3.new(-.58,-1.35,-.25),Color3.fromRGB(13,13,14),Enum.Material.SmoothPlastic)
+ local shoeR=part("ShoeR",Vector3.new(.9,.45,1.45),Vector3.new(.58,-1.35,-.25),Color3.fromRGB(13,13,14),Enum.Material.SmoothPlastic)
+ local armL=part("ArmL",Vector3.new(.58,3.15,.65),Vector3.new(-1.45,3.65,0),cloth,Enum.Material.Fabric,nil,CFrame.Angles(0,0,math.rad(staffId=="CLERK"and 6 or -8)))
+ local armR=part("ArmR",Vector3.new(.58,3.15,.65),Vector3.new(1.45,3.65,0),cloth,Enum.Material.Fabric,nil,CFrame.Angles(0,0,math.rad(staffId=="CLERK"and -6 or 8)))
+ part("HandL",Vector3.new(.62,.8,.62),Vector3.new(-1.58,2.05,-.04),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+ part("HandR",Vector3.new(.62,.8,.62),Vector3.new(1.58,2.05,-.04),skin,Enum.Material.SmoothPlastic,Enum.PartType.Ball)
+
+ -- 얼굴은 멀리서도 인간이 아닌 느낌이 읽히도록 눈과 입을 별도 조형한다.
+ local eyeColor=staffId=="MAID"and Color3.fromRGB(178,47,53)or Color3.fromRGB(34,31,31)
+ local eyeL=part("EyeL",Vector3.new(.28,.22,.12),Vector3.new(-.34,6.72,-.9),eyeColor,staffId=="MAID"and Enum.Material.Neon or Enum.Material.SmoothPlastic)
+ local eyeR=part("EyeR",Vector3.new(.28,.22,.12),Vector3.new(.34,6.72,-.9),eyeColor,staffId=="MAID"and Enum.Material.Neon or Enum.Material.SmoothPlastic)
+ local smile=part("Smile",Vector3.new(staffId=="CLERK"and 1.15 or .78,.13,.11),Vector3.new(0,6.18,-.91),Color3.fromRGB(75,18,22),staffId=="CLERK"and Enum.Material.Neon or Enum.Material.SmoothPlastic)
+ local nose=part("Nose",Vector3.new(.18,.28,.22),Vector3.new(0,6.46,-.96),Color3.fromRGB(176,156,143),Enum.Material.SmoothPlastic)
+
  if staffId=="CLERK"then
-  attach("ClerkHair",head,Vector3.new(2.05,.55,1.9),Vector3.new(0,.82,.06),Color3.fromRGB(29,25,24),Enum.Material.Fabric)
-  attach("ClerkVest",torso,Vector3.new(1.5,1.9,.16),Vector3.new(0,.05,-.59),Color3.fromRGB(75,24,30),Enum.Material.Fabric)
-  attach("ClerkNamePlate",torso,Vector3.new(.72,.28,.09),Vector3.new(.35,.3,-.7),Color3.fromRGB(182,143,73),Enum.Material.Metal)
-  attach("ClerkSmile",head,Vector3.new(.9,.09,.08),Vector3.new(0,-.3,-1.02),Color3.fromRGB(39,24,25),Enum.Material.SmoothPlastic)
+  part("Vest",Vector3.new(1.62,2.45,.16),Vector3.new(0,3.92,-.76),Color3.fromRGB(68,18,25),Enum.Material.Fabric)
+  part("Shirt",Vector3.new(.82,2.2,.18),Vector3.new(0,4,-.86),Color3.fromRGB(190,182,166),Enum.Material.Fabric)
+  part("Tie",Vector3.new(.24,1.5,.12),Vector3.new(0,4.1,-.98),Color3.fromRGB(17,16,17),Enum.Material.Fabric)
+  part("NamePlate",Vector3.new(.82,.28,.12),Vector3.new(.48,4.55,-.93),brass,Enum.Material.Metal)
+  part("HairTop",Vector3.new(1.78,.55,1.6),Vector3.new(0,7.45,.08),Color3.fromRGB(27,23,22),Enum.Material.Fabric)
+  part("HairBack",Vector3.new(1.72,1.45,.45),Vector3.new(0,6.95,.72),Color3.fromRGB(27,23,22),Enum.Material.Fabric)
  elseif staffId=="BELLBOY"then
-  attach("BellboyHat",head,Vector3.new(2.15,.65,2),Vector3.new(0,.95,.04),Color3.fromRGB(83,20,26),Enum.Material.Fabric)
-  attach("BellboyBand",head,Vector3.new(2.18,.18,2.03),Vector3.new(0,.72,.04),Color3.fromRGB(173,132,62),Enum.Material.Metal)
-  attach("BellboyButtons",torso,Vector3.new(.18,1.8,.1),Vector3.new(0,.05,-.7),Color3.fromRGB(188,148,73),Enum.Material.Metal)
- else
-  attach("MaidCap",head,Vector3.new(1.9,.42,1.55),Vector3.new(0,.9,.12),Color3.fromRGB(205,199,188),Enum.Material.Fabric)
-  attach("MaidApron",torso,Vector3.new(1.45,1.85,.12),Vector3.new(0,-.05,-.66),Color3.fromRGB(205,199,188),Enum.Material.Fabric)
-  attach("MaidFaceShade",head,Vector3.new(1.45,.65,.08),Vector3.new(0,.15,-1.04),Color3.fromRGB(53,48,48),Enum.Material.SmoothPlastic)
+  part("JacketFront",Vector3.new(1.8,2.45,.15),Vector3.new(0,3.75,-.76),Color3.fromRGB(109,24,31),Enum.Material.Fabric)
+  for y=3.1,4.5,.7 do part("Button",Vector3.new(.18,.18,.12),Vector3.new(0,y,-.9),brass,Enum.Material.Metal,Enum.PartType.Ball)end
+  local hat=part("BellboyHat",Vector3.new(2.05,.95,1.9),Vector3.new(0,7.7,.02),Color3.fromRGB(100,20,28),Enum.Material.Fabric)
+  part("HatBand",Vector3.new(2.12,.22,1.96),Vector3.new(0,7.45,.02),brass,Enum.Material.Metal)
+  part("HatTop",Vector3.new(1.75,.7,1.65),Vector3.new(0,8.35,.02),Color3.fromRGB(82,18,24),Enum.Material.Fabric)
+ elseif staffId=="MAID"then
+  part("DressSkirt",Vector3.new(3.1,2.75,1.65),Vector3.new(0,1.65,.05),Color3.fromRGB(23,22,24),Enum.Material.Fabric)
+  part("Apron",Vector3.new(1.85,3.05,.14),Vector3.new(0,2.7,-.84),Color3.fromRGB(194,188,177),Enum.Material.Fabric)
+  part("MaidCap",Vector3.new(1.85,.45,1.45),Vector3.new(0,7.55,.06),Color3.fromRGB(203,198,189),Enum.Material.Fabric)
+  part("FaceVeil",Vector3.new(1.45,.82,.1),Vector3.new(0,6.55,-.95),Color3.fromRGB(46,42,43),Enum.Material.SmoothPlastic)
  end
 
- local labelPart=attach("StaffLabelAnchor",head,Vector3.new(.1,.1,.1),Vector3.new(0,1.65,0),Color3.new(1,1,1),Enum.Material.SmoothPlastic)
- if labelPart then
-  labelPart.Transparency=1
-  local gui=Instance.new("BillboardGui");gui.Name="StaffLabel";gui.Size=UDim2.fromOffset(170,34);gui.AlwaysOnTop=false;gui.MaxDistance=28;gui.Parent=labelPart
-  local label=Instance.new("TextLabel");label.Size=UDim2.fromScale(1,1);label.BackgroundColor3=Color3.fromRGB(13,12,13);label.BackgroundTransparency=.22;label.TextColor3=Color3.fromRGB(224,207,173);label.TextSize=12;label.Text=labelText;label.Font=Enum.Font.GothamBold;label.Parent=gui
- end
+ local labelAnchor=part("StaffLabelAnchor",Vector3.new(.1,.1,.1),Vector3.new(0,9.15,0),Color3.new(1,1,1),Enum.Material.SmoothPlastic)
+ labelAnchor.Transparency=1
+ local nameGui=Instance.new("BillboardGui");nameGui.Name="StaffLabel";nameGui.Size=UDim2.fromOffset(190,34);nameGui.AlwaysOnTop=false;nameGui.MaxDistance=28;nameGui.Parent=labelAnchor
+ local nameLabel=Instance.new("TextLabel");nameLabel.Size=UDim2.fromScale(1,1);nameLabel.BackgroundColor3=Color3.fromRGB(10,9,10);nameLabel.BackgroundTransparency=.16;nameLabel.TextColor3=Color3.fromRGB(225,204,165);nameLabel.TextSize=12;nameLabel.Text=labelText;nameLabel.Font=Enum.Font.GothamBold;nameLabel.Parent=nameGui
+
+ local speechAnchor=part("SpeechAnchor",Vector3.new(.1,.1,.1),Vector3.new(0,8.55,0),Color3.new(1,1,1),Enum.Material.SmoothPlastic)
+ speechAnchor.Transparency=1
+ local speechGui=Instance.new("BillboardGui");speechGui.Name="StaffSpeech";speechGui.Size=UDim2.fromOffset(300,82);speechGui.StudsOffset=Vector3.new(0,1.4,0);speechGui.AlwaysOnTop=true;speechGui.MaxDistance=34;speechGui.Enabled=false;speechGui.Parent=speechAnchor
+ local speechLabel=Instance.new("TextLabel");speechLabel.Size=UDim2.fromScale(1,1);speechLabel.BackgroundColor3=Color3.fromRGB(11,9,10);speechLabel.BackgroundTransparency=.06;speechLabel.TextColor3=Color3.fromRGB(238,225,199);speechLabel.TextSize=14;speechLabel.TextWrapped=true;speechLabel.Font=Enum.Font.GothamBold;speechLabel.Parent=speechGui
+ local speechStroke=Instance.new("UIStroke");speechStroke.Color=staffId=="MAID"and Color3.fromRGB(126,32,37)or brass;speechStroke.Transparency=.35;speechStroke.Thickness=1.5;speechStroke.Parent=speechLabel
+ local speechCorner=Instance.new("UICorner");speechCorner.CornerRadius=UDim.new(0,8);speechCorner.Parent=speechLabel
 
  local prompt=Instance.new("ProximityPrompt")
- prompt.Name="LobbyStaffPrompt";prompt.ObjectText=labelText;prompt.ActionText=promptText;prompt.HoldDuration=.2;prompt.MaxActivationDistance=9;prompt.RequiresLineOfSight=false;prompt.Parent=rootPart
- prompt.Triggered:Connect(onTriggered)
+ prompt.Name="LobbyStaffPrompt";prompt.ObjectText=labelText;prompt.ActionText=promptText;prompt.HoldDuration=.12;prompt.MaxActivationDistance=11;prompt.RequiresLineOfSight=false;prompt.Parent=root
 
- local animator=humanoid:FindFirstChildOfClass("Animator")or Instance.new("Animator");animator.Parent=humanoid
- local anim=Instance.new("Animation");anim.AnimationId="rbxassetid://507766666"
- local loaded,track=pcall(function()return animator:LoadAnimation(anim)end);anim:Destroy()
- if loaded and track then track.Looped=true;track.Priority=Enum.AnimationPriority.Idle;track:Play(.2,1,staffId=="MAID"and .82 or .94)end
+ local lineIndex=0
+ local serial=0
+ prompt.Triggered:Connect(function(player)
+  local options=typeof(lines)=="table"and lines or{}
+  if #options==0 then return end
+  lineIndex=lineIndex%#options+1;serial+=1
+  local token=serial;local line=tostring(options[lineIndex])
+  speechLabel.Text=line;speechGui.Enabled=true
+  player:SetAttribute("LobbyStoryEvent",labelText.."|"..line.."|"..tostring(math.floor(workspace:GetServerTimeNow()*1000)))
 
- model:PivotTo(CFrame.lookAt(pos,Vector3.new(lookAt.X,pos.Y,lookAt.Z)))
+  local headBase=head.CFrame
+  local smileBase=smile.Size
+  TweenService:Create(head,TweenInfo.new(.16,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{CFrame=headBase*CFrame.Angles(0,0,math.rad(staffId=="CLERK"and 18 or -11))}):Play()
+  TweenService:Create(smile,TweenInfo.new(.18,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Size=Vector3.new(smileBase.X*(staffId=="CLERK"and 1.6 or 1.2),smileBase.Y,smileBase.Z)}):Play()
+  if staffId=="MAID"then eyeL.Material=Enum.Material.Neon;eyeR.Material=Enum.Material.Neon end
+  task.delay(.65,function()
+   if head.Parent then TweenService:Create(head,TweenInfo.new(.22),{CFrame=headBase}):Play()end
+   if smile.Parent then TweenService:Create(smile,TweenInfo.new(.22),{Size=smileBase}):Play()end
+  end)
+  task.delay(4,function()if serial==token and speechGui.Parent then speechGui.Enabled=false end end)
+ end)
+
  return model
 end
 
@@ -812,9 +836,9 @@ local function makePhysicalLobby()
  arenaPart(f,"GuestBook",Vector3.new(5.8,.35,3.9),Vector3.new(7,6.82,290.5),Color3.fromRGB(188,176,148),Enum.Material.Fabric).CanCollide=false
 
  -- 로비 자체가 게임 튜토리얼 역할을 한다. 안내판도 호텔의 미친 투숙 규정으로 보인다.
- local rules=arenaPart(f,"MadHotelRules",Vector3.new(31,13,.7),Vector3.new(-49,9.3,306.05),Color3.fromRGB(28,24,23),Enum.Material.WoodPlanks)
+ local rules=arenaPart(f,"MadHotelRules",Vector3.new(24,10,.7),Vector3.new(-50,10.6,306.05),Color3.fromRGB(28,24,23),Enum.Material.WoodPlanks)
  lobbySurfaceText(rules,"심야 투숙 규정\n1. 승강기 안에 서면 5초 뒤 체크인\n2. 인간은 정화 · 괴물은 감염\n3. 상대 진영이 0명이면 승리\n4. 같은 직원이 두 번 보이면 뛰지 마시오",Color3.fromRGB(219,202,169),15)
- local warningBoard=arenaPart(f,"MadWarning",Vector3.new(31,7,.65),Vector3.new(49,12.2,306.05),Color3.fromRGB(35,28,28),Enum.Material.WoodPlanks)
+ local warningBoard=arenaPart(f,"MadWarning",Vector3.new(24,5.6,.65),Vector3.new(50,13.1,306.05),Color3.fromRGB(35,28,28),Enum.Material.WoodPlanks)
  lobbySurfaceText(warningBoard,"직원을 믿지 마십시오\n웃고 있는 직원은 더더욱.",Color3.fromRGB(167,48,53),19)
  for i=1,5 do
   local scratch=arenaPart(f,"WallScratch",Vector3.new(.16,3.4,.12),Vector3.new(38+i*2.3,5.7+(i%2)*.5,305.65),Color3.fromRGB(91,25,29),Enum.Material.Neon)
@@ -826,35 +850,32 @@ local function makePhysicalLobby()
   "승강기 안에 서 계시면 객실이 알아서 손님을 골라 드립니다.",
   "직원이 두 명으로 보이면 눈을 감지 마세요. 하나는 제가 아닙니다.",
  }
- local clerkIndex=0
- lobbyStaff(f,"CLERK",Vector3.new(0,3.25,299),Vector3.new(0,3.25,270),"야간 프런트 · 미스터 블랙","문의",function(player)
-  clerkIndex=clerkIndex%#clerkLines+1
-  player:SetAttribute("LobbyStoryEvent","프런트 직원|"..clerkLines[clerkIndex].."|"..tostring(math.floor(os.clock()*1000)))
- end)
+ lobbyStaff(f,"CLERK",Vector3.new(0,1.55,299),Vector3.new(0,1.55,270),"야간 프런트 · 미스터 블랙","문의",clerkLines)
  local bellboyLines={
   "짐은 제가 들겠습니다. 손님까지 들 필요는 없겠죠?",
   "13층 버튼은 누르지 마세요. 없는 층이라서 더 빨리 옵니다.",
   "승강기가 웃으면 다른 칸을 타십시오. 네, 승강기가요.",
  }
- local bellboyIndex=0
- lobbyStaff(f,"BELLBOY",Vector3.new(-69,3.15,284),Vector3.new(-45,3.15,260),"벨보이 · 토비","말 걸기",function(player)
-  bellboyIndex=bellboyIndex%#bellboyLines+1
-  player:SetAttribute("LobbyStoryEvent","벨보이 토비|"..bellboyLines[bellboyIndex].."|"..tostring(math.floor(os.clock()*1000)))
- end)
+ lobbyStaff(f,"BELLBOY",Vector3.new(-69,1.55,284),Vector3.new(-45,1.55,260),"벨보이 · 토비","말 걸기",bellboyLines)
  local maidLines={
   "방금 복도에 떨어진 손님은 청소했습니다. 아주 깨끗하게요.",
   "피 얼룩은 지워지는데 비명 얼룩은 잘 안 지워져요.",
   "저를 세 번째 보셨다면 프런트에는 비밀로 해 주세요.",
  }
- local maidIndex=0
- lobbyStaff(f,"MAID",Vector3.new(76,3.15,231),Vector3.new(48,3.15,250),"야간 메이드 · 메리","질문",function(player)
-  maidIndex=maidIndex%#maidLines+1
-  player:SetAttribute("LobbyStoryEvent","메이드 메리|"..maidLines[maidIndex].."|"..tostring(math.floor(os.clock()*1000)))
- end)
+ lobbyStaff(f,"MAID",Vector3.new(76,1.55,231),Vector3.new(48,1.55,250),"야간 메이드 · 메리","질문",maidLines)
 
  local bellPrompt=Instance.new("ProximityPrompt");bellPrompt.Name="DeskBellPrompt";bellPrompt.ObjectText="프런트 벨";bellPrompt.ActionText="누르기";bellPrompt.HoldDuration=.1;bellPrompt.MaxActivationDistance=7;bellPrompt.RequiresLineOfSight=false;bellPrompt.Parent=bell
  bellPrompt.Triggered:Connect(function(player)
-  player:SetAttribute("LobbyStoryEvent","호텔 벨|딩— 예약 확인 완료. 손님 수: 살아 있는 만큼.|"..tostring(math.floor(os.clock()*1000)))
+  local line="딩— 예약 확인 완료. 손님 수: 살아 있는 만큼."
+  player:SetAttribute("LobbyStoryEvent","호텔 벨|"..line.."|"..tostring(math.floor(workspace:GetServerTimeNow()*1000)))
+  local oldColor=bell.Color;bell.Color=Color3.fromRGB(225,54,59)
+  task.delay(.18,function()if bell.Parent then bell.Color=oldColor end end)
+  for _,light in ipairs(flickerLights)do
+   if light and light.Parent then
+    local before=light.Brightness;light.Brightness=.02
+    task.delay(.16,function()if light.Parent then light.Brightness=before end end)
+   end
+  end
  end)
 
  -- 열쇠함과 오래된 객실 번호. 단순 벽이 아니라 호텔처럼 보이게 한다.
@@ -866,6 +887,26 @@ local function makePhysicalLobby()
    tag.CanCollide=false
   end
  end
+
+ -- 1927 호텔 로비의 상징물: 황동 짐수레, 멈춘 시계, 폐쇄된 13층 표지.
+ local cartBase=arenaPart(f,"BellhopCartBase",Vector3.new(7,.65,4.2),Vector3.new(-58,1.25,284),Color3.fromRGB(102,72,42),Enum.Material.Metal)
+ for _,dx in ipairs({-2.6,2.6})do
+  for _,dz in ipairs({-1.55,1.55})do
+   local wheel=arenaPart(f,"BellhopCartWheel",Vector3.new(1.2,1.2,.45),Vector3.new(-58+dx,.75,284+dz),Color3.fromRGB(27,25,25),Enum.Material.SmoothPlastic)
+   wheel.Shape=Enum.PartType.Cylinder;wheel.Orientation=Vector3.new(0,90,0)
+  end
+ end
+ for _,dx in ipairs({-3,3})do arenaPart(f,"BellhopCartPost",Vector3.new(.32,6,.32),Vector3.new(-58+dx,4,284),Color3.fromRGB(170,128,61),Enum.Material.Metal)end
+ arenaPart(f,"BellhopCartTop",Vector3.new(6.3,.32,.32),Vector3.new(-58,7,284),Color3.fromRGB(170,128,61),Enum.Material.Metal)
+ arenaPart(f,"CartSuitcase1",Vector3.new(3.4,2.8,2.8),Vector3.new(-59,3,284),Color3.fromRGB(74,49,37),Enum.Material.Fabric)
+ arenaPart(f,"CartSuitcase2",Vector3.new(2.4,2.1,2.5),Vector3.new(-56.3,2.6,284.1),Color3.fromRGB(47,42,39),Enum.Material.Fabric)
+
+ for i,spec in ipairs({{-22,"03:13"},{0,"03:13"},{22,"13:13"}})do
+  local clock=arenaPart(f,"LobbyClock"..i,Vector3.new(8,4.1,.42),Vector3.new(spec[1],17,306),Color3.fromRGB(26,24,24),Enum.Material.Metal)
+  lobbySurfaceText(clock,(i==3 and"13F  "or"")..spec[2],i==3 and Color3.fromRGB(177,43,48)or Color3.fromRGB(207,189,154),18)
+ end
+ local floorNotice=arenaPart(f,"Floor13Notice",Vector3.new(16,3.8,.5),Vector3.new(66,8,306),Color3.fromRGB(44,34,31),Enum.Material.WoodPlanks)
+ lobbySurfaceText(floorNotice,"13층 폐쇄\n직원도 출입 금지",Color3.fromRGB(178,54,57),18)
 
  -- 좌우 대기실: 소파/탁자/짐/낡은 액자로 빈 공간을 끊는다.
  for _,side in ipairs({-1,1})do
@@ -1045,8 +1086,8 @@ local function makePhysicalLobby()
  refreshPhysicalLobby()
  workspace:SetAttribute("PhysicalLobbyReady",true)
  workspace:SetAttribute("WorldLobbyMode",true)
- workspace:SetAttribute("LobbyArtPass","NOCTURNE_CURSED_HOTEL_V4")
- workspace:SetAttribute("LobbyBuildRevision","NOCTURNE_STAFF_HAUNT_20260930")
+ workspace:SetAttribute("LobbyArtPass","NOCTURNE_CURSED_HOTEL_V5")
+ workspace:SetAttribute("LobbyBuildRevision","NOCTURNE_SCULPTED_STAFF_20260930")
  return f
 end
 
