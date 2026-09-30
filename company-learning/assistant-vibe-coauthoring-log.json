@@ -563,6 +563,49 @@
       ],
       "learningState": "TRACE_ONLY",
       "liveState": "CONTROL_PLANE_REPAIRS_MERGED_THROUGH_D33C58AB; DESIGN_RESET_AND_GROWTH_MARKETING_ACTUAL_ACTION_PASS; OWNER_EXCLUSIVE_GAME_NOT_PLANNED_SELECTED_OR_RESERVED; NEXT_ROTATION_LINE_DEFENSE_STUDIO_MCP_COMMON_FAILURE_COHORT; NO_STUDIO_RUNTIME_PASS_CLAIM"
+    },
+    {
+      "id": "assistant_development_coordinator_fanout_repair_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_DEVELOPMENT_COORDINATOR",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "On exact main 41ad13ba, 44 of the 100 most recent GitHub Actions runs were the same unscoped Company DEVELOPMENT_CONFIRMED Runtime. Thirty-three were cancelled and eleven remained queued, pending, or running. Each unscoped dispatch used github.run_id as its concurrency key, so every caller and every successful self-cycle could start another full multi-game matrix instead of sharing the already-active coordinator. The duplicated matrices consumed runner capacity and cancelled or delayed the 13-game Roblox Studio MCP failure cohort before a stable post-change scenario could be observed.",
+      "rootCause": "UNSCOPED_DEVELOPMENT_COORDINATOR_USED_A_UNIQUE_RUN_ID_AND_HAD_NO_ACTIVE_BATCH_ADMISSION_GATE",
+      "decision": "Coalesce only duplicate whole-portfolio workflow_dispatch coordinators at a small serialized admission job. Preserve exact-game dispatch, main source-change validation, per-game matrix parallelism, fail-fast false isolation, and the continuous next-cycle reopen.",
+      "change": "Added a run identity and coordinator-gate to the existing central workflow. The gate scans three pages of actual workflow runs, admits the oldest active legacy or new batch, and marks later unscoped batches deduped before checkout or matrix fan-out. Exact-game and push runs bypass the batch gate. Downstream matrices now require a successful native plan, so a deduped coordinator cannot accidentally evaluate empty outputs as work. Updated the existing isolation regression without changing game code, balance, saves, queue records, release state, or horror-escape-room files and tasks.",
+      "evidence": [
+        "baseline-main:41ad13ba5329ebc2ac6f26a15729bc083fa0f878",
+        "recent-actions-window:100",
+        "duplicate-development-coordinators:44",
+        "cancelled-development-coordinators:33",
+        "active-development-coordinators:11",
+        "example-active-run:36764780916",
+        "example-queued-run:36764376790",
+        "example-cancelled-run:36763444179",
+        "affected-studio-cohort:13-games:ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
+        "owner-exclusive-scope:horror-escape-room-query-only"
+      ],
+      "reusablePatterns": [
+        "COALESCE_ONLY_DUPLICATE_WHOLE_PORTFOLIO_COORDINATORS",
+        "KEEP_EXACT_GAME_LANES_PARALLEL_AND_INDEPENDENT",
+        "SCAN_CURRENT_ACTION_STATE_BEFORE_REOPENING_EXPENSIVE_FANOUT",
+        "DEDUPED_PARENT_MUST_NOT_EVALUATE_EMPTY_MATRIX_OUTPUTS_AS_WORK"
+      ],
+      "avoidPatterns": [
+        "UNIQUE_RUN_ID_AS_THE_ONLY_UNSCOPED_BATCH_CONCURRENCY_KEY",
+        "GLOBAL_SERIALIZATION_OF_INDEPENDENT_GAME_LANES",
+        "RETRYING_STUDIO_FAILURES_WHILE_DUPLICATE_PARENTS_CANCEL_THEM",
+        "CLAIMING_STUDIO_PASS_FROM_COORDINATOR_OR_STATIC_TESTS"
+      ],
+      "qa": [
+        "local coordinator isolation and central pipeline regression: 33/33 PASS",
+        "local synthetic active-run selection: oldest batch selected and exact-game title ignored",
+        "local git diff whitespace validation: PASS",
+        "post-change GitHub Actions: PENDING",
+        "Studio actual execution: NOT_RUN; no Studio, F9, or release completion claim"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "LOCAL_REPAIR_VERIFIED; PR_AND_POST_CHANGE_ACTIONS_PENDING; NEXT_ROTATION_LINE_DEFENSE_AND_12_SIBLING_STUDIO_SCENARIO_FAILURES_AFTER_COORDINATOR_DRAIN"
     }
   ]
 }
