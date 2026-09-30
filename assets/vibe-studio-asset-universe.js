@@ -25,13 +25,131 @@ export const CREATURE_BODY_PLANS=Object.freeze([
 
 export const CREATURE_SPECIES=Object.freeze([
   'GOBLIN','KOBOLD','ORC','TROLL','OGRE','MINOTAUR','SKELETON','ZOMBIE','GHOUL','WEREWOLF','DEMON',
-  'LIZARDMAN','BEASTMAN','MONSTER_KNIGHT','MONSTER_MAGE','WOLF','FOX','LION','TIGER','BEAR','BOAR','DEER',
+  'LIZARDMAN','BEASTMAN','MONSTER_KNIGHT','MONSTER_MAGE','WOLF','FOX','COYOTE','LION','TIGER','BEAR','BOAR','DEER',
+  'ELK','MOOSE','BISON','RABBIT','RACCOON','SQUIRREL','BEAVER','BADGER','MOUNTAIN_GOAT','TURKEY','CROW',
   'HORSE_BEAST','HELLHOUND','QUADRUPED_DRAGON','ANT','SOLDIER_ANT','BEETLE','SPIDER','SCORPION','MANTIS',
   'WASP','BEE','CENTIPEDE','GIANT_CRAB','SNAKE','COBRA','GIANT_SERPENT','CROCODILE','BASILISK','BIRD',
   'BAT','FLYING_INSECT','WYVERN','DRAGON','HARPY','FLYING_DEMON','FISH','SHARK','EEL','JELLYFISH',
   'OCTOPUS','SQUID','SEA_SERPENT','SLIME','BLOB','TENTACLE_BEAST','MIMIC','MUSHROOM_MONSTER',
   'PLANT_MONSTER','ROOT_MONSTER','STONE_GOLEM','IRON_GOLEM','CRYSTAL_GOLEM','ROBOT','MECH','GIANT','COLOSSUS'
 ]);
+
+export const SURVIVAL_WILDLIFE_SPECIES=Object.freeze([
+  'BEAR','BOAR','DEER','ELK','MOOSE','BISON','WOLF','COYOTE','FOX','RABBIT','RACCOON','SQUIRREL',
+  'BEAVER','BADGER','MOUNTAIN_GOAT','TURKEY','CROW'
+]);
+
+export const SURVIVAL_WILDLIFE_ARCHETYPES=Object.freeze({
+  BEAR:Object.freeze({bodyPlan:'QUADRUPED_HEAVY',size:'LARGE',locomotion:'HEAVY_QUADRUPED',temperament:'DEFENSIVE_PREDATOR',skinVariants:['DARK_BROWN','BLACK','CINNAMON']}),
+  BOAR:Object.freeze({bodyPlan:'QUADRUPED_HEAVY',size:'MEDIUM',locomotion:'LOW_HEAVY_QUADRUPED',temperament:'TERRITORIAL',skinVariants:['DARK_BROWN','MUDDY_BROWN','GREY_BROWN']}),
+  DEER:Object.freeze({bodyPlan:'QUADRUPED_HOOFED',size:'MEDIUM',locomotion:'HOOFED_LIGHT',temperament:'SKITTISH_PREY',skinVariants:['TAN','BROWN','DARK_WINTER']}),
+  ELK:Object.freeze({bodyPlan:'QUADRUPED_HOOFED',size:'LARGE',locomotion:'HOOFED_HEAVY',temperament:'ALERT_PREY',skinVariants:['BROWN','DARK_NECK','WINTER']}),
+  MOOSE:Object.freeze({bodyPlan:'QUADRUPED_HOOFED',size:'XLARGE',locomotion:'HOOFED_HEAVY',temperament:'DEFENSIVE',skinVariants:['DARK_BROWN','GREY_BROWN']}),
+  BISON:Object.freeze({bodyPlan:'QUADRUPED_HEAVY',size:'XLARGE',locomotion:'HEAVY_HERD',temperament:'DEFENSIVE_HERD',skinVariants:['DARK_BROWN','BLACK_BROWN']}),
+  WOLF:Object.freeze({bodyPlan:'QUADRUPED_CANINE',size:'MEDIUM',locomotion:'CANINE',temperament:'PACK_PREDATOR',skinVariants:['GREY','DARK_GREY','BROWN_GREY']}),
+  COYOTE:Object.freeze({bodyPlan:'QUADRUPED_CANINE',size:'MEDIUM_SMALL',locomotion:'CANINE_LIGHT',temperament:'OPPORTUNISTIC',skinVariants:['SAND','GREY_BROWN']}),
+  FOX:Object.freeze({bodyPlan:'QUADRUPED_CANINE',size:'SMALL',locomotion:'CANINE_LIGHT',temperament:'SKITTISH',skinVariants:['RED','DARK_RED','SILVER']}),
+  RABBIT:Object.freeze({bodyPlan:'QUADRUPED_SMALL',size:'SMALL',locomotion:'HOPPER',temperament:'FLEE',skinVariants:['BROWN','GREY','WHITE']}),
+  RACCOON:Object.freeze({bodyPlan:'QUADRUPED_SMALL',size:'SMALL',locomotion:'SMALL_MAMMAL',temperament:'CURIOUS',skinVariants:['GREY_MASK','BROWN_MASK']}),
+  SQUIRREL:Object.freeze({bodyPlan:'QUADRUPED_SMALL',size:'TINY',locomotion:'SMALL_MAMMAL_FAST',temperament:'FLEE',skinVariants:['RED_BROWN','GREY']}),
+  BEAVER:Object.freeze({bodyPlan:'QUADRUPED_SMALL',size:'SMALL',locomotion:'SMALL_MAMMAL_HEAVY',temperament:'NEUTRAL',skinVariants:['BROWN','DARK_BROWN']}),
+  BADGER:Object.freeze({bodyPlan:'QUADRUPED_SMALL',size:'SMALL',locomotion:'SMALL_MAMMAL_HEAVY',temperament:'DEFENSIVE',skinVariants:['BLACK_WHITE','BROWN_WHITE']}),
+  MOUNTAIN_GOAT:Object.freeze({bodyPlan:'QUADRUPED_HOOFED',size:'MEDIUM',locomotion:'HOOFED_CLIMBER',temperament:'NEUTRAL',skinVariants:['WHITE','CREAM','GREY']}),
+  TURKEY:Object.freeze({bodyPlan:'FLYING_BIRD',size:'SMALL',locomotion:'GROUND_BIRD',temperament:'FLEE',skinVariants:['DARK_BRONZE','BROWN']}),
+  CROW:Object.freeze({bodyPlan:'FLYING_BIRD',size:'TINY',locomotion:'BIRD',temperament:'FLEE',skinVariants:['BLACK','BLUE_BLACK']})
+});
+
+export const SURVIVAL_LOW_POLY_VISUAL_PROFILE=Object.freeze({
+  target:'POLISHED_STYLIZED_LOW_POLY_FOREST_SURVIVAL',
+  productionVerified:false,
+  styleFamily:'LOW_POLY',
+  qualityBar:'MOBILE_READABLE_COMMERCIAL_ROBLOX_SURVIVAL',
+  silhouette:Object.freeze({
+    readableAtDistance:true,
+    speciesSpecificHeadNeckBackLegProportion:true,
+    colorOnlySpeciesIdentityForbidden:true,
+    chunkyPrimaryMassesWithSecondaryAnatomy:true
+  }),
+  mesh:Object.freeze({
+    articulatedMeshPreferred:true,
+    primitiveOnlyFinalAnimalForbidden:true,
+    facetedNormals:true,
+    largeReadablePlanes:true,
+    controlledPolygonDensity:true,
+    separateJawEarTailAndLegMotionWhenApplicable:true
+  }),
+  material:Object.freeze({
+    matteRoughness:true,
+    restrainedSpecular:true,
+    subtleValueVariationAcrossBodyPlanes:true,
+    furAndHideSuggestedByShapeAndValueNotDenseHairCards:true,
+    muddyGroundContactVariationAllowed:true
+  }),
+  palette:Object.freeze({
+    forestGreens:'DEEP_TO_MID_NATURAL_GREENS',
+    bark:'DARK_WARM_BROWN',
+    ground:'MOSS_GRASS_EARTH',
+    wildlife:'NATURAL_BROWN_GREY_TAN_BLACK',
+    saturation:'MODERATE',
+    contrast:'CLEAR_SILHOUETTE_OVER_BACKGROUND'
+  }),
+  environment:Object.freeze({
+    coniferAndBroadleafMix:true,
+    layeredTreeCanopy:true,
+    lowPolyRocksLogsStumps:true,
+    lightDistanceFog:true,
+    softOvercastOrMorningLight:true,
+    terrainHeightBreaks:true,
+    sparseGroundPlants:true
+  }),
+  player:Object.freeze({
+    robloxAvatarCompatible:true,
+    groundedFootPlacement:true,
+    toolGripAlignmentRequired:true,
+    bodyLeanMatchesAcceleration:true,
+    idleBreathingAndWeightShift:true
+  }),
+  referencePolicy:'MATCH_REFERENCE_QUALITY_AND_SURVIVAL_READABILITY_WITH_ORIGINAL_ASSETS',
+  exactThirdPartyMeshTextureSkinCopy:false,
+  nativeRuntimeVerificationRequired:true
+});
+
+export function createSurvivalWildlifeAssetProfile({species='BEAR',platform='ROBLOX',skinVariant=''}={}){
+  const key=upper(species)||'BEAR';
+  const archetype=SURVIVAL_WILDLIFE_ARCHETYPES[key]||SURVIVAL_WILDLIFE_ARCHETYPES.BEAR;
+  const variant=upper(skinVariant)||archetype.skinVariants[0];
+  return Object.freeze({
+    target:SURVIVAL_LOW_POLY_VISUAL_PROFILE.target,
+    species:SURVIVAL_WILDLIFE_ARCHETYPES[key]?key:'BEAR',
+    platform:upper(platform),
+    bodyPlan:archetype.bodyPlan,
+    size:archetype.size,
+    locomotionFamily:archetype.locomotion,
+    temperament:archetype.temperament,
+    skinVariant:variant,
+    availableSkinVariants:freezeList(archetype.skinVariants),
+    style:SURVIVAL_LOW_POLY_VISUAL_PROFILE,
+    rigRequirements:Object.freeze({
+      articulatedLegs:true,
+      spineAndNeck:true,
+      jawWhenAttackOrGrazeUsesMouth:true,
+      tailWhenSpeciesHasVisibleTail:true,
+      earMotionWhenReadable:true,
+      rootOnlyMotionForbidden:true
+    }),
+    visualRequirements:Object.freeze({
+      silhouetteMustReadFromMobileCamera:true,
+      speciesAnatomyMustRemainDistinct:true,
+      meshAndMaterialMustExceedPrimitivePlaceholder:true,
+      skinRequiresShapeOrMaterialVariationBeyondHue:true,
+      lodRequired:true,
+      groundContactShadowRequired:true
+    }),
+    productionVerified:false,
+    runtimeVerificationRequired:true,
+    exactThirdPartyAssetCopy:false
+  });
+}
 
 export const CLOTHING_LAYER_SLOTS=Object.freeze([
   'HEAD','HAIR','FACE','NECK','TORSO_INNER','TORSO_OUTER','SHOULDER','ARM','GLOVE','BELT','LEG','BOOT','BACK','CAPE','ACCESSORY'
