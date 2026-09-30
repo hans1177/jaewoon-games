@@ -352,9 +352,33 @@ jobs:
           echo 'VIBE2_WEB_SAVE_KEY_COMPATIBILITY=PASS'
           echo 'VIBE2_WEB_STATIC_QA=PASS'
 
+      - name: Check released game eligibility before canonical web deployment
+        id: release_gate
+        if: steps.webqa.outcome == 'success'
+        env:
+          GAME_ID: ${{ needs.inspect.outputs.game_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main company-runtime
+          mkdir -p /tmp/web-release-policy
+          git show origin/main:tools/company-platform-exposure-control.mjs > /tmp/web-release-policy/company-platform-exposure-control.mjs
+          git show origin/main:company-learning/platform-release-roadmap.json > /tmp/web-release-policy/policy.json
+          git show origin/company-runtime:development-queue.json > /tmp/web-release-policy/queue.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {evaluateInternalRelease} from '/tmp/web-release-policy/company-platform-exposure-control.mjs';
+          const policy=JSON.parse(fs.readFileSync('/tmp/web-release-policy/policy.json','utf8'));
+          const queue=JSON.parse(fs.readFileSync('/tmp/web-release-policy/queue.json','utf8'));
+          const item=(queue.items||[]).find(row=>row.gameId===process.env.GAME_ID)||{};
+          const eligible=['ROBLOX','UNITY'].some(platform=>evaluateInternalRelease(item,platform,policy).homepageReady);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`eligible=${eligible}\n`);
+          console.log('WEB_SERVER_PUBLICATION='+(eligible?'ELIGIBLE':'SKIPPED_DEVELOPMENT'));
+          NODE
+
       - name: Promote approved web source root through reviewed PR
         id: promote
-        if: steps.webqa.outcome == 'success'
+        if: steps.webqa.outcome == 'success' && steps.release_gate.outputs.eligible == 'true'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -449,6 +473,7 @@ jobs:
           TASK_ID: ${{ needs.inspect.outputs.task_id }}
           GAME_ID: ${{ needs.inspect.outputs.game_id }}
           QA_OUTCOME: ${{ steps.webqa.outcome }}
+          RELEASE_ELIGIBLE: ${{ steps.release_gate.outputs.eligible }}
           PROMOTE_OUTCOME: ${{ steps.promote.outcome }}
           PROMOTED_MAIN_SHA: ${{ steps.promote.outputs.promotion_sha }}
           PROMOTED_SOURCE_TREE_SHA: ${{ steps.promote.outputs.source_tree_sha }}
@@ -458,6 +483,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$QA_OUTCOME" = success ] && [ "$PROMOTE_OUTCOME" = success ]; then result=PASS; else result=FAIL; fi
+          if [ "$QA_OUTCOME" = success ] && [ "$RELEASE_ELIGIBLE" = false ]; then result=DEVELOPMENT_VERIFIED; fi
           if [ "$result" = PASS ] && [[ ! "$PROMOTED_SOURCE_TREE_SHA" =~ ^[0-9a-f]{40}$ ]]; then
             echo 'WEB_PROMOTED_SOURCE_TREE_IDENTITY=INVALID' >&2
             result=FAIL
@@ -466,6 +492,8 @@ jobs:
             if [ "$result" = PASS ]; then
               gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main -f released_game_id="$GAME_ID" -f release_task_id="$TASK_ID" -f release_origin="$CANDIDATE_ORIGIN" || true
               echo 'AUTONOMOUS_POST_RELEASE_HEALTH=DISPATCHED'
+            elif [ "$result" = DEVELOPMENT_VERIFIED ]; then
+              echo 'AUTONOMOUS_WEB_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT'
             else
               echo 'AUTONOMOUS_WEB_PUBLICATION_RETRY_REQUIRED=YES'
             fi
@@ -488,7 +516,9 @@ jobs:
           for attempt in 1 2 3; do
             git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
-            if [ "$result" = PASS ]; then
+            if [ "$result" = DEVELOPMENT_VERIFIED ]; then
+              node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-static-qa-pass,web-server-publication-skipped-development,web-development-candidate:${CANDIDATE_BRANCH},actions-run-${GITHUB_RUN_ID}"
+            elif [ "$result" = PASS ]; then
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-deploy-attempted,web-static-qa-pass,web-cloudflare-deployment-pass,main-pr-merged,web-runtime-source-tree:${PROMOTED_SOURCE_TREE_SHA},web-main-sha:${PROMOTED_MAIN_SHA},web-publication-retry-resolved,actions-run-${GITHUB_RUN_ID}"
             else
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-deploy-attempted,web-publication-retry-required,web-qa-${QA_OUTCOME},promotion-${PROMOTE_OUTCOME},actions-run-${GITHUB_RUN_ID}"
@@ -511,7 +541,7 @@ jobs:
             --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
             --arg task "${TASK_ID:-}" \
             --arg outcome "VERIFIED" \
-            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"web-f9-publish-dispatched-next-cycle"}}')"
+            '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,source_task:$task,source_outcome:$outcome,reason:"web-f9-release-classified-next-cycle"}}')"
           curl --fail-with-body --silent --show-error \
             --request POST \
             --header 'Accept: application/vnd.github+json' \

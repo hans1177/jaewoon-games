@@ -1,5 +1,5 @@
 {
-  "version": 494,
+  "version": 495,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -1360,15 +1360,15 @@
       "publicationTargetFromStudioForbidden": true,
       "postInternalReleaseActualVibePlayRequired": true,
       "verifiedCyclePublication": {
-        "version": 1,
-        "authority": "OWNER_DIRECTIVE_2026-09-28",
-        "objective": "RUN_EVERY_ROBLOX_EVOLUTION_CYCLE_THROUGH_F0_TO_F9_DISPATCH_EXACT_F9_CANONICAL_PUBLISH_THEN_IMMEDIATELY_START_NEXT_CYCLE_WITHOUT_WAITING_FOR_PUBLICATION_OUTCOME",
+        "version": 2,
+        "authority": "OWNER_DIRECTIVE_2026-09-30",
+        "objective": "RELEASED_GAMES_DISPATCH_EXACT_F9_CANONICAL_PUBLISH; DEVELOPMENT_GAMES_SKIP_PUBLICATION; ALL_GAMES_IMMEDIATELY_CONTINUE_F0_TO_F9",
         "sequence": [
           "EVOLUTION_SOURCE_MUTATION",
           "F0_SOURCE_INTEGRITY",
           "F1_TO_F8_EXACT_PRIVATE_VALIDATION_TARGET_AND_STUDIO_QA",
           "F9_EXACT_FINAL_REVIEW",
-          "DISPATCH_EXACT_F9_ARTIFACT_TO_CANONICAL_GAME_TARGET",
+          "DISPATCH_EXACT_F9_ARTIFACT_ONLY_IF_RELEASED_ELSE_SKIP_CANONICAL_PUBLISH",
           "START_NEXT_EVOLUTION_CYCLE_IMMEDIATELY",
           "RECONCILE_CANONICAL_PUBLISH_RESULT_ASYNC"
         ],
@@ -1395,7 +1395,11 @@
         "publicationRetryMode": "AUTOMATIC_UNBOUNDED_CAUSAL_REDISPATCH",
         "publicationRetryMustPreserveExactFailedCycleIdentity": true,
         "nextCycleStartsAfterPublishDispatch": true,
-        "publicationOutcomeBlocksEvolution": false
+        "publicationOutcomeBlocksEvolution": false,
+        "canonicalServerPublicationEligibility": "VERIFIED_LOBBY_INTERNAL_RELEASE_OR_EXPLICIT_OWNER_CONFIRMED_RELEASE",
+        "developmentGameCanonicalPublicationAllowed": false,
+        "developmentGameNextCycleRequiresPublicationDispatch": false,
+        "publicationDispatchRequirementScope": "RELEASED_GAMES_ONLY"
       }
     },
     "validationMode": "HEADLESS_FAST_MVP",
@@ -5461,7 +5465,7 @@
         "POST_PUBLIC_HOTFIX_MINOR_MAJOR_OPERATIONS"
       ],
       "internalRelease": {
-        "defaultAfterNativeTechnicalEvidence": true,
+        "defaultAfterNativeTechnicalEvidence": false,
         "externalDiscoveryForbidden": true,
         "externalMarketingForbidden": true,
         "homepageVisibility": "INTERNAL_COMPANY_HOME_FULL_DETAIL_ALLOWED",
@@ -5498,6 +5502,56 @@
           "fullTwoPlusClientPlatformEvidenceStillRequiredBeforeExternalPublicRelease": true,
           "recurringFullMultiplayerVerificationContinuesAfterInternalRelease": true,
           "multiplayerVerificationMayNotDelayOtherDevelopmentOrInternalPlaytest": true
+        },
+        "lobbyGate": {
+          "version": 1,
+          "authority": "OWNER_DIRECTIVE_2026-09-30",
+          "enabled": true,
+          "meaning": "INTERNAL_RELEASE_EQUALS_HOMEPAGE_RELEASED_GAME_WITH_VERIFIED_LOBBY",
+          "minimumDesignAxes": [
+            "identity",
+            "coreLoop",
+            "sessionRules",
+            "signatureSystems",
+            "presentation"
+          ],
+          "runtimeScenarios": [
+            "character-camera-ready",
+            "adaptive-start-playability",
+            "adaptive-spawn-safety",
+            "adaptive-world-safety",
+            "adaptive-ui-commercial-quality",
+            "adaptive-ui-blocking-overlay",
+            "adaptive-semantic-interaction-effect",
+            "adaptive-environment-surface",
+            "adaptive-audio-surface",
+            "adaptive-save-rejoin-persistence",
+            "visual-asset-load-integrity"
+          ],
+          "lobbyMeaning": "GENRE_SPECIFIC_USABLE_ENTRY_HUB_MANSION_VILLAGE_OR_CAMP_WITH_REAL_INPUT_AND_INTERACTION",
+          "exactSourceArtifactBindingRequired": true,
+          "actualRuntimeEvidenceRequired": true,
+          "publishedTargetRequiredForHomepageRelease": true,
+          "unverifiedReleaseForbidden": true,
+          "historicalDeploymentAloneIsNotRelease": true,
+          "existingGameplaySaveBalancePreserved": true,
+          "externalPublicReleaseGateUnchanged": true,
+          "ownerConfirmedReleases": [
+            {
+              "gameId": "horror-escape-room",
+              "platform": "ROBLOX",
+              "placeId": "98222620265768",
+              "authority": "OWNER_DIRECTIVE",
+              "confirmedAt": "2026-09-30T13:42:15Z",
+              "runtimePassImplied": false
+            }
+          ],
+          "experienceLabels": {
+            "LOBBY": "로비 체험",
+            "GAMEPLAY": "본게임 가능",
+            "DEVELOPMENT": "개발 중"
+          },
+          "missingEvidenceAction": "SHOW_IN_DEVELOPMENT_AND_CONTINUE_F0_TO_F9_WITHOUT_CANONICAL_SERVER_PUBLICATION"
         }
       },
       "secondGate": {
@@ -7010,7 +7064,7 @@
       }
     },
     "verifiedF0F9PublicationLoop": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-28",
       "status": "ACTIVE_EXECUTABLE_CONTRACT",
       "appliesTo": [
@@ -7018,7 +7072,7 @@
         "ROBLOX",
         "UNITY"
       ],
-      "objective": "EVERY_GAME_EVOLUTION_DELTA_RUNS_F0_THROUGH_F9_THEN_DISPATCHES_THE_EXACT_F9_VERIFIED_VERSION_TO_THE_CONFIGURED_PLATFORM_TARGET_AND_IMMEDIATELY_STARTS_THE_NEXT_EVOLUTION_CYCLE_WITHOUT_WAITING_FOR_PUBLICATION_RESULT_OR_VISIBILITY",
+      "objective": "RELEASED_GAMES_PUBLISH_EXACT_F9_VERIFIED_VERSION; DEVELOPMENT_GAMES_REPEAT_F0_TO_F9_WITHOUT_CANONICAL_SERVER_PUBLICATION",
       "sequence": [
         "GAME_SOURCE_MUTATION",
         "F0",
@@ -7031,7 +7085,8 @@
         "F7",
         "F8",
         "F9",
-        "PLATFORM_PUBLISH_OR_DEPLOY_DISPATCH",
+        "RELEASE_CLASSIFICATION",
+        "PUBLISH_ONLY_IF_RELEASED",
         "IMMEDIATE_NEXT_EVOLUTION_CYCLE"
       ],
       "f9Terminal": false,
@@ -7040,7 +7095,7 @@
       "publicationOutcomeBlocksNextEvolution": false,
       "publicationVisibilityBlocksNextEvolution": false,
       "internalOrExternalVisibilityIrrelevantToEvolutionLoop": true,
-      "nextCycleTrigger": "F9_VERIFIED_AND_PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED",
+      "nextCycleTrigger": "F9_VERIFIED_AND_RELEASED_PUBLISH_DISPATCHED_OR_DEVELOPMENT_PUBLICATION_SKIPPED",
       "publishFailureAction": "KEEP_EVOLUTION_RUNNING_AND_ROUTE_PUBLICATION_FAILURE_TO_EXISTING_CAUSAL_REPAIR_RETRY",
       "publicationFailureMustRemainRetryTracked": true,
       "publicationRetryMode": "AUTOMATIC_UNBOUNDED_CAUSAL_REDISPATCH",
@@ -7068,7 +7123,13 @@
           "deploymentTarget": "UNITY_CONFIGURED_INTERNAL_OR_CLOSED_TEST_BUILD",
           "nextCycleRoute": "vibe2-fanin-refill"
         }
-      }
+      },
+      "canonicalServerPublicationEligibility": "VERIFIED_LOBBY_INTERNAL_RELEASE_OR_EXPLICIT_OWNER_CONFIRMED_RELEASE",
+      "developmentGamePublicationAllowed": false,
+      "developmentGameNextCycleRequiresPublicationDispatch": false,
+      "privateValidationArtifactForF0ToF9Allowed": true,
+      "validationArtifactMayReplaceCanonicalServer": false,
+      "homepageClassificationAndPublicationMustUseSameGate": true
     },
     "existingRobloxSourceIntake": {
       "authority": "OWNER_DIRECTIVE_2026-09-30",
@@ -7351,7 +7412,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-30T04:08:00.000Z",
+  "updatedAt": "2026-09-30T13:43:45.000Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -7416,7 +7477,7 @@
       "testCandidateManifestIsHomepageShelf": false
     },
     "frontDoor": {
-      "version": 3,
+      "version": 4,
       "authority": "OWNER_DIRECTIVE_2026-09-24_ASSET_LIBRARY_SURFACE",
       "mode": "SAMPLE_FRONT_DOOR_V1",
       "legacyMixingForbidden": true,
@@ -7459,11 +7520,13 @@
       "shelves": [
         {
           "id": "PLATFORM_AVAILABLE",
-          "source": "VERIFIED_INTERNAL_PLATFORM_RELEASE"
+          "source": "VERIFIED_LOBBY_INTERNAL_RELEASE_OR_OWNER_CONFIRMED",
+          "label": "출시 게임"
         },
         {
           "id": "IN_DEVELOPMENT",
-          "source": "DEVELOPMENT_CONFIRMED_EXCLUDING_PLATFORM_AVAILABLE"
+          "source": "ALL_ACTIVE_NON_RELEASED_GAMES",
+          "label": "개발 중"
         }
       ],
       "forbiddenFrontDoorElements": [
@@ -7555,7 +7618,12 @@
         "playableWebCompanionRequiresPlayableAndArchive": true,
         "playableWebCompanionRequiresExistingCanonicalIndex": true,
         "playableWebCompanionMayBeDirectLaunchFallback": true,
-        "playableWebCompanionDoesNotClaimRelease": true
+        "playableWebCompanionDoesNotClaimRelease": true,
+        "platformAvailableShelfRequiresVerifiedLobbyOrOwnerConfirmation": true,
+        "releasedExperienceLabels": [
+          "로비 체험",
+          "본게임 가능"
+        ]
       },
       "recentUpdates": {
         "enabled": true,
@@ -7577,7 +7645,7 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 7,
+    "version": 8,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
@@ -7886,7 +7954,8 @@
       "runtimeMissingGamesMayBeMergedWhenLiveQueueEligible": true,
       "canonicalNormalizationRequiredBeforePublication": true,
       "normalizationOwner": "tools/company-status-sync.mjs + tools/game-catalog-normalization.mjs"
-    }
+    },
+    "releaseClassificationSource": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalRelease.lobbyGate"
   },
   "longHorizonVision": {
     "version": 2,
@@ -9296,7 +9365,21 @@
       "directResponsibleGameSourceRequired": true,
       "existingVerifiedRobloxPlaceRequired": true,
       "temporaryPublishArtifactCleanupRequired": true,
-      "scopeDoesNotChangeOtherGames": true
+      "scopeDoesNotChangeOtherGames": true,
+      "homepageReleaseAndPublication": {
+        "authority": "OWNER_DIRECTIVE_2026-09-30",
+        "released": "MINIMUM_DESIGN_AND_VERIFIED_LOBBY_OR_EXPLICIT_OWNER_CONFIRMATION",
+        "ownerConfirmedReleasedGameIds": [
+          "horror-escape-room"
+        ],
+        "homepageSections": [
+          "출시 게임",
+          "개발 중"
+        ],
+        "releasedCycle": "F0_TO_F9_THEN_CANONICAL_SERVER_PUBLISH_THEN_REPEAT",
+        "developmentCycle": "F0_TO_F9_THEN_REPEAT_WITHOUT_CANONICAL_SERVER_PUBLISH",
+        "externalPublicExposureGateUnchanged": true
+      }
     }
   },
   "vibeExecutionLaneContract": {

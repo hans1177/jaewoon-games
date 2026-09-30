@@ -1,3 +1,4 @@
+// 파일명: qa/homepage-manager-publication-order.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -101,30 +102,28 @@ test('homepage live runtime state bypasses the PWA cache',()=>{
   assert.ok(sw.includes('/assets\\/homepage-enhancements\\.js'), 'homepage renderer must stay network-only');
 });
 
-test('homepage mirror exposes the three dedicated internal Roblox links',()=>{
+test('homepage preserves target history but releases only the confirmed lobby',()=>{
   const exposure=JSON.parse(fs.readFileSync('homepage-platform-exposure.json','utf8'));
-  const expected={
-    'cozy-island':'116850096561713',
-    'daechung-rpg':'126302702438348',
-    'horror-escape-room':'98222620265768',
-  };
+  const expected={'cozy-island':'116850096561713','daechung-rpg':'126302702438348','horror-escape-room':'98222620265768'};
   for(const [gameId,placeId] of Object.entries(expected)){
-    const game=(exposure.games||[]).find(row=>row.gameId===gameId);
-    const roblox=(game?.platforms||[]).find(row=>row.platform==='ROBLOX');
-    assert.equal(roblox?.placeId,placeId);
-    assert.equal(roblox?.internalUrl,`https://www.roblox.com/games/${placeId}`);
-    assert.equal(roblox?.internalReleaseReady,true);
-    assert.equal(roblox?.internalLinkSuppressedReason,null);
+    const game=exposure.games.find(row=>row.gameId===gameId);
+    const roblox=game.platforms.find(row=>row.platform==='ROBLOX');
+    assert.equal(roblox.placeId,placeId);
+    assert.equal(roblox.internalUrl,`https://www.roblox.com/games/${placeId}`);
+    assert.equal(roblox.internalReleaseReady,gameId==='horror-escape-room');
+    assert.equal(roblox.releaseReadiness.homepageReady,gameId==='horror-escape-room');
   }
 });
 
-test('homepage keeps the three current internal releases visible before runtime sync',()=>{
+test('homepage fallback exposes only the owner-confirmed release before runtime sync',()=>{
   const index=fs.readFileSync('index.html','utf8');
-  assert.match(index,/id="homeInternalReleaseFallback"/);
-  for(const id of ['cozy-island','daechung-rpg','horror-escape-room'])assert.match(index,new RegExp(`data-game-id="${id}"`));
-  for(const title of ['포근섬: 작은 왕국 키우기','5포탈 RPG: 던전 파티','심야 감염전 \\[4대4\\]'])assert.match(index,new RegExp(title));
-  assert.match(index,/Roblox · 내부출시/);
-  for(const placeId of ['116850096561713','126302702438348','98222620265768'])assert.match(index,new RegExp(`href="https:\\/\\/www\\.roblox\\.com\\/games\\/${placeId}"`));
+  const fallback=index.split('id="homeInternalReleaseFallback"')[1].split('</section>')[0];
+  assert.match(fallback,/data-game-id="horror-escape-room"/);
+  assert.doesNotMatch(fallback,/data-game-id="(?:cozy-island|daechung-rpg)"/);
+  assert.match(fallback,/로비 체험/);
+  assert.match(fallback,/98222620265768/);
+  assert.match(index,/id="releasedCount"/);
+  assert.match(index,/id="developmentCount"/);
   assert.match(homepage,/homeInternalReleaseFallback/);
   assert.match(homepage,/document\.getElementById\(id\)\?\.remove\(\)/);
 });
@@ -400,7 +399,7 @@ test('featured hero is explicit and ChatGPT launcher is app-first with safe fall
   const index=fs.readFileSync('index.html','utf8');
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(runtime,/const FEATURED_GAME_ID='daechung-rpg'/);
-  assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID\)\|\|rows\[0\]/);
+  assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID&&hasInternalRelease\(item\)\)\|\|rows\.find\(hasInternalRelease\)\|\|rows\[0\]/);
   assert.match(index,/package=com\.openai\.chatgpt/);
   assert.match(index,/\/command\.html\?from=chatgpt-shortcut/);
   assert.match(index,/function openChatGpt\(\)/);
@@ -483,8 +482,9 @@ test('Unity Web homepage links require a deployable manifest or verified Unity i
 });
 test('platform availability requires explicit internal release evidence from company-runtime',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  assert.match(runtime,/internalReleaseReady===true\|\|roblox\.publicRelease===true/);
-  assert.match(runtime,/internalReleaseReady===true\|\|unity\.publicRelease===true/);
+  assert.match(runtime,/roblox\.internalReleaseReady===true&&roblox\.releaseReadiness\?\.homepageReady===true/);
+  assert.match(runtime,/unity\.internalReleaseReady===true&&unity\.releaseReadiness\?\.homepageReady===true/);
+  assert.doesNotMatch(runtime,/internalReleaseReady===true\|\|(?:roblox|unity)\.publicRelease===true/);
   assert.match(runtime,/exposureAuthority/);
   assert.match(runtime,/supportedPlatforms/);
   assert.match(runtime,/웹 플레이/);

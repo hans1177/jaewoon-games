@@ -136,6 +136,8 @@ export function compileHomepageCentralPolicy(policy={}){
   const managerContract=source.managerContract||{};
   const testingContract=source.testingContract||{};
   const documentationSyncContract=source.documentationSyncContract||{};
+  const lobbyGate=policy.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.internalRelease?.lobbyGate||{};
+  if(lobbyGate.enabled!==true||lobbyGate.unverifiedReleaseForbidden!==true)errors.push('HOMEPAGE_LOBBY_RELEASE_GATE');
   if(clean(source.managerContractAuthority)!=='CENTRAL_ROADMAP_ONLY_DIRECTIVE_IS_COMPATIBILITY_MIRROR')errors.push('HOMEPAGE_MANAGER_CONTRACT_AUTHORITY');
   if(source.directiveMirrorMayNotOverrideCentral!==true)errors.push('HOMEPAGE_DIRECTIVE_OVERRIDE_FORBIDDEN');
   if(source.homepageWorkerMustConsumeCompiledCentralProjection!==true)errors.push('HOMEPAGE_WORKER_PROJECTION_REQUIRED');
@@ -171,6 +173,7 @@ export function compileHomepageCentralPolicy(policy={}){
       directUnsupervisedPublicWriteForbidden:pipeline.directUnsupervisedPublicWriteForbidden===true
     },
     managerContract,
+    lobbyGate,
     testingContract,
     documentationSyncContract,
     managerContractAuthority:clean(source.managerContractAuthority)||null,

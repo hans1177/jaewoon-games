@@ -518,7 +518,7 @@ test('Web Roblox and Unity all repeat F0 through F9 then deploy and immediately 
   assert.deepEqual(loop.appliesTo,['WEB','ROBLOX','UNITY']);
   assert.deepEqual(loop.sequence,[
     'GAME_SOURCE_MUTATION','F0','F1','F2','F3','F4','F5','F6','F7','F8','F9',
-    'PLATFORM_PUBLISH_OR_DEPLOY_DISPATCH','IMMEDIATE_NEXT_EVOLUTION_CYCLE'
+    'RELEASE_CLASSIFICATION','PUBLISH_ONLY_IF_RELEASED','IMMEDIATE_NEXT_EVOLUTION_CYCLE'
   ]);
   assert.equal(loop.f9Terminal,false);
   assert.equal(loop.f10Forbidden,true);
@@ -526,7 +526,9 @@ test('Web Roblox and Unity all repeat F0 through F9 then deploy and immediately 
   assert.equal(loop.publicationOutcomeBlocksNextEvolution,false);
   assert.equal(loop.publicationVisibilityBlocksNextEvolution,false);
   assert.equal(loop.internalOrExternalVisibilityIrrelevantToEvolutionLoop,true);
-  assert.equal(loop.nextCycleTrigger,'F9_VERIFIED_AND_PLATFORM_PUBLISH_OR_DEPLOY_DISPATCHED');
+  assert.equal(loop.nextCycleTrigger,'F9_VERIFIED_AND_RELEASED_PUBLISH_DISPATCHED_OR_DEVELOPMENT_PUBLICATION_SKIPPED');
+  assert.equal(loop.developmentGamePublicationAllowed,false);
+  assert.equal(loop.developmentGameNextCycleRequiresPublicationDispatch,false);
   assert.equal(loop.repeat,'UNBOUNDED_UNTIL_OWNER_HOLD_OR_PROJECT_REMOVAL');
   const efficiency=roadmap.developmentLifecycleMachine.validationEfficiencyOptimization;
   assert.deepEqual(efficiency.appliesTo,['WEB','ROBLOX','UNITY']);

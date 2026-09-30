@@ -284,6 +284,7 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,dedicatedRegistry,stamp
     designDate:design.date,
     minimumDesignContract:{
       version:1,pass:true,source:design.file,date:design.date,
+      releaseChecklist:design.gate.releaseChecklist,
       commonCoreReady:true,platformProfiles:{ROBLOX:true,UNITY:true,distinct:true}
     },
     platformDesignProfiles:{

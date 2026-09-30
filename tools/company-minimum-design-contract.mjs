@@ -48,11 +48,20 @@ export function evaluateMinimumDesignContract(record={}){
   if(!roblox)blockers.push('ROBLOX_PLATFORM_PROFILE_INCOMPLETE');
   if(!unity)blockers.push('UNITY_PLATFORM_PROFILE_INCOMPLETE');
   if(roblox&&unity&&!distinct)blockers.push('PLATFORM_PROFILES_MUST_DIFFER');
+  // 개발 착수 조건은 보존하고, 출시 전 확정할 다섯 설계 축을 별도로 전달한다.
+  const releaseChecklist={
+    identity:textReady(content.identity,24),
+    coreLoop:list(content.coreLoop).filter(v=>textReady(v,6)).length>=3,
+    sessionRules:list(content.failureRetryRisk?.failureStates).length>=2&&textReady(content.failureRetryRisk?.retryFlow||content.failureRetryRisk?.retryDirection,8),
+    signatureSystems:list(content.signatureSystems).filter(v=>textReady(v?.name,2)&&textReady(v?.purpose,8)).length>=2,
+    presentation:textReady(content.visualDirection,16)&&Boolean(content.artAudioDirection)&&Boolean(content.mobileUx)
+  };
   return Object.freeze({
     version:1,
     pass:common&&roblox&&unity&&distinct,
     commonCoreReady:common,
     platformProfiles:{ROBLOX:roblox,UNITY:unity,distinct},
+    releaseChecklist:Object.freeze(releaseChecklist),
     blockers:Object.freeze(blockers)
   });
 }

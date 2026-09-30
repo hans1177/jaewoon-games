@@ -3,6 +3,7 @@
 // 임포트
 import fs from 'node:fs';
 import { compileHomepageCentralPolicy } from './company-shared-context.mjs';
+import { evaluateInternalRelease } from './company-platform-exposure-control.mjs';
 
 const clean=v=>String(v??'').trim();
 const bool=v=>v===true;
@@ -43,7 +44,7 @@ export function verifiedCompletionHistory(item={},platform='ROBLOX'){
   return{count:records.length,lastCompletedAt:records[0]?.completedAt||null,evidenceUrl:records[0]?.evidenceUrl||null,scope:'RETAINED_VERIFIED_PUBLICATION_RECORDS',records:records.slice(0,10)};
 }
 
-function robloxState(item={}){
+function robloxState(item={},policy={}){
   const pub=item.robloxPublicationTarget||{};
   const rel=item.robloxReleaseEvidence||{};
   const internal=item.robloxInternalReleaseEvidence||{};
@@ -61,9 +62,8 @@ function robloxState(item={}){
   const preservedInternalRelease=bool(item.robloxInternalReleasePublished)
     ||(bool(internal.internalRelease)&&bool(internal.published))
     ||bool(migration.internalReleasePreserved);
-  const internalReady=preservedInternalRelease
-    ||bool(item.robloxInternalReleaseReady)
-    ||(!staleSharedTarget&&((published&&!explicitPublic)||(published&&runtime&&regression)));
+  const releaseReadiness=evaluateInternalRelease(item,'ROBLOX',policy);
+  const internalReady=releaseReadiness.homepageReady;
   const publicReleaseReady=!staleSharedTarget&&(bool(item.robloxPublicReleaseReady)||(runtime&&qa&&regression&&published));
   return{
     platform:'ROBLOX',
@@ -73,6 +73,8 @@ function robloxState(item={}){
     independentQaPassed:qa,
     regressionPassed:regression,
     internalReleaseReady:internalReady,
+    releaseReadiness,
+    historicalInternalRelease:preservedInternalRelease,
     internalReleaseState:internalReady?'PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE':'NOT_READY',
     publicReleaseReady,
     publicRelease:explicitPublic,
@@ -83,7 +85,7 @@ function robloxState(item={}){
     internalLinkSuppressedReason:staleSharedTarget?'STALE_SHARED_TARGET_AWAITING_DEDICATED_TARGET':null
   };
 }
-function unityState(item={}){
+function unityState(item={},policy={}){
   const evidence=item.unityExecutionEvidence||item.executionEvidence||{};
   const build=num(item.unityBuildRunId);
   const runtime=bool(evidence.runtimePassed)||num(item.unityRuntimeSmokeRunId)!==null;
@@ -91,7 +93,8 @@ function unityState(item={}){
   const regression=bool(evidence.regressionPassed)||num(item.unityRegressionRunId)!==null;
   const sourceReady=Boolean(item.unityProjectPath||item.unitySourceCommit||item.unityCandidateBranch||item.targetSourcePaths?.UNITY);
   const buildUrl=clean(item.unityInternalBuildUrl||item.unityBuildUrl||item.unityDownloadUrl);
-  const internalReady=bool(item.unityInternalReleaseReady)||(Boolean(build)&&runtime&&qa&&regression);
+  const releaseReadiness=evaluateInternalRelease(item,'UNITY',policy);
+  const internalReady=releaseReadiness.homepageReady;
   const publicRelease=bool(item.unityPublicRelease)||bool(item.unityExternalReleaseEvidence?.published);
   return{
     platform:'UNITY',
@@ -102,6 +105,7 @@ function unityState(item={}){
     independentQaPassed:qa,
     regressionPassed:regression,
     internalReleaseReady:internalReady,
+    releaseReadiness,
     internalReleaseState:internalReady?'INTERNAL_OR_CLOSED_APP_TEST_BUILD':'NOT_READY',
     publicReleaseReady:bool(item.unityPublicReleaseReady)||(internalReady&&bool(item.unityExternalReleaseEvidence?.ready)),
     publicRelease,
@@ -121,7 +125,7 @@ export function buildHomepagePlatformExposure({queue={},catalog={},policy={}}={}
   const byId=new Map((catalog.games||[]).map(g=>[clean(g.id),g]));
   const games=(queue.items||[]).map(item=>{
     const gameId=clean(item.gameId); if(!gameId)return null;
-    const platforms=central.supportedPlatforms.map(platform=>PLATFORM_STATE_BUILDERS[platform](item));
+    const platforms=central.supportedPlatforms.map(platform=>PLATFORM_STATE_BUILDERS[platform](item,policy));
     const externalPublicReleaseState=platforms.some(row=>row.publicRelease)?'PUBLIC_RELEASE'
       :(platforms.some(row=>row.publicReleaseReady)?'PUBLIC_RELEASE_READY':'INTERNAL_ONLY');
     return{
