@@ -8,16 +8,7 @@ local Config={
  MultiplayerRequired = true,
  SoloPlayable=true,CoopRequired=false,CompetitiveRequired=true,MinimumParticipants=1,
  TargetPopulation=8,SurvivorSlots=4,MonsterSlots=4,RoundSeconds=240,IntermissionSeconds=8,ResultSeconds=6,LobbyLoadTimeoutSeconds=12,TagDistance=5.5,PurifyDistance=8,PurifyCooldown=5,RemoteName="GameAction",
- Matchmaking={
-  MatchSize=8,AutoShard=true,OverflowPolicy="NEW_RESERVED_ROOM",ElevatorCount=4,
-  MapSelectionMode="ELEVATOR_HOST_CHOICE",MapVoteEnabled=false,MapSelectionCarryThroughElevator=true,
-  Elevators={
-   {Index=1,Label="1인 전용",MinPlayers=1,MaxPlayers=1,Countdown=3},
-   {Index=2,Label="2인 전용",MinPlayers=2,MaxPlayers=2,Countdown=4},
-   {Index=3,Label="3~4인",MinPlayers=3,MaxPlayers=4,Countdown=5},
-   {Index=4,Label="5~8인",MinPlayers=5,MaxPlayers=8,Countdown=5},
-  },
- },
+ Matchmaking={MatchSize=8,AutoShard=true,OverflowPolicy="NEW_RESERVED_ROOM",LobbyType="PERSONAL_MANOR",MapSelectionMode="PERSONAL_SELECTION",MapVoteEnabled=false},
  Room={MaxPlayers=8,CodeLength=6,DirectoryExpirationSeconds=7200,ActionCooldownSeconds=1.5,ArrivalGraceSeconds=6,TeleportRetrySeconds=1.25,Visibility={"PUBLIC","FRIENDS","PRIVATE"}},
  SurvivorDashCooldown=7,MonsterAbilityCooldown=7,
  RemoteMinInterval=.08,MaxHorizontalVelocity=92,MaxTeleportStep=48,ArenaLimit=176,
@@ -133,14 +124,14 @@ local Config={
   {Completed=12,Title="세계 괴담 기록관"},
  },
  Cosmetics={
-  {Id="DEFAULT",Name="기본 프레임",Price=0,Accent=Color3.fromRGB(170,209,220),Title="신입 참가자"},
-  {Id="MIDNIGHT_RED",Name="심야 적색",Price=120,Accent=Color3.fromRGB(225,76,92),Title="심야 추적자"},
-  {Id="MOON_BLUE",Name="월광 청색",Price=180,Accent=Color3.fromRGB(98,166,235),Title="월광 생존자"},
-  {Id="TOXIC_GREEN",Name="독성 녹색",Price=260,Accent=Color3.fromRGB(111,213,132),Title="감염 저항자"},
-  {Id="VOID_PURPLE",Name="공허 보라",Price=360,Accent=Color3.fromRGB(174,112,235),Title="공허 사냥꾼"},
+  {Id="DEFAULT",Name="장식 없음",Price=0,Accent=Color3.fromRGB(170,209,220),Title="신입 참가자"},
+  {Id="MIDNIGHT_RED",Name="심야 나비넥타이",Price=120,Accent=Color3.fromRGB(225,76,92),Title="심야 추적자"},
+  {Id="MOON_BLUE",Name="월광 실크해트",Price=180,Accent=Color3.fromRGB(98,166,235),Title="월광 생존자"},
+  {Id="TOXIC_GREEN",Name="독성 나비넥타이",Price=260,Accent=Color3.fromRGB(111,213,132),Title="감염 저항자"},
+  {Id="VOID_PURPLE",Name="공허 나비넥타이",Price=360,Accent=Color3.fromRGB(174,112,235),Title="공허 사냥꾼"},
  },
  Audio={
-  LobbyBackground="rbxassetid://1843529635",
+  LobbyBackground="rbxassetid://"..tostring(require(script.Parent.ManorAssets).LobbyMusicId),
   Background="rbxassetid://9043557976",
   Chase="rbxassetid://9042664292",
   Result="rbxassetid://1839321582",
@@ -173,8 +164,8 @@ local Config={
  },
  MonsterForms={
   {Id="DRACULA",Name="드라큘라",UnlockXP=0,Ability="BAT_DASH",Theme="VAMPIRE",SkinConcept="ARISTOCRATIC_VAMPIRE",EffectColor=Color3.fromRGB(196,32,52),AccentColor=Color3.fromRGB(36,8,18)},
-  {Id="FRANKENSTEIN",Name="프랑켄슈타인",UnlockXP=250,Ability="POWER_CHARGE",Theme="FRANKEN",SkinConcept="ELECTRIC_EXPERIMENT",EffectColor=Color3.fromRGB(126,235,108),AccentColor=Color3.fromRGB(58,86,56)},
-  {Id="WEREWOLF",Name="늑대인간",UnlockXP=500,Ability="RAGE_RUN",Theme="WEREWOLF",SkinConcept="FERAL_HUNTER",EffectColor=Color3.fromRGB(235,165,72),AccentColor=Color3.fromRGB(92,62,44),ExternalAssetId=155389113},
+  {Id="FRANKENSTEIN",Name="프랑켄슈타인",UnlockXP=0,Ability="POWER_CHARGE",Theme="FRANKEN",SkinConcept="ELECTRIC_EXPERIMENT",EffectColor=Color3.fromRGB(126,235,108),AccentColor=Color3.fromRGB(58,86,56)},
+  {Id="WEREWOLF",Name="늑대인간",UnlockXP=0,Ability="RAGE_RUN",Theme="WEREWOLF",SkinConcept="FERAL_HUNTER",EffectColor=Color3.fromRGB(235,165,72),AccentColor=Color3.fromRGB(92,62,44),ExternalAssetId=155389113},
   {Id="MUMMY",Name="미라",UnlockXP=800,Ability="CURSE_SLOW",Theme="MUMMY",SkinConcept="ANCIENT_CURSE",EffectColor=Color3.fromRGB(226,196,112),AccentColor=Color3.fromRGB(116,92,58),ExternalAssetId=4012084718},
   {Id="GRIM_REAPER",Name="사신",UnlockXP=1200,Ability="SHADOW_STEP",Theme="REAPER",SkinConcept="VOID_HARVESTER",EffectColor=Color3.fromRGB(151,82,235),AccentColor=Color3.fromRGB(31,23,45),ExternalAssetId=49353603},
  },
@@ -214,11 +205,12 @@ local Config={
   SHADOW_STEP="그림자 이동",
  },
  Actions={
+  SELECT_LOBBY_FORM="SELECT_LOBBY_FORM",
   PREFER_MONSTER="PREFER_MONSTER",PREFER_SURVIVOR="PREFER_SURVIVOR",
   SOLO_MONSTER="SOLO_MONSTER",SOLO_SURVIVOR="SOLO_SURVIVOR",
   PURIFY="PURIFY",RESCUE="RESCUE",DASH="DASH",HUMAN_ABILITY="HUMAN_ABILITY",INFECT_ATTACK="INFECT_ATTACK",ABILITY="ABILITY",NEXT_MONSTER="NEXT_MONSTER",NEXT_HUMAN="NEXT_HUMAN",
   BUY_COSMETIC="BUY_COSMETIC",EQUIP_COSMETIC="EQUIP_COSMETIC",GHOST_SIGHTING_FOUND="GHOST_SIGHTING_FOUND",
-  CREATE_ROOM="CREATE_ROOM",JOIN_ROOM_CODE="JOIN_ROOM_CODE",QUICK_JOIN_PUBLIC="QUICK_JOIN_PUBLIC",QUICK_JOIN_FRIEND="QUICK_JOIN_FRIEND",START_ROOM="START_ROOM",LEAVE_ROOM="LEAVE_ROOM",SELECT_MAP="SELECT_MAP"
+  CREATE_ROOM="CREATE_ROOM",JOIN_ROOM_CODE="JOIN_ROOM_CODE",QUICK_JOIN_PUBLIC="QUICK_JOIN_PUBLIC",QUICK_JOIN_FRIEND="QUICK_JOIN_FRIEND",START_ROOM="START_ROOM",LEAVE_ROOM="LEAVE_ROOM",SELECT_MAP="SELECT_MAP",MANOR_SOLO="MANOR_SOLO",MANOR_GAG="MANOR_GAG",MANOR_RANK="MANOR_RANK"
  },
  QACameraEnabled=true,QACaptureRemoteName="QACaptureReport",
  OwnerDirectDevelopment=true,

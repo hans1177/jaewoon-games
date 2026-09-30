@@ -1,107 +1,91 @@
 name: Horror Owner System Publish
-
 on:
   push:
     branches: [main]
     paths:
       - '.github/workflows/horror-owner-system-publish.yml'
-
 permissions:
   contents: read
-
 concurrency:
   group: horror-owner-system-publish
-  cancel-in-progress: true
-
+  cancel-in-progress: false
 jobs:
-  validate-build-publish:
+  import-build-publish:
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 25
-    env:
-      GAME_ID: horror-escape-room
-      SOURCE_REVISION: '20f2467811bc4f6c72387e8427326b483ebfc87d'
-      UNIVERSE_ID: '10767445796'
-      PLACE_ID: '98222620265768'
-
     steps:
-      - name: Checkout exact system revision
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          ref: ${{ env.SOURCE_REVISION }}
-          fetch-depth: 1
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Verify owner system machine contract
+      - name: Validate manor release contract
+        shell: pwsh
+        run: node --test qa/horror-manor.test.mjs
+      - name: Restore uploaded asset evidence
+        uses: actions/cache/restore@v4
+        with:
+          path: assets/roblox/midnight-manor/generated/roblox-asset.json
+          key: manor-assets-${{ hashFiles('assets/roblox/midnight-manor/generated/manor-lobby.glb', 'assets/roblox/midnight-manor/generated/manor-waltz.mp3', 'assets/roblox/midnight-manor/generated/menu.png') }}
+      - name: Import verified original GLB
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+        shell: pwsh
+        run: node tools/horror-manor-assets.mjs
+      - name: Build native place
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
-          $launch=Get-Content "roblox-games/$env:GAME_ID/launch-mvp.json" -Raw
-          $config=Get-Content "roblox-games/$env:GAME_ID/shared/GameConfig.luau" -Raw
-          $server=Get-Content "roblox-games/$env:GAME_ID/server/Game.server.luau" -Raw
-          $client=Get-Content "roblox-games/$env:GAME_ID/client/Game.client.luau" -Raw
-          foreach($m in @(
-            '"currentPhase": "P1_CORE_MATCH_AND_ROLE_COMBAT"',
-            '"id": "P2_HUMAN_FORM_IDENTITY"',
-            '"machineDocumentsOnly": true',
-            '"coreInfectionRule": "EXPLICIT_SERVER_AUTHORITATIVE_INFECT_ATTACK_ONLY"'
-          )){if(-not $launch.Contains($m)){throw "ROADMAP_MARKER_MISSING:$m"}}
-          foreach($m in @('InfectedAbilities={','FALSE_ALARM={','BLACKOUT={','RUSH={','HUNT_FLASH={','BREACH={')){if(-not $config.Contains($m)){throw "CONFIG_MARKER_MISSING:$m"}}
-          foreach($m in @('FalseAlarmUntil','BlackoutUntil','HuntFlashUntil','FeedbackEvent","ABILITY:')){if(-not $server.Contains($m)){throw "SERVER_MARKER_MISSING:$m"}}
-          foreach($m in @('ThreatEffectLayer','currentAbilityName()','정전 · 시야가 차단됐어','사냥 플래시 · 움직임 둔화')){if(-not $client.Contains($m)){throw "CLIENT_MARKER_MISSING:$m"}}
-          Write-Host 'HORROR_SYSTEM_STATIC=PASS'
-
-      - name: Run focused horror release contract
-        continue-on-error: true
-        shell: pwsh
-        run: |
-          $ErrorActionPreference='Stop'
-          node --test qa/horror-escape-room-release.test.mjs
-
-      - name: Install pinned Rojo
-        shell: pwsh
-        run: |
-          $ErrorActionPreference='Stop'
-          $root=Join-Path $env:RUNNER_TEMP 'horror-owner-system'
-          $bin=Join-Path $root 'rojo-bin'
-          New-Item -ItemType Directory -Force -Path $bin | Out-Null
+          $root=Join-Path $env:RUNNER_TEMP 'horror-personal-manor'
+          New-Item -ItemType Directory -Force -Path $root | Out-Null
           $zip=Join-Path $root 'rojo.zip'
-          Invoke-WebRequest -Uri 'https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip' -OutFile $zip
-          $hash=(Get-FileHash -Algorithm SHA256 $zip).Hash.ToLowerInvariant()
-          if($hash -ne '2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949'){throw "ROJO_HASH_MISMATCH:$hash"}
-          Expand-Archive -Path $zip -DestinationPath $bin -Force
-          $rojo=Get-ChildItem -Path $bin -Filter 'rojo.exe' -Recurse | Select-Object -First 1
-          if(-not $rojo){throw 'ROJO_EXE_MISSING'}
-          "ROJO_EXE=$($rojo.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-          "OWNER_OUT=$root" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-
-      - name: Build exact place
+          Invoke-WebRequest 'https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip' -OutFile $zip
+          if((Get-FileHash $zip -Algorithm SHA256).Hash.ToLowerInvariant() -ne '2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949'){throw 'ROJO_HASH_MISMATCH'}
+          Expand-Archive $zip (Join-Path $root 'bin') -Force
+          $rojo=(Get-ChildItem (Join-Path $root 'bin') -Filter rojo.exe -Recurse | Select-Object -First 1).FullName
+          $place=Join-Path $root 'horror-escape-room.rbxlx'
+          & $rojo build roblox-games/horror-escape-room/default.project.json -o $place
+          if($LASTEXITCODE -ne 0){throw 'MANOR_BUILD_FAILED'}
+          "MANOR_PLACE=$place" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+      - name: Verify native mesh and private instances in Studio
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
-          $place=Join-Path $env:OWNER_OUT "$env:GAME_ID.rbxlx"
-          & $env:ROJO_EXE build "roblox-games/$env:GAME_ID/default.project.json" -o $place
-          if(-not (Test-Path $place)){throw 'PLACE_BUILD_MISSING'}
-          $hash=(Get-FileHash -Algorithm SHA256 $place).Hash.ToLowerInvariant()
-          Write-Host "HORROR_OWNER_BUILD_SHA256=$hash"
-          "PLACE_FILE=$place" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-
-      - name: Publish exact system build
+          $studio=Get-ChildItem "$env:LOCALAPPDATA\Roblox\Versions" -Filter RobloxStudioBeta.exe -Recurse | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if(-not $studio){throw 'STUDIO_MISSING'}
+          $script=(Resolve-Path qa/horror-manor-studio.luau).Path
+          $out=Join-Path $env:RUNNER_TEMP 'manor-native-qa.log'
+          Remove-Item $out -Force -ErrorAction SilentlyContinue
+          $args="--task RunScript --localPlaceFile `"$env:MANOR_PLACE`" --runScriptFile `"$script`" --outputFile `"$out`" --quitAfterExecution"
+          $process=Start-Process $studio.FullName -ArgumentList $args -PassThru
+          $handle=$process.Handle
+          if(-not $process.WaitForExit(180000)){Stop-Process -Id $process.Id -Force;throw 'MANOR_STUDIO_QA_TIMEOUT'}
+          $log=Get-Content $out -Raw
+          Write-Host $log
+          if(-not $log.Contains('MANOR_NATIVE_QA=PASS')){throw 'MANOR_NATIVE_QA_FAILED'}
+      - name: Publish verified manor
+        if: github.ref == 'refs/heads/main'
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
-          if([string]::IsNullOrWhiteSpace($env:ROBLOX_OPEN_CLOUD_API_KEY)){throw 'ROBLOX_OPEN_CLOUD_API_KEY_MISSING'}
-          $headers=@{'x-api-key'=$env:ROBLOX_OPEN_CLOUD_API_KEY}
-          $out=Join-Path $env:OWNER_OUT 'publish.json'
-          $uri="https://apis.roblox.com/universes/v1/$env:UNIVERSE_ID/places/$env:PLACE_ID/versions?versionType=Published"
-          Invoke-WebRequest -Method Post -Uri $uri -Headers $headers -ContentType 'application/xml' -InFile $env:PLACE_FILE -OutFile $out
-          $r=Get-Content $out -Raw | ConvertFrom-Json
-          $version=[int]$r.versionNumber
-          if($version -le 0){throw 'ROBLOX_PUBLISH_VERSION_MISSING'}
-          Write-Host 'HORROR_OWNER_SYSTEM_PUBLISH=PASS'
-          Write-Host "ROBLOX_PLACE_VERSION=$version"
+          $uri='https://apis.roblox.com/universes/v1/10767445796/places/98222620265768/versions?versionType=Published'
+          $r=Invoke-RestMethod -Method Post -Uri $uri -Headers @{'x-api-key'=$env:ROBLOX_OPEN_CLOUD_API_KEY} -ContentType application/xml -InFile $env:MANOR_PLACE
+          if([int]$r.versionNumber -le 0){throw 'MANOR_PUBLISH_VERSION_MISSING'}
+          Write-Host "MANOR_PUBLISHED_VERSION=$($r.versionNumber)"
+      - name: Preserve uploaded asset evidence
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: assets/roblox/midnight-manor/generated/roblox-asset.json
+          key: manor-assets-${{ hashFiles('assets/roblox/midnight-manor/generated/manor-lobby.glb', 'assets/roblox/midnight-manor/generated/manor-waltz.mp3', 'assets/roblox/midnight-manor/generated/menu.png') }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: horror-manor-release-evidence
+          path: |
+            assets/roblox/midnight-manor/generated/roblox-asset.json
+            roblox-games/horror-escape-room/shared/ManorAssets.luau
+            ${{ runner.temp }}/manor-native-qa.log
