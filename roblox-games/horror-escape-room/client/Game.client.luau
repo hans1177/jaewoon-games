@@ -2979,6 +2979,48 @@ local function playMonsterAbilityEffect(snapshot)
  end
 end
 
+local function playHumanAbilityEffect(snapshot)
+ if typeof(snapshot)~="table"then return end
+ local ability=tostring(snapshot.Ability or"")
+ local action=tostring(snapshot.Action or"")
+ local origin=typeof(snapshot.Origin)=="Vector3"and snapshot.Origin or Vector3.zero
+ local target=typeof(snapshot.Target)=="Vector3"and snapshot.Target or origin
+ local formId=tostring(snapshot.FormId or"BROADCAST")
+ local palette={
+  BROADCAST=Color3.fromRGB(82,210,235),
+  ELECTRICIAN=Color3.fromRGB(235,196,68),
+  COURIER=Color3.fromRGB(236,139,72),
+  PHOTOGRAPHER=Color3.fromRGB(238,242,248),
+  SECURITY=Color3.fromRGB(105,186,230),
+ }
+ local color=palette[formId]or Color3.fromRGB(116,201,220)
+ if ability=="SIGNAL_JAM"then
+  abilityPulse("SignalJam",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(22,3,22),.52)
+ elseif ability=="OVERLOAD"then
+  abilityPulse("HumanOverload",origin+Vector3.new(0,.8,0),color,Vector3.new(1,1,1),Vector3.new(14,2,14),.38)
+  for i=1,8 do
+   local a=i/8*math.pi*2
+   abilityStreak("OverloadArc",origin,Vector3.new(math.cos(a),0,math.sin(a)),color,0,5,.16,.3)
+  end
+ elseif ability=="IMPACT_BAG"then
+  local dir=target-origin
+  abilityPulse("ImpactBagBurst",origin+Vector3.new(0,1.2,0),color,Vector3.new(1,1,1),Vector3.new(5,4,5),.3)
+  if dir.Magnitude>.1 then abilityStreak("ImpactBagTrail",origin,dir.Unit,color,0,math.min(14,dir.Magnitude),.35,.34)end
+ elseif ability=="CAMERA_FLASH"then
+  abilityPulse("CameraFlash",origin+Vector3.new(0,1.5,0),color,Vector3.new(2,2,2),Vector3.new(19,10,19),.22)
+ elseif ability=="SHOCK_BATON"then
+  local dir=target-origin
+  if dir.Magnitude>.1 then
+   for i=-1,1 do abilityStreak("BatonArc",origin,dir.Unit,color,i*.25,math.min(8,dir.Magnitude),.18,.28)end
+  end
+ elseif action=="PURIFY"then
+  abilityPulse("AIPurify",target+Vector3.new(0,1,0),color,Vector3.new(.8,.8,.8),Vector3.new(4,4,4),.25)
+ elseif action=="DASH"then
+  local dir=target-origin
+  if dir.Magnitude>.1 then abilityStreak("AIHumanDash",origin,dir.Unit,color,0,math.min(12,dir.Magnitude),.25,.32)end
+ end
+end
+
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local value=tostring(p:GetAttribute("FeedbackEvent")or"")
  if value:find("^INFECT:")then setMotionImpulse("INFECT",.72);warningSfx.TimePosition=0;warningSfx:Play();chaseTint.BackgroundTransparency=.72
@@ -2987,12 +3029,20 @@ p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
   setMotionImpulse("ABILITY",.48);warningSfx.TimePosition=0;warningSfx:Play()
   local label=tostring(p:GetAttribute("AbilityFeedback")or"스킬 사용");label=string.match(label,"^([^:]+)")or label
   showMapContentToast(label.." 발동",Color3.fromRGB(217,190,235),1.7)
+ elseif value:find("^HUMAN_ABILITY:")then
+  setMotionImpulse("ABILITY",.42);actionSfx.TimePosition=0;actionSfx:Play()
+  local label=tostring(p:GetAttribute("HumanAbilityFeedback")or"인간 스킬");label=string.match(label,"^([^:]+)")or label
+  showMapContentToast(label.." 발동",Color3.fromRGB(164,224,235),1.6)
  elseif value:find("^RESULT:")then resultSfx.TimePosition=0;resultSfx:Play()end
 end)
 
 remote.OnClientEvent:Connect(function(kind,snapshot)
  if kind=="MONSTER_ABILITY_EFFECT"then
   playMonsterAbilityEffect(snapshot)
+  return
+ end
+ if kind=="HUMAN_ABILITY_EFFECT"or kind=="AI_HUMAN_ACTION_EFFECT"then
+  playHumanAbilityEffect(snapshot)
   return
  end
  if kind~="MULTIPLAYER_SYNC"or typeof(snapshot)~="table"then return end
