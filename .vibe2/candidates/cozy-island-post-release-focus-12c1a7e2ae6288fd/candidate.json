@@ -1,0 +1,15 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "client/Game.client.luau",
+      "find": " b.BackgroundColor3=color",
+      "replace": "b.BackgroundColor3=Color3.fromRGB(255,255,255)"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [],
+  "graphicsReplacementReport": null
+}
