@@ -6718,7 +6718,8 @@
       "coding_negative_yvgfby",
       "coding_negative_1ff02jd",
       "coding_negative_1h2g1ey",
-      "coding_negative_6tpk25"
+      "coding_negative_6tpk25",
+      "coding_negative_1kaqoxb"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -17969,7 +17970,7 @@
         "verifiedApplications": 12,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 48,
-        "verifiedFailures": 1192,
+        "verifiedFailures": 1193,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -18128,7 +18129,7 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 407,
+            "verifiedFailures": 408,
             "games": {},
             "targets": {},
             "failureGames": {
@@ -18139,7 +18140,7 @@
               "bug-defense": 14,
               "village-dungeons": 45,
               "horror-escape-room": 3,
-              "seed-action-survival-rogu-echoes-of-the-lost-star": 47,
+              "seed-action-survival-rogu-echoes-of-the-lost-star": 48,
               "survival": 47,
               "seed-idle-growth-rpg-crystal-bloom": 34,
               "seed-story-complete-rpg-chronicles-of-eldoria": 45,
@@ -18148,17 +18149,17 @@
               "seed-single-defense-strat-celestial-bastion": 44
             },
             "failureTargets": {
-              "unity": 407
+              "unity": 408
             },
             "failureClasses": {
-              "TIMEOUT": 385,
+              "TIMEOUT": 386,
               "INVALID_PATH": 15,
               "MALFORMED_OUTPUT": 6,
               "NO_OP": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_vuzjbn",
-            "lastUpdatedAt": "2026-09-30T10:46:14.919Z"
+            "lastFailureEvidence": "coding_negative_1kaqoxb",
+            "lastUpdatedAt": "2026-09-30T10:57:16.150Z"
           },
           "unity|INVALID_PATH|MALFORMED_OUTPUT|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 2,
@@ -18585,8 +18586,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_1p380wp",
-        "lastFailureEvidence": "coding_negative_6tpk25",
-        "lastUpdatedAt": "2026-09-30T10:56:33.491Z"
+        "lastFailureEvidence": "coding_negative_1kaqoxb",
+        "lastUpdatedAt": "2026-09-30T10:57:16.150Z"
       }
     }
   },
@@ -21339,7 +21340,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T10:56:33.569Z",
+    "lastBuiltAt": "2026-09-30T10:57:16.235Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -29599,5 +29600,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T10:56:33.569Z"
+  "updatedAt": "2026-09-30T10:57:16.235Z"
 }
