@@ -13,14 +13,14 @@ on:
       - '.github/workflows/roblox-world-ghost-assets.yml'
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: ghost-assets-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   build-assets:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -51,6 +51,56 @@ jobs:
         env:
           VIBE2_LUAU_BINARY: /tmp/ghost-tools/luau/luau
         run: node --test qa/roblox-world-ghost-skins.test.mjs
+      - name: Install Blender for authored spider mesh
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y blender
+      - name: Build high-detail spider asset
+        run: |
+          blender --background --python assets/roblox/world-ghosts/build-spider.py -- --output assets/roblox/world-ghosts/native/spider --render
+      - name: Validate spider GLB and 12 motions
+        run: |
+          python3 - <<'PY'
+          import json, struct
+          from pathlib import Path
+          root=Path('assets/roblox/world-ghosts/native/spider')
+          evidence=json.loads((root/'evidence.json').read_text(encoding='utf-8'))
+          assert evidence['legCount']==8
+          assert evidence['eyeCount']==8
+          assert evidence['bones']>=45
+          assert evidence['motionCount']==12
+          expected={'idle','walk','run','strafe','climb','threat','bite','pounce','web_cast','hit','stagger','death'}
+          assert set(evidence['clips'])==expected
+          raw=(root/'spider.glb').read_bytes()
+          magic,version,total=struct.unpack_from('<4sII',raw,0)
+          assert magic==b'glTF' and version==2 and total==len(raw)
+          off=12; doc=None
+          while off<total:
+              size,kind=struct.unpack_from('<II',raw,off); off+=8
+              chunk=raw[off:off+size]; off+=size
+              if kind==0x4E4F534A:
+                  doc=json.loads(chunk.decode('utf-8').rstrip('\x00 '))
+          assert doc is not None
+          names={a.get('name') for a in doc.get('animations',[])}
+          assert names==expected, (names, expected)
+          assert len(doc.get('skins',[]))>=1
+          print('SPIDER_GLTF_OK', {'animations':len(names),'skins':len(doc.get('skins',[])),'bones':evidence['bones'],'vertices':evidence['vertices'],'triangles':evidence['triangles']})
+          PY
+      - name: Commit generated spider asset
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/roblox/world-ghosts/native/spider/spider.glb assets/roblox/world-ghosts/native/spider/spider.png assets/roblox/world-ghosts/native/spider/evidence.json
+          if git diff --cached --quiet; then
+            echo "Spider artifacts already current"
+            exit 0
+          fi
+          git commit -m "assets: build high-detail spider mesh"
+          git pull --rebase origin main
+          git push origin HEAD:main
       - uses: actions/upload-artifact@v4
         with:
           name: world-ghosts-native-${{ github.sha }}
