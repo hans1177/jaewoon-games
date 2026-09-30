@@ -12,8 +12,21 @@ const key=process.env.ROBLOX_OPEN_CLOUD_API_KEY;
 if(!key)throw Error('ROBLOX_OPEN_CLOUD_API_KEY_MISSING');
 const universeId='10767445796';
 const headers={'x-api-key':key};
+const cookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
+const cookieHeader=cookie.includes('.ROBLOSECURITY=')?cookie:`.ROBLOSECURITY=${cookie};`;
+let csrfToken='';
 const request=async(url,options={})=>{
- const r=await fetch(url,{...options,signal:AbortSignal.timeout(60000)});
+ // Roblox/tarmac uses the documented user-auth asset route for an existing account session.
+ // Asset creation scopes on the publishing API key are independent of account asset access.
+ const authenticated=cookie&&url.startsWith('https://apis.roblox.com/');
+ if(authenticated&&url.startsWith('https://apis.roblox.com/assets/v1/'))url=url.replace('/assets/v1/','/assets/user-auth/v1/');
+ const requestHeaders={...(options.headers||{})};
+ if(authenticated){delete requestHeaders['x-api-key'];requestHeaders.cookie=cookieHeader;if(csrfToken)requestHeaders['x-csrf-token']=csrfToken;}
+ let r=await fetch(url,{...options,headers:requestHeaders,signal:AbortSignal.timeout(60000)});
+ if(authenticated&&r.status===403&&r.headers.get('x-csrf-token')){
+  csrfToken=r.headers.get('x-csrf-token');
+  r=await fetch(url,{...options,headers:{...requestHeaders,'x-csrf-token':csrfToken},signal:AbortSignal.timeout(60000)});
+ }
  const d=await r.json().catch(()=>({}));
  if(!r.ok)throw Error(`ROBLOX_HTTP_${r.status}:${new URL(url).pathname}`);
  return d;
@@ -25,7 +38,6 @@ const owner=info.data?.[0]?.creator;
 if(Number(owner?.id)>0)creator={[owner.type==='Group'?'groupId':'userId']:String(owner.id)};
 if(!creator){
  // Private experiences are omitted from the public games API. Read their authenticated metadata.
- const cookie=String(process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'').trim();
  if(cookie){
   const r=await fetch(`https://develop.roblox.com/v1/universes/${universeId}`,{headers:{cookie:cookie.includes('.ROBLOSECURITY=')?cookie:`.ROBLOSECURITY=${cookie};`},signal:AbortSignal.timeout(30000)});
   const d=await r.json().catch(()=>({}));

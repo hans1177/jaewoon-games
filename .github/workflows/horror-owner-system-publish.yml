@@ -1,4 +1,5 @@
 name: Horror Owner System Publish
+# Asset import uses the existing authenticated account session; place publishing uses its API key.
 on:
   push:
     branches: [main]
