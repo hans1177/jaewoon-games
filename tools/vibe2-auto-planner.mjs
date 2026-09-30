@@ -3,6 +3,8 @@
 // DEVELOPMENT_CONFIRMED Web은 기존 소스를 먼저 평가한 뒤 보존/부분수정/대규모개편/전체재구축 전략을 선택한다.
 
 import fs from 'node:fs';
+import { discoverExistingRobloxGames } from './company-development-queue-reconcile.mjs';
+import { ownerDevelopmentHeld, synchronizeOwnerDevelopmentHolds } from './vibe2-queue-control.mjs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeContinuousQueue, DEFAULT_MAX_CONCURRENT_TASKS } from '../assets/vibe-continuous-queue.js';
@@ -167,7 +169,7 @@ export function latestDevelopmentBaselineEvidence(gameId,repoRoot=process.cwd())
 function latestDevelopmentValidationStatus(gameId,repoRoot=process.cwd()){const id=clean(gameId),root=path.join(repoRoot,'design',id),missing={state:'MISSING',score:null,blockers:[],path:null,evidence:null};if(!id||!fs.existsSync(root))return missing;let dates=[];try{dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();}catch{return missing;}for(const date of dates){for(const name of ['development-validation-status.json','cycle-status.json']){const file=path.join(root,date,name);if(!fs.existsSync(file))continue;const data=readJson(file,null);if(!data||clean(data.gameId)!==id)continue;const score=Number(data.webStrictScore??data?.evidence?.web?.webStrictScore);return{state:clean(data.state).toUpperCase()||'MISSING',score:Number.isFinite(score)?score:null,blockers:Array.isArray(data.blockers)?data.blockers.map(clean).filter(Boolean):[],path:posix(path.relative(repoRoot,file)),evidence:data?.evidence||null,nextAction:clean(data.nextAction)};}}return missing;}
 function bottleneckRank(project={}){const v=project.developmentValidation||{},score=Number(v.score),state=clean(v.state).toUpperCase(),blockers=Array.isArray(v.blockers)?v.blockers:[];if(project.engine==='web'&&score>=80&&score<=88)return 0;if(blockers.length===1)return 1;if(project.engine==='web'&&project.releaseState==='development-confirmed'&&state==='MISSING')return 2;if(/REVALIDATION|RETURN_TO_WEB_DEVELOPMENT/.test(state))return 3;if(clean(project.lifecycleState).toUpperCase()==='REBUILD')return 4;return 5;}
 
-export function collectProjects(status={},catalog={},repoRoot=process.cwd(),developmentQueue={}){const byId=catalogById(catalog),removed=permanentRemovalIds(catalog),rows=[];for(const project of Array.isArray(status.projects)?status.projects:[]){const id=clean(project.gameId),engine=engineFromProject(project),root=posix(project.robloxProjectPath||project.projectPath||project.source);if(!id||removed.has(id)||!engine||!root||clean(project.ownerDecision).toUpperCase()!=='PASS')continue;const game=byId.get(id);if(!game||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),developmentBaseline=state==='release-confirmed'&&engine==='unity'?latestDevelopmentBaselineEvidence(id,repoRoot):null,developmentValidation=latestDevelopmentValidationStatus(id,repoRoot);rows.push({...project,gameId:id,engine,projectPath:root,lifecycleState:gameLifecycleState(game),releaseState:state,existing:true,source:'company-status',developmentBaseline,developmentValidation});}
+export function collectProjects(status={},catalog={},repoRoot=process.cwd(),developmentQueue={}){catalog=discoverExistingRobloxGames(catalog,repoRoot).catalog;const byId=catalogById(catalog),removed=permanentRemovalIds(catalog),rows=[];for(const project of Array.isArray(status.projects)?status.projects:[]){const id=clean(project.gameId),engine=engineFromProject(project),root=posix(project.robloxProjectPath||project.projectPath||project.source);if(!id||removed.has(id)||!engine||!root||clean(project.ownerDecision).toUpperCase()!=='PASS')continue;const game=byId.get(id);if(!game||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),developmentBaseline=state==='release-confirmed'&&engine==='unity'?latestDevelopmentBaselineEvidence(id,repoRoot):null,developmentValidation=latestDevelopmentValidationStatus(id,repoRoot);rows.push({...project,gameId:id,engine,projectPath:root,lifecycleState:gameLifecycleState(game),releaseState:state,existing:true,source:'company-status',developmentBaseline,developmentValidation});}
 for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:[]){
   const id=clean(item?.gameId),game=byId.get(id);
   if(!id||removed.has(id)||!game||!lifecycleAllowsDevelopment(game))continue;
@@ -429,7 +431,7 @@ for(const game of Array.isArray(catalog.games)?catalog.games:[]){
   const exists=fs.existsSync(path.join(repoRoot,root));
   rows.push({gameId:id,name:clean(game.name),engine:'web',target:'web',projectPath:root,lifecycleState:gameLifecycleState(game),existing:exists,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});
 }
-return rows;
+return rows.filter(project=>!ownerDevelopmentHeld(centralPresentationPolicy(repoRoot)||{},project.gameId,project.engine));
 }
 function focusedCaretakerPolicy(repoRoot=process.cwd()){
   const policy=centralPresentationPolicy(repoRoot)?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
@@ -500,7 +502,7 @@ function nextCausalGenerationId(queue,basePrefix){
 function activeTasks(queue){return queue.tasks.filter(item=>['queued','running'].includes(clean(item.status).toLowerCase()));}
 function isDevelopmentImplementation(item={}){return clean(item.department).toLowerCase()==='development'&&clean(item.type).toLowerCase()==='implementation';}
 function isReleaseWait(item={}){return clean(item.status).toLowerCase()==='running'&&/candidate-awaiting-qa-and-deployment|candidate-awaiting-supervised-review|awaiting.*qa|qa.*awaiting|awaiting.*supervised-review|slot-released.*fan-in/i.test(clean(item.blocker));}
-function developmentPlanningPool(queue){return activeTasks(queue).filter(item=>isDevelopmentImplementation(item)&&!isReleaseWait(item));}
+function developmentPlanningPool(queue){return activeTasks(queue).filter(item=>isDevelopmentImplementation(item)&&!isReleaseWait(item)&&!item.ownerDevelopmentHold);}
 function sameRootResponsibilityConflict(a={},b={}){const aRoot=posix(a.sourceRoot),bRoot=posix(b.sourceRoot);if(!aRoot||!bRoot||aRoot!==bRoot)return false;const aFiles=new Set((a.responsibleFiles||[]).map(posix).filter(Boolean)),bFiles=new Set((b.responsibleFiles||[]).map(posix).filter(Boolean));if(!aFiles.size||!bFiles.size)return false;for(const file of aFiles)if(bFiles.has(file))return true;return false;}
 function plannerConflict(queue,task){
   const holistic=(task?.evidence||[]).map(clean).includes('existing-holistic-backfill:v1')||task?.studioQualityEvolution?.existingHolisticBackfillRequired===true;
@@ -1191,6 +1193,39 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
       preserveGameplayBalanceSaveProgressionHitSemanticsAndNetworkAuthority:true
     })
   });
+}
+
+export function applyWorldLobbyFirst(taskInput,project={},repoRoot=process.cwd()){
+  if(!taskInput||!['roblox','unity','web'].includes(clean(project.engine).toLowerCase()))return taskInput;
+  if(!(taskInput.evidence||[]).some(value=>['studio-quality-loop:v1','presentation-quality-pipeline:v1'].includes(value)))return taskInput;
+  if((taskInput.evidence||[]).includes('world-lobby-first:v1'))return taskInput;
+  const identity=[project.gameId,project.name,project.genre,project.subgenre].map(clean).join(' ');
+  const text=identity.toLowerCase();
+  const idea=/horror|escape|심야|공포|탈출/.test(text)
+    ?'불길한 대기 공간, 제한된 따뜻한 빛과 어두운 출구의 대비, 실제 목적지를 안내하는 문이나 승강기'
+    :/rpg|알피지|던전|판타지/.test(text)
+      ?'모험가 거점, 직업별 개성을 읽을 수 있는 훈련 공간, 현재 임무와 연결된 출정 입구'
+      :/race|racing|레이싱/.test(text)
+        ?'차고나 출발 피트, 코스 분위기를 예고하는 조망, 실제 출발 구역'
+        :/farm|farming|농장|힐링/.test(text)
+          ?'마을 쉼터나 작업장, 계절과 생활 소품, 실제 농장이나 활동 장소로 이어지는 길'
+          :/defense|strategy|디펜스|전략/.test(text)
+            ?'작전 거점, 진행 중인 위협을 보여주는 월드 장치, 실제 전장 진입 동선'
+            :'현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길';
+  const guidance=`[WORLD_LOBBY_FIRST]\n게임=${identity}\n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.
+현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.
+컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): ${idea}. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.
+월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.
+UI는 로비→선택→플레이 상태와 연결한다. 직업 선택은 서버 확정 후 닫고, 이미 선택한 캐릭터는 매번 다시 묻지 않는다. 기존 저장 키·진행·전투 규칙을 보존하고 오래된 이벤트 연결과 겹친 화면을 정리한다.
+저사양 기준으로 로비 생성은 한 번, 이벤트 연결은 중복 없이, 반복 탐색·과도한 파티클·매 프레임 UI 갱신을 줄인다. Studio는 한 창에서 현재 프로세스 준비를 기다린다. 멀티는 소스 계약 검사로 기록하고 실제 다인 실행 성공으로 쓰지 않는다.
+소스/정적 통과와 Studio 실측을 구분해 기록한다. 로비 생성·시작·복귀의 책임 파일과 실제 변경 근거를 남기며, 사진/문구/마커만으로 구현 완료를 주장하지 않는다.\n[/WORLD_LOBBY_FIRST]\n`;
+  const responsible=[...(taskInput.responsibleFiles||[])];
+  if(project.engine==='roblox')for(const relative of ['server/Game.server.luau','client/Game.client.luau']){
+    const file=posix(project.projectPath)+'/'+relative;
+    if(fs.existsSync(path.join(repoRoot,file))&&!responsible.includes(file))responsible.push(file);
+  }
+  return{...taskInput,goal:guidance+taskInput.goal,responsibleFiles:responsible,
+    evidence:[...(taskInput.evidence||[]),'world-lobby-first:v1','world-lobby-theme:CURRENT_GAME_SOURCE_AND_DESIGN','world-lobby-source-preservation:REQUIRED']};
 }
 
 function adaptiveGraphicsReplacementSupported(project={}){
@@ -2291,7 +2326,7 @@ ${existingBackfillInstruction}${phaseInstruction}${visualInstruction}${designIns
   const presentationBound=focusPillar==='PRESENTATION'
     ?applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION')
     :out;
-  return attachGameSpecificBuildUpDirective(presentationBound,project,repoRoot,queue,designContext);
+  return attachGameSpecificBuildUpDirective(applyWorldLobbyFirst(presentationBound,project,repoRoot),project,repoRoot,queue,designContext);
 }
 function bindSharedBuildUpDirective(taskInput,directive){
   if(!taskInput||!directive?.directiveId)return taskInput;
@@ -2753,11 +2788,13 @@ function supersedeLegacyMicroTasksForStudioQuality(queueInput){
 }
 
 export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,queueMaxConcurrentTasks=maxConcurrentTasks,planningBacklogTarget=maxConcurrentTasks,planningBacklogMinimum=Math.min(40,Number(planningBacklogTarget)||0),workPackagePolicy={},recombinationMemory={},historicalRegistry={},robloxDistillationLedger={},robloxPlaybooks={}}={}){
+  catalog=discoverExistingRobloxGames(catalog,repoRoot).catalog;
   const executionWaveMax=parallelLimit(maxConcurrentTasks);
   const persistentQueueMax=parallelLimit(queueMaxConcurrentTasks);
   const backlogTarget=Math.max(1,Math.min(persistentQueueMax,Number(planningBacklogTarget)||executionWaveMax));
   const backlogMinimum=Math.max(0,Math.min(backlogTarget,Number(planningBacklogMinimum)||0));
   let queue=createVibeContinuousQueue({...synchronizeQueueLifecycle(queueInput||{},catalog,historicalRegistry),maxConcurrentTasks:persistentQueueMax});
+  queue=synchronizeOwnerDevelopmentHolds(queue,centralPresentationPolicy(repoRoot)||{});
   const catalogGames=catalogById(catalog);
   const exactWebRepairItems=(Array.isArray(developmentQueue?.items)?developmentQueue.items:[])
     .filter(item=>{
@@ -2848,6 +2885,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const buildUpDirectiveBackfill=synchronizeQueuedBuildUpDirectives(queue,allProjects,repoRoot);
   queue=buildUpDirectiveBackfill.queue;
   const repairedPresentationTasks=queue.tasks.map(item=>{
+    if(clean(item?.status).toLowerCase()==='queued'&&!item.ownerDevelopmentHold){
+      const project=allProjects.find(row=>row.gameId===item.gameId&&row.engine===item.target);
+      if(project)item=applyWorldLobbyFirst(item,project,repoRoot);
+    }
     if(clean(item?.status).toLowerCase()!=='queued'
       ||clean(item?.target).toLowerCase()!=='roblox'
       ||clean(item?.studioQualityEvolution?.focusPillar).toUpperCase()!=='PRESENTATION')return item;

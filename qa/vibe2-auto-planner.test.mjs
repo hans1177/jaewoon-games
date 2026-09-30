@@ -3617,3 +3617,40 @@ test('Unity development floor preserves existing Roblox repair observations with
     if(built)assert.equal(roblox.queueRobloxQualityBuildUpEvidence.qualityFailureDetails[0].observed,'{"floorHits":0}');
   }
 });
+
+test('unfinished source joins planning without design PASS and owner hold does not fill the backlog',()=>{
+  const root=tempRepo();
+  try{
+    const source=path.join(root,'roblox-games/new-rpg');
+    fs.mkdirSync(path.join(source,'server'),{recursive:true});fs.mkdirSync(path.join(source,'client'),{recursive:true});
+    fs.writeFileSync(path.join(source,'default.project.json'),JSON.stringify({name:'새 모험 RPG',tree:{$className:'DataModel'}}));
+    fs.writeFileSync(path.join(source,'server/Game.server.luau'),'local world=workspace\n');
+    fs.writeFileSync(path.join(source,'client/Game.client.luau'),'local player=game.Players.LocalPlayer\n');
+    const machine={authority:'MACHINE_EXECUTION_CONTRACT',ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'ACTIVE',gameIds:['owner-game']}}};
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(machine));
+    const result=planVibe2AutonomousTasks({repoRoot:root,catalog:{games:[]},queue:{tasks:[{id:'owner',gameId:'owner-game',target:'roblox',department:'development',type:'implementation',goal:'owner',status:'queued'}]},maxConcurrentTasks:2});
+    assert.ok(result.tasks.some(task=>task.gameId==='new-rpg'));
+    const lobby=result.tasks.find(task=>task.evidence.includes('world-lobby-first:v1'));
+    assert.ok(lobby);assert.match(lobby.goal,/모험가 거점/);assert.match(lobby.goal,/F2 월드 로비/);
+    assert.ok(lobby.responsibleFiles.includes('roblox-games/new-rpg/server/Game.server.luau'));
+    assert.ok(lobby.responsibleFiles.includes('roblox-games/new-rpg/client/Game.client.luau'));
+    assert.equal(lobby.studioQualityEvolution?.designContextAvailable,false);
+    assert.equal(result.tasks.some(task=>task.gameId==='owner-game'),false);
+    assert.equal(fs.readFileSync(path.join(source,'server/Game.server.luau'),'utf8'),'local world=workspace\n');
+    assert.equal(collectProjects({}, {games:[{id:'new-rpg',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'PAUSED'}]}, root).length,0);
+    assert.equal(collectProjects({}, {games:[],permanentRemovalPolicy:{ids:['new-rpg']}}, root).length,0);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('owner game is excluded until explicit scope handoff then existing source returns',()=>{
+  const root=tempRepo();
+  try{
+    fs.mkdirSync(path.join(root,'roblox-games/owner-game'),{recursive:true});
+    const catalog={games:[{id:'owner-game',productionClass:'DEVELOPMENT_CONFIRMED'}]};
+    const policy=path.join(root,'company-learning/platform-release-roadmap.json');
+    fs.writeFileSync(policy,JSON.stringify({ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'ACTIVE',gameIds:['owner-game']}}}));
+    assert.equal(collectProjects({},catalog,root).length,0);
+    fs.writeFileSync(policy,JSON.stringify({ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'ACTIVE',gameIds:[]}}}));
+    assert.equal(collectProjects({},catalog,root)[0].projectPath,'roblox-games/owner-game');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

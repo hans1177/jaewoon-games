@@ -260,6 +260,7 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,dedicatedRegistry,stamp
   const preserve=progressMatchesDesign(oldItem,design);
   const recoveredProgress=recoverExactPrivateRuntimeCheckpoint(oldItem,design);
   const item={...oldItem};
+  delete item.sourceContinuationPendingAdmission;
   Object.assign(item,{
     gameId,
     seedId:item.seedId||seed?.seedId||null,
@@ -336,15 +337,49 @@ function normalizeItem(oldItem,{game,seed,design,roadmap,dedicatedRegistry,stamp
   return item;
 }
 
+export function discoverExistingRobloxGames(catalog={},root='.'){
+  const games=[...(catalog.games||[])], known=new Set(games.map(game=>clean(game.id)));
+  const removed=new Set(catalog.permanentRemovalPolicy?.ids||[]), admitted=[];
+  const directory=path.join(root,'roblox-games');
+  if(!fs.existsSync(directory))return{catalog,admitted};
+  for(const entry of fs.readdirSync(directory,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){
+    const id=entry.name;
+    if(!entry.isDirectory()||! /^[a-z0-9][a-z0-9-]*$/.test(id)||known.has(id)||removed.has(id))continue;
+    const source=path.join(directory,id),projectFile=path.join(source,'default.project.json');
+    if(!fs.existsSync(projectFile)||!fs.lstatSync(projectFile).isFile())continue;
+    const project=readJson(projectFile,null);
+    // A real Rojo project with source is intake evidence, never a QA or publication PASS.
+    if(!project?.tree||typeof project.tree!=='object'||Array.isArray(project.tree)||!clean(project.name))continue;
+    const stack=[source];let hasSource=false;
+    while(stack.length&&!hasSource){
+      const current=stack.pop();
+      for(const child of fs.readdirSync(current,{withFileTypes:true})){
+        if(child.isDirectory()&&!['node_modules','.git','build','dist'].includes(child.name))stack.push(path.join(current,child.name));
+        else if(child.isFile()&&/\.lua(u)?$/.test(child.name)){hasSource=true;break;}
+      }
+    }
+    if(!hasSource)continue;
+    games.push({id,name:clean(project.name),productionClass:'DEVELOPMENT_CONFIRMED',
+      productionClassSource:'EXISTING_ROBLOX_SOURCE_INTAKE',lifecycleState:'ACTIVE',
+      selectedPlatform:'ROBLOX',robloxProjectPath:`roblox-games/${id}`,
+      developmentHandling:'PRESERVE_EXISTING_SOURCE_AND_CONTINUE',
+      sourceIntake:{kind:'EXISTING_ROJO_PROJECT',designVerified:false,runtimeVerified:false,externalReleaseApproved:false}});
+    known.add(id);admitted.push(id);
+  }
+  return{catalog:admitted.length?{...catalog,games}:catalog,admitted};
+}
+
 export function reconcileDevelopmentQueue({root='.'}={}){
   const p=(...parts)=>path.join(root,...parts);
-  const catalog=readJson(p('game-catalog.json'),{version:1,games:[]});
+  const intake=discoverExistingRobloxGames(readJson(p('game-catalog.json'),{version:1,games:[]}),root);
+  const catalog=intake.catalog;
   const seedState=readJson(p('game-seed-state.json'),{version:1,seeds:[]});
   const queuePath=p('development-queue.json');
   const queue=readJson(queuePath,{version:1,items:[]});
   const roadmap=readJson(p(MACHINE_POLICY_SOURCE),{});
   const dedicatedRegistry=readJson(p(DEDICATED_TARGET_REGISTRY),{version:1,targets:[]});
   assertDirectNativePolicy(roadmap);
+  if(intake.admitted.length)writeJson(p('game-catalog.json'),catalog);
 
   catalog.games ||= [];
   seedState.seeds ||= [];
@@ -372,7 +407,15 @@ export function reconcileDevelopmentQueue({root='.'}={}){
     const lifecycleActive=ACTIVE_LIFECYCLE.has(lifecycle);
     const design=latestMinimumDesign(root,gameId);
 
-    if(!catalogConfirmed||!lifecycleActive||!seedActive||!seedConfirmed||!design)continue;
+    if(!catalogConfirmed||!lifecycleActive)continue;
+    if(!seedActive||!seedConfirmed||!design){
+      // Source continuation is planned from the catalog; incomplete design is not fabricated.
+      // Preserve existing runtime/source evidence until normal admission can resume.
+      if((!seed||(seedActive&&seedConfirmed))&&oldById.has(gameId)&&fs.existsSync(p('roblox-games',gameId,'default.project.json'))){
+        next.push({...oldById.get(gameId),sourceContinuationPendingAdmission:true});seen.add(gameId);preserved.push(gameId);
+      }
+      continue;
+    }
 
     const old=oldById.get(gameId)||{};
     const normalized=normalizeItem(old,{game,seed,design,roadmap,dedicatedRegistry,stamp});
@@ -411,7 +454,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   }
 
   return {
-    changed,created,removed,rebound,preserved,duplicateRemoved,
+    changed:changed||intake.admitted.length>0,admittedSourceGames:intake.admitted,created,removed,rebound,preserved,duplicateRemoved,
     queueCount:next.length,routerPolicy:MACHINE_POLICY_SOURCE,
     nativeDevelopmentPolicy:'MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT',
     developmentGameWipMax:null,
@@ -426,6 +469,7 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   const result=reconcileDevelopmentQueue({root:process.cwd()});
   console.log(`DEVELOPMENT_QUEUE_RECONCILE_CHANGED=${result.changed?'YES':'NO'}`);
   console.log(`DEVELOPMENT_QUEUE_CREATED=${result.created.join(',')||'NONE'}`);
+  console.log(`DEVELOPMENT_QUEUE_SOURCE_INTAKE=${result.admittedSourceGames.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_QUEUE_REMOVED=${result.removed.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_QUEUE_REBOUND=${result.rebound.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_QUEUE_DUPLICATES_REMOVED=${result.duplicateRemoved}`);

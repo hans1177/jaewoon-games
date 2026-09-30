@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {
+  synchronizeOwnerDevelopmentHolds,
   enqueueVibeTask,
   reserveNextVibeTask,
   reserveVibeTaskBatch,
@@ -2036,4 +2037,20 @@ test('runtime evidence candidate survives queue normalization and worker lease r
     const roundTrip=createVibeContinuousQueue(JSON.parse(JSON.stringify({tasks:[{...raw,runtimeEvidenceCandidate:normalized}]})));
     assert.deepEqual(roundTrip.tasks[0].runtimeEvidenceCandidate,normalized);
   }
+});
+
+test('owner direct scope protects single and batch reservations while other games continue and handoff resumes',()=>{
+  const policy={ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'ACTIVE',gameIds:['owner-game']}}};
+  const queue={maxConcurrentTasks:1,tasks:[
+    {id:'owner',gameId:'owner-game',target:'roblox',department:'development',type:'implementation',goal:'continue owner source',status:'queued',sourceRoot:'roblox-games/owner-game'},
+    {id:'other',gameId:'other-game',target:'roblox',department:'development',type:'implementation',goal:'continue other source',status:'queued',sourceRoot:'roblox-games/other-game'}
+  ]};
+  const one=reserveNextVibeTask(queue,{maxConcurrentTasks:1,policy});
+  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:1,policy});
+  assert.equal(one.task.id,'other');assert.deepEqual(batch.tasks.map(t=>t.id),['other']);
+  assert.equal(batch.queue.tasks.find(t=>t.id==='owner').status,'queued');
+  const resumed=reserveNextVibeTask({...queue,tasks:queue.tasks.slice(0,1)},{policy:{}});
+  assert.equal(resumed.task.id,'owner');
+  const running=synchronizeOwnerDevelopmentHolds({tasks:[{...queue.tasks[0],status:'running',reservationId:'existing'}]},policy);
+  assert.equal(running.tasks[0].status,'running');assert.equal(running.tasks[0].reservationId,'existing');
 });

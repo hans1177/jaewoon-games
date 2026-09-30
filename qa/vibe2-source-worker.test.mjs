@@ -5028,3 +5028,13 @@ test('Roblox focused context keeps complete boundary lines and separates the sol
   }
   assert.equal(fs.readFileSync(path.join(sourceRoot,relative),'utf8'),source);
 });
+
+test('owner direct source is protected even when a stale work order claims another game',async()=>{
+  const root=tempRoot();
+  try{
+    write(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'ACTIVE',gameIds:['owner-game']}}}));
+    write(path.join(root,'order.json'),JSON.stringify({run:true,workMode:'source-change-candidate',workerPolicy:{directMainWrite:false},target:'roblox',gameId:'other',source:{root:'roblox-games/owner-game'}}));
+    await assert.rejects(runVibe2SourceWorker({cwd:root,workOrderFile:'order.json'}),/OWNER_DIRECT_DEVELOPMENT_HELD:owner-game/);
+    assert.equal(fs.existsSync(path.join(root,'.vibe2/candidates')),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

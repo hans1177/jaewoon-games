@@ -12,6 +12,7 @@ on:
       - '.github/workflows/company-status-sync.yml'
       - '.github/workflows/company-development-queue-reconcile.yml'
       - 'game-catalog.json'
+      - 'roblox-games/**/default.project.json'
   workflow_run:
     workflows:
       - Company DESIGN_ONLY Promotion Sync
@@ -101,6 +102,7 @@ jobs:
             git clean -fd
             git checkout origin/main -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-selected-platform-router.mjs company-learning/platform-release-roadmap.json
             git reset -- tools/company-development-queue-reconcile.mjs tools/company-minimum-design-contract.mjs tools/company-selected-platform-router.mjs company-learning/platform-release-roadmap.json >/dev/null 2>&1 || true
+            git restore --source=origin/main --worktree -- roblox-games
 
             node tools/company-development-queue-reconcile.mjs
 
@@ -113,6 +115,13 @@ jobs:
             if(queue.nativeDevelopmentPolicy!=='MINIMUM_DESIGN_READY_THEN_ROBLOX_UNITY_CONCURRENT')throw new Error('direct-native queue policy required');
             if(queue.developmentGameWipMax!==null)throw new Error('internal game WIP cap forbidden');
             for(const item of queue.items||[]){
+              if(item.sourceContinuationPendingAdmission===true){
+                const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+                const game=(catalog.games||[]).find(game=>game.id===item.gameId);
+                if(!/^[a-z0-9][a-z0-9-]*$/.test(item.gameId)||game?.productionClass!=='DEVELOPMENT_CONFIRMED'||!['ACTIVE','REBUILD'].includes(game.lifecycleState||'ACTIVE')||!fs.existsSync(`roblox-games/${item.gameId}/default.project.json`))throw new Error(`source continuation identity missing: ${item.gameId}`);
+                console.log(`DEVELOPMENT_QUEUE_SOURCE_CONTINUATION_PENDING_ADMISSION=${item.gameId}`);
+                continue;
+              }
               if(item.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`non-development item remains: ${item.gameId}`);
               if(item.minimumDesignContract?.pass!==true)throw new Error(`minimum design missing: ${item.gameId}`);
               if(item.platformExecutionMode!=='ROBLOX_UNITY_CONCURRENT_SAME_GAME')throw new Error(`dual-native execution missing: ${item.gameId}`);
@@ -128,7 +137,7 @@ jobs:
             console.log('UNITY_WEB_ADMISSION_AUTHORITY=NONE');
           NODE
 
-            git add -- development-queue.json
+            git add -- development-queue.json game-catalog.json
             git diff --cached --check
             if git diff --cached --quiet; then
               echo 'DEVELOPMENT_QUEUE_RUNTIME_CHANGE=NO'
