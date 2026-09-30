@@ -2492,6 +2492,9 @@ test('Studio launcher handoff remains bound to one isolated Place and cleanup re
   assert.match(close,/Stop-Process -InputObject \$ownedStudio -Force/);
   assert.match(close,/if \(-not \$ownedStudio\.WaitForExit\(60000\)\)/);
   assert.match(close,/finally \{ \$ownedStudio\.Dispose\(\) \}/);
+  // Windows PowerShell can expose a null ExitTime even after WaitForExit succeeds.
+  assert.doesNotMatch(close,/\$ownedStudio\.ExitTime/);
+  assert.match(close,/ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES:process=\$\(\$ownedStudio.Id\):exitConfirmed=YES/);
   assert.doesNotMatch(close,/if \(Get-Process -Id \$ownedStudio.Id/);
   assert.match(close,/\$launchFamily\.ContainsKey\(\[string\]\$_.ProcessId\)/);
   assert.match(close,/\.TotalMilliseconds\) -le 10/);

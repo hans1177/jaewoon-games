@@ -2503,7 +2503,7 @@ jobs:
                 if (-not $ownedStudio.WaitForExit(60000)) {
                   throw "Owned Studio has not exited; next launch must remain blocked:process=$($ownedStudio.Id)"
                 }
-                Write-Host "ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES:process=$($ownedStudio.Id):exitedAt=$($ownedStudio.ExitTime.ToUniversalTime().ToString('o'))"
+                Write-Host "ROBLOX_STUDIO_AUTOMATED_CLOSE_AFTER_EVIDENCE=YES:process=$($ownedStudio.Id):exitConfirmed=YES"
               } finally { $ownedStudio.Dispose() }
             }
             Start-Sleep -Seconds 1
