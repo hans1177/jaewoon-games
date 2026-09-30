@@ -6275,7 +6275,8 @@
       "coding_negative_oiunnd",
       "coding_negative_1au2h6i",
       "coding_negative_5hup6k",
-      "coding_negative_1lq3x7h"
+      "coding_negative_1lq3x7h",
+      "coding_negative_znm1py"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16891,7 +16892,7 @@
         "verifiedApplications": 5,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 19,
-        "verifiedFailures": 820,
+        "verifiedFailures": 821,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -17259,26 +17260,26 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 64,
+            "verifiedFailures": 65,
             "games": {},
             "targets": {},
             "failureGames": {
               "horror-escape-room": 30,
-              "fantasy-survival": 25,
+              "fantasy-survival": 26,
               "line-defense": 9
             },
             "failureTargets": {
-              "unity": 64
+              "unity": 65
             },
             "failureClasses": {
               "INVALID_PATH": 24,
               "TIMEOUT": 29,
               "MALFORMED_OUTPUT": 6,
-              "NO_OP": 5
+              "NO_OP": 6
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_cnukpf",
-            "lastUpdatedAt": "2026-09-30T01:43:04.480Z"
+            "lastFailureEvidence": "coding_negative_znm1py",
+            "lastUpdatedAt": "2026-09-30T01:54:40.519Z"
           },
           "unity|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -17410,8 +17411,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_i8erjc",
-        "lastFailureEvidence": "coding_negative_1lq3x7h",
-        "lastUpdatedAt": "2026-09-30T01:53:34.863Z"
+        "lastFailureEvidence": "coding_negative_znm1py",
+        "lastUpdatedAt": "2026-09-30T01:54:40.519Z"
       }
     }
   },
@@ -20164,7 +20165,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T01:53:34.939Z",
+    "lastBuiltAt": "2026-09-30T01:54:40.596Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -28424,5 +28425,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T01:53:34.939Z"
+  "updatedAt": "2026-09-30T01:54:40.596Z"
 }
