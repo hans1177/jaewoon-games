@@ -488,3 +488,20 @@ test('에너지 HUD는 로비와 게임에서 현재값과 최대값을 항상 �
  assert.match(client,/energyFill\.Visible=true/);
  assert.match(client,/energyLabel\.Visible=true/);
 });
+
+
+test('실제 캐릭터 스폰은 고정 Y가 아니라 바닥 Raycast와 아바타 높이로 계산한다',()=>{
+ assert.match(server,/local function groundedRootTarget\(p,pos\)/);
+ assert.match(server,/workspace:Raycast\(origin,Vector3\.new\(0,-18,0\),params\)/);
+ assert.match(server,/local standingOffset=math\.max\(1,tonumber\(h\.HipHeight\)or 0\)\+\(r\.Size\.Y\*\.5\)/);
+ assert.match(server,/groundY\+standingOffset\+\.03/);
+ assert.doesNotMatch(server,/local target=Vector3\.new\(pos\.X,3\.6,pos\.Z\)/);
+ assert.match(server,/h:ChangeState\(Enum\.HumanoidStateType\.GettingUp\)/);
+});
+
+test('대기 로비 캐릭터도 인원수와 관계없이 실제 바닥 스냅을 사용한다',()=>{
+ const block=server.slice(server.indexOf('local function onCharacter'),server.indexOf('Players.PlayerAdded:Connect'));
+ assert.doesNotMatch(block,/#Players:GetPlayers\(\)==1/);
+ assert.match(block,/table\.sort\(players/);
+ assert.match(block,/teleport\(p,survivorSpawns\[slot\]\)/);
+});
