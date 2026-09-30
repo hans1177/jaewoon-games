@@ -19527,10 +19527,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-30T17:40:07.232Z",
+      "updatedAt": "2026-09-30T21:17:37.371Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -21248,7 +21248,113 @@
         "f9RuntimeReplay": true,
         "internalStudioValidationOnly": true,
         "authority": "roblox-open-cloud-f9-verified-canonical-publish"
-      }
+      },
+      "platformAdapter": "tools/company-development-unity-platform.mjs",
+      "unityCandidateBranch": "development/unity-tech-seed-casual-realm-weaver-36773180555",
+      "unitySourceCommit": "de506fdbc81793b769e3bbbb5095eb023b83e4d2",
+      "unityBuildRunId": 36775430664,
+      "unityRuntimeSmokeRunId": 36778154982,
+      "unityIndependentQaRunId": null,
+      "unityRegressionRunId": null,
+      "unityF0ThroughF9Evidence": {
+        "version": 1,
+        "platform": "UNITY",
+        "sourceRevision": "de506fdbc81793b769e3bbbb5095eb023b83e4d2",
+        "artifactIdentity": "sha256:21eb715b96950237ba245dba3911318cffbb22da5130189bfec6a54ce2d805fd",
+        "sourceRootTreeSha": "041b4d2842d3ad836c7388337fa4f22a61bb80f1",
+        "evidenceMode": "EXISTING_EXACT_APK_RUNTIME_QA_REGRESSION_WITH_PLATFORM_APPLICABILITY",
+        "floors": {
+          "F0": {
+            "state": "PASS",
+            "authority": "IMMUTABLE_APK_BUILD_AND_SOURCE_BINDING"
+          },
+          "F1": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F2": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F3": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F4": {
+            "state": "FAIL",
+            "authority": "EXACT_ANDROID_RUNTIME_SESSION"
+          },
+          "F5": {
+            "state": "FAIL",
+            "authority": "INDEPENDENT_ANDROID_QA_TOUCH_INPUT_SCREEN_RUNTIME"
+          },
+          "F6": {
+            "state": "FAIL",
+            "authority": "INDEPENDENT_ANDROID_QA_AND_EXACT_RUNTIME_STATE_EVIDENCE"
+          },
+          "F7": {
+            "state": "NOT_APPLICABLE",
+            "authority": "VERIFIED_DESIGN_SINGLE_PLAYER",
+            "participantCount": 0,
+            "authoritativeSync": false
+          },
+          "F8": {
+            "state": "FAIL",
+            "authority": "EXACT_RUNTIME_PLUS_INDEPENDENT_QA"
+          },
+          "F9": {
+            "state": "FAIL",
+            "authority": "EXACT_ARTIFACT_REGRESSION_FAN_IN"
+          }
+        },
+        "multiplayerRequired": false,
+        "verifiedAt": "2026-09-30T21:17:37.371Z"
+      },
+      "unityF9ReleaseRegressionPassed": false,
+      "unityF9ReleaseRegressionPassedAt": null,
+      "unityCanonicalPublishPending": false,
+      "unityInternalReleaseReady": false,
+      "unityInternalReleaseAt": null,
+      "unityInternalReleaseEvidence": null,
+      "unityExecutionEvidence": {
+        "version": 3,
+        "platform": "UNITY",
+        "sourceRevision": "de506fdbc81793b769e3bbbb5095eb023b83e4d2",
+        "sourceRootTreeSha": "041b4d2842d3ad836c7388337fa4f22a61bb80f1",
+        "sourceFingerprint": "010c23095b91c9e3cc42c3e57c815f24b7232a62c2ad945f552998c6b8325677",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:21eb715b96950237ba245dba3911318cffbb22da5130189bfec6a54ce2d805fd",
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "multiplayerPassed": true,
+        "regressionPassed": false,
+        "f0ToF9Passed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
+      },
+      "executionEvidence": {
+        "version": 3,
+        "platform": "UNITY",
+        "sourceRevision": "de506fdbc81793b769e3bbbb5095eb023b83e4d2",
+        "sourceRootTreeSha": "041b4d2842d3ad836c7388337fa4f22a61bb80f1",
+        "sourceFingerprint": "010c23095b91c9e3cc42c3e57c815f24b7232a62c2ad945f552998c6b8325677",
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:21eb715b96950237ba245dba3911318cffbb22da5130189bfec6a54ce2d805fd",
+        "runtimePassed": false,
+        "independentQaPassed": false,
+        "multiplayerPassed": true,
+        "regressionPassed": false,
+        "f0ToF9Passed": false,
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
+      },
+      "resumeStage": "F1_SERVER_BOOT",
+      "failureCount": 1,
+      "contractCanaryPassed": false
     },
     {
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -30094,7 +30200,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T20:58:26.286Z",
+  "updatedAt": "2026-09-30T21:17:39.354Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
