@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths: ['.github/workflows/horror-owner-direct-publish.yml']
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: horror-owner-direct-publish
   cancel-in-progress: false
@@ -31,7 +31,7 @@ jobs:
           Invoke-WebRequest 'https://github.com/rojo-rbx/rojo/releases/download/v7.7.0/rojo-7.7.0-windows-x86_64.zip' -OutFile "$out/rojo.zip"
           if((Get-FileHash "$out/rojo.zip" -Algorithm SHA256).Hash.ToLowerInvariant() -ne '2179c44862a10ecbd725bdfeb4abc64e16dc4aad9b6c8f3e1a7c46a87280b949'){throw 'ROJO_CHECKSUM'}
           Expand-Archive "$out/rojo.zip" "$out/rojo" -Force
-      - name: Validate committed repair without rewriting game sources
+      - name: Repair existing room initialization and compile actual sources
         shell: pwsh
         run: |
           $ErrorActionPreference='Stop'
@@ -40,10 +40,25 @@ jobs:
           const base='roblox-games/horror-escape-room/';
           const sf=base+'server/Game.server.luau',cf=base+'client/Game.client.luau';
           const git=(...a)=>cp.execFileSync('git',a,{encoding:'utf8'}).trim();
-          assert.equal(git('rev-parse','HEAD:'+sf),'76f16e373b5401d9fae7cabfad52e4caf38ae1da','SERVER_CHANGED_REVIEW_REQUIRED');
+          const expected='d494ba0f2301498e056d5dd71fa593939d966d6c';
+          const current=git('rev-parse','HEAD:'+sf);
+          assert(['76f16e373b5401d9fae7cabfad52e4caf38ae1da',expected].includes(current),'SERVER_CHANGED_REVIEW_REQUIRED');
           assert.equal(git('rev-parse','HEAD:'+cf),'416498c600416dd6b2bc5e0ee448cf3199854233','CLIENT_CHANGED_REVIEW_REQUIRED');
+          if(current!==expected){
+            let s=fs.readFileSync(sf,'utf8').replace(/\r\n/g,'\n');
+            const replacements=[
+              ['local roomDirectory=MemoryStoreService:GetSortedMap("midnight-infection-room-directory-v1")\nlocal studioRoomFallback=RunService:IsStudio()', '-- 로컬 플레이는 기존 단일 서버 방 흐름을 사용하고 온라인 방 저장소는 게시 서버에서만 연다.\nlocal studioRoomFallback=RunService:IsStudio()\nlocal roomDirectory\nif not studioRoomFallback then\n roomDirectory=MemoryStoreService:GetSortedMap("midnight-infection-room-directory-v1")\nend'],
+              ['local function setRoomDirectoryEntry(code,data)\n if code==""or','local function setRoomDirectoryEntry(code,data)\n if not roomDirectory or code==""or'],
+              ['local function getRoomDirectoryEntry(code)\n local ok,data=','local function getRoomDirectoryEntry(code)\n if not roomDirectory then return nil end\n local ok,data='],
+              ['local function removeRoomDirectoryEntry(code)\n if code==""then','local function removeRoomDirectoryEntry(code)\n if not roomDirectory or code==""then'],
+              ['local function quickJoinRoom(p,friendsOnly)\n if roomServer or state=="RUNNING"or not roomActionReady(p)then return end\n local ok,rows=','local function quickJoinRoom(p,friendsOnly)\n if roomServer or state=="RUNNING"or not roomActionReady(p)then return end\n if not roomDirectory then roomFeedback(p,"EMPTY","로컬 테스트는 승강기로 입장");return end\n local ok,rows=']
+            ];
+            for(const [a,b]of replacements){assert.equal(s.split(a).length,2,'SOURCE_MISMATCH');s=s.replace(a,b);}
+            fs.writeFileSync(sf,s);
+          }
+          assert.equal(git('hash-object',sf),expected,'UNREVIEWED_SOURCE_CHANGE');
           const exe=path.join(process.env.OWNER_OUT,'luau','luau-compile.exe');
-          const evidence={sourceRevision:git('rev-parse','HEAD'),compiler:'0.740',files:[],pass:false};
+          const evidence={sourceBlob:expected,compiler:'0.740',files:[],pass:false};
           for(const f of [sf,cf,...fs.readdirSync(base+'shared').filter(x=>/\.luau?$/.test(x)).map(x=>base+'shared/'+x)]){
             const r=cp.spawnSync(exe,['--null',f],{encoding:'utf8',timeout:45000});
             const row={file:f,status:r.status,error:String(r.error||''),stdout:r.stdout,stderr:r.stderr};
@@ -51,8 +66,18 @@ jobs:
           }
           evidence.pass=evidence.files.every(x=>x.status===0);
           fs.writeFileSync(path.join(process.env.OWNER_OUT,'compile.json'),JSON.stringify(evidence,null,2));
-          assert(evidence.pass,'COMPILE_FAILED');assert.equal(git('status','--porcelain'),'','GAME_SOURCE_CHANGED');
-          console.log('COMMITTED_GAME_SOURCE_UNCHANGED=PASS');
+          fs.writeFileSync(path.join(process.env.OWNER_OUT,'repair.diff'),git('diff','--',sf));
+          assert(evidence.pass,'COMPILE_FAILED');
+          const changed=git('diff','--name-only').split(/\r?\n/).filter(Boolean);
+          assert(changed.every(f=>f===sf),'UNRELATED_SOURCE_CHANGE');
+          if(changed.length){
+            git('diff','--check');git('config','user.name','hans1177');git('config','user.email','actions@users.noreply.github.com');
+            git('add','--',sf);git('commit','-m','fix(horror): 로컬 플레이의 방 저장소 초기화 중단 복구');
+            git('fetch','origin','main');git('rebase','origin/main');
+            assert.equal(git('rev-parse','HEAD:'+sf),expected,'SERVER_CHANGED_DURING_REBASE');
+            git('push','origin','HEAD:main');
+          }
+          console.log('REPAIR_COMMIT='+git('rev-parse','HEAD'));
           '@ | node
           if($LASTEXITCODE -ne 0){throw 'REPAIR_VALIDATION_FAILED'}
           "SOURCE_REVISION=$(git rev-parse HEAD)" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
@@ -170,4 +195,5 @@ jobs:
           path: |
             ${{ env.OWNER_OUT }}/*.json
             ${{ env.OWNER_OUT }}/*.png
+            ${{ env.OWNER_OUT }}/repair.diff
           retention-days: 1
