@@ -2752,6 +2752,7 @@ local function clearRoleVisual(p)
  for _,d in ipairs(c:GetDescendants())do if d.Name=="RoleVisual"or d:GetAttribute("MonsterCostume")==true then d:Destroy()end end
  local old=c:FindFirstChild("RoleHighlight");if old then old:Destroy()end
  resetCharacterBodyScale(c)
+ restoreMonsterPalette(c)
 end
 local function costumePart(character,base,name,size,offset,color,material,shape)
  local x=Instance.new("Part");x.Name=name;x:SetAttribute("MonsterCostume",true);x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic;x.CanCollide=false;x.CanTouch=false;x.CanQuery=false;x.Massless=true
@@ -2796,8 +2797,22 @@ local function applyMonsterPalette(character,id)
  if not row then return end
  for _,part in ipairs(character:GetChildren())do
   if part:IsA("BasePart")and part.Name~="HumanoidRootPart"and part:GetAttribute("MonsterCostume")~=true then
+   if part:GetAttribute("MonsterOriginalColor")==nil then part:SetAttribute("MonsterOriginalColor",part.Color)end
+   if part:GetAttribute("MonsterOriginalMaterial")==nil then part:SetAttribute("MonsterOriginalMaterial",part.Material.Name)end
    if part.Name~="Head"or id~="DRACULA"then part.Color=row[1]end
    part.Material=row[2]
+  end
+ end
+end
+local function restoreMonsterPalette(character)
+ for _,part in ipairs(character:GetChildren())do
+  if part:IsA("BasePart")then
+   local color=part:GetAttribute("MonsterOriginalColor")
+   local materialName=part:GetAttribute("MonsterOriginalMaterial")
+   if typeof(color)=="Color3"then part.Color=color end
+   if typeof(materialName)=="string"and Enum.Material[materialName]then part.Material=Enum.Material[materialName]end
+   part:SetAttribute("MonsterOriginalColor",nil)
+   part:SetAttribute("MonsterOriginalMaterial",nil)
   end
  end
 end
@@ -2980,6 +2995,8 @@ local function infectBot(b,sourcePlayer)
  if b.model and b.model.Parent then
   b.model.Name="AI_MONSTER_"..monsterId
   for _,d in ipairs(b.model:GetDescendants())do if d:IsA("BasePart")and d~=b.part and d:GetAttribute("MonsterCostume")~=true then d.Color=monsterStyle.Color;d.Material=Enum.Material.Fabric end end
+  local scale=monsterId=="FRANKENSTEIN"and 1.16 or monsterId=="WEREWOLF"and 1.12 or monsterId=="GRIM_REAPER"and 1.13 or monsterId=="DRACULA"and 1.06 or 1.04
+  pcall(function()b.model:ScaleTo(scale)end)
   local hi=b.model:FindFirstChild("AIRoleHighlight");if hi and hi:IsA("Highlight")then hi.FillTransparency=.72;hi.FillColor=monsterStyle.Color;hi.OutlineColor=monsterStyle.Accent end
  else
   b.part.Color=monsterStyle.Color;b.part.Material=Enum.Material.Fabric
