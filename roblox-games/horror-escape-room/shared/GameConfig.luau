@@ -46,18 +46,29 @@ local Config={
  },
  Celebrations={
   SURVIVOR={
-   {Id="PHOTO_FAIL",Name="단체사진 망함",Emote="cheer",ComicEmote="laugh",Caption="한 명은 꼭 눈을 감았다"},
-   {Id="PURIFIER_HIGHFIVE",Name="정화기 하이파이브",Emote="wave",ComicEmote="point",Caption="하이파이브 타이밍은 각자 달랐다"},
-   {Id="CLOCK_OUT",Name="퇴근 성공",Emote="dance2",ComicEmote="laugh",Caption="괴물보다 퇴근이 더 중요했다"},
+   {Id="LAST_LIGHT",Name="마지막 불빛",Emote="cheer",ComicEmote="wave",Caption="정화 완료 · 살아남은 팀이 중앙을 지킨다"},
+   {Id="CLEAN_EXIT",Name="생존 확인",Emote="wave",ComicEmote="point",Caption="추격 종료 · 남은 인원 전원 생존 확인"},
+   {Id="FINAL_PURIFY",Name="최종 정화",Emote="cheer",ComicEmote="wave",Caption="마지막 몬스터까지 정화 완료"},
   },
   MONSTER={
-   {Id="ROLL_CALL",Name="괴물 출석체크",Emote="wave",ComicEmote="point",Caption="결석자는 인간팀으로 처리됩니다"},
-   {Id="SHRUG_DANCE",Name="단체 으쓱춤",Emote="dance3",ComicEmote="laugh",Caption="무서움보다 박자가 더 문제다"},
-   {Id="SCARY_POSE",Name="누가 제일 무섭나",Emote="cheer",ComicEmote="dance",Caption="판정 결과: 다들 조금씩 이상하다"},
+   {Id="HUNT_COMPLETE",Name="사냥 종료",Emote="cheer",ComicEmote="point",Caption="감염 완료 · 사냥팀이 전장을 점거한다"},
+   {Id="NIGHT_PROCESSION",Name="심야 행렬",Emote="wave",ComicEmote="cheer",Caption="남은 인간 없음 · 몬스터 팀 집결"},
+   {Id="RED_CHECKIN",Name="붉은 체크인",Emote="cheer",ComicEmote="point",Caption="체크인 완료 · 전원 몬스터 처리"},
   },
   DRAW={
-   {Id="AWKWARD_CLAP",Name="전원 어색한 박수",Emote="wave",ComicEmote="laugh",Caption="이긴 사람은 없고 박수만 남았다"},
+   {Id="DEADLOCK",Name="대치 종료",Emote="wave",ComicEmote="wave",Caption="시간 종료 · 어느 진영도 끝내지 못했다"},
   },
+ },
+ AICombat={
+  SeparationRadius=12,
+  SeparationWeight=7,
+  HumanEngageRange=52,
+  HumanKiteRange=18,
+  HumanPreferredRange=10,
+  MonsterAbilityMinRange=9,
+  MonsterAbilityMaxRange=34,
+  HumanDecisionInterval=.22,
+  MonsterDecisionInterval=.18,
  },
  Lore={
   {Id="SCHOOL_01",Map="SCHOOL",Name="빈 교실 출석부",Text="새벽 2시에도 한 명이 출석으로 찍혀 있다."},
