@@ -154,11 +154,24 @@ test('로비 상용화 계약은 launch gate에도 고정된다',()=>{
 });
 
 
-test('학교는 높은 천장과 구조 디테일을 유지한다',()=>{
- assert.match(server,/local schoolCeilingY=18\.4/);
- assert.match(server,/local schoolWallHeight=18/);
- for(const marker of ['SchoolHallColumn','SchoolCeilingBeam','ClassDoorFrameL','SchoolFireCabinet','SchoolTrophyCase','SchoolVendingMachine','GymBackboard'])assert.ok(server.includes(marker),marker);
- assert.doesNotMatch(server,/MainHallCeiling".*Vector3\.new\(0,12\.2,0\)/);
+test('세 맵 실내 천장은 직접 상향된 공간감을 유지한다',()=>{
+ assert.match(server,/local schoolCeilingY=24\.4/);
+ assert.match(server,/local schoolWallHeight=24/);
+ assert.match(server,/local hospitalCeilingY=18\.5/);
+ assert.match(server,/local basementCeilingY=12\.5/);
+ assert.match(server,/local hauntedCeilingY=18\.5/);
+ assert.match(server,/local underpassCeilingY=12\.5/);
+ for(const marker of ['SchoolHallColumn','SchoolCeilingBeam','HospitalHallCeiling','SurgeryCeiling','HauntedCeiling','UnderpassCeiling'])assert.ok(server.includes(marker),marker);
+});
+
+test('플레이 몬스터 5종은 콘셉트 스킨과 고유 스킬 이펙트를 가진다',()=>{
+ for(const id of ['DRACULA','FRANKENSTEIN','WEREWOLF','MUMMY','GRIM_REAPER'])assert.ok(config.includes('Id="'+id+'"'),id);
+ for(const concept of ['ARISTOCRATIC_VAMPIRE','ELECTRIC_EXPERIMENT','FERAL_HUNTER','ANCIENT_CURSE','VOID_HARVESTER'])assert.ok(config.includes(concept),concept);
+ for(const ability of ['BAT_DASH','POWER_CHARGE','RAGE_RUN','CURSE_SLOW','SHADOW_STEP'])assert.ok(config.includes(ability+'={'),ability);
+ for(const effect of ['BLOOD_BATS','ELECTRIC_CHARGE','CLAW_RUSH','CURSE_RING','SHADOW_GATE'])assert.ok(config.includes('Effect="'+effect+'"'),effect);
+ for(const visual of ['BloodMedallion','ElectricCore','WolfBackFur','CurseScarab','ReaperFaceVoid'])assert.ok(server.includes(visual),visual);
+ assert.match(server,/FireAllClients\("MONSTER_ABILITY_EFFECT"/);
+ assert.match(client,/playMonsterAbilityEffect\(snapshot\)/);
 });
 
 test('플레이어와 AI 추격 모션은 기존 Animator 위에 레이어로 적용된다',()=>{
