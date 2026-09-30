@@ -5063,3 +5063,33 @@ test('workflow order, model provisioning and budget share source-worker eligibil
   assert.match(workflow,/deterministic_source="\$\{\{ steps\.order\.outputs\.deterministic_source \}\}"/);
   assert.doesNotMatch(workflow,/deterministic_source="\$\(node -e/);
 });
+
+test('repeated Luau syntax recovery reconstructs from valid source rather than recycling rejected code',{skip:!process.env.VIBE2_TEST_LUAU_COMPILER},async(t)=>{
+  const cwd=tempRoot(),root='roblox-games/demo',relative='client/Game.client.luau',requests=[];
+  const source='local status = {Text = "ready"}\nstatus.Text = "ready"\n';
+  write(path.join(cwd,root,relative),source);
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({target:'roblox',root,responsibleFiles:[root+'/'+relative],taskId:'repeated-luau-syntax'})));
+  const server=http.createServer((req,res)=>{
+    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
+      requests.push(JSON.parse(body));
+      const n=requests.length;
+      const response=n===1?JSON.stringify({edits:[{path:relative,find:'missing anchor',replace:'changed'}]})
+        :JSON.stringify({replace:n<4?'status.Text = )':'status.Text = "changed"'});
+      res.writeHead(200,{'content-type':'application/x-ndjson'});
+      res.end(JSON.stringify({response,done:true,done_reason:'stop'})+'\n');
+    });
+  });
+  await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(11434,'127.0.0.1',resolve);});
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  const result=await runVibe2SourceWorker({cwd,luauCompiler:process.env.VIBE2_TEST_LUAU_COMPILER});
+  assert.equal(requests.length,4);
+  assert.match(requests[2].prompt,/REJECTED REPLACEMENT.*status.Text = \)/);
+  assert.match(requests[3].prompt,/LUAU REPAIR PASS 2/);
+  assert.match(requests[3].prompt,/ORIGINAL valid anchor/);
+  assert.doesNotMatch(requests[3].prompt,/REJECTED REPLACEMENT/);
+  assert.notEqual(requests[3].prompt,requests[2].prompt);
+  assert.equal(requests[3].options.temperature,0.16);
+  assert.equal(result.generation.attempts,4);
+  assert.equal(fs.readFileSync(path.join(cwd,root,relative),'utf8'),source);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/repeated-luau-syntax/files',relative),'utf8'),/status.Text = "changed"/);
+});
