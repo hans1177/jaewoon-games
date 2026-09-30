@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "gameId": "monster-adventure",
+  "state": "FAIL",
+  "pass": false,
+  "validated": false,
+  "target": "UNITY_ANDROID_TECHNICAL_VALIDATION",
+  "checkedAt": "2026-09-30T21:47:02.597Z",
+  "sourceBinding": {
+    "upstreamBuildRunId": 36776512998,
+    "sourceCommit": "92c76090d928b7724e18a0fd980f1f173a4581ba",
+    "sourceTreeSha": "dce7400250044101458795fd82eabab132a26496",
+    "apkSha256": "3a1ba25c01dd7987e8712245ae58a493e7da08b794c1b119e491fdb10afe5fab",
+    "sameBinding": true
+  },
+  "realEvidence": {
+    "runtimeSmoke": true,
+    "independentQa": true,
+    "metricSamples": 0,
+    "actionObserved": false,
+    "saveObserved": true,
+    "pauseResumeObserved": true
+  },
+  "coverage": {
+    "ANDROID_FPS_FRAME_STABILITY": {
+      "state": "FAIL",
+      "sampleCount": 0,
+      "minFps": null,
+      "avgFps": null,
+      "scope": "ANDROID_16_EMULATOR_TECHNICAL_PROTOTYPE"
+    },
+    "MEMORY_HEAT_LOADING": {
+      "state": "FAIL",
+      "maxAllocatedMemoryBytes": null,
+      "loading": "PASS",
+      "heat": "EMULATOR_ONLY_NOT_PHYSICAL_DEVICE",
+      "limitation": "Physical-device thermal behavior remains a RELEASE_CONFIRMED device-validation concern."
+    },
+    "PHYSICS_CAMERA_ANIMATION": {
+      "state": "NOT_REQUIRED_BY_CURRENT_TECH_PROTOTYPE",
+      "reason": "Generated validation prototype uses deterministic UI/state animation and no physics/camera dependency."
+    },
+    "AI_NAVMESH_OBJECT_COUNT": {
+      "state": "NOT_REQUIRED_BY_CURRENT_TECH_PROTOTYPE",
+      "reason": "No NavMesh or AI-agent dependency is used in the validation prototype."
+    },
+    "VFX_COST": {
+      "state": "PASS",
+      "reason": "No external VFX assets; prototype uses lightweight immediate-mode validation visuals."
+    },
+    "ASPECT_RATIO_TOUCH": {
+      "state": "FAIL",
+      "evidence": "Android emulator black-box taps/swipes plus in-app action log."
+    },
+    "SAVE_LOAD_UPDATE_COMPATIBILITY": {
+      "state": "PASS_WITH_LIMITATION",
+      "updateInstallPassed": true,
+      "saveSignalObserved": true,
+      "limitation": "Update installation and save writes are observed; cross-version migration schema is not exercised by this first technical prototype."
+    },
+    "APP_PAUSE_RESUME": {
+      "state": "PASS",
+      "evidence": "Independent Android QA background/resume plus app pause/focus signal."
+    },
+    "IMPLEMENTATION_COMPLEXITY": {
+      "state": "PASS",
+      "trackedProjectFiles": 5,
+      "reason": "One-game technical prototype is intentionally minimal and generated from locked design/Web evidence."
+    },
+    "ASSET_AND_QA_COST": {
+      "state": "PASS",
+      "externalRuntimeAssets": 0,
+      "reason": "No external art/audio package dependency in technical prototype; QA uses existing Android smoke and independent QA pipelines."
+    },
+    "FUTURE_EXPANSION_FEASIBILITY": {
+      "state": "REVIEW_REQUIRED_BY_DEPARTMENT_MEETING",
+      "reason": "Seed expansion decisions are preserved for Unity evidence meeting; technical prototype does not claim Steam/multiplayer production readiness."
+    }
+  },
+  "limitations": [
+    "This is DEVELOPMENT_CONFIRMED technical-validation evidence, not RELEASE_CONFIRMED approval.",
+    "Physical-device thermal behavior is not inferred from emulator evidence."
+  ],
+  "provenance": {
+    "buildInfo": "/tmp/unity-build/monster-adventure-android-cloud-36776512998-1/build-info.json",
+    "runtimeEvidence": "/tmp/unity-runtime/unity-runtime-smoke-36776512998/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-runtime-smoke/evidence.json",
+    "independentEvidence": "/tmp/unity-independent/unity-independent-qa-36776512998/home/runner/work/jaewoon-games/jaewoon-games/qa-artifacts/unity-independent-qa/evidence.json",
+    "projectPath": "unity-games/monster-adventure"
+  }
+}
