@@ -6880,7 +6880,8 @@
       "coding_negative_53mo6y",
       "coding_negative_lz7xoj",
       "coding_negative_1pxc0hc",
-      "coding_negative_9qhqbb"
+      "coding_negative_9qhqbb",
+      "coding_negative_mmzlqg"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -18264,7 +18265,7 @@
         "verifiedApplications": 13,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 53,
-        "verifiedFailures": 1334,
+        "verifiedFailures": 1335,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -18634,12 +18635,12 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 143,
+            "verifiedFailures": 144,
             "games": {},
             "targets": {},
             "failureGames": {
               "horror-escape-room": 35,
-              "fantasy-survival": 43,
+              "fantasy-survival": 44,
               "line-defense": 28,
               "seed-puzzle-chromatic-cascade": 18,
               "seed-idle-growth-rpg-crystal-bloom": 17,
@@ -18647,17 +18648,17 @@
               "seed-casual-realm-weaver": 1
             },
             "failureTargets": {
-              "unity": 143
+              "unity": 144
             },
             "failureClasses": {
               "INVALID_PATH": 27,
-              "TIMEOUT": 97,
+              "TIMEOUT": 98,
               "MALFORMED_OUTPUT": 11,
               "NO_OP": 8
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_s5ghyh",
-            "lastUpdatedAt": "2026-09-30T13:02:41.323Z"
+            "lastFailureEvidence": "coding_negative_mmzlqg",
+            "lastUpdatedAt": "2026-09-30T13:05:53.440Z"
           },
           "unity|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -18968,8 +18969,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_gu6x9n",
-        "lastFailureEvidence": "coding_negative_9qhqbb",
-        "lastUpdatedAt": "2026-09-30T13:04:51.169Z"
+        "lastFailureEvidence": "coding_negative_mmzlqg",
+        "lastUpdatedAt": "2026-09-30T13:05:53.440Z"
       }
     }
   },
@@ -21722,7 +21723,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T13:04:51.245Z",
+    "lastBuiltAt": "2026-09-30T13:05:53.524Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -29982,5 +29983,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T13:04:51.245Z"
+  "updatedAt": "2026-09-30T13:05:53.524Z"
 }
