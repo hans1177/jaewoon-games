@@ -2,7 +2,7 @@
   "version": 6,
   "authority": "ASSISTANT_VIBE_COAUTHORING_TRACE",
   "status": "ACTIVE",
-  "recordedAt": "2026-09-26",
+  "recordedAt": "2026-10-01T00:00:00.000Z",
   "purpose": "Record every assistant-led Vibe Web coauthoring decision, source change, review, QA result, bottleneck repair, and production lesson as traceable learning evidence without bypassing the existing verified experience and canonical training gates.",
   "policy": {
     "everyAssistantCoauthoringActionMustBeRecorded": true,
@@ -858,6 +858,43 @@
       ],
       "learningState": "TRACE_ONLY",
       "liveState": "MERGED_AT_FA985B00; ORDINARY_JSON_OVER_64KB_STARTS_WITH_BOUNDED_WRITABLE_CONTEXT; POST_MERGE_EXACT_EFFECT_NOT_YET_OBSERVED; LINE_DEFENSE_STUDIO_JOB_110127864340_REMAINS_TIMEOUT_BLOCKED_AT_51566_THEN_42704_BYTES_AND_IS_OUTSIDE_THIS_ORDINARY_PATH; NEXT_ROTATION_LINE_DEFENSE_STANDARD_CANDIDATE_AND_STUDIO_SPECIALIZED_PROMPT_BUDGET_THEN_ACTUAL_STUDIO_F9"
+    },
+    {
+      "id": "assistant_roblox_duplicate_batch_wake_repair_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_ROBLOX",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "최신 Roblox changed-source 동기화 run 36787879843이 게임 런타임 전에 계약 회귀검사에서 실패했다. exact changed-game source sync가 이미 roblox-games 변경을 게임별로 처리하는데 Company DEVELOPMENT_CONFIRMED Roblox Runtime에도 roblox-games/** broad push trigger가 다시 존재해 동일 변경이 batch runtime까지 중복 기동되었다.",
+      "rootCause": "ROLLED_BACK_DUPLICATE_ROBLOX_GAMES_BROAD_BATCH_TRIGGER_REINTRODUCED_AFTER_EXISTING_EXACT_CHANGED_SOURCE_SYNC",
+      "decision": "게임 소스 변경은 기존 company-roblox-source-drift-sync exact-game 경로만 깨우고, batch runtime은 중앙 계약/도구 변경에만 반응하게 한다. 게임별 F0-F9, Studio QA, 배포 게이트는 변경하지 않는다.",
+      "change": "company-development-roblox-runtime.yml의 push paths에서 roblox-games/** 하나만 제거했다. exact source-drift sync, runtime continuation, Studio/F9 계약은 유지했다. horror-escape-room 게임 코드/에셋/배포/전용 작업은 변경하지 않았다.",
+      "evidence": [
+        "failure-run:36787879843",
+        "failure-test:qa/company-roblox-source-drift-sync.test.mjs:source-sync-contract-edits-wake-runtime-control",
+        "failure-signature:batch-runtime-still-has-roblox-games-broad-trigger",
+        "existing-exact-sync:.github/workflows/company-roblox-source-drift-sync.yml",
+        "historical-fix:c0013c3203d35b97a1b18dfbb85aae74985e83ec",
+        "reintroduced-by-rollback:17d907b4dddfc3f99f38153c4ba307cab7302e7a",
+        "repair-commit:bf75e75264aaf939c3802a862ced8bb676a09fe0",
+        "owner-exclusive-scope:horror-escape-room-not-touched"
+      ],
+      "reusablePatterns": [
+        "GAME_SOURCE_CHANGE_WAKES_EXACT_GAME_SYNC_NOT_PORTFOLIO_BATCH",
+        "KEEP_BATCH_RUNTIME_FOR_SHARED_CONTRACT_CHANGES",
+        "REMOVE_DUPLICATE_NATIVE_WAKE_WITHOUT_WEAKENING_F0_F9_OR_STUDIO_QA"
+      ],
+      "avoidPatterns": [
+        "ROBLOX_GAMES_GLOB_IN_BOTH_EXACT_SYNC_AND_BATCH_RUNTIME",
+        "PORTFOLIO_BATCH_WAKE_FOR_ONE_GAME_SOURCE_CHANGE",
+        "CLAIMING_GAME_RUNTIME_PASS_FROM_TRIGGER_CONTRACT_QA"
+      ],
+      "qa": [
+        "pre-repair actual run 36787879843: FAIL before game mutation due duplicate broad-trigger regression",
+        "post-repair PR checks pending",
+        "Roblox Studio actual execution after repair: NOT_YET_OBSERVED"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "REPAIR_BRANCH_READY; EXACT_GAME_SYNC_PRESERVED; BATCH_BROAD_GAME_SOURCE_WAKE_REMOVED; POST_MERGE_RUNTIME_REVALIDATION_PENDING"
     }
   ]
 }
