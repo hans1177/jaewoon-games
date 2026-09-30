@@ -3696,6 +3696,82 @@ local function tryBotHumanDash(b,direction,distance)
  return true
 end
 
+local function tryBotHumanAbility(b,target,distance)
+ local formInfo=botHumanForm(b)
+ local abilityId=formInfo and formInfo.ActiveAbility or nil
+ local profile=abilityId and C.HumanAbilities and C.HumanAbilities[abilityId]or nil
+ if not abilityId or not profile then return false end
+ local now=os.clock()
+ local cooldownSeconds=math.max(1,tonumber(profile.Cooldown)or 8)
+ if now<(b.humanAbilityReadyAt or 0)then return false end
+ local cost=math.max(0,tonumber(profile.Cost)or 30)
+ if(b.energy or 0)<cost then return false end
+ local radius=math.max(1,tonumber(profile.Radius)or tonumber(profile.Range)or 12)
+ if distance>radius then return false end
+ b.energy=math.max(0,(b.energy or 0)-cost)
+ b.humanAbilityReadyAt=now+cooldownSeconds
+ local origin=b.part.Position
+ local targetPos=target and target.pos or nil
+
+ if abilityId=="SIGNAL_JAM"then
+  local drain=math.max(0,tonumber(profile.EnergyDrain)or 20)
+  for _,player in ipairs(Players:GetPlayers())do
+   if player:GetAttribute("Role")=="MONSTER"then
+    local rr=root(player)
+    if rr and(rr.Position-origin).Magnitude<=radius then setEnergy(player,energyOf(player)-drain)end
+   end
+  end
+  for _,other in ipairs(bots)do
+   if other.role=="MONSTER"and other.part and(other.part.Position-origin).Magnitude<=radius then
+    other.energy=math.max(0,(other.energy or 0)-drain)
+   end
+  end
+ elseif abilityId=="OVERLOAD"or abilityId=="CAMERA_FLASH"or abilityId=="SHOCK_BATON"then
+  local slowSpeed=math.max(0,tonumber(profile.SlowSpeed)or 10)
+  local duration=math.max(.2,tonumber(profile.Duration)or 1.2)
+  for _,player in ipairs(Players:GetPlayers())do
+   if player:GetAttribute("Role")=="MONSTER"then
+    local rr=root(player)
+    if rr and(rr.Position-origin).Magnitude<=radius then
+     speed(player,slowSpeed)
+     task.delay(duration,function()if player.Parent and player:GetAttribute("Role")=="MONSTER"then speed(player,19)end end)
+    end
+   end
+  end
+  for _,other in ipairs(bots)do
+   if other.role=="MONSTER"and other.part and(other.part.Position-origin).Magnitude<=radius then
+    other.speed=math.min(other.speed or other.baseSpeed or 18,slowSpeed)
+    other.speedResetAt=math.max(other.speedResetAt or 0,now+duration)
+   end
+  end
+ elseif abilityId=="IMPACT_BAG"and target then
+  local force=math.max(10,tonumber(profile.Knockback)or 42)
+  local delta=target.pos-origin
+  local flat=Vector3.new(delta.X,0,delta.Z)
+  if flat.Magnitude>.01 then
+   local dir=flat.Unit
+   if target.player then
+    local rr=root(target.player)
+    if rr then
+     movementGraceUntil[target.player]=now+.55
+     rr.AssemblyLinearVelocity=dir*force+Vector3.new(0,4,0)
+    end
+   elseif target.bot then
+    local step=math.min(8,force*.14)
+    local current=target.bot.part.Position
+    local pushed=current+dir*step
+    setBotCFrame(target.bot,CFrame.lookAt(pushed,pushed+dir))
+   end
+  end
+ end
+
+ remote:FireAllClients("HUMAN_ABILITY_EFFECT",{
+  Ability=abilityId,Effect=profile.Effect or abilityId,FormId=formInfo.Id,
+  Origin=origin,Target=targetPos,UserId=0,Stamp=tostring(math.floor(now*1000)),
+ })
+ return true
+end
+
 local function tryBotMonsterAbility(b,targetPos,distance)
  if not targetPos then return false end
  local now=os.clock()
@@ -3806,8 +3882,10 @@ RunService.Heartbeat:Connect(function(dt)
    elseif b.role=="SURVIVOR"then
     local target,targetPos,best=distributedMonsterTarget(b)
     if targetPos then
-     local attacked,purifyRange=tryBotHumanPurify(b,target,best)
-     if not attacked then
+     local usedAbility=tryBotHumanAbility(b,target,best)
+     local attacked,purifyRange=false,math.max(4,(C.PurifyDistance or 8)+(tonumber(botHumanForm(b).PurifyRangeBonus)or 0))
+     if not usedAbility then attacked,purifyRange=tryBotHumanPurify(b,target,best)end
+     if not usedAbility and not attacked then
       local profile=botHumanForm(b)
       local preferred=math.max(5,math.min(purifyRange-1,tonumber(C.AICombat and C.AICombat.HumanPreferredRange)or 10))
       local delta=targetPos-b.part.Position
