@@ -99,26 +99,29 @@ test('24H runner executes System AI learning before verified-learning motor reru
 });
 
 test('System AI retrieval can reuse verified System AI experience and code pattern from Vibe memory',()=>{
+  const promoted=promoteVerifiedSystemAiLearning({
+    systemAiInput:{tasks:[{
+      id:'sys-router',status:'done',lastOutcome:'PRIMARY_AI_ACCEPTED',department:'infrastructure',
+      goal:'repair workflow queue orchestration failure',responsibleFiles:['tools/router.mjs'],
+      verificationCommands:['node --test qa/router.test.mjs'],
+      evidence:['actions-run:1','verification:success','primary-ai-review:PASS','changed-file:tools/router.mjs','source-mutation-sha:abc123']
+    }]},
+    experienceInput:{records:[]},libraryInput:{patterns:[]}
+  });
+  assert.equal(promoted.experienceAdded,1);
+  assert.equal(promoted.patternsAdded,1);
+  const experienceId=promoted.experience.records[0].id;
+  const patternId=promoted.library.patterns[0].id;
   const context=buildSystemAiLearningContext({
     task:{id:'next-system-task',taskType:'system-ai',goal:'repair workflow queue orchestration failure',target:'system'},
-    experienceInput:{records:[{
-      id:'exp-system-ai',verified:true,reusable:true,engine:'system-ai',gameId:null,
-      problem:'workflow queue orchestration failure',goal:'repair workflow queue orchestration',
-      change:'verified changes: tools/router.mjs',outcome:'PASS',failureCause:null,
-      reusablePatterns:['VERIFIED_SYSTEM_AI_ORCHESTRATION_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION'],
-      avoidPatterns:['SYSTEM_AI_SELF_ACCEPTANCE']
-    }]},
-    codePatternsInput:{patterns:[{
-      id:'pat-system-ai',verified:true,engine:'system-ai',gameId:null,system:'ORCHESTRATION',
-      problem:'workflow queue orchestration',pattern:'VERIFIED_SYSTEM_AI_ORCHESTRATION_SCOPED_CHANGE_VERIFY_REVIEW_REUSE',
-      tags:['system-ai','verified','ORCHESTRATION']
-    }]},
+    experienceInput:promoted.experience,
+    codePatternsInput:promoted.library,
     masteryInput:{}
   });
-  assert.ok(context.exactKnowledgeIds.includes('EXPERIENCE:exp-system-ai'));
-  assert.ok(context.exactKnowledgeIds.includes('CODE_PATTERN:pat-system-ai'));
-  assert.match(context.guidance,/exp-system-ai/);
-  assert.match(context.guidance,/pat-system-ai/);
+  assert.ok(context.exactKnowledgeIds.includes('EXPERIENCE:'+experienceId));
+  assert.ok(context.exactKnowledgeIds.includes('CODE_PATTERN:'+patternId));
+  assert.ok(context.guidance.includes(experienceId));
+  assert.ok(context.guidance.includes(patternId));
   assert.equal(context.rawModelOutputIncluded,false);
   assert.equal(context.authorityExpanded,false);
 });
@@ -212,4 +215,3 @@ test('primary domain outranks secondary domain even when secondary has similar k
   assert.ok(save>=0);
   assert.ok(ui<0||save<ui);
 });
-
