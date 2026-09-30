@@ -79,6 +79,9 @@ local roomVisibility="PUBLIC"
 local roomStartRequested=false
 local roomActionLast={}
 local roomJoinedAt={}
+local roomExpectedCount=1
+local roomFirstJoinAt=0
+local roomTeleportPending={}
 local lobbyQueueBays={}
 local LOBBY_QUEUE_SECONDS=5
 local LOBBY_QUEUE_MAX=8
@@ -235,6 +238,9 @@ local function createUniqueRoomCode()
 end
 local function teleportToReservedRoom(p,record)
  if not p or not p.Parent or typeof(record)~="table"or typeof(record.accessCode)~="string"or record.accessCode==""then return false end
+ if roomTeleportPending[p]then return true end
+ roomTeleportPending[p]=true
+ roomFeedback(p,"CONNECTING",record.code or"")
  local options=Instance.new("TeleportOptions")
  options.ReservedServerAccessCode=record.accessCode
  options:SetTeleportData({
@@ -243,17 +249,27 @@ local function teleportToReservedRoom(p,record)
   roomHostName=record.hostName,
   roomVisibility=record.visibility,
   roomCreatedAt=record.createdAt,
+  expectedMemberCount=math.max(1,tonumber(record.memberCount)or 1),
  })
  local ok,err=pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p},options)end)
- if not ok then roomFeedback(p,"ERROR","방 이동 실패");warn("Room teleport failed",err);return false end
+ if not ok then
+  roomTeleportPending[p]=nil
+  roomFeedback(p,"ERROR","방 연결 실패 · 다시 시도")
+  warn("Room teleport failed",err)
+  return false
+ end
  roomFeedback(p,"TELEPORTING",record.code or"")
+ task.delay(10,function()if p.Parent==Players then roomTeleportPending[p]=nil end end)
  return true
 end
 local function teleportPlayersToReservedRoom(players,record)
  if typeof(players)~="table"or #players==0 or typeof(record)~="table"or typeof(record.accessCode)~="string"or record.accessCode==""then return false end
  local valid={}
- for _,p in ipairs(players)do if p and p.Parent==Players then table.insert(valid,p)end end
+ for _,p in ipairs(players)do
+  if p and p.Parent==Players and not roomTeleportPending[p]then table.insert(valid,p)end
+ end
  if #valid==0 then return false end
+ for _,p in ipairs(valid)do roomTeleportPending[p]=true;roomFeedback(p,"CONNECTING",record.code or"")end
  local options=Instance.new("TeleportOptions")
  options.ReservedServerAccessCode=record.accessCode
  options:SetTeleportData({
@@ -262,14 +278,21 @@ local function teleportPlayersToReservedRoom(players,record)
   roomHostName=record.hostName,
   roomVisibility=record.visibility,
   roomCreatedAt=record.createdAt,
+  expectedMemberCount=#valid,
  })
  local ok,err=pcall(function()TeleportService:TeleportAsync(game.PlaceId,valid,options)end)
  if not ok then
-  for _,p in ipairs(valid)do roomFeedback(p,"ERROR","방 이동 실패")end
+  for _,p in ipairs(valid)do
+   roomTeleportPending[p]=nil
+   roomFeedback(p,"ERROR","방 연결 실패 · 승강기에서 다시 시도")
+  end
   warn("Room group teleport failed",err)
   return false
  end
- for _,p in ipairs(valid)do roomFeedback(p,"TELEPORTING",record.code or"")end
+ for _,p in ipairs(valid)do
+  roomFeedback(p,"TELEPORTING",record.code or"")
+  task.delay(10,function()if p.Parent==Players then roomTeleportPending[p]=nil end end)
+ end
  return true
 end
 
@@ -365,25 +388,40 @@ local function adoptReservedRoomFromPlayer(p)
  if not roomServer then return end
  local ok,joinData=pcall(function()return p:GetJoinData()end)
  local teleportData=ok and typeof(joinData)=="table"and joinData.TeleportData or nil
- if typeof(teleportData)~="table"then return end
+ if typeof(teleportData)~="table"then
+  if roomCode==""then
+   roomCode="R"..string.sub(tostring(game.PrivateServerId),-6)
+   roomHostUserId=p.UserId
+   roomHostName=p.DisplayName
+   roomVisibility="PRIVATE"
+   roomExpectedCount=1
+   roomFirstJoinAt=os.clock()
+   roomFeedback(p,"CONNECTED","예약 방 연결 복구")
+  end
+  roomJoinedAt[p]=os.clock()
+  syncRoomState();syncLobbyState("ROOM_WAITING")
+  return
+ end
  local incomingCode=tostring(teleportData.roomCode or"")
- if incomingCode==""then return end
+ if incomingCode==""then
+  incomingCode=roomCode~=""and roomCode or("R"..string.sub(tostring(game.PrivateServerId),-6))
+ end
  if roomCode==""then
   roomCode=incomingCode
   roomHostUserId=tonumber(teleportData.roomHostUserId)or p.UserId
   roomHostName=tostring(teleportData.roomHostName or p.DisplayName)
   roomVisibility=normalizeRoomVisibility(teleportData.roomVisibility)
+  roomExpectedCount=math.clamp(math.floor(tonumber(teleportData.expectedMemberCount)or 1),1,roomMaxPlayers())
+  roomFirstJoinAt=os.clock()
  elseif roomCode~=incomingCode then
-  roomFeedback(p,"ERROR","잘못된 방 연결")
-  task.defer(function()pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p})end)end)
-  return
+  warn("Room code mismatch recovered",roomCode,incomingCode,p.UserId)
+  roomFeedback(p,"SYNC","기존 방에 안전하게 연결됨")
  end
  roomJoinedAt[p]=os.clock()
- roomStartRequested=true
- workspace:SetAttribute("RoomStartRequested",true)
  p:SetAttribute("LobbySelectionConfirmed",true)
+ roomFeedback(p,"CONNECTED",roomCode)
  syncRoomState()
- syncLobbyState("INTERMISSION")
+ syncLobbyState("ROOM_WAITING")
  task.defer(updateCurrentRoomDirectory)
 end
 local function startRoomMatch(p)
@@ -3477,9 +3515,8 @@ Players.PlayerAdded:Connect(function(p)
  p:SetAttribute("RoomFeedback","")
  adoptReservedRoomFromPlayer(p)
  if roomServer and #Players:GetPlayers()>roomMaxPlayers()then
-  roomFeedback(p,"ERROR","방 정원 초과")
-  task.defer(function()pcall(function()TeleportService:TeleportAsync(game.PlaceId,{p})end)end)
-  return
+  roomFeedback(p,"FULL","방 정원 초과 · 다음 판까지 관전")
+  p:SetAttribute("Role","SPECTATING");p:SetAttribute("RoundState","SPECTATING");p:SetAttribute("Spectating",true)
  end
  p:SetAttribute("CurrentMap",workspace:GetAttribute("CurrentMapName")or"학교")
  p:SetAttribute("CurrentMapEvent",workspace:GetAttribute("CurrentMapEventName")or"")
@@ -3538,7 +3575,7 @@ Players.PlayerRemoving:Connect(function(p)
  local leavingWasHost=roomServer and p.UserId==roomHostUserId
  local rr=root(p)
  local leavingPos=rr and rr.Position or(leavingRole=="MONSTER"and monsterSpawns[1]or survivorSpawns[1])
- save(p);for _,bay in ipairs(lobbyQueueBays)do bay.players[p]=nil end;cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;humanAbilityCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;roomActionLast[p]=nil;roomJoinedAt[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
+ save(p);for _,bay in ipairs(lobbyQueueBays)do bay.players[p]=nil end;cooldown[p]=nil;dashCooldown[p]=nil;infectAttackCooldown[p]=nil;humanAbilityCooldown[p]=nil;energyStationReady[p]=nil;ghostSeenThisRound[p]=nil;roomActionLast[p]=nil;roomJoinedAt[p]=nil;roomTeleportPending[p]=nil;lastRequest[p]=nil;lastValidPosition[p]=nil;movementGraceUntil[p]=nil;movementProbeStart[p]=nil;foundationLast[p]=nil;qaCaptureLast[p]=nil;tagGraceUntil[p]=nil;purifyCooldown[p]=nil
  task.defer(function()
   if state=="RUNNING"and arena and arena.Parent and(leavingRole=="MONSTER"or leavingRole=="SURVIVOR")then
    bot(leavingRole,leavingPos)
@@ -3560,6 +3597,15 @@ Players.PlayerRemoving:Connect(function(p)
   syncLobbyState()
  end)
 end)
+
+TeleportService.TeleportInitFailed:Connect(function(player,teleportResult,errorMessage)
+ if player and player.Parent==Players then
+  roomTeleportPending[player]=nil
+  roomFeedback(player,"ERROR","방 연결 실패 · 승강기에서 다시 시도")
+  warn("Room teleport init failed",player.UserId,teleportResult,errorMessage)
+ end
+end)
+
 game:BindToClose(function()for _,p in ipairs(Players:GetPlayers())do save(p)end end)
 
 -- 로비는 실제 3D 공간으로 항상 유지한다.
@@ -3594,10 +3640,23 @@ task.spawn(function()
    syncLobbyState("ROOM_CONNECTING")
    task.wait(.25)
   elseif not roomStartRequested then
-   roomStartRequested=true
-   workspace:SetAttribute("RoomStartRequested",true)
-   syncLobbyState("INTERMISSION")
-   task.wait(.1)
+   local expected=math.clamp(math.floor(tonumber(roomExpectedCount)or 1),1,roomMaxPlayers())
+   local grace=math.max(2,tonumber(C.Room and C.Room.ArrivalGraceSeconds)or 6)
+   local elapsed=roomFirstJoinAt>0 and(os.clock()-roomFirstJoinAt)or grace
+   if #players>=expected or elapsed>=grace then
+    roomStartRequested=true
+    workspace:SetAttribute("RoomStartRequested",true)
+    syncLobbyState("INTERMISSION")
+    task.wait(.1)
+   else
+    for _,p in ipairs(players)do
+     p:SetAttribute("RoundState","ROOM_WAITING")
+     p:SetAttribute("TimeLeft",math.max(0,math.ceil(grace-elapsed)))
+     roomFeedback(p,"WAITING",string.format("참가자 연결 중 %d/%d",#players,expected))
+    end
+    syncLobbyState("ROOM_WAITING")
+    task.wait(.2)
+   end
   else
    roomStartRequested=false;workspace:SetAttribute("RoomStartRequested",false)
    state="INTERMISSION";syncLobbyState("INTERMISSION");updateCurrentRoomDirectory()
