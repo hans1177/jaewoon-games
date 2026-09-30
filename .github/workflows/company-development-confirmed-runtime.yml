@@ -165,7 +165,9 @@ jobs:
           const grandfatherGameIds=roadmap?.directNativeDualPlatformDevelopment?.upperPlatformAdmissionMigration?.grandfatherGameIds||[];
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           if(requested&&!/^[a-z0-9][a-z0-9-]{1,80}$/.test(requested))throw new Error('UPPER_PLATFORM_REQUESTED_GAME_ID_INVALID:'+requested);
+          const ownerExcludedGameIds=new Set(['horror-escape-room']);
           const rows=(q.items||[]).filter(item=>
+            !ownerExcludedGameIds.has(String(item.gameId||''))&&
             (!requested||item.gameId===requested)&&
             String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&
             String(item.status||'').toUpperCase()!=='DISABLED'&&
@@ -315,3 +317,25 @@ jobs:
     with:
       game_id: ${{ matrix.game_id }}
     secrets: inherit
+
+  continue-cycle:
+    name: Continue DEVELOPMENT_CONFIRMED cycle after isolated game outcomes
+    needs: [native-plan, dispatch-roblox, dispatch-unity, dispatch-unity-web-floor, dispatch-unity-web-bootstrap]
+    if: ${{ always() && needs.native-plan.result == 'success' && (needs.native-plan.outputs.roblox_count != '0' || needs.native-plan.outputs.unity_count != '0' || needs.native-plan.outputs.unity_web_ids != '' || needs.native-plan.outputs.unity_web_bootstrap_ids != '') }}
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Re-open the next development wave regardless of individual game failure
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            -f trigger_source=CONTINUOUS_PER_GAME_ISOLATED_CYCLE
+          echo 'DEVELOPMENT_CONTINUOUS_CYCLE_REOPENED=YES'
+          echo 'SINGLE_GAME_FAILURE_BLOCKS_GLOBAL_CYCLE=NO'
+
