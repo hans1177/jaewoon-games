@@ -3020,9 +3020,9 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-30T04:50:41.322Z",
-      "robloxSourceCommit": "4c86208e06a27f3f04fb4826b2923306f358fb0f",
-      "robloxSourceBootstrapPassedAt": "2026-09-30T04:50:41.322Z",
+      "updatedAt": "2026-09-30T04:55:54.488Z",
+      "robloxSourceCommit": "8461d30757cd045a076df2dd49c000f8069c1e27",
+      "robloxSourceBootstrapPassedAt": "2026-09-30T04:55:54.488Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
@@ -3073,9 +3073,9 @@
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-build-package-pending"
+        "roblox-build-package-revalidation-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -4530,9 +4530,9 @@
       "contractCanaryPassed": false,
       "robloxHeadlessPassedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "7d4129bd7b3d3f3c9bfbceba2d540d0994d70290",
-        "newSourceRevision": "4c86208e06a27f3f04fb4826b2923306f358fb0f",
-        "invalidatedAt": "2026-09-30T04:48:06.389Z"
+        "previousSourceRevision": "4c86208e06a27f3f04fb4826b2923306f358fb0f",
+        "newSourceRevision": "8461d30757cd045a076df2dd49c000f8069c1e27",
+        "invalidatedAt": "2026-09-30T04:55:54.488Z"
       },
       "robloxMetadataOnlySourceRecoveryEvidence": {
         "version": 1,
@@ -29320,7 +29320,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T04:50:41.322Z",
+  "updatedAt": "2026-09-30T04:55:54.488Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
