@@ -74,10 +74,10 @@ gui.Parent=p:WaitForChild("PlayerGui")
 -- 로비 전용 화면 톤. 전투가 시작되면 전부 꺼져 게임플레이 가독성에는 영향을 주지 않는다.
 local lobbyColor=Instance.new("ColorCorrectionEffect")
 lobbyColor.Name="MidnightLobbyColor"
-lobbyColor.TintColor=Color3.fromRGB(192,171,155)
-lobbyColor.Brightness=-.085
-lobbyColor.Contrast=.23
-lobbyColor.Saturation=-.34
+lobbyColor.TintColor=Color3.fromRGB(206,188,172)
+lobbyColor.Brightness=-.025
+lobbyColor.Contrast=.2
+lobbyColor.Saturation=-.18
 lobbyColor.Enabled=false
 lobbyColor.Parent=Lighting
 
@@ -91,10 +91,10 @@ lobbyBloom.Parent=Lighting
 
 local lobbyDepth=Instance.new("DepthOfFieldEffect")
 lobbyDepth.Name="MidnightLobbyDepth"
-lobbyDepth.FarIntensity=.16
-lobbyDepth.NearIntensity=.025
-lobbyDepth.FocusDistance=24
-lobbyDepth.InFocusRadius=24
+lobbyDepth.FarIntensity=.035
+lobbyDepth.NearIntensity=.01
+lobbyDepth.FocusDistance=34
+lobbyDepth.InFocusRadius=42
 lobbyDepth.Enabled=false
 lobbyDepth.Parent=Lighting
 
@@ -128,7 +128,7 @@ local lobbyBloodEdge=Instance.new("Frame")
 lobbyBloodEdge.Name="LobbyBloodEdge"
 lobbyBloodEdge.Size=UDim2.fromScale(1,1)
 lobbyBloodEdge.BackgroundColor3=Color3.fromRGB(72,9,14)
-lobbyBloodEdge.BackgroundTransparency=.94
+lobbyBloodEdge.BackgroundTransparency=.975
 lobbyBloodEdge.BorderSizePixel=0
 lobbyBloodEdge.Visible=false
 lobbyBloodEdge.ZIndex=7
@@ -141,6 +141,39 @@ lobbyBloodGradient.Transparency=NumberSequence.new({
  NumberSequenceKeypoint.new(1,.55),
 })
 lobbyBloodGradient.Parent=lobbyBloodEdge
+
+local lobbyClarityActive=false
+local lobbyFogRestore=nil
+local lobbyAtmosphereRestore={}
+local function setLobbyClarity(enabled)
+ if enabled and not lobbyClarityActive then
+  lobbyClarityActive=true
+  lobbyFogRestore={FogStart=Lighting.FogStart,FogEnd=Lighting.FogEnd}
+  Lighting.FogStart=150
+  Lighting.FogEnd=950
+  lobbyAtmosphereRestore={}
+  for _,effect in ipairs(Lighting:GetChildren())do
+   if effect:IsA("Atmosphere")then
+    lobbyAtmosphereRestore[effect]={Density=effect.Density,Haze=effect.Haze,Glare=effect.Glare}
+    effect.Density=math.min(effect.Density,.035)
+    effect.Haze=math.min(effect.Haze,.18)
+    effect.Glare=math.min(effect.Glare,.03)
+   end
+  end
+ elseif not enabled and lobbyClarityActive then
+  lobbyClarityActive=false
+  if lobbyFogRestore then
+   Lighting.FogStart=lobbyFogRestore.FogStart
+   Lighting.FogEnd=lobbyFogRestore.FogEnd
+  end
+  for effect,old in pairs(lobbyAtmosphereRestore)do
+   if effect and effect.Parent and old then
+    effect.Density=old.Density;effect.Haze=old.Haze;effect.Glare=old.Glare
+   end
+  end
+  lobbyAtmosphereRestore={}
+ end
+end
 
 -- 로딩: 클라이언트 핵심 리소스와 서버 맵 준비가 끝날 때까지 로비 진입을 가린다.
 local loadingLayer=Instance.new("Frame")
@@ -968,8 +1001,8 @@ local function playLobbyHaunt(trigger)
  end
 
  if text~=""then
-  localText(pos+Vector3.new(0,7,0),text,Color3.fromRGB(232,207,167),2.8)
-  showMapContentToast("이상 현상 · "..text,Color3.fromRGB(232,180,153),2.6)
+  localText(pos+Vector3.new(0,7,0),text,Color3.fromRGB(236,214,176),3.1)
+  showMapContentToast("이상 현상 · "..text,Color3.fromRGB(232,190,156),3.0)
  end
 end
 
@@ -2473,6 +2506,7 @@ local function render()
  lobbyVignetteTop.Visible=lobbyWaiting
  lobbyVignetteBottom.Visible=lobbyWaiting
  lobbyBloodEdge.Visible=lobbyWaiting
+ setLobbyClarity(lobbyWaiting)
  hud.Visible=running
  if running then lobbyDialogue.Visible=false end
  local lobbyFolder=workspace:FindFirstChild("MidnightLobby")
