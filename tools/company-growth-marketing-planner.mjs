@@ -20,6 +20,9 @@ function targetSurface(game={}){
   return'STORE_POSITIONING_AND_LAUNCH_PREP';
 }
 function marketingFile(gameId=''){return `company-learning/marketing/${safe(gameId)}/latest.json`;}
+export function ownerExclusiveGameIds(roadmap={}){
+  return new Set((roadmap?.ownerCanonicalRules?.ownerExclusiveDevelopment?.gameIds||[]).map(clean).filter(Boolean));
+}
 function taskFor(game={},roadmap={},stamp=''){
   const id=clean(game.id||game.gameId),name=clean(game.name||game?.canonical?.identity?.name||id),p=phase(game),surface=targetSurface(game);
   const file=marketingFile(id);
@@ -72,8 +75,10 @@ function taskFor(game={},roadmap={},stamp=''){
 export function planMarketing({catalog={},systemQueue={},roadmap={},now=new Date()}={}){
   const stamp=now.toISOString(),tasks=[...(systemQueue.tasks||[])],added=[];
   const existing=new Map(tasks.map(x=>[clean(x.id),x]));
+  const ownerExclusive=ownerExclusiveGameIds(roadmap);
   for(const game of catalog.games||[]){
     const id=clean(game.id||game.gameId);if(!id)continue;
+    if(ownerExclusive.has(id))continue;
     if(!['ACTIVE','REBUILD'].includes(lifecycle(game)))continue;
     if(!['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(prodClass(game)))continue;
     const task=taskFor(game,roadmap,stamp),prior=existing.get(task.id);
