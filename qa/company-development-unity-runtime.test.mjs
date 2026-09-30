@@ -240,6 +240,8 @@ test('checkpoint persistence is game-local and does not wait for cohort artifact
   assert.match(workflowSource,/DEVELOPMENT_UNITY_GAME_PERSIST=/);
   assert.doesNotMatch(workflowSource,/\n  persist-runtime:\n/);
   assert.doesNotMatch(workflowSource,/CHECKPOINT_ROOT/);
+  assert.match(workflowSource,/git cat-file -e "\$SOURCE_REVISION:\$PROJECT"/);
+  assert.match(workflowSource,/UNITY_CHECKPOINT_SOURCE_TREE_SHA=UNAVAILABLE_SOURCE_STAGE_FAILED/);
 });
 
 
@@ -555,6 +557,24 @@ test('Unity game-development APK principles cannot remain unmapped',()=>{
   assert.match(source,/UseVisibleProgressionRiskCue/);
   assert.match(source,/도전 전 상태 확인/);
   assert.match(source,/mappings:Object\.freeze\(mappings\)/);
+});
+
+
+test('portable touch-look learning maps to immediate Unity feedback instead of aborting every generator lane',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-unity-touch-look-'));
+  const sandbox=path.join(root,'sandbox');
+  fs.mkdirSync(path.join(sandbox,'tools'),{recursive:true});
+  fs.copyFileSync(generatorSource,path.join(sandbox,'tools/company-development-unity-bootstrap.mjs'));
+  const {baseline,playbooks}=fixtures(root,true);
+  const data=JSON.parse(fs.readFileSync(playbooks,'utf8'));
+  const principle='id=touch-look-produces-immediate-spatial-feedback; scope=mobile-3d-controls; lesson=A short horizontal touch gesture on the first-person play surface produced an immediate, clearly visible camera-orientation change while the movement and action HUD remained available.; apply=Validate look gestures with before/after scene framing while preserving consistent movement and action affordances.';
+  for(const task of Object.values(data.taskTypes))task.reuse[0].distilledApplicationPrinciples=[principle];
+  fs.writeFileSync(playbooks,JSON.stringify(data));
+  const run=spawnSync(process.execPath,['tools/company-development-unity-bootstrap.mjs','--game-id=seed-action-survival-rogu-echoes-of-the-lost-star','--game-name=Echoes of the Lost Star',`--baseline=${baseline}`,`--playbooks=${playbooks}`],{cwd:sandbox,encoding:'utf8'});
+  assert.equal(run.status,0,run.stderr||run.stdout);
+  const meta=JSON.parse(fs.readFileSync(path.join(sandbox,'unity-games/seed-action-survival-rogu-echoes-of-the-lost-star/prototype-source.json'),'utf8'));
+  assert.equal(meta.verifiedExternalGameDevelopmentProfile.immediateVisibleFeedback,true);
+  assert.deepEqual(meta.verifiedExternalGameDevelopmentProfile.mappings[0].behaviors,['IMMEDIATE_VISIBLE_FEEDBACK']);
 });
 
 
