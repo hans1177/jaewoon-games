@@ -117,6 +117,21 @@ test('minimum-design Roblox SOURCE_BIND items are eligible for source reconcilia
 });
 
 
+test('source reconciliation skips only explicitly active owner-exclusive ids',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-owner-exclusive-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);
+    writeCompiledTree(root);
+    initGitRepo(tmp);
+    const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:tmp,encoding:'utf8'}).trim();
+    const item={...staleItem(),currentStep:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',canonicalState:'INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG',robloxSourceCommit:revision};
+    const excluded=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,excludedGameIds:[gameId],loadBaseline:()=>baseline});
+    assert.deepEqual(excluded,[]);
+    const resumed=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,excludedGameIds:[],loadBaseline:()=>baseline});
+    assert.equal(resumed.length,0);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
 test('bound Roblox games re-enter reconciliation only when their own source tree changed',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-source-drift-'));
   try{
