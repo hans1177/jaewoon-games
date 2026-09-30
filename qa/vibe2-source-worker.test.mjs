@@ -8,7 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
 import { learningGuidance } from '../tools/vibe2-learning-motor.mjs';
-import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, normalizeCandidate } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, systemAtomicPairCompletionSpec, buildSpecializedVerificationRequest, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, recoverFocusedReplaceOnly, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible, diagnosticFocusedReplaceOnlySpec, buildDiagnosticFocusedReplaceOnlyPrompt, evaluateDiagnosticPostcondition, deterministicDiagnosticCandidate, deterministicRobloxBuildUpCandidate, evaluatePresentationCandidateDelta, evaluateStudioQualityCandidateDelta, evaluateGraphicsReplacementReport, buildRobloxNativeSourceInspection, inspectRobloxNativeCandidateQuality, buildVerifiedExternalLearningPromptContract, assertVerifiedExternalLearningPromptCoverage, verifiedExternalLearningBlockFromPrompt, buildPrompt, buildFullWebExpansionPrompt, sourcePromptContextWindow, normalizeCandidate } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -4039,6 +4039,80 @@ test('verified APK learning preserves game-source and QA-only dispositions throu
   assert.equal(verifiedExternalLearningBlockFromPrompt(expansion),contract.block);
   assert.throws(()=>buildVerifiedExternalLearningPromptContract({...order,unifiedLearning:{playbookReuse:[rows[0]]}}),/ROW_MISSING:external-black-box-b-run-2/);
   assert.throws(()=>buildVerifiedExternalLearningPromptContract({...order,knowledgeApplicationContract:{...order.knowledgeApplicationContract,verifiedExternalLearningDispositions:[]}}),/DISPOSITION_DRIFT/);
+});
+
+test('oversized stale learning guidance is deduplicated without truncating the verified contract',()=>{
+  const principle='id=persistent-contextual-action-controls;scope=mobile-interaction-observation;lesson=keep contextual controls visible;apply=keep controls beside play';
+  const row={id:'external-black-box-a-run-1',verified:true,authority:'verified-task-playbook',distilledApplicationPrinciples:[principle],distilledAvoidancePrinciples:['no-clone']};
+  const order={
+    target:'unity',selectedTask:{gameId:'demo'},department:'development',qa:[],
+    knowledgeApplicationContract:{
+      mandatoryForGameTarget:true,
+      verifiedExternalLearningIds:[row.id],
+      verifiedExternalLearningRetrievedCount:1,
+      retrievedVerifiedExternalLearningTruncationForbidden:true,
+      allRetrievedPrinciplesHaveExplicitDisposition:true,
+      verifiedExternalLearningDispositions:[{id:'persistent-contextual-action-controls',disposition:'APPLIED_GAME_SOURCE'}]
+    },
+    unifiedLearning:{playbookReuse:[row]},
+    goal:[
+      '실제 Unity 모바일 입력을 개선한다.',
+      '[VIBE VERIFIED LEARNING MOTOR]',
+      ('- stale-compiled-commercial-principle='+principle+'\n').repeat(900),
+      '[STUDIO_QUALITY_EVOLUTION] cycle=1; phase=BUILD_UP; focus=USABILITY'
+    ].join('\n')
+  };
+  const contract=buildVerifiedExternalLearningPromptContract(order);
+  const context={files:[{path:'Assets/Scripts/Game.cs',content:'class Game {}',editable:true,truncated:false}],bytes:13};
+  const prompt=buildPrompt(order,context,['Assets/Scripts/Game.cs'],{verifiedExternalLearningContract:contract});
+  assert.equal(verifiedExternalLearningBlockFromPrompt(prompt),contract.block);
+  assert.equal(prompt.split(principle).length-1,1);
+  assert.doesNotMatch(prompt,/stale-compiled-commercial-principle/);
+  assert.match(prompt,/\[STUDIO_QUALITY_EVOLUTION\]/);
+  assert.ok(Buffer.byteLength(prompt,'utf8')<12000);
+});
+
+test('Studio initial prompt compacts repeated directive prose and expands model context to fit',()=>{
+  const external=[
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]',
+    'dispositions=1/1; sourcePrinciples=1; validationOnly=0; truncation=FORBIDDEN',
+    '[EXTERNAL_LEARNING source-a]',
+    'DISPOSITION=mobile-controls:APPLIED_GAME_SOURCE;GAME=demo;TARGET=UNITY;DOMAINS=MOBILE_INPUT',
+    'APPLY=id=mobile-controls;lesson='+('touch feedback '.repeat(1200)),
+    '[END_EXTERNAL_LEARNING source-a]',
+    '[VERIFIED EXTERNAL BLACK-BOX LEARNING END]'
+  ].join('\n');
+  const long='connected usability detail '.repeat(1200);
+  const directive=[
+    '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
+    'directiveId=demo-g1 generation=1 primaryFocus=USABILITY',
+    'gameIdentity=demo defense',
+    'primaryGoal=make the next mobile action clear',
+    'implementationUnit='+long,
+    ...Array.from({length:8},(_,index)=>`sourceAnchors=Assets/Scripts/Game.cs:${index+1} METHOD Step${index} CURRENT=old INTENDED=${long} ACCEPT=visible feedback`),
+    'contentBundle='+long,
+    'gameplay='+long,
+    'uxInput='+long,
+    'preserve=save keys and gameplay values',
+    'acceptance=three connected source deltas',
+    '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
+  ].join('\n');
+  const prompt=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: unity',
+    'Goal: improve mobile usability',
+    external,
+    '[STUDIO QUALITY EVOLUTION]',
+    directive,
+    'Allowed edit paths: Assets/Scripts/Game.cs',
+    '=== FILE Assets/Scripts/Game.cs [EDITABLE] ===',
+    ('void Step() { HandleTouch(); }\n').repeat(800)
+  ].join('\n');
+  const initial=buildGenerationRetryPrompt(prompt,{responsibleFiles:['Assets/Scripts/Game.cs'],attempt:1,studioInitial:true});
+  assert.equal(verifiedExternalLearningBlockFromPrompt(initial),external);
+  assert.equal((initial.match(/^sourceAnchors=/gm)||[]).length,3);
+  assert.ok(Buffer.byteLength(initial,'utf8')<50000);
+  assert.equal(sourcePromptContextWindow(initial,{baseContextWindow:16384,maxPredict:3072}),24576);
 });
 
 test('fan-in accepts only proven model-prompt or deterministic APK learning application',()=>{

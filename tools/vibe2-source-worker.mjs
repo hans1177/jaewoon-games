@@ -87,6 +87,14 @@ const JSON_CONTEXT_WINDOW=16384;
 const JSON_FINAL_CONTEXT_WINDOW=16384;
 const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192;
 const FULL_WEB_CONTEXT_WINDOW=32768;
+export function sourcePromptContextWindow(prompt='',{baseContextWindow=JSON_CONTEXT_WINDOW,maxPredict=DEFAULT_MAX_PREDICT}={}){
+  const base=Math.max(8192,Number(baseContextWindow)||JSON_CONTEXT_WINDOW);
+  const estimatedPromptTokens=Math.ceil(Buffer.byteLength(String(prompt??''),'utf8')/3);
+  const required=estimatedPromptTokens+Math.max(512,Number(maxPredict)||DEFAULT_MAX_PREDICT)+1024;
+  if(required<=base)return base;
+  if(required<=24576)return Math.max(base,24576);
+  return Math.max(base,32768);
+}
 const MAX_GENERATION_ATTEMPTS=4;
 const SPECULATIVE_FULL_WEB_MAX_GENERATION_ATTEMPTS=3;
 const SPECULATIVE_JSON_MAX_GENERATION_ATTEMPTS=2;
@@ -105,6 +113,9 @@ const FULL_WEB_EXPANSION_CONTENT_MARKER='---VIBE2_EXPANSION_CONTENT---';
 const FULL_WEB_EXPANSION_END_MARKER='---VIBE2_EXPANSION_END---';
 const VERIFIED_EXTERNAL_LEARNING_BEGIN='[VERIFIED EXTERNAL BLACK-BOX LEARNING BEGIN]';
 const VERIFIED_EXTERNAL_LEARNING_END='[VERIFIED EXTERNAL BLACK-BOX LEARNING END]';
+const VERIFIED_LEARNING_MOTOR_BEGIN='[VIBE VERIFIED LEARNING MOTOR]';
+const LARGE_EMBEDDED_LEARNING_GOAL_BYTES=64000;
+const COMPACT_DIRECTIVE_LINE_BYTES=1800;
 
 const TARGET_EXTENSIONS=Object.freeze({
   roblox:new Set(['.luau','.lua','.json']),
@@ -1286,9 +1297,15 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     if(line.startsWith('sourceAnchors=')&&paths.length){
       if(anchorsWritten)return[];
       anchorsWritten=true;
-      return owned.length?owned.map(anchor=>'sourceAnchors='+anchor):[selectedPath?'sourceAnchors=USE_FIXED_ANCHOR_AND_SOURCE_CONTEXT_BELOW':'sourceAnchors=USE_ALLOWED_EDIT_PATHS_AND_EDITABLE_SOURCE_BELOW'];
+      return owned.length?owned.slice(0,compact?3:owned.length).map(anchor=>boundedPromptText('sourceAnchors='+anchor,compact?COMPACT_DIRECTIVE_LINE_BYTES:Number.MAX_SAFE_INTEGER)):[selectedPath?'sourceAnchors=USE_FIXED_ANCHOR_AND_SOURCE_CONTEXT_BELOW':'sourceAnchors=USE_ALLOWED_EDIT_PATHS_AND_EDITABLE_SOURCE_BELOW'];
     }
-    return !compact||line===begin||line===end||keepPrefixes.some(prefix=>line.startsWith(prefix))?[line]:[];
+    if(!compact||line===begin||line===end)return[line];
+    if(!keepPrefixes.some(prefix=>line.startsWith(prefix)))return[];
+    if(Buffer.byteLength(line,'utf8')<=COMPACT_DIRECTIVE_LINE_BYTES)return[line];
+    const at=line.indexOf('=');
+    if(at<0)return[boundedPromptText(line,COMPACT_DIRECTIVE_LINE_BYTES)];
+    const prefix=line.slice(0,at+1);
+    return[prefix+boundedPromptText(line.slice(at+1),Math.max(256,COMPACT_DIRECTIVE_LINE_BYTES-Buffer.byteLength(prefix,'utf8')))];
   }).join('\n');
 }
 
@@ -1569,21 +1586,42 @@ export function assertVerifiedExternalLearningPromptCoverage(prompt='',contract=
   return Object.freeze({required:true,pass:true,count:actualIds.length,ids:Object.freeze([...actualIds])});
 }
 function fullWebGenerationTarget(order={}){const requirements=[...clean(order?.goal).matchAll(/REAL_GAME_FOOTPRINT_TOO_SMALL:\d+:(\d+)/gi)].map(match=>Number(match[1])).filter(Number.isFinite);const minBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MIN_BYTES,...requirements));const maxBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minBytes*2));return{minBytes,maxBytes};}
+function replaceOversizedEmbeddedLearningGuidance(goal='',replacement=''){
+  const raw=String(goal??''),start=raw.indexOf(VERIFIED_LEARNING_MOTOR_BEGIN);
+  if(start<0||Buffer.byteLength(raw,'utf8')<LARGE_EMBEDDED_LEARNING_GOAL_BYTES)return raw;
+  const tail=raw.slice(start+VERIFIED_LEARNING_MOTOR_BEGIN.length);
+  const nextDirective=tail.search(/\n(?=\[(?:WORLD_LOBBY_FIRST|STUDIO_QUALITY_EVOLUTION|GAME_SPECIFIC_BUILD_UP_DIRECTIVE|PRESENTATION_PASS|POST_RELEASE_FOCUSED_DEVELOPMENT|SECOND_PLATFORM_ADAPTATION_REBUILD))/);
+  const end=nextDirective>=0?start+VERIFIED_LEARNING_MOTOR_BEGIN.length+nextDirective:raw.length;
+  return [raw.slice(0,start).trimEnd(),replacement,raw.slice(end).trimStart()].filter(Boolean).join('\n');
+}
+function boundedPromptText(value='',maxBytes=COMPACT_DIRECTIVE_LINE_BYTES){
+  const raw=String(value??''),limit=Math.max(256,Number(maxBytes)||COMPACT_DIRECTIVE_LINE_BYTES);
+  if(Buffer.byteLength(raw,'utf8')<=limit)return raw;
+  const chars=[...raw],marker='\n...[COMPACTED_DUPLICATE_DETAIL]...\n';
+  let low=0,high=chars.length,best=marker;
+  while(low<=high){
+    const keep=Math.floor((low+high)/2),head=Math.ceil(keep/2),tail=Math.floor(keep/2);
+    const candidate=chars.slice(0,head).join('')+marker+chars.slice(chars.length-tail).join('');
+    if(Buffer.byteLength(candidate,'utf8')<=limit){best=candidate;low=keep+1;}else high=keep-1;
+  }
+  return best;
+}
 export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);
   // 학습 계약이 보존하는 원문은 목표 설명에 두 번 보내지 않는다.
   const learningContract=verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order);
   let goal=String(order.goal??'');
   const originalLearning=learningGuidance(order.unifiedLearning||{});
-  if(learningContract.block&&originalLearning&&goal.includes(originalLearning)){
+  if(learningContract.block&&(originalLearning||goal.includes(VERIFIED_LEARNING_MOTOR_BEGIN))){
     assertVerifiedExternalLearningPromptCoverage(learningContract.block,learningContract);
     const coveredIds=new Set(learningContract.ids||[]);
     const sourceLearning=learningGuidance({...order.unifiedLearning,
-      playbookReuse:(order.unifiedLearning.playbookReuse||[]).map(row=>coveredIds.has(clean(row.id))?{
+      playbookReuse:(order.unifiedLearning?.playbookReuse||[]).map(row=>coveredIds.has(clean(row.id))?{
         ...row,distilledApplicationPrinciples:[],distilledAvoidancePrinciples:[],
         distilledLearningUseAllowed:[],distilledLearningUseForbidden:[]
       }:row)
     });
-    goal=goal.replace(originalLearning,()=>sourceLearning);
+    if(originalLearning&&goal.includes(originalLearning))goal=goal.replace(originalLearning,()=>sourceLearning);
+    else goal=replaceOversizedEmbeddedLearningGuidance(goal,sourceLearning);
   }
   return[
 allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON. Do not use markdown fences.':'You are the Vibe2 game source worker. Return JSON only.',
@@ -2189,7 +2227,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
       rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
       verifiedExternalLearningBlockFromPrompt(rawPrompt),
-      buildUpDirectiveBlockFromPrompt(rawPrompt,{responsiblePaths:invalidPath?exactResponsible:[]}),
+      buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
       allowedLine,
       fullWebTargetLine,
       'Preserve the exact responsible path. Do not touch homepage/company files or widen writable scope.',
@@ -2254,7 +2292,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
           rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
           verifiedExternalLearningBlockFromPrompt(rawPrompt),
-          buildUpDirectiveBlockFromPrompt(rawPrompt,{responsiblePaths:invalidPath?exactResponsible:[]}),
+          buildUpDirectiveBlockFromPrompt(rawPrompt,{compact:true,responsiblePaths:exactResponsible}),
           allowedLine,
           'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
           'Every edits[].path MUST be one exact path from Allowed edit paths.',
@@ -2537,9 +2575,10 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
         :((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(unityStudioTimeoutFocusedRecovery?UNITY_STUDIO_FOCUSED_TIMEOUT_MS:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS))):(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))));
-    const contextWindow=expansionMode
+    const baseContextWindow=expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
+    const contextWindow=sourcePromptContextWindow(attemptPrompt,{baseContextWindow,maxPredict});
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
     console.log(`VIBE2_GENERATION_BUDGET=${attempt}:promptBytes=${attemptPromptBytes}:maxPredict=${maxPredict}:contextWindow=${contextWindow}:timeoutMs=${timeoutMs}`);
