@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
-import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan} from '../assets/vibe-motion-director.js';
+import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe} from '../assets/vibe-motion-director.js';
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation} from '../assets/vibe-environment-director.js';
 
@@ -527,6 +527,14 @@ export function buildVibeAssetProductionPlan({
     :/주짓수|jiu.?jitsu/i.test(request)?'JIU_JITSU_GRAPPLING'
     :/mma/i.test(request)?'MMA_HYBRID'
     :requestedWeaponFamily==='UNARMED'?'MMA_HYBRID':null;
+  const requestedCombatRole=/피니셔|finisher/i.test(request)?'FINISHER'
+    :/패링|parry|카운터|counter/i.test(request)?'PARRY_OR_COUNTER'
+    :/회피|dodge|구르기|roll/i.test(request)?'DODGE'
+    :/공중|aerial|jump.?attack/i.test(request)?'AERIAL_ATTACK'
+    :/대시|돌진|gap.?closer|dash.?attack/i.test(request)?'GAP_CLOSER'
+    :/강공|heavy.?attack/i.test(request)?'HEAVY_ATTACK'
+    :/가드|guard|block/i.test(request)?'GUARD'
+    :'LIGHT_COMBO';
   const requestedConcept=inferRequestedConcept(task,request);
   const assetLearningRequired=clean(executionLane).toLowerCase()==='asset-development'||['roblox','unity','web'].includes(resolvedTarget);
   const verifiedCommercialReuse=freezeList((verifiedLearning?.playbookReuse||[])
@@ -770,6 +778,13 @@ export function buildVibeAssetProductionPlan({
         requested:duelCombatRequested,
         requestedWeaponFamily,
         requestedMartialStyle,
+        requestedCombatRole,
+        authoringPreview:duelCombatRequested?freeze(createDuelCombatAuthoringRecipe({
+          weaponFamily:requestedWeaponFamily||'UNARMED',
+          martialStyle:requestedMartialStyle||'MMA_HYBRID',
+          role:requestedCombatRole,
+          platform:resolvedTarget==='roblox'?'ROBLOX':'UNITY'
+        })):null,
         target:clean(companyRegistry?.duelCombatMotion?.target)||null,
         implementation:clean(companyRegistry?.duelCombatMotion?.implementation)||null,
         productionVerified:companyRegistry?.duelCombatMotion?.productionVerified===true,
@@ -1160,7 +1175,7 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.enabled?`캐릭터 플랫폼 프로필=${plan.companyGraphicsLibrary.platformProfile}; Unity/Roblox 바이너리·리그는 직접 공유하지 않고 공통 실루엣/체형/장비 의미만 공유한 뒤 네이티브 재authoring한다.`:'',
     plan.companyGraphicsLibrary?.enabled?`액션 모션 최소 커버리지=${JSON.stringify(plan.companyGraphicsLibrary.motionMinimums)}; weaponPacks=${plan.companyGraphicsLibrary.weaponPacks.join('|')}`:'',
     plan.companyGraphicsLibrary?.duelCombatMotion?.enabled?`결투형 전투 모션=${plan.companyGraphicsLibrary.duelCombatMotion.target}; 무기=${plan.companyGraphicsLibrary.duelCombatMotion.weaponFamilies.join('|')}; 맨손 격투=${plan.companyGraphicsLibrary.duelCombatMotion.unarmedStyles.join('|')}; 역할=${plan.companyGraphicsLibrary.duelCombatMotion.requiredRoles.join('|')}`:'',
-    plan.companyGraphicsLibrary?.duelCombatMotion?.requested?`이번 작업은 결투형 전투 모션을 실제 게임에 적용한다. 우선 무기=${plan.companyGraphicsLibrary.duelCombatMotion.requestedWeaponFamily||'AUTO'}; 맨손 스타일=${plan.companyGraphicsLibrary.duelCombatMotion.requestedMartialStyle||'AUTO'}. 기존 전투 책임 함수와 리그/Animator를 직접 사용하고, 대기→보법→약공 콤보→강공→대시/공중 공격→가드/패링/카운터→피격/넉다운/기상→피니셔 흐름을 연결한다. 원본 제3자 클립을 추출·재배포하지 말고 동일 역할의 독자 키포즈/타이밍으로 네이티브 구현하며 실제 런타임 검증 전 VERIFIED로 표시하지 않는다.`:'',
+    plan.companyGraphicsLibrary?.duelCombatMotion?.requested?`이번 작업은 결투형 전투 모션을 실제 게임에 적용한다. 우선 무기=${plan.companyGraphicsLibrary.duelCombatMotion.requestedWeaponFamily||'AUTO'}; 맨손 스타일=${plan.companyGraphicsLibrary.duelCombatMotion.requestedMartialStyle||'AUTO'}; 역할=${plan.companyGraphicsLibrary.duelCombatMotion.requestedCombatRole||'LIGHT_COMBO'}. 기존 전투 책임 함수와 리그/Animator를 직접 사용하고, 대기→보법→약공 콤보→강공→대시/공중 공격→가드/패링/카운터→피격/넉다운/기상→피니셔 흐름을 연결한다. authoringPreview의 normalized phases·weaponMechanics·martialMechanics를 실제 관절 키포즈/블렌드/접촉 정렬에 사용한다. 원본 제3자 클립을 추출·재배포하지 말고 동일 역할의 독자 키포즈/타이밍으로 네이티브 구현하며 실제 런타임 검증 전 VERIFIED로 표시하지 않는다.`:'',
     plan.companyGraphicsLibrary?.reusableProductionTarget?.motion?.verifiedReusableClipTarget?`공용 모션 runtime-verified 목표=${plan.companyGraphicsLibrary.reusableProductionTarget.motion.verifiedReusableClipTarget}; base author/acquire=${plan.companyGraphicsLibrary.reusableProductionTarget.motion.baseAuthoringOrAcquisitionTarget}; safe derived=${plan.companyGraphicsLibrary.reusableProductionTarget.motion.safeDerivedVariationTarget}; reuse=${(plan.companyGraphicsLibrary.reusableProductionTarget.motion.crossGenreReuse||[]).join('|')}. PREPARED_SEMANTIC은 목표 달성으로 세지 않는다.`:'',
     plan.companyGraphicsLibrary?.reusableProductionTarget?.fullPresentationFamilies?.length?`공용 자산 전체 범위=${plan.companyGraphicsLibrary.reusableProductionTarget.fullPresentationFamilies.join('|')}; 새 시스템을 만들지 않고 기존 Studio Asset Universe gap-fill/GRAPHICS_PRODUCTION에서 채운다.`:'',
 

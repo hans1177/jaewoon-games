@@ -280,6 +280,195 @@ export const UNARMED_MARTIAL_ARTS_STYLES=Object.freeze({
   })
 });
 
+export const DUEL_COMBAT_AUTHORING_PHASES=Object.freeze({
+  READY_STANCE:Object.freeze([
+    Object.freeze({t:0,phase:'BASE_GUARD'}),
+    Object.freeze({t:.5,phase:'BREATH_WEIGHT_SHIFT'}),
+    Object.freeze({t:1,phase:'BASE_GUARD'})
+  ]),
+  COMBAT_LOCOMOTION:Object.freeze([
+    Object.freeze({t:0,phase:'PLANT'}),
+    Object.freeze({t:.25,phase:'PUSH'}),
+    Object.freeze({t:.5,phase:'PASS'}),
+    Object.freeze({t:.75,phase:'CATCH'}),
+    Object.freeze({t:1,phase:'PLANT'})
+  ]),
+  LIGHT_COMBO:Object.freeze([
+    Object.freeze({t:0,phase:'NEUTRAL'}),
+    Object.freeze({t:.10,phase:'ANTICIPATION'}),
+    Object.freeze({t:.30,phase:'STARTUP'}),
+    Object.freeze({t:.48,phase:'ACTIVE_CONTACT'}),
+    Object.freeze({t:.64,phase:'FOLLOW_THROUGH'}),
+    Object.freeze({t:1,phase:'RECOVERY'})
+  ]),
+  HEAVY_ATTACK:Object.freeze([
+    Object.freeze({t:0,phase:'NEUTRAL'}),
+    Object.freeze({t:.18,phase:'ANTICIPATION'}),
+    Object.freeze({t:.42,phase:'STARTUP'}),
+    Object.freeze({t:.62,phase:'ACTIVE_CONTACT'}),
+    Object.freeze({t:.80,phase:'RECOIL'}),
+    Object.freeze({t:1,phase:'RECOVERY'})
+  ]),
+  GAP_CLOSER:Object.freeze([
+    Object.freeze({t:0,phase:'LOAD'}),
+    Object.freeze({t:.18,phase:'LAUNCH'}),
+    Object.freeze({t:.46,phase:'TRAVEL'}),
+    Object.freeze({t:.62,phase:'ACTIVE_CONTACT'}),
+    Object.freeze({t:.78,phase:'BRAKE'}),
+    Object.freeze({t:1,phase:'RECOVERY'})
+  ]),
+  AERIAL_ATTACK:Object.freeze([
+    Object.freeze({t:0,phase:'TAKEOFF_OR_ENTRY'}),
+    Object.freeze({t:.28,phase:'AIR_PREPARE'}),
+    Object.freeze({t:.52,phase:'ACTIVE_CONTACT'}),
+    Object.freeze({t:.72,phase:'FALL_OR_SETTLE'}),
+    Object.freeze({t:1,phase:'LAND_RECOVERY'})
+  ]),
+  GUARD:Object.freeze([
+    Object.freeze({t:0,phase:'NEUTRAL'}),
+    Object.freeze({t:.18,phase:'GUARD_RAISE'}),
+    Object.freeze({t:.5,phase:'GUARD_HOLD'}),
+    Object.freeze({t:1,phase:'GUARD_RETURN'})
+  ]),
+  PARRY_OR_COUNTER:Object.freeze([
+    Object.freeze({t:0,phase:'READ'}),
+    Object.freeze({t:.20,phase:'DEFLECT_PREPARE'}),
+    Object.freeze({t:.38,phase:'CONTACT'}),
+    Object.freeze({t:.58,phase:'COUNTER_OPTION'}),
+    Object.freeze({t:1,phase:'RECOVERY'})
+  ]),
+  DODGE:Object.freeze([
+    Object.freeze({t:0,phase:'LOAD'}),
+    Object.freeze({t:.20,phase:'EVADE_ENTRY'}),
+    Object.freeze({t:.48,phase:'CLEAR'}),
+    Object.freeze({t:.72,phase:'REPLANT'}),
+    Object.freeze({t:1,phase:'RECOVERY'})
+  ]),
+  HIT_REACTION:Object.freeze([
+    Object.freeze({t:0,phase:'IMPACT'}),
+    Object.freeze({t:.22,phase:'RECOIL'}),
+    Object.freeze({t:.62,phase:'STAGGER'}),
+    Object.freeze({t:1,phase:'RECOVERY'})
+  ]),
+  KNOCKDOWN:Object.freeze([
+    Object.freeze({t:0,phase:'IMPACT'}),
+    Object.freeze({t:.25,phase:'BALANCE_BREAK'}),
+    Object.freeze({t:.62,phase:'GROUND_CONTACT'}),
+    Object.freeze({t:1,phase:'DOWN'})
+  ]),
+  GET_UP:Object.freeze([
+    Object.freeze({t:0,phase:'DOWN'}),
+    Object.freeze({t:.28,phase:'POST_HAND_OR_KNEE'}),
+    Object.freeze({t:.58,phase:'RISE'}),
+    Object.freeze({t:.82,phase:'REPLANT'}),
+    Object.freeze({t:1,phase:'READY'})
+  ]),
+  FINISHER:Object.freeze([
+    Object.freeze({t:0,phase:'NEUTRAL'}),
+    Object.freeze({t:.16,phase:'SIGNATURE_ANTICIPATION'}),
+    Object.freeze({t:.44,phase:'COMMIT'}),
+    Object.freeze({t:.62,phase:'ACTIVE_CONTACT'}),
+    Object.freeze({t:.82,phase:'SIGNATURE_FOLLOW_THROUGH'}),
+    Object.freeze({t:1,phase:'RECOVERY'})
+  ])
+});
+
+export const DUEL_COMBAT_WEAPON_MECHANICS=Object.freeze({
+  UNARMED:Object.freeze({stance:'MOBILE_GUARD',grip:'OPEN_OR_CLOSED_HAND',pelvisYaw:12,torsoCounterYaw:8,leadFootPlant:true,contact:'FIST_ELBOW_KNEE_FOOT',arc:'BODY_DRIVEN_STRIKE'}),
+  KATANA:Object.freeze({stance:'SIDE_ON_TWO_HAND',grip:'TWO_HAND_OFFSET',pelvisYaw:18,torsoCounterYaw:12,leadFootPlant:true,contact:'BLADE_EDGE_OR_TIP',arc:'DIAGONAL_OR_HORIZONTAL_THROUGH_TARGET'}),
+  ONE_HAND_SWORD:Object.freeze({stance:'BALANCED_ONE_HAND',grip:'ONE_HAND_WITH_FREE_GUARD',pelvisYaw:16,torsoCounterYaw:10,leadFootPlant:true,contact:'BLADE_EDGE_OR_TIP',arc:'SLASH_THRUST_MIX'}),
+  DUAL_BLADE:Object.freeze({stance:'OPEN_DUAL_GUARD',grip:'BOTH_HANDS_SEPARATE',pelvisYaw:20,torsoCounterYaw:14,leadFootPlant:true,contact:'ALTERNATING_BLADES',arc:'ALTERNATING_CROSS_ARCS'}),
+  TWO_HAND_SWORD:Object.freeze({stance:'HEAVY_TWO_HAND',grip:'WIDE_TWO_HAND',pelvisYaw:24,torsoCounterYaw:16,leadFootPlant:true,contact:'BLADE_MASS_THROUGH_TARGET',arc:'LARGE_COMMITTED_CLEAVE'}),
+  DAGGER:Object.freeze({stance:'CLOSE_FAST_GUARD',grip:'FORWARD_OR_REVERSE',pelvisYaw:14,torsoCounterYaw:10,leadFootPlant:true,contact:'TIP_OR_SHORT_EDGE',arc:'SHORT_STAB_AND_CUT'}),
+  SPEAR:Object.freeze({stance:'LONG_LINE_GUARD',grip:'TWO_HAND_SLIDE',pelvisYaw:14,torsoCounterYaw:8,leadFootPlant:true,contact:'SPEAR_TIP_OR_SHAFT',arc:'LINEAR_THRUST_AND_SWEEP'}),
+  AXE:Object.freeze({stance:'HEAVY_HEAD_READY',grip:'ONE_OR_TWO_HAND',pelvisYaw:22,torsoCounterYaw:14,leadFootPlant:true,contact:'AXE_HEAD',arc:'COMMITTED_CHOP_AND_HOOK'}),
+  HAMMER:Object.freeze({stance:'HEAVY_SHOULDER_READY',grip:'TWO_HAND_POWER',pelvisYaw:24,torsoCounterYaw:16,leadFootPlant:true,contact:'HAMMER_HEAD',arc:'CRUSHING_SWING_OR_VERTICAL_SMASH'}),
+  STAFF_OR_WAND:Object.freeze({stance:'CENTERLINE_CAST_OR_STAFF',grip:'STAFF_TWO_HAND_OR_WAND_ONE_HAND',pelvisYaw:12,torsoCounterYaw:8,leadFootPlant:true,contact:'STAFF_END_OR_CAST_HAND',arc:'THRUST_SWEEP_CAST'}),
+  SHIELD_SWORD:Object.freeze({stance:'SHIELD_LEAD',grip:'SHIELD_PLUS_ONE_HAND_SWORD',pelvisYaw:12,torsoCounterYaw:6,leadFootPlant:true,contact:'SHIELD_FACE_OR_BLADE',arc:'COVERED_SHORT_ARC'}),
+  BOW:Object.freeze({stance:'SIDE_ON_RANGED',grip:'BOW_AND_DRAW_HAND',pelvisYaw:8,torsoCounterYaw:4,leadFootPlant:true,contact:'STRING_RELEASE',arc:'DRAW_RELEASE_RECOIL'}),
+  FIREARM:Object.freeze({stance:'SQUARE_OR_BLaded_AIM',grip:'TWO_HAND_AIM',pelvisYaw:6,torsoCounterYaw:4,leadFootPlant:true,contact:'TRIGGER_RECOIL',arc:'AIM_RECOIL_RECOVER'})
+});
+
+export const UNARMED_MARTIAL_MECHANICS=Object.freeze({
+  BOXING:Object.freeze({guard:'HIGH_COMPACT',footwork:'SHUFFLE_PIVOT',hipRotation:24,shoulderChain:28,kickBias:0,clinchBias:4}),
+  KICKBOXING:Object.freeze({guard:'HIGH_BALANCED',footwork:'STEP_PIVOT',hipRotation:28,shoulderChain:24,kickBias:24,clinchBias:8}),
+  MUAY_THAI:Object.freeze({guard:'HIGH_LONG',footwork:'PLANTED_STEP',hipRotation:30,shoulderChain:22,kickBias:28,clinchBias:24}),
+  KARATE:Object.freeze({guard:'BLaded_KAMAE',footwork:'SLIDE_ENTRY',hipRotation:26,shoulderChain:24,kickBias:20,clinchBias:6}),
+  TAEKWONDO:Object.freeze({guard:'MOBILE_KICK_GUARD',footwork:'BOUNCE_SWITCH',hipRotation:28,shoulderChain:14,kickBias:34,clinchBias:2}),
+  SANDA:Object.freeze({guard:'BALANCED_STRIKE_THROW',footwork:'ANGLE_STEP',hipRotation:28,shoulderChain:22,kickBias:24,clinchBias:22}),
+  WUSHU_KUNG_FU:Object.freeze({guard:'OPEN_HAND_FLOW',footwork:'CIRCLE_BURST',hipRotation:30,shoulderChain:26,kickBias:22,clinchBias:14}),
+  WRESTLING:Object.freeze({guard:'LOW_HAND_FIGHT',footwork:'LEVEL_CHANGE_SHUFFLE',hipRotation:18,shoulderChain:18,kickBias:0,clinchBias:34}),
+  JUDO_THROWING:Object.freeze({guard:'UPRIGHT_GRIP_READY',footwork:'CIRCLE_ENTRY',hipRotation:22,shoulderChain:20,kickBias:0,clinchBias:34}),
+  JIU_JITSU_GRAPPLING:Object.freeze({guard:'LOW_GRAPPLE_READY',footwork:'LEVEL_CHANGE_ENTRY',hipRotation:18,shoulderChain:18,kickBias:0,clinchBias:34}),
+  MMA_HYBRID:Object.freeze({guard:'HIGH_MIXED',footwork:'ANGLE_LEVEL_CHANGE',hipRotation:28,shoulderChain:24,kickBias:22,clinchBias:24}),
+  STREET_BRAWLER:Object.freeze({guard:'LOOSE_POWER_GUARD',footwork:'PRESSURE_STEP',hipRotation:30,shoulderChain:30,kickBias:10,clinchBias:18}),
+  WUXIA_UNARMED_FANTASY:Object.freeze({guard:'OPEN_HAND_FLOW',footwork:'GLIDE_SPIN',hipRotation:34,shoulderChain:30,kickBias:28,clinchBias:14})
+});
+
+export function createDuelCombatAuthoringRecipe({
+  weaponFamily='UNARMED',
+  martialStyle='MMA_HYBRID',
+  role='LIGHT_COMBO',
+  motionId='',
+  platform='ROBLOX'
+}={}){
+  const loadout=createDuelCombatMotionLoadout({weaponFamily,martialStyle,platform});
+  const normalizedRole=upper(role)||'LIGHT_COMBO';
+  const groupByRole=Object.freeze({
+    READY_STANCE:'stance',
+    COMBAT_LOCOMOTION:'footwork',
+    LIGHT_COMBO:'lightCombo',
+    HEAVY_ATTACK:'heavy',
+    GAP_CLOSER:'gapCloser',
+    AERIAL_ATTACK:'aerial',
+    GUARD:'defense',
+    PARRY_OR_COUNTER:'defense',
+    DODGE:'defense',
+    HIT_REACTION:'reactions',
+    KNOCKDOWN:'reactions',
+    GET_UP:'recovery',
+    FINISHER:'finisher',
+    GRAPPLE:'grapple'
+  });
+  const group=groupByRole[normalizedRole]||'lightCombo';
+  const candidates=loadout.groups[group]||[];
+  const selectedMotion=text(motionId)||candidates[0]||null;
+  const weaponMechanics=DUEL_COMBAT_WEAPON_MECHANICS[loadout.weaponFamily]||DUEL_COMBAT_WEAPON_MECHANICS.UNARMED;
+  const martialMechanics=loadout.weaponFamily==='UNARMED'
+    ?(UNARMED_MARTIAL_MECHANICS[loadout.martialStyle]||UNARMED_MARTIAL_MECHANICS.MMA_HYBRID)
+    :null;
+  const phases=DUEL_COMBAT_AUTHORING_PHASES[normalizedRole]||DUEL_COMBAT_AUTHORING_PHASES.LIGHT_COMBO;
+  return Object.freeze({
+    target:DUEL_COMBAT_MOTION_TARGET,
+    platform:upper(platform),
+    role:normalizedRole,
+    motionId:selectedMotion,
+    candidates:freezeList(candidates),
+    phases,
+    weaponMechanics,
+    martialMechanics,
+    jointPriority:Object.freeze(['FEET','HIPS','SPINE','SHOULDERS','ARMS_OR_WEAPON','HEAD_GAZE']),
+    authoredMotionRequirements:Object.freeze({
+      fullBodyWeightTransfer:true,
+      plantedFootDuringCommittedContact:true,
+      pelvisStartsMotionBeforeOrWithShoulder:true,
+      torsoCounterRotation:true,
+      handWeaponOrStrikeContactAligned:true,
+      guardReturnsAfterRecovery:true,
+      transitionCrossFadeRequired:true,
+      directionMatchedHitReactionRequired:true,
+      rootTranslationOwnedByGameplay:true
+    }),
+    nativePath:upper(platform)==='ROBLOX'
+      ?Object.freeze({primary:'ANIMATOR_ANIMATIONTRACK',cleanup:'MOTOR6D_OR_BONE_TRANSFORM',contact:'IKCONTROL_WHEN_AVAILABLE',rootOnlyForbidden:true})
+      :Object.freeze({primary:'ANIMATOR_CLIP',cleanup:'HUMANOID_RETARGET_AVATAR_MASK',contact:'ANIMATION_RIGGING_OR_IK',rootOnlyForbidden:true}),
+    timingPolicy:'NORMALIZED_PHASES_MUST_FIT_EXISTING_GAMEPLAY_ATTACK_WINDOWS',
+    exactThirdPartyClipCopy:false,
+    nativeRuntimeVerificationRequired:true,
+    gameplayAuthority:false
+  });
+}
+
 export const MOTION_COMPOSITION_CHANNELS=Object.freeze([
   'ROOT','LOCOMOTION','LOWER_BODY','PELVIS_SPINE','UPPER_BODY','LEFT_ARM','RIGHT_ARM','HEAD_GAZE',
   'TAIL','WINGS','EXTRA_LIMBS','SECONDARY_MOTION','PROCEDURAL_CORRECTION',

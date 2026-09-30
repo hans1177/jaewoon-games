@@ -12,9 +12,13 @@ import {
   ROBLOX_MOTION_SOURCE_PRIORITY,
   DUEL_COMBAT_MOTION_TARGET,
   DUEL_COMBAT_REQUIRED_ROLES,
+  DUEL_COMBAT_AUTHORING_PHASES,
+  DUEL_COMBAT_WEAPON_MECHANICS,
   WEAPON_COMBAT_MOTION_PACKS,
   UNARMED_MARTIAL_ARTS_STYLES,
+  UNARMED_MARTIAL_MECHANICS,
   createDuelCombatMotionLoadout,
+  createDuelCombatAuthoringRecipe,
   createMotionDNA,
   scoreMotionCandidate,
   selectContextMotion,
@@ -114,6 +118,33 @@ test('duel loadout binds katana and unarmed martial arts without taking gameplay
   assert.ok(muayThai.groups.heavy.includes('MUAY_THAI_KNEE'));
   assert.ok(muayThai.groups.grapple.includes('MUAY_THAI_CLINCH_ENTRY'));
   assert.equal(muayThai.nativeRuntimeVerificationRequired,true);
+});
+
+test('duel authoring recipe gives concrete joint phases and weapon mechanics',()=>{
+  const katana=createDuelCombatAuthoringRecipe({
+    weaponFamily:'KATANA',
+    role:'LIGHT_COMBO',
+    platform:'ROBLOX'
+  });
+  assert.equal(katana.motionId,'KATANA_DIAGONAL_CUT_R');
+  assert.equal(katana.phases,DUEL_COMBAT_AUTHORING_PHASES.LIGHT_COMBO);
+  assert.equal(katana.weaponMechanics,DUEL_COMBAT_WEAPON_MECHANICS.KATANA);
+  assert.equal(katana.weaponMechanics.leadFootPlant,true);
+  assert.equal(katana.nativePath.primary,'ANIMATOR_ANIMATIONTRACK');
+  assert.equal(katana.nativePath.rootOnlyForbidden,true);
+  assert.equal(katana.authoredMotionRequirements.rootTranslationOwnedByGameplay,true);
+  assert.equal(katana.exactThirdPartyClipCopy,false);
+
+  const muay=createDuelCombatAuthoringRecipe({
+    weaponFamily:'UNARMED',
+    martialStyle:'MUAY_THAI',
+    role:'PARRY_OR_COUNTER',
+    platform:'ROBLOX'
+  });
+  assert.equal(muay.martialMechanics,UNARMED_MARTIAL_MECHANICS.MUAY_THAI);
+  assert.equal(muay.martialMechanics.clinchBias,24);
+  assert.ok(muay.phases.some(row=>row.phase==='CONTACT'));
+  assert.equal(muay.gameplayAuthority,false);
 });
 
 test('motion director exposes combat loadout as a composable presentation system',()=>{
@@ -459,6 +490,9 @@ test('asset planner auto-detects requested duel weapon and martial style',async(
   assert.equal(unarmed.companyGraphicsLibrary.duelCombatMotion.requested,true);
   assert.equal(unarmed.companyGraphicsLibrary.duelCombatMotion.requestedWeaponFamily,'UNARMED');
   assert.equal(unarmed.companyGraphicsLibrary.duelCombatMotion.requestedMartialStyle,'MUAY_THAI');
+  assert.equal(unarmed.companyGraphicsLibrary.duelCombatMotion.requestedCombatRole,'LIGHT_COMBO');
+  assert.equal(unarmed.companyGraphicsLibrary.duelCombatMotion.authoringPreview.martialMechanics.guard,'HIGH_LONG');
+  assert.equal(unarmed.companyGraphicsLibrary.duelCombatMotion.authoringPreview.nativePath.primary,'ANIMATOR_ANIMATIONTRACK');
 
   const katana=buildVibeAssetProductionPlan({
     task:{gameId:'motion-auto-test',goal:'카타나 대전 모션 적용'},
@@ -468,6 +502,8 @@ test('asset planner auto-detects requested duel weapon and martial style',async(
   assert.equal(katana.companyGraphicsLibrary.duelCombatMotion.requested,true);
   assert.equal(katana.companyGraphicsLibrary.duelCombatMotion.requestedWeaponFamily,'KATANA');
   assert.equal(katana.companyGraphicsLibrary.duelCombatMotion.requestedMartialStyle,null);
+  assert.equal(katana.companyGraphicsLibrary.duelCombatMotion.requestedCombatRole,'LIGHT_COMBO');
+  assert.equal(katana.companyGraphicsLibrary.duelCombatMotion.authoringPreview.weaponMechanics.stance,'SIDE_ON_TWO_HAND');
 });
 
 test('transition director scores smooth transitions and hard-fails event desync',()=>{
