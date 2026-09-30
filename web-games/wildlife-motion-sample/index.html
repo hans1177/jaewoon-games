@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>3D 곰 모션 샘플</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#182016;color:#f3f0df;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+#app{position:fixed;inset:0}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.hud{position:fixed;left:max(12px,env(safe-area-inset-left));top:max(12px,env(safe-area-inset-top));z-index:5;background:rgba(20,26,18,.76);backdrop-filter:blur(8px);padding:12px 14px;border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 10px 28px rgba(0,0,0,.26)}
+.hud b{display:block;font-size:15px;margin-bottom:4px}.hud span{font-size:12px;color:#cbd4bd}
+.controls{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:5;display:flex;gap:8px;padding:8px;background:rgba(20,26,18,.72);border-radius:16px;border:1px solid rgba(255,255,255,.1)}
+button{appearance:none;border:0;border-radius:11px;background:#e7e0bd;color:#21261c;font-weight:800;padding:10px 14px;min-width:64px}
+button.active{background:#fff;color:#111}
+@media(max-width:560px){.controls{width:calc(100% - 24px);justify-content:space-between}.controls button{flex:1;padding:10px 6px}.hud{right:12px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="hud"><b>곰 3D 관절 모션 샘플</b><span id="state">걷기 · 4족 대각 보행 · 발 접지/몸통 반동</span></div>
+<div class="controls">
+<button data-state="walk" class="active">걷기</button>
+<button data-state="run">달리기</button>
+<button data-state="alert">경계</button>
+<button data-state="attack">공격</button>
+</div>
+<script type="module">
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+const app=document.querySelector('#app');
+const stateText=document.querySelector('#state');
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x1c2819);
+scene.fog=new THREE.FogExp2(0x1c2819,.026);
+
+const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,120);
+camera.position.set(11,7.2,13.5);
+camera.lookAt(0,2.2,0);
+
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+app.appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xcfe1bf,0x263020,1.8));
+const sun=new THREE.DirectionalLight(0xffedc2,2.3);
+sun.position.set(-8,14,7); sun.castShadow=true;
+sun.shadow.mapSize.set(1024,1024);
+sun.shadow.camera.left=-18;sun.shadow.camera.right=18;sun.shadow.camera.top=18;sun.shadow.camera.bottom=-18;
+scene.add(sun);
+
+const ground=new THREE.Mesh(
+  new THREE.PlaneGeometry(70,70,1,1),
+  new THREE.MeshStandardMaterial({color:0x526444,roughness:1})
+);
+ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+
+const trunkMat=new THREE.MeshStandardMaterial({color:0x4b3b2d,roughness:1,flatShading:true});
+const leafMats=[0x355034,0x405d38,0x2e4930].map(c=>new THREE.MeshStandardMaterial({color:c,roughness:1,flatShading:true}));
+for(let i=0;i<34;i++){
+  const a=(i/34)*Math.PI*2+(i%3)*.13;
+  const r=14+(i%6)*2.4;
+  const x=Math.cos(a)*r,z=Math.sin(a)*r;
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.24,.38,4.5,6),trunkMat);
+  trunk.position.set(x,2.25,z);trunk.castShadow=true;scene.add(trunk);
+  const crown=new THREE.Mesh(new THREE.ConeGeometry(1.8+(i%3)*.25,5.2,7),leafMats[i%leafMats.length]);
+  crown.position.set(x,6,z);crown.castShadow=true;scene.add(crown);
+}
+
+const rockMat=new THREE.MeshStandardMaterial({color:0x77766b,roughness:1,flatShading:true});
+for(let i=0;i<14;i++){
+  const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.45+(i%4)*.12,0),rockMat);
+  const a=i*.89,r=8+(i%5)*1.3;
+  rock.position.set(Math.cos(a)*r,.3,Math.sin(a)*r);rock.scale.set(1.4,.7,1);rock.rotation.y=a;rock.castShadow=true;scene.add(rock);
+}
+
+const bear=new THREE.Group();scene.add(bear);
+const matBody=new THREE.MeshStandardMaterial({color:0x4e372b,roughness:.93,flatShading:true});
+const matChest=new THREE.MeshStandardMaterial({color:0x604536,roughness:.96,flatShading:true});
+const matDark=new THREE.MeshStandardMaterial({color:0x241c18,roughness:1,flatShading:true});
+const matLight=new THREE.MeshStandardMaterial({color:0x80614a,roughness:1,flatShading:true});
+
+function ellipsoid(name,scale,mat,seg=8){
+  const m=new THREE.Mesh(new THREE.SphereGeometry(1,seg,Math.max(5,seg-2)),mat);
+  m.name=name;m.scale.set(...scale);m.castShadow=true;m.receiveShadow=true;return m;
+}
+function limb(name,len,width,mat){
+  const pivot=new THREE.Group();pivot.name=name;
+  const mesh=new THREE.Mesh(new THREE.CylinderGeometry(width*.8,width,len,6),mat);
+  mesh.position.y=-len*.5;mesh.castShadow=true;pivot.add(mesh);return {pivot,mesh};
+}
+
+const body=ellipsoid('Body',[1.72,1.04,2.25],matBody,9);body.position.y=2.42;bear.add(body);
+const chest=ellipsoid('Chest',[1.82,1.18,1.48],matChest,9);chest.position.set(0,.16,-1.18);body.add(chest);
+const neck=new THREE.Group();neck.position.set(0,.26,-1.42);neck.rotation.x=-.18;chest.add(neck);
+const neckMesh=ellipsoid('Neck',[.83,.68,.74],matChest,8);neckMesh.position.set(0,.24,-.36);neck.add(neckMesh);
+const head=new THREE.Group();head.position.set(0,.38,-.72);neck.add(head);
+const headMesh=ellipsoid('Head',[1.12,.96,1.02],matBody,9);head.add(headMesh);
+const muzzle=new THREE.Group();muzzle.position.set(0,-.08,-.9);head.add(muzzle);
+const muzzleMesh=ellipsoid('Muzzle',[.78,.47,.62],matLight,8);muzzle.add(muzzleMesh);
+const nose=ellipsoid('Nose',[.32,.22,.2],matDark,7);nose.position.z=-.58;muzzle.add(nose);
+const jaw=new THREE.Group();jaw.position.set(0,-.31,-.05);muzzle.add(jaw);
+const jawMesh=ellipsoid('Jaw',[.66,.18,.5],matDark,7);jaw.add(jawMesh);
+
+for(const s of [-1,1]){
+  const earPivot=new THREE.Group();earPivot.position.set(s*.68,.73,-.03);head.add(earPivot);
+  const ear=ellipsoid('Ear',[.28,.3,.18],matBody,7);earPivot.add(ear);earPivot.userData.side=s;
+  const eye=ellipsoid('Eye',[.095,.095,.095],new THREE.MeshStandardMaterial({color:0x11100e,roughness:.7}),6);
+  eye.position.set(s*.39,.18,-.87);head.add(eye);
+}
+const hump=ellipsoid('Hump',[1.55,.63,.87],matDark,8);hump.position.set(0,.76,.06);chest.add(hump);
+
+const legs={};
+function makeLeg(key,parent,x,z,upperLen,lowerLen,w){
+  const upper=limb(key+'Upper',upperLen,w,matBody);upper.pivot.position.set(x,-.44,z);parent.add(upper.pivot);
+  const lower=limb(key+'Lower',lowerLen,w*.82,matDark);lower.pivot.position.y=-upperLen;upper.pivot.add(lower.pivot);
+  const foot=ellipsoid(key+'Foot',[w*1.15,.22,w*1.42],matDark,7);foot.position.set(0,-lowerLen,-w*.22);lower.pivot.add(foot);
+  legs[key]={upper:upper.pivot,lower:lower.pivot,foot};
+}
+makeLeg('FL',chest,-1.05,-.17,1.42,1.18,.34);
+makeLeg('FR',chest, 1.05,-.17,1.42,1.18,.34);
+makeLeg('BL',body,-1.05,1.35,1.48,1.15,.35);
+makeLeg('BR',body, 1.05,1.35,1.48,1.15,.35);
+
+const tail=new THREE.Group();tail.position.set(0,.05,2.08);body.add(tail);
+const tailMesh=ellipsoid('Tail',[.34,.34,.48],matBody,7);tailMesh.position.z=.34;tail.add(tailMesh);
+
+let mode='walk',clock=0,movePhase=0,attackClock=0;
+const modes={
+  walk:{speed:4.8,label:'걷기 · 4족 대각 보행 · 발 접지/몸통 반동'},
+  run:{speed:10.5,label:'달리기 · 보폭 확대 · 척추 압축/신장 · 머리 카운터밸런스'},
+  alert:{speed:0,label:'경계 · 체중 전방 이동 · 목/귀 반응 · 호흡 유지'},
+  attack:{speed:0,label:'공격 · 선행 체중 이동 → 앞발/상체 타격 → 회복'}
+};
+
+function setMode(next){
+  mode=next;attackClock=0;
+  document.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.state===next));
+  stateText.textContent=modes[next].label;
+}
+document.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.state)));
+
+function damp(a,b,s,dt){return THREE.MathUtils.lerp(a,b,1-Math.exp(-s*dt))}
+function legPose(key,phase,stride,knee,lift){
+  const s=Math.sin(phase),c=Math.cos(phase);
+  const swing=s*stride;
+  const bend=Math.max(0,c)*knee+Math.max(0,s)*knee*.28;
+  legs[key].upper.rotation.x=damp(legs[key].upper.rotation.x,swing,15,dtGlobal);
+  legs[key].lower.rotation.x=damp(legs[key].lower.rotation.x,-bend,17,dtGlobal);
+  legs[key].foot.rotation.x=damp(legs[key].foot.rotation.x,-swing*.30+bend*.16,18,dtGlobal);
+  legs[key].foot.position.y=-1.15+Math.max(0,s)*lift;
+}
+
+let last=performance.now(),dtGlobal=.016;
+function animate(now){
+  requestAnimationFrame(animate);
+  dtGlobal=Math.min(.033,(now-last)/1000);last=now;clock+=dtGlobal;
+  const speed=modes[mode].speed;
+  const moving=speed>0;
+  if(moving)movePhase+=dtGlobal*(mode==='run'?7.7:4.1);
+
+  let stride=mode==='run'?.66:.40,knee=mode==='run'?.56:.38,lift=mode==='run'?.24:.13;
+  if(moving){
+    legPose('FL',movePhase,stride,knee,lift);
+    legPose('BR',movePhase,stride,knee,lift);
+    legPose('FR',movePhase+Math.PI,stride,knee,lift);
+    legPose('BL',movePhase+Math.PI,stride,knee,lift);
+    const bob=Math.abs(Math.sin(movePhase*2))*(mode==='run'?.105:.055);
+    body.position.y=damp(body.position.y,2.42+bob,12,dtGlobal);
+    body.rotation.z=damp(body.rotation.z,Math.sin(movePhase)* (mode==='run'?.045:.025),12,dtGlobal);
+    chest.rotation.x=damp(chest.rotation.x,Math.sin(movePhase*2+.35)*(mode==='run'?.042:.022),12,dtGlobal);
+    head.rotation.x=damp(head.rotation.x,-Math.sin(movePhase*2+.4)*(mode==='run'?.07:.035),13,dtGlobal);
+    const radiusX=5.7,radiusZ=3.6;
+    const a=clock*(mode==='run'?.42:.22);
+    const x=Math.cos(a)*radiusX,z=Math.sin(a)*radiusZ;
+    const dx=-Math.sin(a)*radiusX,dz=Math.cos(a)*radiusZ;
+    bear.position.x=damp(bear.position.x,x,4.7,dtGlobal);
+    bear.position.z=damp(bear.position.z,z,4.7,dtGlobal);
+    bear.rotation.y=damp(bear.rotation.y,Math.atan2(dx,dz),5.2,dtGlobal);
+  }else{
+    body.position.y=damp(body.position.y,2.42+Math.sin(clock*1.7)*.022,8,dtGlobal);
+    for(const k of Object.keys(legs)){
+      legs[k].upper.rotation.x=damp(legs[k].upper.rotation.x,0,8,dtGlobal);
+      legs[k].lower.rotation.x=damp(legs[k].lower.rotation.x,0,8,dtGlobal);
+      legs[k].foot.rotation.x=damp(legs[k].foot.rotation.x,0,8,dtGlobal);
+    }
+    if(mode==='alert'){
+      chest.rotation.x=damp(chest.rotation.x,-.10,8,dtGlobal);
+      neck.rotation.x=damp(neck.rotation.x,-.30,8,dtGlobal);
+      head.rotation.x=damp(head.rotation.x,-.16,8,dtGlobal);
+    }else if(mode==='attack'){
+      attackClock+=dtGlobal;
+      const t=(attackClock%1.15)/1.15;
+      const wind=t<.22?t/.22:0;
+      const strike=t>=.22&&t<.52?Math.sin((t-.22)/.30*Math.PI):0;
+      chest.rotation.x=damp(chest.rotation.x,.17*wind-.32*strike,18,dtGlobal);
+      neck.rotation.x=damp(neck.rotation.x,-.18*wind+.34*strike,18,dtGlobal);
+      head.rotation.x=damp(head.rotation.x,-.12*wind+.25*strike,18,dtGlobal);
+      legs.FL.upper.rotation.x=damp(legs.FL.upper.rotation.x,-.55*strike,20,dtGlobal);
+      jaw.rotation.x=damp(jaw.rotation.x,.16*strike,20,dtGlobal);
+    }
+  }
+
+  tail.rotation.y=damp(tail.rotation.y,Math.sin(clock*(moving?3.1:1.3))*(moving?.18:.09),9,dtGlobal);
+  const ears=head.children.filter(x=>x.userData&&x.userData.side);
+  ears.forEach(e=>e.rotation.z=damp(e.rotation.z,e.userData.side*Math.sin(clock*2.15)*.035,10,dtGlobal));
+
+  renderer.render(scene,camera);
+}
+requestAnimationFrame(animate);
+
+addEventListener('resize',()=>{
+  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "name": "SurvivalWildlifeSample",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "SurvivalWildlife": {
+        "$className": "Folder",
+        "WildlifeCatalog": {
+          "$path": "WildlifeCatalog.luau"
+        },
+        "WildlifeFactory": {
+          "$path": "WildlifeFactory.luau"
+        },
+        "WildlifeAnimator": {
+          "$path": "WildlifeAnimator.luau"
+        }
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "BearWalkSample": {
+        "$path": "BearWalkSample.server.luau"
+      }
+    }
+  }
+}
