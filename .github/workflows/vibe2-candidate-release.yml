@@ -908,10 +908,15 @@ jobs:
           const pending=task?.runtimeEvidenceCandidate;
           if(task?.status!=='running'||task?.blocker!=='candidate-awaiting-runtime-evidence'
             ||pending?.evidenceOnly!==true||pending?.candidateSha!==process.env.CANDIDATE_SHA||pending?.candidateBranch!==process.env.CANDIDATE_BRANCH)throw Error('stale runtime evidence candidate');
-          const pass=process.env.VALIDATE_OUTCOME==='success';
           const reportFile='/tmp/roblox-candidate-review/release-evidence-review.json';
           const report=fs.existsSync(reportFile)?JSON.parse(fs.readFileSync(reportFile,'utf8')):null;
+          const reportMatches=report?.pass===true&&report.sourceRevision===process.env.CANDIDATE_SHA
+            &&report.authority==='roblox-candidate-static-source-promotion-gate'&&report.validationMode==='STATIC'
+            &&report.runtimeVerified===false&&report.releaseClaim===false
+            &&Array.isArray(report.blockedReasons)&&report.blockedReasons.length===0;
+          const pass=process.env.VALIDATE_OUTCOME==='success'&&reportMatches;
           const reasons=Array.isArray(report?.blockedReasons)?report.blockedReasons.map(String).slice(0,30):[];
+          if(!reportMatches)reasons.push('static-review-report-missing-or-invalid');
           task.evidence=[...new Set([...(task.evidence||[]),
             'candidate-static-probe:'+process.env.CANDIDATE_SHA+':'+(pass?'PASS':'FAIL'),
             'candidate-static-probe-run:'+process.env.GITHUB_RUN_ID,
