@@ -1,8 +1,12 @@
 import test from 'node:test';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import {
   acquireRemoteVibeWorkLock,
+  createGitCasTransport,
   createRemoteWorkLockContext,
   releaseRemoteVibeWorkLock,
   remoteWorkLockRetryDelayMs
@@ -62,6 +66,114 @@ test('remote acquire writes with the observed blob SHA and lock-state branch', a
   assert.equal(result.attempt, 1);
   assert.equal(result.commitSha, 'lock-commit-1');
   assert.equal(calls.length, 2);
+});
+
+test('remote acquire falls back to Git CAS when Contents API write is rate limited', async () => {
+  const fallbackWrites = [];
+  const gitTransport = {
+    write: async (request) => {
+      fallbackWrites.push(request);
+      return { updated: true, retryable: false, status: 200, commitSha: 'git-cas-commit', transport: 'git-cas' };
+    }
+  };
+  const fetchImpl = async (_url, options = {}) => {
+    if ((options.method || 'GET') === 'GET') {
+      return jsonResponse(200, { sha: 'observed-blob', content: encodedState([]) });
+    }
+    return jsonResponse(403, { message: 'API rate limit exceeded for installation' });
+  };
+
+  const result = await acquireRemoteVibeWorkLock({
+    worker: 'vibe2',
+    task: 'rate-limited-lock-task',
+    game: 'demo',
+    files: 'roblox-games/demo/server/Game.server.luau',
+    'base-sha': 'main-rate-limited'
+  }, { context, fetchImpl, gitTransport, delay: noDelay });
+
+  assert.equal(result.acquired, true);
+  assert.equal(result.remoteUpdated, true);
+  assert.equal(result.remoteTransport, 'git-cas');
+  assert.equal(result.apiStatus, 403);
+  assert.equal(result.commitSha, 'git-cas-commit');
+  assert.equal(fallbackWrites.length, 1);
+  assert.equal(fallbackWrites[0].observedBlobSha, 'observed-blob');
+  assert.equal(fallbackWrites[0].state.locks[0].taskId, 'rate-limited-lock-task');
+});
+
+test('remote acquire falls back to Git CAS when Contents API read is rate limited', async () => {
+  let reads = 0;
+  let writes = 0;
+  const gitTransport = {
+    read: async () => {
+      reads += 1;
+      return { sha: 'git-blob', state: { locks: [] }, transport: 'git-cas' };
+    },
+    write: async ({ observedBlobSha }) => {
+      writes += 1;
+      assert.equal(observedBlobSha, 'git-blob');
+      return { updated: true, retryable: false, status: 200, commitSha: 'git-read-fallback-commit', transport: 'git-cas' };
+    }
+  };
+  const fetchImpl = async (_url, options = {}) => {
+    if ((options.method || 'GET') === 'GET') return jsonResponse(429, { message: 'too many requests' });
+    return jsonResponse(429, { message: 'too many requests' });
+  };
+
+  const result = await acquireRemoteVibeWorkLock({
+    worker: 'vibe2',
+    task: 'read-rate-limited-lock-task',
+    game: 'demo',
+    files: 'unity-games/demo/Assets/Scripts/Game.cs',
+    'base-sha': 'main-read-rate-limited'
+  }, { context, fetchImpl, gitTransport, delay: noDelay });
+
+  assert.equal(result.acquired, true);
+  assert.equal(result.remoteTransport, 'git-cas');
+  assert.equal(result.apiStatus, 429);
+  assert.equal(reads, 1);
+  assert.equal(writes, 1);
+});
+
+test('Git CAS transport updates the dedicated lock branch without the Contents API', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-work-lock-git-cas-'));
+  const remote = path.join(root, 'remote.git');
+  const seed = path.join(root, 'seed');
+  const worker = path.join(root, 'worker');
+  const git = (cwd, ...args) => execFileSync('git', ['-C', cwd, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    execFileSync('git', ['init', '--bare', remote], { stdio: 'ignore' });
+    execFileSync('git', ['clone', remote, seed], { stdio: 'ignore' });
+    git(seed, 'config', 'user.name', 'test');
+    git(seed, 'config', 'user.email', 'test@example.com');
+    fs.mkdirSync(path.join(seed, '.vibe2'), { recursive: true });
+    fs.writeFileSync(path.join(seed, '.vibe2', 'work-locks.json'), `${JSON.stringify({ version: 1, branch: 'vibe2-work-locks', locks: [] }, null, 2)}\n`);
+    git(seed, 'add', '.vibe2/work-locks.json');
+    git(seed, 'commit', '-m', 'seed lock state');
+    git(seed, 'branch', '-M', 'vibe2-work-locks');
+    git(seed, 'push', '-u', 'origin', 'vibe2-work-locks');
+    execFileSync('git', ['clone', '--branch', 'vibe2-work-locks', remote, worker], { stdio: 'ignore' });
+
+    const transport = createGitCasTransport({ cwd: worker });
+    const before = await transport.read();
+    const next = {
+      ...before.state,
+      locks: [activeLock({ id: 'git-cas-lock', worker: 'vibe2', taskId: 'git-cas-task' })]
+    };
+    const write = await transport.write({
+      observedBlobSha: before.sha,
+      state: next,
+      message: 'test: acquire git cas lock'
+    });
+    assert.equal(write.updated, true);
+    assert.equal(write.transport, 'git-cas');
+    const after = await transport.read();
+    assert.equal(after.state.locks.length, 1);
+    assert.equal(after.state.locks[0].taskId, 'git-cas-task');
+    assert.equal(git(worker, 'log', '-1', '--format=%s', 'FETCH_HEAD').trim(), 'test: acquire git cas lock');
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test('default remote acquire disperses transient CAS races and continues beyond the old three-attempt herd', async () => {

@@ -1,8 +1,14 @@
 // 파일명: tools/vibe2-remote-work-lock.mjs
 // 역할: GitHub의 vibe2-work-locks 브랜치에 공용 Work Lock을 원자적으로 획득/해제한다.
 // 원칙: Contents API의 blob SHA 조건부 갱신을 사용하고 409/422 경쟁 시 최신 상태를 다시 읽어 재판정한다.
+// API 쓰기 제한 중에는 같은 blob SHA를 검증한 Git force-with-lease CAS로 전환해 잠금 의미를 보존한다.
 
 import { pathToFileURL } from 'node:url';
+import { execFile } from 'node:child_process';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { promisify } from 'node:util';
 import {
   VIBE_WORK_LOCK_STATE_BRANCH,
   VIBE_WORK_LOCK_STATE_PATH,
@@ -13,6 +19,7 @@ import {
 
 const clean = (value) => String(value ?? '').trim();
 const list = (value) => clean(value).split(',').map(clean).filter(Boolean);
+const execFileAsync = promisify(execFile);
 
 function parseArgs(argv = process.argv.slice(2)) {
   const [command = 'summary', ...rest] = argv;
@@ -45,16 +52,99 @@ function headers(token) {
   };
 }
 
-async function readRemoteState(ctx, fetchImpl) {
+function apiWriteRetryable(status) {
+  return status === 409 || status === 422;
+}
+
+function apiRateLimited(status) {
+  return status === 403 || status === 429;
+}
+
+export function createGitCasTransport(overrides = {}) {
+  const cwd = clean(overrides.cwd) || process.cwd();
+  const runGit = overrides.runGit || (async (args, options = {}) => execFileAsync('git', ['-C', cwd, ...args], {
+    maxBuffer: 4 * 1024 * 1024,
+    ...options
+  }));
+
+  async function readHead() {
+    await runGit(['fetch', '--no-tags', 'origin', `refs/heads/${VIBE_WORK_LOCK_STATE_BRANCH}`]);
+    const { stdout: headOut } = await runGit(['rev-parse', 'FETCH_HEAD']);
+    const head = clean(headOut);
+    const { stdout: blobOut } = await runGit(['rev-parse', `${head}:${VIBE_WORK_LOCK_STATE_PATH}`]);
+    const { stdout: raw } = await runGit(['show', `${head}:${VIBE_WORK_LOCK_STATE_PATH}`]);
+    return {
+      head,
+      sha: clean(blobOut),
+      state: createVibeWorkLockState(JSON.parse(raw))
+    };
+  }
+
+  return {
+    async read() {
+      const current = await readHead();
+      return { sha: current.sha, state: current.state, transport: 'git-cas' };
+    },
+    async write({ observedBlobSha, state, message }) {
+      const current = await readHead();
+      if (current.sha !== clean(observedBlobSha)) {
+        return { updated: false, retryable: true, status: 409, transport: 'git-cas', reason: 'stale-observed-blob' };
+      }
+      const temporary = await mkdtemp(join(tmpdir(), 'vibe2-work-lock-'));
+      const stateFile = join(temporary, 'work-locks.json');
+      const indexFile = join(temporary, 'index');
+      const gitEnv = {
+        ...process.env,
+        GIT_INDEX_FILE: indexFile,
+        GIT_AUTHOR_NAME: 'jaewoon-vibe2-work-lock',
+        GIT_AUTHOR_EMAIL: 'vibe2-work-lock@users.noreply.github.com',
+        GIT_COMMITTER_NAME: 'jaewoon-vibe2-work-lock',
+        GIT_COMMITTER_EMAIL: 'vibe2-work-lock@users.noreply.github.com'
+      };
+      try {
+        await writeFile(stateFile, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+        const { stdout: blobOut } = await runGit(['hash-object', '-w', stateFile]);
+        const blob = clean(blobOut);
+        await runGit(['read-tree', current.head], { env: gitEnv });
+        await runGit(['update-index', '--add', '--cacheinfo', '100644', blob, VIBE_WORK_LOCK_STATE_PATH], { env: gitEnv });
+        const { stdout: treeOut } = await runGit(['write-tree'], { env: gitEnv });
+        const { stdout: commitOut } = await runGit([
+          'commit-tree', clean(treeOut), '-p', current.head, '-m', clean(message) || 'vibe2-lock: update shared work state'
+        ], { env: gitEnv });
+        const commitSha = clean(commitOut);
+        try {
+          await runGit([
+            'push',
+            `--force-with-lease=refs/heads/${VIBE_WORK_LOCK_STATE_BRANCH}:${current.head}`,
+            'origin',
+            `${commitSha}:refs/heads/${VIBE_WORK_LOCK_STATE_BRANCH}`
+          ]);
+        } catch (error) {
+          const detail = `${clean(error?.stdout)}\n${clean(error?.stderr)}`;
+          if (/stale info|fetch first|rejected|non-fast-forward/i.test(detail)) {
+            return { updated: false, retryable: true, status: 409, transport: 'git-cas', reason: 'push-lease-race' };
+          }
+          throw error;
+        }
+        return { updated: true, retryable: false, status: 200, commitSha, transport: 'git-cas' };
+      } finally {
+        await rm(temporary, { recursive: true, force: true });
+      }
+    }
+  };
+}
+
+async function readRemoteState(ctx, fetchImpl, gitTransport = null) {
   const url = `https://api.github.com/repos/${ctx.owner}/${ctx.repo}/contents/${VIBE_WORK_LOCK_STATE_PATH}?ref=${encodeURIComponent(VIBE_WORK_LOCK_STATE_BRANCH)}`;
   const response = await fetchImpl(url, { headers: headers(ctx.token) });
+  if (apiRateLimited(response.status) && gitTransport) return gitTransport.read();
   if (!response.ok) throw new Error(`work-lock state fetch failed: ${response.status}`);
   const body = await response.json();
   const raw = Buffer.from(String(body.content || '').replaceAll('\n', ''), 'base64').toString('utf8');
   return { sha: clean(body.sha), state: createVibeWorkLockState(JSON.parse(raw)) };
 }
 
-async function writeRemoteState(ctx, sha, state, message, fetchImpl) {
+async function writeRemoteState(ctx, sha, state, message, fetchImpl, gitTransport = null) {
   const url = `https://api.github.com/repos/${ctx.owner}/${ctx.repo}/contents/${VIBE_WORK_LOCK_STATE_PATH}`;
   const content = Buffer.from(`${JSON.stringify(state, null, 2)}\n`, 'utf8').toString('base64');
   const response = await fetchImpl(url, {
@@ -62,10 +152,14 @@ async function writeRemoteState(ctx, sha, state, message, fetchImpl) {
     headers: { ...headers(ctx.token), 'Content-Type': 'application/json' },
     body: JSON.stringify({ message, content, sha, branch: VIBE_WORK_LOCK_STATE_BRANCH })
   });
-  if (response.status === 409 || response.status === 422) return { updated: false, retryable: true, status: response.status };
+  if (apiWriteRetryable(response.status)) return { updated: false, retryable: true, status: response.status, transport: 'contents-api' };
+  if (apiRateLimited(response.status) && gitTransport) {
+    const fallback = await gitTransport.write({ observedBlobSha: sha, state, message });
+    return { ...fallback, apiStatus: response.status };
+  }
   if (!response.ok) throw new Error(`work-lock state update failed: ${response.status}`);
   const body = await response.json();
-  return { updated: true, retryable: false, status: response.status, commitSha: body?.commit?.sha || null };
+  return { updated: true, retryable: false, status: response.status, commitSha: body?.commit?.sha || null, transport: 'contents-api' };
 }
 
 function defaultDelay(ms) {
@@ -113,11 +207,14 @@ function operationOptions(options = {}) {
   const context = options.context || createRemoteWorkLockContext(options.contextOverrides || {});
   const delay = typeof options.delay === 'function' ? options.delay : defaultDelay;
   const maxAttempts = Math.max(1, Math.min(8, Number(options.maxAttempts) || 8));
-  return { fetchImpl, context, delay, maxAttempts };
+  const gitTransport = options.gitTransport === null
+    ? null
+    : options.gitTransport || (options.fetchImpl ? null : createGitCasTransport(options.gitOptions));
+  return { fetchImpl, context, delay, maxAttempts, gitTransport };
 }
 
 export async function acquireRemoteVibeWorkLock(args = {}, options = {}) {
-  const { fetchImpl, context: ctx, delay, maxAttempts } = operationOptions(options);
+  const { fetchImpl, context: ctx, delay, maxAttempts, gitTransport } = operationOptions(options);
   const request = {
     worker: clean(args.worker) || 'vibe2',
     taskId: clean(args.task),
@@ -131,7 +228,7 @@ export async function acquireRemoteVibeWorkLock(args = {}, options = {}) {
   };
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    const remote = await readRemoteState(ctx, fetchImpl);
+    const remote = await readRemoteState(ctx, fetchImpl, gitTransport);
     let result = acquireVibeWorkLock(remote.state, request, new Date());
     let reclaimedLockIds = [];
     if (!result.acquired && result.reason === 'file-lock-conflict') {
@@ -146,8 +243,8 @@ export async function acquireRemoteVibeWorkLock(args = {}, options = {}) {
     }
     if (!result.acquired) return { ...result, reclaimedLockIds, attempt, remoteUpdated: false };
     if (result.reused) return { ...result, reclaimedLockIds, attempt, remoteUpdated: false };
-    const write = await writeRemoteState(ctx, remote.sha, result.state, `vibe2-lock: acquire ${request.worker} ${request.taskId}`, fetchImpl);
-    if (write.updated) return { ...result, reclaimedLockIds, attempt, remoteUpdated: true, commitSha: write.commitSha };
+    const write = await writeRemoteState(ctx, remote.sha, result.state, `vibe2-lock: acquire ${request.worker} ${request.taskId}`, fetchImpl, gitTransport);
+    if (write.updated) return { ...result, reclaimedLockIds, attempt, remoteUpdated: true, commitSha: write.commitSha, remoteTransport: write.transport, apiStatus: write.apiStatus || null };
     if (!write.retryable) throw new Error(`work-lock acquire state update failed after ${attempt} attempts`);
     if (attempt === maxAttempts) {
       return {
@@ -169,17 +266,17 @@ export async function acquireRemoteVibeWorkLock(args = {}, options = {}) {
 }
 
 export async function releaseRemoteVibeWorkLock(args = {}, options = {}) {
-  const { fetchImpl, context: ctx, delay, maxAttempts } = operationOptions(options);
+  const { fetchImpl, context: ctx, delay, maxAttempts, gitTransport } = operationOptions(options);
   const lockId = clean(args.id);
   const worker = clean(args.worker) || 'vibe2';
   if (!lockId) throw new Error('work-lock id required');
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    const remote = await readRemoteState(ctx, fetchImpl);
+    const remote = await readRemoteState(ctx, fetchImpl, gitTransport);
     const result = releaseVibeWorkLock(remote.state, { lockId, worker }, new Date());
     if (!result.released) return { ...result, attempt, remoteUpdated: false };
-    const write = await writeRemoteState(ctx, remote.sha, result.state, `vibe2-lock: release ${worker} ${lockId}`, fetchImpl);
-    if (write.updated) return { ...result, attempt, remoteUpdated: true, commitSha: write.commitSha };
+    const write = await writeRemoteState(ctx, remote.sha, result.state, `vibe2-lock: release ${worker} ${lockId}`, fetchImpl, gitTransport);
+    if (write.updated) return { ...result, attempt, remoteUpdated: true, commitSha: write.commitSha, remoteTransport: write.transport, apiStatus: write.apiStatus || null };
     if (!write.retryable) throw new Error(`work-lock release state update failed after ${attempt} attempts`);
     if (attempt === maxAttempts) {
       return {
