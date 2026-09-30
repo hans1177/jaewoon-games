@@ -42,10 +42,10 @@ local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
 local verifiedLearningRoot = root
-local verifiedLearningSemanticVariant = "OBJECTIVE_GOAL"
+local verifiedLearningSemanticVariant = "PUZZLE_STATE"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
-local verifiedLearningSemanticColor = Color3.fromRGB(255, 220, 124)
-local verifiedLearningSemanticMood = "READABLE_EXPLORATION"
+local verifiedLearningSemanticColor = Color3.fromRGB(255, 205, 92)
+local verifiedLearningSemanticMood = "BRIGHT_BOARD"
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningAxisCount", #verifiedLearningAxes)
@@ -64,9 +64,9 @@ if not verifiedLearningColorGrade then
   verifiedLearningColorGrade.Name = "VerifiedLearningColorGrade"
   verifiedLearningColorGrade.Parent = verifiedLearningLighting
 end
-verifiedLearningColorGrade.Saturation = 0.07
-verifiedLearningColorGrade.Contrast = 0.05
-verifiedLearningColorGrade.Brightness = 0.01
+verifiedLearningColorGrade.Saturation = 0.12
+verifiedLearningColorGrade.Contrast = 0.06
+verifiedLearningColorGrade.Brightness = 0.02
 verifiedLearningColorGrade:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
 if verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
 -- Survival alone receives atmospheric depth and threat haze.
