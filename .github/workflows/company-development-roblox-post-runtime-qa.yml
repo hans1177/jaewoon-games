@@ -1565,7 +1565,7 @@ jobs:
           echo "ROBLOX_F9_SCAN_DISPATCHED=candidates=$candidate_count"
 
       - name: Dispatch exact Studio MCP follow-up after new runtime foundation evidence
-        if: ${{ inputs.retry_open_cloud_only != true }}
+        if: ${{ inputs.run_studio == true && inputs.retry_open_cloud_only != true }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -1575,7 +1575,7 @@ jobs:
           dispatch_count=0
           while read -r id; do
             [ -n "$id" ] || continue
-            gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id" -f run_studio=true
             dispatch_count=$((dispatch_count+1))
             echo "ROBLOX_STUDIO_MCP_POST_FOUNDATION_DISPATCH=$id"
           done < /tmp/roblox-studio-followup-ids
