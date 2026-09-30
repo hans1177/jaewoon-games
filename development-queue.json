@@ -26068,10 +26068,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "VIBE_INTERNAL_PLAY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-30T23:56:53.860Z",
+      "updatedAt": "2026-09-30T23:57:43.106Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
@@ -27351,8 +27351,8 @@
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "unityCandidateBranch": "development/unity-tech-seed-story-complete-rpg-chronicles-of-eldoria-36774290498",
       "unitySourceCommit": "348df0432e88cc64bb59755a5d24bfc3e202e9ad",
-      "unityBuildRunId": 36777147511,
-      "unityRuntimeSmokeRunId": null,
+      "unityBuildRunId": 36792018402,
+      "unityRuntimeSmokeRunId": 36793513149,
       "unityIndependentQaRunId": null,
       "unityRegressionRunId": null,
       "unityInternalReleaseReady": false,
@@ -27366,19 +27366,19 @@
         "sourceRevision": "348df0432e88cc64bb59755a5d24bfc3e202e9ad",
         "sourceRootTreeSha": "6684c0278102e15d93a7765b9ce5dfefcf304bd0",
         "sourceFingerprint": "50cea2c23d8e1535b37d53199961e578d7ee5078843a74702244db3613030993",
-        "buildOrPackagePassed": false,
-        "artifactIdentity": null,
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:0f6894e3af254981594b4813b5d6d0d7962c77d067477d98fc3647b05d21b99c",
         "runtimePassed": false,
         "independentQaPassed": false,
         "multiplayerPassed": true,
         "regressionPassed": false,
         "f0ToF9Passed": false,
-        "exactRevision": false,
-        "lastSuccessfulStage": "CHEAP_PRECHECK",
-        "failureStage": "F0_SOURCE_INTEGRITY",
-        "failureSignature": "90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d"
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
       },
-      "resumeStage": "F0_SOURCE_INTEGRITY",
+      "resumeStage": "F1_SERVER_BOOT",
       "failureCount": 1,
       "contractCanaryPassed": false,
       "robloxInternalPlaytestPassed": false,
@@ -27735,12 +27735,12 @@
         "version": 1,
         "platform": "UNITY",
         "sourceRevision": "348df0432e88cc64bb59755a5d24bfc3e202e9ad",
-        "artifactIdentity": null,
+        "artifactIdentity": "sha256:0f6894e3af254981594b4813b5d6d0d7962c77d067477d98fc3647b05d21b99c",
         "sourceRootTreeSha": "6684c0278102e15d93a7765b9ce5dfefcf304bd0",
         "evidenceMode": "EXISTING_EXACT_APK_RUNTIME_QA_REGRESSION_WITH_PLATFORM_APPLICABILITY",
         "floors": {
           "F0": {
-            "state": "FAIL",
+            "state": "PASS",
             "authority": "IMMUTABLE_APK_BUILD_AND_SOURCE_BINDING"
           },
           "F1": {
@@ -27783,7 +27783,7 @@
           }
         },
         "multiplayerRequired": false,
-        "verifiedAt": "2026-09-30T21:50:50.935Z"
+        "verifiedAt": "2026-09-30T23:57:43.106Z"
       },
       "unityF9ReleaseRegressionPassed": false,
       "unityF9ReleaseRegressionPassedAt": null,
@@ -27794,17 +27794,17 @@
         "sourceRevision": "348df0432e88cc64bb59755a5d24bfc3e202e9ad",
         "sourceRootTreeSha": "6684c0278102e15d93a7765b9ce5dfefcf304bd0",
         "sourceFingerprint": "50cea2c23d8e1535b37d53199961e578d7ee5078843a74702244db3613030993",
-        "buildOrPackagePassed": false,
-        "artifactIdentity": null,
+        "buildOrPackagePassed": true,
+        "artifactIdentity": "sha256:0f6894e3af254981594b4813b5d6d0d7962c77d067477d98fc3647b05d21b99c",
         "runtimePassed": false,
         "independentQaPassed": false,
         "multiplayerPassed": true,
         "regressionPassed": false,
         "f0ToF9Passed": false,
-        "exactRevision": false,
-        "lastSuccessfulStage": "CHEAP_PRECHECK",
-        "failureStage": "F0_SOURCE_INTEGRITY",
-        "failureSignature": "90fbb26b7e141cea4c0256d6e0e273c1785df05e3a4184349eb32f8af6525e2d"
+        "exactRevision": true,
+        "lastSuccessfulStage": "F0_SOURCE_INTEGRITY",
+        "failureStage": "F1_SERVER_BOOT",
+        "failureSignature": "48a4aab6102100fa73897928f1a564e3f2dfd730cdb99eddd49fa9438fd2bdee"
       }
     },
     {
@@ -29520,7 +29520,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T23:56:53.860Z",
+  "updatedAt": "2026-09-30T23:57:44.411Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
