@@ -76,25 +76,6 @@ jobs:
           Write-Host "OWNER_BUILD_SHA256=$hash"
           "PLACE_FILE=$place" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
-      - name: Configure private experience directly
-        env:
-          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-        shell: pwsh
-        run: |
-          $ErrorActionPreference='Stop'
-          if([string]::IsNullOrWhiteSpace($env:ROBLOX_OPEN_CLOUD_API_KEY)){ throw 'ROBLOX_OPEN_CLOUD_API_KEY_MISSING' }
-          $headers=@{'x-api-key'=$env:ROBLOX_OPEN_CLOUD_API_KEY}
-          $body=@{
-            displayName='심야 대탈출'
-            description='심야 호텔에서 시작되는 8인 공포 추격전'
-            visibility='PRIVATE'
-          } | ConvertTo-Json -Compress
-          $configOut=Join-Path $env:OWNER_OUT 'configure.json'
-          Invoke-WebRequest -Method Patch -Uri "https://apis.roblox.com/cloud/v2/universes/$env:UNIVERSE_ID?updateMask=displayName,description,visibility" -Headers $headers -ContentType 'application/json' -Body $body -OutFile $configOut
-          $privateOut=Join-Path $env:OWNER_OUT 'private.json'
-          Invoke-WebRequest -Method Post -Uri "https://apis.roblox.com/legacy-develop/v1/universes/$env:UNIVERSE_ID/deactivate" -Headers $headers -OutFile $privateOut
-          Write-Host 'OWNER_PRIVATE_CONFIG=PASS'
-
       - name: Publish directly with Roblox Open Cloud
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
@@ -119,8 +100,6 @@ jobs:
           name: horror-owner-direct-publish
           path: |
             ${{ env.OWNER_OUT }}\build.sha256
-            ${{ env.OWNER_OUT }}\configure.json
-            ${{ env.OWNER_OUT }}\private.json
             ${{ env.OWNER_OUT }}\publish.json
           if-no-files-found: warn
           retention-days: 3
