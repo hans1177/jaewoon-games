@@ -6692,7 +6692,8 @@
       "coding_negative_1akm85j",
       "coding_negative_11y52wc",
       "coding_negative_1itzh5p",
-      "coding_negative_72abmb"
+      "coding_negative_72abmb",
+      "coding_negative_i1ab0r"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -17878,7 +17879,7 @@
         "verifiedApplications": 12,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 48,
-        "verifiedFailures": 1174,
+        "verifiedFailures": 1175,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -18073,7 +18074,7 @@
             "verifiedApplications": 2,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 9,
-            "verifiedFailures": 173,
+            "verifiedFailures": 174,
             "games": {
               "seed-idle-growth-rpg-crystal-bloom": 1,
               "seed-action-survival-rogu-echoes-of-the-lost-star": 1
@@ -18084,21 +18085,21 @@
             "failureGames": {
               "amusement-tycoon": 48,
               "seed-casual-realm-weaver": 45,
-              "seed-puzzle-chromatic-cascade": 45,
+              "seed-puzzle-chromatic-cascade": 46,
               "seed-idle-growth-rpg-crystal-bloom": 12,
               "seed-action-survival-rogu-echoes-of-the-lost-star": 23
             },
             "failureTargets": {
-              "unity": 173
+              "unity": 174
             },
             "failureClasses": {
               "MALFORMED_OUTPUT": 2,
               "TIMEOUT": 7,
-              "STUDIO_QUALITY_DELTA": 164
+              "STUDIO_QUALITY_DELTA": 165
             },
             "lastEvidence": "coding_i8erjc",
-            "lastFailureEvidence": "coding_negative_1itzh5p",
-            "lastUpdatedAt": "2026-09-30T10:25:41.296Z"
+            "lastFailureEvidence": "coding_negative_i1ab0r",
+            "lastUpdatedAt": "2026-09-30T10:32:49.196Z"
           },
           "unity|EDIT_MATCH|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -18454,8 +18455,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_1p380wp",
-        "lastFailureEvidence": "coding_negative_72abmb",
-        "lastUpdatedAt": "2026-09-30T10:30:52.451Z"
+        "lastFailureEvidence": "coding_negative_i1ab0r",
+        "lastUpdatedAt": "2026-09-30T10:32:49.196Z"
       }
     }
   },
@@ -21208,7 +21209,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T10:30:52.528Z",
+    "lastBuiltAt": "2026-09-30T10:32:49.271Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -29468,5 +29469,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T10:30:52.528Z"
+  "updatedAt": "2026-09-30T10:32:49.271Z"
 }
