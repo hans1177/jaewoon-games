@@ -27,6 +27,7 @@ end
 -- STUDIO_ASSET_BINDING_CLIENT_END
 
 local QACamera=require(RS:WaitForChild("Shared"):WaitForChild("QACamera"))
+local RPGMenu=require(RS:WaitForChild("Shared"):WaitForChild("RPGMenu"))
 local remote=RS:WaitForChild(C.RemoteName)
 local foundationRemote=RS:WaitForChild("RuntimeFoundationReport")
 local foundationRoundtrip=false
@@ -486,7 +487,7 @@ block.InputEnded:Connect(function(input)
  if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then setBlock(false)end
 end)
 UserInputService.InputBegan:Connect(function(input,processed)
- if not processed and input.KeyCode==Enum.KeyCode.F then setBlock(true)end
+ if not processed and gui:GetAttribute("RPGMenuOpen")~=true and input.KeyCode==Enum.KeyCode.F then setBlock(true)end
 end)
 UserInputService.InputEnded:Connect(function(input)
  if input.KeyCode==Enum.KeyCode.F then setBlock(false)end
@@ -508,9 +509,22 @@ returnButton.Activated:Connect(function()remote:FireServer(C.Actions.RETURN_VILL
 
 local multi=button(gui,"멀티 코드 1",Color3.fromRGB(55,76,119));multi.Name="MultiplayerCode";multi.AnchorPoint=touchEnabled and Vector2.new(1,1)or Vector2.new(1,0);multi.Position=touchEnabled and UDim2.new(1,-8,1,-10)or UDim2.new(1,-8,0,80);multi.Size=UDim2.fromOffset(112,32)
 multi.Activated:Connect(function()remote:FireServer(C.Actions.NEXT_ROOM_CODE)end)
+multi.Visible=false -- The party menu owns the same server-authoritative code action.
 
 local hint=Instance.new("TextLabel");hint.Name="WorldHint";hint.AnchorPoint=Vector2.new(0,1);hint.Position=UDim2.new(0,8,1,-10);hint.Size=touchEnabled and UDim2.fromOffset(170,32)or UDim2.fromOffset(220,34);hint.BackgroundColor3=Color3.fromRGB(25,28,35);hint.BackgroundTransparency=.3;hint.TextColor3=Color3.fromRGB(226,230,235);hint.TextSize=11;hint.Font=Enum.Font.Gotham;hint.TextWrapped=true;hint.Text="마을 포탈로 이동 · AI는 두 번 터치해 파티 초대";hint.Parent=gui;corner(hint,9)
 if touchEnabled then task.delay(9,function()if hint.Parent then hint.Visible=false end end)end
+
+local rpgMenu=RPGMenu.install(C,gui,p,{
+ sounds={actionSfx,hitSfx,skillSfx,levelSfx},
+ canOpen=function()return startupOverlay.Parent==nil and not classPanel.Visible end,
+ onOpen=function(open)
+  if open then setBlock(false)end
+  combat.Visible=not open
+ end,
+ trackQuest=function()objective.Visible=true end,
+ changeRoom=function()remote:FireServer(C.Actions.NEXT_ROOM_CODE)end,
+ toggleTips=function()hint.Visible=not hint.Visible end,
+})
 
 local function zoneName(id)
  if id==0 then return"마을"end
@@ -520,6 +534,7 @@ local function renderClassPanel()
  local classId=tostring(p:GetAttribute("ClassId")or"NONE");local adv=tostring(p:GetAttribute("AdvancementId")or"")
  local chooseStart=classId=="NONE";local chooseAdvance=classId~="NONE"and((p:GetAttribute("AdvancementTrialPassed")==true)or(p:GetAttribute("RespecReady")==true))
  classPanel.Visible=chooseStart or chooseAdvance
+ if classPanel.Visible then rpgMenu.close()end
  for _,b in ipairs(classButtons)do b.Visible=chooseStart end;advA.Visible=chooseAdvance;advB.Visible=chooseAdvance
  if chooseStart then
   classTitle.Text="시작 직업 선택"

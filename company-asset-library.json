@@ -305,6 +305,28 @@
       "path": "/web-games/survival2/assets/mushroom.png",
       "license": "CC0",
       "note": "기존 저장소 실자산 · 환경/아이템 참고 후보"
+    },
+    {
+      "id": "roblox-rpg-system-menu-v1",
+      "title": "RPG 배낭·장비·퀘스트·파티·설정 메뉴",
+      "category": "UI",
+      "family": "UI",
+      "subfamily": "SLOT_INVENTORY",
+      "platform": "ROBLOX",
+      "status": "REPO_ASSET",
+      "path": "/assets/roblox/rpg-menu/RPGMenu.luau",
+      "sourceFiles": [
+        "assets/roblox/rpg-menu/RPGMenu.luau",
+        "assets/roblox/rpg-menu/RPGMenuModel.luau"
+      ],
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "consumerGameIds": [
+        "daechung-rpg"
+      ],
+      "note": "실제 Luau 코드 자산. 게임별 복제본을 패키지에 고정하고 parity 검사로 일치 확인. 보유 장비·도구·진행 데이터만 표시. 모바일/게임패드 UI 구현, 실제 Studio 검증 전 VERIFIED 아님."
     }
   ],
   "research": [
