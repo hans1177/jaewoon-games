@@ -6224,7 +6224,8 @@
       "coding_negative_13ezt3f",
       "coding_negative_1s3xqps",
       "coding_negative_15smkr4",
-      "coding_negative_sj2ljh"
+      "coding_negative_sj2ljh",
+      "coding_negative_10snil3"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16840,7 +16841,7 @@
         "verifiedApplications": 4,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 14,
-        "verifiedFailures": 770,
+        "verifiedFailures": 771,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -16863,13 +16864,13 @@
           },
           "UNITY_WEB_BOOTSTRAP_SHELL": {
             "verifiedApplications": 0,
-            "verifiedFailures": 17,
+            "verifiedFailures": 18,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
             "totalContextBytes": 0,
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1kznqoy",
-            "lastUpdatedAt": "2026-09-30T00:15:19.797Z"
+            "lastFailureEvidence": "coding_negative_10snil3",
+            "lastUpdatedAt": "2026-09-30T00:45:08.375Z"
           }
         },
         "failureFingerprints": {
@@ -17064,23 +17065,23 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 31,
+            "verifiedFailures": 32,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 31
+              "cozy-island": 32
             },
             "failureTargets": {
-              "unity": 31
+              "unity": 32
             },
             "failureClasses": {
-              "EDIT_MATCH": 29,
+              "EDIT_MATCH": 30,
               "TIMEOUT": 1,
               "PERFORMANCE_SANITY": 1
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1kznqoy",
-            "lastUpdatedAt": "2026-09-30T00:15:19.797Z"
+            "lastFailureEvidence": "coding_negative_10snil3",
+            "lastUpdatedAt": "2026-09-30T00:45:08.375Z"
           },
           "unity|INVALID_PATH|NO_OP|OTHER|STUDIO_QUALITY_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -17355,8 +17356,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_1ud2weu",
-        "lastFailureEvidence": "coding_negative_sj2ljh",
-        "lastUpdatedAt": "2026-09-30T00:43:56.016Z"
+        "lastFailureEvidence": "coding_negative_10snil3",
+        "lastUpdatedAt": "2026-09-30T00:45:08.375Z"
       }
     }
   },
@@ -20107,7 +20108,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T00:44:14.665Z",
+    "lastBuiltAt": "2026-09-30T00:45:08.448Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -28214,5 +28215,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T00:44:14.665Z"
+  "updatedAt": "2026-09-30T00:45:08.448Z"
 }
