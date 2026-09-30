@@ -9460,48 +9460,6 @@
         "developmentCycle": "F0_TO_F9_THEN_REPEAT_WITHOUT_CANONICAL_SERVER_PUBLISH",
         "externalPublicExposureGateUnchanged": true
       }
-    },
-    "perGameFailureIsolation20260930": {
-      "version": 496,
-      "summary": "A single game or platform-lane failure is isolated; sibling games continue and the DEVELOPMENT_CONFIRMED parent cycle reopens for the next wave.",
-      "workflow": ".github/workflows/company-development-confirmed-runtime.yml",
-      "excludedGameIds": [
-        "horror-escape-room"
-      ],
-      "qualityOrEvidenceGateWeakening": false
-    },
-    "vibeControlQueueBacklog20260930": {
-      "version": 497,
-      "summary": "Move result callbacks/refill reserve control to ARM and coalesce stateless fan-in refill runs by lane while preserving every neuron completion result.",
-      "workflow": ".github/workflows/vibe2-continuous-core.yml",
-      "qualityOrEvidenceGateWeakening": false
-    },
-    "vibeControlQueueUbuntuLatest20260930": {
-      "version": 498,
-      "summary": "Route Vibe completion/refill reserve and fan-in control jobs to ubuntu-latest after ARM control jobs remained queued while ubuntu-latest capacity was active.",
-      "workflow": ".github/workflows/vibe2-continuous-core.yml",
-      "evidence": {
-        "queuedNeuronReserveRunner": "ubuntu-24.04-arm",
-        "observedArmState": "QUEUED",
-        "observedUbuntuLatestState": "MULTIPLE_GAME_WORKERS_IN_PROGRESS"
-      },
-      "qualityOrEvidenceGateWeakening": false
-    },
-    "vibePressureCohortFanIn20260930": {
-      "version": 499,
-      "summary": "Remove the game-primary single-task micro-fan-in exception under runner pressure. Preserve each immutable worker result artifact and let the cohort fan-in ingest it; only a wave leader may request one coalesced refill.",
-      "workflow": ".github/workflows/vibe2-continuous-core.yml",
-      "preservesResultArtifacts": true,
-      "qualityOrEvidenceGateWeakening": false
-    },
-    "controlWorkflowNoiseSuppression20260930": {
-      "version": 500,
-      "summary": "Skip Company Status Sync and development queue reconcile gate work for cancelled/skipped workflow_run events while preserving real success/failure processing.",
-      "workflows": [
-        ".github/workflows/company-status-sync.yml",
-        ".github/workflows/company-development-queue-reconcile.yml"
-      ],
-      "qualityOrEvidenceGateWeakening": false
     }
   },
   "vibeExecutionLaneContract": {
@@ -26258,8 +26216,8 @@
     "maxChangeRecordEntries": 43,
     "scope": "CURRENT_RULES_AND_EXECUTABLE_CONTRACTS",
     "historicalExecutionLogsAuthority": "GIT_HISTORY",
-    "archivedChangeRecordCommit": "d3eeb7da0b77c2ca867cbff52c98f25f5ab6ac7c",
-    "archivedUnreferencedChangeRecords": 71,
+    "archivedChangeRecordCommit": "a64347b74a3757dbe41d6e85c1fbb310a40e58cb",
+    "archivedUnreferencedChangeRecords": 76,
     "currentOwnerRulesMustRemain": true,
     "f0ThroughF9MustRemain": true,
     "publicationApprovalMustRemain": true,
