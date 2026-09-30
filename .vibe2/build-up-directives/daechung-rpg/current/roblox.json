@@ -493,12 +493,11 @@
       "sourceRevision": "cc303fdadcbd7cd3c72ec5cb236198491b7787a1",
       "artifactIdentity": "sha256:e77f6c381c8f1660d16761ece43f8088b8a0487b34f4d6ae4e0996b2bb1ae6a8",
       "authority": "roblox-official-studio-mcp-product-quality-failure",
-      "workflowRunId": 36693812290,
-      "testedAt": "2026-09-30T09:11:08.241Z",
+      "workflowRunId": 36693888241,
+      "testedAt": "2026-09-30T09:17:30.322Z",
       "repairSurfaces": [
         "MOBILE_UI",
         "WORLD_GEOMETRY",
-        "MAP_ROUTEABILITY",
         "SYSTEM_TRANSACTION",
         "WORLD_TRAVEL",
         "COMBAT_AI",
@@ -532,25 +531,18 @@
           "observed": "{\"boundsFinite\":true,\"collidablePartCount\":1125,\"floorBelowPlayer\":true,\"floorSamples\":9,\"floorHits\":6,\"floorCoveragePass\":true,\"routeSamples\":16,\"routeSuccess\":7,\"routeCoveragePass\":false,\"spawnThreatDistance\":780.2060478757685,\"spawnOverlapSafe\":true}"
         },
         {
-          "id": "adaptive-map-route-coverage",
-          "repairSurface": "MAP_ROUTEABILITY",
-          "priority": "CRITICAL",
-          "hint": "Repair unreachable/stuck/dead-zone routes discovered during Studio corner-direction traversal.",
-          "observed": "{\"routeAttemptCount\":1,\"routePassCount\":0,\"routeRequired\":1,\"routes\":[{\"id\":\"map-route-prompt:전직 교관\",\"ok\":false,\"moved\":33.72462867110307,\"fall\":2.154871940612793,\"floorBelow\":true}]}"
-        },
-        {
           "id": "adaptive-system-transaction-effect",
           "repairSurface": "SYSTEM_TRANSACTION",
           "priority": "CRITICAL",
           "hint": "One or more discovered shop/craft/equip/upgrade actions accepted input without changing inventory, currency/progression, feedback, or relevant UI state. Repair each transaction chain independently.",
-          "observed": "{\"systemActionCount\":1,\"systemEffectCount\":0,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"UPGRADE\",\"effectObserved\":false,\"effect\":{\"moved\":128.511910016122,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}}]}"
+          "observed": "{\"systemActionCount\":1,\"systemEffectCount\":0,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"semantic\":\"UPGRADE\",\"effectObserved\":false,\"effect\":{\"moved\":134.07720917463084,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}}]}"
         },
         {
           "id": "adaptive-travel-effect",
           "repairSurface": "WORLD_TRAVEL",
           "priority": "CRITICAL",
           "hint": "A discovered portal/door/travel action accepted input but did not move the player, change map/round state, or provide authoritative feedback.",
-          "observed": "{\"travelActionCount\":3,\"travelEffectCount\":1,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"effectObserved\":true,\"effect\":{\"moved\":129.397268816325,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}},{\"id\":\"prompt-ProximityPrompt\",\"effectObserved\":false,\"effect\":{\"moved\":0.35882212718836043,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":false}},{\"id\":\"prompt-ProximityPrompt\",\"effectObserved\":false,\"effect\":{\"moved\":0.059932562907662905,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":false}}]}"
+          "observed": "{\"travelActionCount\":3,\"travelEffectCount\":1,\"actions\":[{\"id\":\"prompt-ProximityPrompt\",\"effectObserved\":true,\"effect\":{\"moved\":56.41325993150083,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":true}},{\"id\":\"prompt-ProximityPrompt\",\"effectObserved\":false,\"effect\":{\"moved\":0.07212670190105794,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":false}},{\"id\":\"prompt-ProximityPrompt\",\"effectObserved\":false,\"effect\":{\"moved\":0.36080823757537334,\"progress\":false,\"inventory\":false,\"feedback\":false,\"health\":false,\"ui\":false,\"round\":false,\"map\":false,\"effectObserved\":false}}]}"
         },
         {
           "id": "adaptive-combat-surface",
@@ -600,13 +592,6 @@
           "priority": "HIGH",
           "hint": "Replay the exact observed action and verify its real state change after repair.",
           "observed": "{\"id\":\"observed-action-749f1a8df420364c0ab0\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"commercial-combat-action\",\"targetIdentity\":\"commercial-combat-action\",\"actionType\":\"mcp-combat-action\",\"effectRequired\":true,\"attempts\":1}"
-        },
-        {
-          "id": "observed-action-20c872977163c42ca439",
-          "repairSurface": "ROBLOX_OBSERVED_INTERACTION",
-          "priority": "HIGH",
-          "hint": "Replay the exact observed action and verify its real state change after repair.",
-          "observed": "{\"id\":\"observed-action-20c872977163c42ca439\",\"pass\":false,\"required\":true,\"generatedFrom\":\"OFFICIAL_STUDIO_OBSERVED_ACTION\",\"actionId\":\"map-route-prompt:전직 교관\",\"targetIdentity\":\"map-route-prompt:전직 교관\",\"actionType\":\"mcp-map-route-audit\",\"effectRequired\":false,\"attempts\":1}"
         },
         {
           "id": "observed-action-ce7a335281c15e497552",
