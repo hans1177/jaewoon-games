@@ -65,8 +65,12 @@ pcall(function()foundationStore=DSS:GetDataStore("native-foundation-sentinel-v1"
 local foundationRemote=RS:FindFirstChild("RuntimeFoundationReport")or Instance.new("RemoteEvent")
 foundationRemote.Name="RuntimeFoundationReport";foundationRemote.Parent=RS
 local qaCaptureLast={}
-local roomDirectory=MemoryStoreService:GetSortedMap("midnight-infection-room-directory-v1")
+-- 로컬 플레이는 기존 단일 서버 방 흐름을 사용하고 온라인 방 저장소는 게시 서버에서만 연다.
 local studioRoomFallback=RunService:IsStudio()
+local roomDirectory
+if not studioRoomFallback then
+ roomDirectory=MemoryStoreService:GetSortedMap("midnight-infection-room-directory-v1")
+end
 local roomServer=game.PrivateServerId~=""and game.PrivateServerOwnerId==0
 local roomCode=""
 local roomHostUserId=0
@@ -191,17 +195,18 @@ local function roomMaxPlayers()
  return math.max(1,math.floor(tonumber(C.Room and C.Room.MaxPlayers)or C.TargetPopulation or 8))
 end
 local function setRoomDirectoryEntry(code,data)
- if code==""or typeof(data)~="table"then return false end
+ if not roomDirectory or code==""or typeof(data)~="table"then return false end
  local ok=pcall(function()roomDirectory:SetAsync(code,data,roomDirectoryExpiration(),os.time())end)
  return ok
 end
 local function getRoomDirectoryEntry(code)
+ if not roomDirectory then return nil end
  local ok,data=pcall(function()return roomDirectory:GetAsync(code)end)
  if not ok or typeof(data)~="table"then return nil end
  return data
 end
 local function removeRoomDirectoryEntry(code)
- if code==""then return end
+ if not roomDirectory or code==""then return end
  pcall(function()roomDirectory:RemoveAsync(code)end)
 end
 local function updateCurrentRoomDirectory()
@@ -338,6 +343,7 @@ local function joinRoomByCode(p,rawCode)
 end
 local function quickJoinRoom(p,friendsOnly)
  if roomServer or state=="RUNNING"or not roomActionReady(p)then return end
+ if not roomDirectory then roomFeedback(p,"EMPTY","로컬 테스트는 승강기로 입장");return end
  local ok,rows=pcall(function()return roomDirectory:GetRangeAsync(Enum.SortDirection.Descending,30)end)
  if not ok or typeof(rows)~="table"then roomFeedback(p,"ERROR","방 목록 조회 실패");return end
  for _,row in ipairs(rows)do
