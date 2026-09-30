@@ -2054,3 +2054,18 @@ test('owner direct scope protects single and batch reservations while other game
   const running=synchronizeOwnerDevelopmentHolds({tasks:[{...queue.tasks[0],status:'running',reservationId:'existing'}]},policy);
   assert.equal(running.tasks[0].status,'running');assert.equal(running.tasks[0].reservationId,'existing');
 });
+
+test('reservation policy follows the main executable checkout rather than stale control cwd',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-stale-control-'));
+  const previous=process.cwd();
+  try{
+    fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({ownerCanonicalRules:{ownerExclusiveDevelopment:{status:'ACTIVE',gameIds:['stale-only']}}}));
+    const canonical=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+    const held=canonical.ownerCanonicalRules?.ownerExclusiveDevelopment?.gameIds||[];
+    const queue={tasks:[...held.map(gameId=>({id:gameId,gameId,target:'roblox',department:'development',type:'implementation',goal:'owner work',status:'queued'})),{id:'fresh',gameId:'stale-only',target:'roblox',department:'development',type:'implementation',goal:'continue',status:'queued'}]};
+    process.chdir(root);
+    assert.equal(reserveNextVibeTask(queue,{maxConcurrentTasks:1}).task.id,'fresh');
+    assert.deepEqual(reserveVibeTaskBatch(queue,{maxConcurrentTasks:1}).tasks.map(t=>t.id),['fresh']);
+  }finally{process.chdir(previous);fs.rmSync(root,{recursive:true,force:true});}
+});

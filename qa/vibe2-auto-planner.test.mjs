@@ -3654,3 +3654,26 @@ test('owner game is excluded until explicit scope handoff then existing source r
     assert.equal(collectProjects({},catalog,root)[0].projectPath,'roblox-games/owner-game');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('queued rebuild and released caretaker receive lobby binding before backlog-cap early return',()=>{
+  const root=tempRepo();
+  try{
+    const gameId='new-rpg';
+    for(const rel of ['server/Game.server.luau','client/Game.client.luau']){
+      const file=path.join(root,'roblox-games',gameId,rel);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,'local gameState={}\n');
+    }
+    const catalog={games:[{id:gameId,name:'새 RPG',productionClass:'DEVELOPMENT_CONFIRMED'}]};
+    const tasks=['second-platform-gate-rebuild:required','post-release-focused:yes','internal-playtest-co-development:yes'].map((e,i)=>({id:'task-'+i,gameId,target:'roblox',department:'development',type:'implementation',goal:'existing work',status:'queued',responsibleFiles:['roblox-games/new-rpg/server/Game.server.luau'],evidence:[e]}));
+    const first=planVibe2AutonomousTasks({repoRoot:root,catalog,queue:{tasks},maxConcurrentTasks:1,planningBacklogTarget:1});
+    assert.equal(first.reason,'DEVELOPMENT_BACKLOG_TARGET_REACHED');
+    for(const id of ['task-0','task-1']){
+      const task=first.queue.tasks.find(t=>t.id===id);
+      assert.match(task.goal,/WORLD_LOBBY_FIRST/);assert.match(task.goal,/모험가 거점/);
+      assert.equal(task.sourceRoot,'roblox-games/new-rpg');
+      assert.ok(task.responsibleFiles.includes('roblox-games/new-rpg/client/Game.client.luau'));
+    }
+    assert.doesNotMatch(first.queue.tasks.find(t=>t.id==='task-2').goal,/WORLD_LOBBY_FIRST/);
+    const again=planVibe2AutonomousTasks({repoRoot:root,catalog,queue:first.queue,maxConcurrentTasks:1,planningBacklogTarget:1});
+    assert.equal(again.queue.tasks.find(t=>t.id==='task-0').goal,first.queue.tasks.find(t=>t.id==='task-0').goal);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
