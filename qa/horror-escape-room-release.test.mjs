@@ -506,6 +506,16 @@ test('대기 로비 캐릭터도 인원수와 관계없이 실제 바닥 스냅�
  assert.match(block,/teleport\(p,survivorSpawns\[slot\]\)/);
 });
 
+test('스폰 직후 물리 한 프레임 뒤에도 바닥 재스냅하고 로비 에너지는 항상 완충한다',()=>{
+ const teleportBlock=server.slice(server.indexOf('local function teleport(p,pos)'),server.indexOf('local function setRole(p,r)'));
+ assert.match(teleportBlock,/task\.defer\(function\(\)/);
+ assert.match(teleportBlock,/hh\.FloorMaterial==Enum\.Material\.Air/);
+ assert.match(teleportBlock,/math\.abs\(rr\.Position\.Y-corrected\.Y\)>\.12/);
+ assert.match(teleportBlock,/rr\.AssemblyLinearVelocity=Vector3\.zero/);
+ const characterBlock=server.slice(server.indexOf('local function onCharacter(p)'),server.indexOf('Players.PlayerAdded:Connect'));
+ assert.match(characterBlock,/setEnergy\(p,energyMax\(\)\);p:SetAttribute\("EnergyFeedback",""\)/);
+});
+
 
 test('홈페이지와 방 시스템은 하나의 Roblox Place만 사용한다',()=>{
  const homepage=fs.readFileSync('homepage-platform-exposure.json','utf8');
