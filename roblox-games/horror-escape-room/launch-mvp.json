@@ -1,5 +1,5 @@
 {
-  "version": 24,
+  "version": 25,
   "gameId": "horror-escape-room",
   "gameName": "심야 감염전 [4대4]",
   "releaseStrategy": "FAST_MVP",
@@ -130,7 +130,10 @@
     "spawn positions are separated from energy stations and interaction props",
     "ground snap raycasts only parts marked WalkableGround",
     "post-physics spawn resnap keeps real characters grounded after teleport",
-    "lobby and room-browser energy initializes to full maximum before round start"
+    "lobby and room-browser energy initializes to full maximum before round start",
+    "physical walkable 3D lobby replaces full-screen room browser",
+    "room creation quick join friend join and code join are accessed through lobby world terminals",
+    "reserved-room waiting uses eight physical lobby slots and world start/leave terminals"
   ],
   "evidencePolicy": {
     "runtimePassRequired": true,
@@ -143,7 +146,7 @@
     "startUiRegressionPassRequired": true,
     "audioFeedbackPassRequired": true
   },
-  "updatedAt": "2026-09-30T10:27:00+09:00",
+  "updatedAt": "2026-09-30T10:52:00+09:00",
   "externalReleaseCandidate": true,
   "candidateScopeVersion": 6,
   "gameTitleKo": "심야 감염전 [4대4]",
