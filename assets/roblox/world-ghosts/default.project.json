@@ -1,0 +1,26 @@
+{
+  "name": "WorldGhostSkinsGallery",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "WorldGhostSkins": {
+        "GhostSkinCatalog": {"$path": "GhostSkinCatalog.luau"},
+        "GhostSkinFactory": {"$path": "GhostSkinFactory.luau"}
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {"GhostGallery": {"$path": "Gallery.client.luau"}}
+    },
+    "Workspace": {
+      "GalleryFloor": {
+        "$className": "Part",
+        "$properties": {"Anchored": true, "Size": [72, 1, 54], "Position": [21, -0.6, 8], "Color": [0.12, 0.14, 0.17]}
+      },
+      "GallerySpawn": {
+        "$className": "SpawnLocation",
+        "$properties": {"Anchored": true, "Size": [6, 1, 6], "Position": [21, 0.5, -12], "Neutral": true, "Duration": 0}
+      }
+    },
+    "Lighting": {"$properties": {"ClockTime": 14, "Brightness": 2, "Ambient": [0.55, 0.55, 0.6]}}
+  }
+}
