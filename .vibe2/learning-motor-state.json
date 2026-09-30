@@ -6719,7 +6719,9 @@
       "coding_negative_1ff02jd",
       "coding_negative_1h2g1ey",
       "coding_negative_6tpk25",
-      "coding_negative_1kaqoxb"
+      "coding_negative_1kaqoxb",
+      "coding_negative_1jccen",
+      "coding_negative_ylhf6k"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -17148,7 +17150,7 @@
         "verifiedApplications": 1,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 4,
-        "verifiedFailures": 43,
+        "verifiedFailures": 44,
         "games": {
           "fantasy-survival": 1
         },
@@ -17158,13 +17160,13 @@
         "contextModes": {
           "STANDARD_CONTEXT": {
             "verifiedApplications": 1,
-            "verifiedFailures": 13,
+            "verifiedFailures": 14,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 4,
             "totalContextBytes": 15191,
             "lastEvidence": "coding_1cxqzik",
-            "lastFailureEvidence": "coding_negative_yvgfby",
-            "lastUpdatedAt": "2026-09-30T10:46:14.930Z"
+            "lastFailureEvidence": "coding_negative_1jccen",
+            "lastUpdatedAt": "2026-09-30T10:59:29.469Z"
           }
         },
         "failureFingerprints": {
@@ -17559,12 +17561,32 @@
             "lastEvidence": null,
             "lastFailureEvidence": "coding_negative_yvgfby",
             "lastUpdatedAt": "2026-09-30T10:46:14.930Z"
+          },
+          "roblox|CANDIDATE_BRANCH_PUBLISH|NO_OP|OTHER|ROBLOX_STRUCTURAL_CONTINUITY|TIMEOUT": {
+            "verifiedApplications": 0,
+            "firstCandidatePasses": 0,
+            "totalGenerationAttempts": 0,
+            "verifiedFailures": 1,
+            "games": {},
+            "targets": {},
+            "failureGames": {
+              "daechung-rpg": 1
+            },
+            "failureTargets": {
+              "roblox": 1
+            },
+            "failureClasses": {
+              "NO_OP": 1
+            },
+            "lastEvidence": null,
+            "lastFailureEvidence": "coding_negative_1jccen",
+            "lastUpdatedAt": "2026-09-30T10:59:29.469Z"
           }
         },
         "state": "OBSERVED",
         "lastEvidence": "coding_1cxqzik",
-        "lastFailureEvidence": "coding_negative_yvgfby",
-        "lastUpdatedAt": "2026-09-30T10:46:14.930Z"
+        "lastFailureEvidence": "coding_negative_1jccen",
+        "lastUpdatedAt": "2026-09-30T10:59:29.469Z"
       },
       "RESPONSIBILITY_SPLIT_FANIN": {
         "verifiedApplications": 1,
@@ -17970,7 +17992,7 @@
         "verifiedApplications": 12,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 48,
-        "verifiedFailures": 1193,
+        "verifiedFailures": 1194,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -18300,21 +18322,21 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 44,
+            "verifiedFailures": 45,
             "games": {},
             "targets": {},
             "failureGames": {
-              "line-defense": 44
+              "line-defense": 45
             },
             "failureTargets": {
-              "unity": 44
+              "unity": 45
             },
             "failureClasses": {
-              "STUDIO_QUALITY_DELTA": 44
+              "STUDIO_QUALITY_DELTA": 45
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_72abmb",
-            "lastUpdatedAt": "2026-09-30T10:30:52.451Z"
+            "lastFailureEvidence": "coding_negative_ylhf6k",
+            "lastUpdatedAt": "2026-09-30T10:59:29.485Z"
           },
           "roblox|INVALID_PATH|NO_OP|OTHER|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -18586,8 +18608,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_1p380wp",
-        "lastFailureEvidence": "coding_negative_1kaqoxb",
-        "lastUpdatedAt": "2026-09-30T10:57:16.150Z"
+        "lastFailureEvidence": "coding_negative_ylhf6k",
+        "lastUpdatedAt": "2026-09-30T10:59:29.485Z"
       }
     }
   },
@@ -21340,7 +21362,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T10:58:47.908Z",
+    "lastBuiltAt": "2026-09-30T10:59:29.564Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -29600,5 +29622,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T10:58:47.908Z"
+  "updatedAt": "2026-09-30T10:59:29.564Z"
 }
