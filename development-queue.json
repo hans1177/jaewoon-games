@@ -2801,10 +2801,10 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T07:08:31.257Z",
-      "updatedAt": "2026-09-30T12:30:44.350Z",
+      "updatedAt": "2026-09-30T12:31:56.275Z",
       "robloxSourceCommit": "06e5ffed4caa534b9ddcaa82088eca0c8ca85839",
       "robloxSourceBootstrapPassedAt": "2026-09-30T09:50:42.342Z",
-      "robloxSourceBootstrapFailedAt": "2026-09-30T12:30:44.350Z",
+      "robloxSourceBootstrapFailedAt": "2026-09-30T12:31:56.275Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -4867,18 +4867,18 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "REPAIR_REQUIRED",
-      "canonicalState": "REPAIR_REQUIRED",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-09-25T04:08:42.290Z",
-      "updatedAt": "2026-09-30T12:13:52.936Z",
+      "updatedAt": "2026-09-30T12:31:56.275Z",
       "lifecycleState": "ACTIVE",
       "saveNormalizationRequired": true,
       "saveMeaningPreservationRequired": true,
       "saveVersioningContract": "assets/save-versioning.js",
       "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs",
-      "robloxSourceCommit": "9579b4712eded5e63ab2cf52da4b991387445782",
-      "robloxSourceBootstrapPassedAt": "2026-09-30T11:42:40.552Z",
-      "robloxSourceBootstrapFailedAt": "2026-09-30T11:57:02.839Z",
+      "robloxSourceCommit": "d8405a690a02cd88620bbf45b5b9fdebbda1597b",
+      "robloxSourceBootstrapPassedAt": "2026-09-30T12:31:56.275Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
@@ -5100,7 +5100,7 @@
       "robloxFailureStage": "VIBE_INTERNAL_PLAY",
       "robloxFailureSignature": "ROBLOX_STUDIO_MCP_SCENARIO_CONTRACT_FAILED",
       "routingBlockers": [
-        "roblox-studio-mcp-play-repair-required"
+        "roblox-runtime-evidence-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -29093,7 +29093,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-30T12:30:44.350Z",
+  "updatedAt": "2026-09-30T12:31:56.275Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
