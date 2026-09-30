@@ -2061,7 +2061,11 @@ local function render()
  local aiFill=tonumber(p:GetAttribute("LobbyAIFill"))or math.max(0,(C.TargetPopulation or 8)-realPlayers)
  local lobbyPhase=tostring(p:GetAttribute("LobbyPhase")or round)
  local phaseText=lobbyPhase=="INTERMISSION"and("매치 준비 · "..seconds.."초 후 시작")or lobbyPhase=="RUNNING"and"라운드 진행"or lobbyPhase=="RESULT"and"결과 정산"or lobbyPhase=="LOADING"and"로비 준비"or"플레이어 대기"
- lobbyStatus.Text=string.format("실제 %d명 · AI %d명 충원 예정 · %s",realPlayers,aiFill,phaseText)
+ if p:GetAttribute("RoomServer")==true then
+  lobbyStatus.Text=string.format("매치 대기 %d명 · %s",realPlayers,phaseText)
+ else
+  lobbyStatus.Text=string.format("월드 로비 · 접속 %d명",realPlayers)
+ end
  local pref=p:GetAttribute("MonsterPreference")or"ANY"
  local prefText=pref=="MONSTER"and"몬스터 선호"or pref=="SURVIVOR"and"인간 선호"or"자동 배정"
  local equippedItem=cosmeticItem(tostring(p:GetAttribute("EquippedCosmetic")or"DEFAULT"))
