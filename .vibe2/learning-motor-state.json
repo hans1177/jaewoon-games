@@ -6882,7 +6882,9 @@
       "coding_negative_1pxc0hc",
       "coding_negative_9qhqbb",
       "coding_negative_mmzlqg",
-      "coding_negative_iwot8m"
+      "coding_negative_iwot8m",
+      "coding_negative_1n0me92",
+      "coding_negative_7fs11r"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -18266,7 +18268,7 @@
         "verifiedApplications": 13,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 53,
-        "verifiedFailures": 1336,
+        "verifiedFailures": 1338,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -18280,13 +18282,13 @@
         "contextModes": {
           "STANDARD_CONTEXT": {
             "verifiedApplications": 13,
-            "verifiedFailures": 230,
+            "verifiedFailures": 232,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 53,
             "totalContextBytes": 218375,
             "lastEvidence": "coding_gu6x9n",
-            "lastFailureEvidence": "coding_negative_lz7xoj",
-            "lastUpdatedAt": "2026-09-30T13:03:53.425Z"
+            "lastFailureEvidence": "coding_negative_7fs11r",
+            "lastUpdatedAt": "2026-09-30T13:08:04.259Z"
           },
           "UNITY_WEB_BOOTSTRAP_SHELL": {
             "verifiedApplications": 0,
@@ -18887,24 +18889,24 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 12,
+            "verifiedFailures": 13,
             "games": {},
             "targets": {},
             "failureGames": {
-              "seed-story-complete-rpg-chronicles-of-eldoria": 4,
+              "seed-story-complete-rpg-chronicles-of-eldoria": 5,
               "seed-idle-growth-rpg-crystal-bloom": 4,
               "amusement-tycoon": 1,
               "seed-single-defense-strat-celestial-bastion": 3
             },
             "failureTargets": {
-              "roblox": 12
+              "roblox": 13
             },
             "failureClasses": {
-              "NO_OP": 12
+              "NO_OP": 13
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_18ncnqg",
-            "lastUpdatedAt": "2026-09-30T13:02:41.336Z"
+            "lastFailureEvidence": "coding_negative_7fs11r",
+            "lastUpdatedAt": "2026-09-30T13:08:04.259Z"
           },
           "roblox|CANDIDATE_BRANCH_PUBLISH|NO_OP|ROBLOX_STRUCTURAL_CONTINUITY|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 0,
@@ -18951,27 +18953,27 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 2,
+            "verifiedFailures": 3,
             "games": {},
             "targets": {},
             "failureGames": {
-              "cozy-island": 2
+              "cozy-island": 3
             },
             "failureTargets": {
-              "roblox": 2
+              "roblox": 3
             },
             "failureClasses": {
-              "NO_OP": 2
+              "NO_OP": 3
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_1ov05k0",
-            "lastUpdatedAt": "2026-09-30T12:39:44.516Z"
+            "lastFailureEvidence": "coding_negative_1n0me92",
+            "lastUpdatedAt": "2026-09-30T13:08:04.233Z"
           }
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_gu6x9n",
-        "lastFailureEvidence": "coding_negative_iwot8m",
-        "lastUpdatedAt": "2026-09-30T13:06:15.302Z"
+        "lastFailureEvidence": "coding_negative_7fs11r",
+        "lastUpdatedAt": "2026-09-30T13:08:04.259Z"
       }
     }
   },
@@ -21724,7 +21726,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T13:07:01.750Z",
+    "lastBuiltAt": "2026-09-30T13:08:04.330Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -29984,5 +29986,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T13:07:01.750Z"
+  "updatedAt": "2026-09-30T13:08:04.330Z"
 }
