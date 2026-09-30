@@ -2293,7 +2293,11 @@ local function botVisualPart(rootPart,name,size,offset,color,material,shape)
 end
 local function decorateClassicMonster(anchor,id)
  local style=Style.Monsters[id]or Style.Monsters.DRACULA
- anchor.Color=style.Color;anchor.Transparency=.15
+ if anchor.Name=="HumanoidRootPart"then
+  anchor.Transparency=1
+ else
+  anchor.Color=style.Color;anchor.Transparency=.15
+ end
  local visuals={}
  local function add(name,size,offset,color,material,shape)local x=botVisualPart(anchor,name,size,offset,color,material,shape);table.insert(visuals,{part=x,offset=offset,rotation=CFrame.identity});return x end
  if id=="DRACULA"then
