@@ -1646,11 +1646,11 @@ end
 local function createBotAvatar(role,pos)
  local description=Instance.new("HumanoidDescription")
  description.HeightScale=role=="MONSTER"and 1.08 or 1
- description.WidthScale=role=="MONSTER"and 1.06 or 1
- description.DepthScale=role=="MONSTER"and 1.06 or 1
+ description.WidthScale=role=="MONSTER"and 1.04 or .98
+ description.DepthScale=role=="MONSTER"and 1.04 or .98
  description.HeadScale=1
  local ok,model=pcall(function()return Players:CreateHumanoidModelFromDescription(description,Enum.HumanoidRigType.R15)end)
- if not ok or not model then return nil,nil end
+ if not ok or not model then return nil,nil,nil end
  model.Name=role=="MONSTER"and"AI_MONSTER_R15"or"AI_SURVIVOR_R15"
  model.Parent=arena
  local rootPart=model:FindFirstChild("HumanoidRootPart")
@@ -1659,31 +1659,64 @@ local function createBotAvatar(role,pos)
   humanoid.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None
   humanoid.NameDisplayDistance=0
   humanoid.HealthDisplayDistance=0
+  humanoid.AutoRotate=false
  end
+ local skin=role=="MONSTER"and Color3.fromRGB(159,151,145)or Color3.fromRGB(222,188,157)
+ local shirt=role=="MONSTER"and Color3.fromRGB(54,38,48)or Color3.fromRGB(47,83,108)
+ local pants=role=="MONSTER"and Color3.fromRGB(37,30,37)or Color3.fromRGB(38,45,57)
  for _,d in ipairs(model:GetDescendants())do
   if d:IsA("BasePart")then
-   d.Anchored=true;d.CanCollide=false;d.CanTouch=false;d.CanQuery=false
+   d.Anchored=d==rootPart
+   d.CanCollide=false;d.CanTouch=false;d.CanQuery=false;d.Massless=d~=rootPart
    if d~=rootPart then
-    if role=="MONSTER"then
-     d.Color=Color3.fromRGB(92,63,72)
-     d.Material=Enum.Material.Fabric
-    elseif d.Name:find("Torso")then
-     d.Color=Color3.fromRGB(58,85,105)
-     d.Material=Enum.Material.Fabric
-    elseif d.Name:find("Leg")then
-     d.Color=Color3.fromRGB(45,49,57)
-     d.Material=Enum.Material.Fabric
-    end
+    if d.Name=="Head"or d.Name:find("Hand")or d.Name:find("LowerArm")then d.Color=skin
+    elseif d.Name:find("UpperTorso")or d.Name:find("LowerTorso")or d.Name:find("UpperArm")then d.Color=shirt
+    elseif d.Name:find("Leg")or d.Name:find("Foot")then d.Color=pants end
+    d.Material=Enum.Material.SmoothPlastic
    end
   elseif d:IsA("Script")or d:IsA("LocalScript")then d:Destroy()end
  end
  if rootPart then rootPart.Transparency=1 end
- local hi=Instance.new("Highlight");hi.Name="AIRoleHighlight";hi.FillTransparency=role=="MONSTER"and .72 or .9;hi.OutlineTransparency=.35
+
+ local function accessory(name,body,size,offset,color,material)
+  if not body then return nil end
+  local x=Instance.new("Part");x.Name=name;x.Size=size;x.Color=color;x.Material=material or Enum.Material.SmoothPlastic
+  x.CanCollide=false;x.CanTouch=false;x.CanQuery=false;x.Massless=true;x.CFrame=body.CFrame*CFrame.new(offset);x.Parent=model
+  local weld=Instance.new("WeldConstraint");weld.Part0=body;weld.Part1=x;weld.Parent=x
+  return x
+ end
+ local head=model:FindFirstChild("Head")
+ local torso=model:FindFirstChild("UpperTorso")
+ if role=="SURVIVOR"then
+  accessory("AIHair",head,Vector3.new(2.05,.52,1.9),Vector3.new(0,.82,.08),Color3.fromRGB(45,35,32),Enum.Material.Fabric)
+  accessory("AIJacketStripe",torso,Vector3.new(.24,1.8,1.12),Vector3.new(0,.1,-.58),Color3.fromRGB(91,205,220),Enum.Material.Neon)
+ else
+  accessory("AIHood",head,Vector3.new(2.45,2.25,2.25),Vector3.new(0,.05,.12),Color3.fromRGB(35,25,34),Enum.Material.Fabric)
+  accessory("AIChestMark",torso,Vector3.new(.28,1.9,1.18),Vector3.new(0,.05,-.61),Color3.fromRGB(190,64,80),Enum.Material.Neon)
+ end
+
+ local hi=Instance.new("Highlight");hi.Name="AIRoleHighlight";hi.FillTransparency=role=="MONSTER"and .82 or .94;hi.OutlineTransparency=.48
  hi.FillColor=role=="MONSTER"and Color3.fromRGB(120,42,58)or Color3.fromRGB(75,143,169)
  hi.OutlineColor=role=="MONSTER"and Color3.fromRGB(225,86,103)or Color3.fromRGB(142,213,235)
  hi.Parent=model
+
+ local walkTrack=nil
+ if humanoid then
+  local animator=humanoid:FindFirstChildOfClass("Animator")or Instance.new("Animator")
+  animator.Parent=humanoid
+  local animation=Instance.new("Animation")
+  animation.AnimationId="rbxassetid://507777826"
+  local loaded,track=pcall(function()return animator:LoadAnimation(animation)end)
+  animation:Destroy()
+  if loaded and track then
+   track.Looped=true
+   track.Priority=Enum.AnimationPriority.Movement
+   track:Play(.15,1,role=="MONSTER"and 1.15 or 1)
+   walkTrack=track
+  end
+ end
  model:PivotTo(CFrame.new(pos))
- return model,rootPart
+ return model,rootPart,walkTrack
 end
 
 local function setBotCFrame(b,cf)
@@ -1692,14 +1725,14 @@ local function setBotCFrame(b,cf)
 end
 
 local function bot(role,pos)
- local model,p=createBotAvatar(role,pos)
+ local model,p,walkTrack=createBotAvatar(role,pos)
  local visuals={}
  if not p then
   p=Instance.new("Part");p.Name=role=="MONSTER"and"AI_MONSTER"or"AI_SURVIVOR";p.Anchored=true;p.CanCollide=false;p.CanTouch=false;p.Size=Vector3.new(2.8,3.6,1.9);p.Position=pos;p.Transparency=.18
   p.Color=role=="MONSTER"and Color3.fromRGB(65,34,44)or Color3.fromRGB(66,94,108);p.Material=Enum.Material.Fabric;p.Parent=arena
   if role=="MONSTER"then visuals=decorateClassicMonster(p,"DRACULA")end
  end
- local b={part=p,model=model,role=role,speed=role=="MONSTER"and 18 or 14,monsterId="DRACULA",visuals=visuals,infectReadyAt=0,purifyReadyAt=0,infectAttackReadyAt=0,energy=energyMax(),motionClock=math.random()*6.28}
+ local b={part=p,model=model,animationTrack=walkTrack,role=role,speed=role=="MONSTER"and 18 or 14,monsterId="DRACULA",visuals=visuals,infectReadyAt=0,purifyReadyAt=0,infectAttackReadyAt=0,energy=energyMax(),motionClock=math.random()*6.28}
  table.insert(bots,b);return b
 end
 local function weightPick(list)
@@ -1930,7 +1963,7 @@ end
 local function infectBot(b,sourcePlayer)
  if not b or b.role~="SURVIVOR"then return false end
  if b.visuals then for _,v in ipairs(b.visuals)do if v.part then v.part:Destroy()end end end
- b.role="MONSTER";b.part.Name="AI_MONSTER";b.speed=18;b.infectReadyAt=os.clock()+2.5
+ b.role="MONSTER";b.part.Name="AI_MONSTER";b.speed=18;b.infectReadyAt=os.clock()+2.5;if b.animationTrack then b.animationTrack:AdjustSpeed(1.15)end
  if b.model and b.model.Parent then
   b.model.Name="AI_MONSTER_R15"
   for _,d in ipairs(b.model:GetDescendants())do if d:IsA("BasePart")and d~=b.part then d.Color=Color3.fromRGB(92,63,72);d.Material=Enum.Material.Fabric end end
