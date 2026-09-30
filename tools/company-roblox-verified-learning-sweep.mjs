@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {createRobloxVibe3LearningContext,existingRobloxGameLearningProfile} from './vibe3-roblox-learning-context.mjs';
 import {applyVerifiedExternalLearningToExistingRobloxSource} from './company-development-roblox-bootstrap.mjs';
+import {ownerExclusiveDevelopmentGameIds} from './company-selected-platform-router.mjs';
 
 const args=Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')).map(x=>{
   const i=x.indexOf('=');
@@ -11,15 +12,21 @@ const root=path.resolve(String(args.root||'roblox-games'));
 const playbooksFile=path.resolve(String(args.playbooks||''));
 const recombinationFile=String(args.recombination||'').trim()?path.resolve(String(args.recombination)):'';
 const reportFile=String(args.report||'').trim()?path.resolve(String(args.report)):'';
+const roadmapFile=path.resolve(String(args.roadmap||'company-learning/platform-release-roadmap.json'));
 if(!fs.existsSync(root))throw new Error('ROBLOX_GAMES_ROOT_MISSING:'+root);
 if(!playbooksFile||!fs.existsSync(playbooksFile))throw new Error('ROBLOX_LEARNING_PLAYBOOKS_MISSING:'+playbooksFile);
+if(!fs.existsSync(roadmapFile))throw new Error('ROBLOX_OWNER_EXCLUSIVE_ROADMAP_MISSING:'+roadmapFile);
 
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
 const playbooks=readJson(playbooksFile);
+const roadmap=readJson(roadmapFile);
+const ownerExclusiveIds=ownerExclusiveDevelopmentGameIds(roadmap);
+const ownerExclusiveSet=new Set(ownerExclusiveIds);
 const recombination=recombinationFile&&fs.existsSync(recombinationFile)?readJson(recombinationFile):{};
 const gameIds=fs.readdirSync(root,{withFileTypes:true})
   .filter(entry=>entry.isDirectory())
   .map(entry=>entry.name)
+  .filter(gameId=>!ownerExclusiveSet.has(gameId))
   .filter(gameId=>fs.existsSync(path.join(root,gameId,'shared','GameConfig.luau'))&&fs.existsSync(path.join(root,gameId,'client','Game.client.luau')))
   .sort();
 
@@ -77,6 +84,7 @@ for(const gameId of gameIds){
 const report={
   version:2,
   semanticMappingVersion:1,
+  ownerExclusiveExcludedGameIds:[...ownerExclusiveIds],
   scannedGameCount:results.length,
   changedGameCount:results.filter(row=>row.changed).length,
   serverTouched:false,
@@ -86,6 +94,7 @@ if(reportFile){
   fs.mkdirSync(path.dirname(reportFile),{recursive:true});
   fs.writeFileSync(reportFile,JSON.stringify(report,null,2)+'\n');
 }
+console.log('ROBLOX_VERIFIED_LEARNING_SWEEP_OWNER_EXCLUSIVE_EXCLUDED='+(ownerExclusiveIds.join(',')||'NONE'));
 console.log('ROBLOX_VERIFIED_EXTERNAL_LEARNING_SWEEP_SCANNED='+report.scannedGameCount);
 console.log('ROBLOX_VERIFIED_EXTERNAL_LEARNING_SWEEP_CHANGED='+report.changedGameCount);
 console.log('ROBLOX_VERIFIED_EXTERNAL_LEARNING_SWEEP_SERVER_TOUCHED=NO');
