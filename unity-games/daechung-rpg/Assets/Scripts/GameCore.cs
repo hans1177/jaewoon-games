@@ -300,6 +300,7 @@ namespace JaewoonGames.DaechungRpg
                     Player.level = 1;
                 }
                 if (Player.gold < 0)
+                    Player.gold = 0;
                 {
                     Player.gold = 0;
                 }
