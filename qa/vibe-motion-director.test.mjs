@@ -17,8 +17,12 @@ import {
   WEAPON_COMBAT_MOTION_PACKS,
   UNARMED_MARTIAL_ARTS_STYLES,
   UNARMED_MARTIAL_MECHANICS,
+  SURVIVAL_PLAYER_MOTION_PACK,
+  SURVIVAL_WILDLIFE_MOTION_PACKS,
   createDuelCombatMotionLoadout,
   createDuelCombatAuthoringRecipe,
+  createSurvivalPlayerMotionProfile,
+  createSurvivalWildlifeMotionProfile,
   createMotionDNA,
   scoreMotionCandidate,
   selectContextMotion,
@@ -156,6 +160,33 @@ test('motion director exposes combat loadout as a composable presentation system
   assert.ok(plan.combatLoadout.groups.gapCloser.includes('DUAL_BLADE_DASH_CROSS'));
   assert.ok(plan.systems.includes('DUEL_COMBAT_MOTION_KIT'));
   assert.equal(plan.gameplayAuthority,false);
+});
+
+test('survival player motion profile covers locomotion tools interactions and reactions',()=>{
+  const axe=createSurvivalPlayerMotionProfile({platform:'ROBLOX',tool:'AXE'});
+  assert.equal(axe.primaryToolMotion,'SURVIVAL_AXE_CHOP_R');
+  assert.ok(SURVIVAL_PLAYER_MOTION_PACK.locomotion.includes('SURVIVAL_SPRINT'));
+  assert.ok(SURVIVAL_PLAYER_MOTION_PACK.locomotion.includes('SURVIVAL_TURN_180'));
+  assert.ok(SURVIVAL_PLAYER_MOTION_PACK.interaction.includes('SURVIVAL_PICKUP_GROUND'));
+  assert.equal(axe.mechanics.toolStrikeUsesHipsSpineShoulders,true);
+  assert.equal(axe.nativePath.rootOnlyForbidden,true);
+  assert.equal(axe.productionVerified,false);
+});
+
+test('survival wildlife motion profile gives species specific articulated motion',()=>{
+  const bear=createSurvivalWildlifeMotionProfile({species:'BEAR',platform:'ROBLOX'});
+  const boar=createSurvivalWildlifeMotionProfile({species:'BOAR',platform:'ROBLOX'});
+  const rabbit=createSurvivalWildlifeMotionProfile({species:'RABBIT',platform:'ROBLOX'});
+  assert.equal(bear.family,'HEAVY_QUADRUPED');
+  assert.equal(boar.family,'LOW_HEAVY_QUADRUPED');
+  assert.equal(rabbit.family,'HOPPER');
+  assert.ok(bear.groups.attack.includes('WILDLIFE_HEAVY_SWIPE'));
+  assert.ok(boar.groups.attack.includes('BOAR_CHARGE_RAM'));
+  assert.ok(rabbit.groups.locomotion.includes('RABBIT_SPRINT_HOP'));
+  assert.equal(bear.mechanics.turnUsesBodyArcNotRootSnap,true);
+  assert.equal(bear.runtimeQuality.noRigidBodyGlide,true);
+  assert.equal(bear.nativePath.rootOnlyForbidden,true);
+  assert.ok(SURVIVAL_WILDLIFE_MOTION_PACKS.CANINE.locomotion.includes('CANINE_TROT'));
 });
 
 test('motion DNA captures high-end compatibility metadata',()=>{
@@ -478,6 +509,27 @@ test('planner exposes automatic motion gap audits for bootstrap sets',async()=>{
   assert.equal(plan.companyGraphicsLibrary.duelCombatMotion.exactThirdPartyClipCopyForbidden,true);
 });
 
+
+test('asset planner exposes survival wildlife graphics skins and motion previews',async()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
+  const plan=buildVibeAssetProductionPlan({
+    task:{gameId:'motion-auto-test',goal:'그레이브우드 느낌 생존게임 곰 멧돼지 동물 그래픽 스킨 모션 추가'},
+    target:'roblox',
+    repoRoot:path.resolve(here,'..')
+  });
+  assert.equal(plan.companyGraphicsLibrary.survivalWildlife.enabled,true);
+  assert.equal(plan.companyGraphicsLibrary.survivalWildlife.requested,true);
+  assert.equal(plan.companyGraphicsLibrary.survivalWildlife.requestedSpecies,'BOAR');
+  assert.ok(plan.companyGraphicsLibrary.survivalWildlife.species.includes('BEAR'));
+  assert.ok(plan.companyGraphicsLibrary.survivalWildlife.species.includes('RABBIT'));
+  assert.ok(plan.companyGraphicsLibrary.survivalWildlife.playerSkins.includes('FOREST_SCAVENGER_DARK'));
+  assert.equal(plan.companyGraphicsLibrary.survivalWildlife.wildlifeVisualPreview.visualRequirements.meshAndMaterialMustExceedPrimitivePlaceholder,true);
+  assert.equal(plan.companyGraphicsLibrary.survivalWildlife.wildlifeMotionPreview.nativePath.rootOnlyForbidden,true);
+  assert.equal(plan.companyGraphicsLibrary.survivalWildlife.playerMotionPreview.nativePath.primary,'ANIMATOR_ANIMATIONTRACK');
+  assert.equal(plan.companyGraphicsLibrary.survivalWildlife.reference.game,'100 Days in Gravewood');
+  assert.equal(plan.companyGraphicsLibrary.survivalWildlife.reference.gameplayVideoReferenceVerified,false);
+});
 
 test('asset planner auto-detects requested duel weapon and martial style',async()=>{
   const here=path.dirname(fileURLToPath(import.meta.url));
