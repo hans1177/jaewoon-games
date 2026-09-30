@@ -74,26 +74,26 @@ gui.Parent=p:WaitForChild("PlayerGui")
 -- 로비 전용 화면 톤. 전투가 시작되면 전부 꺼져 게임플레이 가독성에는 영향을 주지 않는다.
 local lobbyColor=Instance.new("ColorCorrectionEffect")
 lobbyColor.Name="MidnightLobbyColor"
-lobbyColor.TintColor=Color3.fromRGB(210,195,177)
-lobbyColor.Brightness=-.045
-lobbyColor.Contrast=.15
-lobbyColor.Saturation=-.22
+lobbyColor.TintColor=Color3.fromRGB(192,171,155)
+lobbyColor.Brightness=-.085
+lobbyColor.Contrast=.23
+lobbyColor.Saturation=-.34
 lobbyColor.Enabled=false
 lobbyColor.Parent=Lighting
 
 local lobbyBloom=Instance.new("BloomEffect")
 lobbyBloom.Name="MidnightLobbyBloom"
-lobbyBloom.Intensity=.24
+lobbyBloom.Intensity=.18
 lobbyBloom.Size=18
-lobbyBloom.Threshold=1.25
+lobbyBloom.Threshold=1.08
 lobbyBloom.Enabled=false
 lobbyBloom.Parent=Lighting
 
 local lobbyDepth=Instance.new("DepthOfFieldEffect")
 lobbyDepth.Name="MidnightLobbyDepth"
-lobbyDepth.FarIntensity=.1
+lobbyDepth.FarIntensity=.16
 lobbyDepth.NearIntensity=.025
-lobbyDepth.FocusDistance=30
+lobbyDepth.FocusDistance=24
 lobbyDepth.InFocusRadius=24
 lobbyDepth.Enabled=false
 lobbyDepth.Parent=Lighting
@@ -110,7 +110,7 @@ lobbyVignetteTop.ZIndex=8
 lobbyVignetteTop.Parent=gui
 local lobbyVignetteTopGradient=Instance.new("UIGradient")
 lobbyVignetteTopGradient.Transparency=NumberSequence.new({
- NumberSequenceKeypoint.new(0,.28),
+ NumberSequenceKeypoint.new(0,.16),
  NumberSequenceKeypoint.new(1,1),
 })
 lobbyVignetteTopGradient.Rotation=90
@@ -123,6 +123,24 @@ lobbyVignetteBottom.Position=UDim2.fromScale(0,1)
 lobbyVignetteBottom.Parent=gui
 local bottomGradient=lobbyVignetteBottom:FindFirstChildOfClass("UIGradient")
 if bottomGradient then bottomGradient.Rotation=270 end
+
+local lobbyBloodEdge=Instance.new("Frame")
+lobbyBloodEdge.Name="LobbyBloodEdge"
+lobbyBloodEdge.Size=UDim2.fromScale(1,1)
+lobbyBloodEdge.BackgroundColor3=Color3.fromRGB(72,9,14)
+lobbyBloodEdge.BackgroundTransparency=.94
+lobbyBloodEdge.BorderSizePixel=0
+lobbyBloodEdge.Visible=false
+lobbyBloodEdge.ZIndex=7
+lobbyBloodEdge.Parent=gui
+local lobbyBloodGradient=Instance.new("UIGradient")
+lobbyBloodGradient.Transparency=NumberSequence.new({
+ NumberSequenceKeypoint.new(0,.55),
+ NumberSequenceKeypoint.new(.23,1),
+ NumberSequenceKeypoint.new(.77,1),
+ NumberSequenceKeypoint.new(1,.55),
+})
+lobbyBloodGradient.Parent=lobbyBloodEdge
 
 -- 로딩: 클라이언트 핵심 리소스와 서버 맵 준비가 끝날 때까지 로비 진입을 가린다.
 local loadingLayer=Instance.new("Frame")
@@ -867,7 +885,7 @@ local ghostSightingTriggers={}
 local ghostSightingSeen={}
 local lobbyHauntRoot=nil
 local lobbyHauntTriggers={}
-local lobbyHauntSeen={}
+local lobbyHauntSeen={} -- trigger -> next allowed os.clock()
 local surpriseClock=0
 
 local function localPart(name,size,cframe,color,material,shape)
@@ -933,13 +951,13 @@ local function playLobbyHaunt(trigger)
   local body=localPart("LobbyMaidGhost",Vector3.new(2.7,5.6,1.35),CFrame.new(pos+Vector3.new(0,2.8,0)),Color3.fromRGB(198,195,190),Enum.Material.Fabric)
   local head=localPart("LobbyMaidGhostHead",Vector3.new(2.1,2.1,2.1),CFrame.new(pos+Vector3.new(0,6.3,0)),Color3.fromRGB(205,198,193),Enum.Material.SmoothPlastic,Enum.PartType.Ball)
   body.Transparency=.28;head.Transparency=.22
-  TweenService:Create(body,TweenInfo.new(.9,Enum.EasingStyle.Sine),{Transparency=1,CFrame=body.CFrame*CFrame.new(0,0,-5)}):Play()
-  TweenService:Create(head,TweenInfo.new(.9,Enum.EasingStyle.Sine),{Transparency=1,CFrame=head.CFrame*CFrame.new(0,0,-5)}):Play()
-  Debris:AddItem(body,1);Debris:AddItem(head,1)
+  TweenService:Create(body,TweenInfo.new(1.35,Enum.EasingStyle.Sine),{Transparency=1,CFrame=body.CFrame*CFrame.new(0,0,-7)}):Play()
+  TweenService:Create(head,TweenInfo.new(1.35,Enum.EasingStyle.Sine),{Transparency=1,CFrame=head.CFrame*CFrame.new(0,0,-7)}):Play()
+  Debris:AddItem(body,1.5);Debris:AddItem(head,1.5)
  elseif kind=="ELEVATOR_13"then
   chaseTint.BackgroundColor3=Color3.fromRGB(104,8,14)
-  chaseTint.BackgroundTransparency=.77
-  task.delay(.12,function()chaseTint.BackgroundTransparency=1 end)
+  chaseTint.BackgroundTransparency=.56
+  task.delay(.26,function()chaseTint.BackgroundTransparency=1 end)
   localText(pos+Vector3.new(0,5.4,0),"13",Color3.fromRGB(210,47,53),1.1)
  elseif kind=="CLERK_SMILE"then
   local face=localPart("LobbyClerkFace",Vector3.new(2.4,2.4,.25),CFrame.new(pos+Vector3.new(0,3.7,0)),Color3.fromRGB(209,195,181),Enum.Material.SmoothPlastic)
@@ -949,7 +967,10 @@ local function playLobbyHaunt(trigger)
   Debris:AddItem(face,.75);Debris:AddItem(smile,.75)
  end
 
- if text~=""then localText(pos+Vector3.new(0,7,0),text,Color3.fromRGB(232,207,167),2.2)end
+ if text~=""then
+  localText(pos+Vector3.new(0,7,0),text,Color3.fromRGB(232,207,167),2.8)
+  showMapContentToast("이상 현상 · "..text,Color3.fromRGB(232,180,153),2.6)
+ end
 end
 
 local function refreshLobbyHaunts()
@@ -1116,12 +1137,17 @@ RunService.Heartbeat:Connect(function(dt)
  if not root then return end
 
  if p:GetAttribute("RoundState")~="RUNNING"then
+  local now=os.clock()
   for _,trigger in ipairs(lobbyHauntTriggers)do
-   if trigger.Parent and not lobbyHauntSeen[trigger]then
+   if trigger.Parent then
     local radius=math.max(3,tonumber(trigger:GetAttribute("LobbyHauntRadius"))or 11)
-    if (root.Position-trigger.Position).Magnitude<=radius then
-     lobbyHauntSeen[trigger]=true
+    local dist=(root.Position-trigger.Position).Magnitude
+    local nextAllowed=tonumber(lobbyHauntSeen[trigger])or 0
+    if dist<=radius and now>=nextAllowed then
+     lobbyHauntSeen[trigger]=now+18
      playLobbyHaunt(trigger)
+    elseif dist>radius*1.55 and nextAllowed>now+2 then
+     lobbyHauntSeen[trigger]=now+2
     end
    end
   end
@@ -1568,8 +1594,8 @@ roundify(lobbyHint,8)
 local lobbyDialogue=Instance.new("Frame")
 lobbyDialogue.Name="LobbyStaffDialogue"
 lobbyDialogue.AnchorPoint=Vector2.new(.5,1)
-lobbyDialogue.Position=UDim2.new(.5,0,1,-112)
-lobbyDialogue.Size=UDim2.fromOffset(356,94)
+lobbyDialogue.Position=UDim2.new(.5,0,1,-120)
+lobbyDialogue.Size=UDim2.fromOffset(372,104)
 lobbyDialogue.BackgroundColor3=Color3.fromRGB(13,11,12)
 lobbyDialogue.BackgroundTransparency=.08
 lobbyDialogue.BorderSizePixel=0
@@ -1599,11 +1625,11 @@ lobbyDialogueSpeaker.ZIndex=45
 lobbyDialogueSpeaker.Parent=lobbyDialogue
 
 local lobbyDialogueText=Instance.new("TextLabel")
-lobbyDialogueText.Size=UDim2.new(1,-34,0,51)
+lobbyDialogueText.Size=UDim2.new(1,-34,0,60)
 lobbyDialogueText.Position=UDim2.fromOffset(24,34)
 lobbyDialogueText.BackgroundTransparency=1
 lobbyDialogueText.TextColor3=Color3.fromRGB(218,211,201)
-lobbyDialogueText.TextSize=12
+lobbyDialogueText.TextSize=13
 lobbyDialogueText.TextWrapped=true
 lobbyDialogueText.Font=Enum.Font.GothamMedium
 lobbyDialogueText.TextXAlignment=Enum.TextXAlignment.Left
@@ -2446,6 +2472,7 @@ local function render()
  lobbyDepth.Enabled=lobbyWaiting
  lobbyVignetteTop.Visible=lobbyWaiting
  lobbyVignetteBottom.Visible=lobbyWaiting
+ lobbyBloodEdge.Visible=lobbyWaiting
  hud.Visible=running
  if running then lobbyDialogue.Visible=false end
  local lobbyFolder=workspace:FindFirstChild("MidnightLobby")
