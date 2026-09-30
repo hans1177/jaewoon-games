@@ -1,5 +1,5 @@
 {
-  "version": 492,
+  "version": 493,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-28",
@@ -2375,7 +2375,13 @@
         "preserveCheckpoint": true,
         "replayCompletedVibeWorkOnReconnect": false,
         "newQueueOrPipelineCreated": false
-      }
+      },
+      "ownerExclusiveDirectDevelopmentExceptionRef": "company-learning/platform-release-roadmap.json#ownerCanonicalRules.ownerExclusiveDevelopment",
+      "ownerExclusiveDirectDevelopmentOverridesVibeOwnershipWhenExplicitlyScoped": true,
+      "vibeMayNotMutateOwnerExclusiveScopedGameSource": true,
+      "directResponsibleSourceWriteAllowedForOwnerExclusiveScopedGame": true,
+      "ownerExclusiveDirectMainGameSourceWriteAllowed": true,
+      "ownerExclusivePolicyOrOrchestrationMutationOutsideScopedExceptionForbidden": true
     },
     "learningMotor": {
       "authority": "VERIFIED_LEARNING_MOTOR",
@@ -7333,7 +7339,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-28T07:10:00.363Z",
+  "updatedAt": "2026-09-30T03:50:00.000Z",
   "priorityTiers": [
     {
       "tier": 1,
@@ -9277,6 +9283,21 @@
         "seedHomepageStatusDirectPushCount": 0,
         "residualUnnecessaryWorkflow": "Company DNA Learning"
       }
+    },
+    "ownerExclusiveDirectDevelopment20260930": {
+      "authority": "OWNER_DIRECTIVE_2026-09-30",
+      "status": "ACTIVE",
+      "reason": "OWNER_REQUESTED_EXCLUSIVE_DIRECT_DEVELOPMENT_FOR_HORROR_ESCAPE_ROOM_AND_EXPLICITLY_FORBADE_VIBE_GAME_SOURCE_MUTATION",
+      "gameId": "horror-escape-room",
+      "gameSource": "roblox-games/horror-escape-room",
+      "canonicalPolicy": "company-learning/platform-release-roadmap.json",
+      "humanReadablePolicyDocumentCreated": false,
+      "existingMachinePolicyUpdated": true,
+      "vibeSourceModifiedByThisPolicyChange": false,
+      "directResponsibleGameSourceRequired": true,
+      "existingVerifiedRobloxPlaceRequired": true,
+      "temporaryPublishArtifactCleanupRequired": true,
+      "scopeDoesNotChangeOtherGames": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -20220,7 +20241,7 @@
     "priorPassingPresentationRegressionMustRepair": true
   },
   "ownerCanonicalRules": {
-    "version": 7,
+    "version": 8,
     "authority": "OWNER_DIRECTIVE_2026-09-21",
     "rule1Handling": "RULE_1_THROUGH_RULE_4_ARE_CANONICALIZED_HERE; IMPLEMENTATION_MUST_PRESERVE_THEIR_ORDERED_GATES_AND_EXISTING_AUTHORITY_BOUNDARIES",
     "rule2": {
@@ -20888,6 +20909,59 @@
           "file": ".github/workflows/vibe2-continuous-core.yml",
           "expected": "VIBE2_BASE_MAIN_SHA: ${{ needs.reserve.outputs.contract_sha }}"
         }
+      ]
+    },
+    "ownerExclusiveDevelopment": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-30",
+      "status": "ACTIVE",
+      "mode": "OWNER_EXCLUSIVE_DIRECT_DEVELOPMENT",
+      "scope": "EXPLICIT_GAME_IDS_ONLY",
+      "gameIds": [
+        "horror-escape-room"
+      ],
+      "sourceOfTruth": "company-learning/platform-release-roadmap.json#ownerCanonicalRules.ownerExclusiveDevelopment",
+      "objective": "OWNER_DIRECTED_GAME_SOURCE_IS_IMPLEMENTED_DIRECTLY_BY_THE_ASSISTANT_WITHOUT_VIBE_GAME_SOURCE_MUTATION_OR_VIBE_QUEUE_OWNERSHIP_FOR_THE_EXPLICITLY_SCOPED_GAME",
+      "rules": {
+        "ownerExplicitInstructionRequired": true,
+        "ownerInstructionIsScopeAuthority": true,
+        "vibeGameSourceMutationForbidden": true,
+        "vibeQueueDevelopmentDispatchForbidden": true,
+        "vibeWorkerOwnershipSuspendedForScopedGame": true,
+        "directResponsibleGameSourceModificationRequired": true,
+        "directMainGameSourceWriteAllowed": true,
+        "unrelatedCompanyOrVibePolicyMutationForbidden": true,
+        "wrapperShadowOrOverridePatchForbidden": true,
+        "existingResponsibleFunctionsAndStructuresMustBeModifiedDirectly": true,
+        "existingGameplaySaveProgressionBalanceAndMultiplayerSemanticsMustBePreservedUnlessOwnerExplicitlyChangesThem": true,
+        "latestMainSourceMustBeReadBeforeEveryModification": true,
+        "staticSourceValidationRequiredBeforePublish": true,
+        "buildValidationRequiredBeforePublish": true,
+        "runtimeValidationRequiredWhenAvailable": true,
+        "publicationMustTargetExistingVerifiedGameSpecificPlace": true,
+        "temporaryOneShotPublishWorkflowAllowedOnlyWhenNoExistingExecutablePublishEntryExists": true,
+        "temporaryOneShotPublishArtifactMustBeRemovedAfterVerifiedPublish": true,
+        "noNewHumanPolicyDocument": true,
+        "humanReadablePolicyMirrorForbidden": true,
+        "useExistingCanonicalMachinePolicyDocumentOnly": true,
+        "policyOrArchitectureChangeOutsideThisScopedExceptionForbidden": true
+      },
+      "implementationScope": {
+        "repository": "hans1177/jaewoon-games",
+        "branch": "main",
+        "gamePath": "roblox-games/horror-escape-room",
+        "policyPath": "company-learning/platform-release-roadmap.json",
+        "publicationTarget": {
+          "universeId": "10767445796",
+          "placeId": "98222620265768"
+        }
+      },
+      "completionEvidence": [
+        "EXACT_MAIN_SOURCE_REVISION",
+        "STATIC_SOURCE_GUARD_PASS",
+        "ROJO_OR_EQUIVALENT_BUILD_PASS",
+        "EXISTING_PLACE_PUBLISHED_VERSION",
+        "TEMPORARY_PUBLISH_ARTIFACT_REMOVED_IF_CREATED"
       ]
     }
   },
