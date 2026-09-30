@@ -6199,7 +6199,8 @@
       "coding_negative_yw4z7s",
       "coding_negative_1n1tew5",
       "coding_negative_1ftzjcj",
-      "coding_negative_b5be05"
+      "coding_negative_b5be05",
+      "coding_negative_i6jju"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -16815,7 +16816,7 @@
         "verifiedApplications": 4,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 14,
-        "verifiedFailures": 745,
+        "verifiedFailures": 746,
         "games": {
           "fantasy-survival": 1,
           "bug-defense": 1,
@@ -17180,26 +17181,26 @@
             "verifiedApplications": 0,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 0,
-            "verifiedFailures": 55,
+            "verifiedFailures": 56,
             "games": {},
             "targets": {},
             "failureGames": {
               "horror-escape-room": 27,
-              "fantasy-survival": 22,
+              "fantasy-survival": 23,
               "line-defense": 6
             },
             "failureTargets": {
-              "unity": 55
+              "unity": 56
             },
             "failureClasses": {
               "INVALID_PATH": 21,
-              "TIMEOUT": 25,
+              "TIMEOUT": 26,
               "MALFORMED_OUTPUT": 5,
               "NO_OP": 4
             },
             "lastEvidence": null,
-            "lastFailureEvidence": "coding_negative_196h6w",
-            "lastUpdatedAt": "2026-09-30T00:04:16.469Z"
+            "lastFailureEvidence": "coding_negative_i6jju",
+            "lastUpdatedAt": "2026-09-30T00:11:20.005Z"
           },
           "unity|NO_OP|OTHER|PRESENTATION_PATCH_DELTA|TIMEOUT|VERIFIED_EXTERNAL_LEARNING_SOURCE_PROMPT": {
             "verifiedApplications": 1,
@@ -17330,8 +17331,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_1ud2weu",
-        "lastFailureEvidence": "coding_negative_b5be05",
-        "lastUpdatedAt": "2026-09-30T00:06:19.458Z"
+        "lastFailureEvidence": "coding_negative_i6jju",
+        "lastUpdatedAt": "2026-09-30T00:11:20.005Z"
       }
     }
   },
@@ -20082,7 +20083,7 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-30T00:08:41.122Z",
+    "lastBuiltAt": "2026-09-30T00:11:20.081Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
@@ -28189,5 +28190,5 @@
     "seenOutcomeIds": [],
     "entries": {}
   },
-  "updatedAt": "2026-09-30T00:08:41.122Z"
+  "updatedAt": "2026-09-30T00:11:20.081Z"
 }
