@@ -710,6 +710,55 @@
       ],
       "learningState": "TRACE_ONLY",
       "liveState": "MERGED_AT_5445B844; PR_REQUIRED_ACTIONS_PASS; POST_MERGE_UNITY_SOURCE_GENERATION_NOT_YET_OBSERVED; NEXT_ROTATION_POST_CHANGE_UNITY_SOURCE_GENERATION_THEN_LINE_DEFENSE_ROBLOX_STUDIO_SCENARIO"
+    },
+    {
+      "id": "assistant_vibe_source_prompt_budget_repair_20261001",
+      "date": "2026-10-01",
+      "gameId": "MULTI_GAME_VIBE_SOURCE_GENERATION",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "The exact post-#4212 line-defense Unity Web source worker job 110084737578 passed verified-learning prompt coverage but sent 187,980 bytes into a 16,384-token local-model context. It then repeated three 240-second timeouts, produced zero changed files, and left the downstream result job 110084737455 at source-candidate-generation-failed before any Unity build or runtime validation. The final artifact reported STUDIO_QUALITY_DELTA_REQUIRED only because no candidate survived generation; the older Roblox Studio scenario failure therefore could not yet be revalidated against new source.",
+      "rootCause": "STALE_MACHINE_GENERATED_LEARNING_REMAINED_IN_MULTILINE_GOAL_BESIDE_THE_COMPLETE_VERIFIED_CONTRACT_PLUS_UNBOUNDED_REPEATED_BUILD_UP_DIRECTIVE_FIELDS_AND_FIXED_16K_CONTEXT_SELECTION",
+      "decision": "Keep the verified external learning contract byte-for-byte complete and preserve all source-quality validators, while removing only oversized stale machine-generated learning already represented by that contract. Compact repeated build-up prose and sibling anchors in the existing Studio retry flow, then choose the model context window from actual prompt bytes and output budget instead of retrying the same oversized request.",
+      "change": "Updated tools/vibe2-source-worker.mjs so oversized stale learning guidance is structurally deduplicated only when the goal is at least 64 KB, verified external learning remains unchanged, compact Studio/full-Web retry directives keep at most three owned anchors and bounded repeated fields, and local-model requests select 16K, 24K, or 32K context from prompt size. Added exact regression coverage in qa/vibe2-source-worker.test.mjs. No game source, asset, balance, health, attack, wave, reward, drop rate, progression, save key/schema, queue task, candidate, publication, or horror-escape-room scope changed.",
+      "evidence": [
+        "baseline-main:168eef5d9e0cb900f3bdb62696284005bfb9747b",
+        "source-run:36772756208",
+        "line-defense-base-source-job:110084737578",
+        "line-defense-base-source-artifact:11124614736",
+        "line-defense-result-job:110084737455",
+        "line-defense-result-artifact:11125153193",
+        "actual-generation-budget:promptBytes=187980:maxPredict=3072:contextWindow=16384:timeoutMs=240000",
+        "actual-attempts:3:each-timeout:changed-files=0",
+        "actual-downstream-blocker:source-candidate-generation-failed",
+        "exact-queue-task-reproduction-without-external-learning:studio-initial-prompt=47722-to-30695-bytes",
+        "pull-request:4214",
+        "source-commit:f60f0ff9ff9b51c489288695f19851484583d85e",
+        "merged-main:a2066d43f2a671a306858f5d1a448eec30d6f6ff",
+        "owner-exclusive-scope:horror-escape-room-query-only"
+      ],
+      "reusablePatterns": [
+        "DEDUPLICATE_MACHINE_GENERATED_GUIDANCE_BEFORE_MODEL_CALL_WHILE_PRESERVING_CANONICAL_VERIFIED_CONTRACT",
+        "BOUND_REPEATED_DIRECTIVE_PROSE_AND_SIBLING_ANCHORS_INSIDE_THE_EXISTING_RETRY_FLOW",
+        "SELECT_LOCAL_MODEL_CONTEXT_FROM_ACTUAL_PROMPT_AND_OUTPUT_BUDGET",
+        "SEPARATE_SOURCE_GENERATION_SUCCESS_FROM_ENGINE_BUILD_AND_RUNTIME_PASS"
+      ],
+      "avoidPatterns": [
+        "RETRYING_THE_SAME_PROMPT_LARGER_THAN_THE_MODEL_CONTEXT_FOR_THREE_FULL_TIMEOUTS",
+        "TRUNCATING_OR_DROPPING_VERIFIED_EXTERNAL_LEARNING_TO_FIT_CONTEXT",
+        "WEAKENING_STUDIO_QUALITY_OR_GAME_SPECIFIC_ACCEPTANCE_GATES_TO_FORCE_A_CANDIDATE",
+        "CLAIMING_UNITY_OR_ROBLOX_STUDIO_PASS_BEFORE_A_POST_MERGE_SOURCE_CANDIDATE_EXISTS"
+      ],
+      "qa": [
+        "local source worker and adjacent learning/exploration/release regressions: 274 PASS, 18 environment-dependent SKIP, 0 FAIL",
+        "verified-learning byte-preservation and stale-duplicate removal regression: PASS",
+        "oversized Studio directive compaction and adaptive 24K context regression: PASS",
+        "git diff whitespace validation: PASS",
+        "PR #4214 required GitHub Actions: Company Evolution QA PASS; Company Central Policy Contract QA PASS; Vibe2 Core QA test, Development Web browser startup smoke, and Practice fault cards runtime PASS",
+        "Unity build/APK/runtime actual execution after merge: NOT_YET_OBSERVED",
+        "Roblox Studio actual execution after merge: NOT_RUN; no F9 or release completion claim"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "MERGED_AT_A2066D43; SOURCE_PROMPT_OVERSIZE_CAUSE_REPAIRED; POST_MERGE_EXACT_SOURCE_GENERATION_NOT_YET_OBSERVED; LINE_DEFENSE_STUDIO_REVALIDATION_BLOCKED_UNTIL_A_NEW_SOURCE_CANDIDATE_EXISTS; NEXT_ROTATION_POST_MERGE_UNITY_SOURCE_ARTIFACT_THEN_OLDEST_NON_OWNER_GAME_STUDIO_SCENARIO"
     }
   ]
 }
