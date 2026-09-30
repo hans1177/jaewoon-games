@@ -4,8 +4,11 @@
     "$className": "DataModel",
     "ReplicatedStorage": {
       "WorldGhostSkins": {
+        "$className": "Folder",
         "GhostSkinCatalog": {"$path": "GhostSkinCatalog.luau"},
-        "GhostSkinFactory": {"$path": "GhostSkinFactory.luau"}
+        "GhostSkinFactory": {"$path": "GhostSkinFactory.luau"},
+        "GhostSkinMotion": {"$path": "GhostSkinMotion.luau"},
+        "GhostSkinAudit": {"$path": "GhostSkinAudit.luau"}
       }
     },
     "StarterPlayer": {
